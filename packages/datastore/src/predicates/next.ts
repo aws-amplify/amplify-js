@@ -92,48 +92,6 @@ const negations = {
 };
 
 /**
- * Given a V1 predicate "seed", applies a list of V2 field-level conditions
- * to the predicate, returning a new/final V1 predicate chain link.
- * @param predicate The base/seed V1 predicate to build on
- * @param conditions The V2 conditions to add to the predicate chain.
- * @param negateChildren Whether the conditions should be negated first.
- * @returns A V1 predicate, with conditions incorporated.
- */
-function applyConditionsToV1Predicate<T>(
-	predicate: T,
-	conditions: FieldCondition[],
-	negateChildren: boolean
-): T {
-	let p = predicate;
-	const finalConditions: FieldCondition[] = [];
-
-	for (const c of conditions) {
-		if (negateChildren) {
-			if (c.operator === 'between') {
-				finalConditions.push(
-					new FieldCondition(c.field, 'lt', [c.operands[0]]),
-					new FieldCondition(c.field, 'gt', [c.operands[1]])
-				);
-			} else {
-				finalConditions.push(
-					new FieldCondition(c.field, negations[c.operator], c.operands)
-				);
-			}
-		} else {
-			finalConditions.push(c);
-		}
-	}
-
-	for (const c of finalConditions) {
-		p = p[c.field](
-			c.operator as never,
-			(c.operator === 'between' ? c.operands : c.operands[0]) as never
-		);
-	}
-	return p;
-}
-
-/**
  * A condition that can operate against a single "primitive" field of a model or item.
  * @member field The field of *some record* to test against.
  * @member operator The equality or comparison operator to use.
@@ -209,6 +167,13 @@ export class FieldCondition {
 				new FieldCondition(this.field, 'lt', [this.operands[0]]),
 				new FieldCondition(this.field, 'gt', [this.operands[1]]),
 			]);
+		} else if (this.operator === 'beginsWith') {
+			// beginsWith negation doesn't have a good, safe optimation right now.
+			// just re-wrap it in negation. The adapter will have to scan-and-filter,
+			// as is likely optimal for negated beginsWith conditions *anyway*.
+			return new GroupCondition(model, undefined, undefined, 'not', [
+				new FieldCondition(this.field, 'beginsWith', [this.operands[0]]),
+			]);
 		} else {
 			return new FieldCondition(
 				this.field,
@@ -242,9 +207,9 @@ export class FieldCondition {
 			ge: () => v >= this.operands[0],
 			lt: () => v < this.operands[0],
 			le: () => v <= this.operands[0],
-			contains: () => v.indexOf(this.operands[0]) > -1,
-			notContains: () => v.indexOf(this.operands[0]) === -1,
-			beginsWith: () => v.startsWith(this.operands[0]),
+			contains: () => v?.indexOf(this.operands[0]) > -1,
+			notContains: () => (!v ? true : v.indexOf(this.operands[0]) === -1),
+			beginsWith: () => v?.startsWith(this.operands[0]),
 			between: () => v >= this.operands[0] && v <= this.operands[1],
 		};
 		const operation = operations[this.operator as keyof typeof operations];
@@ -611,6 +576,7 @@ export class GroupCondition {
 						}
 						allJoinConditions.push({ and: relativeConditions });
 					}
+
 					const predicate = FlatModelPredicateCreator.createFromAST(
 						this.model.schema,
 						{
@@ -618,9 +584,7 @@ export class GroupCondition {
 						}
 					);
 
-					resultGroups.push(
-						await storage.query(this.model.builder, predicate as any)
-					);
+					resultGroups.push(await storage.query(this.model.builder, predicate));
 				} else {
 					throw new Error('Missing field metadata.');
 				}
@@ -752,13 +716,15 @@ export class GroupCondition {
 		};
 	}
 
-	toStoragePredicate<T>(
-		baseCondition?: StoragePredicate<T>
-	): StoragePredicate<T> {
-		return FlatModelPredicateCreator.createFromAST(
+	/**
+	 * Turn this predicate group into something a storage adapter
+	 * understands how to use.
+	 */
+	toStoragePredicate<T>(): StoragePredicate<T> {
+		return FlatModelPredicateCreator.createFromAST<T>(
 			this.model.schema,
 			this.toAST()
-		) as unknown as StoragePredicate<T>;
+		) as StoragePredicate<T>;
 	}
 
 	/**
@@ -792,12 +758,6 @@ export class GroupCondition {
  * `predicateFor()` returns objecst with recursive getters. To facilitate this,
  * a `query` and `tail` can be provided to "accumulate" nested conditions.
  *
- * TODO: the sortof-immutable algorithm was originally done to support legacy style
- * predicate branching (`p => p.x.eq(value).y.eq(value)`). i'm not sure this is
- * necessary or beneficial at this point, since we decided that each field condition
- * must flly terminate a branch. is the strong mutation barrier between chain links
- * still necessary or helpful?
- *
  * @param ModelType The ModelMeta used to build child properties.
  * @param field Scopes the query branch to a field.
  * @param query A base query to build on. Omit to start a new query.
@@ -820,7 +780,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 
 	// our eventual return object, which can be built upon.
 	// next steps will be to add or(), and(), not(), and field.op() methods.
-	const link = {} as any;
+	const link = {} as RecursiveModelPredicate<T>;
 
 	// so it can be looked up later with in the internals when processing conditions.
 	registerPredicateInternals(baseCondition, link);
@@ -839,10 +799,8 @@ export function recursivePredicateFor<T extends PersistentModel>(
 
 	// Adds .or() and .and() methods to the link.
 	// TODO: If revisiting this code, consider writing a Proxy instead.
-	['and', 'or'].forEach(op => {
-		(link as any)[op] = (
-			builder: RecursiveModelPredicateAggregateExtender<T>
-		) => {
+	(['and', 'or'] as const).forEach(op => {
+		link[op] = (builder: RecursiveModelPredicateAggregateExtender<T>) => {
 			// or() and and() will return a copy of the original link
 			// to head off mutability concerns.
 			const { query, newTail } = copyLink();
@@ -899,11 +857,11 @@ export function recursivePredicateFor<T extends PersistentModel>(
 	// For each field on the model schema, we want to add a getter
 	// that creates the appropriate new `link` in the query chain.
 	// TODO: If revisiting, consider a proxy.
-	for (const fieldName in ModelType.schema.fields) {
+	for (const fieldName in ModelType.schema.allFields) {
 		Object.defineProperty(link, fieldName, {
 			enumerable: true,
 			get: () => {
-				const def = ModelType.schema.fields![fieldName];
+				const def = ModelType.schema.allFields![fieldName];
 
 				if (!def.association) {
 					// we're looking at a value field. we need to return a
@@ -1002,5 +960,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 export function predicateFor<T extends PersistentModel>(
 	ModelType: ModelMeta<T>
 ): ModelPredicate<T> & PredicateInternalsKey {
+	// the cast here is just a cheap way to reduce the surface area from
+	// the recursive type.
 	return recursivePredicateFor(ModelType, false) as any as ModelPredicate<T>;
 }

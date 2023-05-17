@@ -60,7 +60,7 @@ class StorageClass implements StorageFacade {
 		private readonly sessionId?: string
 	) {
 		this.adapter = this.adapter || getDefaultAdapter();
-		this.pushStream = new PushStream() as any;
+		this.pushStream = new PushStream();
 	}
 
 	static getNamespace() {
@@ -123,7 +123,10 @@ class StorageClass implements StorageFacade {
 			let updateMutationInput;
 			// don't attempt to calc mutation input when storage.save
 			// is called by Merger, i.e., when processing an AppSync response
-			if (opType === OpType.UPDATE && !syncResponse) {
+			if (
+				(opType === OpType.UPDATE || opType === OpType.INSERT) &&
+				!syncResponse
+			) {
 				//
 				// TODO: LOOK!!!
 				// the `model` used here is in effect regardless of what model
@@ -136,7 +139,7 @@ class StorageClass implements StorageFacade {
 				// depends on this remaining as-is.
 				//
 
-				updateMutationInput = this.getUpdateMutationInput(
+				updateMutationInput = this.getChangedFieldsInput(
 					model,
 					savedElement,
 					patchesTuple
@@ -154,7 +157,7 @@ class StorageClass implements StorageFacade {
 				.constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
-				model: modelConstructor as any,
+				model: modelConstructor,
 				opType,
 				element,
 				mutator,
@@ -234,7 +237,7 @@ class StorageClass implements StorageFacade {
 			}
 
 			this.pushStream.next({
-				model: modelConstructor as any,
+				model: modelConstructor,
 				opType: OpType.DELETE,
 				element: model,
 				mutator,
@@ -340,11 +343,11 @@ class StorageClass implements StorageFacade {
 			});
 		});
 
-		return result as any;
+		return result;
 	}
 
 	// returns null if no user fields were changed (determined by value comparison)
-	private getUpdateMutationInput<T extends PersistentModel>(
+	private getChangedFieldsInput<T extends PersistentModel>(
 		model: T,
 		originalElement: T,
 		patchesTuple?: [Patch[], PersistentModel]
@@ -510,11 +513,11 @@ class ExclusiveStorage implements StorageFacade {
 			if (isModelConstructor(modelOrModelConstructor)) {
 				const modelConstructor = modelOrModelConstructor;
 
-				return storage.delete(modelConstructor as any, condition, mutator);
+				return storage.delete(modelConstructor, condition, mutator);
 			} else {
 				const model = modelOrModelConstructor;
 
-				return storage.delete(model as any, condition, mutator);
+				return storage.delete(model, condition, mutator);
 			}
 		});
 	}

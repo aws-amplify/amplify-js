@@ -14,11 +14,13 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 	ModelInit,
+	SortDirection,
 } from '../src/types';
 import {
 	Comment,
 	Metadata,
 	Model,
+	BasicModelRequiredTS,
 	getDataStore,
 	logDate,
 	expectIsolation,
@@ -1658,6 +1660,14 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 });
 
 describe('Model behavior', () => {
+	beforeEach(() => {
+		warpTime();
+	});
+
+	afterEach(() => {
+		unwarpTime();
+	});
+
 	test('newly instantiated models do not lazy load belongsTo', async () => {
 		const { DataStore, DefaultPKChild, DefaultPKParent } = getDataStore();
 
@@ -1733,6 +1743,69 @@ describe('Model behavior', () => {
 		expect(await disconnectedParent.child).toBeUndefined();
 	});
 
+	[null, undefined].forEach(value => {
+		test(`model field can be set to ${value} to remove connection hasOne parent`, async () => {
+			const { DataStore, HasOneChild, HasOneParent } = getDataStore();
+
+			const child = await DataStore.save(
+				new HasOneChild({ content: 'child content' })
+			);
+			const parent = await DataStore.save(
+				new HasOneParent({
+					child,
+				})
+			);
+
+			const parentWithoutChild = HasOneParent.copyOf(parent, draft => {
+				draft.child = value;
+			});
+
+			expect(parentWithoutChild.hasOneParentChildId).toBeNull();
+			expect(
+				(await DataStore.save(parentWithoutChild)).hasOneParentChildId
+			).toBeNull();
+			expect(
+				(await DataStore.query(HasOneParent, parent.id))!.hasOneParentChildId
+			).toBeNull();
+		});
+
+		test(`model field can be set to ${value} to remove connection on child hasMany`, async () => {
+			const { DataStore, CompositePKParent, CompositePKChild } = getDataStore();
+
+			const parent = await DataStore.save(
+				new CompositePKParent({
+					customId: 'customId',
+					content: 'content',
+				})
+			);
+
+			const child = await DataStore.save(
+				new CompositePKChild({ childId: 'childId', content: 'content', parent })
+			);
+
+			const childWithoutParent = CompositePKChild.copyOf(child, draft => {
+				draft.parent = value;
+			});
+
+			expect(await childWithoutParent.parent).toBeUndefined();
+			expect(
+				await DataStore.save(childWithoutParent).then(c => c.parent)
+			).toBeUndefined();
+			expect(
+				await DataStore.query(CompositePKChild, {
+					childId: child.childId,
+					content: child.content,
+				}).then(c => c!.parent)
+			).toBeUndefined();
+			expect(
+				await DataStore.query(CompositePKParent, {
+					customId: parent.customId,
+					content: parent.content,
+				}).then(c => c!.children.toArray())
+			).toEqual([]);
+		});
+	});
+
 	test('removes no-longer-matching items from the snapshot when using an eq() predicate on boolean field', done => {
 		(async () => {
 			const { DataStore, ModelWithBoolean } = getDataStore();
@@ -1777,7 +1850,7 @@ describe('Model behavior', () => {
 				);
 
 				// advance time to trigger another snapshot.
-				jest.advanceTimersByTime(2000);
+				await pause(2000);
 			} catch (error) {
 				done(error);
 			}
@@ -1828,11 +1901,61 @@ describe('Model behavior', () => {
 				);
 
 				// advance time to trigger another snapshot.
-				jest.advanceTimersByTime(2000);
+				await pause(2000);
 			} catch (error) {
 				done(error);
 			}
 		})();
+	});
+
+	// ref: https://github.com/aws-amplify/amplify-js/issues/11101
+	test('returns fresh snapshot when sorting by descending', async done => {
+		const { DataStore, Post } = getDataStore();
+
+		const expectedTitles = ['create', 'update', 'update2'];
+
+		const newPost = await DataStore.save(
+			new Post({
+				title: 'create',
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+			})
+		);
+
+		const sub = DataStore.observeQuery(Post, Predicates.ALL, {
+			sort: s => s.updatedAt(SortDirection.DESCENDING),
+		}).subscribe(({ items }) => {
+			if (items.length === 0) {
+				return;
+			}
+
+			const [item] = items;
+			const expected = expectedTitles.shift();
+
+			expect(item!.title).toEqual(expected);
+
+			if (expectedTitles.length === 0) {
+				sub.unsubscribe();
+				done();
+			}
+		});
+
+		await DataStore.save(
+			Post.copyOf(newPost, updated => {
+				updated.title = 'update';
+				updated.updatedAt = new Date().toISOString();
+			})
+		);
+
+		// observeQuery snapshots are debounced by 2s
+		await pause(2000);
+
+		await DataStore.save(
+			Post.copyOf(newPost, updated => {
+				updated.title = 'update2';
+				updated.updatedAt = new Date().toISOString();
+			})
+		);
 	});
 });
 
@@ -2203,6 +2326,34 @@ describe('DataStore tests', () => {
 			expect(model2.optionalField1).toBeNull();
 		});
 
+		test('Required timestamp field can be omitted', async () => {
+			const { BasicModelRequiredTS } = initSchema(testSchema()) as {
+				BasicModelRequiredTS: PersistentModelConstructor<BasicModelRequiredTS>;
+			};
+
+			const m = new BasicModelRequiredTS({
+				body: 'something',
+			} as any);
+
+			expect(m.createdAt).toBeNull();
+			expect(m.updatedOn).toBeNull();
+		});
+
+		test('Required timestamp field can be null during a copyOf', async () => {
+			const { BasicModelRequiredTS } = initSchema(testSchema()) as {
+				BasicModelRequiredTS: PersistentModelConstructor<BasicModelRequiredTS>;
+			};
+
+			const m = new BasicModelRequiredTS({
+				body: 'something',
+			} as any);
+
+			const copied = BasicModelRequiredTS.copyOf(m, d => (d.body = 'new body'));
+
+			expect(copied.createdAt).toBeNull();
+			expect(copied.updatedOn).toBeNull();
+		});
+
 		test('multiple copyOf operations carry all changes on save', async () => {
 			let model: Model;
 			const save = jest.fn(() => [model]);
@@ -2403,8 +2554,19 @@ describe('DataStore tests', () => {
 			const [settingsSave, modelCall] = <any>save.mock.calls;
 			const [_model, _condition, _mutator, patches] = modelCall;
 
+			const expectedPatchedFields = [
+				'field1',
+				'dateCreated',
+				'id',
+				'_version',
+				'_lastChangedAt',
+				'_deleted',
+			];
+
 			expect(result).toMatchObject(model);
-			expect(patches).toBeUndefined();
+			expect(patches[0].map(p => p.path.join(''))).toEqual(
+				expectedPatchedFields
+			);
 		});
 
 		test('Save returns the updated model and patches', async () => {
@@ -3922,8 +4084,19 @@ describe('DataStore tests', () => {
 				const [settingsSave, modelCall] = <any>save.mock.calls;
 				const [_model, _condition, _mutator, patches] = modelCall;
 
+				const expectedPatchedFields = [
+					'postId',
+					'title',
+					'dateCreated',
+					'_version',
+					'_lastChangedAt',
+					'_deleted',
+				];
+
 				expect(result).toMatchObject(model);
-				expect(patches).toBeUndefined();
+				expect(patches[0].map(p => p.path.join(''))).toEqual(
+					expectedPatchedFields
+				);
 			});
 
 			test('Save returns the updated model and patches', async () => {

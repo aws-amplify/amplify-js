@@ -25,8 +25,26 @@ executors:
 
   js-test-executor:
     docker:
+      - image: cypress/included:12.4.1
+      - image: verdaccio/verdaccio:5.20
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
+    resource_class: large
+
+  # TODO: Update tests that use this image to use the updated `js-test-executor`
+  # After upgrading the Docker image to 12.4.1, we had to make several updates to our samples (see
+  # https://github.com/aws-amplify/amplify-js-samples-staging/pull/522).
+  # This is because our current implementation of setting network status in our E2E tests began to
+  # fail (i.e. this is no longer supported). We updated our samples to instead use the Reachability
+  # component's helper function for setting network status
+  # (see https://github.com/aws-amplify/amplify-js/blob/main/packages/core/src/Util/Reachability.ts#L42-L54).
+  # However, several JS tests were still failing after attempting to remediate. An item has been
+  # added to the JS backlog for follow-up.
+  js-test-executor-prev:
+    docker:
       - image: cypress/included:8.7.0
-      - image: verdaccio/verdaccio
+      - image: verdaccio/verdaccio:5.20
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -39,8 +57,8 @@ executors:
 
   webkit-test-executor:
     docker:
-      - image: mcr.microsoft.com/playwright:v1.29.2-focal
-      - image: verdaccio/verdaccio
+      - image: mcr.microsoft.com/playwright:v1.30.0-focal
+      - image: verdaccio/verdaccio:5.20
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -418,7 +436,8 @@ jobs:
     parameters:
       browser:
         type: string
-    executor: js-test-executor
+    # TODO: see `js-test-executor` TODO above
+    executor: js-test-executor-prev
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples
     steps:
@@ -448,7 +467,8 @@ jobs:
     parameters:
       browser:
         type: string
-    executor: js-test-executor
+    # TODO: see `js-test-executor` TODO above
+    executor: js-test-executor-prev
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples
     steps:
@@ -566,6 +586,13 @@ jobs:
           category: auth
           sample_name: auth-ssr
           spec: auth-ssr
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'NextJS Auth Custom Implementation with SSR'
+          framework: next
+          category: auth
+          sample_name: custom-auth-ssr
+          spec: authenticator
           browser: << parameters.browser >>
 
   integ_react_predictions:
@@ -1353,7 +1380,8 @@ jobs:
           browser: << parameters.browser >>
 
   integ_react_iot_reconnect:
-    executor: js-test-executor
+    # TODO: see `js-test-executor` TODO above
+    executor: js-test-executor-prev
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-iot
     steps:
@@ -1368,7 +1396,8 @@ jobs:
           browser: chrome
 
   integ_react_api_reconnect:
-    executor: js-test-executor
+    # TODO: see `js-test-executor` TODO above
+    executor: js-test-executor-prev
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-api
     steps:
@@ -1500,6 +1529,40 @@ jobs:
           spec: vanilla-js-basic-crud
           amplifyjs_dir: ~/amplify-js
 
+  integ_react_datastore_docs_examples:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/amplify-docs-examples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Docs Examples'
+          framework: react
+          category: datastore
+          sample_name: v2/amplify-docs-examples
+          spec: amplify-docs-examples
+          browser: << parameters.browser >>
+
+  integ_react_datastore_websocket_disruption:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/websocket-disruption
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - WebSocket Disruption'
+          framework: react
+          category: datastore
+          sample_name: websocket-disruption
+          spec: websocket-disruption
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1510,6 +1573,8 @@ jobs:
           name: 'Publish to Amplify Package'
           command: |
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+            echo "export PREID_HASH_SUFFIX=$(echo $CIRCLE_SHA1 | cut -c -7 | sed 's/^/\./')" >> "$BASH_ENV"
+            source "$BASH_ENV"
             npm whoami
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
@@ -1527,15 +1592,25 @@ jobs:
             - amplify-ssh-deps-{{ .Branch }}
             - amplify-ssh-deps
       - run:
-          name: 'Post-release steps'
+          name: 'Update roll-back infrastructure'
           command: |
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
             git pull origin release
-            yarn workspace @aws-amplify/core build
-            git add ./packages/core/src/Platform/version.ts
-            git commit -m "chore(release): update version.ts [ci skip]"
+            PUBLISH_COMMIT_HASH=$(git log -n 1 --pretty=format:"%H")
+            RELEASE_COMMIT_MESSAGE=$(git log -n 1 --skip 1 --pretty=oneline)
+            if [[ $RELEASE_COMMIT_MESSAGE = *release\(required\)* ]]; then git tag -f required-release $PUBLISH_COMMIT_HASH; fi
+      - run:
+          name: 'Update API documentation'
+          command: |
+            yarn run docs
+            git add ./docs/api/
+            git commit -m "chore(release): update API docs [ci skip]"
+      - run:
+          name: 'Push post release changes'
+          command: |
             git push origin release
+            git push -f origin required-release
             git push --force-with-lease origin release:main
 
 # Specifies the branches that can be considered releasable.
@@ -1549,13 +1624,19 @@ releasable_branches: &releasable_branches
     only:
       - release
       - main
-      - ui-components/main
-      - 1.0-stable
-      - geo/main
-      - in-app-messaging/main
+      - next
 
-test_browsers: &test_browsers
+# List of test browsers that are always used in every E2E test. Tests that aren't expected to interact with browser APIs
+# should use `minimal_browser_list` to keep test execution time low.
+minimal_browser_list: &minimal_browser_list
   browser: [chrome, firefox]
+
+# List of test browsers that are used in E2E tests where we want to also test browser APIs. For functionality that
+# interacts with browser APIs (e.g. IndexedDB), use `extended_browser_list`. Includes Microsoft Edge. Note: WebKit
+# is not included in this list because WebKit requires a different Docker image. Any test that uses this browser
+# list should also test against WebKit.
+extended_browser_list: &extended_browser_list
+  browser: [chrome, firefox, edge]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
@@ -1602,7 +1683,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_auth_2:
           requires:
             - integ_setup
@@ -1611,7 +1692,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_auth_test_cypress_no_ui:
           requires:
             - integ_setup
@@ -1626,7 +1707,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_angular_auth:
           requires:
             - integ_setup
@@ -1635,7 +1716,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_vue_auth:
           requires:
             - integ_setup
@@ -1644,7 +1725,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_next_auth:
           requires:
             - integ_setup
@@ -1653,7 +1734,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_predictions:
           requires:
             - integ_setup
@@ -1662,7 +1743,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_interactions:
           requires:
             - integ_setup
@@ -1671,7 +1752,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_vue_interactions:
           requires:
             - integ_setup
@@ -1680,7 +1761,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              browser: [chrome]
       - integ_angular_interactions:
           requires:
             - integ_setup
@@ -1689,7 +1770,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_javascript_auth:
           requires:
             - integ_setup
@@ -1698,7 +1779,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore:
           requires:
             - integ_setup
@@ -1707,7 +1788,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_v2:
           requires:
             - integ_setup
@@ -1716,7 +1797,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_multi_auth_one_rule:
           requires:
             - integ_setup
@@ -1725,7 +1806,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_multi_auth_one_rule_v2:
           requires:
             - integ_setup
@@ -1734,7 +1815,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_multi_auth_two_rules:
           requires:
             - integ_setup
@@ -1743,7 +1824,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_multi_auth_two_rules_v2:
           requires:
             - integ_setup
@@ -1752,7 +1833,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_multi_auth_three_plus_rules:
           requires:
             - integ_setup
@@ -1761,7 +1842,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_multi_auth_three_plus_rules_v2:
           requires:
             - integ_setup
@@ -1770,7 +1851,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_subs_disabled:
           requires:
             - integ_setup
@@ -1779,7 +1860,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_subs_disabled_v2:
           requires:
             - integ_setup
@@ -1788,7 +1869,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_consecutive_saves:
           requires:
             - integ_setup
@@ -1797,7 +1878,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_consecutive_saves_v2:
           requires:
             - integ_setup
@@ -1806,7 +1887,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       # - integ_react_datastore_observe_query:
       #     requires:
       #       - integ_setup
@@ -1815,7 +1896,7 @@ workflows:
       #       <<: *releasable_branches
       #     matrix:
       #       parameters:
-      #         <<: *test_browsers
+      #         <<: *minimal_browser_list
       # - integ_react_datastore_observe_query_v2:
       #     requires:
       #       - integ_setup
@@ -1824,7 +1905,7 @@ workflows:
       #       <<: *releasable_branches
       #     matrix:
       #       parameters:
-      #         <<: *test_browsers
+      #         <<: *minimal_browser_list
       - integ_react_datastore_schema_drift:
           requires:
             - integ_setup
@@ -1833,7 +1914,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_storage:
           requires:
             - integ_setup
@@ -1842,7 +1923,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_storage_multipart_progress:
           requires:
             - integ_setup
@@ -1851,7 +1932,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_storage_copy:
           requires:
             - integ_setup
@@ -1860,7 +1941,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_amazon_cognito_identity_js_cookie_storage:
           requires:
             - integ_setup
@@ -1869,7 +1950,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_amazon_cognito_identity_js:
           requires:
             - integ_setup
@@ -1878,7 +1959,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_node_amazon_cognito_identity_js:
           requires:
             - integ_setup
@@ -1893,7 +1974,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_delete_user:
           requires:
             - integ_setup
@@ -1902,7 +1983,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_rn_ios_storage:
           requires:
             - integ_setup
@@ -1971,7 +2052,7 @@ workflows:
       #       <<: *releasable_branches
       #     matrix:
       #       parameters:
-      #         <<: *test_browsers
+      #         <<: *minimal_browser_list
       - integ_javascript_geo:
           requires:
             - integ_setup
@@ -1989,7 +2070,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_next_datastore_owner_auth:
           requires:
             - integ_setup
@@ -1998,7 +2079,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_custom_pk_unconnected_models:
           requires:
             - integ_setup
@@ -2007,7 +2088,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *extended_browser_list
       - integ_react_datastore_custom_pk_unconnected_models_webkit:
           requires:
             - integ_setup
@@ -2022,7 +2103,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_custom_pk_has_many_many_to_many:
           requires:
             - integ_setup
@@ -2031,7 +2112,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_background_process_manager:
           requires:
             - integ_setup
@@ -2040,7 +2121,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *extended_browser_list
       - integ_react_datastore_background_process_manager_webkit:
           requires:
             - integ_setup
@@ -2055,7 +2136,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_iot_reconnect:
           requires:
             - integ_setup
@@ -2076,7 +2157,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_nested_predicate:
           requires:
             - integ_setup
@@ -2085,7 +2166,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_next_datastore_13_basic:
           requires:
             - integ_setup
@@ -2094,7 +2175,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_next_datastore_13_js:
           requires:
             - integ_setup
@@ -2103,7 +2184,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_vite_datastore_basic_crud:
           requires:
             - integ_setup
@@ -2112,7 +2193,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_rollup_datastore_basic_crud:
           requires:
             - integ_setup
@@ -2121,7 +2202,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_vanilla_js_datastore_basic_crud:
           requires:
             - integ_setup
@@ -2130,7 +2211,25 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
+      - integ_react_datastore_docs_examples:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *minimal_browser_list
+      - integ_react_datastore_websocket_disruption:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *minimal_browser_list
       - deploy:
           filters:
             <<: *releasable_branches
@@ -2200,6 +2299,8 @@ workflows:
             - integ_vite_datastore_basic_crud
             - integ_rollup_datastore_basic_crud
             - integ_vanilla_js_datastore_basic_crud
+            - integ_react_datastore_docs_examples
+            - integ_react_datastore_websocket_disruption
       - post_release:
           filters:
             branches:
@@ -2231,18 +2332,29 @@ workflows:
           build-dir: build
       # Next
       - getting-started-smoke-test/web:
-          name: Next.js - latest
+          name: Next.js (Page Router) - latest
           npx-command: create-next-app
+          npx-post: --use-npm --ts --tailwind --no-eslint --no-src-dir --no-app --import-alias "@/*"
           framework: nextjs
-          main-file-path: pages/_app.js
+          main-file-path: pages/_app.tsx
           dev-start: dev
           build-dir: build
           ssr: true
       - getting-started-smoke-test/web:
-          name: Next.js - next
-          npx-command: create-next-app@canary
+          name: Next.js (App Router) - latest
+          npx-command: create-next-app
+          npx-post: --use-npm --ts --tailwind --no-eslint --no-src-dir --app --import-alias "@/*"
           framework: nextjs
-          main-file-path: pages/_app.js
+          main-file-path: app/page.tsx
+          dev-start: dev
+          build-dir: build
+          ssr: true
+      - getting-started-smoke-test/web:
+          name: Next.js (App Router) - next
+          npx-command: create-next-app@canary
+          npx-post: --use-npm --ts --tailwind --no-eslint --no-src-dir --app --import-alias "@/*"
+          framework: nextjs
+          main-file-path: app/page.tsx
           dev-start: dev
           build-dir: build
           ssr: true
@@ -2414,7 +2526,10 @@ orbs:
               no_output_timeout: 2m
           - run-with-retry:
               label: Install AmplifyJS
-              command: npm i -S aws-amplify && npm i -g --prefix=$HOME/.local wait-on serve
+              command: |
+                npm i -S aws-amplify
+                npm i -g --prefix=$HOME/.local wait-on serve
+                ~/amplify-js/.circleci/duplicates-npm.sh
           - run:
               name: Call Amplify library in code
               command: |

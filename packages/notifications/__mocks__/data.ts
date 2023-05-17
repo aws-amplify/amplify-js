@@ -1,17 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
 import {
 	Alignment,
 	ButtonAction,
 	DimensionType,
+	Event,
 	FilterType,
 	InAppMessageCampaign as PinpointInAppMessage,
 } from '@aws-sdk/client-pinpoint';
-import {
-	InAppMessage,
-	InAppMessagingEvent,
-	UserInfo,
-} from '../src/InAppMessaging';
+import { InAppMessage, InAppMessagingEvent } from '../src/InAppMessaging';
+import { PushNotificationMessage } from '../src/PushNotification';
+import { UserInfo } from '../src';
 import { NotificationsConfig } from '../src';
 
 export const credentials = {
@@ -27,12 +27,13 @@ export const awsPinpointConfig = {
 	region: 'us-west-2',
 };
 
-export const inAppMessagingConfig = {
+export const subcategoryConfig = {
 	AWSPinpoint: awsPinpointConfig,
 };
 
 export const notificationsConfig = {
-	InAppMessaging: inAppMessagingConfig,
+	InAppMessaging: subcategoryConfig,
+	Push: subcategoryConfig,
 };
 
 export const adhocConfig: NotificationsConfig = {
@@ -52,9 +53,34 @@ export const awsConfig = {
 	Notifications: notificationsConfig,
 };
 
-export const simpleEvent: InAppMessagingEvent = { name: 'foo' };
+export const imageUrl = 'http://image.fakeurl/avocado.png';
 
-export const simpleMessages = [{ id: 'foo' }, { id: 'bar' }];
+export const userId = 'user-id';
+
+export const userInfo: UserInfo = {
+	attributes: {
+		hobbies: ['shuffleboard', 'jousting'],
+	},
+};
+
+export const analyticsEvent: Event = {
+	EventType: 'analytics-event',
+	Timestamp: '2023-03-08T18:13:03.627Z',
+};
+
+/**
+ * In-App Messaging data
+ */
+export const inAppMessagingConfig = {
+	endpointInfo: { channelType: 'IN_APP' },
+};
+
+export const simpleInAppMessagingEvent: InAppMessagingEvent = { name: 'foo' };
+
+export const simpleInAppMessages: Partial<InAppMessage>[] = [
+	{ id: 'foo' },
+	{ id: 'bar' },
+];
 
 export const closestExpiryMessage: InAppMessage = {
 	id: 'closest-expiry',
@@ -122,13 +148,13 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 					Header: 'Header content',
 					TextColor: '#88FF88',
 				},
-				ImageUrl: 'http://image.url',
+				ImageUrl: imageUrl,
 				PrimaryBtn: {
 					DefaultConfig: {
 						BackgroundColor: '#8888FF',
 						BorderRadius: 4,
 						ButtonAction: ButtonAction.CLOSE,
-						Link: null,
+						Link: undefined,
 						Text: 'Close button',
 						TextColor: '#FF88FF',
 					},
@@ -138,7 +164,7 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 						BackgroundColor: '#88FFFF',
 						BorderRadius: 4,
 						ButtonAction: ButtonAction.LINK,
-						Link: 'http://link.url',
+						Link: 'http://link.fakeurl',
 						Text: 'Link button',
 						TextColor: '#FFFFFF',
 					},
@@ -163,8 +189,8 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 			},
 		},
 		QuietTime: {
-			End: null,
-			Start: null,
+			End: undefined,
+			Start: undefined,
 		},
 	},
 	SessionCap: 0,
@@ -184,18 +210,18 @@ export const extractedContent = [
 			content: 'Header content',
 			style: { color: '#88FF88', textAlign: 'center' },
 		},
-		image: { src: 'http://image.url' },
+		image: { src: imageUrl },
 		primaryButton: {
 			action: 'CLOSE',
 			style: { backgroundColor: '#8888FF', borderRadius: 4, color: '#FF88FF' },
 			title: 'Close button',
-			url: null,
+			url: undefined,
 		},
 		secondaryButton: {
 			action: 'LINK',
 			style: { backgroundColor: '#88FFFF', borderRadius: 4, color: '#FFFFFF' },
 			title: 'Link button',
-			url: 'http://link.url',
+			url: 'http://link.fakeurl',
 		},
 	},
 ];
@@ -207,22 +233,114 @@ export const extractedMetadata = {
 	treatmentId: 'T1',
 };
 
-export const userId = 'user-id';
+/**
+ * Push Notification data
+ */
+export const pushNotificationApnsConfig = {
+	endpointInfo: { channelType: 'APNS' },
+};
 
-export const userInfo: UserInfo = {
-	attributes: {
-		hobbies: ['shuffleboard', 'jousting'],
+export const pushNotificationFcmConfig = {
+	endpointInfo: { channelType: 'GCM' },
+};
+
+export const pushModuleConstants = {
+	NativeEvent: {
+		BACKGROUND_MESSAGE_RECEIVED: 'BackgroundMessageReceived',
+		FOREGROUND_MESSAGE_RECEIVED: 'ForegroundMessageReceived',
+		LAUNCH_NOTIFICATION_OPENED: 'LaunchNotificationOpened',
+		NOTIFICATION_OPENED: 'NotificationOpened',
+		TOKEN_RECEIVED: 'TokenReceived',
+	},
+	NativeHeadlessTaskKey: 'PushNotificationHeadlessTaskKey',
+};
+
+export const simplePushMessage: PushNotificationMessage = {
+	title: 'foo',
+	body: 'bar',
+};
+
+export const pushToken = 'foo-bar';
+export const pushNotificationUrl = 'http://goto.fakeurl';
+export const pushNotificationDeeplinkUrl = 'deeplink://url';
+export const pushNotificationAdhocData = { foo: 'bar' };
+export const pinpointCampaign = {
+	campaign_id: 'campaign-id',
+	campaign_activity_id: 'campaign-activity-id',
+	treatment_id: 'treatment-id',
+};
+export const pinpointJourney = {
+	journey_activity_id: 'journey-activity-id',
+	journey_run_id: 'journey-run-id',
+	journey_id: 'journey-id',
+};
+
+export const apnsMessagePayload = {
+	alert: {
+		title: 'apns-title',
+		subtitle: 'apns-subtitle',
+		body: 'apns-body',
 	},
 };
 
-export const pinpointEndpointPayload = {
-	ApplicationId: awsPinpointConfig.appId,
-	EndpointRequest: expect.objectContaining({
-		Attributes: userInfo.attributes,
-		ChannelType: 'IN_APP',
-		User: {
-			UserAttributes: userInfo.attributes,
-			UserId: userId,
-		},
-	}),
+export const apnsMessage = {
+	aps: apnsMessagePayload,
+	data: {
+		'media-url': imageUrl,
+		...pushNotificationAdhocData,
+	},
+};
+
+export const fcmMessageOptions = {
+	channelId: 'channel-id',
+	messageId: 'message-id',
+	senderId: 'sender-id',
+	sendTime: 1678840781599,
+};
+
+export const fcmMessagePayload = {
+	title: 'fcm-title',
+	body: 'fcm-body',
+	imageUrl: imageUrl,
+	action: {},
+	rawData: pushNotificationAdhocData,
+};
+
+export const fcmMessage = {
+	...fcmMessagePayload,
+	...fcmMessageOptions,
+};
+
+export const ANDROID_CAMPAIGN_ACTIVITY_ID_KEY =
+	'pinpoint.campaign.campaign_activity_id';
+export const ANDROID_CAMPAIGN_ID_KEY = 'pinpoint.campaign.campaign_id';
+export const ANDROID_CAMPAIGN_TREATMENT_ID_KEY =
+	'pinpoint.campaign.treatment_id';
+
+export const androidCampaignData = {
+	title: simplePushMessage.title,
+	body: simplePushMessage.body,
+	[ANDROID_CAMPAIGN_ACTIVITY_ID_KEY]: pinpointCampaign.campaign_activity_id,
+	[ANDROID_CAMPAIGN_ID_KEY]: pinpointCampaign.campaign_id,
+	[ANDROID_CAMPAIGN_TREATMENT_ID_KEY]: pinpointCampaign.treatment_id,
+};
+
+export const androidJourneyData = {
+	title: simplePushMessage.title,
+	body: simplePushMessage.body,
+	pinpoint: {
+		journey: pinpointJourney,
+	},
+};
+
+export const iosCampaignData = {
+	pinpoint: {
+		campaign: pinpointCampaign,
+	},
+};
+
+export const iosJourneyData = {
+	pinpoint: {
+		journey: pinpointJourney,
+	},
 };

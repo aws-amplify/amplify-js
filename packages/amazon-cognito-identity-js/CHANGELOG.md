@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.2.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.1.2...amazon-cognito-identity-js@6.2.0) (2023-03-23)
+
+
+### Features
+
+* **cognito:** make cookiestorage constructor parameter optional ([9b8e759](https://github.com/aws-amplify/amplify-js/commit/9b8e75973762ce498269de0162a3e70038238f0f))
+* **cognito:** remove required domain param when create CookieStorage ([c985454](https://github.com/aws-amplify/amplify-js/commit/c985454b0af9f2205941ab95d6ec8c42748ab63d))
+
+
+
+
+
 ## [6.1.2](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.1.1...amazon-cognito-identity-js@6.1.2) (2022-12-27)
 
 

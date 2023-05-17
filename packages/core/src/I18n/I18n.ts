@@ -113,7 +113,7 @@ export class I18n {
 		if (!lang_dict) {
 			lang_dict = this._dict[language] = {};
 		}
-		Object.assign(lang_dict, vocabularies);
+		this._dict[language] = { ...lang_dict, ...vocabularies };
 	}
 
 	/**

@@ -56,7 +56,15 @@ type MutationProcessorEvent = {
 };
 
 class MutationProcessor {
-	private observer!: ZenObservable.Observer<MutationProcessorEvent>;
+	/**
+	 * The observer that receives messages when mutations are successfully completed
+	 * against cloud storage.
+	 *
+	 * A value of `undefined` signals that the sync has either been stopped or has not
+	 * yet started. In this case, `isReady()` will be `false` and `resume()` will exit
+	 * early.
+	 */
+	private observer?: ZenObservable.Observer<MutationProcessorEvent>;
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
 		[TransformerMutationType, string, string][]
@@ -130,6 +138,8 @@ class MutationProcessor {
 			}
 
 			return this.runningProcesses.addCleaner(async () => {
+				// The observer has unsubscribed and/or `stop()` has been called.
+				this.removeObserver();
 				this.pause();
 			});
 		});
@@ -138,8 +148,14 @@ class MutationProcessor {
 	}
 
 	public async stop() {
+		this.removeObserver();
 		await this.runningProcesses.close();
 		await this.runningProcesses.open();
+	}
+
+	public removeObserver() {
+		this.observer?.complete?.();
+		this.observer = undefined;
 	}
 
 	public async resume(): Promise<void> {
@@ -195,7 +211,7 @@ class MutationProcessor {
 									operation,
 									data,
 									condition,
-									modelConstructor as any,
+									modelConstructor,
 									this.MutationEvent,
 									head,
 									operationAuthModes[authModeAttempts],
@@ -215,6 +231,22 @@ class MutationProcessor {
 											operationAuthModes[authModeAttempts - 1]
 										}`
 									);
+									try {
+										await this.errorHandler({
+											recoverySuggestion:
+												'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+											localModel: null!,
+											message: error.message,
+											model: modelConstructor.name,
+											operation: opName,
+											errorType: getMutationErrorType(error),
+											process: ProcessName.sync,
+											remoteModel: null!,
+											cause: error,
+										});
+									} catch (e) {
+										logger.error('Mutation error handler failed with:', e);
+									}
 									throw error;
 								}
 								logger.debug(
@@ -256,7 +288,7 @@ class MutationProcessor {
 						hasMore = (await this.outbox.peek(storage)) !== undefined;
 					});
 
-					this.observer.next!({
+					this.observer?.next?.({
 						operation,
 						modelDefinition,
 						model: record,
@@ -484,6 +516,11 @@ class MutationProcessor {
 		const modelDefinition = this.schema.namespaces[namespaceName].models[model];
 		const { primaryKey } = this.schema.namespaces[namespaceName].keys![model];
 
+		const auth = modelDefinition.attributes?.find(a => a.type === 'auth');
+		const ownerFields: string[] = auth?.properties?.rules
+			.map(rule => rule.ownerField)
+			.filter(f => f) || ['owner'];
+
 		const queriesTuples = this.typeQuery.get(modelDefinition);
 
 		const [, opName, query] = queriesTuples!.find(
@@ -515,6 +552,11 @@ class MutationProcessor {
 			for (const { name, type, association, isReadOnly } of modelFields) {
 				// omit readonly fields. cloud storage doesn't need them and won't take them!
 				if (isReadOnly) {
+					continue;
+				}
+
+				// omit owner fields if it's `null`. cloud storage doesn't allow it.
+				if (ownerFields.includes(name) && parsedData[name] === null) {
 					continue;
 				}
 

@@ -5,7 +5,11 @@ import { v4 as uuid } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
-import { SubscriptionObserver, ConnectionState } from '../types/PubSub';
+import {
+	ConnectionState,
+	PubSubContentObserver,
+	PubSubContent,
+} from '../types/PubSub';
 import { ProviderOptions } from '../types/Provider';
 import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import {
@@ -37,19 +41,39 @@ export function mqttTopicMatch(filter: string, topic: string) {
 export interface MqttProviderOptions extends ProviderOptions {
 	clientId?: string;
 	url?: string;
+	aws_pubsub_endpoint?: string;
+}
+
+interface PahoClient {
+	onMessageArrived: (params: {
+		destinationName: string;
+		payloadString: string;
+	}) => void;
+	onConnectionLost: (params: { errorCode: number }) => void;
+	connect: (params: {
+		[k: string]: string | number | boolean | (() => void);
+	}) => void;
+	disconnect: () => void;
+	isConnected: () => boolean;
+	subscribe: (topic: string) => void;
+	unsubscribe: (topic: string) => void;
+	send(topic: string, message: string);
 }
 
 class ClientsQueue {
-	private promises: Map<string, Promise<any>> = new Map();
+	private promises: Map<string, Promise<PahoClient | undefined>> = new Map();
 
-	async get(clientId: string, clientFactory?: (input: string) => Promise<any>) {
+	async get(
+		clientId: string,
+		clientFactory?: (input: string) => Promise<PahoClient | undefined>
+	) {
 		const cachedPromise = this.promises.get(clientId);
 		if (cachedPromise) return cachedPromise;
 
 		if (clientFactory) {
 			const newPromise = clientFactory(clientId);
 			this.promises.set(clientId, newPromise);
-			newPromise.catch(v => this.promises.delete(clientId));
+			newPromise.catch(() => this.promises.delete(clientId));
 			return newPromise;
 		}
 
@@ -65,13 +89,17 @@ class ClientsQueue {
 	}
 }
 
-const dispatchPubSubEvent = (event: string, data: any, message: string) => {
+const dispatchPubSubEvent = (
+	event: string,
+	data: Record<string, unknown>,
+	message: string
+) => {
 	Hub.dispatch('pubsub', { event, data, message }, 'PubSub', AMPLIFY_SYMBOL);
 };
 
 const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
 
-export class MqttOverWSProvider extends AbstractPubSubProvider {
+export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptions> {
 	private _clientsQueue = new ClientsQueue();
 	private connectionState: ConnectionState;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
@@ -106,11 +134,11 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	}
 
 	protected get clientId() {
-		return this.options.clientId;
+		return this.options.clientId!;
 	}
 
-	protected get endpoint() {
-		return this.options.aws_pubsub_endpoint;
+	protected get endpoint(): Promise<string | undefined> {
+		return Promise.resolve(this.options.aws_pubsub_endpoint);
 	}
 
 	protected get clientsQueue() {
@@ -118,12 +146,9 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	}
 
 	protected get isSSLEnabled() {
-		return !this.options
-			.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
-	}
-
-	protected getTopicForValue(value: any) {
-		return typeof value === 'object' && value[topicSymbol];
+		return !this.options[
+			'aws_appsync_dangerously_connect_to_http_endpoint_for_testing'
+		];
 	}
 
 	getProviderName() {
@@ -152,12 +177,15 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		}
 	}
 
-	public async newClient({ url, clientId }: MqttProviderOptions): Promise<any> {
+	public async newClient({
+		url,
+		clientId,
+	}: MqttProviderOptions): Promise<PahoClient> {
 		logger.debug('Creating new MQTT client', clientId);
 
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
 		// @ts-ignore
-		const client = new Paho.Client(url, clientId);
+		const client = new Paho.Client(url, clientId) as PahoClient;
 
 		client.onMessageArrived = ({
 			destinationName: topic,
@@ -183,7 +211,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				useSSL: this.isSSLEnabled,
 				mqttVersion: 3,
 				onSuccess: () => resolve(true),
-				onFailure: x => {
+				onFailure: () => {
 					if (clientId) this._clientsQueue.remove(clientId);
 					this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 					resolve(false);
@@ -203,14 +231,17 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	protected async connect(
 		clientId: string,
 		options: MqttProviderOptions = {}
-	): Promise<any> {
+	): Promise<PahoClient | undefined> {
 		return await this.clientsQueue.get(clientId, async clientId => {
 			const client = await this.newClient({ ...options, clientId });
 
 			if (client) {
 				// Once connected, subscribe to all topics registered observers
 				this._topicObservers.forEach(
-					(_value: Set<SubscriptionObserver<any>>, key: string) => {
+					(
+						_value: Set<ZenObservable.SubscriptionObserver<any>>,
+						key: string
+					) => {
 						client.subscribe(key);
 					}
 				);
@@ -229,7 +260,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 	}
 
-	async publish(topics: string[] | string, msg: any) {
+	async publish(topics: string[] | string, msg: PubSubContent) {
 		const targetTopics = ([] as string[]).concat(topics);
 		const message = JSON.stringify(msg);
 
@@ -247,23 +278,26 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		}
 	}
 
-	protected _topicObservers: Map<string, Set<SubscriptionObserver<any>>> =
+	protected _topicObservers: Map<string, Set<PubSubContentObserver>> =
 		new Map();
 
-	protected _clientIdObservers: Map<string, Set<SubscriptionObserver<any>>> =
+	protected _clientIdObservers: Map<string, Set<PubSubContentObserver>> =
 		new Map();
 
-	private _onMessage(topic: string, msg: any) {
+	private _onMessage(topic: string, msg: string) {
 		try {
-			const matchedTopicObservers: Set<SubscriptionObserver<any>>[] = [];
+			const matchedTopicObservers: Set<
+				ZenObservable.SubscriptionObserver<any>
+			>[] = [];
 			this._topicObservers.forEach((observerForTopic, observerTopic) => {
 				if (mqttTopicMatch(observerTopic, topic)) {
 					matchedTopicObservers.push(observerForTopic);
 				}
 			});
-			const parsedMessage = JSON.parse(msg);
+			const parsedMessage: PubSubContent = JSON.parse(msg);
 
 			if (typeof parsedMessage === 'object') {
+				// @ts-ignore
 				parsedMessage[topicSymbol] = topic;
 			}
 
@@ -278,7 +312,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	subscribe(
 		topics: string[] | string,
 		options: MqttProviderOptions = {}
-	): Observable<any> {
+	): Observable<PubSubContent> {
 		const targetTopics = ([] as string[]).concat(topics);
 		logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 		let reconnectSubscription: ZenObservable.Subscription;
@@ -302,10 +336,12 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 			// this._clientIdObservers is used to close observers when client gets disconnected
 			let observersForClientId = this._clientIdObservers.get(clientId);
 			if (!observersForClientId) {
-				observersForClientId = new Set();
+				observersForClientId = new Set<PubSubContentObserver>();
 			}
-			observersForClientId.add(observer);
-			this._clientIdObservers.set(clientId, observersForClientId);
+			if (observersForClientId) {
+				observersForClientId.add(observer);
+				this._clientIdObservers.set(clientId, observersForClientId);
+			}
 
 			(async () => {
 				const getClient = async () => {
@@ -352,7 +388,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 					targetTopics.forEach(topic => {
 						const observersForTopic =
 							this._topicObservers.get(topic) ||
-							(new Set() as Set<SubscriptionObserver<any>>);
+							(new Set() as Set<ZenObservable.SubscriptionObserver<any>>);
 
 						observersForTopic.delete(observer);
 

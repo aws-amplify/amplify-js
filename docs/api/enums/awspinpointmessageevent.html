@@ -6,6 +6,7 @@
 	<title>AWSPinpointMessageEvent | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
 /* ========================================================================== HTML5 display definitions ========================================================================== */
 /** Correct `block` display not defined in IE 6/7/8/9 and Firefox 3. */
@@ -880,12 +881,12 @@ img { max-width: 100%; }
 			<div class="table-wrap">
 				<div class="table-cell logo">
 					<a href="../index.html">
-						<img src="https://aws-amplify.github.io/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
-						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+						<img src="https://aws-amplify.github.io/amplify-js/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: relative;">AWS Amplify JS API</div>
 					</a>
 				</div>
 				<div class="table-cell" style="">	<body>
-						<a href="/amplify-js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
+						<a href="https://docs.amplify.aws/lib/q/platform/js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify JS Dev Center</a>
 </div>	</body>
 <div class="table-cell" id="tsd-widgets">
 <div id="tsd-filter">
@@ -919,6 +920,12 @@ img { max-width: 100%; }
 		<a href="awspinpointmessageevent.html" class="tsd-kind-icon">AWSPinpoint<wbr>Message<wbr>Event</a>
 		<ul>
 			<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+				<a href="awspinpointmessageevent.html#background_message_received" class="tsd-kind-icon">BACKGROUND_<wbr>MESSAGE_<wbr>RECEIVED</a>
+			</li>
+			<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+				<a href="awspinpointmessageevent.html#foreground_message_received" class="tsd-kind-icon">FOREGROUND_<wbr>MESSAGE_<wbr>RECEIVED</a>
+			</li>
+			<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
 				<a href="awspinpointmessageevent.html#message_action_taken" class="tsd-kind-icon">MESSAGE_<wbr>ACTION_<wbr>TAKEN</a>
 			</li>
 			<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
@@ -926,6 +933,9 @@ img { max-width: 100%; }
 			</li>
 			<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
 				<a href="awspinpointmessageevent.html#message_displayed" class="tsd-kind-icon">MESSAGE_<wbr>DISPLAYED</a>
+			</li>
+			<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+				<a href="awspinpointmessageevent.html#notification_opened" class="tsd-kind-icon">NOTIFICATION_<wbr>OPENED</a>
 			</li>
 		</ul>
 	</li>
@@ -940,9 +950,12 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Enumeration members</h3>
 					<ul class="tsd-index-list">
+						<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="awspinpointmessageevent.html#background_message_received" class="tsd-kind-icon">BACKGROUND_<wbr>MESSAGE_<wbr>RECEIVED</a></li>
+						<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="awspinpointmessageevent.html#foreground_message_received" class="tsd-kind-icon">FOREGROUND_<wbr>MESSAGE_<wbr>RECEIVED</a></li>
 						<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="awspinpointmessageevent.html#message_action_taken" class="tsd-kind-icon">MESSAGE_<wbr>ACTION_<wbr>TAKEN</a></li>
 						<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="awspinpointmessageevent.html#message_dismissed" class="tsd-kind-icon">MESSAGE_<wbr>DISMISSED</a></li>
 						<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="awspinpointmessageevent.html#message_displayed" class="tsd-kind-icon">MESSAGE_<wbr>DISPLAYED</a></li>
+						<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="awspinpointmessageevent.html#notification_opened" class="tsd-kind-icon">NOTIFICATION_<wbr>OPENED</a></li>
 					</ul>
 				</section>
 			</div>
@@ -951,12 +964,32 @@ img { max-width: 100%; }
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Enumeration members</h2>
 		<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+			<a name="background_message_received" class="tsd-anchor"></a>
+			<h3>BACKGROUND_<wbr>MESSAGE_<wbr>RECEIVED</h3>
+			<div class="tsd-signature tsd-kind-icon">BACKGROUND_<wbr>MESSAGE_<wbr>RECEIVED<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;received_background&quot;</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6649dd6c4/packages/notifications/src/PushNotification/Providers/AWSPinpointProvider/types.ts#L11">packages/notifications/src/PushNotification/Providers/AWSPinpointProvider/types.ts:11</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+			<a name="foreground_message_received" class="tsd-anchor"></a>
+			<h3>FOREGROUND_<wbr>MESSAGE_<wbr>RECEIVED</h3>
+			<div class="tsd-signature tsd-kind-icon">FOREGROUND_<wbr>MESSAGE_<wbr>RECEIVED<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;received_foreground&quot;</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6649dd6c4/packages/notifications/src/PushNotification/Providers/AWSPinpointProvider/types.ts#L12">packages/notifications/src/PushNotification/Providers/AWSPinpointProvider/types.ts:12</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 			<a name="message_action_taken" class="tsd-anchor"></a>
 			<h3>MESSAGE_<wbr>ACTION_<wbr>TAKEN</h3>
 			<div class="tsd-signature tsd-kind-icon">MESSAGE_<wbr>ACTION_<wbr>TAKEN<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;_inapp.message_clicked&quot;</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/171151434/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/types.ts#L32">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/types.ts:32</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6649dd6c4/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/types.ts#L25">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/types.ts:25</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -966,7 +999,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">MESSAGE_<wbr>DISMISSED<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;_inapp.message_dismissed&quot;</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/171151434/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/types.ts#L31">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/types.ts:31</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6649dd6c4/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/types.ts#L24">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/types.ts:24</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -976,7 +1009,17 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">MESSAGE_<wbr>DISPLAYED<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;_inapp.message_displayed&quot;</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/171151434/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/types.ts#L30">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/types.ts:30</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6649dd6c4/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/types.ts#L23">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/types.ts:23</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+			<a name="notification_opened" class="tsd-anchor"></a>
+			<h3>NOTIFICATION_<wbr>OPENED</h3>
+			<div class="tsd-signature tsd-kind-icon">NOTIFICATION_<wbr>OPENED<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;opened_notification&quot;</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6649dd6c4/packages/notifications/src/PushNotification/Providers/AWSPinpointProvider/types.ts#L10">packages/notifications/src/PushNotification/Providers/AWSPinpointProvider/types.ts:10</a></li>
 				</ul>
 			</aside>
 		</section>

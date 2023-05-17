@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api-graphql",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Api-graphql category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -16,7 +16,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "tslint 'src/**/*.ts' && jest --coverage",
+    "test": "npm run lint && jest --coverage",
     "test:size": "size-limit",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
@@ -49,11 +49,11 @@
     "src"
   ],
   "dependencies": {
-    "@aws-amplify/api-rest": "3.0.12",
-    "@aws-amplify/auth": "5.1.6",
-    "@aws-amplify/cache": "5.0.12",
-    "@aws-amplify/core": "5.0.12",
-    "@aws-amplify/pubsub": "5.0.12",
+    "@aws-amplify/api-rest": "3.1.0",
+    "@aws-amplify/auth": "5.3.6",
+    "@aws-amplify/cache": "5.0.32",
+    "@aws-amplify/core": "5.3.0",
+    "@aws-amplify/pubsub": "5.1.15",
     "graphql": "15.8.0",
     "tslib": "^1.8.0",
     "uuid": "^3.2.1",
@@ -64,7 +64,7 @@
       "name": "API (GraphQL client)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, GraphQLAPI }",
-      "limit": "104.5 kB"
+      "limit": "104.6 kB"
     }
   ],
   "jest": {

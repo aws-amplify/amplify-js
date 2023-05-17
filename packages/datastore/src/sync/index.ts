@@ -2,8 +2,13 @@ import {
 	browserOrNode,
 	ConsoleLogger as Logger,
 	BackgroundProcessManager,
+	Hub,
 } from '@aws-amplify/core';
-import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
+import {
+	CONTROL_MSG as PUBSUB_CONTROL_MSG,
+	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
+	ConnectionState,
+} from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
@@ -116,6 +121,13 @@ export class SyncEngine {
 		PersistentModelConstructor<any>,
 		boolean
 	> = new WeakMap();
+	private unsleepSyncQueriesObservable: (() => void) | null;
+	private waitForSleepState: Promise<void>;
+	private syncQueriesObservableStartSleeping: (
+		value?: void | PromiseLike<void>
+	) => void;
+	private stopDisruptionListener: () => void;
+	private connectionDisrupted = false;
 
 	private runningProcesses: BackgroundProcessManager;
 
@@ -134,13 +146,19 @@ export class SyncEngine {
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly syncPredicates: WeakMap<
+			SchemaModel,
+			ModelPredicate<any> | null
+		>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly amplifyContext: AmplifyContext,
 		private readonly connectivityMonitor?: DataStoreConnectivity
 	) {
 		this.runningProcesses = new BackgroundProcessManager();
+		this.waitForSleepState = new Promise(resolve => {
+			this.syncQueriesObservableStartSleeping = resolve;
+		});
 
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -207,197 +225,201 @@ export class SyncEngine {
 
 				// this is awaited at the bottom. so, we don't need to register
 				// this explicitly with the context. it's already contained.
-				const startPromise = new Promise((doneStarting, failedStarting) => {
-					this.datastoreConnectivity.status().subscribe(
-						async ({ online }) =>
-							this.runningProcesses.isOpen &&
-							this.runningProcesses.add(async onTerminate => {
-								// From offline to online
-								if (online && !this.online) {
-									this.online = online;
+				const startPromise = new Promise<void>(
+					(doneStarting, failedStarting) => {
+						this.datastoreConnectivity.status().subscribe(
+							async ({ online }) =>
+								this.runningProcesses.isOpen &&
+								this.runningProcesses.add(async onTerminate => {
+									// From offline to online
+									if (online && !this.online) {
+										this.online = online;
 
-									observer.next({
-										type: ControlMessage.SYNC_ENGINE_NETWORK_STATUS,
-										data: {
-											active: this.online,
-										},
-									});
+										observer.next({
+											type: ControlMessage.SYNC_ENGINE_NETWORK_STATUS,
+											data: {
+												active: this.online,
+											},
+										});
 
-									let ctlSubsObservable: Observable<CONTROL_MSG>;
-									let dataSubsObservable: Observable<
-										[TransformerMutationType, SchemaModel, PersistentModel]
-									>;
+										let ctlSubsObservable: Observable<CONTROL_MSG>;
+										let dataSubsObservable: Observable<
+											[TransformerMutationType, SchemaModel, PersistentModel]
+										>;
 
-									// NOTE: need a way to override this conditional for testing.
-									if (isNode) {
-										logger.warn(
-											'Realtime disabled when in a server-side environment'
-										);
-									} else {
-										//#region GraphQL Subscriptions
-										[ctlSubsObservable, dataSubsObservable] =
-											this.subscriptionsProcessor.start();
+										// NOTE: need a way to override this conditional for testing.
+										if (isNode) {
+											logger.warn(
+												'Realtime disabled when in a server-side environment'
+											);
+										} else {
+											this.stopDisruptionListener =
+												this.startDisruptionListener();
+											//#region GraphQL Subscriptions
+											[ctlSubsObservable, dataSubsObservable] =
+												this.subscriptionsProcessor.start();
 
+											try {
+												await new Promise<void>((resolve, reject) => {
+													onTerminate.then(reject);
+													const ctlSubsSubscription =
+														ctlSubsObservable.subscribe({
+															next: msg => {
+																if (msg === CONTROL_MSG.CONNECTED) {
+																	resolve();
+																}
+															},
+															error: err => {
+																reject(err);
+																const handleDisconnect =
+																	this.disconnectionHandler();
+																handleDisconnect(err);
+															},
+														});
+
+													subscriptions.push(ctlSubsSubscription);
+												});
+											} catch (err) {
+												observer.error(err);
+												failedStarting();
+												return;
+											}
+
+											logger.log('Realtime ready');
+
+											observer.next({
+												type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
+											});
+
+											//#endregion
+										}
+
+										//#region Base & Sync queries
 										try {
-											await new Promise((resolve, reject) => {
-												onTerminate.then(reject);
-												const ctlSubsSubscription = ctlSubsObservable.subscribe(
-													{
-														next: msg => {
-															if (msg === CONTROL_MSG.CONNECTED) {
+											await new Promise<void>((resolve, reject) => {
+												const syncQuerySubscription =
+													this.syncQueriesObservable().subscribe({
+														next: message => {
+															const { type } = message;
+
+															if (
+																type ===
+																ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
+															) {
 																resolve();
 															}
-														},
-														error: err => {
-															reject(err);
-															const handleDisconnect =
-																this.disconnectionHandler();
-															handleDisconnect(err);
-														},
-													}
-												);
 
-												subscriptions.push(ctlSubsSubscription);
+															observer.next(message);
+														},
+														complete: () => {
+															resolve();
+														},
+														error: error => {
+															reject(error);
+														},
+													});
+
+												if (syncQuerySubscription) {
+													subscriptions.push(syncQuerySubscription);
+												}
 											});
-										} catch (err) {
-											observer.error(err);
+										} catch (error) {
+											observer.error(error);
 											failedStarting();
 											return;
 										}
+										//#endregion
 
-										logger.log('Realtime ready');
+										//#region process mutations (outbox)
+										subscriptions.push(
+											this.mutationsProcessor
+												.start()
+												.subscribe(
+													({ modelDefinition, model: item, hasMore }) =>
+														this.runningProcesses.add(async () => {
+															const modelConstructor = this.userModelClasses[
+																modelDefinition.name
+															] as PersistentModelConstructor<any>;
+
+															const model = this.modelInstanceCreator(
+																modelConstructor,
+																item
+															);
+
+															await this.storage.runExclusive(storage =>
+																this.modelMerger.merge(
+																	storage,
+																	model,
+																	modelDefinition
+																)
+															);
+
+															observer.next({
+																type: ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
+																data: {
+																	model: modelConstructor,
+																	element: model,
+																},
+															});
+
+															observer.next({
+																type: ControlMessage.SYNC_ENGINE_OUTBOX_STATUS,
+																data: {
+																	isEmpty: !hasMore,
+																},
+															});
+														}, 'mutation processor event')
+												)
+										);
+										//#endregion
+
+										//#region Merge subscriptions buffer
+										// TODO: extract to function
+										if (!isNode) {
+											subscriptions.push(
+												dataSubsObservable!.subscribe(
+													([_transformerMutationType, modelDefinition, item]) =>
+														this.runningProcesses.add(async () => {
+															const modelConstructor = this.userModelClasses[
+																modelDefinition.name
+															] as PersistentModelConstructor<any>;
+
+															const model = this.modelInstanceCreator(
+																modelConstructor,
+																item
+															);
+
+															await this.storage.runExclusive(storage =>
+																this.modelMerger.merge(
+																	storage,
+																	model,
+																	modelDefinition
+																)
+															);
+														}, 'subscription dataSubsObservable event')
+												)
+											);
+										}
+										//#endregion
+									} else if (!online) {
+										this.online = online;
 
 										observer.next({
-											type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
+											type: ControlMessage.SYNC_ENGINE_NETWORK_STATUS,
+											data: {
+												active: this.online,
+											},
 										});
 
-										//#endregion
+										subscriptions.forEach(sub => sub.unsubscribe());
+										subscriptions = [];
 									}
 
-									//#region Base & Sync queries
-									try {
-										await new Promise((resolve, reject) => {
-											const syncQuerySubscription =
-												this.syncQueriesObservable().subscribe({
-													next: message => {
-														const { type } = message;
-
-														if (
-															type ===
-															ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
-														) {
-															resolve();
-														}
-
-														observer.next(message);
-													},
-													complete: () => {
-														resolve();
-													},
-													error: error => {
-														reject(error);
-													},
-												});
-
-											if (syncQuerySubscription) {
-												subscriptions.push(syncQuerySubscription);
-											}
-										});
-									} catch (error) {
-										observer.error(error);
-										failedStarting();
-										return;
-									}
-									//#endregion
-
-									//#region process mutations (outbox)
-									subscriptions.push(
-										this.mutationsProcessor
-											.start()
-											.subscribe(({ modelDefinition, model: item, hasMore }) =>
-												this.runningProcesses.add(async () => {
-													const modelConstructor = this.userModelClasses[
-														modelDefinition.name
-													] as PersistentModelConstructor<any>;
-
-													const model = this.modelInstanceCreator(
-														modelConstructor,
-														item
-													);
-
-													await this.storage.runExclusive(storage =>
-														this.modelMerger.merge(
-															storage,
-															model,
-															modelDefinition
-														)
-													);
-
-													observer.next({
-														type: ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
-														data: {
-															model: modelConstructor,
-															element: model,
-														},
-													});
-
-													observer.next({
-														type: ControlMessage.SYNC_ENGINE_OUTBOX_STATUS,
-														data: {
-															isEmpty: !hasMore,
-														},
-													});
-												}, 'mutation processor event')
-											)
-									);
-									//#endregion
-
-									//#region Merge subscriptions buffer
-									// TODO: extract to function
-									if (!isNode) {
-										subscriptions.push(
-											dataSubsObservable!.subscribe(
-												([_transformerMutationType, modelDefinition, item]) =>
-													this.runningProcesses.add(async () => {
-														const modelConstructor = this.userModelClasses[
-															modelDefinition.name
-														] as PersistentModelConstructor<any>;
-
-														const model = this.modelInstanceCreator(
-															modelConstructor,
-															item
-														);
-
-														await this.storage.runExclusive(storage =>
-															this.modelMerger.merge(
-																storage,
-																model,
-																modelDefinition
-															)
-														);
-													}, 'subscription dataSubsObservable event')
-											)
-										);
-									}
-									//#endregion
-								} else if (!online) {
-									this.online = online;
-
-									observer.next({
-										type: ControlMessage.SYNC_ENGINE_NETWORK_STATUS,
-										data: {
-											active: this.online,
-										},
-									});
-
-									subscriptions.forEach(sub => sub.unsubscribe());
-									subscriptions = [];
-								}
-
-								doneStarting();
-							}, 'datastore connectivity event')
-					);
-				});
+									doneStarting();
+								}, 'datastore connectivity event')
+						);
+					}
+				);
 
 				this.storage
 					.observe(null, null, ownSymbol)
@@ -448,6 +470,7 @@ export class SyncEngine {
 
 								await startPromise;
 
+								// Set by the this.datastoreConnectivity.status().subscribe() loop
 								if (this.online) {
 									this.mutationsProcessor.resume();
 								}
@@ -540,13 +563,13 @@ export class SyncEngine {
 						);
 						const paginatingModels = new Set(modelLastSync.keys());
 
-						let newestFullSyncStartedAt: number;
-						let theInterval: number;
+						let lastFullSyncStartedAt: number;
+						let syncInterval: number;
 
 						let start: number;
-						let duration: number;
-						let newestStartedAt: number;
-						await new Promise((resolve, reject) => {
+						let syncDuration: number;
+						let lastStartedAt: number;
+						await new Promise<void>((resolve, reject) => {
 							if (!this.runningProcesses.isOpen) resolve();
 							onTerminate.then(() => resolve());
 							syncQueriesSubscription = this.syncQueriesProcessor
@@ -572,10 +595,10 @@ export class SyncEngine {
 											});
 
 											start = getNow();
-											newestStartedAt =
-												newestStartedAt === undefined
+											lastStartedAt =
+												lastStartedAt === undefined
 													? startedAt
-													: Math.max(newestStartedAt, startedAt);
+													: Math.max(lastStartedAt, startedAt);
 										}
 
 										/**
@@ -655,13 +678,13 @@ export class SyncEngine {
 
 											const { lastFullSync, fullSyncInterval } = modelMetadata;
 
-											theInterval = fullSyncInterval;
+											syncInterval = fullSyncInterval;
 
-											newestFullSyncStartedAt =
-												newestFullSyncStartedAt === undefined
+											lastFullSyncStartedAt =
+												lastFullSyncStartedAt === undefined
 													? lastFullSync!
 													: Math.max(
-															newestFullSyncStartedAt,
+															lastFullSyncStartedAt,
 															isFullSync ? startedAt : lastFullSync!
 													  );
 
@@ -699,7 +722,7 @@ export class SyncEngine {
 											paginatingModels.delete(modelDefinition);
 
 											if (paginatingModels.size === 0) {
-												duration = getNow() - start;
+												syncDuration = getNow() - start;
 												resolve();
 												observer.next({
 													type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY,
@@ -721,10 +744,19 @@ export class SyncEngine {
 							});
 						});
 
-						const msNextFullSync =
-							newestFullSyncStartedAt! +
-							theInterval! -
-							(newestStartedAt! + duration!);
+						// null is cast to 0 resulting in unexpected behavior.
+						// undefined in arithmetic operations results in NaN also resulting in unexpected behavior.
+						// If lastFullSyncStartedAt is null this is the first sync.
+						// Assume lastStartedAt is is also newest full sync.
+						let msNextFullSync;
+						if (!lastFullSyncStartedAt!) {
+							msNextFullSync = syncInterval! - syncDuration!;
+						} else {
+							msNextFullSync =
+								lastFullSyncStartedAt! +
+								syncInterval! -
+								(lastStartedAt! + syncDuration!);
+						}
 
 						logger.debug(
 							`Next fullSync in ${msNextFullSync / 1000} seconds. (${new Date(
@@ -756,11 +788,19 @@ export class SyncEngine {
 
 							onTerminate.then(() => {
 								terminated = true;
+								this.syncQueriesObservableStartSleeping();
 								unsleep();
 							});
 
+							this.unsleepSyncQueriesObservable = unsleep;
+							this.syncQueriesObservableStartSleeping();
 							return sleep;
 						}, 'syncQueriesObservable sleep');
+
+						this.unsleepSyncQueriesObservable = null;
+						this.waitForSleepState = new Promise(resolve => {
+							this.syncQueriesObservableStartSleeping = resolve;
+						});
 					}
 				}, 'syncQueriesObservable main');
 		});
@@ -794,6 +834,11 @@ export class SyncEngine {
 		 * from entering the pipelines.
 		 */
 		this.unsubscribeConnectivity();
+
+		/**
+		 * Stop listening for websocket connection disruption
+		 */
+		this.stopDisruptionListener && this.stopDisruptionListener();
 
 		/**
 		 * aggressively shut down any lingering background processes.
@@ -906,9 +951,9 @@ export class SyncEngine {
 		const ModelMetadata = this.modelClasses
 			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
-		const predicate = ModelPredicateCreator.createFromExisting<ModelMetadata>(
+		const predicate = ModelPredicateCreator.createFromAST<ModelMetadata>(
 			this.schema.namespaces[SYNC].models[ModelMetadata.name],
-			c => c.namespace('eq', namespace).model('eq', model)
+			{ and: [{ namespace: { eq: namespace } }, { model: { eq: model } }] }
 		);
 
 		const [modelMetadata] = await this.storage.query(ModelMetadata, predicate, {
@@ -1039,5 +1084,55 @@ export class SyncEngine {
 			},
 		};
 		return namespace;
+	}
+
+	/**
+	 * listen for websocket connection disruption
+	 *
+	 * May indicate there was a period of time where messages
+	 * from AppSync were missed. A sync needs to be triggered to
+	 * retrieve the missed data.
+	 */
+	private startDisruptionListener() {
+		return Hub.listen('api', (data: any) => {
+			if (
+				data.source === 'PubSub' &&
+				data.payload.event === PUBSUB_CONNECTION_STATE_CHANGE
+			) {
+				const connectionState = data.payload.data
+					.connectionState as ConnectionState;
+
+				switch (connectionState) {
+					// Do not need to listen for ConnectionDisruptedPendingNetwork
+					// Normal network reconnection logic will handle the sync
+					case ConnectionState.ConnectionDisrupted:
+						this.connectionDisrupted = true;
+						break;
+
+					case ConnectionState.Connected:
+						if (this.connectionDisrupted) {
+							this.scheduleSync();
+						}
+						this.connectionDisrupted = false;
+						break;
+				}
+			}
+		});
+	}
+
+	/*
+	 * Schedule a sync to start when syncQueriesObservable enters sleep state
+	 * Start sync immediately if syncQueriesObservable is already in sleep state
+	 */
+	private scheduleSync() {
+		return (
+			this.runningProcesses.isOpen &&
+			this.runningProcesses.add(() =>
+				this.waitForSleepState.then(() => {
+					// unsleepSyncQueriesObservable will be set if waitForSleepState has resolved
+					this.unsleepSyncQueriesObservable!();
+				})
+			)
+		);
 	}
 }

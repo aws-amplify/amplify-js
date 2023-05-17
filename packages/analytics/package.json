@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/analytics",
-	"version": "6.0.12",
+	"version": "6.1.0",
 	"description": "Analytics category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -13,7 +13,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+		"test": "npm run lint && jest -w 1 --coverage",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
 		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm test && tsc && webpack",
@@ -48,8 +48,8 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/cache": "5.0.12",
-		"@aws-amplify/core": "5.0.12",
+		"@aws-amplify/cache": "5.0.32",
+		"@aws-amplify/core": "5.3.0",
 		"@aws-sdk/client-firehose": "3.6.1",
 		"@aws-sdk/client-kinesis": "3.6.1",
 		"@aws-sdk/client-personalize-events": "3.6.1",
