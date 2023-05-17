@@ -1,6 +1,11 @@
-import UserAgent, { appendToCognitoUserAgent } from '../src/UserAgent';
+import { AuthAction, Framework } from '../src/Platform/constants';
+import UserAgent, {
+	appendToCognitoUserAgent,
+	getAmplifyUserAgentString,
+} from '../src/UserAgent';
 
-const DEFAULT_USER_AGENT = 'aws-amplify/0.1.x js';
+const DEFAULT_USER_AGENT = 'aws-amplify/0.1.x';
+const AMPLIFY_USER_AGENT_NONE = `auth/${AuthAction.None} framework/${Framework.None}`;
 
 describe('UserAgent test', () => {
 	beforeEach(() => {
@@ -18,6 +23,10 @@ describe('UserAgent test', () => {
 	test('appendToCognitoUserAgent appends content to userAgent', () => {
 		appendToCognitoUserAgent('test');
 		expect(UserAgent.prototype.userAgent).toBe(`${DEFAULT_USER_AGENT} test`);
+
+		expect(getAmplifyUserAgentString({ action: AuthAction.None })).toBe(
+			`${DEFAULT_USER_AGENT} test ${AMPLIFY_USER_AGENT_NONE}`
+		);
 	});
 
 	test('appendToCognitoUserAgent does not append duplicate content', () => {
@@ -28,6 +37,10 @@ describe('UserAgent test', () => {
 		);
 
 		expect(UserAgent.prototype.userAgent).toBe(`${DEFAULT_USER_AGENT} test`);
+
+		expect(getAmplifyUserAgentString({ action: AuthAction.None })).toBe(
+			`${DEFAULT_USER_AGENT} test ${AMPLIFY_USER_AGENT_NONE}`
+		);
 	});
 
 	test('appendToCognitoUserAgent sets userAgent if userAgent has no content', () => {
