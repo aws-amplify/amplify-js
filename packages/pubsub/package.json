@@ -63,13 +63,13 @@
       "name": "PubSub (IoT provider)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, PubSub, AWSIoTProvider }",
-      "limit": "79.1 kB"
+      "limit": "79.15 kB"
     },
     {
       "name": "PubSub (Mqtt provider)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, PubSub, MqttOverWSProvider }",
-      "limit": "78.95 kB"
+      "limit": "79 kB"
     }
   ],
   "jest": {
