@@ -1,13 +1,13 @@
-import { documentExists, packageExists, windowExists } from './helpers';
+import { documentExists, processExists, windowExists } from './helpers';
 
 export function reactWebDetect() {
-	const reactDevTools = () =>
-		windowExists() && window['__REACT_DEVTOOLS_GLOBAL_HOOK__'];
-	const reactRootElement = () =>
-		documentExists() && document.getElementById('react-root');
-	return reactDevTools() || reactRootElement();
+	return documentExists() && !!document.getElementById('react-root');
 }
 
 export function reactSSRDetect() {
-	return packageExists('react');
+	return (
+		processExists() &&
+		typeof process.env !== 'undefined' &&
+		!!Object.keys(process.env).find(key => key.includes('react'))
+	);
 }

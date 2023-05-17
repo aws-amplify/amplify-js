@@ -8,7 +8,5 @@ export function nuxtWebDetect() {
 }
 
 export function nuxtSSRDetect() {
-	return (
-		globalExists() && global['__VUE_SSR_CONTEXT__']?.['nuxt'] !== undefined
-	);
+	return globalExists() && typeof global['__NUXT_PATHS__'] !== 'undefined';
 }

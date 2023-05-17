@@ -1,8 +1,8 @@
-import { globalExists, windowExists } from './helpers';
+import { globalExists, keyPrefixMatch, windowExists } from './helpers';
 
 export function vueWebDetect() {
-	return windowExists() && window['__VUE__'] !== undefined;
+	return windowExists() && keyPrefixMatch(window, '__VUE');
 }
 export function vueSSRDetect() {
-	return globalExists() && global['__VUE_SSR_CONTEXT__'] !== undefined;
+	return globalExists() && keyPrefixMatch(global, '__VUE');
 }

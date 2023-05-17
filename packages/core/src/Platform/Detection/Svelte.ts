@@ -1,9 +1,13 @@
-import { keyPrefixMatch, packageExists, windowExists } from './helpers';
+import { keyPrefixMatch, processExists, windowExists } from './helpers';
 
 export function svelteWebDetect() {
 	return windowExists() && keyPrefixMatch(window, '__SVELTE');
 }
 
 export function svelteSSRDetect() {
-	return packageExists('svelte');
+	return (
+		processExists() &&
+		typeof process.env !== 'undefined' &&
+		!!Object.keys(process.env).find(key => key.includes('svelte'))
+	);
 }

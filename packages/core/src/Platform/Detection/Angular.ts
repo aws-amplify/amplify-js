@@ -1,9 +1,7 @@
 import { processExists, windowExists } from './helpers';
 
 export function angularWebDetect() {
-	return (
-		windowExists() && window['ng'] && window['ng'].probe instanceof Function
-	);
+	return windowExists() && typeof window['ng'] !== 'undefined';
 }
 
 export function angularSSRDetect() {

@@ -1,5 +1,5 @@
 import { globalExists } from './helpers';
 
 export function expoDetect() {
-	return globalExists() && global['expo'] !== undefined;
+	return globalExists() && typeof global['expo'] !== 'undefined';
 }
