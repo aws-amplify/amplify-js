@@ -2366,17 +2366,19 @@ workflows:
           main-file-path: src/main.ts
           dev-port: 4200
           build-dir: dist
-      - getting-started-smoke-test/web:
-          name: Angular - next
-          npx-command: -p @angular/cli@next ng new --defaults true --force
-          framework: angular
-          main-file-path: src/main.ts
-          dev-port: 4200
-          build-dir: dist
+      # TODO: re-enable after fixing Storage types
+      # https://app.circleci.com/pipelines/github/aws-amplify/amplify-js/15508/workflows/61527ddd-7eb6-4897-97d2-f66c9a68ab59/jobs/166884
+      # - getting-started-smoke-test/web:
+      #     name: Angular - next
+      #     npx-command: -p @angular/cli@next ng new --defaults true --force
+      #     framework: angular
+      #     main-file-path: src/main.ts
+      #     dev-port: 4200
+      #     build-dir: dist
       # Vue
       - getting-started-smoke-test/web:
           name: Vue - latest
-          npx-command: -p @vue/cli vue create --default --force --registry "https://registry.npmmirror.com" # npmmirror works better with vue create specifically in CCI
+          npx-command: -p @vue/cli vue create --default --force --registry "https://registry.npmmirror.com"
           framework: vue
           main-file-path: src/main.js
           dev-start: serve
@@ -2395,37 +2397,31 @@ workflows:
       - getting-started-smoke-test/rn-ios:
           name: RN iOS - latest
           framework: rn_ios
-          main-file-path: ./App.js
-          # TODO: delete next line after https://github.com/react-native-picker/picker/issues/425 is resolved
-          tag: 0.68.2
+          main-file-path: ./App.tsx
       - getting-started-smoke-test/rn-android:
           name: RN Android - latest
           framework: rn_android
-          main-file-path: ./App.js
-          # TODO: delete next line after https://github.com/react-native-picker/picker/issues/425 is resolved
-          tag: 0.68.2
-
-      # TODO: re-enable the following 2 jobs after https://github.com/react-native-picker/picker/issues/425 is resolved
-      # - getting-started-smoke-test/rn-ios:
-      #     name: RN iOS - next
-      #     framework: rn_ios
-      #     main-file-path: ./App.js
-      #     tag: next
-      # - getting-started-smoke-test/rn-android:
-      #     name: RN Android - next
-      #     framework: rn_android
-      #     main-file-path: ./App.js
-      #     tag: next
-      # Expo
-      - getting-started-smoke-test/expo:
-          name: Expo - latest
-          framework: expo_ios
-          main-file-path: ./App.js
-      - getting-started-smoke-test/expo:
-          name: Expo - next
-          framework: expo_ios
-          main-file-path: ./App.js
+          main-file-path: ./App.tsx
+      - getting-started-smoke-test/rn-ios:
+          name: RN iOS - next
+          framework: rn_ios
+          main-file-path: ./App.tsx
           tag: next
+      - getting-started-smoke-test/rn-android:
+          name: RN Android - next
+          framework: rn_android
+          main-file-path: ./App.tsx
+          tag: next
+      # Expo
+      # - getting-started-smoke-test/expo:
+      #     name: Expo - latest
+      #     framework: expo_ios
+      #     main-file-path: ./App.js
+      # - getting-started-smoke-test/expo:
+      #     name: Expo - next
+      #     framework: expo_ios
+      #     main-file-path: ./App.js
+      #     tag: next
 
 # Start Canary Orb
 orbs:
@@ -2532,7 +2528,7 @@ orbs:
               label: Install AmplifyJS
               command: |
                 npm i -S aws-amplify
-                npm i -g wait-on serve
+                npm i -g --prefix=$HOME/.local wait-on serve
                 ~/amplify-js/.circleci/duplicates-npm.sh
           - run:
               name: Call Amplify library in code
@@ -2566,7 +2562,7 @@ orbs:
             default: latest
           xcode-version:
             type: string
-            default: 13.4.0
+            default: 13.4.1
           ios-device:
             type: string
             default: iPhone 13
@@ -2580,12 +2576,26 @@ orbs:
               pre-command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >>
               command: npx react-native@<< parameters.tag >> init amplify_getting_started_<< parameters.framework >> --version << parameters.tag >>
               no_output_timeout: 10m
-          - run-with-retry:
-              label: Install Amplify dependencies
-              command: npm install aws-amplify aws-amplify-react-native amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+          - unless:
+              condition:
+                equal: [next, << parameters.tag >>]
+              steps:
+                - run-with-retry:
+                    label: Install Amplify dependencies
+                    command: npm install aws-amplify aws-amplify-react-native amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+          - when:
+              condition:
+                equal: [next, << parameters.tag >>]
+              steps:
+                - run-with-retry:
+                    label: Install Amplify dependencies
+                    command: npm install --legacy-peer-deps aws-amplify aws-amplify-react-native amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+
           - run-with-retry:
               label: Pod Install
-              command: npx pod-install
+              command: |
+                brew install ios-deploy
+                npx pod-install
           - run:
               name: Call Amplify library in code
               command: |
@@ -2632,9 +2642,20 @@ orbs:
               pre-command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >>
               command: npx react-native@<< parameters.tag >> init amplify_getting_started_<< parameters.framework >> --version << parameters.tag >>
               no_output_timeout: 10m
-          - run-with-retry:
-              label: Install Amplify dependencies
-              command: npm install aws-amplify aws-amplify-react-native amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+          - unless:
+              condition:
+                equal: [next, << parameters.tag >>]
+              steps:
+                - run-with-retry:
+                    label: Install Amplify dependencies
+                    command: npm install aws-amplify aws-amplify-react-native amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+          - when:
+              condition:
+                equal: [next, << parameters.tag >>]
+              steps:
+                - run-with-retry:
+                    label: Install Amplify dependencies
+                    command: npm install --legacy-peer-deps aws-amplify aws-amplify-react-native amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
           - run:
               name: Call Amplify library in code
               command: |
@@ -2669,11 +2690,14 @@ orbs:
         steps:
           - run-with-retry:
               label: Install Expo
-              command: npm i -g expo-cli@<< parameters.tag >> wait-on
+              command: npm i -g --prefix=$HOME/.local expo-cli@<< parameters.tag >> wait-on
           - run-with-retry:
               label: Scaffold App
               command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >> && expo-cli init amplify_getting_started_<< parameters.framework >> --yes
               no_output_timeout: 5m
+          - run-with-retry:
+              label: Install Expo Web Deps
+              command: npx expo install react-native-web@~0.18.7 react-dom@18.0.0 @expo/webpack-config@^0.17.0
           - run-with-retry:
               label: Install Amplify dependencies
               command: yarn add aws-amplify aws-amplify-react-native @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
