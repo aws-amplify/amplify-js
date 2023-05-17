@@ -599,7 +599,7 @@ describe('StorageProvider test', () => {
 		});
 
 		test('getProperties successfully', async () => {
-			expect.assertions(3);
+			expect.assertions(4);
 			const spyon = jest.spyOn(S3Client.prototype, 'send');
 			const dispatchSpy = jest.spyOn(StorageUtils, 'dispatchStorageEvent');
 			const metadata = { key: 'value' };
@@ -618,6 +618,10 @@ describe('StorageProvider test', () => {
 				null,
 				'getProperties successful for key'
 			);
+			expect(spyon.mock.calls[0][0].input).toEqual({
+				Bucket: 'bucket',
+				Key: 'public/key',
+			});
 			spyon.mockClear();
 		});
 
