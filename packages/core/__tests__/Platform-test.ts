@@ -64,7 +64,7 @@ describe('Platform test', () => {
 
 			jest.spyOn(detection, 'detect');
 
-			console.log(detectFramework());
+			detectFramework();
 			jest.runOnlyPendingTimers();
 			detectFramework();
 			expect(detection.detect).toHaveBeenCalledTimes(2);
