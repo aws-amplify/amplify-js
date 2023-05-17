@@ -319,9 +319,7 @@ export class Storage {
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			return Promise.reject(
-				'No plugin found in Storage for the provider'
-			) as StorageGetPropertiesOutput<T>;
+			throw new Error('No plugin found with providerName');
 		}
 		const cancelTokenSource = this.getCancellableTokenSource();
 		const responsePromise = prov.getProperties(key, {
