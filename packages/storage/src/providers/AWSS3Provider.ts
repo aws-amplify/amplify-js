@@ -51,7 +51,7 @@ import {
 	S3ClientOptions,
 	S3ProviderListOutput,
 	S3ProviderGetPropertiesOutput,
-	CommonStorageOptions,
+	S3ProviderGetPropertiesConfig,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
@@ -505,20 +505,26 @@ export class AWSS3Provider implements StorageProvider {
 	 * Get Properties of the object
 	 *
 	 * @param {string} key - key of the object
-	 * @param {CommonStorageOptions} [config] - Optional configuration for the underlying S3 command
+	 * @param {S3ProviderGetPropertiesConfig} [config] - Optional configuration for the underlying S3 command
 	 * @return {Promise<S3ProviderGetPropertiesOutput>} - A promise resolves to contentType,
 	 * contentLength, eTag, lastModified, metadata
 	 */
 	public async getProperties(
 		key: string,
-		config?: CommonStorageOptions
+		config?: S3ProviderGetPropertiesConfig
 	): Promise<S3ProviderGetPropertiesOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
 		}
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, track = false } = opt;
+		const {
+			bucket,
+			track = false,
+			SSECustomerAlgorithm,
+			SSECustomerKey,
+			SSECustomerKeyMD5,
+		} = opt;
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		const emitter = new events.EventEmitter();
@@ -529,6 +535,16 @@ export class AWSS3Provider implements StorageProvider {
 			Bucket: bucket,
 			Key: final_key,
 		};
+
+		if (SSECustomerAlgorithm) {
+			params.SSECustomerAlgorithm = SSECustomerAlgorithm;
+		}
+		if (SSECustomerKey) {
+			params.SSECustomerKey = SSECustomerKey;
+		}
+		if (SSECustomerKeyMD5) {
+			params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
+		}
 		// See: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/classes/headobjectcommand.html
 
 		const headObjectCommand = new HeadObjectCommand(params);
