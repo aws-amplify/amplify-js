@@ -528,6 +528,7 @@ describe('StorageProvider test', () => {
 					return Promise.resolve(credentials);
 				});
 			});
+
 			test('get existing object with validateObjectExistence option', async () => {
 				expect.assertions(5);
 				const options_with_validateObjectExistence = Object.assign(
@@ -596,6 +597,7 @@ describe('StorageProvider test', () => {
 				return Promise.resolve(credentials);
 			});
 		});
+
 		test('getProperties successfully', async () => {
 			expect.assertions(3);
 			const spyon = jest.spyOn(S3Client.prototype, 'send');
@@ -618,6 +620,7 @@ describe('StorageProvider test', () => {
 			);
 			spyon.mockClear();
 		});
+
 		test('get properties of non-existing object', async () => {
 			expect.assertions(2);
 			const dispatchSpy = jest.spyOn(StorageUtils, 'dispatchStorageEvent');
