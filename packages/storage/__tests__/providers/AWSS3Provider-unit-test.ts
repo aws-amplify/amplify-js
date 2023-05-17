@@ -600,13 +600,13 @@ describe('StorageProvider test', () => {
 			expect.assertions(3);
 			const spyon = jest.spyOn(S3Client.prototype, 'send');
 			const dispatchSpy = jest.spyOn(StorageUtils, 'dispatchStorageEvent');
-			const metaData = { key: 'value' };
+			const metadata = { key: 'value' };
 			expect(await storage.getProperties('key')).toEqual({
 				contentLength: '100',
 				contentType: 'text/plain',
 				eTag: 'etag',
 				lastModified: 'lastmodified',
-				metaData,
+				metadata,
 			});
 			expect(dispatchSpy).toHaveBeenCalledTimes(1);
 			expect(dispatchSpy).toBeCalledWith(

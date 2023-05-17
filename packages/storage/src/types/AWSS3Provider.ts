@@ -178,7 +178,7 @@ export type S3ProviderGetPropertiesOutput = {
 	contentLength: number;
 	eTag: string;
 	lastModified: Date;
-	metaData: Record<string, string>;
+	metadata: Record<string, string>;
 };
 
 export type PutResult = {

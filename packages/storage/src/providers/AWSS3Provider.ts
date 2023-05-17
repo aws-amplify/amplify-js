@@ -507,7 +507,7 @@ export class AWSS3Provider implements StorageProvider {
 	 * @param {string} key - key of the object
 	 * @param {CommonStorageOptions} [config] - Optional configuration for the underlying S3 command
 	 * @return {Promise<S3ProviderGetPropertiesOutput>} - A promise resolves to contentType,
-	 * contentLength, eTag, lastModified, metaData
+	 * contentLength, eTag, lastModified, metadata
 	 */
 	public async getProperties(
 		key: string,
@@ -539,7 +539,7 @@ export class AWSS3Provider implements StorageProvider {
 				contentType: response.ContentType,
 				eTag: response.ETag,
 				lastModified: response.LastModified,
-				metaData: response.Metadata,
+				metadata: response.Metadata,
 			};
 			dispatchStorageEvent(
 				track,
