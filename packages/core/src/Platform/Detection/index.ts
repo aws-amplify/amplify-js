@@ -17,10 +17,10 @@ type PlatformDetectionEntry = {
 
 // These are in the order of detection where when both are detectable, the early Framework will be reported
 const detectionMap: PlatformDetectionEntry[] = [
-	// Detect mobile first
+	// First, detect mobile
 	{ platform: Framework.Expo, detectionMethod: expoDetect },
 	{ platform: Framework.ReactNative, detectionMethod: reactNativeDetect },
-	// Next detect web frameworks
+	// Next, detect web frameworks
 	{ platform: Framework.NextJs, detectionMethod: nextWebDetect },
 	{ platform: Framework.Nuxt, detectionMethod: nuxtWebDetect },
 	{ platform: Framework.Angular, detectionMethod: angularWebDetect },
@@ -28,7 +28,7 @@ const detectionMap: PlatformDetectionEntry[] = [
 	{ platform: Framework.VueJs, detectionMethod: vueWebDetect },
 	{ platform: Framework.Svelte, detectionMethod: svelteWebDetect },
 	{ platform: Framework.WebUnknown, detectionMethod: webDetect },
-	// Last detect ssr frameworks
+	// Last, detect ssr frameworks
 	{ platform: Framework.NextJsSSR, detectionMethod: nextSSRDetect },
 	{ platform: Framework.NuxtSSR, detectionMethod: nuxtSSRDetect },
 	{ platform: Framework.ReactSSR, detectionMethod: reactSSRDetect },
