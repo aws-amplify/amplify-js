@@ -60,7 +60,7 @@ const getEventDoc = parse(GetEvent);
 const getEventQuery = print(getEventDoc);
 
 /* TODO: Test with actual actions */
-const expectedUserAgentAPI = `${Constants.userAgent} ${Category.API}/${ApiAction.None} framework/${Framework.None}`;
+const expectedUserAgentAPI = `${Constants.userAgent} ${Category.API}/${ApiAction.None} framework/${Framework.WebUnknown}`;
 
 afterEach(() => {
 	jest.restoreAllMocks();
