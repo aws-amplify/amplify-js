@@ -2,17 +2,37 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Framework } from './types';
-import { detectionMap } from './Detection';
+import { detect } from './Detection';
 
 // We want to cache detection since the framework won't change
-let frameworkCache: Framework;
+let frameworkCache: Framework | undefined;
 
-// TODO on client - maybe caching always won't work because the js hasn't hydrated dom or filled in globals yet.
+// Setup the detection reset tracking / timeout delays
+let resetTriggered = false;
+const SSR_RESET_TIMEOUT = 50; // ms
+const WEB_RESET_TIMEOUT = 10; // ms
+
 export const detectFramework = (): Framework => {
 	if (!frameworkCache) {
-		frameworkCache =
-			detectionMap.find(detectionEntry => detectionEntry.detectionMethod())
-				?.platform || Framework.ServerSideUnknown;
+		frameworkCache = detect();
+
+		// Retry once for either Unknown type after a delay
+		resetTimeout(Framework.ServerSideUnknown, SSR_RESET_TIMEOUT);
+		resetTimeout(Framework.WebUnknown, WEB_RESET_TIMEOUT);
 	}
 	return frameworkCache;
 };
+
+export function clearCache() {
+	frameworkCache = undefined;
+}
+
+// For a framework type and a delay amount, setup the event to re-detect
+function resetTimeout(framework: Framework, delay: number) {
+	if (frameworkCache === framework && !resetTriggered) {
+		setTimeout(() => {
+			clearCache();
+			resetTriggered = true;
+		}, delay);
+	}
+}

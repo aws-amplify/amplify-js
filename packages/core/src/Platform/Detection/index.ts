@@ -16,7 +16,7 @@ type PlatformDetectionEntry = {
 };
 
 // These are in the order of detection where when both are detectable, the early Framework will be reported
-export const detectionMap: PlatformDetectionEntry[] = [
+const detectionMap: PlatformDetectionEntry[] = [
 	// Detect mobile first
 	{ platform: Framework.Expo, detectionMethod: expoDetect },
 	{ platform: Framework.ReactNative, detectionMethod: reactNativeDetect },
@@ -36,3 +36,10 @@ export const detectionMap: PlatformDetectionEntry[] = [
 	{ platform: Framework.AngularSSR, detectionMethod: angularSSRDetect },
 	{ platform: Framework.SvelteSSR, detectionMethod: svelteSSRDetect },
 ];
+
+export function detect() {
+	return (
+		detectionMap.find(detectionEntry => detectionEntry.detectionMethod())
+			?.platform || Framework.ServerSideUnknown
+	);
+}
