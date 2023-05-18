@@ -6,7 +6,7 @@ import {
 import { version } from '../src/Platform/version';
 import { ApiAction, Category, Framework } from '../src/Platform/types';
 import { detectFramework, clearCache } from '../src/Platform/detectFramework';
-import * as detection from '../src/Platform/Detection';
+import * as detection from '../src/Platform/detection';
 
 describe('Platform test', () => {
 	beforeEach(() => clearCache());

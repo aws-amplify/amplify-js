@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Framework } from './types';
-import { detect } from './Detection';
+import { detect } from './detection';
 
 // We want to cache detection since the framework won't change
 let frameworkCache: Framework | undefined;
