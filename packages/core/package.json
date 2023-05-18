@@ -104,7 +104,7 @@
 			"name": "Core (Credentials)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Credentials }",
-			"limit": "12 kB"
+			"limit": "12.05 kB"
 		},
 		{
 			"name": "Core (Signer)",
@@ -116,13 +116,13 @@
 			"name": "Custom clients (fetch handler)",
 			"path": "./lib-esm/clients/handlers/fetch.js",
 			"import": "{ fetchTransferHandler }",
-			"limit": "1.73 kB"
+			"limit": "1.85 kB"
 		},
 		{
 			"name": "Custom clients (unauthenticated handler)",
 			"path": "./lib-esm/clients/handlers/unauthenticated.js",
 			"import": "{ unauthenticatedHandler }",
-			"limit": "2.75 kB"
+			"limit": "2.85 kB"
 		},
 		{
 			"name": "Custom clients (retry middleware)",

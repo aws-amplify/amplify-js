@@ -42,13 +42,29 @@ export const fetchTransferHandler: TransferHandler<
 	// resp.body is a ReadableStream according to Fetch API spec, but React Native
 	// does not implement it.
 	const bodyWithMixin = Object.assign(resp.body ?? {}, {
-		text: () => resp.text(),
-		blob: () => resp.blob(),
-		json: () => resp.json(),
+		text: withPayloadCaching(() => resp.text()),
+		blob: withPayloadCaching(() => resp.blob()),
+		json: withPayloadCaching(() => resp.json()),
 	});
 
 	return {
 		...httpResponse,
 		body: bodyWithMixin,
+	};
+};
+
+/**
+ * Cache the payload of a response body. It allows multiple calls to the body,
+ * for example, when reading the body in both retry decider and error deserializer.
+ * Caching body is allowed here because we call the body accessor(blob(), json(),
+ * etc.) when body is small or streaming implementation is not available(RN).
+ */
+const withPayloadCaching = <T>(payloadAccessor: () => Promise<T>) => {
+	let cached: T;
+	return async () => {
+		if (!cached) {
+			cached = await payloadAccessor();
+		}
+		return cached;
 	};
 };
