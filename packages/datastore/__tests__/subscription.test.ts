@@ -21,14 +21,16 @@ import {
 } from '../src/types';
 
 // mock graphql to return a mockable observable
-jest.mock('@aws-amplify/api', () => {
-	const actualAPIModule = jest.requireActual('@aws-amplify/api');
-	const actualAPIInstance = actualAPIModule.API;
+jest.mock('@aws-amplify/api/internal', () => {
+	const actualInternalAPIModule = jest.requireActual(
+		'@aws-amplify/api/internal'
+	);
+	const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 
 	return {
-		...actualAPIModule,
-		API: {
-			...actualAPIInstance,
+		...actualInternalAPIModule,
+		InternalAPI: {
+			...actualInternalAPIInstance,
 			graphql: mockGraphQL,
 		},
 	};

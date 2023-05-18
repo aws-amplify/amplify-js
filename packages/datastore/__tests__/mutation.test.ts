@@ -252,7 +252,7 @@ jest.mock('@aws-amplify/api-rest', () => {
 
 // Configuring the API category so that API.graphql can be used
 // by the MutationProcessor
-jest.mock('@aws-amplify/api', () => {
+jest.mock('@aws-amplify/api/internal', () => {
 	const awsconfig = {
 		aws_project_region: 'us-west-2',
 		aws_appsync_graphqlEndpoint:
@@ -262,18 +262,22 @@ jest.mock('@aws-amplify/api', () => {
 		aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 	};
 
-	const { GraphQLAPIClass } = jest.requireActual('@aws-amplify/api-graphql');
-	const graphqlInstance = new GraphQLAPIClass(null);
-	graphqlInstance.configure(awsconfig);
+	const { InternalGraphQLAPIClass } = jest.requireActual(
+		'@aws-amplify/api-graphql/internal'
+	);
+	const internalGraphqlInstance = new InternalGraphQLAPIClass(null);
+	internalGraphqlInstance.configure(awsconfig);
 
-	const actualAPIModule = jest.requireActual('@aws-amplify/api');
-	const actualAPIInstance = actualAPIModule.API;
+	const actualInternalAPIModule = jest.requireActual(
+		'@aws-amplify/api/internal'
+	);
+	const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 
 	return {
-		...actualAPIModule,
-		API: {
-			...actualAPIInstance,
-			graphql: graphqlInstance.graphql.bind(graphqlInstance),
+		...actualInternalAPIModule,
+		InternalAPI: {
+			...actualInternalAPIInstance,
+			graphql: internalGraphqlInstance.graphql.bind(internalGraphqlInstance),
 		},
 	};
 });
