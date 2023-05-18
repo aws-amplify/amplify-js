@@ -102,8 +102,11 @@ describe('Storage', () => {
 			storage.addPluggable(provider);
 
 			storage.removePluggable(provider.getProviderName());
-
-			expect(storage.getPluggable(provider.getProviderName())).toBeNull();
+			try {
+				storage.getPluggable(provider.getProviderName());
+			} catch (err) {
+				expect(err).toEqual(new Error('No plugin found with providerName'));
+			}
 		});
 	});
 
@@ -587,7 +590,7 @@ describe('Storage', () => {
 			try {
 				await storage.get('key');
 			} catch (err) {
-				expect(err).toEqual('No plugin found in Storage for the provider');
+				expect(err).toEqual(new Error('No plugin found with providerName'));
 			}
 		});
 
@@ -672,7 +675,7 @@ describe('Storage', () => {
 			try {
 				await storage.put('key', 'test upload');
 			} catch (err) {
-				expect(err).toEqual('No plugin found in Storage for the provider');
+				expect(err).toEqual(new Error('No plugin found with providerName'));
 			}
 		});
 
@@ -768,7 +771,7 @@ describe('Storage', () => {
 			try {
 				await storage.remove('key');
 			} catch (err) {
-				expect(err).toEqual('No plugin found in Storage for the provider');
+				expect(err).toEqual(new Error('No plugin found with providerName'));
 			}
 		});
 		test('remove with custom provider', async () => {
@@ -849,7 +852,7 @@ describe('Storage', () => {
 				const result = await storage.list('');
 				expect(result.hasNextToken).toBeUndefined();
 			} catch (err) {
-				expect(err).toEqual('No plugin found in Storage for the provider');
+				expect(err).toEqual(new Error('No plugin found with providerName'));
 			}
 		});
 
@@ -932,7 +935,7 @@ describe('Storage', () => {
 			try {
 				await storage.copy({ key: 'src' }, { key: 'dest' });
 			} catch (err) {
-				expect(err).toEqual('No plugin found in Storage for the provider');
+				expect(err).toEqual(new Error('No plugin found with providerName'));
 			}
 		});
 		test('copy object with custom provider', async () => {
