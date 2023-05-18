@@ -6,17 +6,33 @@ import type {
 	ConfirmForgotPasswordCommandOutput,
 	ForgotPasswordCommandInput,
 	ForgotPasswordCommandOutput,
+	ResendConfirmationCodeCommandInput,
+	ResendConfirmationCodeCommandOutput,
 	SignUpCommandInput,
 	SignUpCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../../errors/AuthError';
 import { assertServiceError } from '../../../../errors/utils/assertServiceError';
 
+// TODO: Update the user-agent value
 const USER_AGENT = 'amplify test';
 
-export type ClientInputs = SignUpCommandInput | ForgotPasswordCommandInput | ConfirmForgotPasswordCommandInput;
-export type ClientOutputs = SignUpCommandOutput | ForgotPasswordCommandOutput | ConfirmForgotPasswordCommandOutput;
-export type ClientOperations = 'SignUp' | 'ConfirmSignUp' | 'ForgotPassword' | 'ConfirmForgotPassword';
+export type ClientInputs =
+	| SignUpCommandInput
+	| ForgotPasswordCommandInput
+	| ConfirmForgotPasswordCommandInput
+	| ResendConfirmationCodeCommandInput;
+export type ClientOutputs =
+	| SignUpCommandOutput
+	| ForgotPasswordCommandOutput
+	| ConfirmForgotPasswordCommandOutput
+	| ResendConfirmationCodeCommandOutput;
+export type ClientOperations =
+	| 'SignUp'
+	| 'ConfirmSignUp'
+	| 'ForgotPassword'
+	| 'ConfirmForgotPassword'
+	| 'ResendConfirmationCode';
 
 export class UserPoolHttpClient {
 	private _endpoint: string;

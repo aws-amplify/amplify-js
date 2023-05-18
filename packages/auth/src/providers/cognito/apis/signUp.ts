@@ -6,6 +6,7 @@ import type {
 	AttributeType,
 	SignUpCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
+import type { CognitoUserAttributeKey } from '../types/models/CognitoUserAttributeKey';
 import {
 	AuthSignUpResult,
 	AuthSignUpStep,
@@ -13,12 +14,7 @@ import {
 	DeliveryMedium,
 	SignUpRequest,
 } from '../../../types';
-import {
-	CognitoSignUpOptions,
-	CognitoUserAttributeKey,
-	CustomAttribute,
-	ValidationData,
-} from '..';
+import { CognitoSignUpOptions, CustomAttribute, ValidationData } from '..';
 import { signUpClient } from '../utils/clients/SignUpClient';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
