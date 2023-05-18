@@ -635,7 +635,7 @@ describe('Storage', () => {
 				.spyOn(AWSStorageProvider.prototype, 'getProperties')
 				.mockImplementation(() =>
 					Promise.resolve({
-						contentType: '',
+						contentType: 'text/plain',
 						contentLength: 100,
 						eTag: 'etag',
 						lastModified: new Date('20 Oct 2023'),
@@ -653,7 +653,7 @@ describe('Storage', () => {
 				const result = await storage.getProperties('key');
 				expect(getPropertiesSpy).toBeCalled();
 				expect(result).toEqual({
-					contentType: '',
+					contentType: 'text/plain',
 					contentLength: 100,
 					eTag: 'etag',
 					lastModified: new Date('20 Oct 2023'),
