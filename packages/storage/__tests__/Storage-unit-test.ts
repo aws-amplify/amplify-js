@@ -621,6 +621,77 @@ describe('Storage', () => {
 		});
 	});
 
+	describe('getProperties test', () => {
+		let storage: StorageClass;
+		let provider: StorageProvider;
+		let getPropertiesSpy: jest.SpyInstance;
+
+		beforeEach(() => {
+			storage = new StorageClass();
+			provider = new AWSStorageProvider();
+			storage.addPluggable(provider);
+			storage.configure(options);
+			Date.now = jest.fn(() => new Date(Date.UTC(2023, 1, 14)).valueOf());
+			getPropertiesSpy = jest
+				.spyOn(AWSStorageProvider.prototype, 'getProperties')
+				.mockImplementation(() =>
+					Promise.resolve({
+						contentType: '',
+						contentLength: 100,
+						eTag: 'etag',
+						lastModified: new Date('20 Oct 2023'),
+						metadata: { key: '' },
+					})
+				);
+		});
+
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
+		describe('with default S3 provider', () => {
+			test('get properties of object successfully', async () => {
+				const result = await storage.getProperties('key');
+				expect(getPropertiesSpy).toBeCalled();
+				expect(result).toEqual({
+					contentType: '',
+					contentLength: 100,
+					eTag: 'etag',
+					lastModified: new Date('20 Oct 2023'),
+					metadata: { key: '' },
+				});
+				getPropertiesSpy.mockClear();
+			});
+
+			test('get properties of object with available config', async () => {
+				await storage.getProperties('key', {
+					SSECustomerAlgorithm: 'aes256',
+					SSECustomerKey: 'key',
+					SSECustomerKeyMD5: 'md5',
+				});
+			});
+		});
+
+		test('get properties without provider', async () => {
+			const storage = new StorageClass();
+			try {
+				await storage.getProperties('key');
+			} catch (err) {
+				expect(err).toEqual(new Error('No plugin found with providerName'));
+			}
+		});
+
+		test('get properties with custom provider should work with no generic type provided', async () => {
+			const customProvider = new TestCustomProvider();
+			const customProviderGetSpy = jest.spyOn(customProvider, 'getProperties');
+			storage.addPluggable(customProvider);
+			await storage.getProperties('key', {
+				provider: 'customProvider',
+			});
+			expect(customProviderGetSpy).toBeCalled();
+		});
+	});
+
 	describe('put test', () => {
 		let storage: StorageClass;
 		let provider: StorageProvider;
