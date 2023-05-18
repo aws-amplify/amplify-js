@@ -631,7 +631,6 @@ describe('Storage', () => {
 			provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			Date.now = jest.fn(() => new Date(Date.UTC(2023, 1, 14)).valueOf());
 			getPropertiesSpy = jest
 				.spyOn(AWSStorageProvider.prototype, 'getProperties')
 				.mockImplementation(() =>
