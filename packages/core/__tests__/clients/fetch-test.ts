@@ -24,6 +24,7 @@ describe(fetchTransferHandler.name, () => {
 		headers: {},
 		url: new URL('https://foo.bar'),
 	};
+	const mockPayloadValue = 'payload value';
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -48,36 +49,36 @@ describe(fetchTransferHandler.name, () => {
 	});
 
 	test('should support text() in response.body with caching', async () => {
-		mockBody.text.mockResolvedValue('payload value');
+		mockBody.text.mockResolvedValue(mockPayloadValue);
 		const { body } = await fetchTransferHandler(mockRequest, {});
 		if (!body) {
 			fail('body should exist');
 		}
-		await body.text();
-		await body.text(); // test caching
-		expect(mockBody.text).toBeCalledTimes(1);
+		expect(await body.text()).toBe(mockPayloadValue);
+		expect(await body.text()).toBe(mockPayloadValue);
+		expect(mockBody.text).toBeCalledTimes(1); // test caching
 	});
 
 	test('should support blob() in response.body with caching', async () => {
-		mockBody.blob.mockResolvedValue('payload value');
+		mockBody.blob.mockResolvedValue(mockPayloadValue);
 		const { body } = await fetchTransferHandler(mockRequest, {});
 		if (!body) {
 			fail('body should exist');
 		}
-		await body.blob();
-		await body.blob(); // test caching
-		expect(mockBody.blob).toBeCalledTimes(1);
+		expect(await body.blob()).toBe(mockPayloadValue);
+		expect(await body.blob()).toBe(mockPayloadValue);
+		expect(mockBody.blob).toBeCalledTimes(1); // test caching
 	});
 
 	test('should support json() in response.body with caching', async () => {
-		mockBody.json.mockResolvedValue('payload value');
+		mockBody.json.mockResolvedValue(mockPayloadValue);
 		const { body } = await fetchTransferHandler(mockRequest, {});
 		if (!body) {
 			fail('body should exist');
 		}
-		await body.json();
-		await body.json(); // test caching
-		expect(mockBody.json).toBeCalledTimes(1);
+		expect(await body.json()).toBe(mockPayloadValue);
+		expect(await body.json()).toBe(mockPayloadValue);
+		expect(mockBody.json).toBeCalledTimes(1); // test caching
 	});
 
 	test.each(['GET', 'HEAD', 'DELETE'])(
