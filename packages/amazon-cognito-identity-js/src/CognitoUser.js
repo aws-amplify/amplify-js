@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Buffer } from 'buffer';
+import { Buffer } from 'buffer/';
 import { Sha256 } from '@aws-crypto/sha256-js';
 import { Platform } from './Platform';
 

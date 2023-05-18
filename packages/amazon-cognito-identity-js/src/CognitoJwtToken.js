@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Buffer } from 'buffer';
+import { Buffer } from 'buffer/';
 
 /** @class */
 export default class CognitoJwtToken {
