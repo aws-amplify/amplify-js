@@ -5,9 +5,9 @@ export { signUp } from './apis/signUp';
 export { resetPassword } from './apis/resetPassword';
 export { confirmResetPassword } from './apis/confirmResetPassword';
 export { signIn } from './apis/signIn';
+export { resendSignUpCode } from './apis/resendSignUpCode';
 
 export { ClientMetadata } from './types/models/ClientMetadata';
-export { CognitoUserAttributeKey } from './types/models/CognitoUserAttributeKey';
 export { CustomAttribute } from './types/models/CustomAttribute';
 export { ValidationData } from './types/models/ValidationData';
 export { AuthFlowType } from './types/models/AuthFlowType';

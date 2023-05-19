@@ -22,6 +22,18 @@ export const authAPITestParams = {
 			Destination: 'test1@test.com',
 		},
 	},
+	resendSignUpClientResult: {
+		CodeDeliveryDetails: {
+			AttributeName: 'email',
+			DeliveryMedium: 'EMAIL',
+			Destination: 'test@email.com',
+		},
+	},
+	resendSignUpAPIResult: {
+		destination: 'test@email.com',
+		deliveryMedium: 'EMAIL',
+		attributeName: 'email',
+	},
 	resetPasswordRequest: {
 		username: 'username',
 	},

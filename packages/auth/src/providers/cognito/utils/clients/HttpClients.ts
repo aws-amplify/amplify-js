@@ -6,6 +6,8 @@ import type {
 	ConfirmForgotPasswordCommandOutput,
 	ForgotPasswordCommandInput,
 	ForgotPasswordCommandOutput,
+	ResendConfirmationCodeCommandInput,
+	ResendConfirmationCodeCommandOutput,
 	SignUpCommandInput,
 	SignUpCommandOutput,
 	InitiateAuthCommandInput,
@@ -16,6 +18,7 @@ import type {
 import { AuthError } from '../../../../errors/AuthError';
 import { assertServiceError } from '../../../../errors/utils/assertServiceError';
 
+// TODO: Update the user-agent value
 const USER_AGENT = 'amplify test';
 
 export type ClientInputs =
@@ -23,20 +26,25 @@ export type ClientInputs =
 	| ForgotPasswordCommandInput
 	| ConfirmForgotPasswordCommandInput
 	| InitiateAuthCommandInput
-	| RespondToAuthChallengeCommandInput;
+	| RespondToAuthChallengeCommandInput
+	| ResendConfirmationCodeCommandInput;
+
 export type ClientOutputs =
 	| SignUpCommandOutput
 	| ForgotPasswordCommandOutput
 	| ConfirmForgotPasswordCommandOutput
 	| InitiateAuthCommandOutput
-	| RespondToAuthChallengeCommandOutput;
+	| RespondToAuthChallengeCommandOutput
+	| ResendConfirmationCodeCommandOutput;
+	
 export type ClientOperations =
 	| 'SignUp'
 	| 'ConfirmSignUp'
 	| 'ForgotPassword'
 	| 'ConfirmForgotPassword'
 	| 'InitiateAuth'
-	| 'RespondToAuthChallenge';
+	| 'RespondToAuthChallenge'
+	| 'ResendConfirmationCode';
 
 export class UserPoolHttpClient {
 	private _endpoint: string;

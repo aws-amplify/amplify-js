@@ -12,7 +12,7 @@ import {
  *
  * @param username - a standard username, potentially an email/phone number
  * @param password - the user's password
- * @param options - optional parameters fro the Sign Up process, including user attributes
+ * @param options - optional parameters for the Sign Up process, including user attributes
  */
 export type SignUpRequest<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
