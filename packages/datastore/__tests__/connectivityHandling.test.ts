@@ -1842,8 +1842,8 @@ describe('DataStore sync engine', () => {
 
 						expectFinalRecordsToMatch({
 							postId: original.id,
-							version: 4,
-							title: 'original title',
+							version: 5,
+							title: 'post title 0',
 							blogId: 'update from second client',
 						});
 					});
