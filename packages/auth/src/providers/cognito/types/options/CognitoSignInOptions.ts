@@ -7,5 +7,5 @@ import { ClientMetadata } from '../models/ClientMetadata';
 // TODO: replace clientMetaData to clientMetadata
 export type CognitoSignInOptions = {
 	authFlowType?: AuthFlowType;
-	clientMetaData?: ClientMetadata;
+	clientMetadata?: ClientMetadata;
 };
