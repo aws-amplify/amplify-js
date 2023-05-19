@@ -14,7 +14,7 @@ import {
 	DeliveryMedium,
 	SignUpRequest,
 } from '../../../types';
-import { CognitoSignUpOptions, CustomAttribute, ValidationData } from '..';
+import { CognitoSignUpOptions, CustomAttribute, ValidationData } from '../types';
 import { signUpClient } from '../utils/clients/SignUpClient';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
