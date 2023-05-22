@@ -44,7 +44,7 @@ export async function signInWithSRP(
 	const { username, password } = signInRequest;
 	const config = Amplify.config;
 	const clientMetaData =
-		signInRequest.options?.serviceOptions?.clientMetaData ||
+		signInRequest.options?.serviceOptions?.clientMetadata ||
 		config.clientMetadata;
 	assertValidationError(
 		!!username,
