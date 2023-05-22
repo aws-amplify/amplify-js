@@ -2642,6 +2642,7 @@ orbs:
           - run:
               name: Launch emulator
               command: |
+                node -v
                 emulator -avd test -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
               background: true
           - run:
