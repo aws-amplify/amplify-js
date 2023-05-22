@@ -12,3 +12,4 @@ export {
 	UpdateEndpointInput,
 	UpdateEndpointOutput,
 } from './updateEndpoint';
+export { Event, InAppMessageCampaign } from './types';
