@@ -2628,8 +2628,11 @@ orbs:
           - run:
               name: Set node version
               command: |
-                nvm install 16
-                nvm alias default 16
+                echo 'export NVM_DIR="/opt/circleci/.nvm"' >> $BASH_ENV
+                echo ' [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+
+                nvm install v16
+                nvm alias default v16
           - run:
               name: Create avd
               command: |
@@ -2682,10 +2685,7 @@ orbs:
                 adb shell settings put global animator_duration_scale 0.0
           - run-with-retry:
               label: Start App
-              command: |
-                ls
-                cat package.json
-                npx react-native run-android
+              command: npm run android
 
       expo:
         parameters:
