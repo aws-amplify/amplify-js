@@ -1,3 +1,4 @@
+/* tslint:disable:max-line-length */
 import { MetadataBearer as __MetadataBearer } from '@aws-sdk/types';
 
 declare const Alignment: {
