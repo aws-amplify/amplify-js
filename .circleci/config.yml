@@ -2312,8 +2312,9 @@ workflows:
   # Jobs are pulled from the getting-started-smoke-test inline orb defined below
   canaries:
     when:
-      condition:
-        equal: [test/canary-config, << pipeline.git.branch >>]
+      and:
+        - equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+        - equal: [canaries, << pipeline.schedule.name >>]
     jobs:
       ## Web
       # React
@@ -2642,7 +2643,6 @@ orbs:
           - run:
               name: Launch emulator
               command: |
-                node -v
                 emulator -avd test -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
               background: true
           - run:
@@ -2653,9 +2653,7 @@ orbs:
           - run-with-retry:
               label: Scaffold App
               pre-command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >>
-              command: |
-                node -v
-                npx react-native@<< parameters.tag >> init amplify_getting_started_<< parameters.framework >> --version << parameters.tag >>
+              command: npx react-native@<< parameters.tag >> init amplify_getting_started_<< parameters.framework >> --version << parameters.tag >>
               no_output_timeout: 10m
           - unless:
               condition:
@@ -2688,9 +2686,7 @@ orbs:
                 adb shell settings put global animator_duration_scale 0.0
           - run-with-retry:
               label: Start App
-              command: |
-                cat package.json
-                npm run android
+              command: npm run android
 
       expo:
         parameters:
