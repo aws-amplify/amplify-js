@@ -8,6 +8,7 @@ import {
 } from '../types/errors/service';
 import { CognitoSignInOptions } from '../types/options/CognitoSignInOptions';
 import { signInWithSRP } from './signInWithSRP';
+import { signInWithUserPassword } from './signInWithUserPassword';
 
 /**
  * Signs a user in
@@ -30,7 +31,7 @@ export async function signIn(
 		case 'USER_SRP_AUTH':
 			return signInWithSRP(signInRequest);
 		case 'USER_PASSWORD_AUTH':
-		// TODO(israx): include USER_PASSWORD_AUTH API here
+			return signInWithUserPassword(signInRequest);
 		case 'CUSTOM_WITHOUT_SRP':
 		// TODO(israx): include CUSTOM_WITHOUT_SRP API here
 		case 'CUSTOM_WITH_SRP':
