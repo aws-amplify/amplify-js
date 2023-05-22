@@ -2652,7 +2652,9 @@ orbs:
           - run-with-retry:
               label: Scaffold App
               pre-command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >>
-              command: npx react-native@<< parameters.tag >> init amplify_getting_started_<< parameters.framework >> --version << parameters.tag >>
+              command: |
+                node -v
+                npx react-native@<< parameters.tag >> init amplify_getting_started_<< parameters.framework >> --version << parameters.tag >>
               no_output_timeout: 10m
           - unless:
               condition:
@@ -2685,7 +2687,9 @@ orbs:
                 adb shell settings put global animator_duration_scale 0.0
           - run-with-retry:
               label: Start App
-              command: npm run android
+              command: |
+                cat package.json
+                npm run android
 
       expo:
         parameters:
