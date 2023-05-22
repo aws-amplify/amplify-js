@@ -2625,15 +2625,6 @@ orbs:
         executor: android-executor
         working_directory: ~/amplify_getting_started_<< parameters.framework >>
         steps:
-          # Set Node version 16, which is required for newer versions of RN on Android
-          - run:
-              name: Set node version
-              command: |
-                echo 'export NVM_DIR="/opt/circleci/.nvm"' >> $BASH_ENV
-                echo ' [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
-
-                nvm install v16
-                nvm alias default v16
           - run:
               name: Create avd
               command: |
