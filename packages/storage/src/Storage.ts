@@ -102,7 +102,7 @@ export class Storage {
 		);
 		if (pluggable === undefined) {
 			logger.debug('No plugin found with providerName', providerName);
-			throw new Error('No plugin found with providerName');
+			return null;
 		} else return pluggable;
 	}
 
@@ -248,7 +248,15 @@ export class Storage {
 		config?: StorageCopyConfig<T>
 	): StorageCopyOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const plugin = this.getPluggable(provider);
+		const plugin = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (plugin === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			return Promise.reject(
+				'No plugin found in Storage for the provider'
+			) as StorageCopyOutput<T>;
+		}
 		const cancelTokenSource = this.getCancellableTokenSource();
 		if (typeof plugin.copy !== 'function') {
 			return Promise.reject(
@@ -279,7 +287,15 @@ export class Storage {
 		T extends StorageProvider | { [key: string]: any; download?: boolean }
 	>(key: string, config?: StorageGetConfig<T>): StorageGetOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const plugin = this.getPluggable(provider);
+		const plugin = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (plugin === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			return Promise.reject(
+				'No plugin found in Storage for the provider'
+			) as StorageGetOutput<T>;
+		}
 		const cancelTokenSource = this.getCancellableTokenSource();
 		const responsePromise = plugin.get(key, {
 			...config,
@@ -298,7 +314,13 @@ export class Storage {
 		config?: StorageGetPropertiesConfig<T>
 	): StorageGetPropertiesOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const plugin = this.getPluggable(provider);
+		const plugin = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (plugin === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			throw new Error('No plugin found with providerName');
+		}
 		const cancelTokenSource = this.getCancellableTokenSource();
 		const responsePromise = plugin.getProperties(key, {
 			...config,
@@ -325,7 +347,15 @@ export class Storage {
 		config?: StoragePutConfig<T>
 	): StoragePutOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const plugin = this.getPluggable(provider);
+		const plugin = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (plugin === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			return Promise.reject(
+				'No plugin found in Storage for the provider'
+			) as StoragePutOutput<T>;
+		}
 		const cancelTokenSource = this.getCancellableTokenSource();
 		const response = plugin.put(key, object, {
 			...config,
@@ -352,7 +382,15 @@ export class Storage {
 		config?: StorageRemoveConfig<T>
 	): StorageRemoveOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const plugin = this.getPluggable(provider);
+		const plugin = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (plugin === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			return Promise.reject(
+				'No plugin found in Storage for the provider'
+			) as StorageRemoveOutput<T>;
+		}
 		return plugin.remove(key, config) as StorageRemoveOutput<T>;
 	}
 
@@ -371,7 +409,15 @@ export class Storage {
 		config?: StorageListConfig<T>
 	): StorageListOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const plugin = this.getPluggable(provider);
+		const plugin = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (plugin === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			return Promise.reject(
+				'No plugin found in Storage for the provider'
+			) as StorageListOutput<T>;
+		}
 		return plugin.list(path, config) as StorageListOutput<T>;
 	}
 }
