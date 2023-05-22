@@ -24,9 +24,8 @@ describe('signIn API happy path cases', () => {
 		handleUserSRPAuthflowSpy = jest
 			.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
-				async (): Promise<RespondToAuthChallengeCommandOutput> => {
-					return authAPITestParams.RespondToAuthChallengeCommandOutput;
-				}
+				async (): Promise<RespondToAuthChallengeCommandOutput> =>
+					authAPITestParams.RespondToAuthChallengeCommandOutput;
 			);
 	});
 
