@@ -2531,7 +2531,7 @@ orbs:
               command: |
                 npm i -S aws-amplify
                 npm i -g --prefix=$HOME/.local wait-on serve
-                ~/amplify-js/.circleci/duplicates-npm.sh
+                ~/circleci/amplify-js/.circleci/duplicates-npm.sh
           - run:
               name: Call Amplify library in code
               command: |
