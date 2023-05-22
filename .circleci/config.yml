@@ -2682,7 +2682,10 @@ orbs:
                 adb shell settings put global animator_duration_scale 0.0
           - run-with-retry:
               label: Start App
-              command: npm run android
+              command: |
+                ls
+                cat package.json
+                npx react-native run-android
 
       expo:
         parameters:
