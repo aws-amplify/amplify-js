@@ -25,7 +25,7 @@ describe('signIn API happy path cases', () => {
 			.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
-					authAPITestParams.RespondToAuthChallengeCommandOutput;
+					authAPITestParams.RespondToAuthChallengeCommandOutput
 			);
 	});
 
