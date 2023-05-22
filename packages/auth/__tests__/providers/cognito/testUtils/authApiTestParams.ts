@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthResetPasswordStep } from '../../../../src/types';
+import {
+	AuthResetPasswordStep,
+	AuthSignInResult,
+	AuthSignInStep,
+} from '../../../../src/types';
 
 export const authAPITestParams = {
 	user1: {
@@ -89,5 +93,35 @@ export const authAPITestParams = {
 		username: 'username',
 		newPassword: 'password',
 		confirmationCode: 'code',
+	},
+	InitiateAuthCommandOutput: {
+		ChallengeName: 'PASSWORD_VERIFIER',
+		ChallengeParameters: {
+			USER_ID_FOR_SRP: '1111112222233333',
+			SECRET_BLOCK: 'zzzzxxxxvvvv',
+		},
+		AuthenticationResult: undefined,
+		Session: 'aaabbbcccddd',
+		$metadata: {},
+	},
+	RespondToAuthChallengeCommandOutput: {
+		ChallengeName: undefined,
+		ChallengeParameters: {},
+		AuthenticationResult: {
+			AccessToken: 'axxcasfsfsadfqwersdf',
+			ExpiresIn: 1000,
+			IdToken: 'sfsfasqwerqwrsfsfsfd',
+			RefreshToken: 'qwersfsafsfssfasf',
+		},
+		Session: 'aaabbbcccddd',
+		$metadata: {},
+	},
+	signInResult: (): AuthSignInResult => {
+		return {
+			isSignedIn: true,
+			nextStep: {
+				signInStep: AuthSignInStep.DONE,
+			},
+		};
 	},
 };
