@@ -2312,9 +2312,8 @@ workflows:
   # Jobs are pulled from the getting-started-smoke-test inline orb defined below
   canaries:
     when:
-      and:
-        - equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - equal: [canaries, << pipeline.schedule.name >>]
+      condition:
+        equal: [test/canary-config, << pipeline.git.branch >>]
     jobs:
       ## Web
       # React
