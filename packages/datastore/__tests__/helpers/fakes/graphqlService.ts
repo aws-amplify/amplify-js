@@ -508,15 +508,24 @@ export class FakeGraphQLService {
 		});
 	}
 
+	public graphql(request: GraphQLRequest, ignoreLatency: boolean = false) {
+		return this.intercept(request, () => this.request(request, ignoreLatency));
+	}
+
 	/**
-	 * For making direct calls to the service without DataStore (e.g. simulating requests from external clients)
+	 * For making direct calls to the service without DataStore (e.g. simulating requests from external clients).
+	 * Wrapping `this.graphql` offers a quick and easy way to quickly debug tests that makes external calls
+	 * without having to filter out all calls to `this.graphql`.
 	 * @param request the GraphQL request
 	 * @param ignoreLatency Used for exact control of the timing of the request / response, while still
 	 * maintaining the artificial latencies of all other in-flight requests. When simulating a request from
 	 * an external client, we want the response back ASAP in order to accurately test outbox merging consistently.
 	 */
-	public graphql(request: GraphQLRequest, ignoreLatency: boolean = false) {
-		return this.intercept(request, () => this.request(request, ignoreLatency));
+	public externalGraphql(request: GraphQLRequest, ignoreLatency = false) {
+		this.log('External request', {
+			request,
+		});
+		return this.graphql(request, ignoreLatency);
 	}
 
 	public request(

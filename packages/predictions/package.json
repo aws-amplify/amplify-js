@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
-	"version": "5.1.6",
+	"version": "5.1.7",
 	"description": "Machine learning category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -75,7 +75,7 @@
 			"name": "Predictions (Identify provider)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Predictions, AmazonAIIdentifyPredictionsProvider }",
-			"limit": "104.5 kB"
+			"limit": "105 kB"
 		},
 		{
 			"name": "Predictions (Interpret provider)",
