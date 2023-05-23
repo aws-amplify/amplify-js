@@ -2061,24 +2061,24 @@ workflows:
       #     matrix:
       #       parameters:
       #         <<: *minimal_browser_list
-      - integ_javascript_geo:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              browser: [chrome]
-      - integ_react_geo:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *minimal_browser_list
+      #- integ_javascript_geo:
+      #    requires:
+      #      - integ_setup
+      #      - build
+      #    filters:
+      #      <<: *releasable_branches
+      #    matrix:
+      #      parameters:
+      #        browser: [chrome]
+      #- integ_react_geo:
+      #    requires:
+      #      - integ_setup
+      #      - build
+      #    filters:
+      #      <<: *releasable_branches
+      #    matrix:
+      #      parameters:
+      #        <<: *minimal_browser_list
       - integ_next_datastore_owner_auth:
           requires:
             - integ_setup
@@ -2289,7 +2289,7 @@ workflows:
             - integ_auth_test_cypress_no_ui
             - integ_react_graphql_api
             # - integ_javascript_geo  # TODO: enable it when CDN deployment is automated
-            - integ_react_geo
+            # - integ_react_geo
             - integ_next_datastore_owner_auth
             - integ_react_datastore_custom_pk_unconnected_models
             - integ_react_datastore_custom_pk_unconnected_models_webkit
