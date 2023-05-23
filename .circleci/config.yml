@@ -2519,6 +2519,9 @@ orbs:
         <<: *common_env_vars
         working_directory: ~/project/amplify-getting-started-<< parameters.framework >>
         steps:
+          # Checkout repository to access utility scripts
+          - checkout:
+              path: ../../amplify-js
           - run-with-retry:
               label: Scaffold App
               pre-command: cd ../
@@ -2529,6 +2532,7 @@ orbs:
               command: |
                 npm i -S aws-amplify
                 npm i -g --prefix=$HOME/.local wait-on serve
+                chmod +x ~/amplify-js/.circleci/duplicates-npm.sh
                 ~/amplify-js/.circleci/duplicates-npm.sh
           - run:
               name: Call Amplify library in code
