@@ -15,7 +15,7 @@ import {
 	ApiAction,
 	CustomUserAgentDetails,
 } from '@aws-amplify/core';
-import { PubSub } from '@aws-amplify/pubsub';
+import { InternalPubSub } from '@aws-amplify/pubsub/internal';
 import { Cache } from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';
 import axios, { CancelTokenStatic } from 'axios';
@@ -958,7 +958,7 @@ describe('API test', () => {
 			jest.spyOn(Cache, 'getItem').mockReturnValue({ token: 'id_token' });
 
 			const spyon_pubsub = jest
-				.spyOn(PubSub, 'subscribe')
+				.spyOn(InternalPubSub, 'subscribe')
 				.mockImplementation(jest.fn(() => Observable.of({})));
 
 			const api = new API(config);
@@ -997,7 +997,8 @@ describe('API test', () => {
 				'',
 				expect.objectContaining({
 					authenticationType: 'OPENID_CONNECT',
-				})
+				}),
+				undefined
 			);
 		});
 
@@ -1025,7 +1026,7 @@ describe('API test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			PubSub.subscribe = jest.fn(() => Observable.of({}));
+			InternalPubSub.subscribe = jest.fn(() => Observable.of({}));
 
 			const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
 				subscribeToEventComments(eventId: $eventId) {
@@ -1042,8 +1043,9 @@ describe('API test', () => {
 				api.graphql(graphqlOperation(query, variables)) as Observable<object>
 			).subscribe({
 				next: () => {
-					expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
-					const subscribeOptions = (PubSub.subscribe as any).mock.calls[0][1];
+					expect(InternalPubSub.subscribe).toHaveBeenCalledTimes(1);
+					const subscribeOptions = (InternalPubSub.subscribe as any).mock
+						.calls[0][1];
 					expect(subscribeOptions.provider).toBe(
 						INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER
 					);
@@ -1078,7 +1080,7 @@ describe('API test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			PubSub.subscribe = jest.fn(() => Observable.of({}));
+			InternalPubSub.subscribe = jest.fn(() => Observable.of({}));
 
 			const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
 				subscribeToEventComments(eventId: $eventId) {
@@ -1102,8 +1104,9 @@ describe('API test', () => {
 				) as Observable<object>
 			).subscribe({
 				next: () => {
-					expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
-					const subscribeOptions = (PubSub.subscribe as any).mock.calls[0][1];
+					expect(InternalPubSub.subscribe).toHaveBeenCalledTimes(1);
+					const subscribeOptions = (InternalPubSub.subscribe as any).mock
+						.calls[0][1];
 					expect(subscribeOptions.additionalHeaders).toBe(additionalHeaders);
 					done();
 				},
@@ -1463,7 +1466,7 @@ describe('Internal API customUserAgent test', () => {
 			expect(spyon).toBeCalledWith(url, init);
 		});
 
-		test('happy-case-subscription', async done => {
+		test('happy case subscription', async done => {
 			jest
 				.spyOn(RestClient.prototype, 'post')
 				.mockImplementation(async (url, init) => ({
@@ -1487,7 +1490,7 @@ describe('Internal API customUserAgent test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			PubSub.subscribe = jest.fn(() => Observable.of({}));
+			InternalPubSub.subscribe = jest.fn(() => Observable.of({}));
 
 			const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
 				subscribeToEventComments(eventId: $eventId) {
@@ -1508,8 +1511,14 @@ describe('Internal API customUserAgent test', () => {
 				) as Observable<object>
 			).subscribe({
 				next: () => {
-					expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
-					const subscribeOptions = (PubSub.subscribe as any).mock.calls[0][1];
+					expect(InternalPubSub.subscribe).toHaveBeenCalledTimes(1);
+					expect(InternalPubSub.subscribe).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.anything(),
+						customUserAgentDetailsAPI
+					);
+					const subscribeOptions = (InternalPubSub.subscribe as any).mock
+						.calls[0][1];
 					expect(subscribeOptions.provider).toBe(
 						INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER
 					);
@@ -1518,70 +1527,6 @@ describe('Internal API customUserAgent test', () => {
 			});
 
 			expect(observable).not.toBe(undefined);
-		});
-
-		test('happy case mutation', async () => {
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce((url, init) => {
-					return new Promise((res, rej) => {
-						res({});
-					});
-				});
-			const internalApi = new InternalAPI(config);
-			const url = 'https://appsync.amazonaws.com',
-				region = 'us-east-2',
-				apiKey = 'secret_api_key',
-				variables = {
-					id: '809392da-ec91-4ef0-b219-5238a8f942b2',
-					content: 'lalala',
-					createdAt: new Date().toISOString(),
-				};
-			internalApi.configure({
-				aws_appsync_graphqlEndpoint: url,
-				aws_appsync_region: region,
-				aws_appsync_authenticationType: 'API_KEY',
-				aws_appsync_apiKey: apiKey,
-			});
-			const AddComment = `mutation AddComment($eventId: ID!, $content: String!, $createdAt: String!) {
-				commentOnEvent(eventId: $eventId, content: $content, createdAt: $createdAt) {
-					eventId
-					content
-					createdAt
-				}
-			}`;
-
-			const doc = parse(AddComment);
-			const query = print(doc);
-
-			const headers = {
-				Authorization: null,
-				'X-Api-Key': apiKey,
-				'x-amz-user-agent': expectedUserAgentAPI,
-			};
-
-			const body = {
-				query,
-				variables,
-			};
-
-			const init = {
-				headers,
-				body,
-				signerServiceInfo: {
-					service: 'appsync',
-					region,
-				},
-				cancellableToken: mockCancellableToken,
-			};
-
-			await internalApi.graphql(
-				graphqlOperation(AddComment, variables),
-				undefined,
-				customUserAgentDetailsAPI
-			);
-
-			expect(spyon).toBeCalledWith(url, init);
 		});
 	});
 });

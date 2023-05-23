@@ -17,7 +17,7 @@ import {
 	getAmplifyUserAgentString,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
-import { PubSub } from '@aws-amplify/pubsub';
+import { InternalPubSub } from '@aws-amplify/pubsub/internal';
 import { Auth } from '@aws-amplify/auth';
 import { Cache } from '@aws-amplify/cache';
 import {
@@ -258,7 +258,11 @@ export class InternalGraphQLAPIClass {
 				);
 				return responsePromise;
 			case 'subscription':
-				return this._graphqlSubscribe({ query, variables, authMode }, headers);
+				return this._graphqlSubscribe(
+					{ query, variables, authMode },
+					headers,
+					customUserAgentDetails
+				);
 			default:
 				throw new Error(`invalid operation type: ${operationType}`);
 		}
@@ -268,7 +272,7 @@ export class InternalGraphQLAPIClass {
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
 		initParams = {},
-		customUserAgentDetails
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
 		this.createInstanceIfNotCreated();
 		const {
@@ -386,7 +390,8 @@ export class InternalGraphQLAPIClass {
 			authMode: defaultAuthenticationType,
 			authToken,
 		}: GraphQLOptions,
-		additionalHeaders = {}
+		additionalHeaders = {},
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
 		const {
 			aws_appsync_region: region,
@@ -398,19 +403,23 @@ export class InternalGraphQLAPIClass {
 		const authenticationType =
 			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
 
-		if (PubSub && typeof PubSub.subscribe === 'function') {
-			return PubSub.subscribe('', {
-				provider: INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-				appSyncGraphqlEndpoint,
-				authenticationType,
-				apiKey,
-				query: print(query as DocumentNode),
-				region,
-				variables,
-				graphql_headers,
-				additionalHeaders,
-				authToken,
-			});
+		if (InternalPubSub && typeof InternalPubSub.subscribe === 'function') {
+			return InternalPubSub.subscribe(
+				'',
+				{
+					provider: INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+					appSyncGraphqlEndpoint,
+					authenticationType,
+					apiKey,
+					query: print(query as DocumentNode),
+					region,
+					variables,
+					graphql_headers,
+					additionalHeaders,
+					authToken,
+				},
+				customUserAgentDetails
+			);
 		} else {
 			logger.debug('No pubsub module applied for subscription');
 			throw new Error('No pubsub module applied for subscription');
