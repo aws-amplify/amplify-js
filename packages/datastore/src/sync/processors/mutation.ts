@@ -85,7 +85,8 @@ class MutationProcessor {
 		private readonly conflictHandler: ConflictHandler,
 		private readonly amplifyContext: AmplifyContext
 	) {
-		this.amplifyContext.API = this.amplifyContext.API || InternalAPI;
+		this.amplifyContext.InternalAPI =
+			this.amplifyContext.InternalAPI || InternalAPI;
 		this.generateQueries();
 	}
 
@@ -340,7 +341,7 @@ class MutationProcessor {
 				do {
 					try {
 						const result = <GraphQLResult<Record<string, PersistentModel>>>(
-							await this.amplifyContext.API.graphql(
+							await this.amplifyContext.InternalAPI.graphql(
 								tryWith,
 								undefined,
 								customUserAgentDetails
@@ -414,7 +415,7 @@ class MutationProcessor {
 
 									const serverData = <
 										GraphQLResult<Record<string, PersistentModel>>
-									>await this.amplifyContext.API.graphql(
+									>await this.amplifyContext.InternalAPI.graphql(
 										{
 											query,
 											variables: { id: variables.input.id },

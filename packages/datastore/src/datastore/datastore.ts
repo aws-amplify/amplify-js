@@ -1382,7 +1382,7 @@ enum DataStoreState {
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
 	private Auth = Auth;
-	private API = InternalAPI;
+	private InternalAPI = InternalAPI;
 	private Cache = Cache;
 
 	// Non-null assertions (bang operator) have been added to most of these properties
@@ -1413,7 +1413,7 @@ class DataStore {
 	// object that gets passed to descendent classes. Allows us to pass these down by reference
 	private amplifyContext: AmplifyContext = {
 		Auth: this.Auth,
-		API: this.API,
+		InternalAPI: this.InternalAPI,
 		Cache: this.Cache,
 	};
 	private connectivityMonitor?: DataStoreConnectivity;
@@ -2439,7 +2439,7 @@ class DataStore {
 
 	configure = (config: DataStoreConfig = {}) => {
 		this.amplifyContext.Auth = this.Auth;
-		this.amplifyContext.API = this.API;
+		this.amplifyContext.InternalAPI = this.InternalAPI;
 		this.amplifyContext.Cache = this.Cache;
 
 		const {

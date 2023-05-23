@@ -57,7 +57,7 @@ class SyncProcessor {
 		private readonly errorHandler: ErrorHandler,
 		private readonly amplifyContext: AmplifyContext
 	) {
-		amplifyContext.API = amplifyContext.API || InternalAPI;
+		amplifyContext.InternalAPI = amplifyContext.InternalAPI || InternalAPI;
 		this.generateQueries();
 	}
 
@@ -222,7 +222,7 @@ class SyncProcessor {
 						action: DataStoreAction.GraphQL,
 					};
 
-					return await this.amplifyContext.API.graphql(
+					return await this.amplifyContext.InternalAPI.graphql(
 						{
 							query,
 							variables,

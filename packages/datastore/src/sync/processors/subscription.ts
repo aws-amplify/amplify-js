@@ -85,7 +85,7 @@ class SubscriptionProcessor {
 		private readonly errorHandler: ErrorHandler,
 		private readonly amplifyContext: AmplifyContext = {
 			Auth,
-			API: InternalAPI,
+			InternalAPI: InternalAPI,
 			Cache,
 		}
 	) {}
@@ -460,7 +460,7 @@ class SubscriptionProcessor {
 											Observable<{
 												value: GraphQLResult<Record<string, PersistentModel>>;
 											}>
-										>(<unknown>this.amplifyContext.API.graphql(
+										>(<unknown>this.amplifyContext.InternalAPI.graphql(
 											{
 												query,
 												variables,

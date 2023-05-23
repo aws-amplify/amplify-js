@@ -1101,7 +1101,7 @@ export enum LimitTimerRaceResolvedValues {
 
 export type AmplifyContext = {
 	Auth: typeof Auth;
-	API: typeof InternalAPI;
+	InternalAPI: typeof InternalAPI;
 	Cache: typeof Cache;
 };
 
