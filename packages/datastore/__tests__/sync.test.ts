@@ -1,5 +1,6 @@
 // These tests should be replaced once SyncEngine.partialDataFeatureFlagEnabled is removed.
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { Category, DataStoreAction } from '@aws-amplify/core';
 import { defaultAuthStrategy } from '../src/authModeStrategies';
 
 let mockGraphQl;
@@ -259,6 +260,42 @@ describe('Sync', () => {
 					// NonRetryableError has a `nonRetryable` property
 					expect(e).toHaveProperty('nonRetryable');
 				}
+			});
+		});
+
+		it('should send datastore user agent details with graphql request', async () => {
+			window.sessionStorage.setItem('datastorePartialData', 'true');
+			const resolveResponse = {
+				data: {
+					syncPosts: {
+						items: [
+							{
+								id: '1',
+								title: 'Item 1',
+							},
+							{
+								id: '2',
+								title: 'Item 2',
+							},
+						],
+					},
+				},
+			};
+
+			const SyncProcessor = jitteredRetrySyncProcessorSetup({
+				resolveResponse,
+			});
+
+			await SyncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+			});
+
+			expect(mockGraphQl).toHaveBeenCalledWith(expect.anything(), undefined, {
+				category: Category.DataStore,
+				action: DataStoreAction.GraphQL,
 			});
 		});
 	});

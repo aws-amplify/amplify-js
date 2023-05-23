@@ -1,7 +1,10 @@
 import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internal';
 import {
+	Category,
 	ConsoleLogger as Logger,
+	CustomUserAgentDetails,
+	DataStoreAction,
 	jitteredBackoff,
 	NonRetryableError,
 	retry,
@@ -329,10 +332,19 @@ class MutationProcessor {
 
 				const opType = this.opTypeFromTransformerOperation(operation);
 
+				const customUserAgentDetails: CustomUserAgentDetails = {
+					category: Category.DataStore,
+					action: DataStoreAction.GraphQL,
+				};
+
 				do {
 					try {
 						const result = <GraphQLResult<Record<string, PersistentModel>>>(
-							await this.amplifyContext.API.graphql(tryWith)
+							await this.amplifyContext.API.graphql(
+								tryWith,
+								undefined,
+								customUserAgentDetails
+							)
 						);
 
 						// Use `as any` because TypeScript doesn't seem to like passing tuples
@@ -402,12 +414,16 @@ class MutationProcessor {
 
 									const serverData = <
 										GraphQLResult<Record<string, PersistentModel>>
-									>await this.amplifyContext.API.graphql({
-										query,
-										variables: { id: variables.input.id },
-										authMode,
-										authToken,
-									});
+									>await this.amplifyContext.API.graphql(
+										{
+											query,
+											variables: { id: variables.input.id },
+											authMode,
+											authToken,
+										},
+										undefined,
+										customUserAgentDetails
+									);
 
 									// onTerminate cancel graphql()
 

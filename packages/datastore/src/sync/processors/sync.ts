@@ -23,7 +23,10 @@ import {
 } from '../utils';
 import {
 	jitteredExponentialRetry,
+	Category,
 	ConsoleLogger as Logger,
+	CustomUserAgentDetails,
+	DataStoreAction,
 	Hub,
 	NonRetryableError,
 	BackgroundProcessManager,
@@ -214,12 +217,21 @@ class SyncProcessor {
 						this.amplifyConfig
 					);
 
-					return await this.amplifyContext.API.graphql({
-						query,
-						variables,
-						authMode,
-						authToken,
-					});
+					const customUserAgentDetails: CustomUserAgentDetails = {
+						category: Category.DataStore,
+						action: DataStoreAction.GraphQL,
+					};
+
+					return await this.amplifyContext.API.graphql(
+						{
+							query,
+							variables,
+							authMode,
+							authToken,
+						},
+						undefined,
+						customUserAgentDetails
+					);
 
 					// TODO: onTerminate.then(() => API.cancel(...))
 				} catch (error) {

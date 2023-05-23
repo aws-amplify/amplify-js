@@ -17,6 +17,12 @@ import {
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { MutationEvent } from '../src/sync/';
+import {
+	Category,
+	CustomUserAgentDetails,
+	DataStoreAction,
+	getAmplifyUserAgentString,
+} from '@aws-amplify/core';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
@@ -28,6 +34,11 @@ let axiosError;
 beforeEach(() => {
 	axiosError = timeoutError;
 });
+
+const datastoreUserAgentDetails: CustomUserAgentDetails = {
+	category: Category.DataStore,
+	action: DataStoreAction.GraphQL,
+};
 
 describe('Jittered backoff', () => {
 	it('should progress exponentially until some limit', () => {
@@ -147,6 +158,22 @@ describe('MutationProcessor', () => {
 
 			expect(input.id).toEqual('abcdef');
 			expect(input.postId).toEqual('100');
+		});
+
+		it('Should send datastore details with the x-amz-user-agent in the rest api request', async () => {
+			jest.spyOn(mutationProcessor, 'resume');
+			await mutationProcessor.resume();
+
+			expect(mockRestPost).toBeCalledWith(
+				expect.anything(),
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						'x-amz-user-agent': getAmplifyUserAgentString(
+							datastoreUserAgentDetails
+						),
+					}),
+				})
+			);
 		});
 	});
 

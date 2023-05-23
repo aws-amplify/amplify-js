@@ -4,6 +4,12 @@ const mockGraphQL = jest.fn(() => mockObservable);
 
 import { Amplify } from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import {
+	Category,
+	CustomUserAgentDetails,
+	DataStoreAction,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import {
 	SubscriptionProcessor,
@@ -658,6 +664,15 @@ describe('error handler', () => {
 								`[DEBUG].*${operation} subscription failed with authMode: AMAZON_COGNITO_USER_POOLS`
 							)
 						)
+					);
+
+					expect(mockGraphQL).toHaveBeenCalledWith(
+						expect.anything(),
+						undefined,
+						{
+							category: Category.DataStore,
+							action: DataStoreAction.Subscribe,
+						}
 					);
 				});
 

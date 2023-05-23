@@ -3,7 +3,10 @@ import { InternalAPI } from '@aws-amplify/api/internal';
 import { Auth } from '@aws-amplify/auth';
 import { Cache } from '@aws-amplify/cache';
 import {
+	Category,
 	ConsoleLogger as Logger,
+	CustomUserAgentDetails,
+	DataStoreAction,
 	Hub,
 	HubCapsule,
 	BackgroundProcessManager,
@@ -426,6 +429,11 @@ class SubscriptionProcessor {
 
 										const variables = {};
 
+										const customUserAgentDetails: CustomUserAgentDetails = {
+											category: Category.DataStore,
+											action: DataStoreAction.Subscribe,
+										};
+
 										if (addFilter && predicatesGroup) {
 											variables['filter'] =
 												predicateToGraphQLFilter(predicatesGroup);
@@ -452,12 +460,16 @@ class SubscriptionProcessor {
 											Observable<{
 												value: GraphQLResult<Record<string, PersistentModel>>;
 											}>
-										>(<unknown>this.amplifyContext.API.graphql({
-											query,
-											variables,
-											...{ authMode },
-											authToken,
-										}));
+										>(<unknown>this.amplifyContext.API.graphql(
+											{
+												query,
+												variables,
+												...{ authMode },
+												authToken,
+											},
+											undefined,
+											customUserAgentDetails
+										));
 
 										let subscriptionReadyCallback: () => void;
 
