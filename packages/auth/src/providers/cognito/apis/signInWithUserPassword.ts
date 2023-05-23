@@ -17,6 +17,7 @@ import {
 	handleUserPasswordAuthFlow,
 } from '../utils/signInHelpers';
 import { InitiateAuthException } from '../types/errors/service';
+import { Amplify } from '@aws-amplify/core';
 
 /**
  * Signs a user in
@@ -34,7 +35,8 @@ export async function signInWithUserPassword(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ) {
 	const { username, password } = signInRequest;
-	const metadata = signInRequest.options?.serviceOptions?.clientMetadata;
+	const config = Amplify.config;
+	const metadata = signInRequest.options?.serviceOptions?.clientMetadata || config.clientMetadata ;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
