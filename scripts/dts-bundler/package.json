@@ -1,5 +1,5 @@
 {
-	"name": "api-extract-pinpoint",
+	"name": "api-extract-aws-clients",
 	"devDependencies": {
 		"@aws-sdk/client-pinpoint": "3.335.0",
 		"@aws-sdk/client-cognito-identity": "3.335.0",
@@ -7,6 +7,5 @@
 	},
 	"scripts": {
 		"build": "dts-bundle-generator --config ./dts-bundler.config.js"
-	},
-	"types": "./pinpoint.d.ts"
+	}
 }
