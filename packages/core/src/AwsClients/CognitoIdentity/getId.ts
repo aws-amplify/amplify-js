@@ -2,10 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	GetIdCommandInput as GetIdInput,
-	GetIdCommandOutput as GetIdOutput,
-} from '@aws-sdk/client-cognito-identity';
-import {
 	buildHttpRpcRequest,
 	cognitoIdentityTransferHandler,
 	defaultConfig,
@@ -20,6 +16,10 @@ import {
 	parseJsonError,
 	parseMetadata,
 } from '../../clients';
+import {
+	GetIdCommandInput as GetIdInput,
+	GetIdCommandOutput as GetIdOutput,
+} from './types';
 
 export type { GetIdInput, GetIdOutput };
 

@@ -58,9 +58,6 @@
 		"tslib": "^1.8.0",
 		"uuid": "^3.2.1"
 	},
-	"devDependencies": {
-		"@aws-sdk/client-pinpoint": "3.186.1"
-	},
 	"size-limit": [
 		{
 			"name": "Analytics (Pinpoint)",
@@ -72,7 +69,7 @@
 			"name": "Analytics (Kinesis)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Analytics, AWSKinesisProvider }",
-			"limit": "58.1 kB"
+			"limit": "58.2 kB"
 		}
 	],
 	"jest": {

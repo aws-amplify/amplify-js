@@ -1,10 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import type {
-	UpdateEndpointCommandInput as UpdateEndpointInput,
-	UpdateEndpointCommandOutput as UpdateEndpointOutput,
-} from '@aws-sdk/client-pinpoint';
 import { authenticatedHandler } from '../../clients/handlers/authenticated';
 import { composeServiceApi } from '../../clients/internal/composeServiceApi';
 import { extendedEncodeURIComponent } from '../../clients/middleware/signing/utils/extendedEncodeURIComponent';
@@ -15,6 +11,10 @@ import {
 } from '../../clients/serde';
 import { Endpoint, HttpRequest, HttpResponse } from '../../clients/types';
 import { defaultConfig, getSharedHeaders } from './base';
+import type {
+	UpdateEndpointCommandInput as UpdateEndpointInput,
+	UpdateEndpointCommandOutput as UpdateEndpointOutput,
+} from './types';
 
 export type { UpdateEndpointInput, UpdateEndpointOutput };
 

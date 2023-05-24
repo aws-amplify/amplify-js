@@ -1,12 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// TODO: [v6] do not leak AWS SDK types to public so we can remove it from runtime dependencies.
-import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-sdk/client-pinpoint';
 import {
 	getInAppMessages,
 	GetInAppMessagesInput,
 	GetInAppMessagesOutput,
+	InAppMessageCampaign as PinpointInAppMessage,
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 
 import { addEventListener, AWSPinpointProviderCommon } from '../../../common';

@@ -9,8 +9,8 @@ import {
 	transferKeyToUpperCase,
 } from '@aws-amplify/core';
 import { Cache } from '@aws-amplify/cache';
-import type { Event as AWSPinpointAnalyticsEvent } from '@aws-sdk/client-pinpoint';
 import {
+	Event as AWSPinpointAnalyticsEvent,
 	putEvents,
 	PutEventsInput,
 	updateEndpoint,

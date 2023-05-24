@@ -1,11 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import type {
-	GetCredentialsForIdentityCommandInput as GetCredentialsForIdentityInput,
-	GetCredentialsForIdentityCommandOutput as GetCredentialsForIdentityOutput,
-	Credentials,
-} from '@aws-sdk/client-cognito-identity';
 import {
 	buildHttpRpcRequest,
 	cognitoIdentityTransferHandler,
@@ -21,6 +16,11 @@ import {
 	parseJsonError,
 	parseMetadata,
 } from '../../clients';
+import type {
+	GetCredentialsForIdentityCommandInput as GetCredentialsForIdentityInput,
+	GetCredentialsForIdentityCommandOutput as GetCredentialsForIdentityOutput,
+	Credentials,
+} from './types';
 
 export type { GetCredentialsForIdentityInput, GetCredentialsForIdentityOutput };
 
