@@ -861,10 +861,12 @@ describe('DataStore sync engine', () => {
 		});
 
 		/**
-		 * NOTE: The following test assertions are based on *existing* behavior, not *correct*
+		 * NOTE:
+		 * The following test assertions are based on *existing* behavior, not *correct*
 		 * behavior. Once we have fixed rapid single-field consecutive updates, and updates on a
 		 * poor connection, we should update these assertions to reflect the *correct* behavior.
 		 *
+		 * WHAT WE ARE TESTING:
 		 * Test observed rapid single-field mutations with variable connection latencies, as well as
 		 * waiting / not waiting on the outbox between mutations. All permutations are necessary,
 		 * as each scenario results in different observed behavior - essentially, whether or not
@@ -878,10 +880,36 @@ describe('DataStore sync engine', () => {
 		 *     3) The record's final version number has changed
 		 * make sure you haven't adjusted the artifical latency or `pause` values, as this will
 		 * result in a change in the expected number of merges performed by the outbox.
+		 *
+		 * NOTES ON HOW WE PERFORM CONSECUTIVE UPDATES:
+		 *
+		 * When we want to test a scenario where the outbox does not necessarily merge all outgoing
+		 * requests (for instance, when we do not add artifical latency to the connection), we make
+		 * the mutations rapidly (i.e. we don't await the outbox). However, because of how
+		 * rapidly the mutations are performed, we are creating an artifical situation where
+		 * mutations will always be merged. Adding a slight pause between mutations dds a
+		 * semi-realistic pause ("button clicks") between updates. This is not required when awaiting
+		 * the outbox after each mutation. Additionally, a pause is not required if we are
+		 * intentionally testing rapid updates, such as when the initial save is still pending.
+		 *
+		 * When we want to test a scenario where the user is waiting for a long period of time
+		 * between each mutation (non-concurrent updates), we wait for an empty outbox after each
+		 * mutation. This ensures each mutation completes a full cycle before the next mutation
+		 * begins. This guarantees that there will NEVER be concurrent updates being processed by
+		 * the outbox.
 		 */
 		describe('observed rapid single-field mutations with variable connection latencies', () => {
-			// Tuple of updated title and version:
+			// Number of primary client updates:
+			const numberOfUpdates = 3;
+
+			// Incremented after each update:
+			let expectedNumberOfUpdates = 0;
+
+			// Tuple of updated `title` and `_version`:
 			type SubscriptionLogTuple = [string, number];
+
+			// updated `title`, `blogId`, and `_version`:
+			type SubscriptionLogMultiField = [string, string, number];
 
 			/**
 			 * Since we're essentially testing race conditions, we want to test the outbox logic
@@ -892,82 +920,92 @@ describe('DataStore sync engine', () => {
 			const latency: number = 1000;
 
 			/**
-			 * @property originalId `id` of the record to update
-			 * @property numberOfUpdates number of primary client updates to perform (excludes external client updates)
-			 * @property waitOnOutbox whether or not to wait for the outbox to be empty after each update
-			 * @property pauseBeforeMutation whether or not to pause prior to the mutation
+			 * Simulate a second client updating the original post
+			 * @param originalPostId id of the post to update
+			 * @param updatedFields field(s) to update
+			 * @param version version number to be sent with the request (what would have been
+			 * returned from a query prior to update)
 			 */
-			type ConsecutiveUpdatesParams = {
-				originalId: string;
-				numberOfUpdates: number;
-				waitOnOutbox: boolean;
-				pauseBeforeMutation: boolean;
+			type ExternalPostUpdateParams = {
+				originalPostId: string;
+				updatedFields: Partial<any>;
+				version: number | undefined;
+			};
+
+			const externalPostUpdate = async ({
+				originalPostId,
+				updatedFields,
+				version,
+			}: ExternalPostUpdateParams) => {
+				await graphqlService.externalGraphql(
+					{
+						query: `
+							mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput) {
+								updatePost(input: $input, condition: $condition) {
+									id
+									title
+									blogId
+									updatedAt
+									createdAt
+									_version
+									_lastChangedAt
+									_deleted
+								}
+							}
+						`,
+						variables: {
+							input: {
+								id: originalPostId,
+								...updatedFields,
+								_version: version,
+							},
+							condition: null,
+						},
+						authMode: undefined,
+						authToken: undefined,
+					},
+					// For now we always ignore latency for external mutations. This could be a param if needed.
+					true
+				);
 			};
 
 			/**
-			 * Helper function to perform consecutive updates on a record given it's `id`.
-			 * As explained in detail below, config options are important here, as they will affect
-			 * whether or not the outbox will merge updates.
+			 * Query post, update, then increment counter.
+			 * @param postId - id of the post to update
+			 * @param updatedTitle - title to update the post with
 			 */
-			const performConsecutiveUpdates = async ({
-				originalId,
-				numberOfUpdates,
-				waitOnOutbox,
-				pauseBeforeMutation,
-			}: ConsecutiveUpdatesParams) => {
-				// Mutate the original record multiple times:
-				for (let number = 0; number < numberOfUpdates; number++) {
-					/**
-					 * When we want to test a scenario where the outbox does not
-					 * necessarily merge all outgoing requests (for instance, when
-					 * we do not add artifical latency to the connection), we make
-					 * the mutations rapidly in this loop. However, because of how
-					 * rapidly this loop executes, we are creating an artifical situation
-					 * where mutations will always be merged. Setting `pauseBeforeMutation`
-					 * to `true` will adding a semi-realistic pause ("button clicks")
-					 * between updates.
-					 * Not required when awaiting the outbox after each mutation.
-					 * Additionally not required if we are intentionally testing
-					 * rapid updates, such as when the initial save is still pending.
-					 */
-					if (pauseBeforeMutation) {
-						await pause(200);
-					}
+			const revPost = async (postId: string, updatedTitle: string) => {
+				const retrieved = await DataStore.query(Post, postId);
 
-					const retrieved = await DataStore.query(Post, originalId);
+				await DataStore.save(
+					// @ts-ignore
+					Post.copyOf(retrieved, updated => {
+						updated.title = updatedTitle;
+					})
+				);
 
-					await DataStore.save(
-						// @ts-ignore
-						Post.copyOf(retrieved, updated => {
-							updated.title = `post title ${number}`;
-						})
-					);
-
-					/**
-					 * When we want to test a scenario where the user is waiting for a long
-					 * period of time between each mutation (non-concurrent updates), we wait
-					 * for an empty outbox after each mutation. This ensures each mutation
-					 * completes a full cycle before the next mutation begins. This guarantees
-					 * that there will NEVER be concurrent updates being processed by the outbox.
-					 * For use with variable latencies.
-					 */
-					if (waitOnOutbox) {
-						await waitForEmptyOutbox();
-					}
-				}
+				expectedNumberOfUpdates++;
 			};
 
 			/**
-			 *
-			 * @param originalId `id` of the record that was updated
-			 * @param expectedFinalVersion expected final `_version` of the record after all updates are complete
-			 * @param expectedFinalTitle expected final `title` of the record after all updates are complete
+			 * @param postId `id` of the record that was updated
+			 * @param version expected final `_version` of the record after all updates are complete
+			 * @param title expected final `title` of the record after all updates are complete
+			 * @param blogId expected final `blogId` of the record after all updates are complete
 			 */
-			const expectFinalRecordsToMatch = async (
-				postId: string,
-				version: number,
-				title: string
-			) => {
+			type FinalAssertionParams = {
+				postId: string;
+				version: number;
+				title: string;
+				blogId?: string | null;
+			};
+
+			const expectFinalRecordsToMatch = async ({
+				postId,
+				version,
+				title,
+				blogId = undefined,
+			}: FinalAssertionParams) => {
 				// Validate that the record was saved to the service:
 				const table = graphqlService.tables.get('Post')!;
 				expect(table.size).toEqual(1);
@@ -975,6 +1013,8 @@ describe('DataStore sync engine', () => {
 				// Validate that the title was updated successfully:
 				const savedItem = table.get(JSON.stringify([postId])) as any;
 				expect(savedItem.title).toEqual(title);
+
+				if (blogId) expect(savedItem.blogId).toEqual(blogId);
 
 				// Validate that the `_version` was incremented correctly:
 				expect(savedItem._version).toEqual(version);
@@ -984,33 +1024,20 @@ describe('DataStore sync engine', () => {
 				expect(queryResult?.title).toEqual(title);
 				// @ts-ignore
 				expect(queryResult?._version).toEqual(version);
+
+				if (blogId) expect(queryResult?.blogId).toEqual(blogId);
 			};
 
 			describe('single client updates', () => {
-				test('rapid mutations on poor connection when initial create is not pending', async () => {
-					// Number of updates to perform in this test:
-					const numberOfUpdates = 3;
+				/**
+				 * All observed updates. Also includes "updates" from initial record creation,
+				 * since we start the subscription in the `beforeEach` block.
+				 */
+				let subscriptionLog: SubscriptionLogTuple[] = [];
 
-					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-					const subscriptionLog: SubscriptionLogTuple[] = [];
-
-					// Record to update:
-					const original = await DataStore.save(
-						new Post({
-							title: 'original title',
-							blogId: 'blog id',
-						})
-					);
-
-					/**
-					 * Make sure the save was successfully sent out. There is a separate test
-					 * for testing an update when the initial save is still in the outbox
-					 * (see below). Here `_version` IS defined.
-					 */
-					await waitForEmptyOutbox();
-
-					const subscription = await DataStore.observe(Post).subscribe(
-						({ opType, element }) => {
+				beforeEach(async () => {
+					await DataStore.observe(Post).subscribe(({ opType, element }) => {
+						if (opType === 'UPDATE') {
 							const response: SubscriptionLogTuple = [
 								element.title,
 								// No, TypeScript, there is a version:
@@ -1020,7 +1047,27 @@ describe('DataStore sync engine', () => {
 							// Track sequence of versions and titles
 							subscriptionLog.push(response);
 						}
+					});
+				});
+
+				afterEach(async () => {
+					expectedNumberOfUpdates = 0;
+					subscriptionLog = [];
+				});
+
+				test('rapid mutations on poor connection when initial create is not pending', async () => {
+					// Record to update:
+					const original = await DataStore.save(
+						new Post({
+							title: 'original title',
+							blogId: 'blog id',
+						})
 					);
+
+					/**
+					 * Make sure the save was successfully sent out. Here `_version` IS defined.
+					 */
+					await waitForEmptyOutbox();
 
 					/**
 					 * Note: Running this test without increased latencies will still fail,
@@ -1037,12 +1084,12 @@ describe('DataStore sync engine', () => {
 
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
-					await performConsecutiveUpdates({
-						originalId: original.id,
-						numberOfUpdates,
-						waitOnOutbox: false,
-						pauseBeforeMutation: false,
-					});
+
+					//region perform consecutive updates
+					await revPost(original.id, 'post title 0');
+					await revPost(original.id, 'post title 1');
+					await revPost(original.id, 'post title 2');
+					//endregion
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1054,35 +1101,30 @@ describe('DataStore sync engine', () => {
 					 * the actual number of updates. If we were running this test without
 					 * increased latency, we'd expect more requests to be received.
 					 */
-					const expectedNumberOfUpdates = numberOfUpdates - 1;
-
-					await graphqlServiceSettled(
+					await graphqlServiceSettled({
 						graphqlService,
-						expectedNumberOfUpdates,
-						'Post'
-					);
+						expectedNumberOfUpdates: expectedNumberOfUpdates - 1,
+						externalNumberOfUpdates: 0,
+						modelName: 'Post',
+					});
 
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
 					expect(subscriptionLog).toEqual([
+						['original title', 1],
 						['post title 0', 1],
 						['post title 1', 1],
 						['post title 2', 1],
 						['post title 0', 3],
 					]);
 
-					await expectFinalRecordsToMatch(original.id, 3, 'post title 0');
-
-					// Cleanup:
-					await subscription.unsubscribe();
+					expectFinalRecordsToMatch({
+						postId: original.id,
+						version: 3,
+						title: 'post title 0',
+					});
 				});
 				test('rapid mutations on fast connection when initial create is not pending', async () => {
-					// Number of updates to perform in this test:
-					const numberOfUpdates = 3;
-
-					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-					const subscriptionLog: SubscriptionLogTuple[] = [];
-
 					// Record to update:
 					const original = await DataStore.save(
 						new Post({
@@ -1092,33 +1134,23 @@ describe('DataStore sync engine', () => {
 					);
 
 					/**
-					 * Make sure the save was successfully sent out. There is a separate test
-					 * for testing an update when the save is still in the outbox (see below).
-					 * Here, `_version` is defined.
+					 * Make sure the save was successfully sent out. Here, `_version` is defined.
 					 */
 					await waitForEmptyOutbox();
 
-					const subscription = await DataStore.observe(Post).subscribe(
-						({ opType, element }) => {
-							const response: SubscriptionLogTuple = [
-								element.title,
-								// No, TypeScript, there is a version:
-								// @ts-ignore
-								element._version,
-							];
-							// Track sequence of versions and titles
-							subscriptionLog.push(response);
-						}
-					);
-
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
-					await performConsecutiveUpdates({
-						originalId: original.id,
-						numberOfUpdates,
-						waitOnOutbox: false,
-						pauseBeforeMutation: true,
-					});
+
+					//region perform consecutive updates
+					await pause(200);
+					await revPost(original.id, 'post title 0');
+
+					await pause(200);
+					await revPost(original.id, 'post title 1');
+
+					await pause(200);
+					await revPost(original.id, 'post title 2');
+					//endregion
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1130,29 +1162,30 @@ describe('DataStore sync engine', () => {
 					 * running this test with increased latency, we'd expect less requests
 					 * to be received.
 					 */
-					await graphqlServiceSettled(graphqlService, numberOfUpdates, 'Post');
+					await graphqlServiceSettled({
+						graphqlService,
+						expectedNumberOfUpdates: numberOfUpdates,
+						externalNumberOfUpdates: 0,
+						modelName: 'Post',
+					});
 
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
 					expect(subscriptionLog).toEqual([
+						['original title', 1],
 						['post title 0', 1],
 						['post title 1', 1],
 						['post title 2', 1],
 						['post title 0', 4],
 					]);
 
-					await expectFinalRecordsToMatch(original.id, 4, 'post title 0');
-
-					// Cleanup:
-					await subscription.unsubscribe();
+					expectFinalRecordsToMatch({
+						postId: original.id,
+						version: 4,
+						title: 'post title 0',
+					});
 				});
 				test('rapid mutations on poor connection when initial create is pending', async () => {
-					// Number of updates to perform in this test:
-					const numberOfUpdates = 3;
-
-					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-					const subscriptionLog: SubscriptionLogTuple[] = [];
-
 					// Record to update:
 					const original = await DataStore.save(
 						new Post({
@@ -1165,19 +1198,6 @@ describe('DataStore sync engine', () => {
 					 * NOTE: We do NOT wait for the outbox here - we are testing
 					 * updates on a record that is still in the outbox.
 					 */
-
-					const subscription = await DataStore.observe(Post).subscribe(
-						({ opType, element }) => {
-							const response: SubscriptionLogTuple = [
-								element.title,
-								// No, TypeScript, there is a version:
-								// @ts-ignore
-								element._version,
-							];
-							// Track sequence of versions and titles
-							subscriptionLog.push(response);
-						}
-					);
 
 					/**
 					 * Note: Running this test without increased latencies will still fail,
@@ -1194,12 +1214,12 @@ describe('DataStore sync engine', () => {
 
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
-					await performConsecutiveUpdates({
-						originalId: original.id,
-						numberOfUpdates,
-						waitOnOutbox: false,
-						pauseBeforeMutation: false, // no pause here, unlike other tests! because we want to test when save is pending.
-					});
+
+					//region perform consecutive updates
+					await revPost(original.id, 'post title 0');
+					await revPost(original.id, 'post title 1');
+					await revPost(original.id, 'post title 2');
+					//endregion
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1207,7 +1227,12 @@ describe('DataStore sync engine', () => {
 					/**
 					 * Currently, the service does not receive any requests.
 					 */
-					await graphqlServiceSettled(graphqlService, 0, 'Post');
+					await graphqlServiceSettled({
+						graphqlService,
+						expectedNumberOfUpdates: 0,
+						externalNumberOfUpdates: 0,
+						modelName: 'Post',
+					});
 
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
@@ -1218,18 +1243,13 @@ describe('DataStore sync engine', () => {
 						['post title 2', 1],
 					]);
 
-					await expectFinalRecordsToMatch(original.id, 1, 'post title 2');
-
-					// Cleanup:
-					await subscription.unsubscribe();
+					expectFinalRecordsToMatch({
+						postId: original.id,
+						version: 1,
+						title: 'post title 2',
+					});
 				});
 				test('rapid mutations on fast connection when initial create is pending', async () => {
-					// Number of updates to perform in this test:
-					const numberOfUpdates = 3;
-
-					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-					const subscriptionLog: SubscriptionLogTuple[] = [];
-
 					// Record to update:
 					const original = await DataStore.save(
 						new Post({
@@ -1243,27 +1263,16 @@ describe('DataStore sync engine', () => {
 					 * updates on a record that is still in the outbox.
 					 */
 
-					const subscription = await DataStore.observe(Post).subscribe(
-						({ opType, element }) => {
-							const response: SubscriptionLogTuple = [
-								element.title,
-								// No, TypeScript, there is a version:
-								// @ts-ignore
-								element._version,
-							];
-							// Track sequence of versions and titles
-							subscriptionLog.push(response);
-						}
-					);
+					//region perform consecutive updates
+					await pause(200);
+					await revPost(original.id, 'post title 0');
 
-					// Note: We do NOT wait for the outbox to be empty here, because
-					// we want to test concurrent updates being processed by the outbox.
-					await performConsecutiveUpdates({
-						originalId: original.id,
-						numberOfUpdates,
-						waitOnOutbox: false,
-						pauseBeforeMutation: true,
-					});
+					await pause(200);
+					await revPost(original.id, 'post title 1');
+
+					await pause(200);
+					await revPost(original.id, 'post title 2');
+					//endregion
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1271,7 +1280,12 @@ describe('DataStore sync engine', () => {
 					/**
 					 * Currently, the service does not receive any requests.
 					 */
-					await graphqlServiceSettled(graphqlService, 0, 'Post');
+					await graphqlServiceSettled({
+						graphqlService,
+						expectedNumberOfUpdates: 0,
+						externalNumberOfUpdates: 0,
+						modelName: 'Post',
+					});
 
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
@@ -1282,18 +1296,13 @@ describe('DataStore sync engine', () => {
 						['post title 2', 1],
 					]);
 
-					await expectFinalRecordsToMatch(original.id, 1, 'post title 2');
-
-					// Cleanup:
-					await subscription.unsubscribe();
+					expectFinalRecordsToMatch({
+						postId: original.id,
+						version: 1,
+						title: 'post title 2',
+					});
 				});
 				test('observe on poor connection with awaited outbox', async () => {
-					// Number of updates to perform in this test:
-					const numberOfUpdates = 3;
-
-					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-					const subscriptionLog: SubscriptionLogTuple[] = [];
-
 					// Record to update:
 					const original = await DataStore.save(
 						new Post({
@@ -1308,19 +1317,6 @@ describe('DataStore sync engine', () => {
 					 * Here, `_version` is defined.
 					 */
 					await waitForEmptyOutbox();
-
-					const subscription = await DataStore.observe(Post).subscribe(
-						({ opType, element }) => {
-							const response: SubscriptionLogTuple = [
-								element.title,
-								// No, TypeScript, there is a version:
-								// @ts-ignore
-								element._version,
-							];
-							// Track sequence of versions and titles
-							subscriptionLog.push(response);
-						}
-					);
 
 					/**
 					 * Note: Running this test without increased latencies will still fail,
@@ -1340,23 +1336,34 @@ describe('DataStore sync engine', () => {
 					 * we want to test non-concurrent updates (i.e. we want to make
 					 * sure all the updates are going out and are being observed)
 					 */
-					await performConsecutiveUpdates({
-						originalId: original.id,
-						numberOfUpdates,
-						waitOnOutbox: true,
-						pauseBeforeMutation: false,
-					});
+
+					//region perform consecutive updates
+					await revPost(original.id, 'post title 0');
+					await waitForEmptyOutbox();
+
+					await revPost(original.id, 'post title 1');
+					await waitForEmptyOutbox();
+
+					await revPost(original.id, 'post title 2');
+					await waitForEmptyOutbox();
+					//endregion
 
 					/**
 					 * Even though we have increased the latency, we are still waiting
 					 * on the outbox after each mutation. Therefore, mutations will not
 					 * be merged.
 					 */
-					await graphqlServiceSettled(graphqlService, numberOfUpdates, 'Post');
+					await graphqlServiceSettled({
+						graphqlService,
+						expectedNumberOfUpdates: numberOfUpdates,
+						externalNumberOfUpdates: 0,
+						modelName: 'Post',
+					});
 
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
 					expect(subscriptionLog).toEqual([
+						['original title', 1],
 						['post title 0', 1],
 						['post title 0', 2],
 						['post title 1', 2],
@@ -1365,18 +1372,13 @@ describe('DataStore sync engine', () => {
 						['post title 2', 4],
 					]);
 
-					await expectFinalRecordsToMatch(original.id, 4, 'post title 2');
-
-					// Cleanup:
-					await subscription.unsubscribe();
+					expectFinalRecordsToMatch({
+						postId: original.id,
+						version: 4,
+						title: 'post title 2',
+					});
 				});
 				test('observe on fast connection with awaited outbox', async () => {
-					// Number of updates to perform in this test:
-					const numberOfUpdates = 3;
-
-					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-					const subscriptionLog: SubscriptionLogTuple[] = [];
-
 					// Record to update:
 					const original = await DataStore.save(
 						new Post({
@@ -1392,41 +1394,39 @@ describe('DataStore sync engine', () => {
 					 */
 					await waitForEmptyOutbox();
 
-					const subscription = await DataStore.observe(Post).subscribe(
-						({ opType, element }) => {
-							const response: SubscriptionLogTuple = [
-								element.title,
-								// No, TypeScript, there is a version:
-								// @ts-ignore
-								element._version,
-							];
-							// Track sequence of versions and titles
-							subscriptionLog.push(response);
-						}
-					);
-
 					/**
 					 * We wait for the empty outbox on each mutation, because
 					 * we want to test non-concurrent updates (i.e. we want to make
 					 * sure all the updates are going out and are being observed)
 					 */
-					await performConsecutiveUpdates({
-						originalId: original.id,
-						numberOfUpdates,
-						waitOnOutbox: true,
-						pauseBeforeMutation: false,
-					});
+
+					//region perform consecutive updates
+					await revPost(original.id, 'post title 0');
+					await waitForEmptyOutbox();
+
+					await revPost(original.id, 'post title 1');
+					await waitForEmptyOutbox();
+
+					await revPost(original.id, 'post title 2');
+					await waitForEmptyOutbox();
+					//endregion
 
 					/**
 					 * Even though we have increased the latency, we are still waiting
 					 * on the outbox after each mutation. Therefore, mutations will not
 					 * be merged.
 					 */
-					await graphqlServiceSettled(graphqlService, numberOfUpdates, 'Post');
+					await graphqlServiceSettled({
+						graphqlService,
+						expectedNumberOfUpdates: numberOfUpdates,
+						externalNumberOfUpdates: 0,
+						modelName: 'Post',
+					});
 
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
 					expect(subscriptionLog).toEqual([
+						['original title', 1],
 						['post title 0', 1],
 						['post title 0', 2],
 						['post title 1', 2],
@@ -1435,10 +1435,642 @@ describe('DataStore sync engine', () => {
 						['post title 2', 4],
 					]);
 
-					await expectFinalRecordsToMatch(original.id, 4, 'post title 2');
+					expectFinalRecordsToMatch({
+						postId: original.id,
+						version: 4,
+						title: 'post title 2',
+					});
+				});
+			});
+			/**
+			 * The following multi-client tests are almost identical to the single-client tests above:
+			 * as a result, the comments in these tests relate specifically to multi-client operations only.
+			 * The primary differences are that we inject external client updates, and add many permutations
+			 * on essentially the same patterns. For a complete understanding of how these tests work (why /
+			 * when we await the outbox, pause, wait for the service to settle, etc), refer to the
+			 * single-field tests.
+			 */
+			describe('Multi-client updates', () => {
+				describe('Updates to the same field', () => {
+					/**
+					 * All observed updates. Also includes "updates" from initial record creation,
+					 * since we start the subscription in the `beforeEach` block.
+					 */
+					let subscriptionLog: SubscriptionLogTuple[] = [];
 
-					// Cleanup:
-					await subscription.unsubscribe();
+					beforeEach(async () => {
+						await DataStore.observe(Post).subscribe(({ opType, element }) => {
+							if (opType === 'UPDATE') {
+								const response: SubscriptionLogTuple = [
+									element.title,
+									// No, TypeScript, there is a version:
+									// @ts-ignore
+									element._version,
+								];
+								// Track sequence of versions and titles
+								subscriptionLog.push(response);
+							}
+						});
+					});
+
+					afterEach(async () => {
+						expectedNumberOfUpdates = 0;
+						subscriptionLog = [];
+					});
+
+					test('rapid mutations on poor connection when initial create is not pending', async () => {
+						const original = await DataStore.save(
+							new Post({
+								title: 'original title',
+								blogId: 'blog id',
+							})
+						);
+
+						await waitForEmptyOutbox();
+
+						graphqlService.setLatencies({
+							request: latency,
+							response: latency,
+							subscriber: latency,
+							jitter,
+						});
+
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+
+						await revPost(original.id, 'post title 1');
+
+						await externalPostUpdate({
+							originalPostId: original.id,
+							updatedFields: { title: 'update from second client' },
+							version: 1,
+						});
+
+						await revPost(original.id, 'post title 2');
+						//endregion
+
+						await waitForEmptyOutbox();
+
+						await graphqlServiceSettled({
+							graphqlService,
+							expectedNumberOfUpdates: expectedNumberOfUpdates - 1,
+							externalNumberOfUpdates: 1,
+							modelName: 'Post',
+						});
+
+						expect(subscriptionLog).toEqual([
+							['original title', 1],
+							['post title 0', 1],
+							['post title 1', 1],
+							['post title 2', 1],
+							['update from second client', 4],
+						]);
+
+						expectFinalRecordsToMatch({
+							postId: original.id,
+							version: 4,
+							title: 'update from second client',
+						});
+					});
+					test('rapid mutations on fast connection when initial create is not pending', async () => {
+						const original = await DataStore.save(
+							new Post({
+								title: 'original title',
+								blogId: 'blog id',
+							})
+						);
+
+						await waitForEmptyOutbox();
+
+						//region perform consecutive updates
+						await pause(200);
+						await revPost(original.id, 'post title 0');
+
+						await pause(200);
+						await revPost(original.id, 'post title 1');
+
+						await externalPostUpdate({
+							originalPostId: original.id,
+							updatedFields: { title: 'update from second client' },
+							version: 1,
+						});
+
+						await pause(200);
+						await revPost(original.id, 'post title 2');
+						//endregion
+
+						await waitForEmptyOutbox();
+
+						await graphqlServiceSettled({
+							graphqlService,
+							expectedNumberOfUpdates: numberOfUpdates,
+							externalNumberOfUpdates: 1,
+							modelName: 'Post',
+						});
+
+						expect(subscriptionLog).toEqual([
+							['original title', 1],
+							['post title 0', 1],
+							['post title 1', 1],
+							['post title 2', 1],
+							['post title 0', 5],
+						]);
+
+						expectFinalRecordsToMatch({
+							postId: original.id,
+							version: 5,
+							title: 'post title 0',
+						});
+					});
+					test('observe on poor connection with awaited outbox', async () => {
+						const original = await DataStore.save(
+							new Post({
+								title: 'original title',
+								blogId: 'blog id',
+							})
+						);
+
+						await waitForEmptyOutbox();
+
+						graphqlService.setLatencies({
+							request: latency,
+							response: latency,
+							subscriber: latency,
+							jitter,
+						});
+
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+						await waitForEmptyOutbox();
+
+						await revPost(original.id, 'post title 1');
+						await waitForEmptyOutbox();
+
+						await externalPostUpdate({
+							originalPostId: original.id,
+							updatedFields: { title: 'update from second client' },
+							version: 3,
+						});
+
+						await revPost(original.id, 'post title 2');
+						await waitForEmptyOutbox();
+						//endregion
+
+						await graphqlServiceSettled({
+							graphqlService,
+							expectedNumberOfUpdates: numberOfUpdates,
+							externalNumberOfUpdates: 1,
+							modelName: 'Post',
+						});
+
+						expect(subscriptionLog).toEqual([
+							['original title', 1],
+							['post title 0', 1],
+							['post title 0', 2],
+							['post title 1', 2],
+							['post title 1', 3],
+							['update from second client', 4],
+							['post title 2', 4],
+							['post title 2', 5],
+						]);
+
+						expectFinalRecordsToMatch({
+							postId: original.id,
+							version: 5,
+							title: 'post title 2',
+						});
+					});
+					test('observe on fast connection with awaited outbox', async () => {
+						const original = await DataStore.save(
+							new Post({
+								title: 'original title',
+								blogId: 'blog id',
+							})
+						);
+
+						await waitForEmptyOutbox();
+
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+						await waitForEmptyOutbox();
+
+						await revPost(original.id, 'post title 1');
+						await waitForEmptyOutbox();
+
+						await externalPostUpdate({
+							originalPostId: original.id,
+							updatedFields: { title: 'update from second client' },
+							version: 3,
+						});
+
+						await revPost(original.id, 'post title 2');
+						await waitForEmptyOutbox();
+						//endregion
+
+						await graphqlServiceSettled({
+							graphqlService,
+							expectedNumberOfUpdates: numberOfUpdates,
+							externalNumberOfUpdates: 1,
+							modelName: 'Post',
+						});
+
+						expect(subscriptionLog).toEqual([
+							['original title', 1],
+							['post title 0', 1],
+							['post title 0', 2],
+							['post title 1', 2],
+							['post title 1', 3],
+							['update from second client', 4],
+							['post title 2', 4],
+							['post title 2', 5],
+						]);
+
+						expectFinalRecordsToMatch({
+							postId: original.id,
+							version: 5,
+							title: 'post title 2',
+						});
+					});
+				});
+				describe('Updates to different fields', () => {
+					/**
+					 * All observed updates. Also includes "updates" from initial record creation,
+					 * since we start the subscription in the `beforeEach` block.
+					 */
+					let subscriptionLog: SubscriptionLogMultiField[] = [];
+
+					beforeEach(async () => {
+						await DataStore.observe(Post).subscribe(({ opType, element }) => {
+							const response: SubscriptionLogMultiField = [
+								element.title,
+								// @ts-ignore
+								element.blogId,
+								// @ts-ignore
+								element._version,
+							];
+							subscriptionLog.push(response);
+						});
+					});
+
+					afterEach(async () => {
+						expectedNumberOfUpdates = 0;
+						subscriptionLog = [];
+					});
+
+					/**
+					 * NOTE: Even though the primary client is updating `title`,
+					 * the second client's update to `blogId` "reverts" the primary
+					 * client's changes. This is because the external update takes
+					 * effect while the primary client's updates are still in flight.
+					 * By the time the primary client's update reaches the service,
+					 * the `_version` has changed. As a result, auto-merge chooses
+					 * the existing server-side `title` over the proposed updated
+					 * `title`. The following two tests demonstrate this behavior,
+					 * with a difference in the timing of the external request,
+					 * ultimately resulting in different final states.
+					 */
+					test('poor connection, initial create is not pending, external request is first received update', async () => {
+						const original = await DataStore.save(
+							new Post({
+								title: 'original title',
+							})
+						);
+
+						await waitForEmptyOutbox();
+
+						graphqlService.setLatencies({
+							request: latency,
+							response: latency,
+							subscriber: latency,
+							jitter,
+						});
+
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+
+						await revPost(original.id, 'post title 1');
+
+						await externalPostUpdate({
+							originalPostId: original.id,
+							// External client performs a mutation against a different field:
+							updatedFields: { blogId: 'update from second client' },
+							version: 1,
+						});
+
+						await revPost(original.id, 'post title 2');
+						//endregion
+
+						await waitForEmptyOutbox();
+
+						await graphqlServiceSettled({
+							graphqlService,
+							expectedNumberOfUpdates: expectedNumberOfUpdates - 1,
+							externalNumberOfUpdates: 1,
+							modelName: 'Post',
+						});
+
+						expect(subscriptionLog).toEqual([
+							['original title', null, undefined],
+							['original title', null, 1],
+							['post title 0', null, 1],
+							['post title 1', null, 1],
+							['post title 2', null, 1],
+							['original title', 'update from second client', 4],
+						]);
+
+						expectFinalRecordsToMatch({
+							postId: original.id,
+							version: 4,
+							title: 'original title',
+							blogId: 'update from second client',
+						});
+					});
+					test('poor connection, initial create is not pending, external request is second received update', async () => {
+						const original = await DataStore.save(
+							new Post({
+								title: 'original title',
+							})
+						);
+
+						await waitForEmptyOutbox();
+
+						graphqlService.setLatencies({
+							request: latency,
+							response: latency,
+							subscriber: latency,
+							jitter,
+						});
+
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+
+						await revPost(original.id, 'post title 1');
+
+						/**
+						 * Ensure that the external update is received after the
+						 * primary client's first update.
+						 */
+						await pause(3000);
+
+						await externalPostUpdate({
+							originalPostId: original.id,
+							// External client performs a mutation against a different field:
+							updatedFields: { blogId: 'update from second client' },
+							version: 1,
+						});
+
+						await revPost(original.id, 'post title 2');
+						//endregion
+
+						await waitForEmptyOutbox();
+
+						await graphqlServiceSettled({
+							graphqlService,
+							expectedNumberOfUpdates,
+							externalNumberOfUpdates: 1,
+							modelName: 'Post',
+						});
+
+						expect(subscriptionLog).toEqual([
+							['original title', null, undefined],
+							['original title', null, 1],
+							['post title 0', null, 1],
+							['post title 1', null, 1],
+							['post title 2', null, 1],
+							['post title 0', 'update from second client', 5],
+						]);
+
+						expectFinalRecordsToMatch({
+							postId: original.id,
+							version: 5,
+							title: 'post title 0',
+							blogId: 'update from second client',
+						});
+					});
+					test('rapid mutations on fast connection when initial create is not pending (second field is `null`)', async () => {
+						const original = await DataStore.save(
+							new Post({
+								title: 'original title',
+							})
+						);
+
+						await waitForEmptyOutbox();
+
+						//region perform consecutive updates
+						await pause(200);
+						await revPost(original.id, 'post title 0');
+
+						await pause(200);
+						await revPost(original.id, 'post title 1');
+
+						await externalPostUpdate({
+							originalPostId: original.id,
+							// External client performs a mutation against a different field:
+							updatedFields: { blogId: 'update from second client' },
+							version: 1,
+						});
+
+						await pause(200);
+						await revPost(original.id, 'post title 2');
+						//endregion
+
+						await waitForEmptyOutbox();
+
+						await graphqlServiceSettled({
+							graphqlService,
+							expectedNumberOfUpdates: numberOfUpdates,
+							externalNumberOfUpdates: 1,
+							modelName: 'Post',
+						});
+
+						expect(subscriptionLog).toEqual([
+							['original title', null, undefined],
+							['original title', null, 1],
+							['post title 0', null, 1],
+							['post title 1', null, 1],
+							['post title 2', null, 1],
+							['post title 0', 'update from second client', 5],
+						]);
+
+						expectFinalRecordsToMatch({
+							postId: original.id,
+							version: 5,
+							title: 'post title 0',
+							blogId: 'update from second client',
+						});
+					});
+					/**
+					 * All other multi-client tests begin with a `null` value to the field that is being
+					 * updated by the external client (`blogId`).
+					 * This is the only scenario where providing an inital value to `blogId` will result
+					 * in different behavior.
+					 */
+					test('rapid mutations on fast connection when initial create is not pending (second field has initial value)', async () => {
+						const original = await DataStore.save(
+							new Post({
+								title: 'original title',
+								blogId: 'original blogId',
+							})
+						);
+
+						await waitForEmptyOutbox();
+
+						//region perform consecutive updates
+						await pause(200);
+						await revPost(original.id, 'post title 0');
+
+						await pause(200);
+						await revPost(original.id, 'post title 1');
+
+						await externalPostUpdate({
+							originalPostId: original.id,
+							// External client performs a mutation against a different field:
+							updatedFields: { blogId: 'update from second client' },
+							version: 1,
+						});
+
+						await pause(200);
+						await revPost(original.id, 'post title 2');
+						//endregion
+
+						await waitForEmptyOutbox();
+
+						await graphqlServiceSettled({
+							graphqlService,
+							expectedNumberOfUpdates: numberOfUpdates,
+							externalNumberOfUpdates: 1,
+							modelName: 'Post',
+						});
+
+						expect(subscriptionLog).toEqual([
+							['original title', 'original blogId', undefined],
+							['original title', 'original blogId', 1],
+							['post title 0', 'original blogId', 1],
+							['post title 1', 'original blogId', 1],
+							['post title 2', 'original blogId', 1],
+							['post title 0', 'original blogId', 5],
+						]);
+
+						expectFinalRecordsToMatch({
+							postId: original.id,
+							version: 5,
+							title: 'post title 0',
+							blogId: 'original blogId',
+						});
+					});
+					test('observe on poor connection with awaited outbox', async () => {
+						const original = await DataStore.save(
+							new Post({
+								title: 'original title',
+							})
+						);
+
+						await waitForEmptyOutbox();
+
+						graphqlService.setLatencies({
+							request: latency,
+							response: latency,
+							subscriber: latency,
+							jitter,
+						});
+
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+						await waitForEmptyOutbox();
+
+						await revPost(original.id, 'post title 1');
+						await waitForEmptyOutbox();
+
+						await externalPostUpdate({
+							originalPostId: original.id,
+							// External client performs a mutation against a different field:
+							updatedFields: { blogId: 'update from second client' },
+							version: undefined,
+						});
+
+						await revPost(original.id, 'post title 2');
+						await waitForEmptyOutbox();
+						//endregion
+
+						await graphqlServiceSettled({
+							graphqlService,
+							expectedNumberOfUpdates: numberOfUpdates,
+							externalNumberOfUpdates: 1,
+							modelName: 'Post',
+						});
+
+						expect(subscriptionLog).toEqual([
+							['original title', null, undefined],
+							['original title', null, 1],
+							['post title 0', null, 1],
+							['post title 0', null, 2],
+							['post title 1', null, 2],
+							['post title 1', null, 3],
+							['post title 1', 'update from second client', 4],
+							['post title 2', 'update from second client', 4],
+							['post title 2', 'update from second client', 5],
+						]);
+
+						expectFinalRecordsToMatch({
+							postId: original.id,
+							version: 5,
+							title: 'post title 2',
+							blogId: 'update from second client',
+						});
+					});
+					test('observe on fast connection with awaited outbox', async () => {
+						const original = await DataStore.save(
+							new Post({
+								title: 'original title',
+							})
+						);
+
+						await waitForEmptyOutbox();
+
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+						await waitForEmptyOutbox();
+
+						await revPost(original.id, 'post title 1');
+						await waitForEmptyOutbox();
+
+						await externalPostUpdate({
+							originalPostId: original.id,
+							// External client performs a mutation against a different field:
+							updatedFields: { blogId: 'update from second client' },
+							version: 3,
+						});
+
+						await revPost(original.id, 'post title 2');
+						await waitForEmptyOutbox();
+						//endregion
+
+						await graphqlServiceSettled({
+							graphqlService,
+							expectedNumberOfUpdates: numberOfUpdates,
+							externalNumberOfUpdates: 1,
+							modelName: 'Post',
+						});
+
+						expect(subscriptionLog).toEqual([
+							['original title', null, undefined],
+							['original title', null, 1],
+							['post title 0', null, 1],
+							['post title 0', null, 2],
+							['post title 1', null, 2],
+							['post title 1', null, 3],
+							['post title 1', 'update from second client', 4],
+							['post title 2', 'update from second client', 4],
+							['post title 2', 'update from second client', 5],
+						]);
+
+						expectFinalRecordsToMatch({
+							postId: original.id,
+							version: 5,
+							title: 'post title 2',
+							blogId: 'update from second client',
+						});
+					});
 				});
 			});
 		});
