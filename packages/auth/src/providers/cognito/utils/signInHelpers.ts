@@ -37,7 +37,7 @@ export async function handleUserPasswordAuthFlow(
 ): Promise<InitiateAuthCommandOutput> {
 	const config = Amplify.config;
 	const clientMeta = clientMetadata ?? config.clientMetadata;
-	const jsonReq = {
+	const jsonReq:InitiateAuthClientInput = {
 		AuthFlow: 'USER_PASSWORD_AUTH',
 		AuthParameters: {
 			USERNAME: username,

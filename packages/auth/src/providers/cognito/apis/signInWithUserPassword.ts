@@ -20,7 +20,7 @@ import { InitiateAuthException } from '../types/errors/service';
 import { Amplify } from '@aws-amplify/core';
 
 /**
- * Signs a user in
+ * Signs a user in using USER_PASSWORD_AUTH AuthFlowType
  *
  * @param signInRequest - The SignInRequest object
  * @returns AuthSignInResult
