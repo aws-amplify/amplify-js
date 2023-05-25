@@ -78,6 +78,7 @@ export enum StorageAction {
 type ActionMap = {
 	[Category.Auth]: AuthAction;
 	[Category.API]: ApiAction;
+	[Category.Analytics]: AnalyticsAction;
 	[Category.DataStore]: DataStoreAction;
 	[Category.Geo]: GeoAction;
 	[Category.Interactions]: InteractionsAction;
@@ -102,6 +103,7 @@ export type CustomUserAgentDetails =
 	| (CustomUserAgentDetailsBase & { category?: never; action?: never })
 	| UserAgentDetailsWithCategory<Category.API>
 	| UserAgentDetailsWithCategory<Category.Auth>
+	| UserAgentDetailsWithCategory<Category.Analytics>
 	| UserAgentDetailsWithCategory<Category.DataStore>
 	| UserAgentDetailsWithCategory<Category.Geo>
 	| UserAgentDetailsWithCategory<Category.Interactions>
