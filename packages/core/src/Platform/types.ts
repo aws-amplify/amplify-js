@@ -28,6 +28,7 @@ export enum Framework {
 export enum Category {
 	API = 'api',
 	Auth = 'auth',
+	Analytics = 'analytics',
 	DataStore = 'datastore',
 	Geo = 'geo',
 	Interactions = 'interactions',
@@ -40,6 +41,9 @@ export enum Category {
 
 // Actions
 /* TODO: Replace 'None' with all expected Actions */
+export enum AnalyticsAction {
+	Record = '1',
+}
 export enum ApiAction {
 	None = '0',
 }
