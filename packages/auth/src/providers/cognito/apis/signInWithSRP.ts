@@ -31,7 +31,8 @@ import { setActiveSignInSession } from '../utils/activeSignInSession';
  *
  * @param signInRequest - The SignInRequest object
  * @returns AuthSignInResult
- * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } - Cognito service errors thrown during the sign-in process.
+ * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } - Cognito service errors 
+ * thrown during the sign-in process.
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
  *
