@@ -24,9 +24,8 @@ import { Amplify } from '@aws-amplify/core';
  *
  * @param signInRequest - The SignInRequest object
  * @returns AuthSignInResult
- * @throws service: {@link InitiateAuthException } -
- * Cognito service error thrown during the sign-in process.
- * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown either username or password
+ * @throws service: {@link InitiateAuthException } - Cognito service error thrown during the sign-in process.
+ * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
  *
  * TODO: add config errors
@@ -34,9 +33,9 @@ import { Amplify } from '@aws-amplify/core';
 export async function signInWithUserPassword(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ) {
-	const { username, password } = signInRequest;
-	const config = Amplify.config;
-	const metadata = signInRequest.options?.serviceOptions?.clientMetadata || config.clientMetadata ;
+	const { username, password, options } = signInRequest;
+	const clientMetadata = Amplify.config.clientMetadata;
+	const metadata = options?.serviceOptions?.clientMetadata || clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername

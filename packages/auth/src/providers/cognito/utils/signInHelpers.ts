@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { InitiateAuthCommandOutput, RespondToAuthChallengeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
+import {
+	InitiateAuthCommandOutput,
+	RespondToAuthChallengeCommandOutput,
+} from '@aws-sdk/client-cognito-identity-provider';
 import {
 	getLargeAValue,
 	getNowString,
@@ -35,15 +38,13 @@ export async function handleUserPasswordAuthFlow(
 	password: string,
 	clientMetadata: ClientMetadata | undefined
 ): Promise<InitiateAuthCommandOutput> {
-	const config = Amplify.config;
-	const clientMeta = clientMetadata ?? config.clientMetadata;
-	const jsonReq:InitiateAuthClientInput = {
+	const jsonReq: InitiateAuthClientInput = {
 		AuthFlow: 'USER_PASSWORD_AUTH',
 		AuthParameters: {
 			USERNAME: username,
 			PASSWORD: password,
 		},
-		ClientMetadata: clientMeta,
+		ClientMetadata: clientMetadata,
 	};
 
 	return await initiateAuthClient(jsonReq);
