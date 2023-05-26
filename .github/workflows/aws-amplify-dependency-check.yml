@@ -2,14 +2,13 @@ name: Validate changes to "aws-amplify" package.json file
 on:
   pull_request:
     branches: [main]
-    types: [opened]
+    types: [opened, reopened]
 jobs:
   checkUmbrellaDependencies:
     permissions:
       pull-requests: write # Used to add comment to PR
-    name: Checks if the "aws-amplify" package.json has been manually changed.
     runs-on: ubuntu-latest
-    if: github.event.action == 'opened'
+    if: github.event.action == 'opened' || github.event.action == 'reopened'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -29,6 +28,13 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '⚠️ This PR includes manual changes to the "aws-amplify" package.json file, which can result in dependency misalignment. A repository administrator is required to review & merge this change.'
+              body: `⚠️ This PR includes manual changes to the "aws-amplify" package.json file, which can have library-wide implications. 
+
+              Please ensure that this PR:
+              - Does not modify "@aws-amplify/*" dependency versions, which may misalign core dependencies across the library.
+              
+              A repository administrator **is required** to review & merge this change.`
             })
+      - name: Fail status check
+        if: steps.aws-amplify-package-check.outputs.any_changed == 'true'
         run: exit 1
