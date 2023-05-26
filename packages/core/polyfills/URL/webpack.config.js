@@ -13,11 +13,6 @@ const rnUrlPolyfillDepsRegex = rnUrlPolyfillDeps.map(
 	name => new RegExp(`^${name}\/?`) // match name with optional trailing slash
 );
 
-const corePath = path.resolve(path.join(__dirname, '..', '..', '..', '..'));
-const outputDir = path.resolve(
-	path.join(corePath, 'lib', 'clients', 'polyfills', 'URL')
-);
-
 module.exports = {
 	name: 'index',
 	context: path.resolve(__dirname),
@@ -26,8 +21,6 @@ module.exports = {
 	},
 	output: {
 		path: path.resolve(__dirname),
-		// filename: '[name].js',
-		// path: '/Users/zheallan/workspace/amplify-js/packages/core/polyfills',
 		filename: '[name].js',
 		library: {
 			type: 'commonjs',
@@ -40,14 +33,10 @@ module.exports = {
 				loader: 'ts-loader',
 				exclude: ['/node_modules/'],
 			},
-			{
-				test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-				type: 'asset',
-			},
 		],
 	},
 	resolve: {
-		extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
+		extensions: ['.tsx', '.ts', '.jsx', '.js'],
 	},
 	externals: rnUrlPolyfillDepsRegex,
 	mode: 'production',
