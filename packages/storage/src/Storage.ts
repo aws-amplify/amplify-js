@@ -23,8 +23,6 @@ import {
 	StorageListOutput,
 	StorageCopyOutput,
 	UploadTask,
-	StorageGetPropertiesConfig,
-	StorageGetPropertiesOutput,
 } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { PutObjectCommandInput } from '@aws-sdk/client-s3';
@@ -248,22 +246,22 @@ export class Storage {
 		config?: StorageCopyConfig<T>
 	): StorageCopyOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const plugin = this._pluggables.find(
+		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
-		if (plugin === undefined) {
+		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject(
 				'No plugin found in Storage for the provider'
 			) as StorageCopyOutput<T>;
 		}
 		const cancelTokenSource = this.getCancellableTokenSource();
-		if (typeof plugin.copy !== 'function') {
+		if (typeof prov.copy !== 'function') {
 			return Promise.reject(
-				`.copy is not implemented on provider ${plugin.getProviderName()}`
+				`.copy is not implemented on provider ${prov.getProviderName()}`
 			) as StorageCopyOutput<T>;
 		}
-		const responsePromise = plugin.copy(src, dest, {
+		const responsePromise = prov.copy(src, dest, {
 			...config,
 			cancelTokenSource,
 		});
@@ -287,17 +285,17 @@ export class Storage {
 		T extends StorageProvider | { [key: string]: any; download?: boolean }
 	>(key: string, config?: StorageGetConfig<T>): StorageGetOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const plugin = this._pluggables.find(
+		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
-		if (plugin === undefined) {
+		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject(
 				'No plugin found in Storage for the provider'
 			) as StorageGetOutput<T>;
 		}
 		const cancelTokenSource = this.getCancellableTokenSource();
-		const responsePromise = plugin.get(key, {
+		const responsePromise = prov.get(key, {
 			...config,
 			cancelTokenSource,
 		});
@@ -309,25 +307,6 @@ export class Storage {
 		return axios.isCancel(error);
 	}
 
-	public getProperties<T extends StorageProvider | { [key: string]: any }>(
-		key: string,
-		config?: StorageGetPropertiesConfig<T>
-	): StorageGetPropertiesOutput<T> {
-		const provider = config?.provider || DEFAULT_PROVIDER;
-		const plugin = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
-		);
-		if (plugin === undefined) {
-			logger.debug('No plugin found with providerName', provider);
-			throw new Error('No plugin found with providerName');
-		}
-		const cancelTokenSource = this.getCancellableTokenSource();
-		const responsePromise = plugin.getProperties(key, {
-			...config,
-		});
-		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
-		return responsePromise as StorageGetPropertiesOutput<T>;
-	}
 	/**
 	 * Put a file in storage bucket specified to configure method
 	 * @param key - key of the object
@@ -347,17 +326,17 @@ export class Storage {
 		config?: StoragePutConfig<T>
 	): StoragePutOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const plugin = this._pluggables.find(
+		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
-		if (plugin === undefined) {
+		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject(
 				'No plugin found in Storage for the provider'
 			) as StoragePutOutput<T>;
 		}
 		const cancelTokenSource = this.getCancellableTokenSource();
-		const response = plugin.put(key, object, {
+		const response = prov.put(key, object, {
 			...config,
 			cancelTokenSource,
 		});
@@ -382,16 +361,16 @@ export class Storage {
 		config?: StorageRemoveConfig<T>
 	): StorageRemoveOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const plugin = this._pluggables.find(
+		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
-		if (plugin === undefined) {
+		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject(
 				'No plugin found in Storage for the provider'
 			) as StorageRemoveOutput<T>;
 		}
-		return plugin.remove(key, config) as StorageRemoveOutput<T>;
+		return prov.remove(key, config) as StorageRemoveOutput<T>;
 	}
 
 	/**
@@ -409,16 +388,16 @@ export class Storage {
 		config?: StorageListConfig<T>
 	): StorageListOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const plugin = this._pluggables.find(
+		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
-		if (plugin === undefined) {
+		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject(
 				'No plugin found in Storage for the provider'
 			) as StorageListOutput<T>;
 		}
-		return plugin.list(path, config) as StorageListOutput<T>;
+		return prov.list(path, config) as StorageListOutput<T>;
 	}
 }
 
