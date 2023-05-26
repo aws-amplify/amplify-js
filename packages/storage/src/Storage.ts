@@ -322,11 +322,11 @@ export class Storage {
 			throw new Error('No plugin found with providerName');
 		}
 		const cancelTokenSource = this.getCancellableTokenSource();
-		
+
 		if (typeof plugin.getProperties !== 'function') {
 			throw new Error(
 				`.getProperties is not implemented on provider ${plugin.getProviderName()}`
-			) 
+			);
 		}
 		const responsePromise = plugin.getProperties(key, {
 			...config,
