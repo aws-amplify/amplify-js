@@ -21,7 +21,7 @@ export interface StorageProvider {
 	get(key: string, options?): Promise<string | Object>;
 
 	// get properties of object
-	getProperties(key: string, options?): Promise<Object>;
+	getProperties?(key: string, options?): Promise<Object>;
 
 	// upload storage object
 	put(key: string, object, options?): Promise<Object> | UploadTask;
