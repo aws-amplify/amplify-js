@@ -20,9 +20,6 @@ export interface StorageProvider {
 	// get object/pre-signed url from storage
 	get(key: string, options?): Promise<string | Object>;
 
-	// get properties of object
-	getProperties(key: string, options?): Promise<Object>;
-
 	// upload storage object
 	put(key: string, object, options?): Promise<Object> | UploadTask;
 
@@ -55,10 +52,4 @@ export interface StorageProviderWithCopy extends StorageProvider {
 	): Promise<any>;
 }
 
-export type StorageProviderApi =
-	| 'copy'
-	| 'get'
-	| 'put'
-	| 'remove'
-	| 'list'
-	| 'getProperties';
+export type StorageProviderApi = 'copy' | 'get' | 'put' | 'remove' | 'list';
