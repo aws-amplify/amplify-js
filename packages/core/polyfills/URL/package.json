@@ -1,5 +1,0 @@
-{
-	"name": "@aws-amplify/core/polyfills/URL",
-	"react-native": "./index.js",
-	"main": "./index.js"
-}
