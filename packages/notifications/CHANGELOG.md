@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.6...@aws-amplify/notifications@1.1.7) (2023-05-27)
+
+### Bug Fixes
+
+- **core:** bundle react-native-url-polyfill to unblock jest test failure ([#11422](https://github.com/aws-amplify/amplify-js/issues/11422)) ([8137ee7](https://github.com/aws-amplify/amplify-js/commit/8137ee79ef2121ceaa6dfa1d9ce675370b38e26b))
+- **notifications:** Add babel plugins to devDependencies ([#11414](https://github.com/aws-amplify/amplify-js/issues/11414)) ([a009ce8](https://github.com/aws-amplify/amplify-js/commit/a009ce8afe52ca1f2e070cf40b8eb581132b6fdd))
+
 ## [1.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.5...@aws-amplify/notifications@1.1.6) (2023-05-12)
 
 ### Bug Fixes
