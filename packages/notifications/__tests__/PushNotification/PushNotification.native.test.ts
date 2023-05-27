@@ -31,11 +31,6 @@ jest.mock('react-native', () => ({
 		addListener: mockAddListener,
 	})),
 }));
-jest.mock('react-native-url-polyfill', () => {
-	return {
-		setupURLPolyfill: jest.fn(),
-	};
-});
 jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/rtn-push-notification', () => ({
 	AmplifyRTNPushNotification: {
