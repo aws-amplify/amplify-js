@@ -7,7 +7,6 @@ import {
 	Credentials,
 	Signer,
 	Hub,
-	getAmplifyUserAgent,
 	transferKeyToLowerCase,
 	transferKeyToUpperCase,
 } from '@aws-amplify/core';
@@ -30,6 +29,7 @@ import {
 } from '../types';
 import { v1 as uuid } from 'uuid';
 import EventsBuffer from './EventBuffer';
+import { getAnalyticsUserAgent } from '../utils/UserAgent';
 
 const AMPLIFY_SYMBOL = (
 	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
@@ -517,7 +517,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		this.pinpointClient = new PinpointClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAnalyticsUserAgent(),
 		});
 
 		// TODO: remove this middleware once a long term fix is implemented by aws-sdk-js team.

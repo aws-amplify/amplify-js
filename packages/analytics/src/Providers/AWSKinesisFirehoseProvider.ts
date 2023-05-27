@@ -8,6 +8,7 @@ import {
 	FirehoseClient,
 } from '@aws-sdk/client-firehose';
 import { fromUtf8 } from '@aws-sdk/util-utf8-browser';
+import { getAnalyticsUserAgent } from '../utils/UserAgent';
 
 const logger = new Logger('AWSKineisFirehoseProvider');
 
@@ -97,6 +98,7 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 			apiVersion: '2015-08-04',
 			region,
 			credentials,
+			customUserAgent: getAnalyticsUserAgent(),
 		});
 		return true;
 	}

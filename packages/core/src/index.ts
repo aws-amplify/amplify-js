@@ -43,6 +43,7 @@ export {
 export {
 	ApiAction,
 	AuthAction,
+	AnalyticsAction,
 	Category,
 	CustomUserAgentDetails,
 	DataStoreAction,

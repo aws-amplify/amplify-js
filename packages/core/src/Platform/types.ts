@@ -28,6 +28,7 @@ export enum Framework {
 export enum Category {
 	API = 'api',
 	Auth = 'auth',
+	Analytics = 'analytics',
 	DataStore = 'datastore',
 	Geo = 'geo',
 	Interactions = 'interactions',
@@ -40,6 +41,9 @@ export enum Category {
 
 // Actions
 /* TODO: Replace 'None' with all expected Actions */
+export enum AnalyticsAction {
+	Record = '1',
+}
 export enum ApiAction {
 	None = '0',
 }
@@ -74,6 +78,7 @@ export enum StorageAction {
 type ActionMap = {
 	[Category.Auth]: AuthAction;
 	[Category.API]: ApiAction;
+	[Category.Analytics]: AnalyticsAction;
 	[Category.DataStore]: DataStoreAction;
 	[Category.Geo]: GeoAction;
 	[Category.Interactions]: InteractionsAction;
@@ -98,6 +103,7 @@ export type CustomUserAgentDetails =
 	| (CustomUserAgentDetailsBase & { category?: never; action?: never })
 	| UserAgentDetailsWithCategory<Category.API>
 	| UserAgentDetailsWithCategory<Category.Auth>
+	| UserAgentDetailsWithCategory<Category.Analytics>
 	| UserAgentDetailsWithCategory<Category.DataStore>
 	| UserAgentDetailsWithCategory<Category.Geo>
 	| UserAgentDetailsWithCategory<Category.Interactions>
