@@ -61,12 +61,12 @@ const getEventDoc = parse(GetEvent);
 const getEventQuery = print(getEventDoc);
 
 /* TODO: Test with actual actions */
-const expectedUserAgentFrameworkOnly = `${Constants.userAgent} framework/${Framework.None}`;
+const expectedUserAgentFrameworkOnly = `${Constants.userAgent} framework/${Framework.WebUnknown}`;
 const customUserAgentDetailsAPI: CustomUserAgentDetails = {
 	category: Category.API,
 	action: ApiAction.GraphQl,
 };
-const expectedUserAgentAPI = `${Constants.userAgent} ${Category.API}/${ApiAction.GraphQl} framework/${Framework.None}`;
+const expectedUserAgentAPI = `${Constants.userAgent} ${Category.API}/${ApiAction.GraphQl} framework/${Framework.WebUnknown}`;
 
 afterEach(() => {
 	jest.restoreAllMocks();

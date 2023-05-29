@@ -1,14 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	ConsoleLogger as Logger,
-	Credentials,
-	getAmplifyUserAgent,
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 import { AnalyticsProvider } from '../types';
 import { fromUtf8 } from '@aws-sdk/util-utf8-browser';
+import { getAnalyticsUserAgent } from '../utils/UserAgent';
 
 const logger = new Logger('AWSKinesisProvider');
 
@@ -224,7 +221,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 		this._kinesis = new KinesisClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAnalyticsUserAgent(),
 			endpoint,
 		});
 		return true;

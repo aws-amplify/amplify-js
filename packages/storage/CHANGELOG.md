@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.6...@aws-amplify/storage@5.3.0) (2023-05-25)
+
+### Features
+
+- **storage:** getProperties API ([#11378](https://github.com/aws-amplify/amplify-js/issues/11378)) ([3bed12b](https://github.com/aws-amplify/amplify-js/commit/3bed12b6960c676095689ee895c60ae55a041c8c))
+
+## [5.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.5...@aws-amplify/storage@5.2.6) (2023-05-12)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [5.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.4...@aws-amplify/storage@5.2.5) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [5.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.3...@aws-amplify/storage@5.2.4) (2023-04-27)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [5.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.2...@aws-amplify/storage@5.2.3) (2023-04-20)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
 ## [5.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.1...@aws-amplify/storage@5.2.2) (2023-04-18)
 
 **Note:** Version bump only for package @aws-amplify/storage

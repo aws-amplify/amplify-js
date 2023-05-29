@@ -1,11 +1,34 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 export enum Framework {
-	None = '0',
-	ReactNative = '1',
+	// < 100 - Web frameworks
+	WebUnknown = '0',
+	React = '1',
+	NextJs = '2',
+	Angular = '3',
+	VueJs = '4',
+	Nuxt = '5',
+	Svelte = '6',
+
+	// 100s - Server side frameworks
+	ServerSideUnknown = '100',
+	ReactSSR = '101',
+	NextJsSSR = '102',
+	AngularSSR = '103',
+	VueJsSSR = '104',
+	NuxtSSR = '105',
+	SvelteSSR = '106',
+
+	// 200s - Mobile framework
+	ReactNative = '201',
+	Expo = '202',
 }
 
 export enum Category {
 	API = 'api',
 	Auth = 'auth',
+	Analytics = 'analytics',
 	DataStore = 'datastore',
 	Geo = 'geo',
 	InAppMessaging = 'inappmessaging',
@@ -18,6 +41,9 @@ export enum Category {
 
 // Actions
 /* TODO: Replace 'None' with all expected Actions */
+export enum AnalyticsAction {
+	Record = '1',
+}
 export enum ApiAction {
 	GraphQl = '1',
 }
@@ -53,6 +79,7 @@ export enum StorageAction {
 type ActionMap = {
 	[Category.Auth]: AuthAction;
 	[Category.API]: ApiAction;
+	[Category.Analytics]: AnalyticsAction;
 	[Category.DataStore]: DataStoreAction;
 	[Category.Geo]: GeoAction;
 	[Category.InAppMessaging]: InAppMessagingAction;
@@ -77,6 +104,7 @@ export type CustomUserAgentDetails =
 	| (CustomUserAgentDetailsBase & { category?: never; action?: never })
 	| UserAgentDetailsWithCategory<Category.API>
 	| UserAgentDetailsWithCategory<Category.Auth>
+	| UserAgentDetailsWithCategory<Category.Analytics>
 	| UserAgentDetailsWithCategory<Category.DataStore>
 	| UserAgentDetailsWithCategory<Category.Geo>
 	| UserAgentDetailsWithCategory<Category.Interactions>
