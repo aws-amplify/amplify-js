@@ -94,6 +94,7 @@
 		"source-map-loader": "^3.0.2",
 		"terser-webpack-plugin": "^5.3.6",
 		"ts-jest": "^24.x.x",
+		"ts-loader": "^9.4.3",
 		"tslint": "^5.7.0",
 		"tslint-config-airbnb": "^5.8.0",
 		"typedoc": "^0.17.0",

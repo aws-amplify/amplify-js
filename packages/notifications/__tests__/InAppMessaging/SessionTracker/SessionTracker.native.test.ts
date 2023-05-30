@@ -10,11 +10,6 @@ jest.mock('react-native', () => ({
 		removeEventListener: jest.fn(),
 	},
 }));
-jest.mock('react-native-url-polyfill', () => {
-	return {
-		setupURLPolyfill: jest.fn(),
-	};
-});
 jest.mock('@aws-amplify/core');
 
 const mockAddEventListener = AppState.addEventListener as jest.Mock;
