@@ -6,6 +6,7 @@
 	<title>PushNotification | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
 /* ========================================================================== HTML5 display definitions ========================================================================== */
 /** Correct `block` display not defined in IE 6/7/8/9 and Firefox 3. */
@@ -880,12 +881,12 @@ img { max-width: 100%; }
 			<div class="table-wrap">
 				<div class="table-cell logo">
 					<a href="../index.html">
-						<img src="https://aws-amplify.github.io/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
-						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+						<img src="https://aws-amplify.github.io/amplify-js/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: relative;">AWS Amplify JS API</div>
 					</a>
 				</div>
 				<div class="table-cell" style="">	<body>
-						<a href="/amplify-js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
+						<a href="https://docs.amplify.aws/lib/q/platform/js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify JS Dev Center</a>
 </div>	</body>
 <div class="table-cell" id="tsd-widgets">
 <div id="tsd-filter">
@@ -934,16 +935,37 @@ img { max-width: 100%; }
 				<a href="pushnotification.html#addeventlistenerforios" class="tsd-kind-icon">add<wbr>Event<wbr>Listener<wbr>ForIOS</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pushnotification.html#addpluggable" class="tsd-kind-icon">add<wbr>Pluggable</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="pushnotification.html#configure" class="tsd-kind-icon">configure</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pushnotification.html#enable" class="tsd-kind-icon">enable</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pushnotification.html#getbadgecount" class="tsd-kind-icon">get<wbr>Badge<wbr>Count</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pushnotification.html#getlaunchnotification" class="tsd-kind-icon">get<wbr>Launch<wbr>Notification</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="pushnotification.html#getmodulename" class="tsd-kind-icon">get<wbr>Module<wbr>Name</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pushnotification.html#getpermissionstatus" class="tsd-kind-icon">get<wbr>Permission<wbr>Status</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pushnotification.html#getpluggable" class="tsd-kind-icon">get<wbr>Pluggable</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="pushnotification.html#handlenotificationopened" class="tsd-kind-icon">handle<wbr>Notification<wbr>Opened</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="pushnotification.html#handlenotificationreceived" class="tsd-kind-icon">handle<wbr>Notification<wbr>Received</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pushnotification.html#identifyuser" class="tsd-kind-icon">identify<wbr>User</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="pushnotification.html#initializeandroid" class="tsd-kind-icon">initialize<wbr>Android</a>
@@ -958,7 +980,16 @@ img { max-width: 100%; }
 				<a href="pushnotification.html#onnotificationopened" class="tsd-kind-icon">on<wbr>Notification<wbr>Opened</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pushnotification.html#onnotificationreceivedinbackground" class="tsd-kind-icon">on<wbr>Notification<wbr>Received<wbr>InBackground</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pushnotification.html#onnotificationreceivedinforeground" class="tsd-kind-icon">on<wbr>Notification<wbr>Received<wbr>InForeground</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="pushnotification.html#onregister" class="tsd-kind-icon">on<wbr>Register</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pushnotification.html#ontokenreceived" class="tsd-kind-icon">on<wbr>Token<wbr>Received</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="pushnotification.html#parsemessagedata" class="tsd-kind-icon">parse<wbr>Message<wbr>Data</a>
@@ -970,7 +1001,16 @@ img { max-width: 100%; }
 				<a href="pushnotification.html#parsemessagefromandroid" class="tsd-kind-icon">parse<wbr>Messagefrom<wbr>Android</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pushnotification.html#removepluggable" class="tsd-kind-icon">remove<wbr>Pluggable</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="pushnotification.html#requestiospermissions" class="tsd-kind-icon">requestIOSPermissions</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pushnotification.html#requestpermissions" class="tsd-kind-icon">request<wbr>Permissions</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pushnotification.html#setbadgecount" class="tsd-kind-icon">set<wbr>Badge<wbr>Count</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="pushnotification.html#updateendpoint" class="tsd-kind-icon">update<wbr>Endpoint</a>
@@ -981,12 +1021,30 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 <div class="content-wrap">
+	<section class="tsd-panel tsd-comment">
+		<div class="tsd-comment tsd-typography">
+			<dl class="tsd-comment-tags">
+				<dt>deprecated</dt>
+				<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+					instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+					<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+				</dd>
+			</dl>
+		</div>
+	</section>
 	<section class="tsd-panel tsd-hierarchy">
 		<h3>Hierarchy</h3>
 		<ul class="tsd-hierarchy">
 			<li>
 				<span class="target">PushNotification</span>
 			</li>
+		</ul>
+	</section>
+	<section class="tsd-panel">
+		<h3>Implements</h3>
+		<ul class="tsd-hierarchy">
+			<li><a href="../interfaces/pushnotificationinterface.html" class="tsd-signature-type">PushNotificationInterface</a></li>
+			<li><a href="../interfaces/pushnotificationinterface.html" class="tsd-signature-type">PushNotificationInterface</a></li>
 		</ul>
 	</section>
 	<section class="tsd-panel-group tsd-index-group">
@@ -1006,19 +1064,32 @@ img { max-width: 100%; }
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#_registertokencached" class="tsd-kind-icon">_register<wbr>Token<wbr>Cached</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#addeventlistenerforandroid" class="tsd-kind-icon">add<wbr>Event<wbr>Listener<wbr>For<wbr>Android</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#addeventlistenerforios" class="tsd-kind-icon">add<wbr>Event<wbr>Listener<wbr>ForIOS</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#addpluggable" class="tsd-kind-icon">add<wbr>Pluggable</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#configure" class="tsd-kind-icon">configure</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#enable" class="tsd-kind-icon">enable</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#getbadgecount" class="tsd-kind-icon">get<wbr>Badge<wbr>Count</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#getlaunchnotification" class="tsd-kind-icon">get<wbr>Launch<wbr>Notification</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#getmodulename" class="tsd-kind-icon">get<wbr>Module<wbr>Name</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#getpermissionstatus" class="tsd-kind-icon">get<wbr>Permission<wbr>Status</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#getpluggable" class="tsd-kind-icon">get<wbr>Pluggable</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#handlenotificationopened" class="tsd-kind-icon">handle<wbr>Notification<wbr>Opened</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#handlenotificationreceived" class="tsd-kind-icon">handle<wbr>Notification<wbr>Received</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#identifyuser" class="tsd-kind-icon">identify<wbr>User</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#initializeandroid" class="tsd-kind-icon">initialize<wbr>Android</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#initializeios" class="tsd-kind-icon">initializeIOS</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#onnotification" class="tsd-kind-icon">on<wbr>Notification</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#onnotificationopened" class="tsd-kind-icon">on<wbr>Notification<wbr>Opened</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#onnotificationreceivedinbackground" class="tsd-kind-icon">on<wbr>Notification<wbr>Received<wbr>InBackground</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#onnotificationreceivedinforeground" class="tsd-kind-icon">on<wbr>Notification<wbr>Received<wbr>InForeground</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#onregister" class="tsd-kind-icon">on<wbr>Register</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#ontokenreceived" class="tsd-kind-icon">on<wbr>Token<wbr>Received</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#parsemessagedata" class="tsd-kind-icon">parse<wbr>Message<wbr>Data</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#parsemessagefromios" class="tsd-kind-icon">parse<wbr>Message<wbr>FromIOS</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#parsemessagefromandroid" class="tsd-kind-icon">parse<wbr>Messagefrom<wbr>Android</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#removepluggable" class="tsd-kind-icon">remove<wbr>Pluggable</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#requestiospermissions" class="tsd-kind-icon">requestIOSPermissions</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#requestpermissions" class="tsd-kind-icon">request<wbr>Permissions</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#setbadgecount" class="tsd-kind-icon">set<wbr>Badge<wbr>Count</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pushnotification.html#updateendpoint" class="tsd-kind-icon">update<wbr>Endpoint</a></li>
 					</ul>
 				</section>
@@ -1031,21 +1102,29 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new <wbr>Push<wbr>Notification<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="pushnotification.html" class="tsd-signature-type">PushNotification</a></li>
+				<li class="tsd-signature tsd-kind-icon">new <wbr>Push<wbr>Notification<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="pushnotification.html" class="tsd-signature-type">PushNotification</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L27">packages/pushnotification/src/PushNotification.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L49">packages/notifications/src/PushNotification/PushNotification.native.ts:49</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>config: <span class="tsd-signature-type">any</span></h5>
-						</li>
-					</ul>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-returns-title">Returns <a href="pushnotification.html" class="tsd-signature-type">PushNotification</a></h4>
 				</li>
 			</ul>
@@ -1063,7 +1142,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L177">packages/pushnotification/src/PushNotification.ts:177</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L247">packages/pushnotification/src/PushNotification.ts:247</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1072,6 +1151,13 @@ img { max-width: 100%; }
 								And checks if the app was launched by a Push Notification
 							Note: Current AppState will be null or &#39;unknown&#39; if the app is coming from killed state to active</p>
 						</div>
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
 					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
@@ -1099,9 +1185,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L143">packages/pushnotification/src/PushNotification.ts:143</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L197">packages/pushnotification/src/PushNotification.ts:197</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
@@ -1116,9 +1211,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L351">packages/pushnotification/src/PushNotification.ts:351</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L450">packages/pushnotification/src/PushNotification.ts:450</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
@@ -1142,9 +1246,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L371">packages/pushnotification/src/PushNotification.ts:371</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L476">packages/pushnotification/src/PushNotification.ts:476</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
@@ -1159,25 +1272,204 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-			<a name="configure" class="tsd-anchor"></a>
-			<h3>configure</h3>
+			<a name="addpluggable" class="tsd-anchor"></a>
+			<h3>add<wbr>Pluggable</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">add<wbr>Pluggable<span class="tsd-signature-symbol">(</span>_<span class="tsd-signature-symbol">: </span><a href="../interfaces/pushnotificationprovider.html" class="tsd-signature-type">PushNotificationProvider</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">add<wbr>Pluggable<span class="tsd-signature-symbol">(</span>pluggable<span class="tsd-signature-symbol">: </span><a href="../interfaces/pushnotificationprovider.html" class="tsd-signature-type">PushNotificationProvider</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L53">packages/pushnotification/src/PushNotification.ts:53</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L46">packages/notifications/src/PushNotification/PushNotification.ts:46</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Add plugin into PushNotification
+							Add plugin into PushNotification</p>
+						</div>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>config: <span class="tsd-signature-type">any</span></h5>
+							<h5>_: <a href="../interfaces/pushnotificationprovider.html" class="tsd-signature-type">PushNotificationProvider</a></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L121">packages/notifications/src/PushNotification/PushNotification.native.ts:121</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Add plugin into PushNotification
+							Add plugin into PushNotification</p>
+						</div>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>pluggable: <a href="../interfaces/pushnotificationprovider.html" class="tsd-signature-type">PushNotificationProvider</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="configure" class="tsd-anchor"></a>
+			<h3>configure</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>_<span class="tsd-signature-symbol">?: </span><a href="../interfaces/pushnotificationconfig.html" class="tsd-signature-type">PushNotificationConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/pushnotificationconfig.html" class="tsd-signature-type">PushNotificationConfig</a></li>
+				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">?: </span><a href="../interfaces/pushnotificationconfig.html" class="tsd-signature-type">PushNotificationConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/pushnotificationconfig.html" class="tsd-signature-type">PushNotificationConfig</a></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L22">packages/notifications/src/PushNotification/PushNotification.ts:22</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Configure PushNotification
+							Configure PushNotification</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> _: <a href="../interfaces/pushnotificationconfig.html" class="tsd-signature-type">PushNotificationConfig</a><span class="tsd-signature-symbol"> = {}</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="../interfaces/pushnotificationconfig.html" class="tsd-signature-type">PushNotificationConfig</a></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L76">packages/notifications/src/PushNotification/PushNotification.native.ts:76</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Configure PushNotification
+							Configure PushNotification</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> config: <a href="../interfaces/pushnotificationconfig.html" class="tsd-signature-type">PushNotificationConfig</a><span class="tsd-signature-symbol"> = {}</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="../interfaces/pushnotificationconfig.html" class="tsd-signature-type">PushNotificationConfig</a></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="enable" class="tsd-anchor"></a>
+			<h3>enable</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">enable<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">enable<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L58">packages/notifications/src/PushNotification/PushNotification.ts:58</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L152">packages/notifications/src/PushNotification/PushNotification.native.ts:152</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="getbadgecount" class="tsd-anchor"></a>
+			<h3>get<wbr>Badge<wbr>Count</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Badge<wbr>Count<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Badge<wbr>Count<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L70">packages/notifications/src/PushNotification/PushNotification.ts:70</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L295">packages/notifications/src/PushNotification/PushNotification.native.ts:295</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="getlaunchnotification" class="tsd-anchor"></a>
+			<h3>get<wbr>Launch<wbr>Notification</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Launch<wbr>Notification<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/pushnotificationmessage.html" class="tsd-signature-type">PushNotificationMessage</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Launch<wbr>Notification<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/pushnotificationmessage.html" class="tsd-signature-type">PushNotificationMessage</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L66">packages/notifications/src/PushNotification/PushNotification.ts:66</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/pushnotificationmessage.html" class="tsd-signature-type">PushNotificationMessage</a><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L288">packages/notifications/src/PushNotification/PushNotification.native.ts:288</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/pushnotificationmessage.html" class="tsd-signature-type">PushNotificationMessage</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1185,16 +1477,98 @@ img { max-width: 100%; }
 			<a name="getmodulename" class="tsd-anchor"></a>
 			<h3>get<wbr>Module<wbr>Name</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">get<wbr>Module<wbr>Name<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Module<wbr>Name<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#notificationssubcategory" class="tsd-signature-type">NotificationsSubCategory</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L49">packages/pushnotification/src/PushNotification.ts:49</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L30">packages/notifications/src/PushNotification/PushNotification.ts:30</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Get the name of this module</p>
+						</div>
+					</div>
+					<h4 class="tsd-returns-title">Returns <a href="../globals.html#notificationssubcategory" class="tsd-signature-type">NotificationsSubCategory</a></h4>
+					<p>name of this module</p>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="getpermissionstatus" class="tsd-anchor"></a>
+			<h3>get<wbr>Permission<wbr>Status</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Permission<wbr>Status<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../enums/pushnotificationpermissionstatus.html" class="tsd-signature-type">PushNotificationPermissionStatus</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Permission<wbr>Status<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../enums/pushnotificationpermissionstatus.html" class="tsd-signature-type">PushNotificationPermissionStatus</a><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L78">packages/notifications/src/PushNotification/PushNotification.ts:78</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../enums/pushnotificationpermissionstatus.html" class="tsd-signature-type">PushNotificationPermissionStatus</a><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L305">packages/notifications/src/PushNotification/PushNotification.native.ts:305</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../enums/pushnotificationpermissionstatus.html" class="tsd-signature-type">PushNotificationPermissionStatus</a><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="getpluggable" class="tsd-anchor"></a>
+			<h3>get<wbr>Pluggable</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Pluggable<span class="tsd-signature-symbol">(</span>_<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">never</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Pluggable<span class="tsd-signature-symbol">(</span>providerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/pushnotificationprovider.html" class="tsd-signature-type">PushNotificationProvider</a></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L38">packages/notifications/src/PushNotification/PushNotification.ts:38</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Get a plugin from added plugins
+							Get a plugin from added plugins</p>
+						</div>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>_: <span class="tsd-signature-type">string</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">never</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L104">packages/notifications/src/PushNotification/PushNotification.native.ts:104</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Get a plugin from added plugins
+							Get a plugin from added plugins</p>
+						</div>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>providerName: <span class="tsd-signature-type">string</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="../interfaces/pushnotificationprovider.html" class="tsd-signature-type">PushNotificationProvider</a></h4>
 				</li>
 			</ul>
 		</section>
@@ -1208,9 +1582,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L277">packages/pushnotification/src/PushNotification.ts:277</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L365">packages/pushnotification/src/PushNotification.ts:365</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
@@ -1231,9 +1614,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L242">packages/pushnotification/src/PushNotification.ts:242</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L324">packages/pushnotification/src/PushNotification.ts:324</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
@@ -1241,6 +1633,41 @@ img { max-width: 100%; }
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="identifyuser" class="tsd-anchor"></a>
+			<h3>identify<wbr>User</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">identify<wbr>User<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">identify<wbr>User<span class="tsd-signature-symbol">(</span>userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, userInfo<span class="tsd-signature-symbol">: </span><a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L62">packages/notifications/src/PushNotification/PushNotification.ts:62</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L274">packages/notifications/src/PushNotification/PushNotification.native.ts:274</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>userId: <span class="tsd-signature-type">string</span></h5>
+						</li>
+						<li>
+							<h5>userInfo: <a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1254,9 +1681,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L114">packages/pushnotification/src/PushNotification.ts:114</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L162">packages/pushnotification/src/PushNotification.ts:162</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
@@ -1271,9 +1707,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L156">packages/pushnotification/src/PushNotification.ts:156</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L222">packages/pushnotification/src/PushNotification.ts:222</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 				</li>
 			</ul>
@@ -1288,9 +1733,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L83">packages/pushnotification/src/PushNotification.ts:83</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L113">packages/pushnotification/src/PushNotification.ts:113</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
@@ -1305,22 +1759,131 @@ img { max-width: 100%; }
 			<a name="onnotificationopened" class="tsd-anchor"></a>
 			<h3>on<wbr>Notification<wbr>Opened</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">on<wbr>Notification<wbr>Opened<span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">on<wbr>Notification<wbr>Opened<span class="tsd-signature-symbol">(</span>_<span class="tsd-signature-symbol">: </span><a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">on<wbr>Notification<wbr>Opened<span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L94">packages/pushnotification/src/PushNotification.ts:94</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L104">packages/notifications/src/PushNotification/PushNotification.ts:104</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>_: <a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L354">packages/notifications/src/PushNotification/PushNotification.native.ts:354</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>handler: <a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="../interfaces/eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="onnotificationreceivedinbackground" class="tsd-anchor"></a>
+			<h3>on<wbr>Notification<wbr>Received<wbr>InBackground</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">on<wbr>Notification<wbr>Received<wbr>InBackground<span class="tsd-signature-symbol">(</span>_<span class="tsd-signature-symbol">: </span><a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">on<wbr>Notification<wbr>Received<wbr>InBackground<span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L88">packages/notifications/src/PushNotification/PushNotification.ts:88</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>handler: <span class="tsd-signature-type">any</span></h5>
+							<h5>_: <a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L334">packages/notifications/src/PushNotification/PushNotification.native.ts:334</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>handler: <a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="../interfaces/eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="onnotificationreceivedinforeground" class="tsd-anchor"></a>
+			<h3>on<wbr>Notification<wbr>Received<wbr>InForeground</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">on<wbr>Notification<wbr>Received<wbr>InForeground<span class="tsd-signature-symbol">(</span>_<span class="tsd-signature-symbol">: </span><a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">on<wbr>Notification<wbr>Received<wbr>InForeground<span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L94">packages/notifications/src/PushNotification/PushNotification.ts:94</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>_: <a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L344">packages/notifications/src/PushNotification/PushNotification.native.ts:344</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>handler: <a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="../interfaces/eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onpushnotificationmessagehandler" class="tsd-signature-type">OnPushNotificationMessageHandler</a><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1334,9 +1897,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L103">packages/pushnotification/src/PushNotification.ts:103</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L145">packages/pushnotification/src/PushNotification.ts:145</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
@@ -1344,6 +1916,44 @@ img { max-width: 100%; }
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="ontokenreceived" class="tsd-anchor"></a>
+			<h3>on<wbr>Token<wbr>Received</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">on<wbr>Token<wbr>Received<span class="tsd-signature-symbol">(</span>_<span class="tsd-signature-symbol">: </span><a href="../globals.html#ontokenreceivedhandler" class="tsd-signature-type">OnTokenReceivedHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">on<wbr>Token<wbr>Received<span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="../globals.html#ontokenreceivedhandler" class="tsd-signature-type">OnTokenReceivedHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#ontokenreceivedhandler" class="tsd-signature-type">OnTokenReceivedHandler</a><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L100">packages/notifications/src/PushNotification/PushNotification.ts:100</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>_: <a href="../globals.html#ontokenreceivedhandler" class="tsd-signature-type">OnTokenReceivedHandler</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L361">packages/notifications/src/PushNotification/PushNotification.native.ts:361</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>handler: <a href="../globals.html#ontokenreceivedhandler" class="tsd-signature-type">OnTokenReceivedHandler</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="../interfaces/eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#ontokenreceivedhandler" class="tsd-signature-type">OnTokenReceivedHandler</a><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1357,9 +1967,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L200">packages/pushnotification/src/PushNotification.ts:200</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L276">packages/pushnotification/src/PushNotification.ts:276</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
@@ -1390,9 +2009,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L427">packages/pushnotification/src/PushNotification.ts:427</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L544">packages/pushnotification/src/PushNotification.ts:544</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
@@ -1413,9 +2041,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L388">packages/pushnotification/src/PushNotification.ts:388</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L499">packages/pushnotification/src/PushNotification.ts:499</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
@@ -1430,6 +2067,50 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="removepluggable" class="tsd-anchor"></a>
+			<h3>remove<wbr>Pluggable</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">remove<wbr>Pluggable<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">remove<wbr>Pluggable<span class="tsd-signature-symbol">(</span>providerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L54">packages/notifications/src/PushNotification/PushNotification.ts:54</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Remove a plugin from added plugins
+							Remove a plugin from added plugins</p>
+						</div>
+					</div>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L141">packages/notifications/src/PushNotification/PushNotification.native.ts:141</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Remove a plugin from added plugins
+							Remove a plugin from added plugins</p>
+						</div>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>providerName: <span class="tsd-signature-type">string</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 			<a name="requestiospermissions" class="tsd-anchor"></a>
 			<h3>requestIOSPermissions</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1439,9 +2120,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L152">packages/pushnotification/src/PushNotification.ts:152</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L212">packages/pushnotification/src/PushNotification.ts:212</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
@@ -1464,6 +2154,82 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="requestpermissions" class="tsd-anchor"></a>
+			<h3>request<wbr>Permissions</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">request<wbr>Permissions<span class="tsd-signature-symbol">(</span>_<span class="tsd-signature-symbol">?: </span><a href="../interfaces/pushnotificationpermissions.html" class="tsd-signature-type">PushNotificationPermissions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">request<wbr>Permissions<span class="tsd-signature-symbol">(</span>permissions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/pushnotificationpermissions.html" class="tsd-signature-type">PushNotificationPermissions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L82">packages/notifications/src/PushNotification/PushNotification.ts:82</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> _: <a href="../interfaces/pushnotificationpermissions.html" class="tsd-signature-type">PushNotificationPermissions</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L312">packages/notifications/src/PushNotification/PushNotification.native.ts:312</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> permissions: <a href="../interfaces/pushnotificationpermissions.html" class="tsd-signature-type">PushNotificationPermissions</a><span class="tsd-signature-symbol"> = {alert: true,badge: true,sound: true,}</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="setbadgecount" class="tsd-anchor"></a>
+			<h3>set<wbr>Badge<wbr>Count</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">set<wbr>Badge<wbr>Count<span class="tsd-signature-symbol">(</span>_<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">set<wbr>Badge<wbr>Count<span class="tsd-signature-symbol">(</span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.ts#L74">packages/notifications/src/PushNotification/PushNotification.ts:74</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>_: <span class="tsd-signature-type">number</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/notifications/src/PushNotification/PushNotification.native.ts#L300">packages/notifications/src/PushNotification/PushNotification.native.ts:300</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>count: <span class="tsd-signature-type">number</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 			<a name="updateendpoint" class="tsd-anchor"></a>
 			<h3>update<wbr>Endpoint</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1473,9 +2239,18 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/pushnotification/src/PushNotification.ts#L308">packages/pushnotification/src/PushNotification.ts:308</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e7a6f07b5/packages/pushnotification/src/PushNotification.ts#L402">packages/pushnotification/src/PushNotification.ts:402</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+								instructions on how to migrate to a new version of Amplify Push Notifications.</p>
+								<p><a href="https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/">https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/</a></p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
