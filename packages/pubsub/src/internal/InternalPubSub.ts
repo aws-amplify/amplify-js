@@ -164,8 +164,7 @@ export class InternalPubSubClass {
 		return new Observable<PubSubObservable>(observer => {
 			const observables = providers.map(provider => ({
 				provider,
-				observable: provider.subscribe(topics, options),
-				customUserAgentDetails: pubSubUserAgentDetails,
+				observable: provider.subscribe(topics, options, pubSubUserAgentDetails),
 			}));
 
 			const subscriptions = observables.map(({ provider, observable }) =>
