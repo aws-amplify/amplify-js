@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "5.3.0",
+	"version": "5.3.1",
 	"description": "Core category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -22,7 +22,8 @@
 		"build:esm": "rimraf lib-esm && node ./build es6",
 		"build:cjs:watch": "node ./build es5 --watch",
 		"build:esm:watch": "rimraf lib-esm && node ./build es6 --watch",
-		"build": "npm run clean && npm run generate-version && npm run build:esm && npm run build:cjs",
+		"build": "npm run clean && npm run generate-version && npm run build:polyfills:url && npm run build:esm && npm run build:cjs",
+		"build:polyfills:url": "webpack --config ./polyfills/URL/webpack.config.js",
 		"generate-version": "genversion src/Platform/version.ts --es6 --semi --source ../aws-amplify",
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
@@ -58,7 +59,8 @@
 		"lib",
 		"lib-esm",
 		"src",
-		"typings.d.ts"
+		"typings.d.ts",
+		"polyfills"
 	],
 	"dependencies": {
 		"@aws-crypto/sha256-js": "1.2.2",

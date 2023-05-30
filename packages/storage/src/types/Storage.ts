@@ -15,7 +15,6 @@ import {
 	S3ProviderListOutput,
 	S3ProviderCopyOutput,
 	S3ProviderPutOutput,
-	S3ProviderGetPropertiesOutput,
 } from '../';
 
 type Tail<T extends any[]> = ((...t: T) => void) extends (
@@ -85,14 +84,6 @@ export type StorageGetConfig<T extends Record<string, any>> =
 		? StorageOperationConfig<T, 'get'>
 		: StorageOperationConfigMap<
 				StorageOperationConfig<AWSS3Provider, 'get'>,
-				T
-		  >;
-
-export type StorageGetPropertiesConfig<T extends Record<string, any>> =
-	T extends StorageProvider
-		? StorageOperationConfig<T, 'getProperties'>
-		: StorageOperationConfigMap<
-				StorageOperationConfig<AWSS3Provider, 'getProperties'>,
 				T
 		  >;
 
@@ -175,12 +166,6 @@ export type StorageCopyOutput<T> = PickProviderOutput<
 	Promise<S3ProviderCopyOutput>,
 	T,
 	'copy'
->;
-
-export type StorageGetPropertiesOutput<T> = PickProviderOutput<
-	Promise<S3ProviderGetPropertiesOutput>,
-	T,
-	'getProperties'
 >;
 
 /**

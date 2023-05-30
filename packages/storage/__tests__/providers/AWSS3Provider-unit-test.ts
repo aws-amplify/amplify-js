@@ -8,7 +8,6 @@ import {
 	ListObjectsV2Command,
 	CreateMultipartUploadCommand,
 	UploadPartCommand,
-	HeadObjectCommand,
 } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 
@@ -52,14 +51,6 @@ S3Client.prototype.send = jest.fn(async command => {
 		return {
 			Contents: [resultObj],
 			IsTruncated: false,
-		};
-	} else if (command instanceof HeadObjectCommand) {
-		return {
-			ContentLength: '100',
-			ContentType: 'text/plain',
-			ETag: 'etag',
-			LastModified: 'lastmodified',
-			Metadata: { key: 'value' },
 		};
 	}
 	return 'data';
@@ -528,7 +519,6 @@ describe('StorageProvider test', () => {
 					return Promise.resolve(credentials);
 				});
 			});
-
 			test('get existing object with validateObjectExistence option', async () => {
 				expect.assertions(5);
 				const options_with_validateObjectExistence = Object.assign(
@@ -566,6 +556,11 @@ describe('StorageProvider test', () => {
 
 			test('get non-existing object with validateObjectExistence option', async () => {
 				expect.assertions(2);
+				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
 				const dispatchSpy = jest.spyOn(StorageUtils, 'dispatchStorageEvent');
 				jest
 					.spyOn(S3Client.prototype, 'send')
@@ -588,63 +583,6 @@ describe('StorageProvider test', () => {
 					);
 				}
 			});
-		});
-	});
-
-	describe('getProperties test', () => {
-		beforeEach(() => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
-			});
-		});
-
-		test('getProperties successfully', async () => {
-			expect.assertions(4);
-			const spyon = jest.spyOn(S3Client.prototype, 'send');
-			const dispatchSpy = jest.spyOn(StorageUtils, 'dispatchStorageEvent');
-			const metadata = { key: 'value' };
-			expect(await storage.getProperties('key')).toEqual({
-				contentLength: '100',
-				contentType: 'text/plain',
-				eTag: 'etag',
-				lastModified: 'lastmodified',
-				metadata,
-			});
-			expect(dispatchSpy).toHaveBeenCalledTimes(1);
-			expect(dispatchSpy).toBeCalledWith(
-				false,
-				'getProperties',
-				{ method: 'getProperties', result: 'success' },
-				null,
-				'getProperties successful for key'
-			);
-			expect(spyon.mock.calls[0][0].input).toEqual({
-				Bucket: 'bucket',
-				Key: 'public/key',
-			});
-			spyon.mockClear();
-		});
-
-		test('get properties of non-existing object', async () => {
-			expect.assertions(2);
-			const dispatchSpy = jest.spyOn(StorageUtils, 'dispatchStorageEvent');
-			jest
-				.spyOn(S3Client.prototype, 'send')
-				.mockImplementationOnce(async params => {
-					throw { $metadata: { httpStatusCode: 404 }, name: 'NotFound' };
-				});
-			try {
-				await storage.getProperties('invalid_key');
-			} catch (error) {
-				expect(error.$metadata.httpStatusCode).toBe(404);
-				expect(dispatchSpy).toBeCalledWith(
-					false,
-					'getProperties',
-					{ method: 'getProperties', result: 'failed' },
-					null,
-					'invalid_key not found'
-				);
-			}
 		});
 	});
 

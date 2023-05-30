@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.3.0...@aws-amplify/core@5.3.1) (2023-05-27)
+
+### Bug Fixes
+
+- **core:** bundle react-native-url-polyfill to unblock jest test failure ([#11422](https://github.com/aws-amplify/amplify-js/issues/11422)) ([8137ee7](https://github.com/aws-amplify/amplify-js/commit/8137ee79ef2121ceaa6dfa1d9ce675370b38e26b))
+
 # [5.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.2.0...@aws-amplify/core@5.3.0) (2023-05-12)
 
 ### Bug Fixes
