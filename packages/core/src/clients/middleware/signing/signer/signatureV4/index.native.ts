@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import 'react-native-url-polyfill/auto';
+import '@aws-amplify/core/polyfills/URL';
 
 // TODO: V6 replace Signer
 export { signRequest } from './signRequest';
