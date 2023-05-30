@@ -8,7 +8,6 @@ jobs:
     permissions:
       pull-requests: write # Used to add comment to PR
     runs-on: ubuntu-latest
-    if: github.event.action == 'opened' || github.event.action == 'reopened'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
