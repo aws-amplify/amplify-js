@@ -44,7 +44,7 @@ describe(composeTransferHandler.name, () => {
 			};
 		const coreHandler: TransferHandler<Request, Response, {}> = jest
 			.fn()
-			.mockResolvedValue({ body: '' } as Response);
+			.mockResolvedValueOnce({ body: '' } as Response);
 		const handler = composeTransferHandler<[OptionsType, OptionsType]>(
 			coreHandler,
 			[middlewareA, middlewareB]
@@ -64,5 +64,17 @@ describe(composeTransferHandler.name, () => {
 		// Validate middleware share a same option object
 		expect(options.mockFnInOptions).toHaveBeenNthCalledWith(1, 'A');
 		expect(options.mockFnInOptions).toHaveBeenNthCalledWith(2, 'B');
+
+		// order does not change in consecutive calls
+		(coreHandler as jest.Mock).mockResolvedValueOnce({ body: '' } as Response);
+		const resp2 = await handler(
+			{ url: new URL('https://a.b'), body: '' },
+			options
+		);
+		expect(resp2).toEqual({ body: 'BA' });
+		expect(coreHandler).toBeCalledWith(
+			expect.objectContaining({ body: 'AB' }),
+			expect.anything()
+		);
 	});
 });

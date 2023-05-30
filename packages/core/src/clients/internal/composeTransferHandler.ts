@@ -41,7 +41,8 @@ export const composeTransferHandler =
 		let composedHandler: MiddlewareHandler<Request, Response> = (
 			request: Request
 		) => coreHandler(request, options);
-		for (const m of middleware.reverse()) {
+		for (let i = middleware.length - 1; i >= 0; i--) {
+			const m = middleware[i];
 			const resolvedMiddleware = m(options);
 			composedHandler = resolvedMiddleware(composedHandler, context);
 		}
