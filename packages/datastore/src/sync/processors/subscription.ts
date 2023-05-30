@@ -85,7 +85,7 @@ class SubscriptionProcessor {
 		private readonly errorHandler: ErrorHandler,
 		private readonly amplifyContext: AmplifyContext = {
 			Auth,
-			InternalAPI: InternalAPI,
+			InternalAPI,
 			Cache,
 		}
 	) {}
