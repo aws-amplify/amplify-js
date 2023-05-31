@@ -42,7 +42,7 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 		message: 'username is required to signUp',
 	},
 	[AuthValidationErrorCode.CustomAuthSignInPassword]: {
-		message: 'A password is not needed when signing in with CUSTOM_AUTH',
+		message: 'A password is not needed when signing in with CUSTOM_WITHOUT_SRP',
 		recoverySuggestion: 'Do not include a password in your signIn call.',
 	}
 };
