@@ -25,7 +25,7 @@ describe('signIn API happy path cases', () => {
 			.spyOn(initiateAuthHelpers, 'handleCustomSRPAuthFlow')
 			.mockImplementationOnce(
 				async (): Promise<RespondToAuthChallengeCommandOutput> => {
-					return authAPITestParams.RespondToAuthChallengeCommandOutput;
+					return authAPITestParams.CustomChallengeResponse;
 				}
 			);
 	});
@@ -44,7 +44,7 @@ describe('signIn API happy path cases', () => {
 				},
 			},
 		});
-		expect(result).toEqual(authAPITestParams.signInResult());
+		expect(result).toEqual(authAPITestParams.signInResultWithCustomAuth());
 		expect(handleCustomSRPAuthFlowSpy).toBeCalledTimes(1);
 	});
 
@@ -53,7 +53,7 @@ describe('signIn API happy path cases', () => {
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 		});
-		expect(result).toEqual(authAPITestParams.signInResult());
+		expect(result).toEqual(authAPITestParams.signInResultWithCustomAuth());
 		expect(handleCustomSRPAuthFlowSpy).toBeCalledTimes(1);
 	});
 
