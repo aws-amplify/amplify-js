@@ -63,7 +63,9 @@ export enum InAppMessagingAction {
 	None = '0',
 }
 export enum PredictionsAction {
-	None = '0',
+	Convert = '1',
+	Identify = '2',
+	Interpret = '3',
 }
 export enum PubSubAction {
 	None = '0',
