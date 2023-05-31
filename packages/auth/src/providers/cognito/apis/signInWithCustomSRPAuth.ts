@@ -21,14 +21,29 @@ import {
 	getSignInResultFromError,
 } from '../utils/signInHelpers';
 import { setActiveSignInSession } from '../utils/activeSignInSession';
+import {
+	InitiateAuthException,
+	RespondToAuthChallengeException,
+} from '../types/errors/service';
 
+/**
+ * Signs a user in using a custom authentication flow with SRP
+ *
+ * @param signInRequest - The SignInRequest object
+ * @returns AuthSignInResult
+ * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } - Cognito
+ * service errors thrown during the sign-in process.
+ * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
+ *  are not defined.
+ *
+ * TODO: add config errors
+ */
 export async function signInWithCustomSRPAuth(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { username, password, options } = signInRequest;
 	const metadata =
-		options?.serviceOptions?.clientMetadata ||
-		Amplify.config.clientMetadata;
+		options?.serviceOptions?.clientMetadata || Amplify.config.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
