@@ -21,7 +21,22 @@ import {
 } from '../utils/signInHelpers';
 import { setActiveSignInSession } from '../utils/activeSignInSession';
 import { Amplify } from '@aws-amplify/core';
+import {
+	InitiateAuthException,
+	RespondToAuthChallengeException,
+} from '../types/errors/service';
 
+/**
+ * Signs a user in using a custom authentication flow without password
+ *
+ * @param signInRequest - The SignInRequest object
+ * @returns AuthSignInResult
+ * @throws service: {@link InitiateAuthException } - Cognito service errors thrown during the sign-in process.
+ * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
+ *  are not defined.
+ *
+ * TODO: add config errors
+ */
 export async function signInWithCustomAuth(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
