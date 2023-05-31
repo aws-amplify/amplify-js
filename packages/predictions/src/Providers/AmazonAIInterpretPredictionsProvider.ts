@@ -260,7 +260,8 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 			const data = await this.comprehendClient.send(
 				detectDominantLanguageCommand
 			);
-			const { Languages: [{ LanguageCode }] = [''] } = ({} = data || {});
+			const x = data?.Languages?.[0];
+			const { Languages: [{ LanguageCode }] = [{}] } = ({} = data || {});
 			if (!LanguageCode) {
 				Promise.reject('Language not detected');
 			}
