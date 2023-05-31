@@ -264,7 +264,6 @@ describe('Sync', () => {
 		});
 
 		it('should send datastore user agent details with graphql request', async () => {
-			window.sessionStorage.setItem('datastorePartialData', 'true');
 			const resolveResponse = {
 				data: {
 					syncPosts: {
