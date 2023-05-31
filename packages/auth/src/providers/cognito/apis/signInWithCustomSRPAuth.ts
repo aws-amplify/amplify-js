@@ -25,9 +25,9 @@ import { setActiveSignInSession } from '../utils/activeSignInSession';
 export async function signInWithCustomSRPAuth(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
-	const { username, password } = signInRequest;
+	const { username, password, options } = signInRequest;
 	const metadata =
-		signInRequest.options?.serviceOptions?.clientMetadata ||
+		options?.serviceOptions?.clientMetadata ||
 		Amplify.config.clientMetadata;
 	assertValidationError(
 		!!username,
