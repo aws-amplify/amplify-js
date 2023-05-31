@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { RespondToAuthChallengeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
+import {
+	InitiateAuthCommandOutput,
+	RespondToAuthChallengeCommandOutput,
+} from '@aws-sdk/client-cognito-identity-provider';
 import {
 	getLargeAValue,
 	getNowString,
@@ -65,13 +68,11 @@ export async function handleUserSRPAuthFlow(
 export async function handleCustomAuthFlowWithoutSRP(
 	username: string,
 	clientMetadata: ClientMetadata | undefined
-) {
-
-	const jsonReq:InitiateAuthClientInput = {
+): Promise<InitiateAuthCommandOutput> {
+	const jsonReq: InitiateAuthClientInput = {
 		AuthFlow: 'CUSTOM_AUTH',
 		AuthParameters: {
 			USERNAME: username,
-			
 		},
 		ClientMetadata: clientMetadata,
 	};
