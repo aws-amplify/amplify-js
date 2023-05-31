@@ -15,7 +15,7 @@ import {
 import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { Auth } from '@aws-amplify/auth';
-import { InternalAPI } from '@aws-amplify/api/internal';
+import { InternalAPI } from '@aws-amplify/api/internals';
 import { Cache } from '@aws-amplify/cache';
 import { Adapter } from './storage/adapter';
 

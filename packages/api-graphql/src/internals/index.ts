@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
+export {
 	InternalGraphQLAPI,
 	InternalGraphQLAPIClass,
 } from './InternalGraphQLAPI';
-
-export { InternalGraphQLAPI, InternalGraphQLAPIClass };

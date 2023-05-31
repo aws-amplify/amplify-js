@@ -1,6 +1,6 @@
 import { Amplify } from '@aws-amplify/core';
 import { GraphQLOptions, GraphQLResult } from './types';
-import { InternalGraphQLAPIClass } from './internal';
+import { InternalGraphQLAPIClass } from './internals';
 import Observable from 'zen-observable-ts';
 
 export const graphqlOperation = (

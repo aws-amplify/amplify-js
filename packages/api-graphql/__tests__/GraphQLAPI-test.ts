@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { GraphQLAPIClass as API } from '../src';
-import { InternalGraphQLAPIClass as InternalAPI } from '../src/internal';
+import { InternalGraphQLAPIClass as InternalAPI } from '../src/internals';
 import { graphqlOperation } from '../src/GraphQLAPI';
 import { GRAPHQL_AUTH_MODE, GraphQLAuthError } from '../src/types';
 import { RestClient } from '@aws-amplify/api-rest';
@@ -15,7 +15,7 @@ import {
 	ApiAction,
 	CustomUserAgentDetails,
 } from '@aws-amplify/core';
-import { InternalPubSub } from '@aws-amplify/pubsub/internal';
+import { InternalPubSub } from '@aws-amplify/pubsub/internals';
 import { Cache } from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';
 import axios, { CancelTokenStatic } from 'axios';

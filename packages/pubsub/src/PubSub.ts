@@ -9,7 +9,7 @@ import {
 	ConsoleLogger as Logger,
 } from '@aws-amplify/core';
 import { PubSubProvider, ProviderOptions } from './types';
-import { InternalPubSubClass } from './internal';
+import { InternalPubSubClass } from './internals';
 
 type PubSubObservable = {
 	provider: PubSubProvider;

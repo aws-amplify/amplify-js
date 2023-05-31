@@ -1,4 +1,4 @@
-import { InternalAPI } from '@aws-amplify/api/internal';
+import { InternalAPI } from '@aws-amplify/api/internals';
 import { Auth } from '@aws-amplify/auth';
 import { Cache } from '@aws-amplify/cache';
 import {

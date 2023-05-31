@@ -435,9 +435,9 @@ function jitteredRetrySyncProcessorSetup({
 			})
 	);
 	// mock graphql to return a mockable observable
-	jest.mock('@aws-amplify/api/internal', () => {
+	jest.mock('@aws-amplify/api/internals', () => {
 		const actualInternalAPIModule = jest.requireActual(
-			'@aws-amplify/api/internal'
+			'@aws-amplify/api/internals'
 		);
 		const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 

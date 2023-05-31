@@ -1,5 +1,5 @@
 import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import { InternalAPI } from '@aws-amplify/api/internal';
+import { InternalAPI } from '@aws-amplify/api/internals';
 import Observable from 'zen-observable-ts';
 import {
 	InternalSchema,

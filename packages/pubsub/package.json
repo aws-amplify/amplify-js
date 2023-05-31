@@ -48,7 +48,7 @@
     "lib",
     "lib-esm",
     "src",
-    "internal"
+    "internals"
   ],
   "dependencies": {
     "@aws-amplify/auth": "5.3.6",

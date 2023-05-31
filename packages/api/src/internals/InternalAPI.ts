@@ -6,7 +6,7 @@ import {
 	GraphQLResult,
 	OperationTypeNode,
 } from '@aws-amplify/api-graphql';
-import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internal';
+import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
 import { RestAPIClass } from '@aws-amplify/api-rest';
 import { Auth } from '@aws-amplify/auth';
 import { Cache } from '@aws-amplify/cache';
