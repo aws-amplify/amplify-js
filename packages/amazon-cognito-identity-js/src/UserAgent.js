@@ -37,8 +37,8 @@ export default UserAgent;
 
 export const getAmplifyUserAgentString = ({ action }) => {
 	const uaCategoryAction =
-		(UserAgent.category && action) ?? ` ${UserAgent.category}/${action}`;
-	const uaFramework = UserAgent.framework ?? ` framework/${uaFramework}`;
+		UserAgent.category && action ? ` ${UserAgent.category}/${action}` : '';
+	const uaFramework = UserAgent.framework ? ` framework/${uaFramework}` : '';
 
 	const userAgent = `${UserAgent.prototype.userAgent}${uaCategoryAction}${uaFramework}`;
 
