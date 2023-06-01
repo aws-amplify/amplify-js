@@ -30,6 +30,7 @@ import {
 	Hub,
 	StorageHelper,
 	ICredentials,
+	Platform,
 	browserOrNode,
 	parseAWSExports,
 	UniversalStorage,
@@ -37,6 +38,8 @@ import {
 	HubCallback,
 } from '@aws-amplify/core';
 import {
+	addAuthCategoryToUserAgent,
+	addFrameworkToUserAgent,
 	CookieStorage,
 	CognitoUserPool,
 	AuthenticationDetails,
@@ -131,6 +134,9 @@ export class AuthClass {
 					break;
 			}
 		});
+
+		addAuthCategoryToUserAgent();
+		addFrameworkToUserAgent(Platform.framework);
 	}
 
 	public getModuleName() {

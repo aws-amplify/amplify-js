@@ -1,5 +1,6 @@
-import { Platform, getUserAgent, rerunFrameworkDetection } from './Platform';
-import { category } from './Platform/constants';
+import { getUserAgent } from './Platform';
+import { authCategory } from './Platform/constants';
+
 // constructor
 function UserAgent() {}
 // public
@@ -23,15 +24,23 @@ export const appendToCognitoUserAgent = content => {
 	}
 };
 
+export const addAuthCategoryToCognitoUserAgent = () => {
+	UserAgent.prototype.category = authCategory;
+};
+
+export const addFrameworkToCognitoUserAgent = framework => {
+	UserAgent.prototype.framework = framework;
+};
+
 // class for defining the amzn user-agent
 export default UserAgent;
 
-export const getAmplifyUserAgentString = ({ action, framework } = {}) => {
-	rerunFrameworkDetection();
-	const uaAction = action ?? AuthAction.None;
-	const uaFramework = framework ?? Platform.framework;
+export const getAmplifyUserAgentString = ({ action }) => {
+	const uaCategoryAction =
+		(UserAgent.category && action) ?? ` ${UserAgent.category}/${action}`;
+	const uaFramework = UserAgent.framework ?? ` framework/${uaFramework}`;
 
-	const userAgent = `${UserAgent.prototype.userAgent} ${category}/${uaAction} framework/${uaFramework}`;
+	const userAgent = `${UserAgent.prototype.userAgent}${uaCategoryAction}${uaFramework}`;
 
 	return userAgent;
 };

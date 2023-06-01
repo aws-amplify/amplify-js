@@ -81,7 +81,7 @@ export default class Client {
 			'Content-Type': 'application/x-amz-json-1.1',
 			'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
 			'X-Amz-User-Agent': getAmplifyUserAgentString({
-				action: AuthAction.None,
+				action: AuthAction[operation],
 			}),
 			'Cache-Control': 'no-store',
 		};

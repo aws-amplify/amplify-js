@@ -8,29 +8,14 @@ import { detectFramework } from './detectFramework';
 
 const BASE_USER_AGENT = `aws-amplify/${version}`;
 
-let framework = detectFramework();
-let frameworkDetectionHasBeenRerun = false;
 export const Platform = {
 	userAgent: BASE_USER_AGENT,
 	framework,
-	isReactNative: framework === Framework.ReactNative,
+	isReactNative: isReactNative(),
 };
 
-/**
- * Rerun framework detection once when getAmplifyUserAgent is called if framework is None.
- * ReactNative framework must be detected initially, however other frameworks may not be
- * detected in cases where DOM is not yet loaded.
- */
-export const rerunFrameworkDetection = () => {
-	if (
-		Platform.framework === Framework.None &&
-		!frameworkDetectionHasBeenRerun
-	) {
-		framework = detectFramework();
-		frameworkDetectionHasBeenRerun = true;
-		Platform.framework = framework;
-	}
-};
+const isReactNative = () =>
+	typeof navigator !== 'undefined' && navigator.product === 'ReactNative';
 
 export const getUserAgent = () => {
 	return Platform.userAgent;
