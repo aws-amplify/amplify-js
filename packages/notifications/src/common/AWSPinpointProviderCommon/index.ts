@@ -108,7 +108,7 @@ export default abstract class AWSPinpointProviderCommon
 		// Update credentials
 		this.config.credentials = await this.getCredentials();
 		// Assert required configuration properties to make `putEvents` request are present
-		this.assertValidConfiguration();
+		this.assertNotEmptyConfiguration();
 		const { appId, credentials, endpointId, region } = this.config;
 
 		try {
@@ -157,7 +157,7 @@ export default abstract class AWSPinpointProviderCommon
 		// Update credentials
 		this.config.credentials = credentials;
 		// Assert required configuration properties to make `updateEndpoint` request are present
-		this.assertValidConfiguration();
+		this.assertNotEmptyConfiguration();
 		const { appId, endpointId, endpointInfo = {}, region } = this.config;
 		try {
 			const { address, attributes, demographic, location, metrics, optOut } =
@@ -252,7 +252,7 @@ export default abstract class AWSPinpointProviderCommon
 		}
 	};
 
-	private assertValidConfiguration = () => {
+	private assertNotEmptyConfiguration = () => {
 		const { appId, credentials, region } = this.config;
 		if (!appId || !credentials || !region) {
 			throw new Error(

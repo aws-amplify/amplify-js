@@ -282,7 +282,7 @@ export class CredentialsClass {
 
 		const cognitoConfig = { region: identityPoolRegion ?? region };
 
-		const credentialsProvider = async () => {
+		const guestCredentialsProvider = async () => {
 			if (!identityId) {
 				const { IdentityId } = await getId(cognitoConfig, {
 					IdentityPoolId: identityPoolId,
@@ -300,7 +300,7 @@ export class CredentialsClass {
 				expiration: Credentials.Expiration,
 			};
 		};
-		let credentials = credentialsProvider().catch(async err => {
+		let credentials = guestCredentialsProvider().catch(async err => {
 			throw err;
 		});
 
@@ -318,7 +318,7 @@ export class CredentialsClass {
 					logger.debug('Failed to load guest credentials');
 					await this._removeGuestIdentityId();
 
-					const credentialsProvider = async () => {
+					const guestCredentialsProvider = async () => {
 						const { IdentityId } = await getId(cognitoConfig, {
 							IdentityPoolId: identityPoolId,
 						});
@@ -339,7 +339,7 @@ export class CredentialsClass {
 						};
 					};
 
-					credentials = credentialsProvider().catch(async err => {
+					credentials = guestCredentialsProvider().catch(async err => {
 						throw err;
 					});
 
@@ -383,7 +383,7 @@ export class CredentialsClass {
 
 		const cognitoConfig = { region: identityPoolRegion ?? region };
 
-		const credentialsProvider = async () => {
+		const authenticatedCredentialsProvider = async () => {
 			if (!identity_id) {
 				const { IdentityId } = await getId(cognitoConfig, {
 					IdentityPoolId: identityPoolId,
@@ -404,7 +404,7 @@ export class CredentialsClass {
 			};
 		};
 
-		const credentials = credentialsProvider().catch(async err => {
+		const credentials = authenticatedCredentialsProvider().catch(async err => {
 			throw err;
 		});
 

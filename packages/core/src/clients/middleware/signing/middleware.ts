@@ -22,7 +22,7 @@ export interface SigningOptions {
 }
 
 /**
- * Signing middleware
+ * Middleware that SigV4 signs request with AWS credentials, and correct system clock offset.
  */
 export const signingMiddleware = ({
 	credentials,

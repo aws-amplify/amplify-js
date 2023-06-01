@@ -23,6 +23,8 @@ export const fetchTransferHandler: TransferHandler<
 		});
 	} catch (e) {
 		// TODO: needs to revise error handling in v6
+		// For now this is a thin wrapper over original fetch error similar to cognito-identity-js package.
+		// Ref: https://github.com/aws-amplify/amplify-js/blob/4fbc8c0a2be7526aab723579b4c95b552195a80b/packages/amazon-cognito-identity-js/src/Client.js#L103-L108
 		if (e instanceof TypeError) {
 			throw new Error('Network error');
 		}
@@ -42,9 +44,9 @@ export const fetchTransferHandler: TransferHandler<
 	// resp.body is a ReadableStream according to Fetch API spec, but React Native
 	// does not implement it.
 	const bodyWithMixin = Object.assign(resp.body ?? {}, {
-		text: withPayloadCaching(() => resp.text()),
-		blob: withPayloadCaching(() => resp.blob()),
-		json: withPayloadCaching(() => resp.json()),
+		text: withMemoization(() => resp.text()),
+		blob: withMemoization(() => resp.blob()),
+		json: withMemoization(() => resp.json()),
 	});
 
 	return {
@@ -59,11 +61,14 @@ export const fetchTransferHandler: TransferHandler<
  * Caching body is allowed here because we call the body accessor(blob(), json(),
  * etc.) when body is small or streaming implementation is not available(RN).
  */
-const withPayloadCaching = <T>(payloadAccessor: () => Promise<T>) => {
-	let cached: T;
-	return async () => {
+const withMemoization = <T>(payloadAccessor: () => Promise<T>) => {
+	let cached: Promise<T>;
+	return () => {
 		if (!cached) {
-			cached = await payloadAccessor();
+			// Explicitly not awaiting. Intermediate await would add overhead and
+			// introduce a possible race in the event that this wrapper is called
+			// again before the first `payloadAccessor` call resolves.
+			cached = payloadAccessor();
 		}
 		return cached;
 	};

@@ -6,8 +6,6 @@ import { parseMetadata } from './responseInfo';
 
 /**
  * Utility functions for serializing and deserializing of JSON protocol in general(including: REST-JSON, JSON-RPC, etc.)
- * The utility functions here must be mindful of only reading the response body once for each response in any
- * deserializer code path.
  */
 
 /**

@@ -121,6 +121,7 @@ export default class AWSPinpointProvider
 		clearMemo();
 		try {
 			await this.updateEndpoint();
+			// The credentials exists assuming `updateEndpoint()` is always called before.
 			const { appId, credentials, endpointId, region } = this.config;
 			const input: GetInAppMessagesInput = {
 				ApplicationId: appId,
