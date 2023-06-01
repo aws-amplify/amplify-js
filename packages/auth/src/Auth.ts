@@ -38,8 +38,8 @@ import {
 	HubCallback,
 } from '@aws-amplify/core';
 import {
-	addAuthCategoryToUserAgent,
-	addFrameworkToUserAgent,
+	addAuthCategoryToCognitoUserAgent,
+	addFrameworkToCognitoUserAgent,
 	CookieStorage,
 	CognitoUserPool,
 	AuthenticationDetails,
@@ -135,8 +135,8 @@ export class AuthClass {
 			}
 		});
 
-		addAuthCategoryToUserAgent();
-		addFrameworkToUserAgent(Platform.framework);
+		addAuthCategoryToCognitoUserAgent();
+		addFrameworkToCognitoUserAgent(Platform.framework);
 	}
 
 	public getModuleName() {
