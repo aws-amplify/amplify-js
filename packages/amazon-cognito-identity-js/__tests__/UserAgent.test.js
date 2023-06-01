@@ -58,7 +58,7 @@ describe('UserAgent test', () => {
 
 	test('addAuthCategoryToCognitoUserAgent sets category and shows category/action in user agent', () => {
 		addAuthCategoryToCognitoUserAgent();
-		expect(UserAgent.prototype.category).toBe(authCategory);
+		expect(UserAgent.category).toBe(authCategory);
 
 		expect(getAmplifyUserAgentString(AuthAction.SignUp)).toBe(
 			`${DEFAULT_USER_AGENT} ${USER_AGENT_AUTH_SIGNUP}`
@@ -67,7 +67,7 @@ describe('UserAgent test', () => {
 
 	test('addFrameworkToCognitoUserAgent sets framework and shows framework in user agent', () => {
 		addFrameworkToCognitoUserAgent('0');
-		expect(UserAgent.prototype.framework).toBe('0');
+		expect(UserAgent.framework).toBe('0');
 
 		expect(getAmplifyUserAgentString()).toBe(
 			`${DEFAULT_USER_AGENT} ${USER_AGENT_FRAMEWORK0}`

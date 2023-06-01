@@ -25,11 +25,11 @@ export const appendToCognitoUserAgent = content => {
 };
 
 export const addAuthCategoryToCognitoUserAgent = () => {
-	UserAgent.prototype.category = authCategory;
+	UserAgent.category = authCategory;
 };
 
 export const addFrameworkToCognitoUserAgent = framework => {
-	UserAgent.prototype.framework = framework;
+	UserAgent.framework = framework;
 };
 
 // class for defining the amzn user-agent
@@ -37,11 +37,9 @@ export default UserAgent;
 
 export const getAmplifyUserAgentString = action => {
 	const uaCategoryAction =
-		UserAgent.prototype.category && action
-			? ` ${UserAgent.prototype.category}/${action}`
-			: '';
-	const uaFramework = UserAgent.prototype.framework
-		? ` framework/${UserAgent.prototype.framework}`
+		UserAgent.category && action ? ` ${UserAgent.category}/${action}` : '';
+	const uaFramework = UserAgent.framework
+		? ` framework/${UserAgent.framework}`
 		: '';
 
 	const userAgent = `${UserAgent.prototype.userAgent}${uaCategoryAction}${uaFramework}`;
