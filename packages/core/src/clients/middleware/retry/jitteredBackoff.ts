@@ -2,13 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { RetryOptions } from './middleware';
-// TODO: remove this dependency in v6
+// TODO: [v6] The separate retry utility is used by Data packages now and will replaced by retry middleware.
 import { jitteredBackoff as jitteredBackoffUtil } from '../../../Util/Retry';
 
-const MAX_DELAY_MS = 5 * 60 * 1000;
+const DEFAULT_MAX_DELAY_MS = 5 * 60 * 1000;
 
 export const jitteredBackoff: RetryOptions['computeDelay'] = attempt => {
-	const delayFunction = jitteredBackoffUtil();
+	const delayFunction = jitteredBackoffUtil(DEFAULT_MAX_DELAY_MS);
 	const delay = delayFunction(attempt);
-	return delay === false ? MAX_DELAY_MS : delay;
+	// The delayFunction returns false when the delay is greater than the max delay(5 mins).
+	// In this case, the retry middleware will delay 5 mins instead, as a ceiling of the delay.
+	return delay === false ? DEFAULT_MAX_DELAY_MS : delay;
 };

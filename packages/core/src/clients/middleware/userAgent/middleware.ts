@@ -9,7 +9,12 @@ export interface UserAgentOptions {
 	userAgentValue?: string;
 }
 
-// TODO: incorporate new user agent design
+/**
+ * Middleware injects user agent string to specified header(default to 'x-amz-user-agent'),
+ * if the header is not set already.
+ *
+ * TODO: incorporate new user agent design
+ */
 export const userAgentMiddleware: Middleware<
 	HttpRequest,
 	HttpResponse,

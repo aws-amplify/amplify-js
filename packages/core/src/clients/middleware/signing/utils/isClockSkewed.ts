@@ -3,7 +3,8 @@
 
 import { getSkewCorrectedDate } from './getSkewCorrectedDate';
 
-const SKEW_WINDOW = 5 * 60 * 1000; // 5 minutes
+// 5 mins in milliseconds. Ref: https://github.com/aws/aws-sdk-js-v3/blob/6c0f44fab30a1bb2134af47362a31332abc3666b/packages/middleware-signing/src/utils/isClockSkewed.ts#L10
+const SKEW_WINDOW = 5 * 60 * 1000;
 
 /**
  * Checks if the provided date is within the skew window of 5 minutes.
@@ -11,8 +12,7 @@ const SKEW_WINDOW = 5 * 60 * 1000; // 5 minutes
  * @param clockTimeInMilliseconds Time to check for skew in milliseconds.
  * @param clockOffsetInMilliseconds Offset to check clock against in milliseconds.
  *
- * @returns True if the difference in time between the checked time and offset is greater than the 5 minute skew window
- * and false otherwise.
+ * @returns True if skewed. False otherwise.
  *
  * @internal
  */
