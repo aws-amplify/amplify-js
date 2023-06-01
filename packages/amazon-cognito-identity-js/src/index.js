@@ -16,7 +16,7 @@ export { default as CookieStorage } from './CookieStorage';
 export { default as DateHelper } from './DateHelper';
 export {
 	appendToCognitoUserAgent,
-	addAuthCategoryToUserAgent,
-	addFrameworkToUserAgent,
+	addAuthCategoryToCognitoUserAgent,
+	addFrameworkToCognitoUserAgent,
 } from './UserAgent';
 export { default as WordArray } from './utils/WordArray';
