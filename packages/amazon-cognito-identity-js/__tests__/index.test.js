@@ -16,8 +16,8 @@ describe('import * keys', () => {
 		  "CookieStorage",
 		  "DateHelper",
 		  "appendToCognitoUserAgent",
-		  "addAuthCategoryToUserAgent",
-		  "addFrameworkToUserAgent",
+		  "addAuthCategoryToCognitoUserAgent",
+		  "addFrameworkToCognitoUserAgent",
 		  "WordArray",
 		]
 	`);
