@@ -583,7 +583,7 @@ describe('authenticateUserInternal()', () => {
 		expect(callback.onSuccess).toBeCalledWith(user.signInUserSession, true);
 	});
 
-	test('global fetch called with expected user agent header InitiateAuth', () => {
+	test('global fetch called with expected user agent header ConfirmDevice', () => {
 		const fetchMock = jest
 			.spyOn(global, 'fetch')
 			.mockImplementation(() =>
@@ -682,6 +682,34 @@ describe('completeNewPasswordChallenge()', () => {
 			clientMetadata
 		);
 		expect(spyon2).toBeCalledTimes(1);
+	});
+
+	test('global fetch called with expected user agent header RespondToAuthChallenge', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+
+		user.completeNewPasswordChallenge(
+			'NEWp@ssw0rd',
+			requiredAttributeData,
+			callback,
+			clientMetadata
+		);
+
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.RespondToAuthChallenge
+					}`,
+				}),
+			})
+		);
 	});
 });
 
