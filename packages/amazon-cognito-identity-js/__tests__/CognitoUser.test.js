@@ -592,10 +592,6 @@ describe('authenticateUserInternal()', () => {
 
 		addAuthCategoryToCognitoUserAgent();
 
-		jest.spyOn(AuthenticationHelper.prototype, 'getRandomPassword');
-		jest.spyOn(AuthenticationHelper.prototype, 'getVerifierDevices');
-		jest.spyOn(AuthenticationHelper.prototype, 'generateHashDevice');
-
 		user.authenticateUserInternal(authData, authHelper, callback);
 
 		expect(fetchMock).toBeCalledWith(
