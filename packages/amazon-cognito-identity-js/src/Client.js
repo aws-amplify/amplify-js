@@ -80,9 +80,7 @@ export default class Client {
 		const headers = {
 			'Content-Type': 'application/x-amz-json-1.1',
 			'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
-			'X-Amz-User-Agent': getAmplifyUserAgentString({
-				action: AuthAction[operation],
-			}),
+			'X-Amz-User-Agent': getAmplifyUserAgentString(AuthAction[operation]),
 			'Cache-Control': 'no-store',
 		};
 
