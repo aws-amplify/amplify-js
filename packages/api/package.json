@@ -54,7 +54,8 @@
 		"lib",
 		"lib-esm",
 		"src",
-		"index.*.d.ts"
+		"index.*.d.ts",
+		"internals"
 	],
 	"dependencies": {
 		"@aws-amplify/api-graphql": "3.2.1",
