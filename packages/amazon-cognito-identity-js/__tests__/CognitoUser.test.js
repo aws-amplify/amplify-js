@@ -7,6 +7,9 @@ import Client from '../src/Client';
 import CognitoIdToken from '../src/CognitoIdToken';
 import CognitoAccessToken from '../src/CognitoAccessToken';
 import CognitoRefreshToken from '../src/CognitoRefreshToken';
+import { getUserAgent } from '../src/Platform';
+import { AuthAction } from '../src/Platform/constants';
+import { addAuthCategoryToCognitoUserAgent } from '../src/UserAgent';
 
 import {
 	callback,
@@ -184,10 +187,37 @@ describe('initiateAuth()', () => {
 		expect(cacheTokensSpy).toBeCalled();
 		expect(callback.onSuccess.mock.calls.length).toBe(1);
 	});
+
+	test('global fetch called with expected user agent header InitiateAuth', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+
+		const authDetails = new AuthenticationDetails(authDetailData);
+		user.initiateAuth(authDetails, callback);
+
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.InitiateAuth
+					}`,
+				}),
+			})
+		);
+	});
 });
 
 describe('authenticateUser()', () => {
-	afterAll(() => {
+	afterEach(() => {
+		callback.onFailure.mockClear();
+		callback.onSuccess.mockClear();
+		callback.customChallenge.mockClear();
 		jest.restoreAllMocks();
 	});
 
@@ -221,6 +251,30 @@ describe('authenticateUser()', () => {
 		user.setAuthenticationFlowType('WRONG_AUTH_FLOW_TYPE');
 		user.authenticateUser(authDetails, callback);
 		expect(callback.onFailure.mock.calls.length).toBe(1);
+	});
+
+	test('global fetch called with expected user agent header InitiateAuth', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+
+		user.setAuthenticationFlowType('USER_PASSWORD_AUTH');
+		user.authenticateUser(authDetails, callback);
+
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.InitiateAuth
+					}`,
+				}),
+			})
+		);
 	});
 });
 
@@ -258,6 +312,28 @@ describe('authenticateUserDefaultAuth()', () => {
 		netRequestMockSuccess(false);
 		user.authenticateUserDefaultAuth(authDetails, callback);
 		expect(callback.onFailure.mock.calls.length).toBe(1);
+	});
+
+	test('global fetch called with expected user agent header InitiateAuth', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+		user.authenticateUserDefaultAuth(authDetails, callback);
+
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.InitiateAuth
+					}`,
+				}),
+			})
+		);
 	});
 });
 
@@ -310,6 +386,34 @@ describe('authenticateUserPlainUsernamePassword()', () => {
 			callback
 		);
 		expect(userSpy3.mock.results[0].value).toBe('test return value');
+	});
+
+	test('global fetch called with expected user agent header InitiateAuth', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+
+		const authDetails = new AuthenticationDetails({
+			Username: 'user@amzn.com',
+			Password: undefined,
+		});
+
+		user.authenticateUserPlainUsernamePassword(authDetails, callback);
+
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.InitiateAuth
+					}`,
+				}),
+			})
+		);
 	});
 });
 
