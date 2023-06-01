@@ -28,7 +28,8 @@ export const AuthAction = {
 	ChangePassword: '18',
 	ForgotPassword: '19',
 	ConfirmForgotPassword: '20',
-	UpdateDeviceStatus: '21',
-	ForgetDevice: '22',
-	ListDevices: '23',
+	ConfirmDevice: '21',
+	UpdateDeviceStatus: '22',
+	ForgetDevice: '23',
+	ListDevices: '24',
 };

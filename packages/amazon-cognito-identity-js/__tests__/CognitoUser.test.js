@@ -582,6 +582,33 @@ describe('authenticateUserInternal()', () => {
 		user.authenticateUserInternal(authData, authHelper, callback);
 		expect(callback.onSuccess).toBeCalledWith(user.signInUserSession, true);
 	});
+
+	test('global fetch called with expected user agent header InitiateAuth', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+
+		jest.spyOn(AuthenticationHelper.prototype, 'getRandomPassword');
+		jest.spyOn(AuthenticationHelper.prototype, 'getVerifierDevices');
+		jest.spyOn(AuthenticationHelper.prototype, 'generateHashDevice');
+
+		user.authenticateUserInternal(authData, authHelper, callback);
+
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.ConfirmDevice
+					}`,
+				}),
+			})
+		);
+	});
 });
 
 describe('completeNewPasswordChallenge()', () => {
