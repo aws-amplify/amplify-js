@@ -51,8 +51,8 @@ export enum AuthAction {
 	None = '0',
 }
 export enum DataStoreAction {
-	GraphQL = '1',
-	Subscribe = '2',
+	Subscribe = '1',
+	GraphQl = '2',
 }
 export enum GeoAction {
 	None = '0',
