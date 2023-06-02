@@ -18,6 +18,7 @@
 		"build:watch": "concurrently 'lerna run build:cjs:watch --parallel' 'lerna run build:esm:watch --parallel' --raw",
 		"build:esm:watch": "lerna run build:esm:watch --parallel",
 		"build:cjs:watch": "lerna run build:cjs:watch --parallel",
+		"build:client-types": "cd scripts/dts-bundler && yarn && yarn run build",
 		"clean": "lerna run clean --parallel",
 		"clean:size": "lerna run clean:size --parallel",
 		"format": "lerna run format",

@@ -12,3 +12,18 @@ export interface AWSPinpointUserInfo extends UserInfo {
 	address?: string;
 	optOut?: 'ALL' | 'NONE';
 }
+
+export type ChannelType =
+	| 'ADM'
+	| 'APNS'
+	| 'APNS_SANDBOX'
+	| 'APNS_VOIP'
+	| 'APNS_VOIP_SANDBOX'
+	| 'BAIDU'
+	| 'CUSTOM'
+	| 'EMAIL'
+	| 'GCM'
+	| 'IN_APP'
+	| 'PUSH'
+	| 'SMS'
+	| 'VOICE';
