@@ -351,7 +351,7 @@ class MutationProcessor {
 
 				const customUserAgentDetails: CustomUserAgentDetails = {
 					category: Category.DataStore,
-					action: DataStoreAction.GraphQL,
+					action: DataStoreAction.GraphQl,
 				};
 
 				do {

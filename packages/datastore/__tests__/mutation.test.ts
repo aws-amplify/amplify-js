@@ -37,7 +37,7 @@ beforeEach(() => {
 
 const datastoreUserAgentDetails: CustomUserAgentDetails = {
 	category: Category.DataStore,
-	action: DataStoreAction.GraphQL,
+	action: DataStoreAction.GraphQl,
 };
 
 describe('Jittered backoff', () => {
