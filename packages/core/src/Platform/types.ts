@@ -64,7 +64,9 @@ export enum InteractionsAction {
 	None = '0',
 }
 export enum PredictionsAction {
-	None = '0',
+	Convert = '1',
+	Identify = '2',
+	Interpret = '3',
 }
 export enum PubSubAction {
 	Subscribe = '1',

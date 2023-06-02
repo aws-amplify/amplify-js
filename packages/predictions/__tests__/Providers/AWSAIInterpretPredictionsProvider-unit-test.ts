@@ -1,4 +1,9 @@
-import { Credentials } from '@aws-amplify/core';
+import {
+	Category,
+	Credentials,
+	PredictionsAction,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core';
 import {
 	ComprehendClient,
 	DetectSyntaxCommand,
@@ -176,6 +181,17 @@ ComprehendClient.prototype.send = jest.fn((command, callback) => {
 	}
 }) as any;
 
+const happyConfig = {
+	interpretText: {
+		region: 'us-west-2',
+		proxy: false,
+		defaults: {
+			languageCode: 'en-US',
+			type: 'ALL',
+		},
+	},
+};
+
 // Mocks before importing provider to avoid race condition with provider instantiation
 import { AmazonAIInterpretPredictionsProvider } from '../../src/Providers';
 import { InterpretTextCategories } from '../../src';
@@ -200,17 +216,6 @@ describe('Predictions interpret provider test', () => {
 		jest.clearAllMocks();
 	});
 	describe('interpretText tests', () => {
-		const happyConfig = {
-			interpretText: {
-				region: 'us-west-2',
-				proxy: false,
-				defaults: {
-					languageCode: 'en-US',
-					type: 'ALL',
-				},
-			},
-		};
-
 		test('happy case credentials exist detectEntities', async () => {
 			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
 			predictionsProvider.configure(happyConfig);
@@ -468,6 +473,30 @@ describe('Predictions interpret provider test', () => {
 			expect(dominantLanguageSpy.mock.calls[0][0].input).toEqual({
 				Text: textToTest,
 			});
+		});
+	});
+
+	describe('custom user agent', () => {
+		test('interpret initializes a client with the correct custom user agent', async () => {
+			jest.spyOn(ComprehendClient.prototype, 'send');
+			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
+			predictionsProvider.configure(happyConfig);
+			await predictionsProvider.interpret({
+				text: {
+					source: {
+						text: textToTest,
+					},
+					type: InterpretTextCategories.ALL,
+				},
+			});
+			expect(
+				predictionsProvider['comprehendClient'].config.customUserAgent
+			).toEqual(
+				getAmplifyUserAgent({
+					category: Category.Predictions,
+					action: PredictionsAction.Interpret,
+				})
+			);
 		});
 	});
 });
