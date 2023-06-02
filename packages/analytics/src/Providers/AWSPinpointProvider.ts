@@ -29,7 +29,7 @@ import {
 	EndpointFailureData,
 } from '../types';
 import { v1 as uuid } from 'uuid';
-import { getAnalyticsUserAgent } from '../utils/UserAgent';
+import { getAnalyticsUserAgentString } from '../utils/UserAgent';
 import EventBuffer from './EventBuffer';
 
 const AMPLIFY_SYMBOL = (
@@ -286,7 +286,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		try {
 			const { credentials, region } = this._config;
 			const data: PutEventsOutput = await putEvents(
-				{ credentials, region, userAgentValue: getAnalyticsUserAgent() },
+				{ credentials, region, userAgentValue: getAnalyticsUserAgentString() },
 				eventParams
 			);
 
@@ -391,7 +391,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		try {
 			const { credentials, region } = this._config;
 			const data: UpdateEndpointOutput = await updateEndpoint(
-				{ credentials, region, userAgentValue: getAnalyticsUserAgent() },
+				{ credentials, region, userAgentValue: getAnalyticsUserAgentString() },
 				update_params
 			);
 			logger.debug('updateEndpoint success', data);
