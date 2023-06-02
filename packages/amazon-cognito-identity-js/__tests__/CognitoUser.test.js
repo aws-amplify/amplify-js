@@ -200,6 +200,7 @@ describe('initiateAuth()', () => {
 		const authDetails = new AuthenticationDetails(authDetailData);
 		user.initiateAuth(authDetails, callback);
 
+		expect(global.fetch.mock.calls.length).toBe(1);
 		expect(fetchMock).toBeCalledWith(
 			expect.anything(),
 			expect.objectContaining({
@@ -265,6 +266,7 @@ describe('authenticateUser()', () => {
 		user.setAuthenticationFlowType('USER_PASSWORD_AUTH');
 		user.authenticateUser(authDetails, callback);
 
+		expect(global.fetch.mock.calls.length).toBe(1);
 		expect(fetchMock).toBeCalledWith(
 			expect.anything(),
 			expect.objectContaining({
@@ -324,6 +326,7 @@ describe('authenticateUserDefaultAuth()', () => {
 		addAuthCategoryToCognitoUserAgent();
 		user.authenticateUserDefaultAuth(authDetails, callback);
 
+		expect(global.fetch.mock.calls.length).toBe(1);
 		expect(fetchMock).toBeCalledWith(
 			expect.anything(),
 			expect.objectContaining({
@@ -400,6 +403,7 @@ describe('authenticateUserPlainUsernamePassword()', () => {
 		const authDetails = new AuthenticationDetails(authDetailData);
 		user.authenticateUserPlainUsernamePassword(authDetails, callback);
 
+		expect(global.fetch.mock.calls.length).toBe(1);
 		expect(fetchMock).toBeCalledWith(
 			expect.anything(),
 			expect.objectContaining({
@@ -594,6 +598,7 @@ describe('authenticateUserInternal()', () => {
 
 		user.authenticateUserInternal(authData, authHelper, callback);
 
+		expect(global.fetch.mock.calls.length).toBe(1);
 		expect(fetchMock).toBeCalledWith(
 			expect.anything(),
 			expect.objectContaining({
@@ -700,6 +705,7 @@ describe('completeNewPasswordChallenge()', () => {
 			clientMetadata
 		);
 
+		expect(global.fetch.mock.calls.length).toBe(1);
 		expect(fetchMock).toBeCalledWith(
 			expect.anything(),
 			expect.objectContaining({
@@ -752,6 +758,34 @@ describe('getDeviceResponse()', () => {
 		netRequestMockSuccess(false);
 		user.getDeviceResponse(callback, {});
 		expect(callback.onFailure).toBeCalledWith(networkError);
+	});
+
+	test('global fetch called with expected user agent header RespondToAuthChallenge', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+
+		jest
+			.spyOn(AuthenticationHelper.prototype, 'getLargeAValue')
+			.mockImplementation(cb => cb(null, 12345));
+
+		user.getDeviceResponse(callback, {});
+
+		expect(global.fetch.mock.calls.length).toBe(1);
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.RespondToAuthChallenge
+					}`,
+				}),
+			})
+		);
 	});
 
 	/**TODO: Check this clientRequestSpy */
