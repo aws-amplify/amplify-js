@@ -82,6 +82,37 @@ export async function handleUserSRPAuthFlow(
 	);
 }
 
+export async function handleCustomSRPAuthFlow(
+	username: string,
+	password: string,
+	clientMetadata: ClientMetadata | undefined
+) {
+	const userPoolId = Amplify.config['aws_user_pools_id'];
+	const userPoolName = userPoolId.split('_')[1];
+	const authenticationHelper = new AuthenticationHelper(userPoolName);
+	const jsonReq: InitiateAuthClientInput = {
+		AuthFlow: 'CUSTOM_AUTH',
+		AuthParameters: {
+			USERNAME: username,
+			SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
+			CHALLENGE_NAME: 'SRP_A',
+		},
+		ClientMetadata: clientMetadata,
+	};
+
+	const { ChallengeParameters: challengeParameters, Session: session } =
+		await initiateAuthClient(jsonReq);
+
+	return handlePasswordVerifierChallenge(
+		password,
+		challengeParameters as ChallengeParameters,
+		clientMetadata,
+		session,
+		authenticationHelper,
+		userPoolName
+	);
+}
+
 export async function handlePasswordVerifierChallenge(
 	password: string,
 	challengeParameters: ChallengeParameters,
