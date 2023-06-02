@@ -219,7 +219,7 @@ class SyncProcessor {
 
 					const customUserAgentDetails: CustomUserAgentDetails = {
 						category: Category.DataStore,
-						action: DataStoreAction.GraphQL,
+						action: DataStoreAction.GraphQl,
 					};
 
 					return await this.amplifyContext.InternalAPI.graphql(

@@ -294,7 +294,7 @@ describe('Sync', () => {
 
 			expect(mockGraphQl).toHaveBeenCalledWith(expect.anything(), undefined, {
 				category: Category.DataStore,
-				action: DataStoreAction.GraphQL,
+				action: DataStoreAction.GraphQl,
 			});
 		});
 	});
