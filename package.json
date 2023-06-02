@@ -107,6 +107,9 @@
 		"winston": "^3.2.1",
 		"wml": "0.0.83"
 	},
+	"resolutions": {
+		"@types/babel__traverse": "7.20.0"
+	},
 	"jest": {
 		"resetMocks": true,
 		"verbose": true
