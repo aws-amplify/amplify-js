@@ -36,10 +36,10 @@ for (let i = 0; i < 256; i++) {
  * @param {number} nBytes
  * @returns {Uint8Array} fixed-length sequence of random bytes
  */
-function randomBytes(nBytes: number): string {
+function randomBytes(nBytes: number):Uint8Array {
 	const str = new WordArray().random(nBytes).toString();
 
-	return toBase64(fromHex(str));
+	return fromHex(str);
 }
 
 /**
@@ -144,7 +144,7 @@ export default class AuthenticationHelper {
 	generateRandomSmallA(): BigInteger {
 		// This will be interpreted as a postive 128-bit integer
 
-		const hexRandom = randomBytes(128).toString();
+		const hexRandom = toHex(randomBytes(128));
 
 		const randomBigInt = new BigInteger(hexRandom, 16);
 
@@ -159,7 +159,7 @@ export default class AuthenticationHelper {
 	 * @private
 	 */
 	generateRandomString(): string {
-		return randomBytes(40).toString();
+		return toBase64(randomBytes(40));
 	}
 
 	/**
@@ -199,7 +199,7 @@ export default class AuthenticationHelper {
 		const combinedString = `${deviceGroupKey}${username}:${this.randomPassword}`;
 		const hashedString = this.hash(combinedString);
 
-		const hexRandom = randomBytes(16).toString();
+		const hexRandom = toHex(randomBytes(16));
 
 		// The random hex will be unambiguously represented as a postive integer
 		this.SaltToHashDevices = this.padHex(new BigInteger(hexRandom, 16));

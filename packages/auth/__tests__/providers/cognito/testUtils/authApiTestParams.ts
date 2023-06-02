@@ -116,6 +116,20 @@ export const authAPITestParams = {
 		Session: 'aaabbbcccddd',
 		$metadata: {},
 	},
+	CustomChallengeResponse: {
+		ChallengeName: 'CUSTOM_CHALLENGE',
+		AuthenticationResult: undefined,
+		Session: 'aaabbbcccddd',
+		$metadata: {},
+	},
+	signInResultWithCustomAuth: () => {
+		return {
+			isSignedIn: false,
+			nextStep: {
+				signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE,
+			},
+		};
+	},
 	signInResult: (): AuthSignInResult => {
 		return {
 			isSignedIn: true,
