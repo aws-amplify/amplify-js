@@ -15,6 +15,8 @@ import {
 import { ConsoleLogger as Logger, Hub, urlSafeEncode } from '@aws-amplify/core';
 
 import { Sha256 } from '@aws-crypto/sha256-js';
+import { getAmplifyUserAgentString } from 'amazon-cognito-identity-js/src/UserAgent';
+import { AuthAction } from 'amazon-cognito-identity-js/src/Platform/constants';
 const AMPLIFY_SYMBOL = (
 	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
 		? Symbol.for('amplify_default')
@@ -164,6 +166,7 @@ export default class OAuth {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
+					'X-Amz-User-Agent': getAmplifyUserAgentString(AuthAction.OAuthToken),
 				},
 				body,
 			})) as any

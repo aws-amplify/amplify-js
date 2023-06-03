@@ -6,8 +6,8 @@ export const Framework = {
 export const authCategory = 'auth';
 
 // Actions
-/* TODO: Replace 'None' with all expected Actions */
 export const AuthAction = {
+	// Standard flow
 	SignUp: '1',
 	InitiateAuth: '2',
 	ConfirmSignUp: '3',
@@ -32,4 +32,5 @@ export const AuthAction = {
 	UpdateDeviceStatus: '22',
 	ForgetDevice: '23',
 	ListDevices: '24',
+	OAuthToken: '25',
 };
