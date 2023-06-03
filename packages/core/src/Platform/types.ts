@@ -31,8 +31,8 @@ export enum Category {
 	Analytics = 'analytics',
 	DataStore = 'datastore',
 	Geo = 'geo',
-	Interactions = 'interactions',
 	InAppMessaging = 'inappmessaging',
+	Interactions = 'interactions',
 	Predictions = 'predictions',
 	PubSub = 'pubsub',
 	PushNotification = 'pushnotification',
@@ -45,34 +45,45 @@ export enum AnalyticsAction {
 	Record = '1',
 }
 export enum ApiAction {
-	None = '0',
+	GraphQl = '1',
 }
 export enum AuthAction {
 	None = '0',
 }
 export enum DataStoreAction {
-	None = '0',
+	Subscribe = '1',
+	GraphQl = '2',
 }
 export enum GeoAction {
-	None = '0',
-}
-export enum InteractionsAction {
 	None = '0',
 }
 export enum InAppMessagingAction {
 	None = '0',
 }
-export enum PredictionsAction {
+export enum InteractionsAction {
 	None = '0',
 }
+export enum PredictionsAction {
+	Convert = '1',
+	Identify = '2',
+	Interpret = '3',
+}
 export enum PubSubAction {
-	None = '0',
+	Subscribe = '1',
 }
 export enum PushNotificationAction {
 	None = '0',
 }
 export enum StorageAction {
-	None = '0',
+	// UploadFile = '1',
+	UploadData = '2',
+	DownloadData = '3',
+	// DownloadFile = '4',
+	GetUrl = '5',
+	// GetProperties = '6',
+	List = '7',
+	Copy = '8',
+	Remove = '9',
 }
 
 type ActionMap = {
@@ -81,8 +92,8 @@ type ActionMap = {
 	[Category.Analytics]: AnalyticsAction;
 	[Category.DataStore]: DataStoreAction;
 	[Category.Geo]: GeoAction;
-	[Category.Interactions]: InteractionsAction;
 	[Category.InAppMessaging]: InAppMessagingAction;
+	[Category.Interactions]: InteractionsAction;
 	[Category.Predictions]: PredictionsAction;
 	[Category.PubSub]: PubSubAction;
 	[Category.PushNotification]: PushNotificationAction;

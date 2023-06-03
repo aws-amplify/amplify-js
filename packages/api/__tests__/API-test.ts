@@ -1,5 +1,5 @@
 import { RestAPIClass } from '@aws-amplify/api-rest';
-import { GraphQLAPIClass } from '@aws-amplify/api-graphql';
+import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
 import { APIClass as API } from '../src/API';
 
 describe('API test', () => {
@@ -8,7 +8,7 @@ describe('API test', () => {
 			.spyOn(RestAPIClass.prototype, 'configure')
 			.mockReturnValue({ restapi: 'configured' });
 		jest
-			.spyOn(GraphQLAPIClass.prototype, 'configure')
+			.spyOn(InternalGraphQLAPIClass.prototype, 'configure')
 			.mockReturnValue({ graphqlapi: 'configured' });
 		const api = new API(null);
 		expect(api.configure(null)).toStrictEqual({
@@ -69,7 +69,7 @@ describe('API test', () => {
 
 	test('getGraphqlOperationType', () => {
 		jest
-			.spyOn(GraphQLAPIClass.prototype, 'getGraphqlOperationType')
+			.spyOn(InternalGraphQLAPIClass.prototype, 'getGraphqlOperationType')
 			.mockReturnValueOnce('getGraphqlOperationTypeResponse' as any);
 		const api = new API(null);
 		expect(api.getGraphqlOperationType(null)).toBe(
@@ -79,7 +79,7 @@ describe('API test', () => {
 
 	test('graphql', async () => {
 		jest
-			.spyOn(GraphQLAPIClass.prototype, 'graphql')
+			.spyOn(InternalGraphQLAPIClass.prototype, 'graphql')
 			.mockResolvedValue('grapqhqlResponse' as any);
 		const api = new API(null);
 		expect(await api.graphql({ query: 'query' })).toBe('grapqhqlResponse');
@@ -88,7 +88,7 @@ describe('API test', () => {
 	describe('cancel', () => {
 		test('cancel RestAPI request', async () => {
 			jest
-				.spyOn(GraphQLAPIClass.prototype, 'hasCancelToken')
+				.spyOn(InternalGraphQLAPIClass.prototype, 'hasCancelToken')
 				.mockImplementation(() => false);
 			const restAPICancelSpy = jest
 				.spyOn(RestAPIClass.prototype, 'cancel')
@@ -104,10 +104,10 @@ describe('API test', () => {
 
 		test('cancel GraphQLAPI request', async () => {
 			jest
-				.spyOn(GraphQLAPIClass.prototype, 'hasCancelToken')
+				.spyOn(InternalGraphQLAPIClass.prototype, 'hasCancelToken')
 				.mockImplementation(() => true);
 			const graphQLAPICancelSpy = jest
-				.spyOn(GraphQLAPIClass.prototype, 'cancel')
+				.spyOn(InternalGraphQLAPIClass.prototype, 'cancel')
 				.mockImplementation(() => true);
 			jest
 				.spyOn(RestAPIClass.prototype, 'hasCancelToken')
