@@ -1,4 +1,9 @@
-import { Credentials } from '@aws-amplify/core';
+import {
+	Category,
+	Credentials,
+	PredictionsAction,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core';
 import {
 	TranslateTextInput,
 	TextToSpeechInput,
@@ -13,22 +18,26 @@ import {
 import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
 
 const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
-TranslateClient.prototype.send = jest.fn(command => {
-	if (command instanceof TranslateTextCommand) {
-		return Promise.resolve(result);
-	}
-}) as any;
+const resetTranslateMock = () => {
+	TranslateClient.prototype.send = jest.fn(command => {
+		if (command instanceof TranslateTextCommand) {
+			return Promise.resolve(result);
+		}
+	}) as any;
+};
 
-PollyClient.prototype.send = jest.fn(command => {
-	if (command instanceof SynthesizeSpeechCommand) {
-		const result = {
-			AudioStream: {
-				buffer: 'dummyStream',
-			},
-		};
-		return Promise.resolve(result);
-	}
-}) as any;
+const resetPollyMock = () => {
+	PollyClient.prototype.send = jest.fn(command => {
+		if (command instanceof SynthesizeSpeechCommand) {
+			const result = {
+				AudioStream: {
+					buffer: 'dummyStream',
+				},
+			};
+			return Promise.resolve(result);
+		}
+	}) as any;
+};
 
 (global as any).Response = jest.fn(stream => {
 	const response = {
@@ -117,6 +126,11 @@ const validSpeechToTextInput: SpeechToTextInput = {
 };
 
 describe('Predictions convert provider test', () => {
+	beforeEach(() => {
+		resetPollyMock();
+		resetTranslateMock();
+	});
+
 	describe('translateText tests', () => {
 		test('happy case credentials exist', () => {
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
@@ -303,6 +317,48 @@ describe('Predictions convert provider test', () => {
 				expect.objectContaining({ outputSampleRate: 8000 })
 			);
 			downsampleBufferSpyon.mockClear();
+		});
+	});
+
+	describe('custom user agent', () => {
+		test('convert text to speech initializes a client with the correct custom user agent', async () => {
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			predictionsProvider.configure(options);
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+			window.URL.createObjectURL = jest.fn();
+			jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
+				return 'dummyURL';
+			});
+
+			await predictionsProvider.convert(validTextToSpeechInput);
+
+			expect(predictionsProvider['pollyClient'].config.customUserAgent).toEqual(
+				getAmplifyUserAgent({
+					category: Category.Predictions,
+					action: PredictionsAction.Convert,
+				})
+			);
+		});
+		test('convert translate text initializes a client with the correct custom user agent', async () => {
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			predictionsProvider.configure(options);
+
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			await predictionsProvider.convert(validTranslateTextInput);
+			expect(
+				predictionsProvider['translateClient'].config.customUserAgent
+			).toEqual(
+				getAmplifyUserAgent({
+					category: Category.Predictions,
+					action: PredictionsAction.Convert,
+				})
+			);
+			expect(predictionsProvider['textractClient']).toBeUndefined();
 		});
 	});
 });

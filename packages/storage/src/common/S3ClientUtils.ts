@@ -1,7 +1,10 @@
 import {
+	Category,
 	Credentials,
+	CustomUserAgentDetails,
 	ICredentials,
 	Logger,
+	StorageAction,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import { StorageAccessLevel, CustomPrefix } from '../types';
@@ -133,6 +136,7 @@ export const createS3Client = (
 		dangerouslyConnectToHttpEndpointForTesting?: boolean;
 		useAccelerateEndpoint?: boolean;
 	},
+	storageAction: StorageAction,
 	emitter?: events.EventEmitter
 ): S3Client => {
 	const {
@@ -157,7 +161,10 @@ export const createS3Client = (
 		// Using provider instead of a static credentials, so that if an upload task was in progress, but credentials gets
 		// changed or invalidated (e.g user signed out), the subsequent requests will fail.
 		credentials: credentialsProvider,
-		customUserAgent: getAmplifyUserAgent(),
+		customUserAgent: getAmplifyUserAgent({
+			category: Category.Storage,
+			action: storageAction,
+		}),
 		...localTestingConfig,
 		requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
 		useAccelerateEndpoint,
