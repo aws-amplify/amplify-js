@@ -48,7 +48,7 @@ export enum ApiAction {
 	GraphQl = '1',
 }
 export enum AuthAction {
-	None = '0',
+	OAuthToken = '1',
 }
 export enum DataStoreAction {
 	Subscribe = '1',

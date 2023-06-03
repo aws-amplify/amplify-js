@@ -32,5 +32,4 @@ export const AuthAction = {
 	UpdateDeviceStatus: '22',
 	ForgetDevice: '23',
 	ListDevices: '24',
-	OAuthToken: '25',
 };
