@@ -12,9 +12,19 @@ import {
 	CognitoHostedUIIdentityProvider,
 } from '../types/Auth';
 
-import { ConsoleLogger as Logger, Hub, urlSafeEncode } from '@aws-amplify/core';
+import {
+	AuthAction,
+	Category,
+	ConsoleLogger as Logger,
+	CustomUserAgentDetails,
+	getAmplifyUserAgentString,
+	Hub,
+	urlSafeEncode,
+	USER_AGENT_HEADER,
+} from '@aws-amplify/core';
 
 import { Sha256 } from '@aws-crypto/sha256-js';
+
 const AMPLIFY_SYMBOL = (
 	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
 		? Symbol.for('amplify_default')
@@ -159,11 +169,19 @@ export default class OAuth {
 			.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
 			.join('&');
 
+		const customUserAgentDetails: CustomUserAgentDetails = {
+			category: Category.Auth,
+			action: AuthAction.OAuthToken,
+		};
+
 		const { access_token, refresh_token, id_token, error } = await (
 			(await fetch(oAuthTokenEndpoint, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
+					[USER_AGENT_HEADER]: getAmplifyUserAgentString(
+						customUserAgentDetails
+					),
 				},
 				body,
 			})) as any
