@@ -422,8 +422,6 @@ declare module 'amazon-cognito-identity-js' {
 	}
 
 	export const appendToCognitoUserAgent: (content: string) => void;
-	export const addAuthCategoryToCognitoUserAgent: () => void;
-	export const addFrameworkToCognitoUserAgent: (content: string) => void;
 
 	export class WordArray {
 		constructor(words?: string[], sigBytes?: number);
