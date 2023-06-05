@@ -89,7 +89,11 @@ export class InternalAPIClass {
 		path: string,
 		init: { [key: string]: any }
 	): Promise<any> {
-		return this._restApi.get(apiName, path, init);
+		return this._restApi.get(
+			apiName,
+			path,
+			this.getInitWithCustomUserAgentDetails(init, ApiAction.Get)
+		);
 	}
 
 	/**
@@ -104,7 +108,11 @@ export class InternalAPIClass {
 		path: string,
 		init: { [key: string]: any }
 	): Promise<any> {
-		return this._restApi.post(apiName, path, init);
+		return this._restApi.post(
+			apiName,
+			path,
+			this.getInitWithCustomUserAgentDetails(init, ApiAction.Post)
+		);
 	}
 
 	/**
@@ -119,7 +127,11 @@ export class InternalAPIClass {
 		path: string,
 		init: { [key: string]: any }
 	): Promise<any> {
-		return this._restApi.put(apiName, path, init);
+		return this._restApi.put(
+			apiName,
+			path,
+			this.getInitWithCustomUserAgentDetails(init, ApiAction.Put)
+		);
 	}
 
 	/**
@@ -134,7 +146,11 @@ export class InternalAPIClass {
 		path: string,
 		init: { [key: string]: any }
 	): Promise<any> {
-		return this._restApi.patch(apiName, path, init);
+		return this._restApi.patch(
+			apiName,
+			path,
+			this.getInitWithCustomUserAgentDetails(init, ApiAction.Patch)
+		);
 	}
 
 	/**
@@ -149,7 +165,11 @@ export class InternalAPIClass {
 		path: string,
 		init: { [key: string]: any }
 	): Promise<any> {
-		return this._restApi.del(apiName, path, init);
+		return this._restApi.del(
+			apiName,
+			path,
+			this.getInitWithCustomUserAgentDetails(init, ApiAction.Del)
+		);
 	}
 
 	/**
@@ -164,7 +184,11 @@ export class InternalAPIClass {
 		path: string,
 		init: { [key: string]: any }
 	): Promise<any> {
-		return this._restApi.head(apiName, path, init);
+		return this._restApi.head(
+			apiName,
+			path,
+			this.getInitWithCustomUserAgentDetails(init, ApiAction.Head)
+		);
 	}
 
 	/**
@@ -188,6 +212,18 @@ export class InternalAPIClass {
 			return this._graphqlApi.cancel(request, message);
 		}
 		return false;
+	}
+
+	private getInitWithCustomUserAgentDetails(
+		init: { [key: string]: any },
+		action: ApiAction
+	) {
+		const customUserAgentDetails: CustomUserAgentDetails = {
+			category: Category.API,
+			action,
+		};
+		const initParams = { ...init, customUserAgentDetails };
+		return initParams;
 	}
 
 	/**

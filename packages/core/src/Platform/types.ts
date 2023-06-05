@@ -46,6 +46,12 @@ export enum AnalyticsAction {
 }
 export enum ApiAction {
 	GraphQl = '1',
+	Get = '2',
+	Post = '3',
+	Put = '4',
+	Patch = '5',
+	Del = '6',
+	Head = '7',
 }
 export enum AuthAction {
 	None = '0',
