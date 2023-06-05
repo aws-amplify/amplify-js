@@ -7,7 +7,6 @@ export const authCategory = 'auth';
 
 // Actions
 export const AuthAction = {
-	// Standard flow
 	SignUp: '1',
 	InitiateAuth: '2',
 	ConfirmSignUp: '3',

@@ -38,8 +38,6 @@ import {
 	HubCallback,
 } from '@aws-amplify/core';
 import {
-	addAuthCategoryToCognitoUserAgent,
-	addFrameworkToCognitoUserAgent,
 	CookieStorage,
 	CognitoUserPool,
 	AuthenticationDetails,
@@ -58,6 +56,10 @@ import {
 	NodeCallback,
 	CodeDeliveryDetails,
 } from 'amazon-cognito-identity-js';
+import {
+	addAuthCategoryToCognitoUserAgent,
+	addFrameworkToCognitoUserAgent,
+} from 'amazon-cognito-identity-js/internals';
 
 import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
