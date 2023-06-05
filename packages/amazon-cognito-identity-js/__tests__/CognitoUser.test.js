@@ -7,6 +7,9 @@ import Client from '../src/Client';
 import CognitoIdToken from '../src/CognitoIdToken';
 import CognitoAccessToken from '../src/CognitoAccessToken';
 import CognitoRefreshToken from '../src/CognitoRefreshToken';
+import { getUserAgent } from '../src/Platform';
+import { AuthAction } from '../src/Platform/constants';
+import { addAuthCategoryToCognitoUserAgent } from '../src/UserAgent';
 
 import {
 	callback,
@@ -184,10 +187,38 @@ describe('initiateAuth()', () => {
 		expect(cacheTokensSpy).toBeCalled();
 		expect(callback.onSuccess.mock.calls.length).toBe(1);
 	});
+
+	test('global fetch called with expected user agent header InitiateAuth', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+
+		const authDetails = new AuthenticationDetails(authDetailData);
+		user.initiateAuth(authDetails, callback);
+
+		expect(global.fetch.mock.calls.length).toBe(1);
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.InitiateAuth
+					}`,
+				}),
+			})
+		);
+	});
 });
 
 describe('authenticateUser()', () => {
-	afterAll(() => {
+	afterEach(() => {
+		callback.onFailure.mockClear();
+		callback.onSuccess.mockClear();
+		callback.customChallenge.mockClear();
 		jest.restoreAllMocks();
 	});
 
@@ -221,6 +252,31 @@ describe('authenticateUser()', () => {
 		user.setAuthenticationFlowType('WRONG_AUTH_FLOW_TYPE');
 		user.authenticateUser(authDetails, callback);
 		expect(callback.onFailure.mock.calls.length).toBe(1);
+	});
+
+	test('global fetch called with expected user agent header InitiateAuth', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+
+		user.setAuthenticationFlowType('USER_PASSWORD_AUTH');
+		user.authenticateUser(authDetails, callback);
+
+		expect(global.fetch.mock.calls.length).toBe(1);
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.InitiateAuth
+					}`,
+				}),
+			})
+		);
 	});
 });
 
@@ -258,6 +314,29 @@ describe('authenticateUserDefaultAuth()', () => {
 		netRequestMockSuccess(false);
 		user.authenticateUserDefaultAuth(authDetails, callback);
 		expect(callback.onFailure.mock.calls.length).toBe(1);
+	});
+
+	test('global fetch called with expected user agent header InitiateAuth', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+		user.authenticateUserDefaultAuth(authDetails, callback);
+
+		expect(global.fetch.mock.calls.length).toBe(1);
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.InitiateAuth
+					}`,
+				}),
+			})
+		);
 	});
 });
 
@@ -310,6 +389,31 @@ describe('authenticateUserPlainUsernamePassword()', () => {
 			callback
 		);
 		expect(userSpy3.mock.results[0].value).toBe('test return value');
+	});
+
+	test('global fetch called with expected user agent header InitiateAuth', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+
+		const authDetails = new AuthenticationDetails(authDetailData);
+		user.authenticateUserPlainUsernamePassword(authDetails, callback);
+
+		expect(global.fetch.mock.calls.length).toBe(1);
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.InitiateAuth
+					}`,
+				}),
+			})
+		);
 	});
 });
 
@@ -482,6 +586,30 @@ describe('authenticateUserInternal()', () => {
 		user.authenticateUserInternal(authData, authHelper, callback);
 		expect(callback.onSuccess).toBeCalledWith(user.signInUserSession, true);
 	});
+
+	test('global fetch called with expected user agent header ConfirmDevice', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+
+		user.authenticateUserInternal(authData, authHelper, callback);
+
+		expect(global.fetch.mock.calls.length).toBe(1);
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.ConfirmDevice
+					}`,
+				}),
+			})
+		);
+	});
 });
 
 describe('completeNewPasswordChallenge()', () => {
@@ -560,6 +688,35 @@ describe('completeNewPasswordChallenge()', () => {
 		);
 		expect(spyon2).toBeCalledTimes(1);
 	});
+
+	test('global fetch called with expected user agent header RespondToAuthChallenge', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+
+		user.completeNewPasswordChallenge(
+			'NEWp@ssw0rd',
+			requiredAttributeData,
+			callback,
+			clientMetadata
+		);
+
+		expect(global.fetch.mock.calls.length).toBe(1);
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.RespondToAuthChallenge
+					}`,
+				}),
+			})
+		);
+	});
 });
 
 describe('getDeviceResponse()', () => {
@@ -601,6 +758,34 @@ describe('getDeviceResponse()', () => {
 		netRequestMockSuccess(false);
 		user.getDeviceResponse(callback, {});
 		expect(callback.onFailure).toBeCalledWith(networkError);
+	});
+
+	test('global fetch called with expected user agent header RespondToAuthChallenge', () => {
+		const fetchMock = jest
+			.spyOn(global, 'fetch')
+			.mockImplementation(() =>
+				Promise.resolve({ json: () => Promise.resolve([]) })
+			);
+
+		addAuthCategoryToCognitoUserAgent();
+
+		jest
+			.spyOn(AuthenticationHelper.prototype, 'getLargeAValue')
+			.mockImplementation(cb => cb(null, 12345));
+
+		user.getDeviceResponse(callback, {});
+
+		expect(global.fetch.mock.calls.length).toBe(1);
+		expect(fetchMock).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					'X-Amz-User-Agent': `${getUserAgent()} auth/${
+						AuthAction.RespondToAuthChallenge
+					}`,
+				}),
+			})
+		);
 	});
 
 	/**TODO: Check this clientRequestSpy */
@@ -1660,36 +1845,34 @@ describe('refreshSession()', () => {
 
 	test('update attributes usage of three out of three parameters in callback', () => {
 		const codeDeliverDetailsResult = {
-			'CodeDeliveryDetailsList': [ 
-			   { 
-				  'AttributeName': 'email',
-				  'DeliveryMedium': 'EMAIL',
-				  'Destination': 'e***@e***'
-			   }
-			]
+			CodeDeliveryDetailsList: [
+				{
+					AttributeName: 'email',
+					DeliveryMedium: 'EMAIL',
+					Destination: 'e***@e***',
+				},
+			],
 		};
-		const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
+		const spyon = jest
+			.spyOn(CognitoUser.prototype, 'updateAttributes')
 			.mockImplementationOnce((attrs, callback) => {
 				callback(null, 'SUCCESS', codeDeliverDetailsResult);
-		});
+			});
 		const attrs = [
 			{
 				Name: 'email',
-				Value: 'email@email.com'
+				Value: 'email@email.com',
 			},
 			{
 				Name: 'family_name',
-				Value: 'familyName'
-			}
+				Value: 'familyName',
+			},
 		];
-		cognitoUser.updateAttributes(
-			attrs,
-			(err, result, details) => {
-				expect(err).toBe(null);
-				expect(result).toBe('SUCCESS');
-				expect(details).toBe(codeDeliverDetailsResult);
-			} 
-		);
+		cognitoUser.updateAttributes(attrs, (err, result, details) => {
+			expect(err).toBe(null);
+			expect(result).toBe('SUCCESS');
+			expect(details).toBe(codeDeliverDetailsResult);
+		});
 		spyon.mockClear();
 	});
 });
