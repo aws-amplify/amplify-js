@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.3.1...@aws-amplify/core@5.4.0) (2023-06-05)
+
+### Bug Fixes
+
+- address feedbacks ([2d6eecf](https://github.com/aws-amplify/amplify-js/commit/2d6eecfa4763a6cfb6aeaabedd49a530c6420dcd))
+- **clients:** add react-native entrypoint for internal modules ([c1535dd](https://github.com/aws-amplify/amplify-js/commit/c1535ddbfb198dc669e8a00eda52323975b37dc6))
+- **clients:** middleware chain revert after every invocation ([#11432](https://github.com/aws-amplify/amplify-js/issues/11432)) ([f576be5](https://github.com/aws-amplify/amplify-js/commit/f576be5ad4fd3e6625d5bc555fa8cbd4e1783f06))
+- **retry:** add metadata to returns from retry middldeware ([#11212](https://github.com/aws-amplify/amplify-js/issues/11212)) ([7fc0540](https://github.com/aws-amplify/amplify-js/commit/7fc0540a44ffe4b70320996b0142ed18d6365303))
+
+### Features
+
+- **clients:** Add custom signature v4 signer ([#11273](https://github.com/aws-amplify/amplify-js/issues/11273)) ([41bb35a](https://github.com/aws-amplify/amplify-js/commit/41bb35aabac952006ad7ef5f8e60ab8782503317))
+- **clients:** Add signing middleware ([#11323](https://github.com/aws-amplify/amplify-js/issues/11323)) ([de1ce7b](https://github.com/aws-amplify/amplify-js/commit/de1ce7b1d3fcc9b0fe042e08cfa58f705d8751da))
+- **clients:** add useragent to cognito identity ([#11269](https://github.com/aws-amplify/amplify-js/issues/11269)) ([475f26b](https://github.com/aws-amplify/amplify-js/commit/475f26bc4d0c415ede4eaf4d5126023a43fb44de))
+- **clients:** allow fetch handler to read body multiple times ([868fb4a](https://github.com/aws-amplify/amplify-js/commit/868fb4af05d35f76364014c74dd5f780959465c5))
+- **clients:** basic types and fetch handler ([#11120](https://github.com/aws-amplify/amplify-js/issues/11120)) ([79f8ae8](https://github.com/aws-amplify/amplify-js/commit/79f8ae8c043df80b1b59a2ce87fe8527090837f8))
+- **clients:** cognito identity client ([#11213](https://github.com/aws-amplify/amplify-js/issues/11213)) ([67e4017](https://github.com/aws-amplify/amplify-js/commit/67e40171385f02d0c9448fdc3e036d63e009ea34))
+- **clients:** compose transfer handler with middleware & retry middleware ([#11188](https://github.com/aws-amplify/amplify-js/issues/11188)) ([85bc134](https://github.com/aws-amplify/amplify-js/commit/85bc134f1975eaab7c85b2c72f78e30946e226c2))
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+- **clients:** vendor TS types from pinpoint and cognito-identity clients ([#11393](https://github.com/aws-amplify/amplify-js/issues/11393)) ([9a8569a](https://github.com/aws-amplify/amplify-js/commit/9a8569ab98480ad96b53a7104366640c66343aa2))
+
 ## [5.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.3.0...@aws-amplify/core@5.3.1) (2023-05-27)
 
 ### Bug Fixes
