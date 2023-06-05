@@ -59,7 +59,7 @@
 			"name": "Interactions (top-level class with Lex v2)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Interactions, AWSLexV2Provider }",
-			"limit": "87 kB"
+			"limit": "74.5 kB"
 		}
 	],
 	"jest": {

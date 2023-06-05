@@ -52,7 +52,6 @@
 		"@aws-amplify/cache": "5.0.33",
 		"@aws-amplify/core": "5.3.1",
 		"@aws-amplify/rtn-push-notification": "1.1.1",
-		"@aws-sdk/client-pinpoint": "3.186.1",
 		"lodash": "^4.17.21",
 		"uuid": "^3.2.1"
 	},
@@ -66,13 +65,13 @@
 			"name": "Notifications (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Notifications }",
-			"limit": "71 kB"
+			"limit": "28.75 kB"
 		},
 		{
 			"name": "Notifications (with Analytics)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Notifications, Analytics }",
-			"limit": "71 kB"
+			"limit": "28.76 kB"
 		}
 	]
 }
