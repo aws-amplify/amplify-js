@@ -51,6 +51,11 @@ export default class PushNotification implements PushNotificationInterface {
 	constructor() {
 		try {
 			this.nativeModule = AmplifyRTNPushNotification;
+			// If constructing this, Push is configured in the Amplify root config. If the native module is missing at this
+			// point, throw an error to give a hint that the module is missing.
+			if (!this.nativeModule) {
+				throw new Error();
+			}
 			const { NativeEvent, NativeHeadlessTaskKey } =
 				this.nativeModule.getConstants();
 			this.nativeEvent = NativeEvent;
