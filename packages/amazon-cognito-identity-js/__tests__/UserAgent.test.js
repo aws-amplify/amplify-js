@@ -1,11 +1,14 @@
-import { AuthAction, Framework } from '../src/Platform/constants';
+import { AuthAction, authCategory } from '../src/Platform/constants';
 import UserAgent, {
+	addAuthCategoryToCognitoUserAgent,
+	addFrameworkToCognitoUserAgent,
 	appendToCognitoUserAgent,
 	getAmplifyUserAgentString,
 } from '../src/UserAgent';
 
 const DEFAULT_USER_AGENT = 'aws-amplify/0.1.x';
-const AMPLIFY_USER_AGENT_NONE = `auth/${AuthAction.None} framework/${Framework.None}`;
+const USER_AGENT_FRAMEWORK0 = 'framework/0';
+const USER_AGENT_AUTH_SIGNUP = `auth/${AuthAction.SignUp}`;
 
 describe('UserAgent test', () => {
 	beforeEach(() => {
@@ -24,8 +27,8 @@ describe('UserAgent test', () => {
 		appendToCognitoUserAgent('test');
 		expect(UserAgent.prototype.userAgent).toBe(`${DEFAULT_USER_AGENT} test`);
 
-		expect(getAmplifyUserAgentString({ action: AuthAction.None })).toBe(
-			`${DEFAULT_USER_AGENT} test ${AMPLIFY_USER_AGENT_NONE}`
+		expect(getAmplifyUserAgentString(AuthAction.SignUp)).toBe(
+			`${DEFAULT_USER_AGENT} test`
 		);
 	});
 
@@ -38,8 +41,8 @@ describe('UserAgent test', () => {
 
 		expect(UserAgent.prototype.userAgent).toBe(`${DEFAULT_USER_AGENT} test`);
 
-		expect(getAmplifyUserAgentString({ action: AuthAction.None })).toBe(
-			`${DEFAULT_USER_AGENT} test ${AMPLIFY_USER_AGENT_NONE}`
+		expect(getAmplifyUserAgentString(AuthAction.SignUp)).toBe(
+			`${DEFAULT_USER_AGENT} test`
 		);
 	});
 
@@ -51,5 +54,23 @@ describe('UserAgent test', () => {
 		UserAgent.prototype.userAgent = undefined;
 		appendToCognitoUserAgent('test');
 		expect(UserAgent.prototype.userAgent).toBe('test');
+	});
+
+	test('addAuthCategoryToCognitoUserAgent sets category and shows category/action in user agent', () => {
+		addAuthCategoryToCognitoUserAgent();
+		expect(UserAgent.category).toBe(authCategory);
+
+		expect(getAmplifyUserAgentString(AuthAction.SignUp)).toBe(
+			`${DEFAULT_USER_AGENT} ${USER_AGENT_AUTH_SIGNUP}`
+		);
+	});
+
+	test('addFrameworkToCognitoUserAgent sets framework and shows framework in user agent', () => {
+		addFrameworkToCognitoUserAgent('0');
+		expect(UserAgent.framework).toBe('0');
+
+		expect(getAmplifyUserAgentString()).toBe(
+			`${DEFAULT_USER_AGENT} ${USER_AGENT_FRAMEWORK0}`
+		);
 	});
 });
