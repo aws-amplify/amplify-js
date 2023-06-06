@@ -32,12 +32,8 @@ export const addFrameworkToCognitoUserAgent = framework => {
 	UserAgent.framework = framework;
 };
 
-// class for defining the amzn user-agent
-export default UserAgent;
-
 export const getAmplifyUserAgentString = action => {
-	const uaCategoryAction =
-		UserAgent.category && action ? ` ${UserAgent.category}/${action}` : '';
+	const uaCategoryAction = UserAgent.category ? ` ${UserAgent.category}` : '';
 	const uaFramework = UserAgent.framework
 		? ` framework/${UserAgent.framework}`
 		: '';
@@ -46,3 +42,6 @@ export const getAmplifyUserAgentString = action => {
 
 	return userAgent;
 };
+
+// class for defining the amzn user-agent
+export default UserAgent;
