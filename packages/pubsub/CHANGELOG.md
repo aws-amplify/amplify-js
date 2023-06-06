@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.1.16...@aws-amplify/pubsub@5.2.0) (2023-06-05)
+
+### Features
+
+- **clients:** cognito identity client ([#11213](https://github.com/aws-amplify/amplify-js/issues/11213)) ([67e4017](https://github.com/aws-amplify/amplify-js/commit/67e40171385f02d0c9448fdc3e036d63e009ea34))
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+
 ## [5.1.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.1.15...@aws-amplify/pubsub@5.1.16) (2023-05-27)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
