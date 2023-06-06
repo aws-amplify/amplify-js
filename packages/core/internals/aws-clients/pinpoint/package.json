@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/core/internals/aws-clients/pinpoint",
+	"types": "../../../lib-esm/AwsClients/Pinpoint/index.d.ts",
+	"main": "../../../lib/AwsClients/Pinpoint/index.js",
+	"module": "../../../lib-esm/AwsClients/Pinpoint/index.js",
+	"react-native": "../../../lib-esm/AwsClients/Pinpoint/index.js",
+	"sideEffects": false
+}

@@ -59,7 +59,7 @@ class MemoryStorage {
 	 */
 	static sync() {
 		if (!MemoryStorage.syncPromise) {
-			MemoryStorage.syncPromise = new Promise((res, rej) => {
+			MemoryStorage.syncPromise = new Promise<void>((res, rej) => {
 				AsyncStorage.getAllKeys((errKeys, keys) => {
 					if (errKeys) rej(errKeys);
 					const memoryKeys = keys.filter(key =>
