@@ -18,7 +18,10 @@ import type {
 import {
 	GetIdCommandOutput,
 	GetIdCommandInput,
+	GetCredentialsForIdentityCommandOutput,
+	GetCredentialsForIdentityCommandInput,
 } from '@aws-sdk/client-cognito-identity';
+
 import { AuthError } from '../../../../errors/AuthError';
 import { assertServiceError } from '../../../../errors/utils/assertServiceError';
 
@@ -32,7 +35,8 @@ export type ClientInputs =
 	| InitiateAuthCommandInput
 	| RespondToAuthChallengeCommandInput
 	| ResendConfirmationCodeCommandInput
-	| GetIdCommandInput;
+	| GetIdCommandInput
+	| GetCredentialsForIdentityCommandInput;
 
 export type ClientOutputs =
 	| SignUpCommandOutput
@@ -41,7 +45,8 @@ export type ClientOutputs =
 	| InitiateAuthCommandOutput
 	| RespondToAuthChallengeCommandOutput
 	| ResendConfirmationCodeCommandOutput
-	| GetIdCommandOutput;
+	| GetIdCommandOutput
+	| GetCredentialsForIdentityCommandOutput;
 
 export type ClientOperations =
 	| 'SignUp'

@@ -1,16 +1,12 @@
-import { Logger } from '@aws-amplify/core';
+// import { Logger } from '@aws-amplify/core';
 import { identityIdForPoolIdClient } from '../utils/clients/IdentityIdForPoolIdClient';
-import {
-	AWSCognitoCredentials,
-	credentialsForIdentityIdClient,
-} from '../utils/clients/CredentialsForIdentityIdClient';
+import { credentialsForIdentityIdClient } from '../utils/clients/CredentialsForIdentityIdClient';
 import { AuthTokensProvider } from './tokensProvider';
-import {
-	GetIdCommandOutput,
-	GetIdCommandInput,
-} from '@aws-sdk/client-cognito-identity';
 
-const logger = new Logger('Credentials');
+// TODO: Confirm use of this type from the sdk is necessary
+import { Credentials } from '@aws-sdk/client-cognito-identity';
+
+// const logger = new Logger('Credentials');
 
 export type Success<T> = { value: T };
 export type Failure<E> = { error: E };
@@ -28,10 +24,10 @@ export class CognitoCredentialsProvider {
 	}
 	authTokensProvider?: AuthTokensProvider;
 
-	private credentials: AWSCognitoCredentials;
+	private credentials?: Credentials;
 	private refreshCredentials: () => Promise<void>;
 
-	async get(idpInfo?: IdpInfo): Promise<AWSCognitoCredentials> {
+	async get(idpInfo?: IdpInfo): Promise<Credentials | undefined> {
 		// check if the cached credentials can be used
 
 		// check eligibility for guest credentials
@@ -46,8 +42,10 @@ export class CognitoCredentialsProvider {
 		throw new Error('Function not complete.');
 	}
 
-	private async getGuestCredentials(): Promise<AWSCognitoCredentials> {
+	private async getGuestCredentials(): Promise<Credentials | undefined> {
 		// post-check if mandatory sign-in is enabled or identityPoolId is not present
+
+		// const amplifyConfig = Amplify.config;
 
 		// TODO: Access config to check for this value
 		const isMandatorySignInEnabled: Boolean = false;
@@ -58,27 +56,29 @@ export class CognitoCredentialsProvider {
 		}
 
 		// TODO: Access config to check for this value
-		const isIdentityPoolIdPresent: Boolean = true;
-		if (!isIdentityPoolIdPresent) {
-			logger.debug(
-				'No Cognito Identity pool provided for unauthenticated access'
-			);
+		var identityPoolId: string | undefined;
+		identityPoolId = 'us-east-2:24f3f840-a3e1-4174-a1bc-8528fb7d4dd2';
+		if (!identityPoolId) {
+			// logger.debug(
+			// 	'No Cognito Identity pool provided for unauthenticated access'
+			// );
 			return Promise.reject(
 				'No Cognito Identity pool provided for unauthenticated access'
 			);
 		}
 
 		// Check for region availablity that is needed for the client
-		const isRegionAvailable: Boolean = true;
-		if (!isRegionAvailable) {
-			logger.debug('region is not configured for getting the credentials');
+		var region: string | undefined;
+		region = 'us-east-2';
+		if (!region) {
+			// logger.debug('region is not configured for getting the credentials');
 			return Promise.reject(
 				'region is not configured for getting the credentials'
 			);
 		}
 
 		// check if we have the identityId
-		const isIdentityIdAvailable: Boolean = true;
+		const isIdentityIdAvailable: Boolean = false;
 		var IdentityId: string | undefined = '';
 		if (!isIdentityIdAvailable) {
 			// IdentityId is absent so get it using IdentityPoolId with Cognito's GetId API
@@ -92,9 +92,10 @@ export class CognitoCredentialsProvider {
 		// use identityId to obtain guest credentials
 		// save credentials in-memory
 		// TODO: Provide params that include region, identityId and no logins
-		const credentials = (this.credentials = (
-			await credentialsForIdentityIdClient({ identityId: '' })
-		).credentials);
+		const credentials = (
+			await credentialsForIdentityIdClient({ IdentityId: '' })
+		).Credentials;
+
 		return credentials;
 	}
 }
