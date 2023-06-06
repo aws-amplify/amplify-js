@@ -6,7 +6,8 @@ import {
 	Credentials,
 	DateUtils,
 	Signer,
-	Platform,
+	getAmplifyUserAgentString,
+	USER_AGENT_HEADER,
 } from '@aws-amplify/core';
 
 import { apiOptions, ApiInfo } from './types';
@@ -109,14 +110,11 @@ export class RestClient {
 			cancelToken: null,
 		};
 
-		let libraryHeaders = {};
-
-		if (Platform.isReactNative) {
-			const userAgent = Platform.userAgent || 'aws-amplify/0.1.x';
-			libraryHeaders = {
-				'User-Agent': userAgent,
-			};
-		}
+		const libraryHeaders = {
+			[USER_AGENT_HEADER]: getAmplifyUserAgentString(
+				init.customUserAgentDetails
+			),
+		};
 
 		const initParams = Object.assign({}, init);
 		const isAllResponse = initParams.response;
