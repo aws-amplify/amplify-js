@@ -24,6 +24,9 @@ jest.mock('@aws-amplify/core', () => ({
 		dispatch: jest.fn(),
 	},
 	urlSafeEncode: jest.fn(),
+	Category: { Auth: 'auth' },
+	AuthAction: { OAuthToken: '25' },
+	getAmplifyUserAgentString: () => jest.fn(),
 }));
 
 function fetchMockReturn(response) {

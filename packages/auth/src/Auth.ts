@@ -30,6 +30,7 @@ import {
 	Hub,
 	StorageHelper,
 	ICredentials,
+	Platform,
 	browserOrNode,
 	parseAWSExports,
 	UniversalStorage,
@@ -55,6 +56,10 @@ import {
 	NodeCallback,
 	CodeDeliveryDetails,
 } from 'amazon-cognito-identity-js';
+import {
+	addAuthCategoryToCognitoUserAgent,
+	addFrameworkToCognitoUserAgent,
+} from 'amazon-cognito-identity-js/internals';
 
 import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
@@ -131,6 +136,9 @@ export class AuthClass {
 					break;
 			}
 		});
+
+		addAuthCategoryToCognitoUserAgent();
+		addFrameworkToCognitoUserAgent(Platform.framework);
 	}
 
 	public getModuleName() {
