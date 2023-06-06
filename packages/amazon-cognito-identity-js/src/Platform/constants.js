@@ -6,7 +6,6 @@ export const Framework = {
 export const authCategory = 'auth';
 
 // Actions
-/* TODO: Replace 'None' with all expected Actions */
 export const AuthAction = {
 	SignUp: '1',
 	InitiateAuth: '2',

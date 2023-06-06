@@ -48,7 +48,8 @@ export enum ApiAction {
 	GraphQl = '1',
 }
 export enum AuthAction {
-	None = '0',
+	// Standard Auth Actions currently defined in amazon-cognito-identity-js/Platform/constants.js
+	OAuthToken = '25',
 }
 export enum DataStoreAction {
 	Subscribe = '1',
