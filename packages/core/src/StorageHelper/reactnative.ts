@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MMKV } from 'react-native-mmkv';
+
+const storage = new MMKV();
 
 const MEMORY_KEY_PREFIX = '@MemoryStorage:';
 let dataMemory = {};
@@ -16,7 +18,7 @@ class MemoryStorage {
 	 */
 	static setItem(key, value) {
 		if (value) {
-			AsyncStorage.setItem(MEMORY_KEY_PREFIX + key, value);
+			storage.set(MEMORY_KEY_PREFIX + key, value);
 			dataMemory[key] = value;
 			return dataMemory[key];
 		}
@@ -40,7 +42,7 @@ class MemoryStorage {
 	 * @returns {string} value - value that was deleted
 	 */
 	static removeItem(key) {
-		AsyncStorage.removeItem(MEMORY_KEY_PREFIX + key);
+		storage.delete(MEMORY_KEY_PREFIX + key);
 		return delete dataMemory[key];
 	}
 
@@ -54,28 +56,26 @@ class MemoryStorage {
 	}
 
 	/**
-	 * Will sync the MemoryStorage data from AsyncStorage to storageWindow MemoryStorage
+	 * Will sync the MemoryStorage data from MMKV Storage to storageWindow MemoryStorage
 	 * @returns {void}
 	 */
 	static sync() {
 		if (!MemoryStorage.syncPromise) {
 			MemoryStorage.syncPromise = new Promise<void>((res, rej) => {
-				AsyncStorage.getAllKeys((errKeys, keys) => {
-					if (errKeys) rej(errKeys);
+				try {
+					const keys = storage.getAllKeys();
 					const memoryKeys = keys.filter(key =>
 						key.startsWith(MEMORY_KEY_PREFIX)
 					);
-					AsyncStorage.multiGet(memoryKeys, (err, stores) => {
-						if (err) rej(err);
-						stores.map((result, index, store) => {
-							const key = store[index][0];
-							const value = store[index][1];
-							const memoryKey = key.replace(MEMORY_KEY_PREFIX, '');
-							dataMemory[memoryKey] = value;
-						});
-						res();
+					memoryKeys.forEach(key => {
+						const value = storage.getString(key);
+						const memoryKey = key.replace(MEMORY_KEY_PREFIX, '');
+						dataMemory[memoryKey] = value;
 					});
-				});
+					res();
+				} catch (error) {
+					rej(error);
+				}
 			});
 		}
 		return MemoryStorage.syncPromise;

@@ -153,15 +153,15 @@ To get started pick your platform from our [**Getting Started** home page](https
 
 - If you are using React Native (vanilla or Expo), you will need to add the following React Native community dependencies:
   - `@react-native-community/netinfo`
-  - `@react-native-async-storage/async-storage`
+  - `react-native-mmkv`
 
 ```
 // React Native
-yarn add aws-amplify amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage
+yarn add aws-amplify amazon-cognito-identity-js @react-native-community/netinfo react-native-mmkv
 npx pod-install
 
 // Expo
-yarn add aws-amplify @react-native-community/netinfo @react-native-async-storage/async-storage
+yarn add aws-amplify @react-native-community/netinfo react-native-mmkv
 ```
 
 ### Amplify 3.x.x has breaking changes. Please see the breaking changes below:

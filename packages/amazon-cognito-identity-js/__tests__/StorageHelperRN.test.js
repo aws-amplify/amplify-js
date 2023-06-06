@@ -5,7 +5,7 @@ describe('React native storage helper unit tests', () => {
 		});
 
 		var items = {};
-		jest.mock('@react-native-async-storage/async-storage', () => ({
+		jest.mock('react-native-mmkv', () => ({
 			setItem: jest.fn((item, value) => {
 				return new Promise((resolve, reject) => {
 					items[item] = value;
@@ -53,7 +53,7 @@ describe('React native storage helper unit tests', () => {
 			const items = {
 				'@MemoryStorage:key': 'value1',
 			};
-			jest.mock('@react-native-async-storage/async-storage', () => ({
+			jest.mock('react-native-mmkv', () => ({
 				setItem: jest.fn((item, value) => {
 					return new Promise((resolve, reject) => {
 						items[item] = value;
@@ -82,7 +82,7 @@ describe('React native storage helper unit tests', () => {
 		});
 
 		test('Get all keys throws errors', () => {
-			jest.mock('@react-native-async-storage/async-storage', () => ({
+			jest.mock('react-native-mmkv', () => ({
 				getAllKeys: jest.fn(callback => {
 					const err = ['errKey'];
 					callback(err, null);
@@ -97,7 +97,7 @@ describe('React native storage helper unit tests', () => {
 		});
 		test('Multiget throws errors', () => {
 			var items = {};
-			jest.mock('@react-native-async-storage/async-storage', () => ({
+			jest.mock('react-native-mmkv', () => ({
 				getAllKeys: jest.fn(callback => {
 					callback(null, Object.keys(items));
 				}),

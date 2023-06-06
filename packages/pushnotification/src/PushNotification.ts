@@ -8,9 +8,10 @@ import {
 	AppState,
 } from 'react-native';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MMKV } from 'react-native-mmkv';
 import { Amplify, ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
 
+const storage = new MMKV();
 const logger = new Logger('Notification');
 
 const RNPushNotification = NativeModules.RNPushNotification;
@@ -197,10 +198,12 @@ export default class PushNotification {
 	async _registerTokenCached(): Promise<boolean> {
 		const { appId } = this._config;
 		const cacheKey = 'push_token' + appId;
-		return AsyncStorage.getItem(cacheKey).then(lastToken => {
-			if (lastToken) return true;
-			else return false;
-		});
+		const lastToken = storage.getString(cacheKey);
+		if (lastToken) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -401,44 +404,38 @@ export default class PushNotification {
 	 */
 	updateEndpoint(token) {
 		if (!token) {
-			logger.debug('no device token recieved on register');
+			logger.debug('no device token received on register');
 			return;
 		}
 
 		const { appId } = this._config;
 		const cacheKey = 'push_token' + appId;
 		logger.debug('update endpoint in push notification', token);
-		AsyncStorage.getItem(cacheKey)
-			.then(lastToken => {
-				if (!lastToken || lastToken !== token) {
-					logger.debug('refresh the device token with', token);
-					const config = {
-						Address: token,
-						OptOut: 'NONE',
-					};
-					if (
-						Amplify.Analytics &&
-						typeof Amplify.Analytics.updateEndpoint === 'function'
-					) {
-						Amplify.Analytics.updateEndpoint(config)
-							.then(data => {
-								logger.debug(
-									'update endpoint success, setting token into cache'
-								);
-								AsyncStorage.setItem(cacheKey, token);
-							})
-							.catch(e => {
-								// ........
-								logger.debug('update endpoint failed', e);
-							});
-					} else {
-						logger.debug('Analytics module is not registered into Amplify');
-					}
-				}
-			})
-			.catch(e => {
-				logger.debug('set device token in cache failed', e);
-			});
+
+		const lastToken = storage.getString(cacheKey);
+		if (!lastToken || lastToken !== token) {
+			logger.debug('refresh the device token with', token);
+			const config = {
+				Address: token,
+				OptOut: 'NONE',
+			};
+			if (
+				Amplify.Analytics &&
+				typeof Amplify.Analytics.updateEndpoint === 'function'
+			) {
+				Amplify.Analytics.updateEndpoint(config)
+					.then(data => {
+						logger.debug('update endpoint success, setting token into cache');
+						storage.setString(cacheKey, token);
+					})
+					.catch(e => {
+						// ........
+						logger.debug('update endpoint failed', e);
+					});
+			} else {
+				logger.debug('Analytics module is not registered into Amplify');
+			}
+		}
 	}
 
 	/**

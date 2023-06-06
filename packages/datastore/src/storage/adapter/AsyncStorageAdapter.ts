@@ -28,7 +28,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 	protected async preOpCheck() {}
 
 	/**
-	 * Open AsyncStorage database
+	 * Open MMKV Storage database
 	 * Create new DB if one doesn't exist
 	 *
 	 * Called by `StorageAdapterBase.setUp()`

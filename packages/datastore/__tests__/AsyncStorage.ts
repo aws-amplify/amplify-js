@@ -135,9 +135,9 @@ function setUpSchema(beforeSetUp?: Function) {
 	>initSchema(newSchema));
 }
 
-describe('AsyncStorage tests', () => {
+describe('Storage tests', () => {
 	const { InMemoryStore } = require('../src/storage/adapter/InMemoryStore');
-	const AsyncStorage = new InMemoryStore();
+	const Storage = new InMemoryStore();
 
 	let blog: InstanceType<typeof Blog>,
 		blog2: InstanceType<typeof Blog>,
@@ -189,7 +189,7 @@ describe('AsyncStorage tests', () => {
 	});
 
 	test('setup function', async () => {
-		const allKeys = await AsyncStorage.getAllKeys();
+		const allKeys = await Storage.getAllKeys();
 		expect(allKeys).not.toHaveLength(0); // At leaset the settings entry should be present
 		expect(allKeys[0]).toMatch(
 			new RegExp(
@@ -204,9 +204,7 @@ describe('AsyncStorage tests', () => {
 		await DataStore.save(owner);
 
 		const get1 = JSON.parse(
-			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, Blog.name, blog.id)
-			)
+			await Storage.getItem(getKeyForAsyncStorage(USER, Blog.name, blog.id))
 		);
 
 		expect({
@@ -217,7 +215,7 @@ describe('AsyncStorage tests', () => {
 		expect(get1['blogOwnerId']).toBe(owner.id);
 
 		const get2 = JSON.parse(
-			await AsyncStorage.getItem(
+			await Storage.getItem(
 				getKeyForAsyncStorage(USER, BlogOwner.name, owner.id)
 			)
 		);
@@ -227,9 +225,7 @@ describe('AsyncStorage tests', () => {
 		await DataStore.save(blog2);
 
 		const get3 = JSON.parse(
-			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, Blog.name, blog2.id)
-			)
+			await Storage.getItem(getKeyForAsyncStorage(USER, Blog.name, blog2.id))
 		);
 
 		expect({
@@ -254,7 +250,7 @@ describe('AsyncStorage tests', () => {
 		await DataStore.save(p);
 
 		const postFromDB = JSON.parse(
-			await AsyncStorage.getItem(getKeyForAsyncStorage(USER, Post.name, p.id))
+			await Storage.getItem(getKeyForAsyncStorage(USER, Post.name, p.id))
 		);
 
 		expect(postFromDB.metadata).toMatchObject({
@@ -271,9 +267,7 @@ describe('AsyncStorage tests', () => {
 		await DataStore.save(owner);
 
 		const get1 = JSON.parse(
-			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, Blog.name, blog.id)
-			)
+			await Storage.getItem(getKeyForAsyncStorage(USER, Blog.name, blog.id))
 		);
 
 		expect(get1['blogOwnerId']).toBe(owner.id);
@@ -283,9 +277,7 @@ describe('AsyncStorage tests', () => {
 
 		await DataStore.save(updated);
 		const get2 = JSON.parse(
-			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, Blog.name, blog.id)
-			)
+			await Storage.getItem(getKeyForAsyncStorage(USER, Blog.name, blog.id))
 		);
 
 		expect(get2.name).toEqual(updated.name);
@@ -561,14 +553,14 @@ describe('AsyncStorage tests', () => {
 
 		expect(deleted).toStrictEqual(author);
 
-		const fromDB = await AsyncStorage.getItem(
+		const fromDB = await Storage.getItem(
 			getKeyForAsyncStorage(USER, Author.name, author.id)
 		);
 
 		expect(fromDB).toBeUndefined();
 	});
 
-	describe('Internal AsyncStorage key schema changes', () => {
+	describe('Internal Storage key schema changes', () => {
 		test('Keys are migrated to the new format with ulid', async () => {
 			setUpSchema(() => {
 				/**
@@ -594,14 +586,14 @@ describe('AsyncStorage tests', () => {
 			const oldData: [
 				string,
 				string[]
-			] = require('./AsyncStorage.migration.data.json');
+			] = require('./Storage.migration.data.json');
 
 			inmemoryMap.clear();
 			oldData.forEach(([k, v]) => inmemoryMap.set(k, v));
 
 			await DataStore.query(Post);
 
-			const newKeys = await AsyncStorage.getAllKeys();
+			const newKeys = await Storage.getAllKeys();
 
 			expect(newKeys).toMatchSnapshot();
 		});

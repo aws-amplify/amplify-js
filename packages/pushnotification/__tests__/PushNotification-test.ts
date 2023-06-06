@@ -25,7 +25,7 @@ jest.mock('react-native', () => ({
 	},
 }));
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-mmkv', () => ({
 	getItem: () => new Promise(res => res('item')),
 	setItem: jest.fn(),
 }));

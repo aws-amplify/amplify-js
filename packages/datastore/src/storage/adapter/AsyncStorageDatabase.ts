@@ -330,7 +330,7 @@ class AsyncStorageDatabase {
 	}
 
 	/**
-	 * Clear the AsyncStorage of all DataStore entries
+	 * Clear the MMKV Storage of all DataStore entries
 	 */
 	async clear() {
 		const allKeys = await this.storage.getAllKeys();
