@@ -29,7 +29,7 @@ export { Signer } from './Signer';
 export { parseAWSExports } from './parseAWSExports';
 export { AWSCloudWatchProvider } from './Providers';
 export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
-export { AppState, AsyncStorage, Linking } from './RNComponents';
+export { AppState, Storage, Linking } from './RNComponents';
 export { Credentials, CredentialsClass } from './Credentials';
 export { ServiceWorker } from './ServiceWorker';
 export { ICredentials } from './types';

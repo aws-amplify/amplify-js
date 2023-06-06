@@ -2,5 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Linking, AppState } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-export { Linking, AppState, AsyncStorage };
+import { MMKV } from 'react-native-mmkv';
+const Storage = new MMKV();
+export { Linking, AppState, Storage };

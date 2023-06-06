@@ -2,15 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MMKV } from 'react-native-mmkv';
 import { StorageCache } from './StorageCache';
 import { defaultConfig, getCurrTime } from './Utils';
 import { ICache } from './types';
 
+const storage = new MMKV();
 const logger = new Logger('AsyncStorageCache');
 
 /*
- * Customized cache which based on the AsyncStorage with LRU implemented
+ * Customized cache which based on the MMKV Storage with LRU implemented
  */
 export class AsyncStorageCache extends StorageCache implements ICache {
 	/**
@@ -36,10 +37,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 */
 	async _decreaseCurSizeInBytes(amount) {
 		const curSize = await this.getCacheCurSize();
-		await AsyncStorage.setItem(
-			this.cacheCurSizeKey,
-			(curSize - amount).toString()
-		);
+		storage.set(this.cacheCurSizeKey, (curSize - amount).toString());
 	}
 
 	/**
@@ -49,10 +47,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 */
 	async _increaseCurSizeInBytes(amount) {
 		const curSize = await this.getCacheCurSize();
-		await AsyncStorage.setItem(
-			this.cacheCurSizeKey,
-			(curSize + amount).toString()
-		);
+		storage.set(this.cacheCurSizeKey, (curSize + amount).toString());
 	}
 
 	/**
@@ -65,7 +60,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 */
 	async _refreshItem(item, prefixedKey) {
 		item.visitedTime = getCurrTime();
-		await AsyncStorage.setItem(prefixedKey, JSON.stringify(item));
+		storage.set(prefixedKey, JSON.stringify(item));
 		return item;
 	}
 
@@ -77,10 +72,12 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 * @return true if the item is expired.
 	 */
 	async _isExpired(key) {
-		const text = await AsyncStorage.getItem(key);
-		const item = JSON.parse(text);
-		if (getCurrTime() >= item.expires) {
-			return true;
+		const text = storage.getString(key);
+		if (text !== undefined) {
+			const item = JSON.parse(text);
+			if (getCurrTime() >= item.expires) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -94,13 +91,13 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	async _removeItem(prefixedKey, size?) {
 		const itemSize = size
 			? size
-			: JSON.parse(await AsyncStorage.getItem(prefixedKey)).byteSize;
+			: JSON.parse(storage.getString(prefixedKey)).byteSize;
 		// first try to update the current size of the cache
 		await this._decreaseCurSizeInBytes(itemSize);
 
 		// try to remove the item from cache
 		try {
-			await AsyncStorage.removeItem(prefixedKey);
+			storage.delete(prefixedKey);
 		} catch (removeItemError) {
 			// if some error happened, we need to rollback the current size
 			await this._increaseCurSizeInBytes(itemSize);
@@ -121,7 +118,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 
 		// try to add the item into cache
 		try {
-			await AsyncStorage.setItem(prefixedKey, JSON.stringify(item));
+			storage.set(prefixedKey, JSON.stringify(item));
 		} catch (setItemErr) {
 			// if some error happened, we need to rollback the current size
 			await this._decreaseCurSizeInBytes(item.byteSize);
@@ -169,7 +166,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 		const keys = [];
 		let keyInCache = [];
 
-		keyInCache = await AsyncStorage.getAllKeys();
+		keyInCache = storage.getAllKeys();
 
 		for (let i = 0; i < keyInCache.length; i += 1) {
 			const key = keyInCache[i];
@@ -199,7 +196,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 		const items = [];
 		let remainedSize = sizeToPop;
 		for (let i = 0; i < keys.length; i += 1) {
-			const val = await AsyncStorage.getItem(keys[i]);
+			const val = storage.getString(keys[i]);
 			if (val != null) {
 				const item = JSON.parse(val);
 				items.push(item);
@@ -247,6 +244,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 * @param {Object} [options] - optional, the specified meta-data
 	 * @return {Prmoise}
 	 */
+
 	async setItem(key, value, options) {
 		logger.debug(
 			`Set item: key is ${key}, value is ${value} with options: ${options}`
@@ -296,7 +294,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 
 		try {
 			// first look into the storage, if it exists, delete it.
-			const val = await AsyncStorage.getItem(prefixedKey);
+			const val = storage.getString(prefixedKey);
 			if (val) {
 				await this._removeItem(prefixedKey, JSON.parse(val).byteSize);
 			}
@@ -325,7 +323,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 * Please make sure the callback function will return the value you want to put into the cache.
 	 * The cache will abort output a warning:
 	 * If the key is invalid
-	 * If error happened with AsyncStorage
+	 * If error happened with MMKV Storage
 	 *
 	 * @param {String} key - the key of the item
 	 * @param {Object} [options] - the options of callback function
@@ -345,7 +343,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 		}
 
 		try {
-			ret = await AsyncStorage.getItem(prefixedKey);
+			ret = storage.getString(prefixedKey); // you would use getNumber or getBoolean if you were expecting a number or boolean
 			if (ret != null) {
 				if (await this._isExpired(prefixedKey)) {
 					// if expired, remove that item and return null
@@ -375,7 +373,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	/**
 	 * remove item from the cache
 	 * The cache will abort output a warning:
-	 * If error happened with AsyncStorage
+	 * If error happened with MMKV Storage
 	 * @param {String} key - the key of the item
 	 * @return {Promise}
 	 */
@@ -391,7 +389,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 		}
 
 		try {
-			const val = await AsyncStorage.getItem(prefixedKey);
+			const val = storage.getString(prefixedKey);
 			if (val) {
 				await this._removeItem(prefixedKey, JSON.parse(val).byteSize);
 			}
@@ -403,13 +401,13 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	/**
 	 * clear the entire cache
 	 * The cache will abort output a warning:
-	 * If error happened with AsyncStorage
+	 * If error happened with MMKV Storage
 	 * @return {Promise}
 	 */
 	async clear() {
 		logger.debug(`Clear Cache`);
 		try {
-			const keys = await AsyncStorage.getAllKeys();
+			const keys = storage.getAllKeys();
 
 			const keysToRemove = [];
 			for (let i = 0; i < keys.length; i += 1) {
@@ -420,7 +418,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 
 			// can be improved
 			for (let i = 0; i < keysToRemove.length; i += 1) {
-				await AsyncStorage.removeItem(keysToRemove[i]);
+				storage.remove(keysToRemove[i]);
 			}
 		} catch (e) {
 			logger.warn(`clear failed! ${e}`);
@@ -432,9 +430,9 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 * @return {Promise}
 	 */
 	async getCacheCurSize() {
-		let ret = await AsyncStorage.getItem(this.cacheCurSizeKey);
+		let ret = storage.getString(this.cacheCurSizeKey);
 		if (!ret) {
-			await AsyncStorage.setItem(this.cacheCurSizeKey, '0');
+			storage.setString(this.cacheCurSizeKey, '0');
 			ret = '0';
 		}
 		return Number(ret);
@@ -447,7 +445,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 */
 	async getAllKeys() {
 		try {
-			const keys = await AsyncStorage.getAllKeys();
+			const keys = storage.getAllKeys();
 
 			const retKeys = [];
 			for (let i = 0; i < keys.length; i += 1) {
@@ -460,7 +458,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 			}
 			return retKeys;
 		} catch (e) {
-			logger.warn(`getALlkeys failed! ${e}`);
+			logger.warn(`getAllKeys failed! ${e}`);
 			return [];
 		}
 	}
@@ -480,6 +478,6 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 }
 
 const instance: ICache = new AsyncStorageCache();
-export { AsyncStorage, instance as Cache };
+export { storage, instance as Cache };
 
 Amplify.register(instance);

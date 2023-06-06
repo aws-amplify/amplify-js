@@ -1,6 +1,4 @@
-const AsyncStorage = jest.genMockFromModule(
-	'@react-native-async-storage/async-storage'
-);
+const Storage = jest.genMockFromModule('react-native-mmkv');
 
 var store = {};
 var curSize = 0;
@@ -96,13 +94,13 @@ function setSize(size) {
 	maxSize = size;
 }
 
-AsyncStorage.getItem = getItem;
-AsyncStorage.setItem = setItem;
-AsyncStorage.removeItem = removeItem;
-AsyncStorage.getAllKeys = getAllKeys;
-AsyncStorage.multiGet = multiGet;
+Storage.getItem = getItem;
+Storage.setItem = setItem;
+Storage.removeItem = removeItem;
+Storage.getAllKeys = getAllKeys;
+Storage.multiGet = multiGet;
 
-AsyncStorage.getSize = getSize;
-AsyncStorage.setSize = setSize;
+Storage.getSize = getSize;
+Storage.setSize = setSize;
 
-module.exports = AsyncStorage;
+module.exports = Storage;
