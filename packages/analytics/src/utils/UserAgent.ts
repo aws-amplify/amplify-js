@@ -10,10 +10,10 @@ const userAgentDetails = {
 	action: AnalyticsAction.Record,
 } as const;
 
-export function getAnalyticsUserAgent() {
+export function getAnalyticsUserAgent(action: AnalyticsAction) {
 	return getAmplifyUserAgent(userAgentDetails);
 }
 
-export function getAnalyticsUserAgentString() {
+export function getAnalyticsUserAgentString(action: AnalyticsAction) {
 	return getAmplifyUserAgentString(userAgentDetails);
 }

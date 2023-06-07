@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { AnalyticsAction, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { AWSKinesisProvider } from './AWSKinesisProvider';
 import {
 	PutRecordBatchCommand,
@@ -98,7 +98,7 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 			apiVersion: '2015-08-04',
 			region,
 			credentials,
-			customUserAgent: getAnalyticsUserAgent(),
+			customUserAgent: getAnalyticsUserAgent(AnalyticsAction.Record),
 		});
 		return true;
 	}

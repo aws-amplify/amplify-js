@@ -5,6 +5,7 @@ import {
 	ConsoleLogger as Logger,
 	Credentials,
 	browserOrNode,
+	AnalyticsAction,
 } from '@aws-amplify/core';
 import {
 	PersonalizeEventsClient,
@@ -372,7 +373,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		this._personalize = new PersonalizeEventsClient({
 			region,
 			credentials,
-			customUserAgent: getAnalyticsUserAgent(),
+			customUserAgent: getAnalyticsUserAgent(AnalyticsAction.Record),
 		});
 		return true;
 	}
