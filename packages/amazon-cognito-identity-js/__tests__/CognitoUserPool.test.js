@@ -1,7 +1,5 @@
 import CognitoUserPool from '../src/CognitoUserPool';
 import Client from '../src/Client';
-import { getUserAgent } from '../src/Platform';
-import { AuthAction } from '../src/Platform/constants';
 import {
 	clientId,
 	userPoolId,
@@ -9,7 +7,6 @@ import {
 	userName,
 	password,
 } from './constants';
-import { addAuthCategoryToCognitoUserAgent } from '../src/UserAgent';
 
 describe('Constructor and accessor methods', () => {
 	const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
@@ -91,26 +88,5 @@ describe('Testing signUp of a user into a user pool', () => {
 		const callback = jest.fn();
 		cognitoUserPool.signUp(userName, password, [], [], callback, []);
 		expect(callback.mock.calls.length).toBe(1);
-	});
-
-	test('headers contain user agent with auth category and sign up action', () => {
-		const fetchMock = jest
-			.spyOn(global, 'fetch')
-			.mockImplementation(() =>
-				Promise.resolve({ json: () => Promise.resolve([]) })
-			);
-
-		addAuthCategoryToCognitoUserAgent();
-
-		const callback = jest.fn();
-		cognitoUserPool.signUp(userName, password, [], [], callback, []);
-		expect(fetchMock).toBeCalledWith(
-			expect.anything(),
-			expect.objectContaining({
-				headers: expect.objectContaining({
-					'X-Amz-User-Agent': `${getUserAgent()} auth/${AuthAction.SignUp}`,
-				}),
-			})
-		);
 	});
 });

@@ -171,7 +171,7 @@ export default class OAuth {
 
 		const customUserAgentDetails: CustomUserAgentDetails = {
 			category: Category.Auth,
-			action: AuthAction.OAuthToken,
+			action: AuthAction.FederatedSignIn,
 		};
 
 		const { access_token, refresh_token, id_token, error } = await (
