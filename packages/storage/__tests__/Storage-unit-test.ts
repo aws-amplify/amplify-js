@@ -44,10 +44,6 @@ class TestCustomProvider implements StorageProvider {
 		return Promise.resolve({ newKey: 'get' });
 	}
 
-	getProperties(key: string, options?: CustomProviderConfig) {
-		return Promise.resolve({ newKey: 'getProperties' });
-	}
-
 	put(key: string, object: any, config: CustomProviderConfig) {
 		return Promise.resolve({ newKey: 'put' });
 	}
@@ -68,9 +64,18 @@ class TestCustomProviderWithCopy
 	copy(
 		src: { key: string },
 		dest: { key: string },
-		config: CustomProviderConfig
+		config?: CustomProviderConfig
 	) {
 		return Promise.resolve({ newKey: 'copy' });
+	}
+}
+
+class TestCustomProviderWithGetProperties
+	extends TestCustomProvider
+	implements StorageProvider
+{
+	getProperties(key: string, options?: CustomProviderConfig) {
+		return Promise.resolve({ newKey: 'getProperties' });
 	}
 }
 
@@ -678,7 +683,7 @@ describe('Storage', () => {
 		});
 
 		test('get properties with custom provider should work with no generic type provided', async () => {
-			const customProvider = new TestCustomProvider();
+			const customProvider = new TestCustomProviderWithGetProperties();
 			const customProviderGetSpy = jest.spyOn(customProvider, 'getProperties');
 			storage.addPluggable(customProvider);
 			await storage.getProperties('key', {

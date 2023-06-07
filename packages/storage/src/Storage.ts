@@ -324,7 +324,7 @@ export class Storage {
 		const cancelTokenSource = this.getCancellableTokenSource();
 		if (typeof plugin.getProperties !== 'function') {
 			return Promise.reject(
-				`.copy is not implemented on provider ${plugin.getProviderName()}`
+				`.getProperties is not implemented on provider ${plugin.getProviderName()}`
 			) as StorageGetPropertiesOutput<T>;
 		}
 		const responsePromise = plugin?.getProperties(key, {
