@@ -321,7 +321,7 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	protected _createNewS3Client(config, emitter?: events.EventEmitter) {
-		const s3client = createS3Client(config, StorageAction.UploadData, emitter);
+		const s3client = createS3Client(config, StorageAction.Put, emitter);
 		s3client.middlewareStack.add(
 			createPrefixMiddleware(this.opts, this.params.Key),
 			prefixMiddlewareOptions

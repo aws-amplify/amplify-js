@@ -383,10 +383,7 @@ export class AWSS3Provider implements StorageProvider {
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		const emitter = new events.EventEmitter();
-		const storageAction = download
-			? StorageAction.DownloadData
-			: StorageAction.GetUrl;
-		const s3 = this._createNewS3Client(opt, storageAction, emitter);
+		const s3 = this._createNewS3Client(opt, StorageAction.Get, emitter);
 		logger.debug('get ' + key + ' from ' + final_key);
 
 		const params: GetObjectCommandInput = {
@@ -584,7 +581,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		if (resumable === true) {
-			const s3Client = this._createNewS3Client(opt, StorageAction.UploadData);
+			const s3Client = this._createNewS3Client(opt, StorageAction.Put);
 			// we are using aws sdk middleware to inject the prefix to key, this way we don't have to call
 			// this._ensureCredentials() which allows us to make this function sync so we can return non-Promise like UploadTask
 			s3Client.middlewareStack.add(

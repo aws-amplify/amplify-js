@@ -127,13 +127,13 @@ describe('S3ClientUtils tests', () => {
 				region: 'us-west-2',
 				useAccelerateEndpoint: true,
 			},
-			StorageAction.GetUrl
+			StorageAction.Get
 		);
 		// ensure customUserAgent is set properly
 		expect(s3client.config.customUserAgent).toEqual(
 			getAmplifyUserAgent({
 				category: Category.Storage,
-				action: StorageAction.GetUrl,
+				action: StorageAction.Get,
 			})
 		);
 		expect(await s3client.config.region()).toEqual('us-west-2');
@@ -146,7 +146,7 @@ describe('S3ClientUtils tests', () => {
 				region: 'us-west-2',
 				dangerouslyConnectToHttpEndpointForTesting: true,
 			},
-			StorageAction.GetUrl
+			StorageAction.Get
 		);
 		expect(await s3client.config.endpoint()).toStrictEqual({
 			hostname: 'localhost',
