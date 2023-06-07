@@ -59,14 +59,10 @@ export interface StorageProviderWithGetProperties extends StorageProvider {
 	getProperties(key: string, options?): Promise<Object>;
 }
 
-// export interface optionalAPI
-// 	extends StorageProviderWithGetProperties,
-// 		StorageProviderWithCopy {}
-
 export type StorageProviderApi =
-	| 'getProperties'
 	| 'copy'
 	| 'get'
 	| 'put'
 	| 'remove'
-	| 'list';
+	| 'list'
+	| 'getProperties';
