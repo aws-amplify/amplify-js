@@ -12,7 +12,7 @@ export type IdentityIdForPoolIdClientInput = Pick<
 export async function identityIdForPoolIdClient(
 	params: IdentityIdForPoolIdClientInput
 ): Promise<GetIdCommandOutput> {
-	const client = new UserPoolHttpClient(UserPoolClient.region);
+	const client = new UserPoolHttpClient(UserPoolClient.region, 'identity');
 	const result: GetIdCommandOutput = await client.send<GetIdCommandOutput>(
 		'GetId',
 		{

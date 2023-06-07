@@ -56,18 +56,31 @@ export type ClientOperations =
 	| 'InitiateAuth'
 	| 'RespondToAuthChallenge'
 	| 'ResendConfirmationCode'
-	| 'GetId';
+	| 'GetId'
+	| 'GetCredentialsForIdentity';
+
+export type ServiceTypes = 'identity' | 'idp';
+
+type Services =
+	| 'AWSCognitoIdentityProviderService'
+	| 'AWSCognitoIdentityService';
 
 export class UserPoolHttpClient {
 	private _endpoint: string;
+	private _service: Services = 'AWSCognitoIdentityProviderService';
+
 	private _headers = {
 		'Content-Type': 'application/x-amz-json-1.1',
 		'X-Amz-User-Agent': USER_AGENT,
 		'Cache-Control': 'no-store',
 	};
 
-	constructor(region: string) {
-		this._endpoint = `https://cognito-idp.${region}.amazonaws.com/`;
+	constructor(region: string, serviceType: ServiceTypes = 'idp') {
+		this._service =
+			serviceType === 'identity'
+				? 'AWSCognitoIdentityService'
+				: 'AWSCognitoIdentityProviderService';
+		this._endpoint = `https://cognito-${serviceType}.${region}.amazonaws.com/`;
 	}
 
 	async send<T extends ClientOutputs>(
@@ -76,7 +89,7 @@ export class UserPoolHttpClient {
 	): Promise<T> {
 		const headers = {
 			...this._headers,
-			'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
+			'X-Amz-Target': `${this._service}.${operation}`,
 		};
 		const options: RequestInit = {
 			headers,

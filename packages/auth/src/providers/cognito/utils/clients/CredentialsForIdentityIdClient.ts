@@ -14,8 +14,11 @@ export async function credentialsForIdentityIdClient(
 ): Promise<GetCredentialsForIdentityCommandOutput> {
 	const client = new UserPoolHttpClient(UserPoolClient.region);
 	const result: GetCredentialsForIdentityCommandOutput =
-		await client.send<GetCredentialsForIdentityCommandOutput>('GetId', {
-			...params,
-		});
+		await client.send<GetCredentialsForIdentityCommandOutput>(
+			'GetCredentialsForIdentity',
+			{
+				...params,
+			}
+		);
 	return result;
 }

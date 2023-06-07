@@ -7,3 +7,4 @@ export { confirmResetPassword } from './apis/confirmResetPassword';
 export { signIn } from './apis/signIn';
 export { resendSignUpCode } from './apis/resendSignUpCode';
 export { CognitoCredentialsProvider } from './apis/credentialsProvider';
+export { CognitoAuthTokensProvider } from './apis/tokensProvider';

@@ -1,12 +1,10 @@
-// import { Logger } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { identityIdForPoolIdClient } from '../utils/clients/IdentityIdForPoolIdClient';
 import { credentialsForIdentityIdClient } from '../utils/clients/CredentialsForIdentityIdClient';
 import { AuthTokensProvider } from './tokensProvider';
 
 // TODO: Confirm use of this type from the sdk is necessary
 import { Credentials } from '@aws-sdk/client-cognito-identity';
-
-// const logger = new Logger('Credentials');
 
 export type Success<T> = { value: T };
 export type Failure<E> = { error: E };
@@ -32,14 +30,16 @@ export class CognitoCredentialsProvider {
 
 		// check eligibility for guest credentials
 		var userpoolTokens = await this.authTokensProvider?.getAuthTokens();
+		console.log('userpoolTokens: ', isError(userpoolTokens));
+
 		if (isError(userpoolTokens)) {
-			userpoolTokens.error;
+			console.log('userpoolTokens.error: ', userpoolTokens.error.message);
 			return await this.getGuestCredentials();
 		} else {
 			userpoolTokens?.value;
 		}
 
-		throw new Error('Function not complete.');
+		// throw new Error('Function not complete.');
 	}
 
 	private async getGuestCredentials(): Promise<Credentials | undefined> {
@@ -54,14 +54,21 @@ export class CognitoCredentialsProvider {
 				'cannot get guest credentials when mandatory signin is enabled'
 			);
 		}
+		const amplifyConfig = Amplify.config;
+		console.log('amplifyConfig: ', amplifyConfig);
 
 		// TODO: Access config to check for this value
 		var identityPoolId: string | undefined;
+		// console.log('identityPoolId: ', identityPoolId);
+
+		// identityPoolId = amplifyConfig.identityPoolId;
+		// console.log('identityPoolId: ', identityPoolId);
+		// return Promise.resolve(undefined);
 		identityPoolId = 'us-east-2:24f3f840-a3e1-4174-a1bc-8528fb7d4dd2';
 		if (!identityPoolId) {
-			// logger.debug(
-			// 	'No Cognito Identity pool provided for unauthenticated access'
-			// );
+			console.log(
+				'No Cognito Identity pool provided for unauthenticated access'
+			);
 			return Promise.reject(
 				'No Cognito Identity pool provided for unauthenticated access'
 			);
@@ -71,7 +78,7 @@ export class CognitoCredentialsProvider {
 		var region: string | undefined;
 		region = 'us-east-2';
 		if (!region) {
-			// logger.debug('region is not configured for getting the credentials');
+			console.log('region is not configured for getting the credentials');
 			return Promise.reject(
 				'region is not configured for getting the credentials'
 			);
@@ -81,9 +88,10 @@ export class CognitoCredentialsProvider {
 		const isIdentityIdAvailable: Boolean = false;
 		var IdentityId: string | undefined = '';
 		if (!isIdentityIdAvailable) {
+			console.log('Getting identityId');
 			// IdentityId is absent so get it using IdentityPoolId with Cognito's GetId API
 			({ IdentityId } = await identityIdForPoolIdClient({
-				IdentityPoolId: '',
+				IdentityPoolId: identityPoolId,
 			}));
 		}
 
@@ -93,7 +101,7 @@ export class CognitoCredentialsProvider {
 		// save credentials in-memory
 		// TODO: Provide params that include region, identityId and no logins
 		const credentials = (
-			await credentialsForIdentityIdClient({ IdentityId: '' })
+			await credentialsForIdentityIdClient({ IdentityId: IdentityId })
 		).Credentials;
 
 		return credentials;
