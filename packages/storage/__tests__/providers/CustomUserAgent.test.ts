@@ -43,7 +43,7 @@ describe('Each Storage call should create a client with the right StorageAction'
 		await storage.get('test');
 		expect(utils.createS3Client).toBeCalledWith(
 			expect.anything(),
-			StorageAction.GetUrl,
+			StorageAction.Get,
 			expect.anything()
 		);
 	});
@@ -60,7 +60,7 @@ describe('Each Storage call should create a client with the right StorageAction'
 		await storage.get('test', { download: true });
 		expect(utils.createS3Client).toBeCalledWith(
 			expect.anything(),
-			StorageAction.DownloadData,
+			StorageAction.Get,
 			expect.anything()
 		);
 	});
@@ -69,7 +69,7 @@ describe('Each Storage call should create a client with the right StorageAction'
 		await storage.put('test', 'testData');
 		expect(utils.createS3Client).toBeCalledWith(
 			expect.anything(),
-			StorageAction.UploadData,
+			StorageAction.Put,
 			expect.anything()
 		);
 	});
