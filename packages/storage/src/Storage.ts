@@ -322,7 +322,12 @@ export class Storage {
 			throw new Error('No plugin found with providerName');
 		}
 		const cancelTokenSource = this.getCancellableTokenSource();
-		const responsePromise = plugin.getProperties(key, {
+		if (typeof plugin.getProperties !== 'function') {
+			return Promise.reject(
+				`.copy is not implemented on provider ${plugin.getProviderName()}`
+			) as StorageGetPropertiesOutput<T>;
+		}
+		const responsePromise = plugin?.getProperties(key, {
 			...config,
 		});
 		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);

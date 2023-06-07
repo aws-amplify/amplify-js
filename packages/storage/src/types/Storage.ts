@@ -16,6 +16,7 @@ import {
 	S3ProviderCopyOutput,
 	S3ProviderPutOutput,
 	S3ProviderGetPropertiesOutput,
+	StorageProviderWithGetProperties,
 } from '../';
 
 type Tail<T extends any[]> = ((...t: T) => void) extends (
@@ -70,13 +71,18 @@ export type StorageCopyDestination = Omit<StorageCopyTarget, 'identityId'>;
  * config.
  */
 type StorageOperationConfig<
-	T extends StorageProvider | StorageProviderWithCopy,
+	T extends
+		| StorageProvider
+		| StorageProviderWithCopy
+		| StorageProviderWithGetProperties,
 	U extends StorageProviderApi
 > = ReturnType<T['getProviderName']> extends 'AWSS3'
 	? LastParameter<AWSS3Provider[U]> // check if it has 'copy' function because 'copy' is optional
-	: T extends StorageProviderWithCopy
-	? LastParameter<T[U]> & { provider: ReturnType<T['getProviderName']> }
-	: LastParameter<T[Exclude<U, 'copy'>]> & {
+	: T extends StorageProviderWithCopy & StorageProviderWithGetProperties
+	? LastParameter<T[U]> & {
+			provider: ReturnType<T['getProviderName']>;
+	  }
+	: LastParameter<T[Exclude<U, 'copy' | 'getProperties'>]> & {
 			provider: ReturnType<T['getProviderName']>;
 	  };
 
@@ -89,7 +95,7 @@ export type StorageGetConfig<T extends Record<string, any>> =
 		  >;
 
 export type StorageGetPropertiesConfig<T extends Record<string, any>> =
-	T extends StorageProvider
+	T extends StorageProviderWithGetProperties
 		? StorageOperationConfig<T, 'getProperties'>
 		: StorageOperationConfigMap<
 				StorageOperationConfig<AWSS3Provider, 'getProperties'>,
@@ -141,9 +147,9 @@ type PickProviderOutput<
 > = T extends StorageProvider
 	? T['getProviderName'] extends 'AWSS3'
 		? DefaultOutput
-		: T extends StorageProviderWithCopy
+		: T extends StorageProviderWithCopy & StorageProviderWithGetProperties
 		? ReturnType<T[api]>
-		: ReturnType<T[Exclude<api, 'copy'>]>
+		: ReturnType<T[Exclude<api, 'copy' | 'getProperties'>]>
 	: T extends { provider: string }
 	? T extends { provider: 'AWSS3' }
 		? DefaultOutput

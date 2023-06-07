@@ -21,7 +21,7 @@ export interface StorageProvider {
 	get(key: string, options?): Promise<string | Object>;
 
 	// get properties of object
-	getProperties(key: string, options?): Promise<Object>;
+	getProperties?(key: string, options?): Promise<Object>;
 
 	// upload storage object
 	put(key: string, object, options?): Promise<Object> | UploadTask;
@@ -55,10 +55,18 @@ export interface StorageProviderWithCopy extends StorageProvider {
 	): Promise<any>;
 }
 
+export interface StorageProviderWithGetProperties extends StorageProvider {
+	getProperties(key: string, options?): Promise<Object>;
+}
+
+// export interface optionalAPI
+// 	extends StorageProviderWithGetProperties,
+// 		StorageProviderWithCopy {}
+
 export type StorageProviderApi =
+	| 'getProperties'
 	| 'copy'
 	| 'get'
 	| 'put'
 	| 'remove'
-	| 'list'
-	| 'getProperties';
+	| 'list';
