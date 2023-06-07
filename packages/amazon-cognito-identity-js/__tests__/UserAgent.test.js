@@ -8,7 +8,7 @@ import UserAgent, {
 
 const DEFAULT_USER_AGENT = 'aws-amplify/0.1.x';
 const USER_AGENT_FRAMEWORK0 = 'framework/0';
-const USER_AGENT_AUTH = `auth`;
+const USER_AGENT_AUTH = 'auth';
 
 describe('UserAgent test', () => {
 	beforeEach(() => {
