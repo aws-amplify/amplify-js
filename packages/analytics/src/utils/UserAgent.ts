@@ -5,15 +5,16 @@ import {
 	getAmplifyUserAgentString,
 } from '@aws-amplify/core';
 
-const userAgentDetails = {
-	category: Category.Analytics,
-	action: AnalyticsAction.Record,
-} as const;
-
-export function getAnalyticsUserAgent() {
-	return getAmplifyUserAgent(userAgentDetails);
+export function getAnalyticsUserAgent(action: AnalyticsAction) {
+	return getAmplifyUserAgent({
+		category: Category.Analytics,
+		action,
+	});
 }
 
-export function getAnalyticsUserAgentString() {
-	return getAmplifyUserAgentString(userAgentDetails);
+export function getAnalyticsUserAgentString(action: AnalyticsAction) {
+	return getAmplifyUserAgentString({
+		category: Category.Analytics,
+		action,
+	});
 }

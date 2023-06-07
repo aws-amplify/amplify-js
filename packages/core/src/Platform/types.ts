@@ -39,10 +39,9 @@ export enum Category {
 	Storage = 'storage',
 }
 
-// Actions
-/* TODO: Replace 'None' with all expected Actions */
 export enum AnalyticsAction {
 	Record = '1',
+	UpdateEndpoint = '2',
 }
 export enum ApiAction {
 	GraphQl = '1',

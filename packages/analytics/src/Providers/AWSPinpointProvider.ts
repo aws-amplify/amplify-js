@@ -10,6 +10,7 @@ import {
 	Hub,
 	transferKeyToLowerCase,
 	transferKeyToUpperCase,
+	AnalyticsAction,
 } from '@aws-amplify/core';
 import {
 	putEvents,
@@ -286,7 +287,11 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		try {
 			const { credentials, region } = this._config;
 			const data: PutEventsOutput = await putEvents(
-				{ credentials, region, userAgentValue: getAnalyticsUserAgentString() },
+				{
+					credentials,
+					region,
+					userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
+				},
 				eventParams
 			);
 
@@ -391,7 +396,13 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		try {
 			const { credentials, region } = this._config;
 			const data: UpdateEndpointOutput = await updateEndpoint(
-				{ credentials, region, userAgentValue: getAnalyticsUserAgentString() },
+				{
+					credentials,
+					region,
+					userAgentValue: getAnalyticsUserAgentString(
+						AnalyticsAction.UpdateEndpoint
+					),
+				},
 				update_params
 			);
 			logger.debug('updateEndpoint success', data);

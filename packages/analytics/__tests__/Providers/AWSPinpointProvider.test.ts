@@ -146,8 +146,11 @@ let resolve = null;
 let reject = null;
 
 // Example: aws-amplify/5.2.4 analytics/1 framework/0
-const expectedUserAgentRegex =
+const expectedRecordUserAgentRegex =
 	/^aws-amplify\/[\d\.]+ analytics\/1 framework\/0/;
+
+const expectedUpdateEndpointUserAgentRegex =
+	/^aws-amplify\/[\d\.]+ analytics\/2 framework\/0/;
 
 jest.mock('uuid', () => {
 	return { v1: () => 'uuid' };
@@ -292,7 +295,7 @@ describe('AnalyticsProvider test', () => {
 					expect.objectContaining({
 						credentials,
 						region: 'region',
-						userAgentValue: expect.stringMatching(expectedUserAgentRegex),
+						userAgentValue: expect.stringMatching(expectedRecordUserAgentRegex),
 						// userAgentValue: expect.stringMatching(new RegExp('^aws-amplify')),
 					}),
 					{
@@ -356,7 +359,7 @@ describe('AnalyticsProvider test', () => {
 					expect.objectContaining({
 						credentials,
 						region: 'region',
-						userAgentValue: expect.stringMatching(expectedUserAgentRegex),
+						userAgentValue: expect.stringMatching(expectedRecordUserAgentRegex),
 					}),
 					{
 						ApplicationId: 'appId',
@@ -481,7 +484,9 @@ describe('AnalyticsProvider test', () => {
 					expect.objectContaining({
 						credentials,
 						region: 'region',
-						userAgentValue: expect.stringMatching(expectedUserAgentRegex),
+						userAgentValue: expect.stringMatching(
+							expectedUpdateEndpointUserAgentRegex
+						),
 					}),
 					{
 						ApplicationId: 'appId',
@@ -524,7 +529,9 @@ describe('AnalyticsProvider test', () => {
 					expect.objectContaining({
 						credentials,
 						region: 'region',
-						userAgentValue: expect.stringMatching(expectedUserAgentRegex),
+						userAgentValue: expect.stringMatching(
+							expectedUpdateEndpointUserAgentRegex
+						),
 					}),
 					{
 						ApplicationId: 'appId',
@@ -569,7 +576,9 @@ describe('AnalyticsProvider test', () => {
 					expect.objectContaining({
 						credentials,
 						region: 'region',
-						userAgentValue: expect.stringMatching(expectedUserAgentRegex),
+						userAgentValue: expect.stringMatching(
+							expectedUpdateEndpointUserAgentRegex
+						),
 					}),
 					{
 						ApplicationId: 'appId',
@@ -634,7 +643,9 @@ describe('AnalyticsProvider test', () => {
 					expect.objectContaining({
 						credentials,
 						region: 'region',
-						userAgentValue: expect.stringMatching(expectedUserAgentRegex),
+						userAgentValue: expect.stringMatching(
+							expectedUpdateEndpointUserAgentRegex
+						),
 					}),
 					{
 						ApplicationId: 'appId',
