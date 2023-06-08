@@ -74,11 +74,11 @@ const isDocumentNode = (node: Node): node is Document =>
 	node.nodeType === Node.DOCUMENT_NODE;
 
 const isTextOnlyElementNode = (node: Element): boolean =>
-	hasOnlyNamespaceAttribute(node) &&
+	hasOnlyNamespaceAttributes(node) &&
 	node.children.length === 0 &&
 	node.firstChild?.nodeType === Node.TEXT_NODE;
 
-const hasOnlyNamespaceAttribute = (node: Element): boolean => {
+const hasOnlyNamespaceAttributes = (node: Element): boolean => {
 	for (let i = 0; i < node.attributes.length; i++) {
 		const attr = node.attributes[i];
 		if (!isNamespaceAttributeName(attr.nodeName)) {
