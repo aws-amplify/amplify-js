@@ -8,7 +8,7 @@
 		"setup-dev:react-native": "node ./scripts/setup-dev-rn",
 		"bootstrap": "lerna bootstrap",
 		"test": "lerna run test --stream",
-		"test:size": "lerna run test:size",
+		"test:size": "lerna run test:size --no-bail",
 		"test:duplicates": "./scripts/duplicates-yarn.sh",
 		"cypress": "lerna run cypress",
 		"cypress:open": "lerna run cypress:open",
