@@ -53,6 +53,7 @@
     "@aws-sdk/util-format-url": "3.6.1",
     "axios": "0.26.0",
     "events": "^3.1.0",
+    "fast-xml-parser": "4.2.4",
     "tslib": "^1.8.0"
   },
   "size-limit": [

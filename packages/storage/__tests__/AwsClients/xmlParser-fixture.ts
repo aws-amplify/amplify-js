@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * Adapted from AWS SDK Smithy protocol test:
  * https://github.com/aws/aws-sdk-js-v3/blob/main/private/aws-protocoltests-restxml/test/functional/restxml.spec.ts,
