@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { xhrTransferHandler } from '../../src/AwsClients/S3/utils/xhrTransferHandler';
 import {
-	xhrTransferHandler,
 	SEND_UPLOAD_PROGRESS_EVENT,
 	SEND_DOWNLOAD_PROGRESS_EVENT,
-} from '../../src/AwsClients/S3/utils/xhrTransferHandler';
+} from '../../src/AwsClients/S3/utils/constants';
 import {
 	spyOnXhr,
 	mockXhrResponse,
