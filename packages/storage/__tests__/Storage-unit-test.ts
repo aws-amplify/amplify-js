@@ -58,17 +58,23 @@ class TestCustomProvider implements StorageProvider {
 	}
 }
 
-class TestCustomProviderWithOptionalAPI
+class TestCustomProviderWithCopy
 	extends TestCustomProvider
 	implements StorageProvider
 {
-	async copy(
+	copy(
 		src: { key: string },
 		dest: { key: string },
 		config?: CustomProviderConfig
 	) {
 		return Promise.resolve({ newKey: 'copy' });
 	}
+}
+
+class TestCustomProviderWithGetProperties
+	extends TestCustomProvider
+	implements StorageProvider
+{
 	getProperties(key: string, options?: CustomProviderConfig) {
 		return Promise.resolve({ newKey: 'getProperties' });
 	}
@@ -678,7 +684,7 @@ describe('Storage', () => {
 		});
 
 		test('get properties with custom provider should work with no generic type provided', async () => {
-			const customProvider = new TestCustomProviderWithOptionalAPI();
+			const customProvider = new TestCustomProviderWithGetProperties();
 			const customProviderGetPropertiesSpy = jest.spyOn(
 				customProvider,
 				'getProperties'
@@ -688,23 +694,6 @@ describe('Storage', () => {
 				provider: 'customProvider',
 			});
 			expect(customProviderGetPropertiesSpy).toBeCalled();
-		});
-
-		test('getProperties object with custom provider', async () => {
-			const customProviderWithCopy = new TestCustomProviderWithOptionalAPI();
-			const customProviderCopySpy = jest.spyOn(
-				customProviderWithCopy,
-				'getProperties'
-			);
-			storage.addPluggable(customProviderWithCopy);
-			const copyRes: { newKey: string } =
-				await storage.getProperties<TestCustomProviderWithOptionalAPI>('key', {
-					provider: 'customProvider',
-					foo: true,
-					bar: 10,
-				});
-			expect(customProviderCopySpy).toBeCalled();
-			expect(copyRes.newKey).toEqual('getProperties');
 		});
 	});
 
@@ -1026,24 +1015,25 @@ describe('Storage', () => {
 			}
 		});
 		test('copy object with custom provider', async () => {
-			const customProviderWithCopy = new TestCustomProviderWithOptionalAPI();
+			const customProviderWithCopy = new TestCustomProviderWithCopy();
 			const customProviderCopySpy = jest.spyOn(customProviderWithCopy, 'copy');
 			storage.addPluggable(customProviderWithCopy);
-			const copyRes = await storage.copy<TestCustomProviderWithOptionalAPI>(
-				{ key: 'src' },
-				{ key: 'dest' },
-				{
-					provider: 'customProvider',
-					foo: false,
-					bar: 40,
-				}
-			);
+			const copyRes: { newKey: string } =
+				await storage.copy<TestCustomProviderWithCopy>(
+					{ key: 'src' },
+					{ key: 'dest' },
+					{
+						provider: 'customProvider',
+						foo: false,
+						bar: 40,
+					}
+				);
 			expect(customProviderCopySpy).toBeCalled();
 			expect(copyRes.newKey).toEqual('copy');
 		});
 		//backwards compatible with current custom provider user
 		test('copy object with custom provider should work with no generic type provided', async () => {
-			const customProviderWithCopy = new TestCustomProviderWithOptionalAPI();
+			const customProviderWithCopy = new TestCustomProviderWithCopy();
 			const customProviderCopySpy = jest.spyOn(customProviderWithCopy, 'copy');
 			storage.addPluggable(customProviderWithCopy);
 			const copyRes: { newKey: string } = await storage.copy(

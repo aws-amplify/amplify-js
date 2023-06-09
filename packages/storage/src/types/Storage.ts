@@ -78,8 +78,12 @@ type StorageOperationConfig<
 	U extends StorageProviderApi
 > = ReturnType<T['getProviderName']> extends 'AWSS3'
 	? LastParameter<AWSS3Provider[U]> // check if it has 'copy' function because 'copy' is optional
-	: T extends StorageProviderWithCopy & StorageProviderWithGetProperties
-	? LastParameter<T[U]> & {
+	: T extends StorageProviderWithCopy
+	? LastParameter<T['copy']> & {
+			provider: ReturnType<T['getProviderName']>;
+	  }
+	: T extends StorageProviderWithGetProperties
+	? LastParameter<T['getProperties']> & {
 			provider: ReturnType<T['getProviderName']>;
 	  }
 	: LastParameter<T[Exclude<U, 'copy' | 'getProperties'>]> & {
