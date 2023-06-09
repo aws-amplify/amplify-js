@@ -11,11 +11,11 @@ import {
 	Endpoint,
 	HttpRequest,
 	HttpResponse,
-	composeServiceApi,
 	parseJsonBody,
 	parseJsonError,
 	parseMetadata,
 } from '../../clients';
+import { composeServiceApi } from '../../clients/internal';
 import type {
 	GetCredentialsForIdentityCommandInput as GetCredentialsForIdentityInput,
 	GetCredentialsForIdentityCommandOutput as GetCredentialsForIdentityOutput,
