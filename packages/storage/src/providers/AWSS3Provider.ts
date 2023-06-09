@@ -449,7 +449,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 		if (validateObjectExistence) {
 			const headObjectCommand = new HeadObjectCommand(params);
-			
+
 			try {
 				await s3.send(headObjectCommand);
 			} catch (error) {
