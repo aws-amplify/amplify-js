@@ -8,7 +8,7 @@ import {
 	ResponseBodyMixin,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import type * as events from 'events';
+import type { EventEmitter } from 'events';
 
 export const SEND_UPLOAD_PROGRESS_EVENT = 'sendUploadProgress';
 export const SEND_DOWNLOAD_PROGRESS_EVENT = 'sendDownloadProgress';
@@ -32,7 +32,7 @@ export interface XhrTransferHandlerOptions {
 	// download binary data. Otherwise, use `text` to return the response as a string.
 	responseType: 'text' | 'blob';
 	abortSignal?: AbortSignal;
-	emitter?: events.EventEmitter;
+	emitter?: EventEmitter;
 }
 
 /**
@@ -56,11 +56,11 @@ export const xhrTransferHandler: TransferHandler<
 		let xhr: XMLHttpRequest | null = new XMLHttpRequest();
 		xhr.open(method.toUpperCase(), url.toString());
 
-		for (const [header, value] of Object.entries(headers).filter(
-			([header]) => !FORBIDDEN_HEADERS.includes(header)
-		)) {
-			xhr.setRequestHeader(header, value as string);
-		}
+		Object.entries(headers)
+			.filter(([header]) => !FORBIDDEN_HEADERS.includes(header))
+			.forEach(([header, value]) => {
+				xhr!.setRequestHeader(header, value);
+			});
 
 		xhr.responseType = responseType;
 
@@ -89,6 +89,7 @@ export const xhrTransferHandler: TransferHandler<
 
 		// Handle browser request cancellation (as opposed to a manual cancellation)
 		xhr.addEventListener('abort', () => {
+			// The abort event can be triggered after the error or load event. So we need to check if the xhr is null.
 			if (!xhr) return;
 			const error = simulateAxiosError(
 				ABORT_ERROR_MESSAGE,
@@ -109,6 +110,7 @@ export const xhrTransferHandler: TransferHandler<
 			}
 
 			const onloadend = () => {
+				// The load event is triggered after the error/abort/load event. So we need to check if the xhr is null.
 				if (!xhr) return;
 				const responseHeaders = convertResponseHeaders(
 					xhr.getAllResponseHeaders()
@@ -140,13 +142,15 @@ export const xhrTransferHandler: TransferHandler<
 				xhr = null; // clean up request
 			};
 
-			// TODO: V6 use xhr.onloadend() when we officially drop support for IE11. Keep it to reduce surprise even though we
-			// don't support IE11 in v5.
+			// readystate handler is calling before onerror or ontimeout handlers,
+			// so we should call onloadend on the next 'tick'
+			// @see https://github.com/axios/axios/blob/9588fcdec8aca45c3ba2f7968988a5d03f23168c/lib/adapters/xhr.js#L98-L99
 			setTimeout(onloadend);
 		});
 
 		if (abortSignal) {
 			const onCancelled = () => {
+				// The abort event is triggered after the error or load event. So we need to check if the xhr is null.
 				if (!xhr) {
 					return;
 				}
@@ -156,8 +160,8 @@ export const xhrTransferHandler: TransferHandler<
 					xhr,
 					options
 				);
-				reject(canceledError);
 				xhr.abort();
+				reject(canceledError);
 				xhr = null;
 			};
 			abortSignal.aborted
@@ -172,7 +176,7 @@ export const xhrTransferHandler: TransferHandler<
 			throw new Error('ReadableStream request payload is not supported.');
 		}
 
-		xhr.send((body as Exclude<BodyInit, ReadableStream>) || null);
+		xhr.send((body as Exclude<BodyInit, ReadableStream>) ?? null);
 	});
 };
 
@@ -221,6 +225,6 @@ const convertResponseHeaders = (xhrHeaders: string): Record<string, string> => {
 		}, {});
 };
 
-// TODO: Add more forbidden headers as found set by S3. Intentionally NOT list all of them here to save bundle size.
+// To add more forbidden headers as found set by S3. Intentionally NOT list all of them here to save bundle size.
 // https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const FORBIDDEN_HEADERS = ['host'];
