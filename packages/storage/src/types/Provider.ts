@@ -1,4 +1,8 @@
-import { StorageCopySource, StorageCopyDestination } from './Storage';
+import {
+	StorageCopySource,
+	StorageCopyDestination,
+	StorageCopyConfig,
+} from './Storage';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 export interface StorageProvider {
