@@ -8,7 +8,7 @@
 		"setup-dev:react-native": "node ./scripts/setup-dev-rn",
 		"bootstrap": "lerna bootstrap",
 		"test": "lerna run test --stream",
-		"test:size": "lerna run test:size",
+		"test:size": "lerna run test:size --no-bail",
 		"test:duplicates": "./scripts/duplicates-yarn.sh",
 		"cypress": "lerna run cypress",
 		"cypress:open": "lerna run cypress:open",
@@ -18,6 +18,7 @@
 		"build:watch": "concurrently 'lerna run build:cjs:watch --parallel' 'lerna run build:esm:watch --parallel' --raw",
 		"build:esm:watch": "lerna run build:esm:watch --parallel",
 		"build:cjs:watch": "lerna run build:cjs:watch --parallel",
+		"build:client-types": "cd scripts/dts-bundler && yarn && yarn run build",
 		"clean": "lerna run clean --parallel",
 		"clean:size": "lerna run clean:size --parallel",
 		"format": "lerna run format",
@@ -92,6 +93,7 @@
 		"source-map-loader": "^3.0.2",
 		"terser-webpack-plugin": "^5.3.6",
 		"ts-jest": "^24.x.x",
+		"ts-loader": "^9.4.3",
 		"tslint": "^5.7.0",
 		"tslint-config-airbnb": "^5.8.0",
 		"typedoc": "^0.17.0",
@@ -104,6 +106,9 @@
 		"webpack-cli": "^5.0.0",
 		"winston": "^3.2.1",
 		"wml": "0.0.83"
+	},
+	"resolutions": {
+		"@types/babel__traverse": "7.20.0"
 	},
 	"jest": {
 		"resetMocks": true,

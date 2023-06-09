@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.1.1...@aws-amplify/api-rest@3.2.0) (2023-06-05)
+
+### Bug Fixes
+
+- address feedbacks ([2d6eecf](https://github.com/aws-amplify/amplify-js/commit/2d6eecfa4763a6cfb6aeaabedd49a530c6420dcd))
+
+### Features
+
+- **clients:** cognito identity client ([#11213](https://github.com/aws-amplify/amplify-js/issues/11213)) ([67e4017](https://github.com/aws-amplify/amplify-js/commit/67e40171385f02d0c9448fdc3e036d63e009ea34))
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+
+## [3.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.1.0...@aws-amplify/api-rest@3.1.1) (2023-05-27)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
 # [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.0.31...@aws-amplify/api-rest@3.1.0) (2023-05-12)
 
 ### Features

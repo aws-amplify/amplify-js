@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.3.1...@aws-amplify/storage@5.4.0) (2023-06-05)
+
+### Features
+
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+
+## [5.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.3.0...@aws-amplify/storage@5.3.1) (2023-05-27)
+
+### Reverts
+
+- Revert "feat(storage): getProperties API (#11378)" ([7179636](https://github.com/aws-amplify/amplify-js/commit/7179636b183282c299304501cb5aad2cee942a86)), closes [#11378](https://github.com/aws-amplify/amplify-js/issues/11378)
+
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.6...@aws-amplify/storage@5.3.0) (2023-05-25)
+
+### Features
+
+- **storage:** getProperties API ([#11378](https://github.com/aws-amplify/amplify-js/issues/11378)) ([3bed12b](https://github.com/aws-amplify/amplify-js/commit/3bed12b6960c676095689ee895c60ae55a041c8c))
+
 ## [5.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.5...@aws-amplify/storage@5.2.6) (2023-05-12)
 
 **Note:** Version bump only for package @aws-amplify/storage

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.7...@aws-amplify/notifications@1.2.0) (2023-06-05)
+
+### Bug Fixes
+
+- address feedbacks ([2d6eecf](https://github.com/aws-amplify/amplify-js/commit/2d6eecfa4763a6cfb6aeaabedd49a530c6420dcd))
+
+### Features
+
+- **clients:** cognito identity client ([#11213](https://github.com/aws-amplify/amplify-js/issues/11213)) ([67e4017](https://github.com/aws-amplify/amplify-js/commit/67e40171385f02d0c9448fdc3e036d63e009ea34))
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+- **clients:** vendor TS types from pinpoint and cognito-identity clients ([#11393](https://github.com/aws-amplify/amplify-js/issues/11393)) ([9a8569a](https://github.com/aws-amplify/amplify-js/commit/9a8569ab98480ad96b53a7104366640c66343aa2))
+
+## [1.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.6...@aws-amplify/notifications@1.1.7) (2023-05-27)
+
+### Bug Fixes
+
+- **core:** bundle react-native-url-polyfill to unblock jest test failure ([#11422](https://github.com/aws-amplify/amplify-js/issues/11422)) ([8137ee7](https://github.com/aws-amplify/amplify-js/commit/8137ee79ef2121ceaa6dfa1d9ce675370b38e26b))
+- **notifications:** Add babel plugins to devDependencies ([#11414](https://github.com/aws-amplify/amplify-js/issues/11414)) ([a009ce8](https://github.com/aws-amplify/amplify-js/commit/a009ce8afe52ca1f2e070cf40b8eb581132b6fdd))
+
 ## [1.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.5...@aws-amplify/notifications@1.1.6) (2023-05-12)
 
 ### Bug Fixes

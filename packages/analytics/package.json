@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/analytics",
-	"version": "6.1.0",
+	"version": "6.2.0",
 	"description": "Analytics category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -48,12 +48,11 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/cache": "5.0.32",
-		"@aws-amplify/core": "5.3.0",
+		"@aws-amplify/cache": "5.1.0",
+		"@aws-amplify/core": "5.4.0",
 		"@aws-sdk/client-firehose": "3.6.1",
 		"@aws-sdk/client-kinesis": "3.6.1",
 		"@aws-sdk/client-personalize-events": "3.6.1",
-		"@aws-sdk/client-pinpoint": "3.6.1",
 		"@aws-sdk/util-utf8-browser": "3.6.1",
 		"lodash": "^4.17.20",
 		"tslib": "^1.8.0",
@@ -64,13 +63,13 @@
 			"name": "Analytics (Pinpoint)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Analytics, AWSPinpointProvider }",
-			"limit": "56.5 kB"
+			"limit": "29.7 kB"
 		},
 		{
 			"name": "Analytics (Kinesis)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Analytics, AWSKinesisProvider }",
-			"limit": "68.5 kB"
+			"limit": "58.2 kB"
 		}
 	],
 	"jest": {

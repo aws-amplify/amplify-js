@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.2.1...@aws-amplify/predictions@5.2.2) (2023-06-05)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.2.0...@aws-amplify/predictions@5.2.1) (2023-05-27)
+
+### Reverts
+
+- Revert "feat(storage): getProperties API (#11378)" ([7179636](https://github.com/aws-amplify/amplify-js/commit/7179636b183282c299304501cb5aad2cee942a86)), closes [#11378](https://github.com/aws-amplify/amplify-js/issues/11378)
+
+# [5.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.7...@aws-amplify/predictions@5.2.0) (2023-05-25)
+
+### Features
+
+- **storage:** getProperties API ([#11378](https://github.com/aws-amplify/amplify-js/issues/11378)) ([3bed12b](https://github.com/aws-amplify/amplify-js/commit/3bed12b6960c676095689ee895c60ae55a041c8c))
+
 ## [5.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.6...@aws-amplify/predictions@5.1.7) (2023-05-18)
 
 **Note:** Version bump only for package @aws-amplify/predictions

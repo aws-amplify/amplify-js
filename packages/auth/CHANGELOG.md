@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.3.7...@aws-amplify/auth@5.4.0) (2023-06-05)
+
+### Features
+
+- **clients:** add useragent to cognito identity ([#11269](https://github.com/aws-amplify/amplify-js/issues/11269)) ([475f26b](https://github.com/aws-amplify/amplify-js/commit/475f26bc4d0c415ede4eaf4d5126023a43fb44de))
+- **clients:** cognito identity client ([#11213](https://github.com/aws-amplify/amplify-js/issues/11213)) ([67e4017](https://github.com/aws-amplify/amplify-js/commit/67e40171385f02d0c9448fdc3e036d63e009ea34))
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+
+## [5.3.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.3.6...@aws-amplify/auth@5.3.7) (2023-05-27)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 ## [5.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.3.5...@aws-amplify/auth@5.3.6) (2023-05-12)
 
 **Note:** Version bump only for package @aws-amplify/auth

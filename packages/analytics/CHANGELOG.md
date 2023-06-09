@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.1.1...@aws-amplify/analytics@6.2.0) (2023-06-05)
+
+### Features
+
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+- **clients:** vendor TS types from pinpoint and cognito-identity clients ([#11393](https://github.com/aws-amplify/amplify-js/issues/11393)) ([9a8569a](https://github.com/aws-amplify/amplify-js/commit/9a8569ab98480ad96b53a7104366640c66343aa2))
+
+## [6.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.1.0...@aws-amplify/analytics@6.1.1) (2023-05-27)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
 # [6.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.31...@aws-amplify/analytics@6.1.0) (2023-05-12)
 
 ### Features

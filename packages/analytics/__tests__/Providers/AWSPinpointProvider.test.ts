@@ -1,10 +1,9 @@
 import { Credentials, ClientDevice } from '@aws-amplify/core';
-import { AWSPinpointProvider as AnalyticsProvider } from '../../src/Providers/AWSPinpointProvider';
 import {
-	PinpointClient,
-	UpdateEndpointCommand,
-	PutEventsCommand,
-} from '@aws-sdk/client-pinpoint';
+	putEvents,
+	updateEndpoint,
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
+import { AWSPinpointProvider as AnalyticsProvider } from '../../src/Providers/AWSPinpointProvider';
 
 const endpointConfigure = {
 	address: 'configured', // The unique identifier for the recipient. For example, an address could be a device token, email address, or mobile phone number.
@@ -143,49 +142,33 @@ const optionsWithClientContext = {
 	},
 };
 
-let response = {
-	EventsResponse: {
-		Results: {
-			endpointId: {
-				EventsItemResponse: {
-					uuid: {
-						Message: 'Accepted',
-						StatusCode: 202,
-					},
-				},
-			},
-		},
-	},
-};
-
 let resolve = null;
 let reject = null;
 
 jest.mock('uuid', () => {
 	return { v1: () => 'uuid' };
 });
+jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
+
+const mockPutEvents = putEvents as jest.Mock;
+const mockUpdateEndpoint = updateEndpoint as jest.Mock;
 
 beforeEach(() => {
-	PinpointClient.prototype.send = jest.fn(async command => {
-		if (command instanceof UpdateEndpointCommand) {
-			return 'data';
-		}
-		if (command instanceof PutEventsCommand) {
-			return {
-				EventsResponse: {
-					Results: {
-						endpointId: {
-							EventsItemResponse: {
-								uuid: {
-									Message: 'Accepted',
-									StatusCode: 202,
-								},
-							},
+	jest.clearAllMocks();
+	mockUpdateEndpoint.mockReturnValue('data');
+	mockPutEvents.mockReturnValue({
+		EventsResponse: {
+			Results: {
+				endpointId: {
+					EventsItemResponse: {
+						uuid: {
+							Message: 'Accepted',
+							StatusCode: 202,
 						},
 					},
 				},
-			};
-		}
+			},
+		},
 	});
 
 	jest.spyOn(Date.prototype, 'getTime').mockImplementation(() => {
@@ -295,48 +278,47 @@ describe('AnalyticsProvider test', () => {
 			test('custom events', async () => {
 				const analytics = new AnalyticsProvider();
 				analytics.configure(options);
-				const spyon = jest.spyOn(PinpointClient.prototype, 'send');
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
 				});
 				const params = { event: { name: 'custom event', immediate: true } };
 				await analytics.record(params, { resolve, reject });
-				expect(spyon.mock.calls[0][0].input).toEqual({
-					ApplicationId: 'appId',
-					EventsRequest: {
-						BatchItem: {
-							endpointId: {
-								Endpoint: {},
-								Events: {
-									uuid: {
-										Attributes: undefined,
-										EventType: 'custom event',
-										Metrics: undefined,
-										Session: {
-											Id: 'uuid',
-											StartTimestamp: 'isoString',
+				expect(mockPutEvents).toBeCalledWith(
+					{ credentials, region: 'region' },
+					{
+						ApplicationId: 'appId',
+						EventsRequest: {
+							BatchItem: {
+								endpointId: {
+									Endpoint: {},
+									Events: {
+										uuid: {
+											Attributes: undefined,
+											EventType: 'custom event',
+											Metrics: undefined,
+											Session: {
+												Id: 'uuid',
+												StartTimestamp: 'isoString',
+											},
+											Timestamp: 'isoString',
 										},
-										Timestamp: 'isoString',
 									},
 								},
 							},
 						},
-					},
-				});
+					}
+				);
 				expect(resolve).toBeCalled();
-				spyon.mockRestore();
 			});
 
 			test('custom event error', async () => {
 				const analytics = new AnalyticsProvider();
 				analytics.configure(options);
 
-				const spyon = jest
-					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async () => {
-						throw 'data';
-					});
+				mockPutEvents.mockImplementation(async () => {
+					throw 'data';
+				});
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -346,7 +328,6 @@ describe('AnalyticsProvider test', () => {
 
 				await analytics.record(params, { resolve, reject });
 				expect(reject).toBeCalled();
-				spyon.mockRestore();
 			});
 		});
 
@@ -354,7 +335,6 @@ describe('AnalyticsProvider test', () => {
 			test('happy case', async () => {
 				const analytics = new AnalyticsProvider();
 				analytics.configure(options);
-				const spyon = jest.spyOn(PinpointClient.prototype, 'send');
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -363,40 +343,40 @@ describe('AnalyticsProvider test', () => {
 				const params = { event: { name: '_session.start', immediate: true } };
 				await analytics.record(params, { resolve, reject });
 
-				expect(spyon.mock.calls[0][0].input).toEqual({
-					ApplicationId: 'appId',
-					EventsRequest: {
-						BatchItem: {
-							endpointId: {
-								Endpoint: {},
-								Events: {
-									uuid: {
-										Attributes: undefined,
-										EventType: '_session.start',
-										Metrics: undefined,
-										Session: {
-											Id: 'uuid',
-											StartTimestamp: 'isoString',
+				expect(mockPutEvents).toBeCalledWith(
+					{ credentials, region: 'region' },
+					{
+						ApplicationId: 'appId',
+						EventsRequest: {
+							BatchItem: {
+								endpointId: {
+									Endpoint: {},
+									Events: {
+										uuid: {
+											Attributes: undefined,
+											EventType: '_session.start',
+											Metrics: undefined,
+											Session: {
+												Id: 'uuid',
+												StartTimestamp: 'isoString',
+											},
+											Timestamp: 'isoString',
 										},
-										Timestamp: 'isoString',
 									},
 								},
 							},
 						},
-					},
-				});
+					}
+				);
 				expect(resolve).toBeCalled();
-				spyon.mockRestore();
 			});
 
 			test('session start error', async () => {
 				const analytics = new AnalyticsProvider();
 				analytics.configure(options);
-				const spyon = jest
-					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(() => {
-						throw 'data';
-					});
+				mockPutEvents.mockImplementation(() => {
+					throw 'data';
+				});
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -407,7 +387,6 @@ describe('AnalyticsProvider test', () => {
 				await analytics.record(params, { resolve, reject });
 				expect(resolve).not.toBeCalled();
 				expect(reject).toBeCalled();
-				spyon.mockRestore();
 			});
 		});
 
@@ -454,17 +433,14 @@ describe('AnalyticsProvider test', () => {
 
 				expect(spyon).toBeCalledWith(expectedUrl, expectedData);
 				expect(resolve).toBeCalled();
-				spyon.mockRestore();
 			});
 
 			test('session stop error', async () => {
 				const analytics = new AnalyticsProvider();
 				analytics.configure(options);
-				const spyon = jest
-					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async () => {
-						throw 'data';
-					});
+				mockPutEvents.mockImplementation(async () => {
+					throw 'data';
+				});
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -474,7 +450,6 @@ describe('AnalyticsProvider test', () => {
 
 				await analytics.record(params, { resolve, reject });
 				expect(reject).toBeCalled();
-				spyon.mockRestore();
 			});
 		});
 
@@ -482,11 +457,6 @@ describe('AnalyticsProvider test', () => {
 			test('happy case with default client info', async () => {
 				const analytics = new AnalyticsProvider();
 				analytics.configure(options);
-				const spyon = jest
-					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						return 'data';
-					});
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -494,41 +464,38 @@ describe('AnalyticsProvider test', () => {
 
 				const params = { event: { name: '_update_endpoint', immediate: true } };
 				await analytics.record(params, { resolve, reject });
-				expect(spyon.mock.calls[0][0].input).toEqual({
-					ApplicationId: 'appId',
-					EndpointId: 'endpointId',
-					EndpointRequest: {
-						Attributes: {},
-						ChannelType: undefined,
-						Demographic: {
-							AppVersion: 'clientInfoAppVersion',
-							Make: 'clientInfoMake',
-							Model: 'clientInfoModel',
-							ModelVersion: 'clientInfoVersion',
-							Platform: 'clientInfoPlatform',
+				expect(mockUpdateEndpoint).toBeCalledWith(
+					{ credentials, region: 'region' },
+					{
+						ApplicationId: 'appId',
+						EndpointId: 'endpointId',
+						EndpointRequest: {
+							Attributes: {},
+							ChannelType: undefined,
+							Demographic: {
+								AppVersion: 'clientInfoAppVersion',
+								Make: 'clientInfoMake',
+								Model: 'clientInfoModel',
+								ModelVersion: 'clientInfoVersion',
+								Platform: 'clientInfoPlatform',
+							},
+							EffectiveDate: 'isoString',
+							Location: {},
+							Metrics: {},
+							RequestId: 'uuid',
+							User: {
+								UserAttributes: {},
+								UserId: 'identityId',
+							},
 						},
-						EffectiveDate: 'isoString',
-						Location: {},
-						Metrics: {},
-						RequestId: 'uuid',
-						User: {
-							UserAttributes: {},
-							UserId: 'identityId',
-						},
-					},
-				});
+					}
+				);
 				expect(resolve).toBeCalled();
-				spyon.mockRestore();
 			});
 
 			test('happy case with client context provided', async () => {
 				const analytics = new AnalyticsProvider();
 				analytics.configure(optionsWithClientContext);
-				const spyon = jest
-					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						return 'data';
-					});
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -536,43 +503,39 @@ describe('AnalyticsProvider test', () => {
 
 				const params = { event: { name: '_update_endpoint', immediate: true } };
 				await analytics.record(params, { resolve, reject });
-				expect(spyon.mock.calls[0][0].input).toEqual({
-					ApplicationId: 'appId',
-					EndpointId: 'endpointId',
-					EndpointRequest: {
-						Attributes: {},
-						ChannelType: undefined,
-						Demographic: {
-							AppVersion: 'clientInfoAppVersion',
-							Locale: 'locale',
-							Make: 'make',
-							Model: 'model',
-							ModelVersion: 'clientInfoVersion',
-							Platform: 'platform',
-							PlatformVersion: 'platformVersion',
+				expect(mockUpdateEndpoint).toBeCalledWith(
+					{ credentials, region: 'region' },
+					{
+						ApplicationId: 'appId',
+						EndpointId: 'endpointId',
+						EndpointRequest: {
+							Attributes: {},
+							ChannelType: undefined,
+							Demographic: {
+								AppVersion: 'clientInfoAppVersion',
+								Locale: 'locale',
+								Make: 'make',
+								Model: 'model',
+								ModelVersion: 'clientInfoVersion',
+								Platform: 'platform',
+								PlatformVersion: 'platformVersion',
+							},
+							EffectiveDate: 'isoString',
+							Location: {},
+							Metrics: {},
+							RequestId: 'uuid',
+							User: {
+								UserAttributes: {},
+								UserId: 'identityId',
+							},
 						},
-						EffectiveDate: 'isoString',
-						Location: {},
-						Metrics: {},
-						RequestId: 'uuid',
-						User: {
-							UserAttributes: {},
-							UserId: 'identityId',
-						},
-					},
-				});
-
-				spyon.mockRestore();
+					}
+				);
 			});
 
 			test('happy case with default enpoint configure provided', async () => {
 				const analytics = new AnalyticsProvider();
 				analytics.configure(optionsWithDefaultEndpointConfigure);
-				const spyon = jest
-					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						return 'data';
-					});
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -581,57 +544,53 @@ describe('AnalyticsProvider test', () => {
 				const params = { event: { name: '_update_endpoint', immediate: true } };
 				await analytics.record(params, { resolve, reject });
 
-				expect(spyon.mock.calls[0][0].input).toEqual({
-					ApplicationId: 'appId',
-					EndpointId: 'endpointId',
-					EndpointRequest: {
-						Address: 'default',
-						Attributes: {
-							hobbies: ['default'],
-						},
-						ChannelType: 'default',
-						Demographic: {
-							AppVersion: 'default',
-							Locale: 'default',
-							Make: 'default',
-							Model: 'default',
-							ModelVersion: 'default',
-							Platform: 'default',
-							PlatformVersion: 'default',
-							Timezone: 'default',
-						},
-						EffectiveDate: 'isoString',
-						Location: {
-							City: 'default',
-							Country: 'default',
-							Latitude: 0,
-							Longitude: 0,
-							PostalCode: 'default',
-							Region: 'default',
-						},
-						Metrics: {},
-						OptOut: 'default',
-						RequestId: 'uuid',
-						User: {
-							UserAttributes: {
-								interests: ['default'],
+				expect(mockUpdateEndpoint).toBeCalledWith(
+					{ credentials, region: 'region' },
+					{
+						ApplicationId: 'appId',
+						EndpointId: 'endpointId',
+						EndpointRequest: {
+							Address: 'default',
+							Attributes: {
+								hobbies: ['default'],
 							},
-							UserId: 'default',
+							ChannelType: 'default',
+							Demographic: {
+								AppVersion: 'default',
+								Locale: 'default',
+								Make: 'default',
+								Model: 'default',
+								ModelVersion: 'default',
+								Platform: 'default',
+								PlatformVersion: 'default',
+								Timezone: 'default',
+							},
+							EffectiveDate: 'isoString',
+							Location: {
+								City: 'default',
+								Country: 'default',
+								Latitude: 0,
+								Longitude: 0,
+								PostalCode: 'default',
+								Region: 'default',
+							},
+							Metrics: {},
+							OptOut: 'default',
+							RequestId: 'uuid',
+							User: {
+								UserAttributes: {
+									interests: ['default'],
+								},
+								UserId: 'default',
+							},
 						},
-					},
-				});
-
-				spyon.mockRestore();
+					}
+				);
 			});
 
 			test('happy case with specified enpoint configure provided', async () => {
 				const analytics = new AnalyticsProvider();
 				analytics.configure(optionsWithDefaultEndpointConfigure);
-				const spyon = jest
-					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						return 'data';
-					});
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -646,47 +605,48 @@ describe('AnalyticsProvider test', () => {
 				};
 				await analytics.record(params, { resolve, reject });
 
-				expect(spyon.mock.calls[0][0].input).toEqual({
-					ApplicationId: 'appId',
-					EndpointId: 'endpointId',
-					EndpointRequest: {
-						Address: 'configured',
-						Attributes: {
-							hobbies: ['configured'],
-						},
-						ChannelType: 'configured',
-						Demographic: {
-							AppVersion: 'configured',
-							Locale: 'configured',
-							Make: 'configured',
-							Model: 'configured',
-							ModelVersion: 'configured',
-							Platform: 'configured',
-							PlatformVersion: 'configured',
-							Timezone: 'configured',
-						},
-						EffectiveDate: 'isoString',
-						Location: {
-							City: 'configured',
-							Country: 'configured',
-							Latitude: 0,
-							Longitude: 0,
-							PostalCode: 'configured',
-							Region: 'configured',
-						},
-						Metrics: {},
-						OptOut: 'configured',
-						RequestId: 'uuid',
-						User: {
-							UserAttributes: {
-								interests: ['configured'],
+				expect(mockUpdateEndpoint).toBeCalledWith(
+					{ credentials, region: 'region' },
+					{
+						ApplicationId: 'appId',
+						EndpointId: 'endpointId',
+						EndpointRequest: {
+							Address: 'configured',
+							Attributes: {
+								hobbies: ['configured'],
 							},
-							UserId: 'configured',
+							ChannelType: 'configured',
+							Demographic: {
+								AppVersion: 'configured',
+								Locale: 'configured',
+								Make: 'configured',
+								Model: 'configured',
+								ModelVersion: 'configured',
+								Platform: 'configured',
+								PlatformVersion: 'configured',
+								Timezone: 'configured',
+							},
+							EffectiveDate: 'isoString',
+							Location: {
+								City: 'configured',
+								Country: 'configured',
+								Latitude: 0,
+								Longitude: 0,
+								PostalCode: 'configured',
+								Region: 'configured',
+							},
+							Metrics: {},
+							OptOut: 'configured',
+							RequestId: 'uuid',
+							User: {
+								UserAttributes: {
+									interests: ['configured'],
+								},
+								UserId: 'configured',
+							},
 						},
-					},
-				});
-
-				spyon.mockRestore();
+					}
+				);
 			});
 
 			test('error case', async () => {
@@ -694,11 +654,9 @@ describe('AnalyticsProvider test', () => {
 				const mockError = { message: 'error' };
 
 				analytics.configure(options);
-				const spyon = jest
-					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						throw { message: 'error' };
-					});
+				mockUpdateEndpoint.mockImplementation(async params => {
+					throw { message: 'error' };
+				});
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -708,7 +666,6 @@ describe('AnalyticsProvider test', () => {
 
 				await analytics.record(params, { resolve, reject });
 				expect(reject).toBeCalledWith(mockError);
-				spyon.mockRestore();
 			});
 
 			test('BAD_REQUEST_CODE without message rejects error', async () => {
@@ -716,11 +673,9 @@ describe('AnalyticsProvider test', () => {
 				const mockError = { debug: 'error', statusCode: 400 };
 
 				analytics.configure(options);
-				const spyon = jest
-					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						throw mockError;
-					});
+				mockUpdateEndpoint.mockImplementation(async params => {
+					throw mockError;
+				});
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -730,7 +685,6 @@ describe('AnalyticsProvider test', () => {
 
 				await analytics.record(params, { resolve, reject });
 				expect(reject).toBeCalledWith(mockError);
-				spyon.mockRestore();
 			});
 
 			test('Exceeded maximum endpoint per user count', async () => {
@@ -744,12 +698,9 @@ describe('AnalyticsProvider test', () => {
 
 				analytics.configure(options);
 
-				const spyonUpdateEndpoint = jest
-					.spyOn(PinpointClient.prototype, 'send')
-					// Reject with error the first time we execute updateEndpoint
-					.mockImplementationOnce(async params => {
-						throw mockExceededMaxError;
-					});
+				mockUpdateEndpoint.mockImplementation(async params => {
+					throw mockExceededMaxError;
+				});
 
 				jest
 					.spyOn(Credentials, 'get')
@@ -759,9 +710,7 @@ describe('AnalyticsProvider test', () => {
 
 				await analytics.record(params, { resolve, reject });
 
-				expect(spyonUpdateEndpoint).toHaveBeenCalledTimes(1);
-
-				spyonUpdateEndpoint.mockRestore();
+				expect(mockUpdateEndpoint).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
