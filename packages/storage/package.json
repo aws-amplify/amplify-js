@@ -80,7 +80,7 @@
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
     "testPathIgnorePatterns": [
       "xmlParser-fixture.ts",
-			"testUtils"
+      "testUtils"
     ],
     "moduleFileExtensions": [
       "ts",
