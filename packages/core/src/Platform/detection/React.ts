@@ -6,7 +6,15 @@ import { documentExists, processExists, windowExists } from './helpers';
 // Tested with react 18.2 - built using Vite
 
 export function reactWebDetect() {
-	return documentExists() && !!document.getElementById('react-root');
+	const elementKeyPrefixedWithReact = k => {
+		return k.startsWith('_react') || k.startsWith('__react');
+	};
+	const elementIsReactEnabled = e => {
+		return Object.keys(e).find(elementKeyPrefixedWithReact);
+	};
+	const allElementsWithId = () => Array.from(document.querySelectorAll('[id]'));
+
+	return documentExists() && allElementsWithId().some(elementIsReactEnabled);
 }
 
 export function reactSSRDetect() {
