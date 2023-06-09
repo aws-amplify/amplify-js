@@ -5,8 +5,8 @@
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
-  "react-native": {
-    "./lib/index": "./lib-esm/index.js"
+  "browser": {
+    "./lib-esm/AwsClients/S3/utils/index": "./lib-esm/AwsClients/S3/utils/index.browser.js"
   },
   "sideEffects": [
     "./lib/Storage.js",
