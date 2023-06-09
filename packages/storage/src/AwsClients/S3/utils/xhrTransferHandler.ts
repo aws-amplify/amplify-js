@@ -122,6 +122,7 @@ export const xhrTransferHandler: TransferHandler<
 					text: () => Promise.resolve(responseText),
 					json: () =>
 						Promise.reject(
+							// S3 does not support JSON response. So fail-fast here with nicer error message.
 							new Error(
 								'Parsing response to JSON is not implemented. Please use response.text() instead.'
 							)
