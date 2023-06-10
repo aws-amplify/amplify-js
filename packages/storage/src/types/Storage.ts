@@ -151,8 +151,10 @@ type PickProviderOutput<
 > = T extends StorageProvider
 	? T['getProviderName'] extends 'AWSS3'
 		? DefaultOutput
-		: T extends StorageProviderWithCopy & StorageProviderWithGetProperties
-		? ReturnType<T[api]>
+		: T extends StorageProviderWithCopy
+		? ReturnType<T['copy']>
+		: T extends StorageProviderWithGetProperties
+		? ReturnType<T['getProperties']>
 		: ReturnType<T[Exclude<api, 'copy' | 'getProperties'>]>
 	: T extends { provider: string }
 	? T extends { provider: 'AWSS3' }
