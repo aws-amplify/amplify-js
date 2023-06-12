@@ -6,8 +6,6 @@ import {
 	Credentials,
 	DateUtils,
 	Signer,
-	getAmplifyUserAgentString,
-	USER_AGENT_HEADER,
 } from '@aws-amplify/core';
 
 import { apiOptions, ApiInfo } from './types';
@@ -110,12 +108,7 @@ export class RestClient {
 			cancelToken: null,
 		};
 
-		const libraryHeaders = {
-			[USER_AGENT_HEADER]: getAmplifyUserAgentString(
-				init.customUserAgentDetails
-			),
-		};
-
+		const libraryHeaders = {};
 		const initParams = Object.assign({}, init);
 		const isAllResponse = initParams.response;
 		if (initParams.body) {

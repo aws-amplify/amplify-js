@@ -1,14 +1,7 @@
 import axios, { CancelTokenStatic } from 'axios';
 import { RestAPIClass as API } from '../src/';
 import { RestClient } from '../src/RestClient';
-import {
-	Signer,
-	Credentials,
-	DateUtils,
-	getAmplifyUserAgentString,
-	Category,
-	ApiAction,
-} from '@aws-amplify/core';
+import { Signer, Credentials, DateUtils } from '@aws-amplify/core';
 
 jest.mock('axios');
 
@@ -186,23 +179,12 @@ describe('Rest API test', () => {
 						res({});
 					});
 				});
-			await api.get('apiName', 'path', {
-				customUserAgentDetails: {
-					category: Category.API,
-					action: ApiAction.Get,
-				},
-			});
+			await api.get('apiName', 'path', {});
 
 			expect(spyonRequest).toBeCalledWith(
 				{
 					data: null,
-					headers: {
-						Authorization: 'mytoken',
-						'x-amz-user-agent': getAmplifyUserAgentString({
-							category: Category.API,
-							action: ApiAction.Get,
-						}),
-					},
+					headers: { Authorization: 'mytoken' },
 					host: 'www.amazonaws.compath',
 					method: 'GET',
 					path: '/',
@@ -265,7 +247,7 @@ describe('Rest API test', () => {
 			await api.get('apiName', '/items', init);
 			const expectedParams = {
 				data: null,
-				headers: { 'x-amz-user-agent': getAmplifyUserAgentString() },
+				headers: {},
 				host: undefined,
 				method: 'GET',
 				path: '/',
@@ -331,7 +313,7 @@ describe('Rest API test', () => {
 			await api.get('apiName', '/items', init);
 			const expectedParams = {
 				data: null,
-				headers: { 'x-amz-user-agent': getAmplifyUserAgentString() },
+				headers: {},
 				host: undefined,
 				method: 'GET',
 				path: '/',
@@ -400,10 +382,7 @@ describe('Rest API test', () => {
 			await api.get('apiName', '/items', init);
 			const expectedParams = {
 				data: null,
-				headers: {
-					Authorization: 'apikey',
-					'x-amz-user-agent': getAmplifyUserAgentString(),
-				},
+				headers: { Authorization: 'apikey' },
 				host: undefined,
 				method: 'GET',
 				path: '/',
@@ -466,7 +445,7 @@ describe('Rest API test', () => {
 			await api.get('apiName', '/items?key1=value1&key2=value', init);
 			const expectedParams = {
 				data: null,
-				headers: { 'x-amz-user-agent': getAmplifyUserAgentString() },
+				headers: {},
 				host: undefined,
 				method: 'GET',
 				path: '/',
