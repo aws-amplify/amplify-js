@@ -109,7 +109,12 @@
 	},
 	"resolutions": {
 		"@types/babel__traverse": "7.20.0",
-		"terser": "5.17.7"
+		"tuf-js": "1.1.6",
+		"terser": "5.16.9",
+		"es-module-lexer": "1.2.1",
+		"core-js": "3.30.2",
+		"core-js-compat": "3.30.2",
+		"caniuse-lite": "1.0.30001497"
 	},
 	"jest": {
 		"resetMocks": true,
