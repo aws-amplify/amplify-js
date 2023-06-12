@@ -695,6 +695,21 @@ describe('Storage', () => {
 			});
 			expect(customProviderGetPropertiesSpy).toBeCalled();
 		});
+
+		test('getProperties object with custom provider', async () => {
+			const customProvider = new TestCustomProviderWithGetProperties();
+			const customProviderGetPropertiesSpy = jest.spyOn(
+				customProvider,
+				'getProperties'
+			);
+			storage.addPluggable(customProvider);
+			await storage.getProperties<TestCustomProviderWithGetProperties>('key', {
+				foo: true,
+				bar: 1,
+				provider: 'customProvider',
+			});
+			expect(customProviderGetPropertiesSpy).toBeCalled();
+		});
 	});
 
 	describe('put test', () => {
