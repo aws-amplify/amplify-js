@@ -1,3 +1,5 @@
+import { getDateFromHeaderString } from '../clients/middleware/signing/utils/getDateFromHeaderString';
+
 /**
  * Date & time utility functions to abstract the `aws-sdk` away from users.
  * (v2 => v3 modularization is a breaking change)
@@ -34,22 +36,7 @@ export const DateUtils = {
 		return date.toISOString().replace(/[:\-]|\.\d{3}/g, '');
 	},
 
-	getDateFromHeaderString(header: string) {
-		const [, year, month, day, hour, minute, second] = header.match(
-			/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2}).+/
-		);
-
-		return new Date(
-			Date.UTC(
-				Number(year),
-				Number(month) - 1,
-				Number(day),
-				Number(hour),
-				Number(minute),
-				Number(second)
-			)
-		);
-	},
+	getDateFromHeaderString,
 
 	isClockSkewed(serverDate: Date) {
 		// API gateway permits client calls that are off by no more than ±5 minutes
