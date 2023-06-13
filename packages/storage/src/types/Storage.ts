@@ -83,11 +83,11 @@ type StorageOperationConfig<
 			provider: ReturnType<T['getProviderName']>;
 	  }
 	: T extends StorageProviderWithCopy
-	? LastParameter<T['copy']> & {
+	? LastParameter<T[Exclude<U, 'getProperties'>]> & {
 			provider: ReturnType<T['getProviderName']>;
 	  }
 	: T extends StorageProviderWithGetProperties
-	? LastParameter<T['getProperties']> & {
+	? LastParameter<T[Exclude<U, 'copy'>]> & {
 			provider: ReturnType<T['getProviderName']>;
 	  }
 	: LastParameter<T[Exclude<U, 'copy' | 'getProperties'>]> & {
@@ -158,9 +158,9 @@ type PickProviderOutput<
 		: T extends StorageProviderWithCopy & StorageProviderWithGetProperties
 		? ReturnType<T[api]>
 		: T extends StorageProviderWithCopy
-		? ReturnType<T['copy']>
+		? ReturnType<T[Exclude<api, 'getProperties'>]>
 		: T extends StorageProviderWithGetProperties
-		? ReturnType<T['getProperties']>
+		? ReturnType<T[Exclude<api, 'copy'>]>
 		: ReturnType<T[Exclude<api, 'copy' | 'getProperties'>]>
 	: T extends { provider: string }
 	? T extends { provider: 'AWSS3' }
