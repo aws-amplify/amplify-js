@@ -6,5 +6,6 @@ import { globalExists } from './helpers';
 // Tested with expo 48 / react-native 0.71.3
 
 export function expoDetect() {
+	// @ts-ignore
 	return globalExists() && typeof global['expo'] !== 'undefined';
 }
