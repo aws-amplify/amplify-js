@@ -2,19 +2,49 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type {
+	ConfirmForgotPasswordCommandInput,
+	ConfirmForgotPasswordCommandOutput,
 	ForgotPasswordCommandInput,
 	ForgotPasswordCommandOutput,
+	ResendConfirmationCodeCommandInput,
+	ResendConfirmationCodeCommandOutput,
 	SignUpCommandInput,
 	SignUpCommandOutput,
+	InitiateAuthCommandInput,
+	InitiateAuthCommandOutput,
+	RespondToAuthChallengeCommandInput,
+	RespondToAuthChallengeCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../../errors/AuthError';
 import { assertServiceError } from '../../../../errors/utils/assertServiceError';
 
+// TODO: Update the user-agent value
 const USER_AGENT = 'amplify test';
 
-export type ClientInputs = SignUpCommandInput | ForgotPasswordCommandInput;
-export type ClientOutputs = SignUpCommandOutput | ForgotPasswordCommandOutput;
-export type ClientOperations = 'SignUp' | 'ConfirmSignUp' | 'ForgotPassword';
+export type ClientInputs =
+	| SignUpCommandInput
+	| ForgotPasswordCommandInput
+	| ConfirmForgotPasswordCommandInput
+	| InitiateAuthCommandInput
+	| RespondToAuthChallengeCommandInput
+	| ResendConfirmationCodeCommandInput;
+
+export type ClientOutputs =
+	| SignUpCommandOutput
+	| ForgotPasswordCommandOutput
+	| ConfirmForgotPasswordCommandOutput
+	| InitiateAuthCommandOutput
+	| RespondToAuthChallengeCommandOutput
+	| ResendConfirmationCodeCommandOutput;
+	
+export type ClientOperations =
+	| 'SignUp'
+	| 'ConfirmSignUp'
+	| 'ForgotPassword'
+	| 'ConfirmForgotPassword'
+	| 'InitiateAuth'
+	| 'RespondToAuthChallenge'
+	| 'ResendConfirmationCode';
 
 export class UserPoolHttpClient {
 	private _endpoint: string;
