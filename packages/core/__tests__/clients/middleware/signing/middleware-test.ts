@@ -13,7 +13,6 @@ import {
 	HttpResponse,
 	MiddlewareHandler,
 } from '../../../../src/clients/types';
-import { isClockSkewError } from '../../../../src/clients/utils/isClockSkewError';
 import {
 	credentials,
 	signingDate,
@@ -31,7 +30,6 @@ jest.mock(
 	'../../../../src/clients/middleware/signing/utils/getUpdatedSystemClockOffset'
 );
 
-const mockisClockSkewError = isClockSkewError as jest.Mock;
 const mockGetSkewCorrectedDate = getSkewCorrectedDate as jest.Mock;
 const mockGetUpdatedSystemClockOffset =
 	getUpdatedSystemClockOffset as jest.Mock;
