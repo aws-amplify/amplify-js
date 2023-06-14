@@ -6,9 +6,9 @@ import {
 	HttpResponse,
 	authenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import type { s3TransferHandler as s3BrowserTransferhandler } from './s3TransferHandlerXhr';
+import type { s3TransferHandler as s3BrowserTransferhandler } from './xhr';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import { contentSha256Middleware } from './contentSha256middleware';
+import { contentSha256Middleware } from '../contentSha256middleware';
 
 /**
  * S3 transfer handler for node based on Node-fetch. On top of basic transfer handler, it also supports

@@ -6,5 +6,5 @@ export {
 	SEND_DOWNLOAD_PROGRESS_EVENT,
 	SEND_UPLOAD_PROGRESS_EVENT,
 } from './constants';
-export { s3TransferHandler } from './s3TransferHandlerXhr';
+export { s3TransferHandler } from './s3TransferHandler/xhr';
 export { parser } from './xmlParserDom';
