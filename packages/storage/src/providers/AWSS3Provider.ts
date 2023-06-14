@@ -22,6 +22,7 @@ import {
 	GetObjectCommandInput,
 	ListObjectsV2Request,
 	HeadObjectCommand,
+	HeadObjectCommandInput,
 } from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
@@ -50,6 +51,8 @@ import {
 	UploadTask,
 	S3ClientOptions,
 	S3ProviderListOutput,
+	S3ProviderGetPropertiesOutput,
+	S3ProviderGetPropertiesConfig,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
@@ -495,6 +498,87 @@ export class AWSS3Provider implements StorageProvider {
 				null,
 				`Could not get a signed URL for ${key}`
 			);
+			throw error;
+		}
+	}
+
+	/**
+	 * Get Properties of the object
+	 *
+	 * @param {string} key - key of the object
+	 * @param {S3ProviderGetPropertiesConfig} [config] - Optional configuration for the underlying S3 command
+	 * @return {Promise<S3ProviderGetPropertiesOutput>} - A promise resolves to contentType,
+	 * contentLength, eTag, lastModified, metadata
+	 */
+	public async getProperties(
+		key: string,
+		config?: S3ProviderGetPropertiesConfig
+	): Promise<S3ProviderGetPropertiesOutput> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK || !this._isWithCredentials(this._config)) {
+			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
+		}
+		const opt = Object.assign({}, this._config, config);
+		const {
+			bucket,
+			track = false,
+			SSECustomerAlgorithm,
+			SSECustomerKey,
+			SSECustomerKeyMD5,
+		} = opt;
+		const prefix = this._prefix(opt);
+		const final_key = prefix + key;
+		const emitter = new events.EventEmitter();
+		const s3 = this._createNewS3Client(opt, emitter);
+		logger.debug(`getProperties ${key} from ${final_key}`);
+
+		const params: HeadObjectCommandInput = {
+			Bucket: bucket,
+			Key: final_key,
+		};
+
+		if (SSECustomerAlgorithm) {
+			params.SSECustomerAlgorithm = SSECustomerAlgorithm;
+		}
+		if (SSECustomerKey) {
+			params.SSECustomerKey = SSECustomerKey;
+		}
+		if (SSECustomerKeyMD5) {
+			params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
+		}
+		// See: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/classes/headobjectcommand.html
+
+		const headObjectCommand = new HeadObjectCommand(params);
+		try {
+			const response = await s3.send(headObjectCommand);
+			const getPropertiesResponse: S3ProviderGetPropertiesOutput = {
+				contentLength: response.ContentLength,
+				contentType: response.ContentType,
+				eTag: response.ETag,
+				lastModified: response.LastModified,
+				metadata: response.Metadata,
+			};
+			dispatchStorageEvent(
+				track,
+				'getProperties',
+				{ method: 'getProperties', result: 'success' },
+				null,
+				`getProperties successful for ${key}`
+			);
+			return getPropertiesResponse;
+		} catch (error) {
+			if (error.$metadata.httpStatusCode === 404) {
+				dispatchStorageEvent(
+					track,
+					'getProperties',
+					{
+						method: 'getProperties',
+						result: 'failed',
+					},
+					null,
+					`${key} not found`
+				);
+			}
 			throw error;
 		}
 	}
