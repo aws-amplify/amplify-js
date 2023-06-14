@@ -1,4 +1,8 @@
-import { StorageCopySource, StorageCopyDestination } from './Storage';
+import {
+	StorageCopySource,
+	StorageCopyDestination,
+	StorageCopyConfig,
+} from './Storage';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 export interface StorageProvider {
@@ -19,6 +23,9 @@ export interface StorageProvider {
 
 	// get object/pre-signed url from storage
 	get(key: string, options?): Promise<string | Object>;
+
+	// get properties of object
+	getProperties?(key: string, options?): Promise<Object>;
 
 	// upload storage object
 	put(key: string, object, options?): Promise<Object> | UploadTask;
@@ -52,4 +59,14 @@ export interface StorageProviderWithCopy extends StorageProvider {
 	): Promise<any>;
 }
 
-export type StorageProviderApi = 'copy' | 'get' | 'put' | 'remove' | 'list';
+export interface StorageProviderWithGetProperties extends StorageProvider {
+	getProperties(key: string, options?): Promise<Object>;
+}
+
+export type StorageProviderApi =
+	| 'copy'
+	| 'get'
+	| 'put'
+	| 'remove'
+	| 'list'
+	| 'getProperties';
