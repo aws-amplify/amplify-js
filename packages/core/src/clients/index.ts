@@ -7,11 +7,11 @@ export { fetchTransferHandler } from './handlers/fetch';
 export { unauthenticatedHandler } from './handlers/unauthenticated';
 export { authenticatedHandler } from './handlers/authenticated';
 export {
-	signRequest,
+	getHashedPayload,
 	presignUrl,
+	signRequest,
 } from './middleware/signing/signer/signatureV4';
 export { signingMiddleware, SigningOptions } from './middleware/signing';
-export { getHashedPayload } from './middleware/signing/signer/signatureV4';
 export {
 	getRetryDecider,
 	jitteredBackoff,

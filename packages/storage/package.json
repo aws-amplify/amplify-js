@@ -6,13 +6,7 @@
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "browser": {
-    "./lib-esm/AwsClients/S3/utils/s3TransferHandler": "./lib-esm/AwsClients/S3/utils/s3TransferHandler.browser.js",
-    "./lib-esm/AwsClients/S3/utils/xmlParser": "./lib-esm/AwsClients/S3/utils/xmlParser.browser.js"
-  },
-  "react-native": {
-    "./lib/index": "./lib-esm/index.js",
-    "./lib-esm/AwsClients/S3/utils/s3TransferHandler": "./lib-esm/AwsClients/S3/utils/s3TransferHandler.browser.js",
-    "./lib-esm/AwsClients/S3/utils/xmlParser": "./lib-esm/AwsClients/S3/utils/xmlParser.browser.js"
+    "./lib-esm/AwsClients/S3/utils/index": "./lib-esm/AwsClients/S3/utils/index.browser.js"
   },
   "sideEffects": [
     "./lib/Storage.js",

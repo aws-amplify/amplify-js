@@ -6,7 +6,7 @@ import {
 	HttpResponse,
 	authenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import type { s3TransferHandler as s3BrowserTransferhandler } from './s3TransferHandler.browser';
+import type { s3TransferHandler as s3BrowserTransferhandler } from './s3TransferHandlerXhr';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import { contentSha256Middleware } from './contentSha256middleware';
 

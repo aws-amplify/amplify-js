@@ -9,9 +9,10 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import type { EventEmitter } from 'events';
-
-export const SEND_UPLOAD_PROGRESS_EVENT = 'sendUploadProgress';
-export const SEND_DOWNLOAD_PROGRESS_EVENT = 'sendDownloadProgress';
+import {
+	SEND_DOWNLOAD_PROGRESS_EVENT,
+	SEND_UPLOAD_PROGRESS_EVENT,
+} from './constants';
 
 const NETWORK_ERROR_MESSAGE = 'Network Error';
 const NETWORK_ERROR_CODE = 'ECONNABORTED';
