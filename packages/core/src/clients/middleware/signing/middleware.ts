@@ -10,7 +10,6 @@ import {
 import { signRequest } from './signer/signatureV4';
 import { getSkewCorrectedDate } from './utils/getSkewCorrectedDate';
 import { getUpdatedSystemClockOffset } from './utils/getUpdatedSystemClockOffset';
-import { getDateFromHeaderString } from './utils/getDateFromHeaderString';
 
 /**
  * Configuration of the signing middleware
@@ -44,11 +43,11 @@ export const signingMiddleware = ({
 			const response = await next(signedRequest);
 			// Update system clock offset if response contains date header, regardless of the status code.
 			// non-2xx response will still be returned from next handler instead of thrown, because it's
-			// only thrown after the retry middleware.
+			// only thrown by the retry middleware.
 			const dateString = getDateHeader(response);
 			if (dateString) {
 				currentSystemClockOffset = getUpdatedSystemClockOffset(
-					getDateFromHeaderString(dateString).getTime(),
+					Date.parse(dateString),
 					currentSystemClockOffset
 				);
 			}
@@ -57,4 +56,4 @@ export const signingMiddleware = ({
 };
 
 const getDateHeader = ({ headers }: any = {}): string | undefined =>
-	headers?.date ?? headers?.['x-amz-date'];
+	headers?.date ?? headers?.Date ?? headers?.['x-amz-date'];

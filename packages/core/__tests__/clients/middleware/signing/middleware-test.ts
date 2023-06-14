@@ -22,7 +22,6 @@ import {
 } from './signer/signatureV4/testUtils/data';
 import { signingTestTable } from './signer/signatureV4/testUtils/signingTestTable';
 
-jest.mock('../../../../src/clients/utils/isClockSkewError');
 jest.mock(
 	'../../../../src/clients/middleware/signing/utils/getSkewCorrectedDate'
 );
@@ -94,46 +93,32 @@ describe('Signing middleware', () => {
 	});
 
 	test.each([
-		['skew error', null],
-		['error with Date header', 'Date'],
-		['error with date header', 'date'],
+		['response with Date header', 'Date'],
+		['response with date header', 'date'],
+		['response with x-amz-date header', 'x-amz-date'],
 	])('should adjust clock offset if server returns %s', async (_, key) => {
-		mockisClockSkewError.mockReturnValue(true);
 		const serverTime = signingDate.toISOString();
 		const parsedServerTime = Date.parse(serverTime);
-		const nextHandler = key
-			? jest.fn().mockRejectedValue({
-					$response: {
-						headers: {
-							[key]: serverTime,
-						},
-					},
-			  })
-			: jest.fn().mockRejectedValue({ ServerTime: serverTime });
+		const nextHandler = jest.fn().mockResolvedValue({
+			headers: {
+				[key!]: serverTime,
+			},
+		});
 
 		const middlewareFunction = signingMiddleware(defaultSigningOptions)(
 			nextHandler
 		);
 
-		try {
-			await middlewareFunction(defaultRequest);
-		} catch (error) {
-			expect(mockGetSkewCorrectedDate).toBeCalledWith(0);
-			expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(
-				parsedServerTime,
-				0
-			);
-			jest.clearAllMocks();
-			try {
-				await middlewareFunction(defaultRequest);
-			} catch (error) {
-				expect(mockGetSkewCorrectedDate).toBeCalledWith(updatedOffset);
-				expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(
-					parsedServerTime,
-					updatedOffset
-				);
-			}
-		}
-		expect.assertions(4);
+		await middlewareFunction(defaultRequest);
+		expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(parsedServerTime, 0);
+
+		jest.clearAllMocks();
+		await middlewareFunction(defaultRequest);
+		expect(mockGetSkewCorrectedDate).toBeCalledWith(updatedOffset);
+		expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(
+			parsedServerTime,
+			updatedOffset
+		);
+		expect.assertions(3);
 	});
 });
