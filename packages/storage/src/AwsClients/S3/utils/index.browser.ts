@@ -7,4 +7,4 @@ export {
 	SEND_UPLOAD_PROGRESS_EVENT,
 } from './constants';
 export { s3TransferHandler } from './s3TransferHandler/xhr';
-export { parser } from './xmlParserDom';
+export { parser } from './xmlParser/dom';
