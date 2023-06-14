@@ -457,7 +457,7 @@ export class AWSS3Provider implements StorageProvider {
 			try {
 				await s3.send(headObjectCommand);
 			} catch (error) {
-				if (error.$metadata.httpStatusCode === 404) {
+				if (error.$metadata?.httpStatusCode === 404) {
 					dispatchStorageEvent(
 						track,
 						'getSignedUrl',
@@ -571,7 +571,7 @@ export class AWSS3Provider implements StorageProvider {
 			);
 			return getPropertiesResponse;
 		} catch (error) {
-			if (error.$metadata.httpStatusCode === 404) {
+			if (error.$metadata?.httpStatusCode === 404) {
 				dispatchStorageEvent(
 					track,
 					'getProperties',
