@@ -21,6 +21,6 @@ export const processExists = () => {
 	return typeof process !== 'undefined';
 };
 
-export const keyPrefixMatch = (object, prefix) => {
+export const keyPrefixMatch = (object: object, prefix: string) => {
 	return !!Object.keys(object).find(key => key.startsWith(prefix));
 };

@@ -1,12 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { processExists, windowExists } from './helpers';
+import { documentExists, processExists, windowExists } from './helpers';
 
 // Tested with @angular/core 16.0.0
 
 export function angularWebDetect() {
-	return windowExists() && typeof window['ng'] !== 'undefined';
+	const angularVersionSetInDocument = Boolean(
+		documentExists() && document.querySelector('[ng-version]')
+	);
+	const angularContentSetInWindow = Boolean(
+		// @ts-ignore
+		windowExists() && typeof window['ng'] !== 'undefined'
+	);
+	return angularVersionSetInDocument || angularContentSetInWindow;
 }
 
 export function angularSSRDetect() {

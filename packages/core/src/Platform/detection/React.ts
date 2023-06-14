@@ -6,11 +6,11 @@ import { documentExists, processExists, windowExists } from './helpers';
 // Tested with react 18.2 - built using Vite
 
 export function reactWebDetect() {
-	const elementKeyPrefixedWithReact = k => {
-		return k.startsWith('_react') || k.startsWith('__react');
+	const elementKeyPrefixedWithReact = key => {
+		return key.startsWith('_react') || key.startsWith('__react');
 	};
-	const elementIsReactEnabled = e => {
-		return Object.keys(e).find(elementKeyPrefixedWithReact);
+	const elementIsReactEnabled = element => {
+		return Object.keys(element).find(elementKeyPrefixedWithReact);
 	};
 	const allElementsWithId = () => Array.from(document.querySelectorAll('[id]'));
 
