@@ -76,6 +76,12 @@ export class Signer {
 			signedRequest.headers['x-amz-security-token'];
 		delete signedRequest.headers.authorization;
 		delete signedRequest.headers['x-amz-security-token'];
+
+		// For parity with previous signer implementation, add side effect to update the original request's headers with
+		// signed request's headers. This should be removed in future. Api-rest category's REST client relies on this behavior
+		// to correct clock skew.
+		Object.assign(request.headers, signedRequest.headers);
+
 		return signedRequest;
 	}
 

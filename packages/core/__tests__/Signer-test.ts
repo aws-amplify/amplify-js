@@ -125,6 +125,26 @@ describe('Signer.sign', () => {
 			)
 		);
 	});
+
+	test("should add signed request's headers to input request", () => {
+		const request = getDefaultRequest();
+		const signedRequest = Signer.sign(request, credentialsWithToken, {
+			region: 'us-east-1',
+			service: 'foo',
+		});
+		expect(signedRequest.headers).toEqual(
+			expect.objectContaining({
+				'x-amz-date': expect.any(String),
+				Authorization: expect.any(String),
+			})
+		);
+		expect(request.headers).toEqual(
+			expect.objectContaining({
+				'x-amz-date': expect.any(String),
+				Authorization: expect.any(String),
+			})
+		);
+	});
 });
 
 describe('Signer.signUrl', () => {
