@@ -2,7 +2,7 @@ import { Credentials, ICredentials, StorageAction } from '@aws-amplify/core';
 import * as utils from '../../src/common/S3ClientUtils';
 import { AWSS3Provider as StorageProvider } from '../../src/providers/AWSS3Provider';
 import { StorageOptions } from '../../src';
-import { S3Client } from '@aws-sdk/client-s3';
+import { HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 const credentials: ICredentials = {
 	accessKeyId: 'accessKeyId',
@@ -32,7 +32,18 @@ describe('Each Storage call should create a client with the right StorageAction'
 		});
 		storage = new StorageProvider();
 		storage.configure(options);
-		S3Client.prototype.send = jest.fn();
+		S3Client.prototype.send = jest.fn(async command => {
+			if (command instanceof HeadObjectCommand) {
+				return {
+					ContentLength: '100',
+					ContentType: 'text/plain',
+					ETag: 'etag',
+					LastModified: 'lastmodified',
+					Metadata: { key: 'value' },
+				};
+			}
+			return undefined;
+		});
 	});
 
 	afterEach(() => {
@@ -44,6 +55,15 @@ describe('Each Storage call should create a client with the right StorageAction'
 		expect(utils.createS3Client).toBeCalledWith(
 			expect.anything(),
 			StorageAction.Get,
+			expect.anything()
+		);
+	});
+
+	test('getProperties', async () => {
+		await storage.getProperties('test');
+		expect(utils.createS3Client).toBeCalledWith(
+			expect.anything(),
+			StorageAction.GetProperties,
 			expect.anything()
 		);
 	});
