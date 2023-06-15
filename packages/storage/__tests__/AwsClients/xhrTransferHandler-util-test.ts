@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { xhrTransferHandler } from '../../src/AwsClients/S3/utils/xhrTransferHandler';
+import { xhrTransferHandler } from '../../src/AwsClients/S3/runtime/xhrTransferHandler';
 import {
 	SEND_UPLOAD_PROGRESS_EVENT,
 	SEND_DOWNLOAD_PROGRESS_EVENT,
-} from '../../src/AwsClients/S3/utils/constants';
+} from '../../src/AwsClients/S3/utils';
 import {
 	spyOnXhr,
 	mockXhrResponse,
@@ -304,8 +304,12 @@ describe('xhrTransferHandler', () => {
 		expect(body).toBeInstanceOf(Blob);
 		expect((body! as unknown as Blob).size).toBe(mock200Response.body.length);
 		expect(await body!.blob()).toBe(body);
-		expect(await body!.text()).toEqual(
-			expect.stringMatching(/^text from raw response: .+Blob.+/)
+		await expect(body!.text()).rejects.toThrow(
+			expect.objectContaining({
+				message: expect.stringContaining(
+					'Please set the responseType to "text".'
+				),
+			})
 		);
 		await expect(body!.json()).rejects.toThrow(
 			expect.objectContaining({
