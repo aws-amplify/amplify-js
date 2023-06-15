@@ -4,4 +4,5 @@
 /**
  * Cognito custom attribute type
  */
-export type CustomAttribute = { custom: string };
+// TODO(israx): change to `custom:${string}` once TS version is upgraded
+export type CustomAttribute = string&{};

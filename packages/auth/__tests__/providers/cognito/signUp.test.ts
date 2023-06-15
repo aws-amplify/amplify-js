@@ -29,7 +29,7 @@ describe('SignUp API Happy Path Cases:', () => {
 			username: user1.username,
 			password: user1.password,
 			options: {
-				userAttributes: [{ userAttributeKey: 'email', value: user1.email }],
+				userAttributes: {email: user1.email}
 			},
 		});
 		expect(result).toEqual({

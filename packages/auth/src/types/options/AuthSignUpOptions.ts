@@ -17,6 +17,6 @@ export type AuthSignUpOptions<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
-	userAttributes: AuthUserAttribute<UserAttributeKey>[];
+	userAttributes: AuthUserAttribute<UserAttributeKey>;
 	serviceOptions?: ServiceOptions;
 };
