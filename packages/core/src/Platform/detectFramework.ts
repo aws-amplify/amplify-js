@@ -13,6 +13,7 @@ const frameworkChangeObservers: (() => void)[] = [];
 let resetTriggered = false;
 const SSR_RESET_TIMEOUT = 10; // ms
 const WEB_RESET_TIMEOUT = 10; // ms
+const PRIME_FRAMEWORK_DELAY = 1_000; // ms
 
 export const detectFramework = (): Framework => {
 	if (!frameworkCache) {
@@ -50,7 +51,7 @@ function resetTimeout(framework: Framework, delay: number) {
 		setTimeout(() => {
 			clearCache();
 			resetTriggered = true;
-			detectFramework();
+			setTimeout(detectFramework, PRIME_FRAMEWORK_DELAY);
 		}, delay);
 	}
 }
