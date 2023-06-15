@@ -6,7 +6,7 @@
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "browser": {
-    "./lib-esm/AwsClients/S3/utils/index": "./lib-esm/AwsClients/S3/utils/index.browser.js"
+    "./lib-esm/AwsClients/S3/runtime/index": "./lib-esm/AwsClients/S3/runtime/index.browser.js"
   },
   "sideEffects": [
     "./lib/Storage.js",
