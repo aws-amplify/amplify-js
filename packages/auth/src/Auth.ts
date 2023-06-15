@@ -139,6 +139,9 @@ export class AuthClass {
 
 		addAuthCategoryToCognitoUserAgent();
 		addFrameworkToCognitoUserAgent(Platform.framework);
+		Platform.observeFrameworkChanges(() => {
+			addFrameworkToCognitoUserAgent(Platform.framework);
+		});
 	}
 
 	public getModuleName() {

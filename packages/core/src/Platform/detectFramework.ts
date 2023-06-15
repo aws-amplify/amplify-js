@@ -7,6 +7,8 @@ import { detect } from './detection';
 // We want to cache detection since the framework won't change
 let frameworkCache: Framework | undefined;
 
+const frameworkChangeObservers: (() => void)[] = [];
+
 // Setup the detection reset tracking / timeout delays
 let resetTriggered = false;
 const SSR_RESET_TIMEOUT = 10; // ms
@@ -16,11 +18,21 @@ export const detectFramework = (): Framework => {
 	if (!frameworkCache) {
 		frameworkCache = detect();
 
+		// Everytime we update the cache, call each observer function
+		frameworkChangeObservers.forEach(fcn => fcn());
+
 		// Retry once for either Unknown type after a delay (explained below)
 		resetTimeout(Framework.ServerSideUnknown, SSR_RESET_TIMEOUT);
 		resetTimeout(Framework.WebUnknown, WEB_RESET_TIMEOUT);
 	}
 	return frameworkCache;
+};
+
+/**
+ * @internal Setup observer callback that will be called everytime the framework changes
+ */
+export const observeFrameworkChanges = (fcn: () => void) => {
+	frameworkChangeObservers.push(fcn);
 };
 
 export function clearCache() {
@@ -38,6 +50,7 @@ function resetTimeout(framework: Framework, delay: number) {
 		setTimeout(() => {
 			clearCache();
 			resetTriggered = true;
+			detectFramework();
 		}, delay);
 	}
 }
