@@ -324,7 +324,6 @@ export class GraphQLAPIClass {
 				errors: [error],
 			};
 		}
-
 		let response;
 		try {
 			response = await this._api.post(endpoint, init);
@@ -340,10 +339,32 @@ export class GraphQLAPIClass {
 				errors: [new GraphQLError(err.message, null, null, null, null, err)],
 			};
 		}
-
 		const { errors } = response;
-
 		if (errors && errors.length) {
+			let queryfield: string | null;
+			const null_values = errors.find((obj): boolean => {
+				if (obj.message.includes('Cannot return null for non-nullable type')) {
+					queryfield = obj.path[0] as string;
+					return true;
+				}
+			});
+			if (null_values && queryfield) {
+				const data_values: Array<String> = response.data[queryfield].items;
+				const query: string =
+					body.query.slice(0, body.query.indexOf('id') + 3) +
+					'}' +
+					body.query.slice(body.query.lastIndexOf('nextToken'));
+				init.body.query = query;
+				response.items = [];
+				const new_response = await this._api.post(endpoint, init);
+				const compare_values: Array<String> =
+					new_response.data[queryfield].items;
+				for (let index: number = 0; index < data_values.length; index++) {
+					if (!data_values[index]) {
+						response.items.push(compare_values[index]);
+					}
+				}
+			}
 			throw response;
 		}
 
