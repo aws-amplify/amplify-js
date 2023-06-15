@@ -9,6 +9,7 @@ import {
 import { CognitoSignInOptions } from '../types/options/CognitoSignInOptions';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
+import { signInWithUserPassword } from './signInWithUserPassword';
 
 /**
  * Signs a user in
@@ -16,8 +17,8 @@ import { signInWithSRP } from './signInWithSRP';
  * @param signInRequest - The SignInRequest object
  * @returns AuthSignInResult
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException }
- *  -Cognito service errors thrown during the sign-in process.
- * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown either username or password
+ *  - Cognito service errors thrown during the sign-in process.
+ * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
  *
  * TODO: add config errors
@@ -31,7 +32,7 @@ export async function signIn(
 		case 'USER_SRP_AUTH':
 			return signInWithSRP(signInRequest);
 		case 'USER_PASSWORD_AUTH':
-		// TODO(israx): include USER_PASSWORD_AUTH API here
+			return signInWithUserPassword(signInRequest);
 		case 'CUSTOM_WITHOUT_SRP':
 		// TODO(israx): include CUSTOM_WITHOUT_SRP API here
 		case 'CUSTOM_WITH_SRP':

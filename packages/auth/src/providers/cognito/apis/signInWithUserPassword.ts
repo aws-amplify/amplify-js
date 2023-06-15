@@ -2,50 +2,40 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import {
-	SignInRequest,
-	AuthSignInResult,
-	AuthSignInStep,
-} from '../../../types';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
+import { assertValidationError } from '../../../errors/utils/assertValidationError';
+import { AuthSignInStep, SignInRequest } from '../../../types';
 import { CognitoSignInOptions } from '../types/options/CognitoSignInOptions';
+import { setActiveSignInSession } from '../utils/activeSignInSession';
 import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../utils/clients/types/models';
 import {
-	InitiateAuthException,
-	RespondToAuthChallengeException,
-} from '../types/errors/service';
-import { Amplify } from '@aws-amplify/core';
-import {
 	getSignInResult,
 	getSignInResultFromError,
-	handleUserSRPAuthFlow,
+	handleUserPasswordAuthFlow,
 } from '../utils/signInHelpers';
-import { setActiveSignInSession } from '../utils/activeSignInSession';
+import { InitiateAuthException } from '../types/errors/service';
+import { Amplify } from '@aws-amplify/core';
 
 /**
- * Signs a user in
+ * Signs a user in using USER_PASSWORD_AUTH AuthFlowType
  *
  * @param signInRequest - The SignInRequest object
  * @returns AuthSignInResult
- * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } - Cognito service errors 
- * thrown during the sign-in process.
+ * @throws service: {@link InitiateAuthException } - Cognito service error thrown during the sign-in process.
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
  *
  * TODO: add config errors
  */
-export async function signInWithSRP(
+export async function signInWithUserPassword(
 	signInRequest: SignInRequest<CognitoSignInOptions>
-): Promise<AuthSignInResult> {
-	const { username, password } = signInRequest;
-	const config = Amplify.config;
-	const clientMetaData =
-		signInRequest.options?.serviceOptions?.clientMetadata ||
-		config.clientMetadata;
+) {
+	const { username, password, options } = signInRequest;
+	const clientMetadata = Amplify.config.clientMetadata;
+	const metadata = options?.serviceOptions?.clientMetadata || clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -61,7 +51,7 @@ export async function signInWithSRP(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleUserSRPAuthFlow(username, password, clientMetaData);
+		} = await handleUserPasswordAuthFlow(username, password, metadata);
 
 		// Session used on RespondToAuthChallenge requests.
 		setActiveSignInSession(Session);
