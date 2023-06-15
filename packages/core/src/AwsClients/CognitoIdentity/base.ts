@@ -18,6 +18,7 @@ import {
 	getRetryDecider,
 } from '../../clients/middleware/retry';
 import { getAmplifyUserAgentString } from '../../Platform';
+import { observeFrameworkChanges } from '../../Platform/detectFramework';
 
 /**
  * The service name used to sign requests if the API requires authentication.
@@ -64,6 +65,10 @@ export const defaultConfig = {
 	computeDelay: jitteredBackoff,
 	userAgentValue: getAmplifyUserAgentString(),
 };
+
+observeFrameworkChanges(() => {
+	defaultConfig.userAgentValue = getAmplifyUserAgentString();
+});
 
 /**
  * @internal

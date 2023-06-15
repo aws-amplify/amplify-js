@@ -3,7 +3,7 @@
 
 import { CustomUserAgentDetails, Framework } from './types';
 import { version } from './version';
-import { detectFramework } from './detectFramework';
+import { detectFramework, observeFrameworkChanges } from './detectFramework';
 import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
 
 const BASE_USER_AGENT = `aws-amplify`;
@@ -16,6 +16,10 @@ class PlatformBuilder {
 
 	get isReactNative() {
 		return this.framework === Framework.ReactNative;
+	}
+
+	observeFrameworkChanges(fcn: () => void) {
+		observeFrameworkChanges(fcn);
 	}
 }
 
