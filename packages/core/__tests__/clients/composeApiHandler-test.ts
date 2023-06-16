@@ -13,6 +13,11 @@ describe(composeServiceApi.name, () => {
 	const defaultConfig = {
 		endpointResolver: jest.fn().mockReturnValue('https://a.b'),
 	};
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	test('should call transfer handler with resolved config', async () => {
 		const mockTransferHandler = jest.fn().mockResolvedValue(defaultResponse);
 		const config = {
@@ -36,6 +41,25 @@ describe(composeServiceApi.name, () => {
 				foo: 'foo',
 			})
 		);
+	});
+
+	test('should call endpoint resolver with handler config and input', async () => {
+		const mockTransferHandler = jest.fn().mockResolvedValue(defaultResponse);
+		const config = {
+			...defaultConfig,
+			foo: 'bar',
+		};
+		const api = composeServiceApi(
+			mockTransferHandler,
+			input => defaultRequest,
+			async output => ({
+				Result: 'from API',
+			}),
+			defaultConfig
+		);
+		await api(config, 'Input');
+		expect(defaultConfig.endpointResolver).toBeCalledTimes(1);
+		expect(defaultConfig.endpointResolver).toBeCalledWith(config, 'Input');
 	});
 
 	test('should call serializer and deserializer', async () => {

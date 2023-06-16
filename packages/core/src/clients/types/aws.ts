@@ -15,7 +15,7 @@ export type EndpointResolverOptions = { region: string };
 
 export interface ServiceClientOptions {
 	region: string;
-	endpointResolver: (options: EndpointResolverOptions) => Endpoint;
+	endpointResolver: (options: EndpointResolverOptions, input?: any) => Endpoint;
 }
 
 /**

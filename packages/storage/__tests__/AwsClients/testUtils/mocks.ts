@@ -3,7 +3,11 @@
 
 import { XhrSpy } from './types';
 
-// Mock XMLHttpRequest instance so we can spy on the methods and listeners.
+/**
+ * Mock XMLHttpRequest instance so we can spy on the methods and listeners.
+ *
+ * @internal
+ */
 export const spyOnXhr = (): XhrSpy => {
 	const uploadListeners: XhrSpy['uploadListeners'] = {};
 	const listeners: XhrSpy['listeners'] = {};
@@ -33,6 +37,13 @@ export const spyOnXhr = (): XhrSpy => {
 };
 
 /**
+ * Mock a blob response payload.
+ *
+ * @internal
+ */
+export const mockBlobResponsePayload = (body: string) => 'blob: ' + body;
+
+/**
  * Mock XMLHttpRequest's response and invoke the corresponding listeners on given mock XHR instance.
  *
  * @internal
@@ -43,12 +54,33 @@ export const mockXhrResponse = (
 		status: number;
 		// XHR's raw header string. @see https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders#return_value
 		headerString: string;
-		body: BodyInit;
+		body: string;
 	}
 ) => {
 	mockXhr.readyState = XMLHttpRequest.DONE;
 	mockXhr.status = response.status;
-	mockXhr.responseText = `text from raw response: ${response.body}`;
+	Object.defineProperty(mockXhr, 'responseText', {
+		get: () => {
+			if (mockXhr.responseType === 'text') {
+				return response.body as string;
+			}
+			throw new Error(
+				`Cannot read responseText when responseType is ${mockXhr.responseType}`
+			);
+		},
+		configurable: true,
+	});
+	(Blob.prototype.text as jest.Mock).mockImplementation(async () => {
+		if (
+			typeof response.body !== 'string' ||
+			!response.body.startsWith('blob: ')
+		) {
+			throw new Error(
+				'Attempt to read blob response body that is not mocked as blob'
+			);
+		}
+		return response.body.slice('blob: '.length);
+	});
 	mockXhr.response = response.body;
 	(mockXhr.getAllResponseHeaders as jest.Mock).mockReturnValue(
 		response.headerString

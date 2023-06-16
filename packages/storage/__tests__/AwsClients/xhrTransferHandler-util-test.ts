@@ -1,17 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { xhrTransferHandler } from '../../src/AwsClients/S3/utils/xhrTransferHandler';
+import { xhrTransferHandler } from '../../src/AwsClients/S3/runtime/xhrTransferHandler';
 import {
 	SEND_UPLOAD_PROGRESS_EVENT,
 	SEND_DOWNLOAD_PROGRESS_EVENT,
-} from '../../src/AwsClients/S3/utils/constants';
+} from '../../src/AwsClients/S3/utils';
 import {
 	spyOnXhr,
 	mockXhrResponse,
 	triggerNetWorkError,
 	triggerServerSideAbort,
 	mockXhrReadyState,
+	mockBlobResponsePayload,
 } from './testUtils/mocks';
 
 const defaultRequest = {
@@ -28,17 +29,23 @@ const mock200Response = {
 	body: 'hello world',
 };
 
+const mockBlobText = jest.fn();
+const mockReadablStreamCtor = jest.fn();
+
 describe('xhrTransferHandler', () => {
 	const originalXhr = window.XMLHttpRequest;
 	const originalReadableStream = window.ReadableStream;
+	const originalBlobText = Blob.prototype.text;
 	beforeEach(() => {
 		jest.resetAllMocks();
-		window.ReadableStream = jest.fn() as any;
+		window.ReadableStream = mockReadablStreamCtor;
+		Blob.prototype.text = mockBlobText;
 	});
 
 	afterEach(() => {
 		window.XMLHttpRequest = originalXhr;
 		window.ReadableStream = originalReadableStream;
+		Blob.prototype.text = originalBlobText;
 	});
 
 	it('should call xhr.open with the correct arguments', async () => {
@@ -82,7 +89,6 @@ describe('xhrTransferHandler', () => {
 		mockXhrResponse(mockXhr, mock200Response);
 		await requestPromise;
 		expect(mockXhr.responseType).toBe('text');
-
 		mockXhr = spyOnXhr();
 		requestPromise = xhrTransferHandler(defaultRequest, {
 			responseType: 'blob',
@@ -109,20 +115,18 @@ describe('xhrTransferHandler', () => {
 	});
 
 	it('should throw if request Body is a ReadableStream', async () => {
-		const mockXhr = spyOnXhr();
-		const requestPromise = xhrTransferHandler(
-			{
-				...defaultRequest,
-				body: new window.ReadableStream(),
-			},
-			{
-				responseType: 'text',
-			}
-		);
-		mockXhrResponse(mockXhr, mock200Response);
-		await expect(requestPromise).rejects.toThrow(
-			'ReadableStream request payload is not supported.'
-		);
+		spyOnXhr();
+		await expect(
+			xhrTransferHandler(
+				{
+					...defaultRequest,
+					body: new ReadableStream(),
+				},
+				{
+					responseType: 'text',
+				}
+			)
+		).rejects.toThrow('ReadableStream request payload is not supported.');
 	});
 
 	it('should call xhr.send with null when Body is undefined', async () => {
@@ -298,15 +302,17 @@ describe('xhrTransferHandler', () => {
 		});
 		mockXhrResponse(mockXhr, {
 			...mock200Response,
-			body: new Blob([mock200Response.body]),
+			body: mockBlobResponsePayload(mock200Response.body),
 		});
 		const { body } = await requestPromise;
-		expect(body).toBeInstanceOf(Blob);
-		expect((body! as unknown as Blob).size).toBe(mock200Response.body.length);
-		expect(await body!.blob()).toBe(body);
-		expect(await body!.text()).toEqual(
-			expect.stringMatching(/^text from raw response: .+Blob.+/)
-		);
+
+		expect(await body!.blob()).toBe(String(body));
+
+		await body!.text();
+		const responseText = await body!.text();
+		expect(responseText).toBe(mock200Response.body);
+		expect(mockBlobText).toBeCalledTimes(1); // validate memoization
+
 		await expect(body!.json()).rejects.toThrow(
 			expect.objectContaining({
 				message: expect.stringContaining(
@@ -323,9 +329,7 @@ describe('xhrTransferHandler', () => {
 		});
 		mockXhrResponse(mockXhr, mock200Response);
 		const { body } = await requestPromise;
-		expect(await body.text()).toEqual(
-			expect.stringMatching(`text from raw response: ${mock200Response.body}`)
-		);
+		expect(await body?.text()).toEqual(mock200Response.body);
 	});
 
 	it('should clear xhr when xhr.readyState is DONE', async () => {

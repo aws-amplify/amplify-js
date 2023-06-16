@@ -1,4 +1,7 @@
 {
+	"linterOptions": {
+		"exclude": ["src/AwsClients/S3/types.ts"]
+	},
 	"defaultSeverity": "error",
 	"plugins": ["prettier"],
 	"extends": [],
@@ -19,7 +22,7 @@
 		"space-before-function-paren": [
 			true,
 			{
-				"anonymous": "never",
+				"anonymous": "ignore",
 				"named": "never"
 			}
 		],
