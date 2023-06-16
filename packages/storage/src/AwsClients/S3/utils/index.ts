@@ -14,7 +14,4 @@ export {
 	emptyArrayGuard,
 	map,
 } from './deserializeHelpers';
-export {
-	assignSerializableHeaderValues,
-	assignQueryParameters,
-} from './serializeHelpers';
+export { assignStringVariables } from './serializeHelpers';
