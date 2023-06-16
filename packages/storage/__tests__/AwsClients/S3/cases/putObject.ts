@@ -9,7 +9,7 @@ import {
 	expectedMetadata,
 } from './shared';
 
-const putObjectRequest = {
+export const putObjectRequest = {
 	Bucket: 'bucket',
 	Key: 'key',
 	Body: 'body',
@@ -30,7 +30,7 @@ const putObjectRequest = {
 	Tagging: 'Tagging',
 };
 
-const expectedPutObjectRequestHeaders = {
+export const expectedPutObjectRequestHeaders = {
 	'x-amz-server-side-encryption': 'ServerSideEncryption',
 	'x-amz-server-side-encryption-customer-algorithm': 'SSECustomerAlgorithm',
 	'x-amz-server-side-encryption-customer-key': 'SSECustomerKey',
