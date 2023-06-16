@@ -7,7 +7,6 @@ import {
 	HttpResponse,
 	MiddlewareHandler,
 } from '../../types';
-import { isClockSkewError } from '../../utils/isClockSkewError';
 import { signRequest } from './signer/signatureV4';
 import { getSkewCorrectedDate } from './utils/getSkewCorrectedDate';
 import { getUpdatedSystemClockOffset } from './utils/getUpdatedSystemClockOffset';
@@ -23,6 +22,7 @@ export interface SigningOptions {
 
 /**
  * Middleware that SigV4 signs request with AWS credentials, and correct system clock offset.
+ * This middleware is expected to be placed after retry middleware.
  */
 export const signingMiddleware = ({
 	credentials,
@@ -40,26 +40,20 @@ export const signingMiddleware = ({
 				signingService: service,
 			};
 			const signedRequest = await signRequest(request, signRequestOptions);
-			try {
-				const response = await next(signedRequest);
-				return response;
-			} catch (error) {
-				const dateString = shouldUseServerTime(error)
-					? error.ServerTime
-					: getDateHeader(error.$response);
-				if (dateString) {
-					currentSystemClockOffset = getUpdatedSystemClockOffset(
-						Date.parse(dateString),
-						currentSystemClockOffset
-					);
-				}
-				throw error;
+			const response = await next(signedRequest);
+			// Update system clock offset if response contains date header, regardless of the status code.
+			// non-2xx response will still be returned from next handler instead of thrown, because it's
+			// only thrown by the retry middleware.
+			const dateString = getDateHeader(response);
+			if (dateString) {
+				currentSystemClockOffset = getUpdatedSystemClockOffset(
+					Date.parse(dateString),
+					currentSystemClockOffset
+				);
 			}
+			return response;
 		};
 };
 
-const shouldUseServerTime = ({ ServerTime, Code }: any): boolean =>
-	ServerTime && isClockSkewError(Code);
-
 const getDateHeader = ({ headers }: any = {}): string | undefined =>
-	headers?.date ?? headers?.Date;
+	headers?.date ?? headers?.Date ?? headers?.['x-amz-date'];
