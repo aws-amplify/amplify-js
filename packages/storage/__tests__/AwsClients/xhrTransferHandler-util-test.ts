@@ -12,6 +12,7 @@ import {
 	triggerNetWorkError,
 	triggerServerSideAbort,
 	mockXhrReadyState,
+	mockBlobResponsePayload,
 } from './testUtils/mocks';
 
 const defaultRequest = {
@@ -31,14 +32,17 @@ const mock200Response = {
 describe('xhrTransferHandler', () => {
 	const originalXhr = window.XMLHttpRequest;
 	const originalReadableStream = window.ReadableStream;
+	const originalBlobText = Blob.prototype.text;
 	beforeEach(() => {
 		jest.resetAllMocks();
 		window.ReadableStream = jest.fn() as any;
+		Blob.prototype.text = jest.fn();
 	});
 
 	afterEach(() => {
 		window.XMLHttpRequest = originalXhr;
 		window.ReadableStream = originalReadableStream;
+		Blob.prototype.text = originalBlobText;
 	});
 
 	it('should call xhr.open with the correct arguments', async () => {
@@ -82,7 +86,6 @@ describe('xhrTransferHandler', () => {
 		mockXhrResponse(mockXhr, mock200Response);
 		await requestPromise;
 		expect(mockXhr.responseType).toBe('text');
-
 		mockXhr = spyOnXhr();
 		requestPromise = xhrTransferHandler(defaultRequest, {
 			responseType: 'blob',
@@ -109,20 +112,18 @@ describe('xhrTransferHandler', () => {
 	});
 
 	it('should throw if request Body is a ReadableStream', async () => {
-		const mockXhr = spyOnXhr();
-		const requestPromise = xhrTransferHandler(
-			{
-				...defaultRequest,
-				body: new window.ReadableStream(),
-			},
-			{
-				responseType: 'text',
-			}
-		);
-		mockXhrResponse(mockXhr, mock200Response);
-		await expect(requestPromise).rejects.toThrow(
-			'ReadableStream request payload is not supported.'
-		);
+		spyOnXhr();
+		await expect(
+			xhrTransferHandler(
+				{
+					...defaultRequest,
+					body: new window.ReadableStream(),
+				},
+				{
+					responseType: 'text',
+				}
+			)
+		).rejects.toThrow('ReadableStream request payload is not supported.');
 	});
 
 	it('should call xhr.send with null when Body is undefined', async () => {
@@ -298,19 +299,17 @@ describe('xhrTransferHandler', () => {
 		});
 		mockXhrResponse(mockXhr, {
 			...mock200Response,
-			body: new Blob([mock200Response.body]),
+			body: mockBlobResponsePayload(mock200Response.body),
 		});
 		const { body } = await requestPromise;
-		expect(body).toBeInstanceOf(Blob);
-		expect((body! as unknown as Blob).size).toBe(mock200Response.body.length);
-		expect(await body!.blob()).toBe(body);
-		await expect(body!.text()).rejects.toThrow(
-			expect.objectContaining({
-				message: expect.stringContaining(
-					'Please set the responseType to "text".'
-				),
-			})
-		);
+
+		expect(await body!.blob()).toBe(String(body));
+
+		await body!.text();
+		const responseText = await body!.text();
+		expect(responseText).toBe(mock200Response.body);
+		expect(Blob.prototype.text).toBeCalledTimes(1); // validate memoization
+
 		await expect(body!.json()).rejects.toThrow(
 			expect.objectContaining({
 				message: expect.stringContaining(
@@ -327,9 +326,7 @@ describe('xhrTransferHandler', () => {
 		});
 		mockXhrResponse(mockXhr, mock200Response);
 		const { body } = await requestPromise;
-		expect(await body.text()).toEqual(
-			expect.stringMatching(`text from raw response: ${mock200Response.body}`)
-		);
+		expect(await body.text()).toEqual(mock200Response.body);
 	});
 
 	it('should clear xhr when xhr.readyState is DONE', async () => {

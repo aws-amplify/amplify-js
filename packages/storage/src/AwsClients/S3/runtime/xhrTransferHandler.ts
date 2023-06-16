@@ -6,6 +6,7 @@ import {
 	HttpResponse,
 	TransferHandler,
 	ResponseBodyMixin,
+	withMemoization,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import type { EventEmitter } from 'events';
@@ -116,18 +117,16 @@ export const xhrTransferHandler: TransferHandler<
 				const responseHeaders = convertResponseHeaders(
 					xhr.getAllResponseHeaders()
 				);
+				const responseType = xhr.responseType;
 				const responseBlob = xhr.response as Blob;
-				const responseText = xhr.responseText;
+				const responseText = responseType === 'text' ? xhr.responseText : '';
 				const bodyMixIn: ResponseBodyMixin = {
 					blob: () => Promise.resolve(responseBlob),
-					text: async () => {
-						if (responseType === 'text') {
-							return responseText;
-						}
-						// The responseType is set internally by S3 API handlers hence the developer,
-						// we still throw this error for nicer error message.
-						throw new Error('Please set the responseType to "text".');
-					},
+					text: withMemoization(() =>
+						responseType === 'blob'
+							? Blob.prototype.text.call(responseBlob)
+							: Promise.resolve(responseText)
+					),
 					json: () =>
 						Promise.reject(
 							// S3 does not support JSON response. So fail-fast here with nicer error message.

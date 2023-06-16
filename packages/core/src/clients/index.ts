@@ -20,4 +20,5 @@ export {
 } from './middleware/retry';
 export { userAgentMiddleware, UserAgentOptions } from './middleware/userAgent';
 export { parseJsonBody, parseJsonError, parseMetadata } from './serde';
+export { withMemoization } from './utils/memoization';
 export * from './types';
