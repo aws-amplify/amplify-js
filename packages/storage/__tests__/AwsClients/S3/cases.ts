@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { listObjectsV2 } from '../../../src/AwsClients/S3';
 import { ApiFunctionalTestCase } from '../testUtils/types';
 

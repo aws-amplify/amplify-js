@@ -19,7 +19,7 @@ export const parseXmlError: ErrorParser = async (response?: HttpResponse) => {
 		? (body.Code as string)
 		: statusCode === 404
 		? 'NotFound'
-		: '' + statusCode;
+		: statusCode.toString();
 	const message = body?.['message'] ?? body?.['Message'] ?? 'UnknownError';
 	const error = new Error(message);
 	return Object.assign(error, {
@@ -31,14 +31,14 @@ export const parseXmlError: ErrorParser = async (response?: HttpResponse) => {
 export const parseXmlBody = async (response: HttpResponse): Promise<any> => {
 	if (!response.body) {
 		// S3 can return 200 without a body indicating failure.
-		throw new Error('S3 aborted request');
+		throw new Error('S3 aborted request.');
 	}
 	const data = await response.body.text();
 	if (data?.length > 0) {
 		try {
 			return parser.parse(data);
 		} catch (error) {
-			throw new Error('Failed to parse XML response');
+			throw new Error('Failed to parse XML response.');
 		}
 	}
 	return {};

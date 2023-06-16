@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { HttpResponse } from '@aws-amplify/core/internals/aws-client-utils';
 import { fetchTransferHandler } from '@aws-amplify/core/lib/clients/handlers/fetch';
 
