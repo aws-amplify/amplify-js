@@ -14,9 +14,6 @@ declare const ChecksumAlgorithm: {
 	readonly SHA1: 'SHA1';
 	readonly SHA256: 'SHA256';
 };
-declare const ChecksumMode: {
-	readonly ENABLED: 'ENABLED';
-};
 declare const EncodingType: {
 	readonly url: 'url';
 };
