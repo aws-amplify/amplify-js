@@ -6,6 +6,7 @@ import {
 	HttpResponse,
 	TransferHandler,
 	ResponseBodyMixin,
+	withMemoization,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import type { EventEmitter } from 'events';
@@ -116,11 +117,16 @@ export const xhrTransferHandler: TransferHandler<
 				const responseHeaders = convertResponseHeaders(
 					xhr.getAllResponseHeaders()
 				);
+				const responseType = xhr.responseType;
 				const responseBlob = xhr.response as Blob;
-				const responseText = xhr.responseText;
+				const responseText = responseType === 'text' ? xhr.responseText : '';
 				const bodyMixIn: ResponseBodyMixin = {
 					blob: () => Promise.resolve(responseBlob),
-					text: () => Promise.resolve(responseText),
+					text: withMemoization(() =>
+						responseType === 'blob'
+							? Blob.prototype.text.call(responseBlob) // Use prototype's text() method to avoid infinite recursion when users call body.text();
+							: Promise.resolve(responseText)
+					),
 					json: () =>
 						Promise.reject(
 							// S3 does not support JSON response. So fail-fast here with nicer error message.
@@ -175,6 +181,7 @@ export const xhrTransferHandler: TransferHandler<
 			typeof ReadableStream === 'function' &&
 			body instanceof ReadableStream
 		) {
+			// This does not matter as previous implementation uses Axios which does not support ReadableStream anyway.
 			throw new Error('ReadableStream request payload is not supported.');
 		}
 
