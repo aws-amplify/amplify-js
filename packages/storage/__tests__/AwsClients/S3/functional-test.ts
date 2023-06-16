@@ -8,6 +8,7 @@ import cases from './cases';
 
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
+const mockFetchTransferHandler = fetchTransferHandler as jest.Mock;
 const mockBinaryResponse = ({
 	status,
 	headers,
@@ -23,7 +24,7 @@ const mockBinaryResponse = ({
 				'Parsing response to JSON is not implemented. Please use response.text() instead.'
 			);
 		},
-		blob: async () => body as unknown as Blob,
+		blob: async () => new Blob([body], { type: 'plain/text' }),
 		text: async () => body,
 	} as HttpResponse['body'];
 	return {
@@ -35,7 +36,7 @@ const mockBinaryResponse = ({
 
 describe('S3 APIs functional test', () => {
 	beforeEach(() => {
-		(fetchTransferHandler as jest.Mock).mockReset();
+		mockFetchTransferHandler.mockReset();
 	});
 	test.each(cases)(
 		'%s %s',
@@ -50,11 +51,10 @@ describe('S3 APIs functional test', () => {
 			outputOrError
 		) => {
 			expect.assertions(2);
-			(fetchTransferHandler as jest.Mock).mockResolvedValue(
+			mockFetchTransferHandler.mockResolvedValue(
 				mockBinaryResponse(response as any)
 			);
 			try {
-				// @ts-ignore
 				const output = await handler(config, input);
 				if (caseType === 'happy case') {
 					expect(output).toEqual(outputOrError);

@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * Cache the payload of a response body. It allows multiple calls to the body,
  * for example, when reading the body in both retry decider and error deserializer.

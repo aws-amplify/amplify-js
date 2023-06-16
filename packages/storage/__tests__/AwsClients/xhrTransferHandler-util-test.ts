@@ -29,14 +29,17 @@ const mock200Response = {
 	body: 'hello world',
 };
 
+const mockBlobText = jest.fn();
+const mockReadablStreamCtor = jest.fn();
+
 describe('xhrTransferHandler', () => {
 	const originalXhr = window.XMLHttpRequest;
 	const originalReadableStream = window.ReadableStream;
 	const originalBlobText = Blob.prototype.text;
 	beforeEach(() => {
 		jest.resetAllMocks();
-		window.ReadableStream = jest.fn() as any;
-		Blob.prototype.text = jest.fn();
+		window.ReadableStream = mockReadablStreamCtor;
+		Blob.prototype.text = mockBlobText;
 	});
 
 	afterEach(() => {
@@ -117,7 +120,7 @@ describe('xhrTransferHandler', () => {
 			xhrTransferHandler(
 				{
 					...defaultRequest,
-					body: new window.ReadableStream(),
+					body: new ReadableStream(),
 				},
 				{
 					responseType: 'text',
@@ -308,7 +311,7 @@ describe('xhrTransferHandler', () => {
 		await body!.text();
 		const responseText = await body!.text();
 		expect(responseText).toBe(mock200Response.body);
-		expect(Blob.prototype.text).toBeCalledTimes(1); // validate memoization
+		expect(mockBlobText).toBeCalledTimes(1); // validate memoization
 
 		await expect(body!.json()).rejects.toThrow(
 			expect.objectContaining({
@@ -326,7 +329,7 @@ describe('xhrTransferHandler', () => {
 		});
 		mockXhrResponse(mockXhr, mock200Response);
 		const { body } = await requestPromise;
-		expect(await body.text()).toEqual(mock200Response.body);
+		expect(await body?.text()).toEqual(mock200Response.body);
 	});
 
 	it('should clear xhr when xhr.readyState is DONE', async () => {

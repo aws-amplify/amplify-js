@@ -81,7 +81,7 @@
     "testPathIgnorePatterns": [
       "xmlParser-fixture.ts",
       "testUtils",
-      "cases.ts"
+      "cases"
     ],
     "moduleFileExtensions": [
       "ts",

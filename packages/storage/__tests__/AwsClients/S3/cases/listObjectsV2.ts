@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { listObjectsV2 } from '../../../src/AwsClients/S3';
-import { ApiFunctionalTestCase } from '../testUtils/types';
+import { listObjectsV2 } from '../../../../src/AwsClients/S3';
+import { ApiFunctionalTestCase } from '../../testUtils/types';
 
 const EMPTY_SHA256 =
 	'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';

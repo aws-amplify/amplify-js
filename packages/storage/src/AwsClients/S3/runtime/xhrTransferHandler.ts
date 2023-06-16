@@ -124,7 +124,7 @@ export const xhrTransferHandler: TransferHandler<
 					blob: () => Promise.resolve(responseBlob),
 					text: withMemoization(() =>
 						responseType === 'blob'
-							? Blob.prototype.text.call(responseBlob)
+							? Blob.prototype.text.call(responseBlob) // Use prototype's text() method to avoid infinite recursion when users call body.text();
 							: Promise.resolve(responseText)
 					),
 					json: () =>
