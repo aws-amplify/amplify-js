@@ -14,7 +14,8 @@ import type {
 } from './types';
 import { defaultConfig } from './base';
 import {
-	assignSerializableValues,
+	assignQueryParameters,
+	assignSerializableHeaderValues,
 	deserializeBoolean,
 	deserializeNumber,
 	deserializeTimestamp,
@@ -33,11 +34,11 @@ const listObjectsV2Serializer = (
 	input: ListObjectsV2Input,
 	endpoint: Endpoint
 ): HttpRequest => {
-	const headers = assignSerializableValues({
+	const headers = assignSerializableHeaderValues({
 		'x-amz-request-payer': input.RequestPayer,
 		'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 	});
-	const query = assignSerializableValues({
+	const query = assignQueryParameters({
 		'list-type': '2',
 		'continuation-token': input.ContinuationToken,
 		delimiter: input.Delimiter,
