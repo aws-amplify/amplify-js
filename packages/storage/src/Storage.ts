@@ -139,6 +139,7 @@ export class Storage {
 			'SSECustomerKey',
 			'SSECustomerKeyMD5',
 			'SSEKMSKeyId',
+			'isLockEnabled',
 		];
 
 		const hasDefaultProviderConfigKeys = (config: object) =>

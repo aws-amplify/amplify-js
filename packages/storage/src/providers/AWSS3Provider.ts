@@ -60,6 +60,7 @@ import {
 	autoAdjustClockskewMiddlewareOptions,
 	createS3Client,
 } from '../common/S3ClientUtils';
+import { calculateContentMd5 } from '../common/MD5Helper/utils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
@@ -506,11 +507,11 @@ export class AWSS3Provider implements StorageProvider {
 	 * @return an instance of AWSS3UploadTask or a promise that resolves to an object with the new object's key on
 	 * success.
 	 */
-	public put<T extends S3ProviderPutConfig>(
+	public async put<T extends S3ProviderPutConfig>(
 		key: string,
 		object: PutObjectCommandInput['Body'],
 		config?: T
-	): S3ProviderPutOutput<T> {
+	): Promise<S3ProviderPutOutput<T>> {
 		const opt = Object.assign({}, this._config, config);
 		const { bucket, track, progressCallback, level, resumable } = opt;
 		const {
@@ -522,6 +523,7 @@ export class AWSS3Provider implements StorageProvider {
 			metadata,
 			tagging,
 			acl,
+			isLockEnabled,
 		} = opt;
 		const {
 			serverSideEncryption,
@@ -572,6 +574,9 @@ export class AWSS3Provider implements StorageProvider {
 			params.SSEKMSKeyId = SSEKMSKeyId;
 		}
 
+		if (isLockEnabled) {
+			params.ContentMD5 = await calculateContentMd5(object as string);
+		}
 		const emitter = new events.EventEmitter();
 		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
 
