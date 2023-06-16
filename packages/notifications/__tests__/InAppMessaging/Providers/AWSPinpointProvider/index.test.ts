@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials, StorageHelper } from '@aws-amplify/core';
-import { PinpointClient } from '@aws-sdk/client-pinpoint';
+import { getInAppMessages } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { addEventListener } from '../../../../src/common/eventListeners';
@@ -29,7 +29,7 @@ import {
 import { mockStorage } from '../../../../__mocks__/mocks';
 
 jest.mock('@aws-amplify/core');
-jest.mock('@aws-sdk/client-pinpoint');
+jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('../../../../src/common/eventListeners');
 jest.mock('../../../../src/InAppMessaging/Providers/AWSPinpointProvider/utils');
 jest.mock(
@@ -45,12 +45,12 @@ jest.mock(
 const getStorageSpy = jest.spyOn(StorageHelper.prototype, 'getStorage');
 const credentialsGetSpy = jest.spyOn(Credentials, 'get');
 const credentialsShearSpy = jest.spyOn(Credentials, 'shear');
-const clientSendSpy = jest.spyOn(PinpointClient.prototype, 'send') as jest.Mock;
 const mockAddEventListener = addEventListener as jest.Mock;
 const mockIsBeforeEndDate = isBeforeEndDate as jest.Mock;
 const mockMatchesAttributes = matchesAttributes as jest.Mock;
 const mockMatchesEventType = matchesEventType as jest.Mock;
 const mockMatchesMetrics = matchesMetrics as jest.Mock;
+const mockGetInAppMessages = getInAppMessages as jest.Mock;
 
 describe('AWSPinpoint InAppMessaging Provider', () => {
 	let provider: AWSPinpointProvider;
@@ -85,7 +85,7 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 		});
 
 		test('gets in-app messages from Pinpoint', async () => {
-			clientSendSpy.mockResolvedValueOnce(null).mockResolvedValueOnce({
+			mockGetInAppMessages.mockResolvedValueOnce({
 				InAppMessagesResponse: {
 					InAppMessageCampaigns: messages,
 				},
@@ -95,7 +95,7 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 		});
 
 		test('throws an error on client failure', async () => {
-			clientSendSpy.mockImplementationOnce(() => {
+			mockGetInAppMessages.mockImplementationOnce(() => {
 				throw new Error();
 			});
 

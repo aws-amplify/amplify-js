@@ -36,7 +36,7 @@ for (let i = 0; i < 256; i++) {
  * @param {number} nBytes
  * @returns {Uint8Array} fixed-length sequence of random bytes
  */
-function randomBytes(nBytes: number): Uint8Array {
+function randomBytes(nBytes: number):Uint8Array {
 	const str = new WordArray().random(nBytes).toString();
 
 	return fromHex(str);

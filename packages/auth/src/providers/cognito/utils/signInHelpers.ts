@@ -33,6 +33,23 @@ import {
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors/service';
 
+export async function handleUserPasswordAuthFlow(
+	username: string,
+	password: string,
+	clientMetadata: ClientMetadata | undefined
+): Promise<InitiateAuthCommandOutput> {
+	const jsonReq: InitiateAuthClientInput = {
+		AuthFlow: 'USER_PASSWORD_AUTH',
+		AuthParameters: {
+			USERNAME: username,
+			PASSWORD: password,
+		},
+		ClientMetadata: clientMetadata,
+	};
+
+	return await initiateAuthClient(jsonReq);
+}
+
 export async function handleUserSRPAuthFlow(
 	username: string,
 	password: string,
@@ -78,6 +95,37 @@ export async function handleCustomAuthFlowWithoutSRP(
 	};
 
 	return await initiateAuthClient(jsonReq);
+}
+
+export async function handleCustomSRPAuthFlow(
+	username: string,
+	password: string,
+	clientMetadata: ClientMetadata | undefined
+) {
+	const userPoolId = Amplify.config['aws_user_pools_id'];
+	const userPoolName = userPoolId.split('_')[1];
+	const authenticationHelper = new AuthenticationHelper(userPoolName);
+	const jsonReq: InitiateAuthClientInput = {
+		AuthFlow: 'CUSTOM_AUTH',
+		AuthParameters: {
+			USERNAME: username,
+			SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
+			CHALLENGE_NAME: 'SRP_A',
+		},
+		ClientMetadata: clientMetadata,
+	};
+
+	const { ChallengeParameters: challengeParameters, Session: session } =
+		await initiateAuthClient(jsonReq);
+
+	return handlePasswordVerifierChallenge(
+		password,
+		challengeParameters as ChallengeParameters,
+		clientMetadata,
+		session,
+		authenticationHelper,
+		userPoolName
+	);
 }
 
 export async function handlePasswordVerifierChallenge(
