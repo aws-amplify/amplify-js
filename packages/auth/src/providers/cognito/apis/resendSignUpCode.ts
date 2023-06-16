@@ -13,8 +13,7 @@ import {
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { resendSignUpConfirmationCodeClient } from '../utils/clients/ResendSignUpCodeClient';
-import { CognitoResendSignUpCodeOptions } from '../types';
-
+import { CognitoResendSignUpCodeOptions, CognitoUserAttributeKey } from '../types';
 
 /**
  * Resend the confirmation code while signing up
