@@ -5,7 +5,7 @@ import { AmplifyErrorString, Amplify } from '@aws-amplify/core';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { confirmResetPassword } from '../../../src/providers/cognito';
-import { ConfirmForgotPasswordException } from '../../../src/providers/cognito/types/errors/service';
+import { ConfirmForgotPasswordException } from '../../../src/providers/cognito/types/errors';
 import * as confirmResetPasswordClient from '../../../src/providers/cognito/utils/clients/ConfirmResetPasswordClient';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 

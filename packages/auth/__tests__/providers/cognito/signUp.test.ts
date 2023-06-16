@@ -8,7 +8,7 @@ import * as signUpClient from '../../../src/providers/cognito/utils/clients/Sign
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
-import { SignUpException } from '../../../src/providers/cognito/types/errors/service';
+import { SignUpException } from '../../../src/providers/cognito/types/errors';
 import { AmplifyErrorString } from '@aws-amplify/core';
 
 describe('SignUp API Happy Path Cases:', () => {
