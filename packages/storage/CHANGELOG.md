@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.4.1...@aws-amplify/storage@5.5.0) (2023-06-15)
+
+### Features
+
+- **storage:** add getProperties API ([#11469](https://github.com/aws-amplify/amplify-js/issues/11469)) ([f47d472](https://github.com/aws-amplify/amplify-js/commit/f47d472ea021dadb1a04d03295c3c6065155f0c0))
+
 ## [5.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.4.0...@aws-amplify/storage@5.4.1) (2023-06-14)
 
 **Note:** Version bump only for package @aws-amplify/storage
