@@ -8,7 +8,6 @@ import {
 	DEFAULT_RESPONSE_HEADERS,
 	expectedMetadata,
 } from './shared';
-import { putObjectRequest, expectedPutObjectRequestHeaders } from './putObject';
 
 // API reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html
 const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
@@ -112,7 +111,39 @@ const completeMultipartUploadErrorCase: ApiFunctionalTestCase<
 	},
 ];
 
+const completeMultipartUploadErrorWith200CodeCase: ApiFunctionalTestCase<
+	typeof completeMultipartUpload
+> = [
+	'error case',
+	'completeMultipartUpload with 200 status',
+	completeMultipartUpload,
+	{ ...defaultConfig, retryDecider: async () => false },
+	completeMultipartUploadHappyCase[4],
+	completeMultipartUploadHappyCase[5],
+	{
+		status: 200,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body:
+			'<?xml version="1.0" encoding="UTF-8"?>' +
+			'<Error>' +
+			'<Code>InternalError</Code>' +
+			'<Message>We encountered an internal error. Please try again.</Message>' +
+			'<RequestId>656c76696e6727732072657175657374</RequestId>' +
+			'<HostId>Uuag1LuByRx9e6j5Onimru9pO4ZVKnJ2Qz7/C1NPcfTWAtRPfTaOFg==</HostId>' +
+			'</Error>',
+	},
+	{
+		$metadata: expect.objectContaining({
+			...expectedMetadata,
+			httpStatusCode: 500,
+		}),
+		message: 'We encountered an internal error. Please try again.',
+		name: 'InternalError',
+	},
+];
+
 export default [
 	completeMultipartUploadHappyCase,
 	completeMultipartUploadErrorCase,
+	completeMultipartUploadErrorWith200CodeCase,
 ];
