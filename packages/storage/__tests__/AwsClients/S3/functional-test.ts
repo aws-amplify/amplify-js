@@ -55,6 +55,7 @@ describe('S3 APIs functional test', () => {
 				mockBinaryResponse(response as any)
 			);
 			try {
+				// @ts-ignore
 				const output = await handler(config, input);
 				if (caseType === 'happy case') {
 					expect(output).toEqual(outputOrError);
