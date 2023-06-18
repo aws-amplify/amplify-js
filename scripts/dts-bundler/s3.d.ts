@@ -1,4 +1,6 @@
 import {
+	GetObjectCommandInput,
+	GetObjectCommandOutput,
 	ListObjectsV2CommandInput,
 	ListObjectsV2CommandOutput,
 	PutObjectCommandInput,
@@ -13,9 +15,16 @@ import {
 	UploadPartCommandOutput,
 	ListPartsCommandInput,
 	ListPartsCommandOutput,
+	CopyObjectCommandInput,
+	CopyObjectCommandOutput,
+	HeadObjectCommandInput,
+	HeadObjectCommandOutput,
+	DeleteObjectCommandInput,
 } from '@aws-sdk/client-s3';
 
 export {
+	GetObjectCommandInput,
+	GetObjectCommandOutput,
 	ListObjectsV2CommandInput,
 	ListObjectsV2CommandOutput,
 	PutObjectCommandInput,
@@ -30,4 +39,9 @@ export {
 	UploadPartCommandOutput,
 	ListPartsCommandInput,
 	ListPartsCommandOutput,
+	CopyObjectCommandInput,
+	CopyObjectCommandOutput,
+	HeadObjectCommandInput,
+	HeadObjectCommandOutput,
+	DeleteObjectCommandInput,
 };

@@ -4,7 +4,6 @@ import {
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import { MetadataBearer } from '@aws-sdk/types';
 import { defaultConfig } from './base';
 import type {
 	CompatibleHttpResponse,
@@ -35,8 +34,6 @@ export type HeadObjectOutput = Pick<
 	| 'LastModified'
 	| 'Metadata'
 >;
-
-export type HeadObjectOutput = MetadataBearer;
 
 const headObjectSerializer = (
 	input: HeadObjectInput,
