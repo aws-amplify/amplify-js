@@ -11,6 +11,10 @@ import type {
 	HeadObjectCommandOutput,
 } from './types';
 import {
+	deserializeMetadata,
+	deserializeNumber,
+	deserializeTimestamp,
+	map,
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectSsecOptionsToHeaders,
@@ -57,9 +61,18 @@ const headObjectDeserializer = async (
 		const error = await parseXmlError(response);
 		throw error;
 	} else {
-		// TODO: parse the response body
+		const contents = {
+			...map(response.headers, {
+				ContentLength: ['content-length', deserializeNumber],
+				ContentType: 'content-type',
+				ETag: 'etag',
+				LastModified: ['last-modified', deserializeTimestamp],
+			}),
+			Metadata: deserializeMetadata(response.headers),
+		};
 		return {
 			$metadata: parseMetadata(response),
+			...contents,
 		};
 	}
 };

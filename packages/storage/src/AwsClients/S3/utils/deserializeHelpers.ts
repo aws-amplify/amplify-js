@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
+
 type PropertyNameWithStringValue = string;
 type PropertyNameWithSubsequentDeserializer<T> = [string, (any) => T];
 type Instruction<T> =
@@ -115,4 +117,19 @@ export const emptyArrayGuard = <T extends Array<any>>(
 		e => e != null
 	);
 	return deserializer(valueArray);
+};
+
+/**
+ * @internal
+ */
+export const deserializeMetadata = (
+	headers: Headers
+): Record<string, string> => {
+	const deserialized = Object.keys(headers)
+		.filter(header => header.startsWith('x-amz-meta-'))
+		.reduce((acc, header) => {
+			acc[header.substring(11)] = headers[header];
+			return acc;
+		}, {} as any);
+	return Object.keys(deserialized).length > 0 ? deserialized : undefined;
 };

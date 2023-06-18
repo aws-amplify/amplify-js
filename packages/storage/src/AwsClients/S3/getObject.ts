@@ -1,6 +1,5 @@
 import {
 	Endpoint,
-	Headers,
 	HttpRequest,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
@@ -14,6 +13,7 @@ import type {
 } from './types';
 import {
 	deserializeBoolean,
+	deserializeMetadata,
 	deserializeNumber,
 	deserializeTimestamp,
 	map,
@@ -117,14 +117,6 @@ const getObjectDeserializer = async (
 		};
 	}
 };
-
-const deserializeMetadata = (headers: Headers): Record<string, string> =>
-	Object.keys(headers)
-		.filter(header => header.startsWith('x-amz-meta-'))
-		.reduce((acc, header) => {
-			acc[header.substring(11)] = headers[header];
-			return acc;
-		}, {} as any);
 
 export const getObject = composeServiceApi(
 	s3TransferHandler,

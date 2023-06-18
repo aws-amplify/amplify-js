@@ -35,12 +35,21 @@ const headObjectHappyCase: ApiFunctionalTestCase<typeof headObject> = [
 	}),
 	{
 		status: 200,
-		headers: DEFAULT_RESPONSE_HEADERS,
-		// TODO: test with actual response body
+		headers: {
+			...DEFAULT_RESPONSE_HEADERS,
+			'content-length': '434234',
+			'content-type': 'text/plain',
+			etag: 'etag',
+			'last-modified': 'Sun, 1 Jan 2006 12:00:00 GMT',
+		},
 		body: '',
 	},
 	{
 		$metadata: expect.objectContaining(expectedMetadata),
+		ContentLength: 434234,
+		ContentType: 'text/plain',
+		ETag: 'etag',
+		LastModified: new Date('Sun, 1 Jan 2006 12:00:00 GMT'),
 	},
 ];
 
