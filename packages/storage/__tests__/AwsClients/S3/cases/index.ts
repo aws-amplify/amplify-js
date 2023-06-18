@@ -8,6 +8,10 @@ import uploadPartCases from './uploadPart';
 import completeMultipartUploadCases from './completeMultipartUpload';
 import abortMultipartUploadCases from './abortMultipartUpload';
 import listPartsCases from './listParts';
+import copyObjectCases from './copyObject';
+import deleteObjectCases from './deleteObject';
+import getObjectCases from './getObject';
+import headObjectCases from './headObject';
 
 export default [
 	...listObjectsV2Cases,
@@ -17,4 +21,8 @@ export default [
 	...completeMultipartUploadCases,
 	...abortMultipartUploadCases,
 	...listPartsCases,
+	...copyObjectCases,
+	...deleteObjectCases,
+	...getObjectCases,
+	...headObjectCases,
 ];

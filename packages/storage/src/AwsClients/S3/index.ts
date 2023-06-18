@@ -24,3 +24,11 @@ export {
 } from './createMultipartUpload';
 export { listParts, ListPartsInput, ListPartsOutput } from './listParts';
 export { uploadPart, UploadPartInput, UploadPartOutput } from './uploadPart';
+export { copyObject, CopyObjectInput, CopyObjectOutput } from './copyObject';
+export {
+	deleteObject,
+	DeleteObjectInput,
+	DeleteObjectOutput,
+} from './deleteObject';
+export { getObject, GetObjectInput, GetObjectOutput } from './getObject';
+export { headObject, HeadObjectInput, HeadObjectOutput } from './headObject';
