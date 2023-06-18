@@ -117,7 +117,7 @@ const completeMultipartUploadErrorWith200CodeCase: ApiFunctionalTestCase<
 	'error case',
 	'completeMultipartUpload with 200 status',
 	completeMultipartUpload,
-	{ ...defaultConfig, retryDecider: async () => false },
+	{ ...defaultConfig, retryDecider: async () => false }, // disable retry
 	completeMultipartUploadHappyCase[4],
 	completeMultipartUploadHappyCase[5],
 	{
@@ -133,10 +133,7 @@ const completeMultipartUploadErrorWith200CodeCase: ApiFunctionalTestCase<
 			'</Error>',
 	},
 	{
-		$metadata: expect.objectContaining({
-			...expectedMetadata,
-			httpStatusCode: 500,
-		}),
+		$metadata: expect.objectContaining(expectedMetadata),
 		message: 'We encountered an internal error. Please try again.',
 		name: 'InternalError',
 	},

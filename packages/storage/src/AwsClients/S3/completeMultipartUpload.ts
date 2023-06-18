@@ -78,6 +78,25 @@ const serializeCompletedPartList = (input: CompletedPart): string => {
 	return `<Part><ETag>${input.ETag}</ETag><PartNumber>${input.PartNumber}</PartNumber></Part>`;
 };
 
+/**
+ * Parse CompleteMultipartUpload API response payload, which may be empty or error indicating internal
+ * server error, even when the status code is 200.
+ *
+ * Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html#API_CompleteMultipartUpload_Example_4
+ */
+const parseXmlBodyOrThrow = async (response: HttpResponse): Promise<any> => {
+	const parsed = await parseXmlBody(response); // Handles empty body case
+	if (parsed.Code !== undefined && parsed.Message !== undefined) {
+		const error = await parseXmlError({
+			...response,
+			statusCode: 500, // To workaround the >=300 status code check common to other APIs.
+		});
+		error.$metadata.httpStatusCode = response.statusCode;
+		throw error;
+	}
+	return parsed;
+};
+
 const completeMultipartUploadDeserializer = async (
 	response: HttpResponse
 ): Promise<CompleteMultipartUploadOutput> => {
@@ -85,14 +104,7 @@ const completeMultipartUploadDeserializer = async (
 		const error = await parseXmlError(response);
 		throw error;
 	} else {
-		const parsed = await parseXmlBody(response);
-		if (parsed.Code !== undefined && parsed.Message !== undefined) {
-			const error = await parseXmlError({
-				...response,
-				statusCode: 500 /** indicating server error  */,
-			});
-			throw error;
-		}
+		const parsed = await parseXmlBodyOrThrow(response);
 		const contents = map(parsed, {
 			ETag: 'ETag',
 			Key: 'Key',
@@ -105,7 +117,27 @@ const completeMultipartUploadDeserializer = async (
 	}
 };
 
-const defaultRetryDecider = defaultConfig.retryDecider;
+// CompleteMultiPartUpload API returns 200 status code with empty body or error message.
+// This indicates internal server error after the response has been sent to the client.
+// Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html#API_CompleteMultipartUpload_Example_4
+const retryWhenErrorWith200StatusCode = async (
+	response: HttpResponse,
+	error?: Error
+): Promise<boolean> => {
+	if (response.statusCode === 200) {
+		if (!response.body) {
+			return true;
+		}
+		const parsed = await parseXmlBody(response);
+		if (parsed.Code !== undefined && parsed.Message !== undefined) {
+			return true;
+		}
+		return false;
+	}
+
+	const defaultRetryDecider = defaultConfig.retryDecider;
+	return defaultRetryDecider(response, error);
+};
 
 export const completeMultipartUpload = composeServiceApi(
 	s3TransferHandler,
@@ -114,21 +146,6 @@ export const completeMultipartUpload = composeServiceApi(
 	{
 		...defaultConfig,
 		responseType: 'text',
-		// CompleteMultiPartUpload API returns 200 status code with empty body or error message.
-		// This indicates internal server error after the response has been sent to the client.
-		// Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html#API_CompleteMultipartUpload_Example_4
-		retryDecider: async (response: HttpResponse, error?: Error) => {
-			if (response.statusCode === 200) {
-				if (!response.body) {
-					return true;
-				}
-				const parsed = await parseXmlBody(response);
-				if (parsed.Code !== undefined && parsed.Message !== undefined) {
-					return true;
-				}
-				return false;
-			}
-			return defaultRetryDecider(response, error);
-		},
+		retryDecider: retryWhenErrorWith200StatusCode,
 	}
 );
