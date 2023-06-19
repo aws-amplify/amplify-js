@@ -18,6 +18,8 @@ import {
 	ConsoleLogger as Logger,
 	Signer,
 	getAmplifyUserAgent,
+	Category,
+	PredictionsAction,
 } from '@aws-amplify/core';
 import {
 	EventStreamMarshaller,
@@ -72,7 +74,10 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		this.translateClient = new TranslateClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgent({
+				category: Category.Predictions,
+				action: PredictionsAction.Convert,
+			}),
 		});
 		const translateTextCommand = new TranslateTextCommand({
 			SourceLanguageCode: sourceLanguageCode,
@@ -105,7 +110,6 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			return Promise.reject('Source needs to be provided in the input');
 		}
 		const voiceId = input.textToSpeech.voiceId || VoiceId;
-
 		if (!region) {
 			return Promise.reject(
 				'Region was undefined. Did you enable speech generator using amplify CLI?'
@@ -119,7 +123,10 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		this.pollyClient = new PollyClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgent({
+				category: Category.Predictions,
+				action: PredictionsAction.Convert,
+			}),
 		});
 		const synthesizeSpeechCommand = new SynthesizeSpeechCommand({
 			OutputFormat: 'mp3',

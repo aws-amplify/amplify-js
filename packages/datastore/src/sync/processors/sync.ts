@@ -1,4 +1,5 @@
-import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { InternalAPI } from '@aws-amplify/api/internals';
 import Observable from 'zen-observable-ts';
 import {
 	InternalSchema,
@@ -20,10 +21,12 @@ import {
 	predicateToGraphQLFilter,
 	getTokenForCustomAuth,
 } from '../utils';
-import { USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import {
 	jitteredExponentialRetry,
+	Category,
 	ConsoleLogger as Logger,
+	CustomUserAgentDetails,
+	DataStoreAction,
 	Hub,
 	NonRetryableError,
 	BackgroundProcessManager,
@@ -54,7 +57,7 @@ class SyncProcessor {
 		private readonly errorHandler: ErrorHandler,
 		private readonly amplifyContext: AmplifyContext
 	) {
-		amplifyContext.API = amplifyContext.API || API;
+		amplifyContext.InternalAPI = amplifyContext.InternalAPI || InternalAPI;
 		this.generateQueries();
 	}
 
@@ -214,13 +217,21 @@ class SyncProcessor {
 						this.amplifyConfig
 					);
 
-					return await this.amplifyContext.API.graphql({
-						query,
-						variables,
-						authMode,
-						authToken,
-						userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
-					});
+					const customUserAgentDetails: CustomUserAgentDetails = {
+						category: Category.DataStore,
+						action: DataStoreAction.GraphQl,
+					};
+
+					return await this.amplifyContext.InternalAPI.graphql(
+						{
+							query,
+							variables,
+							authMode,
+							authToken,
+						},
+						undefined,
+						customUserAgentDetails
+					);
 
 					// TODO: onTerminate.then(() => API.cancel(...))
 				} catch (error) {

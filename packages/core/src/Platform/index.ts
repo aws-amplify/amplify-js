@@ -1,30 +1,51 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
+import { CustomUserAgentDetails, Framework } from './types';
 import { version } from './version';
+import { detectFramework, observeFrameworkChanges } from './detectFramework';
+import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
 
-const BASE_USER_AGENT = `aws-amplify/${version}`;
+const BASE_USER_AGENT = `aws-amplify`;
 
-export const Platform = {
-	userAgent: `${BASE_USER_AGENT} js`,
-	product: '',
-	navigator: null,
-	isReactNative: false,
-};
-if (typeof navigator !== 'undefined' && navigator.product) {
-	Platform.product = navigator.product || '';
-	Platform.navigator = navigator || null;
-	switch (navigator.product) {
-		case 'ReactNative':
-			Platform.userAgent = `${BASE_USER_AGENT} react-native`;
-			Platform.isReactNative = true;
-			break;
-		default:
-			Platform.userAgent = `${BASE_USER_AGENT} js`;
-			Platform.isReactNative = false;
-			break;
+class PlatformBuilder {
+	userAgent = `${BASE_USER_AGENT}/${version}`;
+	get framework() {
+		return detectFramework();
+	}
+
+	get isReactNative() {
+		return this.framework === Framework.ReactNative;
+	}
+
+	observeFrameworkChanges(fcn: () => void) {
+		observeFrameworkChanges(fcn);
 	}
 }
 
-export const getAmplifyUserAgent = (content?: string) => {
-	return `${Platform.userAgent}${content ? content : ''}`;
+export const Platform = new PlatformBuilder();
+
+export const getAmplifyUserAgent = ({
+	category,
+	action,
+	framework,
+}: CustomUserAgentDetails = {}): AWSUserAgent => {
+	const userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
+	if (category) {
+		userAgent.push([category, action]);
+	}
+	userAgent.push(['framework', detectFramework()]);
+
+	return userAgent;
+};
+
+export const getAmplifyUserAgentString = (
+	customUserAgentDetails?: CustomUserAgentDetails
+): string => {
+	const userAgent = getAmplifyUserAgent(customUserAgentDetails);
+	const userAgentString = userAgent
+		.map(([agentKey, agentValue]) => `${agentKey}/${agentValue}`)
+		.join(' ');
+
+	return userAgentString;
 };

@@ -4,6 +4,12 @@ const mockGraphQL = jest.fn(() => mockObservable);
 
 import { Amplify } from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import {
+	Category,
+	CustomUserAgentDetails,
+	DataStoreAction,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import {
 	SubscriptionProcessor,
@@ -19,17 +25,18 @@ import {
 	InternalSchema,
 	PersistentModelConstructor,
 } from '../src/types';
-import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
 
 // mock graphql to return a mockable observable
-jest.mock('@aws-amplify/api', () => {
-	const actualAPIModule = jest.requireActual('@aws-amplify/api');
-	const actualAPIInstance = actualAPIModule.API;
+jest.mock('@aws-amplify/api/internals', () => {
+	const actualInternalAPIModule = jest.requireActual(
+		'@aws-amplify/api/internals'
+	);
+	const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 
 	return {
-		...actualAPIModule,
-		API: {
-			...actualAPIInstance,
+		...actualInternalAPIModule,
+		InternalAPI: {
+			...actualInternalAPIInstance,
 			graphql: mockGraphQL,
 		},
 	};
@@ -660,9 +667,12 @@ describe('error handler', () => {
 					);
 
 					expect(mockGraphQL).toHaveBeenCalledWith(
-						expect.objectContaining({
-							userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
-						})
+						expect.anything(),
+						undefined,
+						{
+							category: Category.DataStore,
+							action: DataStoreAction.Subscribe,
+						}
 					);
 				});
 

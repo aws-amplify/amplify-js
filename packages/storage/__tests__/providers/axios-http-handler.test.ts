@@ -14,7 +14,7 @@ const options = {};
 
 describe('AxiosHttpHandler', () => {
 	beforeEach(() => {
-		Platform.isReactNative = false;
+		jest.spyOn(Platform, 'isReactNative', 'get').mockReturnValue(false);
 		jest.spyOn(axios, 'request').mockResolvedValue({});
 		request = {
 			method: 'get',
@@ -78,7 +78,7 @@ describe('AxiosHttpHandler', () => {
 		});
 
 		it('should use custom request transformer on React Native', async () => {
-			Platform.isReactNative = true;
+			jest.spyOn(Platform, 'isReactNative', 'get').mockReturnValue(true);
 			const handler = new AxiosHttpHandler();
 			const blob = new Blob(['123456789012']);
 			request.body = blob;
