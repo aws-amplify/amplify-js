@@ -1,11 +1,18 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
-
 import {
 	ListObjectsV2CommandInput,
 	ListObjectsV2CommandOutput,
 	PutObjectCommandInput,
 	PutObjectCommandOutput,
+	CreateMultipartUploadCommandInput,
+	CreateMultipartUploadCommandOutput,
+	AbortMultipartUploadCommandInput,
+	AbortMultipartUploadCommandOutput,
+	CompleteMultipartUploadCommandInput,
+	CompleteMultipartUploadCommandOutput,
+	UploadPartCommandInput,
+	UploadPartCommandOutput,
+	ListPartsCommandInput,
+	ListPartsCommandOutput,
 } from '@aws-sdk/client-s3';
 
 export {
@@ -13,4 +20,14 @@ export {
 	ListObjectsV2CommandOutput,
 	PutObjectCommandInput,
 	PutObjectCommandOutput,
+	CreateMultipartUploadCommandInput,
+	CreateMultipartUploadCommandOutput,
+	AbortMultipartUploadCommandInput,
+	AbortMultipartUploadCommandOutput,
+	CompleteMultipartUploadCommandInput,
+	CompleteMultipartUploadCommandOutput,
+	UploadPartCommandInput,
+	UploadPartCommandOutput,
+	ListPartsCommandInput,
+	ListPartsCommandOutput,
 };
