@@ -3,7 +3,6 @@
 
 import {
 	Endpoint,
-	getRetryDecider,
 	HttpRequest,
 	HttpResponse,
 	parseMetadata,
@@ -64,12 +63,14 @@ const completeMultipartUploadSerializer = (
 
 const serializeCompletedMultipartUpload = (
 	input: CompletedMultipartUpload
-): string =>
-	`<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${(
-		input.Parts ?? []
-	)
-		.map(serializeCompletedPartList)
-		.join('')}</CompleteMultipartUpload>`;
+): string => {
+	if (!input.Parts?.length) {
+		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${input}`);
+	}
+	return `<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${input.Parts.map(
+		serializeCompletedPartList
+	).join('')}</CompleteMultipartUpload>`;
+};
 
 const serializeCompletedPartList = (input: CompletedPart): string => {
 	if (!input.ETag || input.PartNumber == null) {
