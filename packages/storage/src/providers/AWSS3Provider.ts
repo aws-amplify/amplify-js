@@ -7,6 +7,7 @@ import {
 	StorageHelper,
 	Hub,
 	parseAWSExports,
+	StorageAction,
 } from '@aws-amplify/core';
 import {
 	S3Client,
@@ -314,7 +315,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 		if (acl) params.ACL = acl;
 
-		const s3 = this._createNewS3Client(opt);
+		const s3 = this._createNewS3Client(opt, StorageAction.Copy);
 		try {
 			await s3.send(new CopyObjectCommand(params));
 			dispatchStorageEvent(
@@ -385,7 +386,7 @@ export class AWSS3Provider implements StorageProvider {
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		const emitter = new events.EventEmitter();
-		const s3 = this._createNewS3Client(opt, emitter);
+		const s3 = this._createNewS3Client(opt, StorageAction.Get, emitter);
 		logger.debug('get ' + key + ' from ' + final_key);
 
 		const params: GetObjectCommandInput = {
@@ -456,7 +457,7 @@ export class AWSS3Provider implements StorageProvider {
 			try {
 				await s3.send(headObjectCommand);
 			} catch (error) {
-				if (error.$metadata.httpStatusCode === 404) {
+				if (error.$metadata?.httpStatusCode === 404) {
 					dispatchStorageEvent(
 						track,
 						'getSignedUrl',
@@ -528,7 +529,11 @@ export class AWSS3Provider implements StorageProvider {
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		const emitter = new events.EventEmitter();
-		const s3 = this._createNewS3Client(opt, emitter);
+		const s3 = this._createNewS3Client(
+			opt,
+			StorageAction.GetProperties,
+			emitter
+		);
 		logger.debug(`getProperties ${key} from ${final_key}`);
 
 		const params: HeadObjectCommandInput = {
@@ -566,7 +571,7 @@ export class AWSS3Provider implements StorageProvider {
 			);
 			return getPropertiesResponse;
 		} catch (error) {
-			if (error.$metadata.httpStatusCode === 404) {
+			if (error.$metadata?.httpStatusCode === 404) {
 				dispatchStorageEvent(
 					track,
 					'getProperties',
@@ -664,7 +669,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		if (resumable === true) {
-			const s3Client = this._createNewS3Client(opt);
+			const s3Client = this._createNewS3Client(opt, StorageAction.Put);
 			// we are using aws sdk middleware to inject the prefix to key, this way we don't have to call
 			// this._ensureCredentials() which allows us to make this function sync so we can return non-Promise like UploadTask
 			s3Client.middlewareStack.add(
@@ -744,7 +749,7 @@ export class AWSS3Provider implements StorageProvider {
 
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
-		const s3 = this._createNewS3Client(opt);
+		const s3 = this._createNewS3Client(opt, StorageAction.Remove);
 		logger.debug('remove ' + key + ' from ' + final_key);
 
 		const params: DeleteObjectCommandInput = {
@@ -784,7 +789,7 @@ export class AWSS3Provider implements StorageProvider {
 			results: [],
 			hasNextToken: false,
 		};
-		const s3 = this._createNewS3Client(opt);
+		const s3 = this._createNewS3Client(opt, StorageAction.List);
 		const listObjectsV2Command = new ListObjectsV2Command({ ...params });
 		const response = await s3.send(listObjectsV2Command);
 		if (response && response.Contents) {
@@ -942,9 +947,10 @@ export class AWSS3Provider implements StorageProvider {
 			dangerouslyConnectToHttpEndpointForTesting?: boolean;
 			useAccelerateEndpoint?: boolean;
 		},
+		storageAction: StorageAction,
 		emitter?: events.EventEmitter
 	): S3Client {
-		const s3client = createS3Client(config, emitter);
+		const s3client = createS3Client(config, storageAction, emitter);
 		s3client.middlewareStack.add(
 			autoAdjustClockskewMiddleware(s3client.config),
 			autoAdjustClockskewMiddlewareOptions

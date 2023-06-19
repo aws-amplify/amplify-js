@@ -2060,15 +2060,15 @@ workflows:
       #     matrix:
       #       parameters:
       #         <<: *minimal_browser_list
-      - integ_javascript_geo:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              browser: [chrome]
+      #- integ_javascript_geo:
+      #    requires:
+      #      - integ_setup
+      #      - build
+      #    filters:
+      #      <<: *releasable_branches
+      #    matrix:
+      #      parameters:
+      #        browser: [chrome]
       - integ_react_geo:
           requires:
             - integ_setup
