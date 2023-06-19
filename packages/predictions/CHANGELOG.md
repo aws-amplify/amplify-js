@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.2.3...@aws-amplify/predictions@5.3.0) (2023-06-15)
+
+### Features
+
+- **storage:** add getProperties API ([#11469](https://github.com/aws-amplify/amplify-js/issues/11469)) ([f47d472](https://github.com/aws-amplify/amplify-js/commit/f47d472ea021dadb1a04d03295c3c6065155f0c0))
+
+## [5.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.2.2...@aws-amplify/predictions@5.2.3) (2023-06-14)
+
+### Bug Fixes
+
+- Update AmazonAIConvertPredictionsProvider.ts ([#11453](https://github.com/aws-amplify/amplify-js/issues/11453)) ([129e35f](https://github.com/aws-amplify/amplify-js/commit/129e35f5f52db01eb4de90b7eeb9d76e372147a6))
+
 ## [5.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.2.1...@aws-amplify/predictions@5.2.2) (2023-06-05)
 
 **Note:** Version bump only for package @aws-amplify/predictions
