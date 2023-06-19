@@ -1,4 +1,4 @@
-import { authCategory } from '../src/Platform/constants';
+import { AUTH_CATEGORY } from '../src/Platform/constants';
 import UserAgent, {
 	addAuthCategoryToCognitoUserAgent,
 	addFrameworkToCognitoUserAgent,
@@ -56,7 +56,7 @@ describe('UserAgent test', () => {
 
 	test('addAuthCategoryToCognitoUserAgent sets category and shows category/action in user agent', () => {
 		addAuthCategoryToCognitoUserAgent();
-		expect(UserAgent.category).toBe(authCategory);
+		expect(UserAgent.category).toBe(AUTH_CATEGORY);
 
 		expect(getAmplifyUserAgentString()).toBe(
 			`${DEFAULT_USER_AGENT} ${USER_AGENT_AUTH}`
