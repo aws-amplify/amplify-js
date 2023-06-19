@@ -30,20 +30,20 @@ export type GeneratedQuery<InputType, OutputType> = string & {
 //   input?: T extends GeneratedQuery<infer IN, infer OUT> ? IN : S;
 // } & AuthMode;
 
-export type GraphqlQueryOverrides<IN, OUT> = {
+export type GraphqlQueryOverrides<IN extends {}, OUT extends {}> = {
 	variables: IN;
 	result: OUT;
 };
 
-export type GraphqlQueryParams<T extends string, S> = (T extends GeneratedQuery<
-	infer IN,
-	infer OUT
->
-	? IN
-	: S extends GraphqlQueryOverrides<infer IN, infer OUT>
-	? IN
-	: any) &
-	AuthMode;
+export type GraphqlQueryParams<
+	TYPED_GQL_STRING extends string,
+	FALLBACK_TYPES
+> = AuthMode &
+	(TYPED_GQL_STRING extends GeneratedQuery<infer IN, infer OUT>
+		? IN
+		: FALLBACK_TYPES extends GraphqlQueryOverrides<infer IN, infer OUT>
+		? IN
+		: any);
 
 export type GraphqlQueryResult<T extends string, S> = T extends GeneratedQuery<
 	infer IN,
@@ -54,11 +54,6 @@ export type GraphqlQueryResult<T extends string, S> = T extends GeneratedQuery<
 	? GraphQLResult<OUT>
 	: any;
 
-export declare function query<S = never, T extends string = string>(
-	document: T,
-	queryParams: GraphqlQueryParams<T, S>
-): Promise<GraphqlQueryResult<T, S>>;
-
 /** GraphQL mutate */
 
 export type GeneratedMutation<InputType, OutputType> = string & {
@@ -67,28 +62,24 @@ export type GeneratedMutation<InputType, OutputType> = string & {
 };
 
 export type GraphqlMutationParams<
-	T extends string,
-	S
-> = (T extends GeneratedMutation<infer IN, infer OUT>
-	? IN
-	: S extends GraphqlQueryOverrides<infer IN, infer OUT>
-	? IN
-	: any) &
+	TYPED_GQL_STRING extends string,
+	OVERRIDE_TYPE
+> = AuthMode &
+	(TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer OUT>
+		? IN
+		: OVERRIDE_TYPE extends GraphqlQueryOverrides<infer OVERRIDE_IN, infer OUT>
+		? OVERRIDE_IN
+		: any) &
 	AuthMode;
 
 export type GraphqlMutationResult<
-	T extends string,
-	S
-> = T extends GeneratedMutation<infer IN, infer OUT>
+	TYPED_GQL_STRING extends string,
+	FALLBACK_TYPES
+> = TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer OUT>
 	? GraphQLResult<OUT>
-	: S extends GraphqlQueryOverrides<infer IN, infer OUT>
+	: FALLBACK_TYPES extends GraphqlQueryOverrides<infer IN, infer OUT>
 	? GraphQLResult<OUT>
 	: any;
-
-export declare function mutate<S = never, T extends string = string>(
-	document: T,
-	queryParams: GraphqlMutationParams<T, S>
-): Promise<GraphqlMutationResult<T, S>>;
 
 /** GraphQL subscribe */
 
@@ -98,25 +89,20 @@ export type GeneratedSubscription<InputType, OutputType> = string & {
 };
 
 export type GraphqlSubscriptionParams<
-	T extends string,
-	S
-> = (T extends GeneratedSubscription<infer IN, infer OUT>
-	? IN
-	: S extends GraphqlQueryOverrides<infer IN, infer OUT>
-	? IN
-	: any) &
-	AuthMode;
+	TYPED_GQL_STRING extends string,
+	FALLBACK_TYPES
+> = AuthMode &
+	(TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer OUT>
+		? IN
+		: FALLBACK_TYPES extends GraphqlQueryOverrides<infer IN, infer OUT>
+		? IN
+		: any);
 
 export type GraphqlSubscriptionResult<
-	T extends string,
-	S
-> = T extends GeneratedSubscription<infer IN, infer OUT>
+	TYPED_GQL_STRING extends string,
+	FALLBACK_TYPES
+> = TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer OUT>
 	? OUT
-	: S extends GraphqlQueryOverrides<infer IN, infer OUT>
+	: FALLBACK_TYPES extends GraphqlQueryOverrides<infer IN, infer OUT>
 	? OUT
 	: any;
-
-export declare function subscribe<S = never, T extends string = string>(
-	document: T,
-	queryParams?: GraphqlSubscriptionParams<T, S>
-): Observable<GraphqlSubscriptionResult<T, S>>;

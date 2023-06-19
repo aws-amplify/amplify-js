@@ -38,54 +38,69 @@ export function graphql<T = any>(
 
 	switch (operationType) {
 		case 'query':
-			return query(childOptions, additionalHeaders);
+			return query(childOptions.query, childOptions, additionalHeaders);
 		case 'mutation':
-			return mutate(childOptions, additionalHeaders);
+			return mutate(childOptions.query, childOptions, additionalHeaders);
 		case 'subscription':
-			return subscribe(childOptions, additionalHeaders);
+			return subscribe(childOptions.query, childOptions, additionalHeaders);
 		default:
 			throw new Error(`invalid operation type: ${operationType}`);
 	}
 }
 
-export declare function query<S = never, T extends string = string>(
-	document: T,
-	queryParams?: GraphqlQueryParams<T, S>,
+export function query<
+	FALLBACK_TYPES = unknown,
+	TYPED_GQL_STRING extends string = string
+>(
+	document: TYPED_GQL_STRING,
+	queryParams?: GraphqlQueryParams<TYPED_GQL_STRING, FALLBACK_TYPES>,
 	additionalHeaders?: { [key: string]: string }
-): Promise<GraphqlQueryResult<T, S>> {
-	return GraphQLAPI.graphql<GraphqlQueryResult<T, S>>(
+): Promise<GraphqlQueryResult<TYPED_GQL_STRING, FALLBACK_TYPES>> {
+	return GraphQLAPI.graphql<
+		GraphqlQueryResult<TYPED_GQL_STRING, FALLBACK_TYPES>
+	>(
 		{
+			...(queryParams || {}),
 			query: document,
-			variables: queryParams || {},
 		},
 		additionalHeaders
-	) as Promise<GraphqlQueryResult<T, S>>;
-};
-
-export function mutate<S = never, T extends string = string>(
-	document: T,
-	queryParams?: GraphqlMutationParams<T, S>,
-	additionalHeaders?: { [key: string]: string }
-): Promise<GraphqlMutationResult<T, S>> {
-	return GraphQLAPI.graphql<GraphqlMutationResult<T, S>>(
-		{
-			query: document,
-			variables: queryParams || {},
-		},
-		additionalHeaders
-	) as Promise<GraphqlMutationResult<T, S>>;
+	) as Promise<GraphqlQueryResult<TYPED_GQL_STRING, FALLBACK_TYPES>>;
 }
 
-export declare function subscribe<S = never, T extends string = string>(
-	document: T,
-	queryParams?: GraphqlSubscriptionParams<T, S>,
+export function mutate<
+	FALLBACK_TYPES = unknown,
+	TYPED_GQL_STRING extends string = string
+>(
+	document: TYPED_GQL_STRING,
+	queryParams?: GraphqlMutationParams<TYPED_GQL_STRING, FALLBACK_TYPES>,
 	additionalHeaders?: { [key: string]: string }
-): Observable<GraphqlSubscriptionResult<T, S>> {
-	return GraphQLAPI.graphql<GraphqlSubscriptionResult<T, S>>(
+): Promise<GraphqlMutationResult<TYPED_GQL_STRING, FALLBACK_TYPES>> {
+	return GraphQLAPI.graphql<
+		GraphqlMutationResult<TYPED_GQL_STRING, FALLBACK_TYPES>
+	>(
 		{
+			...(queryParams || {}),
 			query: document,
-			variables: queryParams || {},
 		},
 		additionalHeaders
-	) as Observable<GraphqlSubscriptionResult<T, S>>;
-};
+	) as Promise<GraphqlMutationResult<TYPED_GQL_STRING, FALLBACK_TYPES>>;
+}
+
+export function subscribe<
+	FALLBACK_TYPES = unknown,
+	TYPED_GQL_STRING extends string = string
+>(
+	document: TYPED_GQL_STRING,
+	queryParams?: GraphqlSubscriptionParams<TYPED_GQL_STRING, FALLBACK_TYPES>,
+	additionalHeaders?: { [key: string]: string }
+): Observable<GraphqlSubscriptionResult<TYPED_GQL_STRING, FALLBACK_TYPES>> {
+	return GraphQLAPI.graphql<
+		GraphqlSubscriptionResult<TYPED_GQL_STRING, FALLBACK_TYPES>
+	>(
+		{
+			...(queryParams || {}),
+			query: document,
+		},
+		additionalHeaders
+	) as Observable<GraphqlSubscriptionResult<TYPED_GQL_STRING, FALLBACK_TYPES>>;
+}
