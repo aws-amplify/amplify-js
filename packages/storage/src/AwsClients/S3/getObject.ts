@@ -67,6 +67,8 @@ const getObjectDeserializer = async (
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
 		throw error;
+	} else if (!response.body) {
+		throw new Error('Got empty response body.');
 	} else {
 		return {
 			...map(response.headers, {
@@ -113,7 +115,7 @@ const getObjectDeserializer = async (
 			}),
 			Metadata: deserializeMetadata(response.headers),
 			$metadata: parseMetadata(response),
-			Body: response.body!,
+			Body: response.body,
 		};
 	}
 };

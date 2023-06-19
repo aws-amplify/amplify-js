@@ -37,6 +37,7 @@ export type HeadObjectOutput = Pick<
 	| 'ETag'
 	| 'LastModified'
 	| 'Metadata'
+	| 'VersionId'
 >;
 
 const headObjectSerializer = (
@@ -67,6 +68,7 @@ const headObjectDeserializer = async (
 				ContentType: 'content-type',
 				ETag: 'etag',
 				LastModified: ['last-modified', deserializeTimestamp],
+				VersionId: 'x-amz-version-id',
 			}),
 			Metadata: deserializeMetadata(response.headers),
 		};

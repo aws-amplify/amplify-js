@@ -125,10 +125,11 @@ export const emptyArrayGuard = <T extends Array<any>>(
 export const deserializeMetadata = (
 	headers: Headers
 ): Record<string, string> => {
+	const objectMetadataHeaderPrefix = 'x-amz-meta-';
 	const deserialized = Object.keys(headers)
-		.filter(header => header.startsWith('x-amz-meta-'))
+		.filter(header => header.startsWith(objectMetadataHeaderPrefix))
 		.reduce((acc, header) => {
-			acc[header.substring(11)] = headers[header];
+			acc[header.replace(objectMetadataHeaderPrefix, '')] = headers[header];
 			return acc;
 		}, {} as any);
 	return Object.keys(deserialized).length > 0 ? deserialized : undefined;

@@ -41,6 +41,7 @@ const headObjectHappyCase: ApiFunctionalTestCase<typeof headObject> = [
 			'content-type': 'text/plain',
 			etag: 'etag',
 			'last-modified': 'Sun, 1 Jan 2006 12:00:00 GMT',
+			'x-amz-version-id': 'versionId',
 		},
 		body: '',
 	},
@@ -50,6 +51,7 @@ const headObjectHappyCase: ApiFunctionalTestCase<typeof headObject> = [
 		ContentType: 'text/plain',
 		ETag: 'etag',
 		LastModified: new Date('Sun, 1 Jan 2006 12:00:00 GMT'),
+		VersionId: 'versionId',
 	},
 ];
 
