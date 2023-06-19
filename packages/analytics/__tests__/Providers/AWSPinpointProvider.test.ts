@@ -296,7 +296,6 @@ describe('AnalyticsProvider test', () => {
 						credentials,
 						region: 'region',
 						userAgentValue: expect.stringMatching(expectedRecordUserAgentRegex),
-						// userAgentValue: expect.stringMatching(new RegExp('^aws-amplify')),
 					}),
 					{
 						ApplicationId: 'appId',
