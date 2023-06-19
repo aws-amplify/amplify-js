@@ -1,6 +1,8 @@
 import {
+	Category,
 	Credentials,
 	ConsoleLogger as Logger,
+	PredictionsAction,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import { Storage } from '@aws-amplify/storage';
@@ -138,12 +140,12 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		this.rekognitionClient = new RekognitionClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 		});
 		this.textractClient = new TextractClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 		});
 		let inputDocument: Document;
 
@@ -240,7 +242,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			this.rekognitionClient = new RekognitionClient({
 				region,
 				credentials,
-				customUserAgent: getAmplifyUserAgent(),
+				customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 			});
 			let inputImage: Image;
 			await this.configureSource(input.labels.source)
@@ -359,7 +361,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		this.rekognitionClient = new RekognitionClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 		});
 		let inputImage: Image;
 		await this.configureSource(input.entities.source)
@@ -479,4 +481,11 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 	private decodeExternalImageId(externalImageId: string): string {
 		return ('' + externalImageId).replace(/::/g, '/');
 	}
+}
+
+function _getPredictionsIdentifyAmplifyUserAgent() {
+	return getAmplifyUserAgent({
+		category: Category.Predictions,
+		action: PredictionsAction.Identify,
+	});
 }

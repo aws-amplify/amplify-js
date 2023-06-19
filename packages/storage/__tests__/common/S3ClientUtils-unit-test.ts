@@ -9,6 +9,8 @@ import {
 	ICredentials,
 	Credentials,
 	getAmplifyUserAgent,
+	StorageAction,
+	Category,
 } from '@aws-amplify/core';
 import { S3ClientConfig } from '@aws-sdk/client-s3';
 
@@ -120,21 +122,32 @@ describe('S3ClientUtils tests', () => {
 	});
 
 	test('createS3Client test', async () => {
-		const s3client = createS3Client({
-			region: 'us-west-2',
-			useAccelerateEndpoint: true,
-		});
+		const s3client = createS3Client(
+			{
+				region: 'us-west-2',
+				useAccelerateEndpoint: true,
+			},
+			StorageAction.Get
+		);
 		// ensure customUserAgent is set properly
-		expect(s3client.config.customUserAgent).toEqual([[getAmplifyUserAgent()]]);
+		expect(s3client.config.customUserAgent).toEqual(
+			getAmplifyUserAgent({
+				category: Category.Storage,
+				action: StorageAction.Get,
+			})
+		);
 		expect(await s3client.config.region()).toEqual('us-west-2');
 		expect(s3client.config.useAccelerateEndpoint).toBe(true);
 	});
 
 	test('createS3Client test - dangerouslyConnectToHttpEndpointForTesting', async () => {
-		const s3client = createS3Client({
-			region: 'us-west-2',
-			dangerouslyConnectToHttpEndpointForTesting: true,
-		});
+		const s3client = createS3Client(
+			{
+				region: 'us-west-2',
+				dangerouslyConnectToHttpEndpointForTesting: true,
+			},
+			StorageAction.Get
+		);
 		expect(await s3client.config.endpoint()).toStrictEqual({
 			hostname: 'localhost',
 			path: '/',

@@ -59,7 +59,7 @@ describe('Testing signUp of a user into a user pool', () => {
 	const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
 	const cognitoUserPool = new CognitoUserPool(minimalData);
 
-	afterAll(() => {
+	afterEach(() => {
 		jest.restoreAllMocks();
 	});
 

@@ -47,7 +47,8 @@
   "files": [
     "lib",
     "lib-esm",
-    "src"
+    "src",
+    "internals"
   ],
   "dependencies": {
     "@aws-amplify/auth": "5.4.1",
@@ -64,13 +65,13 @@
       "name": "PubSub (IoT provider)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, PubSub, AWSIoTProvider }",
-      "limit": "79.15 kB"
+      "limit": "80 kB"
     },
     {
       "name": "PubSub (Mqtt provider)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, PubSub, MqttOverWSProvider }",
-      "limit": "79 kB"
+      "limit": "80 kB"
     }
   ],
   "jest": {

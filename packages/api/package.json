@@ -54,7 +54,8 @@
 		"lib",
 		"lib-esm",
 		"src",
-		"index.*.d.ts"
+		"index.*.d.ts",
+		"internals"
 	],
 	"dependencies": {
 		"@aws-amplify/api-graphql": "3.3.1",
@@ -66,7 +67,7 @@
 			"name": "API (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, API }",
-			"limit": "88.35 kB"
+			"limit": "89 kB"
 		}
 	],
 	"jest": {

@@ -17,8 +17,12 @@ import {
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { MutationEvent } from '../src/sync/';
-import { Constants } from '@aws-amplify/core';
-import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
+import {
+	Category,
+	CustomUserAgentDetails,
+	DataStoreAction,
+	getAmplifyUserAgentString,
+} from '@aws-amplify/core';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
@@ -30,6 +34,11 @@ let axiosError;
 beforeEach(() => {
 	axiosError = timeoutError;
 });
+
+const datastoreUserAgentDetails: CustomUserAgentDetails = {
+	category: Category.DataStore,
+	action: DataStoreAction.GraphQl,
+};
 
 describe('Jittered backoff', () => {
 	it('should progress exponentially until some limit', () => {
@@ -150,9 +159,8 @@ describe('MutationProcessor', () => {
 			expect(input.id).toEqual('abcdef');
 			expect(input.postId).toEqual('100');
 		});
-	});
-	describe('Call to rest api', () => {
-		it('Should send a user agent with the datastore suffix the rest api request', async () => {
+
+		it('Should send datastore details with the x-amz-user-agent in the rest api request', async () => {
 			jest.spyOn(mutationProcessor, 'resume');
 			await mutationProcessor.resume();
 
@@ -160,27 +168,15 @@ describe('MutationProcessor', () => {
 				expect.anything(),
 				expect.objectContaining({
 					headers: expect.objectContaining({
-						'x-amz-user-agent': `${Constants.userAgent}${USER_AGENT_SUFFIX_DATASTORE}`,
+						'x-amz-user-agent': getAmplifyUserAgentString(
+							datastoreUserAgentDetails
+						),
 					}),
 				})
 			);
 		});
 	});
-	describe('Call to rest api', () => {
-		it('Should send a user agent with the datastore suffix the rest api request', async () => {
-			jest.spyOn(mutationProcessor, 'resume');
-			await mutationProcessor.resume();
 
-			expect(mockRestPost).toBeCalledWith(
-				expect.anything(),
-				expect.objectContaining({
-					headers: expect.objectContaining({
-						'x-amz-user-agent': `${Constants.userAgent}${USER_AGENT_SUFFIX_DATASTORE}`,
-					}),
-				})
-			);
-		});
-	});
 	afterAll(() => {
 		jest.restoreAllMocks();
 	});
@@ -283,7 +279,7 @@ jest.mock('@aws-amplify/api-rest', () => {
 
 // Configuring the API category so that API.graphql can be used
 // by the MutationProcessor
-jest.mock('@aws-amplify/api', () => {
+jest.mock('@aws-amplify/api/internals', () => {
 	const awsconfig = {
 		aws_project_region: 'us-west-2',
 		aws_appsync_graphqlEndpoint:
@@ -293,18 +289,22 @@ jest.mock('@aws-amplify/api', () => {
 		aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 	};
 
-	const { GraphQLAPIClass } = jest.requireActual('@aws-amplify/api-graphql');
-	const graphqlInstance = new GraphQLAPIClass(null);
-	graphqlInstance.configure(awsconfig);
+	const { InternalGraphQLAPIClass } = jest.requireActual(
+		'@aws-amplify/api-graphql/internals'
+	);
+	const internalGraphqlInstance = new InternalGraphQLAPIClass(null);
+	internalGraphqlInstance.configure(awsconfig);
 
-	const actualAPIModule = jest.requireActual('@aws-amplify/api');
-	const actualAPIInstance = actualAPIModule.API;
+	const actualInternalAPIModule = jest.requireActual(
+		'@aws-amplify/api/internals'
+	);
+	const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 
 	return {
-		...actualAPIModule,
-		API: {
-			...actualAPIInstance,
-			graphql: graphqlInstance.graphql.bind(graphqlInstance),
+		...actualInternalAPIModule,
+		InternalAPI: {
+			...actualInternalAPIInstance,
+			graphql: internalGraphqlInstance.graphql.bind(internalGraphqlInstance),
 		},
 	};
 });

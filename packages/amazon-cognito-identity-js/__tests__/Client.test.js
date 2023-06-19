@@ -2,6 +2,11 @@ import Client from '../src/Client';
 import { promisifyCallback } from './util';
 import { region, endpoint, networkError } from './constants';
 import { netRequestMockSuccess } from '../__mocks__/mocks';
+import {
+	addAuthCategoryToCognitoUserAgent,
+	addFrameworkToCognitoUserAgent,
+} from '../src/UserAgent';
+import { getUserAgent } from '../src/Platform';
 
 describe('Client unit test suite', () => {
 	beforeAll(() => {
@@ -38,7 +43,10 @@ describe('Client unit test suite', () => {
 		});
 
 		test('Happy case for request', async () => {
-			jest.spyOn(window, 'fetch');
+			const fetchSpy = jest.spyOn(window, 'fetch');
+
+			addAuthCategoryToCognitoUserAgent();
+			addFrameworkToCognitoUserAgent('0');
 
 			window.fetch.mockResolvedValueOnce({
 				ok: true,
@@ -48,6 +56,14 @@ describe('Client unit test suite', () => {
 			await promisifyCallback(client, 'request', '', {}).then(res => {
 				expect(res).toMatchObject({ endpoint: endpoint });
 			});
+			expect(fetchSpy).toHaveBeenCalledWith(
+				expect.anything(),
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						'X-Amz-User-Agent': `${getUserAgent()} auth framework/0`,
+					}),
+				})
+			);
 		});
 
 		test('Network Error case for request', async () => {
