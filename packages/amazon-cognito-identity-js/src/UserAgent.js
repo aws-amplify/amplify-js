@@ -1,5 +1,5 @@
 import { getUserAgent } from './Platform';
-import { authCategory } from './Platform/constants';
+import { AUTH_CATEGORY } from './Platform/constants';
 
 // constructor
 function UserAgent() {}
@@ -25,7 +25,7 @@ export const appendToCognitoUserAgent = content => {
 };
 
 export const addAuthCategoryToCognitoUserAgent = () => {
-	UserAgent.category = authCategory;
+	UserAgent.category = AUTH_CATEGORY;
 };
 
 export const addFrameworkToCognitoUserAgent = framework => {

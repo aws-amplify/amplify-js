@@ -1,6 +1,6 @@
-export const Framework = {
+export const FRAMEWORK = {
 	None: '0',
 	ReactNative: '1',
 };
 
-export const authCategory = 'auth';
+export const AUTH_CATEGORY = 'auth';
