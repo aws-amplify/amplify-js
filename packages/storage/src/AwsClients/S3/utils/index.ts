@@ -9,6 +9,7 @@ export {
 } from '../runtime';
 export {
 	deserializeBoolean,
+	deserializeMetadata,
 	deserializeNumber,
 	deserializeTimestamp,
 	emptyArrayGuard,
