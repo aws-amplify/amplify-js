@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { isClockSkewError } from '../../../src/clients/utils/isClockSkewError';
+import { isClockSkewError } from '../../../../src/clients/middleware/retry/isClockSkewError';
 
 describe('isClockSkewError', () => {
 	test('returns true if error code is a clock skew error', () => {
