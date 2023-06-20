@@ -13,9 +13,14 @@ import { parseXmlError } from './utils';
 /**
  * The service name used to sign requests if the API requires authentication.
  */
-const SERVICE_NAME = 's3';
+export const SERVICE_NAME = 's3';
 
-type S3EndpointResolverOptions = EndpointResolverOptions & {
+/**
+ * Options for endpoint resolver.
+ *
+ * @internal
+ */
+export type S3EndpointResolverOptions = EndpointResolverOptions & {
 	useAccelerateEndpoint?: boolean;
 };
 
@@ -26,7 +31,6 @@ const endpointResolver = ({
 	region,
 	useAccelerateEndpoint,
 }: S3EndpointResolverOptions) => {
-	// TODO: [V6] support force path style.
 	if (useAccelerateEndpoint) {
 		return { url: new URL(`https://s3-accelerate.${getDnsSuffix(region)}`) };
 	} else {

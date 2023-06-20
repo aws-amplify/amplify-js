@@ -5,7 +5,7 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { defaultConfig } from './base';
+import { S3EndpointResolverOptions, defaultConfig } from './base';
 import type {
 	CompatibleHttpResponse,
 	GetObjectCommandInput,
@@ -126,3 +126,16 @@ export const getObject = composeServiceApi(
 	getObjectDeserializer,
 	{ ...defaultConfig, responseType: 'blob' }
 );
+
+/**
+ * Get a URL for the `getObject` API. It is useful to presign returned request.
+ *
+ * @internal
+ */
+export const getGetObjectRequest = (
+	config: S3EndpointResolverOptions,
+	input: GetObjectInput
+): HttpRequest => {
+	const endpoint = defaultConfig.endpointResolver(config);
+	return getObjectSerializer(input, endpoint);
+};

@@ -6,6 +6,8 @@ export {
 	SEND_DOWNLOAD_PROGRESS_EVENT,
 	SEND_UPLOAD_PROGRESS_EVENT,
 	s3TransferHandler,
+	CANCELED_ERROR_MESSAGE,
+	isCancelError,
 } from '../runtime';
 export {
 	deserializeBoolean,
