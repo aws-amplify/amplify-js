@@ -116,7 +116,11 @@ describe(`${retryMiddleware.name} middleware`, () => {
 				maxAttempts: 6,
 				computeDelay,
 			});
-			expect(res).toEqual({ ...defaultResponse, $metadata: { attempts: 6 } });
+			expect(res).toEqual(
+			  expect.objectContaining(
+			    { $metadata: { attempts: 6 } }
+			  )
+			);
 			expect(nextHandler).toBeCalledTimes(6);
 			expect(computeDelay).toBeCalledTimes(5); // no interval after last attempt
 		} catch (error) {

@@ -1,14 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { MetadataBearer } from '@aws-sdk/types';
 import {
 	MiddlewareContext,
 	MiddlewareHandler,
 	Request,
 	Response,
 } from '../../types/core';
-import { type } from 'os';
 
 const DEFAULT_RETRY_ATTEMPTS = 3;
 
@@ -100,7 +98,7 @@ export const retryMiddleware = <TInput = Request, TOutput = Response>({
 			}
 
 			if (abortSignal?.aborted) {
-				throw new Error('Request aborted');
+				throw new Error('Request aborted.');
 			} else {
 				return handleTerminalErrorOrResponse();
 			}
@@ -129,7 +127,7 @@ const addOrIncrementMetadataAttempts = (
 	nextHandlerOutput: Object,
 	attempts: number
 ) => {
-	if (typeof nextHandlerOutput !== 'object') {
+	if (Object.prototype.toString.call(nextHandlerOutput) !== '[object Object]') {
 		return;
 	}
 	nextHandlerOutput['$metadata'] = {
