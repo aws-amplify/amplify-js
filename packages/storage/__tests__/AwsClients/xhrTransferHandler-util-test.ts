@@ -12,7 +12,6 @@ import {
 	triggerNetWorkError,
 	triggerServerSideAbort,
 	mockXhrReadyState,
-	mockBlobResponsePayload,
 } from './testUtils/mocks';
 
 const defaultRequest = {
@@ -29,23 +28,27 @@ const mock200Response = {
 	body: 'hello world',
 };
 
-const mockBlobText = jest.fn();
 const mockReadablStreamCtor = jest.fn();
 
 describe('xhrTransferHandler', () => {
 	const originalXhr = window.XMLHttpRequest;
 	const originalReadableStream = window.ReadableStream;
-	const originalBlobText = Blob.prototype.text;
+	const originalFileReaderCtor = window.FileReader;
 	beforeEach(() => {
 		jest.resetAllMocks();
 		window.ReadableStream = mockReadablStreamCtor;
-		Blob.prototype.text = mockBlobText;
+		window.FileReader = Object.assign(
+			jest.fn().mockImplementation(() => {
+				return new originalFileReaderCtor();
+			}),
+			{ ...originalFileReaderCtor }
+		);
 	});
 
 	afterEach(() => {
 		window.XMLHttpRequest = originalXhr;
 		window.ReadableStream = originalReadableStream;
-		Blob.prototype.text = originalBlobText;
+		window.FileReader = originalFileReaderCtor;
 	});
 
 	it('should call xhr.open with the correct arguments', async () => {
@@ -302,16 +305,16 @@ describe('xhrTransferHandler', () => {
 		});
 		mockXhrResponse(mockXhr, {
 			...mock200Response,
-			body: mockBlobResponsePayload(mock200Response.body),
+			body: new Blob([mock200Response.body]),
 		});
 		const { body } = await requestPromise;
 
-		expect(await body!.blob()).toBe(String(body));
+		expect(await body!.blob()).toBe(body);
 
 		await body!.text();
 		const responseText = await body!.text();
 		expect(responseText).toBe(mock200Response.body);
-		expect(mockBlobText).toBeCalledTimes(1); // validate memoization
+		expect(FileReader).toBeCalledTimes(1); // validate memoization
 
 		await expect(body!.json()).rejects.toThrow(
 			expect.objectContaining({
