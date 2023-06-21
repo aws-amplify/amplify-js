@@ -25,7 +25,7 @@ class PlatformBuilder {
 
 export const Platform = new PlatformBuilder();
 
-export const getAmplifyUserAgent = ({
+export const getAmplifyUserAgentObject = ({
 	category,
 	action,
 	framework,
@@ -39,10 +39,10 @@ export const getAmplifyUserAgent = ({
 	return userAgent;
 };
 
-export const getAmplifyUserAgentString = (
+export const getAmplifyUserAgent = (
 	customUserAgentDetails?: CustomUserAgentDetails
 ): string => {
-	const userAgent = getAmplifyUserAgent(customUserAgentDetails);
+	const userAgent = getAmplifyUserAgentObject(customUserAgentDetails);
 	const userAgentString = userAgent
 		.map(([agentKey, agentValue]) => `${agentKey}/${agentValue}`)
 		.join(' ');

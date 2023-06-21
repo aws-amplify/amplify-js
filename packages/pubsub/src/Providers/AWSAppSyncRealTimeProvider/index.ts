@@ -18,7 +18,7 @@ import {
 	ICredentials,
 	isNonRetryableError,
 	CustomUserAgentDetails,
-	getAmplifyUserAgentString,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import { Cache } from '@aws-amplify/cache';
 import { Auth, GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
@@ -353,7 +353,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 			})),
 			...(await graphql_headers()),
 			...additionalHeaders,
-			[USER_AGENT_HEADER]: getAmplifyUserAgentString(customUserAgentDetails),
+			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 		};
 
 		const subscriptionMessage = {

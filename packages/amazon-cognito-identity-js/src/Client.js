@@ -1,6 +1,6 @@
 import 'isomorphic-unfetch';
 
-import { getAmplifyUserAgentString } from './UserAgent';
+import { getAmplifyUserAgent } from './UserAgent';
 
 class CognitoError extends Error {
 	constructor(message, code, name, statusCode) {
@@ -79,7 +79,7 @@ export default class Client {
 		const headers = {
 			'Content-Type': 'application/x-amz-json-1.1',
 			'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
-			'X-Amz-User-Agent': getAmplifyUserAgentString(),
+			'X-Amz-User-Agent': getAmplifyUserAgent(),
 			'Cache-Control': 'no-store',
 		};
 
