@@ -7,6 +7,7 @@ import {
 	RespondToAuthChallengeException,
 } from '../types/errors/service';
 import { CognitoSignInOptions } from '../types/options/CognitoSignInOptions';
+import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
@@ -34,7 +35,7 @@ export async function signIn(
 		case 'USER_PASSWORD_AUTH':
 			return signInWithUserPassword(signInRequest);
 		case 'CUSTOM_WITHOUT_SRP':
-		// TODO(israx): include CUSTOM_WITHOUT_SRP API here
+			return signInWithCustomAuth(signInRequest);
 		case 'CUSTOM_WITH_SRP':
 			return signInWithCustomSRPAuth(signInRequest);
 		default:

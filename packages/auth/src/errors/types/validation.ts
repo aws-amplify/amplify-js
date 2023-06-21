@@ -4,6 +4,7 @@
 export enum AuthValidationErrorCode {
 	EmptySignInUsername = 'EmptySignInUsername',
 	EmptySignInPassword = 'EmptySignInPassword',
+	CustomAuthSignInPassword = 'CustomAuthSignInPassword',
 	EmptySignUpUsername = 'EmptySignUpUsername',
 	EmptySignUpPassword = 'EmptySignUpPassword',
 	EmptyConfirmSignUpUsername = 'EmptyConfirmSignUpUsername',
