@@ -34,6 +34,7 @@ const uploadPartHappyCase: ApiFunctionalTestCase<typeof uploadPart> = [
 			'x-amz-server-side-encryption-customer-algorithm': 'SSECustomerAlgorithm',
 			'x-amz-server-side-encryption-customer-key': 'SSECustomerKey',
 			'x-amz-server-side-encryption-customer-key-md5': 'SSECustomerKeyMD5',
+			'content-type': 'application/octet-stream', // required by RN Android if body exists
 		}),
 		body: 'body',
 	}),

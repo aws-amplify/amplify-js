@@ -124,7 +124,7 @@ export const xhrTransferHandler: TransferHandler<
 					blob: () => Promise.resolve(responseBlob),
 					text: withMemoization(() =>
 						responseType === 'blob'
-							? Blob.prototype.text.call(responseBlob) // Use prototype's text() method to avoid infinite recursion when users call body.text();
+							? readBlobAsText(responseBlob)
 							: Promise.resolve(responseText)
 					),
 					json: () =>
@@ -232,6 +232,22 @@ const convertResponseHeaders = (xhrHeaders: string): Record<string, string> => {
 			headerMap[header.toLowerCase()] = value;
 			return headerMap;
 		}, {});
+};
+
+const readBlobAsText = (blob: Blob) => {
+	const reader = new FileReader();
+	return new Promise<string>((resolve, reject) => {
+		reader.onloadend = () => {
+			if (reader.readyState !== FileReader.DONE) {
+				return;
+			}
+			resolve(reader.result as string);
+		};
+		reader.onerror = () => {
+			reject(reader.error);
+		};
+		reader.readAsText(blob);
+	});
 };
 
 // To add more forbidden headers as found set by S3. Intentionally NOT list all of them here to save bundle size.

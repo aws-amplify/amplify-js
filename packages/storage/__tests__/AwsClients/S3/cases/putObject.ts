@@ -46,6 +46,16 @@ export const expectedPutObjectRequestHeaders = {
 	'x-amz-meta-param1': 'value 1',
 };
 
+const putObjectSuccessResponse = {
+	status: 200,
+	headers: {
+		...DEFAULT_RESPONSE_HEADERS,
+		'x-amz-version-id': 'versionId',
+		etag: 'etag',
+	},
+	body: '',
+};
+
 const putObjectHappyCase: ApiFunctionalTestCase<typeof putObject> = [
 	'happy case',
 	'putObject',
@@ -59,15 +69,7 @@ const putObjectHappyCase: ApiFunctionalTestCase<typeof putObject> = [
 		headers: expect.objectContaining(expectedPutObjectRequestHeaders),
 		body: 'body',
 	}),
-	{
-		status: 200,
-		headers: {
-			...DEFAULT_RESPONSE_HEADERS,
-			'x-amz-version-id': 'versionId',
-			etag: 'etag',
-		},
-		body: '',
-	},
+	putObjectSuccessResponse,
 	{
 		$metadata: expect.objectContaining(expectedMetadata),
 		ETag: 'etag',
@@ -75,4 +77,22 @@ const putObjectHappyCase: ApiFunctionalTestCase<typeof putObject> = [
 	},
 ];
 
-export default [putObjectHappyCase];
+const pubObjectDefaultContentType: ApiFunctionalTestCase<typeof putObject> = [
+	'happy case',
+	'putObject default content type',
+	putObject,
+	defaultConfig,
+	{
+		...putObjectRequest,
+		ContentType: undefined,
+	},
+	expect.objectContaining({
+		headers: expect.objectContaining({
+			'content-type': 'application/octet-stream',
+		}),
+	}),
+	putObjectSuccessResponse,
+	expect.anything(),
+];
+
+export default [putObjectHappyCase, pubObjectDefaultContentType];
