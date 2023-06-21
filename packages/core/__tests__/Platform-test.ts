@@ -1,6 +1,6 @@
 import {
+	getAmplifyUserAgentObject,
 	getAmplifyUserAgent,
-	getAmplifyUserAgentString,
 	Platform,
 } from '../src/Platform';
 import { version } from '../src/Platform/version';
@@ -16,9 +16,9 @@ describe('Platform test', () => {
 		});
 	});
 
-	describe('getAmplifyUserAgent test', () => {
+	describe('getAmplifyUserAgentObject test', () => {
 		test('without customUserAgentDetails', () => {
-			expect(getAmplifyUserAgent()).toStrictEqual([
+			expect(getAmplifyUserAgentObject()).toStrictEqual([
 				['aws-amplify', version],
 				['framework', Framework.WebUnknown],
 			]);
@@ -27,7 +27,7 @@ describe('Platform test', () => {
 		/* TODO: test with actual API action */
 		test('with customUserAgentDetails', () => {
 			expect(
-				getAmplifyUserAgent({
+				getAmplifyUserAgentObject({
 					category: Category.API,
 					action: ApiAction.None,
 				})
@@ -39,16 +39,16 @@ describe('Platform test', () => {
 		});
 	});
 
-	describe('getAmplifyUserAgentString test', () => {
+	describe('getAmplifyUserAgent test', () => {
 		test('without customUserAgentDetails', () => {
-			expect(getAmplifyUserAgentString()).toBe(
+			expect(getAmplifyUserAgent()).toBe(
 				`${Platform.userAgent} framework/${Framework.WebUnknown}`
 			);
 		});
 
 		test('with customUserAgentDetails', () => {
 			expect(
-				getAmplifyUserAgentString({
+				getAmplifyUserAgent({
 					category: Category.API,
 					action: ApiAction.None,
 				})

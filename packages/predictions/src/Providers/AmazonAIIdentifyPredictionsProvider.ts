@@ -3,7 +3,7 @@ import {
 	Credentials,
 	ConsoleLogger as Logger,
 	PredictionsAction,
-	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
 } from '@aws-amplify/core';
 import { Storage } from '@aws-amplify/storage';
 import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
@@ -484,7 +484,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 }
 
 function _getPredictionsIdentifyAmplifyUserAgent() {
-	return getAmplifyUserAgent({
+	return getAmplifyUserAgentObject({
 		category: Category.Predictions,
 		action: PredictionsAction.Identify,
 	});

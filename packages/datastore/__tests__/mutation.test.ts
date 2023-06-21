@@ -21,7 +21,7 @@ import {
 	Category,
 	CustomUserAgentDetails,
 	DataStoreAction,
-	getAmplifyUserAgentString,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 
 let syncClasses: any;
@@ -168,9 +168,7 @@ describe('MutationProcessor', () => {
 				expect.anything(),
 				expect.objectContaining({
 					headers: expect.objectContaining({
-						'x-amz-user-agent': getAmplifyUserAgentString(
-							datastoreUserAgentDetails
-						),
+						'x-amz-user-agent': getAmplifyUserAgent(datastoreUserAgentDetails),
 					}),
 				})
 			);

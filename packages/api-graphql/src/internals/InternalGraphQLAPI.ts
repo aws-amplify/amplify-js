@@ -14,7 +14,7 @@ import {
 	ConsoleLogger as Logger,
 	Credentials,
 	CustomUserAgentDetails,
-	getAmplifyUserAgentString,
+	getAmplifyUserAgent,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import { InternalPubSub } from '@aws-amplify/pubsub/internals';
@@ -293,7 +293,7 @@ export class InternalGraphQLAPIClass {
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
-				[USER_AGENT_HEADER]: getAmplifyUserAgentString(customUserAgentDetails),
+				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 			}),
 		};
 

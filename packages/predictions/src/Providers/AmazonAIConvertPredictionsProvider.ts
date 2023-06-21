@@ -17,7 +17,7 @@ import {
 	Credentials,
 	ConsoleLogger as Logger,
 	Signer,
-	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
 	Category,
 	PredictionsAction,
 } from '@aws-amplify/core';
@@ -74,7 +74,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		this.translateClient = new TranslateClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent({
+			customUserAgent: getAmplifyUserAgentObject({
 				category: Category.Predictions,
 				action: PredictionsAction.Convert,
 			}),
@@ -123,7 +123,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		this.pollyClient = new PollyClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent({
+			customUserAgent: getAmplifyUserAgentObject({
 				category: Category.Predictions,
 				action: PredictionsAction.Convert,
 			}),

@@ -19,7 +19,7 @@ import {
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
 } from '@aws-amplify/core';
 import { convert } from './AWSLexProviderHelper/utils';
 import { unGzipBase64AsJson } from './AWSLexProviderHelper/commonUtils';
@@ -129,7 +129,7 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 		this._lexRuntimeServiceV2Client = new LexRuntimeV2Client({
 			region: this._config[botname].region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 
 		let response: AWSLexV2ProviderSendResponse;
