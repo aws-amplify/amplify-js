@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ResponseMetadata } from '@aws-sdk/types';
-import { isMetadataBearer } from '../middleware/retry/middleware';
+import { ResponseMetadata, MetadataBearer } from '@aws-sdk/types';
 import { HttpResponse } from '../types/http';
 
 export const parseMetadata = (response: HttpResponse): ResponseMetadata => {
@@ -18,3 +17,6 @@ export const parseMetadata = (response: HttpResponse): ResponseMetadata => {
 		cfId: headers['x-amz-cf-id'],
 	};
 };
+
+const isMetadataBearer = (response: unknown): response is MetadataBearer =>
+	typeof response?.['$metadata'] === 'object';
