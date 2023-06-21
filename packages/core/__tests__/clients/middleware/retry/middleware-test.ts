@@ -117,9 +117,7 @@ describe(`${retryMiddleware.name} middleware`, () => {
 				computeDelay,
 			});
 			expect(res).toEqual(
-			  expect.objectContaining(
-			    { $metadata: { attempts: 6 } }
-			  )
+				expect.objectContaining({ $metadata: { attempts: 6 } })
 			);
 			expect(nextHandler).toBeCalledTimes(6);
 			expect(computeDelay).toBeCalledTimes(5); // no interval after last attempt
@@ -141,7 +139,7 @@ describe(`${retryMiddleware.name} middleware`, () => {
 			});
 			fail('this test should fail');
 		} catch (error) {
-			expect(error.message).toBe('Request aborted');
+			expect(error.message).toBe('Request aborted.');
 			expect(nextHandler).toBeCalledTimes(0);
 		}
 		expect.assertions(2);
@@ -168,7 +166,7 @@ describe(`${retryMiddleware.name} middleware`, () => {
 			});
 			fail('this test should fail');
 		} catch (error) {
-			expect(error.message).toBe('Request aborted');
+			expect(error.message).toBe('Request aborted.');
 			expect(setTimeout).toBeCalledTimes(2); // 1st attempt + mock back-off strategy
 			expect(clearTimeout).toBeCalledTimes(1); // cancel 2nd attempt
 		}
