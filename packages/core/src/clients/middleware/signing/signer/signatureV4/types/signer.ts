@@ -8,6 +8,14 @@ export interface SignRequestOptions {
 	signingDate?: Date;
 	signingRegion: string;
 	signingService: string;
+
+	/**
+	 * Whether to uri encode the path as part of canonical uri. It's used for S3 only where the pathname
+	 * is already uri encoded, and the signing process is not expected to uri encode it again.
+	 *
+	 * @default true
+	 */
+	uriEscapePath?: boolean;
 }
 
 export interface PresignUrlOptions extends SignRequestOptions {
@@ -26,6 +34,9 @@ export interface FormattedDates {
 export interface SigningValues
 	extends Credentials,
 		FormattedDates,
-		Pick<SignRequestOptions, 'signingRegion' | 'signingService'> {
+		Pick<
+			SignRequestOptions,
+			'signingRegion' | 'signingService' | 'uriEscapePath'
+		> {
 	credentialScope: string;
 }
