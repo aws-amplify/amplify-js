@@ -53,7 +53,10 @@ const putObjectSerializer = (
 	input: PutObjectInput,
 	endpoint: Endpoint
 ): HttpRequest => {
-	const headers = serializeObjectConfigsToHeaders(input);
+	const headers = serializeObjectConfigsToHeaders({
+		...input,
+		ContentType: input.ContentType ?? 'application/octet-stream',
+	});
 	const url = new URL(endpoint.url.toString());
 	url.hostname = `${input.Bucket}.${url.hostname}`;
 	url.pathname = `/${input.Key}`;

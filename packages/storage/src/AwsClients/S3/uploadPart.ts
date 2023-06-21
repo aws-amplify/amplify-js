@@ -41,7 +41,10 @@ const uploadPartSerializer = (
 	input: UploadPartInput,
 	endpoint: Endpoint
 ): HttpRequest => {
-	const headers = serializeObjectSsecOptionsToHeaders(input);
+	const headers = {
+		...serializeObjectSsecOptionsToHeaders(input),
+		'content-type': 'application/octet-stream',
+	};
 	const url = new URL(endpoint.url.toString());
 	url.hostname = `${input.Bucket}.${url.hostname}`;
 	url.pathname = `/${input.Key}`;

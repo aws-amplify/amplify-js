@@ -46,6 +46,7 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 			'x-amz-server-side-encryption-customer-algorithm': 'SSECustomerAlgorithm',
 			'x-amz-server-side-encryption-customer-key': 'SSECustomerKey',
 			'x-amz-server-side-encryption-customer-key-md5': 'SSECustomerKeyMD5',
+			'content-type': 'application/xml',
 		}),
 		body:
 			'<?xml version="1.0" encoding="UTF-8"?>' +
