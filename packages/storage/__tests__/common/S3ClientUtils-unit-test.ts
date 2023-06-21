@@ -8,7 +8,7 @@ import {
 import {
 	ICredentials,
 	Credentials,
-	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
 	StorageAction,
 	Category,
 } from '@aws-amplify/core';
@@ -131,7 +131,7 @@ describe('S3ClientUtils tests', () => {
 		);
 		// ensure customUserAgent is set properly
 		expect(s3client.config.customUserAgent).toEqual(
-			getAmplifyUserAgent({
+			getAmplifyUserAgentObject({
 				category: Category.Storage,
 				action: StorageAction.Get,
 			})

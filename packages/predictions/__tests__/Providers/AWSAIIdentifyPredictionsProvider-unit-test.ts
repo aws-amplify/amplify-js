@@ -2,7 +2,7 @@ import {
 	Category,
 	Credentials,
 	PredictionsAction,
-	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
 } from '@aws-amplify/core';
 import { Storage } from '@aws-amplify/storage';
 import {
@@ -703,7 +703,7 @@ describe('Predictions identify provider test', () => {
 			expect(
 				predictionsProvider['rekognitionClient'].config.customUserAgent
 			).toEqual(
-				getAmplifyUserAgent({
+				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
 				})
@@ -729,7 +729,7 @@ describe('Predictions identify provider test', () => {
 			expect(
 				predictionsProvider['rekognitionClient'].config.customUserAgent
 			).toEqual(
-				getAmplifyUserAgent({
+				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
 				})
@@ -750,7 +750,7 @@ describe('Predictions identify provider test', () => {
 			expect(
 				predictionsProvider['rekognitionClient'].config.customUserAgent
 			).toEqual(
-				getAmplifyUserAgent({
+				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
 				})
@@ -758,7 +758,7 @@ describe('Predictions identify provider test', () => {
 			expect(
 				predictionsProvider['textractClient'].config.customUserAgent
 			).toEqual(
-				getAmplifyUserAgent({
+				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
 				})

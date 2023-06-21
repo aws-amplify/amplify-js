@@ -2,7 +2,7 @@ import {
 	Category,
 	Credentials,
 	PredictionsAction,
-	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
 } from '@aws-amplify/core';
 import {
 	TranslateTextInput,
@@ -335,7 +335,7 @@ describe('Predictions convert provider test', () => {
 			await predictionsProvider.convert(validTextToSpeechInput);
 
 			expect(predictionsProvider['pollyClient'].config.customUserAgent).toEqual(
-				getAmplifyUserAgent({
+				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Convert,
 				})
@@ -353,7 +353,7 @@ describe('Predictions convert provider test', () => {
 			expect(
 				predictionsProvider['translateClient'].config.customUserAgent
 			).toEqual(
-				getAmplifyUserAgent({
+				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Convert,
 				})
