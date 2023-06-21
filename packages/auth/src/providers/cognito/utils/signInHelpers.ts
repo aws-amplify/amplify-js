@@ -82,6 +82,21 @@ export async function handleUserSRPAuthFlow(
 	);
 }
 
+export async function handleCustomAuthFlowWithoutSRP(
+	username: string,
+	clientMetadata: ClientMetadata | undefined
+): Promise<InitiateAuthCommandOutput> {
+	const jsonReq: InitiateAuthClientInput = {
+		AuthFlow: 'CUSTOM_AUTH',
+		AuthParameters: {
+			USERNAME: username,
+		},
+		ClientMetadata: clientMetadata,
+	};
+
+	return await initiateAuthClient(jsonReq);
+}
+
 export async function handleCustomSRPAuthFlow(
 	username: string,
 	password: string,
