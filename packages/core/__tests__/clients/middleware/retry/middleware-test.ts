@@ -32,6 +32,26 @@ describe(`${retryMiddleware.name} middleware`, () => {
 	test('should retry specified times', async () => {
 		const nextHandler = jest.fn().mockResolvedValue(defaultResponse);
 		const retryableHandler = getRetryableHandler(nextHandler);
+		expect.assertions(2);
+		try {
+			const resp = await retryableHandler(defaultRequest, {
+				...defaultRetryOptions,
+				maxAttempts: 6,
+			});
+			expect(nextHandler).toBeCalledTimes(6);
+			expect(resp).toEqual({ ...defaultResponse, $metadata: { attempts: 6 } });
+		} catch (error) {
+			fail('this test should succeed');
+		}
+	});
+
+	test('should throw last error if max attempts is reached', async () => {
+		let nextHandlerInvocations = 0;
+		const nextHandler = jest.fn().mockImplementation(async () => {
+			throw new Error(`Error ${++nextHandlerInvocations}`);
+		});
+		const retryableHandler = getRetryableHandler(nextHandler);
+		expect.assertions(2);
 		let resp;
 		try {
 			resp = await retryableHandler(defaultRequest, {
@@ -41,7 +61,7 @@ describe(`${retryMiddleware.name} middleware`, () => {
 			fail('this test should fail');
 		} catch (error) {
 			expect(nextHandler).toBeCalledTimes(6);
-			expect(error.message).toEqual('Retry attempts exhausted');
+			expect(error.message).toEqual('Error 6');
 		}
 	});
 
@@ -91,16 +111,16 @@ describe(`${retryMiddleware.name} middleware`, () => {
 		const retryableHandler = getRetryableHandler(nextHandler);
 		const computeDelay = jest.fn().mockImplementation(retry => retry * 100);
 		try {
-			await retryableHandler(defaultRequest, {
+			const res = await retryableHandler(defaultRequest, {
 				...defaultRetryOptions,
 				maxAttempts: 6,
 				computeDelay,
 			});
-			fail('this test should fail');
-		} catch (error) {
-			expect(error.message).toBe('Retry attempts exhausted');
+			expect(res).toEqual({ ...defaultResponse, $metadata: { attempts: 6 } });
 			expect(nextHandler).toBeCalledTimes(6);
 			expect(computeDelay).toBeCalledTimes(5); // no interval after last attempt
+		} catch (error) {
+			fail('this test should fail');
 		}
 		expect.assertions(3);
 	});

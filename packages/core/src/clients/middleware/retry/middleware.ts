@@ -8,6 +8,7 @@ import {
 	Request,
 	Response,
 } from '../../types/core';
+import { type } from 'os';
 
 const DEFAULT_RETRY_ATTEMPTS = 3;
 
@@ -60,13 +61,25 @@ export const retryMiddleware = <TInput = Request, TOutput = Response>({
 			let error: Error;
 			let attemptsCount = context.attemptsCount ?? 0;
 			let response: TOutput;
+
+			// When retry is not needed or max attempts is reached, either error or response will be set. This function handles either cases.
+			const handleTerminalErrorOrResponse = () => {
+				if (response) {
+					addOrIncrementMetadataAttempts(response, attemptsCount);
+					return response;
+				} else {
+					addOrIncrementMetadataAttempts(error, attemptsCount);
+					throw error;
+				}
+			};
+
 			while (!abortSignal?.aborted && attemptsCount < maxAttempts) {
-				error = undefined;
-				response = undefined;
 				try {
 					response = await next(request);
+					error = undefined;
 				} catch (e) {
 					error = e;
+					response = undefined;
 				}
 				// context.attemptsCount may be updated after calling next handler which may retry the request by itself.
 				attemptsCount =
@@ -81,17 +94,16 @@ export const retryMiddleware = <TInput = Request, TOutput = Response>({
 						await cancellableSleep(delay, abortSignal);
 					}
 					continue;
-				} else if (response) {
-					updateMetadataAttempts(response, attemptsCount);
-					return response;
 				} else {
-					updateMetadataAttempts(error, attemptsCount);
-					throw error;
+					return handleTerminalErrorOrResponse();
 				}
 			}
-			throw abortSignal?.aborted
-				? new Error('Request aborted')
-				: error ?? new Error('Retry attempts exhausted');
+
+			if (abortSignal?.aborted) {
+				throw new Error('Request aborted');
+			} else {
+				return handleTerminalErrorOrResponse();
+			}
 		};
 };
 
@@ -113,21 +125,15 @@ const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 	return sleepPromise;
 };
 
-/**
- * Check if the response is a contains `$metadata` property.
- *
- * @internal Amplify internal use only
- */
-export const isMetadataBearer = (
-	response: unknown
-): response is MetadataBearer => typeof response?.['$metadata'] === 'object';
-
-const updateMetadataAttempts = (
+const addOrIncrementMetadataAttempts = (
 	nextHandlerOutput: Object,
 	attempts: number
 ) => {
-	if (isMetadataBearer(nextHandlerOutput)) {
-		nextHandlerOutput.$metadata.attempts = attempts;
+	if (typeof nextHandlerOutput !== 'object') {
+		return;
 	}
-	nextHandlerOutput['$metadata'] = { attempts };
+	nextHandlerOutput['$metadata'] = {
+		...(nextHandlerOutput['$metadata'] ?? {}),
+		attempts,
+	};
 };
