@@ -27,4 +27,4 @@ export type AuthStandardAttributeKey =
 	| 'sub'
 	| 'updated_at'
 	| 'website'
-	| 'zoneInfo';
+	| 'zoneinfo';
