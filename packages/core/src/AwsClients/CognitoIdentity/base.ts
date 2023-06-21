@@ -17,7 +17,7 @@ import {
 	jitteredBackoff,
 	getRetryDecider,
 } from '../../clients/middleware/retry';
-import { getAmplifyUserAgentString } from '../../Platform';
+import { getAmplifyUserAgent } from '../../Platform';
 import { observeFrameworkChanges } from '../../Platform/detectFramework';
 
 /**
@@ -63,11 +63,11 @@ export const defaultConfig = {
 	endpointResolver,
 	retryDecider: getRetryDecider(parseJsonError),
 	computeDelay: jitteredBackoff,
-	userAgentValue: getAmplifyUserAgentString(),
+	userAgentValue: getAmplifyUserAgent(),
 };
 
 observeFrameworkChanges(() => {
-	defaultConfig.userAgentValue = getAmplifyUserAgentString();
+	defaultConfig.userAgentValue = getAmplifyUserAgent();
 });
 
 /**

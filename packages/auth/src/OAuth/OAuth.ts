@@ -17,7 +17,7 @@ import {
 	Category,
 	ConsoleLogger as Logger,
 	CustomUserAgentDetails,
-	getAmplifyUserAgentString,
+	getAmplifyUserAgent,
 	Hub,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
@@ -179,9 +179,7 @@ export default class OAuth {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
-					[USER_AGENT_HEADER]: getAmplifyUserAgentString(
-						customUserAgentDetails
-					),
+					[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 				},
 				body,
 			})) as any

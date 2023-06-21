@@ -2,7 +2,7 @@ import {
 	Category,
 	Credentials,
 	PredictionsAction,
-	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
 } from '@aws-amplify/core';
 import {
 	ComprehendClient,
@@ -492,7 +492,7 @@ describe('Predictions interpret provider test', () => {
 			expect(
 				predictionsProvider['comprehendClient'].config.customUserAgent
 			).toEqual(
-				getAmplifyUserAgent({
+				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Interpret,
 				})

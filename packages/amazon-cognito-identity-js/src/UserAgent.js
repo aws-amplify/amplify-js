@@ -32,7 +32,7 @@ export const addFrameworkToCognitoUserAgent = framework => {
 	UserAgent.framework = framework;
 };
 
-export const getAmplifyUserAgentString = action => {
+export const getAmplifyUserAgent = action => {
 	const uaCategoryAction = UserAgent.category ? ` ${UserAgent.category}` : '';
 	const uaFramework = UserAgent.framework
 		? ` framework/${UserAgent.framework}`

@@ -3,7 +3,7 @@ import UserAgent, {
 	addAuthCategoryToCognitoUserAgent,
 	addFrameworkToCognitoUserAgent,
 	appendToCognitoUserAgent,
-	getAmplifyUserAgentString,
+	getAmplifyUserAgent,
 } from '../src/UserAgent';
 
 const DEFAULT_USER_AGENT = 'aws-amplify/0.1.x';
@@ -29,7 +29,7 @@ describe('UserAgent test', () => {
 		appendToCognitoUserAgent('test');
 		expect(UserAgent.prototype.userAgent).toBe(`${DEFAULT_USER_AGENT} test`);
 
-		expect(getAmplifyUserAgentString()).toBe(`${DEFAULT_USER_AGENT} test`);
+		expect(getAmplifyUserAgent()).toBe(`${DEFAULT_USER_AGENT} test`);
 	});
 
 	test('appendToCognitoUserAgent does not append duplicate content', () => {
@@ -41,7 +41,7 @@ describe('UserAgent test', () => {
 
 		expect(UserAgent.prototype.userAgent).toBe(`${DEFAULT_USER_AGENT} test`);
 
-		expect(getAmplifyUserAgentString()).toBe(`${DEFAULT_USER_AGENT} test`);
+		expect(getAmplifyUserAgent()).toBe(`${DEFAULT_USER_AGENT} test`);
 	});
 
 	test('appendToCognitoUserAgent sets userAgent if userAgent has no content', () => {
@@ -58,7 +58,7 @@ describe('UserAgent test', () => {
 		addAuthCategoryToCognitoUserAgent();
 		expect(UserAgent.category).toBe(AUTH_CATEGORY);
 
-		expect(getAmplifyUserAgentString()).toBe(
+		expect(getAmplifyUserAgent()).toBe(
 			`${DEFAULT_USER_AGENT} ${USER_AGENT_AUTH}`
 		);
 	});
@@ -67,7 +67,7 @@ describe('UserAgent test', () => {
 		addFrameworkToCognitoUserAgent('0');
 		expect(UserAgent.framework).toBe('0');
 
-		expect(getAmplifyUserAgentString()).toBe(
+		expect(getAmplifyUserAgent()).toBe(
 			`${DEFAULT_USER_AGENT} ${USER_AGENT_FRAMEWORK0}`
 		);
 	});

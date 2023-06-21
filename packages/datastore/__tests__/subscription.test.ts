@@ -8,7 +8,7 @@ import {
 	Category,
 	CustomUserAgentDetails,
 	DataStoreAction,
-	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
 } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import {

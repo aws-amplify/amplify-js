@@ -1,19 +1,19 @@
 import {
 	AnalyticsAction,
 	Category,
+	getAmplifyUserAgentObject,
 	getAmplifyUserAgent,
-	getAmplifyUserAgentString,
 } from '@aws-amplify/core';
 
 export function getAnalyticsUserAgent(action: AnalyticsAction) {
-	return getAmplifyUserAgent({
+	return getAmplifyUserAgentObject({
 		category: Category.Analytics,
 		action,
 	});
 }
 
 export function getAnalyticsUserAgentString(action: AnalyticsAction) {
-	return getAmplifyUserAgentString({
+	return getAmplifyUserAgent({
 		category: Category.Analytics,
 		action,
 	});

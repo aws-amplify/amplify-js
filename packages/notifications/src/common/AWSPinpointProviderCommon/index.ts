@@ -7,7 +7,7 @@ import {
 	ConsoleLogger,
 	Credentials,
 	CustomUserAgentDetails,
-	getAmplifyUserAgentString,
+	getAmplifyUserAgent,
 	InAppMessagingAction,
 	PushNotificationAction,
 	StorageHelper,
@@ -121,7 +121,7 @@ export default abstract class AWSPinpointProviderCommon
 			};
 		}
 
-		return getAmplifyUserAgentString(customUserAgentDetails);
+		return getAmplifyUserAgent(customUserAgentDetails);
 	};
 
 	protected recordAnalyticsEvent = async (
