@@ -19,6 +19,7 @@ export const getSigningValues = ({
 	signingDate = new Date(),
 	signingRegion,
 	signingService,
+	uriEscapePath = true,
 }: SignRequestOptions): SigningValues => {
 	// get properties from credentials
 	const { accessKeyId, secretAccessKey, sessionToken } = credentials;
@@ -39,5 +40,6 @@ export const getSigningValues = ({
 		shortDate,
 		signingRegion,
 		signingService,
+		uriEscapePath,
 	};
 };
