@@ -76,7 +76,6 @@ const newPasswordRequiredChallengeUserAttributePrefix = 'userAttributes.';
 
 /** @class */
 export default class AuthenticationHelper {
-	
 	encoder = new TextEncoder();
 	smallAValue: BigInteger;
 	infoBits: Uint8Array;
