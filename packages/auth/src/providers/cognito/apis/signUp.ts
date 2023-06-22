@@ -102,7 +102,7 @@ export async function signUp(
 	}
 }
 
-function toAttributeType<T extends Record<string, any>>(
+function toAttributeType<T extends Record<string, string | undefined>>(
 	data: T
 ): AttributeType[] {
 	return Object.entries(data).map(([key, value]) => ({
