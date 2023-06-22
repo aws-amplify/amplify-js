@@ -14,6 +14,8 @@ export interface SignRequestOptions {
 	 * is already uri encoded, and the signing process is not expected to uri encode it again.
 	 *
 	 * @default true
+	 *
+	 * @see https://github.com/aws/aws-sdk-js-v3/blob/9ba012dfa3a3429aa2db0f90b3b0b3a7a31f9bc3/packages/signature-v4/src/SignatureV4.ts#L76-L83
 	 */
 	uriEscapePath?: boolean;
 }
