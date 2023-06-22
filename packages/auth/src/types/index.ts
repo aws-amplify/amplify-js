@@ -30,7 +30,6 @@ export {
 	SignInRequest,
 } from './requests';
 
-// Results
 export {
 	AuthSignUpResult,
 	AuthSignInResult,

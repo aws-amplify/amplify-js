@@ -9,7 +9,7 @@ import {
 	AuthSignInStep,
 } from '../../../types';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
-import { CognitoSignInOptions } from '../types/options/CognitoSignInOptions';
+
 import {
 	ChallengeName,
 	ChallengeParameters,
@@ -23,8 +23,8 @@ import { setActiveSignInSession } from '../utils/activeSignInSession';
 import { Amplify } from '@aws-amplify/core';
 import {
 	InitiateAuthException,
-	RespondToAuthChallengeException,
-} from '../types/errors/service';
+} from '../types/errors';
+import { CognitoSignInOptions } from '../types';
 
 /**
  * Signs a user in using a custom authentication flow without password

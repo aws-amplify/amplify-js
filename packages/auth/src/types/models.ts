@@ -8,7 +8,7 @@ import { AuthResetPasswordStep, AuthSignInStep, AuthSignUpStep } from './enums';
  */
 export type AdditionalInfo = { [key: string]: string };
 
-export type AnyAttribute = (string & {}) | Record<string, string>;
+export type AnyAttribute = string & {};
 
 /**
  * Denotes the medium over which a confirmation code was sent.
@@ -100,8 +100,7 @@ export type AuthStandardAttributeKey =
 export type AuthUserAttribute<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
-	userAttributeKey: GetAttributeKey<UserAttributeKey>;
-	value: string;
+	[Attribute in UserAttributeKey]?: string;
 };
 
 /**
