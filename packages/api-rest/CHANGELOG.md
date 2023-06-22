@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.3.0...@aws-amplify/api-rest@3.3.1) (2023-06-21)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+# [3.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.2.1...@aws-amplify/api-rest@3.3.0) (2023-06-20)
+
+### Bug Fixes
+
+- Add upkeep to platform/framework caches ([#11505](https://github.com/aws-amplify/amplify-js/issues/11505)) ([03aa356](https://github.com/aws-amplify/amplify-js/commit/03aa3560e921f08717594bdf679b62501bc6de77))
+- remove x-amz-user-agent header from api-rest calls to prevent CORS failures ([#11487](https://github.com/aws-amplify/amplify-js/issues/11487)) ([76b6706](https://github.com/aws-amplify/amplify-js/commit/76b670675b84045890aa7944e6704af87a012b3d))
+- **storage:** Add getProperties user agent action ([#11501](https://github.com/aws-amplify/amplify-js/issues/11501)) ([019b5b1](https://github.com/aws-amplify/amplify-js/commit/019b5b1115bebc92f2c44bbf285d1d916cb08492))
+
+### Features
+
+- **core:** API detection for 8 framework targets ([#11384](https://github.com/aws-amplify/amplify-js/issues/11384)) ([388f207](https://github.com/aws-amplify/amplify-js/commit/388f2074db0640f2d22aa7cd1a44d8eb8f2301d2))
+- Custom user agent enhancement for api-rest ([#11457](https://github.com/aws-amplify/amplify-js/issues/11457)) ([4315ba0](https://github.com/aws-amplify/amplify-js/commit/4315ba05ad2e4463a4ef19431f20f8d5308cdc62))
+
 ## [3.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.2.0...@aws-amplify/api-rest@3.2.1) (2023-06-14)
 
 **Note:** Version bump only for package @aws-amplify/api-rest

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, StorageAction } from '@aws-amplify/core';
 import {
 	PutObjectCommandInput,
 	PutObjectCommand,
@@ -57,7 +57,11 @@ export class AWSS3ProviderManagedUpload {
 	private totalBytesToUpload = 0;
 	private emitter: events.EventEmitter | null = null;
 
-	constructor(params: PutObjectCommandInput, opts, emitter: events.EventEmitter) {
+	constructor(
+		params: PutObjectCommandInput,
+		opts,
+		emitter: events.EventEmitter
+	) {
 		this.params = params;
 		this.opts = opts;
 		this.emitter = emitter;
@@ -317,7 +321,7 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	protected _createNewS3Client(config, emitter?: events.EventEmitter) {
-		const s3client = createS3Client(config, emitter);
+		const s3client = createS3Client(config, StorageAction.Put, emitter);
 		s3client.middlewareStack.add(
 			createPrefixMiddleware(this.opts, this.params.Key),
 			prefixMiddlewareOptions

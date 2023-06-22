@@ -19,7 +19,7 @@ import {
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
 } from '@aws-amplify/core';
 import { convert } from './AWSLexProviderHelper/utils';
 
@@ -126,7 +126,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		this.lexRuntimeServiceClient = new LexRuntimeServiceClient({
 			region: this._config[botname].region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 
 		let params: PostTextCommandInput | PostContentCommandInput;

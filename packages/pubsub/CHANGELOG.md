@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.3.0...@aws-amplify/pubsub@5.3.1) (2023-06-21)
+
+### Bug Fixes
+
+- Update getAmplifyUserAgent to retain original interface ([#11535](https://github.com/aws-amplify/amplify-js/issues/11535)) ([dc84cc8](https://github.com/aws-amplify/amplify-js/commit/dc84cc8bfa7811b5f4f8ac2f7e5ea1b5edc54fe1))
+
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.2.1...@aws-amplify/pubsub@5.3.0) (2023-06-20)
+
+### Features
+
+- **core:** API detection for 8 framework targets ([#11384](https://github.com/aws-amplify/amplify-js/issues/11384)) ([388f207](https://github.com/aws-amplify/amplify-js/commit/388f2074db0640f2d22aa7cd1a44d8eb8f2301d2))
+- user agent enhancements - cross-category api>api-graphql>pubsub ([#11368](https://github.com/aws-amplify/amplify-js/issues/11368)) ([a88dda2](https://github.com/aws-amplify/amplify-js/commit/a88dda202919aa1d4dc2af48f33c3533d8626261))
+
 ## [5.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.2.0...@aws-amplify/pubsub@5.2.1) (2023-06-14)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
