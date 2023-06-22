@@ -17,9 +17,8 @@ import {
 import {
 	CognitoSignUpOptions,
 	CustomAttribute,
-	ValidationData,
 } from '../types';
-import { SignUpClientInput, signUpClient } from '../utils/clients/SignUpClient';
+import { signUpClient } from '../utils/clients/SignUpClient';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { SignUpException } from '../types/errors/service';
