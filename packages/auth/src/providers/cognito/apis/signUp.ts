@@ -14,7 +14,10 @@ import {
 	DeliveryMedium,
 	SignUpRequest,
 } from '../../../types';
-import { CognitoSignUpOptions, CustomAttribute, ValidationData } from '../types';
+import {
+	CognitoSignUpOptions,
+	CustomAttribute,
+} from '../types';
 import { signUpClient } from '../utils/clients/SignUpClient';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -35,8 +38,8 @@ import { SignUpException } from '../types/errors/service';
 export async function signUp(
 	signUpRequest: SignUpRequest<CognitoUserAttributeKey, CognitoSignUpOptions>
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
-	const username = signUpRequest.username;
-	const password = signUpRequest.password;
+	const { username, password, options } = signUpRequest;
+
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
@@ -47,19 +50,20 @@ export async function signUp(
 	);
 	// TODO: implement autoSignIn
 	let validationData: AttributeType[] | undefined;
+	let attributes: AttributeType[] | undefined;
 	const config = Amplify.config;
 
-	if (signUpRequest.options?.serviceOptions?.validationData) {
-		validationData = mapValidationData(
-			signUpRequest.options?.serviceOptions?.validationData
-		);
+	if (options?.serviceOptions?.validationData) {
+		validationData = toAttributeType(options?.serviceOptions?.validationData);
 	}
+	if (options?.userAttributes) {
+		attributes = toAttributeType(options?.userAttributes);
+	}
+
 	const res: SignUpCommandOutput = await signUpClient({
 		Username: username,
 		Password: password,
-		UserAttributes: signUpRequest.options?.userAttributes.map(el => {
-			return { Name: el.userAttributeKey.toString(), Value: el.value };
-		}),
+		UserAttributes: attributes,
 		ClientMetadata:
 			signUpRequest.options?.serviceOptions?.clientMetadata ??
 			config.clientMetadata,
@@ -97,7 +101,9 @@ export async function signUp(
 	}
 }
 
-function mapValidationData(data: ValidationData): AttributeType[] {
+function toAttributeType<T extends Record<string, string | undefined>>(
+	data: T
+): AttributeType[] {
 	return Object.entries(data).map(([key, value]) => ({
 		Name: key,
 		Value: value,
