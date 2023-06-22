@@ -6,7 +6,6 @@ import {
 	Credentials,
 	DateUtils,
 	Signer,
-	Platform,
 } from '@aws-amplify/core';
 
 import { apiOptions, ApiInfo } from './types';
@@ -109,15 +108,7 @@ export class RestClient {
 			cancelToken: null,
 		};
 
-		let libraryHeaders = {};
-
-		if (Platform.isReactNative) {
-			const userAgent = Platform.userAgent || 'aws-amplify/0.1.x';
-			libraryHeaders = {
-				'User-Agent': userAgent,
-			};
-		}
-
+		const libraryHeaders = {};
 		const initParams = Object.assign({}, init);
 		const isAllResponse = initParams.response;
 		if (initParams.body) {

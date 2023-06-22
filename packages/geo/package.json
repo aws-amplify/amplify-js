@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/geo",
-	"version": "2.0.35",
+	"version": "2.1.1",
 	"description": "Geo category for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -46,7 +46,7 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/core": "5.4.0",
+		"@aws-amplify/core": "5.5.1",
 		"@aws-sdk/client-location": "3.186.2",
 		"@turf/boolean-clockwise": "6.5.0",
 		"camelcase-keys": "6.2.2",
@@ -57,7 +57,7 @@
 			"name": "Geo (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Geo }",
-			"limit": "50.5 kB"
+			"limit": "51.7 kB"
 		}
 	],
 	"jest": {

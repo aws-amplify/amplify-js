@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "5.4.0",
+	"version": "5.5.1",
 	"description": "Core category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -104,7 +104,7 @@
 			"name": "Core (Credentials)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Credentials }",
-			"limit": "12.05 kB"
+			"limit": "13.3 kB"
 		},
 		{
 			"name": "Core (Signer)",
