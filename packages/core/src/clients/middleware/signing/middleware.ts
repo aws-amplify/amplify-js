@@ -18,6 +18,14 @@ export interface SigningOptions {
 	credentials: Credentials;
 	region: string;
 	service: string;
+
+	/**
+	 * Whether to uri encode the path as part of canonical uri. It's used for S3 only where the pathname
+	 * is already uri encoded, and the signing process is not expected to uri encode it again.
+	 *
+	 * @default true
+	 */
+	uriEscapePath?: boolean;
 }
 
 /**
@@ -28,6 +36,7 @@ export const signingMiddleware = ({
 	credentials,
 	region,
 	service,
+	uriEscapePath = true,
 }: SigningOptions) => {
 	let currentSystemClockOffset;
 	return (next: MiddlewareHandler<HttpRequest, HttpResponse>) =>
@@ -38,6 +47,7 @@ export const signingMiddleware = ({
 				signingDate: getSkewCorrectedDate(currentSystemClockOffset),
 				signingRegion: region,
 				signingService: service,
+				uriEscapePath,
 			};
 			const signedRequest = await signRequest(request, signRequestOptions);
 			const response = await next(signedRequest);
