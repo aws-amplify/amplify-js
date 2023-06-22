@@ -23,7 +23,7 @@ import {
 	DEFAULT_PART_SIZE,
 	DEFAULT_QUEUE_SIZE,
 	MAX_OBJECT_SIZE,
-	S3Config,
+	S3ResolvedConfig,
 	loadS3Config,
 	getPrefix,
 } from '../common/S3ClientUtils';
@@ -44,7 +44,7 @@ export class AWSS3ProviderManagedUpload {
 	private params: PutObjectInput;
 	private opts = null;
 	private completedParts: CompletedPart[] = [];
-	private s3Config: S3Config;
+	private s3Config: S3ResolvedConfig;
 	private uploadId: string | undefined;
 	private partSize = DEFAULT_PART_SIZE;
 	private prefixPromise: Promise<string> | null = null;
@@ -59,8 +59,9 @@ export class AWSS3ProviderManagedUpload {
 		this.opts = opts;
 		this.emitter = emitter;
 		this.s3Config = loadS3Config({
-			...(opts ?? {}),
+			...opts,
 			emitter,
+			storageAction: StorageAction.Put,
 		});
 		this.prefixPromise = this.s3Config
 			.credentials()

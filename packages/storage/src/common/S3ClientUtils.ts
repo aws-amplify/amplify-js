@@ -1,4 +1,11 @@
-import { Credentials, ICredentials, Logger } from '@aws-amplify/core';
+import {
+	Category,
+	Credentials,
+	ICredentials,
+	Logger,
+	StorageAction,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core';
 import type { EventEmitter } from 'events';
 
 import { StorageAccessLevel, CustomPrefix } from '../types';
@@ -57,16 +64,22 @@ export const credentialsProvider = async () => {
 	}
 };
 
-export interface S3Config {
+interface S3InputConfig {
+	region?: string;
+	useAccelerateEndpoint?: boolean;
+	abortSignal?: AbortSignal;
+	emitter?: EventEmitter;
+	storageAction: StorageAction;
+}
+
+export interface S3ResolvedConfig extends Omit<S3InputConfig, 'region'> {
 	region: string;
+	userAgentValue?: string;
 	credentials: () => Promise<{
 		accessKeyId: string;
 		secretAccessKey: string;
 		sessionToken?: string;
 	}>;
-	useAccelerateEndpoint?: boolean;
-	abortSignal?: AbortSignal;
-	emitter?: EventEmitter;
 }
 
 /**
@@ -75,12 +88,21 @@ export interface S3Config {
  *
  * @inernal
  */
-export const loadS3Config = (
-	config: Omit<S3Config, 'credentials'>
-): S3Config => ({
-	...config,
-	credentials: credentialsProvider,
-});
+export const loadS3Config = (config: S3InputConfig): S3ResolvedConfig => {
+	if (!config.region) {
+		// Same error thrown by aws-sdk
+		throw new Error('Region is missing.');
+	}
+	return {
+		...config,
+		region: config.region,
+		credentials: credentialsProvider,
+		userAgentValue: getAmplifyUserAgent({
+			category: Category.Storage,
+			action: config.storageAction,
+		}),
+	};
+};
 
 const MB = 1024 * 1024;
 const GB = 1024 * MB;

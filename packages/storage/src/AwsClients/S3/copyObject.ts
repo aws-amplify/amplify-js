@@ -27,6 +27,8 @@ export type CopyObjectInput = Pick<
 	| 'MetadataDirective'
 	| 'CacheControl'
 	| 'ContentType'
+	| 'ContentDisposition'
+	| 'ContentLanguage'
 	| 'Expires'
 	| 'ACL'
 	| 'ServerSideEncryption'
@@ -34,6 +36,8 @@ export type CopyObjectInput = Pick<
 	| 'SSECustomerKey'
 	| 'SSECustomerKeyMD5'
 	| 'SSEKMSKeyId'
+	| 'Tagging'
+	| 'Metadata'
 >;
 
 export type CopyObjectOutput = MetadataBearer;

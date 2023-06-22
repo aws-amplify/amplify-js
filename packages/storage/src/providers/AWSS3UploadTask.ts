@@ -19,7 +19,7 @@ import {
 	DEFAULT_PART_SIZE,
 	DEFAULT_QUEUE_SIZE,
 	MAX_OBJECT_SIZE,
-	S3Config,
+	S3ResolvedConfig,
 } from '../common/S3ClientUtils';
 import { byteLength, isFile } from '../common/StorageUtils';
 import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
@@ -42,7 +42,7 @@ export enum TaskEvents {
 }
 
 export interface AWSS3UploadTaskParams {
-	s3Config: S3Config;
+	s3Config: S3ResolvedConfig;
 	file: Blob;
 	storage: Storage;
 	level: StorageAccessLevel;
@@ -89,7 +89,7 @@ export class AWSS3UploadTask implements UploadTask {
 	private readonly emitter: events.EventEmitter;
 	private readonly file: Blob;
 	private readonly queueSize = DEFAULT_QUEUE_SIZE;
-	private readonly s3Config: S3Config;
+	private readonly s3Config: S3ResolvedConfig;
 	private readonly storage: Storage;
 	private readonly storageSync: Promise<any>;
 	private readonly fileId: string;

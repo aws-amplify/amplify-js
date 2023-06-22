@@ -55,7 +55,11 @@ import {
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
-import { getPrefix, S3Config, loadS3Config } from '../common/S3ClientUtils';
+import {
+	getPrefix,
+	S3ResolvedConfig,
+	loadS3Config,
+} from '../common/S3ClientUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
@@ -72,7 +76,7 @@ interface AddTaskInput {
 	bucket: string;
 	emitter: events.EventEmitter;
 	key: string;
-	s3Config: S3Config;
+	s3Config: S3ResolvedConfig;
 	params?: PutObjectInput;
 }
 
@@ -307,9 +311,13 @@ export class AWSS3Provider implements StorageProvider {
 		if (acl) params.ACL = acl;
 
 		try {
-			// TODO: validate if opt has region
-			await copyObject(loadS3Config(opt as any), params);
-			// await s3.send(new CopyObjectCommand(params));
+			await copyObject(
+				loadS3Config({
+					...opt,
+					storageAction: StorageAction.Copy,
+				}),
+				params
+			);
 			dispatchStorageEvent(
 				track,
 				'copy',
@@ -378,10 +386,11 @@ export class AWSS3Provider implements StorageProvider {
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		const emitter = new events.EventEmitter();
-		const s3Config = {
-			...loadS3Config(opt as any), // TODO: validate if opt has region
+		const s3Config = loadS3Config({
+			...opt,
 			emitter,
-		};
+			storageAction: StorageAction.Get,
+		});
 		logger.debug('get ' + key + ' from ' + final_key);
 
 		const params: GetObjectInput = {
@@ -522,7 +531,10 @@ export class AWSS3Provider implements StorageProvider {
 		const final_key = prefix + key;
 		logger.debug(`getProperties ${key} from ${final_key}`);
 
-		const s3Config = loadS3Config(opt as any); // TODO: validate opt type to include region.
+		const s3Config = loadS3Config({
+			...opt,
+			storageAction: StorageAction.GetProperties,
+		});
 		const params: HeadObjectInput = {
 			Bucket: bucket,
 			Key: final_key,
@@ -654,7 +666,10 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		if (resumable === true) {
-			const s3Config = loadS3Config(opt as any); // TODO: validate opt type to include region.
+			const s3Config = loadS3Config({
+				...opt,
+				storageAction: StorageAction.Put,
+			});
 			const addTaskInput: AddTaskInput = {
 				bucket,
 				key,
@@ -735,7 +750,10 @@ export class AWSS3Provider implements StorageProvider {
 			Key: final_key,
 		};
 
-		const s3Config = loadS3Config(opt as any); // TODO validate opt type contains region
+		const s3Config = loadS3Config({
+			...opt,
+			storageAction: StorageAction.Remove,
+		});
 		try {
 			const response = await deleteObject(s3Config, params);
 			dispatchStorageEvent(
@@ -766,7 +784,13 @@ export class AWSS3Provider implements StorageProvider {
 			results: [],
 			hasNextToken: false,
 		};
-		const response = await listObjectsV2(loadS3Config(opt as any), params);
+		const response = await listObjectsV2(
+			loadS3Config({
+				...opt,
+				storageAction: StorageAction.List,
+			}),
+			params
+		);
 		if (response && response.Contents) {
 			list.results = response.Contents.map(item => {
 				return {

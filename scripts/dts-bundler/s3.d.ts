@@ -20,6 +20,7 @@ import {
 	HeadObjectCommandInput,
 	HeadObjectCommandOutput,
 	DeleteObjectCommandInput,
+	DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 
 export {
@@ -44,4 +45,5 @@ export {
 	HeadObjectCommandInput,
 	HeadObjectCommandOutput,
 	DeleteObjectCommandInput,
+	DeleteObjectCommandOutput,
 };

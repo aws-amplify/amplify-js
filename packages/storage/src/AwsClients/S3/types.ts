@@ -1046,6 +1046,34 @@ export interface CreateMultipartUploadRequest {
 export interface DeleteObjectCommandInput extends DeleteObjectRequest {}
 /**
  * @public
+ *
+ * The output of {@link DeleteObjectCommand}.
+ */
+export interface DeleteObjectCommandOutput
+	extends DeleteObjectOutput,
+		__MetadataBearer {}
+/**
+ * @public
+ */
+export interface DeleteObjectOutput {
+	/**
+	 * <p>Specifies whether the versioned object that was permanently deleted was (true) or was
+	 *          not (false) a delete marker.</p>
+	 */
+	DeleteMarker?: boolean;
+	/**
+	 * <p>Returns the version ID of the delete marker created as a result of the DELETE
+	 *          operation.</p>
+	 */
+	VersionId?: string;
+	/**
+	 * <p>If present, indicates that the requester was successfully charged for the
+	 *          request.</p>
+	 */
+	RequestCharged?: RequestCharged | string;
+}
+/**
+ * @public
  */
 export interface DeleteObjectRequest {
 	/**

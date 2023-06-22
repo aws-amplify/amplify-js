@@ -39,6 +39,7 @@ interface ObjectConfigs extends ObjectSsecOptions {
 	CacheControl?: string;
 	ContentDisposition?: string;
 	ContentEncoding?: string;
+	ContentLanguage?: string;
 	ContentType?: string;
 	Expires?: Date;
 	Tagging?: string;
@@ -59,6 +60,7 @@ export const serializeObjectConfigsToHeaders = (input: ObjectConfigs) => ({
 		'x-amz-acl': input.ACL,
 		'cache-control': input.CacheControl,
 		'content-disposition': input.ContentDisposition,
+		'content-language': input.ContentLanguage,
 		'content-encoding': input.ContentEncoding,
 		'content-type': input.ContentType,
 		expires: input.Expires?.toUTCString(),
