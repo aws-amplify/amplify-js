@@ -73,7 +73,7 @@ export type AuthNextSignInStep<UserAttributeKey extends AuthUserAttributeKey> =
 	  };
 
 export type AuthStandardAttributeKey =
-        | 'address'
+	| 'address'
 	| 'birthdate'
 	| 'email'
 	| 'email_verified'
@@ -93,26 +93,6 @@ export type AuthStandardAttributeKey =
 	| 'updated_at'
 	| 'website'
 	| 'zoneinfo';
-	| 'address'
-	| 'birthDate'
-	| 'email'
-	| 'emailVerified'
-	| 'familyName'
-	| 'gender'
-	| 'givenName'
-	| 'locale'
-	| 'middleName'
-	| 'name'
-	| 'nickname'
-	| 'phoneNumber'
-	| 'phoneNumberVerified'
-	| 'picture'
-	| 'preferredUsername'
-	| 'profile'
-	| 'sub'
-	| 'updatedAt'
-	| 'website'
-	| 'zoneInfo';
 
 /**
  * Key/value pairs describing a user attribute.
