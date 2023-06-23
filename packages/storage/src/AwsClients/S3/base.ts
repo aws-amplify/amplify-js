@@ -46,7 +46,7 @@ export const defaultConfig = {
 	endpointResolver,
 	retryDecider: getRetryDecider(parseXmlError),
 	computeDelay: jitteredBackoff,
-	userAgentValue: getAmplifyUserAgent(), // TODO: use getAmplifyUserAgentString() when available.
+	userAgentValue: getAmplifyUserAgent(),
 	useAccelerateEndpoint: false,
 	uriEscapePath: false, // Required by S3. See https://github.com/aws/aws-sdk-js-v3/blob/9ba012dfa3a3429aa2db0f90b3b0b3a7a31f9bc3/packages/signature-v4/src/SignatureV4.ts#L76-L83
 };

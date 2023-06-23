@@ -15,6 +15,7 @@ import {
 } from '../../src/AwsClients/S3';
 import { StorageAccessLevel, FileMetadata } from '../../src/types';
 import { UPLOADS_STORAGE_KEY } from '../../src/common/StorageConstants';
+import { StorageAction } from '@aws-amplify/core';
 
 jest.mock('../../src/AwsClients/S3');
 
@@ -27,13 +28,6 @@ const credentials = {
 	identityId: 'identityId',
 	authenticated: true,
 };
-
-// const testOpts: any = {
-// 	bucket: 'testBucket',
-// 	region: 'testRegion',
-// 	credentials,
-// 	level: 'level',
-// };
 
 let mockLocalStorageItems = {};
 
@@ -55,6 +49,7 @@ const mockCredentialsProvider = jest.fn().mockResolvedValue(credentials);
 const defaultS3Config = {
 	region: 'us-foo-1',
 	credentials: mockCredentialsProvider,
+	storageAction: StorageAction.Put,
 };
 
 describe('resumable upload task test', () => {

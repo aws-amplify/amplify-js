@@ -1,14 +1,12 @@
 import {
 	getPrefix,
-	// createPrefixMiddleware,
-	// autoAdjustClockskewMiddleware,
-	// createS3Client,
+	loadS3Config,
 	credentialsProvider,
 } from '../../src/common/S3ClientUtils';
 import {
 	ICredentials,
 	Credentials,
-	getAmplifyUserAgentObject,
+	getAmplifyUserAgent,
 	StorageAction,
 	Category,
 } from '@aws-amplify/core';
@@ -23,7 +21,7 @@ const credentials: ICredentials = {
 };
 
 describe('S3ClientUtils tests', () => {
-	test.skip('basic getPrefix tests', () => {
+	test('basic getPrefix tests', () => {
 		const publicPrefix = getPrefix({
 			level: 'public',
 			credentials,
@@ -41,7 +39,8 @@ describe('S3ClientUtils tests', () => {
 		});
 		expect(privatePrefix).toEqual('private/identityId/');
 	});
-	test.skip('getPrefix with customPrefix', () => {
+
+	test('getPrefix with customPrefix', () => {
 		const customPrefix = {
 			public: 'myPublic/',
 			protected: 'myProtected/',
@@ -67,89 +66,61 @@ describe('S3ClientUtils tests', () => {
 		expect(privatePrefix).toEqual('myPrivate/identityId/');
 	});
 
-	// test.skip('createPrefixMiddleware test', async () => {
-	// 	jest.spyOn(Credentials, 'get').mockImplementation(() => {
-	// 		return Promise.resolve(credentials);
-	// 	});
-	// 	const publicPrefixMiddleware = createPrefixMiddleware(
-	// 		{
-	// 			credentials,
-	// 			level: 'public',
-	// 		},
-	// 		'key'
-	// 	);
-	// 	const protectedPrefixMiddleware = createPrefixMiddleware(
-	// 		{
-	// 			credentials,
-	// 			level: 'protected',
-	// 		},
-	// 		'key'
-	// 	);
-	// 	const privatePrefixMiddleware = createPrefixMiddleware(
-	// 		{
-	// 			credentials,
-	// 			level: 'private',
-	// 		},
-	// 		'key'
-	// 	);
-	// 	const { output: publicPrefix } = await publicPrefixMiddleware(
-	// 		arg =>
-	// 			Promise.resolve({
-	// 				output: arg.input.Key,
-	// 				response: null,
-	// 			}),
-	// 		null
-	// 	)({ input: { Key: 'key' } });
-	// 	const { output: protectedPrefix } = await protectedPrefixMiddleware(
-	// 		arg =>
-	// 			Promise.resolve({
-	// 				output: arg.input.Key,
-	// 				response: null,
-	// 			}),
-	// 		null
-	// 	)({ input: { Key: 'key' } });
-	// 	const { output: privatePrefix } = await privatePrefixMiddleware(
-	// 		arg =>
-	// 			Promise.resolve({
-	// 				output: arg.input.Key,
-	// 				response: null,
-	// 			}),
-	// 		null
-	// 	)({ input: { Key: 'key' } });
-	// 	expect(publicPrefix).toEqual('public/key');
-	// 	expect(protectedPrefix).toEqual('protected/identityId/key');
-	// 	expect(privatePrefix).toEqual('private/identityId/key');
-	// });
+	test('createS3Client test', async () => {
+		expect.assertions(4);
+		const mockCredentials: ICredentials = {
+			accessKeyId: 'accessKeyId',
+			sessionToken: 'sessionToken',
+			secretAccessKey: 'secretAccessKey',
+			identityId: 'identityId',
+			authenticated: true,
+		};
+		const s3Config = loadS3Config({
+			region: 'us-west-2',
+			useAccelerateEndpoint: true,
+			storageAction: StorageAction.Get,
+			credentials: mockCredentials,
+		});
+		expect(s3Config.userAgentValue).toEqual(
+			getAmplifyUserAgent({
+				category: Category.Storage,
+				action: StorageAction.Get,
+			})
+		);
+		expect(s3Config.region).toEqual('us-west-2');
+		expect(s3Config.useAccelerateEndpoint).toBe(true);
+		expect(await s3Config.credentials()).toBe(mockCredentials);
+	});
 
-	// test.skip('createS3Client test', async () => {
-	// 	const s3client = createS3Client({
-	// 		region: 'us-west-2',
-	// 		useAccelerateEndpoint: true,
-	// 	});
-	// 	// ensure customUserAgent is set properly
-	// 	expect(s3client.config.customUserAgent).toEqual([[getAmplifyUserAgent()]]);
-	// 	expect(await s3client.config.region()).toEqual('us-west-2');
-	// 	expect(s3client.config.useAccelerateEndpoint).toBe(true);
-	// });
+	test('createS3Client injects credentials provider', async () => {
+		expect.assertions(4);
+		const mockCredentials: ICredentials = {
+			accessKeyId: 'accessKeyId',
+			sessionToken: 'sessionToken',
+			secretAccessKey: 'secretAccessKey',
+			identityId: 'identityId',
+			authenticated: true,
+		};
+		jest
+			.spyOn(Credentials, 'get')
+			.mockImplementationOnce(() => Promise.resolve(mockCredentials));
+		const s3Config = loadS3Config({
+			region: 'us-west-2',
+			useAccelerateEndpoint: true,
+			storageAction: StorageAction.Get,
+		});
+		expect(s3Config.userAgentValue).toEqual(
+			getAmplifyUserAgent({
+				category: Category.Storage,
+				action: StorageAction.Get,
+			})
+		);
+		expect(s3Config.region).toEqual('us-west-2');
+		expect(s3Config.useAccelerateEndpoint).toBe(true);
+		expect(await s3Config.credentials()).toEqual(mockCredentials);
+	});
 
-	// test.skip('createS3Client test - dangerouslyConnectToHttpEndpointForTesting', async () => {
-	// 	const s3client = createS3Client({
-	// 		region: 'us-west-2',
-	// 		dangerouslyConnectToHttpEndpointForTesting: true,
-	// 	});
-	// 	expect(await s3client.config.endpoint()).toStrictEqual({
-	// 		hostname: 'localhost',
-	// 		path: '/',
-	// 		port: 20005,
-	// 		protocol: 'http:',
-	// 		query: undefined,
-	// 	});
-	// 	expect(s3client.config.tls).toBe(false);
-	// 	expect(s3client.config.bucketEndpoint).toBe(false);
-	// 	expect(s3client.config.forcePathStyle).toBe(true);
-	// });
-
-	test.skip('credentialsProvider test', async () => {
+	test('credentialsProvider test', async () => {
 		const mockCredentials: ICredentials = {
 			accessKeyId: 'accessKeyId',
 			sessionToken: 'sessionToken',
@@ -164,32 +135,11 @@ describe('S3ClientUtils tests', () => {
 		expect(credentials).toStrictEqual(mockCredentials);
 	});
 
-	test.skip('credentialsProvider - Credentials.get error', async () => {
+	test('credentialsProvider - Credentials.get error', async () => {
 		jest
 			.spyOn(Credentials, 'get')
 			.mockImplementationOnce(() => Promise.reject('err'));
 		const credentials = await credentialsProvider();
 		expect(credentials).toStrictEqual({ accessKeyId: '', secretAccessKey: '' });
 	});
-
-	// test.skip('autoAdjustClockskewMiddleware tests', async () => {
-	// 	const dateNow = Date.now();
-	// 	// keep the Date.now() call inside the middleware consistent
-	// 	jest.spyOn(Date, 'now').mockImplementation(() => dateNow);
-	// 	const s3ClientConfig = { systemClockOffset: 0 } as S3ClientConfig;
-	// 	const middleware = autoAdjustClockskewMiddleware(s3ClientConfig);
-	// 	const oneHourInMs = 1000 * 60 * 60;
-	// 	try {
-	// 		await middleware(
-	// 			arg =>
-	// 				Promise.reject({
-	// 					ServerTime: new Date(dateNow + oneHourInMs),
-	// 					Code: 'RequestTimeTooSkewed',
-	// 				}),
-	// 			null
-	// 		)({ request: null, input: {} });
-	// 	} catch (err) {
-	// 		expect(s3ClientConfig.systemClockOffset).toBe(oneHourInMs);
-	// 	}
-	// });
 });

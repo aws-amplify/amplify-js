@@ -6,13 +6,14 @@ import {
 	StorageAction,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
+import type { Credentials as AwsCredentials } from '@aws-sdk/types';
 import type { EventEmitter } from 'events';
 
 import { StorageAccessLevel, CustomPrefix } from '../types';
 
 const logger = new Logger('S3ClientUtils');
 // placeholder credentials in order to satisfy type requirement, always results in 403 when used
-const INVALID_CRED = { accessKeyId: '', secretAccessKey: '' };
+const INVALID_CRED = { accessKeyId: '', secretAccessKey: '' } as ICredentials;
 
 export const getPrefix = (config: {
 	credentials: ICredentials;
@@ -65,6 +66,7 @@ export const credentialsProvider = async () => {
 };
 
 interface S3InputConfig {
+	credentials?: AwsCredentials;
 	region?: string;
 	useAccelerateEndpoint?: boolean;
 	abortSignal?: AbortSignal;
@@ -72,14 +74,11 @@ interface S3InputConfig {
 	storageAction: StorageAction;
 }
 
-export interface S3ResolvedConfig extends Omit<S3InputConfig, 'region'> {
+export interface S3ResolvedConfig
+	extends Omit<S3InputConfig, 'region' | 'credentials'> {
 	region: string;
 	userAgentValue?: string;
-	credentials: () => Promise<{
-		accessKeyId: string;
-		secretAccessKey: string;
-		sessionToken?: string;
-	}>;
+	credentials: () => Promise<AwsCredentials>;
 }
 
 /**
@@ -96,7 +95,9 @@ export const loadS3Config = (config: S3InputConfig): S3ResolvedConfig => {
 	return {
 		...config,
 		region: config.region,
-		credentials: credentialsProvider,
+		credentials: config.credentials
+			? async () => config.credentials
+			: credentialsProvider,
 		userAgentValue: getAmplifyUserAgent({
 			category: Category.Storage,
 			action: config.storageAction,

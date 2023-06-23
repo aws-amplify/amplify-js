@@ -26,6 +26,7 @@ import {
 	S3ResolvedConfig,
 	loadS3Config,
 	getPrefix,
+	credentialsProvider,
 } from '../common/S3ClientUtils';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
@@ -47,7 +48,6 @@ export class AWSS3ProviderManagedUpload {
 	private s3Config: S3ResolvedConfig;
 	private uploadId: string | undefined;
 	private partSize = DEFAULT_PART_SIZE;
-	private prefixPromise: Promise<string> | null = null;
 
 	// Progress reporting
 	private bytesUploaded = 0;
@@ -63,9 +63,6 @@ export class AWSS3ProviderManagedUpload {
 			emitter,
 			storageAction: StorageAction.Put,
 		});
-		this.prefixPromise = this.s3Config
-			.credentials()
-			.then(credentials => getPrefix({ ...opts, credentials }));
 	}
 
 	public async upload() {
@@ -77,7 +74,7 @@ export class AWSS3ProviderManagedUpload {
 				this.params.Body = this.body;
 				return putObject(this.s3Config, {
 					...this.params,
-					Key: (await this.prefixPromise) + this.params.Key,
+					Key: (await this.getKeyPrefix()) + this.params.Key,
 				});
 			} else {
 				// Step 1: Determine appropriate part size.
@@ -145,7 +142,7 @@ export class AWSS3ProviderManagedUpload {
 		try {
 			const response = await createMultipartUpload(this.s3Config, {
 				...this.params,
-				Key: (await this.prefixPromise) + this.params.Key,
+				Key: (await this.getKeyPrefix()) + this.params.Key,
 			});
 			logger.debug(response.UploadId);
 			return response.UploadId;
@@ -177,7 +174,7 @@ export class AWSS3ProviderManagedUpload {
 							PartNumber: part.partNumber,
 							Body: part.bodyPart,
 							UploadId: uploadId,
-							Key: (await this.prefixPromise) + Key,
+							Key: (await this.getKeyPrefix()) + Key,
 							Bucket,
 							...(SSECustomerAlgorithm && { SSECustomerAlgorithm }),
 							...(SSECustomerKey && { SSECustomerKey }),
@@ -205,7 +202,7 @@ export class AWSS3ProviderManagedUpload {
 	private async finishMultiPartUpload(uploadId: string) {
 		const input: CompleteMultipartUploadInput = {
 			Bucket: this.params.Bucket,
-			Key: (await this.prefixPromise) + this.params.Key,
+			Key: (await this.getKeyPrefix()) + this.params.Key,
 			UploadId: uploadId,
 			MultipartUpload: { Parts: this.completedParts },
 		};
@@ -232,7 +229,7 @@ export class AWSS3ProviderManagedUpload {
 
 		const input = {
 			Bucket: this.params.Bucket,
-			Key: (await this.prefixPromise) + this.params.Key,
+			Key: (await this.getKeyPrefix()) + this.params.Key,
 			UploadId: uploadId,
 		};
 
@@ -318,5 +315,13 @@ export class AWSS3ProviderManagedUpload {
 			}
 		}
 		return false;
+	}
+
+	private async getKeyPrefix() {
+		const prefix = await getPrefix({
+			...this.opts,
+			credentials: await credentialsProvider(),
+		});
+		return prefix;
 	}
 }

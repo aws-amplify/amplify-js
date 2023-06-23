@@ -27,7 +27,7 @@ import {
 	StorageGetPropertiesOutput,
 } from './types';
 import axios, { CancelTokenSource } from 'axios';
-import { PutObjectCommandInput } from '@aws-sdk/client-s3';
+import { PutObjectInput } from './AwsClients/S3';
 import { AWSS3UploadTask } from './providers/AWSS3UploadTask';
 
 const logger = new Logger('StorageClass');
@@ -348,7 +348,7 @@ export class Storage {
 	): StoragePutOutput<T>;
 	public put<T extends StorageProvider = AWSS3Provider>(
 		key: string,
-		object: Omit<PutObjectCommandInput['Body'], 'ReadableStream' | 'Readable'>,
+		object: Omit<PutObjectInput['Body'], 'ReadableStream' | 'Readable'>,
 		config?: StoragePutConfig<T>
 	): StoragePutOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;

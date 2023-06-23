@@ -132,7 +132,7 @@ export const getObject = composeServiceApi(
  *
  * @internal
  */
-export const getGetObjectRequest = (
+export const serializeGetObjectRequest = (
 	config: S3EndpointResolverOptions,
 	input: GetObjectInput
 ): HttpRequest => {

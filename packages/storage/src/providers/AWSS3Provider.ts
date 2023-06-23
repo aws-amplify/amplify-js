@@ -16,7 +16,7 @@ import {
 	getObject,
 	GetObjectInput,
 	GetObjectOutput,
-	getGetObjectRequest,
+	serializeGetObjectRequest,
 	PutObjectInput,
 	headObject,
 	DeleteObjectInput,
@@ -475,7 +475,7 @@ export class AWSS3Provider implements StorageProvider {
 			}
 		}
 		try {
-			const request = getGetObjectRequest(s3Config, params);
+			const request = serializeGetObjectRequest(s3Config, params);
 			const url = presignUrl(request, {
 				expiration: expires || DEFAULT_PRESIGN_EXPIRATION,
 				credentials: await s3Config.credentials(),
@@ -789,7 +789,7 @@ export class AWSS3Provider implements StorageProvider {
 				...opt,
 				storageAction: StorageAction.List,
 			}),
-			params
+			{ ...params }
 		);
 		if (response && response.Contents) {
 			list.results = response.Contents.map(item => {
