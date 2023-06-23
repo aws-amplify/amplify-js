@@ -20,6 +20,7 @@ import {
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
+	serializeObjectKey,
 	serializeObjectSsecOptionsToHeaders,
 } from './utils';
 
@@ -49,8 +50,7 @@ const completeMultipartUploadSerializer = (
 	const headers = serializeObjectSsecOptionsToHeaders(input);
 	headers['content-type'] = 'application/xml';
 	const url = new URL(endpoint.url.toString());
-	url.hostname = `${input.Bucket}.${url.hostname}`;
-	url.pathname = `/${input.Key}`;
+	url.pathname = serializeObjectKey(url, input.Key);
 	url.search = new URLSearchParams({ uploadId: input.UploadId }).toString();
 	return {
 		method: 'POST',

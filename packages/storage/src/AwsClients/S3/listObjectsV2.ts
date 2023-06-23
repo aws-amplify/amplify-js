@@ -23,6 +23,7 @@ import {
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
+	serializeObjectKey,
 } from './utils';
 
 export type ListObjectsV2Input = ListObjectsV2CommandInput;
@@ -48,7 +49,6 @@ const listObjectsV2Serializer = (
 		'start-after': input.StartAfter,
 	});
 	const url = new URL(endpoint.url.toString());
-	url.hostname = `${input.Bucket}.${url.hostname}`;
 	url.search = new URLSearchParams(query).toString();
 	return {
 		method: 'GET',

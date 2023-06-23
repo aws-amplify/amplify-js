@@ -10,6 +10,7 @@ import type { Credentials as AwsCredentials } from '@aws-sdk/types';
 import type { EventEmitter } from 'events';
 
 import { StorageAccessLevel, CustomPrefix } from '../types';
+import { localTestingStorageEndpoint } from './StorageConstants';
 
 const logger = new Logger('S3ClientUtils');
 // placeholder credentials in order to satisfy type requirement, always results in 403 when used
@@ -72,6 +73,7 @@ interface S3InputConfig {
 	abortSignal?: AbortSignal;
 	emitter?: EventEmitter;
 	storageAction: StorageAction;
+	dangerouslyConnectToHttpEndpointForTesting?: boolean;
 }
 
 export interface S3ResolvedConfig
@@ -79,6 +81,8 @@ export interface S3ResolvedConfig
 	region: string;
 	userAgentValue?: string;
 	credentials: () => Promise<AwsCredentials>;
+	customEndpoint?: string;
+	forcePathStyle?: boolean;
 }
 
 /**
@@ -102,6 +106,12 @@ export const loadS3Config = (config: S3InputConfig): S3ResolvedConfig => {
 			category: Category.Storage,
 			action: config.storageAction,
 		}),
+		...(config.dangerouslyConnectToHttpEndpointForTesting
+			? {
+					customEndpoint: localTestingStorageEndpoint,
+					forcePathStyle: true,
+			  }
+			: {}),
 	};
 };
 

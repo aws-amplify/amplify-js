@@ -181,4 +181,36 @@ const getObjectAccelerateEndpoint: ApiFunctionalTestCase<typeof getObject> = [
 	}) as any,
 ];
 
-export default [getObjectHappyCase, getObjectAccelerateEndpoint];
+const getObjectCustomEndpoint: ApiFunctionalTestCase<typeof getObject> = [
+	'happy case',
+	'getObject with custom endpoint',
+	getObject,
+	{
+		...defaultConfig,
+		customEndpoint: 'https://custom.endpoint.com',
+		forcePathStyle: true,
+	} as Parameters<typeof getObject>[0],
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key',
+		}),
+	}),
+	{
+		status: 200,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: 'mockBody',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+
+export default [
+	getObjectHappyCase,
+	getObjectAccelerateEndpoint,
+	getObjectCustomEndpoint,
+];

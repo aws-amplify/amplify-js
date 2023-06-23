@@ -16,6 +16,7 @@ import {
 	map,
 	parseXmlError,
 	s3TransferHandler,
+	serializeObjectKey,
 } from './utils';
 
 export type DeleteObjectInput = Pick<
@@ -30,8 +31,7 @@ const deleteObjectSerializer = (
 	endpoint: Endpoint
 ): HttpRequest => {
 	const url = new URL(endpoint.url.toString());
-	url.hostname = `${input.Bucket}.${url.hostname}`;
-	url.pathname = `/${input.Key}`;
+	url.pathname = serializeObjectKey(url, input.Key);
 	return {
 		method: 'DELETE',
 		headers: {},

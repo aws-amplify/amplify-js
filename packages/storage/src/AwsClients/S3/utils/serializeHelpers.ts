@@ -76,3 +76,7 @@ const serializeMetadata = (
 		acc[`x-amz-meta-${suffix.toLowerCase()}`] = metadata[suffix];
 		return acc;
 	}, {});
+
+export const serializeObjectKey = (url: URL, key: string) => {
+	return url.pathname.replace(/\/$/, '') + `/${key}`;
+};

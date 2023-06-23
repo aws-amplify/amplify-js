@@ -10,7 +10,6 @@ import {
 	StorageAction,
 	Category,
 } from '@aws-amplify/core';
-import { S3ClientConfig } from '@aws-sdk/client-s3';
 
 const credentials: ICredentials = {
 	accessKeyId: 'accessKeyId',
@@ -118,6 +117,18 @@ describe('S3ClientUtils tests', () => {
 		expect(s3Config.region).toEqual('us-west-2');
 		expect(s3Config.useAccelerateEndpoint).toBe(true);
 		expect(await s3Config.credentials()).toEqual(mockCredentials);
+	});
+
+	test('createS3Client test - dangerouslyConnectToHttpEndpointForTesting', async () => {
+		const s3Config = loadS3Config({
+			region: 'us-west-2',
+			dangerouslyConnectToHttpEndpointForTesting: true,
+			storageAction: StorageAction.Get,
+		});
+		expect(s3Config).toMatchObject({
+			customEndpoint: 'http://localhost:20005',
+			forcePathStyle: true,
+		});
 	});
 
 	test('credentialsProvider test', async () => {

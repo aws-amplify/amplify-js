@@ -13,6 +13,7 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
+	serializeObjectKey,
 } from './utils';
 import type { S3ProviderCopyConfig } from '../../types/AWSS3Provider';
 
@@ -52,8 +53,7 @@ const copyObjectSerializer = (
 		'x-amz-metadata-directive': input.MetadataDirective,
 	};
 	const url = new URL(endpoint.url.toString());
-	url.hostname = `${input.Bucket}.${url.hostname}`;
-	url.pathname = `/${input.Key}`;
+	url.pathname = serializeObjectKey(url, input.Key);
 	return {
 		method: 'PUT',
 		headers,

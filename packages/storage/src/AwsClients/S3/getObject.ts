@@ -20,6 +20,7 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectSsecOptionsToHeaders,
+	serializeObjectKey,
 } from './utils';
 
 export type GetObjectInput = Pick<
@@ -51,8 +52,7 @@ const getObjectSerializer = (
 		'response-content-type': 'ResponseContentType',
 	});
 	const url = new URL(endpoint.url.toString());
-	url.hostname = `${input.Bucket}.${url.hostname}`;
-	url.pathname = `/${input.Key}`;
+	url.pathname = serializeObjectKey(url, input.Key);
 	url.search = new URLSearchParams(query).toString();
 	return {
 		method: 'GET',

@@ -20,5 +20,6 @@ export {
 export {
 	assignStringVariables,
 	serializeObjectConfigsToHeaders,
+	serializeObjectKey,
 	serializeObjectSsecOptionsToHeaders,
 } from './serializeHelpers';

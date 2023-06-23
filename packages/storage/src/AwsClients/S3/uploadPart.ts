@@ -16,6 +16,7 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectSsecOptionsToHeaders,
+	serializeObjectKey,
 } from './utils';
 
 // Content-length is ignored here because it's forbidden header
@@ -44,8 +45,7 @@ const uploadPartSerializer = (
 	const headers = serializeObjectSsecOptionsToHeaders(input);
 	headers['content-type'] = 'application/octet-stream';
 	const url = new URL(endpoint.url.toString());
-	url.hostname = `${input.Bucket}.${url.hostname}`;
-	url.pathname = `/${input.Key}`;
+	url.pathname = serializeObjectKey(url, input.Key);
 	url.search = new URLSearchParams({
 		partNumber: input.PartNumber + '',
 		uploadId: input.UploadId,

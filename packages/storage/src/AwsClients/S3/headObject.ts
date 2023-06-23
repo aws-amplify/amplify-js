@@ -18,6 +18,7 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectSsecOptionsToHeaders,
+	serializeObjectKey,
 } from './utils';
 
 export type HeadObjectInput = Pick<
@@ -46,8 +47,7 @@ const headObjectSerializer = (
 ): HttpRequest => {
 	const headers = serializeObjectSsecOptionsToHeaders(input);
 	const url = new URL(endpoint.url.toString());
-	url.hostname = `${input.Bucket}.${url.hostname}`;
-	url.pathname = `/${input.Key}`;
+	url.pathname = serializeObjectKey(url, input.Key);
 	return {
 		method: 'HEAD',
 		headers,

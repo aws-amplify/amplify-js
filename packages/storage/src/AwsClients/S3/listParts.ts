@@ -22,6 +22,7 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	deserializeNumber,
+	serializeObjectKey,
 } from './utils';
 
 export type ListPartsInput = Pick<
@@ -45,8 +46,7 @@ const listPartsSerializer = (
 ): HttpRequest => {
 	const headers = serializeObjectSsecOptionsToHeaders(input);
 	const url = new URL(endpoint.url.toString());
-	url.hostname = `${input.Bucket}.${url.hostname}`;
-	url.pathname = `/${input.Key}`;
+	url.pathname = serializeObjectKey(url, input.Key);
 	url.search = new URLSearchParams({
 		uploadId: input.UploadId,
 	}).toString();
