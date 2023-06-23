@@ -1,0 +1,34 @@
+name: PR Validation
+
+on:
+  pull_request:
+
+jobs:
+  prebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
+        with:
+          # Minimal depth 2 so we can checkout the commit before possible merge commit.
+          fetch-depth: 2
+      - name: Setup node and build the repository
+        uses: ./.github/actions/node-and-build
+  get-package-list:
+    uses: ./.github/workflows/callable-get-package-list.yml
+  codeql:
+    uses: ./.github/workflows/callable-codeql.yml
+  unit-tests:
+    needs:
+      - prebuild
+      - get-package-list
+    strategy:
+      matrix:
+        package: ${{ fromJSON(needs.get-package-list.outputs.packages) }}
+      fail-fast: true
+    uses: ./.github/workflows/callable-unit-tests.yml
+    with:
+      package: ${{ matrix.package }}
+  bundle-size-tests:
+    needs: prebuild
+    uses: ./.github/workflows/callable-bundle-size-tests.yml

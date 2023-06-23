@@ -1,0 +1,19 @@
+name: 'Unit Tests'
+
+on:
+  workflow_call:
+
+jobs:
+  bundle_size_tests:
+    name: Bundle Size Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
+        with:
+          # Minimal depth 2 so we can checkout the commit before possible merge commit.
+          fetch-depth: 2
+      - name: Setup node and build the repository
+        uses: ./.github/actions/node-and-build
+      - name: Run Bundle Size Tests
+        run: yarn test:size
