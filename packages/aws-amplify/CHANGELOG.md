@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.3.0...aws-amplify@5.3.1) (2023-06-21)
+
+**Note:** Version bump only for package aws-amplify
+
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.7...aws-amplify@5.3.0) (2023-06-20)
+
+### Features
+
+- user agent enhancements - cross-category api>api-graphql>pubsub ([#11368](https://github.com/aws-amplify/amplify-js/issues/11368)) ([a88dda2](https://github.com/aws-amplify/amplify-js/commit/a88dda202919aa1d4dc2af48f33c3533d8626261))
+
+## [5.2.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.6...aws-amplify@5.2.7) (2023-06-15)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.2.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.5...aws-amplify@5.2.6) (2023-06-14)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.2.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.4...aws-amplify@5.2.5) (2023-06-05)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.2.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.3...aws-amplify@5.2.4) (2023-05-27)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.2.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.2...aws-amplify@5.2.3) (2023-05-25)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.2.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.1...aws-amplify@5.2.2) (2023-05-18)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.2.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.0...aws-amplify@5.2.1) (2023-05-12)
+
+**Note:** Version bump only for package aws-amplify
+
+# [5.2.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.1.4...aws-amplify@5.2.0) (2023-05-04)
+
+### Features
+
+- **aws-amplify:** Bump the aws-amplify minor version ([#11327](https://github.com/aws-amplify/amplify-js/issues/11327)) ([d53501e](https://github.com/aws-amplify/amplify-js/commit/d53501ec542258611546d030e24e7d29854b103a))
+
+## [5.1.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.1.3...aws-amplify@5.1.4) (2023-04-27)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.1.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.1.2...aws-amplify@5.1.3) (2023-04-20)
+
+**Note:** Version bump only for package aws-amplify
+
 ## [5.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.1.1...aws-amplify@5.1.2) (2023-04-18)
 
 **Note:** Version bump only for package aws-amplify

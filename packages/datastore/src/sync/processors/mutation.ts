@@ -1,6 +1,10 @@
-import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { InternalAPI } from '@aws-amplify/api/internals';
 import {
+	Category,
 	ConsoleLogger as Logger,
+	CustomUserAgentDetails,
+	DataStoreAction,
 	jitteredBackoff,
 	NonRetryableError,
 	retry,
@@ -28,12 +32,7 @@ import {
 	ProcessName,
 	AmplifyContext,
 } from '../../types';
-import {
-	extractTargetNamesFromSrc,
-	USER,
-	USER_AGENT_SUFFIX_DATASTORE,
-	ID,
-} from '../../util';
+import { extractTargetNamesFromSrc, USER, ID } from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
 	buildGraphQLOperation,
@@ -86,7 +85,8 @@ class MutationProcessor {
 		private readonly conflictHandler: ConflictHandler,
 		private readonly amplifyContext: AmplifyContext
 	) {
-		this.amplifyContext.API = this.amplifyContext.API || API;
+		this.amplifyContext.InternalAPI =
+			this.amplifyContext.InternalAPI || InternalAPI;
 		this.generateQueries();
 	}
 
@@ -231,6 +231,22 @@ class MutationProcessor {
 											operationAuthModes[authModeAttempts - 1]
 										}`
 									);
+									try {
+										await this.errorHandler({
+											recoverySuggestion:
+												'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+											localModel: null!,
+											message: error.message,
+											model: modelConstructor.name,
+											operation: opName,
+											errorType: getMutationErrorType(error),
+											process: ProcessName.sync,
+											remoteModel: null!,
+											cause: error,
+										});
+									} catch (e) {
+										logger.error('Mutation error handler failed with:', e);
+									}
 									throw error;
 								}
 								logger.debug(
@@ -328,16 +344,24 @@ class MutationProcessor {
 					variables,
 					authMode,
 					authToken,
-					userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 				};
 				let attempt = 0;
 
 				const opType = this.opTypeFromTransformerOperation(operation);
 
+				const customUserAgentDetails: CustomUserAgentDetails = {
+					category: Category.DataStore,
+					action: DataStoreAction.GraphQl,
+				};
+
 				do {
 					try {
 						const result = <GraphQLResult<Record<string, PersistentModel>>>(
-							await this.amplifyContext.API.graphql(tryWith)
+							await this.amplifyContext.InternalAPI.graphql(
+								tryWith,
+								undefined,
+								customUserAgentDetails
+							)
 						);
 
 						// Use `as any` because TypeScript doesn't seem to like passing tuples
@@ -407,13 +431,16 @@ class MutationProcessor {
 
 									const serverData = <
 										GraphQLResult<Record<string, PersistentModel>>
-									>await this.amplifyContext.API.graphql({
-										query,
-										variables: { id: variables.input.id },
-										authMode,
-										authToken,
-										userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
-									});
+									>await this.amplifyContext.InternalAPI.graphql(
+										{
+											query,
+											variables: { id: variables.input.id },
+											authMode,
+											authToken,
+										},
+										undefined,
+										customUserAgentDetails
+									);
 
 									// onTerminate cancel graphql()
 

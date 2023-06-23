@@ -4,8 +4,8 @@
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	getAmplifyUserAgent,
 	browserOrNode,
+	AnalyticsAction,
 } from '@aws-amplify/core';
 import {
 	PersonalizeEventsClient,
@@ -23,6 +23,7 @@ import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
 import { AnalyticsProvider } from '../types';
+import { getAnalyticsUserAgent } from '../utils/UserAgent';
 
 const logger = new Logger('AmazonPersonalizeProvider');
 
@@ -372,7 +373,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		this._personalize = new PersonalizeEventsClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAnalyticsUserAgent(AnalyticsAction.Record),
 		});
 		return true;
 	}

@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/interactions",
-	"version": "5.0.28",
+	"version": "5.2.1",
 	"description": "Interactions category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -46,9 +46,9 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/core": "5.1.11",
-		"@aws-sdk/client-lex-runtime-service": "3.186.1",
-		"@aws-sdk/client-lex-runtime-v2": "3.186.1",
+		"@aws-amplify/core": "5.5.1",
+		"@aws-sdk/client-lex-runtime-service": "3.186.2",
+		"@aws-sdk/client-lex-runtime-v2": "3.186.2",
 		"base-64": "1.0.0",
 		"fflate": "0.7.3",
 		"pako": "2.0.4",
@@ -59,7 +59,7 @@
 			"name": "Interactions (top-level class with Lex v2)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Interactions, AWSLexV2Provider }",
-			"limit": "87 kB"
+			"limit": "76 kB"
 		}
 	],
 	"jest": {

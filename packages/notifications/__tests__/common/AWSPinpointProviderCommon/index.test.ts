@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials, StorageHelper } from '@aws-amplify/core';
-import { PinpointClient } from '@aws-sdk/client-pinpoint';
+import {
+	putEvents,
+	updateEndpoint,
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 
 import { AWSPinpointProviderCommon } from '../../../src/common';
 
@@ -17,13 +20,12 @@ import { mockLogger, mockStorage } from '../../../__mocks__/mocks';
 import { NotificationsSubCategory } from '../../../src/types';
 
 jest.mock('@aws-amplify/core');
-jest.mock('@aws-sdk/client-pinpoint');
+jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('../../../src/common/eventListeners');
 
 const SUB_CATEGORY = 'SubCategory';
 
 const getStorageSpy = jest.spyOn(StorageHelper.prototype, 'getStorage');
-const clientSendSpy = jest.spyOn(PinpointClient.prototype, 'send');
 
 class AWSPinpointProviderTest extends AWSPinpointProviderCommon {
 	getSubCategory() {
@@ -41,6 +43,8 @@ class AWSPinpointProviderTest extends AWSPinpointProviderCommon {
 
 const credentialsGetSpy = jest.spyOn(Credentials, 'get');
 const credentialsShearSpy = jest.spyOn(Credentials, 'shear');
+const mockPutEvents = putEvents as jest.Mock;
+const mockUpdateEndpoint = updateEndpoint as jest.Mock;
 
 describe('AWSPinpoint Common Provider', () => {
 	let provider: AWSPinpointProviderTest;
@@ -113,7 +117,7 @@ describe('AWSPinpoint Common Provider', () => {
 			await provider.testRecordAnalyticsEvent(analyticsEvent);
 
 			expect(mockLogger.debug).toBeCalledWith('recording analytics event');
-			expect(clientSendSpy).toBeCalled();
+			expect(mockPutEvents).toBeCalled();
 		});
 
 		test('throws an error if credentials are empty', async () => {
@@ -124,7 +128,7 @@ describe('AWSPinpoint Common Provider', () => {
 			).rejects.toThrow();
 
 			expect(mockLogger.debug).toBeCalledWith('no credentials found');
-			expect(clientSendSpy).not.toBeCalled();
+			expect(mockPutEvents).not.toBeCalled();
 		});
 
 		test('throws an error on credentials get failure', async () => {
@@ -140,11 +144,11 @@ describe('AWSPinpoint Common Provider', () => {
 				expect.stringContaining('Error getting credentials'),
 				expect.any(Error)
 			);
-			expect(clientSendSpy).not.toBeCalled();
+			expect(mockPutEvents).not.toBeCalled();
 		});
 
 		test('throws an error on client failure', async () => {
-			clientSendSpy.mockImplementationOnce(() => {
+			mockPutEvents.mockImplementationOnce(() => {
 				throw new Error();
 			});
 
@@ -168,11 +172,11 @@ describe('AWSPinpoint Common Provider', () => {
 			await provider.identifyUser(userId, userInfo);
 
 			expect(mockLogger.debug).toBeCalledWith('updating endpoint');
-			expect(clientSendSpy).toBeCalled();
+			expect(mockUpdateEndpoint).toBeCalled();
 		});
 
 		test('throws an error on client failure', async () => {
-			clientSendSpy.mockImplementationOnce(() => {
+			mockUpdateEndpoint.mockImplementationOnce(() => {
 				throw new Error();
 			});
 

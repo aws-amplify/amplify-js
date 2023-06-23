@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@5.1.1...@aws-amplify/cache@5.1.2) (2023-06-21)
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+## [5.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@5.1.0...@aws-amplify/cache@5.1.1) (2023-06-20)
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+# [5.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@5.0.33...@aws-amplify/cache@5.1.0) (2023-06-05)
+
+### Features
+
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+
+## [5.0.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@5.0.32...@aws-amplify/cache@5.0.33) (2023-05-27)
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+## [5.0.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@5.0.31...@aws-amplify/cache@5.0.32) (2023-05-12)
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+## [5.0.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@5.0.30...@aws-amplify/cache@5.0.31) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+## [5.0.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@5.0.29...@aws-amplify/cache@5.0.30) (2023-04-27)
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+## [5.0.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@5.0.28...@aws-amplify/cache@5.0.29) (2023-04-20)
+
+**Note:** Version bump only for package @aws-amplify/cache
+
 ## [5.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@5.0.27...@aws-amplify/cache@5.0.28) (2023-04-18)
 
 **Note:** Version bump only for package @aws-amplify/cache
