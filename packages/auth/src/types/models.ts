@@ -73,6 +73,26 @@ export type AuthNextSignInStep<UserAttributeKey extends AuthUserAttributeKey> =
 	  };
 
 export type AuthStandardAttributeKey =
+        | 'address'
+	| 'birthdate'
+	| 'email'
+	| 'email_verified'
+	| 'family_name'
+	| 'gender'
+	| 'given_name'
+	| 'locale'
+	| 'middle_name'
+	| 'name'
+	| 'nickname'
+	| 'phone_number'
+	| 'phone_number_verified'
+	| 'picture'
+	| 'preferred_username'
+	| 'profile'
+	| 'sub'
+	| 'updated_at'
+	| 'website'
+	| 'zoneinfo';
 	| 'address'
 	| 'birthDate'
 	| 'email'
