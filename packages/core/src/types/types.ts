@@ -85,3 +85,54 @@ export type ServiceError = {
 	name: string;
 	message: string;
 };
+
+export type ResourceConfig = {
+	API?: {};
+	Analytics?: {};
+	Auth?: {
+		userPoolId?: string;
+		identityPoolId?: string;
+		userPoolWebClientId?: string;
+	};
+	DataStore?: {};
+	Interactions?: {};
+	Notifications?: {};
+	Predictions?: {};
+	Storage?: {};
+};
+
+
+export type LibraryOptions = {
+	Auth?: {
+		tokenProvider?: TokenProvider;
+		refreshTokenClient?: TokenRefreshClient;
+		credentialsProvider?: CredentialsProvider;
+		storage?: AuthStorage;
+	} | null;
+};
+
+export interface TokenProvider {
+	getTokens: (options?: GetTokensOptions) => Promise<AuthTokens>;
+	setTokens: (tokens: AuthTokens) => Promise<void>;
+}
+
+export type TokenRefreshClient = (metadata?: Record<string, string>) => Promise<AuthTokens>;
+
+export type CredentialsProvider = (options?: GetTokensOptions) => Promise<ICredentials>;
+
+export type GetTokensOptions = {
+	forceRefresh?: boolean;
+};
+
+export type AuthTokens = {
+	idToken: string;
+	accessToken: string;
+	metadata?: Record<string, string>
+};
+
+export interface AuthStorage {
+	setItem(key: string, value: string): Promise<void>
+	getItem(key: string): Promise<string | null>;
+	removeItem(key: string): Promise<void>;
+	clear(): Promise<void>
+}
