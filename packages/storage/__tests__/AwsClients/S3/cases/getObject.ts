@@ -53,6 +53,9 @@ const getObjectResponseHeaders = {
 	'x-amz-meta-param2': 'value 2',
 } as const;
 
+export const expectedGetObjectUrl =
+	'https://bucket.s3.us-east-1.amazonaws.com/key?response-cache-control=ResponseCacheControl&response-content-disposition=ResponseContentDisposition&response-content-encoding=ResponseContentEncoding&response-content-language=ResponseContentLanguage&response-content-type=ResponseContentType';
+
 // API Reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html
 const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
 	'happy case',
@@ -73,7 +76,7 @@ const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://bucket.s3.us-east-1.amazonaws.com/key?response-cache-control=ResponseCacheControl&response-content-disposition=ResponseContentDisposition&response-content-encoding=ResponseContentEncoding&response-content-language=ResponseContentLanguage&response-content-type=ResponseContentType',
+			href: expectedGetObjectUrl,
 		}),
 		method: 'GET',
 		headers: expect.objectContaining({

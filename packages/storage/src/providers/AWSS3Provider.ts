@@ -415,7 +415,6 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		if (download === true) {
-			// const getObjectCommand = new GetObjectCommand(params);
 			try {
 				if (progressCallback) {
 					if (typeof progressCallback === 'function') {

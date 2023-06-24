@@ -136,6 +136,6 @@ export const serializeGetObjectRequest = (
 	config: S3EndpointResolverOptions,
 	input: GetObjectInput
 ): HttpRequest => {
-	const endpoint = defaultConfig.endpointResolver(config);
+	const endpoint = defaultConfig.endpointResolver(config, input);
 	return getObjectSerializer(input, endpoint);
 };
