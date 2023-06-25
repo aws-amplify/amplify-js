@@ -89,7 +89,7 @@ export const xhrTransferHandler: TransferHandler<
 		// Handle browser request cancellation (as opposed to a manual cancellation)
 		xhr.addEventListener('abort', () => {
 			// The abort event can be triggered after the error or load event. So we need to check if the xhr is null.
-			if (!xhr) return;
+			if (!xhr || abortSignal?.aborted) return;
 			const error = simulateAxiosError(
 				ABORT_ERROR_MESSAGE,
 				ABORT_ERROR_CODE,
@@ -160,7 +160,7 @@ export const xhrTransferHandler: TransferHandler<
 					return;
 				}
 				const canceledError = simulateAxiosCanceledError(
-					CANCELED_ERROR_MESSAGE,
+					CANCELED_ERROR_MESSAGE ?? abortSignal.reason,
 					CANCELED_ERROR_CODE,
 					xhr,
 					options

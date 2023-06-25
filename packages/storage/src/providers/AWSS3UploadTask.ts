@@ -528,7 +528,7 @@ export class AWSS3UploadTask implements UploadTask {
 			logger.warn('This task is already paused');
 		}
 		this.state = AWSS3UploadTaskState.PAUSED;
-		// Use axios cancel token to abort the part request immediately
+		// Abort the part request immediately
 		// Add the inProgress parts back to pending
 		const removedInProgressReq = this.inProgress.splice(
 			0,

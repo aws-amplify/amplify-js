@@ -5,7 +5,9 @@ import {
 	Storage as StorageCategory,
 	StorageProvider,
 } from '../src';
-import axios, { CancelToken } from 'axios';
+import { isCancelError } from '../src/AwsClients/S3/utils';
+
+jest.mock('../src/AwsClients/S3/utils');
 
 type CustomProviderConfig = {
 	provider: string;
@@ -1118,30 +1120,38 @@ describe('Storage', () => {
 	});
 
 	describe('cancel test', () => {
-		let isCancelSpy: jest.SpyInstance;
-		let cancelTokenSpy: jest.SpyInstance;
-		let cancelMock: jest.Mock;
-		let tokenMock: jest.Mock;
+		let mockIsCancelError = isCancelError as jest.Mock;
+		let originalAbortController = window.AbortController;
+		let signalAborted = false;
+		let abortError;
+		const mockAbort = jest.fn();
 
 		beforeEach(() => {
-			cancelMock = jest.fn();
-			tokenMock = jest.fn();
-			isCancelSpy = jest.spyOn(axios, 'isCancel').mockReturnValue(true);
-			cancelTokenSpy = jest
-				.spyOn(axios.CancelToken, 'source')
-				.mockImplementation(() => {
-					return {
-						token: tokenMock as unknown as CancelToken,
-						cancel: cancelMock,
-					};
-				});
+			window.AbortController = jest.fn().mockImplementation(function () {
+				return {
+					signal: {
+						aborted: signalAborted,
+					},
+					abort: mockAbort,
+				};
+			});
+			mockAbort.mockImplementation(message => {
+				signalAborted = true;
+				abortError = new Error(message);
+				throw abortError;
+			});
+			mockIsCancelError.mockImplementation(err => err && err === abortError);
 		});
 
 		afterEach(() => {
 			jest.clearAllMocks();
+			window.AbortController = originalAbortController;
+			signalAborted = false;
+			abortError = undefined;
 		});
 
 		test('happy case - cancel upload', async () => {
+			expect.assertions(3);
 			jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => {
 				return Promise.resolve({ key: 'new_object' });
 			});
@@ -1149,14 +1159,12 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			const request = storage.put('test.txt', 'test upload');
-			storage.cancel(request, 'request cancelled');
-			expect(cancelTokenSpy).toBeCalledTimes(1);
-			expect(cancelMock).toHaveBeenCalledTimes(1);
 			try {
-				await request;
+				const request = storage.put('test.txt', 'test upload');
+				storage.cancel(request, 'request cancelled');
 			} catch (err) {
-				expect(err).toEqual('request cancelled');
+				expect(mockAbort).toBeCalledTimes(1);
+				expect(err).toMatchObject(new Error('request cancelled'));
 				expect(storage.isCancelError(err)).toBeTruthy();
 			}
 		});
@@ -1169,16 +1177,15 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			const request = storage.get('test.txt', {
-				download: true,
-			});
-			storage.cancel(request, 'request cancelled');
-			expect(cancelTokenSpy).toHaveBeenCalledTimes(1);
-			expect(cancelMock).toHaveBeenCalledWith('request cancelled');
 			try {
+				const request = storage.get('test.txt', {
+					download: true,
+				});
+				storage.cancel(request, 'request cancelled');
 				await request;
 			} catch (err) {
-				expect(err).toEqual('request cancelled');
+				expect(mockAbort).toBeCalledTimes(1);
+				expect(err).toMatchObject(new Error('request cancelled'));
 				expect(storage.isCancelError(err)).toBeTruthy();
 			}
 		});
@@ -1188,14 +1195,13 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			const request = storage.copy({ key: 'src' }, { key: 'dest' }, {});
-			storage.cancel(request, 'request cancelled');
-			expect(cancelTokenSpy).toHaveBeenCalledTimes(1);
-			expect(cancelMock).toHaveBeenCalledWith('request cancelled');
 			try {
+				const request = storage.copy({ key: 'src' }, { key: 'dest' }, {});
+				storage.cancel(request, 'request cancelled');
 				await request;
 			} catch (err) {
-				expect(err).toEqual('request cancelled');
+				expect(mockAbort).toBeCalledTimes(1);
+				expect(err).toMatchObject(new Error('request cancelled'));
 				expect(storage.isCancelError(err)).toBeTruthy();
 			}
 		});
@@ -1203,7 +1209,7 @@ describe('Storage', () => {
 		test('isCancelError called', () => {
 			const storage = new StorageClass();
 			storage.isCancelError({});
-			expect(isCancelSpy).toHaveBeenCalledTimes(1);
+			expect(mockIsCancelError).toHaveBeenCalledTimes(1);
 		});
 	});
 });
