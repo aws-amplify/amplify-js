@@ -3,7 +3,7 @@ export {
 	getObject,
 	GetObjectInput,
 	GetObjectOutput,
-	serializeGetObjectRequest,
+	getPresignedGetObjectUrl,
 } from './getObject';
 export {
 	listObjectsV2,

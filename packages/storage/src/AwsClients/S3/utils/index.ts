@@ -8,6 +8,7 @@ export {
 	s3TransferHandler,
 	CANCELED_ERROR_MESSAGE,
 	isCancelError,
+	CONTENT_SHA256_HEADER,
 } from '../runtime';
 export {
 	deserializeBoolean,

@@ -1,13 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
-import { presignUrl } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	listObjectsV2,
 	createMultipartUpload,
 	uploadPart,
 	headObject,
-	serializeGetObjectRequest,
+	getPresignedGetObjectUrl,
 	getObject,
 	putObject,
 	deleteObject,
@@ -48,13 +47,11 @@ const mockListObjectsV2 = listObjectsV2 as jest.Mock;
 const mockCreateMultipartUpload = createMultipartUpload as jest.Mock;
 const mockUploadPart = uploadPart as jest.Mock;
 const mockHeadObject = headObject as jest.Mock;
-const mockSerializeGetObjectRequest = serializeGetObjectRequest as jest.Mock;
+const mockGetPresignedGetObjectUrl = getPresignedGetObjectUrl as jest.Mock;
 const mockGetObject = getObject as jest.Mock;
 const mockPutObject = putObject as jest.Mock;
 const mockDeleteObject = deleteObject as jest.Mock;
 const mockCopyObject = copyObject as jest.Mock;
-
-const mockPresignUrl = presignUrl as jest.Mock;
 
 const credentials: ICredentials = {
 	accessKeyId: 'accessKeyId',
@@ -191,21 +188,26 @@ describe('StorageProvider test', () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
 			});
-			mockSerializeGetObjectRequest.mockReturnValueOnce('request');
-			mockPresignUrl.mockReturnValueOnce('url');
+			mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
 			expect(await storage.get('key', { download: false })).toBe('url');
-			expect(presignUrl).toBeCalledWith('request', expect.anything());
+			expect(mockGetPresignedGetObjectUrl).toBeCalledWith(
+				expect.objectContaining({
+					credentials,
+				}),
+				expect.objectContaining({
+					Bucket: options.bucket,
+				})
+			);
 		});
 
 		test('get object with custom response headers', async () => {
-			expect.assertions(3);
+			expect.assertions(2);
 			const curCredSpyOn = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementation(() => {
 					return Promise.resolve(credentials);
 				});
-			mockSerializeGetObjectRequest.mockReturnValueOnce('request');
-			mockPresignUrl.mockReturnValueOnce('url');
+			mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
 			const params = {
 				cacheControl: 'no-cache',
 				contentDisposition: 'attachment; filename="filename.jpg"',
@@ -215,23 +217,22 @@ describe('StorageProvider test', () => {
 				expires: 123456789,
 			};
 			expect(await storage.get('key', params)).toBe('url');
-			expect(serializeGetObjectRequest).toBeCalledWith(expect.anything(), {
-				Bucket: options.bucket,
-				Key: 'public/key',
-				ResponseCacheControl: params.cacheControl,
-				ResponseContentDisposition: params.contentDisposition,
-				ResponseContentEncoding: params.contentEncoding,
-				ResponseContentLanguage: params.contentLanguage,
-				ResponseContentType: params.contentType,
-			});
-			expect(presignUrl).toBeCalledWith(
-				'request',
+			expect(mockGetPresignedGetObjectUrl).toBeCalledWith(
 				expect.objectContaining({
 					expiration: params.expires,
 					signingRegion: options.region,
 					signingService: 's3',
 					credentials,
-				})
+				}),
+				{
+					Bucket: options.bucket,
+					Key: 'public/key',
+					ResponseCacheControl: params.cacheControl,
+					ResponseContentDisposition: params.contentDisposition,
+					ResponseContentEncoding: params.contentEncoding,
+					ResponseContentLanguage: params.contentLanguage,
+					ResponseContentType: params.contentType,
+				}
 			);
 			curCredSpyOn.mockClear();
 		});
@@ -241,14 +242,13 @@ describe('StorageProvider test', () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
 			});
-			mockSerializeGetObjectRequest.mockReturnValueOnce('request');
-			mockPresignUrl.mockReturnValueOnce('url');
+			mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
 			const hubDispathSpy = jest.spyOn(Hub, 'dispatch');
 
 			expect(await storage.get('key', { downloaded: false, track: true })).toBe(
 				'url'
 			);
-			expect(serializeGetObjectRequest).toBeCalledWith(
+			expect(mockGetPresignedGetObjectUrl).toBeCalledWith(
 				expect.objectContaining({
 					region: options.region,
 				}),
@@ -365,10 +365,9 @@ describe('StorageProvider test', () => {
 					});
 				});
 			});
-			mockSerializeGetObjectRequest.mockReturnValueOnce('request');
-			mockPresignUrl.mockReturnValueOnce('url');
+			mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
 			expect(await storage.get('key', { level: 'private' })).toBe('url');
-			expect(serializeGetObjectRequest).toBeCalledWith(
+			expect(mockGetPresignedGetObjectUrl).toBeCalledWith(
 				expect.objectContaining({
 					region: options.region,
 				}),
@@ -387,10 +386,9 @@ describe('StorageProvider test', () => {
 					});
 				});
 			});
-			mockSerializeGetObjectRequest.mockReturnValueOnce('request');
-			mockPresignUrl.mockReturnValueOnce('url');
+			mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
 			await storage.get('my_key', { customPrefix: { public: '' } });
-			expect(serializeGetObjectRequest).toBeCalledWith(
+			expect(mockGetPresignedGetObjectUrl).toBeCalledWith(
 				expect.objectContaining({
 					region: options.region,
 				}),
@@ -409,11 +407,10 @@ describe('StorageProvider test', () => {
 					});
 				});
 			});
-			mockSerializeGetObjectRequest.mockReturnValueOnce('request');
-			mockPresignUrl.mockReturnValueOnce('url');
+			mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
 
 			await storage.get('my_key', { customPrefix: { public: '123/' } });
-			expect(serializeGetObjectRequest).toBeCalledWith(
+			expect(mockGetPresignedGetObjectUrl).toBeCalledWith(
 				expect.objectContaining({
 					region: options.region,
 				}),
@@ -425,55 +422,46 @@ describe('StorageProvider test', () => {
 		});
 
 		test('get object with expires option', async () => {
-			expect.assertions(3);
+			expect.assertions(2);
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return new Promise((res, rej) => {
 					res({});
 				});
 			});
-			mockSerializeGetObjectRequest.mockReturnValueOnce('request');
-			mockPresignUrl.mockReturnValueOnce('url');
+			mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
 
 			expect(await storage.get('key', { expires: 1200 })).toBe('url');
-			expect(serializeGetObjectRequest).toBeCalledWith(
+			expect(mockGetPresignedGetObjectUrl).toBeCalledWith(
 				expect.objectContaining({
 					region: options.region,
+					expiration: 1200,
 				}),
 				expect.objectContaining({
 					Bucket: options.bucket,
 					Key: 'public/key',
 				})
-			);
-			expect(presignUrl).toBeCalledWith(
-				'request',
-				expect.objectContaining({ expiration: 1200 })
 			);
 		});
 
 		test('get object with default expires option', async () => {
-			expect.assertions(3);
+			expect.assertions(2);
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return new Promise((res, rej) => {
 					res({});
 				});
 			});
-			mockSerializeGetObjectRequest.mockReturnValueOnce('request');
-			mockPresignUrl.mockReturnValueOnce('url');
+			mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
 
 			expect(await storage.get('key')).toBe('url');
-			expect(serializeGetObjectRequest).toBeCalledWith(
+			expect(mockGetPresignedGetObjectUrl).toBeCalledWith(
 				expect.objectContaining({
 					region: options.region,
+					expiration: 900,
 				}),
 				expect.objectContaining({
 					Bucket: options.bucket,
 					Key: 'public/key',
 				})
-			);
-
-			expect(presignUrl).toBeCalledWith(
-				'request',
-				expect.objectContaining({ expiration: 900 })
 			);
 		});
 
@@ -484,8 +472,7 @@ describe('StorageProvider test', () => {
 					res({});
 				});
 			});
-			mockSerializeGetObjectRequest.mockReturnValueOnce('request');
-			mockPresignUrl.mockReturnValueOnce('url');
+			mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
 
 			expect(
 				await storage.get('key', {
@@ -493,7 +480,7 @@ describe('StorageProvider test', () => {
 					identityId: 'identityId',
 				})
 			).toBe('url');
-			expect(serializeGetObjectRequest).toBeCalledWith(
+			expect(mockGetPresignedGetObjectUrl).toBeCalledWith(
 				expect.objectContaining({
 					region: options.region,
 				}),
@@ -524,8 +511,7 @@ describe('StorageProvider test', () => {
 		});
 
 		test('always ask for the current credentials', async () => {
-			mockSerializeGetObjectRequest.mockReturnValue('request');
-			mockPresignUrl.mockReturnValue('url');
+			mockGetPresignedGetObjectUrl.mockReturnValue('url');
 			const curCredSpyOn = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementation(() => {
@@ -571,8 +557,7 @@ describe('StorageProvider test', () => {
 				);
 				storage = new StorageProvider();
 				storage.configure(options_with_validateObjectExistence);
-				mockSerializeGetObjectRequest.mockReturnValueOnce('request');
-				mockPresignUrl.mockReturnValueOnce('url');
+				mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
 				const dispatchSpy = jest.spyOn(StorageUtils, 'dispatchStorageEvent');
 				expect(
 					await storage.get('key', {
@@ -588,7 +573,7 @@ describe('StorageProvider test', () => {
 					null,
 					'Signed URL: url'
 				);
-				expect(serializeGetObjectRequest).toBeCalledWith(
+				expect(mockGetPresignedGetObjectUrl).toBeCalledWith(
 					expect.objectContaining({
 						region: options.region,
 					}),

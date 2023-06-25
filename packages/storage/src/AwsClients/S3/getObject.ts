@@ -2,8 +2,13 @@ import {
 	Endpoint,
 	HttpRequest,
 	parseMetadata,
+	presignUrl,
+	UserAgentOptions,
+	PresignUrlOptions,
+	EMPTY_SHA256_HASH,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
+import { USER_AGENT_HEADER } from '@aws-amplify/core';
 
 import { S3EndpointResolverOptions, defaultConfig } from './base';
 import type {
@@ -21,6 +26,7 @@ import {
 	s3TransferHandler,
 	serializeObjectSsecOptionsToHeaders,
 	serializeObjectKey,
+	CONTENT_SHA256_HEADER,
 } from './utils';
 
 export type GetObjectInput = Pick<
@@ -128,14 +134,29 @@ export const getObject = composeServiceApi(
 );
 
 /**
- * Get a URL for the `getObject` API. It is useful to presign returned request.
+ * Get a presigned URL for the `getObject` API.
  *
  * @internal
  */
-export const serializeGetObjectRequest = (
-	config: S3EndpointResolverOptions,
+export const getPresignedGetObjectUrl = async (
+	config: UserAgentOptions & PresignUrlOptions & S3EndpointResolverOptions,
 	input: GetObjectInput
-): HttpRequest => {
+): Promise<string> => {
 	const endpoint = defaultConfig.endpointResolver(config, input);
-	return getObjectSerializer(input, endpoint);
+	const { url, headers, method } = getObjectSerializer(input, endpoint);
+
+	// TODO: set content sha256 query parameter with value of UNSIGNED-PAYLOAD.
+	// It requires changes in presignUrl. Without this change, the generated url still works,
+	// but not the same as other tools like AWS SDK and CLI.
+	url.searchParams.append(CONTENT_SHA256_HEADER, EMPTY_SHA256_HASH);
+	url.searchParams.append(
+		config.userAgentHeader ?? USER_AGENT_HEADER,
+		config.userAgentValue
+	);
+	for (const [headerName, value] of Object.entries(headers).sort(
+		([key1], [key2]) => key1.localeCompare(key2)
+	)) {
+		url.searchParams.append(headerName, value);
+	}
+	return presignUrl({ method, url, body: null }, config).toString();
 };

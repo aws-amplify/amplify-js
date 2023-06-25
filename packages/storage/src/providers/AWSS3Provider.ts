@@ -9,14 +9,13 @@ import {
 	parseAWSExports,
 	StorageAction,
 } from '@aws-amplify/core';
-import { presignUrl } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	copyObject,
 	CopyObjectInput,
 	getObject,
 	GetObjectInput,
 	GetObjectOutput,
-	serializeGetObjectRequest,
+	getPresignedGetObjectUrl,
 	PutObjectInput,
 	headObject,
 	DeleteObjectInput,
@@ -474,13 +473,16 @@ export class AWSS3Provider implements StorageProvider {
 			}
 		}
 		try {
-			const request = serializeGetObjectRequest(s3Config, params);
-			const url = presignUrl(request, {
-				expiration: expires || DEFAULT_PRESIGN_EXPIRATION,
-				credentials: await s3Config.credentials(),
-				signingRegion: s3Config.region,
-				signingService: S3_SERVICE_NAME,
-			}).toString();
+			const url = await getPresignedGetObjectUrl(
+				{
+					...s3Config,
+					expiration: expires || DEFAULT_PRESIGN_EXPIRATION,
+					credentials: await s3Config.credentials(),
+					signingRegion: s3Config.region,
+					signingService: S3_SERVICE_NAME,
+				},
+				params
+			);
 			dispatchStorageEvent(
 				track,
 				'getSignedUrl',

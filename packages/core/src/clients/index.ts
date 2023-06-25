@@ -9,8 +9,11 @@ export { authenticatedHandler } from './handlers/authenticated';
 export {
 	getHashedPayload,
 	presignUrl,
+	PresignUrlOptions,
 	signRequest,
+	SignRequestOptions,
 } from './middleware/signing/signer/signatureV4';
+export { EMPTY_HASH as EMPTY_SHA256_HASH } from './middleware/signing/signer/signatureV4/constants';
 export { signingMiddleware, SigningOptions } from './middleware/signing';
 export {
 	getRetryDecider,
