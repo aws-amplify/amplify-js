@@ -56,8 +56,14 @@ type UnionOfKeysOf<T> = {
  */
 type Dig<T> = T[keyof T];
 
+type Iterated<T> = T extends Array<infer IT> ? AsyncGenerator<IT> : T;
+
+type WithIterablesInsteadOfArrays<T> = T extends { items: infer IT }
+	? Iterated<IT>
+	: T;
+
 export type GraphQLResult<T = object> = {
-	data: Dig<T>;
+	data: WithIterablesInsteadOfArrays<Dig<T>>;
 	errors?: GraphQLError[];
 	extensions?: {
 		[key: string]: any;
@@ -111,6 +117,26 @@ export type GraphqlQueryResult<T extends string, S> = T extends GeneratedQuery<
 	: S extends GraphqlQueryOverrides<infer IN, infer OUT>
 	? GraphQLResult<OUT>
 	: any;
+
+// e.g.
+export type ListThreadsQuery = {
+	listThreads?: {
+		__typename: 'ModelThreadConnection';
+		items: Array<{
+			__typename: 'Thread';
+			id: string;
+			topic?: string | null;
+			comments?: {
+				__typename: 'ModelCommentConnection';
+				nextToken?: string | null;
+			} | null;
+			createdAt?: string | null;
+			updatedAt: string;
+			owner?: string | null;
+		} | null>;
+		nextToken?: string | null;
+	} | null;
+};
 
 /** GraphQL mutate */
 

@@ -2,6 +2,10 @@ import { GraphQLAPI } from './GraphQLAPI';
 import { Observable } from 'zen-observable-ts';
 import { parse, print, OperationDefinitionNode } from 'graphql';
 
+// used in NextJS POC.
+// not sure how this will work in Amplify generally. Need fo consult SSR designer!
+// import type Context from '../data/context-type';
+
 import { GraphQLResult } from './types/facade-2-types';
 
 /**

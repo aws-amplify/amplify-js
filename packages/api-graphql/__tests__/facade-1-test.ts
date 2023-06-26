@@ -3,29 +3,8 @@ import * as v6 from '../src/facade-1';
 import * as queries from './helpers/fixtures/queries';
 import * as mutations from './helpers/fixtures/mutations';
 import * as subscriptions from './helpers/fixtures/subscriptions';
-import * as APIFixture from './helpers/fixtures/API';
 import { Observable } from 'zen-observable-ts';
 import { PubSub } from '@aws-amplify/pubsub';
-
-// class PubSubFake {
-// 	subscribe(
-// 		topic: string,
-// 		options: {
-// 			privider: string;
-// 			appSyncGraphqlEndpoint: string;
-// 			authenticationType: string;
-// 			apiKey: string | undefined;
-// 			query: string;
-// 			region: string;
-// 			variables: any;
-// 			graphql_headers: any;
-// 			additionalHeaders: any;
-// 			authToken: string | undefined;
-// 		}
-// 	) {
-// 		return new Observable(observer => {});
-// 	}
-// }
 
 function expectMutation(
 	spy: jest.SpyInstance<any, any>,
@@ -216,6 +195,7 @@ describe('v6', () => {
 		});
 
 		const thread = result.data?.deleteThread;
+		2;
 		const errors = result.errors;
 
 		expectMutation(spy, 'deleteThread', threadToDelete);
@@ -300,7 +280,7 @@ describe('v6', () => {
 		expect(items).toEqual(graphqlResponse.data.listThreads.items);
 	});
 
-	test.only('subscribe', done => {
+	test('subscribe', done => {
 		const threadToSend = {
 			__typename: 'Thread',
 			...serverManagedFields,
