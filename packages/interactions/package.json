@@ -47,8 +47,8 @@
 	],
 	"dependencies": {
 		"@aws-amplify/core": "5.5.1",
-		"@aws-sdk/client-lex-runtime-service": "3.186.3",
-		"@aws-sdk/client-lex-runtime-v2": "3.186.3",
+		"@aws-sdk/client-lex-runtime-service": "3.186.4",
+		"@aws-sdk/client-lex-runtime-v2": "3.186.4",
 		"base-64": "1.0.0",
 		"fflate": "0.7.3",
 		"pako": "2.0.4",
