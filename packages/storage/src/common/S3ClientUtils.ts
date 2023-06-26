@@ -86,8 +86,8 @@ export interface S3ResolvedConfig
 }
 
 /**
- * A function that persistent the s3 configs, so we don't need to
- * assigning each config parameter for every s3 API call.
+ * A function that persists the s3 configs, so we don't need to
+ * assign each config parameter for every s3 API call.
  *
  * @inernal
  */

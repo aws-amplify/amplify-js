@@ -149,12 +149,12 @@ export class AWSS3UploadTask implements UploadTask {
 		key: string;
 		bucket: string;
 	}) {
-		const prefix = await this.prefixPromise;
+		const objectKeyPrefix = await this.prefixPromise;
 		const { Contents = [] } = await listObjectsV2(this.s3Config, {
 			Bucket: bucket,
-			Prefix: prefix + key,
+			Prefix: objectKeyPrefix + key,
 		});
-		const obj = Contents.find(o => o.Key === `${prefix}${key}`);
+		const obj = Contents.find(o => o.Key === `${objectKeyPrefix}${key}`);
 		return obj;
 	}
 
@@ -394,7 +394,7 @@ export class AWSS3UploadTask implements UploadTask {
 			const bodyEnd = Math.min(bodyStart + this.partSize, size);
 			parts.push({
 				Body: this.file.slice(bodyStart, bodyEnd),
-				Key: this.params.Key, // TODO: add prefix
+				Key: this.params.Key,
 				Bucket: this.params.Bucket,
 				PartNumber: parts.length + 1,
 				UploadId: this.uploadId,
@@ -457,7 +457,6 @@ export class AWSS3UploadTask implements UploadTask {
 				}
 			}
 		} catch (err) {
-			// TODO: validate error handling
 			if (!isCancelError(err)) {
 				logger.error('Error initializing the upload task', err);
 				this._emitEvent(TaskEvents.ERROR, err);

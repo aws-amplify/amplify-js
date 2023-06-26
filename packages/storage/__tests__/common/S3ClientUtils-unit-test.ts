@@ -67,18 +67,11 @@ describe('S3ClientUtils tests', () => {
 
 	test('createS3Client test', async () => {
 		expect.assertions(4);
-		const mockCredentials: ICredentials = {
-			accessKeyId: 'accessKeyId',
-			sessionToken: 'sessionToken',
-			secretAccessKey: 'secretAccessKey',
-			identityId: 'identityId',
-			authenticated: true,
-		};
 		const s3Config = loadS3Config({
 			region: 'us-west-2',
 			useAccelerateEndpoint: true,
 			storageAction: StorageAction.Get,
-			credentials: mockCredentials,
+			credentials,
 		});
 		expect(s3Config.userAgentValue).toEqual(
 			getAmplifyUserAgent({
@@ -88,21 +81,14 @@ describe('S3ClientUtils tests', () => {
 		);
 		expect(s3Config.region).toEqual('us-west-2');
 		expect(s3Config.useAccelerateEndpoint).toBe(true);
-		expect(await s3Config.credentials()).toBe(mockCredentials);
+		expect(await s3Config.credentials()).toBe(credentials);
 	});
 
 	test('createS3Client injects credentials provider', async () => {
 		expect.assertions(4);
-		const mockCredentials: ICredentials = {
-			accessKeyId: 'accessKeyId',
-			sessionToken: 'sessionToken',
-			secretAccessKey: 'secretAccessKey',
-			identityId: 'identityId',
-			authenticated: true,
-		};
 		jest
 			.spyOn(Credentials, 'get')
-			.mockImplementationOnce(() => Promise.resolve(mockCredentials));
+			.mockImplementationOnce(() => Promise.resolve(credentials));
 		const s3Config = loadS3Config({
 			region: 'us-west-2',
 			useAccelerateEndpoint: true,
@@ -116,7 +102,7 @@ describe('S3ClientUtils tests', () => {
 		);
 		expect(s3Config.region).toEqual('us-west-2');
 		expect(s3Config.useAccelerateEndpoint).toBe(true);
-		expect(await s3Config.credentials()).toEqual(mockCredentials);
+		expect(await s3Config.credentials()).toEqual(credentials);
 	});
 
 	test('createS3Client test - dangerouslyConnectToHttpEndpointForTesting', async () => {
@@ -132,18 +118,11 @@ describe('S3ClientUtils tests', () => {
 	});
 
 	test('credentialsProvider test', async () => {
-		const mockCredentials: ICredentials = {
-			accessKeyId: 'accessKeyId',
-			sessionToken: 'sessionToken',
-			secretAccessKey: 'secretAccessKey',
-			identityId: 'identityId',
-			authenticated: true,
-		};
 		jest
 			.spyOn(Credentials, 'get')
-			.mockImplementationOnce(() => Promise.resolve(mockCredentials));
+			.mockImplementationOnce(() => Promise.resolve(credentials));
 		const credentials = await credentialsProvider();
-		expect(credentials).toStrictEqual(mockCredentials);
+		expect(credentials).toStrictEqual(credentials);
 	});
 
 	test('credentialsProvider - Credentials.get error', async () => {

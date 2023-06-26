@@ -9,6 +9,7 @@ import { MetadataBearer } from '@aws-sdk/types';
 import type { CopyObjectCommandInput } from './types';
 import { defaultConfig } from './base';
 import {
+	assignStringVariables,
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
@@ -49,8 +50,10 @@ const copyObjectSerializer = (
 ): HttpRequest => {
 	const headers = {
 		...serializeObjectConfigsToHeaders(input),
-		'x-amz-copy-source': input.CopySource, // TODO: url encode the copy source
-		'x-amz-metadata-directive': input.MetadataDirective,
+		...assignStringVariables({
+			'x-amz-copy-source': input.CopySource,
+			'x-amz-metadata-directive': input.MetadataDirective,
+		}),
 	};
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializeObjectKey(url, input.Key);
