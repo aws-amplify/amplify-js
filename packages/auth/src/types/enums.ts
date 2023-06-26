@@ -1,6 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+/**
+ * Denotes the next step in the Reset Password process.
+ */
+export enum AuthResetPasswordStep {
+	CONFIRM_RESET_PASSWORD_WITH_CODE = 'CONFIRM_RESET_PASSWORD_WITH_CODE',
+	DONE = 'DONE',
+}
+
+/**
+ * Denotes the next step in the Sign In process.
+ */
 export enum AuthSignInStep {
 	CONFIRM_SIGN_IN_WITH_SMS_MFA_CODE = 'CONFIRM_SIGN_IN_SMS_MFA_CODE',
 
@@ -18,5 +29,13 @@ export enum AuthSignInStep {
 
 	RESET_PASSWORD = 'RESET_PASSWORD',
 
+	DONE = 'DONE',
+}
+
+/**
+ * Denotes the next step in the Sign Up process.
+ */
+export enum AuthSignUpStep {
+	CONFIRM_SIGN_UP = 'CONFIRM_SIGN_UP',
 	DONE = 'DONE',
 }

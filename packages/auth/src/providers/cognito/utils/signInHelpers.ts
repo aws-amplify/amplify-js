@@ -23,7 +23,7 @@ import {
 	respondToAuthChallengeClient,
 } from './clients/RespondToAuthChallengeClient';
 import { ChallengeName, ChallengeParameters } from './clients/types/models';
-import { ClientMetadata } from '../types/models/ClientMetadata';
+import { ClientMetadata } from '../types';
 import {
 	AdditionalInfo,
 	AuthSignInResult,
@@ -31,7 +31,7 @@ import {
 	DeliveryMedium,
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
-import { InitiateAuthException } from '../types/errors/service';
+import { InitiateAuthException } from '../types/errors';
 
 export async function handleUserPasswordAuthFlow(
 	username: string,

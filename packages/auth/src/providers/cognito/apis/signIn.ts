@@ -1,17 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthSignInResult, SignInRequest } from '../../../types';
 import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
-} from '../types/errors/service';
-import { CognitoSignInOptions } from '../types/options/CognitoSignInOptions';
+} from '../types/errors';
 import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
-
+import { AuthSignInResult, SignInRequest } from '../../../types';
+import { CognitoSignInOptions } from '../types';
 /**
  * Signs a user in
  *

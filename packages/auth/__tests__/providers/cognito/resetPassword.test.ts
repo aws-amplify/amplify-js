@@ -6,7 +6,7 @@ import { ForgotPasswordCommandOutput } from '@aws-sdk/client-cognito-identity-pr
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { resetPassword } from '../../../src/providers/cognito';
-import { ForgotPasswordException } from '../../../src/providers/cognito/types/errors/service';
+import { ForgotPasswordException } from '../../../src/providers/cognito/types/errors';
 import * as resetPasswordClient from '../../../src/providers/cognito/utils/clients/ResetPasswordClient';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 

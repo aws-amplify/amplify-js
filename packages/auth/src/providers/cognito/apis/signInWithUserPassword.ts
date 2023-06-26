@@ -5,7 +5,7 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthSignInStep, SignInRequest } from '../../../types';
-import { CognitoSignInOptions } from '../types/options/CognitoSignInOptions';
+
 import { setActiveSignInSession } from '../utils/activeSignInSession';
 import {
 	ChallengeName,
@@ -16,8 +16,9 @@ import {
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
 } from '../utils/signInHelpers';
-import { InitiateAuthException } from '../types/errors/service';
 import { Amplify } from '@aws-amplify/core';
+import { InitiateAuthException } from '../types/errors';
+import { CognitoSignInOptions } from '../types';
 
 /**
  * Signs a user in using USER_PASSWORD_AUTH AuthFlowType

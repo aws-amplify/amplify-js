@@ -4,13 +4,7 @@
 import { Amplify } from '@aws-amplify/core';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import {
-	SignInRequest,
-	AuthSignInResult,
-	AuthSignInStep,
-} from '../../../types';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
-import { CognitoSignInOptions } from '../types/options/CognitoSignInOptions';
 import {
 	ChallengeName,
 	ChallengeParameters,
@@ -24,7 +18,13 @@ import { setActiveSignInSession } from '../utils/activeSignInSession';
 import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
-} from '../types/errors/service';
+} from '../types/errors';
+import {
+	SignInRequest,
+	AuthSignInResult,
+	AuthSignInStep,
+} from '../../../types';
+import { CognitoSignInOptions } from '../types';
 
 /**
  * Signs a user in using a custom authentication flow with SRP

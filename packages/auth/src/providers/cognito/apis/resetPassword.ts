@@ -2,21 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import type { 
-	ForgotPasswordCommandOutput 
-} from '@aws-sdk/client-cognito-identity-provider';
+import type { ForgotPasswordCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { 
-	AuthResetPasswordStep,
-	AuthStandardAttributeKey, 
-	DeliveryMedium, 
-	ResetPasswordRequest, 
-	ResetPasswordResult 
-} from '../../../types';
-import { CustomAttribute } from '../types/models/CustomAttribute';
-import { CognitoResetPasswordOptions } from '../types/options/CognitoResetPasswordOptions';
 import { resetPasswordClient } from '../utils/clients/ResetPasswordClient';
+import {
+	AuthResetPasswordStep,
+	AuthStandardAttributeKey,
+	DeliveryMedium,
+	ResetPasswordRequest,
+	ResetPasswordResult,
+} from '../../../types';
+import { CognitoResetPasswordOptions, CustomAttribute } from '../types';
 
 export async function resetPassword(
 	resetPasswordRequest: ResetPasswordRequest<CognitoResetPasswordOptions>
@@ -29,9 +26,9 @@ export async function resetPassword(
 	const config = Amplify.config;
 	const res: ForgotPasswordCommandOutput = await resetPasswordClient({
 		Username: username,
-		ClientMetadata: 
-			resetPasswordRequest.options?.serviceOptions?.clientMetadata ?? 
-			config.clientMetadata
+		ClientMetadata:
+			resetPasswordRequest.options?.serviceOptions?.clientMetadata ??
+			config.clientMetadata,
 	});
 	const codeDeliveryDetails = res.CodeDeliveryDetails;
 	return {
@@ -41,7 +38,8 @@ export async function resetPassword(
 			codeDeliveryDetails: {
 				deliveryMedium: codeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
 				destination: codeDeliveryDetails?.Destination as string,
-				attributeName: codeDeliveryDetails?.AttributeName as AuthStandardAttributeKey,
+				attributeName:
+					codeDeliveryDetails?.AttributeName as AuthStandardAttributeKey,
 			},
 		},
 	};
