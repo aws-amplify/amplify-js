@@ -16,18 +16,19 @@ import { Cache } from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';
 import axios, { CancelTokenStatic } from 'axios';
 
-axios.CancelToken = <CancelTokenStatic>{
+axios.CancelToken = {
 	source: () => ({ token: null, cancel: null }),
-};
+} as unknown as CancelTokenStatic;
+
 axios.isCancel = (value: any): boolean => {
 	return false;
 };
 
-let isCancelSpy = null;
-let cancelTokenSpy = null;
-let cancelMock = null;
-let tokenMock = null;
-let mockCancellableToken = null;
+let isCancelSpy: any = null;
+let cancelTokenSpy: any = null;
+let cancelMock: any = null;
+let tokenMock: any = null;
+let mockCancellableToken: any = null;
 jest.mock('axios');
 
 const config = {

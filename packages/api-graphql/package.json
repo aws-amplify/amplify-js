@@ -87,6 +87,9 @@
       "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "testPathIgnorePatterns": [
+			"__tests__/helpers/"
+		],
     "moduleFileExtensions": [
       "ts",
       "tsx",

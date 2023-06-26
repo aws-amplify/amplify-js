@@ -1,12 +1,29 @@
 import { GraphQLAPI } from './GraphQLAPI';
 import { Observable } from 'zen-observable-ts';
 import { parse, print, OperationDefinitionNode } from 'graphql';
+import { Auth, API } from 'aws-amplify';
+
+// used in NextJS POC.
+// not sure how this will work in Amplify generally. Need fo consult SSR designer!
+// import type Context from '../data/context-type';
+
+import {
+	Context,
+	ObservableOperation,
+	ModelOp,
+	FieldType,
+	Fields,
+	Shape,
+	ModelOf,
+	ModelOfFields,
+	GraphQLResult,
+} from './types/facade-2-types';
 
 /**
  * `GraphQLOptions` currently includes `{ query: string | DocumentNode, ... }`, but I'm thinking
  * we swap that for `query: string` or `query: string | T extends Whatever`.
  */
-import { GraphQLOptions, GraphQLResult } from './types';
+import { GraphQLOptions } from './types';
 
 import {
 	GraphqlQueryParams,
@@ -15,7 +32,7 @@ import {
 	GraphqlMutationResult,
 	GraphqlSubscriptionParams,
 	GraphqlSubscriptionResult,
-} from './types/v6-types';
+} from './types/facade-2-types';
 
 export function graphql<T = any>(
 	options: GraphQLOptions,
@@ -56,15 +73,25 @@ export function query<
 	queryParams?: GraphqlQueryParams<TYPED_GQL_STRING, FALLBACK_TYPES>,
 	additionalHeaders?: { [key: string]: string }
 ): Promise<GraphqlQueryResult<TYPED_GQL_STRING, FALLBACK_TYPES>> {
-	return GraphQLAPI.graphql<
-		GraphqlQueryResult<TYPED_GQL_STRING, FALLBACK_TYPES>
-	>(
-		{
-			...(queryParams || {}),
-			query: document,
-		},
-		additionalHeaders
-	) as Promise<GraphqlQueryResult<TYPED_GQL_STRING, FALLBACK_TYPES>>;
+	return (
+		GraphQLAPI.graphql(
+			{
+				...(queryParams || {}),
+				query: document,
+			},
+			additionalHeaders
+		) as any
+	).then(raw => {
+		const responseKey = raw.data ? Object.keys(raw.data)[0] : undefined;
+		if (responseKey) {
+			return {
+				data: raw.data[responseKey],
+				errors: raw.errors,
+			};
+		} else {
+			return raw;
+		}
+	}) as Promise<GraphqlQueryResult<TYPED_GQL_STRING, FALLBACK_TYPES>>;
 }
 
 export function mutate<
@@ -75,15 +102,25 @@ export function mutate<
 	queryParams?: GraphqlMutationParams<TYPED_GQL_STRING, FALLBACK_TYPES>,
 	additionalHeaders?: { [key: string]: string }
 ): Promise<GraphqlMutationResult<TYPED_GQL_STRING, FALLBACK_TYPES>> {
-	return GraphQLAPI.graphql<
-		GraphqlMutationResult<TYPED_GQL_STRING, FALLBACK_TYPES>
-	>(
-		{
-			...(queryParams || {}),
-			query: document,
-		},
-		additionalHeaders
-	) as Promise<GraphqlMutationResult<TYPED_GQL_STRING, FALLBACK_TYPES>>;
+	return (
+		GraphQLAPI.graphql(
+			{
+				...(queryParams || {}),
+				query: document,
+			},
+			additionalHeaders
+		) as any
+	).then(raw => {
+		const responseKey = raw.data ? Object.keys(raw.data)[0] : undefined;
+		if (responseKey) {
+			return {
+				data: raw.data[responseKey],
+				errors: raw.errors,
+			};
+		} else {
+			return raw;
+		}
+	}) as Promise<GraphqlMutationResult<TYPED_GQL_STRING, FALLBACK_TYPES>>;
 }
 
 export function subscribe<

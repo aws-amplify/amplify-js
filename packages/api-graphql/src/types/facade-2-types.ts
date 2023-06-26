@@ -1,7 +1,74 @@
-import { Observable } from 'zen-observable-ts';
-import { GraphQLOptions, GraphQLResult } from './index';
+// import { Observable } from 'zen-observable-ts';
+// import { GraphQLOptions } from './index';
+import { GraphQLError } from 'graphql';
+import { Auth, API } from 'aws-amplify';
 
 // #region shared API types ... probably to be pulled from core or something later.
+
+// original
+// export interface GraphQLResult<T = object> {
+// 	data?: T;
+// 	errors?: GraphQLError[];
+// 	extensions?: {
+// 		[key: string]: any;
+// 	};
+// }
+
+/**
+ *
+ * ```
+ * type T = UnionOfKeysOf<{x: string, y: string}>;
+ *      ^
+ *      "x" | "y"
+ * ```
+ */
+type UnionOfKeysOf<T> = {
+	[K in keyof T]: T extends Record<K, any> ? K : never;
+}[keyof T];
+
+/**
+ * Digs down a layer into an object to extract a union of all the property
+ * types.
+ *
+ * ```
+ * type T = Dig<{ x: { a: string, b: number }, y: { c: boolean } }>;
+ *      ^
+ *      {
+ *        a: string;
+ *        b: number;
+ *      } | {
+ *        c: boolean;
+ *      }
+ * ```
+ *
+ * This is particularly useful for extracting the type when a single property
+ * exists on an object and we just want to "skip" it or "dig it out".
+ *
+ * ```
+ * type T = Dig<{x: { a: string, b: number }}>;
+ *      ^
+ *      {
+ *        a: string;
+ *        b: number;
+ *      }
+ * ```
+ *
+ */
+type Dig<T> = T[keyof T];
+
+type Iterated<T> = T extends Array<infer IT> ? AsyncGenerator<IT> : T;
+
+type WithIterablesInsteadOfArrays<T> = T extends { items: infer IT }
+	? Iterated<IT>
+	: T;
+
+export type GraphQLResult<T = object> = {
+	data: WithIterablesInsteadOfArrays<Dig<T>>;
+	errors?: GraphQLError[];
+	extensions?: {
+		[key: string]: any;
+	};
+};
 
 type UnionKeys<T> = T extends T ? keyof T : never;
 type StrictUnionHelper<T, TAll> = T extends any
@@ -25,10 +92,6 @@ export type GeneratedQuery<InputType, OutputType> = string & {
 	__generatedQueryInput: InputType;
 	__generatedQueryOutput: OutputType;
 };
-
-// export type GraphqlQueryParams<T extends string, S extends {}> = {
-//   input?: T extends GeneratedQuery<infer IN, infer OUT> ? IN : S;
-// } & AuthMode;
 
 export type GraphqlQueryOverrides<IN extends {}, OUT extends {}> = {
 	variables: IN;
@@ -69,8 +132,7 @@ export type GraphqlMutationParams<
 		? IN
 		: OVERRIDE_TYPE extends GraphqlQueryOverrides<infer OVERRIDE_IN, infer OUT>
 		? OVERRIDE_IN
-		: any) &
-	AuthMode;
+		: any);
 
 export type GraphqlMutationResult<
 	TYPED_GQL_STRING extends string,
@@ -106,3 +168,54 @@ export type GraphqlSubscriptionResult<
 	: FALLBACK_TYPES extends GraphqlQueryOverrides<infer IN, infer OUT>
 	? OUT
 	: any;
+
+/**
+ * For SSR adaption and/or adaption in other contexts. Perhaps a test context.
+ */
+
+export type Context = {
+	Auth: typeof Auth;
+	API: typeof API;
+};
+
+/**
+ *
+ *
+ * The more experimental stuff starts here.
+ *
+ *
+ */
+
+export enum ObservableOperation {
+	Create = 'Create',
+	Update = 'Update',
+	Delete = 'Delete',
+}
+
+export type ModelOp<Model> = {
+	op: ObservableOperation;
+	value: Model;
+};
+
+// as examples. can expand.
+export type FieldType<T> = (init: any) => T;
+
+export type Fields = Record<string, FieldType<any>>;
+
+export type Shape<T extends Fields> = {
+	name: string;
+	fields: T;
+};
+
+export type ModelOf<SHAPE> = SHAPE extends Shape<infer T>
+	? ModelOfFields<T>
+	: never;
+
+export type ModelOfFields<SHAPE extends Fields> = {
+	[K in keyof SHAPE]: ReturnType<SHAPE[K]>;
+};
+
+export type PageOf<SHAPE extends Fields> = {
+	items: ModelOfFields<SHAPE>[];
+	nextToken: any;
+};

@@ -50,7 +50,7 @@ export class GraphQLAPIClass {
 	 * @private
 	 */
 	private _options;
-	private _api = null;
+	private _api = new RestClient({} as any);
 
 	Auth = Auth;
 	Cache = Cache;
