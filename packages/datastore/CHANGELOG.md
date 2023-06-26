@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.6.0...@aws-amplify/datastore@4.6.1) (2023-06-21)
+
+### Bug Fixes
+
+- Update getAmplifyUserAgent to retain original interface ([#11535](https://github.com/aws-amplify/amplify-js/issues/11535)) ([dc84cc8](https://github.com/aws-amplify/amplify-js/commit/dc84cc8bfa7811b5f4f8ac2f7e5ea1b5edc54fe1))
+
+# [4.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.5.1...@aws-amplify/datastore@4.6.0) (2023-06-20)
+
+### Bug Fixes
+
+- DataStore action names ([82abd24](https://github.com/aws-amplify/amplify-js/commit/82abd2496327d373ccbbf3642a9cddb0e121b6bb))
+
+### Features
+
+- user agent enhancements - cross-category api>api-graphql>pubsub ([#11368](https://github.com/aws-amplify/amplify-js/issues/11368)) ([a88dda2](https://github.com/aws-amplify/amplify-js/commit/a88dda202919aa1d4dc2af48f33c3533d8626261))
+- user agent enhancements: part1 core ([#11121](https://github.com/aws-amplify/amplify-js/issues/11121)) ([66d1fb5](https://github.com/aws-amplify/amplify-js/commit/66d1fb5a7c3d82621ce9a8c1e880fe81573387ba))
+
+## [4.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.5.0...@aws-amplify/datastore@4.5.1) (2023-06-14)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
 # [4.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.4.1...@aws-amplify/datastore@4.5.0) (2023-06-05)
 
 ### Bug Fixes

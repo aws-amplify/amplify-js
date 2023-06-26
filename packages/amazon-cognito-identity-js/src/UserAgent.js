@@ -1,6 +1,8 @@
-import { getUserAgent } from "./Platform";
+import { getUserAgent } from './Platform';
+import { AUTH_CATEGORY } from './Platform/constants';
+
 // constructor
-function UserAgent() { }
+function UserAgent() {}
 // public
 UserAgent.prototype.userAgent = getUserAgent();
 
@@ -20,6 +22,25 @@ export const appendToCognitoUserAgent = content => {
 	if (!UserAgent.prototype.userAgent || UserAgent.prototype.userAgent === '') {
 		UserAgent.prototype.userAgent = content;
 	}
+};
+
+export const addAuthCategoryToCognitoUserAgent = () => {
+	UserAgent.category = AUTH_CATEGORY;
+};
+
+export const addFrameworkToCognitoUserAgent = framework => {
+	UserAgent.framework = framework;
+};
+
+export const getAmplifyUserAgent = action => {
+	const uaCategoryAction = UserAgent.category ? ` ${UserAgent.category}` : '';
+	const uaFramework = UserAgent.framework
+		? ` framework/${UserAgent.framework}`
+		: '';
+
+	const userAgent = `${UserAgent.prototype.userAgent}${uaCategoryAction}${uaFramework}`;
+
+	return userAgent;
 };
 
 // class for defining the amzn user-agent

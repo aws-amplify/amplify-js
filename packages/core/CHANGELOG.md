@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.5.0...@aws-amplify/core@5.5.1) (2023-06-21)
+
+### Bug Fixes
+
+- Update getAmplifyUserAgent to retain original interface ([#11535](https://github.com/aws-amplify/amplify-js/issues/11535)) ([dc84cc8](https://github.com/aws-amplify/amplify-js/commit/dc84cc8bfa7811b5f4f8ac2f7e5ea1b5edc54fe1))
+
+# [5.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.4.0...@aws-amplify/core@5.5.0) (2023-06-20)
+
+### Bug Fixes
+
+- Add upkeep to platform/framework caches ([#11505](https://github.com/aws-amplify/amplify-js/issues/11505)) ([03aa356](https://github.com/aws-amplify/amplify-js/commit/03aa3560e921f08717594bdf679b62501bc6de77))
+- **client:** correct clock skew from any response ([#11503](https://github.com/aws-amplify/amplify-js/issues/11503)) ([c1fa9c7](https://github.com/aws-amplify/amplify-js/commit/c1fa9c7363ca911dbd336c26478b39345de14a72))
+- **core:** Angular web detection and other minor changes ([#11491](https://github.com/aws-amplify/amplify-js/issues/11491)) ([c0cb9b9](https://github.com/aws-amplify/amplify-js/commit/c0cb9b9795c1a3343bb9460c61f12500211f8442))
+- React detection and Analytics batch upload ([#11478](https://github.com/aws-amplify/amplify-js/issues/11478)) ([f2b1740](https://github.com/aws-amplify/amplify-js/commit/f2b1740d6ea2b0b25397a02da7f9e6669768b3d7))
+- Remove unused dependency ([#11524](https://github.com/aws-amplify/amplify-js/issues/11524)) ([aaf73d8](https://github.com/aws-amplify/amplify-js/commit/aaf73d8e0ddb8157d3ee2dac1f6706120b91224a))
+- Storage action enum update ([82a96c9](https://github.com/aws-amplify/amplify-js/commit/82a96c9804797891a2b604ae3d6c82ea48f0a18c))
+- **storage:** Add getProperties user agent action ([#11501](https://github.com/aws-amplify/amplify-js/issues/11501)) ([019b5b1](https://github.com/aws-amplify/amplify-js/commit/019b5b1115bebc92f2c44bbf285d1d916cb08492))
+
+### Features
+
+- Add custom user agent enhancements for Predictions ([#11437](https://github.com/aws-amplify/amplify-js/issues/11437)) ([424e9d4](https://github.com/aws-amplify/amplify-js/commit/424e9d46c9b218401472123c0c0d5cd240afe00d))
+- **analytics:** Add reporting for updateEndpoint ([#11468](https://github.com/aws-amplify/amplify-js/issues/11468)) ([663a5ed](https://github.com/aws-amplify/amplify-js/commit/663a5ed1835d87911c21a42e34b1d2f0a2829bbd))
+- **analytics:** Use custom user agent in all Analytics providers ([#11410](https://github.com/aws-amplify/amplify-js/issues/11410)) ([9fe4a5e](https://github.com/aws-amplify/amplify-js/commit/9fe4a5e43a7d671e76375833f9ce44b60bac05d7))
+- **core:** API detection for 8 framework targets ([#11384](https://github.com/aws-amplify/amplify-js/issues/11384)) ([388f207](https://github.com/aws-amplify/amplify-js/commit/388f2074db0640f2d22aa7cd1a44d8eb8f2301d2))
+- Custom user agent enhancement for api-rest ([#11457](https://github.com/aws-amplify/amplify-js/issues/11457)) ([4315ba0](https://github.com/aws-amplify/amplify-js/commit/4315ba05ad2e4463a4ef19431f20f8d5308cdc62))
+- Custom user agent improvements for Storage ([#11425](https://github.com/aws-amplify/amplify-js/issues/11425)) ([fd04df4](https://github.com/aws-amplify/amplify-js/commit/fd04df40b6a07a864e2ded443a53f3efdf74931f))
+- user agent enhancements - auth reduction ([#11465](https://github.com/aws-amplify/amplify-js/issues/11465)) ([f73abd2](https://github.com/aws-amplify/amplify-js/commit/f73abd2f3c9a377a4d14832c68ea2880a1372020))
+- user agent enhancements - cross-category api>api-graphql>pubsub ([#11368](https://github.com/aws-amplify/amplify-js/issues/11368)) ([a88dda2](https://github.com/aws-amplify/amplify-js/commit/a88dda202919aa1d4dc2af48f33c3533d8626261))
+- user agent enhancements: part1 core ([#11121](https://github.com/aws-amplify/amplify-js/issues/11121)) ([66d1fb5](https://github.com/aws-amplify/amplify-js/commit/66d1fb5a7c3d82621ce9a8c1e880fe81573387ba))
+
 # [5.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.3.1...@aws-amplify/core@5.4.0) (2023-06-05)
 
 ### Bug Fixes
