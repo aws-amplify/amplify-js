@@ -57,7 +57,8 @@ const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
 const getEventDoc = parse(GetEvent);
 const getEventQuery = print(getEventDoc);
 
-afterEach(() => {
+beforeEach(() => {
+	jest.resetModules();
 	jest.restoreAllMocks();
 });
 
@@ -72,6 +73,7 @@ describe('API test', () => {
 			.mockImplementation(() => {
 				return mockCancellableToken;
 			});
+		delete (API as any)._api;
 	});
 	describe('graphql test', () => {
 		test('happy-case-query', async () => {
@@ -1305,6 +1307,7 @@ describe('API test', () => {
 		test('call isInstanceCreated', () => {
 			const createInstanceMock = spyOn(API.prototype, 'createInstance');
 			const api = new API(config);
+			delete (api as any)._api;
 			api.createInstanceIfNotCreated();
 			expect(createInstanceMock).toHaveBeenCalled();
 		});

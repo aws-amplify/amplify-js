@@ -2,12 +2,6 @@ import { GraphQLAPI } from './GraphQLAPI';
 import { Observable } from 'zen-observable-ts';
 import { parse, print, OperationDefinitionNode } from 'graphql';
 
-// used in NextJS POC.
-// not sure how this will work in Amplify generally. Need fo consult SSR designer!
-// import type Context from '../data/context-type';
-
-import { GraphQLResult } from './types/facade-2-types';
-
 /**
  * `GraphQLOptions` currently includes `{ query: string | DocumentNode, ... }`, but I'm thinking
  * we swap that for `query: string` or `query: string | T extends Whatever`.
@@ -15,18 +9,19 @@ import { GraphQLResult } from './types/facade-2-types';
 import { GraphQLOptions } from './types';
 
 import {
+	GraphQLResult,
 	GraphqlQueryParams,
 	GraphqlQueryResult,
 	GraphqlMutationParams,
 	GraphqlMutationResult,
 	GraphqlSubscriptionParams,
 	GraphqlSubscriptionResult,
-} from './types/facade-2-types';
+} from './types/facade-3-types';
 
 export function graphql<T = any>(
 	options: GraphQLOptions,
 	additionalHeaders?: { [key: string]: string }
-): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
+): Observable<GraphqlSubscriptionResult<'', T>> | Promise<GraphQLResult<T>> {
 	const parsedQuery =
 		typeof options.query === 'string'
 			? parse(options.query)
@@ -73,10 +68,21 @@ export function query<
 	).then(raw => {
 		const responseKey = raw.data ? Object.keys(raw.data)[0] : undefined;
 		if (responseKey) {
-			return {
-				data: raw.data[responseKey],
-				errors: raw.errors,
-			};
+			if (Array.isArray(raw.data[responseKey]?.items)) {
+				return {
+					data: (async function* _() {
+						for (const item of raw.data[responseKey]?.items) {
+							yield item;
+						}
+					})(),
+					errors: raw.errors,
+				};
+			} else {
+				return {
+					data: raw.data[responseKey],
+					errors: raw.errors,
+				};
+			}
 		} else {
 			return raw;
 		}
@@ -138,5 +144,7 @@ export function subscribe<
 				provider: raw.provider,
 			},
 		};
-	}) as Observable<GraphqlSubscriptionResult<TYPED_GQL_STRING, FALLBACK_TYPES>>;
+	}) as unknown as Observable<
+		GraphqlSubscriptionResult<TYPED_GQL_STRING, FALLBACK_TYPES>
+	>;
 }

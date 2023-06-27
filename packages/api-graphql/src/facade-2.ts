@@ -2,8 +2,6 @@ import { GraphQLAPI } from './GraphQLAPI';
 import { Observable } from 'zen-observable-ts';
 import { parse, print, OperationDefinitionNode } from 'graphql';
 
-import { GraphQLResult } from './types/facade-2-types';
-
 /**
  * `GraphQLOptions` currently includes `{ query: string | DocumentNode, ... }`, but I'm thinking
  * we swap that for `query: string` or `query: string | T extends Whatever`.
@@ -11,6 +9,7 @@ import { GraphQLResult } from './types/facade-2-types';
 import { GraphQLOptions } from './types';
 
 import {
+	GraphQLResult,
 	GraphqlQueryParams,
 	GraphqlQueryResult,
 	GraphqlMutationParams,
@@ -22,7 +21,7 @@ import {
 export function graphql<T = any>(
 	options: GraphQLOptions,
 	additionalHeaders?: { [key: string]: string }
-): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
+): Observable<GraphqlSubscriptionResult<'', T>> | Promise<GraphQLResult<T>> {
 	const parsedQuery =
 		typeof options.query === 'string'
 			? parse(options.query)
@@ -134,5 +133,7 @@ export function subscribe<
 				provider: raw.provider,
 			},
 		};
-	}) as Observable<GraphqlSubscriptionResult<TYPED_GQL_STRING, FALLBACK_TYPES>>;
+	}) as unknown as Observable<
+		GraphqlSubscriptionResult<TYPED_GQL_STRING, FALLBACK_TYPES>
+	>;
 }

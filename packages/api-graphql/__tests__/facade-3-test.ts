@@ -1,5 +1,5 @@
 import * as v5 from '../src';
-import * as v6 from '../src/facade-1';
+import * as v6 from '../src/facade-3';
 import * as queries from './helpers/fixtures/queries';
 import * as mutations from './helpers/fixtures/mutations';
 import * as subscriptions from './helpers/fixtures/subscriptions';
@@ -132,7 +132,7 @@ describe('v6', () => {
 			authMode: 'API_KEY',
 		});
 
-		const thread = result.data?.createThread;
+		const thread = result.data;
 		const errors = result.errors;
 
 		expectMutation(spy, 'createThread', threadToCreate);
@@ -167,7 +167,7 @@ describe('v6', () => {
 			authMode: 'API_KEY',
 		});
 
-		const thread = result.data?.updateThread;
+		const thread = result.data;
 		const errors = result.errors;
 
 		expectMutation(spy, 'updateThread', threadToUpdate);
@@ -200,8 +200,7 @@ describe('v6', () => {
 			authMode: 'API_KEY',
 		});
 
-		const thread = result.data?.deleteThread;
-		2;
+		const thread = result.data;
 		const errors = result.errors;
 
 		expectMutation(spy, 'deleteThread', threadToDelete);
@@ -236,7 +235,7 @@ describe('v6', () => {
 			authMode: 'API_KEY',
 		});
 
-		const thread = result.data?.getThread;
+		const thread = result.data;
 		const errors = result.errors;
 
 		expectGet(spy, 'getThread', graphqlVariables);
@@ -273,12 +272,17 @@ describe('v6', () => {
 			.spyOn((v5.GraphQLAPI as any)._api, 'post')
 			.mockImplementation(() => graphqlResponse);
 
+		// AsyncGenerator for now. But, could almost-as-easily be an AsyncIterable
+		// with additional toArray() methods, etc.
 		const result = await v6.query(queries.listThreads, {
 			variables: graphqlVariables,
 			authMode: 'API_KEY',
 		});
 
-		const { items, nextToken } = result.data?.listThreads || {};
+		const items: Record<string, any>[] = [];
+		for await (const thread of result.data || []) {
+			items.push(thread);
+		}
 		const errors = result.errors;
 
 		expectList(spy, 'listThreads', graphqlVariables);
@@ -320,7 +324,7 @@ describe('v6', () => {
 			.subscribe({
 				next(message) {
 					expectSub(spy, 'onCreateThread', graphqlVariables);
-					expect(message.value.data.onCreateThread).toEqual(
+					expect(message.value.data).toEqual(
 						graphqlMessage.value.data.onCreateThread
 					);
 					sub.unsubscribe();

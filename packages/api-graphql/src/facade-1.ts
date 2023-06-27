@@ -1,22 +1,6 @@
 import { GraphQLAPI } from './GraphQLAPI';
 import { Observable } from 'zen-observable-ts';
 import { parse, print, OperationDefinitionNode } from 'graphql';
-import { Auth, API } from 'aws-amplify';
-
-// used in NextJS POC.
-// not sure how this will work in Amplify generally. Need fo consult SSR designer!
-// import type Context from '../data/context-type';
-
-import {
-	Context,
-	ObservableOperation,
-	ModelOp,
-	FieldType,
-	Fields,
-	Shape,
-	ModelOf,
-	ModelOfFields,
-} from './types/facade-1-types';
 
 /**
  * `GraphQLOptions` currently includes `{ query: string | DocumentNode, ... }`, but I'm thinking
@@ -36,7 +20,7 @@ import {
 export function graphql<T = any>(
 	options: GraphQLOptions,
 	additionalHeaders?: { [key: string]: string }
-): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
+): Observable<GraphqlSubscriptionResult<'', T>> | Promise<GraphQLResult<T>> {
 	const parsedQuery =
 		typeof options.query === 'string'
 			? parse(options.query)

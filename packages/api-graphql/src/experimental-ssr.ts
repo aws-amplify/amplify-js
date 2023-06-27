@@ -27,7 +27,7 @@ export async function getPage<T extends Fields>(
 	const variables = { nextToken } as any;
 	if (filter) variables.filter = filter;
 
-	let page = await context.API.graphql({
+	const page = await context.API.graphql({
 		query: `
       query List${shape.name} (
         $filter: Model${shape.name}FilterInput

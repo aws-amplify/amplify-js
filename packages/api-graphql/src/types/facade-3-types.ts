@@ -56,7 +56,9 @@ type UnionOfKeysOf<T> = {
  */
 type Dig<T> = T[keyof T];
 
-type Iterated<T> = T extends Array<infer IT> ? AsyncGenerator<IT> : T;
+type Iterated<T> = T extends Array<infer IT>
+	? AsyncGenerator<Exclude<IT, null>>
+	: T;
 
 type WithIterablesInsteadOfArrays<T> = T extends { items: infer IT }
 	? Iterated<IT>

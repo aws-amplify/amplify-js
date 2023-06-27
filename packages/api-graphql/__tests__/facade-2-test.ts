@@ -102,6 +102,12 @@ describe('v6', () => {
 		});
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+		jest.clearAllMocks();
+		delete (v5.GraphQLAPI as any)._api;
+	});
+
 	test('create', async () => {
 		const threadToCreate = { topic: 'a very engaging discussion topic' };
 
