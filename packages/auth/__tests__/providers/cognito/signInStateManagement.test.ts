@@ -1,0 +1,69 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { RespondToAuthChallengeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
+import { authAPITestParams } from './testUtils/authApiTestParams';
+import { signIn } from '../../../src/providers/cognito/apis/signIn';
+import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
+import { signInStore } from '../../../src/providers/cognito/utils/signInStore';
+
+describe('local sign-in state management tests', () => {
+	const session = '1234234232';
+	const challengeName = 'SMS_MFA';
+	const username = authAPITestParams.user1.username;
+	const password = authAPITestParams.user1.password;
+	test('local state management should return state after signIn returns a ChallengeName', async () => {
+		const handleUserSRPAuthflowSpy = jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+					ChallengeName: challengeName,
+					Session: session,
+					$metadata: {},
+					ChallengeParameters: {
+						CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
+						CODE_DELIVERY_DESTINATION: '*******9878',
+					},
+				})
+			);
+		await signIn({
+			username,
+			password,
+		});
+
+		const localSignInState = signInStore.getState();
+
+		expect(handleUserSRPAuthflowSpy).toBeCalledTimes(1);
+		expect(localSignInState).toEqual({
+			activeChallengeName: challengeName,
+			activeSignInSession: session,
+			username,
+		});
+
+		handleUserSRPAuthflowSpy.mockClear();
+	});
+
+	test('local state management should return empty state after signIn returns an AuthenticationResult', async () => {
+		const handleUserSRPAuthflowSpy = jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> =>
+					authAPITestParams.RespondToAuthChallengeCommandOutput
+			);
+		await signIn({
+			username,
+			password
+		});
+
+		const localSignInState = signInStore.getState();
+
+		expect(handleUserSRPAuthflowSpy).toBeCalledTimes(1);
+		expect(localSignInState).toEqual({
+			activeChallengeName: undefined,
+			activeSignInSession: undefined,
+			username: undefined,
+		});
+
+		handleUserSRPAuthflowSpy.mockClear();
+	});
+});
