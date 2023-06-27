@@ -31,6 +31,7 @@ import {
 	DEFAULT_QUEUE_SIZE,
 	MAX_OBJECT_SIZE,
 } from '../common/S3ClientUtils';
+import { calculateContentMd5 } from '../common/MD5Helper/utils';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
 
@@ -57,7 +58,11 @@ export class AWSS3ProviderManagedUpload {
 	private totalBytesToUpload = 0;
 	private emitter: events.EventEmitter | null = null;
 
-	constructor(params: PutObjectCommandInput, opts, emitter: events.EventEmitter) {
+	constructor(
+		params: PutObjectCommandInput,
+		opts,
+		emitter: events.EventEmitter
+	) {
 		this.params = params;
 		this.opts = opts;
 		this.emitter = emitter;
@@ -159,12 +164,16 @@ export class AWSS3ProviderManagedUpload {
 				parts.map(async part => {
 					this.setupEventListener(part);
 					const options: AxiosHttpHandlerOptions = { emitter: part.emitter };
+					if (this.params.ContentMD5) {
+						this.params.ContentMD5 = await calculateContentMd5(part.bodyPart);
+					}
 					const {
 						Key,
 						Bucket,
 						SSECustomerAlgorithm,
 						SSECustomerKey,
 						SSECustomerKeyMD5,
+						ContentMD5,
 					} = this.params;
 					const res = await this.s3client.send(
 						new UploadPartCommand({
@@ -176,6 +185,7 @@ export class AWSS3ProviderManagedUpload {
 							...(SSECustomerAlgorithm && { SSECustomerAlgorithm }),
 							...(SSECustomerKey && { SSECustomerKey }),
 							...(SSECustomerKeyMD5 && { SSECustomerKeyMD5 }),
+							...(ContentMD5 && { ContentMD5 }),
 						}),
 						options
 					);
