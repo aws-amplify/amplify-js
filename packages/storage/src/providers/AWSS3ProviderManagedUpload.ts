@@ -173,12 +173,6 @@ export class AWSS3ProviderManagedUpload {
 				parts.map(async part => {
 					this.setupEventListener(part);
 					const options: AxiosHttpHandlerOptions = { emitter: part.emitter };
-					const { isObjectLockEnabled } = this.opts;
-					if (isObjectLockEnabled) {
-						this.params.ContentMD5 = await calculateContentMd5(
-							part.bodyPart as string | File
-						);
-					}
 					const {
 						Key,
 						Bucket,
