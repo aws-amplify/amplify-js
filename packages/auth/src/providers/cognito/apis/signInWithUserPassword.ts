@@ -4,7 +4,7 @@
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { AuthSignInStep, SignInRequest } from '../../../types';
+import { AuthSignInResult, AuthSignInStep, SignInRequest } from '../../../types';
 
 import { setActiveSignInSession } from '../utils/activeSignInSession';
 import {
@@ -33,7 +33,7 @@ import { CognitoSignInOptions } from '../types';
  */
 export async function signInWithUserPassword(
 	signInRequest: SignInRequest<CognitoSignInOptions>
-) {
+):Promise<AuthSignInResult> {
 	const { username, password, options } = signInRequest;
 	const clientMetadata = Amplify.config.clientMetadata;
 	const metadata = options?.serviceOptions?.clientMetadata || clientMetadata;
