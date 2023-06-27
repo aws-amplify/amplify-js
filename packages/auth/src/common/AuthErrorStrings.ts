@@ -44,7 +44,11 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 	[AuthValidationErrorCode.CustomAuthSignInPassword]: {
 		message: 'A password is not needed when signing in with CUSTOM_WITHOUT_SRP',
 		recoverySuggestion: 'Do not include a password in your signIn call.',
-	}
+	},
+	[AuthValidationErrorCode.IncorrectMFAMethod]: {
+		message: 'Incorrect MFA method was chosen. It should be either SMS or TOTP',
+		recoverySuggestion: 'Try to pass TOTP or SMS as the challengeResponse',
+	},
 };
 
 // TODO: delete this code when the Auth class is removed.
@@ -64,4 +68,8 @@ export enum AuthErrorStrings {
 	NETWORK_ERROR = 'Network Error',
 	DEVICE_CONFIG = 'Device tracking has not been configured in this User Pool',
 	AUTOSIGNIN_ERROR = 'Please use your credentials to sign in',
+}
+
+export enum AuthErrorCodes {
+	SignInException = 'SignInException',
 }

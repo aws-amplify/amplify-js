@@ -24,7 +24,10 @@ type Store<State, Action> = (reducer: Reducer<State, Action>) => {
 
 type Reducer<State, Action> = (state: State, action: Action) => State;
 
-const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
+export const signInReducer: Reducer<SignInState, SignInAction> = (
+	state,
+	action
+) => {
 	switch (action.type) {
 		case 'SET_SIGN_IN_SESSION':
 			return {
