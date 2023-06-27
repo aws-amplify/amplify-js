@@ -4,9 +4,11 @@
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { AuthSignInResult, AuthSignInStep, SignInRequest } from '../../../types';
-
-import { setActiveSignInSession } from '../utils/activeSignInSession';
+import {
+	AuthSignInResult,
+	AuthSignInStep,
+	SignInRequest,
+} from '../../../types';
 import {
 	ChallengeName,
 	ChallengeParameters,
@@ -19,6 +21,10 @@ import {
 import { Amplify } from '@aws-amplify/core';
 import { InitiateAuthException } from '../types/errors';
 import { CognitoSignInOptions } from '../types';
+import {
+	cleanActiveSignInState,
+	setActiveSignInState,
+} from '../utils/signInStore';
 
 /**
  * Signs a user in using USER_PASSWORD_AUTH AuthFlowType
@@ -33,7 +39,7 @@ import { CognitoSignInOptions } from '../types';
  */
 export async function signInWithUserPassword(
 	signInRequest: SignInRequest<CognitoSignInOptions>
-):Promise<AuthSignInResult> {
+): Promise<AuthSignInResult> {
 	const { username, password, options } = signInRequest;
 	const clientMetadata = Amplify.config.clientMetadata;
 	const metadata = options?.serviceOptions?.clientMetadata || clientMetadata;
@@ -54,10 +60,15 @@ export async function signInWithUserPassword(
 			Session,
 		} = await handleUserPasswordAuthFlow(username, password, metadata);
 
-		// Session used on RespondToAuthChallenge requests.
-		setActiveSignInSession(Session);
+		// sets up local state used during the sign-in process
+		setActiveSignInState({
+			activeSignInSession: Session,
+			username,
+			activeChallengeName: ChallengeName,
+		});
 		if (AuthenticationResult) {
 			// TODO(israx): cache tokens
+			cleanActiveSignInState();
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: AuthSignInStep.DONE },
@@ -70,7 +81,7 @@ export async function signInWithUserPassword(
 			challengeParameters: ChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		setActiveSignInSession(undefined);
+		cleanActiveSignInState();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;

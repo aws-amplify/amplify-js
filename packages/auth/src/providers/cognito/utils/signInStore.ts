@@ -23,10 +23,7 @@ type Store<State, Action> = (reducer: Reducer<State, Action>) => {
 
 type Reducer<State, Action> = (state: State, action: Action) => State;
 
-export const signInReducer: Reducer<SignInState, SignInAction> = (
-	state,
-	action
-) => {
+const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 	switch (action.type) {
 		case 'SET_ACTIVE_SIGN_IN_SESSION':
 			return {
@@ -71,3 +68,26 @@ const createStore: Store<SignInState, SignInAction> = reducer => {
 };
 
 export const signInStore = createStore(signInReducer);
+
+export function getActiveSignInState(): SignInState {
+	return signInStore.getState();
+}
+
+export function setActiveSignInState(state: SignInState): void {
+	signInStore.dispatch({
+		type: 'SET_ACTIVE_SIGN_IN_SESSION',
+		value: state.activeSignInSession,
+	});
+	signInStore.dispatch({
+		type: 'SET_USERNAME',
+		value: state.username,
+	});
+	signInStore.dispatch({
+		type: 'SET_ACTIVE_CHALLENGE_NAME',
+		value: state.activeChallengeName as ChallengeName,
+	});
+}
+
+export function cleanActiveSignInState(): void {
+	signInStore.dispatch({ type: 'SET_INITIAL_STATE' });
+}
