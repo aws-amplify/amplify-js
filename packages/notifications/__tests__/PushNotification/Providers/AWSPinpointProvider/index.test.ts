@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials, StorageHelper } from '@aws-amplify/core';
-import { PinpointClient } from '@aws-sdk/client-pinpoint';
+import { updateEndpoint } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 
 import { addEventListener } from '../../../../src/common/eventListeners';
 import { Platform } from '../../../../src/PushNotification/Platform';
@@ -24,7 +24,7 @@ import {
 import { mockStorage } from '../../../../__mocks__/mocks';
 
 jest.mock('@aws-amplify/core');
-jest.mock('@aws-sdk/client-pinpoint');
+jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('../../../../src/common/eventListeners');
 jest.mock('../../../../src/PushNotification/Platform');
 jest.mock(
@@ -34,8 +34,8 @@ jest.mock(
 const getStorageSpy = jest.spyOn(StorageHelper.prototype, 'getStorage');
 const credentialsGetSpy = jest.spyOn(Credentials, 'get');
 const credentialsShearSpy = jest.spyOn(Credentials, 'shear');
-const clientSendSpy = jest.spyOn(PinpointClient.prototype, 'send');
 const mockAddEventListener = addEventListener as jest.Mock;
+const mockUpdateEndpoint = updateEndpoint as jest.Mock;
 
 describe('AWSPinpoint InAppMessaging Provider', () => {
 	let provider: AWSPinpointProvider;
@@ -136,11 +136,11 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 
 		test('registers device with Pinpoint', async () => {
 			await provider.registerDevice(pushToken);
-			expect(clientSendSpy).toBeCalled();
+			expect(mockUpdateEndpoint).toBeCalled();
 		});
 
 		test('throws an error on client failure', async () => {
-			clientSendSpy.mockImplementationOnce(() => {
+			mockUpdateEndpoint.mockImplementationOnce(() => {
 				throw new Error();
 			});
 
