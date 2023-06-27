@@ -6,7 +6,7 @@ import { resendSignUpCode } from '../../../src/providers/cognito';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
-import { ResendConfirmationException } from '../../../src/providers/cognito/types/errors/service';
+import { ResendConfirmationException } from '../../../src/providers/cognito/types/errors';
 import { AmplifyErrorString } from '@aws-amplify/core';
 import * as resendSignUpConfirmationCodeClient from '../../../src/providers/cognito/utils/clients/ResendSignUpCodeClient';
 
