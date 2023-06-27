@@ -21,7 +21,7 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
-	serializeObjectKey,
+	serializePathnameObjectKey,
 } from './utils';
 
 export type CreateMultipartUploadInput = Extract<
@@ -40,7 +40,7 @@ const createMultipartUploadSerializer = (
 ): HttpRequest => {
 	const headers = serializeObjectConfigsToHeaders(input);
 	const url = new URL(endpoint.url.toString());
-	url.pathname = serializeObjectKey(url, input.Key);
+	url.pathname = serializePathnameObjectKey(url, input.Key);
 	url.search = 'uploads';
 	return {
 		method: 'POST',

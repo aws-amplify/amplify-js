@@ -14,7 +14,7 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
-	serializeObjectKey,
+	serializePathnameObjectKey,
 } from './utils';
 import type { S3ProviderCopyConfig } from '../../types/AWSS3Provider';
 
@@ -56,7 +56,7 @@ const copyObjectSerializer = (
 		}),
 	};
 	const url = new URL(endpoint.url.toString());
-	url.pathname = serializeObjectKey(url, input.Key);
+	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'PUT',
 		headers,

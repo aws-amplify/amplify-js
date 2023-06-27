@@ -12,7 +12,11 @@ import { MetadataBearer } from '@aws-sdk/types';
 import type { AbortMultipartUploadCommandInput } from './types';
 
 import { defaultConfig } from './base';
-import { parseXmlError, s3TransferHandler, serializeObjectKey } from './utils';
+import {
+	parseXmlError,
+	s3TransferHandler,
+	serializePathnameObjectKey,
+} from './utils';
 
 export type AbortMultipartUploadInput = Pick<
 	AbortMultipartUploadCommandInput,
@@ -26,7 +30,7 @@ const abortMultipartUploadSerializer = (
 	endpoint: Endpoint
 ): HttpRequest => {
 	const url = new URL(endpoint.url.toString());
-	url.pathname = serializeObjectKey(url, input.Key);
+	url.pathname = serializePathnameObjectKey(url, input.Key);
 	url.search = new URLSearchParams({
 		uploadId: input.UploadId,
 	}).toString();

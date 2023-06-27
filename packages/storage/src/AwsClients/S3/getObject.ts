@@ -25,7 +25,7 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectSsecOptionsToHeaders,
-	serializeObjectKey,
+	serializePathnameObjectKey,
 	CONTENT_SHA256_HEADER,
 } from './utils';
 
@@ -58,7 +58,7 @@ const getObjectSerializer = (
 		'response-content-type': 'ResponseContentType',
 	});
 	const url = new URL(endpoint.url.toString());
-	url.pathname = serializeObjectKey(url, input.Key);
+	url.pathname = serializePathnameObjectKey(url, input.Key);
 	url.search = new URLSearchParams(query).toString();
 	return {
 		method: 'GET',

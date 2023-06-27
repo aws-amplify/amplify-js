@@ -23,7 +23,7 @@ import {
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
-	serializeObjectKey,
+	serializePathnameObjectKey,
 } from './utils';
 
 export type ListObjectsV2Input = ListObjectsV2CommandInput;

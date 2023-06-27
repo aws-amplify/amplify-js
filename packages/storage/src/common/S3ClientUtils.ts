@@ -115,12 +115,12 @@ export const loadS3Config = (config: S3InputConfig): S3ResolvedConfig => {
 	};
 };
 
-const MB = 1024 * 1024;
-const GB = 1024 * MB;
-const TB = 1024 * GB;
+const MiB = 1024 * 1024;
+const GiB = 1024 * MiB;
+const TiB = 1024 * GiB;
 
-export const DEFAULT_PART_SIZE = 5 * MB;
-export const MAX_OBJECT_SIZE = 5 * TB;
+export const DEFAULT_PART_SIZE = 5 * MiB;
+export const MAX_OBJECT_SIZE = 5 * TiB;
 export const MAX_PARTS_COUNT = 10000;
 export const DEFAULT_QUEUE_SIZE = 4;
 

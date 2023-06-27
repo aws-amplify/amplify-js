@@ -58,6 +58,11 @@ const endpointResolver = (
 	if (customEndpoint) {
 		endpoint = new URL(customEndpoint);
 	} else if (useAccelerateEndpoint) {
+		if (forcePathStyle) {
+			throw new Error(
+				'Path style URLs are not supported with S3 Transfer Acceleration.'
+			);
+		}
 		endpoint = new URL(`https://s3-accelerate.${getDnsSuffix(region)}`);
 	} else {
 		endpoint = new URL(`https://s3.${region}.${getDnsSuffix(region)}`);

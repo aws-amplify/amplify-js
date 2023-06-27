@@ -284,7 +284,7 @@ export class AWSS3UploadTask implements UploadTask {
 				UploadId: this.uploadId,
 				MultipartUpload: {
 					// Parts are not always completed in order, we need to manually sort them
-					Parts: this.completedParts.sort(comparePartNumber),
+					Parts: [...this.completedParts].sort(comparePartNumber),
 				},
 			});
 			await this._verifyFileSize();

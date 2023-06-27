@@ -16,7 +16,7 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
-	serializeObjectKey,
+	serializePathnameObjectKey,
 } from './utils';
 import type { S3ProviderPutConfig } from '../../types';
 
@@ -59,7 +59,7 @@ const putObjectSerializer = (
 		ContentType: input.ContentType ?? 'application/octet-stream',
 	});
 	const url = new URL(endpoint.url.toString());
-	url.pathname = serializeObjectKey(url, input.Key);
+	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'PUT',
 		headers,

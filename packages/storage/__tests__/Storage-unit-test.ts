@@ -1170,6 +1170,7 @@ describe('Storage', () => {
 		});
 
 		test('happy case - cancel download', async () => {
+			expect.assertions(3);
 			jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
 				return Promise.resolve('some_file_content');
 			});
@@ -1191,6 +1192,7 @@ describe('Storage', () => {
 		});
 
 		test('happy case - cancel copy', async () => {
+			expect.assertions(3);
 			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);

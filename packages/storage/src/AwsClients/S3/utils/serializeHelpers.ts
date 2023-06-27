@@ -85,7 +85,7 @@ const serializeMetadata = (
  *
  * @internal
  */
-export const serializeObjectKey = (url: URL, key: string) => {
+export const serializePathnameObjectKey = (url: URL, key: string) => {
 	return (
 		url.pathname.replace(/\/$/, '') +
 		`/${key.split('/').map(extendedEncodeURIComponent).join('/')}`

@@ -74,7 +74,7 @@ export class AWSS3ProviderManagedUpload {
 				this.params.Body = this.body;
 				return putObject(this.s3Config, {
 					...this.params,
-					Key: (await this.getKeyPrefix()) + this.params.Key,
+					Key: await this.getObjectKeyWithPrefix(this.params.Key),
 				});
 			} else {
 				// Step 1: Determine appropriate part size.
@@ -142,7 +142,7 @@ export class AWSS3ProviderManagedUpload {
 		try {
 			const response = await createMultipartUpload(this.s3Config, {
 				...this.params,
-				Key: (await this.getKeyPrefix()) + this.params.Key,
+				Key: await this.getObjectKeyWithPrefix(this.params.Key),
 			});
 			logger.debug(response.UploadId);
 			return response.UploadId;
@@ -174,11 +174,11 @@ export class AWSS3ProviderManagedUpload {
 							PartNumber: part.partNumber,
 							Body: part.bodyPart,
 							UploadId: uploadId,
-							Key: (await this.getKeyPrefix()) + Key,
+							Key: await this.getObjectKeyWithPrefix(this.params.Key),
 							Bucket,
-							...(SSECustomerAlgorithm && { SSECustomerAlgorithm }),
-							...(SSECustomerKey && { SSECustomerKey }),
-							...(SSECustomerKeyMD5 && { SSECustomerKeyMD5 }),
+							SSECustomerAlgorithm,
+							SSECustomerKey,
+							SSECustomerKeyMD5,
 						}
 					);
 					return res;
@@ -202,7 +202,7 @@ export class AWSS3ProviderManagedUpload {
 	private async finishMultiPartUpload(uploadId: string) {
 		const input: CompleteMultipartUploadInput = {
 			Bucket: this.params.Bucket,
-			Key: (await this.getKeyPrefix()) + this.params.Key,
+			Key: await this.getObjectKeyWithPrefix(this.params.Key),
 			UploadId: uploadId,
 			MultipartUpload: { Parts: this.completedParts },
 		};
@@ -229,7 +229,7 @@ export class AWSS3ProviderManagedUpload {
 
 		const input = {
 			Bucket: this.params.Bucket,
-			Key: (await this.getKeyPrefix()) + this.params.Key,
+			Key: await this.getObjectKeyWithPrefix(this.params.Key),
 			UploadId: uploadId,
 		};
 
@@ -317,11 +317,12 @@ export class AWSS3ProviderManagedUpload {
 		return false;
 	}
 
-	private async getKeyPrefix() {
-		const prefix = await getPrefix({
-			...this.opts,
-			credentials: await credentialsProvider(),
-		});
-		return prefix;
+	private async getObjectKeyWithPrefix(keyWithoutPrefix: string) {
+		return (
+			(await getPrefix({
+				...this.opts,
+				credentials: await credentialsProvider(),
+			})) + keyWithoutPrefix
+		);
 	}
 }
