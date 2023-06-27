@@ -69,10 +69,6 @@ const createStore: Store<SignInState, SignInAction> = reducer => {
 
 export const signInStore = createStore(signInReducer);
 
-export function getActiveSignInState(): SignInState {
-	return signInStore.getState();
-}
-
 export function setActiveSignInState(state: SignInState): void {
 	signInStore.dispatch({
 		type: 'SET_ACTIVE_SIGN_IN_SESSION',
