@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.5.1...@aws-amplify/auth@5.5.2) (2023-06-27)
+
+### Bug Fixes
+
+- **auth:** Catch password reset Cognito API error response ([#11274](https://github.com/aws-amplify/amplify-js/issues/11274)) ([18012b0](https://github.com/aws-amplify/amplify-js/commit/18012b0e2856ac0a8fc87a8dee775ffb1528c487))
+
 ## [5.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.5.0...@aws-amplify/auth@5.5.1) (2023-06-21)
 
 ### Bug Fixes
