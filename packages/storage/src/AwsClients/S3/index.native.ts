@@ -3,7 +3,12 @@
 import '@aws-amplify/core/polyfills/URL'; // TODO: [v6] install react-native-url-polyfill separately
 
 export { SERVICE_NAME } from './base';
-export { getObject, GetObjectInput, GetObjectOutput } from './getObject';
+export {
+	getObject,
+	GetObjectInput,
+	GetObjectOutput,
+	getPresignedGetObjectUrl,
+} from './getObject';
 export {
 	listObjectsV2,
 	ListObjectsV2Input,
