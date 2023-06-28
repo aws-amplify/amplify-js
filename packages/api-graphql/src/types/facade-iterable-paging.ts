@@ -56,8 +56,16 @@ type UnionOfKeysOf<T> = {
  */
 type Dig<T> = T[keyof T];
 
+type Iterated<T> = T extends Array<infer IT>
+	? AsyncGenerator<Exclude<IT, null>>
+	: T;
+
+type WithIterablesInsteadOfArrays<T> = T extends { items: infer IT }
+	? Iterated<IT>
+	: T;
+
 export type GraphQLResult<T = object> = {
-	data: Dig<T>;
+	data: WithIterablesInsteadOfArrays<Dig<T>>;
 	errors?: GraphQLError[];
 	extensions?: {
 		[key: string]: any;
@@ -111,6 +119,26 @@ export type GraphqlQueryResult<T extends string, S> = T extends GeneratedQuery<
 	: S extends GraphqlQueryOverrides<infer IN, infer OUT>
 	? GraphQLResult<OUT>
 	: any;
+
+// e.g.
+export type ListThreadsQuery = {
+	listThreads?: {
+		__typename: 'ModelThreadConnection';
+		items: Array<{
+			__typename: 'Thread';
+			id: string;
+			topic?: string | null;
+			comments?: {
+				__typename: 'ModelCommentConnection';
+				nextToken?: string | null;
+			} | null;
+			createdAt?: string | null;
+			updatedAt: string;
+			owner?: string | null;
+		} | null>;
+		nextToken?: string | null;
+	} | null;
+};
 
 /** GraphQL mutate */
 
@@ -169,55 +197,4 @@ export type GraphqlSubscriptionResult<
 			: any;
 	};
 	provider: any;
-};
-
-/**
- * For SSR adaption and/or adaption in other contexts. Perhaps a test context.
- */
-
-export type Context = {
-	Auth: typeof Auth;
-	API: typeof API;
-};
-
-/**
- *
- *
- * The more experimental stuff starts here.
- *
- *
- */
-
-export enum ObservableOperation {
-	Create = 'Create',
-	Update = 'Update',
-	Delete = 'Delete',
-}
-
-export type ModelOp<Model> = {
-	op: ObservableOperation;
-	value: Model;
-};
-
-// as examples. can expand.
-export type FieldType<T> = (init: any) => T;
-
-export type Fields = Record<string, FieldType<any>>;
-
-export type Shape<T extends Fields> = {
-	name: string;
-	fields: T;
-};
-
-export type ModelOf<SHAPE> = SHAPE extends Shape<infer T>
-	? ModelOfFields<T>
-	: never;
-
-export type ModelOfFields<SHAPE extends Fields> = {
-	[K in keyof SHAPE]: ReturnType<SHAPE[K]>;
-};
-
-export type PageOf<SHAPE extends Fields> = {
-	items: ModelOfFields<SHAPE>[];
-	nextToken: any;
 };

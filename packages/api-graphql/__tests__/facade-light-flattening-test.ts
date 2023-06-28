@@ -1,5 +1,5 @@
 import * as v5 from '../src';
-import * as v6 from '../src/facade-3';
+import * as v6 from '../src/facade-light-flattening';
 import * as queries from './helpers/fixtures/queries';
 import * as mutations from './helpers/fixtures/mutations';
 import * as subscriptions from './helpers/fixtures/subscriptions';
@@ -272,17 +272,12 @@ describe('v6', () => {
 			.spyOn((v5.GraphQLAPI as any)._api, 'post')
 			.mockImplementation(() => graphqlResponse);
 
-		// AsyncGenerator for now. But, could almost-as-easily be an AsyncIterable
-		// with additional toArray() methods, etc.
 		const result = await v6.query(queries.listThreads, {
 			variables: graphqlVariables,
 			authMode: 'API_KEY',
 		});
 
-		const items: Record<string, any>[] = [];
-		for await (const thread of result.data || []) {
-			items.push(thread);
-		}
+		const { items, nextToken } = result.data || {};
 		const errors = result.errors;
 
 		expectList(spy, 'listThreads', graphqlVariables);

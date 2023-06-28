@@ -1,5 +1,5 @@
 import * as v5 from '../src';
-import * as v6 from '../src/facade-1';
+import * as v6 from '../src/facade-no-flattening';
 import * as queries from './helpers/fixtures/queries';
 import * as mutations from './helpers/fixtures/mutations';
 import * as subscriptions from './helpers/fixtures/subscriptions';

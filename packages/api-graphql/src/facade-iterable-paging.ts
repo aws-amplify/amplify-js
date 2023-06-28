@@ -16,7 +16,7 @@ import {
 	GraphqlMutationResult,
 	GraphqlSubscriptionParams,
 	GraphqlSubscriptionResult,
-} from './types/facade-2-types';
+} from './types/facade-iterable-paging';
 
 export function graphql<T = any>(
 	options: GraphQLOptions,
@@ -68,10 +68,21 @@ export function query<
 	).then(raw => {
 		const responseKey = raw.data ? Object.keys(raw.data)[0] : undefined;
 		if (responseKey) {
-			return {
-				data: raw.data[responseKey],
-				errors: raw.errors,
-			};
+			if (Array.isArray(raw.data[responseKey]?.items)) {
+				return {
+					data: (async function* _() {
+						for (const item of raw.data[responseKey]?.items) {
+							yield item;
+						}
+					})(),
+					errors: raw.errors,
+				};
+			} else {
+				return {
+					data: raw.data[responseKey],
+					errors: raw.errors,
+				};
+			}
 		} else {
 			return raw;
 		}

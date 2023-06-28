@@ -15,7 +15,7 @@ import {
 	GraphqlMutationResult,
 	GraphqlSubscriptionParams,
 	GraphqlSubscriptionResult,
-} from './types/facade-1-types';
+} from './types/facade-no-flattening';
 
 export function graphql<T = any>(
 	options: GraphQLOptions,
