@@ -447,7 +447,11 @@ export class AWSS3UploadTask implements UploadTask {
 				this.uploadId = uploadId;
 				this.queued = this._createParts();
 				this._initCachedUploadParts(parts);
-				this._startUpload();
+				if (this._isDone()) {
+					this._completeUpload();
+				} else {
+					this._startUpload();
+				}
 			} else {
 				if (!this.uploadId) {
 					const uploadId = await this._initMultipartUpload();
