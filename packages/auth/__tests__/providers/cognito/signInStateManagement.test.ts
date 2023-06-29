@@ -35,8 +35,8 @@ describe('local sign-in state management tests', () => {
 
 		expect(handleUserSRPAuthflowSpy).toBeCalledTimes(1);
 		expect(localSignInState).toEqual({
-			activeChallengeName: challengeName,
-			activeSignInSession: session,
+			challengeName,
+			signInSession: session,
 			username,
 		});
 
@@ -59,8 +59,8 @@ describe('local sign-in state management tests', () => {
 
 		expect(handleUserSRPAuthflowSpy).toBeCalledTimes(1);
 		expect(localSignInState).toEqual({
-			activeChallengeName: undefined,
-			activeSignInSession: undefined,
+			challengeName: undefined,
+			signInSession: undefined,
 			username: undefined,
 		});
 

@@ -68,9 +68,9 @@ export async function signInWithSRP(
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
-			activeSignInSession: Session,
+			signInSession: Session,
 			username,
-			activeChallengeName: ChallengeName,
+			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
 			// TODO(israx): cache tokens

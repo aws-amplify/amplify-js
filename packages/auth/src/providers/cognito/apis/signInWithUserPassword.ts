@@ -22,8 +22,7 @@ import { Amplify } from '@aws-amplify/core';
 import { InitiateAuthException } from '../types/errors';
 import { CognitoSignInOptions } from '../types';
 import {
-	cleanActiveSignInState,
-	setActiveSignInState,
+	cleanActiveSignInState, setActiveSignInState
 } from '../utils/signInStore';
 
 /**
@@ -62,9 +61,9 @@ export async function signInWithUserPassword(
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
-			activeSignInSession: Session,
+			signInSession: Session,
 			username,
-			activeChallengeName: ChallengeName,
+			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
 			// TODO(israx): cache tokens

@@ -6,15 +6,16 @@ import { ChallengeName } from './clients/types/models';
 // TODO: replace all of this implementation with state machines
 type SignInState = {
 	username: string | undefined;
-	activeChallengeName: string | undefined;
-	activeSignInSession: string | undefined;
+	challengeName: ChallengeName | undefined;
+	signInSession: string | undefined;
 };
 
 type SignInAction =
 	| { type: 'SET_INITIAL_STATE' }
+	| { type: 'SET_SIGN_IN_STATE'; value: SignInState }
 	| { type: 'SET_USERNAME'; value: string | undefined }
-	| { type: 'SET_ACTIVE_CHALLENGE_NAME'; value: ChallengeName | undefined }
-	| { type: 'SET_ACTIVE_SIGN_IN_SESSION'; value: string | undefined };
+	| { type: 'SET_CHALLENGE_NAME'; value: ChallengeName | undefined }
+	| { type: 'SET_SIGN_IN_SESSION'; value: string | undefined };
 
 type Store<State, Action> = (reducer: Reducer<State, Action>) => {
 	getState: () => ReturnType<Reducer<State, Action>>;
@@ -25,15 +26,19 @@ type Reducer<State, Action> = (state: State, action: Action) => State;
 
 const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 	switch (action.type) {
-		case 'SET_ACTIVE_SIGN_IN_SESSION':
+		case 'SET_SIGN_IN_SESSION':
 			return {
 				...state,
-				activeSignInSession: action.value,
+				signInSession: action.value,
 			};
-		case 'SET_ACTIVE_CHALLENGE_NAME':
+		case 'SET_SIGN_IN_STATE':
+			return {
+				...action.value,
+			};
+		case 'SET_CHALLENGE_NAME':
 			return {
 				...state,
-				activeChallengeName: action.value,
+				challengeName: action.value,
 			};
 		case 'SET_USERNAME':
 			return {
@@ -42,22 +47,25 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 			};
 		case 'SET_INITIAL_STATE':
 			return {
-				activeSignInSession: undefined,
+				signInSession: undefined,
 				username: undefined,
-				activeChallengeName: undefined,
+				challengeName: undefined,
 			};
 		default:
 			return state;
 	}
 };
 
-const createStore: Store<SignInState, SignInAction> = reducer => {
-	const initialSignInState = {
+function defaultState(): SignInState {
+	return {
 		username: undefined,
-		activeChallengeName: undefined,
-		activeSignInSession: undefined,
+		challengeName: undefined,
+		signInSession: undefined,
 	};
-	let currentState = reducer(initialSignInState, { type: 'SET_INITIAL_STATE' });
+}
+
+const createStore: Store<SignInState, SignInAction> = reducer => {
+	let currentState = reducer(defaultState(), { type: 'SET_INITIAL_STATE' });
 
 	return {
 		getState: () => currentState,
@@ -71,16 +79,8 @@ export const signInStore = createStore(signInReducer);
 
 export function setActiveSignInState(state: SignInState): void {
 	signInStore.dispatch({
-		type: 'SET_ACTIVE_SIGN_IN_SESSION',
-		value: state.activeSignInSession,
-	});
-	signInStore.dispatch({
-		type: 'SET_USERNAME',
-		value: state.username,
-	});
-	signInStore.dispatch({
-		type: 'SET_ACTIVE_CHALLENGE_NAME',
-		value: state.activeChallengeName as ChallengeName,
+		type: 'SET_SIGN_IN_STATE',
+		value: state,
 	});
 }
 
