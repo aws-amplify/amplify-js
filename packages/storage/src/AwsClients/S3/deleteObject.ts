@@ -5,26 +5,33 @@ import {
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import { MetadataBearer } from '@aws-sdk/types';
-import type { DeleteObjectCommandInput } from './types';
+import type {
+	DeleteObjectCommandInput,
+	DeleteObjectCommandOutput,
+} from './types';
 
 import { defaultConfig } from './base';
-import { parseXmlError, s3TransferHandler } from './utils';
+import {
+	deserializeBoolean,
+	map,
+	parseXmlError,
+	s3TransferHandler,
+	serializePathnameObjectKey,
+} from './utils';
 
 export type DeleteObjectInput = Pick<
 	DeleteObjectCommandInput,
 	'Bucket' | 'Key'
 >;
 
-export type DeleteObjectOutput = MetadataBearer;
+export type DeleteObjectOutput = DeleteObjectCommandOutput;
 
 const deleteObjectSerializer = (
 	input: DeleteObjectInput,
 	endpoint: Endpoint
 ): HttpRequest => {
 	const url = new URL(endpoint.url.toString());
-	url.hostname = `${input.Bucket}.${url.hostname}`;
-	url.pathname = `/${input.Key}`;
+	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'DELETE',
 		headers: {},
@@ -39,7 +46,13 @@ const deleteObjectDeserializer = async (
 		const error = await parseXmlError(response);
 		throw error;
 	} else {
+		const content = map(response.headers, {
+			DeleteMarker: ['x-amz-delete-marker', deserializeBoolean],
+			VersionId: 'x-amz-version-id',
+			RequestCharged: 'x-amz-request-charged',
+		});
 		return {
+			...content,
 			$metadata: parseMetadata(response),
 		};
 	}

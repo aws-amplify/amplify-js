@@ -13,16 +13,13 @@ import type { EventEmitter } from 'events';
 import {
 	SEND_DOWNLOAD_PROGRESS_EVENT,
 	SEND_UPLOAD_PROGRESS_EVENT,
+	ABORT_ERROR_CODE,
+	ABORT_ERROR_MESSAGE,
+	CANCELED_ERROR_CODE,
+	CANCELED_ERROR_MESSAGE,
+	NETWORK_ERROR_CODE,
+	NETWORK_ERROR_MESSAGE,
 } from './constants';
-
-const NETWORK_ERROR_MESSAGE = 'Network Error';
-const NETWORK_ERROR_CODE = 'ECONNABORTED';
-
-const ABORT_ERROR_MESSAGE = 'Request aborted';
-const ABORT_ERROR_CODE = 'ERR_ABORTED';
-
-const CANCELED_ERROR_MESSAGE = 'canceled';
-const CANCELED_ERROR_CODE = 'ERR_CANCELED';
 
 const logger = new Logger('xhr-http-handler');
 
@@ -92,7 +89,7 @@ export const xhrTransferHandler: TransferHandler<
 		// Handle browser request cancellation (as opposed to a manual cancellation)
 		xhr.addEventListener('abort', () => {
 			// The abort event can be triggered after the error or load event. So we need to check if the xhr is null.
-			if (!xhr) return;
+			if (!xhr || abortSignal?.aborted) return;
 			const error = simulateAxiosError(
 				ABORT_ERROR_MESSAGE,
 				ABORT_ERROR_CODE,
@@ -163,7 +160,7 @@ export const xhrTransferHandler: TransferHandler<
 					return;
 				}
 				const canceledError = simulateAxiosCanceledError(
-					CANCELED_ERROR_MESSAGE,
+					CANCELED_ERROR_MESSAGE ?? abortSignal.reason,
 					CANCELED_ERROR_CODE,
 					xhr,
 					options
@@ -214,6 +211,8 @@ const simulateAxiosCanceledError = (
 	return error;
 };
 
+export const isCancelError = (error: unknown): boolean =>
+	!!error?.['__CANCEL__'];
 /**
  * Convert xhr.getAllResponseHeaders() string to a Record<string, string>. Note that modern browser already returns
  * header names in lowercase.

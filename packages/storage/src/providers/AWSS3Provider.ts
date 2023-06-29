@@ -10,27 +10,25 @@ import {
 	StorageAction,
 } from '@aws-amplify/core';
 import {
-	S3Client,
-	GetObjectCommand,
-	DeleteObjectCommand,
-	ListObjectsV2Command,
-	GetObjectCommandOutput,
-	DeleteObjectCommandInput,
-	CopyObjectCommandInput,
-	CopyObjectCommand,
-	PutObjectCommandInput,
-	GetObjectCommandInput,
-	ListObjectsV2Request,
-	HeadObjectCommand,
-	HeadObjectCommandInput,
-} from '@aws-sdk/client-s3';
-import { formatUrl } from '@aws-sdk/util-format-url';
-import { createRequest } from '@aws-sdk/util-create-request';
-import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
+	copyObject,
+	CopyObjectInput,
+	getObject,
+	GetObjectInput,
+	GetObjectOutput,
+	getPresignedGetObjectUrl,
+	PutObjectInput,
+	headObject,
+	DeleteObjectInput,
+	deleteObject,
+	ListObjectsV2Input,
+	listObjectsV2,
+	SERVICE_NAME as S3_SERVICE_NAME,
+	HeadObjectInput,
+} from '../AwsClients/S3';
 import {
 	SEND_DOWNLOAD_PROGRESS_EVENT,
 	SEND_UPLOAD_PROGRESS_EVENT,
-} from './axios-http-handler';
+} from '../AwsClients/S3/utils';
 import {
 	StorageOptions,
 	StorageProvider,
@@ -51,24 +49,20 @@ import {
 	UploadTask,
 	S3ClientOptions,
 	S3ProviderListOutput,
-	S3ProviderGetPropertiesOutput,
 	S3ProviderGetPropertiesConfig,
+	S3ProviderGetPropertiesOutput,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
 import {
-	createPrefixMiddleware,
-	prefixMiddlewareOptions,
 	getPrefix,
-	autoAdjustClockskewMiddleware,
-	autoAdjustClockskewMiddlewareOptions,
-	createS3Client,
+	S3ResolvedConfig,
+	loadS3Config,
 } from '../common/S3ClientUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
 import * as events from 'events';
-import { CancelTokenSource } from 'axios';
 
 const logger = new Logger('AWSS3Provider');
 
@@ -81,8 +75,8 @@ interface AddTaskInput {
 	bucket: string;
 	emitter: events.EventEmitter;
 	key: string;
-	s3Client: S3Client;
-	params?: PutObjectCommandInput;
+	s3Config: S3ResolvedConfig;
+	params?: PutObjectInput;
 }
 
 /**
@@ -144,7 +138,7 @@ export class AWSS3Provider implements StorageProvider {
 		addTaskInput: AddTaskInput,
 		config: S3ProviderPutConfig & ResumableUploadConfig
 	): UploadTask {
-		const { s3Client, emitter, key, file, params } = addTaskInput;
+		const { s3Config, emitter, key, file, params } = addTaskInput;
 		const {
 			progressCallback,
 			completeCallback,
@@ -206,7 +200,7 @@ export class AWSS3Provider implements StorageProvider {
 		);
 
 		const task = new AWSS3UploadTask({
-			s3Client,
+			s3Config,
 			file,
 			emitter,
 			level: config.level,
@@ -288,7 +282,7 @@ export class AWSS3Provider implements StorageProvider {
 		const finalDestKey = `${destPrefix}${destKey}`;
 		logger.debug(`copying ${finalSrcKey} to ${finalDestKey}`);
 
-		const params: CopyObjectCommandInput = {
+		const params: CopyObjectInput = {
 			Bucket: bucket,
 			CopySource: finalSrcKey,
 			Key: finalDestKey,
@@ -315,9 +309,14 @@ export class AWSS3Provider implements StorageProvider {
 		}
 		if (acl) params.ACL = acl;
 
-		const s3 = this._createNewS3Client(opt, StorageAction.Copy);
 		try {
-			await s3.send(new CopyObjectCommand(params));
+			await copyObject(
+				loadS3Config({
+					...opt,
+					storageAction: StorageAction.Copy,
+				}),
+				params
+			);
 			dispatchStorageEvent(
 				track,
 				'copy',
@@ -351,7 +350,7 @@ export class AWSS3Provider implements StorageProvider {
 	 *
 	 * @param {string} key - key of the object
 	 * @param {S3ProviderGetConfig} [config] - Optional configuration for the underlying S3 command
-	 * @return {Promise<string | GetObjectCommandOutput>} - A promise resolves to Amazon S3 presigned URL or the
+	 * @return {Promise<string | GetObjectOutput>} - A promise resolves to Amazon S3 presigned URL or the
 	 * GetObjectCommandOutput if download is set to true on success
 	 */
 	public async get<T extends S3ProviderGetConfig & StorageOptions>(
@@ -361,7 +360,7 @@ export class AWSS3Provider implements StorageProvider {
 	public async get(
 		key: string,
 		config?: S3ProviderGetConfig
-	): Promise<string | GetObjectCommandOutput> {
+	): Promise<string | GetObjectOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
@@ -386,10 +385,14 @@ export class AWSS3Provider implements StorageProvider {
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		const emitter = new events.EventEmitter();
-		const s3 = this._createNewS3Client(opt, StorageAction.Get, emitter);
+		const s3Config = loadS3Config({
+			...opt,
+			emitter,
+			storageAction: StorageAction.Get,
+		});
 		logger.debug('get ' + key + ' from ' + final_key);
 
-		const params: GetObjectCommandInput = {
+		const params: GetObjectInput = {
 			Bucket: bucket,
 			Key: final_key,
 		};
@@ -411,7 +414,6 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		if (download === true) {
-			const getObjectCommand = new GetObjectCommand(params);
 			try {
 				if (progressCallback) {
 					if (typeof progressCallback === 'function') {
@@ -425,7 +427,7 @@ export class AWSS3Provider implements StorageProvider {
 						);
 					}
 				}
-				const response = await s3.send(getObjectCommand);
+				const response = await getObject(s3Config, params);
 				emitter.removeAllListeners(SEND_DOWNLOAD_PROGRESS_EVENT);
 				dispatchStorageEvent(
 					track,
@@ -452,10 +454,8 @@ export class AWSS3Provider implements StorageProvider {
 			}
 		}
 		if (validateObjectExistence) {
-			const headObjectCommand = new HeadObjectCommand(params);
-
 			try {
-				await s3.send(headObjectCommand);
+				await headObject(s3Config, params);
 			} catch (error) {
 				if (error.$metadata?.httpStatusCode === 404) {
 					dispatchStorageEvent(
@@ -473,13 +473,15 @@ export class AWSS3Provider implements StorageProvider {
 			}
 		}
 		try {
-			const signer = new S3RequestPresigner({ ...s3.config });
-			const request = await createRequest(s3, new GetObjectCommand(params));
-			// Default is 15 mins as defined in V2 AWS SDK
-			const url = formatUrl(
-				await signer.presign(request, {
-					expiresIn: expires || DEFAULT_PRESIGN_EXPIRATION,
-				})
+			const url = await getPresignedGetObjectUrl(
+				{
+					...s3Config,
+					expiration: expires || DEFAULT_PRESIGN_EXPIRATION,
+					credentials: await s3Config.credentials(),
+					signingRegion: s3Config.region,
+					signingService: S3_SERVICE_NAME,
+				},
+				params
 			);
 			dispatchStorageEvent(
 				track,
@@ -528,15 +530,13 @@ export class AWSS3Provider implements StorageProvider {
 		} = opt;
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
-		const emitter = new events.EventEmitter();
-		const s3 = this._createNewS3Client(
-			opt,
-			StorageAction.GetProperties,
-			emitter
-		);
 		logger.debug(`getProperties ${key} from ${final_key}`);
 
-		const params: HeadObjectCommandInput = {
+		const s3Config = loadS3Config({
+			...opt,
+			storageAction: StorageAction.GetProperties,
+		});
+		const params: HeadObjectInput = {
 			Bucket: bucket,
 			Key: final_key,
 		};
@@ -550,11 +550,9 @@ export class AWSS3Provider implements StorageProvider {
 		if (SSECustomerKeyMD5) {
 			params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
 		}
-		// See: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/classes/headobjectcommand.html
 
-		const headObjectCommand = new HeadObjectCommand(params);
 		try {
-			const response = await s3.send(headObjectCommand);
+			const response = await headObject(s3Config, params);
 			const getPropertiesResponse: S3ProviderGetPropertiesOutput = {
 				contentLength: response.ContentLength,
 				contentType: response.ContentType,
@@ -597,7 +595,7 @@ export class AWSS3Provider implements StorageProvider {
 	 */
 	public put<T extends S3ProviderPutConfig>(
 		key: string,
-		object: PutObjectCommandInput['Body'],
+		object: PutObjectInput['Body'],
 		config?: T
 	): S3ProviderPutOutput<T> {
 		const opt = Object.assign({}, this._config, config);
@@ -621,7 +619,7 @@ export class AWSS3Provider implements StorageProvider {
 		} = opt;
 		const type = contentType ? contentType : 'binary/octet-stream';
 
-		const params: PutObjectCommandInput = {
+		const params: PutObjectInput = {
 			Bucket: bucket,
 			Key: key,
 			Body: object,
@@ -669,17 +667,14 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		if (resumable === true) {
-			const s3Client = this._createNewS3Client(opt, StorageAction.Put);
-			// we are using aws sdk middleware to inject the prefix to key, this way we don't have to call
-			// this._ensureCredentials() which allows us to make this function sync so we can return non-Promise like UploadTask
-			s3Client.middlewareStack.add(
-				createPrefixMiddleware(opt, key),
-				prefixMiddlewareOptions
-			);
+			const s3Config = loadS3Config({
+				...opt,
+				storageAction: StorageAction.Put,
+			});
 			const addTaskInput: AddTaskInput = {
 				bucket,
 				key,
-				s3Client,
+				s3Config,
 				file: object as Blob,
 				emitter,
 				accessLevel: level,
@@ -749,18 +744,19 @@ export class AWSS3Provider implements StorageProvider {
 
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
-		const s3 = this._createNewS3Client(opt, StorageAction.Remove);
 		logger.debug('remove ' + key + ' from ' + final_key);
 
-		const params: DeleteObjectCommandInput = {
+		const params: DeleteObjectInput = {
 			Bucket: bucket,
 			Key: final_key,
 		};
 
-		const deleteObjectCommand = new DeleteObjectCommand(params);
-
+		const s3Config = loadS3Config({
+			...opt,
+			storageAction: StorageAction.Remove,
+		});
 		try {
-			const response = await s3.send(deleteObjectCommand);
+			const response = await deleteObject(s3Config, params);
 			dispatchStorageEvent(
 				track,
 				'delete',
@@ -781,7 +777,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 	}
 	private async _list(
-		params: ListObjectsV2Request,
+		params: ListObjectsV2Input,
 		opt: S3ClientOptions,
 		prefix: string
 	): Promise<S3ProviderListOutput> {
@@ -789,9 +785,13 @@ export class AWSS3Provider implements StorageProvider {
 			results: [],
 			hasNextToken: false,
 		};
-		const s3 = this._createNewS3Client(opt, StorageAction.List);
-		const listObjectsV2Command = new ListObjectsV2Command({ ...params });
-		const response = await s3.send(listObjectsV2Command);
+		const response = await listObjectsV2(
+			loadS3Config({
+				...opt,
+				storageAction: StorageAction.List,
+			}),
+			{ ...params }
+		);
 		if (response && response.Contents) {
 			list.results = response.Contents.map(item => {
 				return {
@@ -834,7 +834,7 @@ export class AWSS3Provider implements StorageProvider {
 			};
 			const MAX_PAGE_SIZE = 1000;
 			let listResult: S3ProviderListOutput;
-			const params: ListObjectsV2Request = {
+			const params: ListObjectsV2Input = {
 				Bucket: bucket,
 				Prefix: final_path,
 				MaxKeys: MAX_PAGE_SIZE,
@@ -935,26 +935,5 @@ export class AWSS3Provider implements StorageProvider {
 			default:
 				return publicPath;
 		}
-	}
-
-	/**
-	 * Creates an S3 client with new V3 aws sdk
-	 */
-	private _createNewS3Client(
-		config: {
-			region?: string;
-			cancelTokenSource?: CancelTokenSource;
-			dangerouslyConnectToHttpEndpointForTesting?: boolean;
-			useAccelerateEndpoint?: boolean;
-		},
-		storageAction: StorageAction,
-		emitter?: events.EventEmitter
-	): S3Client {
-		const s3client = createS3Client(config, storageAction, emitter);
-		s3client.middlewareStack.add(
-			autoAdjustClockskewMiddleware(s3client.config),
-			autoAdjustClockskewMiddlewareOptions
-		);
-		return s3client;
 	}
 }

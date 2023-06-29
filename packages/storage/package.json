@@ -47,13 +47,9 @@
   ],
   "dependencies": {
     "@aws-amplify/core": "5.5.1",
-    "@aws-sdk/client-s3": "3.6.3",
-    "@aws-sdk/s3-request-presigner": "3.6.1",
-    "@aws-sdk/util-create-request": "3.6.1",
-    "@aws-sdk/util-format-url": "3.6.1",
-    "axios": "0.26.0",
+    "@aws-sdk/types": "3.6.1",
     "events": "^3.1.0",
-    "fast-xml-parser": "4.2.4",
+    "fast-xml-parser": "^4.2.5",
     "tslib": "^1.8.0",
     "typescript": "5.0.2"
   },
@@ -62,7 +58,7 @@
       "name": "Storage (top-level class)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, Storage }",
-      "limit": "88 kB"
+      "limit": "35.8 kB"
     }
   ],
   "jest": {

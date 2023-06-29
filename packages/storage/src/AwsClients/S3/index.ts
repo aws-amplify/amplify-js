@@ -1,6 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+export { SERVICE_NAME } from './base';
+export {
+	getObject,
+	GetObjectInput,
+	GetObjectOutput,
+	getPresignedGetObjectUrl,
+} from './getObject';
 export {
 	listObjectsV2,
 	ListObjectsV2Input,
@@ -8,27 +15,27 @@ export {
 } from './listObjectsV2';
 export { putObject, PutObjectInput, PutObjectOutput } from './putObject';
 export {
-	abortMultipartUpload,
-	AbortMultipartUploadInput,
-	AbortMultipartUploadOutput,
-} from './abortMultipartUpload';
+	createMultipartUpload,
+	CreateMultipartUploadInput,
+	CreateMultipartUploadOutput,
+} from './createMultipartUpload';
+export { uploadPart, UploadPartInput, UploadPartOutput } from './uploadPart';
 export {
 	completeMultipartUpload,
 	CompleteMultipartUploadInput,
 	CompleteMultipartUploadOutput,
 } from './completeMultipartUpload';
-export {
-	createMultipartUpload,
-	CreateMultipartUploadInput,
-	CreateMultipartUploadOutput,
-} from './createMultipartUpload';
 export { listParts, ListPartsInput, ListPartsOutput } from './listParts';
-export { uploadPart, UploadPartInput, UploadPartOutput } from './uploadPart';
+export {
+	abortMultipartUpload,
+	AbortMultipartUploadInput,
+	AbortMultipartUploadOutput,
+} from './abortMultipartUpload';
 export { copyObject, CopyObjectInput, CopyObjectOutput } from './copyObject';
+export { headObject, HeadObjectInput, HeadObjectOutput } from './headObject';
 export {
 	deleteObject,
 	DeleteObjectInput,
 	DeleteObjectOutput,
 } from './deleteObject';
-export { getObject, GetObjectInput, GetObjectOutput } from './getObject';
-export { headObject, HeadObjectInput, HeadObjectOutput } from './headObject';
+export { CompletedPart, Part, _Object } from './types';
