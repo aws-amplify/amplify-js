@@ -240,6 +240,79 @@ describe('resumable upload task test', () => {
 		);
 	});
 
+	test('Should complete upload if all parts have been uploaded on resume', done => {
+		const file = new File(['TestFileContent'], 'testFileName');
+		Object.defineProperty(file, 'size', { value: 25048576 });
+		const emitter = new events.EventEmitter();
+		const input: AWSS3UploadTaskParams = {
+			file,
+			// s3Client: new S3Client(testOpts),
+			s3Config: defaultS3Config,
+			emitter: emitter,
+			storage: mockLocalStorage,
+			level: 'public',
+			params: {
+				Bucket: 'bucket',
+				Key: 'key',
+			},
+			prefixPromise: Promise.resolve('prefix'),
+		};
+		(listParts as jest.Mock).mockResolvedValue({
+			Parts: [
+				{
+					PartNumber: 1,
+					Size: 25048576 / 2,
+					ETag: 'etag-1',
+				},
+				{
+					PartNumber: 2,
+					Size: 25048576 / 2,
+					ETag: 'etag-2',
+				},
+			],
+		});
+		(createMultipartUpload as jest.Mock).mockResolvedValue({
+			UploadId: 'uploadId',
+		});
+		(listObjectsV2 as jest.Mock).mockResolvedValue({
+			Contents: [{ Key: 'prefix' + input.params.Key, Size: 25048576 }],
+		});
+		(completeMultipartUpload as jest.Mock).mockResolvedValue({
+			Key: input.params.Key,
+		});
+		const fileMetadata: FileMetadata = {
+			bucket: 'bucket',
+			key: 'key',
+			lastTouched: Date.now(),
+			uploadId: 'uploadId',
+			fileName: file.name,
+		};
+		const fileId = [
+			file.name,
+			file.lastModified,
+			file.size,
+			file.type,
+			input.params.Bucket,
+			input.level,
+			input.params.Key,
+		].join('-');
+		const cachedUploadTasks = {
+			[fileId]: fileMetadata,
+		};
+		mockLocalStorage.setItem(
+			UPLOADS_STORAGE_KEY,
+			JSON.stringify(cachedUploadTasks)
+		);
+		const uploadTask = new AWSS3UploadTask(input);
+		// kick off the upload task
+		uploadTask.resume();
+
+		emitter.on(TaskEvents.UPLOAD_COMPLETE, () => {
+			expect(completeMultipartUpload).toBeCalledTimes(1);
+			done();
+		});
+	});
+
 	test('upload a body that exceeds the size of default part size and parts count', done => {
 		const testUploadId = 'testUploadId';
 		let buffer: ArrayBuffer;
