@@ -8,12 +8,7 @@ export { Amplify } from './Amplify';
 export { AmplifyClass } from './Amplify';
 export { ClientDevice } from './ClientDevice';
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
-export {
-	invalidParameter,
-	missingConfig,
-	AmplifyError,
-	AmplifyErrorString,
-} from './Errors';
+export { invalidParameter, missingConfig } from './Errors';
 export { Hub, HubCapsule, HubCallback, HubPayload } from './Hub';
 export { I18n } from './I18n';
 export {
@@ -37,12 +32,7 @@ export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export { AppState, AsyncStorage, Linking } from './RNComponents';
 export { Credentials, CredentialsClass } from './Credentials';
 export { ServiceWorker } from './ServiceWorker';
-export {
-	ICredentials,
-	ErrorParams,
-	AmplifyErrorMap,
-	ServiceError,
-} from './types';
+export { ICredentials } from './types';
 export { StorageHelper, MemoryStorage } from './StorageHelper';
 export { UniversalStorage } from './UniversalStorage';
 export {
