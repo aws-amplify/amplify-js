@@ -36,10 +36,12 @@ const listPartsHappyCase: ApiFunctionalTestCase<typeof listParts> = [
 			'<Part>' +
 			'<PartNumber>1</PartNumber>' +
 			'<ETag>etag1</ETag>' +
+			'<Size>5242880</Size>' +
 			'</Part>' +
 			'<Part>' +
 			'<PartNumber>2</PartNumber>' +
 			'<ETag>etag2</ETag>' +
+			'<Size>1024</Size>' +
 			'</Part>' +
 			'</ListPartsResult>',
 	},
@@ -50,10 +52,12 @@ const listPartsHappyCase: ApiFunctionalTestCase<typeof listParts> = [
 			{
 				PartNumber: 1,
 				ETag: 'etag1',
+				Size: 5242880,
 			},
 			{
 				PartNumber: 2,
 				ETag: 'etag2',
+				Size: 1024,
 			},
 		],
 	},
