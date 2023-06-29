@@ -20,9 +20,10 @@ import { Cache } from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';
 import axios, { CancelTokenStatic } from 'axios';
 
-axios.CancelToken = <CancelTokenStatic>{
+axios.CancelToken = {
 	source: () => ({ token: null, cancel: null }),
-};
+} as unknown as CancelTokenStatic;
+
 axios.isCancel = (value: any): boolean => {
 	return false;
 };
@@ -83,6 +84,7 @@ describe('API test', () => {
 			.mockImplementation(() => {
 				return mockCancellableToken;
 			});
+		delete (API as any)._api;
 	});
 	describe('graphql test', () => {
 		test('happy-case-query', async () => {
@@ -1262,6 +1264,7 @@ describe('API test', () => {
 		test('call isInstanceCreated', () => {
 			const createInstanceMock = spyOn(API.prototype, 'createInstance');
 			const api = new API(config);
+			delete (api as any)._api;
 			api.createInstanceIfNotCreated();
 			expect(createInstanceMock).toHaveBeenCalled();
 		});

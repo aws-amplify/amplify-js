@@ -29,6 +29,7 @@
 		"publish:next": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=next --preid=next${PREID_HASH_SUFFIX} --exact --no-verify-access",
 		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes --no-verify-access",
+		"publish:graphql-api-functional-options": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=graphql-api-functional-options --preid=graphql-api-functional-options --exact",
 		"ts-coverage": "lerna run ts-coverage"
 	},
 	"husky": {
