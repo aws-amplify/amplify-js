@@ -2,9 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	Category,
 	ClientDevice,
 	ConsoleLogger,
 	Credentials,
+	CustomUserAgentDetails,
+	getAmplifyUserAgent,
+	InAppMessagingAction,
+	PushNotificationAction,
 	StorageHelper,
 	transferKeyToUpperCase,
 } from '@aws-amplify/core';
@@ -102,6 +107,23 @@ export default abstract class AWSPinpointProviderCommon
 		}
 	};
 
+	private getUserAgentValue = (): string => {
+		let customUserAgentDetails: CustomUserAgentDetails;
+		if (this.getSubCategory() === 'PushNotification') {
+			customUserAgentDetails = {
+				category: Category.PushNotification,
+				action: PushNotificationAction.None,
+			};
+		} else {
+			customUserAgentDetails = {
+				category: Category.InAppMessaging,
+				action: InAppMessagingAction.None,
+			};
+		}
+
+		return getAmplifyUserAgent(customUserAgentDetails);
+	};
+
 	protected recordAnalyticsEvent = async (
 		event: AWSPinpointAnalyticsEvent
 	): Promise<void> => {
@@ -127,7 +149,10 @@ export default abstract class AWSPinpointProviderCommon
 				},
 			};
 			this.logger.debug('recording analytics event');
-			await putEvents({ credentials, region }, input);
+			await putEvents(
+				{ credentials, region, userAgentValue: this.getUserAgentValue() },
+				input
+			);
 		} catch (err) {
 			this.logger.error('Error recording analytics event', err);
 			throw err;
@@ -204,7 +229,10 @@ export default abstract class AWSPinpointProviderCommon
 				},
 			};
 			this.logger.debug('updating endpoint');
-			await updateEndpoint({ credentials, region }, input);
+			await updateEndpoint(
+				{ credentials, region, userAgentValue: this.getUserAgentValue() },
+				input
+			);
 			this.endpointInitialized = true;
 		} catch (err) {
 			throw err;
