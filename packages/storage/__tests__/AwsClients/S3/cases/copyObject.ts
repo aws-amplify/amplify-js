@@ -17,7 +17,7 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 	defaultConfig,
 	{
 		Bucket: 'bucket',
-		CopySource: 'sourceBucket/sourceKey', // TODO: test with encoded source key
+		CopySource: 'sourceBucket/sourceKey',
 		Key: 'key',
 		CacheControl: 'cacheControl',
 		ContentType: 'contentType',

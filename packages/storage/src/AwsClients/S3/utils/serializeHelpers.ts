@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { extendedEncodeURIComponent } from '@aws-amplify/core/internals/aws-client-utils';
+
 /**
  * @internal
  */
@@ -39,6 +41,7 @@ interface ObjectConfigs extends ObjectSsecOptions {
 	CacheControl?: string;
 	ContentDisposition?: string;
 	ContentEncoding?: string;
+	ContentLanguage?: string;
 	ContentType?: string;
 	Expires?: Date;
 	Tagging?: string;
@@ -59,6 +62,7 @@ export const serializeObjectConfigsToHeaders = (input: ObjectConfigs) => ({
 		'x-amz-acl': input.ACL,
 		'cache-control': input.CacheControl,
 		'content-disposition': input.ContentDisposition,
+		'content-language': input.ContentLanguage,
 		'content-encoding': input.ContentEncoding,
 		'content-type': input.ContentType,
 		expires: input.Expires?.toUTCString(),
@@ -74,3 +78,16 @@ const serializeMetadata = (
 		acc[`x-amz-meta-${suffix.toLowerCase()}`] = metadata[suffix];
 		return acc;
 	}, {});
+
+/**
+ * Serialize the object key to a URL pathname.
+ * @see https://github.com/aws/aws-sdk-js-v3/blob/7ed7101dcc4e81038b6c7f581162b959e6b33a04/clients/client-s3/src/protocols/Aws_restXml.ts#L1108
+ *
+ * @internal
+ */
+export const serializePathnameObjectKey = (url: URL, key: string) => {
+	return (
+		url.pathname.replace(/\/$/, '') +
+		`/${key.split('/').map(extendedEncodeURIComponent).join('/')}`
+	);
+};

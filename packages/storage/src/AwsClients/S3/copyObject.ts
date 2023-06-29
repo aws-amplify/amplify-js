@@ -9,10 +9,12 @@ import { MetadataBearer } from '@aws-sdk/types';
 import type { CopyObjectCommandInput } from './types';
 import { defaultConfig } from './base';
 import {
+	assignStringVariables,
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
+	serializePathnameObjectKey,
 } from './utils';
 import type { S3ProviderCopyConfig } from '../../types/AWSS3Provider';
 
@@ -27,6 +29,8 @@ export type CopyObjectInput = Pick<
 	| 'MetadataDirective'
 	| 'CacheControl'
 	| 'ContentType'
+	| 'ContentDisposition'
+	| 'ContentLanguage'
 	| 'Expires'
 	| 'ACL'
 	| 'ServerSideEncryption'
@@ -34,6 +38,8 @@ export type CopyObjectInput = Pick<
 	| 'SSECustomerKey'
 	| 'SSECustomerKeyMD5'
 	| 'SSEKMSKeyId'
+	| 'Tagging'
+	| 'Metadata'
 >;
 
 export type CopyObjectOutput = MetadataBearer;
@@ -44,12 +50,13 @@ const copyObjectSerializer = (
 ): HttpRequest => {
 	const headers = {
 		...serializeObjectConfigsToHeaders(input),
-		'x-amz-copy-source': input.CopySource, // TODO: url encode the copy source
-		'x-amz-metadata-directive': input.MetadataDirective,
+		...assignStringVariables({
+			'x-amz-copy-source': input.CopySource,
+			'x-amz-metadata-directive': input.MetadataDirective,
+		}),
 	};
 	const url = new URL(endpoint.url.toString());
-	url.hostname = `${input.Bucket}.${url.hostname}`;
-	url.pathname = `/${input.Key}`;
+	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'PUT',
 		headers,

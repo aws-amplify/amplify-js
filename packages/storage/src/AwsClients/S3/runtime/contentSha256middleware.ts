@@ -7,8 +7,7 @@ import {
 	MiddlewareHandler,
 	HttpResponse,
 } from '@aws-amplify/core/internals/aws-client-utils';
-
-const CONTENT_SHA256_HEADER = 'x-amz-content-sha256';
+import { CONTENT_SHA256_HEADER } from './constants';
 
 /**
  * A middleware that adds the x-amz-content-sha256 header to the request if it is not already present.
