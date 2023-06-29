@@ -49,7 +49,7 @@
     "@aws-amplify/core": "5.5.1",
     "@aws-sdk/types": "3.6.1",
     "events": "^3.1.0",
-    "fast-xml-parser": "4.2.4",
+    "fast-xml-parser": "^4.2.5",
     "tslib": "^1.8.0",
     "typescript": "5.0.2"
   },
