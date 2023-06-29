@@ -4,7 +4,7 @@ import * as queries from './helpers/fixtures/queries';
 import * as mutations from './helpers/fixtures/mutations';
 import * as subscriptions from './helpers/fixtures/subscriptions';
 import { Observable } from 'zen-observable-ts';
-import { PubSub } from '@aws-amplify/pubsub';
+import { InternalPubSub } from '@aws-amplify/pubsub/internals';
 
 function expectMutation(
 	spy: jest.SpyInstance<any, any>,
@@ -82,7 +82,8 @@ function expectSub(
 				`${opName}(filter: $filter, owner: $owner)`
 			),
 			variables: expect.objectContaining(item),
-		})
+		}),
+		undefined
 	);
 }
 
@@ -307,7 +308,7 @@ describe('v6', () => {
 		};
 
 		const spy = jest
-			.spyOn(PubSub, 'subscribe')
+			.spyOn(InternalPubSub, 'subscribe')
 			.mockImplementation(jest.fn(() => Observable.from([graphqlMessage])));
 
 		const graphqlVariables = {

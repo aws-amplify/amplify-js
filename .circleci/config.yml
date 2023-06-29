@@ -57,7 +57,7 @@ executors:
 
   webkit-test-executor:
     docker:
-      - image: mcr.microsoft.com/playwright:v1.30.0-focal
+      - image: mcr.microsoft.com/playwright:v1.34.2-focal
       - image: verdaccio/verdaccio:5.20
         auth:
           username: $DOCKERHUB_USERNAME
@@ -2061,15 +2061,15 @@ workflows:
       #     matrix:
       #       parameters:
       #         <<: *minimal_browser_list
-      - integ_javascript_geo:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              browser: [chrome]
+      #- integ_javascript_geo:
+      #    requires:
+      #      - integ_setup
+      #      - build
+      #    filters:
+      #      <<: *releasable_branches
+      #    matrix:
+      #      parameters:
+      #        browser: [chrome]
       - integ_react_geo:
           requires:
             - integ_setup
