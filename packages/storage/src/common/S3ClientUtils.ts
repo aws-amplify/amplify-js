@@ -100,7 +100,7 @@ export const loadS3Config = (config: S3InputConfig): S3ResolvedConfig => {
 		...config,
 		region: config.region,
 		credentials: config.credentials
-			? async () => config.credentials
+			? () => Promise.resolve(config.credentials!)
 			: credentialsProvider,
 		userAgentValue: getAmplifyUserAgent({
 			category: Category.Storage,
