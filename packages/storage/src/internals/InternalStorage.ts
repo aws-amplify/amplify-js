@@ -6,7 +6,7 @@ import {
 	ConsoleLogger as Logger,
 	parseAWSExports,
 } from '@aws-amplify/core';
-import { AWSS3Provider } from './providers';
+import { AWSS3Provider } from '../providers';
 import {
 	StorageCopySource,
 	StorageCopyDestination,
@@ -25,10 +25,11 @@ import {
 	UploadTask,
 	StorageGetPropertiesConfig,
 	StorageGetPropertiesOutput,
-} from './types';
+} from '../types';
 import axios, { CancelTokenSource } from 'axios';
 import { PutObjectCommandInput } from '@aws-sdk/client-s3';
-import { AWSS3UploadTask } from './providers/AWSS3UploadTask';
+import type { UserAgent as AWSUserAgent } from '@aws-sdk/types';
+import { AWSS3UploadTask } from '../providers/AWSS3UploadTask';
 
 const logger = new Logger('StorageClass');
 const loggerStorageInstance = new Logger('Storage'); // Logging relating to Storage instance management
@@ -37,7 +38,7 @@ const DEFAULT_PROVIDER = 'AWSS3';
 /**
  * Provide storage methods to use AWS S3
  */
-export class Storage {
+export class InternalStorage {
 	/**
 	 * @private
 	 */
@@ -51,11 +52,6 @@ export class Storage {
 	 * attempt to retrieve it's corresponding cancelTokenSource and cancel the in-flight request.
 	 */
 	private _cancelTokenSourceMap: WeakMap<Promise<any>, CancelTokenSource>;
-
-	/**
-	 * @public
-	 */
-	public vault: Storage;
 
 	/**
 	 * Initialize Storage
@@ -74,7 +70,7 @@ export class Storage {
 	}
 
 	public getModuleName() {
-		return 'Storage';
+		return 'InternalStorage';
 	}
 
 	/**
@@ -210,11 +206,20 @@ export class Storage {
 	 * @param request - The request to cancel
 	 * @param [message] - A message to include in the cancelation exception
 	 */
-	public cancel(request: UploadTask, message?: string): Promise<boolean>;
-	public cancel(request: Promise<any>, message?: string): void;
+	public cancel(
+		request: UploadTask,
+		message?: string,
+		userAgentObject?: AWSUserAgent
+	): Promise<boolean>;
+	public cancel(
+		request: Promise<any>,
+		message?: string,
+		userAgentObject?: AWSUserAgent
+	): void;
 	public cancel(
 		request: Promise<any> | UploadTask,
-		message?: string
+		message?: string,
+		userAgentObject?: AWSUserAgent
 	): void | Promise<boolean> {
 		if (request instanceof AWSS3UploadTask) {
 			return request._cancel();
@@ -240,12 +245,14 @@ export class Storage {
 	public copy<T extends Record<string, any>>(
 		src: StorageCopySource,
 		dest: StorageCopyDestination,
-		config?: StorageCopyConfig<T>
+		config?: StorageCopyConfig<T>,
+		userAgentObject?: AWSUserAgent
 	): StorageCopyOutput<T>;
 	public copy<T extends StorageProviderWithCopy = AWSS3Provider>(
 		src: Parameters<T['copy']>[0],
 		dest: Parameters<T['copy']>[1],
-		config?: StorageCopyConfig<T>
+		config?: StorageCopyConfig<T>,
+		userAgentObject?: AWSUserAgent
 	): StorageCopyOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const plugin = this._pluggables.find(
@@ -281,11 +288,16 @@ export class Storage {
 	// Adding & { download?: boolean }, if not T extends { download: true } ? ... : ... will not work properly
 	public get<T extends Record<string, any> & { download?: boolean }>(
 		key: string,
-		config?: StorageGetConfig<T>
+		config?: StorageGetConfig<T>,
+		userAgentObject?: AWSUserAgent
 	): StorageGetOutput<T>;
 	public get<
 		T extends StorageProvider | { [key: string]: any; download?: boolean }
-	>(key: string, config?: StorageGetConfig<T>): StorageGetOutput<T> {
+	>(
+		key: string,
+		config?: StorageGetConfig<T>,
+		userAgentObject?: AWSUserAgent
+	): StorageGetOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const plugin = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
@@ -344,12 +356,14 @@ export class Storage {
 	public put<T extends Record<string, any>>(
 		key: string,
 		object: any,
-		config?: StoragePutConfig<T>
+		config?: StoragePutConfig<T>,
+		userAgentObject?: AWSUserAgent
 	): StoragePutOutput<T>;
 	public put<T extends StorageProvider = AWSS3Provider>(
 		key: string,
 		object: Omit<PutObjectCommandInput['Body'], 'ReadableStream' | 'Readable'>,
-		config?: StoragePutConfig<T>
+		config?: StoragePutConfig<T>,
+		userAgentObject?: AWSUserAgent
 	): StoragePutOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const plugin = this._pluggables.find(
@@ -380,7 +394,8 @@ export class Storage {
 	 */
 	public remove<T extends Record<string, any>>(
 		key: string,
-		config?: StorageRemoveConfig<T>
+		config?: StorageRemoveConfig<T>,
+		userAgentObject?: AWSUserAgent
 	): StorageRemoveOutput<T>;
 	public remove<T extends StorageProvider = AWSS3Provider>(
 		key: string,
@@ -407,7 +422,8 @@ export class Storage {
 	 */
 	public list<T extends Record<string, any>>(
 		key: string,
-		config?: StorageListConfig<T>
+		config?: StorageListConfig<T>,
+		userAgentObject?: AWSUserAgent
 	): StorageListOutput<T>;
 	public list<T extends StorageProvider = AWSS3Provider>(
 		path: string,
@@ -427,37 +443,5 @@ export class Storage {
 	}
 }
 
-/**
- * Configure & register Storage singleton instance.
- */
-let _instance: Storage = null;
-const getInstance = () => {
-	if (_instance) {
-		return _instance;
-	}
-	loggerStorageInstance.debug('Create Storage Instance, debug');
-	_instance = new Storage();
-	_instance.vault = new Storage();
-
-	const old_configure = _instance.configure;
-	_instance.configure = options => {
-		loggerStorageInstance.debug('storage configure called');
-		const vaultConfig = { ...old_configure.call(_instance, options) };
-
-		// set level private for each provider for the vault
-		Object.keys(vaultConfig).forEach(providerName => {
-			if (typeof vaultConfig[providerName] !== 'string') {
-				vaultConfig[providerName] = {
-					...vaultConfig[providerName],
-					level: 'private',
-				};
-			}
-		});
-		loggerStorageInstance.debug('storage vault configure called');
-		_instance.vault.configure(vaultConfig);
-	};
-	return _instance;
-};
-
-export const StorageInstance: Storage = getInstance();
-Amplify.register(StorageInstance);
+export const InternalStorageInstance = new InternalStorage();
+Amplify.register(InternalStorageInstance);
