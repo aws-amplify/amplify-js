@@ -153,10 +153,17 @@ export const getPresignedGetObjectUrl = async (
 		config.userAgentHeader ?? USER_AGENT_HEADER,
 		config.userAgentValue
 	);
+
 	for (const [headerName, value] of Object.entries(headers).sort(
 		([key1], [key2]) => key1.localeCompare(key2)
 	)) {
 		url.searchParams.append(headerName, value);
 	}
-	return presignUrl({ method, url, body: null }, config).toString();
+	return presignUrl(
+		{ method, url, body: null },
+		{
+			...defaultConfig,
+			...config,
+		}
+	).toString();
 };
