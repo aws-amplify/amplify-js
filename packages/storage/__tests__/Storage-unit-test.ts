@@ -30,6 +30,11 @@ const options = {
 	level: 'level',
 };
 
+/**
+ * CAUTION: This mock class implements a publically available interface `StorageProvider` which customers can use to
+ * implement custom providers. Exercise caution when modifying this class as additive changes to this interface can
+ * break customers when not marked as optional.
+ */
 class TestCustomProvider implements StorageProvider {
 	getProviderName(): string {
 		return 'customProvider' as const;
@@ -60,6 +65,11 @@ class TestCustomProvider implements StorageProvider {
 	}
 }
 
+/**
+ * CAUTION: This mock class implements a publically available interface `StorageProvider` which customers can use to
+ * implement custom providers. Exercise caution when modifying this class as additive changes to this interface can
+ * break customers when not marked as optional.
+ */
 class TestCustomProviderWithCopy
 	extends TestCustomProvider
 	implements StorageProvider
@@ -73,6 +83,11 @@ class TestCustomProviderWithCopy
 	}
 }
 
+/**
+ * CAUTION: This mock class implements a publically available interface `StorageProvider` which customers can use to
+ * implement custom providers. Exercise caution when modifying this class as additive changes to this interface can
+ * break customers when not marked as optional.
+ */
 class TestCustomProviderWithGetProperties
 	extends TestCustomProvider
 	implements StorageProvider
@@ -82,6 +97,11 @@ class TestCustomProviderWithGetProperties
 	}
 }
 
+/**
+ * CAUTION: This mock class implements a publically available interface `StorageProvider` which customers can use to
+ * implement custom providers. Exercise caution when modifying this class as additive changes to this interface can
+ * break customers when not marked as optional.
+ */
 class TestCustomProviderWithOptionalAPI
 	extends TestCustomProvider
 	implements StorageProvider
@@ -616,6 +636,10 @@ describe('Storage', () => {
 			}
 		});
 
+		/**
+		 * Custom providers are a publically available feature via the `StorageProvider` interface. Exercise caution when
+		 * updating these to ensure backwards compatibility.
+		 */
 		test('get with custom provider', async () => {
 			const customProvider = new TestCustomProvider();
 			const customProviderGetSpy = jest.spyOn(customProvider, 'get');
@@ -628,7 +652,11 @@ describe('Storage', () => {
 			expect(customProviderGetSpy).toBeCalled();
 			expect(getRes.newKey).toEqual('get');
 		});
-		// backwards compatible with current custom provider user
+
+		/**
+		 * Custom providers are a publically available feature via the `StorageProvider` interface. Exercise caution when
+		 * updating these to ensure backwards compatibility.
+		 */
 		test('get with custom provider should work with no generic type provided', async () => {
 			const customProvider = new TestCustomProvider();
 			const customProviderGetSpy = jest.spyOn(customProvider, 'get');
