@@ -47,12 +47,12 @@ export type CopyObjectInput = Pick<
 
 export type CopyObjectOutput = MetadataBearer;
 
-const copyObjectSerializer = (
+const copyObjectSerializer = async (
 	input: CopyObjectInput,
 	endpoint: Endpoint
-): HttpRequest => {
+): Promise<HttpRequest> => {
 	const headers = {
-		...serializeObjectConfigsToHeaders(input),
+		...(await serializeObjectConfigsToHeaders(input)),
 		...assignStringVariables({
 			'x-amz-copy-source': input.CopySource,
 			'x-amz-metadata-directive': input.MetadataDirective,

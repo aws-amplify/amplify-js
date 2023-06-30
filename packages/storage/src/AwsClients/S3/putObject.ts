@@ -50,11 +50,11 @@ export type PutObjectOutput = Pick<
 	'$metadata' | 'ETag' | 'VersionId'
 >;
 
-const putObjectSerializer = (
+const putObjectSerializer = async (
 	input: PutObjectInput,
 	endpoint: Endpoint
-): HttpRequest => {
-	const headers = serializeObjectConfigsToHeaders({
+): Promise<HttpRequest> => {
+	const headers = await serializeObjectConfigsToHeaders({
 		...input,
 		ContentType: input.ContentType ?? 'application/octet-stream',
 	});

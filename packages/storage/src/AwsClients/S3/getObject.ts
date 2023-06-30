@@ -48,11 +48,11 @@ export type GetObjectInput = Pick<
 
 export type GetObjectOutput = GetObjectCommandOutput;
 
-const getObjectSerializer = (
+const getObjectSerializer = async (
 	input: GetObjectInput,
 	endpoint: Endpoint
-): HttpRequest => {
-	const headers = serializeObjectSsecOptionsToHeaders(input);
+): Promise<HttpRequest> => {
+	const headers = await serializeObjectSsecOptionsToHeaders(input);
 	const query = map(input, {
 		'response-cache-control': 'ResponseCacheControl',
 		'response-content-disposition': 'ResponseContentDisposition',
@@ -146,7 +146,7 @@ export const getPresignedGetObjectUrl = async (
 	input: GetObjectInput
 ): Promise<string> => {
 	const endpoint = defaultConfig.endpointResolver(config, input);
-	const { url, headers, method } = getObjectSerializer(input, endpoint);
+	const { url, headers, method } = await getObjectSerializer(input, endpoint);
 
 	// TODO: set content sha256 query parameter with value of UNSIGNED-PAYLOAD.
 	// It requires changes in presignUrl. Without this change, the generated url still works,
