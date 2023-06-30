@@ -1,0 +1,33 @@
+name: Setup Amplify Samples Staging
+description: Checks out Amplify Samples Staging and builds the package with caching
+
+inputs:
+  GH_PAT:
+    description: The token that grants read access to the sample staging repo
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Create cache
+      uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1 https://github.com/actions/cache/commit/88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8
+      id: cache-samples-staging-build
+      with:
+        key: aws-amplify-js-samples-staging-build-${{ github.sha }}
+        path: |
+          ./amplify-js-samples-staging
+          /home/runner/.cache/Cypress
+    - name: Checkout staging repo
+      if: steps.cache-samples-staging-build.outputs.cache-hit != 'true'
+      uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f
+      with:
+        repository: stocaaro/amplify-js-samples-staging
+        path: amplify-js-samples-staging
+        token: ${{ inputs.GH_PAT }}
+        fetch-depth: 2
+    - name: Install
+      if: steps.cache-samples-staging-build.outputs.cache-hit != 'true'
+      run: |
+        yarn
+      shell: bash
+      working-directory: ./amplify-js-samples-staging

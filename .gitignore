@@ -15,7 +15,6 @@ packages/**/cjs/
 *.log
 .npm/
 packages/**/cypress/videos/
-yarn.lock
 package-lock.json
 packages/*/.watchmanconfig
 dual-publish-tmp

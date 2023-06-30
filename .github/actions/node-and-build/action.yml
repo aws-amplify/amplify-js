@@ -10,29 +10,32 @@ runs:
         node-version: 16
       env:
         SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
-    - name: Install
-      run: |
-        mv .yarnrc ._yarnrc
-        yarn
-      shell: bash
-    - name: Bootstrap
-      run: yarn bootstrap
-      shell: bash
-    - uses: actions/cache@v2
+    - uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
       id: cache-build-artifacts
       with:
         path: |
+          node_modules
           **/dist
           **/lib
-          **/
           **/lib-esm/
           **/es/
           **/esm/
           **/cjs/
+          **/packages/core/src/Platform/version.ts
         key: ${{ runner.os }}-build-artifacts-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-build-artifacts-
+    # TODO We should be able to skip yarn / bootstrap if we cache enough things. Leaving because skipping causes issues.
+    - name: Install
+      run: yarn
+      shell: bash
+      working-directory: ./aws-amplify
+    - name: Bootstrap
+      run: yarn bootstrap
+      shell: bash
+      working-directory: ./aws-amplify
     - name: Build packages
       if: steps.cache-build-artifacts.outputs.cache-hit != 'true'
       run: yarn build
       shell: bash
+      working-directory: ./aws-amplify

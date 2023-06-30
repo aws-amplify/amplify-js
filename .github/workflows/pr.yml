@@ -12,8 +12,9 @@ jobs:
         with:
           # Minimal depth 2 so we can checkout the commit before possible merge commit.
           fetch-depth: 2
+          path: aws-amplify
       - name: Setup node and build the repository
-        uses: ./.github/actions/node-and-build
+        uses: ./aws-amplify/.github/actions/node-and-build
   get-package-list:
     uses: ./.github/workflows/callable-get-package-list.yml
   codeql:

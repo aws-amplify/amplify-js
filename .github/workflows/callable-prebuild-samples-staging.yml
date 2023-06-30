@@ -1,11 +1,12 @@
-name: 'Unit Tests'
+name: 'Prebuild AmplifyJs'
 
 on:
   workflow_call:
-
+    secrets:
+      GH_PAT:
+        required: true
 jobs:
-  bundle_size_tests:
-    name: Bundle Size Tests
+  prebuild:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -14,8 +15,7 @@ jobs:
           # Minimal depth 2 so we can checkout the commit before possible merge commit.
           fetch-depth: 2
           path: aws-amplify
-      - name: Setup node and build the repository
-        uses: ./aws-amplify/.github/actions/node-and-build
-      - name: Run Bundle Size Tests
-        working-directory: ./aws-amplify
-        run: yarn test:size
+      - name: Setup samples staging
+        uses: ./aws-amplify/.github/actions/setup-samples-staging
+        with:
+          GH_PAT: ${{ secrets.GH_PAT }}

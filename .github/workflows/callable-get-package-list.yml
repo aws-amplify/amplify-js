@@ -37,5 +37,6 @@ jobs:
         id: get_package_list
         run: |
           cat package-list.json >> $GITHUB_OUTPUT
+          cat package-list.json
     outputs:
       packages: ${{ steps.get_package_list.outputs.packages }}

@@ -1,11 +1,9 @@
-name: 'Unit Tests'
-
 on:
-  workflow_call:
+  push:
+    branches: ['example-e2e']
 
 jobs:
-  bundle_size_tests:
-    name: Bundle Size Tests
+  prebuild:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -16,6 +14,12 @@ jobs:
           path: aws-amplify
       - name: Setup node and build the repository
         uses: ./aws-amplify/.github/actions/node-and-build
-      - name: Run Bundle Size Tests
-        working-directory: ./aws-amplify
-        run: yarn test:size
+  prebuild-samples-staging:
+    secrets: inherit
+    uses: ./.github/workflows/callable-prebuild-samples-staging.yml
+  e2e:
+    needs:
+      - prebuild
+      - prebuild-samples-staging
+    secrets: inherit
+    uses: ./.github/workflows/callable-e2e-example.yml
