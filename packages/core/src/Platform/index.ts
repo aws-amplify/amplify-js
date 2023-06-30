@@ -15,7 +15,10 @@ class PlatformBuilder {
 	}
 
 	get isReactNative() {
-		return this.framework === Framework.ReactNative;
+		return (
+			this.framework === Framework.ReactNative ||
+			this.framework === Framework.Expo
+		);
 	}
 
 	observeFrameworkChanges(fcn: () => void) {

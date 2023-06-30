@@ -1,10 +1,15 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import {
 	StorageCopySource,
 	StorageCopyDestination,
 	StorageCopyConfig,
 } from './Storage';
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
+
+// CAUTION: The StorageProvider interface is publicly available and allows customers to implement their own custom
+// storage providers. Exercise caution when modifying this class as additive changes to this interface can break
+// customers when not marked as optional.
 export interface StorageProvider {
 	// you need to implement those methods
 

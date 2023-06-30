@@ -6,6 +6,9 @@ export interface PromiseHandlers {
 	reject: Function;
 }
 
+// CAUTION: The AnalyticsProvider interface is publicly available and allows customers to implement their own custom
+// analytics providers. Exercise caution when modifying this class as additive changes to this interface can break
+// customers when not marked as optional.
 export interface AnalyticsProvider {
 	// you need to implement those methods
 
