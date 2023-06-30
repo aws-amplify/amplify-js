@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import type { UserAgent as AWSUserAgent } from '@aws-sdk/types';
 
 export enum Framework {
 	// < 100 - Web frameworks
@@ -143,6 +144,7 @@ type UserAgentDetailsWithCategory<T extends Category> =
 
 type CustomUserAgentDetailsBase = {
 	framework?: Framework;
+	additionalInfo?: AWSUserAgent;
 };
 
 export type CustomUserAgentDetails =
