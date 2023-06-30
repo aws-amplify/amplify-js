@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CustomUserAgentDetails, Framework } from './types';
+import {
+	ActionMap,
+	Category,
+	CustomUserAgentDetails,
+	Framework,
+} from './types';
 import { version } from './version';
 import { detectFramework, observeFrameworkChanges } from './detectFramework';
 import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
