@@ -38,6 +38,9 @@ jobs:
       matrix:
         browser:
           - ${{ fromJson(inputs.browser) }}
+        build_type:
+          - prod
+          - dev
 
     steps:
       - name: check incoming config
@@ -67,7 +70,7 @@ jobs:
       - name: Run E2E test
         run: |
           ../aws-amplify/.circleci/retry-yarn-script.sh -s \
-          'ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ inputs.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }}'
+          'ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ inputs.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} ${{ matrix.build_type }}'
         working-directory: amplify-js-samples-staging
         shell: bash
 
