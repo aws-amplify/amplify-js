@@ -70,7 +70,7 @@ jobs:
       - name: Run E2E test
         run: |
           ../aws-amplify/.circleci/retry-yarn-script.sh -s \
-          'ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ inputs.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} ${{ matrix.build_type }}'
+          'ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ inputs.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} ${{ matrix.build_type }}' -n 3
         working-directory: amplify-js-samples-staging
         shell: bash
 
