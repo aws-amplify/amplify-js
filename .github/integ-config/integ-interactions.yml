@@ -1,0 +1,15 @@
+# Angular
+# - test_name: Angular Interactions
+#   framework: angular
+#   category: interactions
+#   sample_name: chatbot-component
+#   spec: chatbot-component
+#   browser: chrome
+
+# # React
+# - test_name: React Interactions
+#   framework: react
+#   category: interactions
+#   sample_name: chatbot-component
+#   spec: chatbot-component
+#   browser: chrome
