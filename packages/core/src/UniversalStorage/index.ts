@@ -12,7 +12,7 @@ const ONE_YEAR_IN_MS = 365 * 24 * 60 * 60 * 1000;
 
 export class UniversalStorage implements Storage {
 	cookies = new Cookies();
-	store: Store = isBrowser ? window.localStorage : Object.create(null);
+	store: Store = getLocalStorage();
 
 	constructor(context: Context = {}) {
 		this.cookies = context.req
@@ -113,5 +113,13 @@ export class UniversalStorage implements Storage {
 			secure:
 				isBrowser && window.location.hostname === 'localhost' ? false : true,
 		});
+	}
+}
+
+function getLocalStorage() {
+	try {
+		return globalThis.localStorage
+	} catch (e) {
+		return Object.create(null)
 	}
 }
