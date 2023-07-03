@@ -207,16 +207,6 @@ export class InternalStorage {
 	 * @param [message] - A message to include in the cancelation exception
 	 */
 	public cancel(
-		request: UploadTask,
-		message?: string,
-		userAgentObject?: AWSUserAgent
-	): Promise<boolean>;
-	public cancel(
-		request: Promise<any>,
-		message?: string,
-		userAgentObject?: AWSUserAgent
-	): void;
-	public cancel(
 		request: Promise<any> | UploadTask,
 		message?: string,
 		userAgentObject?: AWSUserAgent
@@ -323,7 +313,8 @@ export class InternalStorage {
 
 	public getProperties<T extends StorageProvider | { [key: string]: any }>(
 		key: string,
-		config?: StorageGetPropertiesConfig<T>
+		config?: StorageGetPropertiesConfig<T>,
+		userAgentObject?: AWSUserAgent
 	): StorageGetPropertiesOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const plugin = this._pluggables.find(
@@ -399,7 +390,8 @@ export class InternalStorage {
 	): StorageRemoveOutput<T>;
 	public remove<T extends StorageProvider = AWSS3Provider>(
 		key: string,
-		config?: StorageRemoveConfig<T>
+		config?: StorageRemoveConfig<T>,
+		userAgentObject?: AWSUserAgent
 	): StorageRemoveOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const plugin = this._pluggables.find(
@@ -427,7 +419,8 @@ export class InternalStorage {
 	): StorageListOutput<T>;
 	public list<T extends StorageProvider = AWSS3Provider>(
 		path: string,
-		config?: StorageListConfig<T>
+		config?: StorageListConfig<T>,
+		userAgentObject?: AWSUserAgent
 	): StorageListOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const plugin = this._pluggables.find(
