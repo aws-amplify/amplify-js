@@ -42,8 +42,15 @@ export {
 	ErrorParams,
 	AmplifyErrorMap,
 	ServiceError,
+	AuthStorage,
 } from './types';
-export { StorageHelper, MemoryStorage } from './StorageHelper';
+export {
+	StorageHelper,
+	MemoryStorage,
+	LocalStorage,
+	SessionStorage,
+	CookieStorage
+} from './StorageHelper';
 export { UniversalStorage } from './UniversalStorage';
 export { Platform, getAmplifyUserAgent } from './Platform';
 export {
