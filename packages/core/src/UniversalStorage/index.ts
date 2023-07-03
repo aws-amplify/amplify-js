@@ -117,9 +117,13 @@ export class UniversalStorage implements Storage {
 }
 
 function getLocalStorage() {
-	try {
-		return globalThis.localStorage
-	} catch (e) {
-		return Object.create(null)
-	}
+    try {
+        if (globalThis.localStorage) {
+            return globalThis.localStorage
+        }
+    } catch (e) {
+    }
+
+    return Object.create(null)
 }
+
