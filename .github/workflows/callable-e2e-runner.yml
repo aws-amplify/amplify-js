@@ -39,10 +39,15 @@ jobs:
       amplifyjs_dir: ${{ matrix.integ-config.amplifyjs_dir || false }}
       browser: |
         ${{
+          fromJson(
+            needs.e2e-prep.outputs.integ-utils
+          )[matrix.integ-config.browser]
+          &&
           toJSON(
             fromJson(
               needs.e2e-prep.outputs.integ-utils
             )[matrix.integ-config.browser]
           )
-          || matrix.integ-config.browser
+          ||
+          format('[{0}]', toJSON(matrix.integ-config.browser))
         }}
