@@ -42,9 +42,6 @@ jobs:
       matrix:
         browser:
           - ${{ fromJson(inputs.browser) }}
-        build_type:
-          - prod
-          - dev
       fail-fast: false
     timeout-minutes: 20
 
@@ -72,11 +69,16 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT }}
       - name: Load Verdaccio with AmplifyJs
         uses: ./aws-amplify/.github/actions/load-verdaccio-with-amplify-js
-      - name: Run cypress tests for ${{ inputs.test_name }}
-
+      - name: Run cypress tests for ${{ inputs.test_name }} dev
         run: |
           ../aws-amplify/.circleci/retry-yarn-script.sh -s \
-          "ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ inputs.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} ${{ matrix.build_type }} ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}" -n 3
+          "ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ inputs.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} dev ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}" -n 3
+        working-directory: amplify-js-samples-staging
+        shell: bash
+      - name: Run cypress tests for ${{ inputs.test_name }} prod
+        run: |
+          ../aws-amplify/.circleci/retry-yarn-script.sh -s \
+          "ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ inputs.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} prod ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}" -n 3
         working-directory: amplify-js-samples-staging
         shell: bash
 # TODO CODE FROM CIRCLE CI: REPLICATE THIS
