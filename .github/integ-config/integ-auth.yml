@@ -1,14 +1,113 @@
-# angular
-- test_name: Angular Authenticator
-  framework: angular
+# React
+# integ_react_auth_1
+- test_name: 'React Authenticator'
+  framework: react
   category: auth
   sample_name: amplify-authenticator
-  spec: ui-amplify-authenticator
+  spec: new-ui-authenticator
+  browser: minimal_browser_list
+- test_name: 'Guest to Authenticated User"'
+  framework: react
+  category: auth
+  sample_name: guest-to-auth-user
+  spec: guest-to-auth-user
+  browser: minimal_browser_list
+- test_name: 'React Typescript Authenticator'
+  framework: react
+  category: auth
+  sample_name: typescript-amplify-authenticator
+  spec: new-ui-authenticator
   browser: minimal_browser_list
 
-# - test_name: Angular Custom Authenticator
-#   framework: angular
-#   category: auth
-#   sample_name: amplify-authenticator
-#   spec: custom-authenticator
-#   browser: chrome
+# integ_react_auth_2
+-   test_name: 'React Credentials Different Region'
+    framework: react
+    category: auth
+    sample_name: credentials-auth
+    spec: credentials-auth
+    browser: minimal_browser_list
+-   test_name: 'React Custom Authenticator'
+    framework: react
+    category: auth
+    sample_name: amplify-authenticator
+    spec: new-ui-custom-authenticator
+    browser: minimal_browser_list
+-   test_name: 'React Custom Authenticator'
+    framework: react
+    category: auth
+    sample_name: with-authenticator
+    spec: new-ui-authenticator
+    browser: minimal_browser_list
+-   test_name: 'Sign In after Sign Up'
+    framework: react
+    category: auth
+    sample_name: auto-signin-after-signup
+    spec: auto-signin-after-signup
+    browser: minimal_browser_list
+
+# Angular
+# integ_angular_auth
+-   test_name: 'Angular Authenticator'
+    framework: angular
+    category: auth
+    sample_name: amplify-authenticator
+    spec: ui-amplify-authenticator
+    browser: minimal_browser_list
+-   test_name: 'Angular Custom Authenticator'
+    framework: angular
+    category: auth
+    sample_name: amplify-authenticator
+    spec: custom-authenticator
+    browser: minimal_browser_list
+
+# Javascript
+# integ_javascript_auth
+-   test_name: 'JavaScript Auth CDN'
+    framework: javascript
+    category: auth
+    sample_name: auth-cdn
+    spec: auth-cdn
+    browser: minimal_browser_list
+    amplifyjs_dir: true
+
+# Vue
+# integ_vue_auth
+-   test_name: 'Legacy Vue Authenticator'
+    framework: vue
+    category: auth
+    sample_name: amplify-authenticator-legacy
+    spec: authenticator
+    browser: minimal_browser_list
+-   test_name: 'Vue 3 Authenticator'
+    framework: vue
+    category: auth
+    sample_name: authenticator-vue3
+    spec: new-ui-authenticator
+    browser: minimal_browser_list
+-   test_name: 'Vue Custom Authenticator'
+    framework: vue
+    category: auth
+    sample_name: amplify-authenticator
+    spec: custom-authenticator
+    browser: minimal_browser_list
+
+# Next
+# integ_next_auth
+-   test_name: 'Authenticator and SSR page'
+    framework: next
+    category: auth
+    sample_name: auth-ssr
+    spec: auth-ssr
+    browser: minimal_browser_list
+-   test_name: 'Authenticator and RSC page'
+    framework: next
+    category: auth
+    sample_name: auth-rsc
+    spec: auth-rsc
+    browser: minimal_browser_list
+-   test_name: 'NextJS Auth Custom Implementation with SSR'
+    framework: next
+    category: auth
+    sample_name: custom-auth-ssr
+    spec: authenticator
+    browser: minimal_browser_list

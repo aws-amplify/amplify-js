@@ -23,16 +23,20 @@ on:
         required: true
         type: string
         default: ''
+      amplifyjs_dir:
+        required: false
+        type: boolean
+        default: false
 
 env:
   NPM_REGISTRY: http://localhost:4873/
   NPM_USER: circleci
   NPM_PASS: circleci
   NPM_EMAIL: circleci@amplify.js
-
+  AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/aws-amplify
 jobs:
   e2e-test:
-    name: Run E2E test
+    name: "E2E: ${{ inputs.test_name }}"
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -43,13 +47,12 @@ jobs:
       - name: check incoming config
         run: |
           echo \
-          ${{ inputs.framework }} \
+          "${{ inputs.framework }} \
           ${{ inputs.category }} \
           ${{ inputs.sample_name }} \
           ${{ inputs.spec }} \
-          ${{ matrix.browser }}
-
-
+          ${{ matrix.browser }} \
+          ${{ inputs.amplifyjs_dir }}"
       - name: Checkout repository
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
         with:
@@ -64,10 +67,11 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT }}
       - name: Load Verdaccio with AmplifyJs
         uses: ./aws-amplify/.github/actions/load-verdaccio-with-amplify-js
-      - name: Run E2E test
+      - name: Run cypress tests for ${{ inputs.test_name }}
+
         run: |
           ../aws-amplify/.circleci/retry-yarn-script.sh -s \
-          'ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ inputs.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }}'
+          "ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ inputs.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} dev ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}"
         working-directory: amplify-js-samples-staging
         shell: bash
 

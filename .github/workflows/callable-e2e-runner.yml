@@ -35,6 +35,7 @@ jobs:
       category: ${{ matrix.integ-config.category }}
       sample_name: ${{ matrix.integ-config.sample_name }}
       spec: ${{ matrix.integ-config.spec }}
+      amplifyjs_dir: ${{ matrix.integ-config.amplifyjs_dir || false }}
       browser: |
         ${{
           toJSON(
