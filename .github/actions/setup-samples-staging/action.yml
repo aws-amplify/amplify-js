@@ -31,3 +31,4 @@ runs:
         yarn
       shell: bash
       working-directory: ./amplify-js-samples-staging
+
