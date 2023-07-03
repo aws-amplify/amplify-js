@@ -24,10 +24,11 @@ jobs:
   e2e-test-runner:
     name: e2e test runnner
     needs: e2e-prep
-    secrets: inherit  
+    secrets: inherit
     strategy:
       matrix:
         integ-config: ${{ fromJson(needs.e2e-prep.outputs.integ-config) }}
+      fail-fast: false
     uses: ./.github/workflows/callable-e2e-tests.yml
     with:
       test_name: ${{ matrix.integ-config.test_name }}
@@ -45,4 +46,3 @@ jobs:
           )
           || matrix.integ-config.browser
         }}
-

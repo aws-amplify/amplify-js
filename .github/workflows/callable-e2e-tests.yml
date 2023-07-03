@@ -36,12 +36,16 @@ env:
   AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/aws-amplify
 jobs:
   e2e-test:
-    name: "E2E: ${{ inputs.test_name }}"
+    name: 'E2E: ${{ inputs.test_name }}'
     runs-on: ubuntu-latest
     strategy:
       matrix:
         browser:
           - ${{ fromJson(inputs.browser) }}
+        build_type:
+          - prod
+          - dev
+      fail-fast: false
 
     steps:
       - name: check incoming config
@@ -71,45 +75,44 @@ jobs:
 
         run: |
           ../aws-amplify/.circleci/retry-yarn-script.sh -s \
-          "ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ inputs.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} dev ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}"
+          "ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ inputs.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} ${{ matrix.build_type }} ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}" -n 3
         working-directory: amplify-js-samples-staging
         shell: bash
-
 # TODO CODE FROM CIRCLE CI: REPLICATE THIS
-      # - name: Install ${{ inputs.test_name }} >> sample
-      #   run: |
-      #     echo "Current NPM registry: " $(yarn config get registry)
-      #     ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
+# - name: Install ${{ inputs.test_name }} >> sample
+#   run: |
+#     echo "Current NPM registry: " $(yarn config get registry)
+#     ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
 
-      # - name: Run cypress tests for ${{ inputs.test_name }} sample on dev
-      #   run: |
-      #     cd ~/amplify-js-samples-staging
-      #     ~/amplify-js/.circleci/retry-yarn-script.sh -s \
-      #     'ci:test ${{ inputs.framework }} \
-      #     ${{ inputs.category }} \
-      #     ${{ inputs.sample_name }} \
-      #     ${{ inputs.spec }} \
-      #     ${{ inputs.browser }} \
-      #     dev \
-      #     ${{ inputs.amplifyjs_dir }}' -n 3
+# - name: Run cypress tests for ${{ inputs.test_name }} sample on dev
+#   run: |
+#     cd ~/amplify-js-samples-staging
+#     ~/amplify-js/.circleci/retry-yarn-script.sh -s \
+#     'ci:test ${{ inputs.framework }} \
+#     ${{ inputs.category }} \
+#     ${{ inputs.sample_name }} \
+#     ${{ inputs.spec }} \
+#     ${{ inputs.browser }} \
+#     dev \
+#     ${{ inputs.amplifyjs_dir }}' -n 3
 
-      # - name: Run cypress tests for ${{ inputs.test_name }} sample on prod
-      #   run: |
-      #     cd ~/amplify-js-samples-staging
+# - name: Run cypress tests for ${{ inputs.test_name }} sample on prod
+#   run: |
+#     cd ~/amplify-js-samples-staging
 
-      #     ~/amplify-js/.circleci/retry-yarn-script.sh -s \
-      #     'ci:test ${{ inputs.framework }} \
-      #     ${{ inputs.category }} \
-      #     ${{ inputs.sample_name }} \
-      #     ${{ inputs.spec }} \
-      #     ${{ inputs.browser }} \
-      #     prod \
-      #     ${{ inputs.amplifyjs_dir }}' -n 3
+#     ~/amplify-js/.circleci/retry-yarn-script.sh -s \
+#     'ci:test ${{ inputs.framework }} \
+#     ${{ inputs.category }} \
+#     ${{ inputs.sample_name }} \
+#     ${{ inputs.spec }} \
+#     ${{ inputs.browser }} \
+#     prod \
+#     ${{ inputs.amplifyjs_dir }}' -n 3
 
-      # - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
-      #   with:
-      #     name: my-artifact
-      #     path: |
-      #       ~/amplify-js-samples-staging/cypress/videos
-      #       ~/amplify-js-samples-staging/cypress/screenshots
+# - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+#   with:
+#     name: my-artifact
+#     path: |
+#       ~/amplify-js-samples-staging/cypress/videos
+#       ~/amplify-js-samples-staging/cypress/screenshots
 
