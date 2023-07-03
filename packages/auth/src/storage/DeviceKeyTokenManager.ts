@@ -8,6 +8,7 @@ import { AuthTokenManager } from './types';
 import { CognitoDeviceKeyTokens, CognitoKeys } from './types/models';
 
 export class DeviceKeyTokenManager implements AuthTokenManager {
+	// TODO: change to config interface once defined
 	private config: any;
 	private storage: AuthStorage;
 	private prefix = 'com.amplify.cognito.auth';

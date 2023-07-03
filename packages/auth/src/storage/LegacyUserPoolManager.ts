@@ -11,8 +11,9 @@ import {
 } from './types';
 
 export class LegacyUserPoolTokenManager implements AuthTokenManager {
-	private username: string;
+	// TODO: change to config interface once defined
 	private config: any;
+	private username: string;
 	private storage: AuthStorage;
 	private legacyPrefix: string;
 	private keys: Omit<CognitoKeys<LegacyCognitoUserPoolKeys>, 'LastAuthUser'>;
