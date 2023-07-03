@@ -11,7 +11,7 @@ export class CookieStorage implements AuthStorage {
 	secure: boolean;
 	sameSite: SameSite;
 
-	constructor(data: CookieStorageData) {
+	constructor(data: CookieStorageData = {}) {
 		if (data.domain) {
 			this.domain = data.domain;
 		}
@@ -47,7 +47,7 @@ export class CookieStorage implements AuthStorage {
 		}
 	}
 
-	async setItem(key: string, value: string) {
+	async setItem(key: string, value: string):Promise<void> {
 		const options: CookieStorageData = {
 			path: this.path,
 			expires: this.expires,
@@ -63,11 +63,11 @@ export class CookieStorage implements AuthStorage {
 		return Cookies.get(key);
 	}
 
-	async getItem(key) {
+	async getItem(key:string):Promise<string> {
 		return Cookies.get(key);
 	}
 
-	async removeItem(key) {
+	async removeItem(key:string):Promise<void> {
 		const options: CookieStorageData = {
 			path: this.path,
 			expires: this.expires,
@@ -82,9 +82,9 @@ export class CookieStorage implements AuthStorage {
 		return Cookies.remove(key, options);
 	}
 
-	async clear() {
+	async clear():Promise<void> {
 		const cookies = Cookies.get();
-		let numKeys = Object.keys(cookies).length;
+		const numKeys = Object.keys(cookies).length;
 		for (let index = 0; index < numKeys; ++index) {
 			this.removeItem(Object.keys(cookies)[index]);
 		}
