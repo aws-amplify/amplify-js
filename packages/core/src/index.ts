@@ -49,7 +49,8 @@ export {
 	MemoryStorage,
 	LocalStorage,
 	SessionStorage,
-	CookieStorage
+	CookieStorage,
+	InMemoryStorage
 } from './StorageHelper';
 export { UniversalStorage } from './UniversalStorage';
 export { Platform, getAmplifyUserAgent } from './Platform';
