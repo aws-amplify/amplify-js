@@ -1,0 +1,120 @@
+# React
+# integ_react_datastore
+- test_name: 'React DataStore'
+  framework: react
+  category: datastore
+  sample_name: many-to-many
+  spec: many-to-many
+  browser: minimal_browser_list
+
+# integ_react_datastore_v2
+- test_name: 'React DataStore CLI v2'
+  framework: react
+  category: datastore
+  sample_name: v2/many-to-many-v2
+  spec: many-to-many
+  browser: minimal_browser_list
+
+# integ_react_datastore_multi_auth_one_rule
+- test_name: 'React DataStore Multi-Auth - One Rule'
+  framework: react
+  category: datastore
+  sample_name: multi-auth
+  spec: multi-auth-one-rule
+  browser: minimal_browser_list
+
+# integ_react_datastore_multi_auth_one_rule_v2
+- test_name: 'React DataStore Multi-Auth - One Rule CLI v2'
+  framework: react
+  category: datastore
+  sample_name: v2/multi-auth-v2
+  spec: multi-auth-one-rule
+  browser: minimal_browser_list
+
+# integ_react_datastore_multi_auth_two_rules
+- test_name: 'React DataStore Multi-Auth - Two Rules'
+  framework: react
+  category: datastore
+  sample_name: multi-auth
+  spec: multi-auth-two-rules
+  browser: minimal_browser_list
+
+# integ_react_datastore_multi_auth_two_rules_v2
+- test_name: 'React DataStore Multi-Auth - Two Rules CLI v2'
+  framework: react
+  category: datastore
+  sample_name: v2/multi-auth-v2
+  spec: multi-auth-two-rules
+  browser: minimal_browser_list
+
+# integ_react_datastore_multi_auth_three_plus_rules
+- test_name: 'React DataStore Multi-Auth - Three Plus Rules'
+  framework: react
+  category: datastore
+  sample_name: multi-auth
+  spec: multi-auth-three-plus-rules
+  browser: minimal_browser_list
+
+# integ_react_datastore_multi_auth_three_plus_rules_v2
+- test_name: 'React DataStore Multi-Auth - Three Plus Rules CLI v2'
+  framework: react
+  category: datastore
+  sample_name: v2/multi-auth-v2
+  spec: multi-auth-three-plus-rules
+  browser: minimal_browser_list
+
+# integ_react_datastore_subs_disabled
+- test_name: 'DataStore - Subs Disabled'
+  framework: react
+  category: datastore
+  sample_name: subs-disabled
+  spec: subs-disabled
+  browser: minimal_browser_list
+
+# integ_react_datastore_subs_disabled_v2
+- test_name: 'DataStore - Subs Disabled CLI v2'
+  framework: react
+  category: datastore
+  sample_name: v2/subs-disabled-v2
+  spec: subs-disabled
+  browser: minimal_browser_list
+
+# integ_react_datastore_consecutive_saves
+- test_name: 'DataStore - Subs Disabled'
+  framework: react
+  category: datastore
+  sample_name: consecutive-saves
+  spec: consecutive-saves
+  browser: minimal_browser_list
+
+# integ_react_datastore_consecutive_saves_v2
+- test_name: 'DataStore - Subs Disabled CLI v2'
+  framework: react
+  category: datastore
+  sample_name: v2/consecutive-saves-v2
+  spec: consecutive-saves
+  browser: minimal_browser_list
+
+# # integ_react_datastore_observe_query
+# - test_name: 'DataStore - Observe Query'
+#   framework: react
+#   category: datastore
+#   sample_name: observe-query
+#   spec: observe-query
+#   browser: minimal_browser_list
+
+# # integ_react_datastore_observe_query_v2
+# - test_name: 'DataStore - Observe Query CLI v2'
+#   framework: react
+#   category: datastore
+#   sample_name: v2/observe-query-v2
+#   spec: observe-query
+#   browser: minimal_browser_list
+
+# integ_react_datastore_schema_drift
+- test_name: 'DataStore - Schema Drift'
+  framework: react
+  category: datastore
+  sample_name: schema-drift
+  spec: schema-drift
+  browser: minimal_browser_list

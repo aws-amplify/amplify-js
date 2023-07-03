@@ -4,3 +4,4 @@ minimal_browser_list:
 extended_browser_list:
   - chrome
   - firefox
+  - edge

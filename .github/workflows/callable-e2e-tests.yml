@@ -46,6 +46,7 @@ jobs:
           - prod
           - dev
       fail-fast: false
+    timeout-minutes: 20
 
     steps:
       - name: check incoming config

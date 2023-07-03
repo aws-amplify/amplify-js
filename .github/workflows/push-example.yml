@@ -1,6 +1,10 @@
 on:
   push:
 
+concurrency:
+  group: push-${{ github.event.workflow_run.head_branch }} # This is to make the group name unique for a branch.
+  cancel-in-progress: true
+
 jobs:
   prebuild:
     runs-on: ubuntu-latest
