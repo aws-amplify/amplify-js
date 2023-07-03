@@ -1,0 +1,8 @@
+# React
+# integ_react_predictions
+- test_name: 'React Predictions'
+  framework: react
+  category: predictions
+  sample_name: multi-user-translation
+  spec: multiuser-translation
+  browser: minimal_browser_list

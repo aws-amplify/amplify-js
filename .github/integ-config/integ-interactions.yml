@@ -1,15 +1,45 @@
-# Angular
-- test_name: Angular Interactions
-  framework: angular
-  category: interactions
-  sample_name: chatbot-component
-  spec: chatbot-component
-  browser: chrome
-
 # React
-- test_name: React Interactions
-  framework: react
-  category: interactions
-  sample_name: chatbot-component
-  spec: chatbot-component
-  browser: chrome
+# integ_react_interactions
+-   test_name: 'React Interactions'
+    framework: react
+    category: interactions
+    sample_name: chatbot-component
+    spec: chatbot-component
+    browser: minimal_browser_list
+-   test_name: 'Chatbot V1'
+    framework: react
+    category: interactions
+    sample_name: lex-test-component
+    spec: chatbot-v1
+    browser: minimal_browser_list
+-   test_name: 'Chatbot V2'
+    framework: react
+    category: interactions
+    sample_name: lex-test-component
+    spec: chatbot-v2
+    browser: minimal_browser_list
+
+# Angular
+# integ_angular_interactions
+-   test_name: 'Angular Interactions'
+    framework: angular
+    category: interactions
+    sample_name: chatbot-component
+    spec: chatbot-component
+    browser: minimal_browser_list
+
+# Vue
+# integ_vue_interactions
+-   test_name: 'Vue 2 Interactions'
+    framework: vue
+    category: interactions
+    sample_name: chatbot-component
+    spec: chatbot-component
+    browser: chrome
+-   test_name: 'Vue 3 Interactions'
+    framework: vue
+    category: interactions
+    sample_name: chatbot-component-vue3
+    spec: chatbot-component
+    browser: chrome
+
