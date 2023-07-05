@@ -43,8 +43,8 @@ export class UserPoolTokenManager implements AuthTokenManager {
 		const items: Record<string, string> = {};
 
 		items[this.keys.accessToken] = accessToken;
-		items[this.keys.refreshToken] = idToken;
-		items[this.keys.idToken] = refreshToken;
+		items[this.keys.refreshToken] = refreshToken;
+		items[this.keys.idToken] = idToken;
 
 		const keyValuePairPromiseArray = Object.entries(items).map(
 			async ([key, value]) => this.storage.setItem(key, value)

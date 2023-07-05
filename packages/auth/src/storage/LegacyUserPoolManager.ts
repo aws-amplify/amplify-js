@@ -9,6 +9,8 @@ import {
 	CognitoKeys,
 	LegacyCognitoUserPoolTokens,
 } from './types';
+import { AuthError } from '../errors/AuthError';
+import { AuthErrorCodes } from '../common/AuthErrorStrings';
 
 export class LegacyUserPoolTokenManager implements AuthTokenManager {
 	// TODO: change to config interface once defined
@@ -23,14 +25,14 @@ export class LegacyUserPoolTokenManager implements AuthTokenManager {
 		this.config = config;
 		this.storage = storage;
 		const clientId = this.config.clientId;
+		this.legacyPrefix = `CognitoIdentityServiceProvider.${clientId}`;
 		this.keys = getCognitoKeys(LegacyCognitoUserPoolKeys)(
 			this.legacyPrefix,
 			this.username
 		);
-		this.legacyPrefix = `CognitoIdentityServiceProvider.${clientId}`;
 	}
 
-	getLegacyKeys() {
+	private getLegacyKeys() {
 		// Gets LastAuthUser key without 'username' prefix
 		const legacyLastAuthUserKey = `${this.legacyPrefix}.${LegacyCognitoUserPoolKeys.lastAuthUser}`;
 
@@ -52,27 +54,25 @@ export class LegacyUserPoolTokenManager implements AuthTokenManager {
 		);
 		const userData = await this.storage.getItem(legacyKeyValues.userData);
 
-		if (
-			accessToken &&
-			refreshToken &&
-			clockDrift &&
-			idToken &&
-			lastAuthUser &&
-			userData
-		) {
+		// This assertion doesn't check for lastAuthUser, clockDrift and userData
+		// because these values are not migrated
+		if (accessToken && refreshToken && idToken) {
 			tokens.accessToken = accessToken;
 			tokens.refreshToken = refreshToken;
 			tokens.idToken = idToken;
-			tokens.lastAuthUser = lastAuthUser;
-			tokens.clockDrift = clockDrift;
-			tokens.userData = userData;
+			tokens.lastAuthUser = lastAuthUser!;
+			tokens.clockDrift = clockDrift!;
+			tokens.userData = userData!;
 			return tokens;
 		}
 
 		return null;
 	}
 	async storeTokens(tokens: Record<string, string>): Promise<void> {
-		throw new Error(`storeTokens method is not supported on ${this}`);
+		throw new AuthError({
+			name: AuthErrorCodes.LegacyUserPoolManagerException,
+			message: 'storeTokens method is not supported',
+		});
 	}
 	async clearTokens(): Promise<void> {
 		const legacyKeyValues = this.getLegacyKeys();
