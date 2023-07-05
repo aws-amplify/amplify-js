@@ -43,7 +43,7 @@ jobs:
         browser:
           - ${{ fromJson(inputs.browser) }}
       fail-fast: false
-    timeout-minutes: 20
+    timeout-minutes: 35
 
     steps:
       - name: check incoming config

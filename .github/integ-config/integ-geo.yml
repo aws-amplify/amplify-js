@@ -1,0 +1,34 @@
+# React
+# integ_react_geo
+- test_name: 'Display Map'
+  framework: react
+  category: geo
+  sample_name: display-map
+  spec: display-map
+  # Temp fix:
+  browser: chrome
+- test_name: 'Search Outside Map'
+  framework: react
+  category: geo
+  sample_name: search-outside-map
+  spec: search-outside-map
+  # Temp fix:
+  browser: chrome
+
+# Javascript
+# integ_javascript_geo
+# - test_name: 'Display Map'
+#   framework: javascript
+#   category: geo
+#   sample_name: display-map-static
+#   spec: display-map-static
+#   browser: << parameters.browser >>
+#   amplifyjs_dir: true
+# - test_name: 'Search Outside Map'
+#   framework: javascript
+#   category: geo
+#   sample_name: search-outside-map-static
+#   spec: search-outside-map-static
+#   browser: << parameters.browser >>
+#   amplifyjs_dir: true
+
