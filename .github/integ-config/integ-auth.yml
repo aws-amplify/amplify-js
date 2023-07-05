@@ -111,3 +111,11 @@
     sample_name: custom-auth-ssr
     spec: authenticator
     browser: minimal_browser_list
+
+# Node
+# integ_node_amazon_cognito_identity_js
+- test_name: 'amazon-cognito-identity-js'
+  framework: node
+  category: auth
+  sample_name: amazon-cognito-identity-js
+  build_type: dev

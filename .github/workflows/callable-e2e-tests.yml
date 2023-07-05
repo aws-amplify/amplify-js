@@ -16,11 +16,11 @@ on:
         required: true
         type: string
       spec:
-        required: true
+        required: false
         type: string
         default: ''
       browser:
-        required: true
+        required: false
         type: string
         default: ''
       amplifyjs_dir:
