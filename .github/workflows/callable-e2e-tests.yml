@@ -42,6 +42,8 @@ jobs:
       matrix:
         browser:
           - ${{ fromJson(inputs.browser) }}
+        sample_name:
+          - ${{ fromJson(inputs.sample_name) }}
       fail-fast: false
     timeout-minutes: 35
 
@@ -51,7 +53,7 @@ jobs:
           echo \
           "${{ inputs.framework }} \
           ${{ inputs.category }} \
-          ${{ inputs.sample_name }} \
+          ${{ matrix.sample_name }} \
           ${{ inputs.spec }} \
           ${{ matrix.browser }} \
           ${{ inputs.amplifyjs_dir }}"
@@ -72,13 +74,13 @@ jobs:
       - name: Run cypress tests for ${{ inputs.test_name }} dev
         run: |
           ../aws-amplify/.circleci/retry-yarn-script.sh -s \
-          "ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ inputs.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} dev ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}" -n 3
+          "ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ matrix.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} dev ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}" -n 3
         working-directory: amplify-js-samples-staging
         shell: bash
       - name: Run cypress tests for ${{ inputs.test_name }} prod
         run: |
           ../aws-amplify/.circleci/retry-yarn-script.sh -s \
-          "ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ inputs.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} prod ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}" -n 3
+          "ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ matrix.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} prod ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}" -n 3
         working-directory: amplify-js-samples-staging
         shell: bash
 # TODO CODE FROM CIRCLE CI: REPLICATE THIS

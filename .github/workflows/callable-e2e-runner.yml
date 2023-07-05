@@ -36,9 +36,22 @@ jobs:
       test_name: ${{ matrix.integ-config.test_name }}
       framework: ${{ matrix.integ-config.framework }}
       category: ${{ matrix.integ-config.category }}
-      sample_name: ${{ matrix.integ-config.sample_name }}
       spec: ${{ matrix.integ-config.spec || '' }}
       amplifyjs_dir: ${{ matrix.integ-config.amplifyjs_dir || false }}
+      sample_name: |
+        ${{
+          fromJson(
+            needs.e2e-prep.outputs.integ-utils
+          )[matrix.integ-config.sample_name]
+          &&
+          toJSON(
+            fromJson(
+              needs.e2e-prep.outputs.integ-utils
+            )[matrix.integ-config.sample_name]
+          )
+          ||
+          format('[{0}]', toJSON(matrix.integ-config.sample_name))
+        }}
       browser: |
         ${{
           matrix.integ-config.browser
