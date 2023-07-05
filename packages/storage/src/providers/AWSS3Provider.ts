@@ -194,6 +194,7 @@ export class AWSS3Provider implements StorageProvider {
 				const cred = Credentials.shear(credentials);
 				return getPrefix({
 					...config,
+					level: addTaskInput.accessLevel,
 					credentials: cred,
 				});
 			}
@@ -203,7 +204,7 @@ export class AWSS3Provider implements StorageProvider {
 			s3Config,
 			file,
 			emitter,
-			level: config.level,
+			level: addTaskInput.accessLevel,
 			storage: this._storage,
 			params,
 			prefixPromise,
