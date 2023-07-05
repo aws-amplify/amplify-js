@@ -1,13 +1,29 @@
 on:
   push:
+    branches:
+      - feat/github-actions/main
+      - feat/github-actions/test-stocaaro
+      - feat/github-actions/test-ashwinkumar6
+      - feat/github-actions/test-yingku
 
 concurrency:
   group: push-${{ github.event.workflow_run.head_branch }} # This is to make the group name unique for a branch.
   cancel-in-progress: true
 
 jobs:
-  prebuild:
+  prebuild-ubuntu:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
+        with:
+          # Minimal depth 2 so we can checkout the commit before possible merge commit.
+          fetch-depth: 2
+          path: aws-amplify
+      - name: Setup node and build the repository
+        uses: ./aws-amplify/.github/actions/node-and-build
+  prebuild-macos:
+    runs-on: macos-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
@@ -22,7 +38,8 @@ jobs:
     uses: ./.github/workflows/callable-prebuild-samples-staging.yml
   e2e:
     needs:
-      - prebuild
+      - prebuild-macos
+      - prebuild-ubuntu
       - prebuild-samples-staging
     secrets: inherit
     uses: ./.github/workflows/callable-e2e-runner.yml

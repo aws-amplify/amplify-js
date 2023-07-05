@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       integ-config: ${{env.INTEG_CONFIG}}
+      detox-integ-config: ${{env.DETOX_INTEG_CONFIG}}
       integ-utils: ${{env.INTEG_UTILS}}
     steps:
       - name: checkout AmplifyJs
@@ -18,6 +19,7 @@ jobs:
       - name: read integ config files
         run: |
           echo "INTEG_CONFIG=$(cat .github/integ-config/integ-*.yml | yq -o=json | jq -c .)" >> $GITHUB_ENV
+          echo "DETOX_INTEG_CONFIG=$(cat .github/integ-config/detox-integ-*.yml | yq -o=json | jq -c .)" >> $GITHUB_ENV
           echo "INTEG_UTILS=$(cat .github/integ-config/utils.yml | yq -o=json | jq -c .)" >> $GITHUB_ENV
         working-directory: ./amplify-js
 
@@ -51,3 +53,16 @@ jobs:
           ||
           format('[{0}]', toJSON(matrix.integ-config.browser))
         }}
+
+  detox-e2e-test-runner:
+    name: e2e test runner
+    needs: e2e-prep
+    strategy:
+      matrix:
+        integ-config: ${{ fromJson(needs.e2e-prep.outputs.detox-integ-config) }}
+      fail-fast: false
+    secrets: inherit
+    uses: ./.github/workflows/callable-e2e-tests-detox.yml
+    with:
+      test_name: ${{ matrix.integ-config.test_name }}
+      working_directory: ${{ matrix.integ-config.working_directory }}
