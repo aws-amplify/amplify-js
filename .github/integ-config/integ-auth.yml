@@ -45,6 +45,38 @@
     spec: auto-signin-after-signup
     browser: minimal_browser_list
 
+# integ_react_amazon_cognito_identity_js_cookie_storage
+- test_name: 'amazon-cognito-identity-js-cookie-storage'
+  framework: react
+  category: auth
+  sample_name: amazon-cognito-identity-js-cookie-storage
+  spec: amazon-cognito-identity-js-cookie-storage
+  browser: minimal_browser_list
+
+# integ_react_amazon_cognito_identity_js
+- test_name: 'amazon-cognito-identity-js'
+  framework: react
+  category: auth
+  sample_name: amazon-cognito-identity-js
+  spec: amazon-cognito-identity-js
+  browser: minimal_browser_list
+
+# integ_react_device_tracking
+- test_name: 'cognito-device-tracking'
+  framework: react
+  category: auth
+  sample_name: device-tracking
+  spec: device-tracking
+  browser: minimal_browser_list
+
+# integ_react_delete_user
+- test_name: 'delete-user'
+  framework: react
+  category: auth
+  sample_name: delete-user
+  spec: delete-user
+  browser: minimal_browser_list
+
 # Angular
 # integ_angular_auth
 -   test_name: 'Angular Authenticator'
@@ -111,3 +143,11 @@
     sample_name: custom-auth-ssr
     spec: authenticator
     browser: minimal_browser_list
+
+# Node
+# integ_node_amazon_cognito_identity_js
+- test_name: 'amazon-cognito-identity-js'
+  framework: node
+  category: auth
+  sample_name: amazon-cognito-identity-js
+  build_type: dev

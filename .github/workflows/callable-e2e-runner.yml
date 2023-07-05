@@ -36,22 +36,41 @@ jobs:
       test_name: ${{ matrix.integ-config.test_name }}
       framework: ${{ matrix.integ-config.framework }}
       category: ${{ matrix.integ-config.category }}
-      sample_name: ${{ matrix.integ-config.sample_name }}
-      spec: ${{ matrix.integ-config.spec }}
+      spec: ${{ matrix.integ-config.spec || '' }}
       amplifyjs_dir: ${{ matrix.integ-config.amplifyjs_dir || false }}
-      browser: |
+      sample_name: |
         ${{
           fromJson(
             needs.e2e-prep.outputs.integ-utils
-          )[matrix.integ-config.browser]
+          )[matrix.integ-config.sample_name]
           &&
           toJSON(
             fromJson(
               needs.e2e-prep.outputs.integ-utils
-            )[matrix.integ-config.browser]
+            )[matrix.integ-config.sample_name]
           )
           ||
-          format('[{0}]', toJSON(matrix.integ-config.browser))
+          format('[{0}]', toJSON(matrix.integ-config.sample_name))
+        }}
+      browser: |
+        ${{
+          matrix.integ-config.browser
+          &&
+          (
+            fromJson(
+              needs.e2e-prep.outputs.integ-utils
+            )[matrix.integ-config.browser]
+            &&
+            toJSON(
+              fromJson(
+                needs.e2e-prep.outputs.integ-utils
+              )[matrix.integ-config.browser]
+            )
+            ||
+            format('[{0}]', toJSON(matrix.integ-config.browser))
+          )
+          ||
+          '[""]'
         }}
 
   detox-e2e-test-runner:
