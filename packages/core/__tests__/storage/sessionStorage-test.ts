@@ -1,7 +1,34 @@
-import { SessionStorage } from "../../src/StorageHelper";
+import { SessionStorage } from '../../src/StorageHelper';
 
-const key = 'k'
-const value = 'value'
+const key = 'k';
+const value = 'value';
+const sessionStorageMock = (function () {
+	let store = {};
+
+	return {
+		getItem(key) {
+			return store[key];
+		},
+
+		setItem(key, value) {
+			store[key] = value;
+		},
+
+		clear() {
+			store = {};
+		},
+
+		removeItem(key) {
+			delete store[key];
+		},
+
+		getAll() {
+			return store;
+		},
+	};
+})();
+
+Object.defineProperty(window, 'sessionStorage', { value: sessionStorageMock });
 
 describe('SessionStorage', () => {
 	test('test read/write operations', async () => {
