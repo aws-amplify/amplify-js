@@ -11,12 +11,13 @@ import {
 } from './types';
 import { AuthError } from '../errors/AuthError';
 import { AuthErrorCodes } from '../common/AuthErrorStrings';
+import { LEGACY_KEY_PREFIX } from './constants';
 
 export class LegacyUserPoolTokenManager implements AuthTokenManager {
 	// TODO: change to config interface once defined
 	private config: any;
 	private storage: AuthStorage;
-	private prefix: string = 'CognitoIdentityServiceProvider';
+	private prefix: string = LEGACY_KEY_PREFIX;
 	private keys: Omit<CognitoKeys<LegacyCognitoUserPoolKeys>, 'LastAuthUser'>;
 
 	constructor(config: any, username: string, storage: AuthStorage) {
@@ -69,7 +70,7 @@ export class LegacyUserPoolTokenManager implements AuthTokenManager {
 	}
 	async storeTokens(tokens: Record<string, string>): Promise<void> {
 		throw new AuthError({
-			name: AuthErrorCodes.LegacyUserPoolManagerException,
+			name: AuthErrorCodes.AuthStorageException,
 			message: 'storeTokens method is not supported',
 		});
 	}

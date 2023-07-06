@@ -6,19 +6,24 @@ import { getCognitoKeys } from './helpers';
 import { CognitoDeviceKey } from './keys';
 import { AuthTokenManager } from './types';
 import { CognitoDeviceKeyTokens, CognitoKeys } from './types/models';
-import { KEY_PREFIX } from './constants';
+import { AuthError } from '../errors/AuthError';
+import { AuthErrorCodes } from '../common/AuthErrorStrings';
+import { LEGACY_KEY_PREFIX } from './constants';
 
-export class DeviceKeyTokenManager implements AuthTokenManager {
+export class LegacyDeviceKeyTokenManager implements AuthTokenManager {
 	// TODO: change to config interface once defined
 	private config: any;
 	private storage: AuthStorage;
-	private prefix = KEY_PREFIX;
+	private prefix: string = LEGACY_KEY_PREFIX;
 	private keys: CognitoKeys<CognitoDeviceKey>;
-	constructor(config: any, storage: AuthStorage) {
+	constructor(config: any, storage: AuthStorage, username: string) {
 		this.config = config;
 		this.storage = storage;
 		const clientId = this.config.clientId;
-		this.keys = getCognitoKeys(CognitoDeviceKey)(this.prefix, clientId);
+		this.keys = getCognitoKeys(CognitoDeviceKey)(
+			this.prefix,
+			`${clientId}.${username}`
+		);
 	}
 
 	async loadTokens(): Promise<CognitoDeviceKeyTokens | null> {
@@ -39,19 +44,10 @@ export class DeviceKeyTokenManager implements AuthTokenManager {
 	}
 
 	async storeTokens(tokens: CognitoDeviceKeyTokens): Promise<void> {
-		const { deviceGroupKey, deviceKey, randomPasswordKey } = tokens;
-
-		const items: Record<string, string> = {};
-
-		items[this.keys.deviceGroupKey] = deviceGroupKey;
-		items[this.keys.deviceKey] = deviceKey;
-		items[this.keys.randomPasswordKey] = randomPasswordKey;
-
-		const keyValuePairPromiseArray = Object.entries(items).map(
-			async ([key, value]) => this.storage.setItem(key, value)
-		);
-
-		await Promise.all(keyValuePairPromiseArray);
+		throw new AuthError({
+			name: AuthErrorCodes.AuthStorageException,
+			message: 'storeTokens method is not supported',
+		});
 	}
 	async clearTokens(): Promise<void> {
 		const cognitoKeyPromiseArray = Object.values(this.keys).map(async key =>

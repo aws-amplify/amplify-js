@@ -67,5 +67,5 @@ export enum AuthErrorStrings {
 }
 
 export enum AuthErrorCodes {
-	LegacyUserPoolManagerException = 'LegacyUserPoolManagerException',
+	AuthStorageException = 'AuthStorageException',
 }

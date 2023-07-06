@@ -5,7 +5,12 @@ import { LegacyUserPoolTokenManager } from '../src/storage/LegacyUserPoolManager
 import { AuthError } from '../src/errors/AuthError';
 import { AuthErrorCodes } from '../src/common/AuthErrorStrings';
 import { getCognitoKeys } from '../src/storage/helpers';
-import { LegacyCognitoUserPoolKeys } from '../src/storage/keys';
+import {
+	CognitoDeviceKey,
+	LegacyCognitoUserPoolKeys,
+} from '../src/storage/keys';
+import { LegacyDeviceKeyTokenManager } from '../src/storage/LegacyDeviceKeyTokenManager';
+import { KEY_PREFIX, LEGACY_KEY_PREFIX } from '../src/storage/constants';
 
 const clientId = '12343-abcd-AZWB';
 
@@ -42,7 +47,7 @@ describe('test userpool token manager', () => {
 	});
 
 	test('user pool token manager should store tokens with a scoped key', async () => {
-		const key = `com.amplify.cognito.auth.${clientId}.idToken`;
+		const key = `${KEY_PREFIX}.${clientId}.idToken`;
 
 		expect(await LocalStorage.getItem(key)).toEqual(idToken);
 	});
@@ -50,7 +55,7 @@ describe('test userpool token manager', () => {
 
 describe('test legacy userpool token manager', () => {
 	const username = 'username';
-	const legacyPrefix = 'CognitoIdentityServiceProvider';
+	const legacyPrefix = LEGACY_KEY_PREFIX;
 	const userData = 'userData';
 	const clockDrift = '0';
 	const keys = getCognitoKeys(LegacyCognitoUserPoolKeys)(
@@ -60,10 +65,14 @@ describe('test legacy userpool token manager', () => {
 
 	// set legacy tokens first
 	beforeEach(async () => {
+		// set user pool tokens
 		await LocalStorage.setItem(keys.idToken, idToken);
 		await LocalStorage.setItem(keys.refreshToken, refreshToken);
 		await LocalStorage.setItem(keys.accessToken, accessToken);
-		await LocalStorage.setItem(`${legacyPrefix}.${clientId}.LastAuthUser`, username);
+		await LocalStorage.setItem(
+			`${legacyPrefix}.${clientId}.LastAuthUser`,
+			username
+		);
 		await LocalStorage.setItem(keys.clockDrift, clockDrift);
 		await LocalStorage.setItem(keys.userData, userData);
 	});
@@ -82,12 +91,11 @@ describe('test legacy userpool token manager', () => {
 			await legacyUserPoolManager.storeTokens(cognitoUserPoolTokens);
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(AuthErrorCodes.LegacyUserPoolManagerException);
+			expect(error.name).toBe(AuthErrorCodes.AuthStorageException);
 		}
 	});
 
 	test('legacy user pool manager should load tokens ', async () => {
-		console.log(await legacyUserPoolManager.loadTokens());
 		expect(await legacyUserPoolManager.loadTokens()).toEqual({
 			...cognitoUserPoolTokens,
 			clockDrift,
@@ -100,5 +108,57 @@ describe('test legacy userpool token manager', () => {
 		await legacyUserPoolManager.clearTokens();
 
 		expect(await legacyUserPoolManager.loadTokens()).toEqual(null);
+	});
+});
+
+describe('test legacy device key token manager', () => {
+	const username = 'username';
+	const legacyPrefix = LEGACY_KEY_PREFIX;
+	const deviceGroupKey = '123eaas34aefasdz';
+	const deviceKey = 'asdfsfwe2347s7s';
+	const randomPasswordKey = 'asdfasdf8231723r0s';
+	const devicekeyTokens = {
+		deviceGroupKey,
+		deviceKey,
+		randomPasswordKey,
+	};
+	const legacyKeys = getCognitoKeys(CognitoDeviceKey)(
+		legacyPrefix,
+		`${clientId}.${username}`
+	);
+
+	beforeEach(async () => {
+		// set legacy device key tokens first
+		await LocalStorage.setItem(legacyKeys.deviceGroupKey, deviceGroupKey);
+		await LocalStorage.setItem(legacyKeys.deviceKey, deviceKey);
+		await LocalStorage.setItem(legacyKeys.randomPasswordKey, randomPasswordKey);
+	});
+
+	afterEach(async () => {
+		await LocalStorage.clear();
+	});
+
+	const legacyDeviceKeyManager = new LegacyDeviceKeyTokenManager(
+		config,
+		LocalStorage,
+		username
+	);
+	test('legacy device key manager should not allow to set tokens', async () => {
+		try {
+			await legacyDeviceKeyManager.storeTokens(devicekeyTokens);
+		} catch (error) {
+			expect(error).toBeInstanceOf(AuthError);
+			expect(error.name).toBe(AuthErrorCodes.AuthStorageException);
+		}
+	});
+
+	test('legacy device key manager should load tokens ', async () => {
+		expect(await legacyDeviceKeyManager.loadTokens()).toEqual(devicekeyTokens);
+	});
+
+	test('legacy device key manager should return null if there are no tokens in storage ', async () => {
+		await legacyDeviceKeyManager.clearTokens();
+
+		expect(await legacyDeviceKeyManager.loadTokens()).toEqual(null);
 	});
 });

@@ -5,12 +5,13 @@ import { AuthStorage } from '@aws-amplify/core';
 import { getCognitoKeys } from './helpers';
 import { CognitoUserPoolKey } from './keys';
 import { CognitoUserPoolTokens, AuthTokenManager, CognitoKeys } from './types';
+import { KEY_PREFIX } from './constants';
 
 export class UserPoolTokenManager implements AuthTokenManager {
 	// TODO: change to config interface once defined
 	private config: any;
 	private storage: AuthStorage;
-	private prefix = 'com.amplify.cognito.auth';
+	private prefix = KEY_PREFIX;
 	private keys: CognitoKeys<CognitoUserPoolKey>;
 
 	constructor(config: any, storage: AuthStorage) {
