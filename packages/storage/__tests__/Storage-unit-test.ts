@@ -1,3 +1,4 @@
+import { Credentials } from '@aws-amplify/core';
 import { AWSS3Provider as AWSStorageProvider } from '../src/providers/AWSS3Provider';
 import { Storage as StorageClass } from '../src/Storage';
 import {
@@ -6,8 +7,14 @@ import {
 	StorageProvider,
 } from '../src';
 import { isCancelError } from '../src/AwsClients/S3/utils';
+import { getPrefix } from '../src/common/S3ClientUtils';
+import { AWSS3UploadTask } from '../src/providers/AWSS3UploadTask';
 
 jest.mock('../src/AwsClients/S3/utils');
+jest.mock('../src/common/S3ClientUtils');
+jest.mock('../src/providers/AWSS3UploadTask');
+
+const mockGetPrefix = getPrefix as jest.Mock;
 
 type CustomProviderConfig = {
 	provider: string;
@@ -327,22 +334,64 @@ describe('Storage', () => {
 			});
 		});
 
-		test('vault level is always private', () => {
+		describe('storage value', () => {
 			const storage = StorageCategory;
-			expect.assertions(3);
-			storage.vault.configure = jest.fn().mockImplementation(configure => {
-				expect(configure).toEqual({
-					AWSS3: { bucket: 'bucket', level: 'private', region: 'region' },
-				});
-			});
-			const aws_options = {
-				aws_user_files_s3_bucket: 'bucket',
-				aws_user_files_s3_bucket_region: 'region',
-			};
+			const originalConfigure = storage.vault.configure.bind(storage.vault);
 
-			storage.configure(aws_options);
-			storage.configure({ Storage: { level: 'protected' } });
-			storage.configure({ Storage: { level: 'public' } });
+			afterEach(() => {
+				storage.configure = originalConfigure;
+			});
+
+			it('should always use private access level when configure', () => {
+				expect.assertions(3);
+				storage.vault.configure = jest.fn().mockImplementation(configure => {
+					originalConfigure(configure);
+					expect(configure).toEqual({
+						AWSS3: { bucket: 'bucket', level: 'private', region: 'region' },
+					});
+				});
+				const aws_options = {
+					aws_user_files_s3_bucket: 'bucket',
+					aws_user_files_s3_bucket_region: 'region',
+				};
+
+				storage.configure(aws_options);
+				storage.configure({ Storage: { level: 'protected' } });
+				storage.configure({ Storage: { level: 'public' } });
+			});
+
+			it('should use private access level to initiate multipart upload', () => {
+				const aws_options = {
+					aws_user_files_s3_bucket: 'bucket',
+					aws_user_files_s3_bucket_region: 'region',
+				};
+				storage.configure(aws_options);
+
+				mockGetPrefix.mockImplementationOnce(config => {
+					expect(config).toHaveProperty('level', 'private');
+					return 'fake-prefix';
+				});
+
+				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
+
+				storage.vault.put(
+					'test-key',
+					new Blob([new Uint8Array(1024 * 1024 * 6)]),
+					{
+						resumable: true,
+					}
+				);
+
+				expect(AWSS3UploadTask).toHaveBeenCalledWith(
+					expect.objectContaining({
+						level: 'private',
+					})
+				);
+			});
 		});
 
 		test('normal storage level is public by default', () => {
