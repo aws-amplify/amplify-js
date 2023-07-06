@@ -935,6 +935,9 @@ img { max-width: 100%; }
 				<a href="storageprovider.html#getcategory" class="tsd-kind-icon">get<wbr>Category</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-interface">
+				<a href="storageprovider.html#getproperties" class="tsd-kind-icon">get<wbr>Properties</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-interface">
 				<a href="storageprovider.html#getprovidername" class="tsd-kind-icon">get<wbr>Provider<wbr>Name</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-interface">
@@ -961,6 +964,9 @@ img { max-width: 100%; }
 					<li>
 						<a href="storageproviderwithcopy.html" class="tsd-signature-type">StorageProviderWithCopy</a>
 					</li>
+					<li>
+						<a href="storageproviderwithgetproperties.html" class="tsd-signature-type">StorageProviderWithGetProperties</a>
+					</li>
 				</ul>
 			</li>
 		</ul>
@@ -983,6 +989,7 @@ img { max-width: 100%; }
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#copy" class="tsd-kind-icon">copy</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#get" class="tsd-kind-icon">get</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#getcategory" class="tsd-kind-icon">get<wbr>Category</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#getproperties" class="tsd-kind-icon">get<wbr>Properties</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#getprovidername" class="tsd-kind-icon">get<wbr>Provider<wbr>Name</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#list" class="tsd-kind-icon">list</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#put" class="tsd-kind-icon">put</a></li>
@@ -1004,7 +1011,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6a84560cb/packages/storage/src/types/Provider.ts#L8">packages/storage/src/types/Provider.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/types/Provider.ts#L12">packages/storage/src/types/Provider.ts:12</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1027,7 +1034,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6a84560cb/packages/storage/src/types/Provider.ts#L18">packages/storage/src/types/Provider.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/types/Provider.ts#L22">packages/storage/src/types/Provider.ts:22</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1050,7 +1057,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6a84560cb/packages/storage/src/types/Provider.ts#L11">packages/storage/src/types/Provider.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/types/Provider.ts#L15">packages/storage/src/types/Provider.ts:15</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1079,7 +1086,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6a84560cb/packages/storage/src/types/Provider.ts#L21">packages/storage/src/types/Provider.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/types/Provider.ts#L25">packages/storage/src/types/Provider.ts:25</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1105,10 +1112,36 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6a84560cb/packages/storage/src/types/Provider.ts#L33">packages/storage/src/types/Provider.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/types/Provider.ts#L40">packages/storage/src/types/Provider.ts:40</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+			<a name="getproperties" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> get<wbr>Properties</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Properties<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/types/Provider.ts#L28">packages/storage/src/types/Provider.ts:28</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>key: <span class="tsd-signature-type">string</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">any</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1122,7 +1155,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6a84560cb/packages/storage/src/types/Provider.ts#L36">packages/storage/src/types/Provider.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/types/Provider.ts#L43">packages/storage/src/types/Provider.ts:43</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1139,7 +1172,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6a84560cb/packages/storage/src/types/Provider.ts#L30">packages/storage/src/types/Provider.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/types/Provider.ts#L37">packages/storage/src/types/Provider.ts:37</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1165,7 +1198,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6a84560cb/packages/storage/src/types/Provider.ts#L24">packages/storage/src/types/Provider.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/types/Provider.ts#L31">packages/storage/src/types/Provider.ts:31</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1197,7 +1230,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6a84560cb/packages/storage/src/types/Provider.ts#L27">packages/storage/src/types/Provider.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/types/Provider.ts#L34">packages/storage/src/types/Provider.ts:34</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>

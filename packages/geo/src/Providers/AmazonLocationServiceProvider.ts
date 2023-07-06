@@ -5,7 +5,7 @@ import camelcaseKeys from 'camelcase-keys';
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
 } from '@aws-amplify/core';
 import {
 	Place as PlaceResult,
@@ -181,7 +181,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 		const command = new SearchPlaceIndexForTextCommand(locationServiceInput);
 
@@ -247,7 +247,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 		const command = new SearchPlaceIndexForSuggestionsCommand(
 			locationServiceInput
@@ -295,7 +295,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 
 		const searchByPlaceIdInput: GetPlaceCommandInput = {
@@ -353,7 +353,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 		const command = new SearchPlaceIndexForPositionCommand(
 			locationServiceInput
@@ -517,7 +517,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 
 		// Create Amazon Location Service command
@@ -579,7 +579,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 
 		// Create Amazon Location Service input
@@ -784,7 +784,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 		const command = new BatchPutGeofenceCommand(geofenceInput);
 
@@ -811,7 +811,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 		const command = new BatchDeleteGeofenceCommand(deleteGeofencesInput);
 

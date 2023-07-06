@@ -1,4 +1,4 @@
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { AnalyticsAction, ConsoleLogger as Logger } from '@aws-amplify/core';
 import {
 	putEvents,
 	PutEventsInput,
@@ -6,6 +6,7 @@ import {
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import { EventBuffer, EventObject, EventMap } from '../types';
 import { isAppInForeground } from '../utils/AppUtils';
+import { getAnalyticsUserAgentString } from '../utils/UserAgent';
 
 const logger = new Logger('EventsBuffer');
 const RETRYABLE_CODES = [429, 500];
@@ -101,7 +102,11 @@ export default class EventsBuffer {
 		try {
 			const { credentials, region } = this._config;
 			const data: PutEventsOutput = await putEvents(
-				{ credentials, region },
+				{
+					credentials,
+					region,
+					userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
+				},
 				batchEventParams
 			);
 			this._processPutEventsSuccessResponse(data, eventMap);
