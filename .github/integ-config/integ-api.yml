@@ -1,8 +1,0 @@
-# React
-# integ_react_graphql_api
-- test_name: 'React GraphQL API'
-  framework: react
-  category: api
-  sample_name: graphql
-  spec: graphql
-  browser: minimal_browser_list

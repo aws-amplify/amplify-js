@@ -10,7 +10,6 @@ jobs:
     outputs:
       integ-config: ${{env.INTEG_CONFIG}}
       detox-integ-config: ${{env.DETOX_INTEG_CONFIG}}
-      integ-utils: ${{env.INTEG_UTILS}}
     steps:
       - name: checkout AmplifyJs
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f
@@ -18,11 +17,19 @@ jobs:
           path: amplify-js
       - name: read integ config files
         run: |
-          echo "INTEG_CONFIG=$(cat .github/integ-config/integ-*.yml | yq -o=json | jq -c .)" >> $GITHUB_ENV
-          echo "DETOX_INTEG_CONFIG=$(cat .github/integ-config/detox-integ-*.yml | yq -o=json | jq -c .)" >> $GITHUB_ENV
-          echo "INTEG_UTILS=$(cat .github/integ-config/utils.yml | yq -o=json | jq -c .)" >> $GITHUB_ENV
+          echo "INTEG_CONFIG=$(cat .github/integ-config/integ-all.yml | yq '.tests' -o=json | jq -c .)"
+          echo "INTEG_CONFIG=$(cat .github/integ-config/integ-all.yml | yq '.tests' -o=json | jq -c .)" >> $GITHUB_ENV
+          echo "DETOX_INTEG_CONFIG=$(cat .github/integ-config/detox-integ-all.yml | yq -o=json | jq -c .)" >> $GITHUB_ENV
         working-directory: ./amplify-js
 
+  debug-job:
+    name: debug the job
+    needs: e2e-prep
+    runs-on: ubuntu-latest
+    steps:
+      - name: check result
+        run: |
+          echo '${{ needs.e2e-prep.outputs.integ-config }}'
   e2e-test-runner:
     name: e2e test runnner
     needs: e2e-prep
@@ -38,40 +45,8 @@ jobs:
       category: ${{ matrix.integ-config.category }}
       spec: ${{ matrix.integ-config.spec || '' }}
       amplifyjs_dir: ${{ matrix.integ-config.amplifyjs_dir || false }}
-      sample_name: |
-        ${{
-          fromJson(
-            needs.e2e-prep.outputs.integ-utils
-          )[matrix.integ-config.sample_name]
-          &&
-          toJSON(
-            fromJson(
-              needs.e2e-prep.outputs.integ-utils
-            )[matrix.integ-config.sample_name]
-          )
-          ||
-          format('[{0}]', toJSON(matrix.integ-config.sample_name))
-        }}
-      browser: |
-        ${{
-          matrix.integ-config.browser
-          &&
-          (
-            fromJson(
-              needs.e2e-prep.outputs.integ-utils
-            )[matrix.integ-config.browser]
-            &&
-            toJSON(
-              fromJson(
-                needs.e2e-prep.outputs.integ-utils
-              )[matrix.integ-config.browser]
-            )
-            ||
-            format('[{0}]', toJSON(matrix.integ-config.browser))
-          )
-          ||
-          '[""]'
-        }}
+      sample_name: ${{ toJSON(matrix.integ-config.sample_name) || '[""]' }}
+      browser: ${{ toJSON(matrix.integ-config.browser) || '[""]' }}
 
   detox-e2e-test-runner:
     name: e2e test runner

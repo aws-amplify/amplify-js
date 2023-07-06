@@ -19,6 +19,8 @@ jobs:
           path: aws-amplify
       - name: Setup node and build the repository
         uses: ./aws-amplify/.github/actions/node-and-build
+        with:
+          is-prebuild: true
   get-package-list:
     uses: ./.github/workflows/callable-get-package-list.yml
   codeql:
@@ -30,7 +32,7 @@ jobs:
     strategy:
       matrix:
         package: ${{ fromJSON(needs.get-package-list.outputs.packages) }}
-      fail-fast: true
+      fail-fast: false
     uses: ./.github/workflows/callable-unit-tests.yml
     with:
       package: ${{ matrix.package }}

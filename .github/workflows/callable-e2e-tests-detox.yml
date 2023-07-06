@@ -19,6 +19,7 @@ jobs:
   e2e-test:
     name: 'E2E-Detox: ${{ inputs.test_name }}'
     runs-on: macos-latest
+    timeout-minutes: 35
 
     steps:
       - name: check incoming config
@@ -51,9 +52,6 @@ jobs:
         shell: bash
       - name: Install CocoaPods
         run: |
-          ls; pwd
-          cd ios
-          ls; pwd
           pod install
         working-directory: ${{ inputs.working_directory }}
         shell: bash
@@ -67,6 +65,8 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Configure Detox
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
         run: |
           brew tap wix/brew
           brew install applesimutils

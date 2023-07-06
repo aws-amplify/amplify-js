@@ -6,10 +6,6 @@ on:
       - feat/github-actions/test-ashwinkumar6
       - feat/github-actions/test-yingku
 
-concurrency:
-  group: push-${{ github.event.workflow_run.head_branch }} # This is to make the group name unique for a branch.
-  cancel-in-progress: true
-
 jobs:
   prebuild-ubuntu:
     runs-on: ubuntu-latest
@@ -22,6 +18,8 @@ jobs:
           path: aws-amplify
       - name: Setup node and build the repository
         uses: ./aws-amplify/.github/actions/node-and-build
+        with:
+          is-prebuild: true
   prebuild-macos:
     runs-on: macos-latest
     steps:
@@ -33,6 +31,8 @@ jobs:
           path: aws-amplify
       - name: Setup node and build the repository
         uses: ./aws-amplify/.github/actions/node-and-build
+        with:
+          is-prebuild: true
   prebuild-samples-staging:
     secrets: inherit
     uses: ./.github/workflows/callable-prebuild-samples-staging.yml
