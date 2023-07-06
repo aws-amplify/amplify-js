@@ -1,13 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { PlatformNotSupportedError } from '../Errors';
 import { AuthStorage } from '../types';
 
 export class LocalStorageClass implements AuthStorage {
 	storage: Storage;
 
 	constructor() {
-		this.storage = window.localStorage;
+		try {
+			this.storage = window.localStorage;
+		} catch (error) {}
 	}
 
 	/**
@@ -17,7 +20,11 @@ export class LocalStorageClass implements AuthStorage {
 	 * @returns {string} value that was set
 	 */
 	async setItem(key: string, value: string): Promise<void> {
-		this.storage.setItem(key, value);
+		try {
+			this.storage.setItem(key, value);
+		} catch (error) {
+			throw PlatformNotSupportedError;
+		}
 	}
 
 	/**
@@ -27,7 +34,11 @@ export class LocalStorageClass implements AuthStorage {
 	 * @returns {string} the data item
 	 */
 	async getItem(key: string): Promise<string | null> {
-		return this.storage.getItem(key);
+		try {
+			return this.storage.getItem(key);
+		} catch (error) {
+			throw PlatformNotSupportedError;
+		}
 	}
 
 	/**
@@ -36,7 +47,11 @@ export class LocalStorageClass implements AuthStorage {
 	 * @returns {string} value - value that was deleted
 	 */
 	async removeItem(key: string): Promise<void> {
-		this.storage.removeItem(key);
+		try {
+			this.storage.removeItem(key);
+		} catch (error) {
+			throw PlatformNotSupportedError;
+		}
 	}
 
 	/**
@@ -44,7 +59,11 @@ export class LocalStorageClass implements AuthStorage {
 	 * @returns {string} nothing
 	 */
 	async clear(): Promise<void> {
-		this.storage.clear();
+		try {
+			this.storage.clear();
+		} catch (error) {
+			throw PlatformNotSupportedError;
+		}
 	}
 }
 
