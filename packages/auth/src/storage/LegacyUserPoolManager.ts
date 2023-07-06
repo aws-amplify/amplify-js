@@ -15,27 +15,26 @@ import { AuthErrorCodes } from '../common/AuthErrorStrings';
 export class LegacyUserPoolTokenManager implements AuthTokenManager {
 	// TODO: change to config interface once defined
 	private config: any;
-	private username: string;
 	private storage: AuthStorage;
-	private legacyPrefix: string;
+	private prefix: string = 'CognitoIdentityServiceProvider';
 	private keys: Omit<CognitoKeys<LegacyCognitoUserPoolKeys>, 'LastAuthUser'>;
 
 	constructor(config: any, username: string, storage: AuthStorage) {
-		this.username = username;
 		this.config = config;
 		this.storage = storage;
 		const clientId = this.config.clientId;
-		this.legacyPrefix = `CognitoIdentityServiceProvider.${clientId}`;
+
 		this.keys = getCognitoKeys(LegacyCognitoUserPoolKeys)(
-			this.legacyPrefix,
-			this.username
+			this.prefix,
+			`${clientId}.${username}`
 		);
 	}
 
 	private getLegacyKeys() {
+		const clientId = this.config.clientId;
 		// Gets LastAuthUser key without 'username' prefix
-		const legacyLastAuthUserKey = `${this.legacyPrefix}.${LegacyCognitoUserPoolKeys.lastAuthUser}`;
-
+		const legacyLastAuthUserKey = `${this.prefix}.${clientId}.${LegacyCognitoUserPoolKeys.lastAuthUser}`;
+		
 		return { ...this.keys, lastAuthUser: legacyLastAuthUserKey };
 	}
 

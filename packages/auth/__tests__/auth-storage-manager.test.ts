@@ -50,17 +50,20 @@ describe('test userpool token manager', () => {
 
 describe('test legacy userpool token manager', () => {
 	const username = 'username';
-	const legacyKey = `CognitoIdentityServiceProvider.${clientId}`;
+	const legacyPrefix = 'CognitoIdentityServiceProvider';
 	const userData = 'userData';
 	const clockDrift = '0';
-	const keys = getCognitoKeys(LegacyCognitoUserPoolKeys)(legacyKey, username);
+	const keys = getCognitoKeys(LegacyCognitoUserPoolKeys)(
+		legacyPrefix,
+		`${clientId}.${username}`
+	);
 
 	// set legacy tokens first
 	beforeEach(async () => {
 		await LocalStorage.setItem(keys.idToken, idToken);
 		await LocalStorage.setItem(keys.refreshToken, refreshToken);
 		await LocalStorage.setItem(keys.accessToken, accessToken);
-		await LocalStorage.setItem(`${legacyKey}.LastAuthUser`, username);
+		await LocalStorage.setItem(`${legacyPrefix}.${clientId}.LastAuthUser`, username);
 		await LocalStorage.setItem(keys.clockDrift, clockDrift);
 		await LocalStorage.setItem(keys.userData, userData);
 	});
@@ -84,6 +87,7 @@ describe('test legacy userpool token manager', () => {
 	});
 
 	test('legacy user pool manager should load tokens ', async () => {
+		console.log(await legacyUserPoolManager.loadTokens());
 		expect(await legacyUserPoolManager.loadTokens()).toEqual({
 			...cognitoUserPoolTokens,
 			clockDrift,
