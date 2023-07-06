@@ -7,20 +7,21 @@ jobs:
   e2e-prep:
     name: Get required configs to run e2e tests
     runs-on: ubuntu-latest
-    outputs:
-      integ-config: ${{env.INTEG_CONFIG}}
-      detox-integ-config: ${{env.DETOX_INTEG_CONFIG}}
     steps:
       - name: checkout AmplifyJs
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f
         with:
           path: amplify-js
       - name: read integ config files
+        id: load_config
         run: |
           echo "INTEG_CONFIG=$(cat .github/integ-config/integ-all.yml | yq '.tests' -o=json | jq -c .)"
-          echo "INTEG_CONFIG=$(cat .github/integ-config/integ-all.yml | yq '.tests' -o=json | jq -c .)" >> $GITHUB_ENV
-          echo "DETOX_INTEG_CONFIG=$(cat .github/integ-config/detox-integ-all.yml | yq -o=json | jq -c .)" >> $GITHUB_ENV
+          echo "INTEG_CONFIG=$(cat .github/integ-config/integ-all.yml | yq '.tests' -o=json | jq -c .)" >> $GITHUB_OUTPUT
+          echo "DETOX_INTEG_CONFIG=$(cat .github/integ-config/detox-integ-all.yml | yq -o=json | jq -c .)" >> $GITHUB_OUTPUT
         working-directory: ./amplify-js
+    outputs:
+      integ-config: ${{steps.load_config.outputs.INTEG_CONFIG}}
+      detox-integ-config: ${{steps.load_config.outputs.DETOX_INTEG_CONFIG}}
 
   debug-job:
     name: debug the job
