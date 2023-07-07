@@ -5,17 +5,17 @@ import { ChallengeName } from './clients/types/models';
 
 // TODO: replace all of this implementation with state machines
 type SignInState = {
-	username: string | undefined;
-	challengeName: ChallengeName | undefined;
-	signInSession: string | undefined;
+	username?: string;
+	challengeName?: ChallengeName;
+	signInSession?: string;
 };
 
 type SignInAction =
 	| { type: 'SET_INITIAL_STATE' }
 	| { type: 'SET_SIGN_IN_STATE'; value: SignInState }
-	| { type: 'SET_USERNAME'; value: string | undefined }
-	| { type: 'SET_CHALLENGE_NAME'; value: ChallengeName | undefined }
-	| { type: 'SET_SIGN_IN_SESSION'; value: string | undefined };
+	| { type: 'SET_USERNAME'; value?: string  }
+	| { type: 'SET_CHALLENGE_NAME'; value?: ChallengeName  }
+	| { type: 'SET_SIGN_IN_SESSION'; value?: string  };
 
 type Store<State, Action> = (reducer: Reducer<State, Action>) => {
 	getState: () => ReturnType<Reducer<State, Action>>;
@@ -46,11 +46,7 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 				username: action.value,
 			};
 		case 'SET_INITIAL_STATE':
-			return {
-				signInSession: undefined,
-				username: undefined,
-				challengeName: undefined,
-			};
+			return defaultState();
 		default:
 			return state;
 	}
