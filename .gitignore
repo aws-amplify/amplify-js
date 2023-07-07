@@ -9,7 +9,7 @@ packages/**/dist/
 packages/**/es/
 packages/**/esm/
 packages/**/cjs/
-.DS_Store
+*.DS_Store
 .vscode
 .idea
 *.log

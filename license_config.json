@@ -1,0 +1,46 @@
+{
+	"ignore": [
+		"NOTICE",
+		".circleci",
+		".github",
+		"**/*.config.dev.js",
+		"**/*.config.js",
+		"**/*.d.ts",
+		"**/*.html",
+		"**/*.jar",
+		"**/*.json",
+		"**/*.md",
+		"**/*.plist",
+		"**/*.podspec",
+		"**/*.properties",
+		"**/*.sh",
+		"**/*.snap",
+		"**/*.tsx",
+		"**/*.xml",
+		"**/*.yml",
+		"**/.*",
+		"**/amazon-cognito-identity-js",
+		"**/android",
+		"**/aws-amplify-react-native",
+		"**/coverage",
+		"**/coverage-ts",
+		"**/dist",
+		"**/docs",
+		"**/ios",
+		"**/lib",
+		"**/lib-esm",
+		"**/node_modules",
+		"**/pushnotification",
+		"**/vendor"
+	],
+	"ignoreFile": ".gitignore",
+	"license": "license_header.txt",
+	"licenseFormats": {
+		"js|ts|kt|java": {
+			"eachLine": {
+				"prepend": "// "
+			}
+		}
+	},
+	"trailingWhitespace": "TRIM"
+}
