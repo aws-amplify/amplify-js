@@ -596,11 +596,11 @@ export class AWSS3Provider implements StorageProvider {
 	 * @return an instance of AWSS3UploadTask or a promise that resolves to an object with the new object's key on
 	 * success.
 	 */
-	public async put<T extends S3ProviderPutConfig>(
+	public put<T extends S3ProviderPutConfig>(
 		key: string,
 		object: PutObjectCommandInput['Body'],
 		config?: T
-	): Promise<S3ProviderPutOutput<T>> {
+	): S3ProviderPutOutput<T> {
 		const opt = Object.assign({}, this._config, config);
 		const { bucket, track, progressCallback, level, resumable } = opt;
 		const {
@@ -661,10 +661,6 @@ export class AWSS3Provider implements StorageProvider {
 		}
 		if (SSEKMSKeyId) {
 			params.SSEKMSKeyId = SSEKMSKeyId;
-		}
-
-		if (isObjectLockEnabled) {
-			params.ContentMD5 = await calculateContentMd5(object as string);
 		}
 		const emitter = new events.EventEmitter();
 		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);

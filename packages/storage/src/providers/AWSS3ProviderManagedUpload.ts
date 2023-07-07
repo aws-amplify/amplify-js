@@ -47,7 +47,7 @@ export class AWSS3ProviderManagedUpload {
 	// Data for current upload
 	private body;
 	private params: PutObjectCommandInput;
-	private opts = null;
+	private opts = { isObjectLockEnabled: false };
 	private completedParts: CompletedPart[] = [];
 	private s3client: S3Client;
 	private uploadId: string | undefined;
@@ -71,6 +71,12 @@ export class AWSS3ProviderManagedUpload {
 
 	public async upload() {
 		try {
+			const { isObjectLockEnabled } = this.opts;
+			if (isObjectLockEnabled) {
+				this.params.ContentMD5 = await calculateContentMd5(
+					this.params.Body as string
+				);
+			}
 			this.body = this.validateAndSanitizeBody(this.params.Body);
 			this.totalBytesToUpload = this.byteLength(this.body);
 			if (this.totalBytesToUpload <= DEFAULT_PART_SIZE) {
