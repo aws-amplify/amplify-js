@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { Md5 } from '@aws-sdk/md5-js';
 import { toBase64, fromBase64 } from '@aws-sdk/util-base64-browser';
 
@@ -8,13 +11,13 @@ export const calculateContentMd5 = async (
 	if (typeof content === 'string') {
 		hasher.update(content);
 	} else {
-		const buffer = await readFile(content);
+		const buffer = await readFileToBase64(content);
 		hasher.update(fromBase64(buffer));
 	}
 	const digest = await hasher.digest();
 	return toBase64(digest);
 };
-const readFile = (blob: Blob): Promise<string> => {
+const readFileToBase64 = (blob: Blob): Promise<string> => {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.onloadend = () => {

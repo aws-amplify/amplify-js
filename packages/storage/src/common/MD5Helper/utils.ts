@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { Md5 } from '@aws-sdk/md5-js';
 import { toBase64 } from '@aws-sdk/util-base64-browser';
 
