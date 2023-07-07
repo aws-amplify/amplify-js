@@ -175,9 +175,7 @@ export class AWSS3ProviderManagedUpload {
 					const options: AxiosHttpHandlerOptions = { emitter: part.emitter };
 					const { isObjectLockEnabled } = this.opts;
 					if (isObjectLockEnabled) {
-						this.params.ContentMD5 = await calculateContentMd5(
-							part.bodyPart as string | File
-						);
+						this.params.ContentMD5 = await calculateContentMd5(part.bodyPart);
 					}
 					const {
 						Key,
