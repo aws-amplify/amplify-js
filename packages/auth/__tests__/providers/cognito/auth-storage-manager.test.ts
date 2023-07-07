@@ -1,30 +1,30 @@
-import { UserPoolTokenManager } from '../src/storage/UserPoolTokenManager';
+import { UserPoolTokenManager } from '../../../src/storage/UserPoolTokenManager';
 import { LocalStorage } from '@aws-amplify/core';
-import { CognitoUserPoolTokens } from '../src/storage/types';
-import { LegacyUserPoolTokenManager } from '../src/storage/LegacyUserPoolManager';
-import { AuthError } from '../src/errors/AuthError';
-import { AuthErrorCodes } from '../src/common/AuthErrorStrings';
-import { getCognitoKeys } from '../src/storage/helpers';
+import { LegacyUserPoolTokenManager } from '../../../src/storage/LegacyUserPoolManager';
+import { AuthError } from '../../../src/errors/AuthError';
+import { AuthErrorCodes } from '../../../src/common/AuthErrorStrings';
+import { getCognitoKeys } from '../../../src/storage/helpers';
 import {
 	CognitoDeviceKey,
 	LegacyCognitoUserPoolKeys,
-} from '../src/storage/keys';
-import { LegacyDeviceKeyTokenManager } from '../src/storage/LegacyDeviceKeyTokenManager';
-import { KEY_PREFIX, LEGACY_KEY_PREFIX } from '../src/storage/constants';
-
-const clientId = '12343-abcd-AZWB';
-
-const config = {
-	clientId,
-};
-const accessToken = '12easdfasdxbxcqaxsd';
-const idToken = '1234sfasdfsfjdxcxq';
-const refreshToken = 'asdfzxcvqrez8zdcdzddsaz';
-const cognitoUserPoolTokens: CognitoUserPoolTokens = {
+} from '../../../src/storage/keys';
+import { LegacyDeviceKeyTokenManager } from '../../../src/storage/LegacyDeviceKeyTokenManager';
+import { KEY_PREFIX, LEGACY_KEY_PREFIX } from '../../../src/storage/constants';
+import {
 	accessToken,
+	clientId,
+	clockDrift,
+	cognitoUserPoolTokens,
+	config,
+	deviceGroupKey,
+	deviceKey,
+	devicekeyTokens,
 	idToken,
+	randomPasswordKey,
 	refreshToken,
-};
+	userData,
+	username,
+} from './testUtils/mocks';
 
 describe('test userpool token manager', () => {
 	const userPoolManager = new UserPoolTokenManager(config, LocalStorage);
@@ -54,12 +54,8 @@ describe('test userpool token manager', () => {
 });
 
 describe('test legacy userpool token manager', () => {
-	const username = 'username';
-	const legacyPrefix = LEGACY_KEY_PREFIX;
-	const userData = 'userData';
-	const clockDrift = '0';
 	const keys = getCognitoKeys(LegacyCognitoUserPoolKeys)(
-		legacyPrefix,
+		LEGACY_KEY_PREFIX,
 		`${clientId}.${username}`
 	);
 
@@ -70,7 +66,7 @@ describe('test legacy userpool token manager', () => {
 		await LocalStorage.setItem(keys.refreshToken, refreshToken);
 		await LocalStorage.setItem(keys.accessToken, accessToken);
 		await LocalStorage.setItem(
-			`${legacyPrefix}.${clientId}.LastAuthUser`,
+			`${LEGACY_KEY_PREFIX}.${clientId}.LastAuthUser`,
 			username
 		);
 		await LocalStorage.setItem(keys.clockDrift, clockDrift);
@@ -112,18 +108,8 @@ describe('test legacy userpool token manager', () => {
 });
 
 describe('test legacy device key token manager', () => {
-	const username = 'username';
-	const legacyPrefix = LEGACY_KEY_PREFIX;
-	const deviceGroupKey = '123eaas34aefasdz';
-	const deviceKey = 'asdfsfwe2347s7s';
-	const randomPasswordKey = 'asdfasdf8231723r0s';
-	const devicekeyTokens = {
-		deviceGroupKey,
-		deviceKey,
-		randomPasswordKey,
-	};
 	const legacyKeys = getCognitoKeys(CognitoDeviceKey)(
-		legacyPrefix,
+		LEGACY_KEY_PREFIX,
 		`${clientId}.${username}`
 	);
 
