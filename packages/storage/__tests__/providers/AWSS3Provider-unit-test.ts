@@ -780,6 +780,7 @@ describe('StorageProvider test', () => {
 					SSECustomerKey: 'key',
 					SSECustomerKeyMD5: 'md5',
 					SSEKMSKeyId: 'id',
+					isObjectLockEnabled: true,
 				})
 			).toEqual({ key: 'key' });
 			expect(spyon.mock.calls[0][0].input).toStrictEqual({
@@ -798,6 +799,7 @@ describe('StorageProvider test', () => {
 				SSECustomerKeyMD5: 'md5',
 				ServerSideEncryption: 'AES256',
 				SSEKMSKeyId: 'id',
+				isObjectLockEnabled: true,
 			});
 		});
 
