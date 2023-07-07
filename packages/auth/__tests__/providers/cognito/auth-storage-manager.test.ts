@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { UserPoolTokenManager } from '../../../src/storage/UserPoolTokenManager';
 import { LocalStorage } from '@aws-amplify/core';
 import { LegacyUserPoolTokenManager } from '../../../src/storage/LegacyUserPoolManager';
