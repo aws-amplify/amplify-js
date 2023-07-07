@@ -612,7 +612,6 @@ export class AWSS3Provider implements StorageProvider {
 			metadata,
 			tagging,
 			acl,
-			isObjectLockEnabled,
 		} = opt;
 		const {
 			serverSideEncryption,
