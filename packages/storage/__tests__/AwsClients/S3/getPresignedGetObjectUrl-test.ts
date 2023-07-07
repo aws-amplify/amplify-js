@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { presignUrl } from '@aws-amplify/core/internals/aws-client-utils';
 import { getPresignedGetObjectUrl } from '../../../src/AwsClients/S3';
 import { defaultConfig } from './cases/shared';
