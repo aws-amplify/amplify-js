@@ -612,7 +612,7 @@ export class AWSS3Provider implements StorageProvider {
 			metadata,
 			tagging,
 			acl,
-			isLockEnabled,
+			isObjectLockEnabled,
 		} = opt;
 		const {
 			serverSideEncryption,
@@ -663,7 +663,7 @@ export class AWSS3Provider implements StorageProvider {
 			params.SSEKMSKeyId = SSEKMSKeyId;
 		}
 
-		if (isLockEnabled) {
+		if (isObjectLockEnabled) {
 			params.ContentMD5 = await calculateContentMd5(object as string);
 		}
 		const emitter = new events.EventEmitter();
