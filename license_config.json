@@ -31,7 +31,9 @@
 		"**/lib-esm",
 		"**/node_modules",
 		"**/pushnotification",
-		"**/vendor"
+		"**/vendor",
+		"**/__tests__",
+		"**/__mocks__"
 	],
 	"ignoreFile": ".gitignore",
 	"license": "license_header.txt",
