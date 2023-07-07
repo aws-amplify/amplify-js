@@ -6,42 +6,176 @@ extended_browser_list: &extended_browser_list
   - chrome
   - firefox
   - edge
-
-datastore_auth_scenarios_sample_spec: &datastore_auth_scenarios_sample_spec
-  - owner-based-default owner-based-default # TODO: Add `owner-based-operations` when tests pass
-  - static-user-pool-groups-default static-user-pool-groups-default
-  - static-user-pool-groups-operations static-user-pool-groups-operations
-  - owner-and-group-different-models-default owner-and-group-different-models-default
-  - owner-and-group-same-model-default owner-and-group-same-model-default
-  - owner-and-group-same-model-operations owner-and-group-same-model-operations
-  - dynamic-user-pool-groups-default dynamic-user-pool-groups-default
-  # - dynamic-user-pool-groups-owner-based-default dynamic-user-pool-groups-owner-based-default
-  - private-auth-default private-auth-default
-  - private-auth-iam private-auth-iam
-  - public-auth-default public-auth-default
-  - public-auth-iam public-auth-iam
-  - owner-custom-claim-default owner-custom-claim-default
-  - owner-custom-field-default owner-custom-field-default
-
-datastore_auth_scenarios_sample_spec_v2:
-  &datastore_auth_scenarios_sample_spec_v2
-  - v2/owner-based-default-v2 owner-based-default # TODO: Add `owner-based-operations` when tests pass
-  - v2/static-user-pool-groups-default-v2 static-user-pool-groups-default
-  - v2/static-user-pool-groups-operations-v2 static-user-pool-groups-operations
-  - v2/owner-and-group-different-models-default-v2 owner-and-group-different-models-default
-  - v2/owner-and-group-same-model-default-v2 owner-and-group-same-model-default
-  - v2/owner-and-group-same-model-operations-v2 owner-and-group-same-model-operations
-  - v2/private-auth-iam-v2 private-auth-iam
-  - v2/public-auth-default-v2 public-auth-default
-  - v2/public-auth-iam-v2 public-auth-iam
-  - v2/owner-custom-claim-default-v2 owner-custom-claim-default
-  - v2/owner-custom-field-default-v2 owner-custom-field-default
-  - v2/dynamic-user-pool-groups-default-v2 dynamic-user-pool-groups-default
-  - v2/private-auth-default-v2 private-auth-default
-  # TODO: The below test fails and ends up failing all the other tests in this group
-  # - v2/dynamic-user-pool-groups-owner-based-default-v2 dynamic-user-pool-groups-owner-based-default
-
 tests:
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: owner-based-default
+    spec: owner-based-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: static-user-pool-groups-default
+    spec: static-user-pool-groups-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: static-user-pool-groups-operations
+    spec: static-user-pool-groups-operations
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: owner-and-group-different-models-default
+    spec: owner-and-group-different-models-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: owner-and-group-same-model-default
+    spec: owner-and-group-same-model-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: owner-and-group-same-model-operations
+    spec: owner-and-group-same-model-operations
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: dynamic-user-pool-groups-default
+    spec: dynamic-user-pool-groups-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: dynamic-user-pool-groups-owner-based-default
+    spec: dynamic-user-pool-groups-owner-based-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: private-auth-default
+    spec: private-auth-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: private-auth-iam
+    spec: private-auth-iam
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: public-auth-default
+    spec: public-auth-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: public-auth-iam
+    spec: public-auth-iam
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: owner-custom-claim-default
+    spec: owner-custom-claim-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: owner-custom-field-default
+    spec: owner-custom-field-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-based-default-v2
+    spec: owner-based-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/static-user-pool-groups-default-v2
+    spec: static-user-pool-groups-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/static-user-pool-groups-operations-v2
+    spec: static-user-pool-groups-operations
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-and-group-different-models-default-v2
+    spec: owner-and-group-different-models-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-and-group-same-model-default-v2
+    spec: owner-and-group-same-model-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-and-group-same-model-operations-v2
+    spec: owner-and-group-same-model-operations
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/dynamic-user-pool-groups-default-v2
+    spec: dynamic-user-pool-groups-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/dynamic-user-pool-groups-owner-based-default-v2
+    spec: dynamic-user-pool-groups-owner-based-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/private-auth-default-v2
+    spec: private-auth-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/private-auth-iam-v2
+    spec: private-auth-iam
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/public-auth-default-v2
+    spec: public-auth-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/public-auth-iam-v2
+    spec: public-auth-iam
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-custom-claim-default-v2
+    spec: owner-custom-claim-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore Auth v2 - Chrome'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-custom-field-default-v2
+    spec: owner-custom-field-default
+    browser: *minimal_browser_list
+
   # React
   # integ_react_graphql_api
   - test_name: 'React GraphQL API'
@@ -323,35 +457,6 @@ tests:
     sample_name: [schema-drift]
     spec: schema-drift
     browser: *minimal_browser_list
-
-  # integ_datastore_auth
-  - test_name: 'DataStore Auth - Chrome'
-    framework: react
-    category: datastore
-    sample_name: *datastore_auth_scenarios_sample_spec
-    spec: ''
-    browser: [chrome]
-  - test_name: 'DataStore Auth - Firefox'
-    framework: react
-    category: datastore
-    sample_name: *datastore_auth_scenarios_sample_spec
-    spec: ''
-    browser: [firefox]
-
-  # integ_datastore_auth_v2
-  - test_name: 'DataStore Auth CLI v2 - Chrome'
-    framework: react
-    category: datastore
-    sample_name: *datastore_auth_scenarios_sample_spec_v2
-    spec: ''
-    browser: [chrome]
-  - test_name: 'DataStore Auth CLI v2 - Firefox'
-    framework: react
-    category: datastore
-    sample_name: *datastore_auth_scenarios_sample_spec_v2
-    spec: ''
-    browser: [firefox]
-
   # integ_react_datastore_custom_pk_unconnected_models
   - test_name: 'DataStore - Custom Primary Key (Connected Models)'
     framework: react
