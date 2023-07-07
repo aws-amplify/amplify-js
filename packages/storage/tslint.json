@@ -1,11 +1,20 @@
 {
+	"linterOptions": {
+		"exclude": ["src/AwsClients/S3/types.ts"]
+	},
 	"defaultSeverity": "error",
 	"plugins": ["prettier"],
 	"extends": [],
 	"jsRules": {},
 	"rules": {
 		"prefer-const": true,
-		"max-line-length": [true, 120],
+		"max-line-length": [
+			true,
+			{
+				"limit": 120,
+				"ignore-pattern": "//"
+			}
+		],
 		"no-empty-interface": true,
 		"no-var-keyword": true,
 		"object-literal-shorthand": true,
@@ -13,7 +22,7 @@
 		"space-before-function-paren": [
 			true,
 			{
-				"anonymous": "never",
+				"anonymous": "ignore",
 				"named": "never"
 			}
 		],
