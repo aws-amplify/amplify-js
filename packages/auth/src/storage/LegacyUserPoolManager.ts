@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthStorage } from '@aws-amplify/core';
-import { getCognitoKeys } from './helpers';
+import { getCognitoKeys, getUsernameFromStorage } from './helpers';
 import { LegacyCognitoUserPoolKeys } from './keys';
 import {
 	AuthTokenManager,
@@ -18,29 +18,28 @@ export class LegacyUserPoolTokenManager implements AuthTokenManager {
 	private config: any;
 	private storage: AuthStorage;
 	private prefix: string = LEGACY_KEY_PREFIX;
-	private keys: Omit<CognitoKeys<LegacyCognitoUserPoolKeys>, 'LastAuthUser'>;
 
-	constructor(config: any, username: string, storage: AuthStorage) {
+	private clientId: string;
+	constructor(config: any, storage: AuthStorage) {
 		this.config = config;
 		this.storage = storage;
-		const clientId = this.config.clientId;
-
-		this.keys = getCognitoKeys(LegacyCognitoUserPoolKeys)(
-			this.prefix,
-			`${clientId}.${username}`
-		);
+		this.clientId = this.config.clientId;
 	}
 
-	private getLegacyKeys() {
-		const clientId = this.config.clientId;
+	private async getLegacyKeys(): Promise<LegacyCognitoUserPoolTokens> {
 		// Gets LastAuthUser key without 'username' prefix
-		const legacyLastAuthUserKey = `${this.prefix}.${clientId}.${LegacyCognitoUserPoolKeys.lastAuthUser}`;
-		
-		return { ...this.keys, lastAuthUser: legacyLastAuthUserKey };
+		const lastAuthUser = `${this.prefix}.${this.clientId}.${LegacyCognitoUserPoolKeys.lastAuthUser}`;
+		const username = await getUsernameFromStorage(this.storage, lastAuthUser);
+		const keys = getCognitoKeys(LegacyCognitoUserPoolKeys)(
+			this.prefix,
+			`${this.clientId}.${username}`
+		);
+
+		return { ...keys, lastAuthUser };
 	}
 
 	async loadTokens(): Promise<LegacyCognitoUserPoolTokens | null> {
-		const legacyKeyValues = this.getLegacyKeys();
+		const legacyKeyValues = await this.getLegacyKeys();
 		const tokens = {} as LegacyCognitoUserPoolTokens;
 
 		const accessToken = await this.storage.getItem(legacyKeyValues.accessToken);
@@ -75,10 +74,10 @@ export class LegacyUserPoolTokenManager implements AuthTokenManager {
 		});
 	}
 	async clearTokens(): Promise<void> {
-		const legacyKeyValues = this.getLegacyKeys();
-
-		const legacyCognitoKeyPromiseArray = Object.values(legacyKeyValues).map(
-			async key => this.storage.removeItem(key)
+		const keys = await this.getLegacyKeys();
+		
+		const legacyCognitoKeyPromiseArray = Object.values(keys).map(async key =>
+			this.storage.removeItem(key)
 		);
 
 		await Promise.all(legacyCognitoKeyPromiseArray);

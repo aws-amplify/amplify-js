@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthStorage } from '@aws-amplify/core';
-import { getCognitoKeys } from './helpers';
-import { CognitoDeviceKey } from './keys';
+import { getCognitoKeys, getUsernameFromStorage } from './helpers';
+import { CognitoDeviceKey, LegacyCognitoUserPoolKeys } from './keys';
 import { AuthTokenManager } from './types';
 import { CognitoDeviceKeyTokens, CognitoKeys } from './types/models';
 import { AuthError } from '../errors/AuthError';
@@ -15,24 +15,32 @@ export class LegacyDeviceKeyTokenManager implements AuthTokenManager {
 	private config: any;
 	private storage: AuthStorage;
 	private prefix: string = LEGACY_KEY_PREFIX;
-	private keys: CognitoKeys<CognitoDeviceKey>;
-	constructor(config: any, storage: AuthStorage, username: string) {
+	private clientId: string;
+	constructor(config: any, storage: AuthStorage) {
 		this.config = config;
 		this.storage = storage;
-		const clientId = this.config.clientId;
-		this.keys = getCognitoKeys(CognitoDeviceKey)(
+		this.clientId = this.config.clientId;
+	}
+
+	private async getLegacyKeys(): Promise<CognitoKeys<CognitoDeviceKey>> {
+		// Gets LastAuthUser key without 'username' prefix
+		const lastAuthUser = `${this.prefix}.${this.clientId}.${LegacyCognitoUserPoolKeys.lastAuthUser}`;
+		const username = await getUsernameFromStorage(this.storage, lastAuthUser);
+		const keys = getCognitoKeys(CognitoDeviceKey)(
 			this.prefix,
-			`${clientId}.${username}`
+			`${this.clientId}.${username}`
 		);
+
+		return keys;
 	}
 
 	async loadTokens(): Promise<CognitoDeviceKeyTokens | null> {
 		const tokens = {} as CognitoDeviceKeyTokens;
-
-		const deviceKey = await this.storage.getItem(this.keys.deviceKey);
-		const deviceGroupKey = await this.storage.getItem(this.keys.deviceGroupKey);
+		const keys = await this.getLegacyKeys();
+		const deviceKey = await this.storage.getItem(keys.deviceKey);
+		const deviceGroupKey = await this.storage.getItem(keys.deviceGroupKey);
 		const randomPasswordKey = await this.storage.getItem(
-			this.keys.randomPasswordKey
+			keys.randomPasswordKey
 		);
 		if (deviceKey && deviceGroupKey && randomPasswordKey) {
 			tokens.deviceGroupKey = deviceGroupKey;
@@ -50,7 +58,8 @@ export class LegacyDeviceKeyTokenManager implements AuthTokenManager {
 		});
 	}
 	async clearTokens(): Promise<void> {
-		const cognitoKeyPromiseArray = Object.values(this.keys).map(async key =>
+		const keys = await this.getLegacyKeys();
+		const cognitoKeyPromiseArray = Object.values(keys).map(async key =>
 			this.storage.removeItem(key)
 		);
 		await Promise.all(cognitoKeyPromiseArray);
