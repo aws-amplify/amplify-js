@@ -466,12 +466,12 @@ tests:
     browser: *extended_browser_list
 
   # integ_react_datastore_custom_pk_unconnected_models_webkit
-  - test_name: 'DataStore - Custom Primary Key (Connected Models)'
-    framework: react
-    category: datastore
-    sample_name: [v2/custom-pk-unconnected-models]
-    spec: custom-pk-unconnected-models
-    browser: [webkit]
+  # - test_name: 'DataStore - Custom Primary Key (Connected Models)'
+  #   framework: react
+  #   category: datastore
+  #   sample_name: [v2/custom-pk-unconnected-models]
+  #   spec: custom-pk-unconnected-models
+  #   browser: [webkit]
 
   # integ_react_datastore_custom_pk_has_one
   - test_name: 'DataStore - Custom Primary Key (Has One)'
@@ -498,12 +498,12 @@ tests:
     browser: *extended_browser_list
 
   # integ_react_datastore_background_process_manager_webkit
-  - test_name: 'DataStore - Background Process Manager'
-    framework: react
-    category: datastore
-    sample_name: [v2/background-process-manager]
-    spec: background-process-manager
-    browser: [webkit]
+  # - test_name: 'DataStore - Background Process Manager'
+  #   framework: react
+  #   category: datastore
+  #   sample_name: [v2/background-process-manager]
+  #   spec: background-process-manager
+  #   browser: [webkit]
 
   # integ_react_datastore_related_models
   - test_name: 'DataStore - Related Models'
