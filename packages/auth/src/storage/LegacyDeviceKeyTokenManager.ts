@@ -13,7 +13,7 @@ import { LEGACY_KEY_PREFIX } from './constants';
 export class LegacyDeviceKeyTokenManager implements AuthTokenManager {
 	// TODO: change to config interface once defined
 	private config: any;
-	private storage: AuthStorage;
+	storage: AuthStorage;
 	private prefix: string = LEGACY_KEY_PREFIX;
 	private clientId: string;
 	constructor(config: any, storage: AuthStorage) {
