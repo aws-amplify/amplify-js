@@ -68,6 +68,7 @@
 		"@aws-sdk/client-cloudwatch-logs": "3.6.1",
 		"@aws-sdk/types": "3.6.1",
 		"@aws-sdk/util-hex-encoding": "3.6.1",
+		"@types/node-fetch": "2.6.4",
 		"isomorphic-unfetch": "^3.0.0",
 		"react-native-url-polyfill": "^1.3.0",
 		"tslib": "^1.8.0",
@@ -109,7 +110,7 @@
 			"name": "Core (Signer)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Signer }",
-			"limit": "7.3 kB"
+			"limit": "7.4 kB"
 		},
 		{
 			"name": "Custom clients (fetch handler)",
@@ -127,25 +128,25 @@
 			"name": "Custom clients (retry middleware)",
 			"path": "./lib-esm/clients/middleware/retry/middleware.js",
 			"import": "{ retryMiddleware }",
-			"limit": "1.24 kB"
+			"limit": "1.35 kB"
 		},
 		{
 			"name": "Custom clients (signing middleware)",
 			"path": "./lib-esm/clients/middleware/signing/middleware.js",
 			"import": "{ signingMiddleware }",
-			"limit": "6.77 kB"
+			"limit": "6.85 kB"
 		},
 		{
 			"name": "Custom clients (request signer)",
 			"path": "./lib-esm/clients/middleware/signing/signer/signatureV4/index.js",
 			"import": "{ signRequest }",
-			"limit": "6.13 kB"
+			"limit": "6.2 kB"
 		},
 		{
 			"name": "Custom clients (url presigner)",
 			"path": "./lib-esm/clients/middleware/signing/signer/signatureV4/index.js",
 			"import": "{ presignUrl }",
-			"limit": "6.25 kB"
+			"limit": "6.3 kB"
 		}
 	],
 	"jest": {
