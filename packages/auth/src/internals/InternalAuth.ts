@@ -107,7 +107,9 @@ export class InternalAuthClass {
 	private _storage;
 	private _storageSync;
 	private oAuthFlowInProgress: boolean = false;
-	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
+	private pendingSignIn: ReturnType<
+		InternalAuthClass['signInWithPassword']
+	> | null;
 	private autoSignInInitiated: boolean = false;
 	private inflightSessionPromise: Promise<CognitoUserSession> | null = null;
 	private inflightSessionPromiseCounter: number = 0;
@@ -312,10 +314,12 @@ export class InternalAuthClass {
 	 * @param {String[]} restOfAttrs - for the backward compatability
 	 * @return - A promise resolves callback data if success
 	 */
-	public signUp = (
+	public signUp(
 		params: string | SignUpParams,
 		...restOfAttrs: string[]
-	): Promise<ISignUpResult> => this._signUp(params, restOfAttrs);
+	): Promise<ISignUpResult> {
+		return this.internalSignUp(params, restOfAttrs);
+	}
 
 	public internalSignUp(
 		params: string | SignUpParams,
