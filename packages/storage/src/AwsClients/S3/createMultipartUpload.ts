@@ -34,11 +34,11 @@ export type CreateMultipartUploadOutput = Pick<
 	'UploadId' | '$metadata'
 >;
 
-const createMultipartUploadSerializer = (
+const createMultipartUploadSerializer = async (
 	input: CreateMultipartUploadInput,
 	endpoint: Endpoint
-): HttpRequest => {
-	const headers = serializeObjectConfigsToHeaders(input);
+): Promise<HttpRequest> => {
+	const headers = await serializeObjectConfigsToHeaders(input);
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	url.search = 'uploads';
