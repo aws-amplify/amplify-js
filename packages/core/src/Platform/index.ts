@@ -4,7 +4,7 @@
 import { CustomUserAgentDetails, Framework } from './types';
 import { version } from './version';
 import { detectFramework, observeFrameworkChanges } from './detectFramework';
-import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
+import type { UserAgent as AWSUserAgent } from '@aws-sdk/types';
 
 const BASE_USER_AGENT = `aws-amplify`;
 
