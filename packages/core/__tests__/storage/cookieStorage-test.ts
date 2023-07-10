@@ -1,9 +1,6 @@
 import { CookieStorage } from '../../src/StorageHelper';
 
 const cookieStorageDomain = 'https://testdomain.com';
-/**
- * @jest-environment jsdom
- */
 
 describe('Cookie Storage Unit Tests', () => {
 	//defining a DOM to attach a cookie to
