@@ -34,49 +34,55 @@ import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { Amplify } from '@aws-amplify/core';
 
 /**
- * Allows to continue or complete the sign in process
+ * Continues or completes the sign in process when required by the initial call to `signIn`.
  *
- * @param confirmSignInRequest - The ConfirmSignInRequest  object
- * @returns AuthSignInResult
- * @throws service: {@link VerifySoftwareTokenException }, {@link RespondToAuthChallengeException } ,
- * {@link AssociateSoftwareTokenException}
- *  - Cognito service errors thrown during the sign-in process.
- * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when challengeResponse
- *  is not defined.
+ * @param confirmSignInRequest - The ConfirmSignInRequest object
+ *
+ * @throws  -{@link VerifySoftwareTokenException }:
+ * Thrown due to an invalid MFA token.
+ *
+ * @throws  -{@link RespondToAuthChallengeException }:
+ * Thrown due to an invalid auth challenge response.
+ *
+ * @throws  -{@link AssociateSoftwareTokenException}:
+ * Thrown due to a service error during the MFA setup process.
+ *
+ * @throws  -{@link AuthValidationErrorCode }:
+ * Thrown when `challengeResponse` is not defined.
  *
  * TODO: add config errors
+ *
+ * @returns AuthSignInResult
+ *
  */
 export async function confirmSignIn(
 	confirmSignInRequest: ConfirmSignInRequest<CognitoConfirmSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { challengeResponse, options } = confirmSignInRequest;
-	const { username, activeChallengeName, activeSignInSession } =
-		signInStore.getState();
+	const { username, challengeName, signInSession } = signInStore.getState();
 
 	const config = Amplify.config;
 	const clientMetaData =
 		options?.serviceOptions?.clientMetadata || config.clientMetadata;
-
+   
 	assertValidationError(
 		!!challengeResponse,
 		AuthValidationErrorCode.EmptyChallengeResponse
 	);
 
-	if (!username || !activeChallengeName || !activeSignInSession)
+	if (!username || !challengeName || !signInSession)
 		throw new AuthError({
 			name: AuthErrorCodes.SignInException,
 			message: `
-			An error ocurred during the sign in process. 
-			This most likely ocurred due to:
-
-			1. signIn was not called before confirmSignIn.
+			An error occurred during the sign in process. 
 			
-			2. calling signIn throws an exception.
-
+			This most likely occurred due to:
+			1. signIn was not called before confirmSignIn.
+			2. signIn threw an exception.
 			3. page was refreshed during the sign in flow.
 			`,
-			recoverySuggestion: `Make sure a successful call to signIn is made before calling confirmSignIn 
-			 and that the page is not refreshed until the sign in process is done.`,
+			recoverySuggestion: 'Make sure a successful call to signIn is made before calling confirmSignIn' + 
+			'and that the page is not refreshed until the sign in process is done.'
 		});
 
 	try {
@@ -87,8 +93,8 @@ export async function confirmSignIn(
 			ChallengeParameters,
 		} = await handleChallengeName(
 			username,
-			activeChallengeName as ChallengeName,
-			activeSignInSession,
+			challengeName as ChallengeName,
+			signInSession,
 			challengeResponse,
 			clientMetaData,
 			options?.serviceOptions
@@ -96,9 +102,9 @@ export async function confirmSignIn(
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
-			activeSignInSession: Session,
+			signInSession: Session,
 			username,
-			activeChallengeName: ChallengeName,
+			challengeName: ChallengeName as ChallengeName,
 		});
 
 		if (AuthenticationResult) {

@@ -60,7 +60,7 @@ export type SignUpRequest<
 };
 
 /**
- * The parameters for constructing a Confirm Sign In request.
+ * Constructs a `confirmSignIn` request.
  *
  * @param challengeResponse - required parameter for responding to {@link AuthSignInStep } returned during
  * the sign in process.

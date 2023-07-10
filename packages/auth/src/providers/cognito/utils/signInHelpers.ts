@@ -42,7 +42,6 @@ import {
 	TOTPSetupDetails,
 } from '../../../types/models';
 import { verifySoftwareTokenClient } from './clients/VerifySoftwareTokenClient';
-
 import { associateSoftwareTokenClient } from './clients/AssociateSoftwareTokenClient';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -50,13 +49,20 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { signInStore } from './signInStore';
 
 const USER_ATTRIBUTES = 'userAttributes.';
-
-export async function handleCustomChallenge(
-	challengeResponse: string,
-	clientMetadata: ClientMetadata | undefined,
-	session: string | undefined,
-	username: string
-): Promise<RespondToAuthChallengeCommandOutput> {
+type HandleAuthChallengeRequest = {
+	challengeResponse: string;
+	username: string;
+	clientMetadata?: ClientMetadata;
+	session?: string;
+	deviceName?: string;
+	requiredAttributes?: AuthUserAttribute;
+};
+export async function handleCustomChallenge({
+	challengeResponse,
+	clientMetadata,
+	session,
+	username,
+}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
 	const challengeResponses = { USERNAME: username, ANSWER: challengeResponse };
 	const jsonReq: RespondToAuthChallengeClientInput = {
 		ChallengeName: 'CUSTOM_CHALLENGE',
@@ -64,16 +70,16 @@ export async function handleCustomChallenge(
 		Session: session,
 		ClientMetadata: clientMetadata,
 	};
-	return await respondToAuthChallengeClient(jsonReq);
+	return respondToAuthChallengeClient(jsonReq);
 }
 
-export async function handleMFASetupChallenge(
-	challengeResponse: string,
-	clientMetadata: ClientMetadata | undefined,
-	session: string | undefined,
-	username: string,
-	deviceName?: string
-): Promise<RespondToAuthChallengeCommandOutput> {
+export async function handleMFASetupChallenge({
+	challengeResponse,
+	username,
+	clientMetadata,
+	session,
+	deviceName,
+}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
 	const challengeResponses = {
 		USERNAME: username,
 	};
@@ -85,7 +91,7 @@ export async function handleMFASetupChallenge(
 	});
 
 	signInStore.dispatch({
-		type: 'SET_ACTIVE_SIGN_IN_SESSION',
+		type: 'SET_SIGN_IN_SESSION',
 		value: Session,
 	});
 
@@ -95,15 +101,15 @@ export async function handleMFASetupChallenge(
 		Session,
 		ClientMetadata: clientMetadata,
 	};
-	return await respondToAuthChallengeClient(jsonReq);
+	return respondToAuthChallengeClient(jsonReq);
 }
 
-export async function handleSelectMFATypeChallenge(
-	challengeResponse: string,
-	clientMetadata: ClientMetadata | undefined,
-	session: string | undefined,
-	username: string
-): Promise<RespondToAuthChallengeCommandOutput> {
+export async function handleSelectMFATypeChallenge({
+	challengeResponse,
+	username,
+	clientMetadata,
+	session,
+}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
 	assertValidationError(
 		challengeResponse === 'TOTP' || challengeResponse === 'SMS',
 		AuthValidationErrorCode.IncorrectMFAMethod
@@ -121,15 +127,15 @@ export async function handleSelectMFATypeChallenge(
 		ClientMetadata: clientMetadata,
 	};
 
-	return await respondToAuthChallengeClient(jsonReq);
+	return respondToAuthChallengeClient(jsonReq);
 }
 
-export async function handleSMSMFAChallenge(
-	challengeResponse: string,
-	clientMetadata: ClientMetadata | undefined,
-	session: string | undefined,
-	username: string
-): Promise<RespondToAuthChallengeCommandOutput> {
+export async function handleSMSMFAChallenge({
+	challengeResponse,
+	clientMetadata,
+	session,
+	username,
+}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
 	const challengeResponses = {
 		USERNAME: username,
 		SMS_MFA_CODE: challengeResponse,
@@ -141,14 +147,14 @@ export async function handleSMSMFAChallenge(
 		ClientMetadata: clientMetadata,
 	};
 
-	return await respondToAuthChallengeClient(jsonReq);
+	return respondToAuthChallengeClient(jsonReq);
 }
-export async function handleSoftwareTokenMFAChallenge(
-	challengeResponse: string,
-	clientMetadata: ClientMetadata | undefined,
-	session: string | undefined,
-	username: string
-): Promise<RespondToAuthChallengeCommandOutput> {
+export async function handleSoftwareTokenMFAChallenge({
+	challengeResponse,
+	clientMetadata,
+	session,
+	username,
+}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
 	const challengeResponses = {
 		USERNAME: username,
 		SOFTWARE_TOKEN_MFA_CODE: challengeResponse,
@@ -159,15 +165,15 @@ export async function handleSoftwareTokenMFAChallenge(
 		Session: session,
 		ClientMetadata: clientMetadata,
 	};
-	return await respondToAuthChallengeClient(jsonReq);
+	return respondToAuthChallengeClient(jsonReq);
 }
-export async function handleCompleteNewPasswordChallenge(
-	challengeResponse: string,
-	clientMetadata: ClientMetadata | undefined,
-	session: string | undefined,
-	username: string,
-	requiredAttributes?: AuthUserAttribute
-): Promise<RespondToAuthChallengeCommandOutput> {
+export async function handleCompleteNewPasswordChallenge({
+	challengeResponse,
+	clientMetadata,
+	session,
+	username,
+	requiredAttributes,
+}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
 	const challengeResponses = {
 		...createAttributes(requiredAttributes),
 		NEW_PASSWORD: challengeResponse,
@@ -181,7 +187,7 @@ export async function handleCompleteNewPasswordChallenge(
 		Session: session,
 	};
 
-	return await respondToAuthChallengeClient(jsonReq);
+	return respondToAuthChallengeClient(jsonReq);
 }
 
 export async function handleUserPasswordAuthFlow(
@@ -245,7 +251,7 @@ export async function handleCustomAuthFlowWithoutSRP(
 		ClientMetadata: clientMetadata,
 	};
 
-	return await initiateAuthClient(jsonReq);
+	return initiateAuthClient(jsonReq);
 }
 
 export async function handleCustomSRPAuthFlow(
@@ -320,7 +326,7 @@ export async function handlePasswordVerifierChallenge(
 		Session: session,
 	};
 
-	return await respondToAuthChallengeClient(jsonReqResponseChallenge);
+	return respondToAuthChallengeClient(jsonReqResponseChallenge);
 }
 
 export async function getSignInResult(params: {
@@ -339,13 +345,13 @@ export async function getSignInResult(params: {
 				},
 			};
 		case 'MFA_SETUP':
-			const { activeSignInSession, username } = signInStore.getState();
+			const { signInSession, username } = signInStore.getState();
 			const { Session, SecretCode: secretCode } =
 				await associateSoftwareTokenClient({
-					Session: activeSignInSession,
+					Session: signInSession,
 				});
 			signInStore.dispatch({
-				type: 'SET_ACTIVE_SIGN_IN_SESSION',
+				type: 'SET_SIGN_IN_SESSION',
 				value: Session,
 			});
 
@@ -405,8 +411,9 @@ export async function getSignInResult(params: {
 
 	throw new AuthError({
 		name: AuthErrorCodes.SignInException,
-		message: `An error occurred during the sign in process. 
-		${challengeName} challengeName returned by the underlying service was not addressed.`,
+		message:
+			'An error occurred during the sign in process. ' +
+			`${challengeName} challengeName returned by the underlying service was not addressed.`,
 	});
 }
 
@@ -420,8 +427,8 @@ export function getTOTPSetupDetails(
 			const totpUri = `otpauth://totp/${appName}:${
 				accountName ?? username
 			}?secret=${secretCode}&issuer=${appName}`;
-			const url = new URL(totpUri);
-			return url;
+
+			return new URL(totpUri);
 		},
 	};
 }
@@ -477,49 +484,49 @@ export async function handleChallengeName(
 
 	switch (challengeName) {
 		case 'SMS_MFA':
-			return await handleSMSMFAChallenge(
+			return handleSMSMFAChallenge({
 				challengeResponse,
 				clientMetadata,
 				session,
-				username
-			);
+				username,
+			});
 		case 'SELECT_MFA_TYPE':
-			return await handleSelectMFATypeChallenge(
+			return handleSelectMFATypeChallenge({
 				challengeResponse,
 				clientMetadata,
 				session,
-				username
-			);
+				username,
+			});
 		case 'MFA_SETUP':
-			return await handleMFASetupChallenge(
+			return handleMFASetupChallenge({
 				challengeResponse,
 				clientMetadata,
 				session,
 				username,
-				deviceName
-			);
+				deviceName,
+			});
 		case 'NEW_PASSWORD_REQUIRED':
-			return await handleCompleteNewPasswordChallenge(
+			return handleCompleteNewPasswordChallenge({
 				challengeResponse,
 				clientMetadata,
 				session,
 				username,
-				userAttributes
-			);
+				requiredAttributes: userAttributes,
+			});
 		case 'CUSTOM_CHALLENGE':
-			return await handleCustomChallenge(
+			return handleCustomChallenge({
 				challengeResponse,
 				clientMetadata,
 				session,
-				username
-			);
+				username,
+			});
 		case 'SOFTWARE_TOKEN_MFA':
-			return await handleSoftwareTokenMFAChallenge(
+			return handleSoftwareTokenMFAChallenge({
 				challengeResponse,
 				clientMetadata,
 				session,
-				username
-			);
+				username,
+			});
 	}
 
 	throw new AuthError({
@@ -530,10 +537,10 @@ export async function handleChallengeName(
 }
 
 export function mapMfaType(mfa: string): CognitoMFAType {
-	let mfaType = 'SMS_MFA';
+	let mfaType:CognitoMFAType = 'SMS_MFA';
 	if (mfa === 'TOTP') mfaType = 'SOFTWARE_TOKEN_MFA';
 
-	return mfaType as CognitoMFAType;
+	return mfaType;
 }
 
 export function parseMFATypes(mfa?: string): AllowedMFATypes {
