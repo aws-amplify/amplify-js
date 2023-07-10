@@ -372,6 +372,17 @@ export class AuthClass extends InternalAuthClass {
 	public currentUserInfo = async () => super.currentUserInfo();
 
 	public async federatedSignIn(
+		options?: FederatedSignInOptions
+	): Promise<ICredentials>;
+	public async federatedSignIn(
+		provider: LegacyProvider,
+		response: FederatedResponse,
+		user: FederatedUser
+	): Promise<ICredentials>;
+	public async federatedSignIn(
+		options?: FederatedSignInOptionsCustom
+	): Promise<ICredentials>;
+	public async federatedSignIn(
 		providerOrOptions:
 			| LegacyProvider
 			| FederatedSignInOptions
