@@ -18,6 +18,7 @@ import {
 	SEND_UPLOAD_PROGRESS_EVENT,
 } from '../AwsClients/S3/utils';
 import { EventEmitter } from 'events';
+import { calculateContentMd5 } from '../common/MD5utils';
 import {
 	calculatePartSize,
 	DEFAULT_PART_SIZE,
@@ -67,6 +68,12 @@ export class AWSS3ProviderManagedUpload {
 
 	public async upload() {
 		try {
+			const { isObjectLockEnabled } = this.opts;
+			if (isObjectLockEnabled) {
+				this.params.ContentMD5 = await calculateContentMd5(
+					this.params.Body as string
+				);
+			}
 			this.body = this.validateAndSanitizeBody(this.params.Body);
 			this.totalBytesToUpload = this.byteLength(this.body);
 			if (this.totalBytesToUpload <= DEFAULT_PART_SIZE) {
@@ -161,12 +168,17 @@ export class AWSS3ProviderManagedUpload {
 			const allResults = await Promise.all(
 				parts.map(async part => {
 					this.setupEventListener(part);
+					const { isObjectLockEnabled } = this.opts;
+					if (isObjectLockEnabled) {
+						this.params.ContentMD5 = await calculateContentMd5(part.bodyPart);
+					}
 					const {
 						Key,
 						Bucket,
 						SSECustomerAlgorithm,
 						SSECustomerKey,
 						SSECustomerKeyMD5,
+						ContentMD5,
 					} = this.params;
 					const res = await uploadPart(
 						{ ...this.s3Config, emitter: part.emitter },
@@ -179,6 +191,7 @@ export class AWSS3ProviderManagedUpload {
 							SSECustomerAlgorithm,
 							SSECustomerKey,
 							SSECustomerKeyMD5,
+							ContentMD5,
 						}
 					);
 					return res;
