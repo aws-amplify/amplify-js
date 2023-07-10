@@ -19,7 +19,7 @@ jobs:
   e2e-test:
     name: 'E2E-Detox: ${{ inputs.test_name }}'
     runs-on: macos-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
 
     steps:
       - name: check incoming config
