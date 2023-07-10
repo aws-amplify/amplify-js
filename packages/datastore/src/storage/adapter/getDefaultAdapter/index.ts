@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { browserOrNode, isWebWorker } from '@aws-amplify/core';
 import { Adapter } from '..';
 import IndexedDBAdapter from '../IndexedDBAdapter';
