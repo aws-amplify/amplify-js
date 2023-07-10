@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
+import { Md5 } from '@aws-sdk/md5-js';
 import { extendedEncodeURIComponent } from '@aws-amplify/core/internals/aws-client-utils';
+import { toBase64, utf8Encode } from '../utils';
 
 /**
  * @internal
@@ -25,13 +26,28 @@ interface ObjectSsecOptions {
 	SSECustomerKeyMD5?: string;
 }
 
-export const serializeObjectSsecOptionsToHeaders = (input: ObjectSsecOptions) =>
-	assignStringVariables({
+export const serializeObjectSsecOptionsToHeaders = async (
+	input: ObjectSsecOptions
+) => {
+	if (!input.SSECustomerAlgorithm || !input.SSECustomerKey) {
+		return input as Record<string, string>;
+	}
+
+	const sseCustomKeyMD5 = new Md5();
+	sseCustomKeyMD5.update(utf8Encode(input.SSECustomerKey));
+	const sseCustomKeyMD5Digest = await sseCustomKeyMD5.digest();
+
+	return assignStringVariables({
 		'x-amz-server-side-encryption-customer-algorithm':
 			input.SSECustomerAlgorithm,
-		'x-amz-server-side-encryption-customer-key': input.SSECustomerKey,
-		'x-amz-server-side-encryption-customer-key-md5': input.SSECustomerKeyMD5,
+		// base64 encoded is need
+		// see: https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html#specifying-s3-c-encryption
+		'x-amz-server-side-encryption-customer-key':
+			input.SSECustomerKey && toBase64(input.SSECustomerKey),
+		'x-amz-server-side-encryption-customer-key-md5':
+			input.SSECustomerKeyMD5 && toBase64(sseCustomKeyMD5Digest),
 	});
+};
 
 // Object configuration options when uploading an object.
 interface ObjectConfigs extends ObjectSsecOptions {
@@ -54,8 +70,10 @@ interface ObjectConfigs extends ObjectSsecOptions {
  *
  * @internal
  */
-export const serializeObjectConfigsToHeaders = (input: ObjectConfigs) => ({
-	...serializeObjectSsecOptionsToHeaders(input),
+export const serializeObjectConfigsToHeaders = async (
+	input: ObjectConfigs
+) => ({
+	...(await serializeObjectSsecOptionsToHeaders(input)),
 	...assignStringVariables({
 		'x-amz-server-side-encryption': input.ServerSideEncryption,
 		'x-amz-server-side-encryption-aws-kms-key-id': input.SSEKMSKeyId,

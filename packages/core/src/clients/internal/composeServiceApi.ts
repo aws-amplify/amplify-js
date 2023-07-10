@@ -16,7 +16,10 @@ export const composeServiceApi = <
 		HttpResponse,
 		TransferHandlerOptions
 	>,
-	serializer: (input: Input, endpoint: Endpoint) => HttpRequest,
+	serializer: (
+		input: Input,
+		endpoint: Endpoint
+	) => Promise<HttpRequest> | HttpRequest,
 	deserializer: (output: HttpResponse) => Promise<Output>,
 	defaultConfig: DefaultConfig
 ) => {
@@ -40,7 +43,7 @@ export const composeServiceApi = <
 		// Unlike AWS SDK clients, a serializer should NOT populate the `host` or `content-length` headers.
 		// Both of these headers are prohibited per Spec(https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name).
 		// They will be populated automatically by browser, or node-fetch polyfill.
-		const request = serializer(input, endpoint);
+		const request = await serializer(input, endpoint);
 		const response = await transferHandler(request, {
 			...resolvedConfig,
 		});

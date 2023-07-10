@@ -11,3 +11,4 @@ export {
 export { s3TransferHandler } from './s3TransferHandler/xhr';
 export { parser } from './xmlParser/pureJs';
 export { isCancelError } from './xhrTransferHandler';
+export { toBase64, utf8Encode } from './base64/index.native';
