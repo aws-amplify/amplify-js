@@ -39,11 +39,6 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT }}
       - name: Load Verdaccio with AmplifyJs
         uses: ./aws-amplify/.github/actions/load-verdaccio-with-amplify-js
-      - name: Inspect
-        run: |
-          pwd; ls
-          pwd $GITHUB_WORKSPACE; ls $GITHUB_WORKSPACE
-          pwd $GITHUB_WORKSPACE/aws-amplify; ls $GITHUB_WORKSPACE/aws-amplify
       - name: Yarn Install
         working-directory: ${{ inputs.working_directory }}
         run: |
@@ -52,7 +47,7 @@ jobs:
         shell: bash
       - name: Install CocoaPods
         run: |
-          pod install
+          cd ios && pod install
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Start iOS simulator (background)

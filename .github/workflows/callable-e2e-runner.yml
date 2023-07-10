@@ -23,14 +23,6 @@ jobs:
       integ-config: ${{steps.load_config.outputs.INTEG_CONFIG}}
       detox-integ-config: ${{steps.load_config.outputs.DETOX_INTEG_CONFIG}}
 
-  debug-job:
-    name: debug the job
-    needs: e2e-prep
-    runs-on: ubuntu-latest
-    steps:
-      - name: check result
-        run: |
-          echo '${{ needs.e2e-prep.outputs.integ-config }}'
   e2e-test-runner:
     name: e2e test runnner
     needs: e2e-prep

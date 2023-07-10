@@ -3,7 +3,6 @@ description: Checks out Amplify and builds the package
 inputs:
   is-prebuild:
     required: false
-    type: boolean
     default: false
 runs:
   using: 'composite'
@@ -31,12 +30,12 @@ runs:
           ${{ runner.os }}-build-artifacts-
     # TODO We should be able to skip yarn / bootstrap if we cache enough things. Leaving because skipping causes issues.
     - name: Install
-      if: inputs.is-prebuild != true || steps.cache-build-artifacts.outputs.cache-hit != 'true'
+      if: inputs.is-prebuild != 'true' || steps.cache-build-artifacts.outputs.cache-hit != 'true'
       run: yarn
       shell: bash
       working-directory: ./aws-amplify
     - name: Bootstrap
-      if: inputs.is-prebuild != true || steps.cache-build-artifacts.outputs.cache-hit != 'true'
+      if: inputs.is-prebuild != 'true' || steps.cache-build-artifacts.outputs.cache-hit != 'true'
       run: yarn bootstrap
       shell: bash
       working-directory: ./aws-amplify
