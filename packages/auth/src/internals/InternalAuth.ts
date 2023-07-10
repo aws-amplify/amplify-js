@@ -21,12 +21,13 @@ import {
 	FederatedSignInOptions,
 	AwsCognitoOAuthOpts,
 	ClientMetaData,
-} from './types';
+} from '../types';
 
 import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Credentials,
+	CustomUserAgentDetails,
 	Hub,
 	StorageHelper,
 	ICredentials,
@@ -62,15 +63,15 @@ import {
 } from 'amazon-cognito-identity-js/internals';
 
 import { parse } from 'url';
-import OAuth from './OAuth/OAuth';
-import { default as urlListener } from './urlListener';
-import { AuthError, NoUserPoolError } from './Errors';
+import OAuth from '../OAuth/OAuth';
+import { default as urlListener } from '../urlListener';
+import { AuthError, NoUserPoolError } from '../Errors';
 import {
 	AuthErrorTypes,
 	AutoSignInOptions,
 	CognitoHostedUIIdentityProvider,
 	IAuthDevice,
-} from './types/Auth';
+} from '../types/Auth';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -145,7 +146,7 @@ export class InternalAuthClass {
 	}
 
 	public getModuleName() {
-		return 'Auth';
+		return 'InternalAuth';
 	}
 
 	configure(config?) {
@@ -311,9 +312,15 @@ export class InternalAuthClass {
 	 * @param {String[]} restOfAttrs - for the backward compatability
 	 * @return - A promise resolves callback data if success
 	 */
-	public signUp(
+	public signUp = (
 		params: string | SignUpParams,
 		...restOfAttrs: string[]
+	): Promise<ISignUpResult> => this._signUp(params, restOfAttrs);
+
+	public internalSignUp(
+		params: string | SignUpParams,
+		restOfAttrs?: string[],
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<ISignUpResult> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -536,7 +543,8 @@ export class InternalAuthClass {
 	public confirmSignUp(
 		username: string,
 		code: string,
-		options?: ConfirmSignUpOptions
+		options?: ConfirmSignUpOptions,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -603,7 +611,8 @@ export class InternalAuthClass {
 	 */
 	public resendSignUp(
 		username: string,
-		clientMetadata: ClientMetaData = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -634,7 +643,8 @@ export class InternalAuthClass {
 	public signIn(
 		usernameOrSignInOpts: string | SignInOpts,
 		pw?: string,
-		clientMetadata: ClientMetaData = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUser | any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -829,7 +839,10 @@ export class InternalAuthClass {
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves the current preferred mfa option if success
 	 */
-	public getMFAOptions(user: CognitoUser | any): Promise<MFAOption[]> {
+	public getMFAOptions(
+		user: CognitoUser | any,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<MFAOption[]> {
 		return new Promise((res, rej) => {
 			user.getMFAOptions((err, mfaOptions) => {
 				if (err) {
@@ -851,7 +864,8 @@ export class InternalAuthClass {
 	 */
 	public getPreferredMFA(
 		user: CognitoUser | any,
-		params?: GetPreferredMFAOpts
+		params?: GetPreferredMFAOpts,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
 		const that = this;
 		return new Promise((res, rej) => {
@@ -956,7 +970,8 @@ export class InternalAuthClass {
 	 */
 	public async setPreferredMFA(
 		user: CognitoUser | any,
-		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
+		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA',
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
@@ -1074,7 +1089,10 @@ export class InternalAuthClass {
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves is success
 	 */
-	public disableSMS(user: CognitoUser): Promise<string> {
+	public disableSMS(
+		user: CognitoUser,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<string> {
 		return new Promise((res, rej) => {
 			user.disableMFA((err, data) => {
 				if (err) {
@@ -1095,7 +1113,10 @@ export class InternalAuthClass {
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves is success
 	 */
-	public enableSMS(user: CognitoUser): Promise<string> {
+	public enableSMS(
+		user: CognitoUser,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<string> {
 		return new Promise((res, rej) => {
 			user.enableMFA((err, data) => {
 				if (err) {
@@ -1115,7 +1136,10 @@ export class InternalAuthClass {
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves with the secret code if success
 	 */
-	public setupTOTP(user: CognitoUser | any): Promise<string> {
+	public setupTOTP(
+		user: CognitoUser | any,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<string> {
 		return new Promise((res, rej) => {
 			user.associateSoftwareToken({
 				onFailure: err => {
@@ -1140,7 +1164,8 @@ export class InternalAuthClass {
 	 */
 	public verifyTotpToken(
 		user: CognitoUser | any,
-		challengeAnswer: string
+		challengeAnswer: string,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUserSession> {
 		logger.debug('verification totp token', user, challengeAnswer);
 
@@ -1187,7 +1212,8 @@ export class InternalAuthClass {
 		user: CognitoUser | any,
 		code: string,
 		mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | null,
-		clientMetadata: ClientMetaData = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUser | any> {
 		if (!code) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyCode);
@@ -1237,7 +1263,8 @@ export class InternalAuthClass {
 		user: CognitoUser | any,
 		password: string,
 		requiredAttributes: any = {},
-		clientMetadata: ClientMetaData = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUser | any> {
 		if (!password) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyPassword);
@@ -1308,7 +1335,8 @@ export class InternalAuthClass {
 	public sendCustomChallengeAnswer(
 		user: CognitoUser | any,
 		challengeResponses: string,
-		clientMetadata: ClientMetaData = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUser | any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -1334,7 +1362,8 @@ export class InternalAuthClass {
 	 **/
 	public deleteUserAttributes(
 		user: CognitoUser | any,
-		attributeNames: string[]
+		attributeNames: string[],
+		customUserAgentDetails?: CustomUserAgentDetails
 	) {
 		const that = this;
 		return new Promise((resolve, reject) => {
@@ -1355,7 +1384,9 @@ export class InternalAuthClass {
 	 * @return {Promise}
 	 **/
 	// TODO: Check return type void
-	public async deleteUser(): Promise<string | void> {
+	public async deleteUser(
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<string | void> {
 		try {
 			await this._storageSync;
 		} catch (e) {
@@ -1440,7 +1471,8 @@ export class InternalAuthClass {
 	public updateUserAttributes(
 		user: CognitoUser | any,
 		attributes: object,
-		clientMetadata: ClientMetaData = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
 		const attributeList: ICognitoUserAttributeData[] = [];
 		const that = this;
@@ -1510,7 +1542,8 @@ export class InternalAuthClass {
 	 * @return - A promise resolves to user attributes if success
 	 */
 	public userAttributes(
-		user: CognitoUser | any
+		user: CognitoUser | any,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUserAttribute[]> {
 		return new Promise((resolve, reject) => {
 			this.userSession(user).then(session => {
@@ -1525,7 +1558,10 @@ export class InternalAuthClass {
 		});
 	}
 
-	public verifiedContact(user: CognitoUser | any) {
+	public verifiedContact(
+		user: CognitoUser | any,
+		customUserAgentDetails?: CustomUserAgentDetails
+	) {
 		const that = this;
 		return this.userAttributes(user).then(attributes => {
 			const attrs = that.attributesToObject(attributes);
@@ -1650,7 +1686,8 @@ export class InternalAuthClass {
 	 * @return - A promise resolves to current authenticated CognitoUser if success
 	 */
 	public currentUserPoolUser(
-		params?: CurrentUserOpts
+		params?: CurrentUserOpts,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUser | any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -1782,7 +1819,8 @@ export class InternalAuthClass {
 	 * @return - A promise resolves to current authenticated CognitoUser if success
 	 */
 	public async currentAuthenticatedUser(
-		params?: CurrentUserOpts
+		params?: CurrentUserOpts,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUser | any> {
 		logger.debug('getting current authenticated user');
 		let federatedUser = null;
@@ -1835,7 +1873,9 @@ export class InternalAuthClass {
 	 * Get current user's session
 	 * @return - A promise resolves to session object if success
 	 */
-	public currentSession(): Promise<CognitoUserSession> {
+	public currentSession(
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<CognitoUserSession> {
 		const that = this;
 		logger.debug('Getting current session');
 		// Purposely not calling the reject method here because we don't need a console error
@@ -1925,7 +1965,10 @@ export class InternalAuthClass {
 	 * @param {Object} user - The CognitoUser object
 	 * @return - A promise resolves to the session
 	 */
-	public userSession(user): Promise<CognitoUserSession> {
+	public userSession(
+		user,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<CognitoUserSession> {
 		return this._userSession(user);
 	}
 
@@ -1933,7 +1976,9 @@ export class InternalAuthClass {
 	 * Get authenticated credentials of current user.
 	 * @return - A promise resolves to be current user's credentials
 	 */
-	public async currentUserCredentials(): Promise<ICredentials> {
+	public async currentUserCredentials(
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<ICredentials> {
 		logger.debug('Getting current user credentials');
 
 		try {
@@ -1969,7 +2014,9 @@ export class InternalAuthClass {
 		}
 	}
 
-	public currentCredentials(): Promise<ICredentials> {
+	public currentCredentials(
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<ICredentials> {
 		logger.debug('getting current credentials');
 		return this.Credentials.get();
 	}
@@ -1983,7 +2030,8 @@ export class InternalAuthClass {
 	public verifyUserAttribute(
 		user: CognitoUser | any,
 		attr: string,
-		clientMetadata: ClientMetaData = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<void> {
 		return new Promise((resolve, reject) => {
 			user.getAttributeVerificationCode(
@@ -2011,7 +2059,8 @@ export class InternalAuthClass {
 	public verifyUserAttributeSubmit(
 		user: CognitoUser | any,
 		attr: string,
-		code: string
+		code: string,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
 		if (!code) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyCode);
@@ -2031,7 +2080,10 @@ export class InternalAuthClass {
 		});
 	}
 
-	public verifyCurrentUserAttribute(attr: string): Promise<void> {
+	public verifyCurrentUserAttribute(
+		attr: string,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<void> {
 		const that = this;
 		return that
 			.currentUserPoolUser()
@@ -2046,7 +2098,8 @@ export class InternalAuthClass {
 	 */
 	verifyCurrentUserAttributeSubmit(
 		attr: string,
-		code: string
+		code: string,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
 		const that = this;
 		return that
@@ -2154,7 +2207,10 @@ export class InternalAuthClass {
 	 * @
 	 * @return - A promise resolved if success
 	 */
-	public async signOut(opts?: SignOutOpts): Promise<any> {
+	public async signOut(
+		opts?: SignOutOpts,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<any> {
 		try {
 			await this.cleanCachedItems();
 		} catch (e) {
@@ -2198,7 +2254,8 @@ export class InternalAuthClass {
 		user: CognitoUser | any,
 		oldPassword: string,
 		newPassword: string,
-		clientMetadata: ClientMetaData = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<'SUCCESS'> {
 		return new Promise((resolve, reject) => {
 			this.userSession(user).then(session => {
@@ -2226,7 +2283,8 @@ export class InternalAuthClass {
 	 */
 	public forgotPassword(
 		username: string,
-		clientMetadata: ClientMetaData = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -2279,7 +2337,8 @@ export class InternalAuthClass {
 		username: string,
 		code: string,
 		password: string,
-		clientMetadata: ClientMetaData = this._config.clientMetadata
+		clientMetadata: ClientMetaData = this._config.clientMetadata,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
@@ -2329,7 +2388,9 @@ export class InternalAuthClass {
 	 * @async
 	 * @return {Object }- current User's information
 	 */
-	public async currentUserInfo() {
+	public async currentUserInfo(
+		customUserAgentDetails?: CustomUserAgentDetails
+	) {
 		const source = this.Credentials.getCredSource();
 
 		if (!source || source === 'aws' || source === 'userPool') {
@@ -2372,23 +2433,13 @@ export class InternalAuthClass {
 	}
 
 	public async federatedSignIn(
-		options?: FederatedSignInOptions
-	): Promise<ICredentials>;
-	public async federatedSignIn(
-		provider: LegacyProvider,
-		response: FederatedResponse,
-		user: FederatedUser
-	): Promise<ICredentials>;
-	public async federatedSignIn(
-		options?: FederatedSignInOptionsCustom
-	): Promise<ICredentials>;
-	public async federatedSignIn(
 		providerOrOptions:
 			| LegacyProvider
 			| FederatedSignInOptions
 			| FederatedSignInOptionsCustom,
 		response?: FederatedResponse,
-		user?: FederatedUser
+		user?: FederatedUser,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<ICredentials> {
 		if (!this._config.identityPoolId && !this._config.userPoolId) {
 			throw new Error(
@@ -2475,7 +2526,10 @@ export class InternalAuthClass {
 	 * Used to complete the OAuth flow with or without the Cognito Hosted UI
 	 * @param {String} URL - optional parameter for customers to pass in the response URL
 	 */
-	private async _handleAuthResponse(URL?: string) {
+	private async _handleAuthResponse(
+		URL?: string,
+		customUserAgentDetails?: CustomUserAgentDetails
+	) {
 		if (this.oAuthFlowInProgress) {
 			logger.debug(`Skipping URL ${URL} current flow in progress`);
 			return;
@@ -2621,7 +2675,10 @@ export class InternalAuthClass {
 	 * @param {Object} credentials
 	 * @return {Object} - Credentials
 	 */
-	public essentialCredentials(credentials): ICredentials {
+	public essentialCredentials(
+		credentials,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): ICredentials {
 		return {
 			accessKeyId: credentials.accessKeyId,
 			sessionToken: credentials.sessionToken,
@@ -2700,7 +2757,9 @@ export class InternalAuthClass {
 		return Promise.reject(new NoUserPoolError(type));
 	}
 
-	public async rememberDevice(): Promise<string | AuthError> {
+	public async rememberDevice(
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<string | AuthError> {
 		let currUser;
 
 		try {
@@ -2729,7 +2788,9 @@ export class InternalAuthClass {
 		});
 	}
 
-	public async forgetDevice(): Promise<void> {
+	public async forgetDevice(
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<void> {
 		let currUser;
 
 		try {
@@ -2758,7 +2819,9 @@ export class InternalAuthClass {
 		});
 	}
 
-	public async fetchDevices(): Promise<IAuthDevice[]> {
+	public async fetchDevices(
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<IAuthDevice[]> {
 		let currUser;
 
 		try {
@@ -2801,6 +2864,5 @@ export class InternalAuthClass {
 	}
 }
 
-export const Auth = new AuthClass(null);
-
-Amplify.register(Auth);
+export const InternalAuth = new InternalAuthClass(null);
+Amplify.register(InternalAuth);
