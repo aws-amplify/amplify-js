@@ -32,12 +32,17 @@ export const getAmplifyUserAgentObject = ({
 	category,
 	action,
 	framework,
+	additionalInfo,
 }: CustomUserAgentDetails = {}): AWSUserAgent => {
-	const userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
+	let userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
 	if (category) {
 		userAgent.push([category, action]);
 	}
 	userAgent.push(['framework', framework || detectFramework()]);
+
+	if (additionalInfo) {
+		userAgent = userAgent.concat(additionalInfo);
+	}
 
 	return userAgent;
 };
