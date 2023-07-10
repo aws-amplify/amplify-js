@@ -92,6 +92,7 @@ jobs:
         if: always()
         with:
           name: e2e-test-artifacts
+          if-no-files-found: ignore
           path: |
             amplify-js-samples-staging/cypress/videos
             amplify-js-samples-staging/cypress/screenshots
