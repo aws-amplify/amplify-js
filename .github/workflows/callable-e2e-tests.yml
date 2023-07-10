@@ -87,6 +87,15 @@ jobs:
           "ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ matrix.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} prod ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}" -n 3
         working-directory: amplify-js-samples-staging
         shell: bash
+      - name: upload artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+        if: always()
+        with:
+          name: e2e-test-artifacts
+          path: |
+            amplify-js-samples-staging/cypress/videos
+            amplify-js-samples-staging/cypress/screenshots
+
 # TODO CODE FROM CIRCLE CI: REPLICATE THIS
 # - name: Install ${{ inputs.test_name }} >> sample
 #   run: |
