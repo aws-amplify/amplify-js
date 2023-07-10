@@ -71,7 +71,7 @@ export class AWSS3ProviderManagedUpload {
 			const { isObjectLockEnabled } = this.opts;
 			if (isObjectLockEnabled) {
 				this.params.ContentMD5 = await calculateContentMd5(
-					this.params.Body as string
+					this.params.Body as Blob | File | string
 				);
 			}
 			this.body = this.validateAndSanitizeBody(this.params.Body);

@@ -5,7 +5,7 @@ import { Md5 } from '@aws-sdk/md5-js';
 import { toBase64 } from '@aws-sdk/util-base64-browser';
 
 export const calculateContentMd5 = async (
-	content: File | string
+	content: Blob | File | string
 ): Promise<string> => {
 	const hasher = new Md5();
 	if (typeof content === 'string') {
@@ -18,7 +18,7 @@ export const calculateContentMd5 = async (
 	return toBase64(digest);
 };
 
-const readFile = (file: File): Promise<ArrayBuffer> => {
+const readFile = (file: File | Blob): Promise<ArrayBuffer> => {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.onloadend = () => {
