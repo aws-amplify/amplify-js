@@ -37,7 +37,7 @@ export const getAmplifyUserAgentObject = ({
 	if (category) {
 		userAgent.push([category, action]);
 	}
-	userAgent.push(['framework', detectFramework()]);
+	userAgent.push(['framework', framework || detectFramework()]);
 
 	return userAgent;
 };
