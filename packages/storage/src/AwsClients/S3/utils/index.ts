@@ -24,3 +24,4 @@ export {
 	serializePathnameObjectKey,
 	serializeObjectSsecOptionsToHeaders,
 } from './serializeHelpers';
+export { toBase64, utf8Encode } from '../runtime';

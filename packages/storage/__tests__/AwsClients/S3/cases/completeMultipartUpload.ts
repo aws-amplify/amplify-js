@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { completeMultipartUpload } from '../../../../src/AwsClients/S3';
+import { toBase64 } from '../../../../src/AwsClients/S3/utils';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 import {
 	defaultConfig,
@@ -44,8 +45,9 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 		method: 'POST',
 		headers: expect.objectContaining({
 			'x-amz-server-side-encryption-customer-algorithm': 'SSECustomerAlgorithm',
-			'x-amz-server-side-encryption-customer-key': 'SSECustomerKey',
-			'x-amz-server-side-encryption-customer-key-md5': 'SSECustomerKeyMD5',
+			'x-amz-server-side-encryption-customer-key': toBase64('SSECustomerKey'),
+			'x-amz-server-side-encryption-customer-key-md5':
+				'u2yTVQWmqQ+XbBDNNmwr4Q==',
 			'content-type': 'application/xml',
 		}),
 		body:

@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
 export enum StorageErrorStrings {
 	NO_CREDENTIALS = 'No credentials',
 	NO_SRC_KEY = 'source param should be an object with the property "key" with value of type string',

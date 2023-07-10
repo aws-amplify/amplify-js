@@ -29,6 +29,7 @@ export type HeadObjectInput = Pick<
 	| 'Bucket'
 	| 'Key'
 	| 'SSECustomerKey'
+	// TODO(AllanZhengYP): remove in V6.
 	| 'SSECustomerKeyMD5'
 	| 'SSECustomerAlgorithm'
 >;
@@ -44,11 +45,11 @@ export type HeadObjectOutput = Pick<
 	| 'VersionId'
 >;
 
-const headObjectSerializer = (
+const headObjectSerializer = async (
 	input: HeadObjectInput,
 	endpoint: Endpoint
-): HttpRequest => {
-	const headers = serializeObjectSsecOptionsToHeaders(input);
+): Promise<HttpRequest> => {
+	const headers = await serializeObjectSsecOptionsToHeaders(input);
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {

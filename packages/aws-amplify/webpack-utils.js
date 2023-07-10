@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 // This module fixes sourcemap paths for the various Amplify packages. It's
 // needed because packages at build time live in different (relative) folder
 // locations than the folders where packages are installed from npm. For
