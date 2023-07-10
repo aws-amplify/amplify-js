@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { putObject } from '../../../../src/AwsClients/S3';
+import { toBase64 } from '../../../../src/AwsClients/S3/utils';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 import {
 	defaultConfig,
@@ -33,8 +34,8 @@ export const putObjectRequest = {
 export const expectedPutObjectRequestHeaders = {
 	'x-amz-server-side-encryption': 'ServerSideEncryption',
 	'x-amz-server-side-encryption-customer-algorithm': 'SSECustomerAlgorithm',
-	'x-amz-server-side-encryption-customer-key': 'SSECustomerKey',
-	'x-amz-server-side-encryption-customer-key-md5': 'SSECustomerKeyMD5',
+	'x-amz-server-side-encryption-customer-key': toBase64('SSECustomerKey'),
+	'x-amz-server-side-encryption-customer-key-md5': 'u2yTVQWmqQ+XbBDNNmwr4Q==',
 	'x-amz-server-side-encryption-aws-kms-key-id': 'SSEKMSKeyId',
 	'x-amz-acl': 'public-read',
 	'cache-control': 'CacheControl',

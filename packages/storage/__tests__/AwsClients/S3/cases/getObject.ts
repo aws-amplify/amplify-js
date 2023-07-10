@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getObject } from '../../../../src/AwsClients/S3';
+import { toBase64 } from '../../../../src/AwsClients/S3/utils';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 import {
 	defaultConfig,
@@ -83,8 +84,9 @@ const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
 			authorization: expect.stringContaining('Signature'),
 			host: 'bucket.s3.us-east-1.amazonaws.com',
 			'x-amz-server-side-encryption-customer-algorithm': 'SSECustomerAlgorithm',
-			'x-amz-server-side-encryption-customer-key': 'SSECustomerKey',
-			'x-amz-server-side-encryption-customer-key-md5': 'SSECustomerKeyMD5',
+			'x-amz-server-side-encryption-customer-key': toBase64('SSECustomerKey'),
+			'x-amz-server-side-encryption-customer-key-md5':
+				'u2yTVQWmqQ+XbBDNNmwr4Q==',
 			'x-amz-content-sha256': EMPTY_SHA256,
 			'x-amz-date': expect.stringMatching(/^\d{8}T\d{6}Z/),
 			'x-amz-user-agent': expect.stringContaining('aws-amplify'),

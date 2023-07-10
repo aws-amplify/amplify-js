@@ -32,6 +32,7 @@ export type ListPartsInput = Pick<
 	| 'UploadId'
 	| 'SSECustomerAlgorithm'
 	| 'SSECustomerKey'
+	// TODO(AllanZhengYP): remove in V6.
 	| 'SSECustomerKeyMD5'
 >;
 
@@ -40,11 +41,11 @@ export type ListPartsOutput = Pick<
 	'Parts' | 'UploadId' | '$metadata'
 >;
 
-const listPartsSerializer = (
+const listPartsSerializer = async (
 	input: ListPartsInput,
 	endpoint: Endpoint
-): HttpRequest => {
-	const headers = serializeObjectSsecOptionsToHeaders(input);
+): Promise<HttpRequest> => {
+	const headers = await serializeObjectSsecOptionsToHeaders(input);
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	url.search = new URLSearchParams({

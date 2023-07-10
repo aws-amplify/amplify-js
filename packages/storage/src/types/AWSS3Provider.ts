@@ -51,6 +51,7 @@ export type S3ProviderGetConfig = CommonStorageOptions & {
 	contentType?: GetObjectInput['ResponseContentType'];
 	SSECustomerAlgorithm?: GetObjectInput['SSECustomerAlgorithm'];
 	SSECustomerKey?: GetObjectInput['SSECustomerKey'];
+	// TODO(AllanZhengYP): remove in V6.
 	SSECustomerKeyMD5?: GetObjectInput['SSECustomerKeyMD5'];
 	validateObjectExistence?: boolean;
 };
@@ -58,6 +59,7 @@ export type S3ProviderGetConfig = CommonStorageOptions & {
 export type S3ProviderGetPropertiesConfig = CommonStorageOptions & {
 	SSECustomerAlgorithm?: HeadObjectInput['SSECustomerAlgorithm'];
 	SSECustomerKey?: HeadObjectInput['SSECustomerKey'];
+	// TODO(AllanZhengYP): remove in V6.
 	SSECustomerKeyMD5?: HeadObjectInput['SSECustomerKeyMD5'];
 };
 
@@ -72,6 +74,7 @@ type _S3ProviderPutConfig = {
 	serverSideEncryption?: PutObjectInput['ServerSideEncryption'];
 	SSECustomerAlgorithm?: PutObjectInput['SSECustomerAlgorithm'];
 	SSECustomerKey?: PutObjectInput['SSECustomerKey'];
+	// TODO(AllanZhengYP): remove in V6.
 	SSECustomerKeyMD5?: PutObjectInput['SSECustomerKeyMD5'];
 	SSEKMSKeyId?: PutObjectInput['SSEKMSKeyId'];
 	acl?: PutObjectInput['ACL'];
@@ -175,6 +178,7 @@ export type S3ProviderCopyConfig = Omit<CommonStorageOptions, 'level'> & {
 	serverSideEncryption?: CopyObjectInput['ServerSideEncryption'];
 	SSECustomerAlgorithm?: CopyObjectInput['SSECustomerAlgorithm'];
 	SSECustomerKey?: CopyObjectInput['SSECustomerKey'];
+	// TODO(AllanZhengYP): remove in V6.
 	SSECustomerKeyMD5?: CopyObjectInput['SSECustomerKeyMD5'];
 	SSEKMSKeyId?: CopyObjectInput['SSEKMSKeyId'];
 };
