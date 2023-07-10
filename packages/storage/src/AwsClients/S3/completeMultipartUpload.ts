@@ -35,6 +35,7 @@ export type CompleteMultipartUploadInput = Pick<
 	| 'MultipartUpload'
 	| 'SSECustomerAlgorithm'
 	| 'SSECustomerKey'
+	// TODO(AllanZhengYP): remove in V6.
 	| 'SSECustomerKeyMD5'
 >;
 

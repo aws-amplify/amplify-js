@@ -32,6 +32,7 @@ export type ListPartsInput = Pick<
 	| 'UploadId'
 	| 'SSECustomerAlgorithm'
 	| 'SSECustomerKey'
+	// TODO(AllanZhengYP): remove in V6.
 	| 'SSECustomerKeyMD5'
 >;
 

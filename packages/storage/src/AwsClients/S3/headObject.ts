@@ -29,6 +29,7 @@ export type HeadObjectInput = Pick<
 	| 'Bucket'
 	| 'Key'
 	| 'SSECustomerKey'
+	// TODO(AllanZhengYP): remove in V6.
 	| 'SSECustomerKeyMD5'
 	| 'SSECustomerAlgorithm'
 >;

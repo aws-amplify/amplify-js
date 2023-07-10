@@ -43,6 +43,7 @@ export type GetObjectInput = Pick<
 	| 'ResponseContentType'
 	| 'SSECustomerAlgorithm'
 	| 'SSECustomerKey'
+	// TODO(AllanZhengYP): remove in V6.
 	| 'SSECustomerKeyMD5'
 >;
 
