@@ -29,13 +29,11 @@ interface ObjectSsecOptions {
 export const serializeObjectSsecOptionsToHeaders = async (
 	input: ObjectSsecOptions
 ) => {
-	if (!input.SSECustomerAlgorithm || !input.SSECustomerKey) {
-		return input as Record<string, string>;
-	}
-
-	const sseCustomKeyMD5 = new Md5();
-	sseCustomKeyMD5.update(utf8Encode(input.SSECustomerKey));
-	const sseCustomKeyMD5Digest = await sseCustomKeyMD5.digest();
+	const getMd5Digest = async (content: any) => {
+		const md5Hasher = new Md5();
+		md5Hasher.update(utf8Encode(content));
+		return md5Hasher.digest();
+	};
 
 	return assignStringVariables({
 		'x-amz-server-side-encryption-customer-algorithm':
@@ -44,8 +42,11 @@ export const serializeObjectSsecOptionsToHeaders = async (
 		// see: https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html#specifying-s3-c-encryption
 		'x-amz-server-side-encryption-customer-key':
 			input.SSECustomerKey && toBase64(input.SSECustomerKey),
+		// Calculate the md5 digest of the the SSE-C key, for compatibility with AWS SDK
+		// see: https://github.com/aws/aws-sdk-js-v3/blob/91fc83307c38cc9cbe0b3acd919557d5b5b831d6/packages/middleware-ssec/src/index.ts#L36
 		'x-amz-server-side-encryption-customer-key-md5':
-			input.SSECustomerKeyMD5 && toBase64(sseCustomKeyMD5Digest),
+			input.SSECustomerKey &&
+			toBase64(await getMd5Digest(input.SSECustomerKey)),
 	});
 };
 
