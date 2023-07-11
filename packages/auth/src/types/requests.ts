@@ -58,3 +58,21 @@ export type SignUpRequest<
 	password: string;
 	options?: AuthSignUpOptions<UserAttributeKey, ServiceOptions>;
 };
+
+
+/**
+ *  Constructs a `confirmSignUp` request.
+ *
+ * @param username - a standard username, potentially an email/phone number
+ * @param confirmationCode- the user's confirmation code sent to email or cellphone
+ * @param options - optional parameters for the Sign Up process, including user attributes
+ */
+export type ConfirmSignUpRequest<
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+> = {
+	username: string;
+	confirmationCode: string;
+	options?:{
+		serviceOptions?: ServiceOptions
+	}
+};

@@ -40,3 +40,11 @@ export type CognitoSignUpOptions = {
 	clientMetadata?: ClientMetadata;
 	// autoSignIn?: AutoSignInOptions;
 };
+
+/**
+ * Options specific to a Cognito Confirm Sign Up request.
+ */
+export type CognitoConfirmSignUpOptions = {
+	clientMetadata?: ClientMetadata;
+	forceAliasCreation?: boolean;
+};
