@@ -21,7 +21,6 @@ export const calculateContentMd5 = async (
 const readFile = (file: File | Blob): Promise<ArrayBuffer> => {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
-		console.log('Linked');
 		reader.onloadend = () => {
 			if (reader.result) {
 				resolve(reader.result as ArrayBuffer);
