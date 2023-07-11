@@ -6,7 +6,6 @@ import { getCognitoKeys, getUsernameFromStorage } from './helpers';
 import { LegacyCognitoUserPoolKeys } from './keys';
 import {
 	AuthTokenManager,
-	CognitoKeys,
 	LegacyCognitoUserPoolTokens,
 } from './types';
 import { AuthError } from '../errors/AuthError';
