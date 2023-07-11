@@ -29,13 +29,11 @@ interface ObjectSsecOptions {
 export const serializeObjectSsecOptionsToHeaders = async (
 	input: ObjectSsecOptions
 ) => {
-	if (!input.SSECustomerAlgorithm || !input.SSECustomerKey) {
-		return input as Record<string, string>;
-	}
-
-	const sseCustomKeyMD5 = new Md5();
-	sseCustomKeyMD5.update(utf8Encode(input.SSECustomerKey));
-	const sseCustomKeyMD5Digest = await sseCustomKeyMD5.digest();
+	const getMd5Digest = async (content: any) => {
+		const md5Hasher = new Md5();
+		md5Hasher.update(utf8Encode(content));
+		return await md5Hasher.digest();
+	};
 
 	return assignStringVariables({
 		'x-amz-server-side-encryption-customer-algorithm':
@@ -45,7 +43,8 @@ export const serializeObjectSsecOptionsToHeaders = async (
 		'x-amz-server-side-encryption-customer-key':
 			input.SSECustomerKey && toBase64(input.SSECustomerKey),
 		'x-amz-server-side-encryption-customer-key-md5':
-			input.SSECustomerKeyMD5 && toBase64(sseCustomKeyMD5Digest),
+			input.SSECustomerKey &&
+			toBase64(await getMd5Digest(input.SSECustomerKey)),
 	});
 };
 
