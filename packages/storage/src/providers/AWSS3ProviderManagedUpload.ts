@@ -44,7 +44,7 @@ export class AWSS3ProviderManagedUpload {
 	// Data for current upload
 	private body;
 	private params: PutObjectInput;
-	private opts: { isObjectLockEnabled: boolean } = null;
+	private opts = null;
 	private completedParts: CompletedPart[] = [];
 	private s3Config: S3ResolvedConfig;
 	private uploadId: string | undefined;
