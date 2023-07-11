@@ -14,6 +14,8 @@ import type {
 	InitiateAuthCommandOutput,
 	RespondToAuthChallengeCommandInput,
 	RespondToAuthChallengeCommandOutput,
+	ConfirmSignUpCommandOutput,
+	ConfirmSignUpCommandInput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../../errors/AuthError';
 import { assertServiceError } from '../../../../errors/utils/assertServiceError';
@@ -27,7 +29,8 @@ export type ClientInputs =
 	| ConfirmForgotPasswordCommandInput
 	| InitiateAuthCommandInput
 	| RespondToAuthChallengeCommandInput
-	| ResendConfirmationCodeCommandInput;
+	| ResendConfirmationCodeCommandInput
+    | ConfirmSignUpCommandInput
 
 export type ClientOutputs =
 	| SignUpCommandOutput
@@ -35,7 +38,8 @@ export type ClientOutputs =
 	| ConfirmForgotPasswordCommandOutput
 	| InitiateAuthCommandOutput
 	| RespondToAuthChallengeCommandOutput
-	| ResendConfirmationCodeCommandOutput;
+	| ResendConfirmationCodeCommandOutput
+	| ConfirmSignUpCommandOutput
 	
 export type ClientOperations =
 	| 'SignUp'
