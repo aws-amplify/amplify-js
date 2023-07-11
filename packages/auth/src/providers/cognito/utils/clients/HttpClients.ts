@@ -30,7 +30,7 @@ export type ClientInputs =
 	| InitiateAuthCommandInput
 	| RespondToAuthChallengeCommandInput
 	| ResendConfirmationCodeCommandInput
-    | ConfirmSignUpCommandInput
+	| ConfirmSignUpCommandInput;
 
 export type ClientOutputs =
 	| SignUpCommandOutput
@@ -39,8 +39,8 @@ export type ClientOutputs =
 	| InitiateAuthCommandOutput
 	| RespondToAuthChallengeCommandOutput
 	| ResendConfirmationCodeCommandOutput
-	| ConfirmSignUpCommandOutput
-	
+	| ConfirmSignUpCommandOutput;
+
 export type ClientOperations =
 	| 'SignUp'
 	| 'ConfirmSignUp'
