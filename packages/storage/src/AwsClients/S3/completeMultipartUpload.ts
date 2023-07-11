@@ -35,6 +35,7 @@ export type CompleteMultipartUploadInput = Pick<
 	| 'MultipartUpload'
 	| 'SSECustomerAlgorithm'
 	| 'SSECustomerKey'
+	// TODO(AllanZhengYP): remove in V6.
 	| 'SSECustomerKeyMD5'
 >;
 
@@ -43,11 +44,11 @@ export type CompleteMultipartUploadOutput = Pick<
 	'$metadata' | 'Key' | 'ETag' | 'Location'
 >;
 
-const completeMultipartUploadSerializer = (
+const completeMultipartUploadSerializer = async (
 	input: CompleteMultipartUploadInput,
 	endpoint: Endpoint
-): HttpRequest => {
-	const headers = serializeObjectSsecOptionsToHeaders(input);
+): Promise<HttpRequest> => {
+	const headers = await serializeObjectSsecOptionsToHeaders(input);
 	headers['content-type'] = 'application/xml';
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);

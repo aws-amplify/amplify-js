@@ -139,6 +139,7 @@ export class Storage {
 			'serverSideEncryption',
 			'SSECustomerAlgorithm',
 			'SSECustomerKey',
+			// TODO(AllanZhengYP): remove in V6.
 			'SSECustomerKeyMD5',
 			'SSEKMSKeyId',
 		];

@@ -31,6 +31,7 @@ export type PutObjectInput = Pick<
 	| 'ServerSideEncryption'
 	| 'SSECustomerAlgorithm'
 	| 'SSECustomerKey'
+	// TODO(AllanZhengYP): remove in V6.
 	| 'SSECustomerKeyMD5'
 	| 'SSEKMSKeyId'
 	| 'ACL'
@@ -50,11 +51,11 @@ export type PutObjectOutput = Pick<
 	'$metadata' | 'ETag' | 'VersionId'
 >;
 
-const putObjectSerializer = (
+const putObjectSerializer = async (
 	input: PutObjectInput,
 	endpoint: Endpoint
-): HttpRequest => {
-	const headers = serializeObjectConfigsToHeaders({
+): Promise<HttpRequest> => {
+	const headers = await serializeObjectConfigsToHeaders({
 		...input,
 		ContentType: input.ContentType ?? 'application/octet-stream',
 	});

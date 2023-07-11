@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { uploadPart } from '../../../../src/AwsClients/S3';
+import { toBase64 } from '../../../../src/AwsClients/S3/utils';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 import {
 	defaultConfig,
@@ -32,8 +33,9 @@ const uploadPartHappyCase: ApiFunctionalTestCase<typeof uploadPart> = [
 		method: 'PUT',
 		headers: expect.objectContaining({
 			'x-amz-server-side-encryption-customer-algorithm': 'SSECustomerAlgorithm',
-			'x-amz-server-side-encryption-customer-key': 'SSECustomerKey',
-			'x-amz-server-side-encryption-customer-key-md5': 'SSECustomerKeyMD5',
+			'x-amz-server-side-encryption-customer-key': toBase64('SSECustomerKey'),
+			'x-amz-server-side-encryption-customer-key-md5':
+				'u2yTVQWmqQ+XbBDNNmwr4Q==',
 			'content-type': 'application/octet-stream', // required by RN Android if body exists
 		}),
 		body: 'body',

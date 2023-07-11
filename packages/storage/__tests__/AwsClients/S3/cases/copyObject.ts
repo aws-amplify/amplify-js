@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { copyObject } from '../../../../src/AwsClients/S3';
+import { toBase64 } from '../../../../src/AwsClients/S3/utils';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 import {
 	defaultConfig,
@@ -24,7 +25,7 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 		ACL: 'acl',
 		ServerSideEncryption: 'serverSideEncryption',
 		SSECustomerAlgorithm: 'sseCustomerAlgorithm',
-		SSECustomerKey: 'sseCustomerKey',
+		SSECustomerKey: 'SSECustomerKey',
 		SSECustomerKeyMD5: 'sseCustomerKeyMD5',
 		SSEKMSKeyId: 'sseKMSKeyId',
 	},
@@ -40,8 +41,9 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 			'x-amz-acl': 'acl',
 			'x-amz-server-side-encryption': 'serverSideEncryption',
 			'x-amz-server-side-encryption-customer-algorithm': 'sseCustomerAlgorithm',
-			'x-amz-server-side-encryption-customer-key': 'sseCustomerKey',
-			'x-amz-server-side-encryption-customer-key-md5': 'sseCustomerKeyMD5',
+			'x-amz-server-side-encryption-customer-key': toBase64('SSECustomerKey'),
+			'x-amz-server-side-encryption-customer-key-md5':
+				'u2yTVQWmqQ+XbBDNNmwr4Q==',
 			'x-amz-server-side-encryption-aws-kms-key-id': 'sseKMSKeyId',
 		}),
 	}),

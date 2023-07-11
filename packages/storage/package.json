@@ -47,6 +47,7 @@
   ],
   "dependencies": {
     "@aws-amplify/core": "5.5.2",
+    "@aws-sdk/md5-js": "3.6.1",
     "@aws-sdk/types": "3.6.1",
     "events": "^3.1.0",
     "fast-xml-parser": "^4.2.5",
@@ -58,7 +59,7 @@
       "name": "Storage (top-level class)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, Storage }",
-      "limit": "35.8 kB"
+      "limit": "38.08 kB"
     }
   ],
   "jest": {

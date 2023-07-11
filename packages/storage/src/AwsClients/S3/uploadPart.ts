@@ -30,6 +30,7 @@ export type UploadPartInput = Pick<
 	| 'Key'
 	| 'SSECustomerAlgorithm'
 	| 'SSECustomerKey'
+	// TODO(AllanZhengYP): remove in V6.
 	| 'SSECustomerKeyMD5'
 >;
 
@@ -38,11 +39,11 @@ export type UploadPartOutput = Pick<
 	'$metadata' | 'ETag'
 >;
 
-const uploadPartSerializer = (
+const uploadPartSerializer = async (
 	input: UploadPartInput,
 	endpoint: Endpoint
-): HttpRequest => {
-	const headers = serializeObjectSsecOptionsToHeaders(input);
+): Promise<HttpRequest> => {
+	const headers = await serializeObjectSsecOptionsToHeaders(input);
 	headers['content-type'] = 'application/octet-stream';
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);
