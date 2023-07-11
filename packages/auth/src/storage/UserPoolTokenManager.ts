@@ -11,28 +11,26 @@ export class UserPoolTokenManager implements AuthTokenManager {
 	// TODO: change to config interface once defined
 	private config: any;
 	private storage: AuthStorage;
-	private prefix = KEY_PREFIX;
 	private keys: CognitoKeys<CognitoUserPoolKey>;
 
 	constructor(config: any, storage: AuthStorage) {
 		this.config = config;
 		this.storage = storage;
 		const clientId = this.config.clientId;
-		this.keys = getCognitoKeys(CognitoUserPoolKey)(this.prefix, clientId);
+		this.keys = getCognitoKeys(CognitoUserPoolKey)(KEY_PREFIX, clientId);
 	}
 
 	async loadTokens(): Promise<CognitoUserPoolTokens | null> {
-		const tokens = {} as CognitoUserPoolTokens;
-
 		const accessToken = await this.storage.getItem(this.keys.accessToken);
 		const refreshToken = await this.storage.getItem(this.keys.refreshToken);
 		const idToken = await this.storage.getItem(this.keys.idToken);
 
 		if (accessToken && refreshToken && idToken) {
-			tokens.accessToken = accessToken;
-			tokens.idToken = idToken;
-			tokens.refreshToken = refreshToken;
-			return tokens;
+			return {
+				accessToken,
+				idToken,
+				refreshToken,
+			};
 		}
 
 		return null;
