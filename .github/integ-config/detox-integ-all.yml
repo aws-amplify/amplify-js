@@ -2,10 +2,5 @@
   working_directory: amplify-js-samples-staging/samples/react-native/storage/StorageApp
 - test_name: 'integ_rn_ios_storage_multipart_progress'
   working_directory: amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
-# TODO - Re-enable failing detox tests
-# - test_name: 'integ_rn_ios_push_notifications'
-#   working_directory: amplify-js-samples-staging/samples/react-native/push-notifications/PushNotificationApp
-# - test_name: 'integ_rn_ios_datastore_sqlite_adapter'
-#   working_directory: amplify-js-samples-staging/samples/react-native/datastore/SQLiteAdapter
-# - test_name: 'integ_rn_ios_device_tracking'
-#   working_directory: amplify-js-samples-staging/samples/react-native/auth/deviceTracking
+- test_name: 'integ_rn_ios_device_tracking'
+  working_directory: amplify-js-samples-staging/samples/react-native/auth/deviceTracking
