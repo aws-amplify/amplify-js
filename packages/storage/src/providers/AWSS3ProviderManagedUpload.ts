@@ -44,7 +44,7 @@ export class AWSS3ProviderManagedUpload {
 	// Data for current upload
 	private body;
 	private params: PutObjectInput;
-	private opts = null;
+	private opts: { isObjectLockEnabled: boolean } = null;
 	private completedParts: CompletedPart[] = [];
 	private s3Config: S3ResolvedConfig;
 	private uploadId: string | undefined;
@@ -57,7 +57,10 @@ export class AWSS3ProviderManagedUpload {
 
 	constructor(params: PutObjectInput, opts, emitter: EventEmitter) {
 		this.params = params;
-		this.opts = opts;
+		this.opts = {
+			isObjectLockEnabled: false,
+			...opts,
+		};
 		this.emitter = emitter;
 		this.s3Config = loadS3Config({
 			...opts,
@@ -68,7 +71,12 @@ export class AWSS3ProviderManagedUpload {
 
 	public async upload() {
 		try {
-			const { isObjectLockEnabled } = this.opts;
+			const { isObjectLockEnabled }: { isObjectLockEnabled: boolean } =
+				this.opts;
+			if (typeof isObjectLockEnabled !== 'boolean') {
+				logger.error('isObjectLockEnabled can be either true/false');
+				throw Error('isObjectLockEnabled can be either true/false');
+			}
 			if (isObjectLockEnabled) {
 				this.params.ContentMD5 = await calculateContentMd5(
 					this.params.Body as Blob | File | string
