@@ -32,7 +32,7 @@ export const serializeObjectSsecOptionsToHeaders = async (
 	const getMd5Digest = async (content: any) => {
 		const md5Hasher = new Md5();
 		md5Hasher.update(utf8Encode(content));
-		return await md5Hasher.digest();
+		return md5Hasher.digest();
 	};
 
 	return assignStringVariables({
