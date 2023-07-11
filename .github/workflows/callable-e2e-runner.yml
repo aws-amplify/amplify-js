@@ -40,6 +40,8 @@ jobs:
       amplifyjs_dir: ${{ matrix.integ-config.amplifyjs_dir || false }}
       sample_name: ${{ toJSON(matrix.integ-config.sample_name) || '[""]' }}
       browser: ${{ toJSON(matrix.integ-config.browser) || '[""]' }}
+      timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 35 }}
+      retry_count: ${{ matrix.integ-config.retry_count || 3 }}
 
   detox-e2e-test-runner:
     name: e2e test runner

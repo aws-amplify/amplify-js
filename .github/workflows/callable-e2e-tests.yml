@@ -27,6 +27,14 @@ on:
         required: false
         type: boolean
         default: false
+      timeout_minutes:
+        required: false
+        type: number
+        default: 35
+      retry_count:
+        required: false
+        type: number
+        default: 3
 
 env:
   NPM_REGISTRY: http://localhost:4873/
@@ -49,7 +57,7 @@ jobs:
         sample_name:
           - ${{ fromJson(inputs.sample_name) }}
       fail-fast: false
-    timeout-minutes: 35
+    timeout-minutes: ${{ inputs.timeout_minutes }}
 
     steps:
       - name: check incoming config
@@ -60,7 +68,9 @@ jobs:
           ${{ matrix.sample_name }} \
           ${{ inputs.spec }} \
           ${{ matrix.browser }} \
-          ${{ inputs.amplifyjs_dir }}"
+          ${{ inputs.amplifyjs_dir }} \
+          ${{ inputs.retry_count }} \
+          ${{ inputs.timeout_minutes }}"
       - name: Checkout repository
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
         with:
@@ -78,13 +88,29 @@ jobs:
       - name: Run cypress tests for ${{ inputs.test_name }} dev
         run: |
           ../aws-amplify/.circleci/retry-yarn-script.sh -s \
-          "ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ matrix.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} dev ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}" -n 3
+          "ci:test \
+          ${{ inputs.framework }} \
+          ${{ inputs.category }} \
+          ${{ matrix.sample_name }} \
+          ${{ inputs.spec }} \
+          ${{ matrix.browser }} \
+          dev \
+          ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}" \
+          -n ${{ inputs.retry_count }}
         working-directory: amplify-js-samples-staging
         shell: bash
       - name: Run cypress tests for ${{ inputs.test_name }} prod
         run: |
           ../aws-amplify/.circleci/retry-yarn-script.sh -s \
-          "ci:test ${{ inputs.framework }} ${{ inputs.category }} ${{ matrix.sample_name }} ${{ inputs.spec }} ${{ matrix.browser }} prod ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}" -n 3
+          "ci:test \
+          ${{ inputs.framework }} \
+          ${{ inputs.category }} \
+          ${{ matrix.sample_name }} \
+          ${{ inputs.spec }} \
+          ${{ matrix.browser }} \
+          prod \
+          ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}" \
+          -n ${{ inputs.retry_count }}
         working-directory: amplify-js-samples-staging
         shell: bash
       - name: upload artifact
