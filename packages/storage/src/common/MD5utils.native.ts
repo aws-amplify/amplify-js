@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Md5 } from '@aws-sdk/md5-js';
-import { toBase64, fromBase64 } from '@aws-sdk/util-base64-browser';
+import { toBase64, utf8Encode } from '../AwsClients/S3/runtime';
 
 export const calculateContentMd5 = async (
 	content: Blob | string
@@ -12,7 +12,7 @@ export const calculateContentMd5 = async (
 		hasher.update(content);
 	} else {
 		const buffer = await readFileToBase64(content);
-		hasher.update(fromBase64(buffer));
+		hasher.update(utf8Encode(buffer));
 	}
 	const digest = await hasher.digest();
 	return toBase64(digest);

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Md5 } from '@aws-sdk/md5-js';
-import { toBase64 } from '@aws-sdk/util-base64-browser';
+import { toBase64 } from '../AwsClients/S3/runtime';
 
 export const calculateContentMd5 = async (
 	content: Blob | File | string
@@ -21,6 +21,7 @@ export const calculateContentMd5 = async (
 const readFile = (file: File | Blob): Promise<ArrayBuffer> => {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
+		console.log('Linked');
 		reader.onloadend = () => {
 			if (reader.result) {
 				resolve(reader.result as ArrayBuffer);
