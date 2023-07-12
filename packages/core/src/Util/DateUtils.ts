@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 /**
  * Date & time utility functions to abstract the `aws-sdk` away from users.
  * (v2 => v3 modularization is a breaking change)

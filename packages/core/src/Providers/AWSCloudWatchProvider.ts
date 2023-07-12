@@ -32,7 +32,7 @@ import {
 } from '../types/types';
 import { Credentials } from '../..';
 import { ConsoleLogger as Logger } from '../Logger';
-import { getAmplifyUserAgent } from '../Platform';
+import { getAmplifyUserAgentObject } from '../Platform';
 import { parseAWSExports } from '../parseAWSExports';
 import {
 	AWS_CLOUDWATCH_BASE_BUFFER_SIZE,
@@ -321,7 +321,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		return new CloudWatchLogsClient({
 			region: this._config.region,
 			credentials: this._config.credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject(),
 			endpoint: this._config.endpoint,
 		});
 	}

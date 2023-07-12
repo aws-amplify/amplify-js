@@ -23,9 +23,11 @@ import {
 	StorageListOutput,
 	StorageCopyOutput,
 	UploadTask,
+	StorageGetPropertiesConfig,
+	StorageGetPropertiesOutput,
 } from './types';
-import axios, { CancelTokenSource } from 'axios';
-import { PutObjectCommandInput } from '@aws-sdk/client-s3';
+import { PutObjectInput } from './AwsClients/S3';
+import { isCancelError } from './AwsClients/S3/utils';
 import { AWSS3UploadTask } from './providers/AWSS3UploadTask';
 
 const logger = new Logger('StorageClass');
@@ -44,11 +46,11 @@ export class Storage {
 
 	/**
 	 * Similar to the API module. This weak map allows users to cancel their in-flight request made using the Storage
-	 * module. For every get or put request, a unique cancel token will be generated and injected to it's underlying
-	 * AxiosHttpHandler. This map maintains a mapping of Request to CancelTokenSource. When .cancel is invoked, it will
-	 * attempt to retrieve it's corresponding cancelTokenSource and cancel the in-flight request.
+	 * module. For every get or put request, a unique AbortConttroller will be generated and injected to it's underlying
+	 * Xhr HTTP handler. This map maintains a mapping of Request to AbortController. When .cancel is invoked, it will
+	 * attempt to retrieve it's corresponding abortController and cancel the in-flight request.
 	 */
-	private _cancelTokenSourceMap: WeakMap<Promise<any>, CancelTokenSource>;
+	private _abortControllerMap: WeakMap<Promise<any>, AbortController>;
 
 	/**
 	 * @public
@@ -62,7 +64,7 @@ export class Storage {
 	constructor() {
 		this._config = {};
 		this._pluggables = [];
-		this._cancelTokenSourceMap = new WeakMap<Promise<any>, CancelTokenSource>();
+		this._abortControllerMap = new WeakMap<Promise<any>, AbortController>();
 		logger.debug('Storage Options', this._config);
 
 		this.get = this.get.bind(this);
@@ -137,6 +139,7 @@ export class Storage {
 			'serverSideEncryption',
 			'SSECustomerAlgorithm',
 			'SSECustomerKey',
+			// TODO(AllanZhengYP): remove in V6.
 			'SSECustomerKeyMD5',
 			'SSEKMSKeyId',
 		];
@@ -183,15 +186,15 @@ export class Storage {
 		return this._config;
 	}
 
-	private getCancellableTokenSource(): CancelTokenSource {
-		return axios.CancelToken.source();
+	private getAbortController(): AbortController {
+		return new AbortController();
 	}
 
 	private updateRequestToBeCancellable(
 		request: Promise<any>,
-		cancelTokenSource: CancelTokenSource
+		abortController: AbortController
 	) {
-		this._cancelTokenSourceMap.set(request, cancelTokenSource);
+		this._abortControllerMap.set(request, abortController);
 	}
 
 	private isUploadTask(x: unknown): x is UploadTask {
@@ -217,11 +220,13 @@ export class Storage {
 		if (request instanceof AWSS3UploadTask) {
 			return request._cancel();
 		}
-		const cancelTokenSource = this._cancelTokenSourceMap.get(
+		const abortController = this._abortControllerMap.get(
 			request as Promise<any>
 		);
-		if (cancelTokenSource) {
-			cancelTokenSource.cancel(message);
+		if (abortController) {
+			// TODO: [v6] clean up the aborted promise in the weak map.
+			// Not doing it yet to avoid breaking changes when users may abort a request twice.
+			abortController.abort(message);
 		} else {
 			logger.debug('The request does not map to any cancel token');
 		}
@@ -246,26 +251,26 @@ export class Storage {
 		config?: StorageCopyConfig<T>
 	): StorageCopyOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const prov = this._pluggables.find(
+		const plugin = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
-		if (prov === undefined) {
+		if (plugin === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject(
 				'No plugin found in Storage for the provider'
 			) as StorageCopyOutput<T>;
 		}
-		const cancelTokenSource = this.getCancellableTokenSource();
-		if (typeof prov.copy !== 'function') {
+		const abortController = this.getAbortController();
+		if (typeof plugin.copy !== 'function') {
 			return Promise.reject(
-				`.copy is not implemented on provider ${prov.getProviderName()}`
+				`.copy is not implemented on provider ${plugin.getProviderName()}`
 			) as StorageCopyOutput<T>;
 		}
-		const responsePromise = prov.copy(src, dest, {
+		const responsePromise = plugin.copy(src, dest, {
 			...config,
-			cancelTokenSource,
+			abortSignal: abortController.signal,
 		});
-		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
+		this.updateRequestToBeCancellable(responsePromise, abortController);
 		return responsePromise as StorageCopyOutput<T>;
 	}
 
@@ -285,28 +290,52 @@ export class Storage {
 		T extends StorageProvider | { [key: string]: any; download?: boolean }
 	>(key: string, config?: StorageGetConfig<T>): StorageGetOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const prov = this._pluggables.find(
+		const plugin = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
-		if (prov === undefined) {
+		if (plugin === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject(
 				'No plugin found in Storage for the provider'
 			) as StorageGetOutput<T>;
 		}
-		const cancelTokenSource = this.getCancellableTokenSource();
-		const responsePromise = prov.get(key, {
+		const abortController = this.getAbortController();
+		const responsePromise = plugin.get(key, {
 			...config,
-			cancelTokenSource,
+			abortSignal: abortController.signal,
 		});
-		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
+		this.updateRequestToBeCancellable(responsePromise, abortController);
 		return responsePromise as StorageGetOutput<T>;
 	}
 
 	public isCancelError(error: any) {
-		return axios.isCancel(error);
+		return isCancelError(error);
 	}
 
+	public getProperties<T extends StorageProvider | { [key: string]: any }>(
+		key: string,
+		config?: StorageGetPropertiesConfig<T>
+	): StorageGetPropertiesOutput<T> {
+		const provider = config?.provider || DEFAULT_PROVIDER;
+		const plugin = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (plugin === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			throw new Error('No plugin found with providerName');
+		}
+		const abortController = this.getAbortController();
+		if (typeof plugin.getProperties !== 'function') {
+			return Promise.reject(
+				`.getProperties is not implemented on provider ${plugin.getProviderName()}`
+			) as StorageGetPropertiesOutput<T>;
+		}
+		const responsePromise = plugin?.getProperties(key, {
+			...config,
+		});
+		this.updateRequestToBeCancellable(responsePromise, abortController);
+		return responsePromise as StorageGetPropertiesOutput<T>;
+	}
 	/**
 	 * Put a file in storage bucket specified to configure method
 	 * @param key - key of the object
@@ -322,26 +351,26 @@ export class Storage {
 	): StoragePutOutput<T>;
 	public put<T extends StorageProvider = AWSS3Provider>(
 		key: string,
-		object: Omit<PutObjectCommandInput['Body'], 'ReadableStream' | 'Readable'>,
+		object: Omit<PutObjectInput['Body'], 'ReadableStream' | 'Readable'>,
 		config?: StoragePutConfig<T>
 	): StoragePutOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const prov = this._pluggables.find(
+		const plugin = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
-		if (prov === undefined) {
+		if (plugin === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject(
 				'No plugin found in Storage for the provider'
 			) as StoragePutOutput<T>;
 		}
-		const cancelTokenSource = this.getCancellableTokenSource();
-		const response = prov.put(key, object, {
+		const abortController = this.getAbortController();
+		const response = plugin.put(key, object, {
 			...config,
-			cancelTokenSource,
+			abortSignal: abortController.signal,
 		});
 		if (!this.isUploadTask(response)) {
-			this.updateRequestToBeCancellable(response, cancelTokenSource);
+			this.updateRequestToBeCancellable(response, abortController);
 		}
 		return response as StoragePutOutput<T>;
 	}
@@ -361,16 +390,16 @@ export class Storage {
 		config?: StorageRemoveConfig<T>
 	): StorageRemoveOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const prov = this._pluggables.find(
+		const plugin = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
-		if (prov === undefined) {
+		if (plugin === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject(
 				'No plugin found in Storage for the provider'
 			) as StorageRemoveOutput<T>;
 		}
-		return prov.remove(key, config) as StorageRemoveOutput<T>;
+		return plugin.remove(key, config) as StorageRemoveOutput<T>;
 	}
 
 	/**
@@ -388,16 +417,16 @@ export class Storage {
 		config?: StorageListConfig<T>
 	): StorageListOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
-		const prov = this._pluggables.find(
+		const plugin = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
-		if (prov === undefined) {
+		if (plugin === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject(
 				'No plugin found in Storage for the provider'
 			) as StorageListOutput<T>;
 		}
-		return prov.list(path, config) as StorageListOutput<T>;
+		return plugin.list(path, config) as StorageListOutput<T>;
 	}
 }
 

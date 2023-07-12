@@ -44,7 +44,7 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 	[AuthValidationErrorCode.CustomAuthSignInPassword]: {
 		message: 'A password is not needed when signing in with CUSTOM_WITHOUT_SRP',
 		recoverySuggestion: 'Do not include a password in your signIn call.',
-	}
+	},
 };
 
 // TODO: delete this code when the Auth class is removed.
