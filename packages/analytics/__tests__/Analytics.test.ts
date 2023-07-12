@@ -170,7 +170,7 @@ describe('Analytics test', () => {
 			);
 
 			expect(customProviderRecordSpy).toBeCalled();
-			expect(recordResponse).toBeTruthy();
+			expect(recordResponse).toBe(true);
 		});
 	});
 
