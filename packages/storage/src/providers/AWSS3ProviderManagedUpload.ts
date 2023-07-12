@@ -72,12 +72,7 @@ export class AWSS3ProviderManagedUpload {
 	public async upload() {
 		try {
 			const { isObjectLockEnabled } = this.opts;
-			if (isObjectLockEnabled != null && typeof isObjectLockEnabled !== 'boolean') {
-			  	// Should not call calculateContentMd5 when the isObjectLockEnabled is set but not true
-					logger.error('isObjectLockEnabled must be a boolean value');
-					throw Error('isObjectLockEnabled must be a boolean value');
-			}
-		  if (isObjectLockEnabled) {
+		    if (isObjectLockEnabled === true) {
 					this.params.ContentMD5 = await calculateContentMd5(
 						  // @ts-expect-error currently ReadableStream<any> is not being supported in put api
 						  this.params.Body
