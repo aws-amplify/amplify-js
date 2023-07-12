@@ -17,6 +17,7 @@ export const calculateContentMd5 = async (
 	const digest = await hasher.digest();
 	return toBase64(digest);
 };
+
 const readFileToBase64 = (blob: Blob): Promise<string> => {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
