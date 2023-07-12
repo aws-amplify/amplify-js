@@ -58,3 +58,17 @@ export type SignUpRequest<
 	password: string;
 	options?: AuthSignUpOptions<UserAttributeKey, ServiceOptions>;
 };
+
+/**
+ * Constructs a `confirmSignIn` request.
+ *
+ * @param challengeResponse - required parameter for responding to {@link AuthSignInStep } returned during
+ * the sign in process.
+ * @param options - optional parameters for the Confirm Sign In process such as the plugin options
+ */
+export type ConfirmSignInRequest<
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+> = {
+	challengeResponse: string;
+	options?: { serviceOptions?: ServiceOptions };
+};

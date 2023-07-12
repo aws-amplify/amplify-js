@@ -18,6 +18,8 @@ export {
 	GetAttributeKey,
 	AuthNextResetPasswordStep,
 	AuthNextSignInStep,
+	MFAType,
+	AllowedMFATypes
 } from './models';
 
 export { AuthServiceOptions, AuthSignUpOptions } from './options';
@@ -28,6 +30,7 @@ export {
 	ResendSignUpCodeRequest,
 	SignUpRequest,
 	SignInRequest,
+	ConfirmSignInRequest
 } from './requests';
 
 export {
