@@ -36,7 +36,7 @@ class TestCustomProvider implements AnalyticsProvider {
 		return 'Analytics' as const;
 	}
 
-	configure(o: any) {
+	configure(o: object) {
 		return o;
 	}
 
