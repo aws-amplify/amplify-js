@@ -5,12 +5,12 @@ import { PlatformNotSupportedError } from '../Errors';
 import { AuthStorage } from '../types';
 
 export class LocalStorageClass implements AuthStorage {
-	storage: Storage | undefined;
+	storage?: Storage;
 
 	constructor() {
-		try {
-			this.storage = window?.localStorage ?? undefined;
-		} catch (error) {}
+		if (typeof window !== undefined) {
+			this.storage = window?.localStorage
+		}
 	}
 
 	/**

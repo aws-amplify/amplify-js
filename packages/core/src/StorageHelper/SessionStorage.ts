@@ -5,12 +5,12 @@ import { PlatformNotSupportedError } from '../Errors';
 import { AuthStorage } from '../types';
 
 export class SessionStorageClass implements AuthStorage {
-	storage: Storage | undefined;
+	storage?: Storage;
 
 	constructor() {
-		try {
-			this.storage = window?.sessionStorage ?? undefined;
-		} catch (error) {}
+		if (typeof window !== undefined) {
+			this.storage = window?.sessionStorage;
+		}
 	}
 
 	/**
