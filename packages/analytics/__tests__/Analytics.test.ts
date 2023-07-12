@@ -23,7 +23,7 @@ const record_spyon = jest
 	});
 
 /**
- * CAUTION: This mock class implements a publically available interface `AnalyticsProvider` which customers can use to
+ * CAUTION: This mock class implements a publicly available interface `AnalyticsProvider` which customers can use to
  * implement custom providers. Exercise caution when modifying this class as additive changes to this interface can
  * break customers when not marked as optional.
  */
