@@ -27,9 +27,7 @@ const readFileToBase64 = (blob: Blob): Promise<string> => {
 			if (reader.readyState !== 2) {
 				return reject(new Error('Reader aborted too early'));
 			}
-			const result = reader.result as string;
-			const dataOffset = result.indexOf(',') + 1;
-			resolve(result.substring(dataOffset));
+			resolve((reader.result as string).split(',')[1]);
 		};
 		reader.onabort = () => reject(new Error('Read aborted'));
 		reader.onerror = () => reject(reader.error);

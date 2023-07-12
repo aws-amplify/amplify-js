@@ -71,15 +71,15 @@ export class AWSS3ProviderManagedUpload {
 
 	public async upload() {
 		try {
-			const { isObjectLockEnabled }: { isObjectLockEnabled: boolean } =
-				this.opts;
+			const { isObjectLockEnabled } = this.opts;
 			if (typeof isObjectLockEnabled !== 'boolean') {
-				logger.error('isObjectLockEnabled can be either true/false');
-				throw Error('isObjectLockEnabled can be either true/false');
+				logger.error('isObjectLockEnabled must be a boolean value');
+				throw Error('isObjectLockEnabled must be a boolean value');
 			}
 			if (isObjectLockEnabled) {
 				this.params.ContentMD5 = await calculateContentMd5(
-					this.params.Body as Blob | File | string
+					// @ts-expect-error currently ReadableStream<any> is not being supported in put api
+					this.params.Body
 				);
 			}
 			this.body = this.validateAndSanitizeBody(this.params.Body);
