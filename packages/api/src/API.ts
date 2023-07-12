@@ -112,7 +112,7 @@ function generateGraphQLDocument(
 	} = modelDefinition;
 	const { operationPrefix, usePlural } = graphQLOperationsInfo[modelOperation];
 
-	let fromCache = graphQLDocumentsCache.get(name)?.get(modelOperation);
+	const fromCache = graphQLDocumentsCache.get(name)?.get(modelOperation);
 
 	if (fromCache !== undefined) {
 		return fromCache;
@@ -122,7 +122,7 @@ function generateGraphQLDocument(
 		graphQLDocumentsCache.set(name, new Map());
 	}
 
-	let graphQLFieldName = `${operationPrefix}${usePlural ? pluralName : name}`;
+	const graphQLFieldName = `${operationPrefix}${usePlural ? pluralName : name}`;
 	let graphQLOperationType: 'mutation' | 'query' | undefined;
 	let graphQLSelectionSet: string | undefined;
 	let graphQLArguments: Record<string, any> | undefined;
