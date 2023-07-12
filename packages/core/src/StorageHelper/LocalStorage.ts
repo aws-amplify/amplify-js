@@ -9,7 +9,9 @@ export class LocalStorageClass implements AuthStorage {
 
 	constructor() {
 		if (typeof window !== undefined) {
-			this.storage = window?.localStorage;
+			try {
+				this.storage = window?.localStorage;
+			} catch (error) {}
 		}
 	}
 

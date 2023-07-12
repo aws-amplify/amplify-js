@@ -9,7 +9,9 @@ export class SessionStorageClass implements AuthStorage {
 
 	constructor() {
 		if (typeof window !== undefined) {
-			this.storage = window?.sessionStorage;
+			try {
+				this.storage = window?.sessionStorage;
+			} catch (error) {}
 		}
 	}
 
