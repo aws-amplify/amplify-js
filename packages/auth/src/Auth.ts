@@ -43,10 +43,12 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {String[]} restOfAttrs - for the backward compatability
 	 * @return - A promise resolves callback data if success
 	 */
-	public signUp = (
+	public signUp(
 		params: string | SignUpParams,
 		...restOfAttrs: string[]
-	): Promise<ISignUpResult> => super.signUp(params, ...restOfAttrs);
+	): Promise<ISignUpResult> {
+		return super.signUp(params, ...restOfAttrs);
+	}
 
 	/**
 	 * Send the verification code to confirm sign up
@@ -55,11 +57,13 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {ConfirmSignUpOptions} options - other options for confirm signup
 	 * @return - A promise resolves callback data if success
 	 */
-	public confirmSignUp = (
+	public confirmSignUp(
 		username: string,
 		code: string,
 		options?: ConfirmSignUpOptions
-	): Promise<any> => super.confirmSignUp(username, code, options);
+	): Promise<any> {
+		return super.confirmSignUp(username, code, options);
+	}
 
 	/**
 	 * Resend the verification code
@@ -67,10 +71,12 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {ClientMetadata} clientMetadata - Metadata to be passed to Cognito Lambda triggers
 	 * @return - A promise resolves code delivery details if successful
 	 */
-	public resendSignUp = (
+	public resendSignUp(
 		username: string,
 		clientMetadata?: ClientMetaData
-	): Promise<any> => super.resendSignUp(username, clientMetadata);
+	): Promise<any> {
+		return super.resendSignUp(username, clientMetadata);
+	}
 
 	/**
 	 * Sign in
@@ -79,12 +85,13 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {ClientMetaData} clientMetadata - Client metadata for custom workflows
 	 * @return - A promise resolves the CognitoUser
 	 */
-	public signIn = (
+	public signIn(
 		usernameOrSignInOpts: string | SignInOpts,
 		pw?: string,
 		clientMetadata?: ClientMetaData
-	): Promise<CognitoUser | any> =>
-		super.signIn(usernameOrSignInOpts, pw, clientMetadata);
+	): Promise<CognitoUser | any> {
+		return super.signIn(usernameOrSignInOpts, pw, clientMetadata);
+	}
 
 	/**
 	 * This was previously used by an authenticated user to get MFAOptions,
@@ -94,18 +101,21 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves the current preferred mfa option if success
 	 */
-	public getMFAOptions = (user: CognitoUser | any): Promise<MFAOption[]> =>
-		super.getMFAOptions(user);
+	public getMFAOptions(user: CognitoUser | any): Promise<MFAOption[]> {
+		return super.getMFAOptions(user);
+	}
 
 	/**
 	 * get preferred mfa method
 	 * @param {CognitoUser} user - the current cognito user
 	 * @param {GetPreferredMFAOpts} params - options for getting the current user preferred MFA
 	 */
-	public getPreferredMFA = (
+	public getPreferredMFA(
 		user: CognitoUser | any,
 		params?: GetPreferredMFAOpts
-	): Promise<string> => super.getPreferredMFA(user, params);
+	): Promise<string> {
+		return super.getPreferredMFA(user, params);
+	}
 
 	/**
 	 * set preferred MFA method
@@ -113,10 +123,12 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {string} mfaMethod - preferred mfa method
 	 * @return - A promise resolve if success
 	 */
-	public setPreferredMFA = async (
+	public async setPreferredMFA(
 		user: CognitoUser | any,
 		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
-	): Promise<string> => super.setPreferredMFA(user, mfaMethod);
+	): Promise<string> {
+		return super.setPreferredMFA(user, mfaMethod);
+	}
 
 	/**
 	 * disable SMS
@@ -124,8 +136,9 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves is success
 	 */
-	public disableSMS = (user: CognitoUser): Promise<string> =>
-		super.disableSMS(user);
+	public disableSMS(user: CognitoUser): Promise<string> {
+		return super.disableSMS(user);
+	}
 
 	/**
 	 * enable SMS
@@ -133,16 +146,18 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves is success
 	 */
-	public enableSMS = (user: CognitoUser): Promise<string> =>
-		super.enableSMS(user);
+	public enableSMS(user: CognitoUser): Promise<string> {
+		return super.enableSMS(user);
+	}
 
 	/**
 	 * Setup TOTP
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves with the secret code if success
 	 */
-	public setupTOTP = (user: CognitoUser | any): Promise<string> =>
-		super.setupTOTP(user);
+	public setupTOTP(user: CognitoUser | any): Promise<string> {
+		return super.setupTOTP(user);
+	}
 
 	/**
 	 * verify TOTP setup
@@ -150,132 +165,156 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {string} challengeAnswer - challenge answer
 	 * @return - A promise resolves is success
 	 */
-	public verifyTotpToken = (
+	public verifyTotpToken(
 		user: CognitoUser | any,
 		challengeAnswer: string
-	): Promise<CognitoUserSession> =>
-		super.verifyTotpToken(user, challengeAnswer);
+	): Promise<CognitoUserSession> {
+		return super.verifyTotpToken(user, challengeAnswer);
+	}
 
 	/**
 	 * Send MFA code to confirm sign in
 	 * @param {Object} user - The CognitoUser object
 	 * @param {String} code - The confirmation code
 	 */
-	public confirmSignIn = (
+	public confirmSignIn(
 		user: CognitoUser | any,
 		code: string,
 		mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | null,
 		clientMetadata?: ClientMetaData
-	): Promise<CognitoUser | any> =>
-		super.confirmSignIn(user, code, mfaType, clientMetadata);
+	): Promise<CognitoUser | any> {
+		return super.confirmSignIn(user, code, mfaType, clientMetadata);
+	}
 
-	public completeNewPassword = (
+	public completeNewPassword(
 		user: CognitoUser | any,
 		password: string,
 		requiredAttributes: any = {},
 		clientMetadata?: ClientMetaData
-	): Promise<CognitoUser | any> =>
-		super.completeNewPassword(
+	): Promise<CognitoUser | any> {
+		return super.completeNewPassword(
 			user,
 			password,
 			requiredAttributes,
 			clientMetadata
 		);
+	}
 
 	/**
 	 * Send the answer to a custom challenge
 	 * @param {CognitoUser} user - The CognitoUser object
 	 * @param {String} challengeResponses - The confirmation code
 	 */
-	public sendCustomChallengeAnswer = (
+	public sendCustomChallengeAnswer(
 		user: CognitoUser | any,
 		challengeResponses: string,
 		clientMetadata?: ClientMetaData
-	): Promise<CognitoUser | any> =>
-		super.sendCustomChallengeAnswer(user, challengeResponses, clientMetadata);
+	): Promise<CognitoUser | any> {
+		return super.sendCustomChallengeAnswer(
+			user,
+			challengeResponses,
+			clientMetadata
+		);
+	}
 
 	/**
 	 * Delete an authenticated users' attributes
 	 * @param {CognitoUser} - The currently logged in user object
 	 * @return {Promise}
 	 **/
-	public deleteUserAttributes = (
+	public deleteUserAttributes(
 		user: CognitoUser | any,
 		attributeNames: string[]
-	) => super.deleteUserAttributes(user, attributeNames);
+	) {
+		return super.deleteUserAttributes(user, attributeNames);
+	}
 
 	/**
 	 * Delete the current authenticated user
 	 * @return {Promise}
 	 **/
 	// TODO: Check return type void
-	public deleteUser = async (): Promise<string | void> => super.deleteUser();
+	public async deleteUser(): Promise<string | void> {
+		return super.deleteUser();
+	}
 
 	/**
 	 * Update an authenticated users' attributes
 	 * @param {CognitoUser} - The currently logged in user object
 	 * @return {Promise}
 	 **/
-	public updateUserAttributes = (
+	public updateUserAttributes(
 		user: CognitoUser | any,
 		attributes: object,
 		clientMetadata?: ClientMetaData
-	): Promise<string> =>
-		super.updateUserAttributes(user, attributes, clientMetadata);
+	): Promise<string> {
+		return super.updateUserAttributes(user, attributes, clientMetadata);
+	}
 
 	/**
 	 * Return user attributes
 	 * @param {Object} user - The CognitoUser object
 	 * @return - A promise resolves to user attributes if success
 	 */
-	public userAttributes = (
+	public userAttributes(
 		user: CognitoUser | any
-	): Promise<CognitoUserAttribute[]> => super.userAttributes(user);
+	): Promise<CognitoUserAttribute[]> {
+		return super.userAttributes(user);
+	}
 
-	public verifiedContact = (user: CognitoUser | any) =>
-		super.verifiedContact(user);
+	public verifiedContact(user: CognitoUser | any) {
+		return super.verifiedContact(user);
+	}
 
 	/**
 	 * Get current authenticated user
 	 * @return - A promise resolves to current authenticated CognitoUser if success
 	 */
-	public currentUserPoolUser = (
+	public currentUserPoolUser(
 		params?: CurrentUserOpts
-	): Promise<CognitoUser | any> => super.currentUserPoolUser(params);
+	): Promise<CognitoUser | any> {
+		return super.currentUserPoolUser(params);
+	}
 
 	/**
 	 * Get current authenticated user
 	 * @param {CurrentUserOpts} - options for getting the current user
 	 * @return - A promise resolves to current authenticated CognitoUser if success
 	 */
-	public currentAuthenticatedUser = async (
+	public async currentAuthenticatedUser(
 		params?: CurrentUserOpts
-	): Promise<CognitoUser | any> => super.currentAuthenticatedUser(params);
+	): Promise<CognitoUser | any> {
+		return super.currentAuthenticatedUser(params);
+	}
 
 	/**
 	 * Get current user's session
 	 * @return - A promise resolves to session object if success
 	 */
-	public currentSession = (): Promise<CognitoUserSession> =>
-		super.currentSession();
+	public currentSession(): Promise<CognitoUserSession> {
+		return super.currentSession();
+	}
 
 	/**
 	 * Get the corresponding user session
 	 * @param {Object} user - The CognitoUser object
 	 * @return - A promise resolves to the session
 	 */
-	public userSession = (user): Promise<CognitoUserSession> =>
-		super.userSession(user);
+	public userSession(user): Promise<CognitoUserSession> {
+		return super.userSession(user);
+	}
 
 	/**
 	 * Get authenticated credentials of current user.
 	 * @return - A promise resolves to be current user's credentials
 	 */
-	public currentUserCredentials = async (): Promise<ICredentials> =>
-		super.currentUserCredentials();
+	public async currentUserCredentials(): Promise<ICredentials> {
+		return super.currentUserCredentials();
+	}
 
-	public currentCredentials = (): Promise<ICredentials> =>
-		super.currentCredentials();
+	public currentCredentials(): Promise<ICredentials> {
+		return super.currentCredentials();
+	}
 
 	/**
 	 * Initiate an attribute confirmation request
@@ -283,11 +322,13 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {Object} attr - The attributes to be verified
 	 * @return - A promise resolves to callback data if success
 	 */
-	public verifyUserAttribute = (
+	public verifyUserAttribute(
 		user: CognitoUser | any,
 		attr: string,
 		clientMetadata?: ClientMetaData
-	): Promise<void> => super.verifyUserAttribute(user, attr, clientMetadata);
+	): Promise<void> {
+		return super.verifyUserAttribute(user, attr, clientMetadata);
+	}
 
 	/**
 	 * Confirm an attribute using a confirmation code
@@ -296,14 +337,17 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {String} code - The confirmation code
 	 * @return - A promise resolves to callback data if success
 	 */
-	public verifyUserAttributeSubmit = (
+	public verifyUserAttributeSubmit(
 		user: CognitoUser | any,
 		attr: string,
 		code: string
-	): Promise<string> => super.verifyUserAttributeSubmit(user, attr, code);
+	): Promise<string> {
+		return super.verifyUserAttributeSubmit(user, attr, code);
+	}
 
-	public verifyCurrentUserAttribute = (attr: string): Promise<void> =>
-		super.verifyCurrentUserAttribute(attr);
+	public verifyCurrentUserAttribute(attr: string): Promise<void> {
+		return super.verifyCurrentUserAttribute(attr);
+	}
 
 	/**
 	 * Confirm current user's attribute using a confirmation code
@@ -311,18 +355,21 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {String} code - The confirmation code
 	 * @return - A promise resolves to callback data if success
 	 */
-	verifyCurrentUserAttributeSubmit = (
+	verifyCurrentUserAttributeSubmit(
 		attr: string,
 		code: string
-	): Promise<string> => super.verifyCurrentUserAttributeSubmit(attr, code);
+	): Promise<string> {
+		return super.verifyCurrentUserAttributeSubmit(attr, code);
+	}
 
 	/**
 	 * Sign out method
 	 * @
 	 * @return - A promise resolved if success
 	 */
-	public signOut = async (opts?: SignOutOpts): Promise<any> =>
-		super.signOut(opts);
+	public async signOut(opts?: SignOutOpts): Promise<any> {
+		return super.signOut(opts);
+	}
 
 	/**
 	 * Change a password for an authenticated user
@@ -331,23 +378,26 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {String} newPassword - the requested new password
 	 * @return - A promise resolves if success
 	 */
-	public changePassword = (
+	public changePassword(
 		user: CognitoUser | any,
 		oldPassword: string,
 		newPassword: string,
 		clientMetadata?: ClientMetaData
-	): Promise<'SUCCESS'> =>
-		super.changePassword(user, oldPassword, newPassword, clientMetadata);
+	): Promise<'SUCCESS'> {
+		return super.changePassword(user, oldPassword, newPassword, clientMetadata);
+	}
 
 	/**
 	 * Initiate a forgot password request
 	 * @param {String} username - the username to change password
 	 * @return - A promise resolves if success
 	 */
-	public forgotPassword = (
+	public forgotPassword(
 		username: string,
 		clientMetadata?: ClientMetaData
-	): Promise<any> => super.forgotPassword(username, clientMetadata);
+	): Promise<any> {
+		return super.forgotPassword(username, clientMetadata);
+	}
 
 	/**
 	 * Confirm a new password using a confirmation Code
@@ -356,20 +406,23 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {String} password - The new password
 	 * @return - A promise that resolves if success
 	 */
-	public forgotPasswordSubmit = (
+	public forgotPasswordSubmit(
 		username: string,
 		code: string,
 		password: string,
 		clientMetadata?: ClientMetaData
-	): Promise<string> =>
-		super.forgotPasswordSubmit(username, code, password, clientMetadata);
+	): Promise<string> {
+		return super.forgotPasswordSubmit(username, code, password, clientMetadata);
+	}
 
 	/**
 	 * Get user information
 	 * @async
 	 * @return {Object }- current User's information
 	 */
-	public currentUserInfo = async () => super.currentUserInfo();
+	public async currentUserInfo() {
+		return super.currentUserInfo();
+	}
 
 	public async federatedSignIn(
 		options?: FederatedSignInOptions
@@ -398,16 +451,21 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {Object} credentials
 	 * @return {Object} - Credentials
 	 */
-	public essentialCredentials = (credentials): ICredentials =>
-		super.essentialCredentials(credentials);
+	public essentialCredentials(credentials): ICredentials {
+		return super.essentialCredentials(credentials);
+	}
 
-	public rememberDevice = async (): Promise<string | AuthError> =>
-		super.rememberDevice();
+	public async rememberDevice(): Promise<string | AuthError> {
+		return super.rememberDevice();
+	}
 
-	public forgetDevice = async (): Promise<void> => super.forgetDevice();
+	public async forgetDevice(): Promise<void> {
+		return super.forgetDevice();
+	}
 
-	public fetchDevices = async (): Promise<IAuthDevice[]> =>
-		super.fetchDevices();
+	public async fetchDevices(): Promise<IAuthDevice[]> {
+		return super.fetchDevices();
+	}
 }
 
 export const Auth = new AuthClass(null);
