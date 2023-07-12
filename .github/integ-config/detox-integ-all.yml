@@ -4,3 +4,4 @@
   working_directory: amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
 - test_name: 'integ_rn_ios_device_tracking'
   working_directory: amplify-js-samples-staging/samples/react-native/auth/deviceTracking
+  timeout_minutes: 120

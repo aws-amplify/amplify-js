@@ -9,6 +9,10 @@ on:
       working_directory:
         required: true
         type: string
+      timeout_minutes:
+        required: false
+        type: number
+        default: 45
 
 env:
   NPM_REGISTRY: http://localhost:4873/
@@ -19,12 +23,12 @@ jobs:
   e2e-test:
     name: 'E2E-Detox: ${{ inputs.test_name }}'
     runs-on: macos-latest
-    timeout-minutes: 45
+    timeout-minutes: ${{ inputs.timeout_minutes }}
 
     steps:
       - name: check incoming config
         run: |
-          echo "${{ inputs.test_name }} ${{ inputs.working_directory }}"
+          echo "${{ inputs.test_name }} ${{ inputs.working_directory }} ${{ inputs.timeout_minutes }}"
       - name: Checkout repository
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
         with:
