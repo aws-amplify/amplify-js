@@ -25,7 +25,7 @@ const readFile = (file: File | Blob): Promise<ArrayBuffer> => {
 			if (reader.result) {
 				resolve(reader.result as ArrayBuffer);
 			} else {
-				reject(new Error('Failed to read file!'));
+				reject(new Error('Failed to read file.'));
 			}
 		};
 		if (file !== undefined) reader.readAsArrayBuffer(file);
