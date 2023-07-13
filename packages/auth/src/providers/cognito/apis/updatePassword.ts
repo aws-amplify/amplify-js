@@ -19,6 +19,7 @@ import { ChangePasswordException } from '../../cognito/types/errors';
 export async function updatePassword(
 	updatePasswordRequest: UpdatePasswordRequest
 ): Promise<void> {
+	// TODO: replace this when TokenProvider is implemented
 	const accessToken = 'mockedAccessToken';
 	const { oldPassword, newPassword } = updatePasswordRequest;
 	assertValidationError(
