@@ -9,6 +9,8 @@ import {
 	GraphqlMutationResult,
 	GraphqlSubscriptionParams,
 	GraphqlSubscriptionResult,
+	GraphQLOptionsV2,
+	GraphQLResponseV2,
 } from './types/v6';
 
 import { GraphQLOptions, GraphQLResult } from './types';
@@ -17,10 +19,10 @@ import { GraphQLOptions, GraphQLResult } from './types';
  * The proposed interface additions to the TypeBeast
  */
 class V6Client {
-	graphql<T = any>(
-		options: GraphQLOptions,
+	graphql<FALLBACK_TYPES = unknown, TYPED_GQL_STRING extends string = string>(
+		options: GraphQLOptionsV2<TYPED_GQL_STRING>,
 		additionalHeaders?: { [key: string]: string }
-	): Observable<GraphqlSubscriptionResult<'', T>> | Promise<GraphQLResult<T>> {
+	): GraphQLResponseV2<FALLBACK_TYPES, TYPED_GQL_STRING> {
 		const parsedQuery =
 			typeof options.query === 'string'
 				? parse(options.query)
@@ -37,20 +39,22 @@ class V6Client {
 			query: print(parsedQuery),
 		} as any; // todo
 
-		switch (operationType) {
-			case 'query':
-				return this.query(childOptions.query, childOptions, additionalHeaders);
-			case 'mutation':
-				return this.mutate(childOptions.query, childOptions, additionalHeaders);
-			case 'subscription':
-				return this.subscribe(
-					childOptions.query,
-					childOptions,
-					additionalHeaders
-				);
-			default:
-				throw new Error(`invalid operation type: ${operationType}`);
-		}
+		return GraphQLAPI.graphql(options, additionalHeaders) as any;
+
+		// switch (operationType) {
+		// 	case 'query':
+		// 		return this.query(childOptions.query, childOptions, additionalHeaders);
+		// 	case 'mutation':
+		// 		return this.mutate(childOptions.query, childOptions, additionalHeaders);
+		// 	case 'subscription':
+		// 		return this.subscribe(
+		// 			childOptions.query,
+		// 			childOptions,
+		// 			additionalHeaders
+		// 		);
+		// 	default:
+		// 		throw new Error(`invalid operation type: ${operationType}`);
+		// }
 	}
 
 	query<FALLBACK_TYPES = unknown, TYPED_GQL_STRING extends string = string>(

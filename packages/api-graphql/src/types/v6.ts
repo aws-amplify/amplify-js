@@ -1,6 +1,20 @@
+import { Observable } from 'zen-observable-ts';
 import { GraphQLResult } from './index';
+import { DocumentNode } from 'graphql';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 
 // #region shared API types ... probably to be pulled from core or something later.
+
+export interface GraphQLOptionsV2<T extends string> {
+	query: T | DocumentNode;
+	variables?: object;
+	authMode?: keyof typeof GRAPHQL_AUTH_MODE;
+	authToken?: string;
+	/**
+	 * @deprecated This property should not be used
+	 */
+	userAgentSuffix?: string; // TODO: remove in v6
+}
 
 type UnionKeys<T> = T extends T ? keyof T : never;
 type StrictUnionHelper<T, TAll> = T extends any
@@ -108,3 +122,14 @@ export type GraphqlSubscriptionResult<
 			: any;
 	};
 };
+
+export type GraphQLResponseV2<
+	FALLBACK_TYPES = unknown,
+	TYPED_GQL_STRING extends string = string
+> = TYPED_GQL_STRING extends GeneratedQuery<any, any>
+	? Promise<GraphqlQueryResult<TYPED_GQL_STRING, FALLBACK_TYPES>>
+	: TYPED_GQL_STRING extends GeneratedMutation<any, any>
+	? Promise<GraphqlMutationResult<TYPED_GQL_STRING, FALLBACK_TYPES>>
+	: TYPED_GQL_STRING extends GeneratedSubscription<any, any>
+	? Observable<GraphqlSubscriptionResult<TYPED_GQL_STRING, FALLBACK_TYPES>>
+	: Promise<GraphQLResult<any>> | Observable<object>;

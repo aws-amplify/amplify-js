@@ -202,7 +202,6 @@ describe('v6', () => {
 		});
 
 		const thread = result.data?.deleteThread;
-		2;
 		const errors = result.errors;
 
 		expectMutation(spy, 'deleteThread', threadToDelete);
