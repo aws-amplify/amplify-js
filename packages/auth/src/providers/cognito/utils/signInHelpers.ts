@@ -408,7 +408,7 @@ export async function getSignInResult(params: {
 		case 'PASSWORD_VERIFIER':
 			break;
 	}
-
+	// TODO: remove this error message for production apps
 	throw new AuthError({
 		name: AuthErrorCodes.SignInException,
 		message:
@@ -528,7 +528,7 @@ export async function handleChallengeName(
 				username,
 			});
 	}
-
+	// TODO: remove this error message for production apps
 	throw new AuthError({
 		name: AuthErrorCodes.SignInException,
 		message: `An error occurred during the sign in process. 
@@ -537,7 +537,7 @@ export async function handleChallengeName(
 }
 
 export function mapMfaType(mfa: string): CognitoMFAType {
-	let mfaType:CognitoMFAType = 'SMS_MFA';
+	let mfaType: CognitoMFAType = 'SMS_MFA';
 	if (mfa === 'TOTP') mfaType = 'SOFTWARE_TOKEN_MFA';
 
 	return mfaType;

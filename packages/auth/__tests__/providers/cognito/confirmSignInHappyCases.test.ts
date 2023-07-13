@@ -23,8 +23,18 @@ describe('confirmSignIn API happy path cases', () => {
 		handleChallengeNameSpy = jest
 			.spyOn(signInHelpers, 'handleChallengeName')
 			.mockImplementation(
-				async (): Promise<RespondToAuthChallengeCommandOutput> =>
-					authAPITestParams.RespondToAuthChallengeCommandOutput
+				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+					ChallengeName: undefined,
+					ChallengeParameters: {},
+					AuthenticationResult: {
+						AccessToken: 'axxcasfsfsadfqwersdf',
+						ExpiresIn: 1000,
+						IdToken: 'sfsfasqwerqwrsfsfsfd',
+						RefreshToken: 'qwersfsafsfssfasf',
+					},
+					Session: 'aaabbbcccddd',
+					$metadata: {},
+				})
 			);
 	});
 
