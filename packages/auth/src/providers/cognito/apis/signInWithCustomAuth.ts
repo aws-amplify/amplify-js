@@ -19,12 +19,14 @@ import {
 	getSignInResult,
 	getSignInResultFromError,
 } from '../utils/signInHelpers';
-import { setActiveSignInSession } from '../utils/activeSignInSession';
+
 import { Amplify } from '@aws-amplify/core';
-import {
-	InitiateAuthException,
-} from '../types/errors';
+import { InitiateAuthException } from '../types/errors';
 import { CognitoSignInOptions } from '../types';
+import {
+	cleanActiveSignInState,
+	setActiveSignInState,
+} from '../utils/signInStore';
 
 /**
  * Signs a user in using a custom authentication flow without password
@@ -60,10 +62,15 @@ export async function signInWithCustomAuth(
 			Session,
 		} = await handleCustomAuthFlowWithoutSRP(username, metadata);
 
-		// Session used on RespondToAuthChallenge requests.
-		setActiveSignInSession(Session);
+		// sets up local state used during the sign-in process
+		setActiveSignInState({
+			signInSession: Session,
+			username,
+			challengeName: ChallengeName as ChallengeName,
+		});
 		if (AuthenticationResult) {
 			// TODO(israx): cache tokens
+			cleanActiveSignInState();
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: AuthSignInStep.DONE },
@@ -75,7 +82,7 @@ export async function signInWithCustomAuth(
 			challengeParameters: ChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		setActiveSignInSession(undefined);
+		cleanActiveSignInState();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;

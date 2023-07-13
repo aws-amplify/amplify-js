@@ -34,43 +34,67 @@ export type AuthNextResetPasswordStep<
 	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
 };
 
+export type TOTPSetupDetails = {
+	sharedSecret: string;
+	getSetupUri: (appName: string, accountName?: string) => URL;
+};
+
+export type MFAType = 'SMS' | 'TOTP';
+
+export type AllowedMFATypes = MFAType[];
+
+export type ContinueSignInWithTOTPSetup = {
+	signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_TOTP_SETUP;
+	totpSetupDetails: TOTPSetupDetails;
+};
+export type ConfirmSignInWithTOTPCode = {
+	signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_TOTP_CODE;
+};
+
+export type ContinueSignInWithMFASelection = {
+	signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_MFA_SELECTION;
+	allowedMFATypes: AllowedMFATypes;
+};
+
+export type ConfirmSignInWithCustomChallenge = {
+	signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE;
+	additionalInfo?: AdditionalInfo;
+};
+
+export type ConfirmSignInWithNewPasswordRequired<
+	UserAttributeKey extends AuthUserAttributeKey
+> = {
+	signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED;
+	missingAttributes?: UserAttributeKey[];
+};
+
+export type ConfirmSignInWithSMSCode = {
+	signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_CODE;
+	codeDeliveryDetails?: AuthCodeDeliveryDetails;
+};
+
+export type ConfirmSignUpStep = {
+	signInStep: AuthSignInStep.CONFIRM_SIGN_UP;
+};
+
+export type ResetPasswordStep = {
+	signInStep: AuthSignInStep.RESET_PASSWORD;
+};
+
+export type DoneStep = {
+	signInStep: AuthSignInStep.DONE;
+};
+
 export type AuthNextSignInStep<UserAttributeKey extends AuthUserAttributeKey> =
-	| {
-			signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE;
-			additionalInfo?: AdditionalInfo;
-	  }
-	| {
-			signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_MFA_SELECTION;
-			additionalInfo?: AdditionalInfo;
-	  }
-	| {
-			signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED;
-			additionalInfo?: AdditionalInfo;
-			missingAttributes?: UserAttributeKey[];
-	  }
-	| {
-			signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_MFA_CODE;
-			additionalInfo?: AdditionalInfo;
-			codeDeliveryDetails?: AuthCodeDeliveryDetails;
-	  }
-	| {
-			signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SOFTWARE_TOKEN_MFA_CODE;
-			additionalInfo?: AdditionalInfo;
-	  }
-	| {
-			signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SOFTWARE_TOKEN_MFA_SETUP;
-			additionalInfo?: AdditionalInfo;
-			secretCode?: string;
-	  }
-	| {
-			signInStep: AuthSignInStep.CONFIRM_SIGN_UP;
-	  }
-	| {
-			signInStep: AuthSignInStep.RESET_PASSWORD;
-	  }
-	| {
-			signInStep: AuthSignInStep.DONE;
-	  };
+	| ConfirmSignInWithCustomChallenge
+	| ContinueSignInWithMFASelection
+	| ConfirmSignInWithNewPasswordRequired<UserAttributeKey>
+	| ConfirmSignInWithSMSCode
+	| ConfirmSignInWithTOTPCode
+	| ContinueSignInWithTOTPSetup
+	| ConfirmSignUpStep
+	| ResetPasswordStep
+	| DoneStep;
 
 export type AuthStandardAttributeKey =
 	| 'address'
