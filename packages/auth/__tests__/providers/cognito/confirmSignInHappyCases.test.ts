@@ -23,8 +23,18 @@ describe('confirmSignIn API happy path cases', () => {
 		handleChallengeNameSpy = jest
 			.spyOn(signInHelpers, 'handleChallengeName')
 			.mockImplementation(
-				async (): Promise<RespondToAuthChallengeCommandOutput> =>
-					authAPITestParams.RespondToAuthChallengeCommandOutput
+				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+					ChallengeName: undefined,
+					ChallengeParameters: {},
+					AuthenticationResult: {
+						AccessToken: 'axxcasfsfsadfqwersdf',
+						ExpiresIn: 1000,
+						IdToken: 'sfsfasqwerqwrsfsfsfd',
+						RefreshToken: 'qwersfsafsfssfasf',
+					},
+					Session: 'aaabbbcccddd',
+					$metadata: {},
+				})
 			);
 	});
 
@@ -32,8 +42,7 @@ describe('confirmSignIn API happy path cases', () => {
 		handleChallengeNameSpy.mockClear();
 	});
 
-	test(`confirmSignIn should return a SignInResult when sign-in step is
-		  ${AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_CODE} `, async () => {
+	test(`confirmSignIn test SMS_MFA ChallengeName.`, async () => {
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -77,8 +86,7 @@ describe('confirmSignIn API happy path cases', () => {
 		handleUserSRPAuthflowSpy.mockClear();
 	});
 
-	test(`confirmSignIn should return a SignInResult when sign-in step is
-		 ${AuthSignInStep.CONFIRM_SIGN_IN_WITH_TOTP_CODE} `, async () => {
+	test(`confirmSignIn tests MFA_SETUP challengeName`, async () => {
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -115,8 +123,7 @@ describe('confirmSignIn API happy path cases', () => {
 		handleUserSRPAuthflowSpy.mockClear();
 	});
 
-	test(`confirmSignIn should return a SignInResult when sign-in step is
-		 ${AuthSignInStep.CONTINUE_SIGN_IN_WITH_MFA_SELECTION} `, async () => {
+	test(`confirmSignIn tests SELECT_MFA_TYPE challengeName `, async () => {
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -176,7 +183,7 @@ describe('confirmSignIn API happy path cases', () => {
 		handleUserSRPAuthflowSpy.mockClear();
 	});
 
-	test('handleChallengeName should be called with clientMetada from request', async () => {
+	test('handleChallengeName should be called with clientMetadata from request', async () => {
 		const activeSignInSession = '1234234232';
 		const activeChallengeName = 'SMS_MFA';
 		const handleUserSRPAuthFlowSpy = jest
@@ -212,7 +219,7 @@ describe('confirmSignIn API happy path cases', () => {
 		handleUserSRPAuthFlowSpy.mockClear();
 	});
 
-	test('handleChallengeName should be called with clientMetada from config', async () => {
+	test('handleChallengeName should be called with clientMetadata from config', async () => {
 		const activeSignInSession = '1234234232';
 		const activeChallengeName = 'SMS_MFA';
 		const handleUserSRPAuthFlowSpy = jest

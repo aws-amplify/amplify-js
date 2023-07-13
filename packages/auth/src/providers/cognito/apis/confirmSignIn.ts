@@ -64,13 +64,14 @@ export async function confirmSignIn(
 	const config = Amplify.config;
 	const clientMetaData =
 		options?.serviceOptions?.clientMetadata || config.clientMetadata;
-   
+
 	assertValidationError(
 		!!challengeResponse,
 		AuthValidationErrorCode.EmptyChallengeResponse
 	);
 
 	if (!username || !challengeName || !signInSession)
+		// TODO: remove this error message for production apps
 		throw new AuthError({
 			name: AuthErrorCodes.SignInException,
 			message: `
@@ -81,8 +82,9 @@ export async function confirmSignIn(
 			2. signIn threw an exception.
 			3. page was refreshed during the sign in flow.
 			`,
-			recoverySuggestion: 'Make sure a successful call to signIn is made before calling confirmSignIn' + 
-			'and that the page is not refreshed until the sign in process is done.'
+			recoverySuggestion:
+				'Make sure a successful call to signIn is made before calling confirmSignIn' +
+				'and that the page is not refreshed until the sign in process is done.',
 		});
 
 	try {
