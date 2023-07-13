@@ -39,6 +39,7 @@ import { InitiateAuthException } from '../types/errors';
 import {
 	AllowedMFATypes,
 	AuthUserAttribute,
+	MFAType,
 	TOTPSetupDetails,
 } from '../../../types/models';
 import { verifySoftwareTokenClient } from './clients/VerifySoftwareTokenClient';
@@ -346,6 +347,14 @@ export async function getSignInResult(params: {
 			};
 		case 'MFA_SETUP':
 			const { signInSession, username } = signInStore.getState();
+
+			if (!isMFATypeEnabled(challengeParameters, 'TOTP'))
+				throw new AuthError({
+					name: AuthErrorCodes.SignInException,
+					message: `Cannot initiate MFA setup from available types: ${parseMFATypes(
+						challengeParameters.MFAS_CAN_SETUP
+					)}`,
+				});
 			const { Session, SecretCode: secretCode } =
 				await associateSoftwareTokenClient({
 					Session: signInSession,
@@ -551,4 +560,14 @@ export function parseMFATypes(mfa?: string): AllowedMFATypes {
 		if (type === 'SOFTWARE_TOKEN_MFA') parsedMfaTypes.push('TOTP');
 	});
 	return parsedMfaTypes;
+}
+
+export function isMFATypeEnabled(
+	challengeParams: ChallengeParameters,
+	mfaType: MFAType
+): boolean {
+	const { MFAS_CAN_SETUP } = challengeParams;
+	const isMFAparseMFATypes = parseMFATypes(MFAS_CAN_SETUP).includes(mfaType);
+
+	return isMFAparseMFATypes;
 }

@@ -21,6 +21,7 @@ export type ChallengeParameters = {
 	SECRET_BLOCK?: string;
 	PASSWORD_CLAIM_SIGNATURE?: string;
 	MFAS_CAN_CHOOSE?: string;
+	MFAS_CAN_SETUP?:string
 } & { [Params: string]: unknown };
 
 export type CognitoMFAType = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
