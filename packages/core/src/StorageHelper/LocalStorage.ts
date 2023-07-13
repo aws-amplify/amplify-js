@@ -5,12 +5,14 @@ import { PlatformNotSupportedError } from '../Errors';
 import { AuthStorage } from '../types';
 
 export class LocalStorageClass implements AuthStorage {
-	storage: Storage;
+	storage?: Storage;
 
 	constructor() {
-		try {
-			this.storage = window.localStorage;
-		} catch (error) {}
+		if (typeof window !== undefined) {
+			try {
+				this.storage = window?.localStorage;
+			} catch (error) {}
+		}
 	}
 
 	/**
@@ -20,11 +22,8 @@ export class LocalStorageClass implements AuthStorage {
 	 * @returns {string} value that was set
 	 */
 	async setItem(key: string, value: string): Promise<void> {
-		try {
-			this.storage.setItem(key, value);
-		} catch (error) {
-			throw PlatformNotSupportedError;
-		}
+		if (!this.storage) throw PlatformNotSupportedError;
+		this.storage.setItem(key, value);
 	}
 
 	/**
@@ -34,11 +33,8 @@ export class LocalStorageClass implements AuthStorage {
 	 * @returns {string} the data item
 	 */
 	async getItem(key: string): Promise<string | null> {
-		try {
-			return this.storage.getItem(key);
-		} catch (error) {
-			throw PlatformNotSupportedError;
-		}
+		if (!this.storage) throw PlatformNotSupportedError;
+		return this.storage.getItem(key);
 	}
 
 	/**
@@ -47,11 +43,8 @@ export class LocalStorageClass implements AuthStorage {
 	 * @returns {string} value - value that was deleted
 	 */
 	async removeItem(key: string): Promise<void> {
-		try {
-			this.storage.removeItem(key);
-		} catch (error) {
-			throw PlatformNotSupportedError;
-		}
+		if (!this.storage) throw PlatformNotSupportedError;
+		this.storage.removeItem(key);
 	}
 
 	/**
@@ -59,11 +52,8 @@ export class LocalStorageClass implements AuthStorage {
 	 * @returns {string} nothing
 	 */
 	async clear(): Promise<void> {
-		try {
-			this.storage.clear();
-		} catch (error) {
-			throw PlatformNotSupportedError;
-		}
+		if (!this.storage) throw PlatformNotSupportedError;
+		this.storage.clear();
 	}
 }
 
