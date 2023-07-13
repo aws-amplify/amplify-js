@@ -24,6 +24,7 @@ const readFileToBase64 = (blob: Blob): Promise<string> => {
 		reader.onloadend = () => {
 			// reference: https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
 			// response from readAsDataURL is always prepended with "data:*/*;base64,"
+			// reference: https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readyState
 			if (reader.readyState !== 2) {
 				return reject(new Error('Reader aborted too early'));
 			}
