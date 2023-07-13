@@ -71,3 +71,8 @@ export class StorageHelper {
 		return this.storageWindow;
 	}
 }
+
+export { LocalStorage } from './LocalStorage';
+export { SessionStorage } from './SessionStorage';
+export { InMemoryStorage } from './InMemoryStorage';
+export { CookieStorage } from './CookieStorage';
