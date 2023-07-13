@@ -1,0 +1,57 @@
+name: 'Publish package to npm and create release on github'
+
+on:
+  workflow_call:
+    inputs:
+      target:
+        required: true
+        type: string
+      preid:
+        required: false
+        type: string
+
+# TODO: configure these env variables
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_EMAIL: test@email.com
+  GITHUB_USER: test-user
+  BASH_ENV: .env
+  # TODO verdaccio stuff we won't need in prod
+  NPM_REGISTRY: http://localhost:4873/
+  NPM_USER: circleci
+  NPM_PASS: circleci
+  NPM_EMAIL: circleci@amplify.js
+
+jobs:
+  deploy:
+    name: 'Publish to Amplify Package'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
+        with:
+          # Minimal depth 2 so we can checkout the commit before possible merge commit.
+          fetch-depth: 2
+          path: amplify-js
+      - name: Setup node and build the repository
+        uses: stocaaro/amplify-js/.github/actions/node-and-build@main
+      ###
+      # TODO Remove this to enable real NPM interactions.
+      # <remove>
+      - name: Load Verdaccio with AmplifyJs
+        uses: stocaaro/amplify-js/.github/actions/load-verdaccio-with-amplify-js@main
+      ### </remove>
+
+      - name: Run npm publish
+        working-directory: ./amplify-js
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+          touch $BASH_ENV
+          echo "export PREID_HASH_SUFFIX=$(echo ${{ github.sha }} | cut -c -7 | sed 's/^/\./')" >> "$BASH_ENV"
+          echo "export PREID_PREFIX=${{ inputs.preid || '' }}" >> "$BASH_ENV"
+          source "$BASH_ENV"
+          git config --global user.email $GITHUB_EMAIL
+          git config --global user.name $GITHUB_USER
+          git status
+          git --no-pager diff
+          yarn publish:${{ inputs.target }}

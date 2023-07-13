@@ -28,20 +28,18 @@ on:
         type: boolean
         default: false
       timeout_minutes:
-        required: false
+        required: true
         type: number
-        default: 35
       retry_count:
-        required: false
+        required: true
         type: number
-        default: 3
 
 env:
   NPM_REGISTRY: http://localhost:4873/
   NPM_USER: circleci
   NPM_PASS: circleci
   NPM_EMAIL: circleci@amplify.js
-  AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/aws-amplify
+  AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/amplify-js
   CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
   CYPRESS_GOOGLE_CLIENT_SECRET: ${{ secrets.CYPRESS_GOOGLE_CLIENT_SECRET }}
   CYPRESS_GOOGLE_REFRESH_TOKEN: ${{ secrets.CYPRESS_GOOGLE_REFRESH_TOKEN }}
@@ -60,34 +58,23 @@ jobs:
     timeout-minutes: ${{ inputs.timeout_minutes }}
 
     steps:
-      - name: check incoming config
-        run: |
-          echo \
-          "${{ inputs.framework }} \
-          ${{ inputs.category }} \
-          ${{ matrix.sample_name }} \
-          ${{ inputs.spec }} \
-          ${{ matrix.browser }} \
-          ${{ inputs.amplifyjs_dir }} \
-          ${{ inputs.retry_count }} \
-          ${{ inputs.timeout_minutes }}"
       - name: Checkout repository
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
         with:
           # Minimal depth 2 so we can checkout the commit before possible merge commit.
           fetch-depth: 2
-          path: aws-amplify
+          path: amplify-js
       - name: Setup node and build the repository
-        uses: ./aws-amplify/.github/actions/node-and-build
+        uses: stocaaro/amplify-js/.github/actions/node-and-build@main
       - name: Setup samples staging repository
-        uses: ./aws-amplify/.github/actions/setup-samples-staging
+        uses: stocaaro/amplify-js/.github/actions/setup-samples-staging@main
         with:
           GH_PAT: ${{ secrets.GH_PAT }}
       - name: Load Verdaccio with AmplifyJs
-        uses: ./aws-amplify/.github/actions/load-verdaccio-with-amplify-js
+        uses: stocaaro/amplify-js/.github/actions/load-verdaccio-with-amplify-js@main
       - name: Run cypress tests for ${{ inputs.test_name }} dev
         run: |
-          ../aws-amplify/.circleci/retry-yarn-script.sh -s \
+          ../amplify-js/.circleci/retry-yarn-script.sh -s \
           "ci:test \
           ${{ inputs.framework }} \
           ${{ inputs.category }} \
@@ -101,7 +88,7 @@ jobs:
         shell: bash
       - name: Run cypress tests for ${{ inputs.test_name }} prod
         run: |
-          ../aws-amplify/.circleci/retry-yarn-script.sh -s \
+          ../amplify-js/.circleci/retry-yarn-script.sh -s \
           "ci:test \
           ${{ inputs.framework }} \
           ${{ inputs.category }} \
@@ -122,42 +109,3 @@ jobs:
           path: |
             amplify-js-samples-staging/cypress/videos
             amplify-js-samples-staging/cypress/screenshots
-
-# TODO CODE FROM CIRCLE CI: REPLICATE THIS
-# - name: Install ${{ inputs.test_name }} >> sample
-#   run: |
-#     echo "Current NPM registry: " $(yarn config get registry)
-#     ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
-
-# - name: Run cypress tests for ${{ inputs.test_name }} sample on dev
-#   run: |
-#     cd ~/amplify-js-samples-staging
-#     ~/amplify-js/.circleci/retry-yarn-script.sh -s \
-#     'ci:test ${{ inputs.framework }} \
-#     ${{ inputs.category }} \
-#     ${{ inputs.sample_name }} \
-#     ${{ inputs.spec }} \
-#     ${{ inputs.browser }} \
-#     dev \
-#     ${{ inputs.amplifyjs_dir }}' -n 3
-
-# - name: Run cypress tests for ${{ inputs.test_name }} sample on prod
-#   run: |
-#     cd ~/amplify-js-samples-staging
-
-#     ~/amplify-js/.circleci/retry-yarn-script.sh -s \
-#     'ci:test ${{ inputs.framework }} \
-#     ${{ inputs.category }} \
-#     ${{ inputs.sample_name }} \
-#     ${{ inputs.spec }} \
-#     ${{ inputs.browser }} \
-#     prod \
-#     ${{ inputs.amplifyjs_dir }}' -n 3
-
-# - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
-#   with:
-#     name: my-artifact
-#     path: |
-#       ~/amplify-js-samples-staging/cypress/videos
-#       ~/amplify-js-samples-staging/cypress/screenshots
-

@@ -33,14 +33,14 @@ runs:
       if: inputs.is-prebuild != 'true' || steps.cache-build-artifacts.outputs.cache-hit != 'true'
       run: yarn
       shell: bash
-      working-directory: ./aws-amplify
+      working-directory: ./amplify-js
     - name: Bootstrap
       if: inputs.is-prebuild != 'true' || steps.cache-build-artifacts.outputs.cache-hit != 'true'
       run: yarn bootstrap
       shell: bash
-      working-directory: ./aws-amplify
+      working-directory: ./amplify-js
     - name: Build packages
       if: steps.cache-build-artifacts.outputs.cache-hit != 'true'
       run: yarn build
       shell: bash
-      working-directory: ./aws-amplify
+      working-directory: ./amplify-js

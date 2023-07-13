@@ -10,9 +10,8 @@ on:
         required: true
         type: string
       timeout_minutes:
-        required: false
+        required: true
         type: number
-        default: 45
 
 env:
   NPM_REGISTRY: http://localhost:4873/
@@ -26,28 +25,25 @@ jobs:
     timeout-minutes: ${{ inputs.timeout_minutes }}
 
     steps:
-      - name: check incoming config
-        run: |
-          echo "${{ inputs.test_name }} ${{ inputs.working_directory }} ${{ inputs.timeout_minutes }}"
       - name: Checkout repository
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
         with:
           # Minimal depth 2 so we can checkout the commit before possible merge commit.
           fetch-depth: 2
-          path: aws-amplify
+          path: amplify-js
       - name: Setup node and build the repository
-        uses: ./aws-amplify/.github/actions/node-and-build
+        uses: stocaaro/amplify-js/.github/actions/node-and-build@main
       - name: Setup samples staging repository
-        uses: ./aws-amplify/.github/actions/setup-samples-staging
+        uses: stocaaro/amplify-js/.github/actions/setup-samples-staging@main
         with:
           GH_PAT: ${{ secrets.GH_PAT }}
       - name: Load Verdaccio with AmplifyJs
-        uses: ./aws-amplify/.github/actions/load-verdaccio-with-amplify-js
+        uses: stocaaro/amplify-js/.github/actions/load-verdaccio-with-amplify-js@main
       - name: Yarn Install
         working-directory: ${{ inputs.working_directory }}
         run: |
           echo "Current NPM registry: " $(yarn config get registry)
-          $GITHUB_WORKSPACE/aws-amplify/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
+          $GITHUB_WORKSPACE/amplify-js/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
         shell: bash
       - name: Install CocoaPods
         run: |
@@ -82,6 +78,6 @@ jobs:
         shell: bash
       - name: Detox run
         run: |
-          $GITHUB_WORKSPACE/aws-amplify/.circleci/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
+          $GITHUB_WORKSPACE/amplify-js/.circleci/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash

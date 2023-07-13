@@ -1,0 +1,10 @@
+name: 'Release to latest'
+
+on:
+  workflow_call:
+
+jobs:
+  release-latest:
+    uses: stocaaro/amplify-js/.github/workflows/callable-npm-publish.yml@main
+    with:
+      target: release

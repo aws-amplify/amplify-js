@@ -1,16 +1,15 @@
-name: 'Unit Tests'
+name: 'Prebuild Amplify'
 
 on:
   workflow_call:
     inputs:
-      package:
+      runs_on:
         required: true
         type: string
 
 jobs:
-  unit_test:
-    name: Unit Tests - ${{ inputs.package }}
-    runs-on: ubuntu-latest
+  prebuild:
+    runs-on: ${{ inputs.runs_on }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
@@ -20,6 +19,5 @@ jobs:
           path: amplify-js
       - name: Setup node and build the repository
         uses: stocaaro/amplify-js/.github/actions/node-and-build@main
-      - name: Run tests
-        working-directory: ./amplify-js
-        run: npx lerna exec --scope ${{ inputs.package }} yarn test
+        with:
+          is-prebuild: true

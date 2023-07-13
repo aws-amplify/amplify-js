@@ -1,0 +1,16 @@
+name: 'Push - release from release to latest'
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  e2e:
+    secrets: inherit
+    uses: stocaaro/amplify-js/.github/workflows/callable-e2e.yml@main
+  release:
+    needs:
+      - e2e
+    secrets: inherit
+    uses: stocaaro/amplify-js/.github/workflows/callable-release.yml@main

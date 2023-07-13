@@ -17,7 +17,7 @@ runs:
       shell: bash
     - name: Publish to verdaccio
       shell: bash
-      working-directory: ./aws-amplify
+      working-directory: ./amplify-js
       run: |
         npm i -g npm-cli-adduser
         npm-cli-adduser

@@ -15,7 +15,6 @@ jobs:
       - name: read integ config files
         id: load_config
         run: |
-          echo "INTEG_CONFIG=$(cat .github/integ-config/integ-all.yml | yq '.tests' -o=json | jq -c .)"
           echo "INTEG_CONFIG=$(cat .github/integ-config/integ-all.yml | yq '.tests' -o=json | jq -c .)" >> $GITHUB_OUTPUT
           echo "DETOX_INTEG_CONFIG=$(cat .github/integ-config/detox-integ-all.yml | yq -o=json | jq -c .)" >> $GITHUB_OUTPUT
         working-directory: ./amplify-js
@@ -31,7 +30,7 @@ jobs:
       matrix:
         integ-config: ${{ fromJson(needs.e2e-prep.outputs.integ-config) }}
       fail-fast: false
-    uses: ./.github/workflows/callable-e2e-tests.yml
+    uses: stocaaro/amplify-js/.github/workflows/callable-e2e-tests.yml@main
     with:
       test_name: ${{ matrix.integ-config.test_name }}
       framework: ${{ matrix.integ-config.framework }}
@@ -51,7 +50,8 @@ jobs:
         integ-config: ${{ fromJson(needs.e2e-prep.outputs.detox-integ-config) }}
       fail-fast: false
     secrets: inherit
-    uses: ./.github/workflows/callable-e2e-tests-detox.yml
+    uses: stocaaro/amplify-js/.github/workflows/callable-e2e-tests-detox.yml@main
     with:
       test_name: ${{ matrix.integ-config.test_name }}
       working_directory: ${{ matrix.integ-config.working_directory }}
+      timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 45 }}

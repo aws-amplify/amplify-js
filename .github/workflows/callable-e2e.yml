@@ -1,0 +1,40 @@
+name: 'E2E Tests'
+
+on:
+  workflow_call:
+
+jobs:
+  prebuild-ubuntu:
+    uses: stocaaro/amplify-js/.github/workflows/callable-prebuild-amplify-js.yml@main
+    with:
+      runs_on: ubuntu-latest
+  prebuild-macos:
+    uses: stocaaro/amplify-js/.github/workflows/callable-prebuild-amplify-js.yml@main
+    with:
+      runs_on: macos-latest
+  prebuild-samples-staging:
+    secrets: inherit
+    uses: stocaaro/amplify-js/.github/workflows/callable-prebuild-samples-staging.yml@main
+  e2e:
+    needs:
+      - prebuild-macos
+      - prebuild-ubuntu
+      - prebuild-samples-staging
+    secrets: inherit
+    uses: stocaaro/amplify-js/.github/workflows/callable-e2e-runner.yml@main
+  get-package-list:
+    uses: stocaaro/amplify-js/.github/workflows/callable-get-package-list.yml@main
+  unit-tests:
+    needs:
+      - prebuild-ubuntu
+      - get-package-list
+    strategy:
+      matrix:
+        package: ${{ fromJSON(needs.get-package-list.outputs.packages) }}
+      fail-fast: false
+    uses: stocaaro/amplify-js/.github/workflows/callable-unit-tests.yml@main
+    with:
+      package: ${{ matrix.package }}
+  bundle-size-tests:
+    needs: prebuild-ubuntu
+    uses: stocaaro/amplify-js/.github/workflows/callable-bundle-size-tests.yml@main

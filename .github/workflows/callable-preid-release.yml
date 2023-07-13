@@ -1,0 +1,15 @@
+name: 'Release to preid'
+
+on:
+  workflow_call:
+    inputs:
+      preid:
+        required: true
+        type: string
+
+jobs:
+  release-to-preid:
+    uses: stocaaro/amplify-js/.github/workflows/callable-npm-publish.yml@main
+    with:
+      target: preid
+      preid: ${{ inputs.preid }}
