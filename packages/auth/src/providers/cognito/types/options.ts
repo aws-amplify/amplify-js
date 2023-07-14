@@ -52,3 +52,10 @@ export type CognitoConfirmSignInOptions<
 	clientMetadata?: ClientMetadata;
 	friendlyDeviceName?: string;
 };
+
+/**
+ * Options specific to a Cognito Verify TOTP Setup request.
+ */
+export type CogntioVerifyTOTPSetupOptions = {
+	friendlyDeviceName?: string;
+};
