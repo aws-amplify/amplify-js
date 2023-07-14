@@ -5,25 +5,25 @@ on:
 
 jobs:
   prebuild-ubuntu:
-    uses: stocaaro/amplify-js/.github/workflows/callable-prebuild-amplify-js.yml@main
+    uses: ./.github/workflows/callable-prebuild-amplify-js.yml
     with:
       runs_on: ubuntu-latest
   prebuild-macos:
-    uses: stocaaro/amplify-js/.github/workflows/callable-prebuild-amplify-js.yml@main
+    uses: ./.github/workflows/callable-prebuild-amplify-js.yml
     with:
       runs_on: macos-latest
   prebuild-samples-staging:
     secrets: inherit
-    uses: stocaaro/amplify-js/.github/workflows/callable-prebuild-samples-staging.yml@main
+    uses: ./.github/workflows/callable-prebuild-samples-staging.yml
   e2e:
     needs:
       - prebuild-macos
       - prebuild-ubuntu
       - prebuild-samples-staging
     secrets: inherit
-    uses: stocaaro/amplify-js/.github/workflows/callable-e2e-runner.yml@main
+    uses: ./.github/workflows/callable-e2e-runner.yml
   get-package-list:
-    uses: stocaaro/amplify-js/.github/workflows/callable-get-package-list.yml@main
+    uses: ./.github/workflows/callable-get-package-list.yml
   unit-tests:
     needs:
       - prebuild-ubuntu
@@ -32,9 +32,9 @@ jobs:
       matrix:
         package: ${{ fromJSON(needs.get-package-list.outputs.packages) }}
       fail-fast: false
-    uses: stocaaro/amplify-js/.github/workflows/callable-unit-tests.yml@main
+    uses: ./.github/workflows/callable-unit-tests.yml
     with:
       package: ${{ matrix.package }}
   bundle-size-tests:
     needs: prebuild-ubuntu
-    uses: stocaaro/amplify-js/.github/workflows/callable-bundle-size-tests.yml@main
+    uses: ./.github/workflows/callable-bundle-size-tests.yml

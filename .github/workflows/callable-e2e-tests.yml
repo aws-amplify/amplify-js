@@ -65,13 +65,13 @@ jobs:
           fetch-depth: 2
           path: amplify-js
       - name: Setup node and build the repository
-        uses: stocaaro/amplify-js/.github/actions/node-and-build@main
+        uses: ./amplify-js/.github/actions/node-and-build
       - name: Setup samples staging repository
-        uses: stocaaro/amplify-js/.github/actions/setup-samples-staging@main
+        uses: ./amplify-js/.github/actions/setup-samples-staging
         with:
           GH_PAT: ${{ secrets.GH_PAT }}
       - name: Load Verdaccio with AmplifyJs
-        uses: stocaaro/amplify-js/.github/actions/load-verdaccio-with-amplify-js@main
+        uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
       - name: Run cypress tests for ${{ inputs.test_name }} dev
         run: |
           ../amplify-js/.circleci/retry-yarn-script.sh -s \

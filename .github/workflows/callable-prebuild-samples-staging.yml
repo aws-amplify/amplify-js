@@ -16,6 +16,6 @@ jobs:
           fetch-depth: 2
           path: amplify-js
       - name: Setup samples staging
-        uses: stocaaro/amplify-js/.github/actions/setup-samples-staging@main
+        uses: ./amplify-js/.github/actions/setup-samples-staging
         with:
           GH_PAT: ${{ secrets.GH_PAT }}

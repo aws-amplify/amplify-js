@@ -18,13 +18,13 @@ jobs:
           fetch-depth: 2
           path: amplify-js
       - name: Setup node and build the repository
-        uses: stocaaro/amplify-js/.github/actions/node-and-build@main
+        uses: ./amplify-js/.github/actions/node-and-build
         with:
           is-prebuild: true
   get-package-list:
-    uses: stocaaro/amplify-js/.github/workflows/callable-get-package-list.yml@main
+    uses: ./.github/workflows/callable-get-package-list.yml
   codeql:
-    uses: stocaaro/amplify-js/.github/workflows/callable-codeql.yml@main
+    uses: ./.github/workflows/callable-codeql.yml
   unit-tests:
     needs:
       - prebuild
@@ -33,9 +33,9 @@ jobs:
       matrix:
         package: ${{ fromJSON(needs.get-package-list.outputs.packages) }}
       fail-fast: false
-    uses: stocaaro/amplify-js/.github/workflows/callable-unit-tests.yml@main
+    uses: ./.github/workflows/callable-unit-tests.yml
     with:
       package: ${{ matrix.package }}
   bundle-size-tests:
     needs: prebuild
-    uses: stocaaro/amplify-js/.github/workflows/callable-bundle-size-tests.yml@main
+    uses: ./.github/workflows/callable-bundle-size-tests.yml

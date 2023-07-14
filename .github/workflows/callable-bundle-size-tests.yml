@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 2
           path: amplify-js
       - name: Setup node and build the repository
-        uses: stocaaro/amplify-js/.github/actions/node-and-build@main
+        uses: ./amplify-js/.github/actions/node-and-build
       - name: Run Bundle Size Tests
         working-directory: ./amplify-js
         run: yarn test:size

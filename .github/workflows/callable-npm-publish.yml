@@ -34,12 +34,12 @@ jobs:
           fetch-depth: 2
           path: amplify-js
       - name: Setup node and build the repository
-        uses: stocaaro/amplify-js/.github/actions/node-and-build@main
+        uses: ./amplify-js/.github/actions/node-and-build
       ###
       # TODO Remove this to enable real NPM interactions.
       # <remove>
       - name: Load Verdaccio with AmplifyJs
-        uses: stocaaro/amplify-js/.github/actions/load-verdaccio-with-amplify-js@main
+        uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
       ### </remove>
 
       - name: Run npm publish
