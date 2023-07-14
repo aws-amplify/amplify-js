@@ -25,7 +25,7 @@ runs:
           **/esm/
           **/cjs/
           **/packages/core/src/Platform/version.ts
-        key: ${{ runner.os }}-build-artifacts-${{ hashFiles('yarn.lock') }}
+        key: ${{ runner.os }}-build-artifacts-${{ hashFiles('./amplify-js/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-build-artifacts-
     # TODO We should be able to skip yarn / bootstrap if we cache enough things. Leaving because skipping causes issues.
