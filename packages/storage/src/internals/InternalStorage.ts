@@ -3,6 +3,7 @@
 
 import {
 	Amplify,
+	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 	parseAWSExports,
 } from '@aws-amplify/core';
@@ -207,11 +208,20 @@ export class InternalStorageClass {
 	 * @param request - The request to cancel
 	 * @param [message] - A message to include in the cancelation exception
 	 */
-	public cancel(request: UploadTask, message?: string): Promise<boolean>;
-	public cancel(request: Promise<any>, message?: string): void;
+	public cancel(
+		request: UploadTask,
+		message?: string,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<boolean>;
+	public cancel(
+		request: Promise<any>,
+		message?: string,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): void;
 	public cancel(
 		request: Promise<any> | UploadTask,
-		message?: string
+		message?: string,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): void | Promise<boolean> {
 		if (request instanceof AWSS3UploadTask) {
 			return request._cancel();
@@ -239,12 +249,14 @@ export class InternalStorageClass {
 	public copy<T extends Record<string, any>>(
 		src: StorageCopySource,
 		dest: StorageCopyDestination,
-		config?: StorageCopyConfig<T>
+		config?: StorageCopyConfig<T>,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): StorageCopyOutput<T>;
 	public copy<T extends StorageProviderWithCopy = AWSS3Provider>(
 		src: Parameters<T['copy']>[0],
 		dest: Parameters<T['copy']>[1],
-		config?: StorageCopyConfig<T>
+		config?: StorageCopyConfig<T>,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): StorageCopyOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const plugin = this._pluggables.find(
@@ -280,11 +292,16 @@ export class InternalStorageClass {
 	// Adding & { download?: boolean }, if not T extends { download: true } ? ... : ... will not work properly
 	public get<T extends Record<string, any> & { download?: boolean }>(
 		key: string,
-		config?: StorageGetConfig<T>
+		config?: StorageGetConfig<T>,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): StorageGetOutput<T>;
 	public get<
 		T extends StorageProvider | { [key: string]: any; download?: boolean }
-	>(key: string, config?: StorageGetConfig<T>): StorageGetOutput<T> {
+	>(
+		key: string,
+		config?: StorageGetConfig<T>,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): StorageGetOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const plugin = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
@@ -343,12 +360,14 @@ export class InternalStorageClass {
 	public put<T extends Record<string, any>>(
 		key: string,
 		object: any,
-		config?: StoragePutConfig<T>
+		config?: StoragePutConfig<T>,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): StoragePutOutput<T>;
 	public put<T extends StorageProvider = AWSS3Provider>(
 		key: string,
 		object: Omit<PutObjectInput['Body'], 'ReadableStream' | 'Readable'>,
-		config?: StoragePutConfig<T>
+		config?: StoragePutConfig<T>,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): StoragePutOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const plugin = this._pluggables.find(
@@ -379,11 +398,13 @@ export class InternalStorageClass {
 	 */
 	public remove<T extends Record<string, any>>(
 		key: string,
-		config?: StorageRemoveConfig<T>
+		config?: StorageRemoveConfig<T>,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): StorageRemoveOutput<T>;
 	public remove<T extends StorageProvider = AWSS3Provider>(
 		key: string,
-		config?: StorageRemoveConfig<T>
+		config?: StorageRemoveConfig<T>,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): StorageRemoveOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const plugin = this._pluggables.find(
@@ -406,11 +427,13 @@ export class InternalStorageClass {
 	 */
 	public list<T extends Record<string, any>>(
 		key: string,
-		config?: StorageListConfig<T>
+		config?: StorageListConfig<T>,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): StorageListOutput<T>;
 	public list<T extends StorageProvider = AWSS3Provider>(
 		path: string,
-		config?: StorageListConfig<T>
+		config?: StorageListConfig<T>,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): StorageListOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const plugin = this._pluggables.find(
