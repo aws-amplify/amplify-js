@@ -209,16 +209,6 @@ export class InternalStorageClass {
 	 * @param [message] - A message to include in the cancelation exception
 	 */
 	public cancel(
-		request: UploadTask,
-		message?: string,
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<boolean>;
-	public cancel(
-		request: Promise<any>,
-		message?: string,
-		customUserAgentDetails?: CustomUserAgentDetails
-	): void;
-	public cancel(
 		request: Promise<any> | UploadTask,
 		message?: string,
 		customUserAgentDetails?: CustomUserAgentDetails
@@ -327,7 +317,8 @@ export class InternalStorageClass {
 
 	public getProperties<T extends StorageProvider | { [key: string]: any }>(
 		key: string,
-		config?: StorageGetPropertiesConfig<T>
+		config?: StorageGetPropertiesConfig<T>,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): StorageGetPropertiesOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const plugin = this._pluggables.find(
