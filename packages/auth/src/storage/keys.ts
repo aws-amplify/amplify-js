@@ -24,9 +24,36 @@ export enum LegacyCognitoUserPoolKeys {
 }
 
 export enum CognitoDeviceKey {
-    deviceKey = 'deviceKey',
+	deviceKey = 'deviceKey',
 
-    deviceGroupKey = 'deviceGroupKey',
+	deviceGroupKey = 'deviceGroupKey',
 
-    randomPasswordKey = 'randomPasswordKey',
+	randomPasswordKey = 'randomPasswordKey',
+}
+
+/**
+ * The key to get/set the auth token storage manager version.
+ */
+export const USER_POOL_MANAGER_VERSION_KEY = 'UserPoolManagerVersionKey';
+
+/**
+ * The key to get/set the device key storage manager version.
+ */
+export const DEVICE_KEY_MANAGER_VERSION_KEY = 'DeviceKeyManagerVersionKey';
+
+/**
+ * The token manager version.
+ */
+export enum AuthTokenStorageManagerVersion {
+	/**
+	 * No auth token store manager version is present.
+	 *
+	 * Either the token manager has never been initialized, or
+	 * the tokens are stored in a legacy format.
+	 * */
+	none = 'none',
+	/**
+	 * The initial implementation of auth token manager version
+	 */
+	v1 = 'v1',
 }

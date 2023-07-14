@@ -2,16 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthStorage } from '@aws-amplify/core';
-import { getCognitoKeys } from './helpers';
-import { CognitoDeviceKey } from './keys';
+import { getCognitoKeys, migrateTokens } from './helpers';
+import { CognitoDeviceKey, DEVICE_KEY_MANAGER_VERSION_KEY } from './keys';
 import { AuthTokenManager } from './types';
 import { CognitoDeviceKeyTokens, CognitoKeys } from './types/models';
 import { KEY_PREFIX } from './constants';
+import { LegacyDeviceKeyTokenManager } from './LegacyDeviceKeyTokenManager';
 
 export class DeviceKeyTokenManager implements AuthTokenManager {
 	// TODO: change to config interface once defined
 	private config: any;
-	private storage: AuthStorage;
+	storage: AuthStorage;
 	private keys: CognitoKeys<CognitoDeviceKey>;
 
 	constructor(config: any, storage: AuthStorage) {
@@ -22,6 +23,16 @@ export class DeviceKeyTokenManager implements AuthTokenManager {
 	}
 
 	async loadTokens(): Promise<CognitoDeviceKeyTokens | null> {
+
+		const legacyDeviceKeyTokenManager = new LegacyDeviceKeyTokenManager(
+			this.config,
+			this.storage
+		);
+		await migrateTokens(
+			legacyDeviceKeyTokenManager,
+			this,
+			DEVICE_KEY_MANAGER_VERSION_KEY
+		);
 		const deviceKey = await this.storage.getItem(this.keys.deviceKey);
 		const deviceGroupKey = await this.storage.getItem(this.keys.deviceGroupKey);
 		const randomPasswordKey = await this.storage.getItem(

@@ -2,15 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthStorage } from '@aws-amplify/core';
-import { getCognitoKeys } from './helpers';
-import { CognitoUserPoolKey } from './keys';
+import { getCognitoKeys, migrateTokens } from './helpers';
+import { CognitoUserPoolKey, USER_POOL_MANAGER_VERSION_KEY } from './keys';
 import { CognitoUserPoolTokens, AuthTokenManager, CognitoKeys } from './types';
 import { KEY_PREFIX } from './constants';
+import { LegacyUserPoolTokenManager } from './LegacyUserPoolManager';
 
 export class UserPoolTokenManager implements AuthTokenManager {
 	// TODO: change to config interface once defined
 	private config: any;
-	private storage: AuthStorage;
+	storage: AuthStorage;
 	private keys: CognitoKeys<CognitoUserPoolKey>;
 
 	constructor(config: any, storage: AuthStorage) {
@@ -21,6 +22,16 @@ export class UserPoolTokenManager implements AuthTokenManager {
 	}
 
 	async loadTokens(): Promise<CognitoUserPoolTokens | null> {
+		const legacyTokenManager = new LegacyUserPoolTokenManager(
+			this.config,
+			this.storage
+		);
+		await migrateTokens(
+			legacyTokenManager,
+			this,
+			USER_POOL_MANAGER_VERSION_KEY
+		);
+
 		const accessToken = await this.storage.getItem(this.keys.accessToken);
 		const refreshToken = await this.storage.getItem(this.keys.refreshToken);
 		const idToken = await this.storage.getItem(this.keys.idToken);

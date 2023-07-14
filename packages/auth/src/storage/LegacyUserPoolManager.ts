@@ -15,8 +15,7 @@ import { LEGACY_KEY_PREFIX } from './constants';
 export class LegacyUserPoolTokenManager implements AuthTokenManager {
 	// TODO: change to config interface once defined
 	private config: any;
-	private storage: AuthStorage;
-
+	storage: AuthStorage;
 	private clientId: string;
 
 	constructor(config: any, storage: AuthStorage) {
@@ -39,7 +38,6 @@ export class LegacyUserPoolTokenManager implements AuthTokenManager {
 
 	async loadTokens(): Promise<LegacyCognitoUserPoolTokens | null> {
 		const legacyKeyValues = await this.getLegacyKeys();
-
 		const accessToken = await this.storage.getItem(legacyKeyValues.accessToken);
 		const refreshToken = await this.storage.getItem(
 			legacyKeyValues.refreshToken
