@@ -1,0 +1,32 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { AuthError } from '../../../errors/AuthError';
+import { TOTPSetupDetails } from '../../../types/models';
+import { SETUP_TOTP_EXCEPTION } from '../types/errors';
+import { associateSoftwareTokenClient } from '../utils/clients/AssociateSoftwareTokenClient';
+import { getTOTPSetupDetails } from '../utils/signInHelpers';
+import { AssociateSoftwareTokenException } from '../types/errors';
+/**
+ * Sets up TOTP for the user.
+ * @throws  service error thrown when setting up TOTP: {@link AssociateSoftwareTokenException}
+ * @returns {Promise<TOTPSetupDetails>}
+ **/
+export async function setUpTOTP(): Promise<TOTPSetupDetails> {
+	// TODO: delete this mock when auth token provider is implemented.
+	const accessToken = 'mockedAccessToken';
+	// TODO: extract username from auth token provider.
+	const username = 'mockedUsername';
+	const { SecretCode } = await associateSoftwareTokenClient({
+		AccessToken: accessToken,
+	});
+
+	if (!SecretCode) {
+		// This should never happen.
+		throw new AuthError({
+			name: SETUP_TOTP_EXCEPTION,
+			message: 'Failed to set up TOTP.',
+		});
+	}
+	return getTOTPSetupDetails(SecretCode, username);
+}

@@ -11,6 +11,7 @@ import { UserPoolClient } from './UserPoolClient';
 export async function associateSoftwareTokenClient(
 	params: AssociateSoftwareTokenCommandInput
 ): Promise<AssociateSoftwareTokenCommandOutput> {
+	
 	const client = new UserPoolHttpClient(UserPoolClient.region);
 	const result = await client.send<AssociateSoftwareTokenCommandOutput>(
 		'AssociateSoftwareToken',
