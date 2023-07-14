@@ -136,6 +136,7 @@ export class Storage {
 			'level',
 			'track',
 			'customPrefix',
+			'ContentMD5',
 			'serverSideEncryption',
 			'SSECustomerAlgorithm',
 			'SSECustomerKey',

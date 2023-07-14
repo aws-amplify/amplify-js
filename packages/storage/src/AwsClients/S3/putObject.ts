@@ -12,6 +12,7 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 import { defaultConfig } from './base';
 import type { PutObjectCommandInput, PutObjectCommandOutput } from './types';
 import {
+	assignStringVariables,
 	map,
 	parseXmlError,
 	s3TransferHandler,
@@ -39,6 +40,7 @@ export type PutObjectInput = Pick<
 	| 'ContentDisposition'
 	| 'ContentEncoding'
 	| 'ContentType'
+	| 'ContentMD5'
 	| 'Expires'
 	| 'Metadata'
 	| 'Tagging'
@@ -55,10 +57,13 @@ const putObjectSerializer = async (
 	input: PutObjectInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	const headers = await serializeObjectConfigsToHeaders({
-		...input,
-		ContentType: input.ContentType ?? 'application/octet-stream',
-	});
+	const headers = {
+		...(await serializeObjectConfigsToHeaders({
+			...input,
+			ContentType: input.ContentType ?? 'application/octet-stream',
+		})),
+		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
+	};
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
