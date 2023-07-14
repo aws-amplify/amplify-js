@@ -22,8 +22,12 @@ import {
 	RespondToAuthChallengeClientInput,
 	respondToAuthChallengeClient,
 } from './clients/RespondToAuthChallengeClient';
-import { ChallengeName, ChallengeParameters } from './clients/types/models';
-import { ClientMetadata } from '../types';
+import {
+	ChallengeName,
+	ChallengeParameters,
+	CognitoMFAType,
+} from './clients/types/models';
+import { ClientMetadata, CognitoConfirmSignInOptions } from '../types';
 import {
 	AdditionalInfo,
 	AuthSignInResult,
@@ -32,6 +36,160 @@ import {
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
+import {
+	AllowedMFATypes,
+	AuthUserAttribute,
+	MFAType,
+	TOTPSetupDetails,
+} from '../../../types/models';
+import { verifySoftwareTokenClient } from './clients/VerifySoftwareTokenClient';
+import { associateSoftwareTokenClient } from './clients/AssociateSoftwareTokenClient';
+import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
+import { AuthValidationErrorCode } from '../../../errors/types/validation';
+import { assertValidationError } from '../../../errors/utils/assertValidationError';
+import { signInStore } from './signInStore';
+
+const USER_ATTRIBUTES = 'userAttributes.';
+type HandleAuthChallengeRequest = {
+	challengeResponse: string;
+	username: string;
+	clientMetadata?: ClientMetadata;
+	session?: string;
+	deviceName?: string;
+	requiredAttributes?: AuthUserAttribute;
+};
+export async function handleCustomChallenge({
+	challengeResponse,
+	clientMetadata,
+	session,
+	username,
+}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
+	const challengeResponses = { USERNAME: username, ANSWER: challengeResponse };
+	const jsonReq: RespondToAuthChallengeClientInput = {
+		ChallengeName: 'CUSTOM_CHALLENGE',
+		ChallengeResponses: challengeResponses,
+		Session: session,
+		ClientMetadata: clientMetadata,
+	};
+	return respondToAuthChallengeClient(jsonReq);
+}
+
+export async function handleMFASetupChallenge({
+	challengeResponse,
+	username,
+	clientMetadata,
+	session,
+	deviceName,
+}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
+	const challengeResponses = {
+		USERNAME: username,
+	};
+
+	const { Session } = await verifySoftwareTokenClient({
+		UserCode: challengeResponse,
+		Session: session,
+		FriendlyDeviceName: deviceName,
+	});
+
+	signInStore.dispatch({
+		type: 'SET_SIGN_IN_SESSION',
+		value: Session,
+	});
+
+	const jsonReq: RespondToAuthChallengeClientInput = {
+		ChallengeName: 'MFA_SETUP',
+		ChallengeResponses: challengeResponses,
+		Session,
+		ClientMetadata: clientMetadata,
+	};
+	return respondToAuthChallengeClient(jsonReq);
+}
+
+export async function handleSelectMFATypeChallenge({
+	challengeResponse,
+	username,
+	clientMetadata,
+	session,
+}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
+	assertValidationError(
+		challengeResponse === 'TOTP' || challengeResponse === 'SMS',
+		AuthValidationErrorCode.IncorrectMFAMethod
+	);
+
+	const challengeResponses = {
+		USERNAME: username,
+		ANSWER: mapMfaType(challengeResponse),
+	};
+
+	const jsonReq: RespondToAuthChallengeClientInput = {
+		ChallengeName: 'SELECT_MFA_TYPE',
+		ChallengeResponses: challengeResponses,
+		Session: session,
+		ClientMetadata: clientMetadata,
+	};
+
+	return respondToAuthChallengeClient(jsonReq);
+}
+
+export async function handleSMSMFAChallenge({
+	challengeResponse,
+	clientMetadata,
+	session,
+	username,
+}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
+	const challengeResponses = {
+		USERNAME: username,
+		SMS_MFA_CODE: challengeResponse,
+	};
+	const jsonReq: RespondToAuthChallengeClientInput = {
+		ChallengeName: 'SMS_MFA',
+		ChallengeResponses: challengeResponses,
+		Session: session,
+		ClientMetadata: clientMetadata,
+	};
+
+	return respondToAuthChallengeClient(jsonReq);
+}
+export async function handleSoftwareTokenMFAChallenge({
+	challengeResponse,
+	clientMetadata,
+	session,
+	username,
+}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
+	const challengeResponses = {
+		USERNAME: username,
+		SOFTWARE_TOKEN_MFA_CODE: challengeResponse,
+	};
+	const jsonReq: RespondToAuthChallengeClientInput = {
+		ChallengeName: 'SOFTWARE_TOKEN_MFA',
+		ChallengeResponses: challengeResponses,
+		Session: session,
+		ClientMetadata: clientMetadata,
+	};
+	return respondToAuthChallengeClient(jsonReq);
+}
+export async function handleCompleteNewPasswordChallenge({
+	challengeResponse,
+	clientMetadata,
+	session,
+	username,
+	requiredAttributes,
+}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
+	const challengeResponses = {
+		...createAttributes(requiredAttributes),
+		NEW_PASSWORD: challengeResponse,
+		USERNAME: username,
+	};
+
+	const jsonReq: RespondToAuthChallengeClientInput = {
+		ChallengeName: 'NEW_PASSWORD_REQUIRED',
+		ChallengeResponses: challengeResponses,
+		ClientMetadata: clientMetadata,
+		Session: session,
+	};
+
+	return respondToAuthChallengeClient(jsonReq);
+}
 
 export async function handleUserPasswordAuthFlow(
 	username: string,
@@ -94,7 +252,7 @@ export async function handleCustomAuthFlowWithoutSRP(
 		ClientMetadata: clientMetadata,
 	};
 
-	return await initiateAuthClient(jsonReq);
+	return initiateAuthClient(jsonReq);
 }
 
 export async function handleCustomSRPAuthFlow(
@@ -169,15 +327,14 @@ export async function handlePasswordVerifierChallenge(
 		Session: session,
 	};
 
-	return await respondToAuthChallengeClient(jsonReqResponseChallenge);
+	return respondToAuthChallengeClient(jsonReqResponseChallenge);
 }
 
-export function getSignInResult(params: {
+export async function getSignInResult(params: {
 	challengeName: ChallengeName;
 	challengeParameters: ChallengeParameters;
-	secretCode?: string;
-}): AuthSignInResult {
-	const { challengeName, challengeParameters, secretCode } = params;
+}): Promise<AuthSignInResult> {
+	const { challengeName, challengeParameters } = params;
 
 	switch (challengeName) {
 		case 'CUSTOM_CHALLENGE':
@@ -189,13 +346,29 @@ export function getSignInResult(params: {
 				},
 			};
 		case 'MFA_SETUP':
+			const { signInSession, username } = signInStore.getState();
+
+			if (!isMFATypeEnabled(challengeParameters, 'TOTP'))
+				throw new AuthError({
+					name: AuthErrorCodes.SignInException,
+					message: `Cannot initiate MFA setup from available types: ${parseMFATypes(
+						challengeParameters.MFAS_CAN_SETUP
+					)}`,
+				});
+			const { Session, SecretCode: secretCode } =
+				await associateSoftwareTokenClient({
+					Session: signInSession,
+				});
+			signInStore.dispatch({
+				type: 'SET_SIGN_IN_SESSION',
+				value: Session,
+			});
+
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep:
-						AuthSignInStep.CONFIRM_SIGN_IN_WITH_SOFTWARE_TOKEN_MFA_SETUP,
-					secretCode,
-					additionalInfo: challengeParameters as AdditionalInfo,
+					signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_TOTP_SETUP,
+					totpSetupDetails: getTOTPSetupDetails(secretCode!, username),
 				},
 			};
 		case 'NEW_PASSWORD_REQUIRED':
@@ -206,37 +379,33 @@ export function getSignInResult(params: {
 					missingAttributes: parseAttributes(
 						challengeParameters.requiredAttributes
 					),
-					additionalInfo: challengeParameters as AdditionalInfo,
 				},
 			};
 		case 'SELECT_MFA_TYPE':
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_MFA_SELECTION,
-					additionalInfo: challengeParameters as AdditionalInfo,
+					signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_MFA_SELECTION,
+					allowedMFATypes: parseMFATypes(challengeParameters.MFAS_CAN_CHOOSE),
 				},
 			};
 		case 'SMS_MFA':
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_MFA_CODE,
+					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_CODE,
 					codeDeliveryDetails: {
 						deliveryMedium:
 							challengeParameters.CODE_DELIVERY_DELIVERY_MEDIUM as DeliveryMedium,
 						destination: challengeParameters.CODE_DELIVERY_DESTINATION,
 					},
-					additionalInfo: challengeParameters as AdditionalInfo,
 				},
 			};
 		case 'SOFTWARE_TOKEN_MFA':
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep:
-						AuthSignInStep.CONFIRM_SIGN_IN_WITH_SOFTWARE_TOKEN_MFA_CODE,
-					additionalInfo: challengeParameters as AdditionalInfo,
+					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_TOTP_CODE,
 				},
 			};
 		case 'ADMIN_NO_SRP_AUTH':
@@ -248,12 +417,29 @@ export function getSignInResult(params: {
 		case 'PASSWORD_VERIFIER':
 			break;
 	}
-
+	// TODO: remove this error message for production apps
 	throw new AuthError({
-		name: 'UnsupportedChallengeName',
-		message: `challengeName is not supported. 
-			 This probably happened due to the underlying service returning a challengeName that is not supported by Amplify.`,
+		name: AuthErrorCodes.SignInException,
+		message:
+			'An error occurred during the sign in process. ' +
+			`${challengeName} challengeName returned by the underlying service was not addressed.`,
 	});
+}
+
+export function getTOTPSetupDetails(
+	secretCode: string,
+	username?: string
+): TOTPSetupDetails {
+	return {
+		sharedSecret: secretCode,
+		getSetupUri: (appName, accountName) => {
+			const totpUri = `otpauth://totp/${appName}:${
+				accountName ?? username
+			}?secret=${secretCode}&issuer=${appName}`;
+
+			return new URL(totpUri);
+		},
+	};
 }
 
 export function getSignInResultFromError(
@@ -275,8 +461,113 @@ export function getSignInResultFromError(
 export function parseAttributes(attributes: string | undefined): string[] {
 	if (!attributes) return [];
 	const parsedAttributes = (JSON.parse(attributes) as Array<string>).map(att =>
-		att.includes('userAttributes.') ? att.replace('userAttributes.', '') : att
+		att.includes(USER_ATTRIBUTES) ? att.replace(USER_ATTRIBUTES, '') : att
 	);
 
 	return parsedAttributes;
+}
+
+export function createAttributes(
+	attributes?: AuthUserAttribute
+): Record<string, string> {
+	if (!attributes) return {};
+
+	const newAttributes = {};
+
+	Object.entries(attributes).forEach(([key, value]) => {
+		newAttributes[`${USER_ATTRIBUTES}${key}`] = value;
+	});
+	return newAttributes;
+}
+
+export async function handleChallengeName(
+	username: string,
+	challengeName: ChallengeName,
+	session: string,
+	challengeResponse: string,
+	clientMetadata?: ClientMetadata,
+	options?: CognitoConfirmSignInOptions
+): Promise<RespondToAuthChallengeCommandOutput> {
+	const userAttributes = options?.userAttributes;
+	const deviceName = options?.friendlyDeviceName;
+
+	switch (challengeName) {
+		case 'SMS_MFA':
+			return handleSMSMFAChallenge({
+				challengeResponse,
+				clientMetadata,
+				session,
+				username,
+			});
+		case 'SELECT_MFA_TYPE':
+			return handleSelectMFATypeChallenge({
+				challengeResponse,
+				clientMetadata,
+				session,
+				username,
+			});
+		case 'MFA_SETUP':
+			return handleMFASetupChallenge({
+				challengeResponse,
+				clientMetadata,
+				session,
+				username,
+				deviceName,
+			});
+		case 'NEW_PASSWORD_REQUIRED':
+			return handleCompleteNewPasswordChallenge({
+				challengeResponse,
+				clientMetadata,
+				session,
+				username,
+				requiredAttributes: userAttributes,
+			});
+		case 'CUSTOM_CHALLENGE':
+			return handleCustomChallenge({
+				challengeResponse,
+				clientMetadata,
+				session,
+				username,
+			});
+		case 'SOFTWARE_TOKEN_MFA':
+			return handleSoftwareTokenMFAChallenge({
+				challengeResponse,
+				clientMetadata,
+				session,
+				username,
+			});
+	}
+	// TODO: remove this error message for production apps
+	throw new AuthError({
+		name: AuthErrorCodes.SignInException,
+		message: `An error occurred during the sign in process. 
+		${challengeName} challengeName returned by the underlying service was not addressed.`,
+	});
+}
+
+export function mapMfaType(mfa: string): CognitoMFAType {
+	let mfaType: CognitoMFAType = 'SMS_MFA';
+	if (mfa === 'TOTP') mfaType = 'SOFTWARE_TOKEN_MFA';
+
+	return mfaType;
+}
+
+export function parseMFATypes(mfa?: string): AllowedMFATypes {
+	if (!mfa) return [];
+	const parsedMfaTypes: AllowedMFATypes = [];
+	(JSON.parse(mfa) as CognitoMFAType[]).map(type => {
+		if (type === 'SMS_MFA') parsedMfaTypes.push('SMS');
+		if (type === 'SOFTWARE_TOKEN_MFA') parsedMfaTypes.push('TOTP');
+	});
+	return parsedMfaTypes;
+}
+
+export function isMFATypeEnabled(
+	challengeParams: ChallengeParameters,
+	mfaType: MFAType
+): boolean {
+	const { MFAS_CAN_SETUP } = challengeParams;
+	const isMFAparseMFATypes = parseMFATypes(MFAS_CAN_SETUP).includes(mfaType);
+
+	return isMFAparseMFATypes;
 }
