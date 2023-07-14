@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { browserOrNode } from "../src/JS";
+import { browserOrNode } from "../lib";
 
 /** The doc block above is to change the running environment of Jest to node.
  * Since this is allowed per test file and not per test or describe, we have

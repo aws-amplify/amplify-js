@@ -7,7 +7,7 @@ import { AuthStorage, CookieStorageData, SameSite } from '../types';
 export class CookieStorage implements AuthStorage {
 	domain: string;
 	path: string;
-	expires: number;
+	expires: number; // days;
 	secure: boolean;
 	sameSite: SameSite;
 
@@ -47,7 +47,7 @@ export class CookieStorage implements AuthStorage {
 		}
 	}
 
-	async setItem(key: string, value: string):Promise<void> {
+	async setItem(key: string, value: string): Promise<void> {
 		const options: CookieStorageData = {
 			path: this.path,
 			expires: this.expires,
@@ -63,11 +63,11 @@ export class CookieStorage implements AuthStorage {
 		return Cookies.get(key);
 	}
 
-	async getItem(key:string):Promise<string> {
+	async getItem(key: string): Promise<string> {
 		return Cookies.get(key);
 	}
 
-	async removeItem(key:string):Promise<void> {
+	async removeItem(key: string): Promise<void> {
 		const options: CookieStorageData = {
 			path: this.path,
 			expires: this.expires,
@@ -79,14 +79,16 @@ export class CookieStorage implements AuthStorage {
 			options.sameSite = this.sameSite;
 		}
 
-		return Cookies.remove(key, options);
+		Cookies.remove(key, options);
 	}
 
-	async clear():Promise<void> {
+	async clear(): Promise<void> {
 		const cookies = Cookies.get();
 		const numKeys = Object.keys(cookies).length;
+		const promiseArray: Promise<void>[] = [];
 		for (let index = 0; index < numKeys; ++index) {
-			this.removeItem(Object.keys(cookies)[index]);
+			promiseArray.push(this.removeItem(Object.keys(cookies)[index]));
 		}
+		await Promise.all(promiseArray);
 	}
 }

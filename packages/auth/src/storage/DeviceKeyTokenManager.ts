@@ -13,38 +13,37 @@ export class DeviceKeyTokenManager implements AuthTokenManager {
 	// TODO: change to config interface once defined
 	private config: any;
 	storage: AuthStorage;
-	private prefix = KEY_PREFIX;
 	private keys: CognitoKeys<CognitoDeviceKey>;
+
 	constructor(config: any, storage: AuthStorage) {
 		this.config = config;
 		this.storage = storage;
 		const clientId = this.config.clientId;
-		this.keys = getCognitoKeys(CognitoDeviceKey)(this.prefix, clientId);
+		this.keys = getCognitoKeys(CognitoDeviceKey)(KEY_PREFIX, clientId);
 	}
 
 	async loadTokens(): Promise<CognitoDeviceKeyTokens | null> {
+
 		const legacyDeviceKeyTokenManager = new LegacyDeviceKeyTokenManager(
 			this.config,
 			this.storage
 		);
-
 		await migrateTokens(
 			legacyDeviceKeyTokenManager,
 			this,
 			DEVICE_KEY_MANAGER_VERSION_KEY
 		);
-		const tokens = {} as CognitoDeviceKeyTokens;
-
 		const deviceKey = await this.storage.getItem(this.keys.deviceKey);
 		const deviceGroupKey = await this.storage.getItem(this.keys.deviceGroupKey);
 		const randomPasswordKey = await this.storage.getItem(
 			this.keys.randomPasswordKey
 		);
 		if (deviceKey && deviceGroupKey && randomPasswordKey) {
-			tokens.deviceGroupKey = deviceGroupKey;
-			tokens.deviceKey = deviceKey;
-			tokens.randomPasswordKey = randomPasswordKey;
-			return tokens;
+			return {
+				deviceGroupKey,
+				deviceKey,
+				randomPasswordKey,
+			};
 		}
 		return null;
 	}

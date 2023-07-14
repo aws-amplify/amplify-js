@@ -14,8 +14,8 @@ export class LegacyDeviceKeyTokenManager implements AuthTokenManager {
 	// TODO: change to config interface once defined
 	private config: any;
 	storage: AuthStorage;
-	private prefix: string = LEGACY_KEY_PREFIX;
 	private clientId: string;
+
 	constructor(config: any, storage: AuthStorage) {
 		this.config = config;
 		this.storage = storage;
@@ -24,10 +24,10 @@ export class LegacyDeviceKeyTokenManager implements AuthTokenManager {
 
 	private async getLegacyKeys(): Promise<CognitoKeys<CognitoDeviceKey>> {
 		// Gets LastAuthUser key without 'username' prefix
-		const lastAuthUser = `${this.prefix}.${this.clientId}.${LegacyCognitoUserPoolKeys.lastAuthUser}`;
+		const lastAuthUser = `${LEGACY_KEY_PREFIX}.${this.clientId}.${LegacyCognitoUserPoolKeys.lastAuthUser}`;
 		const username = await getUsernameFromStorage(this.storage, lastAuthUser);
 		const keys = getCognitoKeys(CognitoDeviceKey)(
-			this.prefix,
+			LEGACY_KEY_PREFIX,
 			`${this.clientId}.${username}`
 		);
 
@@ -35,7 +35,6 @@ export class LegacyDeviceKeyTokenManager implements AuthTokenManager {
 	}
 
 	async loadTokens(): Promise<CognitoDeviceKeyTokens | null> {
-		const tokens = {} as CognitoDeviceKeyTokens;
 		const keys = await this.getLegacyKeys();
 		const deviceKey = await this.storage.getItem(keys.deviceKey);
 		const deviceGroupKey = await this.storage.getItem(keys.deviceGroupKey);
@@ -43,10 +42,11 @@ export class LegacyDeviceKeyTokenManager implements AuthTokenManager {
 			keys.randomPasswordKey
 		);
 		if (deviceKey && deviceGroupKey && randomPasswordKey) {
-			tokens.deviceGroupKey = deviceGroupKey;
-			tokens.deviceKey = deviceKey;
-			tokens.randomPasswordKey = randomPasswordKey;
-			return tokens;
+			return {
+				deviceGroupKey,
+				deviceKey,
+				randomPasswordKey,
+			};
 		}
 		return null;
 	}
