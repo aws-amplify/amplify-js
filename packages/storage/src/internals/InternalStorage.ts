@@ -6,7 +6,7 @@ import {
 	ConsoleLogger as Logger,
 	parseAWSExports,
 } from '@aws-amplify/core';
-import { AWSS3Provider } from './providers';
+import { AWSS3Provider } from '../providers';
 import {
 	StorageCopySource,
 	StorageCopyDestination,
@@ -25,10 +25,10 @@ import {
 	UploadTask,
 	StorageGetPropertiesConfig,
 	StorageGetPropertiesOutput,
-} from './types';
-import { PutObjectInput } from './AwsClients/S3';
-import { isCancelError } from './AwsClients/S3/utils';
-import { AWSS3UploadTask } from './providers/AWSS3UploadTask';
+} from '../types';
+import { PutObjectInput } from '../AwsClients/S3';
+import { isCancelError } from '../AwsClients/S3/utils';
+import { AWSS3UploadTask } from '../providers/AWSS3UploadTask';
 
 const logger = new Logger('StorageClass');
 const loggerStorageInstance = new Logger('Storage'); // Logging relating to Storage instance management
@@ -37,7 +37,7 @@ const DEFAULT_PROVIDER = 'AWSS3';
 /**
  * Provide storage methods to use AWS S3
  */
-export class Storage {
+export class InternalStorageClass {
 	/**
 	 * @private
 	 */
@@ -51,11 +51,6 @@ export class Storage {
 	 * attempt to retrieve it's corresponding abortController and cancel the in-flight request.
 	 */
 	private _abortControllerMap: WeakMap<Promise<any>, AbortController>;
-
-	/**
-	 * @public
-	 */
-	public vault: Storage;
 
 	/**
 	 * Initialize Storage
@@ -74,7 +69,7 @@ export class Storage {
 	}
 
 	public getModuleName() {
-		return 'Storage';
+		return 'InternalStorage';
 	}
 
 	/**
@@ -431,37 +426,5 @@ export class Storage {
 	}
 }
 
-/**
- * Configure & register Storage singleton instance.
- */
-let _instance: Storage = null;
-const getInstance = () => {
-	if (_instance) {
-		return _instance;
-	}
-	loggerStorageInstance.debug('Create Storage Instance, debug');
-	_instance = new Storage();
-	_instance.vault = new Storage();
-
-	const old_configure = _instance.configure;
-	_instance.configure = options => {
-		loggerStorageInstance.debug('storage configure called');
-		const vaultConfig = { ...old_configure.call(_instance, options) };
-
-		// set level private for each provider for the vault
-		Object.keys(vaultConfig).forEach(providerName => {
-			if (typeof vaultConfig[providerName] !== 'string') {
-				vaultConfig[providerName] = {
-					...vaultConfig[providerName],
-					level: 'private',
-				};
-			}
-		});
-		loggerStorageInstance.debug('storage vault configure called');
-		_instance.vault.configure(vaultConfig);
-	};
-	return _instance;
-};
-
-export const StorageInstance: Storage = getInstance();
-Amplify.register(StorageInstance);
+export const InternalStorage: InternalStorageClass = new InternalStorageClass();
+Amplify.register(InternalStorage);
