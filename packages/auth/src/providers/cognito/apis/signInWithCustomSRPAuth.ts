@@ -14,7 +14,6 @@ import {
 	getSignInResult,
 	getSignInResultFromError,
 } from '../utils/signInHelpers';
-import { setActiveSignInSession } from '../utils/activeSignInSession';
 import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
@@ -25,6 +24,10 @@ import {
 	AuthSignInStep,
 } from '../../../types';
 import { CognitoSignInOptions } from '../types';
+import {
+	cleanActiveSignInState,
+	setActiveSignInState,
+} from '../utils/signInStore';
 
 /**
  * Signs a user in using a custom authentication flow with SRP
@@ -61,10 +64,15 @@ export async function signInWithCustomSRPAuth(
 			Session,
 		} = await handleCustomSRPAuthFlow(username, password, metadata);
 
-		// Session used on RespondToAuthChallenge requests.
-		setActiveSignInSession(Session);
+		// sets up local state used during the sign-in process
+		setActiveSignInState({
+			signInSession: Session,
+			username,
+			challengeName: ChallengeName as ChallengeName,
+		});
 		if (AuthenticationResult) {
 			// TODO(israx): cache tokens
+			cleanActiveSignInState();
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: AuthSignInStep.DONE },
@@ -77,7 +85,7 @@ export async function signInWithCustomSRPAuth(
 			challengeParameters: ChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		setActiveSignInSession(undefined);
+		cleanActiveSignInState();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;

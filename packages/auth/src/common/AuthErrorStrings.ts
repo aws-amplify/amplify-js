@@ -45,6 +45,10 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 		message: 'A password is not needed when signing in with CUSTOM_WITHOUT_SRP',
 		recoverySuggestion: 'Do not include a password in your signIn call.',
 	},
+	[AuthValidationErrorCode.IncorrectMFAMethod]: {
+		message: 'Incorrect MFA method was chosen. It should be either SMS or TOTP',
+		recoverySuggestion: 'Try to pass TOTP or SMS as the challengeResponse',
+	},
 };
 
 // TODO: delete this code when the Auth class is removed.
@@ -68,4 +72,5 @@ export enum AuthErrorStrings {
 
 export enum AuthErrorCodes {
 	AuthStorageException = 'AuthStorageException',
+	SignInException = 'SignInException',
 }
