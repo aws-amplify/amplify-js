@@ -217,7 +217,7 @@ export class InternalStorageClass {
 	): void | Promise<boolean> {
 		if (request instanceof AWSS3UploadTask) {
 			return request._cancel(
-				getStorageUserAgentValue(StorageAction.cancel, customUserAgentDetails)
+				getStorageUserAgentValue(StorageAction.Cancel, customUserAgentDetails)
 			);
 		}
 		const abortController = this._abortControllerMap.get(
