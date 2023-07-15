@@ -6,6 +6,7 @@ import {
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 	parseAWSExports,
+	StorageAction,
 } from '@aws-amplify/core';
 import { AWSS3Provider } from '../providers';
 import {
@@ -30,6 +31,7 @@ import {
 import { PutObjectInput } from '../AwsClients/S3';
 import { isCancelError } from '../AwsClients/S3/utils';
 import { AWSS3UploadTask } from '../providers/AWSS3UploadTask';
+import { getStorageUserAgentValue } from '../common/StorageUtils';
 
 const logger = new Logger('StorageClass');
 const loggerStorageInstance = new Logger('Storage'); // Logging relating to Storage instance management
@@ -214,7 +216,9 @@ export class InternalStorageClass {
 		customUserAgentDetails?: CustomUserAgentDetails
 	): void | Promise<boolean> {
 		if (request instanceof AWSS3UploadTask) {
-			return request._cancel();
+			return request._cancel(
+				getStorageUserAgentValue(StorageAction.cancel, customUserAgentDetails)
+			);
 		}
 		const abortController = this._abortControllerMap.get(
 			request as Promise<any>

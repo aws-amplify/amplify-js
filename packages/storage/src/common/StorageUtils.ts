@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from './StorageConstants';
+import { CustomUserAgentDetails } from '@aws-amplify/core';
+import { StorageAction } from '@aws-amplify/core';
+import { getAmplifyUserAgent } from '@aws-amplify/core';
 
 export const byteLength = (x: unknown) => {
 	if (typeof x === 'string') {
@@ -46,6 +49,17 @@ export const isFile = (x: unknown): x is File => {
 
 export const isBlob = (x: unknown): x is Blob => {
 	return typeof x !== 'undefined' && x instanceof Blob;
+};
+
+export const getStorageUserAgentValue = (
+	action: StorageAction,
+	customUserAgentDetails?: CustomUserAgentDetails
+): CustomUserAgentDetails => {
+	getAmplifyUserAgent({
+		category: Storage,
+		action,
+		...customUserAgentDetails,
+	});
 };
 
 const isArrayBuffer = (x: unknown): x is ArrayBuffer => {
