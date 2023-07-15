@@ -8,6 +8,7 @@ jest.mock('../src/vendor/dom-utils', () => {
 
 import { ClientDevice, parseAWSExports, Hub } from '@aws-amplify/core';
 import { AnalyticsClass as Analytics } from '../src/Analytics';
+import { AnalyticsProvider, PromiseHandlers } from '../src/types';
 import { AWSPinpointProvider as AWSAnalyticsProvider } from '../src/Providers/AWSPinpointProvider';
 
 jest.mock('@aws-amplify/core');
@@ -20,6 +21,31 @@ const record_spyon = jest
 	.mockImplementation((params, handlers) => {
 		return handlers.resolve();
 	});
+
+/**
+ * CAUTION: This mock class implements a publicly available interface `AnalyticsProvider` which customers can use to
+ * implement custom providers. Exercise caution when modifying this class as additive changes to this interface can
+ * break customers when not marked as optional.
+ */
+class TestCustomProvider implements AnalyticsProvider {
+	getProviderName(): string {
+		return 'CustomProvider' as const;
+	}
+
+	getCategory() {
+		return 'Analytics' as const;
+	}
+
+	configure(o: object) {
+		return o;
+	}
+
+	record(params: object, handlers?: PromiseHandlers) {
+		handlers?.resolve(true);
+
+		return Promise.resolve(true);
+	}
+}
 
 describe('Analytics test', () => {
 	beforeEach(() => {
@@ -125,6 +151,26 @@ describe('Analytics test', () => {
 				expect.anything()
 			);
 			expect(record_spyon).toBeCalled();
+		});
+
+		/**
+		 * Custom providers are a publically available feature via the `AnalyticsProvider` interface. Exercise caution when
+		 * updating these to ensure backwards compatibility.
+		 */
+		test('record with custom provider', async () => {
+			const analytics = new Analytics();
+			const customProvider = new TestCustomProvider();
+			const customProviderRecordSpy = jest.spyOn(customProvider, 'record');
+
+			analytics.addPluggable(customProvider);
+
+			const recordResponse = await analytics.record(
+				{ name: 'testEvent' },
+				'CustomProvider'
+			);
+
+			expect(customProviderRecordSpy).toBeCalled();
+			expect(recordResponse).toBe(true);
 		});
 	});
 
