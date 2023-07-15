@@ -311,13 +311,7 @@ export class AWSS3Provider implements StorageProvider {
 		if (acl) params.ACL = acl;
 
 		try {
-			await copyObject(
-				loadS3Config({
-					...opt,
-					storageAction: StorageAction.Copy,
-				}),
-				params
-			);
+			await copyObject(loadS3Config(opt), params);
 			dispatchStorageEvent(
 				track,
 				'copy',
@@ -389,7 +383,6 @@ export class AWSS3Provider implements StorageProvider {
 		const s3Config = loadS3Config({
 			...opt,
 			emitter,
-			storageAction: StorageAction.Get,
 		});
 		logger.debug('get ' + key + ' from ' + final_key);
 
@@ -533,10 +526,7 @@ export class AWSS3Provider implements StorageProvider {
 		const final_key = prefix + key;
 		logger.debug(`getProperties ${key} from ${final_key}`);
 
-		const s3Config = loadS3Config({
-			...opt,
-			storageAction: StorageAction.GetProperties,
-		});
+		const s3Config = loadS3Config(opt);
 		const params: HeadObjectInput = {
 			Bucket: bucket,
 			Key: final_key,
@@ -668,10 +658,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		if (resumable === true) {
-			const s3Config = loadS3Config({
-				...opt,
-				storageAction: StorageAction.Put,
-			});
+			const s3Config = loadS3Config(opt);
 			const addTaskInput: AddTaskInput = {
 				bucket,
 				key,
@@ -752,10 +739,7 @@ export class AWSS3Provider implements StorageProvider {
 			Key: final_key,
 		};
 
-		const s3Config = loadS3Config({
-			...opt,
-			storageAction: StorageAction.Remove,
-		});
+		const s3Config = loadS3Config(opt);
 		try {
 			const response = await deleteObject(s3Config, params);
 			dispatchStorageEvent(
@@ -786,13 +770,7 @@ export class AWSS3Provider implements StorageProvider {
 			results: [],
 			hasNextToken: false,
 		};
-		const response = await listObjectsV2(
-			loadS3Config({
-				...opt,
-				storageAction: StorageAction.List,
-			}),
-			{ ...params }
-		);
+		const response = await listObjectsV2(loadS3Config(opt), { ...params });
 		if (response && response.Contents) {
 			list.results = response.Contents.map(item => {
 				return {

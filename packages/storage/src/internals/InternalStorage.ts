@@ -271,6 +271,10 @@ export class InternalStorageClass {
 		const responsePromise = plugin.copy(src, dest, {
 			...config,
 			abortSignal: abortController.signal,
+			userAgentValue: getStorageUserAgentValue(
+				StorageAction.Copy,
+				customUserAgentDetails
+			),
 		});
 		this.updateRequestToBeCancellable(responsePromise, abortController);
 		return responsePromise as StorageCopyOutput<T>;
@@ -310,6 +314,10 @@ export class InternalStorageClass {
 		const responsePromise = plugin.get(key, {
 			...config,
 			abortSignal: abortController.signal,
+			userAgentValue: getStorageUserAgentValue(
+				StorageAction.Copy,
+				customUserAgentDetails
+			),
 		});
 		this.updateRequestToBeCancellable(responsePromise, abortController);
 		return responsePromise as StorageGetOutput<T>;
@@ -340,6 +348,10 @@ export class InternalStorageClass {
 		}
 		const responsePromise = plugin?.getProperties(key, {
 			...config,
+			userAgentValue: getStorageUserAgentValue(
+				StorageAction.Copy,
+				customUserAgentDetails
+			),
 		});
 		this.updateRequestToBeCancellable(responsePromise, abortController);
 		return responsePromise as StorageGetPropertiesOutput<T>;
@@ -378,6 +390,10 @@ export class InternalStorageClass {
 		const response = plugin.put(key, object, {
 			...config,
 			abortSignal: abortController.signal,
+			userAgentValue: getStorageUserAgentValue(
+				StorageAction.Copy,
+				customUserAgentDetails
+			),
 		});
 		if (!this.isUploadTask(response)) {
 			this.updateRequestToBeCancellable(response, abortController);
@@ -411,7 +427,13 @@ export class InternalStorageClass {
 				'No plugin found in Storage for the provider'
 			) as StorageRemoveOutput<T>;
 		}
-		return plugin.remove(key, config) as StorageRemoveOutput<T>;
+		return plugin.remove(key, {
+			...config,
+			userAgentValue: getStorageUserAgentValue(
+				StorageAction.Copy,
+				customUserAgentDetails
+			),
+		}) as StorageRemoveOutput<T>;
 	}
 
 	/**
@@ -440,7 +462,13 @@ export class InternalStorageClass {
 				'No plugin found in Storage for the provider'
 			) as StorageListOutput<T>;
 		}
-		return plugin.list(path, config) as StorageListOutput<T>;
+		return plugin.list(path, {
+			...config,
+			userAgentValue: getStorageUserAgentValue(
+				StorageAction.Copy,
+				customUserAgentDetails
+			),
+		}) as StorageListOutput<T>;
 	}
 }
 
