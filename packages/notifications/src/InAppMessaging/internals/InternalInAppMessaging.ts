@@ -201,7 +201,14 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 		return Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				try {
-					await pluggable.identifyUser(userId, userInfo);
+					await pluggable.identifyUser(
+						userId,
+						userInfo,
+						getUserAgentValue(
+							InAppMessagingAction.IdentifyUser,
+							customUserAgentDetails
+						)
+					);
 				} catch (err) {
 					logger.error('Failed to identify user', err);
 					throw err;
