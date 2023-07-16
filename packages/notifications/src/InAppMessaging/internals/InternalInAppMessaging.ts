@@ -151,7 +151,7 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 				try {
 					const messages = await pluggable.getInAppMessages(
 						getUserAgentValue(
-							InAppMessagingAction.SyncMesssages,
+							InAppMessagingAction.SyncMessages,
 							customUserAgentDetails
 						)
 					);
