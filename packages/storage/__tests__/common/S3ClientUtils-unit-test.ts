@@ -13,6 +13,7 @@ import {
 	StorageAction,
 	Category,
 } from '@aws-amplify/core';
+import { getStorageUserAgentValue } from '../../src/common/StorageUtils';
 
 const credentials: ICredentials = {
 	accessKeyId: 'accessKeyId',
@@ -73,7 +74,7 @@ describe('S3ClientUtils tests', () => {
 		const s3Config = loadS3Config({
 			region: 'us-west-2',
 			useAccelerateEndpoint: true,
-			storageAction: StorageAction.Get,
+			userAgentValue: getStorageUserAgentValue(StorageAction.Get),
 			credentials,
 		});
 		expect(s3Config.userAgentValue).toEqual(
@@ -95,7 +96,7 @@ describe('S3ClientUtils tests', () => {
 		const s3Config = loadS3Config({
 			region: 'us-west-2',
 			useAccelerateEndpoint: true,
-			storageAction: StorageAction.Get,
+			userAgentValue: getStorageUserAgentValue(StorageAction.Get),
 		});
 		expect(s3Config.userAgentValue).toEqual(
 			getAmplifyUserAgent({
@@ -112,7 +113,7 @@ describe('S3ClientUtils tests', () => {
 		const s3Config = loadS3Config({
 			region: 'us-west-2',
 			dangerouslyConnectToHttpEndpointForTesting: true,
-			storageAction: StorageAction.Get,
+			userAgentValue: getStorageUserAgentValue(StorageAction.Get),
 		});
 		expect(s3Config).toMatchObject({
 			customEndpoint: 'http://localhost:20005',
