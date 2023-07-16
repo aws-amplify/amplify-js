@@ -18,7 +18,7 @@ import {
 	EventListener,
 	notifyEventListeners,
 } from '../../common';
-import { UserInfo } from '../../types';
+import { NotificationsConfig, UserInfo } from '../../types';
 import { AWSPinpointProvider } from '../Providers';
 import {
 	InAppMessage,
@@ -54,10 +54,12 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 	 * Configure InAppMessaging
 	 * @param {Object} config - InAppMessaging configuration object
 	 */
-	configure = ({
-		listenForAnalyticsEvents = true,
-		...config
-	}: InAppMessagingConfig = {}): InAppMessagingConfig => {
+	configure({
+		Notifications: notificationsConfig,
+	}: NotificationsConfig = {}): InAppMessagingConfig {
+		const { listenForAnalyticsEvents = true, ...config }: InAppMessagingConfig =
+			notificationsConfig?.InAppMessaging || {};
+
 		this.config = { ...this.config, ...config };
 
 		logger.debug('configure InAppMessaging', this.config);
@@ -76,7 +78,7 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 		}
 
 		return this.config;
-	};
+	}
 
 	/**
 	 * Get the name of this module

@@ -4,6 +4,7 @@
 import { EventListener } from '../common';
 import { AWSPinpointProviderConfig } from '../common/AWSPinpointProviderCommon/types';
 import {
+	NotificationsConfig,
 	NotificationsProvider,
 	NotificationsSubCategory as NotificationsSubCategories,
 	UserInfo,
@@ -16,7 +17,7 @@ export type NotificationsSubCategory = Extract<
 export type InternalNotifcationsSubCategory = 'InternalInAppMessaging';
 
 export interface InAppMessagingInterface {
-	configure: (config: InAppMessagingConfig) => InAppMessagingConfig;
+	configure: (config: NotificationsConfig) => InAppMessagingConfig;
 	getModuleName: () =>
 		| NotificationsSubCategory
 		| InternalNotifcationsSubCategory;
