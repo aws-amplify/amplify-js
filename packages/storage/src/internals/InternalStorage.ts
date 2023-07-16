@@ -346,10 +346,11 @@ export class InternalStorageClass {
 				`.getProperties is not implemented on provider ${plugin.getProviderName()}`
 			) as StorageGetPropertiesOutput<T>;
 		}
+
 		const responsePromise = plugin?.getProperties(key, {
 			...config,
 			userAgentValue: getStorageUserAgentValue(
-				StorageAction.Copy,
+				StorageAction.GetProperties,
 				customUserAgentDetails
 			),
 		});
