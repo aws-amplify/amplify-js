@@ -7,6 +7,7 @@ import {
 	HubCapsule,
 	Hub,
 	StorageHelper,
+	CustomUserAgentDetails,
 } from '@aws-amplify/core';
 import flatten from 'lodash/flatten';
 
@@ -14,9 +15,9 @@ import {
 	addEventListener,
 	EventListener,
 	notifyEventListeners,
-} from '../common';
-import { UserInfo } from '../types';
-import { AWSPinpointProvider } from './Providers';
+} from '../../common';
+import { UserInfo } from '../../types';
+import { AWSPinpointProvider } from '../Providers';
 import {
 	InAppMessage,
 	InAppMessageInteractionEvent,
@@ -25,15 +26,15 @@ import {
 	InAppMessageConflictHandler,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
-	NotificationsSubCategory,
 	OnMessageInteractionEventHandler,
-} from './types';
+	InternalNotifcationsSubCategory,
+} from '../types';
 
 const STORAGE_KEY_SUFFIX = '_inAppMessages';
 
 const logger = new Logger('Notifications.InAppMessaging');
 
-export default class InAppMessaging implements InAppMessagingInterface {
+export default class InternalInAppMessaging implements InAppMessagingInterface {
 	private config: Record<string, any> = {};
 	private conflictHandler: InAppMessageConflictHandler;
 	private listeningForAnalyticEvents = false;
@@ -77,8 +78,8 @@ export default class InAppMessaging implements InAppMessagingInterface {
 	 * Get the name of this module
 	 * @returns {string} name of this module
 	 */
-	getModuleName(): NotificationsSubCategory {
-		return 'InAppMessaging';
+	getModuleName(): InternalNotifcationsSubCategory {
+		return 'InternalInAppMessaging';
 	}
 
 	/**
@@ -138,7 +139,9 @@ export default class InAppMessaging implements InAppMessagingInterface {
 	 * @param {string} provider
 	 * @returns - Array of available map resources
 	 */
-	syncMessages = (): Promise<void[]> =>
+	syncMessages = (
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<void[]> =>
 		Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				try {
@@ -152,7 +155,9 @@ export default class InAppMessaging implements InAppMessagingInterface {
 			})
 		);
 
-	clearMessages = (): Promise<void[]> =>
+	clearMessages = (
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<void[]> =>
 		Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
@@ -160,7 +165,10 @@ export default class InAppMessaging implements InAppMessagingInterface {
 			})
 		);
 
-	dispatchEvent = async (event: InAppMessagingEvent): Promise<void> => {
+	dispatchEvent = async (
+		event: InAppMessagingEvent,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<void> => {
 		const messages: InAppMessage[][] = await Promise.all<InAppMessage[]>(
 			this.pluggables.map(async pluggable => {
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
@@ -179,7 +187,11 @@ export default class InAppMessaging implements InAppMessagingInterface {
 		}
 	};
 
-	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> =>
+	identifyUser = (
+		userId: string,
+		userInfo: UserInfo,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<void[]> =>
 		Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				try {
