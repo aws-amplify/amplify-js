@@ -348,5 +348,5 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 	};
 }
 
-const InternalInAppMessaging = new InternalInAppMessagingClass();
+export const InternalInAppMessaging = new InternalInAppMessagingClass();
 Amplify.register(InternalInAppMessaging);
