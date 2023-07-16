@@ -28,11 +28,6 @@ export default class InAppMessaging
 	 */
 	syncMessages = (): Promise<void[]> => super.syncMessages();
 
-	clearMessages = (): Promise<void[]> => super.clearMessages();
-
-	dispatchEvent = async (event: InAppMessagingEvent): Promise<void> =>
-		super.dispatchEvent(event);
-
 	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> =>
 		super.identifyUser(userId, userInfo);
 }

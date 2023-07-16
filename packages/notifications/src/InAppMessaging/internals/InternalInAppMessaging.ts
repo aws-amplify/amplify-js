@@ -165,9 +165,7 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 		);
 	}
 
-	public clearMessages(
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<void[]> {
+	public clearMessages(): Promise<void[]> {
 		return Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
@@ -176,10 +174,7 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 		);
 	}
 
-	public async dispatchEvent(
-		event: InAppMessagingEvent,
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<void> {
+	public async dispatchEvent(event: InAppMessagingEvent): Promise<void> {
 		const messages: InAppMessage[][] = await Promise.all<InAppMessage[]>(
 			this.pluggables.map(async pluggable => {
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
