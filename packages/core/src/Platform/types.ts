@@ -97,6 +97,7 @@ export enum GeoAction {
 }
 export enum InAppMessagingAction {
 	None = '0',
+	SyncMessages = '1',
 }
 export enum InteractionsAction {
 	None = '0',
