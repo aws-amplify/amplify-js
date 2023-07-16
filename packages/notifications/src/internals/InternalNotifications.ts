@@ -3,32 +3,36 @@
 
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
+import InAppMessagingClass from '../InAppMessaging';
 import { InternalInAppMessagingClass } from '../InAppMessaging/internals';
 import PushNotificationClass from '../PushNotification';
 import { InAppMessagingInterface as InAppMessaging } from '../InAppMessaging/types';
 import { PushNotificationInterface as PushNotification } from '../PushNotification/types';
 import {
 	InternalNotificationsCategory,
+	NotificationsCategory,
 	NotificationsConfig,
 	UserInfo,
 } from '../types';
 
 const logger = new Logger('Notifications');
 
-class InternalNotificationsClass {
+export class InternalNotificationsClass {
 	private config: Record<string, any> = {};
-	private internalInAppMessaging: InAppMessaging;
+	private inAppMessaging: InAppMessaging;
 	private pushNotification?: PushNotification;
 
-	constructor() {
-		this.internalInAppMessaging = new InternalInAppMessagingClass();
+	constructor(isInternal = true) {
+		this.inAppMessaging = isInternal
+			? new InternalInAppMessagingClass()
+			: new InAppMessagingClass();
 	}
 
 	/**
 	 * Get the name of the module category
 	 * @returns {string} name of the module category
 	 */
-	getModuleName(): InternalNotificationsCategory {
+	getModuleName(): InternalNotificationsCategory | NotificationsCategory {
 		return 'InternalNotifications';
 	}
 
@@ -42,7 +46,7 @@ class InternalNotificationsClass {
 		logger.debug('configure Notifications', config);
 
 		// Configure sub-categories
-		this.internalInAppMessaging.configure(this.config.InAppMessaging);
+		this.inAppMessaging.configure(this.config.InAppMessaging);
 
 		if (this.config.Push) {
 			try {
@@ -60,7 +64,7 @@ class InternalNotificationsClass {
 	};
 
 	get InAppMessaging(): InAppMessaging {
-		return this.internalInAppMessaging;
+		return this.inAppMessaging;
 	}
 
 	get Push(): PushNotification {
@@ -69,8 +73,8 @@ class InternalNotificationsClass {
 
 	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> => {
 		const identifyFunctions: Function[] = [];
-		if (this.internalInAppMessaging) {
-			identifyFunctions.push(this.internalInAppMessaging.identifyUser);
+		if (this.inAppMessaging) {
+			identifyFunctions.push(this.inAppMessaging.identifyUser);
 		}
 		if (this.pushNotification) {
 			identifyFunctions.push(this.pushNotification.identifyUser);
