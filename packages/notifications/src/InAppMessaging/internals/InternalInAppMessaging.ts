@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	Amplify,
 	ConsoleLogger as Logger,
 	HubCallback,
 	HubCapsule,
@@ -28,13 +29,14 @@ import {
 	InAppMessagingProvider,
 	OnMessageInteractionEventHandler,
 	InternalNotifcationsSubCategory,
+	NotificationsSubCategory,
 } from '../types';
 
 const STORAGE_KEY_SUFFIX = '_inAppMessages';
 
 const logger = new Logger('Notifications.InAppMessaging');
 
-export default class InternalInAppMessaging implements InAppMessagingInterface {
+export class InternalInAppMessagingClass implements InAppMessagingInterface {
 	private config: Record<string, any> = {};
 	private conflictHandler: InAppMessageConflictHandler;
 	private listeningForAnalyticEvents = false;
@@ -78,7 +80,7 @@ export default class InternalInAppMessaging implements InAppMessagingInterface {
 	 * Get the name of this module
 	 * @returns {string} name of this module
 	 */
-	getModuleName(): InternalNotifcationsSubCategory {
+	getModuleName(): NotificationsSubCategory | InternalNotifcationsSubCategory {
 		return 'InternalInAppMessaging';
 	}
 
@@ -139,10 +141,10 @@ export default class InternalInAppMessaging implements InAppMessagingInterface {
 	 * @param {string} provider
 	 * @returns - Array of available map resources
 	 */
-	syncMessages = (
+	public syncMessages(
 		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<void[]> =>
-		Promise.all<void>(
+	): Promise<void[]> {
+		return Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				try {
 					const messages = await pluggable.getInAppMessages();
@@ -154,21 +156,23 @@ export default class InternalInAppMessaging implements InAppMessagingInterface {
 				}
 			})
 		);
+	}
 
-	clearMessages = (
+	public clearMessages(
 		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<void[]> =>
-		Promise.all<void>(
+	): Promise<void[]> {
+		return Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
 				await this.removeMessages(key);
 			})
 		);
+	}
 
-	dispatchEvent = async (
+	public async dispatchEvent(
 		event: InAppMessagingEvent,
 		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<void> => {
+	): Promise<void> {
 		const messages: InAppMessage[][] = await Promise.all<InAppMessage[]>(
 			this.pluggables.map(async pluggable => {
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
@@ -185,14 +189,14 @@ export default class InternalInAppMessaging implements InAppMessagingInterface {
 				this.conflictHandler(flattenedMessages)
 			);
 		}
-	};
+	}
 
-	identifyUser = (
+	public identifyUser(
 		userId: string,
 		userInfo: UserInfo,
 		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<void[]> =>
-		Promise.all<void>(
+	): Promise<void[]> {
+		return Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				try {
 					await pluggable.identifyUser(userId, userInfo);
@@ -202,6 +206,7 @@ export default class InternalInAppMessaging implements InAppMessagingInterface {
 				}
 			})
 		);
+	}
 
 	onMessageReceived = (
 		handler: OnMessageInteractionEventHandler
@@ -331,3 +336,6 @@ export default class InternalInAppMessaging implements InAppMessagingInterface {
 		return sorted[0];
 	};
 }
+
+const InternalInAppMessaging = new InternalInAppMessagingClass();
+Amplify.register(InternalInAppMessaging);
