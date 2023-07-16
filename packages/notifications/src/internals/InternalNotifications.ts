@@ -92,7 +92,5 @@ export class InternalNotificationsClass {
 	};
 }
 
-const InternalNotifications = new InternalNotificationsClass();
-
-export default InternalNotifications;
+export const InternalNotifications = new InternalNotificationsClass();
 Amplify.register(InternalNotifications);
