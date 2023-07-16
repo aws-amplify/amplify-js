@@ -2,11 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { UserInfo } from '../types';
-import {
-	InAppMessagingInterface,
-	InAppMessagingEvent,
-	NotificationsSubCategory,
-} from './types';
+import { InAppMessagingInterface, NotificationsSubCategory } from './types';
 import { InternalInAppMessagingClass } from './internals/InternalInAppMessaging';
 
 export default class InAppMessaging
