@@ -5,18 +5,20 @@ import { InAppMessagingConfig } from './InAppMessaging/types';
 import { PushNotificationConfig } from './PushNotification/types';
 
 export type NotificationsCategory = 'Notifications';
+export type InternalNotificationsCategory = 'InternalNotifications';
 
 export type NotificationsSubCategory = 'InAppMessaging' | 'PushNotification';
+export type InternalNotificationsSubCategory = 'InternalInAppMessaging';
 
 export interface NotificationsProvider {
 	// configure provider
 	configure(config: object): object;
 
 	// return category ('Notifications')
-	getCategory(): NotificationsCategory;
+	getCategory(): NotificationsCategory | InternalNotificationsCategory;
 
 	// return sub-category
-	getSubCategory(): NotificationsSubCategory;
+	getSubCategory(): NotificationsSubCategory | InternalNotificationsCategory;
 
 	// return the name of you provider
 	getProviderName(): string;

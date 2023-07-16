@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	Amplify,
 	ConsoleLogger as Logger,
 	HubCallback,
 	HubCapsule,
@@ -345,6 +344,3 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 		return sorted[0];
 	};
 }
-
-const InternalInAppMessaging = new InternalInAppMessagingClass();
-Amplify.register(InternalInAppMessaging);

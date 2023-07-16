@@ -23,7 +23,7 @@ export interface PushNotificationInterface {
 	enable: () => void;
 	identifyUser: (userId: string, userInfo: UserInfo) => Promise<void[]>;
 	getLaunchNotification: () => Promise<PushNotificationMessage>;
-	getBadgeCount: () => Promise<number>;
+	getBadgeCount: () => Promise<number | null>;
 	setBadgeCount: (count: number) => void;
 	getPermissionStatus: () => Promise<PushNotificationPermissionStatus>;
 	requestPermissions: (

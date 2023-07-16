@@ -3,29 +3,33 @@
 
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
-import InAppMessagingClass from './InAppMessaging';
-import PushNotificationClass from './PushNotification';
-import { InAppMessagingInterface as InAppMessaging } from './InAppMessaging/types';
-import { PushNotificationInterface as PushNotification } from './PushNotification/types';
-import { NotificationsCategory, NotificationsConfig, UserInfo } from './types';
+import { InternalInAppMessagingClass } from '../InAppMessaging/internals';
+import PushNotificationClass from '../PushNotification';
+import { InAppMessagingInterface as InAppMessaging } from '../InAppMessaging/types';
+import { PushNotificationInterface as PushNotification } from '../PushNotification/types';
+import {
+	InternalNotificationsCategory,
+	NotificationsConfig,
+	UserInfo,
+} from '../types';
 
 const logger = new Logger('Notifications');
 
-class NotificationsClass {
+class InternalNotificationsClass {
 	private config: Record<string, any> = {};
-	private inAppMessaging: InAppMessaging;
+	private internalInAppMessaging: InAppMessaging;
 	private pushNotification?: PushNotification;
 
 	constructor() {
-		this.inAppMessaging = new InAppMessagingClass();
+		this.internalInAppMessaging = new InternalInAppMessagingClass();
 	}
 
 	/**
 	 * Get the name of the module category
 	 * @returns {string} name of the module category
 	 */
-	getModuleName(): NotificationsCategory {
-		return 'Notifications';
+	getModuleName(): InternalNotificationsCategory {
+		return 'InternalNotifications';
 	}
 
 	/**
@@ -38,7 +42,7 @@ class NotificationsClass {
 		logger.debug('configure Notifications', config);
 
 		// Configure sub-categories
-		this.inAppMessaging.configure(this.config.InAppMessaging);
+		this.internalInAppMessaging.configure(this.config.InAppMessaging);
 
 		if (this.config.Push) {
 			try {
@@ -56,7 +60,7 @@ class NotificationsClass {
 	};
 
 	get InAppMessaging(): InAppMessaging {
-		return this.inAppMessaging;
+		return this.internalInAppMessaging;
 	}
 
 	get Push(): PushNotification {
@@ -65,8 +69,8 @@ class NotificationsClass {
 
 	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> => {
 		const identifyFunctions: Function[] = [];
-		if (this.inAppMessaging) {
-			identifyFunctions.push(this.inAppMessaging.identifyUser);
+		if (this.internalInAppMessaging) {
+			identifyFunctions.push(this.internalInAppMessaging.identifyUser);
 		}
 		if (this.pushNotification) {
 			identifyFunctions.push(this.pushNotification.identifyUser);
@@ -84,7 +88,7 @@ class NotificationsClass {
 	};
 }
 
-const Notifications = new NotificationsClass();
+const InternalNotifications = new InternalNotificationsClass();
 
-export default Notifications;
-Amplify.register(Notifications);
+export default InternalNotifications;
+Amplify.register(InternalNotifications);
