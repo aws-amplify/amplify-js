@@ -9,6 +9,7 @@ import {
 	Hub,
 	StorageHelper,
 	CustomUserAgentDetails,
+	InAppMessagingAction,
 } from '@aws-amplify/core';
 import flatten from 'lodash/flatten';
 
@@ -31,6 +32,7 @@ import {
 	InternalNotifcationsSubCategory,
 	NotificationsSubCategory,
 } from '../types';
+import { getUserAgentValue } from './utils';
 
 const STORAGE_KEY_SUFFIX = '_inAppMessages';
 
@@ -147,7 +149,12 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 		return Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				try {
-					const messages = await pluggable.getInAppMessages();
+					const messages = await pluggable.getInAppMessages(
+						getUserAgentValue(
+							InAppMessagingAction.SyncMesssages,
+							customUserAgentDetails
+						)
+					);
 					const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
 					await this.setMessages(key, messages);
 				} catch (err) {

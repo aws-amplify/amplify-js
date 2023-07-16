@@ -51,7 +51,7 @@ export interface InAppMessagingProvider extends NotificationsProvider {
 	getSubCategory(): NotificationsSubCategory;
 
 	// get in-app messages from provider
-	getInAppMessages(): Promise<any>;
+	getInAppMessages(userAgentValue?: string): Promise<any>;
 
 	// filters in-app messages based on event input and provider logic
 	processInAppMessages(
