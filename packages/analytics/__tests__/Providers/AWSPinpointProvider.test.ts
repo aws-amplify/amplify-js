@@ -145,6 +145,13 @@ const optionsWithClientContext = {
 let resolve = null;
 let reject = null;
 
+// Example: aws-amplify/5.2.4 analytics/1 framework/0
+const expectedRecordUserAgentRegex =
+	/^aws-amplify\/[\d\.]+ analytics\/1 framework\/0/;
+
+const expectedUpdateEndpointUserAgentRegex =
+	/^aws-amplify\/[\d\.]+ analytics\/2 framework\/0/;
+
 jest.mock('uuid', () => {
 	return { v1: () => 'uuid' };
 });
@@ -285,7 +292,11 @@ describe('AnalyticsProvider test', () => {
 				const params = { event: { name: 'custom event', immediate: true } };
 				await analytics.record(params, { resolve, reject });
 				expect(mockPutEvents).toBeCalledWith(
-					{ credentials, region: 'region' },
+					expect.objectContaining({
+						credentials,
+						region: 'region',
+						userAgentValue: expect.stringMatching(expectedRecordUserAgentRegex),
+					}),
 					{
 						ApplicationId: 'appId',
 						EventsRequest: {
@@ -344,7 +355,11 @@ describe('AnalyticsProvider test', () => {
 				await analytics.record(params, { resolve, reject });
 
 				expect(mockPutEvents).toBeCalledWith(
-					{ credentials, region: 'region' },
+					expect.objectContaining({
+						credentials,
+						region: 'region',
+						userAgentValue: expect.stringMatching(expectedRecordUserAgentRegex),
+					}),
 					{
 						ApplicationId: 'appId',
 						EventsRequest: {
@@ -465,7 +480,13 @@ describe('AnalyticsProvider test', () => {
 				const params = { event: { name: '_update_endpoint', immediate: true } };
 				await analytics.record(params, { resolve, reject });
 				expect(mockUpdateEndpoint).toBeCalledWith(
-					{ credentials, region: 'region' },
+					expect.objectContaining({
+						credentials,
+						region: 'region',
+						userAgentValue: expect.stringMatching(
+							expectedUpdateEndpointUserAgentRegex
+						),
+					}),
 					{
 						ApplicationId: 'appId',
 						EndpointId: 'endpointId',
@@ -504,7 +525,13 @@ describe('AnalyticsProvider test', () => {
 				const params = { event: { name: '_update_endpoint', immediate: true } };
 				await analytics.record(params, { resolve, reject });
 				expect(mockUpdateEndpoint).toBeCalledWith(
-					{ credentials, region: 'region' },
+					expect.objectContaining({
+						credentials,
+						region: 'region',
+						userAgentValue: expect.stringMatching(
+							expectedUpdateEndpointUserAgentRegex
+						),
+					}),
 					{
 						ApplicationId: 'appId',
 						EndpointId: 'endpointId',
@@ -545,7 +572,13 @@ describe('AnalyticsProvider test', () => {
 				await analytics.record(params, { resolve, reject });
 
 				expect(mockUpdateEndpoint).toBeCalledWith(
-					{ credentials, region: 'region' },
+					expect.objectContaining({
+						credentials,
+						region: 'region',
+						userAgentValue: expect.stringMatching(
+							expectedUpdateEndpointUserAgentRegex
+						),
+					}),
 					{
 						ApplicationId: 'appId',
 						EndpointId: 'endpointId',
@@ -606,7 +639,13 @@ describe('AnalyticsProvider test', () => {
 				await analytics.record(params, { resolve, reject });
 
 				expect(mockUpdateEndpoint).toBeCalledWith(
-					{ credentials, region: 'region' },
+					expect.objectContaining({
+						credentials,
+						region: 'region',
+						userAgentValue: expect.stringMatching(
+							expectedUpdateEndpointUserAgentRegex
+						),
+					}),
 					{
 						ApplicationId: 'appId',
 						EndpointId: 'endpointId',

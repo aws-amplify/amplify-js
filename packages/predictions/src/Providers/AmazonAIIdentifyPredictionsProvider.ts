@@ -1,7 +1,11 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import {
+	Category,
 	Credentials,
 	ConsoleLogger as Logger,
-	getAmplifyUserAgent,
+	PredictionsAction,
+	getAmplifyUserAgentObject,
 } from '@aws-amplify/core';
 import { Storage } from '@aws-amplify/storage';
 import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
@@ -138,12 +142,12 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		this.rekognitionClient = new RekognitionClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 		});
 		this.textractClient = new TextractClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 		});
 		let inputDocument: Document;
 
@@ -240,7 +244,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			this.rekognitionClient = new RekognitionClient({
 				region,
 				credentials,
-				customUserAgent: getAmplifyUserAgent(),
+				customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 			});
 			let inputImage: Image;
 			await this.configureSource(input.labels.source)
@@ -359,7 +363,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		this.rekognitionClient = new RekognitionClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 		});
 		let inputImage: Image;
 		await this.configureSource(input.entities.source)
@@ -479,4 +483,11 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 	private decodeExternalImageId(externalImageId: string): string {
 		return ('' + externalImageId).replace(/::/g, '/');
 	}
+}
+
+function _getPredictionsIdentifyAmplifyUserAgent() {
+	return getAmplifyUserAgentObject({
+		category: Category.Predictions,
+		action: PredictionsAction.Identify,
+	});
 }

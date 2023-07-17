@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
 	isAWSDate,
@@ -15,7 +17,7 @@ import {
 import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { Auth } from '@aws-amplify/auth';
-import { API } from '@aws-amplify/api';
+import { InternalAPI } from '@aws-amplify/api/internals';
 import { Cache } from '@aws-amplify/cache';
 import { Adapter } from './storage/adapter';
 
@@ -1101,7 +1103,7 @@ export enum LimitTimerRaceResolvedValues {
 
 export type AmplifyContext = {
 	Auth: typeof Auth;
-	API: typeof API;
+	InternalAPI: typeof InternalAPI;
 	Cache: typeof Cache;
 };
 

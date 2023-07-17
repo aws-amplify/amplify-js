@@ -13,7 +13,6 @@ import {
 	HttpResponse,
 	MiddlewareHandler,
 } from '../../../../src/clients/types';
-import { isClockSkewError } from '../../../../src/clients/utils/isClockSkewError';
 import {
 	credentials,
 	signingDate,
@@ -23,7 +22,6 @@ import {
 } from './signer/signatureV4/testUtils/data';
 import { signingTestTable } from './signer/signatureV4/testUtils/signingTestTable';
 
-jest.mock('../../../../src/clients/utils/isClockSkewError');
 jest.mock(
 	'../../../../src/clients/middleware/signing/utils/getSkewCorrectedDate'
 );
@@ -31,7 +29,6 @@ jest.mock(
 	'../../../../src/clients/middleware/signing/utils/getUpdatedSystemClockOffset'
 );
 
-const mockisClockSkewError = isClockSkewError as jest.Mock;
 const mockGetSkewCorrectedDate = getSkewCorrectedDate as jest.Mock;
 const mockGetUpdatedSystemClockOffset =
 	getUpdatedSystemClockOffset as jest.Mock;
@@ -95,47 +92,53 @@ describe('Signing middleware', () => {
 		);
 	});
 
+	test('can be configured with credentials provider function', async () => {
+		const credentialsProvider = jest.fn().mockResolvedValue(credentials);
+		const nextHandler = jest.fn().mockResolvedValue(defaultResponse);
+		const signableHandler = getSignableHandler(nextHandler);
+		const config = {
+			...defaultSigningOptions,
+			credentials: credentialsProvider,
+		};
+		await signableHandler(defaultRequest, config);
+		expect(nextHandler).toBeCalledWith(
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					authorization: basicTestCase.expectedAuthorization,
+				}),
+			}),
+			expect.anything()
+		);
+		expect(credentialsProvider).toBeCalledTimes(1);
+	});
+
 	test.each([
-		['skew error', null],
-		['error with Date header', 'Date'],
-		['error with date header', 'date'],
+		['response with Date header', 'Date'],
+		['response with date header', 'date'],
+		['response with x-amz-date header', 'x-amz-date'],
 	])('should adjust clock offset if server returns %s', async (_, key) => {
-		mockisClockSkewError.mockReturnValue(true);
 		const serverTime = signingDate.toISOString();
 		const parsedServerTime = Date.parse(serverTime);
-		const nextHandler = key
-			? jest.fn().mockRejectedValue({
-					$response: {
-						headers: {
-							[key]: serverTime,
-						},
-					},
-			  })
-			: jest.fn().mockRejectedValue({ ServerTime: serverTime });
+		const nextHandler = jest.fn().mockResolvedValue({
+			headers: {
+				[key!]: serverTime,
+			},
+		});
 
 		const middlewareFunction = signingMiddleware(defaultSigningOptions)(
 			nextHandler
 		);
 
-		try {
-			await middlewareFunction(defaultRequest);
-		} catch (error) {
-			expect(mockGetSkewCorrectedDate).toBeCalledWith(0);
-			expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(
-				parsedServerTime,
-				0
-			);
-			jest.clearAllMocks();
-			try {
-				await middlewareFunction(defaultRequest);
-			} catch (error) {
-				expect(mockGetSkewCorrectedDate).toBeCalledWith(updatedOffset);
-				expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(
-					parsedServerTime,
-					updatedOffset
-				);
-			}
-		}
-		expect.assertions(4);
+		await middlewareFunction(defaultRequest);
+		expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(parsedServerTime, 0);
+
+		jest.clearAllMocks();
+		await middlewareFunction(defaultRequest);
+		expect(mockGetSkewCorrectedDate).toBeCalledWith(updatedOffset);
+		expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(
+			parsedServerTime,
+			updatedOffset
+		);
+		expect.assertions(3);
 	});
 });

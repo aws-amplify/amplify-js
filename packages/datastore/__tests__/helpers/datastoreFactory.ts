@@ -229,7 +229,7 @@ export function getDataStore({
 
 	// private, test-only DI's.
 	if (online) {
-		(DataStore as any).amplifyContext.API = graphqlService;
+		(DataStore as any).amplifyContext.InternalAPI = graphqlService;
 		(DataStore as any).connectivityMonitor = connectivityMonitor;
 		(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
 			'https://0.0.0.0/graphql';
