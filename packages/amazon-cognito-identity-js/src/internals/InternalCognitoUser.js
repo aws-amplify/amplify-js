@@ -141,6 +141,7 @@ export default class InternalCognitoUser {
 	 * @param {customChallenge} callback.customChallenge Custom challenge
 	 *        response required to continue.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	initiateAuth(authDetails, callback, userAgentValue) {
@@ -199,6 +200,7 @@ export default class InternalCognitoUser {
 	 * @param {customChallenge} callback.customChallenge Custom challenge
 	 *        response required to continue.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	authenticateUser(authDetails, callback, userAgentValue) {
@@ -238,6 +240,7 @@ export default class InternalCognitoUser {
 	 * @param {customChallenge} callback.customChallenge Custom challenge
 	 *        response required to continue.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	authenticateUserDefaultAuth(authDetails, callback, userAgentValue) {
@@ -409,6 +412,7 @@ export default class InternalCognitoUser {
 	 * @param {mfaRequired} callback.mfaRequired MFA code
 	 *        required to continue.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	authenticateUserPlainUsernamePassword(authDetails, callback, userAgentValue) {
@@ -467,6 +471,7 @@ export default class InternalCognitoUser {
 	 * @param {object} dataAuthenticate authentication data
 	 * @param {object} authenticationHelper helper created
 	 * @param {callback} callback passed on from caller
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	authenticateUserInternal(
@@ -617,6 +622,7 @@ export default class InternalCognitoUser {
 	 *         response required to continue.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	completeNewPasswordChallenge(
@@ -683,6 +689,7 @@ export default class InternalCognitoUser {
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 * @private
 	 */
@@ -806,6 +813,7 @@ export default class InternalCognitoUser {
 	 * @param {bool} forceAliasCreation Allow migrating from an existing email / phone number.
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	confirmRegistration(
@@ -847,6 +855,7 @@ export default class InternalCognitoUser {
 	 *    Custom challenge response required to continue.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	sendCustomChallengeAnswer(
@@ -899,6 +908,7 @@ export default class InternalCognitoUser {
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	sendMFACode(
@@ -1028,6 +1038,7 @@ export default class InternalCognitoUser {
 	 * @param {string} newUserPassword The requested new password.
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	changePassword(
@@ -1064,6 +1075,7 @@ export default class InternalCognitoUser {
 	 * This is used by an authenticated user to enable MFA for itself
 	 * @deprecated
 	 * @param {nodeCallback<string>} callback Called on success or error.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	enableMFA(callback, userAgentValue) {
@@ -1100,6 +1112,7 @@ export default class InternalCognitoUser {
 	 * @param {IMfaSettings} smsMfaSettings the sms mfa settings
 	 * @param {IMFASettings} softwareTokenMfaSettings the software token mfa settings
 	 * @param {nodeCallback<string>} callback Called on success or error.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	setUserMfaPreference(
@@ -1134,6 +1147,7 @@ export default class InternalCognitoUser {
 	 * This is used by an authenticated user to disable MFA for itself
 	 * @deprecated
 	 * @param {nodeCallback<string>} callback Called on success or error.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	disableMFA(callback, userAgentValue) {
@@ -1164,6 +1178,7 @@ export default class InternalCognitoUser {
 	 * This is used by an authenticated user to delete itself
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	deleteUser(callback, clientMetadata, userAgentValue) {
@@ -1197,6 +1212,7 @@ export default class InternalCognitoUser {
 	 * @param {AttributeArg[]} attributes A list of the new user attributes.
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	updateAttributes(attributes, callback, clientMetadata, userAgentValue) {
@@ -1233,6 +1249,7 @@ export default class InternalCognitoUser {
 	/**
 	 * This is used by an authenticated user to get a list of attributes
 	 * @param {nodeCallback<CognitoUserAttribute[]>} callback Called on success or error.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	getUserAttributes(callback, userAgentValue) {
@@ -1274,6 +1291,7 @@ export default class InternalCognitoUser {
 	 * how to setup and use MFA: https://docs.amplify.aws/lib/auth/mfa/q/platform/js
 	 * @deprecated
 	 * @param {nodeCallback<MFAOptions>} callback Called on success or error.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	getMFAOptions(callback, userAgentValue) {
@@ -1301,6 +1319,8 @@ export default class InternalCognitoUser {
 	/**
 	 * PRIVATE ONLY: This is an internal only method and should not
 	 * be directly called by the consumers.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
+	 * @returns {Promise<object>}
 	 */
 	createGetUserRequest(userAgentValue) {
 		return this.client.promisifyRequest(
@@ -1315,6 +1335,9 @@ export default class InternalCognitoUser {
 	/**
 	 * PRIVATE ONLY: This is an internal only method and should not
 	 * be directly called by the consumers.
+	 * @param {object} options
+	 * @param {string} userAgentValue Optional string containing custom user agent value
+	 * @returns {Promise<any>}
 	 */
 	refreshSessionIfPossible(options = {}, userAgentValue) {
 		// best effort, if not possible
@@ -1343,6 +1366,7 @@ export default class InternalCognitoUser {
 	 * This is used by an authenticated users to get the userData
 	 * @param {nodeCallback<UserData>} callback Called on success or error.
 	 * @param {GetUserDataOptions} params
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	getUserData(callback, params, userAgentValue) {
@@ -1409,6 +1433,7 @@ export default class InternalCognitoUser {
 	 *
 	 * PRIVATE ONLY: This is an internal only method and should not
 	 * be directly called by the consumers.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 */
 	fetchUserData(userAgentValue) {
 		return this.createGetUserRequest().then(data => {
@@ -1421,6 +1446,7 @@ export default class InternalCognitoUser {
 	 * This is used by an authenticated user to delete a list of attributes
 	 * @param {string[]} attributeList Names of the attributes to delete.
 	 * @param {nodeCallback<string>} callback Called on success or error.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	deleteAttributes(attributeList, callback, userAgentValue) {
@@ -1457,6 +1483,7 @@ export default class InternalCognitoUser {
 	 * This is used by a user to resend a confirmation code
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	resendConfirmationCode(callback, clientMetadata, userAgentValue) {
@@ -1490,6 +1517,7 @@ export default class InternalCognitoUser {
 	 *
 	 * @param {nodeCallback<CognitoUserSession>} callback Called on success or error.
 	 * @param {GetSessionOptions} options
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	getSession(callback, options = {}, userAgentValue) {
@@ -1565,6 +1593,7 @@ export default class InternalCognitoUser {
 	 * @param {CognitoRefreshToken} refreshToken A previous session's refresh token.
 	 * @param {nodeCallback<CognitoUserSession>} callback Called on success or error.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	refreshSession(refreshToken, callback, clientMetadata, userAgentValue) {
@@ -1773,6 +1802,7 @@ export default class InternalCognitoUser {
 	 *    Optional callback raised instead of onSuccess with response data.
 	 * @param {onSuccess} callback.onSuccess Called on success.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	forgotPassword(callback, clientMetadata, userAgentValue) {
@@ -1808,6 +1838,7 @@ export default class InternalCognitoUser {
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<void>} callback.onSuccess Called on success.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	confirmPassword(
@@ -1847,6 +1878,7 @@ export default class InternalCognitoUser {
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {inputVerificationCode} callback.inputVerificationCode Called on success.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	getAttributeVerificationCode(
@@ -1887,6 +1919,7 @@ export default class InternalCognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<string>} callback.onSuccess Called on success.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	verifyAttribute(attributeName, confirmationCode, callback, userAgentValue) {
@@ -1917,6 +1950,7 @@ export default class InternalCognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<*>} callback.onSuccess Called on success with device data.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	getDevice(callback, userAgentValue) {
@@ -1947,6 +1981,7 @@ export default class InternalCognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<string>} callback.onSuccess Called on success.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	forgetSpecificDevice(deviceKey, callback, userAgentValue) {
@@ -1976,6 +2011,7 @@ export default class InternalCognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<string>} callback.onSuccess Called on success.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	forgetDevice(callback, userAgentValue) {
@@ -2000,6 +2036,7 @@ export default class InternalCognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<string>} callback.onSuccess Called on success.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	setDeviceStatusRemembered(callback, userAgentValue) {
@@ -2030,6 +2067,7 @@ export default class InternalCognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<string>} callback.onSuccess Called on success.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	setDeviceStatusNotRemembered(callback, userAgentValue) {
@@ -2063,6 +2101,7 @@ export default class InternalCognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<*>} callback.onSuccess Called on success with device list.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	listDevices(limit, paginationToken, callback, userAgentValue) {
@@ -2097,6 +2136,7 @@ export default class InternalCognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<string>} callback.onSuccess Called on success.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	globalSignOut(callback, userAgentValue) {
@@ -2123,6 +2163,8 @@ export default class InternalCognitoUser {
 
 	/**
 	 * This is used for the user to signOut of the application and clear the cached tokens.
+	 * @param revokeTokenCallback
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	signOut(revokeTokenCallback, userAgentValue) {
@@ -2222,6 +2264,7 @@ export default class InternalCognitoUser {
 	 * This is used by a user trying to select a given MFA
 	 * @param {string} answerChallenge the mfa the user wants
 	 * @param {nodeCallback<string>} callback Called on success or error.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	sendMFASelectionAnswer(answerChallenge, callback, userAgentValue) {
@@ -2276,6 +2319,7 @@ export default class InternalCognitoUser {
 	/**
 	 * This is used by an authenticated or a user trying to authenticate to associate a TOTP MFA
 	 * @param {nodeCallback<string>} callback Called on success or error.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	associateSoftwareToken(callback, userAgentValue) {
@@ -2316,6 +2360,7 @@ export default class InternalCognitoUser {
 	 * @param {string} totpCode The MFA code entered by the user.
 	 * @param {string} friendlyDeviceName The device name we are assigning to the device.
 	 * @param {nodeCallback<string>} callback Called on success or error.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	verifySoftwareToken(totpCode, friendlyDeviceName, callback, userAgentValue) {
