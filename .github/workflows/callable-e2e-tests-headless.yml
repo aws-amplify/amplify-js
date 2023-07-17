@@ -1,0 +1,72 @@
+name: 'E2E Tests - Headless'
+
+on:
+  workflow_call:
+    inputs:
+      test_name:
+        required: true
+        type: string
+      category:
+        required: true
+        type: string
+      spec:
+        required: true
+        type: string
+      timeout_minutes:
+        required: true
+        type: number
+      retry_count:
+        required: true
+        type: number
+
+jobs:
+  e2e-test:
+    name: 'E2E-Headless: ${{ inputs.test_name }}'
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout_minutes }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
+        with:
+          # Minimal depth 2 so we can checkout the commit before possible merge commit.
+          fetch-depth: 2
+          path: amplify-js
+
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+
+      - name: Setup samples staging repository
+        uses: ./amplify-js/.github/actions/setup-samples-staging
+        with:
+          GH_ACTIONS_STAGING_READ: ${{ secrets.GH_ACTIONS_STAGING_READ }}
+
+      - name: 'Change directory into build and run link'
+        run: |
+          yarn link-all
+        working-directory: amplify-js
+
+      - name: 'Link packages into samples staging root'
+        run: |
+          yarn link amazon-cognito-identity-js @aws-amplify/core @aws-amplify/cache @aws-amplify/auth
+        working-directory: amplify-js-samples-staging
+
+      - name: Run cypress tests for ${{ inputs.test_name }}
+        run: |
+          ../amplify-js/.circleci/retry-yarn-script.sh -s \
+          "cypress run \          
+          --headless \
+          --spec ./cypress/integration/${{ inputs.category }}/${{ inputs.spec }}.spec.js \
+          --config baseUrl=https://aws.amazon.com/" \
+          -n ${{ inputs.retry_count }}
+        working-directory: amplify-js-samples-staging
+        shell: bash
+
+      - name: upload artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+        if: always()
+        with:
+          name: e2e-test-artifacts
+          if-no-files-found: ignore
+          path: |
+            amplify-js-samples-staging/cypress/videos
+            amplify-js-samples-staging/cypress/screenshots

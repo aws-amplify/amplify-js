@@ -16,10 +16,12 @@ jobs:
         id: load_config
         run: |
           echo "INTEG_CONFIG=$(cat .github/integ-config/integ-all.yml | yq '.tests' -o=json | jq -c .)" >> $GITHUB_OUTPUT
+          echo "INTEG_CONFIG_HEADLESS=$(cat .github/integ-config/integ-all-headless.yml | yq '.tests' -o=json | jq -c .)" >> $GITHUB_OUTPUT
           echo "DETOX_INTEG_CONFIG=$(cat .github/integ-config/detox-integ-all.yml | yq -o=json | jq -c .)" >> $GITHUB_OUTPUT
         working-directory: ./amplify-js
     outputs:
       integ-config: ${{steps.load_config.outputs.INTEG_CONFIG}}
+      integ-config-headless: ${{steps.load_config.outputs.INTEG_CONFIG_HEADLESS}}
       detox-integ-config: ${{steps.load_config.outputs.DETOX_INTEG_CONFIG}}
 
   e2e-test-runner:
@@ -39,6 +41,22 @@ jobs:
       amplifyjs_dir: ${{ matrix.integ-config.amplifyjs_dir || false }}
       sample_name: ${{ toJSON(matrix.integ-config.sample_name) || '[""]' }}
       browser: ${{ toJSON(matrix.integ-config.browser) || '[""]' }}
+      timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 35 }}
+      retry_count: ${{ matrix.integ-config.retry_count || 3 }}
+
+  e2e-test-runner-headless:
+    name: e2e test runnner_headless
+    needs: e2e-prep
+    secrets: inherit
+    strategy:
+      matrix:
+        integ-config: ${{ fromJson(needs.e2e-prep.outputs.integ-config-headless) }}
+      fail-fast: false
+    uses: ./.github/workflows/callable-e2e-tests-headless.yml
+    with:
+      test_name: ${{ matrix.integ-config.test_name }}
+      category: ${{ matrix.integ-config.category }}
+      spec: ${{ matrix.integ-config.spec || '' }}
       timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 35 }}
       retry_count: ${{ matrix.integ-config.retry_count || 3 }}
 
