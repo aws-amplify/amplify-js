@@ -2,7 +2,7 @@ name: Setup Amplify Samples Staging
 description: Checks out Amplify Samples Staging and builds the package with caching
 
 inputs:
-  GH_PAT:
+  GH_ACTIONS_STAGING_READ:
     description: The token that grants read access to the sample staging repo
     required: true
 
@@ -23,7 +23,7 @@ runs:
       with:
         repository: stocaaro/amplify-js-samples-staging
         path: amplify-js-samples-staging
-        token: ${{ inputs.GH_PAT }}
+        token: ${{ inputs.GH_ACTIONS_STAGING_READ }}
         fetch-depth: 2
     - name: Install
       if: steps.cache-samples-staging-build.outputs.cache-hit != 'true'
@@ -31,4 +31,3 @@ runs:
         yarn
       shell: bash
       working-directory: ./amplify-js-samples-staging
-

@@ -3,7 +3,7 @@ name: 'Prebuild AmplifyJs'
 on:
   workflow_call:
     secrets:
-      GH_PAT:
+      GH_ACTIONS_STAGING_READ:
         required: true
 jobs:
   prebuild:
@@ -18,4 +18,4 @@ jobs:
       - name: Setup samples staging
         uses: ./amplify-js/.github/actions/setup-samples-staging
         with:
-          GH_PAT: ${{ secrets.GH_PAT }}
+          GH_ACTIONS_STAGING_READ: ${{ secrets.GH_ACTIONS_STAGING_READ }}

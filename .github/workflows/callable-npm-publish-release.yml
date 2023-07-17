@@ -1,0 +1,65 @@
+name: 'Publish package to npm and create release on github'
+
+on:
+  workflow_call:
+
+# TODO: configure these env variables
+env:
+  # TODO verdaccio stuff we won't need in prod
+  NPM_REGISTRY: http://localhost:4873/
+  NPM_USER: circleci
+  NPM_PASS: circleci
+  NPM_EMAIL: circleci@amplify.js
+
+jobs:
+  deploy:
+    name: 'Publish to Amplify Package'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
+        with:
+          # Minimal depth 2 so we can checkout the commit before possible merge commit.
+          fetch-depth: 2
+          path: amplify-js
+          token: ${{ secrets.GH_ACTIONS_AMPLIFY_JS_WRITE }}
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+      ###
+      # TODO Remove this to enable real NPM interactions.
+      # <remove>
+      - name: Load Verdaccio with AmplifyJs
+        uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
+      ### </remove>
+
+      - name: Run npm publish
+        uses: ./amplify-js/.github/actions/npm-publish
+        with:
+          github_email: test@email.com
+          github_name: test-user
+          target: release
+          npm_token: ${{ secrets.NPM_TOKEN }}
+
+      - name: 'Update roll-back infrastructure'
+        working-directory: ./amplify-js
+        run: |
+          git config --global user.email $GITHUB_EMAIL
+          git config --global user.name $GITHUB_USER
+          git pull origin release
+          PUBLISH_COMMIT_HASH=$(git log -n 1 --pretty=format:"%H")
+          RELEASE_COMMIT_MESSAGE=$(git log -n 1 --skip 1 --pretty=oneline)
+          if [[ $RELEASE_COMMIT_MESSAGE = *release\(required\)* ]]; then git tag -f required-release $PUBLISH_COMMIT_HASH; fi
+
+      - name: 'Update API documentation'
+        working-directory: ./amplify-js
+        run: |
+          yarn run docs
+          git add ./docs/api/
+          git commit -m "chore(release): update API docs [ci skip]"
+
+      - name: 'Push post release changes'
+        working-directory: ./amplify-js
+        run: |
+          git push origin release
+          git push -f origin required-release
+          git push --force-with-lease origin release:main

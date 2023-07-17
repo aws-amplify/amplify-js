@@ -36,7 +36,7 @@ jobs:
       - name: Setup samples staging repository
         uses: ./amplify-js/.github/actions/setup-samples-staging
         with:
-          GH_PAT: ${{ secrets.GH_PAT }}
+          GH_ACTIONS_STAGING_READ: ${{ secrets.GH_ACTIONS_STAGING_READ }}
       - name: Load Verdaccio with AmplifyJs
         uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
       - name: Yarn Install

@@ -26,7 +26,7 @@ jobs:
       - e2e
       - parse-preid
     secrets: inherit
-    uses: ./.github/workflows/callable-preid-release.yml
+    uses: ./.github/workflows/callable-npm-publish-preid.yml
     # The preid should be detected from th branch name recommending feat/PREID/whatvever as branch naming pattern
     with:
       preid: ${{ needs.parse-preid.outputs.preid }}
