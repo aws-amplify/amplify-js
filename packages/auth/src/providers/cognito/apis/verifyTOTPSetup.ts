@@ -7,8 +7,9 @@ import { VerifyTOTPSetupRequest } from '../../../types/requests';
 import { CogntioVerifyTOTPSetupOptions } from '../types/options';
 import { verifySoftwareTokenClient } from '../utils/clients/VerifySoftwareTokenClient';
 import { VerifySoftwareTokenException } from '../types/errors';
+
 /**
- * verify a otp code retrieved from an associated authenticated app.
+ * Verifies a otp code retrieved from an associated authenticated app.
  *
  * @param verifyTOTPSetupRequest - The VerifyTOTPSetupRequest
  *
