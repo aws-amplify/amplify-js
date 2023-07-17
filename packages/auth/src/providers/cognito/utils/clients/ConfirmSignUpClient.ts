@@ -21,10 +21,8 @@ export async function confirmSignUpClient(
 	params: ConfirmSignUpClientInput
 ): Promise<ConfirmSignUpCommandOutput> {
 	const client = new UserPoolHttpClient(UserPoolClient.region);
-	const result: ConfirmSignUpCommandOutput =
-		await client.send<ConfirmSignUpCommandOutput>('ConfirmSignUp', {
+	return client.send<ConfirmSignUpCommandOutput>('ConfirmSignUp', {
 			...params,
 			ClientId: UserPoolClient.clientId,
-		});
-	return result;
+    });
 }
