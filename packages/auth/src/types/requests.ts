@@ -73,8 +73,8 @@ export type ConfirmSignUpRequest<
 	confirmationCode: string;
 	options?:{
 		serviceOptions?: ServiceOptions
-	};
-
+	}
+};
 /**
  * Constructs a `confirmSignIn` request.
  *
