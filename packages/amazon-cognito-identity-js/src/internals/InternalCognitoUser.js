@@ -143,7 +143,7 @@ export default class InternalCognitoUser {
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
 	 * @returns {void}
 	 */
-	initiateAuth(authDetails, callback) {
+	initiateAuth(authDetails, callback, userAgentValue) {
 		const authParameters = authDetails.getAuthParameters();
 		authParameters.USERNAME = this.username;
 
@@ -162,23 +162,28 @@ export default class InternalCognitoUser {
 			jsonReq.UserContextData = this.getUserContextData();
 		}
 
-		this.client.request('InitiateAuth', jsonReq, (err, data) => {
-			if (err) {
-				return callback.onFailure(err);
-			}
-			const challengeName = data.ChallengeName;
-			const challengeParameters = data.ChallengeParameters;
+		this.client.request(
+			'InitiateAuth',
+			jsonReq,
+			(err, data) => {
+				if (err) {
+					return callback.onFailure(err);
+				}
+				const challengeName = data.ChallengeName;
+				const challengeParameters = data.ChallengeParameters;
 
-			if (challengeName === 'CUSTOM_CHALLENGE') {
-				this.Session = data.Session;
-				return callback.customChallenge(challengeParameters);
-			}
-			this.signInUserSession = this.getCognitoUserSession(
-				data.AuthenticationResult
-			);
-			this.cacheTokens();
-			return callback.onSuccess(this.signInUserSession);
-		});
+				if (challengeName === 'CUSTOM_CHALLENGE') {
+					this.Session = data.Session;
+					return callback.customChallenge(challengeParameters);
+				}
+				this.signInUserSession = this.getCognitoUserSession(
+					data.AuthenticationResult
+				);
+				this.cacheTokens();
+				return callback.onSuccess(this.signInUserSession);
+			},
+			userAgentValue
+		);
 	}
 
 	/**
@@ -196,14 +201,22 @@ export default class InternalCognitoUser {
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
 	 * @returns {void}
 	 */
-	authenticateUser(authDetails, callback) {
+	authenticateUser(authDetails, callback, userAgentValue) {
 		if (this.authenticationFlowType === 'USER_PASSWORD_AUTH') {
-			return this.authenticateUserPlainUsernamePassword(authDetails, callback);
+			return this.authenticateUserPlainUsernamePassword(
+				authDetails,
+				callback,
+				userAgentValue
+			);
 		} else if (
 			this.authenticationFlowType === 'USER_SRP_AUTH' ||
 			this.authenticationFlowType === 'CUSTOM_AUTH'
 		) {
-			return this.authenticateUserDefaultAuth(authDetails, callback);
+			return this.authenticateUserDefaultAuth(
+				authDetails,
+				callback,
+				userAgentValue
+			);
 		}
 		return callback.onFailure(
 			new Error('Authentication flow type is invalid.')
@@ -227,7 +240,7 @@ export default class InternalCognitoUser {
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
 	 * @returns {void}
 	 */
-	authenticateUserDefaultAuth(authDetails, callback) {
+	authenticateUserDefaultAuth(authDetails, callback, userAgentValue) {
 		const authenticationHelper = new AuthenticationHelper(
 			this.pool.getUserPoolName()
 		);
@@ -269,109 +282,120 @@ export default class InternalCognitoUser {
 				jsonReq.UserContextData = this.getUserContextData(this.username);
 			}
 
-			this.client.request('InitiateAuth', jsonReq, (err, data) => {
-				if (err) {
-					return callback.onFailure(err);
-				}
+			this.client.request(
+				'InitiateAuth',
+				jsonReq,
+				(err, data) => {
+					if (err) {
+						return callback.onFailure(err);
+					}
 
-				const challengeParameters = data.ChallengeParameters;
+					const challengeParameters = data.ChallengeParameters;
 
-				this.username = challengeParameters.USER_ID_FOR_SRP;
-				this.userDataKey = `${this.keyPrefix}.${this.username}.userData`;
-				serverBValue = new BigInteger(challengeParameters.SRP_B, 16);
-				salt = new BigInteger(challengeParameters.SALT, 16);
-				this.getCachedDeviceKeyAndPassword();
+					this.username = challengeParameters.USER_ID_FOR_SRP;
+					this.userDataKey = `${this.keyPrefix}.${this.username}.userData`;
+					serverBValue = new BigInteger(challengeParameters.SRP_B, 16);
+					salt = new BigInteger(challengeParameters.SALT, 16);
+					this.getCachedDeviceKeyAndPassword();
 
-				authenticationHelper.getPasswordAuthenticationKey(
-					this.username,
-					authDetails.getPassword(),
-					serverBValue,
-					salt,
-					(errOnHkdf, hkdf) => {
-						// getPasswordAuthenticationKey callback start
-						if (errOnHkdf) {
-							callback.onFailure(errOnHkdf);
-						}
+					authenticationHelper.getPasswordAuthenticationKey(
+						this.username,
+						authDetails.getPassword(),
+						serverBValue,
+						salt,
+						(errOnHkdf, hkdf) => {
+							// getPasswordAuthenticationKey callback start
+							if (errOnHkdf) {
+								callback.onFailure(errOnHkdf);
+							}
 
-						const dateNow = dateHelper.getNowString();
+							const dateNow = dateHelper.getNowString();
 
-						const concatBuffer = Buffer.concat([
-							Buffer.from(this.pool.getUserPoolName(), 'utf8'),
-							Buffer.from(this.username, 'utf8'),
-							Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
-							Buffer.from(dateNow, 'utf8'),
-						]);
+							const concatBuffer = Buffer.concat([
+								Buffer.from(this.pool.getUserPoolName(), 'utf8'),
+								Buffer.from(this.username, 'utf8'),
+								Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
+								Buffer.from(dateNow, 'utf8'),
+							]);
 
-						const awsCryptoHash = new Sha256(hkdf);
-						awsCryptoHash.update(concatBuffer);
+							const awsCryptoHash = new Sha256(hkdf);
+							awsCryptoHash.update(concatBuffer);
 
-						const resultFromAWSCrypto = awsCryptoHash.digestSync();
-						const signatureString =
-							Buffer.from(resultFromAWSCrypto).toString('base64');
+							const resultFromAWSCrypto = awsCryptoHash.digestSync();
+							const signatureString =
+								Buffer.from(resultFromAWSCrypto).toString('base64');
 
-						const challengeResponses = {};
+							const challengeResponses = {};
 
-						challengeResponses.USERNAME = this.username;
-						challengeResponses.PASSWORD_CLAIM_SECRET_BLOCK =
-							challengeParameters.SECRET_BLOCK;
-						challengeResponses.TIMESTAMP = dateNow;
-						challengeResponses.PASSWORD_CLAIM_SIGNATURE = signatureString;
+							challengeResponses.USERNAME = this.username;
+							challengeResponses.PASSWORD_CLAIM_SECRET_BLOCK =
+								challengeParameters.SECRET_BLOCK;
+							challengeResponses.TIMESTAMP = dateNow;
+							challengeResponses.PASSWORD_CLAIM_SIGNATURE = signatureString;
 
-						if (this.deviceKey != null) {
-							challengeResponses.DEVICE_KEY = this.deviceKey;
-						}
+							if (this.deviceKey != null) {
+								challengeResponses.DEVICE_KEY = this.deviceKey;
+							}
 
-						const respondToAuthChallenge = (challenge, challengeCallback) =>
-							this.client.request(
-								'RespondToAuthChallenge',
-								challenge,
-								(errChallenge, dataChallenge) => {
-									if (
-										errChallenge &&
-										errChallenge.code === 'ResourceNotFoundException' &&
-										errChallenge.message.toLowerCase().indexOf('device') !== -1
-									) {
-										challengeResponses.DEVICE_KEY = null;
-										this.deviceKey = null;
-										this.randomPassword = null;
-										this.deviceGroupKey = null;
-										this.clearCachedDeviceKeyAndPassword();
-										return respondToAuthChallenge(challenge, challengeCallback);
+							const respondToAuthChallenge = (challenge, challengeCallback) =>
+								this.client.request(
+									'RespondToAuthChallenge',
+									challenge,
+									(errChallenge, dataChallenge) => {
+										if (
+											errChallenge &&
+											errChallenge.code === 'ResourceNotFoundException' &&
+											errChallenge.message.toLowerCase().indexOf('device') !==
+												-1
+										) {
+											challengeResponses.DEVICE_KEY = null;
+											this.deviceKey = null;
+											this.randomPassword = null;
+											this.deviceGroupKey = null;
+											this.clearCachedDeviceKeyAndPassword();
+											return respondToAuthChallenge(
+												challenge,
+												challengeCallback
+											);
+										}
+										return challengeCallback(errChallenge, dataChallenge);
+									},
+									userAgentValue
+								);
+
+							const jsonReqResp = {
+								ChallengeName: 'PASSWORD_VERIFIER',
+								ClientId: this.pool.getClientId(),
+								ChallengeResponses: challengeResponses,
+								Session: data.Session,
+								ClientMetadata: clientMetaData,
+							};
+							if (this.getUserContextData()) {
+								jsonReqResp.UserContextData = this.getUserContextData();
+							}
+							respondToAuthChallenge(
+								jsonReqResp,
+								(errAuthenticate, dataAuthenticate) => {
+									if (errAuthenticate) {
+										return callback.onFailure(errAuthenticate);
 									}
-									return challengeCallback(errChallenge, dataChallenge);
+
+									return this.authenticateUserInternal(
+										dataAuthenticate,
+										authenticationHelper,
+										callback,
+										userAgentValue
+									);
 								}
 							);
-
-						const jsonReqResp = {
-							ChallengeName: 'PASSWORD_VERIFIER',
-							ClientId: this.pool.getClientId(),
-							ChallengeResponses: challengeResponses,
-							Session: data.Session,
-							ClientMetadata: clientMetaData,
-						};
-						if (this.getUserContextData()) {
-							jsonReqResp.UserContextData = this.getUserContextData();
+							return undefined;
+							// getPasswordAuthenticationKey callback end
 						}
-						respondToAuthChallenge(
-							jsonReqResp,
-							(errAuthenticate, dataAuthenticate) => {
-								if (errAuthenticate) {
-									return callback.onFailure(errAuthenticate);
-								}
-
-								return this.authenticateUserInternal(
-									dataAuthenticate,
-									authenticationHelper,
-									callback
-								);
-							}
-						);
-						return undefined;
-						// getPasswordAuthenticationKey callback end
-					}
-				);
-				return undefined;
-			});
+					);
+					return undefined;
+				},
+				userAgentValue
+			);
 			// getLargeAValue callback end
 		});
 	}
@@ -387,7 +411,7 @@ export default class InternalCognitoUser {
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
 	 * @returns {void}
 	 */
-	authenticateUserPlainUsernamePassword(authDetails, callback) {
+	authenticateUserPlainUsernamePassword(authDetails, callback, userAgentValue) {
 		const authParameters = {};
 		authParameters.USERNAME = this.username;
 		authParameters.PASSWORD = authDetails.getPassword();
@@ -419,16 +443,22 @@ export default class InternalCognitoUser {
 		}
 		// USER_PASSWORD_AUTH happens in a single round-trip: client sends userName and password,
 		// Cognito UserPools verifies password and returns tokens.
-		this.client.request('InitiateAuth', jsonReq, (err, authResult) => {
-			if (err) {
-				return callback.onFailure(err);
-			}
-			return this.authenticateUserInternal(
-				authResult,
-				authenticationHelper,
-				callback
-			);
-		});
+		this.client.request(
+			'InitiateAuth',
+			jsonReq,
+			(err, authResult) => {
+				if (err) {
+					return callback.onFailure(err);
+				}
+				return this.authenticateUserInternal(
+					authResult,
+					authenticationHelper,
+					callback,
+					userAgentValue
+				);
+			},
+			userAgentValue
+		);
 	}
 
 	/**
@@ -439,7 +469,12 @@ export default class InternalCognitoUser {
 	 * @param {callback} callback passed on from caller
 	 * @returns {void}
 	 */
-	authenticateUserInternal(dataAuthenticate, authenticationHelper, callback) {
+	authenticateUserInternal(
+		dataAuthenticate,
+		authenticationHelper,
+		callback,
+		userAgentValue
+	) {
 		const challengeName = dataAuthenticate.ChallengeName;
 		const challengeParameters = dataAuthenticate.ChallengeParameters;
 
@@ -498,7 +533,7 @@ export default class InternalCognitoUser {
 
 		if (challengeName === 'DEVICE_SRP_AUTH') {
 			this.Session = dataAuthenticate.Session;
-			this.getDeviceResponse(callback);
+			this.getDeviceResponse(callback, undefined, userAgentValue);
 			return undefined;
 		}
 
@@ -560,7 +595,8 @@ export default class InternalCognitoUser {
 							);
 						}
 						return callback.onSuccess(this.signInUserSession);
-					}
+					},
+					userAgentValue
 				);
 				return undefined;
 			}
@@ -587,7 +623,8 @@ export default class InternalCognitoUser {
 		newPassword,
 		requiredAttributeData,
 		callback,
-		clientMetadata
+		clientMetadata,
+		userAgentValue
 	) {
 		if (!newPassword) {
 			return callback.onFailure(new Error('New password is required.'));
@@ -629,9 +666,11 @@ export default class InternalCognitoUser {
 				return this.authenticateUserInternal(
 					dataAuthenticate,
 					authenticationHelper,
-					callback
+					callback,
+					userAgentValue
 				);
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -647,7 +686,7 @@ export default class InternalCognitoUser {
 	 * @returns {void}
 	 * @private
 	 */
-	getDeviceResponse(callback, clientMetadata) {
+	getDeviceResponse(callback, clientMetadata, userAgentValue) {
 		const authenticationHelper = new AuthenticationHelper(this.deviceGroupKey);
 		const dateHelper = new DateHelper();
 
@@ -673,84 +712,90 @@ export default class InternalCognitoUser {
 			if (this.getUserContextData()) {
 				jsonReq.UserContextData = this.getUserContextData();
 			}
-			this.client.request('RespondToAuthChallenge', jsonReq, (err, data) => {
-				if (err) {
-					return callback.onFailure(err);
-				}
-
-				const challengeParameters = data.ChallengeParameters;
-
-				const serverBValue = new BigInteger(challengeParameters.SRP_B, 16);
-				const salt = new BigInteger(challengeParameters.SALT, 16);
-
-				authenticationHelper.getPasswordAuthenticationKey(
-					this.deviceKey,
-					this.randomPassword,
-					serverBValue,
-					salt,
-					(errHkdf, hkdf) => {
-						// getPasswordAuthenticationKey callback start
-						if (errHkdf) {
-							return callback.onFailure(errHkdf);
-						}
-
-						const dateNow = dateHelper.getNowString();
-
-						const concatBuffer = Buffer.concat([
-							Buffer.from(this.deviceGroupKey, 'utf8'),
-							Buffer.from(this.deviceKey, 'utf8'),
-							Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
-							Buffer.from(dateNow, 'utf8'),
-						]);
-
-						const awsCryptoHash = new Sha256(hkdf);
-						awsCryptoHash.update(concatBuffer);
-
-						const resultFromAWSCrypto = awsCryptoHash.digestSync();
-						const signatureString =
-							Buffer.from(resultFromAWSCrypto).toString('base64');
-
-						const challengeResponses = {};
-
-						challengeResponses.USERNAME = this.username;
-						challengeResponses.PASSWORD_CLAIM_SECRET_BLOCK =
-							challengeParameters.SECRET_BLOCK;
-						challengeResponses.TIMESTAMP = dateNow;
-						challengeResponses.PASSWORD_CLAIM_SIGNATURE = signatureString;
-						challengeResponses.DEVICE_KEY = this.deviceKey;
-
-						const jsonReqResp = {
-							ChallengeName: 'DEVICE_PASSWORD_VERIFIER',
-							ClientId: this.pool.getClientId(),
-							ChallengeResponses: challengeResponses,
-							Session: data.Session,
-						};
-						if (this.getUserContextData()) {
-							jsonReqResp.UserContextData = this.getUserContextData();
-						}
-
-						this.client.request(
-							'RespondToAuthChallenge',
-							jsonReqResp,
-							(errAuthenticate, dataAuthenticate) => {
-								if (errAuthenticate) {
-									return callback.onFailure(errAuthenticate);
-								}
-
-								this.signInUserSession = this.getCognitoUserSession(
-									dataAuthenticate.AuthenticationResult
-								);
-								this.cacheTokens();
-
-								return callback.onSuccess(this.signInUserSession);
-							}
-						);
-						return undefined;
-						// getPasswordAuthenticationKey callback end
+			this.client.request(
+				'RespondToAuthChallenge',
+				jsonReq,
+				(err, data) => {
+					if (err) {
+						return callback.onFailure(err);
 					}
-				);
-				return undefined;
-			});
+
+					const challengeParameters = data.ChallengeParameters;
+
+					const serverBValue = new BigInteger(challengeParameters.SRP_B, 16);
+					const salt = new BigInteger(challengeParameters.SALT, 16);
+
+					authenticationHelper.getPasswordAuthenticationKey(
+						this.deviceKey,
+						this.randomPassword,
+						serverBValue,
+						salt,
+						(errHkdf, hkdf) => {
+							// getPasswordAuthenticationKey callback start
+							if (errHkdf) {
+								return callback.onFailure(errHkdf);
+							}
+
+							const dateNow = dateHelper.getNowString();
+
+							const concatBuffer = Buffer.concat([
+								Buffer.from(this.deviceGroupKey, 'utf8'),
+								Buffer.from(this.deviceKey, 'utf8'),
+								Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
+								Buffer.from(dateNow, 'utf8'),
+							]);
+
+							const awsCryptoHash = new Sha256(hkdf);
+							awsCryptoHash.update(concatBuffer);
+
+							const resultFromAWSCrypto = awsCryptoHash.digestSync();
+							const signatureString =
+								Buffer.from(resultFromAWSCrypto).toString('base64');
+
+							const challengeResponses = {};
+
+							challengeResponses.USERNAME = this.username;
+							challengeResponses.PASSWORD_CLAIM_SECRET_BLOCK =
+								challengeParameters.SECRET_BLOCK;
+							challengeResponses.TIMESTAMP = dateNow;
+							challengeResponses.PASSWORD_CLAIM_SIGNATURE = signatureString;
+							challengeResponses.DEVICE_KEY = this.deviceKey;
+
+							const jsonReqResp = {
+								ChallengeName: 'DEVICE_PASSWORD_VERIFIER',
+								ClientId: this.pool.getClientId(),
+								ChallengeResponses: challengeResponses,
+								Session: data.Session,
+							};
+							if (this.getUserContextData()) {
+								jsonReqResp.UserContextData = this.getUserContextData();
+							}
+
+							this.client.request(
+								'RespondToAuthChallenge',
+								jsonReqResp,
+								(errAuthenticate, dataAuthenticate) => {
+									if (errAuthenticate) {
+										return callback.onFailure(errAuthenticate);
+									}
+
+									this.signInUserSession = this.getCognitoUserSession(
+										dataAuthenticate.AuthenticationResult
+									);
+									this.cacheTokens();
+
+									return callback.onSuccess(this.signInUserSession);
+								},
+								userAgentValue
+							);
+							return undefined;
+							// getPasswordAuthenticationKey callback end
+						}
+					);
+					return undefined;
+				},
+				userAgentValue
+			);
 			// getLargeAValue callback end
 		});
 	}
@@ -798,7 +843,12 @@ export default class InternalCognitoUser {
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	sendCustomChallengeAnswer(answerChallenge, callback, clientMetadata) {
+	sendCustomChallengeAnswer(
+		answerChallenge,
+		callback,
+		clientMetadata,
+		userAgentValue
+	) {
 		const challengeResponses = {};
 		challengeResponses.USERNAME = this.username;
 		challengeResponses.ANSWER = answerChallenge;
@@ -829,7 +879,8 @@ export default class InternalCognitoUser {
 			return this.authenticateUserInternal(
 				data,
 				authenticationHelper,
-				callback
+				callback,
+				userAgentValue
 			);
 		});
 	}
@@ -844,7 +895,13 @@ export default class InternalCognitoUser {
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	sendMFACode(confirmationCode, callback, mfaType, clientMetadata) {
+	sendMFACode(
+		confirmationCode,
+		callback,
+		mfaType,
+		clientMetadata,
+		userAgentValue
+	) {
 		const challengeResponses = {};
 		challengeResponses.USERNAME = this.username;
 		challengeResponses.SMS_MFA_CODE = confirmationCode;
@@ -879,7 +936,7 @@ export default class InternalCognitoUser {
 				const challengeName = dataAuthenticate.ChallengeName;
 
 				if (challengeName === 'DEVICE_SRP_AUTH') {
-					this.getDeviceResponse(callback);
+					this.getDeviceResponse(callback, undefined, userAgentValue);
 					return undefined;
 				}
 
@@ -947,13 +1004,15 @@ export default class InternalCognitoUser {
 									);
 								}
 								return callback.onSuccess(this.signInUserSession);
-							}
+							},
+							userAgentValue
 						);
 						return undefined;
 					}
 				);
 				return undefined;
-			}
+			},
+			userAgentValue
 		);
 	}
 
@@ -965,7 +1024,13 @@ export default class InternalCognitoUser {
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	changePassword(oldUserPassword, newUserPassword, callback, clientMetadata) {
+	changePassword(
+		oldUserPassword,
+		newUserPassword,
+		callback,
+		clientMetadata,
+		userAgentValue
+	) {
 		if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -983,7 +1048,8 @@ export default class InternalCognitoUser {
 					return callback(err, null);
 				}
 				return callback(null, 'SUCCESS');
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -994,7 +1060,7 @@ export default class InternalCognitoUser {
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	enableMFA(callback) {
+	enableMFA(callback, userAgentValue) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -1017,7 +1083,8 @@ export default class InternalCognitoUser {
 					return callback(err, null);
 				}
 				return callback(null, 'SUCCESS');
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1029,7 +1096,12 @@ export default class InternalCognitoUser {
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	setUserMfaPreference(smsMfaSettings, softwareTokenMfaSettings, callback) {
+	setUserMfaPreference(
+		smsMfaSettings,
+		softwareTokenMfaSettings,
+		callback,
+		userAgentValue
+	) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -1046,7 +1118,8 @@ export default class InternalCognitoUser {
 					return callback(err, null);
 				}
 				return callback(null, 'SUCCESS');
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1057,7 +1130,7 @@ export default class InternalCognitoUser {
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	disableMFA(callback) {
+	disableMFA(callback, userAgentValue) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -1075,7 +1148,8 @@ export default class InternalCognitoUser {
 					return callback(err, null);
 				}
 				return callback(null, 'SUCCESS');
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1086,7 +1160,7 @@ export default class InternalCognitoUser {
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	deleteUser(callback, clientMetadata) {
+	deleteUser(callback, clientMetadata, userAgentValue) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -1103,7 +1177,8 @@ export default class InternalCognitoUser {
 				}
 				this.clearCachedUser();
 				return callback(null, 'SUCCESS');
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1118,7 +1193,7 @@ export default class InternalCognitoUser {
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	updateAttributes(attributes, callback, clientMetadata) {
+	updateAttributes(attributes, callback, clientMetadata, userAgentValue) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -1136,10 +1211,15 @@ export default class InternalCognitoUser {
 				}
 
 				// update cached user
-				return this.getUserData(() => callback(null, 'SUCCESS', result), {
-					bypassCache: true,
-				});
-			}
+				return this.getUserData(
+					() => callback(null, 'SUCCESS', result),
+					{
+						bypassCache: true,
+					},
+					userAgentValue
+				);
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1149,7 +1229,7 @@ export default class InternalCognitoUser {
 	 * @param {nodeCallback<CognitoUserAttribute[]>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	getUserAttributes(callback) {
+	getUserAttributes(callback, userAgentValue) {
 		if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -1176,7 +1256,8 @@ export default class InternalCognitoUser {
 				}
 
 				return callback(null, attributeList);
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1189,7 +1270,7 @@ export default class InternalCognitoUser {
 	 * @param {nodeCallback<MFAOptions>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	getMFAOptions(callback) {
+	getMFAOptions(callback, userAgentValue) {
 		if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -1205,7 +1286,8 @@ export default class InternalCognitoUser {
 				}
 
 				return callback(null, userData.MFAOptions);
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1214,22 +1296,31 @@ export default class InternalCognitoUser {
 	 * PRIVATE ONLY: This is an internal only method and should not
 	 * be directly called by the consumers.
 	 */
-	createGetUserRequest() {
-		return this.client.promisifyRequest('GetUser', {
-			AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
-		});
+	createGetUserRequest(userAgentValue) {
+		return this.client.promisifyRequest(
+			'GetUser',
+			{
+				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+			},
+			userAgentValue
+		);
 	}
 
 	/**
 	 * PRIVATE ONLY: This is an internal only method and should not
 	 * be directly called by the consumers.
 	 */
-	refreshSessionIfPossible(options = {}) {
+	refreshSessionIfPossible(options = {}, userAgentValue) {
 		// best effort, if not possible
 		return new Promise(resolve => {
 			const refresh = this.signInUserSession.getRefreshToken();
 			if (refresh && refresh.getToken()) {
-				this.refreshSession(refresh, resolve, options.clientMetadata);
+				this.refreshSession(
+					refresh,
+					resolve,
+					options.clientMetadata,
+					userAgentValue
+				);
 			} else {
 				resolve();
 			}
@@ -1248,7 +1339,7 @@ export default class InternalCognitoUser {
 	 * @param {GetUserDataOptions} params
 	 * @returns {void}
 	 */
-	getUserData(callback, params) {
+	getUserData(callback, params, userAgentValue) {
 		if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 			this.clearCachedUserData();
 			return callback(new Error('User is not authenticated'), null);
@@ -1268,7 +1359,9 @@ export default class InternalCognitoUser {
 		if (this.isFetchUserDataAndTokenRequired(params)) {
 			this.fetchUserData()
 				.then(data => {
-					return this.refreshSessionIfPossible(params).then(() => data);
+					return this.refreshSessionIfPossible(params, userAgentValue).then(
+						() => data
+					);
 				})
 				.then(data => callback(null, data))
 				.catch(callback);
@@ -1311,11 +1404,11 @@ export default class InternalCognitoUser {
 	 * PRIVATE ONLY: This is an internal only method and should not
 	 * be directly called by the consumers.
 	 */
-	fetchUserData() {
+	fetchUserData(userAgentValue) {
 		return this.createGetUserRequest().then(data => {
 			this.cacheUserData(data);
 			return data;
-		});
+		}, userAgentValue);
 	}
 
 	/**
@@ -1324,7 +1417,7 @@ export default class InternalCognitoUser {
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	deleteAttributes(attributeList, callback) {
+	deleteAttributes(attributeList, callback, userAgentValue) {
 		if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -1341,10 +1434,15 @@ export default class InternalCognitoUser {
 				}
 
 				// update cached user
-				return this.getUserData(() => callback(null, 'SUCCESS'), {
-					bypassCache: true,
-				});
-			}
+				return this.getUserData(
+					() => callback(null, 'SUCCESS'),
+					{
+						bypassCache: true,
+					},
+					userAgentValue
+				);
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1355,19 +1453,24 @@ export default class InternalCognitoUser {
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	resendConfirmationCode(callback, clientMetadata) {
+	resendConfirmationCode(callback, clientMetadata, userAgentValue) {
 		const jsonReq = {
 			ClientId: this.pool.getClientId(),
 			Username: this.username,
 			ClientMetadata: clientMetadata,
 		};
 
-		this.client.request('ResendConfirmationCode', jsonReq, (err, result) => {
-			if (err) {
-				return callback(err, null);
-			}
-			return callback(null, result);
-		});
+		this.client.request(
+			'ResendConfirmationCode',
+			jsonReq,
+			(err, result) => {
+				if (err) {
+					return callback(err, null);
+				}
+				return callback(null, result);
+			},
+			userAgentValue
+		);
 	}
 
 	/**
@@ -1435,7 +1538,12 @@ export default class InternalCognitoUser {
 				);
 			}
 
-			this.refreshSession(refreshToken, callback, options.clientMetadata);
+			this.refreshSession(
+				refreshToken,
+				callback,
+				options.clientMetadata,
+				userAgentValue
+			);
 		} else {
 			callback(
 				new Error('Local storage is missing an ID Token, Please authenticate'),
@@ -1453,7 +1561,7 @@ export default class InternalCognitoUser {
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	refreshSession(refreshToken, callback, clientMetadata) {
+	refreshSession(refreshToken, callback, clientMetadata, userAgentValue) {
 		const wrappedCallback = this.pool.wrapRefreshSessionCallback
 			? this.pool.wrapRefreshSessionCallback(callback)
 			: callback;
@@ -1478,30 +1586,35 @@ export default class InternalCognitoUser {
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
 		}
-		this.client.request('InitiateAuth', jsonReq, (err, authResult) => {
-			if (err) {
-				if (err.code === 'NotAuthorizedException') {
-					this.clearCachedUser();
+		this.client.request(
+			'InitiateAuth',
+			jsonReq,
+			(err, authResult) => {
+				if (err) {
+					if (err.code === 'NotAuthorizedException') {
+						this.clearCachedUser();
+					}
+					return wrappedCallback(err, null);
 				}
-				return wrappedCallback(err, null);
-			}
-			if (authResult) {
-				const authenticationResult = authResult.AuthenticationResult;
-				if (
-					!Object.prototype.hasOwnProperty.call(
-						authenticationResult,
-						'RefreshToken'
-					)
-				) {
-					authenticationResult.RefreshToken = refreshToken.getToken();
+				if (authResult) {
+					const authenticationResult = authResult.AuthenticationResult;
+					if (
+						!Object.prototype.hasOwnProperty.call(
+							authenticationResult,
+							'RefreshToken'
+						)
+					) {
+						authenticationResult.RefreshToken = refreshToken.getToken();
+					}
+					this.signInUserSession =
+						this.getCognitoUserSession(authenticationResult);
+					this.cacheTokens();
+					return wrappedCallback(null, this.signInUserSession);
 				}
-				this.signInUserSession =
-					this.getCognitoUserSession(authenticationResult);
-				this.cacheTokens();
-				return wrappedCallback(null, this.signInUserSession);
-			}
-			return undefined;
-		});
+				return undefined;
+			},
+			userAgentValue
+		);
 	}
 
 	/**
@@ -1656,7 +1769,7 @@ export default class InternalCognitoUser {
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	forgotPassword(callback, clientMetadata) {
+	forgotPassword(callback, clientMetadata, userAgentValue) {
 		const jsonReq = {
 			ClientId: this.pool.getClientId(),
 			Username: this.username,
@@ -1665,15 +1778,20 @@ export default class InternalCognitoUser {
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
 		}
-		this.client.request('ForgotPassword', jsonReq, (err, data) => {
-			if (err) {
-				return callback.onFailure(err);
-			}
-			if (typeof callback.inputVerificationCode === 'function') {
-				return callback.inputVerificationCode(data);
-			}
-			return callback.onSuccess(data);
-		});
+		this.client.request(
+			'ForgotPassword',
+			jsonReq,
+			(err, data) => {
+				if (err) {
+					return callback.onFailure(err);
+				}
+				if (typeof callback.inputVerificationCode === 'function') {
+					return callback.inputVerificationCode(data);
+				}
+				return callback.onSuccess(data);
+			},
+			userAgentValue
+		);
 	}
 
 	/**
@@ -1697,12 +1815,17 @@ export default class InternalCognitoUser {
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
 		}
-		this.client.request('ConfirmForgotPassword', jsonReq, err => {
-			if (err) {
-				return callback.onFailure(err);
-			}
-			return callback.onSuccess('SUCCESS');
-		});
+		this.client.request(
+			'ConfirmForgotPassword',
+			jsonReq,
+			err => {
+				if (err) {
+					return callback.onFailure(err);
+				}
+				return callback.onSuccess('SUCCESS');
+			},
+			userAgentValue
+		);
 	}
 
 	/**
@@ -1714,7 +1837,12 @@ export default class InternalCognitoUser {
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	getAttributeVerificationCode(attributeName, callback, clientMetadata) {
+	getAttributeVerificationCode(
+		attributeName,
+		callback,
+		clientMetadata,
+		userAgentValue
+	) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
@@ -1734,7 +1862,8 @@ export default class InternalCognitoUser {
 					return callback.inputVerificationCode(data);
 				}
 				return callback.onSuccess('SUCCESS');
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1748,7 +1877,7 @@ export default class InternalCognitoUser {
 	 * @param {onSuccess<string>} callback.onSuccess Called on success.
 	 * @returns {void}
 	 */
-	verifyAttribute(attributeName, confirmationCode, callback) {
+	verifyAttribute(attributeName, confirmationCode, callback, userAgentValue) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
@@ -1765,7 +1894,8 @@ export default class InternalCognitoUser {
 					return callback.onFailure(err);
 				}
 				return callback.onSuccess('SUCCESS');
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1777,7 +1907,7 @@ export default class InternalCognitoUser {
 	 * @param {onSuccess<*>} callback.onSuccess Called on success with device data.
 	 * @returns {void}
 	 */
-	getDevice(callback) {
+	getDevice(callback, userAgentValue) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
@@ -1793,7 +1923,8 @@ export default class InternalCognitoUser {
 					return callback.onFailure(err);
 				}
 				return callback.onSuccess(data);
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1806,7 +1937,7 @@ export default class InternalCognitoUser {
 	 * @param {onSuccess<string>} callback.onSuccess Called on success.
 	 * @returns {void}
 	 */
-	forgetSpecificDevice(deviceKey, callback) {
+	forgetSpecificDevice(deviceKey, callback, userAgentValue) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
@@ -1822,7 +1953,8 @@ export default class InternalCognitoUser {
 					return callback.onFailure(err);
 				}
 				return callback.onSuccess('SUCCESS');
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1834,17 +1966,21 @@ export default class InternalCognitoUser {
 	 * @param {onSuccess<string>} callback.onSuccess Called on success.
 	 * @returns {void}
 	 */
-	forgetDevice(callback) {
-		this.forgetSpecificDevice(this.deviceKey, {
-			onFailure: callback.onFailure,
-			onSuccess: result => {
-				this.deviceKey = null;
-				this.deviceGroupKey = null;
-				this.randomPassword = null;
-				this.clearCachedDeviceKeyAndPassword();
-				return callback.onSuccess(result);
+	forgetDevice(callback, userAgentValue) {
+		this.forgetSpecificDevice(
+			this.deviceKey,
+			{
+				onFailure: callback.onFailure,
+				onSuccess: result => {
+					this.deviceKey = null;
+					this.deviceGroupKey = null;
+					this.randomPassword = null;
+					this.clearCachedDeviceKeyAndPassword();
+					return callback.onSuccess(result);
+				},
 			},
-		});
+			userAgentValue
+		);
 	}
 
 	/**
@@ -1854,7 +1990,7 @@ export default class InternalCognitoUser {
 	 * @param {onSuccess<string>} callback.onSuccess Called on success.
 	 * @returns {void}
 	 */
-	setDeviceStatusRemembered(callback) {
+	setDeviceStatusRemembered(callback, userAgentValue) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
@@ -1871,7 +2007,8 @@ export default class InternalCognitoUser {
 					return callback.onFailure(err);
 				}
 				return callback.onSuccess('SUCCESS');
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1883,7 +2020,7 @@ export default class InternalCognitoUser {
 	 * @param {onSuccess<string>} callback.onSuccess Called on success.
 	 * @returns {void}
 	 */
-	setDeviceStatusNotRemembered(callback) {
+	setDeviceStatusNotRemembered(callback, userAgentValue) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
@@ -1900,7 +2037,8 @@ export default class InternalCognitoUser {
 					return callback.onFailure(err);
 				}
 				return callback.onSuccess('SUCCESS');
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1915,7 +2053,7 @@ export default class InternalCognitoUser {
 	 * @param {onSuccess<*>} callback.onSuccess Called on success with device list.
 	 * @returns {void}
 	 */
-	listDevices(limit, paginationToken, callback) {
+	listDevices(limit, paginationToken, callback, userAgentValue) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
@@ -1928,12 +2066,17 @@ export default class InternalCognitoUser {
 			requestParams.PaginationToken = paginationToken;
 		}
 
-		this.client.request('ListDevices', requestParams, (err, data) => {
-			if (err) {
-				return callback.onFailure(err);
-			}
-			return callback.onSuccess(data);
-		});
+		this.client.request(
+			'ListDevices',
+			requestParams,
+			(err, data) => {
+				if (err) {
+					return callback.onFailure(err);
+				}
+				return callback.onSuccess(data);
+			},
+			userAgentValue
+		);
 		return undefined;
 	}
 
@@ -1944,7 +2087,7 @@ export default class InternalCognitoUser {
 	 * @param {onSuccess<string>} callback.onSuccess Called on success.
 	 * @returns {void}
 	 */
-	globalSignOut(callback) {
+	globalSignOut(callback, userAgentValue) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
@@ -1960,7 +2103,8 @@ export default class InternalCognitoUser {
 				}
 				this.clearCachedUser();
 				return callback.onSuccess('SUCCESS');
-			}
+			},
+			userAgentValue
 		);
 		return undefined;
 	}
@@ -1969,7 +2113,7 @@ export default class InternalCognitoUser {
 	 * This is used for the user to signOut of the application and clear the cached tokens.
 	 * @returns {void}
 	 */
-	signOut(revokeTokenCallback) {
+	signOut(revokeTokenCallback, userAgentValue) {
 		// If tokens won't be revoked, we just clean the client data.
 		if (!revokeTokenCallback || typeof revokeTokenCallback !== 'function') {
 			this.cleanClientData();
@@ -1986,11 +2130,11 @@ export default class InternalCognitoUser {
 				this.cleanClientData();
 
 				revokeTokenCallback(err);
-			});
+			}, userAgentValue);
 		});
 	}
 
-	revokeTokens(revokeTokenCallback = () => {}) {
+	revokeTokens(revokeTokenCallback = () => {}, userAgentValue) {
 		if (typeof revokeTokenCallback !== 'function') {
 			throw new Error('Invalid revokeTokenCallback. It should be a function.');
 		}
@@ -2014,10 +2158,13 @@ export default class InternalCognitoUser {
 
 		if (this.isSessionRevocable(accessToken)) {
 			if (refreshToken) {
-				return this.revokeToken({
-					token: refreshToken,
-					callback: revokeTokenCallback,
-				});
+				return this.revokeToken(
+					{
+						token: refreshToken,
+						callback: revokeTokenCallback,
+					},
+					userAgentValue
+				);
 			}
 		}
 		revokeTokenCallback();
@@ -2041,7 +2188,7 @@ export default class InternalCognitoUser {
 		this.clearCachedUser();
 	}
 
-	revokeToken({ token, callback }) {
+	revokeToken({ token, callback }, userAgentValue) {
 		this.client.requestWithRetry(
 			'RevokeToken',
 			{
@@ -2054,7 +2201,8 @@ export default class InternalCognitoUser {
 				}
 
 				callback();
-			}
+			},
+			userAgentValue
 		);
 	}
 
@@ -2064,7 +2212,7 @@ export default class InternalCognitoUser {
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	sendMFASelectionAnswer(answerChallenge, callback) {
+	sendMFASelectionAnswer(answerChallenge, callback, userAgentValue) {
 		const challengeResponses = {};
 		challengeResponses.USERNAME = this.username;
 		challengeResponses.ANSWER = answerChallenge;
@@ -2078,25 +2226,30 @@ export default class InternalCognitoUser {
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
 		}
-		this.client.request('RespondToAuthChallenge', jsonReq, (err, data) => {
-			if (err) {
-				return callback.onFailure(err);
-			}
-			this.Session = data.Session;
-			if (answerChallenge === 'SMS_MFA') {
-				return callback.mfaRequired(
-					data.ChallengeName,
-					data.ChallengeParameters
-				);
-			}
-			if (answerChallenge === 'SOFTWARE_TOKEN_MFA') {
-				return callback.totpRequired(
-					data.ChallengeName,
-					data.ChallengeParameters
-				);
-			}
-			return undefined;
-		});
+		this.client.request(
+			'RespondToAuthChallenge',
+			jsonReq,
+			(err, data) => {
+				if (err) {
+					return callback.onFailure(err);
+				}
+				this.Session = data.Session;
+				if (answerChallenge === 'SMS_MFA') {
+					return callback.mfaRequired(
+						data.ChallengeName,
+						data.ChallengeParameters
+					);
+				}
+				if (answerChallenge === 'SOFTWARE_TOKEN_MFA') {
+					return callback.totpRequired(
+						data.ChallengeName,
+						data.ChallengeParameters
+					);
+				}
+				return undefined;
+			},
+			userAgentValue
+		);
 	}
 
 	/**
@@ -2113,7 +2266,7 @@ export default class InternalCognitoUser {
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	associateSoftwareToken(callback) {
+	associateSoftwareToken(callback, userAgentValue) {
 		if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 			this.client.request(
 				'AssociateSoftwareToken',
@@ -2126,7 +2279,8 @@ export default class InternalCognitoUser {
 					}
 					this.Session = data.Session;
 					return callback.associateSecretCode(data.SecretCode);
-				}
+				},
+				userAgentValue
 			);
 		} else {
 			this.client.request(
@@ -2139,7 +2293,8 @@ export default class InternalCognitoUser {
 						return callback.onFailure(err);
 					}
 					return callback.associateSecretCode(data.SecretCode);
-				}
+				},
+				userAgentValue
 			);
 		}
 	}
@@ -2151,7 +2306,7 @@ export default class InternalCognitoUser {
 	 * @param {nodeCallback<string>} callback Called on success or error.
 	 * @returns {void}
 	 */
-	verifySoftwareToken(totpCode, friendlyDeviceName, callback) {
+	verifySoftwareToken(totpCode, friendlyDeviceName, callback, userAgentValue) {
 		if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 			this.client.request(
 				'VerifySoftwareToken',
@@ -2188,10 +2343,12 @@ export default class InternalCognitoUser {
 							);
 							this.cacheTokens();
 							return callback.onSuccess(this.signInUserSession);
-						}
+						},
+						userAgentValue
 					);
 					return undefined;
-				}
+				},
+				userAgentValue
 			);
 		} else {
 			this.client.request(
@@ -2206,7 +2363,8 @@ export default class InternalCognitoUser {
 						return callback.onFailure(err);
 					}
 					return callback.onSuccess(data);
-				}
+				},
+				userAgentValue
 			);
 		}
 	}
