@@ -315,7 +315,7 @@ export class InternalStorageClass {
 			...config,
 			abortSignal: abortController.signal,
 			userAgentValue: getStorageUserAgentValue(
-				StorageAction.Copy,
+				StorageAction.Get,
 				customUserAgentDetails
 			),
 		});
@@ -392,7 +392,7 @@ export class InternalStorageClass {
 			...config,
 			abortSignal: abortController.signal,
 			userAgentValue: getStorageUserAgentValue(
-				StorageAction.Copy,
+				StorageAction.Put,
 				customUserAgentDetails
 			),
 		});
@@ -431,7 +431,7 @@ export class InternalStorageClass {
 		return plugin.remove(key, {
 			...config,
 			userAgentValue: getStorageUserAgentValue(
-				StorageAction.Copy,
+				StorageAction.Remove,
 				customUserAgentDetails
 			),
 		}) as StorageRemoveOutput<T>;
@@ -466,7 +466,7 @@ export class InternalStorageClass {
 		return plugin.list(path, {
 			...config,
 			userAgentValue: getStorageUserAgentValue(
-				StorageAction.Copy,
+				StorageAction.List,
 				customUserAgentDetails
 			),
 		}) as StorageListOutput<T>;
