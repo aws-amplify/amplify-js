@@ -1804,7 +1804,13 @@ export default class InternalCognitoUser {
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	confirmPassword(confirmationCode, newPassword, callback, clientMetadata) {
+	confirmPassword(
+		confirmationCode,
+		newPassword,
+		callback,
+		clientMetadata,
+		userAgentValue
+	) {
 		const jsonReq = {
 			ClientId: this.pool.getClientId(),
 			Username: this.username,
