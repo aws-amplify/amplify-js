@@ -6,6 +6,7 @@ import {
 	Hub,
 	HubCallback,
 	HubCapsule,
+	InAppMessagingAction,
 	StorageHelper,
 } from '@aws-amplify/core';
 
@@ -27,6 +28,7 @@ import {
 import InAppMessaging, {
 	InAppMessageInteractionEvent,
 } from '../../src/InAppMessaging';
+import { getUserAgentValue } from '../../src/InAppMessaging/internals/utils';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../src/common/eventListeners');
@@ -286,7 +288,8 @@ describe('InAppMessaging', () => {
 
 			expect(mockInAppMessagingProvider.identifyUser).toBeCalledWith(
 				userId,
-				userInfo
+				userInfo,
+				getUserAgentValue(InAppMessagingAction.IdentifyUser)
 			);
 		});
 
