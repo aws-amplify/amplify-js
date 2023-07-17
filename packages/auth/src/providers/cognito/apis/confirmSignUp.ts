@@ -15,7 +15,7 @@ import { ConfirmSignUpException } from '../types/errors';
 import { confirmSignUpClient } from '../utils/clients/ConfirmSignUpClient';
 
 /**
- * Confirms a user account
+ * Confirms a new user account.
  *
  * @param confirmSignUpRequest - The ConfirmSignUpRequest object.
  * @throws -{@link ConfirmSignUpException }
