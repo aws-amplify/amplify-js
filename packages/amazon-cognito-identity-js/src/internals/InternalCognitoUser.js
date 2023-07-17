@@ -5,17 +5,17 @@
 
 import { Buffer } from 'buffer';
 import { Sha256 } from '@aws-crypto/sha256-js';
-import { Platform } from './Platform';
+import { Platform } from '../Platform';
 
-import BigInteger from './BigInteger';
-import AuthenticationHelper from './AuthenticationHelper';
-import CognitoAccessToken from './CognitoAccessToken';
-import CognitoIdToken from './CognitoIdToken';
-import CognitoRefreshToken from './CognitoRefreshToken';
-import CognitoUserSession from './CognitoUserSession';
-import DateHelper from './DateHelper';
-import CognitoUserAttribute from './CognitoUserAttribute';
-import StorageHelper from './StorageHelper';
+import BigInteger from '../BigInteger';
+import AuthenticationHelper from '../AuthenticationHelper';
+import CognitoAccessToken from '../CognitoAccessToken';
+import CognitoIdToken from '../CognitoIdToken';
+import CognitoRefreshToken from '../CognitoRefreshToken';
+import CognitoUserSession from '../CognitoUserSession';
+import DateHelper from '../DateHelper';
+import CognitoUserAttribute from '../CognitoUserAttribute';
+import StorageHelper from '../StorageHelper';
 
 /**
  * @callback nodeCallback
@@ -64,7 +64,7 @@ const userAgent = isNavigatorAvailable
 	: 'nodejs';
 
 /** @class */
-export default class CognitoUser {
+export default class InternalCognitoUser {
 	/**
 	 * Constructs a new CognitoUser object
 	 * @param {object} data Creation options
