@@ -7,8 +7,6 @@ import { AWSS3Provider as StorageProvider } from '../../src/providers/AWSS3Provi
 import { StorageOptions } from '../../src';
 import { headObject, getObject } from '../../src/AwsClients/S3';
 import { presignUrl } from '@aws-amplify/core/internals/aws-client-utils';
-import { getStorageUserAgentValue } from '../../src/common/StorageUtils';
-import { Storage } from '../../src/Storage';
 
 jest.mock('../../src/AwsClients/S3');
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
@@ -32,7 +30,7 @@ const options: StorageOptions = {
 	level: 'public',
 };
 
-let storage: Storage;
+let storage: StorageProvider;
 
 const originalLoadS3Config = utils.loadS3Config;
 // @ts-ignore
@@ -44,7 +42,7 @@ describe('Each Storage call should create a client with the right StorageAction'
 		jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 			return Promise.resolve(credentials);
 		});
-		storage = new Storage();
+		storage = new StorageProvider();
 		storage.configure(options);
 		mockHeadObject.mockResolvedValue({
 			ContentLength: '100',
@@ -59,73 +57,73 @@ describe('Each Storage call should create a client with the right StorageAction'
 		jest.clearAllMocks();
 	});
 
-	// test('getUrl', async () => {
-	// 	await storage.get('test');
-	// 	expect(utils.loadS3Config).toBeCalledWith(
-	// 		expect.objectContaining({
-	// 			userAgentValue: getStorageUserAgentValue(StorageAction.Get),
-	// 		})
-	// 	);
-	// });
+	test('getUrl', async () => {
+		await storage.get('test');
+		expect(utils.loadS3Config).toBeCalledWith(
+			expect.objectContaining({
+				storageAction: StorageAction.Get,
+			})
+		);
+	});
 
 	test('getProperties', async () => {
 		await storage.getProperties('test');
 		expect(utils.loadS3Config).toBeCalledWith(
 			expect.objectContaining({
-				userAgentValue: getStorageUserAgentValue(StorageAction.GetProperties),
+				storageAction: StorageAction.GetProperties,
 			})
 		);
 	});
 
-	// test('download', async () => {
-	// 	mockGetObject.mockResolvedValue({
-	// 		Body: {
-	// 			size: '',
-	// 			length: '',
-	// 		},
-	// 	});
+	test('download', async () => {
+		mockGetObject.mockResolvedValue({
+			Body: {
+				size: '',
+				length: '',
+			},
+		});
 
-	// 	await storage.get('test', { download: true });
-	// 	expect(utils.loadS3Config).toBeCalledWith(
-	// 		expect.objectContaining({
-	// 			userAgentValue: getStorageUserAgentValue(StorageAction.Get),
-	// 		})
-	// 	);
-	// });
+		await storage.get('test', { download: true });
+		expect(utils.loadS3Config).toBeCalledWith(
+			expect.objectContaining({
+				storageAction: StorageAction.Get,
+			})
+		);
+	});
 
-	// test('uploadData', async () => {
-	// 	await storage.put('test', 'testData');
-	// 	expect(utils.loadS3Config).toBeCalledWith(
-	// 		expect.objectContaining({
-	// 			userAgentValue: getStorageUserAgentValue(StorageAction.Put),
-	// 		})
-	// 	);
-	// });
+	test('uploadData', async () => {
+		await storage.put('test', 'testData');
+		expect(utils.loadS3Config).toBeCalledWith(
+			expect.objectContaining({
+				storageAction: StorageAction.Put,
+			})
+		);
+	});
 
-	// test('copy', async () => {
-	// 	await storage.copy({ key: 'testSrc' }, { key: 'testDest' });
-	// 	expect(utils.loadS3Config).toBeCalledWith(
-	// 		expect.objectContaining({
-	// 			userAgentValue: getStorageUserAgentValue(StorageAction.Copy),
-	// 		})
-	// 	);
-	// });
+	test('copy', async () => {
+		await storage.copy({ key: 'testSrc' }, { key: 'testDest' });
+		expect(utils.loadS3Config).toBeCalledWith(
+			expect.objectContaining({
+				storageAction: StorageAction.Copy,
+			})
+		);
+	});
 
-	// test('list', async () => {
-	// 	await storage.list('');
-	// 	expect(utils.loadS3Config).toBeCalledWith(
-	// 		expect.objectContaining({
-	// 			userAgentValue: getStorageUserAgentValue(StorageAction.List),
-	// 		})
-	// 	);
-	// });
+	test('list', async () => {
+		await storage.list('');
+		expect(utils.loadS3Config).toBeCalledWith(
+			expect.objectContaining({
+				storageAction: StorageAction.List,
+			})
+		);
+	});
 
-	// test('remove', async () => {
-	// 	await storage.remove('test');
-	// 	expect(utils.loadS3Config).toBeCalledWith(
-	// 		expect.objectContaining({
-	// 			userAgentValue: getStorageUserAgentValue(StorageAction.Remove),
-	// 		})
-	// 	);
-	// });
+	test('remove', async () => {
+		await storage.remove('test');
+		expect(utils.loadS3Config).toBeCalledWith(
+			expect.objectContaining({
+				storageAction: StorageAction.Remove,
+			})
+		);
+	});
 });
