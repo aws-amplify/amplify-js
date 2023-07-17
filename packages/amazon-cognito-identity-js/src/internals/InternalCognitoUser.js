@@ -812,7 +812,8 @@ export default class InternalCognitoUser {
 		confirmationCode,
 		forceAliasCreation,
 		callback,
-		clientMetadata
+		clientMetadata,
+		userAgentValue
 	) {
 		const jsonReq = {
 			ClientId: this.pool.getClientId(),
@@ -824,12 +825,17 @@ export default class InternalCognitoUser {
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
 		}
-		this.client.request('ConfirmSignUp', jsonReq, err => {
-			if (err) {
-				return callback(err, null);
-			}
-			return callback(null, 'SUCCESS');
-		});
+		this.client.request(
+			'ConfirmSignUp',
+			jsonReq,
+			err => {
+				if (err) {
+					return callback(err, null);
+				}
+				return callback(null, 'SUCCESS');
+			},
+			userAgentValue
+		);
 	}
 
 	/**
@@ -1486,7 +1492,7 @@ export default class InternalCognitoUser {
 	 * @param {GetSessionOptions} options
 	 * @returns {void}
 	 */
-	getSession(callback, options = {}) {
+	getSession(callback, options = {}, userAgentValue) {
 		if (this.username == null) {
 			return callback(
 				new Error('Username is null. Cannot retrieve a new session'),
