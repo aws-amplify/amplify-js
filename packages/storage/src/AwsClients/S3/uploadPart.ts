@@ -45,14 +45,7 @@ const uploadPartSerializer = async (
 	input: UploadPartInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-<<<<<<< HEAD
 	const headers = await serializeObjectSsecOptionsToHeaders(input);
-=======
-	const headers = {
-		...(await serializeObjectSsecOptionsToHeaders(input)),
-		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
-	};
->>>>>>> main
 	headers['content-type'] = 'application/octet-stream';
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);

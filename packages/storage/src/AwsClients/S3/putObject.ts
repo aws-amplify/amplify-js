@@ -57,20 +57,10 @@ const putObjectSerializer = async (
 	input: PutObjectInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-<<<<<<< HEAD
 	const headers = await serializeObjectConfigsToHeaders({
 		...input,
 		ContentType: input.ContentType ?? 'application/octet-stream',
 	});
-=======
-	const headers = {
-		...(await serializeObjectConfigsToHeaders({
-			...input,
-			ContentType: input.ContentType ?? 'application/octet-stream',
-		})),
-		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
-	};
->>>>>>> main
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
