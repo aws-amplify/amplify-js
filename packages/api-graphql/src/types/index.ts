@@ -5,7 +5,7 @@ export { OperationTypeNode } from 'graphql';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 export { GRAPHQL_AUTH_MODE };
 import { Observable } from 'zen-observable-ts';
-import { CustomUserAgentDetails } from '@aws-amplify/core';
+// import { CustomUserAgentDetails } from '@aws-amplify/core';
 
 export interface GraphQLOptions {
 	query: string | DocumentNode;
@@ -40,11 +40,12 @@ export enum GraphQLAuthError {
  */
 export type GraphQLOperation = Source | string;
 
-// #region shared API types ... probably to be pulled from core or something later.
-
-export interface GraphQLOptionsV6<T extends string> {
-	query: T | DocumentNode;
-	variables?: object;
+export interface GraphQLOptionsV6<
+	FALLBACK_TYPES = unknown,
+	TYPED_GQL_STRING extends string = string
+> {
+	query: TYPED_GQL_STRING | DocumentNode;
+	variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 	authMode?: keyof typeof GRAPHQL_AUTH_MODE;
 	authToken?: string;
 	/**
@@ -53,23 +54,53 @@ export interface GraphQLOptionsV6<T extends string> {
 	userAgentSuffix?: string; // TODO: remove in v6
 }
 
-type UnionKeys<T> = T extends T ? keyof T : never;
-type StrictUnionHelper<T, TAll> = T extends any
-	? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, undefined>>
-	: never;
-export type StrictUnion<T> = StrictUnionHelper<T, T>;
-export type SimpleAuthMode = {
-	authMode?: 'AMAZON_COGNITO_USERPOOLS' | 'API_KEY' | 'AWS_IAM';
-};
+export type UnknownGraphQLResponse = Promise<{
+	data?: any;
+	errors?: any;
+	extensions?: any;
+}> &
+	Partial<
+		Observable<{
+			provider: any;
+			value: any;
+		}>
+	>;
 
-export type LambdaAuthMode = {
-	authMode: 'AWS_LAMBDA';
-	authToken: string;
-};
+/**
+ * Returns a proper `variables` type with respect to the given `FALLBACK_TYPES` or
+ * `TYPED_GQL_STRING`. If the `TYPED_GQL_STRING` isn't a generated/tagged string,
+ * and `FALLBACK_TYPES` specifies `variables` and `result` types, it is used instead.
+ * Otherwise, broad catch-all types are used instead.
+ */
+export type GraphQLVariablesV6<
+	FALLBACK_TYPES = unknown,
+	TYPED_GQL_STRING extends string = string
+> = TYPED_GQL_STRING extends GeneratedQuery<infer IN, infer OUT>
+	? IN
+	: TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer OUT>
+	? IN
+	: TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer OUT>
+	? IN
+	: FALLBACK_TYPES extends GraphqlQueryOverrides<infer IN, infer OUT>
+	? IN
+	: any;
 
-export type AuthMode = StrictUnion<SimpleAuthMode | LambdaAuthMode>;
-
-// #endregion
+/**
+ * Returns a proper response type with respect to the given `FALLBACK_TYPES` or
+ * `TYPED_GQL_STRING`. If the `TYPED_GQL_STRING` isn't a generated/tagged string,
+ * and `FALLBACK_TYPES` specifies `variables` and `result` types, it is used instead.
+ * Otherwise, broad catch-all types are used instead.
+ */
+export type GraphQLResponseV6<
+	FALLBACK_TYPES = unknown,
+	TYPED_GQL_STRING extends string = string
+> = TYPED_GQL_STRING extends GeneratedQuery<any, any>
+	? Promise<GraphqlQueryResult<TYPED_GQL_STRING, FALLBACK_TYPES>>
+	: TYPED_GQL_STRING extends GeneratedMutation<any, any>
+	? Promise<GraphqlMutationResult<TYPED_GQL_STRING, FALLBACK_TYPES>>
+	: TYPED_GQL_STRING extends GeneratedSubscription<any, any>
+	? Observable<GraphqlSubscriptionResult<TYPED_GQL_STRING, FALLBACK_TYPES>>
+	: UnknownGraphQLResponse;
 
 export type GeneratedQuery<InputType, OutputType> = string & {
 	__generatedQueryInput: InputType;
@@ -79,17 +110,6 @@ export type GeneratedQuery<InputType, OutputType> = string & {
 export type GraphqlQueryOverrides<IN extends {}, OUT extends {}> = {
 	variables: IN;
 	result: OUT;
-};
-
-export type GraphqlQueryParams<
-	TYPED_GQL_STRING extends string,
-	FALLBACK_TYPES
-> = AuthMode & {
-	variables: TYPED_GQL_STRING extends GeneratedQuery<infer IN, infer OUT>
-		? IN
-		: FALLBACK_TYPES extends GraphqlQueryOverrides<infer IN, infer OUT>
-		? IN
-		: any;
 };
 
 export type GraphqlQueryResult<T extends string, S> = T extends GeneratedQuery<
@@ -108,17 +128,6 @@ export type GeneratedMutation<InputType, OutputType> = string & {
 	__generatedMutationOutput: OutputType;
 };
 
-export type GraphqlMutationParams<
-	TYPED_GQL_STRING extends string,
-	OVERRIDE_TYPE
-> = AuthMode & {
-	variables: TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer OUT>
-		? IN
-		: OVERRIDE_TYPE extends GraphqlQueryOverrides<infer OVERRIDE_IN, infer OUT>
-		? OVERRIDE_IN
-		: any;
-};
-
 export type GraphqlMutationResult<
 	TYPED_GQL_STRING extends string,
 	FALLBACK_TYPES
@@ -135,17 +144,6 @@ export type GeneratedSubscription<InputType, OutputType> = string & {
 	__generatedSubscriptionOutput: OutputType;
 };
 
-export type GraphqlSubscriptionParams<
-	TYPED_GQL_STRING extends string,
-	FALLBACK_TYPES
-> = AuthMode & {
-	variables: TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer OUT>
-		? IN
-		: FALLBACK_TYPES extends GraphqlQueryOverrides<infer IN, infer OUT>
-		? IN
-		: any;
-};
-
 export type GraphqlSubscriptionResult<
 	TYPED_GQL_STRING extends string,
 	FALLBACK_TYPES
@@ -159,14 +157,3 @@ export type GraphqlSubscriptionResult<
 			: any;
 	};
 };
-
-export type GraphQLResponseV6<
-	FALLBACK_TYPES = unknown,
-	TYPED_GQL_STRING extends string = string
-> = TYPED_GQL_STRING extends GeneratedQuery<any, any>
-	? Promise<GraphqlQueryResult<TYPED_GQL_STRING, FALLBACK_TYPES>>
-	: TYPED_GQL_STRING extends GeneratedMutation<any, any>
-	? Promise<GraphqlMutationResult<TYPED_GQL_STRING, FALLBACK_TYPES>>
-	: TYPED_GQL_STRING extends GeneratedSubscription<any, any>
-	? Observable<GraphqlSubscriptionResult<TYPED_GQL_STRING, FALLBACK_TYPES>>
-	: Promise<GraphQLResult<any>> | Observable<object>;

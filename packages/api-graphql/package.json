@@ -71,7 +71,7 @@
   "jest": {
     "globals": {
       "ts-jest": {
-        "diagnostics": false,
+        "diagnostics": true,
         "tsConfig": {
           "lib": [
             "es5",
@@ -89,7 +89,8 @@
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
     "testPathIgnorePatterns": [
-      "__tests__/fixtures/"
+      "__tests__/fixtures/",
+      "__tests__/utils/"
     ],
     "moduleFileExtensions": [
       "ts",

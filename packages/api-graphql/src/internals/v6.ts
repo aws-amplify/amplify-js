@@ -23,7 +23,7 @@ export function graphql<
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string
 >(
-	options: GraphQLOptionsV6<TYPED_GQL_STRING>,
+	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
 	additionalHeaders?: { [key: string]: string }
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
 	/**
