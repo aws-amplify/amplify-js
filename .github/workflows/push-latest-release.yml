@@ -12,5 +12,7 @@ jobs:
   release:
     needs:
       - e2e
+    permissions:
+      contents: write
     secrets: inherit
-    uses: ./.github/workflows/callable-release.yml
+    uses: ./.github/workflows/callable-npm-publish-release.yml

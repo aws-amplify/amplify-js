@@ -13,6 +13,6 @@ jobs:
     needs:
       - e2e
     secrets: inherit
-    uses: ./.github/workflows/callable-preid-release.yml
+    uses: ./.github/workflows/callable-npm-publish-preid.yml
     with:
       preid: unstable
