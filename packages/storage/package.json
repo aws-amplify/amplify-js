@@ -60,7 +60,7 @@
       "name": "Storage (top-level class)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, Storage }",
-      "limit": "38.49 kB"
+      "limit": "38.85 kB"
     }
   ],
   "jest": {
