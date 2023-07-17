@@ -6,3 +6,4 @@ export { resetPassword } from './apis/resetPassword';
 export { confirmResetPassword } from './apis/confirmResetPassword';
 export { signIn } from './apis/signIn';
 export { resendSignUpCode } from './apis/resendSignUpCode';
+export { confirmSignIn } from './apis/confirmSignIn';
