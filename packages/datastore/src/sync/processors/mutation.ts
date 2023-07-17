@@ -1,6 +1,12 @@
-import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { InternalAPI } from '@aws-amplify/api/internals';
 import {
+	Category,
 	ConsoleLogger as Logger,
+	CustomUserAgentDetails,
+	DataStoreAction,
 	jitteredBackoff,
 	NonRetryableError,
 	retry,
@@ -28,12 +34,7 @@ import {
 	ProcessName,
 	AmplifyContext,
 } from '../../types';
-import {
-	extractTargetNamesFromSrc,
-	USER,
-	USER_AGENT_SUFFIX_DATASTORE,
-	ID,
-} from '../../util';
+import { extractTargetNamesFromSrc, USER, ID } from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
 	buildGraphQLOperation,
@@ -86,7 +87,8 @@ class MutationProcessor {
 		private readonly conflictHandler: ConflictHandler,
 		private readonly amplifyContext: AmplifyContext
 	) {
-		this.amplifyContext.API = this.amplifyContext.API || API;
+		this.amplifyContext.InternalAPI =
+			this.amplifyContext.InternalAPI || InternalAPI;
 		this.generateQueries();
 	}
 
@@ -344,16 +346,24 @@ class MutationProcessor {
 					variables,
 					authMode,
 					authToken,
-					userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 				};
 				let attempt = 0;
 
 				const opType = this.opTypeFromTransformerOperation(operation);
 
+				const customUserAgentDetails: CustomUserAgentDetails = {
+					category: Category.DataStore,
+					action: DataStoreAction.GraphQl,
+				};
+
 				do {
 					try {
 						const result = <GraphQLResult<Record<string, PersistentModel>>>(
-							await this.amplifyContext.API.graphql(tryWith)
+							await this.amplifyContext.InternalAPI.graphql(
+								tryWith,
+								undefined,
+								customUserAgentDetails
+							)
 						);
 
 						// Use `as any` because TypeScript doesn't seem to like passing tuples
@@ -423,13 +433,16 @@ class MutationProcessor {
 
 									const serverData = <
 										GraphQLResult<Record<string, PersistentModel>>
-									>await this.amplifyContext.API.graphql({
-										query,
-										variables: { id: variables.input.id },
-										authMode,
-										authToken,
-										userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
-									});
+									>await this.amplifyContext.InternalAPI.graphql(
+										{
+											query,
+											variables: { id: variables.input.id },
+											authMode,
+											authToken,
+										},
+										undefined,
+										customUserAgentDetails
+									);
 
 									// onTerminate cancel graphql()
 
