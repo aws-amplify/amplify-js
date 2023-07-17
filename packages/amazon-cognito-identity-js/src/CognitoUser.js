@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Platform } from './Platform';
-
 import CognitoRefreshToken from './CognitoRefreshToken';
 import CognitoUserSession from './CognitoUserSession';
 import CognitoUserAttribute from './CognitoUserAttribute';
@@ -48,13 +46,6 @@ import InternalCognitoUser from './internals/InternalCognitoUser';
  * @param {CognitoUserSession} session The new session.
  * @param {bool=} userConfirmationNecessary User must be confirmed.
  */
-
-const isNavigatorAvailable = typeof navigator !== 'undefined';
-const userAgent = isNavigatorAvailable
-	? Platform.isReactNative
-		? 'react-native'
-		: navigator.userAgent
-	: 'nodejs';
 
 /** @class */
 export default class CognitoUser extends InternalCognitoUser {
