@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	Amplify,
+	CustomUserAgentDetails,
+	GeoAction,
 	ConsoleLogger as Logger,
 	parseAWSExports,
 } from '@aws-amplify/core';
-import { AmazonLocationServiceProvider } from './Providers/AmazonLocationServiceProvider';
+import { AmazonLocationServiceProvider } from '../Providers/AmazonLocationServiceProvider';
 
-import { validateCoordinates } from './util';
+import { validateCoordinates } from '../util';
 
 import {
 	Place,
@@ -26,13 +28,14 @@ import {
 	ListGeofenceResults,
 	DeleteGeofencesResults,
 	searchByPlaceIdOptions,
-} from './types';
+} from '../types';
+import { getGeoUserAgentDetails } from './utils';
 
 const logger = new Logger('Geo');
 
 const DEFAULT_PROVIDER = 'AmazonLocationService';
-export class GeoClass {
-	static MODULE = 'Geo';
+export class InternalGeoClass {
+	static MODULE = 'InternalGeo';
 	/**
 	 * @private
 	 */
@@ -50,7 +53,7 @@ export class GeoClass {
 	 * @returns {string} name of the module category
 	 */
 	public getModuleName() {
-		return GeoClass.MODULE;
+		return InternalGeoClass.MODULE;
 	}
 
 	/**
@@ -146,13 +149,18 @@ export class GeoClass {
 	 */
 	public async searchByText(
 		text: string,
-		options?: SearchByTextOptions
+		options?: SearchByTextOptions,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<Place[]> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
 
 		try {
-			return await prov.searchByText(text, options);
+			return await prov.searchByText(
+				text,
+				options,
+				getGeoUserAgentDetails(GeoAction.SearchByText, customUserAgentDetails)
+			);
 		} catch (error) {
 			logger.debug(error);
 			throw error;
@@ -167,13 +175,21 @@ export class GeoClass {
 	 */
 	public async searchForSuggestions(
 		text: string,
-		options?: SearchByTextOptions
+		options?: SearchByTextOptions,
+		customUserAgentDetails?: CustomUserAgentDetails
 	) {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
 
 		try {
-			return await prov.searchForSuggestions(text, options);
+			return await prov.searchForSuggestions(
+				text,
+				options,
+				getGeoUserAgentDetails(
+					GeoAction.SearchForSuggestions,
+					customUserAgentDetails
+				)
+			);
 		} catch (error) {
 			logger.debug(error);
 			throw error;
@@ -188,13 +204,21 @@ export class GeoClass {
 	 */
 	public async searchByPlaceId(
 		placeId: string,
-		options?: searchByPlaceIdOptions
+		options?: searchByPlaceIdOptions,
+		customUserAgentDetails?: CustomUserAgentDetails
 	) {
 		const providerName = DEFAULT_PROVIDER;
 		const prov = this.getPluggable(providerName);
 
 		try {
-			return await prov.searchByPlaceId(placeId, options);
+			return await prov.searchByPlaceId(
+				placeId,
+				options,
+				getGeoUserAgentDetails(
+					GeoAction.SearchByPlaceId,
+					customUserAgentDetails
+				)
+			);
 		} catch (error) {
 			logger.debug(error);
 			throw error;
@@ -234,7 +258,8 @@ export class GeoClass {
 	 */
 	public async saveGeofences(
 		geofences: GeofenceInput | GeofenceInput[],
-		options?: GeofenceOptions
+		options?: GeofenceOptions,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<SaveGeofencesResults> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
@@ -248,7 +273,11 @@ export class GeoClass {
 		}
 
 		try {
-			return await prov.saveGeofences(geofenceInputArray, options);
+			return await prov.saveGeofences(
+				geofenceInputArray,
+				options,
+				getGeoUserAgentDetails(GeoAction.SaveGeofences, customUserAgentDetails)
+			);
 		} catch (error) {
 			logger.debug(error);
 			throw error;
@@ -263,13 +292,18 @@ export class GeoClass {
 	 */
 	public async getGeofence(
 		geofenceId: GeofenceId,
-		options?: GeofenceOptions
+		options?: GeofenceOptions,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<Geofence> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
 
 		try {
-			return await prov.getGeofence(geofenceId, options);
+			return await prov.getGeofence(
+				geofenceId,
+				options,
+				getGeoUserAgentDetails(GeoAction.GetGeofence, customUserAgentDetails)
+			);
 		} catch (error) {
 			logger.debug(error);
 			throw error;
@@ -284,13 +318,17 @@ export class GeoClass {
 	 *   nextToken: token for next page of geofences
 	 */
 	public async listGeofences(
-		options?: ListGeofenceOptions
+		options?: ListGeofenceOptions,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<ListGeofenceResults> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
 
 		try {
-			return await prov.listGeofences(options);
+			return await prov.listGeofences(
+				options,
+				getGeoUserAgentDetails(GeoAction.ListGeofences, customUserAgentDetails)
+			);
 		} catch (error) {
 			logger.debug(error);
 			throw error;
@@ -307,7 +345,8 @@ export class GeoClass {
 	 */
 	public async deleteGeofences(
 		geofenceIds: string | string[],
-		options?: GeofenceOptions
+		options?: GeofenceOptions,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<DeleteGeofencesResults> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
@@ -322,7 +361,14 @@ export class GeoClass {
 
 		//  Delete geofences
 		try {
-			return await prov.deleteGeofences(geofenceIdsInputArray, options);
+			return await prov.deleteGeofences(
+				geofenceIdsInputArray,
+				options,
+				getGeoUserAgentDetails(
+					GeoAction.DeleteGeofences,
+					customUserAgentDetails
+				)
+			);
 		} catch (error) {
 			logger.debug(error);
 			throw error;
@@ -330,5 +376,5 @@ export class GeoClass {
 	}
 }
 
-export const Geo = new GeoClass();
-Amplify.register(Geo);
+export const InternalGeo = new InternalGeoClass();
+Amplify.register(InternalGeo);
