@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 const fs = require('fs');
 const path = require('path');
 
@@ -7,7 +9,7 @@ const path = require('path');
 function iterateFiles(source) {
 	let fileList = [];
 	return new Promise((res, rej) => {
-		fs.readdir(source, function(err, files) {
+		fs.readdir(source, function (err, files) {
 			if (err) {
 				console.error('Could not list the directory.', err);
 				return rej(err);
