@@ -248,6 +248,8 @@ describe('client', () => {
 				authMode: 'API_KEY',
 			});
 
+			// Customers should normally omit the type. Making it explicit to ensure the test
+			// fails if the returned changes.
 			const listThreads: ListThreadsQuery['listThreads'] =
 				result.data?.listThreads;
 			const { items, nextToken } = listThreads || {};
