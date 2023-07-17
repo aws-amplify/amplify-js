@@ -1,4 +1,7 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { API } from '@aws-amplify/api';
+import { InternalAPI } from '@aws-amplify/api/internals';
 import { Auth } from '@aws-amplify/auth';
 import { AmplifyClass, Credentials, UniversalStorage } from '@aws-amplify/core';
 import { DataStore } from '@aws-amplify/datastore';
@@ -23,6 +26,9 @@ type Context = {
 
 export function withSSRContext(context: Context = {}) {
 	const { modules = defaultModules, req } = context;
+	if (modules.includes(DataStore)) {
+		modules.push(InternalAPI);
+	}
 	const previousConfig = Amplify.configure();
 	const amplify = new AmplifyClass();
 	const storage = new UniversalStorage({ req });

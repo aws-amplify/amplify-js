@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { ReachabilityMonitor } from './datastoreReachability';
@@ -26,7 +28,7 @@ export default class DataStoreConnectivity {
 		if (this.observer) {
 			throw new Error('Subscriber already exists');
 		}
-		return new Observable((observer) => {
+		return new Observable(observer => {
 			this.observer = observer;
 			// Will be used to forward socket connection changes, enhancing Reachability
 

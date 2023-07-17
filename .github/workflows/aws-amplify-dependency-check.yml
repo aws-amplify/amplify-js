@@ -10,16 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
         with:
           persist-credentials: true
       - name: Determine if "aws-amplify" package.json has been changed
         id: aws-amplify-package-check
-        uses: tj-actions/changed-files@v36
+        uses: tj-actions/changed-files@54479c37f5eb47a43e595c6b71e1df2c112ce7f1 # v36 https://github.com/tj-actions/changed-files/commit/54479c37f5eb47a43e595c6b71e1df2c112ce7f1
         with:
           files: packages/aws-amplify/package.json
       - name: Write a PR comment
-        uses: actions/github-script@v6
+        uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # v6.4.0 https://github.com/actions/github-script/commit/98814c53be79b1d30f795b907e553d8679345975
         if: steps.aws-amplify-package-check.outputs.any_changed == 'true'
         with:
           script: |

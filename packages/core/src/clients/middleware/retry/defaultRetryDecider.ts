@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HttpResponse, ErrorParser } from '../../types';
-import { isClockSkewError } from '../../utils/isClockSkewError';
+import { isClockSkewError } from './isClockSkewError';
 
 /**
  * Get retry decider function

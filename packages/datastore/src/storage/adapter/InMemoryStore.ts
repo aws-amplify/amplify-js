@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 export class InMemoryStore {
 	db = new Map<string, string>();
 
@@ -13,7 +15,7 @@ export class InMemoryStore {
 	};
 
 	multiRemove = async (keys: string[], callback?) => {
-		keys.forEach((k) => this.db.delete(k));
+		keys.forEach(k => this.db.delete(k));
 
 		typeof callback === 'function' && callback();
 	};
