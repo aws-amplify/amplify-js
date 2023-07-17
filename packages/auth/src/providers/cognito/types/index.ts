@@ -12,5 +12,6 @@ export {
 	CognitoResetPasswordOptions,
 	CognitoSignInOptions,
 	CognitoResendSignUpCodeOptions,
-	CognitoConfirmSignUpOptions
+	CognitoConfirmSignUpOptions,
+	CognitoConfirmSignInOptions
 } from './options';
