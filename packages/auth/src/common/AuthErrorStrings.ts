@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 export enum AuthErrorStrings {
 	DEFAULT_MSG = 'Authentication Error',
 	EMPTY_EMAIL = 'Email cannot be empty',

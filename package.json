@@ -10,6 +10,7 @@
 		"test": "lerna run test --stream",
 		"test:size": "lerna run test:size --no-bail",
 		"test:duplicates": "./scripts/duplicates-yarn.sh",
+		"test:license": "license-check-and-add check -f license_config.json",
 		"cypress": "lerna run cypress",
 		"cypress:open": "lerna run cypress:open",
 		"coverage": "codecov || exit 0",
@@ -23,6 +24,7 @@
 		"clean:size": "lerna run clean:size --parallel",
 		"format": "lerna run format",
 		"lint": "lerna run lint",
+		"lint:license": "license-check-and-add add -f license_config.json",
 		"link-all": "yarn unlink-all && lerna exec --no-bail --parallel yarn link",
 		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
 		"publish:preid": "./scripts/preid-env-vars-exist.sh && lerna publish --canary --force-publish \"*\" --yes --dist-tag=${PREID_PREFIX} --preid=${PREID_PREFIX}${PREID_HASH_SUFFIX} --exact --no-verify-access",
@@ -81,6 +83,7 @@
 		"jest-config": "24.8.0",
 		"json-loader": "^0.5.7",
 		"lerna": "^6.6.1",
+		"license-check-and-add": "^4.0.5",
 		"prettier": "^2.4.1",
 		"pretty-quick": "^1.11.1",
 		"rimraf": "^2.6.2",
@@ -109,7 +112,9 @@
 		"wml": "0.0.83"
 	},
 	"resolutions": {
-		"@types/babel__traverse": "7.20.0"
+		"@types/babel__traverse": "7.20.0",
+		"path-scurry": "1.10.0",
+		"**/glob/minipass": "6.0.2"
 	},
 	"jest": {
 		"resetMocks": true,

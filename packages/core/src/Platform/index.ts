@@ -4,7 +4,7 @@
 import { CustomUserAgentDetails, Framework } from './types';
 import { version } from './version';
 import { detectFramework, observeFrameworkChanges } from './detectFramework';
-import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
+import type { UserAgent as AWSUserAgent } from '@aws-sdk/types';
 
 const BASE_USER_AGENT = `aws-amplify`;
 
@@ -15,7 +15,10 @@ class PlatformBuilder {
 	}
 
 	get isReactNative() {
-		return this.framework === Framework.ReactNative;
+		return (
+			this.framework === Framework.ReactNative ||
+			this.framework === Framework.Expo
+		);
 	}
 
 	observeFrameworkChanges(fcn: () => void) {
@@ -29,12 +32,17 @@ export const getAmplifyUserAgentObject = ({
 	category,
 	action,
 	framework,
+	additionalInfo,
 }: CustomUserAgentDetails = {}): AWSUserAgent => {
-	const userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
+	let userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
 	if (category) {
 		userAgent.push([category, action]);
 	}
-	userAgent.push(['framework', detectFramework()]);
+	userAgent.push(['framework', framework || detectFramework()]);
+
+	if (additionalInfo) {
+		userAgent = userAgent.concat(additionalInfo);
+	}
 
 	return userAgent;
 };

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>AxiosTransformer | amplify-js</title>
+	<title>PutObjectCommandOutput | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
@@ -917,7 +917,54 @@ img { max-width: 100%; }
 <nav class="tsd-navigation secondary">
 <ul>
 	<li class="current tsd-kind-interface">
-		<a href="axiostransformer.html" class="tsd-kind-icon">Axios<wbr>Transformer</a>
+		<a href="putobjectcommandoutput.html" class="tsd-kind-icon">Put<wbr>Object<wbr>Command<wbr>Output</a>
+		<ul>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#_metadata" class="tsd-kind-icon">$metadata</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#bucketkeyenabled" class="tsd-kind-icon">Bucket<wbr>Key<wbr>Enabled</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#checksumcrc32" class="tsd-kind-icon">ChecksumCRC32</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#checksumcrc32c" class="tsd-kind-icon">ChecksumCRC32C</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#checksumsha1" class="tsd-kind-icon">ChecksumSHA1</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#checksumsha256" class="tsd-kind-icon">ChecksumSHA256</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#etag" class="tsd-kind-icon">ETag</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#expiration" class="tsd-kind-icon">Expiration</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#requestcharged" class="tsd-kind-icon">Request<wbr>Charged</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#ssecustomeralgorithm" class="tsd-kind-icon">SSECustomer<wbr>Algorithm</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#ssecustomerkeymd5" class="tsd-kind-icon">SSECustomer<wbr>KeyMD5</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#ssekmsencryptioncontext" class="tsd-kind-icon">SSEKMSEncryption<wbr>Context</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#ssekmskeyid" class="tsd-kind-icon">SSEKMSKey<wbr>Id</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#serversideencryption" class="tsd-kind-icon">Server<wbr>Side<wbr>Encryption</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="putobjectcommandoutput.html#versionid" class="tsd-kind-icon">Version<wbr>Id</a>
+			</li>
+		</ul>
 	</li>
 </ul>
 </nav>
@@ -925,59 +972,320 @@ img { max-width: 100%; }
 <div class="content-wrap">
 	<section class="tsd-panel tsd-comment">
 		<div class="tsd-comment tsd-typography">
-			<div class="lead">
-				<p>Extending the axios interface here to make headers required, (previously,
-					they were not required on the type we were using, but our implementation
-					does not currently account for missing headers. This worked previously,
-				because the previous <code>headers</code> type was <code>any</code>.</p>
-			</div>
 		</div>
 	</section>
 	<section class="tsd-panel tsd-hierarchy">
 		<h3>Hierarchy</h3>
 		<ul class="tsd-hierarchy">
 			<li>
-				<span class="tsd-signature-type">object</span>
+				<a href="putobjectoutput.html" class="tsd-signature-type">PutObjectOutput</a>
+			</li>
+			<li>
+				<span class="tsd-signature-type">MetadataBearer</span>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">AxiosTransformer</span>
+						<span class="target">PutObjectCommandOutput</span>
 					</li>
 				</ul>
 			</li>
 		</ul>
 	</section>
-	<section class="tsd-panel">
-		<h3 class="tsd-before-signature">Callable</h3>
-		<ul class="tsd-signatures tsd-kind-interface">
-			<li class="tsd-signature tsd-kind-icon">__call<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, headers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AxiosRequestHeaders</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
-		</ul>
-		<ul class="tsd-descriptions">
-			<li class="tsd-description">
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/5166dc40b/packages/storage/src/providers/axios-http-handler.ts#L25">packages/storage/src/providers/axios-http-handler.ts:25</a></li>
+	<section class="tsd-panel-group tsd-index-group">
+		<h2>Index</h2>
+		<section class="tsd-panel tsd-index-panel">
+			<div class="tsd-index-content">
+				<section class="tsd-index-section tsd-is-inherited">
+					<h3>Properties</h3>
+					<ul class="tsd-index-list">
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#_metadata" class="tsd-kind-icon">$metadata</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#bucketkeyenabled" class="tsd-kind-icon">Bucket<wbr>Key<wbr>Enabled</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#checksumcrc32" class="tsd-kind-icon">ChecksumCRC32</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#checksumcrc32c" class="tsd-kind-icon">ChecksumCRC32C</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#checksumsha1" class="tsd-kind-icon">ChecksumSHA1</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#checksumsha256" class="tsd-kind-icon">ChecksumSHA256</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#etag" class="tsd-kind-icon">ETag</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#expiration" class="tsd-kind-icon">Expiration</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#requestcharged" class="tsd-kind-icon">Request<wbr>Charged</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#ssecustomeralgorithm" class="tsd-kind-icon">SSECustomer<wbr>Algorithm</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#ssecustomerkeymd5" class="tsd-kind-icon">SSECustomer<wbr>KeyMD5</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#ssekmsencryptioncontext" class="tsd-kind-icon">SSEKMSEncryption<wbr>Context</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#ssekmskeyid" class="tsd-kind-icon">SSEKMSKey<wbr>Id</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#serversideencryption" class="tsd-kind-icon">Server<wbr>Side<wbr>Encryption</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="putobjectcommandoutput.html#versionid" class="tsd-kind-icon">Version<wbr>Id</a></li>
 					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Extending the axios interface here to make headers required, (previously,
-							they were not required on the type we were using, but our implementation
-							does not currently account for missing headers. This worked previously,
-						because the previous <code>headers</code> type was <code>any</code>.</p>
-					</div>
-				</div>
-				<h4 class="tsd-parameters-title">Parameters</h4>
-				<ul class="tsd-parameters">
-					<li>
-						<h5>data: <span class="tsd-signature-type">any</span></h5>
-					</li>
-					<li>
-						<h5>headers: <span class="tsd-signature-type">AxiosRequestHeaders</span></h5>
-					</li>
+				</section>
+			</div>
+		</section>
+	</section>
+	<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+		<h2>Properties</h2>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="_metadata" class="tsd-anchor"></a>
+			<h3>$metadata</h3>
+			<div class="tsd-signature tsd-kind-icon">$metadata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ResponseMetadata</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="getcredentialsforidentitycommandoutput.html">GetCredentialsForIdentityCommandOutput</a>.<a href="getcredentialsforidentitycommandoutput.html#_metadata">$metadata</a></p>
+				<ul>
+					<li>Defined in node_modules/@aws-sdk/types/types/ts3.4/response.d.ts:33</li>
 				</ul>
-				<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
-			</li>
-		</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Metadata pertaining to this request.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="bucketkeyenabled" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> Bucket<wbr>Key<wbr>Enabled</h3>
+			<div class="tsd-signature tsd-kind-icon">Bucket<wbr>Key<wbr>Enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#bucketkeyenabled">BucketKeyEnabled</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2291">packages/storage/src/AwsClients/S3/types.ts:2291</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Indicates whether the uploaded object uses an S3 Bucket Key for server-side encryption
+					with Amazon Web Services KMS (SSE-KMS).</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="checksumcrc32" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> ChecksumCRC32</h3>
+			<div class="tsd-signature tsd-kind-icon">ChecksumCRC32<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#checksumcrc32">ChecksumCRC32</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2231">packages/storage/src/AwsClients/S3/types.ts:2231</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>The base64-encoded, 32-bit CRC32 checksum of the object. This will only be present if it was uploaded
+						with the object. With multipart uploads, this may not be a checksum value of the object. For more information about how checksums are calculated
+						with multipart uploads, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html#large-object-checksums">
+					Checking object integrity</a> in the <i>Amazon S3 User Guide</i>.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="checksumcrc32c" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> ChecksumCRC32C</h3>
+			<div class="tsd-signature tsd-kind-icon">ChecksumCRC32C<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#checksumcrc32c">ChecksumCRC32C</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2238">packages/storage/src/AwsClients/S3/types.ts:2238</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>The base64-encoded, 32-bit CRC32C checksum of the object. This will only be present if it was uploaded
+						with the object. With multipart uploads, this may not be a checksum value of the object. For more information about how checksums are calculated
+						with multipart uploads, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html#large-object-checksums">
+					Checking object integrity</a> in the <i>Amazon S3 User Guide</i>.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="checksumsha1" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> ChecksumSHA1</h3>
+			<div class="tsd-signature tsd-kind-icon">ChecksumSHA1<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#checksumsha1">ChecksumSHA1</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2245">packages/storage/src/AwsClients/S3/types.ts:2245</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>The base64-encoded, 160-bit SHA-1 digest of the object. This will only be present if it was uploaded
+						with the object. With multipart uploads, this may not be a checksum value of the object. For more information about how checksums are calculated
+						with multipart uploads, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html#large-object-checksums">
+					Checking object integrity</a> in the <i>Amazon S3 User Guide</i>.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="checksumsha256" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> ChecksumSHA256</h3>
+			<div class="tsd-signature tsd-kind-icon">ChecksumSHA256<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#checksumsha256">ChecksumSHA256</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2252">packages/storage/src/AwsClients/S3/types.ts:2252</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>The base64-encoded, 256-bit SHA-256 digest of the object. This will only be present if it was uploaded
+						with the object. With multipart uploads, this may not be a checksum value of the object. For more information about how checksums are calculated
+						with multipart uploads, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html#large-object-checksums">
+					Checking object integrity</a> in the <i>Amazon S3 User Guide</i>.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="etag" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> ETag</h3>
+			<div class="tsd-signature tsd-kind-icon">ETag<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#etag">ETag</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2224">packages/storage/src/AwsClients/S3/types.ts:2224</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Entity tag for the uploaded object.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="expiration" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> Expiration</h3>
+			<div class="tsd-signature tsd-kind-icon">Expiration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#expiration">Expiration</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2220">packages/storage/src/AwsClients/S3/types.ts:2220</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>If the expiration is configured for the object (see <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycleConfiguration.html">PutBucketLifecycleConfiguration</a>), the response includes this header. It
+						includes the <code>expiry-date</code> and <code>rule-id</code> key-value pairs that provide
+						information about object expiration. The value of the <code>rule-id</code> is
+					URL-encoded.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="requestcharged" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> Request<wbr>Charged</h3>
+			<div class="tsd-signature tsd-kind-icon">Request<wbr>Charged<span class="tsd-signature-symbol">:</span> <a href="putobjectcommandoutput.html#requestcharged" class="tsd-signature-type">RequestCharged</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#requestcharged">RequestCharged</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2296">packages/storage/src/AwsClients/S3/types.ts:2296</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>If present, indicates that the requester was successfully charged for the
+					request.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="ssecustomeralgorithm" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> SSECustomer<wbr>Algorithm</h3>
+			<div class="tsd-signature tsd-kind-icon">SSECustomer<wbr>Algorithm<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#ssecustomeralgorithm">SSECustomerAlgorithm</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2266">packages/storage/src/AwsClients/S3/types.ts:2266</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>If server-side encryption with a customer-provided encryption key was requested, the
+					response will include this header confirming the encryption algorithm used.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="ssecustomerkeymd5" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> SSECustomer<wbr>KeyMD5</h3>
+			<div class="tsd-signature tsd-kind-icon">SSECustomer<wbr>KeyMD5<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#ssecustomerkeymd5">SSECustomerKeyMD5</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2272">packages/storage/src/AwsClients/S3/types.ts:2272</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>If server-side encryption with a customer-provided encryption key was requested, the
+						response will include this header to provide round-trip message integrity verification of
+					the customer-provided encryption key.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="ssekmsencryptioncontext" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> SSEKMSEncryption<wbr>Context</h3>
+			<div class="tsd-signature tsd-kind-icon">SSEKMSEncryption<wbr>Context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#ssekmsencryptioncontext">SSEKMSEncryptionContext</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2286">packages/storage/src/AwsClients/S3/types.ts:2286</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>If present, specifies the Amazon Web Services KMS Encryption Context to use for object encryption. The
+						value of this header is a base64-encoded UTF-8 string holding JSON with the encryption
+						context key-value pairs. This value is stored as object metadata and automatically gets passed
+						on to Amazon Web Services KMS for future <code>GetObject</code> or <code>CopyObject</code> operations on
+					this object.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="ssekmskeyid" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> SSEKMSKey<wbr>Id</h3>
+			<div class="tsd-signature tsd-kind-icon">SSEKMSKey<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#ssekmskeyid">SSEKMSKeyId</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2278">packages/storage/src/AwsClients/S3/types.ts:2278</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>If <code>x-amz-server-side-encryption</code> is has a valid value of
+						<code>aws:kms</code>, this header specifies the ID of the Amazon Web Services Key Management Service
+					(Amazon Web Services KMS) symmetric encryption customer managed key that was used for the object. </p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="serversideencryption" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> Server<wbr>Side<wbr>Encryption</h3>
+			<div class="tsd-signature tsd-kind-icon">Server<wbr>Side<wbr>Encryption<span class="tsd-signature-symbol">:</span> <a href="putobjectcommandoutput.html#serversideencryption" class="tsd-signature-type">ServerSideEncryption</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#serversideencryption">ServerSideEncryption</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2257">packages/storage/src/AwsClients/S3/types.ts:2257</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>The server-side encryption algorithm used when storing this object in Amazon S3 (for example,
+					AES256, <code>aws:kms</code>).</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="versionid" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> Version<wbr>Id</h3>
+			<div class="tsd-signature tsd-kind-icon">Version<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="putobjectcommandoutput.html">PutObjectCommandOutput</a>.<a href="putobjectcommandoutput.html#versionid">VersionId</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/storage/src/AwsClients/S3/types.ts#L2261">packages/storage/src/AwsClients/S3/types.ts:2261</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Version of the object.</p>
+				</div>
+			</div>
+		</section>
 	</section>
 	<footer>
 		<div class="container">
