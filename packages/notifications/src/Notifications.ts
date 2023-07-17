@@ -3,11 +3,7 @@
 
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
-import InAppMessagingClass from './InAppMessaging';
-import PushNotificationClass from './PushNotification';
-import { InAppMessagingInterface as InAppMessaging } from './InAppMessaging/types';
-import { PushNotificationInterface as PushNotification } from './PushNotification/types';
-import { NotificationsCategory, NotificationsConfig, UserInfo } from './types';
+import { NotificationsCategory } from './types';
 import { InternalNotificationsClass } from './internals/InternalNotifications';
 
 const logger = new Logger('Notifications');
