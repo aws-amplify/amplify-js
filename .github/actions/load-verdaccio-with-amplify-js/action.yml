@@ -28,6 +28,6 @@ runs:
         git config --global user.name $NPM_USER
         git status
         git --no-pager diff
-        .circleci/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
+        scripts/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
         yarn info aws-amplify@unstable description
         npm info aws-amplify@unstable version

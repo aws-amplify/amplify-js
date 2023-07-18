@@ -43,7 +43,7 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
         run: |
           echo "Current NPM registry: " $(yarn config get registry)
-          $GITHUB_WORKSPACE/amplify-js/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
         shell: bash
       - name: Install CocoaPods
         run: |
@@ -78,6 +78,6 @@ jobs:
         shell: bash
       - name: Detox run
         run: |
-          $GITHUB_WORKSPACE/amplify-js/.circleci/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash

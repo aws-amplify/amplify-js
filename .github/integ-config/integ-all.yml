@@ -738,3 +738,11 @@ tests:
     sample_name: [multi-part-copy-with-progress]
     spec: multi-part-copy-with-progress
     browser: *minimal_browser_list
+
+  # integ_duplicate_packages
+  # - test_name: 'Duplicate Package Errors'
+  #   framework: react
+  #   category: version-conflict
+  #   sample_name: duplicate-packages
+  #   spec: duplicate-packages
+  #   browser: *minimal_browser_list

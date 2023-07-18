@@ -52,7 +52,7 @@ jobs:
 
       - name: Run cypress tests for ${{ inputs.test_name }}
         run: |
-          ../amplify-js/.circleci/retry-yarn-script.sh -s \
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
           "cypress run \          
           --headless \
           --spec ./cypress/integration/${{ inputs.category }}/${{ inputs.spec }}.spec.js \
