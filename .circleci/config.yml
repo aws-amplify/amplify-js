@@ -1584,7 +1584,7 @@ jobs:
           test_name: 'API (GraphQL) - Optimistic UI'
           framework: react
           category: api
-          sample_name: websocket-disruption
+          sample_name: optimistic-ui
           spec: websocket-disruption
           browser: << parameters.browser >>
 
@@ -2264,7 +2264,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *minimal_browser_list
+              <<: *extended_browser_list
       - deploy:
           filters:
             <<: *releasable_branches
