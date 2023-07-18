@@ -7,6 +7,9 @@ export { GRAPHQL_AUTH_MODE };
 import { Observable } from 'zen-observable-ts';
 // import { CustomUserAgentDetails } from '@aws-amplify/core';
 
+/**
+ * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
+ */
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: object;
@@ -18,6 +21,9 @@ export interface GraphQLOptions {
 	userAgentSuffix?: string; // TODO: remove in v6
 }
 
+/**
+ *
+ */
 export interface GraphQLResult<T = object> {
 	data?: T;
 	errors?: GraphQLError[];
@@ -25,6 +31,51 @@ export interface GraphQLResult<T = object> {
 		[key: string]: any;
 	};
 }
+
+/**
+ * The return value from a `graphql({query})` call when `query` is a subscription.
+ *
+ * ```ts
+ * //               |-- You are here
+ * //               v
+ * const subResult: GraphqlSubscriptionResult<T> = client.graphql({
+ * 	query: onCreateWidget
+ * });
+ *
+ * const sub = subResult.subscribe({
+ * 	//
+ * 	//            |-- You are here
+ * 	//            v
+ * 	next(message: GraphqlSubscriptionMessage<OnCreateWidgetSubscription>) {
+ * 		handle(message.value);  // <-- type OnCreateWidgetSubscription
+ * 	}
+ * })
+ * ```
+ */
+export type GraphqlSubscriptionResult<T> = Observable<
+	GraphqlSubscriptionMessage<T>
+>;
+
+/**
+ * The shape of messages passed to `next()` from a graphql subscription. E.g.,
+ *
+ * ```ts
+ * const sub = client.graphql({
+ * 	query: onCreateWidget,
+ * }).subscribe({
+ * 	//
+ * 	//            |-- You are here
+ * 	//            v
+ * 	next(message: GraphqlSubscriptionMessage<OnCreateWidgetSubscription>) {
+ * 		handle(message.value);  // <-- type OnCreateWidgetSubscription
+ * 	}
+ * })
+ * ```
+ */
+export type GraphqlSubscriptionMessage<T> = {
+	provider: any;
+	value: { data: T };
+};
 
 export enum GraphQLAuthError {
 	NO_API_KEY = 'No api-key configured',
@@ -40,6 +91,10 @@ export enum GraphQLAuthError {
  */
 export type GraphQLOperation = Source | string;
 
+/**
+ * API V6 `graphql({options})` type that can leverage branded graphql `query`
+ * objects and fallback types.
+ */
 export interface GraphQLOptionsV6<
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string
@@ -54,106 +109,135 @@ export interface GraphQLOptionsV6<
 	userAgentSuffix?: string; // TODO: remove in v6
 }
 
-export type UnknownGraphQLResponse = Promise<{
-	data?: any;
-	errors?: any;
-	extensions?: any;
-}> &
-	Partial<
-		Observable<{
-			provider: any;
-			value: any;
-		}>
-	>;
+/**
+ * Result type for `graphql()` operations that don't include any specific
+ * type information. The result could be either a `Promise` or `Subscription`.
+ *
+ * Invoking code should either cast the result or use `?` and `!` operators to
+ * navigate the result objects.
+ */
+export type UnknownGraphQLResponse =
+	| Promise<GraphQLResult<any>>
+	| GraphqlSubscriptionResult<any>;
 
 /**
- * Returns a proper `variables` type with respect to the given `FALLBACK_TYPES` or
- * `TYPED_GQL_STRING`. If the `TYPED_GQL_STRING` isn't a generated/tagged string,
- * and `FALLBACK_TYPES` specifies `variables` and `result` types, it is used instead.
- * Otherwise, broad catch-all types are used instead.
+ * The expected type for `variables` in a V6 `graphql()` operation with
+ * respect to the given `FALLBACK_TYPES` and `TYPED_GQL_STRING`.
  */
 export type GraphQLVariablesV6<
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string
-> = TYPED_GQL_STRING extends GeneratedQuery<infer IN, infer OUT>
+> = TYPED_GQL_STRING extends GeneratedQuery<infer IN, any>
 	? IN
-	: TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer OUT>
+	: TYPED_GQL_STRING extends GeneratedMutation<infer IN, any>
 	? IN
-	: TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer OUT>
+	: TYPED_GQL_STRING extends GeneratedSubscription<infer IN, any>
 	? IN
-	: FALLBACK_TYPES extends GraphqlQueryOverrides<infer IN, infer OUT>
+	: FALLBACK_TYPES extends GraphQLOperationType<infer IN, any>
 	? IN
 	: any;
 
 /**
- * Returns a proper response type with respect to the given `FALLBACK_TYPES` or
- * `TYPED_GQL_STRING`. If the `TYPED_GQL_STRING` isn't a generated/tagged string,
- * and `FALLBACK_TYPES` specifies `variables` and `result` types, it is used instead.
- * Otherwise, broad catch-all types are used instead.
+ * The expected return type with respect to the given `FALLBACK_TYPE`
+ * and `TYPED_GQL_STRING`.
  */
 export type GraphQLResponseV6<
-	FALLBACK_TYPES = unknown,
+	FALLBACK_TYPE = UnknownGraphQLResponse,
 	TYPED_GQL_STRING extends string = string
-> = TYPED_GQL_STRING extends GeneratedQuery<any, any>
-	? Promise<GraphqlQueryResult<TYPED_GQL_STRING, FALLBACK_TYPES>>
-	: TYPED_GQL_STRING extends GeneratedMutation<any, any>
-	? Promise<GraphqlMutationResult<TYPED_GQL_STRING, FALLBACK_TYPES>>
-	: TYPED_GQL_STRING extends GeneratedSubscription<any, any>
-	? Observable<GraphqlSubscriptionResult<TYPED_GQL_STRING, FALLBACK_TYPES>>
+> = TYPED_GQL_STRING extends GeneratedQuery<any, infer QUERY_OUT>
+	? Promise<GraphQLResult<QUERY_OUT>>
+	: TYPED_GQL_STRING extends GeneratedMutation<any, infer MUTATION_OUT>
+	? Promise<GraphQLResult<MUTATION_OUT>>
+	: TYPED_GQL_STRING extends GeneratedSubscription<any, infer SUB_OUT>
+	? GraphqlSubscriptionResult<SUB_OUT>
+	: FALLBACK_TYPE extends GraphQLOperationType<any, infer CUSTOM_OUT>
+	? CUSTOM_OUT
+	: FALLBACK_TYPE extends {}
+	? FALLBACK_TYPE
 	: UnknownGraphQLResponse;
 
+/**
+ * The shape customers can use to provide `T` to `graphql<T>()` to specify both
+ * `IN` and `OUT` types (the type of `variables` and the return type, respectively).
+ *
+ * I.E.,
+ *
+ * ```ts
+ * type MyVariablesType = { ... };
+ * type MyResultType = { ... };
+ * type MyOperationType = { variables: MyVariablesType, result: MyResultType };
+ *
+ * const result: MyResultType = graphql<MyOperationType>("graphql string", {
+ * 	variables: {
+ * 		// MyVariablesType
+ * 	}
+ * })
+ * ```
+ */
+export type GraphQLOperationType<IN extends {}, OUT extends {}> = {
+	variables: IN;
+	result: OUT;
+};
+
+/**
+ * Nominal type for branding generated graphql query operation strings with
+ * input and output types.
+ *
+ * E.g.,
+ *
+ * ```ts
+ * export const getWidget = `...` as GeneratedQuery<
+ * 	GetWidgetQueryVariables,
+ * 	GetWidgetQuery
+ * >;
+ * ```
+ *
+ * This allows `graphql()` to extract `InputType` and `OutputType` to correctly
+ * assign types to the `variables` and result objects.
+ */
 export type GeneratedQuery<InputType, OutputType> = string & {
 	__generatedQueryInput: InputType;
 	__generatedQueryOutput: OutputType;
 };
 
-export type GraphqlQueryOverrides<IN extends {}, OUT extends {}> = {
-	variables: IN;
-	result: OUT;
-};
-
-export type GraphqlQueryResult<T extends string, S> = T extends GeneratedQuery<
-	infer IN,
-	infer OUT
->
-	? GraphQLResult<OUT>
-	: S extends GraphqlQueryOverrides<infer IN, infer OUT>
-	? GraphQLResult<OUT>
-	: any;
-
-/** GraphQL mutate */
-
+/**
+ * Nominal type for branding generated graphql mutation operation strings with
+ * input and output types.
+ *
+ * E.g.,
+ *
+ * ```ts
+ * export const createWidget = `...` as GeneratedQuery<
+ * 	CreateWidgetMutationVariables,
+ * 	CreateWidgetMutation
+ * >;
+ * ```
+ *
+ * This allows `graphql()` to extract `InputType` and `OutputType` to correctly
+ * assign types to the `variables` and result objects.
+ */
 export type GeneratedMutation<InputType, OutputType> = string & {
 	__generatedMutationInput: InputType;
 	__generatedMutationOutput: OutputType;
 };
 
-export type GraphqlMutationResult<
-	TYPED_GQL_STRING extends string,
-	FALLBACK_TYPES
-> = TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer OUT>
-	? GraphQLResult<OUT>
-	: FALLBACK_TYPES extends GraphqlQueryOverrides<infer IN, infer OUT>
-	? GraphQLResult<OUT>
-	: any;
-
-/** GraphQL subscribe */
-
+/**
+ * Nominal type for branding generated graphql mutation operation strings with
+ * input and output types.
+ *
+ * E.g.,
+ *
+ * ```ts
+ * export const createWidget = `...` as GeneratedMutation<
+ * 	CreateWidgetMutationVariables,
+ * 	CreateWidgetMutation
+ * >;
+ * ```
+ *
+ * This allows `graphql()` to extract `InputType` and `OutputType` to correctly
+ * assign types to the `variables` and result objects.
+ */
 export type GeneratedSubscription<InputType, OutputType> = string & {
 	__generatedSubscriptionInput: InputType;
 	__generatedSubscriptionOutput: OutputType;
-};
-
-export type GraphqlSubscriptionResult<
-	TYPED_GQL_STRING extends string,
-	FALLBACK_TYPES
-> = {
-	provider: any;
-	value: {
-		data: TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer OUT>
-			? OUT
-			: FALLBACK_TYPES extends GraphqlQueryOverrides<infer IN, infer OUT>
-			? OUT
-			: any;
-	};
 };

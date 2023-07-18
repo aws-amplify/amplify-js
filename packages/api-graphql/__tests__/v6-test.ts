@@ -15,7 +15,11 @@ import {
 	expectSub,
 } from './utils/expects';
 
-import { GraphQLResult } from '../src/types';
+import {
+	GraphQLResult,
+	GraphqlSubscriptionResult,
+	GraphqlSubscriptionMessage,
+} from '../src/types';
 import {
 	CreateThreadMutation,
 	UpdateThreadMutation,
@@ -286,27 +290,32 @@ describe('client', () => {
 				},
 			};
 
-			const sub = client
-				.graphql({
+			// Customers should normally omit the type. Making it explicit to ensure the test
+			// fails if the returned changes.
+			const result: GraphqlSubscriptionResult<OnCreateThreadSubscription> =
+				client.graphql({
 					query: typedSubscriptions.onCreateThread,
 					variables: graphqlVariables,
 					authMode: 'API_KEY',
-				})
-				.subscribe({
-					next(message) {
-						expectSub(spy, 'onCreateThread', graphqlVariables);
-						expect(message.value.data.onCreateThread).toEqual(
-							graphqlMessage.value.data.onCreateThread
-						);
-						sub.unsubscribe();
-						done();
-					},
-					error(error) {
-						expect(error).toBeUndefined();
-						sub.unsubscribe();
-						done('bad news!');
-					},
 				});
+
+			const sub = result.subscribe({
+				// Customers should normally omit the type. Making it explicit to ensure the test
+				// fails if the returned changes.
+				next(message: GraphqlSubscriptionMessage<OnCreateThreadSubscription>) {
+					expectSub(spy, 'onCreateThread', graphqlVariables);
+					expect(message.value.data.onCreateThread).toEqual(
+						graphqlMessage.value.data.onCreateThread
+					);
+					sub.unsubscribe();
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					sub.unsubscribe();
+					done('bad news!');
+				},
+			});
 		});
 	});
 
@@ -328,7 +337,11 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
-			const result = await client.graphql({
+			// Customers would not specify these types. They're shown to demonstrate
+			// the return type for the test.
+			const rawResult:
+				| raw.GraphqlSubscriptionResult<any>
+				| raw.GraphQLResult<any> = await client.graphql({
 				query: untypedMutations.createThread,
 				authMode: 'API_KEY',
 				variables: {
@@ -336,6 +349,8 @@ describe('client', () => {
 				},
 			});
 
+			// An `as any` is what customers would likely write without branded queries.
+			const result = rawResult as any;
 			const thread = result.data?.createThread;
 			const errors = result.errors;
 
