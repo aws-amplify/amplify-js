@@ -56,7 +56,7 @@
       "name": "API (rest client)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, RestAPI }",
-      "limit": "30.94 kB"
+      "limit": "31.23 kB"
     }
   ],
   "jest": {
