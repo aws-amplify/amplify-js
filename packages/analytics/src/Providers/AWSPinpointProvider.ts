@@ -10,6 +10,7 @@ import {
 	Hub,
 	transferKeyToLowerCase,
 	transferKeyToUpperCase,
+	AnalyticsAction,
 } from '@aws-amplify/core';
 import {
 	putEvents,
@@ -29,6 +30,7 @@ import {
 	EndpointFailureData,
 } from '../types';
 import { v1 as uuid } from 'uuid';
+import { getAnalyticsUserAgentString } from '../utils/UserAgent';
 import EventBuffer from './EventBuffer';
 
 const AMPLIFY_SYMBOL = (
@@ -285,7 +287,11 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		try {
 			const { credentials, region } = this._config;
 			const data: PutEventsOutput = await putEvents(
-				{ credentials, region },
+				{
+					credentials,
+					region,
+					userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
+				},
 				eventParams
 			);
 
@@ -390,7 +396,13 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		try {
 			const { credentials, region } = this._config;
 			const data: UpdateEndpointOutput = await updateEndpoint(
-				{ credentials, region },
+				{
+					credentials,
+					region,
+					userAgentValue: getAnalyticsUserAgentString(
+						AnalyticsAction.UpdateEndpoint
+					),
+				},
 				update_params
 			);
 			logger.debug('updateEndpoint success', data);

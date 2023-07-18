@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { AbstractConvertPredictionsProvider } from '../types/Providers/AbstractConvertPredictionsProvider';
 import {
 	TranslateClient,
@@ -17,14 +19,16 @@ import {
 	Credentials,
 	ConsoleLogger as Logger,
 	Signer,
-	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
+	Category,
+	PredictionsAction,
 } from '@aws-amplify/core';
 import {
 	EventStreamMarshaller,
 	MessageHeaderValue,
 } from '@aws-sdk/eventstream-marshaller';
 import { fromUtf8, toUtf8 } from '@aws-sdk/util-utf8-node';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 
 const logger = new Logger('AmazonAIConvertPredictionsProvider');
 const eventBuilder = new EventStreamMarshaller(toUtf8, fromUtf8);
@@ -72,7 +76,10 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		this.translateClient = new TranslateClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject({
+				category: Category.Predictions,
+				action: PredictionsAction.Convert,
+			}),
 		});
 		const translateTextCommand = new TranslateTextCommand({
 			SourceLanguageCode: sourceLanguageCode,
@@ -105,7 +112,6 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			return Promise.reject('Source needs to be provided in the input');
 		}
 		const voiceId = input.textToSpeech.voiceId || VoiceId;
-
 		if (!region) {
 			return Promise.reject(
 				'Region was undefined. Did you enable speech generator using amplify CLI?'
@@ -119,7 +125,10 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		this.pollyClient = new PollyClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject({
+				category: Category.Predictions,
+				action: PredictionsAction.Convert,
+			}),
 		});
 		const synthesizeSpeechCommand = new SynthesizeSpeechCommand({
 			OutputFormat: 'mp3',
