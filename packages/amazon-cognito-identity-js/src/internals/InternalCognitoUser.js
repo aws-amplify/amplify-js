@@ -64,7 +64,7 @@ const userAgent = isNavigatorAvailable
 	: 'nodejs';
 
 /** @class */
-export default class InternalCognitoUser {
+export class InternalCognitoUser {
 	/**
 	 * Constructs a new CognitoUser object
 	 * @param {object} data Creation options
