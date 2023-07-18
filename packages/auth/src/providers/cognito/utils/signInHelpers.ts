@@ -351,8 +351,8 @@ export async function getSignInResult(params: {
 			if (!isMFATypeEnabled(challengeParameters, 'TOTP'))
 				throw new AuthError({
 					name: AuthErrorCodes.SignInException,
-					message: `Cannot initiate MFA setup from available types: ${parseMFATypes(
-						challengeParameters.MFAS_CAN_SETUP
+					message: `Cannot initiate MFA setup from available types: ${getMFATypes(
+						parseMFATypes(challengeParameters.MFAS_CAN_SETUP)
 					)}`,
 				});
 			const { Session, SecretCode: secretCode } =
@@ -386,7 +386,9 @@ export async function getSignInResult(params: {
 				isSignedIn: false,
 				nextStep: {
 					signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_MFA_SELECTION,
-					allowedMFATypes: parseMFATypes(challengeParameters.MFAS_CAN_CHOOSE),
+					allowedMFATypes: getMFATypes(
+						parseMFATypes(challengeParameters.MFAS_CAN_CHOOSE)
+					),
 				},
 			};
 		case 'SMS_MFA':
@@ -552,14 +554,18 @@ export function mapMfaType(mfa: string): CognitoMFAType {
 	return mfaType;
 }
 
-export function parseMFATypes(mfa?: string): AllowedMFATypes {
+export function getMFAType(type?: string): MFAType | undefined {
+	if (type === 'SMS_MFA') return 'SMS';
+	if (type === 'SOFTWARE_TOKEN_MFA') return 'TOTP';
+}
+
+export function getMFATypes(types?: string[]): MFAType[] {
+	if (!types) return [];
+	return types.map(getMFAType).filter(Boolean) as MFAType[];
+}
+export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 	if (!mfa) return [];
-	const parsedMfaTypes: AllowedMFATypes = [];
-	(JSON.parse(mfa) as CognitoMFAType[]).map(type => {
-		if (type === 'SMS_MFA') parsedMfaTypes.push('SMS');
-		if (type === 'SOFTWARE_TOKEN_MFA') parsedMfaTypes.push('TOTP');
-	});
-	return parsedMfaTypes;
+	return JSON.parse(mfa) as CognitoMFAType[];
 }
 
 export function isMFATypeEnabled(
@@ -567,7 +573,9 @@ export function isMFATypeEnabled(
 	mfaType: MFAType
 ): boolean {
 	const { MFAS_CAN_SETUP } = challengeParams;
-	const isMFAparseMFATypes = parseMFATypes(MFAS_CAN_SETUP).includes(mfaType);
+	const isMFAparseMFATypes = getMFATypes(
+		parseMFATypes(MFAS_CAN_SETUP)
+	).includes(mfaType);
 
 	return isMFAparseMFATypes;
 }

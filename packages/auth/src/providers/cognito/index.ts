@@ -7,3 +7,4 @@ export { confirmResetPassword } from './apis/confirmResetPassword';
 export { signIn } from './apis/signIn';
 export { resendSignUpCode } from './apis/resendSignUpCode';
 export { confirmSignIn } from './apis/confirmSignIn';
+export { fetchMFAPreference } from './apis/fetchMFAPreference';
