@@ -1585,7 +1585,7 @@ jobs:
           framework: react
           category: api
           sample_name: optimistic-ui
-          spec: websocket-disruption
+          spec: optimistic-ui
           browser: << parameters.browser >>
 
   deploy:
