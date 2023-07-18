@@ -3,7 +3,7 @@ export {
 	CustomAttribute,
 	ValidationData,
 	AuthFlowType,
-    CognitoUserAttributeKey
+	CognitoUserAttributeKey,
 } from './models';
 
 export {
@@ -12,5 +12,6 @@ export {
 	CognitoResetPasswordOptions,
 	CognitoSignInOptions,
 	CognitoResendSignUpCodeOptions,
-	CognitoConfirmSignInOptions
+	CognitoConfirmSignUpOptions,
+	CognitoConfirmSignInOptions,
 } from './options';

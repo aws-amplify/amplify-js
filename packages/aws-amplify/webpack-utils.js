@@ -33,13 +33,11 @@ const packageFolderMap = {
 	api: '@aws-amplify/api',
 	auth: '@aws-amplify/auth',
 	'aws-amplify': 'aws-amplify',
-	'aws-amplify-react-native': 'aws-amplify-react-native',
 	cache: '@aws-amplify/cache',
 	core: '@aws-amplify/core',
 	datastore: '@aws-amplify/datastore',
 	interactions: '@aws-amplify/interactions',
 	pubsub: '@aws-amplify/pubsub',
-	pushnotification: '@aws-amplify/pushnotification',
 	storage: '@aws-amplify/storage',
 };
 

@@ -153,7 +153,7 @@ Optionally, you can use the shorthands flags `-p` and `-t` for packages and targ
 To develop multiple/all packages, provide the package names separated by a comma or the flag `--all` or `-a`:
 
 ```
-npm run setup-dev:react-native -- --packages @aws-amplify/auth,aws-amplify-react-native --target ~/path/to/your/rn/app/root
+npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
 npm run setup-dev:react-native -- --all --target ~/path/to/your/rn/app/root
 ```
 
