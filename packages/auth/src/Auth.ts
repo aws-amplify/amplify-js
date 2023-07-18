@@ -1427,7 +1427,7 @@ export class AuthClass {
 							return resolve(result);
 						}
 					},
-					getAuthUserAgentValue(AuthAction.DeleteUser)
+					getAuthUserAgentValue(AuthAction.DeleteUserAttributes)
 				);
 			});
 		});
