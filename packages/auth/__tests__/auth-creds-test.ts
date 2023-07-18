@@ -8,6 +8,7 @@ import {
 	CognitoAccessToken,
 	CognitoIdToken,
 } from 'amazon-cognito-identity-js';
+import { InternalCognitoUser } from 'amazon-cognito-identity-js/internals';
 const authOptions: AuthOptions = {
 	userPoolId: 'us-west-2_0xxxxxxxx',
 	userPoolWebClientId: 'awsUserPoolsWebClientId',
@@ -21,7 +22,7 @@ describe('credentials syncing tests', () => {
 		const auth = new Auth(authOptions);
 
 		jest
-			.spyOn(CognitoUser.prototype, 'authenticateUser')
+			.spyOn(InternalCognitoUser.prototype, 'authenticateUser')
 			.mockImplementation((authenticationDetails, callback) => {
 				const session = new CognitoUserSession({
 					AccessToken: new CognitoAccessToken({ AccessToken: 'accesstoken' }),
@@ -49,7 +50,7 @@ describe('credentials syncing tests', () => {
 		});
 
 		jest
-			.spyOn(CognitoUser.prototype, 'getSession')
+			.spyOn(InternalCognitoUser.prototype, 'getSession')
 			.mockImplementation((callback: any) => {
 				callback(null, session);
 			});
