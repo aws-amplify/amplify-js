@@ -110,7 +110,8 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 });
 
 jest.mock('amazon-cognito-identity-js/internals', () => {
-	const InternalCognitoUser = function () {
+	// prettier-ignore
+	const InternalCognitoUser = function() {
 		// mock private member
 		this.signInUserSession = null;
 	};
@@ -275,7 +276,8 @@ jest.mock('amazon-cognito-identity-js/internals', () => {
 	) => {
 		callback.onSuccess('success');
 	};
-	InternalCognitoUser.prototype.getSignInUserSession = function () {
+	// prettier-ignore
+	InternalCognitoUser.prototype.getSignInUserSession = function() {
 		return this.signInUserSession;
 	};
 
@@ -304,10 +306,17 @@ const createMockLocalStorage = () =>
 
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
-import { Credentials, StorageHelper, Hub } from '@aws-amplify/core';
+import {
+	AuthAction,
+	Credentials,
+	StorageHelper,
+	Hub,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
 import { mockDeviceArray, transformedMockData } from './mockData';
+import { getAuthUserAgentValue } from '../src/utils';
 
 const authOptions: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
@@ -762,9 +771,15 @@ describe('auth unit test', () => {
 
 			expect(
 				await InternalCognitoUser.prototype.confirmRegistration
-			).toBeCalledWith(code, jasmine.any(Boolean), jasmine.any(Function), {
-				foo: 'bar',
-			});
+			).toBeCalledWith(
+				code,
+				jasmine.any(Boolean),
+				jasmine.any(Function),
+				{
+					foo: 'bar',
+				},
+				getAuthUserAgentValue(AuthAction.ConfirmSignUp)
+			);
 			spyon.mockClear();
 		});
 
@@ -782,9 +797,15 @@ describe('auth unit test', () => {
 
 			expect(
 				await InternalCognitoUser.prototype.confirmRegistration
-			).toBeCalledWith(code, jasmine.any(Boolean), jasmine.any(Function), {
-				custom: 'value',
-			});
+			).toBeCalledWith(
+				code,
+				jasmine.any(Boolean),
+				jasmine.any(Function),
+				{
+					custom: 'value',
+				},
+				getAuthUserAgentValue(AuthAction.ConfirmSignUp)
+			);
 			spyon.mockClear();
 		});
 
@@ -882,7 +903,11 @@ describe('auth unit test', () => {
 
 			expect(
 				await InternalCognitoUser.prototype.resendConfirmationCode
-			).toBeCalledWith(jasmine.any(Function), { foo: 'bar' });
+			).toBeCalledWith(
+				jasmine.any(Function),
+				{ foo: 'bar' },
+				getAuthUserAgentValue(AuthAction.ResendSignUp)
+			);
 			spyon.mockClear();
 		});
 
@@ -897,7 +922,11 @@ describe('auth unit test', () => {
 
 			expect(
 				await InternalCognitoUser.prototype.resendConfirmationCode
-			).toBeCalledWith(jasmine.any(Function), { custom: 'value' });
+			).toBeCalledWith(
+				jasmine.any(Function),
+				{ custom: 'value' },
+				getAuthUserAgentValue(AuthAction.ResendSignUp)
+			);
 			spyon.mockClear();
 		});
 
@@ -1043,7 +1072,8 @@ describe('auth unit test', () => {
 					clientMetadata: { foo: 'bar' },
 					authParameters: {},
 				},
-				authCallbacks
+				authCallbacks,
+				getAuthUserAgentValue(AuthAction.SignIn)
 			);
 			spyon.mockClear();
 		});
@@ -1067,7 +1097,8 @@ describe('auth unit test', () => {
 					clientMetadata: { custom: 'value' },
 					authParameters: {},
 				},
-				authCallbacks
+				authCallbacks,
+				getAuthUserAgentValue(AuthAction.SignIn)
 			);
 			spyon.mockClear();
 		});
@@ -1446,7 +1477,8 @@ describe('auth unit test', () => {
 					onFailure: jasmine.any(Function),
 				},
 				undefined,
-				{ foo: 'bar' }
+				{ foo: 'bar' },
+				getAuthUserAgentValue(AuthAction.ConfirmSignIn)
 			);
 			spyon.mockClear();
 		});
@@ -1469,7 +1501,8 @@ describe('auth unit test', () => {
 					onFailure: jasmine.any(Function),
 				},
 				'SMS_MFA',
-				{ custom: 'value' }
+				{ custom: 'value' },
+				getAuthUserAgentValue(AuthAction.ConfirmSignIn)
 			);
 			spyon.mockClear();
 		});
@@ -1595,7 +1628,8 @@ describe('auth unit test', () => {
 					mfaSetup: jasmine.any(Function),
 					totpRequired: jasmine.any(Function),
 				},
-				{ foo: 'bar' }
+				{ foo: 'bar' },
+				getAuthUserAgentValue(AuthAction.CompleteNewPassword)
 			);
 			spyon.mockClear();
 		});
@@ -1625,7 +1659,8 @@ describe('auth unit test', () => {
 					mfaSetup: jasmine.any(Function),
 					totpRequired: jasmine.any(Function),
 				},
-				{ custom: 'value' }
+				{ custom: 'value' },
+				getAuthUserAgentValue(AuthAction.CompleteNewPassword)
 			);
 			spyon.mockClear();
 		});
@@ -1949,10 +1984,14 @@ describe('auth unit test', () => {
 			const concurrency = 10;
 			const spyon = jest
 				.spyOn(InternalCognitoUser.prototype, 'getSession')
-				.mockImplementationOnce(function (callback: any) {
+
+				.mockImplementationOnce(
+					// prettier-ignore
+					function(callback: any) {
 					this.signInUserSession = session;
 					callback(null, session);
-				});
+				}
+				);
 			expect.assertions(2 * concurrency + 1);
 
 			const auth = new Auth(authOptions);
@@ -2611,7 +2650,8 @@ describe('auth unit test', () => {
 				jasmine.any(Function),
 				{
 					foo: 'bar',
-				}
+				},
+				getAuthUserAgentValue(AuthAction.ChangePassword)
 			);
 			spyon.mockClear();
 		});
@@ -2636,7 +2676,8 @@ describe('auth unit test', () => {
 				jasmine.any(Function),
 				{
 					custom: 'value',
-				}
+				},
+				getAuthUserAgentValue(AuthAction.ChangePassword)
 			);
 			spyon.mockClear();
 		});
@@ -2666,7 +2707,8 @@ describe('auth unit test', () => {
 					onFailure: jasmine.any(Function),
 					onSuccess: jasmine.any(Function),
 				},
-				{ foo: 'bar' }
+				{ foo: 'bar' },
+				getAuthUserAgentValue(AuthAction.ForgotPassword)
 			);
 			spyon.mockClear();
 		});
@@ -2683,7 +2725,8 @@ describe('auth unit test', () => {
 					onFailure: jasmine.any(Function),
 					onSuccess: jasmine.any(Function),
 				},
-				{ custom: 'value' }
+				{ custom: 'value' },
+				getAuthUserAgentValue(AuthAction.ForgotPassword)
 			);
 			spyon.mockClear();
 		});
@@ -2805,7 +2848,8 @@ describe('auth unit test', () => {
 					onFailure: jasmine.any(Function),
 					onSuccess: jasmine.any(Function),
 				},
-				{ foo: 'bar' }
+				{ foo: 'bar' },
+				getAuthUserAgentValue(AuthAction.ForgotPasswordSubmit)
 			);
 			spyon.mockClear();
 		});
@@ -2830,7 +2874,8 @@ describe('auth unit test', () => {
 					onFailure: jasmine.any(Function),
 					onSuccess: jasmine.any(Function),
 				},
-				{ custom: 'value' }
+				{ custom: 'value' },
+				getAuthUserAgentValue(AuthAction.ForgotPasswordSubmit)
 			);
 			spyon.mockClear();
 		});
@@ -3120,7 +3165,12 @@ describe('auth unit test', () => {
 
 			expect(
 				await InternalCognitoUser.prototype.updateAttributes
-			).toBeCalledWith([], jasmine.any(Function), { foo: 'bar' });
+			).toBeCalledWith(
+				[],
+				jasmine.any(Function),
+				{ foo: 'bar' },
+				getAuthUserAgentValue(AuthAction.UpdateUserAttributes)
+			);
 			spyon.mockClear();
 		});
 
@@ -3139,7 +3189,12 @@ describe('auth unit test', () => {
 
 			expect(
 				await InternalCognitoUser.prototype.updateAttributes
-			).toBeCalledWith([], jasmine.any(Function), { custom: 'value' });
+			).toBeCalledWith(
+				[],
+				jasmine.any(Function),
+				{ custom: 'value' },
+				getAuthUserAgentValue(AuthAction.UpdateUserAttributes)
+			);
 			spyon.mockClear();
 		});
 
@@ -3284,7 +3339,11 @@ describe('auth unit test', () => {
 
 			expect(
 				await InternalCognitoUser.prototype.deleteAttributes
-			).toBeCalledWith(['email', 'phone_number'], jasmine.any(Function));
+			).toBeCalledWith(
+				['email', 'phone_number'],
+				jasmine.any(Function),
+				getAuthUserAgentValue(AuthAction.DeleteUserAttributes)
+			);
 			spyon.mockClear();
 		});
 	});
@@ -4349,7 +4408,12 @@ describe('auth unit test', () => {
 
 			expect(
 				await InternalCognitoUser.prototype.sendCustomChallengeAnswer
-			).toBeCalledWith('answer', authCallbacks, { foo: 'bar' });
+			).toBeCalledWith(
+				'answer',
+				authCallbacks,
+				{ foo: 'bar' },
+				getAuthUserAgentValue(AuthAction.SendCustomChallengeAnswer)
+			);
 			spyon.mockClear();
 		});
 
@@ -4374,7 +4438,12 @@ describe('auth unit test', () => {
 
 			expect(
 				await InternalCognitoUser.prototype.sendCustomChallengeAnswer
-			).toBeCalledWith('answer', authCallbacks, { custom: 'value' });
+			).toBeCalledWith(
+				'answer',
+				authCallbacks,
+				{ custom: 'value' },
+				getAuthUserAgentValue(AuthAction.SendCustomChallengeAnswer)
+			);
 			spyon.mockClear();
 		});
 
@@ -4685,9 +4754,13 @@ describe('auth unit test', () => {
 				});
 			const res = await auth.getPreferredMFA(user, { bypassCache: true });
 			expect(res).toEqual('SMS');
-			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
-				bypassCache: true,
-			});
+			expect(getUserDataSpy).toHaveBeenCalledWith(
+				expect.any(Function),
+				{
+					bypassCache: true,
+				},
+				getAuthUserAgentValue(AuthAction.GetPreferredMFA)
+			);
 		});
 
 		test('get user data error because user is deleted, disabled or token has been revoked', async () => {
@@ -4715,9 +4788,13 @@ describe('auth unit test', () => {
 			await expect(
 				auth.getPreferredMFA(user, { bypassCache: true })
 			).rejects.toThrow('Access Token has been revoked');
-			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
-				bypassCache: true,
-			});
+			expect(getUserDataSpy).toHaveBeenCalledWith(
+				expect.any(Function),
+				{
+					bypassCache: true,
+				},
+				getAuthUserAgentValue(AuthAction.GetPreferredMFA)
+			);
 			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
 			expect(credentialsClearSpy).toHaveBeenCalledTimes(1);
 			expect(hubSpy).toHaveBeenCalledWith(
@@ -4760,7 +4837,8 @@ describe('auth unit test', () => {
 			expect(setUserMfaPreferenceSpy).toHaveBeenCalledWith(
 				null,
 				{ Enabled: true, PreferredMfa: true },
-				expect.any(Function)
+				expect.any(Function),
+				getAuthUserAgentValue(AuthAction.SetPreferredMFA)
 			);
 			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
 				bypassCache: true,
