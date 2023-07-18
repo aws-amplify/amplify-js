@@ -3,6 +3,7 @@
 
 import { InputLogEvent, LogGroup } from '@aws-sdk/client-cloudwatch-logs';
 import { Credentials } from '@aws-sdk/types';
+import { JWT } from '../Singleton/Auth/types';
 
 export interface AmplifyConfig {
 	Analytics?: object;
@@ -104,35 +105,54 @@ export type ResourceConfig = {
 
 export type LibraryOptions = {
 	Auth?: {
-		tokenProvider?: TokenProvider;
-		refreshTokenClient?: TokenRefreshClient;
+		tokenOrchestrator?: AuthTokenOrchestrator;
+		tokenRefresher?: TokenRefresher;
 		credentialsProvider?: CredentialsProvider;
-		storage?: AuthStorage;
+		authTokenStore?: AuthTokenStore;
+		keyValueStore?: KeyValueStorageInterface
 	} | null;
 };
 
-export interface TokenProvider {
-	getTokens: (options?: GetTokensOptions) => Promise<AuthTokens>;
-	setTokens: (tokens: AuthTokens) => Promise<void>;
+export interface AuthTokenOrchestrator {
+	getTokens: ({ options, tokenStore, keyValueStore }: { options?: GetAuthTokensOptions, tokenStore: AuthTokenStore, keyValueStore: KeyValueStorageInterface }) => Promise<AuthTokens>;
+	setTokens: ({ tokens, tokenStore, keyValueStore }: { tokens: AuthTokens, tokenStore: AuthTokenStore, keyValueStore: KeyValueStorageInterface}) => Promise<void>;
+	clearTokens:({ tokenStore, keyValueStore }: {tokenStore: AuthTokenStore, keyValueStore: KeyValueStorageInterface}) => Promise<void>;
 }
 
-export type TokenRefreshClient = (metadata?: Record<string, string>) => Promise<AuthTokens>;
+export type TokenRefresher = (tokens: AuthTokens) => Promise<AuthTokens>;
 
-export type CredentialsProvider = (options?: GetTokensOptions) => Promise<ICredentials>;
+export type CredentialsProvider = (options?: GetAuthTokensOptions) => Promise<ICredentials>;
 
-export type GetTokensOptions = {
+export type GetAuthTokensOptions = {
 	forceRefresh?: boolean;
 };
 
 export type AuthTokens = {
-	idToken: string;
-	accessToken: string;
+	idToken?: JWT;
+	accessToken: JWT;
+	accessTokenExpAt: number;
+	oidcProvider: OidcProvider;
 	metadata?: Record<string, string>
 };
 
-export interface AuthStorage {
+export type OidcProvider = 'COGNITO' | { custom: string };
+
+export interface KeyValueStorageInterface {
 	setItem(key: string, value: string): Promise<void>
 	getItem(key: string): Promise<string | null>;
 	removeItem(key: string): Promise<void>;
 	clear(): Promise<void>
+}
+
+export interface AuthTokenStore {
+	loadTokens(keyValueStore: KeyValueStorageInterface): Promise<AuthTokens | null>;
+	storeTokens(keyValueStore: KeyValueStorageInterface, tokens: AuthTokens): Promise<void>;
+	clearTokens(keyValueStore: KeyValueStorageInterface): Promise<void>;
+}
+
+export type AuthSession = {
+	tokens?: AuthTokens,
+	awsCreds?: Credentials,
+	awsCredsIdentityId?: string,
+	authenticated: boolean
 }

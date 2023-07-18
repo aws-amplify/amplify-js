@@ -1,18 +1,33 @@
 import {
+	AuthSession,
+	AuthTokenStore,
 	AuthTokens,
-	GetTokensOptions,
+	GetAuthTokensOptions,
 	LibraryOptions,
 	ResourceConfig,
+	TokenRefresher,
 } from '../types';
 import { Hub } from '../Hub';
 import { Observable, Observer } from 'rxjs';
-import { ICredentials } from '@aws-amplify/core';
+import { DefaultAuthTokensOrchestrator, MyTokenStore } from './Auth';
+import { MyStorage } from '../StorageHelper';
 
 let singletonResourcesConfig: ResourceConfig = {};
-let singletonLibraryOptions: LibraryOptions = { Auth: {} };
+
+// TODO: add default AuthTokenStore for each platform
+let singletonLibraryOptions: LibraryOptions = {
+	Auth: {
+		authTokenStore: MyTokenStore, // constructs the keys and also has the migration for v5 tokens
+		tokenOrchestrator: DefaultAuthTokensOrchestrator, // Combines refresher, with token store and keyValueStorage
+		keyValueStore: MyStorage, // Depends on platform,
+		tokenRefresher: async (authTokens: AuthTokens) => {
+			throw new Error('No token refresher')
+		}
+	}
+};
 
 // add listeners of User changes
-const observersList: Set<Observer<AuthTokens>> = new Set();
+const observersList: Set<Observer<AuthSession>> = new Set();
 
 export namespace Amplify {
 	/**
@@ -56,36 +71,25 @@ export namespace Amplify {
 		 * @param options GetTokensOptions
 		 * @returns Promise<AuthTokens>
 		 */
-		export async function fetchTokens(
-			options?: GetTokensOptions
-		): Promise<AuthTokens> {
-			if (!singletonLibraryOptions?.Auth?.tokenProvider) {
+		export async function fetchAuthSession(
+			options?: GetAuthTokensOptions
+		): Promise<AuthSession> {
+			if (!singletonLibraryOptions?.Auth?.tokenOrchestrator) {
 				throw new Error('No token session provider configured'); // TODO: add default token provider
 			}
-			return await singletonLibraryOptions.Auth.tokenProvider.getTokens(options);
-		}
-
-		/**
-		 * @private
-			 * Internal use of Amplify only
-		 * Obtain current Auth Tokens
-		 * @param options GetTokensOptions
-		 * @returns Promise<AuthTokens>
-		 */
-		export async function fetchCredentials(
-			options?: GetTokensOptions
-		): Promise<ICredentials> {
-			if (!singletonLibraryOptions?.Auth?.credentialsProvider) {
-				throw new Error('No credentials provider configured');
+			const tokens = await singletonLibraryOptions.Auth.tokenOrchestrator.getTokens({ tokenStore: singletonLibraryOptions.Auth.authTokenStore, keyValueStore: singletonLibraryOptions.Auth.keyValueStore, options });
+			// const identityId = await
+			return {
+				authenticated: false,
+				tokens
 			}
-			return await singletonLibraryOptions.Auth.credentialsProvider(options);
 		}
 
 		/**
 		 * Obtain an Observable that notifies on session changes
 		 * @returns Observable<AmplifyUserSession>
 		 */
-		export function listenSessionChanges(): Observable<AuthTokens> {
+		export function listenSessionChanges(): Observable<AuthSession> {
 			return new Observable(observer => {
 				observersList.add(observer);
 
@@ -97,34 +101,45 @@ export namespace Amplify {
 
 		/**
 		 * @private
-			 * Internal use of Amplify only
-		 * Persist Auth Tokens
+		 * Internal use of Amplify only, Persist Auth Tokens
 		 * @param tokens AuthTokens
 		 * @returns Promise<void>
 		 */
-		export function setTokens(tokens: AuthTokens): Promise<void> {
-			// TODO: Save tokens to Auth Storage
+		export async function setTokens(tokens: AuthTokens): Promise<void> {
+			await singletonLibraryOptions.Auth.tokenOrchestrator.setTokens({ tokens, tokenStore: singletonLibraryOptions.Auth.authTokenStore, keyValueStore: singletonLibraryOptions.Auth.keyValueStore });
 
 			// Notify observers
 			for (const observer of observersList) {
-				observer.next(tokens);
+				// TODO: Add load the identityId and credentials part
+				observer.next({
+					authenticated: true,
+					tokens
+				});
 			}
-
 			return;
 		}
 
 		/**
 		 * @private
-			 * Internal use of Amplify only
-		 * Persist Auth Tokens
-		 * @param tokens AuthTokens
-		 * @returns Promise<void>
+		 * Clear tokens
+		 * @return Promise<void>
 		 */
-		export function getTokens(): Promise<AuthTokens> {
-			// TODO: Read tokens from Auth Storage
-
-			return;
+		export async function clearTokens(): Promise<void> {
+			await singletonLibraryOptions.Auth.authTokenStore.clearTokens(singletonLibraryOptions.Auth.keyValueStore);
 		}
+
+		/**
+		 * Internal use only by AuthTokenOrchestrator
+		 */
+		export const tokenRefresher: TokenRefresher = singletonLibraryOptions.Auth.tokenRefresher;
+
+		/**
+		 * @private
+			  * Internal use of Amplify only
+			* Get Storage adapter 
+		 */
+		export const authTokenStore: AuthTokenStore = singletonLibraryOptions.Auth.authTokenStore;
+
 	}
 }
 
@@ -160,6 +175,6 @@ function incrementLibraryOptions(existingConfig: LibraryOptions, newConfig: Libr
 			resultConfig[category] = { ...resultConfig[category], ...newConfig[category] };
 		}
 	}
-		
+
 	return resultConfig;
 }

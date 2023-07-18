@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { KeyValueStorageInterface } from "../types";
+
 let dataMemory = {};
 
 /** @class */
@@ -69,5 +71,27 @@ export class StorageHelper {
 	 */
 	getStorage(): any {
 		return this.storageWindow;
+	}
+}
+
+const myStorage = {}
+export const MyStorage: KeyValueStorageInterface = {
+	setItem: function (key: string, value: string): Promise<void> {
+		myStorage[key] = value;
+		return;
+	},
+	getItem: function (key: string): Promise<string> {
+		return myStorage[key];
+	},
+	removeItem: function (key: string): Promise<void> {
+		delete(myStorage[key]);
+		return;
+	},
+	clear: function (): Promise<void> {
+		Object.keys(myStorage).forEach(key => {
+			delete(myStorage[key]);
+		})
+
+		return;
 	}
 }

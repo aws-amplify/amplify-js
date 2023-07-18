@@ -14,6 +14,16 @@
 		"./lib-esm/I18n/index.js",
 		"./lib-esm/Credentials.js"
 	],
+	"exports": {
+		"./singleton": {
+			"import": "./lib-esm/Singleton/index.js",
+			"require": "./lib/Singleton/index.js"
+		},
+		".": {
+			"import": "./lib-esm/index.js",
+			"require": "./lib/index.js"
+		}
+	},
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage",
 		"test:size": "size-limit",
@@ -62,7 +72,8 @@
 		"src",
 		"typings.d.ts",
 		"internals",
-		"polyfills"
+		"polyfills",
+		"singleton.d.ts"
 	],
 	"dependencies": {
 		"@aws-crypto/sha256-js": "1.2.2",
