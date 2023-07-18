@@ -25,6 +25,7 @@ import {
 
 import {
 	Amplify,
+	AuthAction,
 	ConsoleLogger as Logger,
 	Credentials,
 	Hub,
@@ -73,7 +74,6 @@ import {
 	IAuthDevice,
 } from './types/Auth';
 import { getAuthUserAgentValue } from './utils';
-import { AuthAction } from '@aws-amplify/core';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
