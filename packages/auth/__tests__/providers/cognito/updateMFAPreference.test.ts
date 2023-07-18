@@ -79,7 +79,8 @@ describe('updateMFAPreference Error Path Cases:', () => {
 		}
 	});
 
-	test('updateMFAPreference should expect an unknown error when underlying error is not coming from the service', async () => {
+	test('updateMFAPreference should expect an unknown error'+
+	' when underlying error is not coming from the service', async () => {
 		expect.assertions(3);
 		globalMock.fetch = jest.fn(() =>
 			Promise.reject(new Error('unknown error'))
