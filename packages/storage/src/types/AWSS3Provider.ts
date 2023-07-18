@@ -34,7 +34,9 @@ export type CommonStorageOptions = Omit<
 	| 'region'
 	| 'bucket'
 	| 'dangerouslyConnectToHttpEndpointForTesting'
->;
+> & {
+	userAgentValue?: string;
+};
 
 export type S3ProviderGetConfig = CommonStorageOptions & {
 	download?: boolean;
