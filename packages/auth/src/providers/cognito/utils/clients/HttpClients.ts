@@ -14,6 +14,8 @@ import type {
 	InitiateAuthCommandOutput,
 	RespondToAuthChallengeCommandInput,
 	RespondToAuthChallengeCommandOutput,
+	ConfirmSignUpCommandOutput,
+	ConfirmSignUpCommandInput,
 	VerifySoftwareTokenCommandInput,
 	VerifySoftwareTokenCommandOutput,
 	AssociateSoftwareTokenCommandInput,
@@ -34,6 +36,7 @@ export type ClientInputs =
 	| InitiateAuthCommandInput
 	| RespondToAuthChallengeCommandInput
 	| ResendConfirmationCodeCommandInput
+	| ConfirmSignUpCommandInput
 	| VerifySoftwareTokenCommandInput
 	| AssociateSoftwareTokenCommandInput
 	| SetUserMFAPreferenceCommandInput;
@@ -45,6 +48,7 @@ export type ClientOutputs =
 	| InitiateAuthCommandOutput
 	| RespondToAuthChallengeCommandOutput
 	| ResendConfirmationCodeCommandOutput
+	| ConfirmSignUpCommandOutput
 	| VerifySoftwareTokenCommandOutput
 	| AssociateSoftwareTokenCommandOutput
 	| SetUserMFAPreferenceCommandOutput;

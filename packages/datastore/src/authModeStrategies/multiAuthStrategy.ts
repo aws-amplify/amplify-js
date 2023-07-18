@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { Auth } from '@aws-amplify/auth';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import {

@@ -18,6 +18,7 @@ import {
 	getRetryDecider,
 } from '../../clients/middleware/retry';
 import { getAmplifyUserAgent } from '../../Platform';
+import { observeFrameworkChanges } from '../../Platform/detectFramework';
 
 /**
  * The service name used to sign requests if the API requires authentication.
@@ -62,8 +63,12 @@ export const defaultConfig = {
 	endpointResolver,
 	retryDecider: getRetryDecider(parseJsonError),
 	computeDelay: jitteredBackoff,
-	userAgentValue: getAmplifyUserAgent(), // TODO: use getAmplifyUserAgentString() when available.
+	userAgentValue: getAmplifyUserAgent(),
 };
+
+observeFrameworkChanges(() => {
+	defaultConfig.userAgentValue = getAmplifyUserAgent();
+});
 
 /**
  * @internal

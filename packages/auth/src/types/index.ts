@@ -30,6 +30,7 @@ export {
 	ResendSignUpCodeRequest,
 	SignUpRequest,
 	SignInRequest,
+	ConfirmSignUpRequest,
 	ConfirmSignInRequest
 } from './requests';
 

@@ -46,7 +46,7 @@ const trackers = {
 };
 
 type TrackerTypes = keyof typeof trackers;
-type Trackers = typeof trackers[TrackerTypes];
+type Trackers = (typeof trackers)[TrackerTypes];
 let _instance = null;
 
 /**
@@ -273,7 +273,6 @@ export class AnalyticsClass {
 		}
 
 		const provider = params.provider ? params.provider : 'AWSPinpoint';
-
 		return new Promise((resolve, reject) => {
 			this._pluggables.forEach(pluggable => {
 				if (pluggable.getProviderName() === provider) {
