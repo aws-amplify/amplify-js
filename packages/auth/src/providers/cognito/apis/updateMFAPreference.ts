@@ -30,7 +30,7 @@ export async function updateMFAPreference(
 	});
 }
 
-function getMFASettings(
+export function getMFASettings(
 	mfaPreference?: MFAPreference
 ): CognitoMFASettings | undefined {
 	if (mfaPreference === 'DISABLED') {
