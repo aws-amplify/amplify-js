@@ -1,18 +1,21 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+import { ICredentials } from '@aws-amplify/core';
 import {
-	GetObjectRequest,
-	GetObjectCommandOutput,
-	PutObjectRequest,
-	CopyObjectRequest,
+	GetObjectInput,
+	GetObjectOutput,
+	PutObjectInput,
+	CopyObjectInput,
+	DeleteObjectOutput,
+	HeadObjectInput,
 	_Object,
-	DeleteObjectCommandOutput,
-} from '@aws-sdk/client-s3';
+} from '../AwsClients/S3';
 import { StorageOptions, StorageAccessLevel } from './Storage';
 import {
 	UploadTaskCompleteEvent,
 	UploadTaskProgressEvent,
 } from '../providers/AWSS3UploadTask';
 import { UploadTask } from './Provider';
-import { ICredentials } from '@aws-amplify/core';
 
 type ListObjectsCommandOutputContent = _Object;
 
@@ -40,38 +43,48 @@ export type S3ProviderGetConfig = CommonStorageOptions & {
 	provider?: 'AWSS3';
 	identityId?: string;
 	progressCallback?: (progress: any) => any;
-	cacheControl?: GetObjectRequest['ResponseCacheControl'];
-	contentDisposition?: GetObjectRequest['ResponseContentDisposition'];
-	contentEncoding?: GetObjectRequest['ResponseContentEncoding'];
-	contentLanguage?: GetObjectRequest['ResponseContentLanguage'];
-	contentType?: GetObjectRequest['ResponseContentType'];
-	SSECustomerAlgorithm?: GetObjectRequest['SSECustomerAlgorithm'];
-	SSECustomerKey?: GetObjectRequest['SSECustomerKey'];
-	SSECustomerKeyMD5?: GetObjectRequest['SSECustomerKeyMD5'];
+	cacheControl?: GetObjectInput['ResponseCacheControl'];
+	contentDisposition?: GetObjectInput['ResponseContentDisposition'];
+	contentEncoding?: GetObjectInput['ResponseContentEncoding'];
+	contentLanguage?: GetObjectInput['ResponseContentLanguage'];
+	contentType?: GetObjectInput['ResponseContentType'];
+	SSECustomerAlgorithm?: GetObjectInput['SSECustomerAlgorithm'];
+	SSECustomerKey?: GetObjectInput['SSECustomerKey'];
+	// TODO(AllanZhengYP): remove in V6.
+	SSECustomerKeyMD5?: GetObjectInput['SSECustomerKeyMD5'];
+	validateObjectExistence?: boolean;
+};
+
+export type S3ProviderGetPropertiesConfig = CommonStorageOptions & {
+	SSECustomerAlgorithm?: HeadObjectInput['SSECustomerAlgorithm'];
+	SSECustomerKey?: HeadObjectInput['SSECustomerKey'];
+	// TODO(AllanZhengYP): remove in V6.
+	SSECustomerKeyMD5?: HeadObjectInput['SSECustomerKeyMD5'];
 };
 
 export type S3ProviderGetOuput<T> = T extends { download: true }
-	? GetObjectCommandOutput
+	? GetObjectOutput
 	: string;
 
 type _S3ProviderPutConfig = {
 	progressCallback?: (progress: any) => any;
 	provider?: 'AWSS3';
 	track?: boolean;
-	serverSideEncryption?: PutObjectRequest['ServerSideEncryption'];
-	SSECustomerAlgorithm?: PutObjectRequest['SSECustomerAlgorithm'];
-	SSECustomerKey?: PutObjectRequest['SSECustomerKey'];
-	SSECustomerKeyMD5?: PutObjectRequest['SSECustomerKeyMD5'];
-	SSEKMSKeyId?: PutObjectRequest['SSEKMSKeyId'];
-	acl?: PutObjectRequest['ACL'];
-	bucket?: PutObjectRequest['Bucket'];
-	cacheControl?: PutObjectRequest['CacheControl'];
-	contentDisposition?: PutObjectRequest['ContentDisposition'];
-	contentEncoding?: PutObjectRequest['ContentEncoding'];
-	contentType?: PutObjectRequest['ContentType'];
-	expires?: PutObjectRequest['Expires'];
-	metadata?: PutObjectRequest['Metadata'];
-	tagging?: PutObjectRequest['Tagging'];
+	serverSideEncryption?: PutObjectInput['ServerSideEncryption'];
+	SSECustomerAlgorithm?: PutObjectInput['SSECustomerAlgorithm'];
+	SSECustomerKey?: PutObjectInput['SSECustomerKey'];
+	// TODO(AllanZhengYP): remove in V6.
+	SSECustomerKeyMD5?: PutObjectInput['SSECustomerKeyMD5'];
+	SSEKMSKeyId?: PutObjectInput['SSEKMSKeyId'];
+	acl?: PutObjectInput['ACL'];
+	bucket?: PutObjectInput['Bucket'];
+	cacheControl?: PutObjectInput['CacheControl'];
+	contentDisposition?: PutObjectInput['ContentDisposition'];
+	contentEncoding?: PutObjectInput['ContentEncoding'];
+	contentType?: PutObjectInput['ContentType'];
+	expires?: PutObjectInput['Expires'];
+	metadata?: PutObjectInput['Metadata'];
+	tagging?: PutObjectInput['Tagging'];
 	useAccelerateEndpoint?: boolean;
 	resumable?: boolean;
 };
@@ -83,6 +96,15 @@ export type ResumableUploadConfig = {
 	errorCallback?: (err: any) => any;
 };
 
+/**
+ * Configuration options for the S3 put function.
+ *
+ * @remarks
+ * The acl parameter may now only be used for S3 buckets with specific Object Owner settings.
+ * Usage of this parameter is not considered a recommended practice:
+ *  {@link https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html}
+ *
+ */
 export type S3ProviderPutConfig = CommonStorageOptions &
 	(
 		| _S3ProviderPutConfig
@@ -101,7 +123,7 @@ export type S3ProviderListOutput = {
 	hasNextToken: boolean;
 };
 
-export type S3ProviderRemoveOutput = DeleteObjectCommandOutput;
+export type S3ProviderRemoveOutput = DeleteObjectOutput;
 
 export type S3ProviderListConfig = CommonStorageOptions & {
 	bucket?: string;
@@ -132,26 +154,44 @@ export type S3CopySource = S3CopyTarget;
 
 export type S3CopyDestination = Omit<S3CopyTarget, 'identityId'>;
 
+/**
+ * Configuration options for the S3 copy function.
+ *
+ * @remarks
+ * The acl parameter may now only be used for S3 buckets with specific Object Owner settings.
+ * Usage of this parameter is not considered a recommended practice:
+ *  {@link https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html}
+ *
+ */
 export type S3ProviderCopyConfig = Omit<CommonStorageOptions, 'level'> & {
 	provider?: 'AWSS3';
-	bucket?: CopyObjectRequest['Bucket'];
-	cacheControl?: CopyObjectRequest['CacheControl'];
-	contentDisposition?: CopyObjectRequest['ContentDisposition'];
-	contentLanguage?: CopyObjectRequest['ContentLanguage'];
-	contentType?: CopyObjectRequest['ContentType'];
-	expires?: CopyObjectRequest['Expires'];
-	tagging?: CopyObjectRequest['Tagging'];
-	acl?: CopyObjectRequest['ACL'];
-	metadata?: CopyObjectRequest['Metadata'];
-	serverSideEncryption?: CopyObjectRequest['ServerSideEncryption'];
-	SSECustomerAlgorithm?: CopyObjectRequest['SSECustomerAlgorithm'];
-	SSECustomerKey?: CopyObjectRequest['SSECustomerKey'];
-	SSECustomerKeyMD5?: CopyObjectRequest['SSECustomerKeyMD5'];
-	SSEKMSKeyId?: CopyObjectRequest['SSEKMSKeyId'];
+	bucket?: CopyObjectInput['Bucket'];
+	cacheControl?: CopyObjectInput['CacheControl'];
+	contentDisposition?: CopyObjectInput['ContentDisposition'];
+	contentLanguage?: CopyObjectInput['ContentLanguage'];
+	contentType?: CopyObjectInput['ContentType'];
+	expires?: CopyObjectInput['Expires'];
+	tagging?: CopyObjectInput['Tagging'];
+	acl?: CopyObjectInput['ACL'];
+	metadata?: CopyObjectInput['Metadata'];
+	serverSideEncryption?: CopyObjectInput['ServerSideEncryption'];
+	SSECustomerAlgorithm?: CopyObjectInput['SSECustomerAlgorithm'];
+	SSECustomerKey?: CopyObjectInput['SSECustomerKey'];
+	// TODO(AllanZhengYP): remove in V6.
+	SSECustomerKeyMD5?: CopyObjectInput['SSECustomerKeyMD5'];
+	SSEKMSKeyId?: CopyObjectInput['SSEKMSKeyId'];
 };
 
 export type S3ProviderCopyOutput = {
 	key: string;
+};
+
+export type S3ProviderGetPropertiesOutput = {
+	contentType: string;
+	contentLength: number;
+	eTag: string;
+	lastModified: Date;
+	metadata: Record<string, string>;
 };
 
 export type PutResult = {

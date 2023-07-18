@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+/* tslint:disable:max-line-length */
 import { Geometry, Relationship } from './Predictions';
 
 export type BlockList = Block[];

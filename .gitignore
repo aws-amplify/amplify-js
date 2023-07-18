@@ -1,5 +1,4 @@
 build
-coverage
 Config
 lerna-debug.log
 node_modules
@@ -10,7 +9,7 @@ packages/**/dist/
 packages/**/es/
 packages/**/esm/
 packages/**/cjs/
-.DS_Store
+**/.DS_Store
 .vscode
 .idea
 *.log
@@ -19,4 +18,26 @@ packages/**/cypress/videos/
 yarn.lock
 package-lock.json
 packages/*/.watchmanconfig
+dual-publish-tmp
+
+### Version file - core build artifact
+packages/core/src/Platform/version.ts
+
+### Gradle ###
+.gradle/
+local.properties
+
+### Xcode ###
+xcuserdata/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+/*.gcno
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+### Coverage ###
+coverage/
+coverage-native/
 coverage-ts/

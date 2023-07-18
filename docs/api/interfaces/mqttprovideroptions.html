@@ -6,6 +6,7 @@
 	<title>MqttProviderOptions | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
 /* ========================================================================== HTML5 display definitions ========================================================================== */
 /** Correct `block` display not defined in IE 6/7/8/9 and Firefox 3. */
@@ -880,12 +881,12 @@ img { max-width: 100%; }
 			<div class="table-wrap">
 				<div class="table-cell logo">
 					<a href="../index.html">
-						<img src="https://aws-amplify.github.io/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
-						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+						<img src="https://aws-amplify.github.io/amplify-js/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: relative;">AWS Amplify JS API</div>
 					</a>
 				</div>
 				<div class="table-cell" style="">	<body>
-						<a href="/amplify-js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
+						<a href="https://docs.amplify.aws/lib/q/platform/js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify JS Dev Center</a>
 </div>	</body>
 <div class="table-cell" id="tsd-widgets">
 <div id="tsd-filter">
@@ -919,7 +920,13 @@ img { max-width: 100%; }
 		<a href="mqttprovideroptions.html" class="tsd-kind-icon">Mqtt<wbr>Provider<wbr>Options</a>
 		<ul>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="mqttprovideroptions.html#aws_pubsub_endpoint" class="tsd-kind-icon">aws_<wbr>pubsub_<wbr>endpoint</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="mqttprovideroptions.html#clientid" class="tsd-kind-icon">client<wbr>Id</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="mqttprovideroptions.html#provider" class="tsd-kind-icon">provider</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="mqttprovideroptions.html#url" class="tsd-kind-icon">url</a>
@@ -959,7 +966,9 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Properties</h3>
 					<ul class="tsd-index-list">
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="mqttprovideroptions.html#aws_pubsub_endpoint" class="tsd-kind-icon">aws_<wbr>pubsub_<wbr>endpoint</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="mqttprovideroptions.html#clientid" class="tsd-kind-icon">client<wbr>Id</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="mqttprovideroptions.html#provider" class="tsd-kind-icon">provider</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="mqttprovideroptions.html#url" class="tsd-kind-icon">url</a></li>
 					</ul>
 				</section>
@@ -969,12 +978,33 @@ img { max-width: 100%; }
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Properties</h2>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="aws_pubsub_endpoint" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> aws_<wbr>pubsub_<wbr>endpoint</h3>
+			<div class="tsd-signature tsd-kind-icon">aws_<wbr>pubsub_<wbr>endpoint<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L44">packages/pubsub/src/Providers/MqttOverWSProvider.ts:44</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 			<a name="clientid" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagOptional">Optional</span> client<wbr>Id</h3>
 			<div class="tsd-signature tsd-kind-icon">client<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L38">packages/pubsub/src/Providers/MqttOverWSProvider.ts:38</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L42">packages/pubsub/src/Providers/MqttOverWSProvider.ts:42</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="provider" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> provider</h3>
+			<div class="tsd-signature tsd-kind-icon">provider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="provideroptions.html">ProviderOptions</a>.<a href="provideroptions.html#provider">provider</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/pubsub/src/types/Provider.ts#L14">packages/pubsub/src/types/Provider.ts:14</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -984,7 +1014,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L39">packages/pubsub/src/Providers/MqttOverWSProvider.ts:39</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L43">packages/pubsub/src/Providers/MqttOverWSProvider.ts:43</a></li>
 				</ul>
 			</aside>
 		</section>

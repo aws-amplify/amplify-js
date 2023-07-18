@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { isFieldAssociation, ModelFieldType, ModelMeta } from '../types';
 
 /**
@@ -173,6 +175,15 @@ export class ModelRelationship<T> {
 		}
 	}
 
+	/**
+	 * The `remote` model's associated field's `assocation` metadata, if
+	 * present.
+	 *
+	 * This is used when determining if the remote model's associated field
+	 * specifies which FK fields to use. If this value is `undefined`, the
+	 * name of the remote field (`this.localAssociatedWith`) *is* the remote
+	 * key field.
+	 */
 	private get explicitRemoteAssociation() {
 		if (this.localAssociatedWith) {
 			if (this.localAssociatedWith.length === 1) {

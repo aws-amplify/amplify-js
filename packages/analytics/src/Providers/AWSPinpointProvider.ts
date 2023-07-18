@@ -1,24 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Cache } from '@aws-amplify/cache';
 import {
 	ConsoleLogger as Logger,
 	ClientDevice,
 	Credentials,
 	Signer,
 	Hub,
-	getAmplifyUserAgent,
 	transferKeyToLowerCase,
 	transferKeyToUpperCase,
+	AnalyticsAction,
 } from '@aws-amplify/core';
 import {
-	EventsBatch,
-	PinpointClient,
-	PutEventsCommand,
-	PutEventsCommandInput,
-	UpdateEndpointCommand,
-} from '@aws-sdk/client-pinpoint';
-import { Cache } from '@aws-amplify/cache';
+	putEvents,
+	PutEventsInput,
+	PutEventsOutput,
+	updateEndpoint,
+	UpdateEndpointInput,
+	UpdateEndpointOutput,
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 
 import {
 	AnalyticsProvider,
@@ -29,7 +30,8 @@ import {
 	EndpointFailureData,
 } from '../types';
 import { v1 as uuid } from 'uuid';
-import EventsBuffer from './EventBuffer';
+import { getAnalyticsUserAgentString } from '../utils/UserAgent';
+import EventBuffer from './EventBuffer';
 
 const AMPLIFY_SYMBOL = (
 	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
@@ -68,10 +70,9 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 	static providerName = 'AWSPinpoint';
 
 	private _config;
-	private pinpointClient;
 	private _sessionId;
 	private _sessionStartTimestamp;
-	private _buffer: EventsBuffer;
+	private _buffer: EventBuffer | null;
 	private _endpointBuffer: EndpointBuffer;
 	private _clientInfo;
 	private _endpointGenerating = true;
@@ -152,7 +153,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			);
 		}
 
-		this._initClients(credentials);
+		this._init(credentials);
 
 		const timestamp = new Date().getTime();
 		// attach the session and eventId
@@ -194,7 +195,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			return;
 		}
 
-		this._buffer && this._buffer.push({ params, handlers });
+		this._buffer?.push({ params, handlers });
 	}
 
 	private _generateSession(params) {
@@ -249,34 +250,31 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		}
 	}
 
-	private _generateBatchItemContext(params) {
+	private _generateBatchItemContext(params): PutEventsInput {
 		const { event, timestamp, config } = params;
 		const { name, attributes, metrics, eventId, session } = event;
 		const { appId, endpointId } = config;
-
 		const endpointContext = {};
 
-		const eventParams: PutEventsCommandInput = {
+		return {
 			ApplicationId: appId,
 			EventsRequest: {
-				BatchItem: {},
+				BatchItem: {
+					[endpointId]: {
+						Endpoint: endpointContext,
+						Events: {
+							[eventId]: {
+								EventType: name,
+								Timestamp: new Date(timestamp).toISOString(),
+								Attributes: attributes,
+								Metrics: metrics,
+								Session: session,
+							},
+						},
+					},
+				},
 			},
 		};
-
-		const endpointObj: EventsBatch = {} as EventsBatch;
-		endpointObj.Endpoint = endpointContext;
-		endpointObj.Events = {
-			[eventId]: {
-				EventType: name,
-				Timestamp: new Date(timestamp).toISOString(),
-				Attributes: attributes,
-				Metrics: metrics,
-				Session: session,
-			},
-		};
-		eventParams.EventsRequest.BatchItem[endpointId] = endpointObj;
-
-		return eventParams;
 	}
 
 	private async _pinpointPutEvents(params, handlers) {
@@ -285,33 +283,34 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			config: { endpointId },
 		} = params;
 		const eventParams = this._generateBatchItemContext(params);
-		const command: PutEventsCommand = new PutEventsCommand(eventParams);
 
 		try {
-			const data = await this.pinpointClient.send(command);
-			const {
-				EventsResponse: {
-					Results: {
-						[endpointId]: {
-							EventsItemResponse: {
-								[eventId]: { StatusCode, Message },
-							},
-						},
-					},
+			const { credentials, region } = this._config;
+			const data: PutEventsOutput = await putEvents(
+				{
+					credentials,
+					region,
+					userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
 				},
-			} = data;
-			if (ACCEPTED_CODES.includes(StatusCode)) {
+				eventParams
+			);
+
+			const { StatusCode, Message } =
+				data.EventsResponse?.Results?.[endpointId]?.EventsItemResponse?.[
+					eventId
+				] ?? {};
+
+			if (StatusCode && ACCEPTED_CODES.includes(StatusCode)) {
 				logger.debug('record event success. ', data);
 				return handlers.resolve(data);
+			} else if (StatusCode && RETRYABLE_CODES.includes(StatusCode)) {
+				// TODO: v6 integrate retry to the service handler retryDecider
+				this._retry(params, handlers);
 			} else {
-				if (RETRYABLE_CODES.includes(StatusCode)) {
-					this._retry(params, handlers);
-				} else {
-					logger.error(
-						`Event ${eventId} is not accepted, the error is ${Message}`
-					);
-					return handlers.reject(data);
-				}
+				logger.error(
+					`Event ${eventId} is not accepted, the error is ${Message}`
+				);
+				return handlers.reject(data);
 			}
 		} catch (err) {
 			this._eventError(err);
@@ -319,7 +318,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		}
 	}
 
-	private _pinpointSendStopSession(params, handlers): Promise<string> {
+	private _pinpointSendStopSession(params, handlers): Promise<string> | void {
 		if (!BEACON_SUPPORTED) {
 			this._pinpointPutEvents(params, handlers);
 			return;
@@ -348,12 +347,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 		const serviceInfo = { region, service: MOBILE_SERVICE_NAME };
 
-		const requestUrl: string = Signer.signUrl(
-			request,
-			accessInfo,
-			serviceInfo,
-			null
-		);
+		const requestUrl: string = Signer.signUrl(request, accessInfo, serviceInfo);
 
 		const success: boolean = navigator.sendBeacon(requestUrl, body);
 
@@ -393,18 +387,24 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 				['attributes', 'userAttributes', 'Attributes', 'UserAttributes']
 			)
 		);
-		const update_params = {
+		const update_params: UpdateEndpointInput = {
 			ApplicationId: appId,
 			EndpointId: endpointId,
 			EndpointRequest: request,
 		};
 
 		try {
-			const command: UpdateEndpointCommand = new UpdateEndpointCommand(
+			const { credentials, region } = this._config;
+			const data: UpdateEndpointOutput = await updateEndpoint(
+				{
+					credentials,
+					region,
+					userAgentValue: getAnalyticsUserAgentString(
+						AnalyticsAction.UpdateEndpoint
+					),
+				},
 				update_params
 			);
-			const data = await this.pinpointClient.send(command);
-
 			logger.debug('updateEndpoint success', data);
 			this._endpointGenerating = false;
 			this._resumeBuffer();
@@ -492,13 +492,12 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 	/**
 	 * @private
 	 * @param config
-	 * Init the clients
+	 * Configure credentials and init buffer
 	 */
-	private async _initClients(credentials) {
-		logger.debug('init clients');
+	private async _init(credentials) {
+		logger.debug('init provider');
 
 		if (
-			this.pinpointClient &&
 			this._config.credentials &&
 			this._config.credentials.sessionToken === credentials.sessionToken &&
 			this._config.credentials.identityId === credentials.identityId
@@ -512,43 +511,17 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			: null;
 
 		this._config.credentials = credentials;
-		const { region } = this._config;
-		logger.debug('init clients with credentials', credentials);
-		this.pinpointClient = new PinpointClient({
-			region,
-			credentials,
-			customUserAgent: getAmplifyUserAgent(),
-		});
 
-		// TODO: remove this middleware once a long term fix is implemented by aws-sdk-js team.
-		this.pinpointClient.middlewareStack.addRelativeTo(
-			next => args => {
-				delete args.request.headers['amz-sdk-invocation-id'];
-				delete args.request.headers['amz-sdk-request'];
-				return next(args);
-			},
-			{
-				step: 'finalizeRequest',
-				relation: 'after',
-				toMiddleware: 'retryMiddleware',
-			}
-		);
-
-		if (this._bufferExists() && identityId === credentials.identityId) {
-			// if the identity has remained the same, pass the updated client to the buffer
-			this._updateBufferClient();
-		} else {
-			// otherwise flush the buffer and instantiate a new one
+		if (!this._bufferExists() || identityId !== credentials.identityId) {
+			// if the identity has changed, flush the buffer and instantiate a new one
 			// this will cause the old buffer to send any remaining events
 			// with the old credentials and then stop looping and shortly thereafter get picked up by GC
 			this._initBuffer();
 		}
-
-		this._customizePinpointClientReq();
 	}
 
 	private _bufferExists() {
-		return this._buffer && this._buffer instanceof EventsBuffer;
+		return this._buffer && this._buffer instanceof EventBuffer;
 	}
 
 	private _initBuffer() {
@@ -556,7 +529,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			this._flushBuffer();
 		}
 
-		this._buffer = new EventsBuffer(this.pinpointClient, this._config);
+		this._buffer = new EventBuffer(this._config);
 
 		// if the first endpoint update hasn't yet resolved pause the buffer to
 		// prevent race conditions. It will be resumed as soon as that request succeeds
@@ -565,34 +538,17 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		}
 	}
 
-	private _updateBufferClient() {
-		if (this._bufferExists()) {
-			this._buffer.updateClient(this.pinpointClient);
-		}
-	}
-
 	private _flushBuffer() {
 		if (this._bufferExists()) {
-			this._buffer.flush();
+			this._buffer?.flush();
 			this._buffer = null;
 		}
 	}
 
 	private _resumeBuffer() {
 		if (this._bufferExists()) {
-			this._buffer.resume();
+			this._buffer?.resume();
 		}
-	}
-
-	private _customizePinpointClientReq() {
-		// TODO FIXME: Find a middleware to do this with AWS V3 SDK
-		// if (Platform.isReactNative) {
-		// 	this.pinpointClient.customizeRequests(request => {
-		// 		request.on('build', req => {
-		// 			req.httpRequest.headers['user-agent'] = Platform.userAgent;
-		// 		});
-		// 	});
-		// }
 	}
 
 	private async _getEndpointId(cacheKey) {

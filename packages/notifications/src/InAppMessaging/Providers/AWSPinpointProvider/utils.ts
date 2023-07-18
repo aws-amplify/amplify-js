@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
-import {
-	InAppMessageCampaign as PinpointInAppMessage,
-	Layout as PinpointInAppMessageLayout,
-} from '@aws-sdk/client-pinpoint';
+import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import isEmpty from 'lodash/isEmpty';
+import { AMPLIFY_SYMBOL } from '../../../common';
 import {
 	InAppMessage,
 	InAppMessageAction,
@@ -15,20 +13,16 @@ import {
 	InAppMessageTextAlign,
 	InAppMessagingEvent,
 } from '../../types';
+
 import { AWSPinpointMessageEvent, MetricsComparator } from './types';
 
-const AMPLIFY_SYMBOL = (
-	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
-		? Symbol.for('amplify_default')
-		: '@@amplify_default'
-) as Symbol;
 const DELIVERY_TYPE = 'IN_APP_MESSAGE';
 
 let eventNameMemo = {};
 let eventAttributesMemo = {};
 let eventMetricsMemo = {};
 
-export const logger = new ConsoleLogger('AWSPinpointProvider');
+export const logger = new ConsoleLogger('InAppMessaging.AWSPinpointProvider');
 
 export const dispatchInAppMessagingEvent = (
 	event: string,
@@ -47,12 +41,6 @@ export const recordAnalyticsEvent = (
 	event: AWSPinpointMessageEvent,
 	message: InAppMessage
 ) => {
-	if (!message) {
-		logger.debug(
-			'Unable to record analytics event - no InAppMessage was received'
-		);
-		return;
-	}
 	if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
 		const { id, metadata } = message;
 		Amplify.Analytics.record({
@@ -227,11 +215,11 @@ export const clearMemo = () => {
 export const interpretLayout = (
 	layout: PinpointInAppMessage['InAppMessage']['Layout']
 ): InAppMessageLayout => {
-	if (layout === PinpointInAppMessageLayout.MOBILE_FEED) {
+	if (layout === 'MOBILE_FEED') {
 		return 'MODAL';
 	}
 
-	if (layout === PinpointInAppMessageLayout.OVERLAYS) {
+	if (layout === 'OVERLAYS') {
 		return 'FULL_SCREEN';
 	}
 

@@ -4,11 +4,12 @@
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	getAmplifyUserAgent,
+	AnalyticsAction,
 } from '@aws-amplify/core';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 import { AnalyticsProvider } from '../types';
 import { fromUtf8 } from '@aws-sdk/util-utf8-browser';
+import { getAnalyticsUserAgent } from '../utils/UserAgent';
 
 const logger = new Logger('AWSKinesisProvider');
 
@@ -89,7 +90,13 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 
 		Object.assign(params, { config: this._config, credentials });
 
-		return this._putToBuffer(params);
+		if (params.event?.immediate) {
+			this._sendEvents([params]);
+
+			return Promise.resolve(true);
+		} else {
+			return this._putToBuffer(params);
+		}
 	}
 
 	public updateEndpoint() {
@@ -218,7 +225,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 		this._kinesis = new KinesisClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAnalyticsUserAgent(AnalyticsAction.Record),
 			endpoint,
 		});
 		return true;

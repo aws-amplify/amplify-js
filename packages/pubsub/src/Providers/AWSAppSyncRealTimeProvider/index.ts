@@ -17,11 +17,18 @@ import {
 	NonRetryableError,
 	ICredentials,
 	isNonRetryableError,
+	CustomUserAgentDetails,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import { Cache } from '@aws-amplify/cache';
 import { Auth, GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from '../PubSubProvider';
-import { CONTROL_MSG, ConnectionState } from '../../types/PubSub';
+import {
+	CONTROL_MSG,
+	ConnectionState,
+	PubSubContent,
+	PubSubContentObserver,
+} from '../../types/PubSub';
 
 import {
 	AMPLIFY_SYMBOL,
@@ -48,14 +55,18 @@ import {
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
-const dispatchApiEvent = (event: string, data: any, message: string) => {
+const dispatchApiEvent = (
+	event: string,
+	data: Record<string, unknown>,
+	message: string
+) => {
 	Hub.dispatch('api', { event, data, message }, 'PubSub', AMPLIFY_SYMBOL);
 };
 
 export type ObserverQuery = {
-	observer: ZenObservable.SubscriptionObserver<any>;
+	observer: PubSubContentObserver;
 	query: string;
-	variables: object;
+	variables: Record<string, unknown>;
 	subscriptionState: SUBSCRIPTION_STATUS;
 	subscriptionReadyCallback?: Function;
 	subscriptionFailedCallback?: Function;
@@ -69,11 +80,29 @@ const customDomainPath = '/realtime';
 
 type GraphqlAuthModes = keyof typeof GRAPHQL_AUTH_MODE;
 
+type DataObject = {
+	data: Record<string, unknown>;
+};
+
+type DataPayload = {
+	id: string;
+	payload: DataObject;
+	type: string;
+};
+
+type ParsedMessagePayload = {
+	type: string;
+	payload: {
+		connectionTimeoutMs: number;
+		errors?: [{ errorType: string; errorCode: number }];
+	};
+};
+
 export interface AWSAppSyncRealTimeProviderOptions extends ProviderOptions {
 	appSyncGraphqlEndpoint?: string;
 	authenticationType?: GraphqlAuthModes;
 	query?: string;
-	variables?: object;
+	variables?: Record<string, unknown>;
 	apiKey?: string;
 	region?: string;
 	graphql_headers?: () => {} | (() => Promise<{}>);
@@ -84,9 +113,10 @@ type AWSAppSyncRealTimeAuthInput =
 	Partial<AWSAppSyncRealTimeProviderOptions> & {
 		canonicalUri: string;
 		payload: string;
+		host?: string | undefined;
 	};
 
-export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
+export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyncRealTimeProviderOptions> {
 	private awsRealTimeSocket?: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
 	private keepAliveTimeoutId?: ReturnType<typeof setTimeout>;
@@ -153,7 +183,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		this.reconnectionMonitor.close();
 	}
 
-	getNewWebSocket(url, protocol) {
+	getNewWebSocket(url: string, protocol: string) {
 		return new WebSocket(url, protocol);
 	}
 
@@ -165,7 +195,11 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		throw new Error('Not used here');
 	}
 
-	public async publish(_topics: string[] | string, _msg: any, _options?: any) {
+	public async publish(
+		_topics: string[] | string,
+		_msg: PubSubContent,
+		_options?: AWSAppSyncRealTimeProviderOptions
+	) {
 		throw new Error('Operation not supported');
 	}
 
@@ -176,8 +210,9 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 	subscribe(
 		_topics: string[] | string,
-		options?: AWSAppSyncRealTimeProviderOptions
-	): Observable<any> {
+		options?: AWSAppSyncRealTimeProviderOptions,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Observable<Record<string, unknown>> {
 		const appSyncGraphqlEndpoint = options?.appSyncGraphqlEndpoint;
 
 		return new Observable(observer => {
@@ -198,11 +233,13 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				const startSubscription = () => {
 					if (!subscriptionStartActive) {
 						subscriptionStartActive = true;
+
 						const startSubscriptionPromise =
 							this._startSubscriptionWithAWSAppSyncRealTime({
 								options,
 								observer,
 								subscriptionId,
+								customUserAgentDetails,
 							}).catch<any>(err => {
 								logger.debug(
 									`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`
@@ -260,18 +297,21 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	}
 
 	protected get isSSLEnabled() {
-		return !this.options
-			.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
+		return !this.options[
+			'aws_appsync_dangerously_connect_to_http_endpoint_for_testing'
+		];
 	}
 
 	private async _startSubscriptionWithAWSAppSyncRealTime({
 		options,
 		observer,
 		subscriptionId,
+		customUserAgentDetails,
 	}: {
 		options: AWSAppSyncRealTimeProviderOptions;
-		observer: ZenObservable.SubscriptionObserver<any>;
+		observer: PubSubContentObserver;
 		subscriptionId: string;
+		customUserAgentDetails: CustomUserAgentDetails;
 	}) {
 		const {
 			appSyncGraphqlEndpoint,
@@ -313,7 +353,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			})),
 			...(await graphql_headers()),
 			...additionalHeaders,
-			[USER_AGENT_HEADER]: Constants.userAgent,
+			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 		};
 
 		const subscriptionMessage = {
@@ -370,9 +410,13 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	}
 
 	// Log logic for start subscription failures
-	private _logStartSubscriptionError(subscriptionId, observer, err) {
+	private _logStartSubscriptionError(
+		subscriptionId: string,
+		observer: PubSubContentObserver,
+		err: { message?: string }
+	) {
 		logger.debug({ err });
-		const message = err['message'] ?? '';
+		const message = String(err.message ?? '');
 		// Resolving to give the state observer time to propogate the update
 		Promise.resolve(
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED)
@@ -495,10 +539,17 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	}
 
 	private _handleIncomingSubscriptionMessage(message: MessageEvent) {
+		if (typeof message.data !== 'string') {
+			return;
+		}
 		logger.debug(
 			`subscription message from AWS AppSync RealTime: ${message.data}`
 		);
-		const { id = '', payload, type } = JSON.parse(message.data);
+		const {
+			id = '',
+			payload,
+			type,
+		}: DataPayload = JSON.parse(String(message.data));
 		const {
 			observer = null,
 			query = '',
@@ -654,17 +705,18 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					this.socketStatus = SOCKET_STATUS.CONNECTING;
 
 					const payloadString = '{}';
-					const headerString = JSON.stringify(
-						await this._awsRealTimeHeaderBasedAuth({
-							authenticationType,
-							payload: payloadString,
-							canonicalUri: '/connect',
-							apiKey,
-							appSyncGraphqlEndpoint,
-							region,
-							additionalHeaders,
-						})
-					);
+
+					const authHeader = await this._awsRealTimeHeaderBasedAuth({
+						authenticationType,
+						payload: payloadString,
+						canonicalUri: '/connect',
+						apiKey,
+						appSyncGraphqlEndpoint,
+						region,
+						additionalHeaders,
+					});
+
+					const headerString = authHeader ? JSON.stringify(authHeader) : '';
 					const headerQs = Buffer.from(headerString).toString('base64');
 
 					const payloadQs = Buffer.from(payloadString).toString('base64');
@@ -756,10 +808,13 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						};
 
 						this.awsRealTimeSocket.onmessage = (message: MessageEvent) => {
+							if (typeof message.data !== 'string') {
+								return;
+							}
 							logger.debug(
 								`subscription message from AWS AppSyncRealTime: ${message.data} `
 							);
-							const data = JSON.parse(message.data);
+							const data = JSON.parse(message.data) as ParsedMessagePayload;
 							const {
 								type,
 								payload: {
@@ -842,7 +897,9 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		apiKey,
 		region,
 		additionalHeaders,
-	}: AWSAppSyncRealTimeProviderOptions): Promise<any> {
+	}: AWSAppSyncRealTimeAuthInput): Promise<
+		Record<string, unknown> | undefined
+	> {
 		const headerHandler: {
 			[key in GraphqlAuthModes]: (AWSAppSyncRealTimeAuthInput) => {};
 		} = {
@@ -855,7 +912,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 		if (!authenticationType || !headerHandler[authenticationType]) {
 			logger.debug(`Authentication type ${authenticationType} not supported`);
-			return '';
+			return undefined;
 		} else {
 			const handler = headerHandler[authenticationType];
 

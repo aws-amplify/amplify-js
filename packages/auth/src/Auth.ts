@@ -30,6 +30,7 @@ import {
 	Hub,
 	StorageHelper,
 	ICredentials,
+	Platform,
 	browserOrNode,
 	parseAWSExports,
 	UniversalStorage,
@@ -55,6 +56,10 @@ import {
 	NodeCallback,
 	CodeDeliveryDetails,
 } from 'amazon-cognito-identity-js';
+import {
+	addAuthCategoryToCognitoUserAgent,
+	addFrameworkToCognitoUserAgent,
+} from 'amazon-cognito-identity-js/internals';
 
 import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
@@ -119,6 +124,7 @@ export class AuthClass {
 		Hub.listen('auth', ({ payload }) => {
 			const { event } = payload;
 			switch (event) {
+				case 'verify':
 				case 'signIn':
 					this._storage.setItem('amplify-signin-with-hostedUI', 'false');
 					break;
@@ -129,6 +135,12 @@ export class AuthClass {
 					this._storage.setItem('amplify-signin-with-hostedUI', 'true');
 					break;
 			}
+		});
+
+		addAuthCategoryToCognitoUserAgent();
+		addFrameworkToCognitoUserAgent(Platform.framework);
+		Platform.observeFrameworkChanges(() => {
+			addFrameworkToCognitoUserAgent(Platform.framework);
 		});
 	}
 
@@ -158,9 +170,10 @@ export class AuthClass {
 			identityPoolRegion,
 			clientMetadata,
 			endpoint,
+			storage,
 		} = this._config;
 
-		if (!this._config.storage) {
+		if (!storage) {
 			// backward compatability
 			if (cookieStorage) this._storage = new CookieStorage(cookieStorage);
 			else {
@@ -169,11 +182,11 @@ export class AuthClass {
 					: new StorageHelper().getStorage();
 			}
 		} else {
-			if (!this._isValidAuthStorage(this._config.storage)) {
+			if (!this._isValidAuthStorage(storage)) {
 				logger.error('The storage in the Auth config is not valid!');
 				throw new Error('Empty storage object');
 			}
-			this._storage = this._config.storage;
+			this._storage = storage;
 		}
 
 		this._storageSync = Promise.resolve();
@@ -202,7 +215,7 @@ export class AuthClass {
 			identityPoolId,
 			refreshHandlers,
 			storage: this._storage,
-			identityPoolRegion
+			identityPoolRegion,
 		});
 
 		// initialize cognitoauth client if hosted ui options provided
@@ -1111,7 +1124,7 @@ export class AuthClass {
 					return;
 				},
 				associateSecretCode: secretCode => {
-					logger.debug('associateSoftwareToken sucess', secretCode);
+					logger.debug('associateSoftwareToken success', secretCode);
 					res(secretCode);
 					return;
 				},
@@ -1130,6 +1143,13 @@ export class AuthClass {
 		challengeAnswer: string
 	): Promise<CognitoUserSession> {
 		logger.debug('verification totp token', user, challengeAnswer);
+
+		let signInUserSession;
+		if (user && typeof user.getSignInUserSession === 'function') {
+			signInUserSession = (user as CognitoUser).getSignInUserSession();
+		}
+		const isLoggedIn = signInUserSession?.isValid();
+
 		return new Promise((res, rej) => {
 			user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
 				onFailure: err => {
@@ -1138,10 +1158,17 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
+					if (!isLoggedIn) {
+						dispatchAuthEvent(
+							'signIn',
+							user,
+							`A user ${user.getUsername()} has been signed in`
+						);
+					}
 					dispatchAuthEvent(
-						'signIn',
+						'verify',
 						user,
-						`A user ${user.getUsername()} has been signed in`
+						`A user ${user.getUsername()} has been verified`
 					);
 					logger.debug('verifyTotpToken success', data);
 					res(data);
@@ -1181,7 +1208,12 @@ export class AuthClass {
 							logger.debug('cannot get cognito credentials', e);
 						} finally {
 							that.user = user;
-
+							try {
+								const currentUser = await this.currentUserPoolUser();
+								user.attributes = currentUser.attributes;
+							} catch (e) {
+								logger.debug('cannot get updated Cognito User', e);
+							}
 							dispatchAuthEvent(
 								'signIn',
 								user,
@@ -1426,15 +1458,23 @@ export class AuthClass {
 				user.updateAttributes(
 					attributeList,
 					(err, result, details) => {
-						
 						if (err) {
-							dispatchAuthEvent('updateUserAttributes_failure', err, 'Failed to update attributes');
+							dispatchAuthEvent(
+								'updateUserAttributes_failure',
+								err,
+								'Failed to update attributes'
+							);
 							return reject(err);
 						} else {
 							const attrs = this.createUpdateAttributesResultList(
-								attributes as Record<string, string>, details?.CodeDeliveryDetailsList
+								attributes as Record<string, string>,
+								details?.CodeDeliveryDetailsList
 							);
-							dispatchAuthEvent('updateUserAttributes', attrs, 'Attributes successfully updated');
+							dispatchAuthEvent(
+								'updateUserAttributes',
+								attrs,
+								'Attributes successfully updated'
+							);
 							return resolve(result);
 						}
 					},
@@ -1445,15 +1485,17 @@ export class AuthClass {
 	}
 
 	private createUpdateAttributesResultList(
-		attributes: Record<string, string>, 
-		codeDeliveryDetailsList?: CodeDeliveryDetails []
+		attributes: Record<string, string>,
+		codeDeliveryDetailsList?: CodeDeliveryDetails[]
 	): Record<string, string> {
 		const attrs = {};
 		Object.keys(attributes).forEach(key => {
 			attrs[key] = {
-				isUpdated: true
+				isUpdated: true,
 			};
-			const codeDeliveryDetails = codeDeliveryDetailsList?.find(value => value.AttributeName === key);
+			const codeDeliveryDetails = codeDeliveryDetailsList?.find(
+				value => value.AttributeName === key
+			);
 			if (codeDeliveryDetails) {
 				attrs[key].isUpdated = false;
 				attrs[key].codeDeliveryDetails = codeDeliveryDetails;
@@ -1559,6 +1601,15 @@ export class AuthClass {
 		);
 	}
 
+	private isPasswordResetRequiredError(
+		err: any
+	): err is { message: 'Password reset required for the user' } {
+		return (
+			this.isErrorWithMessage(err) &&
+			err.message === 'Password reset required for the user'
+		);
+	}
+
 	private isSignedInHostedUI() {
 		return (
 			this._oAuthHandler &&
@@ -1572,7 +1623,8 @@ export class AuthClass {
 			this.isUserDoesNotExistError(err) ||
 			this.isTokenRevokedError(err) ||
 			this.isRefreshTokenRevokedError(err) ||
-			this.isRefreshTokenExpiredError(err)
+			this.isRefreshTokenExpiredError(err) ||
+			this.isPasswordResetRequiredError(err)
 		);
 	}
 

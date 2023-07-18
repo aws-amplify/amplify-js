@@ -1,4 +1,7 @@
-import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { InternalAPI } from '@aws-amplify/api/internals';
 import Observable from 'zen-observable-ts';
 import {
 	InternalSchema,
@@ -20,10 +23,12 @@ import {
 	predicateToGraphQLFilter,
 	getTokenForCustomAuth,
 } from '../utils';
-import { USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import {
 	jitteredExponentialRetry,
+	Category,
 	ConsoleLogger as Logger,
+	CustomUserAgentDetails,
+	DataStoreAction,
 	Hub,
 	NonRetryableError,
 	BackgroundProcessManager,
@@ -45,13 +50,16 @@ class SyncProcessor {
 
 	constructor(
 		private readonly schema: InternalSchema,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly syncPredicates: WeakMap<
+			SchemaModel,
+			ModelPredicate<any> | null
+		>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
 		private readonly amplifyContext: AmplifyContext
 	) {
-		amplifyContext.API = amplifyContext.API || API;
+		amplifyContext.InternalAPI = amplifyContext.InternalAPI || InternalAPI;
 		this.generateQueries();
 	}
 
@@ -211,20 +219,30 @@ class SyncProcessor {
 						this.amplifyConfig
 					);
 
-					return await this.amplifyContext.API.graphql({
-						query,
-						variables,
-						authMode,
-						authToken,
-						userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
-					});
+					const customUserAgentDetails: CustomUserAgentDetails = {
+						category: Category.DataStore,
+						action: DataStoreAction.GraphQl,
+					};
+
+					return await this.amplifyContext.InternalAPI.graphql(
+						{
+							query,
+							variables,
+							authMode,
+							authToken,
+						},
+						undefined,
+						customUserAgentDetails
+					);
 
 					// TODO: onTerminate.then(() => API.cancel(...))
 				} catch (error) {
 					// Catch client-side (GraphQLAuthError) & 401/403 errors here so that we don't continue to retry
 					const clientOrForbiddenErrorMessage =
 						getClientSideAuthError(error) || getForbiddenError(error);
+
 					if (clientOrForbiddenErrorMessage) {
+						logger.error('Sync processor retry error:', error);
 						throw new NonRetryableError(clientOrForbiddenErrorMessage);
 					}
 
@@ -280,20 +298,44 @@ class SyncProcessor {
 						});
 					}
 
+					/**
+					 * Handle $util.unauthorized() in resolver request mapper, which responses with something
+					 * like this:
+					 *
+					 * ```
+					 * {
+					 * 	data: { syncYourModel: null },
+					 * 	errors: [
+					 * 		{
+					 * 			path: ['syncLegacyJSONComments'],
+					 * 			data: null,
+					 * 			errorType: 'Unauthorized',
+					 * 			errorInfo: null,
+					 * 			locations: [{ line: 2, column: 3, sourceName: null }],
+					 * 			message:
+					 * 				'Not Authorized to access syncYourModel on type Query',
+					 * 			},
+					 * 		],
+					 * 	}
+					 * ```
+					 *
+					 * The correct handling for this is to signal that we've encountered a non-retryable error,
+					 * since the server has responded with an auth error and *NO DATA* at this point.
+					 */
 					if (unauthorized) {
-						logger.warn(
-							'queryError',
-							`User is unauthorized to query ${opName}, some items could not be returned.`
-						);
-
-						result.data = result.data || {};
-
-						result.data[opName] = {
-							...opResultDefaults,
-							...result.data[opName],
-						};
-
-						return result;
+						this.errorHandler({
+							recoverySuggestion:
+								'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+							localModel: null!,
+							message: error.message,
+							model: modelDefinition.name,
+							operation: opName,
+							errorType: getSyncErrorType(error.errors[0]),
+							process: ProcessName.sync,
+							remoteModel: null!,
+							cause: error,
+						});
+						throw new NonRetryableError(error);
 					}
 
 					if (result.data?.[opName].items?.length) {
@@ -353,8 +395,16 @@ class SyncProcessor {
 								await Promise.all(promises);
 
 								do {
+									/**
+									 * If `runningProcesses` is not open, it means that the sync processor has been
+									 * stopped (for example by calling `DataStore.clear()` upstream) and has not yet
+									 * finished terminating and/or waiting for its background processes to complete.
+									 */
 									if (!this.runningProcesses.isOpen) {
-										return;
+										logger.debug(
+											`Sync processor has been stopped, terminating sync for ${modelDefinition.name}`
+										);
+										return res();
 									}
 
 									const limit = Math.min(
@@ -362,14 +412,47 @@ class SyncProcessor {
 										syncPageSize
 									);
 
-									({ items, nextToken, startedAt } = await this.retrievePage(
-										modelDefinition,
-										lastSync,
-										nextToken,
-										limit,
-										filter,
-										onTerminate
-									));
+									/**
+									 * It's possible that `retrievePage` will fail.
+									 * If it does fail, continue merging the rest of the data,
+									 * and invoke the error handler for non-applicable data.
+									 */
+									try {
+										({ items, nextToken, startedAt } = await this.retrievePage(
+											modelDefinition,
+											lastSync,
+											nextToken,
+											limit,
+											filter,
+											onTerminate
+										));
+									} catch (error) {
+										try {
+											await this.errorHandler({
+												recoverySuggestion:
+													'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+												localModel: null!,
+												message: error.message,
+												model: modelDefinition.name,
+												operation: null!,
+												errorType: getSyncErrorType(error),
+												process: ProcessName.sync,
+												remoteModel: null!,
+												cause: error,
+											});
+										} catch (e) {
+											logger.error('Sync error handler failed with:', e);
+										}
+										/**
+										 * If there's an error, this model fails, but the rest of the sync should
+										 * continue. To facilitate this, we explicitly mark this model as `done`
+										 * with no items and allow the loop to continue organically. This ensures
+										 * all callbacks (subscription messages) happen as normal, so anything
+										 * waiting on them knows the model is as done as it can be.
+										 */
+										done = true;
+										items = [];
+									}
 
 									recordsReceived += items.length;
 

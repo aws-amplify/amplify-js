@@ -3,45 +3,181 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [6.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.4...@aws-amplify/analytics@6.0.5) (2022-12-06)
+# [6.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.3.2...@aws-amplify/analytics@6.4.0) (2023-07-13)
+
+### Features
+
+- **s3:** omit double encoding of path for S3 when signing ([#11538](https://github.com/aws-amplify/amplify-js/issues/11538)) ([d46d2d1](https://github.com/aws-amplify/amplify-js/commit/d46d2d1d4263e3b8bcfc03af473d7445af12e5b7))
+- **storage:** integrate custom s3 client ([#11542](https://github.com/aws-amplify/amplify-js/issues/11542)) ([fe05494](https://github.com/aws-amplify/amplify-js/commit/fe05494c75ab6d1561863f4dfaf1107bc1f256a6))
+
+## [6.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.3.1...@aws-amplify/analytics@6.3.2) (2023-06-28)
 
 **Note:** Version bump only for package @aws-amplify/analytics
 
+## [6.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.3.0...@aws-amplify/analytics@6.3.1) (2023-06-21)
 
+### Bug Fixes
 
+- Update getAmplifyUserAgent to retain original interface ([#11535](https://github.com/aws-amplify/amplify-js/issues/11535)) ([dc84cc8](https://github.com/aws-amplify/amplify-js/commit/dc84cc8bfa7811b5f4f8ac2f7e5ea1b5edc54fe1))
 
+# [6.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.2.0...@aws-amplify/analytics@6.3.0) (2023-06-20)
+
+### Bug Fixes
+
+- Add upkeep to platform/framework caches ([#11505](https://github.com/aws-amplify/amplify-js/issues/11505)) ([03aa356](https://github.com/aws-amplify/amplify-js/commit/03aa3560e921f08717594bdf679b62501bc6de77))
+- PR comments ([#11520](https://github.com/aws-amplify/amplify-js/issues/11520)) ([1ca73b1](https://github.com/aws-amplify/amplify-js/commit/1ca73b1431d4bb737890ac95004f10c3e572ba8b))
+- React detection and Analytics batch upload ([#11478](https://github.com/aws-amplify/amplify-js/issues/11478)) ([f2b1740](https://github.com/aws-amplify/amplify-js/commit/f2b1740d6ea2b0b25397a02da7f9e6669768b3d7))
+- **storage:** Add getProperties user agent action ([#11501](https://github.com/aws-amplify/amplify-js/issues/11501)) ([019b5b1](https://github.com/aws-amplify/amplify-js/commit/019b5b1115bebc92f2c44bbf285d1d916cb08492))
+
+### Features
+
+- **analytics:** Add reporting for updateEndpoint ([#11468](https://github.com/aws-amplify/amplify-js/issues/11468)) ([663a5ed](https://github.com/aws-amplify/amplify-js/commit/663a5ed1835d87911c21a42e34b1d2f0a2829bbd))
+- **analytics:** Use custom user agent in all Analytics providers ([#11410](https://github.com/aws-amplify/amplify-js/issues/11410)) ([9fe4a5e](https://github.com/aws-amplify/amplify-js/commit/9fe4a5e43a7d671e76375833f9ce44b60bac05d7))
+
+# [6.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.1.1...@aws-amplify/analytics@6.2.0) (2023-06-05)
+
+### Features
+
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+- **clients:** vendor TS types from pinpoint and cognito-identity clients ([#11393](https://github.com/aws-amplify/amplify-js/issues/11393)) ([9a8569a](https://github.com/aws-amplify/amplify-js/commit/9a8569ab98480ad96b53a7104366640c66343aa2))
+
+## [6.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.1.0...@aws-amplify/analytics@6.1.1) (2023-05-27)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+# [6.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.31...@aws-amplify/analytics@6.1.0) (2023-05-12)
+
+### Features
+
+- **core:** refactor signer implementation to remove polyfill ([#11319](https://github.com/aws-amplify/amplify-js/issues/11319)) ([1603af3](https://github.com/aws-amplify/amplify-js/commit/1603af38ea7faa163f7fcb92fd09c056454c8a0a)), closes [#11273](https://github.com/aws-amplify/amplify-js/issues/11273) [#11307](https://github.com/aws-amplify/amplify-js/issues/11307) [#11310](https://github.com/aws-amplify/amplify-js/issues/11310) [#11120](https://github.com/aws-amplify/amplify-js/issues/11120) [#11320](https://github.com/aws-amplify/amplify-js/issues/11320)
+
+## [6.0.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.30...@aws-amplify/analytics@6.0.31) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.29...@aws-amplify/analytics@6.0.30) (2023-04-27)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.28...@aws-amplify/analytics@6.0.29) (2023-04-20)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.27...@aws-amplify/analytics@6.0.28) (2023-04-18)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.26...@aws-amplify/analytics@6.0.27) (2023-04-13)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.25...@aws-amplify/analytics@6.0.26) (2023-04-12)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.24...@aws-amplify/analytics@6.0.25) (2023-04-06)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.23...@aws-amplify/analytics@6.0.24) (2023-04-04)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.22...@aws-amplify/analytics@6.0.23) (2023-03-30)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.21...@aws-amplify/analytics@6.0.22) (2023-03-23)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.20...@aws-amplify/analytics@6.0.21) (2023-03-21)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.19...@aws-amplify/analytics@6.0.20) (2023-03-16)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.18...@aws-amplify/analytics@6.0.19) (2023-03-13)
+
+### Bug Fixes
+
+- Run ts coverage check with test ([#11047](https://github.com/aws-amplify/amplify-js/issues/11047)) ([430bedf](https://github.com/aws-amplify/amplify-js/commit/430bedfd0d0618bd0093b488233521356feef787))
+
+## [6.0.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.17...@aws-amplify/analytics@6.0.18) (2023-03-08)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.16...@aws-amplify/analytics@6.0.17) (2023-03-06)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.15...@aws-amplify/analytics@6.0.16) (2023-02-24)
+
+### Bug Fixes
+
+- **analytics:** personalize typo ([#10965](https://github.com/aws-amplify/amplify-js/issues/10965)) ([4901f55](https://github.com/aws-amplify/amplify-js/commit/4901f556ec2bfecaa38713ab20552a20f724dfa2))
+
+## [6.0.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.14...@aws-amplify/analytics@6.0.15) (2023-02-16)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.13...@aws-amplify/analytics@6.0.14) (2023-02-09)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.12...@aws-amplify/analytics@6.0.13) (2023-02-08)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.11...@aws-amplify/analytics@6.0.12) (2023-01-30)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.10...@aws-amplify/analytics@6.0.11) (2023-01-19)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.9...@aws-amplify/analytics@6.0.10) (2023-01-13)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.8...@aws-amplify/analytics@6.0.9) (2023-01-10)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.7...@aws-amplify/analytics@6.0.8) (2022-12-27)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.6...@aws-amplify/analytics@6.0.7) (2022-12-16)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.5...@aws-amplify/analytics@6.0.6) (2022-12-15)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [6.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.4...@aws-amplify/analytics@6.0.5) (2022-12-06)
+
+**Note:** Version bump only for package @aws-amplify/analytics
 
 ## [6.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.3...@aws-amplify/analytics@6.0.4) (2022-11-23)
 
 **Note:** Version bump only for package @aws-amplify/analytics
 
-
-
-
-
 ## [6.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.2...@aws-amplify/analytics@6.0.3) (2022-11-19)
 
 **Note:** Version bump only for package @aws-amplify/analytics
-
-
-
-
 
 ## [6.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.1...@aws-amplify/analytics@6.0.2) (2022-11-16)
 
 **Note:** Version bump only for package @aws-amplify/analytics
 
-
-
-
-
 ## [6.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.0...@aws-amplify/analytics@6.0.1) (2022-11-11)
 
 **Note:** Version bump only for package @aws-amplify/analytics
-
-
-
-
 
 # [6.0.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.28...@aws-amplify/analytics@6.0.0) (2022-11-09)
 

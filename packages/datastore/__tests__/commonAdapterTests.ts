@@ -19,10 +19,10 @@ import {
 	Model,
 	User,
 	Profile,
+	Blog,
 	Post,
 	Comment,
 	testSchema,
-	CompositePKParent,
 	HasOneParent,
 	HasOneChild,
 	MtmLeft,
@@ -30,6 +30,7 @@ import {
 	MtmJoin,
 	DefaultPKHasOneParent,
 	DefaultPKHasOneChild,
+	ModelWithIndexes,
 } from './helpers';
 
 export { pause };
@@ -60,7 +61,7 @@ export function addCommonQueryTests({
 	// ensure all down-the-line tests use the given adapter. It is otherwise
 	// VERY EASY to forgot to include this, which can cause some of these tests
 	// to run against a different adapter and thus test the wrong things.
-	beforeAll(() => {
+	beforeEach(() => {
 		DataStore.configure({ storageAdapter });
 	});
 
@@ -68,6 +69,7 @@ export function addCommonQueryTests({
 		let Model: PersistentModelConstructor<Model>;
 		let Comment: PersistentModelConstructor<Comment>;
 		let Post: PersistentModelConstructor<Post>;
+		let ModelWithIndexes: PersistentModelConstructor<ModelWithIndexes>;
 
 		/**
 		 * Creates the given number of models, with `field1` populated to
@@ -101,10 +103,11 @@ export function addCommonQueryTests({
 				'https://0.0.0.0/does/not/exist/graphql';
 
 			const classes = initSchema(testSchema());
-			({ Comment, Model, Post } = classes as {
+			({ Comment, Model, Post, ModelWithIndexes } = classes as {
 				Comment: PersistentModelConstructor<Comment>;
 				Model: PersistentModelConstructor<Model>;
 				Post: PersistentModelConstructor<Post>;
+				ModelWithIndexes: PersistentModelConstructor<ModelWithIndexes>;
 			});
 
 			// start() ensures storageAdapter is set
@@ -243,6 +246,55 @@ export function addCommonQueryTests({
 			);
 			expect(results.length).toEqual(2);
 		});
+
+		it('should match eq on indexed string', async () => {
+			const saved = await DataStore.save(
+				new ModelWithIndexes({
+					stringField: 'expected value',
+				})
+			);
+
+			await DataStore.save(
+				new ModelWithIndexes({
+					stringField: 'decoy value',
+				})
+			);
+
+			const retrieved = await DataStore.query(ModelWithIndexes, m =>
+				m.stringField.eq('expected value')
+			);
+			expect(retrieved.map(m => m.stringField)).toEqual(['expected value']);
+		});
+
+		it('should match eq on indexed int', async () => {
+			for (const intField of [1, 2, 3]) {
+				await DataStore.save(
+					new ModelWithIndexes({
+						intField,
+					})
+				);
+			}
+
+			const retrieved = await DataStore.query(ModelWithIndexes, m =>
+				m.intField.eq(2)
+			);
+			expect(retrieved.map(m => m.intField)).toEqual([2]);
+		});
+
+		it('should match eq on indexed float', async () => {
+			for (const floatField of [1.25, 1.5, 1.75]) {
+				await DataStore.save(
+					new ModelWithIndexes({
+						floatField,
+					})
+				);
+			}
+
+			const retrieved = await DataStore.query(ModelWithIndexes, m =>
+				m.floatField.eq(1.5)
+			);
+			expect(retrieved.map(m => m.floatField)).toEqual([1.5]);
+		});
 	});
 
 	describe('Common `save()` cases', () => {
@@ -343,7 +395,9 @@ export function addCommonQueryTests({
 
 			// comment update should be smashed to together with post
 			expect(mutations.length).toBe(2);
-			expectMutation(mutations[0], { title: 'some post' });
+			expectMutation(mutations[0], {
+				title: 'some post',
+			});
 			expectMutation(mutations[1], {
 				content: 'updated content',
 				postId: mutations[0].modelId,
@@ -377,6 +431,7 @@ export function addCommonQueryTests({
 
 	describe('common `delete()` cases', () => {
 		let Comment: PersistentModelConstructor<Comment>;
+		let Blog: PersistentModelConstructor<Blog>;
 		let Post: PersistentModelConstructor<Post>;
 		let HasOneParent: PersistentModelConstructor<HasOneParent>;
 		let HasOneChild: PersistentModelConstructor<HasOneChild>;
@@ -387,6 +442,7 @@ export function addCommonQueryTests({
 			const classes = initSchema(testSchema());
 			({
 				Comment,
+				Blog,
 				Post,
 				HasOneParent,
 				HasOneChild,
@@ -394,6 +450,7 @@ export function addCommonQueryTests({
 				DefaultPKHasOneChild,
 			} = classes as {
 				Comment: PersistentModelConstructor<Comment>;
+				Blog: PersistentModelConstructor<Blog>;
 				Post: PersistentModelConstructor<Post>;
 				HasOneParent: PersistentModelConstructor<HasOneParent>;
 				HasOneChild: PersistentModelConstructor<HasOneChild>;
@@ -423,6 +480,336 @@ export function addCommonQueryTests({
 			const retrievedAfterDelete = await DataStore.query(Post, post.id);
 			expect(retrievedAfterDelete).toBeUndefined();
 		});
+
+		//region `DataStore.delete` with SQL pattern matching
+
+		/**
+		 * The following tests ensure that the following scenarios do not happen:
+		 * 1. A user saves a Post with a title containing / beginning with `%` or `_`.
+		 * 2. The user then attempts to delete specific Posts using `%` or `_` in the predicate.
+		 * 3. The user's query is interpreted as a SQL pattern and all Posts are deleted.
+		 */
+
+		test('Post deletion with `contains(`%`)` predicate only deletes matching Posts', async () => {
+			await Promise.all(
+				Array.from({ length: 5 }).map((_, idx) =>
+					DataStore.save(
+						new Post({
+							title: `Todo ${idx}`,
+						})
+					)
+				)
+			);
+
+			// Save a new post with `%` in the title
+			const post1 = await DataStore.save(
+				new Post({
+					title: 'a % title',
+				})
+			);
+
+			// Save a new Post with title that begins with `%`
+			const post2 = await DataStore.save(
+				new Post({
+					title: '%title-100',
+				})
+			);
+
+			//region: sanity check. make sure posts were created.
+			const retrieved1 = await DataStore.query(Post, post1.id);
+			const retrieved2 = await DataStore.query(Post, post2.id);
+			const allPosts = await DataStore.query(Post);
+
+			expect(retrieved1).not.toBeUndefined();
+			expect(retrieved2).not.toBeUndefined();
+			expect(retrieved1!.id).toEqual(post1.id);
+			expect(retrieved2!.id).toEqual(post2.id);
+			expect(allPosts!.length).toEqual(7);
+			//endregion
+
+			// Should delete only the posts with `%` in the title
+			await DataStore.delete(Post, c => c.title.contains('%'));
+
+			// Post containing `%` in the title should be deleted
+			const retrievedAfterDelete1 = await DataStore.query(Post, post1.id);
+			expect(retrievedAfterDelete1).toBeUndefined();
+
+			// Post with title that begins with `%` should be deleted
+			const retrievedAfterDelete2 = await DataStore.query(Post, post2.id);
+			expect(retrievedAfterDelete2).toBeUndefined();
+
+			// All other posts should still exist
+			const allPostsAfterDelete = await DataStore.query(Post);
+			expect(allPostsAfterDelete.length).toBe(5);
+		});
+
+		test('Post deletion with `beginsWith(`%`)` predicate only deletes matching Post', async () => {
+			await Promise.all(
+				Array.from({ length: 5 }).map((_, idx) =>
+					DataStore.save(
+						new Post({
+							title: `Todo ${idx}`,
+						})
+					)
+				)
+			);
+
+			// Save a new post with `%` in the title
+			const post1 = await DataStore.save(
+				new Post({
+					title: 'a % title',
+				})
+			);
+
+			// Save a new Post with title that begins with `%`
+			const post2 = await DataStore.save(
+				new Post({
+					title: '%title-100',
+				})
+			);
+
+			//region: sanity check. make sure posts were created.
+			const retrieved1 = await DataStore.query(Post, post1.id);
+			const retrieved2 = await DataStore.query(Post, post2.id);
+			const allPosts = await DataStore.query(Post);
+
+			expect(retrieved1).not.toBeUndefined();
+			expect(retrieved2).not.toBeUndefined();
+			expect(retrieved1!.id).toEqual(post1.id);
+			expect(retrieved2!.id).toEqual(post2.id);
+			expect(allPosts!.length).toEqual(7);
+			//endregion
+
+			// Should delete only the Post that has a title beginning with `%`
+			await DataStore.delete(Post, c => c.title.beginsWith('%'));
+
+			// Post containing `%` in the title should not be deleted:
+			const retrievedAfterDelete1 = await DataStore.query(Post, post1.id);
+			expect(retrievedAfterDelete1).not.toBeUndefined();
+			expect(retrievedAfterDelete1?.id).toBe(post1.id);
+
+			// Post with title beginning with `%` should be deleted:
+			const retrievedAfterDelete2 = await DataStore.query(Post, post2.id);
+			expect(retrievedAfterDelete2).toBeUndefined();
+
+			// All other posts should still exist
+			const allPostsAfterDelete = await DataStore.query(Post);
+			expect(allPostsAfterDelete.length).toBe(6);
+		});
+
+		test('Post deletion with `notContains(`%`)` predicate only deletes matching Posts', async () => {
+			await Promise.all(
+				Array.from({ length: 5 }).map((_, idx) =>
+					DataStore.save(
+						new Post({
+							title: `Todo ${idx}`,
+						})
+					)
+				)
+			);
+
+			// Save a new post with `%` in the title
+			const post1 = await DataStore.save(
+				new Post({
+					title: 'a % title',
+				})
+			);
+
+			// Save a new Post with title that begins with `%`
+			const post2 = await DataStore.save(
+				new Post({
+					title: '%title-100',
+				})
+			);
+
+			//region: sanity check. make sure posts were created.
+			const retrieved1 = await DataStore.query(Post, post1.id);
+			const retrieved2 = await DataStore.query(Post, post2.id);
+			const allPosts = await DataStore.query(Post);
+
+			expect(retrieved1).not.toBeUndefined();
+			expect(retrieved2).not.toBeUndefined();
+			expect(retrieved1!.id).toEqual(post1.id);
+			expect(retrieved2!.id).toEqual(post2.id);
+			expect(allPosts!.length).toEqual(7);
+			//endregion
+
+			// Should delete only the posts without  `%` in the title
+			await DataStore.delete(Post, c => c.title.notContains('%'));
+
+			// Post containing `%` should not be deleted:
+			const retrievedAfterDelete1 = await DataStore.query(Post, post1.id);
+			expect(retrievedAfterDelete1).not.toBeUndefined();
+
+			// Post beginning with `%` should not be deleted:
+			const retrievedAfterDelete2 = await DataStore.query(Post, post2.id);
+			expect(retrievedAfterDelete2).not.toBeUndefined();
+
+			// All other posts should still exist
+			const allPostsAfterDelete = await DataStore.query(Post);
+			expect(allPostsAfterDelete.length).toBe(2);
+		});
+		test('Post deletion with `contains(`_`)` predicate only deletes matching Posts', async () => {
+			await Promise.all(
+				Array.from({ length: 5 }).map((_, idx) =>
+					DataStore.save(
+						new Post({
+							title: `Todo ${idx}`,
+						})
+					)
+				)
+			);
+
+			// Save a new post with `_` in the title
+			const post1 = await DataStore.save(
+				new Post({
+					title: 'a _ title',
+				})
+			);
+
+			// Save a new Post with title that begins with `_`
+			const post2 = await DataStore.save(
+				new Post({
+					title: '_title-100',
+				})
+			);
+
+			//region: sanity check. make sure posts were created.
+			const retrieved1 = await DataStore.query(Post, post1.id);
+			const retrieved2 = await DataStore.query(Post, post2.id);
+			const allPosts = await DataStore.query(Post);
+
+			expect(retrieved1).not.toBeUndefined();
+			expect(retrieved2).not.toBeUndefined();
+			expect(retrieved1!.id).toEqual(post1.id);
+			expect(retrieved2!.id).toEqual(post2.id);
+			expect(allPosts!.length).toEqual(7);
+			//endregion
+
+			// Should delete only the posts with `_` in the title
+			await DataStore.delete(Post, c => c.title.contains('_'));
+
+			// Post containing `_` in the title should be deleted
+			const retrievedAfterDelete1 = await DataStore.query(Post, post1.id);
+			expect(retrievedAfterDelete1).toBeUndefined();
+
+			// Post with title that begins with `_` should be deleted
+			const retrievedAfterDelete2 = await DataStore.query(Post, post2.id);
+			expect(retrievedAfterDelete2).toBeUndefined();
+
+			// All other posts should still exist
+			const allPostsAfterDelete = await DataStore.query(Post);
+			expect(allPostsAfterDelete.length).toBe(5);
+		});
+
+		test('Post deletion with `beginsWith(`_`)` predicate only deletes matching Post', async () => {
+			await Promise.all(
+				Array.from({ length: 5 }).map((_, idx) =>
+					DataStore.save(
+						new Post({
+							title: `Todo ${idx}`,
+						})
+					)
+				)
+			);
+
+			// Save a new post with `_` in the title
+			const post1 = await DataStore.save(
+				new Post({
+					title: 'a _ title',
+				})
+			);
+
+			// Save a new Post with title that begins with `_`
+			const post2 = await DataStore.save(
+				new Post({
+					title: '_title-100',
+				})
+			);
+
+			//region: sanity check. make sure posts were created.
+			const retrieved1 = await DataStore.query(Post, post1.id);
+			const retrieved2 = await DataStore.query(Post, post2.id);
+			const allPosts = await DataStore.query(Post);
+
+			expect(retrieved1).not.toBeUndefined();
+			expect(retrieved2).not.toBeUndefined();
+			expect(retrieved1!.id).toEqual(post1.id);
+			expect(retrieved2!.id).toEqual(post2.id);
+			expect(allPosts!.length).toEqual(7);
+			//endregion
+
+			// Should delete only the Post that has a title beginning with `_`
+			await DataStore.delete(Post, c => c.title.beginsWith('_'));
+
+			// Post containing `_` in the title should not be deleted:
+			const retrievedAfterDelete1 = await DataStore.query(Post, post1.id);
+			expect(retrievedAfterDelete1).not.toBeUndefined();
+			expect(retrievedAfterDelete1?.id).toBe(post1.id);
+
+			// Post with title beginning with `_` should be deleted:
+			const retrievedAfterDelete2 = await DataStore.query(Post, post2.id);
+			expect(retrievedAfterDelete2).toBeUndefined();
+
+			// All other posts should still exist
+			const allPostsAfterDelete = await DataStore.query(Post);
+			expect(allPostsAfterDelete.length).toBe(6);
+		});
+
+		test('Post deletion with `notContains(`_`)` predicate only deletes matching Posts', async () => {
+			await Promise.all(
+				Array.from({ length: 5 }).map((_, idx) =>
+					DataStore.save(
+						new Post({
+							title: `Todo ${idx}`,
+						})
+					)
+				)
+			);
+
+			// Save a new post with `_` in the title
+			const post1 = await DataStore.save(
+				new Post({
+					title: 'a _ title',
+				})
+			);
+
+			// Save a new Post with title that begins with `_`
+			const post2 = await DataStore.save(
+				new Post({
+					title: '_title-100',
+				})
+			);
+
+			//region: sanity check. make sure posts were created.
+			const retrieved1 = await DataStore.query(Post, post1.id);
+			const retrieved2 = await DataStore.query(Post, post2.id);
+			const allPosts = await DataStore.query(Post);
+
+			expect(retrieved1).not.toBeUndefined();
+			expect(retrieved2).not.toBeUndefined();
+			expect(retrieved1!.id).toEqual(post1.id);
+			expect(retrieved2!.id).toEqual(post2.id);
+			expect(allPosts!.length).toEqual(7);
+			//endregion
+
+			// Should delete only the posts without  `_` in the title
+			await DataStore.delete(Post, c => c.title.notContains('_'));
+
+			// Post containing `_` should not be deleted:
+			const retrievedAfterDelete1 = await DataStore.query(Post, post1.id);
+			expect(retrievedAfterDelete1).not.toBeUndefined();
+
+			// Post beginning with `_` should not be deleted:
+			const retrievedAfterDelete2 = await DataStore.query(Post, post2.id);
+			expect(retrievedAfterDelete2).not.toBeUndefined();
+
+			// All other posts should still exist
+			const allPostsAfterDelete = await DataStore.query(Post);
+			expect(allPostsAfterDelete.length).toBe(2);
+		});
+
+		//endregion
 
 		// see packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts
 		// as long as the comment above `async delete` still says, "Currently does not cascade",
@@ -500,6 +887,42 @@ export function addCommonQueryTests({
 					comment.id
 				);
 				expect(retrievedDeletedComment).toBeUndefined();
+			}
+		);
+
+		/**
+		 * Distinct from other hasMany delete cascade tests in that the model
+		 * being deleted has *potential* grandchildren. Hence, delete traversals need
+		 * to be capable of successfully querying the child for its children,
+		 * which has seen a regression at least once!
+		 * See: https://github.com/aws-amplify/amplify-js/issues/10866
+		 */
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting nested hasMany cascades',
+			async () => {
+				const blog = await DataStore.save(
+					new Blog({
+						title: 'my blog',
+					})
+				);
+
+				const post = await DataStore.save(
+					new Post({
+						title: 'my post',
+						blogId: blog.id,
+					})
+				);
+
+				const retrievedBlog = await DataStore.query(Blog, blog.id);
+				expect(retrievedBlog!.id).toEqual(blog.id);
+
+				const posts = await retrievedBlog!.posts.toArray();
+				expect(posts.length).toEqual(1);
+				expect(posts[0].id).toEqual(post.id);
+
+				await DataStore.delete(Blog, blog.id);
+
+				expect(await DataStore.query(Post, post.id)).toBeUndefined();
 			}
 		);
 
@@ -1298,6 +1721,7 @@ export function addCommonQueryTests({
 			const fetchedRightOnesA = await DataStore.query(MtmRight, r =>
 				r.leftOnes.mtmLeft.content.contains('left content A')
 			);
+
 			expect(fetchedRightOnesA.map(r => r.content)).toEqual(
 				expectedNamesARight
 			);

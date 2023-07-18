@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { ErrorType } from '../../types';
 
 export type ErrorMap = Partial<{
@@ -22,6 +24,7 @@ export const mutationErrorMap: ErrorMap = {
 	ConfigError: () => false,
 	Transient: error => connectionTimeout(error) || serverError(error),
 	Unauthorized: error =>
+		error.message === 'Unauthorized' ||
 		/^Request failed with status code 401/.test(error.message),
 };
 
@@ -44,7 +47,7 @@ export const syncErrorMap: ErrorMap = {
 	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
 	ConfigError: () => false,
 	Transient: error => connectionTimeout(error) || serverError(error),
-	Unauthorized: () => false,
+	Unauthorized: error => (error as any).errorType === 'Unauthorized',
 };
 
 /**

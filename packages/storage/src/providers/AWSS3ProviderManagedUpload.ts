@@ -1,31 +1,33 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, StorageAction } from '@aws-amplify/core';
 import {
-	PutObjectCommand,
-	PutObjectRequest,
-	CreateMultipartUploadCommand,
-	UploadPartCommand,
-	CompleteMultipartUploadCommand,
-	CompleteMultipartUploadCommandInput,
-	ListPartsCommand,
-	AbortMultipartUploadCommand,
+	PutObjectInput,
+	putObject,
+	createMultipartUpload,
 	CompletedPart,
-	S3Client,
-} from '@aws-sdk/client-s3';
+	uploadPart,
+	CompleteMultipartUploadInput,
+	completeMultipartUpload,
+	abortMultipartUpload,
+	listParts,
+} from '../AwsClients/S3';
 import {
-	SEND_UPLOAD_PROGRESS_EVENT,
 	SEND_DOWNLOAD_PROGRESS_EVENT,
-	AxiosHttpHandlerOptions,
-} from './axios-http-handler';
-import * as events from 'events';
+	SEND_UPLOAD_PROGRESS_EVENT,
+} from '../AwsClients/S3/utils';
+import { EventEmitter } from 'events';
+import { calculateContentMd5 } from '../common/MD5utils';
 import {
-	createPrefixMiddleware,
-	prefixMiddlewareOptions,
-	autoAdjustClockskewMiddleware,
-	autoAdjustClockskewMiddlewareOptions,
-	createS3Client,
+	calculatePartSize,
+	DEFAULT_PART_SIZE,
+	DEFAULT_QUEUE_SIZE,
+	MAX_OBJECT_SIZE,
+	S3ResolvedConfig,
+	loadS3Config,
+	getPrefix,
+	credentialsProvider,
 } from '../common/S3ClientUtils';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
@@ -33,65 +35,79 @@ const logger = new Logger('AWSS3ProviderManagedUpload');
 export declare interface Part {
 	bodyPart: any;
 	partNumber: number;
-	emitter: events.EventEmitter;
+	emitter: EventEmitter;
 	etag?: string;
 	_lastUploadedBytes: number;
 }
 
 export class AWSS3ProviderManagedUpload {
-	// Defaults
-	protected minPartSize = 5 * 1024 * 1024; // in MB
-	private queueSize = 4;
-
 	// Data for current upload
-	private body = null;
-	private params: PutObjectRequest = null;
+	private body;
+	private params: PutObjectInput;
 	private opts = null;
 	private completedParts: CompletedPart[] = [];
-	private s3client: S3Client;
-	private uploadId = null;
+	private s3Config: S3ResolvedConfig;
+	private uploadId: string | undefined;
+	private partSize = DEFAULT_PART_SIZE;
 
 	// Progress reporting
 	private bytesUploaded = 0;
 	private totalBytesToUpload = 0;
-	private emitter: events.EventEmitter = null;
+	private emitter: EventEmitter | null = null;
 
-	constructor(params: PutObjectRequest, opts, emitter: events.EventEmitter) {
+	constructor(params: PutObjectInput, opts, emitter: EventEmitter) {
 		this.params = params;
-		this.opts = opts;
+		this.opts = {
+			isObjectLockEnabled: false,
+			...opts,
+		};
 		this.emitter = emitter;
-		this.s3client = this._createNewS3Client(opts, emitter);
+		this.s3Config = loadS3Config({
+			...opts,
+			emitter,
+			storageAction: StorageAction.Put,
+		});
 	}
 
 	public async upload() {
 		try {
-			this.body = await this.validateAndSanitizeBody(this.params.Body);
+			const { isObjectLockEnabled } = this.opts;
+			if (isObjectLockEnabled === true) {
+				this.params.ContentMD5 = await calculateContentMd5(
+					// @ts-expect-error currently ReadableStream<any> is not being supported in put api
+					this.params.Body
+				);
+			}
+			this.body = this.validateAndSanitizeBody(this.params.Body);
 			this.totalBytesToUpload = this.byteLength(this.body);
-			if (this.totalBytesToUpload <= this.minPartSize) {
+			if (this.totalBytesToUpload <= DEFAULT_PART_SIZE) {
 				// Multipart upload is not required. Upload the sanitized body as is
 				this.params.Body = this.body;
-				const putObjectCommand = new PutObjectCommand(this.params);
-				return this.s3client.send(putObjectCommand);
+				return putObject(this.s3Config, {
+					...this.params,
+					Key: await this.getObjectKeyWithPrefix(this.params.Key),
+				});
 			} else {
-				// Step 1: Initiate the multi part upload
+				// Step 1: Determine appropriate part size.
+				this.partSize = calculatePartSize(this.totalBytesToUpload);
+				// Step 2: Initiate the multi part upload
 				this.uploadId = await this.createMultiPartUpload();
 
-				// Step 2: Upload chunks in parallel as requested
+				// Step 3: Upload chunks in parallel as requested
 				const numberOfPartsToUpload = Math.ceil(
-					this.totalBytesToUpload / this.minPartSize
+					this.totalBytesToUpload / this.partSize
 				);
 
 				const parts: Part[] = this.createParts();
 				for (
 					let start = 0;
 					start < numberOfPartsToUpload;
-					start += this.queueSize
+					start += DEFAULT_QUEUE_SIZE
 				) {
-
 					// Upload as many as `queueSize` parts simultaneously
 					await this.uploadParts(
-						this.uploadId,
-						parts.slice(start, start + this.queueSize)
+						this.uploadId!,
+						parts.slice(start, start + DEFAULT_QUEUE_SIZE)
 					);
 				}
 
@@ -100,7 +116,7 @@ export class AWSS3ProviderManagedUpload {
 				});
 
 				// Step 3: Finalize the upload such that S3 can recreate the file
-				return await this.finishMultiPartUpload(this.uploadId);
+				return await this.finishMultiPartUpload(this.uploadId!);
 			}
 		} catch (error) {
 			// if any error is thrown, call cleanup
@@ -115,16 +131,16 @@ export class AWSS3ProviderManagedUpload {
 			const parts: Part[] = [];
 			for (let bodyStart = 0; bodyStart < this.totalBytesToUpload; ) {
 				const bodyEnd = Math.min(
-					bodyStart + this.minPartSize,
+					bodyStart + this.partSize,
 					this.totalBytesToUpload
 				);
 				parts.push({
 					bodyPart: this.body.slice(bodyStart, bodyEnd),
 					partNumber: parts.length + 1,
-					emitter: new events.EventEmitter(),
+					emitter: new EventEmitter(),
 					_lastUploadedBytes: 0,
 				});
-				bodyStart += this.minPartSize;
+				bodyStart += this.partSize;
 			}
 			return parts;
 		} catch (error) {
@@ -135,10 +151,10 @@ export class AWSS3ProviderManagedUpload {
 
 	private async createMultiPartUpload() {
 		try {
-			const createMultiPartUploadCommand = new CreateMultipartUploadCommand(
-				this.params
-			);
-			const response = await this.s3client.send(createMultiPartUploadCommand);
+			const response = await createMultipartUpload(this.s3Config, {
+				...this.params,
+				Key: await this.getObjectKeyWithPrefix(this.params.Key),
+			});
 			logger.debug(response.UploadId);
 			return response.UploadId;
 		} catch (error) {
@@ -156,26 +172,31 @@ export class AWSS3ProviderManagedUpload {
 			const allResults = await Promise.all(
 				parts.map(async part => {
 					this.setupEventListener(part);
-					const options: AxiosHttpHandlerOptions = { emitter: part.emitter };
+					const { isObjectLockEnabled } = this.opts;
+					if (isObjectLockEnabled) {
+						this.params.ContentMD5 = await calculateContentMd5(part.bodyPart);
+					}
 					const {
 						Key,
 						Bucket,
 						SSECustomerAlgorithm,
 						SSECustomerKey,
 						SSECustomerKeyMD5,
+						ContentMD5,
 					} = this.params;
-					const res = await this.s3client.send(
-						new UploadPartCommand({
+					const res = await uploadPart(
+						{ ...this.s3Config, emitter: part.emitter },
+						{
 							PartNumber: part.partNumber,
 							Body: part.bodyPart,
 							UploadId: uploadId,
-							Key,
+							Key: await this.getObjectKeyWithPrefix(this.params.Key),
 							Bucket,
-							...(SSECustomerAlgorithm && { SSECustomerAlgorithm }),
-							...(SSECustomerKey && { SSECustomerKey }),
-							...(SSECustomerKeyMD5 && { SSECustomerKeyMD5 }),
-						}),
-						options
+							SSECustomerAlgorithm,
+							SSECustomerKey,
+							SSECustomerKeyMD5,
+							ContentMD5,
+						}
 					);
 					return res;
 				})
@@ -196,39 +217,43 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	private async finishMultiPartUpload(uploadId: string) {
-		const input: CompleteMultipartUploadCommandInput = {
+		const input: CompleteMultipartUploadInput = {
 			Bucket: this.params.Bucket,
-			Key: this.params.Key,
+			Key: await this.getObjectKeyWithPrefix(this.params.Key),
 			UploadId: uploadId,
 			MultipartUpload: { Parts: this.completedParts },
 		};
-		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
 		try {
-			const data = await this.s3client.send(completeUploadCommand);
-			return data.Key;
+			const { Key } = await completeMultipartUpload(this.s3Config, input);
+			return Key;
 		} catch (error) {
 			logger.error('Error happened while finishing the upload.');
 			throw error;
 		}
 	}
 
-	private async cleanup(uploadId: string) {
+	private async cleanup(uploadId: string | undefined) {
 		// Reset this's state
 		this.body = null;
 		this.completedParts = [];
 		this.bytesUploaded = 0;
 		this.totalBytesToUpload = 0;
 
+		if (!uploadId) {
+			// This is a single part upload;
+			return;
+		}
+
 		const input = {
 			Bucket: this.params.Bucket,
-			Key: this.params.Key,
+			Key: await this.getObjectKeyWithPrefix(this.params.Key),
 			UploadId: uploadId,
 		};
 
-		await this.s3client.send(new AbortMultipartUploadCommand(input));
+		await abortMultipartUpload(this.s3Config, input);
 
 		// verify that all parts are removed.
-		const data = await this.s3client.send(new ListPartsCommand(input));
+		const data = await listParts(this.s3Config, input);
 
 		if (data && data.Parts && data.Parts.length > 0) {
 			throw new Error('Multipart upload clean up failed.');
@@ -277,21 +302,23 @@ export class AWSS3ProviderManagedUpload {
 		}
 	}
 
-	private async validateAndSanitizeBody(body: any): Promise<any> {
-		if (this.isGenericObject(body)) {
-			// Any javascript object
-			return JSON.stringify(body);
-		} else {
-			// Files, arrayBuffer etc
-			return body;
-		}
+	private validateAndSanitizeBody(body: any): any {
+		const sanitizedBody = this.isGenericObject(body)
+			? JSON.stringify(body)
+			: body;
 		/* TODO: streams and files for nodejs 
 		if (
 			typeof body.path === 'string' &&
 			require('fs').lstatSync(body.path).size > 0
 		) {
-			return body;
+			sanitizedBody = body;
 		} */
+		if (this.byteLength(sanitizedBody) > MAX_OBJECT_SIZE) {
+			throw new Error(
+				`File size bigger than S3 Object limit of 5TB, got ${this.totalBytesToUpload} Bytes`
+			);
+		}
+		return sanitizedBody;
 	}
 
 	private isGenericObject(body: any): body is Object {
@@ -307,16 +334,12 @@ export class AWSS3ProviderManagedUpload {
 		return false;
 	}
 
-	protected _createNewS3Client(config, emitter?: events.EventEmitter) {
-		const s3client = createS3Client(config, emitter);
-		s3client.middlewareStack.add(
-			createPrefixMiddleware(this.opts, this.params.Key),
-			prefixMiddlewareOptions
+	private async getObjectKeyWithPrefix(keyWithoutPrefix: string) {
+		return (
+			(await getPrefix({
+				...this.opts,
+				credentials: await credentialsProvider(),
+			})) + keyWithoutPrefix
 		);
-		s3client.middlewareStack.add(
-			autoAdjustClockskewMiddleware(s3client.config),
-			autoAdjustClockskewMiddlewareOptions
-		);
-		return s3client;
 	}
 }

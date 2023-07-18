@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { ULID } from 'ulid';
 import {
 	ModelInstanceMetadata,
@@ -176,7 +178,7 @@ class AsyncStorageDatabase {
 			.reduce((set, [k]) => set.add(k), new Set<string>());
 
 		// Delete
-		await new Promise((resolve, reject) => {
+		await new Promise<void>((resolve, reject) => {
 			if (keysToDelete.size === 0) {
 				resolve();
 				return;
@@ -204,7 +206,7 @@ class AsyncStorageDatabase {
 		});
 
 		// Save
-		await new Promise((resolve, reject) => {
+		await new Promise<void>((resolve, reject) => {
 			if (keysToSave.size === 0) {
 				resolve();
 				return;

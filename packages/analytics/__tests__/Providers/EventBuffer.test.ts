@@ -41,13 +41,13 @@ describe('EventBuffer', () => {
 	});
 
 	test('can be constructed', () => {
-		const buffer = new EventBuffer({}, DEFAULT_CONFIG);
+		const buffer = new EventBuffer(DEFAULT_CONFIG);
 		expect(buffer).toBeDefined();
 	});
 
 	test('does not allow buffer size to be exceeded', () => {
 		const config = { ...DEFAULT_CONFIG, bufferSize: 1 };
-		const buffer = new EventBuffer({}, config);
+		const buffer = new EventBuffer(config);
 		buffer.push(EVENT_OBJECT);
 		buffer.push(EVENT_OBJECT);
 		expect(EVENT_OBJECT.handlers.reject).toBeCalledWith(

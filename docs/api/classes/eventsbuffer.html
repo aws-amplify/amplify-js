@@ -6,6 +6,7 @@
 	<title>EventsBuffer | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
 /* ========================================================================== HTML5 display definitions ========================================================================== */
 /** Correct `block` display not defined in IE 6/7/8/9 and Firefox 3. */
@@ -880,12 +881,12 @@ img { max-width: 100%; }
 			<div class="table-wrap">
 				<div class="table-cell logo">
 					<a href="../index.html">
-						<img src="https://aws-amplify.github.io/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
-						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+						<img src="https://aws-amplify.github.io/amplify-js/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: relative;">AWS Amplify JS API</div>
 					</a>
 				</div>
 				<div class="table-cell" style="">	<body>
-						<a href="/amplify-js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
+						<a href="https://docs.amplify.aws/lib/q/platform/js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify JS Dev Center</a>
 </div>	</body>
 <div class="table-cell" id="tsd-widgets">
 <div id="tsd-filter">
@@ -933,9 +934,6 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="eventsbuffer.html#resume" class="tsd-kind-icon">resume</a>
 			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class">
-				<a href="eventsbuffer.html#updateclient" class="tsd-kind-icon">update<wbr>Client</a>
-			</li>
 		</ul>
 	</li>
 </ul>
@@ -967,7 +965,6 @@ img { max-width: 100%; }
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="eventsbuffer.html#pause" class="tsd-kind-icon">pause</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="eventsbuffer.html#push" class="tsd-kind-icon">push</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="eventsbuffer.html#resume" class="tsd-kind-icon">resume</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-class"><a href="eventsbuffer.html#updateclient" class="tsd-kind-icon">update<wbr>Client</a></li>
 					</ul>
 				</section>
 			</div>
@@ -979,20 +976,17 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new <wbr>Events<wbr>Buffer<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, config<span class="tsd-signature-symbol">: </span><a href="../globals.html#eventsbufferconfig" class="tsd-signature-type">EventsBufferConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="eventsbuffer.html" class="tsd-signature-type">EventsBuffer</a></li>
+				<li class="tsd-signature tsd-kind-icon">new <wbr>Events<wbr>Buffer<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><a href="../globals.html#eventsbufferconfig" class="tsd-signature-type">EventsBufferConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="eventsbuffer.html" class="tsd-signature-type">EventsBuffer</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/Providers/EventBuffer.ts#L32">packages/analytics/src/Providers/EventBuffer.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/analytics/src/Providers/EventBuffer.ts#L29">packages/analytics/src/Providers/EventBuffer.ts:29</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
-						<li>
-							<h5>client: <span class="tsd-signature-type">any</span></h5>
-						</li>
 						<li>
 							<h5>config: <a href="../globals.html#eventsbufferconfig" class="tsd-signature-type">EventsBufferConfig</a></h5>
 						</li>
@@ -1014,7 +1008,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/Providers/EventBuffer.ts#L71">packages/analytics/src/Providers/EventBuffer.ts:71</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/analytics/src/Providers/EventBuffer.ts#L63">packages/analytics/src/Providers/EventBuffer.ts:63</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1031,7 +1025,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/Providers/EventBuffer.ts#L59">packages/analytics/src/Providers/EventBuffer.ts:59</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/analytics/src/Providers/EventBuffer.ts#L55">packages/analytics/src/Providers/EventBuffer.ts:55</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1048,7 +1042,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/Providers/EventBuffer.ts#L45">packages/analytics/src/Providers/EventBuffer.ts:45</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/analytics/src/Providers/EventBuffer.ts#L41">packages/analytics/src/Providers/EventBuffer.ts:41</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1071,32 +1065,9 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/Providers/EventBuffer.ts#L63">packages/analytics/src/Providers/EventBuffer.ts:63</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/02bbebe83/packages/analytics/src/Providers/EventBuffer.ts#L59">packages/analytics/src/Providers/EventBuffer.ts:59</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-				</li>
-			</ul>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-			<a name="updateclient" class="tsd-anchor"></a>
-			<h3>update<wbr>Client</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">update<wbr>Client<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/Providers/EventBuffer.ts#L67">packages/analytics/src/Providers/EventBuffer.ts:67</a></li>
-						</ul>
-					</aside>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>client: <span class="tsd-signature-type">any</span></h5>
-						</li>
-					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 				</li>
 			</ul>

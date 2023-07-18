@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/core/internals/aws-client-utils",
+	"types": "../../lib-esm/clients/index.d.ts",
+	"main": "../../lib/clients/index.js",
+	"module": "../../lib-esm/clients/index.js",
+	"react-native": "../../lib-esm/clients/index.js",
+	"sideEffects": false
+}

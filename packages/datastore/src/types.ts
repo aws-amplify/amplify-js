@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
 	isAWSDate,
@@ -15,7 +17,7 @@ import {
 import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { Auth } from '@aws-amplify/auth';
-import { API } from '@aws-amplify/api';
+import { InternalAPI } from '@aws-amplify/api/internals';
 import { Cache } from '@aws-amplify/cache';
 import { Adapter } from './storage/adapter';
 
@@ -48,7 +50,17 @@ export type SchemaModel = {
 	name: string;
 	pluralName: string;
 	attributes?: ModelAttributes;
+
+	/**
+	 * Explicitly defined fields.
+	 */
 	fields: ModelFields;
+
+	/**
+	 * Explicitly defined fields plus implied fields. (E.g., foreign keys.)
+	 */
+	allFields?: ModelFields;
+
 	syncable?: boolean;
 };
 
@@ -306,6 +318,7 @@ export type AuthorizationRule = {
 	provider: 'userPools' | 'oidc' | 'iam' | 'apiKey';
 	groupClaim: string;
 	groups: [string];
+	groupsField: string;
 	authStrategy: 'owner' | 'groups' | 'private' | 'public';
 	areSubscriptionsPublic: boolean;
 };
@@ -587,9 +600,11 @@ type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
 		? T[P]
 		: T[P] extends Promise<infer InnerPromiseType>
-		? InnerPromiseType
+		? undefined extends InnerPromiseType
+			? InnerPromiseType | null
+			: InnerPromiseType
 		: T[P] extends AsyncCollection<infer InnerCollectionType>
-		? InnerCollectionType[] | undefined
+		? InnerCollectionType[] | undefined | null
 		: DeepWritable<T[P]>;
 };
 
@@ -1088,7 +1103,7 @@ export enum LimitTimerRaceResolvedValues {
 
 export type AmplifyContext = {
 	Auth: typeof Auth;
-	API: typeof API;
+	InternalAPI: typeof InternalAPI;
 	Cache: typeof Cache;
 };
 
