@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import type { UserAgent as AWSUserAgent } from '@aws-sdk/types';
 
 export enum Framework {
 	// < 100 - Web frameworks
@@ -149,8 +150,15 @@ type UserAgentDetailsWithCategory<T extends Category> =
 
 type CustomUserAgentDetailsBase = {
 	framework?: Framework;
+	// DO NOT REMOVE:
+	// Used by other Amplify teams to pass information to the custom user agent
+	/** Accepts an array of arrays with exactly 1 or 2 values and translates 
+	those arrays to "item" or "item1/item2" strings on the custom user agent */
+	additionalInfo?: AWSUserAgent;
 };
 
+// DO NOT MAKE ANY PROP REQUIRED on CustomUserAgentDetails
+// This object is used by other Amplify teams to pass information to the user agent
 export type CustomUserAgentDetails =
 	| (CustomUserAgentDetailsBase & { category?: never; action?: never })
 	| UserAgentDetailsWithCategory<Category.API>

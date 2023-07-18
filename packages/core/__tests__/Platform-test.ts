@@ -29,12 +29,18 @@ describe('Platform test', () => {
 			expect(
 				getAmplifyUserAgentObject({
 					category: Category.API,
-					action: ApiAction.None,
+					action: ApiAction.GraphQl,
+					additionalInfo: [
+						['amplify-ui', '1.x.x'],
+						['uicomponent', '1'],
+					],
 				})
 			).toStrictEqual([
 				['aws-amplify', version],
-				[Category.API, ApiAction.None],
+				[Category.API, ApiAction.GraphQl],
 				['framework', Framework.WebUnknown],
+				['amplify-ui', '1.x.x'],
+				['uicomponent', '1'],
 			]);
 		});
 	});
@@ -50,10 +56,14 @@ describe('Platform test', () => {
 			expect(
 				getAmplifyUserAgent({
 					category: Category.API,
-					action: ApiAction.None,
+					action: ApiAction.GraphQl,
+					additionalInfo: [
+						['amplify-ui', '1.x.x'],
+						['uicomponent', '1'],
+					],
 				})
 			).toBe(
-				`${Platform.userAgent} ${Category.API}/${ApiAction.None} framework/${Framework.WebUnknown}`
+				`${Platform.userAgent} ${Category.API}/${ApiAction.GraphQl} framework/${Framework.WebUnknown} amplify-ui/1.x.x uicomponent/1`
 			);
 		});
 	});
