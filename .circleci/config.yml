@@ -1632,6 +1632,7 @@ releasable_branches: &releasable_branches
       - release
       - main
       - next
+      - feat/custom-user-agent-ui/cognito
 
 # List of test browsers that are always used in every E2E test. Tests that aren't expected to interact with browser APIs
 # should use `minimal_browser_list` to keep test execution time low.
