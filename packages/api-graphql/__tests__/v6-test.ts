@@ -351,6 +351,7 @@ describe('client', () => {
 
 			// An `as any` is what customers would likely write without branded queries.
 			const result = rawResult as any;
+
 			const thread = result.data?.createThread;
 			const errors = result.errors;
 
@@ -379,13 +380,20 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
-			const result = await client.graphql({
+			// Customers would not specify these types. They're shown to demonstrate
+			// the return type for the test.
+			const rawResult:
+				| raw.GraphqlSubscriptionResult<any>
+				| raw.GraphQLResult<any> = await client.graphql({
 				query: untypedMutations.updateThread,
 				variables: {
 					input: threadToUpdate,
 				},
 				authMode: 'API_KEY',
 			});
+
+			// An `as any` is what customers would likely write without branded queries.
+			const result = rawResult as any;
 
 			const thread = result.data?.updateThread;
 			const errors = result.errors;
@@ -413,13 +421,20 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
-			const result = await client.graphql({
+			// Customers would not specify these types. They're shown to demonstrate
+			// the return type for the test.
+			const rawResult:
+				| raw.GraphqlSubscriptionResult<any>
+				| raw.GraphQLResult<any> = await client.graphql({
 				query: untypedMutations.deleteThread,
 				variables: {
 					input: threadToDelete,
 				},
 				authMode: 'API_KEY',
 			});
+
+			// An `as any` is what customers would likely write without branded queries.
+			const result = rawResult as any;
 
 			const thread = result.data?.deleteThread;
 			const errors = result.errors;
@@ -451,11 +466,18 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
-			const result = await client.graphql({
+			// Customers would not specify these types. They're shown to demonstrate
+			// the return type for the test.
+			const rawResult:
+				| raw.GraphqlSubscriptionResult<any>
+				| raw.GraphQLResult<any> = await client.graphql({
 				query: untypedQueries.getThread,
 				variables: graphqlVariables,
 				authMode: 'API_KEY',
 			});
+
+			// An `as any` is what customers would likely write without branded queries.
+			const result = rawResult as any;
 
 			const thread = result.data?.getThread;
 			const errors = result.errors;
@@ -494,11 +516,18 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
-			const result = await client.graphql({
+			// Customers would not specify these types. They're shown to demonstrate
+			// the return type for the test.
+			const rawResult:
+				| raw.GraphqlSubscriptionResult<any>
+				| raw.GraphQLResult<any> = await client.graphql({
 				query: untypedQueries.listThreads,
 				variables: graphqlVariables,
 				authMode: 'API_KEY',
 			});
+
+			// An `as any` is what customers would likely write without branded queries.
+			const result = rawResult as any;
 
 			const { items, nextToken } = result.data?.listThreads || {};
 			const errors = result.errors;
@@ -534,27 +563,34 @@ describe('client', () => {
 				},
 			};
 
-			const sub = client
-				.graphql({
-					query: untypedSubscriptions.onCreateThread,
-					variables: graphqlVariables,
-					authMode: 'API_KEY',
-				})
-				.subscribe?.({
-					next(message) {
-						expectSub(spy, 'onCreateThread', graphqlVariables);
-						expect(message.value.data.onCreateThread).toEqual(
-							graphqlMessage.value.data.onCreateThread
-						);
-						sub.unsubscribe();
-						done();
-					},
-					error(error) {
-						expect(error).toBeUndefined();
-						sub.unsubscribe();
-						done('bad news!');
-					},
-				})!;
+			// Customers would not specify these types. They're shown to demonstrate
+			// the return type for the test.
+			const rawResult:
+				| raw.GraphqlSubscriptionResult<any>
+				| raw.GraphQLResult<any> = client.graphql({
+				query: untypedSubscriptions.onCreateThread,
+				variables: graphqlVariables,
+				authMode: 'API_KEY',
+			});
+
+			// An `as any` is what customers would likely write without branded queries.
+			const result = rawResult as any;
+
+			const sub = result.subscribe?.({
+				next(message) {
+					expectSub(spy, 'onCreateThread', graphqlVariables);
+					expect(message.value.data.onCreateThread).toEqual(
+						graphqlMessage.value.data.onCreateThread
+					);
+					sub.unsubscribe();
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					sub.unsubscribe();
+					done('bad news!');
+				},
+			})!;
 		});
 	});
 });
