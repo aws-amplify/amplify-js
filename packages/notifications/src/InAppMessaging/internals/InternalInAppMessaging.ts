@@ -29,7 +29,7 @@ import {
 	InAppMessagingEvent,
 	InAppMessagingProvider,
 	OnMessageInteractionEventHandler,
-	InternalNotifcationsSubCategory,
+	InternalNotificationsSubCategory,
 	NotificationsSubCategory,
 } from '../types';
 import { getUserAgentValue } from './utils';
@@ -84,7 +84,7 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 	 * Get the name of this module
 	 * @returns {string} name of this module
 	 */
-	getModuleName(): NotificationsSubCategory | InternalNotifcationsSubCategory {
+	getModuleName(): NotificationsSubCategory | InternalNotificationsSubCategory {
 		return 'InternalInAppMessaging';
 	}
 
