@@ -557,10 +557,11 @@ export function mapMfaType(mfa: string): CognitoMFAType {
 export function getMFAType(type?: string): MFAType | undefined {
 	if (type === 'SMS_MFA') return 'SMS';
 	if (type === 'SOFTWARE_TOKEN_MFA') return 'TOTP';
+	// TODO: log warning for unknown MFA type
 }
 
-export function getMFATypes(types?: string[]): MFAType[] {
-	if (!types) return [];
+export function getMFATypes(types?: string[]): MFAType[] | undefined {
+	if (!types) return undefined;
 	return types.map(getMFAType).filter(Boolean) as MFAType[];
 }
 export function parseMFATypes(mfa?: string): CognitoMFAType[] {
@@ -573,9 +574,7 @@ export function isMFATypeEnabled(
 	mfaType: MFAType
 ): boolean {
 	const { MFAS_CAN_SETUP } = challengeParams;
-	const isMFAparseMFATypes = getMFATypes(
-		parseMFATypes(MFAS_CAN_SETUP)
-	).includes(mfaType);
-
-	return isMFAparseMFATypes;
+	const mfaTypes = getMFATypes(parseMFATypes(MFAS_CAN_SETUP));
+	if (!mfaTypes) return false;
+	return mfaTypes.includes(mfaType);
 }
