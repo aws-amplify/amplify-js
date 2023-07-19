@@ -46,7 +46,8 @@
 	"files": [
 		"lib",
 		"lib-esm",
-		"src"
+		"src",
+		"internals"
 	],
 	"dependencies": {
 		"@aws-amplify/cache": "5.1.4",
@@ -65,13 +66,13 @@
 			"name": "Notifications (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Notifications }",
-			"limit": "29.92 kB"
+			"limit": "30.22 kB"
 		},
 		{
 			"name": "Notifications (with Analytics)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Notifications, Analytics }",
-			"limit": "29.93 kB"
+			"limit": "30.23 kB"
 		}
 	]
 }

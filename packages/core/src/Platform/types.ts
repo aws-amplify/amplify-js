@@ -98,6 +98,8 @@ export enum GeoAction {
 }
 export enum InAppMessagingAction {
 	None = '0',
+	SyncMessages = '1',
+	IdentifyUser = '2',
 }
 export enum InteractionsAction {
 	None = '0',
