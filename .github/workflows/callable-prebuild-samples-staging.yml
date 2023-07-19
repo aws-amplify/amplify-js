@@ -1,4 +1,4 @@
-name: 'Prebuild AmplifyJs'
+name: Prebuild AmplifyJs
 
 on:
   workflow_call:

@@ -1,4 +1,4 @@
-name: 'E2E Tests'
+name: E2E Tests
 
 on:
   workflow_call:
@@ -36,9 +36,9 @@ on:
 
 env:
   NPM_REGISTRY: http://localhost:4873/
-  NPM_USER: circleci
-  NPM_PASS: circleci
-  NPM_EMAIL: circleci@amplify.js
+  NPM_USER: verdaccio
+  NPM_PASS: verdaccio
+  NPM_EMAIL: verdaccio@amplify.js
   AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/amplify-js
   CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
   CYPRESS_GOOGLE_CLIENT_SECRET: ${{ secrets.CYPRESS_GOOGLE_CLIENT_SECRET }}
@@ -46,7 +46,7 @@ env:
 
 jobs:
   e2e-test:
-    name: 'E2E: ${{ inputs.test_name }}'
+    name: E2E ${{ inputs.test_name }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -100,7 +100,7 @@ jobs:
           -n ${{ inputs.retry_count }}
         working-directory: amplify-js-samples-staging
         shell: bash
-      - name: upload artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
         if: always()
         with:

@@ -1,10 +1,10 @@
-name: 'Capture Package Names List to Outputs'
+name: Capture Package Names List to Outputs
 
 on:
   workflow_call:
     outputs:
       packages:
-        description: 'The json encoded package list'
+        description: The json encoded package list
         value: ${{ jobs.get-package-list.outputs.packages }}
 jobs:
   get-package-list:

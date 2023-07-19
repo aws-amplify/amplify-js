@@ -1,4 +1,4 @@
-name: 'E2E Test Runner'
+name: E2E Test Runner
 
 on:
   workflow_call:
@@ -8,11 +8,11 @@ jobs:
     name: Get required configs to run e2e tests
     runs-on: ubuntu-latest
     steps:
-      - name: checkout AmplifyJs
-        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f
+      - name: Checkout AmplifyJs
+        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
         with:
           path: amplify-js
-      - name: read integ config files
+      - name: Read integ config files
         id: load_config
         run: |
           echo "INTEG_CONFIG=$(cat .github/integ-config/integ-all.yml | yq '.tests' -o=json | jq -c .)" >> $GITHUB_OUTPUT
@@ -25,7 +25,7 @@ jobs:
       detox-integ-config: ${{steps.load_config.outputs.DETOX_INTEG_CONFIG}}
 
   e2e-test-runner:
-    name: e2e test runnner
+    name: E2E test runnner
     needs: e2e-prep
     secrets: inherit
     strategy:
@@ -45,7 +45,7 @@ jobs:
       retry_count: ${{ matrix.integ-config.retry_count || 3 }}
 
   e2e-test-runner-headless:
-    name: e2e test runnner_headless
+    name: E2E test runnner_headless
     needs: e2e-prep
     secrets: inherit
     strategy:
@@ -61,7 +61,7 @@ jobs:
       retry_count: ${{ matrix.integ-config.retry_count || 3 }}
 
   detox-e2e-test-runner:
-    name: e2e test runner
+    name: E2E test runner
     needs: e2e-prep
     strategy:
       matrix:

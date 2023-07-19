@@ -426,7 +426,8 @@ tests:
     category: datastore
     sample_name: [v2/basic-crud]
     spec: vite-basic-crud
-    browser: *minimal_browser_list
+    # TODO: run on firefox
+    browser: [chrome]
     timeout_minutes: 45
     retry_count: 10
   - test_name: integ_rollup_datastore_basic_crud

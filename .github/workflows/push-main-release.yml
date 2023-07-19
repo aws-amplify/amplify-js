@@ -1,4 +1,4 @@
-name: 'Push - release from main to unstable'
+name: Push - release from main to unstable
 
 on:
   push:

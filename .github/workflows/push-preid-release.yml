@@ -1,4 +1,4 @@
-name: 'Push - release for feature preid'
+name: Push - release for feature preid
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/callable-e2e.yml
   parse-preid:
-    name: 'Parse preid from branch'
+    name: Parse preid from branch
     runs-on: ubuntu-latest
     env:
       BRANCH: ${{ github.ref_name }}

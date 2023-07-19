@@ -1,5 +1,5 @@
 # Ref: https://tinyurl.com/5d6rr8s7
-name: 'CodeQL'
+name: CodeQL
 
 on:
   workflow_call:

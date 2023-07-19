@@ -1,4 +1,4 @@
-name: 'Push - release from release to latest'
+name: Push - release from release to latest
 
 on:
   push:

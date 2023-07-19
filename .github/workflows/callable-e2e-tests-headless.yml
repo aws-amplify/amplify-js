@@ -1,4 +1,4 @@
-name: 'E2E Tests - Headless'
+name: E2E Tests - Headless
 
 on:
   workflow_call:
@@ -21,7 +21,7 @@ on:
 
 jobs:
   e2e-test:
-    name: 'E2E-Headless: ${{ inputs.test_name }}'
+    name: E2E-Headless ${{ inputs.test_name }}
     runs-on: ubuntu-latest
     timeout-minutes: ${{ inputs.timeout_minutes }}
     steps:
@@ -40,12 +40,12 @@ jobs:
         with:
           GH_ACTIONS_STAGING_READ: ${{ secrets.GH_ACTIONS_STAGING_READ }}
 
-      - name: 'Change directory into build and run link'
+      - name: Change directory into build and run link
         run: |
           yarn link-all
         working-directory: amplify-js
 
-      - name: 'Link packages into samples staging root'
+      - name: Link packages into samples staging root
         run: |
           yarn link amazon-cognito-identity-js @aws-amplify/core @aws-amplify/cache @aws-amplify/auth
         working-directory: amplify-js-samples-staging
