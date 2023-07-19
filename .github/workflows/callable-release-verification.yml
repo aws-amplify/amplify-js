@@ -1,7 +1,6 @@
 name: Release Verification Tests
 
-on:
-  workflow_call:
+on: workflow_call
 
 jobs:
   prebuild-ubuntu:

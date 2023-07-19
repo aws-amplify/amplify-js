@@ -1,7 +1,6 @@
 name: Unit Tests
 
-on:
-  workflow_call:
+on: workflow_call
 
 jobs:
   bundle_size_tests:

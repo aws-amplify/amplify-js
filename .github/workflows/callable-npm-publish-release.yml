@@ -1,7 +1,6 @@
 name: Publish package to npm and create release on github
 
-on:
-  workflow_call:
+on: workflow_call
 
 jobs:
   deploy:
