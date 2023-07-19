@@ -9,7 +9,7 @@ import { verifySoftwareTokenClient } from '../utils/clients/VerifySoftwareTokenC
 import { VerifySoftwareTokenException } from '../types/errors';
 
 /**
- * Verifies a otp code retrieved from an associated authenticated app.
+ * Verifies an OTP code retrieved from an associated authentication app.
  *
  * @param verifyTOTPSetupRequest - The VerifyTOTPSetupRequest
  *
