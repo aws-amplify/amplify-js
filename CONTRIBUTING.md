@@ -55,7 +55,6 @@ The recommended version of Node JS to work with this project is [`16.19.0`](http
 > Note: newer versions of Yarn (2+) remove support for lerna's `--mutex` flag
 > so be sure to use Yarn v1.22.x
 
-
 Start by [forking](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the main branch of [amplify-js](https://github.com/aws-amplify/amplify-js).
 
 ```

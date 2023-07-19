@@ -92,6 +92,26 @@ describe('Signing middleware', () => {
 		);
 	});
 
+	test('can be configured with credentials provider function', async () => {
+		const credentialsProvider = jest.fn().mockResolvedValue(credentials);
+		const nextHandler = jest.fn().mockResolvedValue(defaultResponse);
+		const signableHandler = getSignableHandler(nextHandler);
+		const config = {
+			...defaultSigningOptions,
+			credentials: credentialsProvider,
+		};
+		await signableHandler(defaultRequest, config);
+		expect(nextHandler).toBeCalledWith(
+			expect.objectContaining({
+				headers: expect.objectContaining({
+					authorization: basicTestCase.expectedAuthorization,
+				}),
+			}),
+			expect.anything()
+		);
+		expect(credentialsProvider).toBeCalledTimes(1);
+	});
+
 	test.each([
 		['response with Date header', 'Date'],
 		['response with date header', 'date'],

@@ -22,4 +22,9 @@ describe('getCanonicalUri', () => {
 		const path = '/👀';
 		expect(getCanonicalUri(path)).toBe('/%F0%9F%91%80');
 	});
+
+	test('can disable double encoding', () => {
+		const encoded = '/%F0%9F%91%80';
+		expect(getCanonicalUri(encoded, false)).toBe(encoded);
+	});
 });
