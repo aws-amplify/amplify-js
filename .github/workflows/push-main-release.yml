@@ -5,10 +5,14 @@ on:
     branches:
       - main
 
+env:
+  GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
+  GITHUB_USER: ${{ vars.GH_USER }}
+
 jobs:
   e2e:
     secrets: inherit
-    uses: ./.github/workflows/callable-e2e.yml
+    uses: ./.github/workflows/callable-release-verification.yml
   unstable-release:
     needs:
       - e2e

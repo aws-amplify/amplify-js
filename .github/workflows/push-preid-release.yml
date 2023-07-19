@@ -6,10 +6,14 @@ on:
       # Change this to your branch name where "example-preid" corresponds to the preid you want your changes released on
       - feat/example-preid/main
 
+env:
+  GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
+  GITHUB_USER: ${{ vars.GH_USER }}
+
 jobs:
   e2e:
     secrets: inherit
-    uses: ./.github/workflows/callable-e2e.yml
+    uses: ./.github/workflows/callable-release-verification.yml
   parse-preid:
     name: Parse preid from branch
     runs-on: ubuntu-latest

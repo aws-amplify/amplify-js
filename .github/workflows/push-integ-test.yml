@@ -6,13 +6,11 @@ on:
       - feat/github-actions/test-ashwinkumar6
       - feat/github-actions/test-yingku
 
-# TODO: remove '-test' and configure env on github
-# clean up this env
 env:
-  GITHUB_EMAIL: aws@amazon.com-test
-  GITHUB_USER: aws-amplify-bot-test
+  GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
+  GITHUB_USER: ${{ vars.GH_USER }}
 
 jobs:
   e2e:
     secrets: inherit
-    uses: ./.github/workflows/callable-e2e.yml
+    uses: ./.github/workflows/callable-release-verification.yml
