@@ -2104,7 +2104,7 @@ export class AuthClass {
 		user: CognitoUser | any,
 		attr: string,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
-	): Promise<string> {
+	): Promise<void> {
 		const internalUser: InternalCognitoUser | any = user;
 
 		return new Promise((resolve, reject) => {
@@ -2161,7 +2161,7 @@ export class AuthClass {
 		});
 	}
 
-	public verifyCurrentUserAttribute(attr: string): Promise<string | void> {
+	public verifyCurrentUserAttribute(attr: string): Promise<void> {
 		const that = this;
 		return that
 			.currentUserPoolUser()
@@ -2289,7 +2289,7 @@ export class AuthClass {
 	 * @
 	 * @return - A promise resolved if success
 	 */
-	public async signOut(opts: SignOutOpts = {}): Promise<any> {
+	public async signOut(opts?: SignOutOpts): Promise<any> {
 		try {
 			await this.cleanCachedItems();
 		} catch (e) {
@@ -2877,7 +2877,7 @@ export class AuthClass {
 		});
 	}
 
-	public async forgetDevice(): Promise<string | void> {
+	public async forgetDevice(): Promise<void> {
 		let internalUser: InternalCognitoUser | any;
 
 		try {
