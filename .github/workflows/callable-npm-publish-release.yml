@@ -35,8 +35,6 @@ jobs:
       - name: Run npm publish
         uses: ./amplify-js/.github/actions/npm-publish
         with:
-          github_email: aws@amazon.com
-          github_name: aws-amplify-bot
           target: release
           npm_token: ${{ secrets.NPM_TOKEN }}
 

@@ -6,6 +6,12 @@ on:
       - feat/github-actions/test-ashwinkumar6
       - feat/github-actions/test-yingku
 
+# TODO: remove '-test' and configure env on github
+# clean up this env
+env:
+  github_email: aws@amazon.com-test
+  github_name: aws-amplify-bot-test
+
 jobs:
   e2e:
     secrets: inherit

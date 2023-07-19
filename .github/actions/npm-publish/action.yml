@@ -8,12 +8,6 @@ inputs:
   preid:
     description: The preid to release to when the target is preid. The preid process will fail if this isn't provided.
     required: false
-  github_email:
-    description: The github user email to use to make commits
-    required: true
-  github_name:
-    description: The github user email to use to make commits
-    required: true
   bash_env:
     description: The bash_env filename to use to construct and execute PREID content from
     required: false
@@ -34,8 +28,8 @@ runs:
         echo "export PREID_HASH_SUFFIX=$(echo ${{ github.sha }} | cut -c -7 | sed 's/^/\./')" >> "{{ inputs.bash_env }}"
         echo "export PREID_PREFIX=${{ inputs.preid || '' }}" >> "{{ inputs.bash_env }}"
         source "{{ inputs.bash_env }}"
-        git config --global user.email ${{ inputs.github_email }}
-        git config --global user.name ${{ inputs.github_name }}
+        git config --global user.email $GITHUB_EMAIL
+        git config --global user.name $GITHUB_USER
         git status
         git --no-pager diff
         yarn publish:${{ inputs.target }}
