@@ -1,7 +1,7 @@
 name: PR Validation
 
 concurrency:
-  group: pr-${{ github.event.workflow_run.head_branch }}-${{ github.event.sender.login }} # This is to make the group name unique for a PR.
+  group: pr-${{ github.event.pull_request.number }}-${{ github.event.sender.login }} # This is to make the group name unique for a PR.
   cancel-in-progress: true
 
 on:
@@ -44,4 +44,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: All tests passed
-        run: 'echo "All tests passed'
+        run: echo "All tests passed"

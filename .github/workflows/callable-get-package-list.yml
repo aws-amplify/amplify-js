@@ -24,6 +24,8 @@ jobs:
           key: ${{ runner.os }}-package-list-${{ hashFiles('**/package.json') }}
           restore-keys: |
             ${{ runner.os }}-package-list-
+        env:
+          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
       - name: Install
         if: steps.cache-package-list.outputs.cache-hit != 'true'
         run: yarn

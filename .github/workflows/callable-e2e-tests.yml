@@ -65,7 +65,7 @@ jobs:
       - name: Setup samples staging repository
         uses: ./amplify-js/.github/actions/setup-samples-staging
         with:
-          GH_ACTIONS_STAGING_READ: ${{ secrets.GH_ACTIONS_STAGING_READ }}
+          GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
       - name: Load Verdaccio with AmplifyJs
         uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
       - name: Run cypress tests for ${{ inputs.test_name }} dev
@@ -117,10 +117,11 @@ jobs:
           -n $E2E_RETRY_COUNT
       - name: Upload artifact
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
-        if: always()
+        if: failure()
         with:
           name: e2e-test-artifacts
           if-no-files-found: ignore
           path: |
             amplify-js-samples-staging/cypress/videos
             amplify-js-samples-staging/cypress/screenshots
+          retention-days: 14

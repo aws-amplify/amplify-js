@@ -9,8 +9,8 @@ on:
 # TODO: remove '-test' and configure env on github
 # clean up this env
 env:
-  github_email: aws@amazon.com-test
-  github_name: aws-amplify-bot-test
+  GITHUB_EMAIL: aws@amazon.com-test
+  GITHUB_USER: aws-amplify-bot-test
 
 jobs:
   e2e:

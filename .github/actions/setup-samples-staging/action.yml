@@ -2,7 +2,7 @@ name: Setup Amplify Samples Staging
 description: Checks out Amplify Samples Staging and builds the package with caching
 
 inputs:
-  GH_ACTIONS_STAGING_READ:
+  GH_TOKEN_STAGING_READ:
     description: The token that grants read access to the sample staging repo
     required: true
 
@@ -17,12 +17,14 @@ runs:
         path: |
           ./amplify-js-samples-staging/node_modules
           /home/runner/.cache/Cypress
+      env:
+        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
     - name: Checkout staging repo
       uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
       with:
         repository: stocaaro/amplify-js-samples-staging
         path: amplify-js-samples-staging
-        token: ${{ inputs.GH_ACTIONS_STAGING_READ }}
+        token: ${{ inputs.GH_TOKEN_STAGING_READ }}
         fetch-depth: 2
     - name: Install
       run: |
