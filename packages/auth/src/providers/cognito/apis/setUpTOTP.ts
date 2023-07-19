@@ -6,6 +6,7 @@ import { TOTPSetupDetails } from '../../../types/models';
 import { SETUP_TOTP_EXCEPTION,  AssociateSoftwareTokenException } from '../types/errors';
 import { associateSoftwareTokenClient } from '../utils/clients/AssociateSoftwareTokenClient';
 import { getTOTPSetupDetails } from '../utils/signInHelpers';
+
 /**
  * Sets up TOTP for the user.
  * @throws  service error thrown when setting up TOTP: {@link AssociateSoftwareTokenException}.
