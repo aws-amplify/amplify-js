@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
 import { GraphQLOptions, GraphQLResult } from '@aws-amplify/api-graphql';
+import { graphql as v6graphql } from '@aws-amplify/api-graphql/internals';
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
 import { GraphQLQuery, GraphQLSubscription } from './types';
@@ -52,7 +53,7 @@ export class APIClass extends InternalAPIClass {
 		const { modelIntrospection } = config;
 
 		const client: V6Client<any> = {
-			graphql: this.graphql.bind(this),
+			graphql: v6graphql,
 			models: {},
 		};
 
@@ -253,7 +254,7 @@ type ExcludeNeverFields<O> = {
 
 // If no T is passed, ExcludeNeverFields removes "models" from the client
 type V6Client<T = never> = ExcludeNeverFields<{
-	graphql: typeof APIClass.prototype.graphql;
+	graphql: typeof v6graphql;
 	models: {
 		[K in keyof T]: {
 			[K in OperationPrefix]: (...args: any[]) => Promise<any>;
