@@ -1207,7 +1207,9 @@ export class AuthClass {
 			internalUser &&
 			typeof internalUser.getSignInUserSession === 'function'
 		) {
-			signInUserSession = internalUser.getSignInUserSession();
+			signInUserSession = (
+				internalUser as InternalCognitoUser
+			).getSignInUserSession();
 		}
 		const isLoggedIn = signInUserSession?.isValid();
 
