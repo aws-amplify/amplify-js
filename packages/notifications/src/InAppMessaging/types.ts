@@ -14,13 +14,13 @@ export type NotificationsSubCategory = Extract<
 	NotificationsSubCategories,
 	'InAppMessaging'
 >;
-export type InternalNotifcationsSubCategory = 'InternalInAppMessaging';
+export type InternalNotificationsSubCategory = 'InternalInAppMessaging';
 
 export interface InAppMessagingInterface {
 	configure: (config: NotificationsConfig) => InAppMessagingConfig;
 	getModuleName: () =>
 		| NotificationsSubCategory
-		| InternalNotifcationsSubCategory;
+		| InternalNotificationsSubCategory;
 	getPluggable: (providerName: string) => InAppMessagingProvider;
 	addPluggable: (pluggable: InAppMessagingProvider) => void;
 	removePluggable: (providerName: string) => void;
