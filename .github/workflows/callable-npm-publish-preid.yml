@@ -11,10 +11,6 @@ on:
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # TODO verdaccio stuff we won't need in prod
-  NPM_REGISTRY: http://localhost:4873/
-  NPM_USER: circleci
-  NPM_PASS: circleci
-  NPM_EMAIL: circleci@amplify.js
 
 jobs:
   deploy:

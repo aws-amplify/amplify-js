@@ -17,7 +17,7 @@ runs:
       id: cache-build-artifacts
       with:
         path: |
-          node_modules
+          **/node_modules
           **/dist
           **/lib
           **/lib-esm/

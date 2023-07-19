@@ -17,6 +17,11 @@ runs:
       shell: bash
     - name: Install and run npm-cli-login
       shell: bash
+      env:
+        NPM_REGISTRY: http://localhost:4873/
+        NPM_USER: verdaccio
+        NPM_PASS: verdaccio
+        NPM_EMAIL: verdaccio@amplify.js
       run: |
         npm i -g npm-cli-adduser
         npm-cli-adduser
@@ -24,6 +29,11 @@ runs:
     - name: Configure registry and git
       shell: bash
       working-directory: ./amplify-js
+      env:
+        NPM_REGISTRY: http://localhost:4873/
+        NPM_USER: verdaccio
+        NPM_PASS: verdaccio
+        NPM_EMAIL: verdaccio@amplify.js
       run: |
         yarn config set registry $NPM_REGISTRY
         npm set registry $NPM_REGISTRY

@@ -20,16 +20,22 @@ runs:
   using: 'composite'
   steps:
     - name: Run npm publish
-      working-directory: ./amplify-js
       shell: bash
+      working-directory: ./amplify-js
+      env:
+        NPM_TOKEN: ${{ inputs.npm_token }}
+        GH_SHA: ${{ github.sha }}
+        PREID: ${{ inputs.preid || '' }}
+        BASH_ENV: ${{ inputs.bash_env }}
+        TARGET: ${{ inputs.target }}
       run: |
-        echo "//registry.npmjs.org/:_authToken=${{ inputs.npm_token }}" >> ~/.npmrc
-        touch {{ inputs.bash_env }}
-        echo "export PREID_HASH_SUFFIX=$(echo ${{ github.sha }} | cut -c -7 | sed 's/^/\./')" >> "{{ inputs.bash_env }}"
-        echo "export PREID_PREFIX=${{ inputs.preid || '' }}" >> "{{ inputs.bash_env }}"
-        source "{{ inputs.bash_env }}"
+        echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+        touch $BASH_ENV
+        echo "export PREID_HASH_SUFFIX=$(echo $GH_SHA | cut -c -7 | sed 's/^/\./')" >> $BASH_ENV
+        echo "export PREID_PREFIX=$PREID" >> $BASH_ENV
+        source $BASH_ENV
         git config --global user.email $GITHUB_EMAIL
         git config --global user.name $GITHUB_USER
         git status
         git --no-pager diff
-        yarn publish:${{ inputs.target }}
+        yarn publish:$TARGET

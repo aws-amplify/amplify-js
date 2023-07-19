@@ -51,15 +51,19 @@ jobs:
         working-directory: amplify-js-samples-staging
 
       - name: Run cypress tests for ${{ inputs.test_name }}
+        shell: bash
+        working-directory: amplify-js-samples-staging
+        env:
+          E2E_CATEGORY: ${{ inputs.category }}
+          E2E_SPEC: ${{ inputs.spec }}
+          E2E_RETRY_COUNT: ${{ inputs.retry_count }}
         run: |
           ../amplify-js/scripts/retry-yarn-script.sh -s \
           "cypress run \          
           --headless \
-          --spec ./cypress/integration/${{ inputs.category }}/${{ inputs.spec }}.spec.js \
+          --spec ./cypress/integration/$E2E_CATEGORY/$E2E_SPEC.spec.js \
           --config baseUrl=https://aws.amazon.com/" \
-          -n ${{ inputs.retry_count }}
-        working-directory: amplify-js-samples-staging
-        shell: bash
+          -n $E2E_RETRY_COUNT
 
       - name: Upload artifact
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce

@@ -22,4 +22,6 @@ jobs:
         uses: ./amplify-js/.github/actions/node-and-build
       - name: Run tests
         working-directory: ./amplify-js
-        run: npx lerna exec --scope ${{ inputs.package }} yarn test
+        env:
+          TEST_PACKAGE: ${{ inputs.package }}
+        run: npx lerna exec --scope $TEST_PACKAGE yarn test

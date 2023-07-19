@@ -20,9 +20,9 @@ jobs:
           echo "DETOX_INTEG_CONFIG=$(cat .github/integ-config/detox-integ-all.yml | yq -o=json | jq -c .)" >> $GITHUB_OUTPUT
         working-directory: ./amplify-js
     outputs:
-      integ-config: ${{steps.load_config.outputs.INTEG_CONFIG}}
-      integ-config-headless: ${{steps.load_config.outputs.INTEG_CONFIG_HEADLESS}}
-      detox-integ-config: ${{steps.load_config.outputs.DETOX_INTEG_CONFIG}}
+      integ-config: ${{ steps.load_config.outputs.INTEG_CONFIG }}
+      integ-config-headless: ${{ steps.load_config.outputs.INTEG_CONFIG_HEADLESS }}
+      detox-integ-config: ${{ steps.load_config.outputs.DETOX_INTEG_CONFIG }}
 
   e2e-test-runner:
     name: E2E test runnner

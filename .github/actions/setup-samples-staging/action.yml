@@ -15,10 +15,9 @@ runs:
       with:
         key: aws-amplify-js-samples-staging-build-${{ github.sha }}
         path: |
-          ./amplify-js-samples-staging
+          ./amplify-js-samples-staging/node_modules
           /home/runner/.cache/Cypress
     - name: Checkout staging repo
-      if: steps.cache-samples-staging-build.outputs.cache-hit != 'true'
       uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
       with:
         repository: stocaaro/amplify-js-samples-staging
@@ -26,7 +25,6 @@ runs:
         token: ${{ inputs.GH_ACTIONS_STAGING_READ }}
         fetch-depth: 2
     - name: Install
-      if: steps.cache-samples-staging-build.outputs.cache-hit != 'true'
       run: |
         yarn
       shell: bash

@@ -3,14 +3,6 @@ name: Publish package to npm and create release on github
 on:
   workflow_call:
 
-# TODO: configure these env variables
-env:
-  # TODO verdaccio stuff we won't need in prod
-  NPM_REGISTRY: http://localhost:4873/
-  NPM_USER: verdaccio
-  NPM_PASS: verdaccio
-  NPM_EMAIL: verdaccio@amplify.js
-
 jobs:
   deploy:
     name: Publish to Amplify Package

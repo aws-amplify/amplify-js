@@ -13,11 +13,6 @@ on:
         required: true
         type: number
 
-env:
-  NPM_REGISTRY: http://localhost:4873/
-  NPM_USER: verdaccio
-  NPM_PASS: verdaccio
-  NPM_EMAIL: verdaccio@amplify.js
 jobs:
   e2e-test:
     name: E2E-Detox ${{ inputs.test_name }}
