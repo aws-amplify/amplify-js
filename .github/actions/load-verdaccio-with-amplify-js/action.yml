@@ -15,19 +15,26 @@ runs:
         # Run your commands after verdaccio is up and running
         echo "Verdaccio is up and running, proceeding with the script..."
       shell: bash
-    - name: Publish to verdaccio
+    - name: Install and run npm-cli-login
       shell: bash
-      working-directory: ./amplify-js
       run: |
         npm i -g npm-cli-adduser
         npm-cli-adduser
         sleep 1
+    - name: Configure registry and git
+      shell: bash
+      working-directory: ./amplify-js
+      run: |
         yarn config set registry $NPM_REGISTRY
         npm set registry $NPM_REGISTRY
         git config --global user.email $NPM_EMAIL
         git config --global user.name $NPM_USER
         git status
         git --no-pager diff
+    - name: Publish to verdaccio
+      shell: bash
+      working-directory: ./amplify-js
+      run: |
         scripts/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
         yarn info aws-amplify@unstable description
         npm info aws-amplify@unstable version
