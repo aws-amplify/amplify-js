@@ -1,4 +1,4 @@
-name: 'Publish package to npm and create release on github'
+name: Publish package to npm and create release on github
 
 on:
   workflow_call:
@@ -14,7 +14,7 @@ env:
 
 jobs:
   deploy:
-    name: 'Publish to Amplify Package'
+    name: Publish to Amplify Package
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

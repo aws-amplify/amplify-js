@@ -90,7 +90,7 @@ jobs:
           $E2E_AMPLIFY_JS_DIR" \
           -n $E2E_RETRY_COUNT
 
-      - name: Run cypress tests for $E2E_TEST_NAME prod
+      - name: Run cypress tests for ${{ inputs.test_name }} prod
         shell: bash
         working-directory: amplify-js-samples-staging
         env:
