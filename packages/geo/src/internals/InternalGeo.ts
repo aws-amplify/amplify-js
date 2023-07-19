@@ -233,7 +233,8 @@ export class InternalGeoClass {
 	 */
 	public async searchByCoordinates(
 		coordinates: Coordinates,
-		options?: SearchByCoordinatesOptions
+		options?: SearchByCoordinatesOptions,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<Place> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
@@ -241,7 +242,11 @@ export class InternalGeoClass {
 		const [lng, lat] = coordinates;
 		try {
 			validateCoordinates(lng, lat);
-			return await prov.searchByCoordinates(coordinates, options);
+			return await prov.searchByCoordinates(
+				coordinates,
+				options,
+				getGeoUserAgentDetails(GeoAction.SearchByCoordinates)
+			);
 		} catch (error) {
 			logger.debug(error);
 			throw error;

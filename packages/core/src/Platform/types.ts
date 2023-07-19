@@ -97,10 +97,11 @@ export enum GeoAction {
 	SearchByText = '1',
 	SearchForSuggestions = '2',
 	SearchByPlaceId = '3',
-	SaveGeofences = '4',
-	GetGeofence = '5',
-	ListGeofences = '6',
-	DeleteGeofences = '7',
+	SearchByCoordinates = '4',
+	SaveGeofences = '5',
+	GetGeofence = '6',
+	ListGeofences = '7',
+	DeleteGeofences = '8',
 }
 export enum InAppMessagingAction {
 	None = '0',
