@@ -105,18 +105,28 @@ export type ResourceConfig = {
 
 export type LibraryOptions = {
 	Auth?: {
-		tokenOrchestrator?: AuthTokenOrchestrator;
 		tokenRefresher?: TokenRefresher;
 		credentialsProvider?: CredentialsProvider;
-		authTokenStore?: AuthTokenStore;
 		keyValueStore?: KeyValueStorageInterface
 	} | null;
 };
 
 export interface AuthTokenOrchestrator {
-	getTokens: ({ options, tokenStore, keyValueStore }: { options?: GetAuthTokensOptions, tokenStore: AuthTokenStore, keyValueStore: KeyValueStorageInterface }) => Promise<AuthTokens>;
-	setTokens: ({ tokens, tokenStore, keyValueStore }: { tokens: AuthTokens, tokenStore: AuthTokenStore, keyValueStore: KeyValueStorageInterface}) => Promise<void>;
-	clearTokens:({ tokenStore, keyValueStore }: {tokenStore: AuthTokenStore, keyValueStore: KeyValueStorageInterface}) => Promise<void>;
+	getTokens: ({ options, tokenStore, keyValueStore, tokenRefresher }:
+		{ options?: GetAuthTokensOptions, tokenStore: AuthTokenStore, keyValueStore: KeyValueStorageInterface, tokenRefresher: TokenRefresher }) => Promise<AuthTokens>;
+	setTokens: (
+		{ tokens, tokenStore, keyValueStore }:
+			{
+				tokens: AuthTokens,
+				tokenStore: AuthTokenStore,
+				keyValueStore: KeyValueStorageInterface,
+			}) => Promise<void>;
+	clearTokens: (
+		{ tokenStore, keyValueStore }:
+			{
+				tokenStore: AuthTokenStore,
+				keyValueStore: KeyValueStorageInterface,
+			}) => Promise<void>;
 }
 
 export type TokenRefresher = (tokens: AuthTokens) => Promise<AuthTokens>;
@@ -145,7 +155,7 @@ export interface KeyValueStorageInterface {
 }
 
 export interface AuthTokenStore {
-	loadTokens(keyValueStore: KeyValueStorageInterface): Promise<AuthTokens | null>;
+	loadTokens(keyValueStore: KeyValueStorageInterface): Promise<AuthTokens>;
 	storeTokens(keyValueStore: KeyValueStorageInterface, tokens: AuthTokens): Promise<void>;
 	clearTokens(keyValueStore: KeyValueStorageInterface): Promise<void>;
 }

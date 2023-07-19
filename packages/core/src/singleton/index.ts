@@ -1,5 +1,6 @@
 import {
 	AuthSession,
+	AuthTokenOrchestrator,
 	AuthTokenStore,
 	AuthTokens,
 	GetAuthTokensOptions,
@@ -9,7 +10,7 @@ import {
 } from '../types';
 import { Hub } from '../Hub';
 import { Observable, Observer } from 'rxjs';
-import { DefaultAuthTokensOrchestrator, MyTokenStore } from './Auth';
+import { DefaultAuthTokensOrchestrator, DefaultTokenStore } from './Auth';
 import { MyStorage } from '../StorageHelper';
 
 let singletonResourcesConfig: ResourceConfig = {};
@@ -17,14 +18,15 @@ let singletonResourcesConfig: ResourceConfig = {};
 // TODO: add default AuthTokenStore for each platform
 let singletonLibraryOptions: LibraryOptions = {
 	Auth: {
-		authTokenStore: MyTokenStore, // constructs the keys and also has the migration for v5 tokens
-		tokenOrchestrator: DefaultAuthTokensOrchestrator, // Combines refresher, with token store and keyValueStorage
 		keyValueStore: MyStorage, // Depends on platform,
 		tokenRefresher: async (authTokens: AuthTokens) => {
 			throw new Error('No token refresher')
 		}
 	}
 };
+
+let authTokenStore: AuthTokenStore = DefaultTokenStore;
+let tokenOrchestrator: AuthTokenOrchestrator = DefaultAuthTokensOrchestrator;
 
 // add listeners of User changes
 const observersList: Set<Observer<AuthSession>> = new Set();
@@ -74,13 +76,17 @@ export namespace Amplify {
 		export async function fetchAuthSession(
 			options?: GetAuthTokensOptions
 		): Promise<AuthSession> {
-			if (!singletonLibraryOptions?.Auth?.tokenOrchestrator) {
-				throw new Error('No token session provider configured'); // TODO: add default token provider
+			let tokens: AuthTokens;
+			try {
+				tokens = await tokenOrchestrator.getTokens(
+					{ tokenStore: authTokenStore, keyValueStore: singletonLibraryOptions.Auth.keyValueStore, options, tokenRefresher: singletonLibraryOptions.Auth.tokenRefresher });
+				// const identityId = await
+
+			} catch (error) {
+				console.warn(error);
 			}
-			const tokens = await singletonLibraryOptions.Auth.tokenOrchestrator.getTokens({ tokenStore: singletonLibraryOptions.Auth.authTokenStore, keyValueStore: singletonLibraryOptions.Auth.keyValueStore, options });
-			// const identityId = await
 			return {
-				authenticated: false,
+				authenticated: tokens != undefined,
 				tokens
 			}
 		}
@@ -106,7 +112,12 @@ export namespace Amplify {
 		 * @returns Promise<void>
 		 */
 		export async function setTokens(tokens: AuthTokens): Promise<void> {
-			await singletonLibraryOptions.Auth.tokenOrchestrator.setTokens({ tokens, tokenStore: singletonLibraryOptions.Auth.authTokenStore, keyValueStore: singletonLibraryOptions.Auth.keyValueStore });
+			await tokenOrchestrator.setTokens(
+				{
+					tokens, tokenStore: authTokenStore,
+					keyValueStore: singletonLibraryOptions.Auth.keyValueStore
+				}
+			);
 
 			// Notify observers
 			for (const observer of observersList) {
@@ -125,20 +136,21 @@ export namespace Amplify {
 		 * @return Promise<void>
 		 */
 		export async function clearTokens(): Promise<void> {
-			await singletonLibraryOptions.Auth.authTokenStore.clearTokens(singletonLibraryOptions.Auth.keyValueStore);
+			await tokenOrchestrator.clearTokens({ keyValueStore: singletonLibraryOptions.Auth.keyValueStore, tokenStore: authTokenStore });
+			
+			// Notify observers
+			for (const observer of observersList) {
+				observer.next({
+					authenticated: false,
+				});
+			}
+			return;
 		}
 
 		/**
 		 * Internal use only by AuthTokenOrchestrator
 		 */
 		export const tokenRefresher: TokenRefresher = singletonLibraryOptions.Auth.tokenRefresher;
-
-		/**
-		 * @private
-			  * Internal use of Amplify only
-			* Get Storage adapter 
-		 */
-		export const authTokenStore: AuthTokenStore = singletonLibraryOptions.Auth.authTokenStore;
 
 	}
 }

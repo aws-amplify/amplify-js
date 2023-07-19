@@ -19,10 +19,12 @@ type Json = null | string | number | boolean | Json[] | JsonObject;
 
 type JwtPayload = JwtPayloadStandardFields & JsonObject;
 
-export interface JWT {
+export type JWT = {
 	payload: JwtPayload,
     toString: () => string
-}
+};
+
+export type JWTCreator = (stringJWT: string) => JWT;
 
 // TODO: use this key on AuthN providers
 
