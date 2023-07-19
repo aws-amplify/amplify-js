@@ -21,7 +21,6 @@
 		"**/.*",
 		"**/amazon-cognito-identity-js",
 		"**/android",
-		"**/aws-amplify-react-native",
 		"**/coverage",
 		"**/coverage-ts",
 		"**/dist",

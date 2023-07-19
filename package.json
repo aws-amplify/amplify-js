@@ -43,9 +43,7 @@
 		],
 		"nohoist": [
 			"**/@types/react-native",
-			"**/@types/react-native/**",
-			"aws-amplify-react-native/prettier",
-			"aws-amplify-react-native/eslint-plugin-prettier"
+			"**/@types/react-native/**"
 		]
 	},
 	"repository": {

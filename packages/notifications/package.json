@@ -56,9 +56,11 @@
 		"uuid": "^3.2.1"
 	},
 	"devDependencies": {
+		"@babel/core": "7.15.5",
 		"@babel/plugin-proposal-class-properties": "^7.0.0",
 		"@babel/plugin-proposal-private-methods": "^7.0.0",
-		"@babel/plugin-proposal-private-property-in-object": "^7.0.0"
+		"@babel/plugin-proposal-private-property-in-object": "^7.0.0",
+		"metro-react-native-babel-preset": "^0.66.2"
 	},
 	"size-limit": [
 		{
