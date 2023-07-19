@@ -106,16 +106,3 @@ export function expectSub(
 		undefined
 	);
 }
-
-// /**
-//  * A simple, typed pass-through function that confirms that the given `item`
-//  * is of the given type `T`.
-//  *
-//  * This will succesfully cause a build to fail for non-T arguments when jest
-//  * diagnostics are enabled.
-//  *
-//  * @param item The item to type-test.
-//  */
-// export function expectType<T>(item: T) {
-// 	return true;
-// }

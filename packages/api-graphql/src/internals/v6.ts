@@ -2,19 +2,85 @@ import { GraphQLAPI } from '../GraphQLAPI';
 import { GraphQLOptionsV6, GraphQLResponseV6 } from '../types';
 
 /**
- * TODO: Usage notes and examples.
+ * Invokes graphql operations against a graphql service, providing correct input and
+ * output types if Amplify-generated graphql from a recent version of the CLI/codegen
+ * are used *or* correct typing is provided via the type argument.
  *
+ * Amplify-generated "branded" graphql queries will look similar to this:
  *
- * The types on this function depends on either:
+ * ```ts
+ *                               //
+ *                               // |-- branding
+ *                               // v
+ * export const getModel = `...` as GeneratedQuery<
+ * 	GetModelQueryVariables,
+ * 	GetModelQuery
+ * >;
+ * ```
  *
- * 1. The generated `options.query` being correctly branded.
+ * If this branding is not in your generated graphql, update to a newer version of
+ * CLI/codegen and regenerate your graphql using `amplify codegen`.
  *
- *  ***OR***
+ * ## Using Amplify-generated graphql
  *
- * 2. The caller providing the correct `FALLBACK_TYPES`.
+ * ```ts
+ * import * as queries from './graphql/queries';
  *
- * If you use the Amplify-generated graphql from a recent version of the CLI/codegen,
- * your query will be correctly branced, and the types will be correct.
+ * //
+ * //    |-- correctly typed graphql response containing a Widget
+ * //    v
+ * const queryResult = await graphql({
+ * 	query: queries.getWidget,
+ * 	variables: {
+ * 		id: "abc", // <-- type hinted/enforced
+ * 	},
+ * });
+ *
+ * //
+ * //    |-- a correctly typed Widget
+ * //    v
+ * const fetchedWidget = queryResult.data?.getWidget!;
+ * ```
+ *
+ * ## Custom input + result types
+ *
+ * To provide input types (`variables`) and result types:
+ *
+ * ```ts
+ * type GetById_NameOnly = {
+ * 	variables: {
+ * 		id: string
+ * 	},
+ * 	result: Promise<{
+ * 		data: { getWidget: { name: string } }
+ * 	}>
+ * }
+ *
+ * //
+ * //    |-- type is GetById_NameOnly["result"]
+ * //    v
+ * const result = graphql<GetById_NameOnly>({
+ * 	query: "...",
+ * 	variables: { id: "abc" }  // <-- type of GetById_NameOnly["variables"]
+ * });
+ * ```
+ *
+ * ## Custom result type only
+ *
+ * To specify result types only, use a type that is *not* in the `{variables, result}` shape:
+ *
+ * ```ts
+ * type MyResultType = Promise<{
+ * 	data: {
+ * 		getWidget: { name: string }
+ * 	}
+ * }>
+ *
+ * //
+ * //    |-- type is MyResultType
+ * //    v
+ * const result = graphql<MyResultType>({query: "..."});
+ * ```
  *
  * @param options
  * @param additionalHeaders
@@ -27,15 +93,9 @@ export function graphql<
 	additionalHeaders?: { [key: string]: string }
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
 	/**
-	 * Some consideration was given to using a type guard on `result` before returning it.
-	 * And, with some graphql parsing, a type guard could validate that `result` matches the
-	 * shape dictated by `options`. But, `options.query` is only "branded" as `TYPED_GRAPHQL_STRING`.
-	 * Validating that `options` and `result` match *each other* does not prove anything we don't
-	 * already know &mdash; or that `result` is an instance of
-	 * `GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>`.
-	 *
-	 * Per the note at the top, the correctness of these typings depends on the correct
-	 * branding or type overrides, neither of which can actually be validated at runtime.
+	 * The correctness of these typings depends on correct string branding or overrides.
+	 * Neither of these can actually be validated at runtime. Hence, we don't perform
+	 * any validation or type-guarding here.
 	 */
 	const result = GraphQLAPI.graphql(options, additionalHeaders);
 	return result as any;

@@ -593,4 +593,71 @@ describe('client', () => {
 			})!;
 		});
 	});
+
+	describe('type overrides', () => {
+		test('can add types ot inputs and ouput with a {variables, result} override', () => {
+			type MyType = {
+				variables: {
+					id: string;
+				};
+				result: Promise<{
+					data: { getWidget: { name: string } };
+				}>;
+			};
+
+			// response doesn't actually matter for this test. but for demonstrative purposes:
+			const graphqlResponse = {
+				data: {
+					getWhatever: {
+						name: 'whatever',
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(() => graphqlResponse);
+
+			// Customer would probably not explicitly add `MyType["result"]` in their code.
+			// But to ensure the test fails if graphql() returns the wrong type, it's explcit here:
+			const result: MyType['result'] = client.graphql<MyType>({
+				query: 'query GetWidget($id: ID!) { getWidget(id: $id) { name } }',
+				variables: {
+					id: 'works',
+				},
+			});
+
+			// Nothing to assert. Test is just intended to fail if types misalign.
+		});
+
+		test('can use a return-type only override', () => {
+			type MyType = Promise<{
+				data: { getWidget: { name: string } };
+			}>;
+
+			// response doesn't actually matter for this test. but for demonstrative purposes:
+			const graphqlResponse = {
+				data: {
+					getWhatever: {
+						name: 'whatever',
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(() => graphqlResponse);
+
+			// Customer would probably not explicitly add `MyType` in their code.
+			// But to ensure the test fails if graphql() returns the wrong type, it's explcit here:
+			const result: MyType = client.graphql<MyType>({
+				query: 'query GetWidget { getWidget { name } }',
+				variables: {
+					id: 'works',
+				},
+			});
+
+			// Nothing to assert. Test is just intended to fail if types misalign.
+		});
+	});
 });

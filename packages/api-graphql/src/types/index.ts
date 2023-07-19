@@ -1,11 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Source, DocumentNode, GraphQLError, OperationTypeNode } from 'graphql';
+import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 export { GRAPHQL_AUTH_MODE };
 import { Observable } from 'zen-observable-ts';
-// import { CustomUserAgentDetails } from '@aws-amplify/core';
 
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
@@ -21,9 +20,6 @@ export interface GraphQLOptions {
 	userAgentSuffix?: string; // TODO: remove in v6
 }
 
-/**
- *
- */
 export interface GraphQLResult<T = object> {
 	data?: T;
 	errors?: GraphQLError[];
