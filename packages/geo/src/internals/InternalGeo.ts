@@ -145,6 +145,7 @@ export class InternalGeoClass {
 	 * Search by text input with optional parameters
 	 * @param  {string} text - The text string that is to be searched for
 	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns {Promise<Place[]>} - Promise resolves to a list of Places that match search parameters
 	 */
 	public async searchByText(
@@ -171,6 +172,7 @@ export class InternalGeoClass {
 	 * Search for search term suggestions based on input text
 	 * @param  {string} text - The text string that is to be search for
 	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns {Promise<SearchForSuggestionsResults>} - Resolves to an array of search suggestion strings
 	 */
 	public async searchForSuggestions(
@@ -200,6 +202,7 @@ export class InternalGeoClass {
 	 * Search for location by unique ID
 	 * @param  {string} placeId - Unique ID of the location that is to be searched for
 	 * @param  {searchByPlaceIdOptions} options? - Optional parameters to the search
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns {Promise<Place>} - Resolves to a place with the given placeId
 	 */
 	public async searchByPlaceId(
@@ -229,6 +232,7 @@ export class InternalGeoClass {
 	 * Reverse geocoding search via a coordinate point on the map
 	 * @param coordinates - Coordinates array for the search input
 	 * @param options - Options parameters for the search
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns {Promise<Place>} - Promise that resolves to a place matching search coordinates
 	 */
 	public async searchByCoordinates(
@@ -257,6 +261,7 @@ export class InternalGeoClass {
 	 * Create geofences
 	 * @param geofences - Single or array of geofence objects to create
 	 * @param options? - Optional parameters for creating geofences
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns {Promise<SaveGeofencesResults>} - Promise that resolves to an object with:
 	 *   successes: list of geofences successfully created
 	 *   errors: list of geofences that failed to create
@@ -293,6 +298,7 @@ export class InternalGeoClass {
 	 * Get a single geofence by geofenceId
 	 * @param geofenceId: GeofenceId - The string id of the geofence to get
 	 * @param options?: GeofenceOptions - Optional parameters for getting a geofence
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns Promise<Geofence> - Promise that resolves to a geofence object
 	 */
 	public async getGeofence(
@@ -318,6 +324,7 @@ export class InternalGeoClass {
 	/**
 	 * List geofences
 	 * @param  options?: ListGeofenceOptions
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns {Promise<ListGeofencesResults>} - Promise that resolves to an object with:
 	 *   entries: list of geofences - 100 geofences are listed per page
 	 *   nextToken: token for next page of geofences
@@ -344,6 +351,7 @@ export class InternalGeoClass {
 	 * Delete geofences
 	 * @param geofenceIds: string|string[]
 	 * @param options?: GeofenceOptions
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns {Promise<DeleteGeofencesResults>} - Promise that resolves to an object with:
 	 *  successes: list of geofences successfully deleted
 	 *  errors: list of geofences that failed to delete
