@@ -15,17 +15,23 @@ interface JwtPayloadStandardFields {
 type Json = null | string | number | boolean | Json[] | JsonObject;
 
 /** JSON Object type */
- type JsonObject = { [name: string]: Json };
+type JsonObject = { [name: string]: Json };
 
 type JwtPayload = JwtPayloadStandardFields & JsonObject;
 
 export type JWT = {
 	payload: JwtPayload,
-    toString: () => string
+	toString: () => string
 };
 
 export type JWTCreator = (stringJWT: string) => JWT;
 
-// TODO: use this key on AuthN providers
+export const AuthStorageKeys = {
+	'accessToken': 'accessToken',
+	'idToken': 'idToken',
+	'accessTokenExpAt': 'accessTokenExpAt',
+	'oidcProvider': 'oidcProvider',
+	'clockDrift': 'clockDrift',
+	'metadata': 'metadata'
+};
 
-export const CLOCK_DRIFT_KEY = 'clockDrift';

@@ -107,31 +107,26 @@ export type LibraryOptions = {
 	Auth?: {
 		tokenRefresher?: TokenRefresher;
 		credentialsProvider?: CredentialsProvider;
-		keyValueStore?: KeyValueStorageInterface
+		identityIdProvider?: IdentityIdProvider;
+		keyValueStorage?: KeyValueStorageInterface
 	} | null;
 };
 
 export interface AuthTokenOrchestrator {
-	getTokens: ({ options, tokenStore, keyValueStore, tokenRefresher }:
-		{ options?: GetAuthTokensOptions, tokenStore: AuthTokenStore, keyValueStore: KeyValueStorageInterface, tokenRefresher: TokenRefresher }) => Promise<AuthTokens>;
-	setTokens: (
-		{ tokens, tokenStore, keyValueStore }:
-			{
-				tokens: AuthTokens,
-				tokenStore: AuthTokenStore,
-				keyValueStore: KeyValueStorageInterface,
-			}) => Promise<void>;
-	clearTokens: (
-		{ tokenStore, keyValueStore }:
-			{
-				tokenStore: AuthTokenStore,
-				keyValueStore: KeyValueStorageInterface,
-			}) => Promise<void>;
+	setTokenRefresher(tokenRefresher: TokenRefresher): void;
+	setAuthTokenStore(tokenStore: AuthTokenStore): void;
+	setAuthConfig(authConfig: AuthConfig): void
+
+	getTokens: ({ options }: { options?: GetAuthTokensOptions }) => Promise<AuthTokens>;
+	setTokens: ({ tokens }: { tokens: AuthTokens }) => Promise<void>;
+	clearTokens: () => Promise<void>;
 }
 
-export type TokenRefresher = (tokens: AuthTokens) => Promise<AuthTokens>;
+export type TokenRefresher = ({ tokens, authConfig }: { tokens: AuthTokens, authConfig?: AuthConfig }) => Promise<AuthTokens>;
 
-export type CredentialsProvider = (options?: GetAuthTokensOptions) => Promise<ICredentials>;
+export type IdentityIdProvider = ({ tokens, authConfig }: { tokens?: AuthTokens, authConfig?: AuthConfig }) => Promise<string>
+
+export type CredentialsProvider = ({ options, tokens, authConfig, identityId}: { options?: GetAuthTokensOptions, tokens?: AuthTokens, authConfig?: AuthConfig, identityId?: string }) => Promise<Credentials>;
 
 export type GetAuthTokensOptions = {
 	forceRefresh?: boolean;
@@ -141,11 +136,9 @@ export type AuthTokens = {
 	idToken?: JWT;
 	accessToken: JWT;
 	accessTokenExpAt: number;
-	oidcProvider: OidcProvider;
-	metadata?: Record<string, string>
+	clockDrift?: number;
+	metadata?: Record<string, string> // Generic for each service supported
 };
-
-export type OidcProvider = 'COGNITO' | { custom: string };
 
 export interface KeyValueStorageInterface {
 	setItem(key: string, value: string): Promise<void>
@@ -154,10 +147,14 @@ export interface KeyValueStorageInterface {
 	clear(): Promise<void>
 }
 
+export type AuthConfig = ResourceConfig['Auth'];
+
 export interface AuthTokenStore {
-	loadTokens(keyValueStore: KeyValueStorageInterface): Promise<AuthTokens>;
-	storeTokens(keyValueStore: KeyValueStorageInterface, tokens: AuthTokens): Promise<void>;
-	clearTokens(keyValueStore: KeyValueStorageInterface): Promise<void>;
+	setAuthConfig(authConfig: AuthConfig): void;
+	loadTokens(): Promise<AuthTokens>;
+	storeTokens(tokens: AuthTokens): Promise<void>;
+	clearTokens(): Promise<void>;
+	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
 }
 
 export type AuthSession = {

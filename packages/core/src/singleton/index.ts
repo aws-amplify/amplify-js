@@ -10,23 +10,24 @@ import {
 } from '../types';
 import { Hub } from '../Hub';
 import { Observable, Observer } from 'rxjs';
+import { Credentials } from '@aws-sdk/types';
 import { DefaultAuthTokensOrchestrator, DefaultTokenStore } from './Auth';
-import { MyStorage } from '../StorageHelper';
+import { MemoryKeyValueStorage } from '../StorageHelper';
 
 let singletonResourcesConfig: ResourceConfig = {};
 
 // TODO: add default AuthTokenStore for each platform
+// TODO: add default providers for getting started
 let singletonLibraryOptions: LibraryOptions = {
 	Auth: {
-		keyValueStore: MyStorage, // Depends on platform,
-		tokenRefresher: async (authTokens: AuthTokens) => {
-			throw new Error('No token refresher')
-		}
+		keyValueStorage: new MemoryKeyValueStorage(), // Initialize automatically Depends on platform,
+		tokenRefresher: () => { throw new Error('No token refresher') },
 	}
 };
 
-let authTokenStore: AuthTokenStore = DefaultTokenStore;
-let tokenOrchestrator: AuthTokenOrchestrator = DefaultAuthTokensOrchestrator;
+let authTokenStore: AuthTokenStore = new DefaultTokenStore();
+let tokenOrchestrator: AuthTokenOrchestrator = new DefaultAuthTokensOrchestrator();
+tokenOrchestrator.setAuthTokenStore(authTokenStore);
 
 // add listeners of User changes
 const observersList: Set<Observer<AuthSession>> = new Set();
@@ -34,15 +35,20 @@ const observersList: Set<Observer<AuthSession>> = new Set();
 export namespace Amplify {
 	/**
 	 * Configure Amplify Library with backend resources and library options
-	 * @param resources ResourceConfig
+	 * @param resourcesConfig ResourceConfig
 	 * @param libraryOptions LibraryOptions
 	 */
 	export function configure(
 		resourcesConfig: ResourceConfig,
 		libraryOptions?: LibraryOptions
 	): void {
-		singletonResourcesConfig = incrementResourceConfig(singletonResourcesConfig, resourcesConfig);
+		// TODO: check if exists or not
+		authTokenStore.setKeyValueStorage(singletonLibraryOptions.Auth.keyValueStorage);
+		authTokenStore.setAuthConfig(resourcesConfig.Auth);
 
+		tokenOrchestrator.setTokenRefresher(singletonLibraryOptions.Auth.tokenRefresher);
+
+		singletonResourcesConfig = incrementResourceConfig(singletonResourcesConfig, resourcesConfig);
 		singletonLibraryOptions = incrementLibraryOptions(singletonLibraryOptions, libraryOptions);
 
 		Hub.dispatch(
@@ -77,17 +83,43 @@ export namespace Amplify {
 			options?: GetAuthTokensOptions
 		): Promise<AuthSession> {
 			let tokens: AuthTokens;
+			let awsCreds: Credentials;
+			let awsCredsIdentityId: string;
+
 			try {
 				tokens = await tokenOrchestrator.getTokens(
-					{ tokenStore: authTokenStore, keyValueStore: singletonLibraryOptions.Auth.keyValueStore, options, tokenRefresher: singletonLibraryOptions.Auth.tokenRefresher });
-				// const identityId = await
+					{ options });
 
 			} catch (error) {
 				console.warn(error);
 			}
+
+			try {
+				if (singletonLibraryOptions.Auth.identityIdProvider) {
+					awsCredsIdentityId = await singletonLibraryOptions.Auth.identityIdProvider({ tokens, authConfig: singletonResourcesConfig.Auth });
+				}
+			} catch (err) {
+				console.warn(err);
+			}
+
+			try {
+				if (singletonLibraryOptions.Auth.credentialsProvider) {
+					awsCreds = await singletonLibraryOptions.Auth.credentialsProvider({
+						authConfig: singletonResourcesConfig.Auth,
+						identityId: awsCredsIdentityId,
+						tokens,
+						options
+					});
+				}
+			} catch (err) {
+				 console.warn(err);
+			}
+
 			return {
 				authenticated: tokens != undefined,
-				tokens
+				tokens,
+				awsCreds,
+				awsCredsIdentityId
 			}
 		}
 
@@ -112,12 +144,7 @@ export namespace Amplify {
 		 * @returns Promise<void>
 		 */
 		export async function setTokens(tokens: AuthTokens): Promise<void> {
-			await tokenOrchestrator.setTokens(
-				{
-					tokens, tokenStore: authTokenStore,
-					keyValueStore: singletonLibraryOptions.Auth.keyValueStore
-				}
-			);
+			await tokenOrchestrator.setTokens({ tokens });
 
 			// Notify observers
 			for (const observer of observersList) {
@@ -136,8 +163,8 @@ export namespace Amplify {
 		 * @return Promise<void>
 		 */
 		export async function clearTokens(): Promise<void> {
-			await tokenOrchestrator.clearTokens({ keyValueStore: singletonLibraryOptions.Auth.keyValueStore, tokenStore: authTokenStore });
-			
+			await tokenOrchestrator.clearTokens();
+
 			// Notify observers
 			for (const observer of observersList) {
 				observer.next({

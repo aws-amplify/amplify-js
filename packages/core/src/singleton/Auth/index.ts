@@ -1,21 +1,34 @@
-import type { AuthTokenOrchestrator, AuthTokenStore, AuthTokens, GetAuthTokensOptions, KeyValueStorageInterface, OidcProvider, TokenRefresher } from "../../types";
+import type { AuthConfig, AuthTokenOrchestrator, AuthTokenStore, AuthTokens, GetAuthTokensOptions, KeyValueStorageInterface, LibraryOptions, ResourceConfig, TokenRefresher } from "../../types";
 import { Amplify } from '../../Singleton';
-import { CLOCK_DRIFT_KEY, JWT } from "./types";
+import { JWT } from "./types";
 import { Buffer } from 'buffer'; // TODO: this needs to be a platform operation
+import { AuthStorageKeys } from "./types";
 
-export const DefaultAuthTokensOrchestrator: AuthTokenOrchestrator = {
-    async getTokens({ options, tokenStore, keyValueStore, tokenRefresher }:
-        { options?: GetAuthTokensOptions, tokenStore: AuthTokenStore, keyValueStore: KeyValueStorageInterface, tokenRefresher: TokenRefresher }): Promise<AuthTokens> {
+export class DefaultAuthTokensOrchestrator implements AuthTokenOrchestrator {
+    tokenStore: AuthTokenStore;
+    tokenRefresher: TokenRefresher;
+    authConfig: AuthConfig;
+
+    setAuthConfig(authConfig: AuthConfig) {
+        this.authConfig = authConfig;
+    }
+    setTokenRefresher(tokenRefresher: TokenRefresher) {
+        this.tokenRefresher = tokenRefresher;
+    }
+    setAuthTokenStore(tokenStore: AuthTokenStore) {
+        this.tokenStore = tokenStore;
+    }
+    async getTokens({ options }: { options?: GetAuthTokensOptions }): Promise<AuthTokens> {
         // TODO: how to handle if there are not tokens on tokenManager
         let tokens: AuthTokens;
-        
+
         try {
-            tokens = await tokenStore.loadTokens(keyValueStore); 
-            const idTokenExpired = isTokenExpired({ expiresAt: tokens.idToken.payload.exp * 1000, metadata: tokens.metadata });
-            const accessTokenExpired = isTokenExpired({ expiresAt: tokens.accessTokenExpAt, metadata: tokens.metadata });
-            debugger;
-            if ((options && options.forceRefresh) || idTokenExpired ||accessTokenExpired) {
-                tokens = await refreshTokens({ tokens, tokenRefresher });
+            tokens = await this.tokenStore.loadTokens();
+            const idTokenExpired = isTokenExpired({ expiresAt: tokens.idToken.payload.exp * 1000, clockDrift: tokens.clockDrift });
+            const accessTokenExpired = isTokenExpired({ expiresAt: tokens.accessTokenExpAt, clockDrift: tokens.clockDrift });
+
+            if ((options && options.forceRefresh) || idTokenExpired || accessTokenExpired) {
+                tokens = await refreshTokens({ tokens, tokenRefresher: this.tokenRefresher, authConfig: this.authConfig });
             }
         } catch (err) {
             console.warn(err);
@@ -23,38 +36,33 @@ export const DefaultAuthTokensOrchestrator: AuthTokenOrchestrator = {
         }
 
         return { ...tokens };
-    },
-    async setTokens({ tokens, tokenStore, keyValueStore }:
-        { tokens: AuthTokens, tokenStore: AuthTokenStore, keyValueStore: KeyValueStorageInterface }) {
-        return await tokenStore.storeTokens(keyValueStore, tokens);
-    },
-    async clearTokens({ tokenStore, keyValueStore }: { tokenStore: AuthTokenStore, keyValueStore: KeyValueStorageInterface }) {
-        return await tokenStore.clearTokens(keyValueStore);
-    },
+    }
+
+    async setTokens({ tokens }: { tokens: AuthTokens }) {
+        return await this.tokenStore.storeTokens(tokens);
+    }
+
+    async clearTokens() {
+        return await this.tokenStore.clearTokens();
+    }
 }
 
-function isTokenExpired({ expiresAt, metadata }: { expiresAt: number, metadata: Record<string, string> }): boolean {
+function isTokenExpired({ expiresAt, clockDrift }: { expiresAt: number, clockDrift: number }): boolean {
     // compare expiration against token exp and clock drift
     const currentTime = Date.now();
-    // TODO: other AuthN providers should use this key for clockDrift
-    const clockDrift = Number.parseInt(metadata[CLOCK_DRIFT_KEY]) || 0;
     return currentTime + clockDrift > expiresAt;
 }
 
-async function refreshTokens({ tokens, tokenRefresher }: { tokens: AuthTokens, tokenRefresher: TokenRefresher }): Promise<AuthTokens> {
-    debugger;
+async function refreshTokens({ tokens, tokenRefresher, authConfig }: { tokens: AuthTokens, tokenRefresher: TokenRefresher, authConfig: AuthConfig }): Promise<AuthTokens> {
     try {
-        const newTokens = await tokenRefresher(tokens);
+        const newTokens = await tokenRefresher({ tokens, authConfig });
         await Amplify.Auth.setTokens(newTokens);
         return newTokens;
-    } catch(err) {
+    } catch (err) {
         await Amplify.Auth.clearTokens();
         throw err;
     }
 }
-
-
-
 
 function decodeJWT(token: string): JWT {
     const tokenSplitted = token.split('.');
@@ -74,36 +82,93 @@ function decodeJWT(token: string): JWT {
     }
 }
 
-export const DefaultTokenStore: AuthTokenStore = {
-    loadTokens: async function (keyValueStore: KeyValueStorageInterface): Promise<AuthTokens> {
-        try {
-            const atString = await keyValueStore.getItem('accessToken');
-            const itString = await keyValueStore.getItem('idToken');
 
-            let oidcProvider: OidcProvider = 'COGNITO';
-            const customProvider = await keyValueStore.getItem('oidcProvider');
-            if (customProvider) {
-                oidcProvider = { custom: customProvider }
-            }
+export class DefaultTokenStore implements AuthTokenStore {
+    keyValueStorage: KeyValueStorageInterface;
+    authConfig: AuthConfig;
+
+    setAuthConfig(authConfigParam: AuthConfig) {
+        this.authConfig = authConfigParam;
+        return;
+    }
+
+    setKeyValueStorage(keyValueStorage: KeyValueStorageInterface) {
+        this.keyValueStorage = keyValueStorage;
+        return;
+    }
+
+    async loadTokens(): Promise<AuthTokens> {
+        if (this.authConfig === undefined) {
+            throw new Error('Auth not configured');
+        }
+        // TODO: migration logic should be here
+        // Reading V5 tokens old format
+
+        // Reading V6 tokens
+        try {
+            const name = 'Cognito'; // TODO: update after API review for Amplify.configure
+            const authKeys = createKeysForAuthStorage(name, this.authConfig.userPoolWebClientId);
+            const atString = await this.keyValueStorage.getItem(authKeys.accessToken);
+            const itString = await this.keyValueStorage.getItem(authKeys.idToken);
 
             return {
                 accessToken: decodeJWT(atString),
                 idToken: decodeJWT(itString),
-                accessTokenExpAt: Number.parseInt(await keyValueStore.getItem('accessTokenExpAt')) || 0,
-                oidcProvider,
-                metadata: JSON.parse(await keyValueStore.getItem('metadata') || "{}")
+                accessTokenExpAt: Number.parseInt(await this.keyValueStorage.getItem(authKeys.accessTokenExpAt)) || 0,
+                metadata: JSON.parse(await this.keyValueStorage.getItem(authKeys.metadata) || "{}"),
+                clockDrift: Number.parseInt(await this.keyValueStorage.getItem(authKeys.clockDrift)) || 0
             }
-        } catch( err ) {
-            throw new Error('No tokens');
+        } catch (err) {
+            throw new Error('No valid tokens');
         }
-    },
-    storeTokens: async function (keyValueStore: KeyValueStorageInterface, tokens: AuthTokens): Promise<void> {
-        keyValueStore.setItem('accessToken', tokens.accessToken.toString());
-        keyValueStore.setItem('idToken', tokens.idToken.toString());
-        keyValueStore.setItem('accessTokenExpAt', `${tokens.accessTokenExpAt}`);
-        keyValueStore.setItem('metadata', JSON.stringify(tokens.metadata));
-    },
-    clearTokens: async function (keyValueStore: KeyValueStorageInterface): Promise<void> {
-        await keyValueStore.clear();
+    }
+    async storeTokens(tokens: AuthTokens): Promise<void> {
+        if (this.authConfig === undefined) {
+            throw new Error('Auth not configured');
+        }
+
+        const name = 'Cognito'; // TODO: update after API review for Amplify.configure
+        const authKeys = createKeysForAuthStorage(name, this.authConfig.userPoolWebClientId);
+        this.keyValueStorage.setItem(authKeys.accessToken, tokens.accessToken.toString());
+        this.keyValueStorage.setItem(authKeys.idToken, tokens.idToken.toString());
+        this.keyValueStorage.setItem(authKeys.accessTokenExpAt, `${tokens.accessTokenExpAt}`);
+        this.keyValueStorage.setItem(authKeys.metadata, JSON.stringify(tokens.metadata));
+        this.keyValueStorage.setItem(authKeys.clockDrift, `${tokens.clockDrift}`);
+    }
+
+    async clearTokens(): Promise<void> {
+        if (this.authConfig === undefined) {
+            throw new Error('Auth not configured');
+        }
+
+        const name = 'Cognito'; // TODO: update after API review for Amplify.configure
+        const authKeys = createKeysForAuthStorage(name, this.authConfig.userPoolWebClientId);
+
+        // Not calling clear because it can remove data that is not managed by AuthTokenStore
+        await this.keyValueStorage.removeItem(authKeys.accessToken);
+        await this.keyValueStorage.removeItem(authKeys.idToken);
+        await this.keyValueStorage.removeItem(authKeys.accessTokenExpAt);
+        await this.keyValueStorage.removeItem(authKeys.clockDrift);
+        await this.keyValueStorage.removeItem(authKeys.metadata);
     }
 }
+
+const createKeysForAuthStorage = (provider: string, identifier: string) => {
+    return getAuthStorageKeys(AuthStorageKeys)(`com.amplify.${provider}`, identifier);
+}
+
+export function getAuthStorageKeys<T extends Record<string, string>>(authKeys: T) {
+    const keys = Object.values({ ...authKeys });
+    return (prefix: string, identifier: string) =>
+        keys.reduce(
+            (acc, authKey) => ({
+                ...acc,
+                [authKey]: `${prefix}.${identifier}.${authKey}`,
+            }),
+            {} as AuthKeys<keyof T & string>
+        );
+}
+
+type AuthKeys<AuthKey extends string> = {
+    [Key in AuthKey]: string;
+};

@@ -74,22 +74,26 @@ export class StorageHelper {
 	}
 }
 
-const myStorage = {}
-export const MyStorage: KeyValueStorageInterface = {
-	setItem: function (key: string, value: string): Promise<void> {
-		myStorage[key] = value;
+export class MemoryKeyValueStorage implements KeyValueStorageInterface {
+	myStorage: Record<string, string> = {};
+	
+	async setItem (key: string, value: string): Promise<void> {
+		this.myStorage[key] = value;
 		return;
-	},
-	getItem: function (key: string): Promise<string> {
-		return myStorage[key];
-	},
-	removeItem: function (key: string): Promise<void> {
-		delete(myStorage[key]);
+	}
+	
+	async getItem (key: string): Promise<string> {
+		return this.myStorage[key];
+	}
+
+	async removeItem (key: string): Promise<void> {
+		delete(this.myStorage[key]);
 		return;
-	},
-	clear: function (): Promise<void> {
-		Object.keys(myStorage).forEach(key => {
-			delete(myStorage[key]);
+	}
+
+	async clear(): Promise<void> {
+		Object.keys(this.myStorage).forEach(key => {
+			delete(this.myStorage[key]);
 		})
 
 		return;
