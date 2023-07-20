@@ -23,6 +23,12 @@ import type {
 	ChangePasswordCommandInput,
 	ChangePasswordCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
+import {
+	GetIdCommandOutput,
+	GetIdCommandInput,
+	GetCredentialsForIdentityCommandOutput,
+	GetCredentialsForIdentityCommandInput,
+} from '@aws-sdk/client-cognito-identity';
 import { AuthError } from '../../../../errors/AuthError';
 import { assertServiceError } from '../../../../errors/utils/assertServiceError';
 
@@ -39,7 +45,9 @@ export type ClientInputs =
 	| ConfirmSignUpCommandInput
 	| VerifySoftwareTokenCommandInput
 	| AssociateSoftwareTokenCommandInput
-	| ChangePasswordCommandInput;
+	| ChangePasswordCommandInput
+	| GetIdCommandInput
+	| GetCredentialsForIdentityCommandInput;
 
 export type ClientOutputs =
 	| SignUpCommandOutput
@@ -51,7 +59,9 @@ export type ClientOutputs =
 	| ConfirmSignUpCommandOutput
 	| VerifySoftwareTokenCommandOutput
 	| AssociateSoftwareTokenCommandOutput
-	| ChangePasswordCommandOutput;
+	| ChangePasswordCommandOutput
+	| GetIdCommandOutput
+	| GetCredentialsForIdentityCommandOutput;
 
 export type ClientOperations =
 	| 'SignUp'
@@ -63,18 +73,32 @@ export type ClientOperations =
 	| 'ResendConfirmationCode'
 	| 'VerifySoftwareToken'
 	| 'AssociateSoftwareToken'
-	| 'ChangePassword';
+	| 'ChangePassword'
+	| 'GetId'
+	| 'GetCredentialsForIdentity';
+
+export type ServiceTypes = 'identity' | 'idp';
+
+type Services =
+	| 'AWSCognitoIdentityProviderService'
+	| 'AWSCognitoIdentityService';
 
 export class UserPoolHttpClient {
 	private _endpoint: string;
+	private _service: Services = 'AWSCognitoIdentityProviderService';
+
 	private _headers = {
 		'Content-Type': 'application/x-amz-json-1.1',
 		'X-Amz-User-Agent': USER_AGENT,
 		'Cache-Control': 'no-store',
 	};
 
-	constructor(region: string) {
-		this._endpoint = `https://cognito-idp.${region}.amazonaws.com/`;
+	constructor(region: string, serviceType: ServiceTypes = 'idp') {
+		this._service =
+			serviceType === 'identity'
+				? 'AWSCognitoIdentityService'
+				: 'AWSCognitoIdentityProviderService';
+		this._endpoint = `https://cognito-${serviceType}.${region}.amazonaws.com/`;
 	}
 
 	async send<T extends ClientOutputs>(
@@ -83,7 +107,7 @@ export class UserPoolHttpClient {
 	): Promise<T> {
 		const headers = {
 			...this._headers,
-			'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
+			'X-Amz-Target': `${this._service}.${operation}`,
 		};
 		const options: RequestInit = {
 			headers,
