@@ -14,9 +14,9 @@
 		"./lib-esm/I18n/index.js",
 		"./lib-esm/Credentials.js",
 		"./lib/Cache/BrowserStorageCache.js",
-    "./lib/Cache/AsyncStorageCache.js",
-    "./lib-esm/Cache/BrowserStorageCache.js",
-    "./lib-esm/Cache/AsyncStorageCache.js"
+		"./lib/Cache/AsyncStorageCache.js",
+		"./lib-esm/Cache/BrowserStorageCache.js",
+		"./lib-esm/Cache/AsyncStorageCache.js"
 	],
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage",
@@ -154,17 +154,17 @@
 			"limit": "6.3 kB"
 		},
 		{
-      "name": "Cache (default browser storage)",
-      "path": "./lib-esm/index.js",
-      "import": "{ Cache }",
-      "limit": "4 kB"
-    },
-    {
-      "name": "Cache (in-memory)",
-      "path": "./lib-esm/index.js",
-      "import": "{ InMemoryCache }",
-      "limit": "3.7 kB"
-    }
+			"name": "Cache (default browser storage)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Cache }",
+			"limit": "4 kB"
+		},
+		{
+			"name": "Cache (in-memory)",
+			"path": "./lib-esm/index.js",
+			"import": "{ InMemoryCache }",
+			"limit": "3.7 kB"
+		}
 	],
 	"jest": {
 		"globals": {
@@ -188,9 +188,9 @@
 			"jsx"
 		],
 		"setupFiles": [
-      "./__mocks__/SessionStorage.js",
-      "./__mocks__/LocalStorage.js"
-    ],
+			"./__mocks__/SessionStorage.js",
+			"./__mocks__/LocalStorage.js"
+		],
 		"testEnvironment": "jsdom",
 		"coverageThreshold": {
 			"global": {
