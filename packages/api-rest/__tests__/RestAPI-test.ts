@@ -5,6 +5,8 @@ import { Signer, Credentials, DateUtils } from '@aws-amplify/core';
 
 jest.mock('axios');
 
+const mockAxios = jest.spyOn(axios as any, 'default');
+
 axios.CancelToken = <CancelTokenStatic>{
 	source: () => ({ token: null, cancel: null }),
 };
@@ -28,6 +30,7 @@ const config = {
 
 afterEach(() => {
 	jest.restoreAllMocks();
+	mockAxios.mockClear();
 });
 
 describe('Rest API test', () => {
@@ -166,19 +169,11 @@ describe('Rest API test', () => {
 			api.configure(custom_config);
 			const spyon = jest
 				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
-				});
+				.mockResolvedValueOnce('cred');
 
 			const spyonRequest = jest
 				.spyOn(RestClient.prototype as any, '_request')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res({});
-					});
-				});
+				.mockResolvedValueOnce({});
 			await api.get('apiName', 'path', {});
 
 			expect(spyonRequest).toBeCalledWith(
@@ -221,11 +216,7 @@ describe('Rest API test', () => {
 				session_token: 'token',
 			};
 
-			const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return new Promise((res, rej) => {
-					res(creds);
-				});
-			});
+			const spyon = jest.spyOn(Credentials, 'get').mockResolvedValue(creds);
 
 			const spyonSigner = jest
 				.spyOn(Signer, 'sign')
@@ -233,13 +224,7 @@ describe('Rest API test', () => {
 					return { headers: {} };
 				});
 
-			const spyAxios = jest
-				.spyOn(axios as any, 'default')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res(resp);
-					});
-				});
+			mockAxios.mockResolvedValue(resp);
 
 			const init = {
 				timeout: 2500,
@@ -297,13 +282,7 @@ describe('Rest API test', () => {
 					return { headers: {} };
 				});
 
-			const spyAxios = jest
-				.spyOn(axios as any, 'default')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res(resp);
-					});
-				});
+			mockAxios.mockResolvedValue(resp);
 
 			const init = {
 				queryStringParameters: {
@@ -363,13 +342,7 @@ describe('Rest API test', () => {
 					return { headers: {} };
 				});
 
-			const spyAxios = jest
-				.spyOn(axios as any, 'default')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res(resp);
-					});
-				});
+			mockAxios.mockResolvedValue(resp);
 
 			const init = {
 				queryStringParameters: {
@@ -429,13 +402,7 @@ describe('Rest API test', () => {
 					return { headers: {} };
 				});
 
-			const spyAxios = jest
-				.spyOn(axios as any, 'default')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res(resp);
-					});
-				});
+			mockAxios.mockResolvedValue(resp);
 
 			const init = {
 				queryStringParameters: {
@@ -557,19 +524,31 @@ describe('Rest API test', () => {
 				.mockImplementation(() => 'endpoint');
 
 			jest.spyOn(Credentials, 'get').mockResolvedValue('creds');
-
-			jest
-				.spyOn(RestClient.prototype as any, '_signed')
-				.mockRejectedValueOnce(normalError);
+			jest.spyOn(RestClient.prototype as any, '_sign').mockReturnValue({
+				...init,
+				headers: { ...init.headers, Authorization: 'signed' },
+			});
+			mockAxios.mockImplementationOnce(() => {
+				return new Promise((_, rej) => {
+					rej(normalError);
+				});
+			});
 
 			await expect(api.post('url', 'path', init)).rejects.toThrow(normalError);
 
 			// Clock should not be skewed from normal errors
 			expect(DateUtils.getClockOffset()).toBe(0);
 
-			jest
-				.spyOn(RestClient.prototype as any, '_signed')
-				.mockRejectedValueOnce(clockSkewError);
+			// mock clock skew error response and successful response after retry
+			mockAxios
+				.mockImplementationOnce(() => {
+					return new Promise((_, rej) => {
+						rej(clockSkewError);
+					});
+				})
+				.mockResolvedValue({
+					data: [{ name: 'Bob' }],
+				});
 
 			await expect(api.post('url', 'path', init)).resolves.toEqual([
 				{ name: 'Bob' },
