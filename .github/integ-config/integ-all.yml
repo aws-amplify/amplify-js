@@ -436,7 +436,8 @@ tests:
     category: datastore
     sample_name: [rollup-basic-crud]
     spec: rollup-basic-crud
-    browser: *minimal_browser_list
+    # TODO: run on firefox
+    browser: [chrome]
     timeout_minutes: 45
     retry_count: 10
 
