@@ -1,3 +1,3 @@
 > INTERNAL USE ONLY
 
-This package contains the AWS Amplify JS API GraphQL category and is intended for internal use only. To integrate Amplify JS into your app, please use [aws-amplify](https://www.npmjs.com/package/aws-amplify).
+This package contains the AWS Amplify API GraphQL category and is intended for internal use only. To integrate Amplify into your app, please use [aws-amplify](https://www.npmjs.com/package/aws-amplify).
