@@ -26,6 +26,25 @@ runs:
         path: amplify-js-samples-staging
         token: ${{ inputs.GH_TOKEN_STAGING_READ }}
         fetch-depth: 2
+
+    # We test on the staging branch that corresponds to the amplify-js branch
+    #   when it exists and test on the default branch `main` otherwise
+    - name: Staging repo branch selection
+      shell: bash
+      working-directory: ./amplify-js-samples-staging
+      env:
+        BRANCH: ${{ github.ref_name }}
+      run: |
+        if git ls-remote --exit-code --heads origin $BRANCH >/dev/null 2>&1; then
+            # Branch exists, checkout and echo success message
+            git fetch origin $BRANCH
+            git checkout $BRANCH
+            echo "Checked out branch: $BRANCH"
+        else
+            # Branch doesn't exist, echo error message
+            echo "Branch '$BRANCH' does not exist"
+        fi
+
     - name: Install
       run: |
         yarn
