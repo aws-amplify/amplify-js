@@ -8,14 +8,11 @@ on:
         value: ${{ jobs.get-package-list.outputs.packages }}
 jobs:
   get-package-list:
-    # Prepares the 'bazelversion' axis of the test matrix
+    name: Get packages list
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout AmplifyJs
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
-        with:
-          # Minimal depth 2 so we can checkout the commit before possible merge commit.
-          fetch-depth: 2
       - uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
         id: cache-package-list
         with:

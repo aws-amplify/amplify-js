@@ -25,7 +25,6 @@ runs:
         repository: ${{ github.repository_owner }}/amplify-js-samples-staging
         path: amplify-js-samples-staging
         token: ${{ inputs.GH_TOKEN_STAGING_READ }}
-        fetch-depth: 2
 
     # We test on the staging branch that corresponds to the amplify-js branch
     #   when it exists and test on the default branch `main` otherwise

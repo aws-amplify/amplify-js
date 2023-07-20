@@ -7,7 +7,7 @@ jobs:
     name: Get required configs to run e2e tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout AmplifyJs
+      - name: Checkout repository
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
         with:
           path: amplify-js
