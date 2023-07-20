@@ -11,7 +11,8 @@
 #
 # @remarks
 # This script is to be executed after versions have been set but before publication to NPM, e.g. the NPM `prepare`
-# life-cycle script which Lerna will invoke.
+# life-cycle script which Lerna will invoke. It will set the peer-dependency in each category's package.json file 
+# before it gets packaged up and sent to NPM.
 #
 # @remarks
 # This script requires `jq` which is installed by default on Linux. On OSX use `brew install jq`.
@@ -48,6 +49,7 @@ for packageFile in $PACKAGE_DIR/*/package.json; do
   
 	if [ $packageIsPrivate != true ] && [ $peerDepExistsInFile == true ]
 	then
+		# Set the peer dependency & write back to the package's package.json file
 		jq --arg version "$coreVersion" '.peerDependencies."@aws-amplify/core" = $version' $packageFile > $packageFile.tmp && mv $packageFile.tmp $packageFile
 
 		echo "$LOG_PREFIX Set peer dependency version in: ${packageFile}"
