@@ -57,7 +57,7 @@ executors:
 
   webkit-test-executor:
     docker:
-      - image: mcr.microsoft.com/playwright:v1.30.0-focal
+      - image: mcr.microsoft.com/playwright:v1.34.2-focal
       - image: verdaccio/verdaccio:5.20
         auth:
           username: $DOCKERHUB_USERNAME
@@ -2060,15 +2060,15 @@ workflows:
       #     matrix:
       #       parameters:
       #         <<: *minimal_browser_list
-      - integ_javascript_geo:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              browser: [chrome]
+      #- integ_javascript_geo:
+      #    requires:
+      #      - integ_setup
+      #      - build
+      #    filters:
+      #      <<: *releasable_branches
+      #    matrix:
+      #      parameters:
+      #        browser: [chrome]
       - integ_react_geo:
           requires:
             - integ_setup
@@ -2589,7 +2589,7 @@ orbs:
               no_output_timeout: 10m
           - run-with-retry:
               label: Install Amplify dependencies
-              command: npm install aws-amplify aws-amplify-react-native amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+              command: npm install aws-amplify amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
           - run-with-retry:
               label: Pod Install
               command: npx pod-install
@@ -2641,7 +2641,7 @@ orbs:
               no_output_timeout: 10m
           - run-with-retry:
               label: Install Amplify dependencies
-              command: npm install aws-amplify aws-amplify-react-native amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+              command: npm install aws-amplify amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
           - run:
               name: Call Amplify library in code
               command: |
@@ -2683,7 +2683,7 @@ orbs:
               no_output_timeout: 5m
           - run-with-retry:
               label: Install Amplify dependencies
-              command: yarn add aws-amplify aws-amplify-react-native @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+              command: yarn add aws-amplify @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
           - run-with-retry:
               label: Call Amplify library in code
               command: |

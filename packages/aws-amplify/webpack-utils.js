@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 // This module fixes sourcemap paths for the various Amplify packages. It's
 // needed because packages at build time live in different (relative) folder
 // locations than the folders where packages are installed from npm. For
@@ -31,13 +33,11 @@ const packageFolderMap = {
 	api: '@aws-amplify/api',
 	auth: '@aws-amplify/auth',
 	'aws-amplify': 'aws-amplify',
-	'aws-amplify-react-native': 'aws-amplify-react-native',
 	cache: '@aws-amplify/cache',
 	core: '@aws-amplify/core',
 	datastore: '@aws-amplify/datastore',
 	interactions: '@aws-amplify/interactions',
 	pubsub: '@aws-amplify/pubsub',
-	pushnotification: '@aws-amplify/pushnotification',
 	storage: '@aws-amplify/storage',
 };
 

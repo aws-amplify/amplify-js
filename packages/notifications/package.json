@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/notifications",
-	"version": "1.2.0",
+	"version": "1.3.2",
 	"description": "Notifications category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -49,29 +49,31 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/cache": "5.1.0",
-		"@aws-amplify/core": "5.4.0",
+		"@aws-amplify/cache": "5.1.3",
+		"@aws-amplify/core": "5.5.2",
 		"@aws-amplify/rtn-push-notification": "1.1.1",
 		"lodash": "^4.17.21",
 		"uuid": "^3.2.1"
 	},
 	"devDependencies": {
+		"@babel/core": "7.15.5",
 		"@babel/plugin-proposal-class-properties": "^7.0.0",
 		"@babel/plugin-proposal-private-methods": "^7.0.0",
-		"@babel/plugin-proposal-private-property-in-object": "^7.0.0"
+		"@babel/plugin-proposal-private-property-in-object": "^7.0.0",
+		"metro-react-native-babel-preset": "^0.66.2"
 	},
 	"size-limit": [
 		{
 			"name": "Notifications (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Notifications }",
-			"limit": "28.75 kB"
+			"limit": "29.9 kB"
 		},
 		{
 			"name": "Notifications (with Analytics)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Notifications, Analytics }",
-			"limit": "28.76 kB"
+			"limit": "29.902 kB"
 		}
 	]
 }

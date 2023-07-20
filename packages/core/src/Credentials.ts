@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { ConsoleLogger as Logger } from './Logger';
 import { StorageHelper } from './StorageHelper';
 import { makeQuerablePromise } from './JS';

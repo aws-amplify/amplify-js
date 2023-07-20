@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import {
 	AWSS3UploadTask,
 	AWSS3UploadTaskState,
@@ -6,16 +9,18 @@ import {
 } from '../../src/providers/AWSS3UploadTask';
 import * as events from 'events';
 import {
-	S3Client,
-	AbortMultipartUploadCommand,
-	CompleteMultipartUploadCommand,
-	ListPartsCommand,
-	CreateMultipartUploadCommand,
-	ListObjectsV2Command,
-	UploadPartCommand,
-} from '@aws-sdk/client-s3';
+	abortMultipartUpload,
+	completeMultipartUpload,
+	listParts,
+	createMultipartUpload,
+	listObjectsV2,
+	uploadPart,
+} from '../../src/AwsClients/S3';
 import { StorageAccessLevel, FileMetadata } from '../../src/types';
 import { UPLOADS_STORAGE_KEY } from '../../src/common/StorageConstants';
+import { StorageAction } from '@aws-amplify/core';
+
+jest.mock('../../src/AwsClients/S3');
 
 const MB = 1024 * 1024;
 
@@ -25,13 +30,6 @@ const credentials = {
 	secretAccessKey: 'secretAccessKey',
 	identityId: 'identityId',
 	authenticated: true,
-};
-
-const testOpts: any = {
-	bucket: 'testBucket',
-	region: 'testRegion',
-	credentials,
-	level: 'level',
 };
 
 let mockLocalStorageItems = {};
@@ -49,6 +47,14 @@ const mockLocalStorage = {
 	}),
 } as unknown as Storage;
 
+const mockCredentialsProvider = jest.fn().mockResolvedValue(credentials);
+
+const defaultS3Config = {
+	region: 'us-foo-1',
+	credentials: mockCredentialsProvider,
+	storageAction: StorageAction.Put,
+};
+
 describe('resumable upload task test', () => {
 	afterEach(() => {
 		jest.clearAllMocks();
@@ -60,7 +66,7 @@ describe('resumable upload task test', () => {
 		const emitter = new events.EventEmitter();
 		const input: AWSS3UploadTaskParams = {
 			file,
-			s3Client: new S3Client(testOpts),
+			s3Config: defaultS3Config,
 			emitter: emitter,
 			storage: mockLocalStorage,
 			level: 'public' as StorageAccessLevel,
@@ -80,7 +86,7 @@ describe('resumable upload task test', () => {
 		const emitter = new events.EventEmitter();
 		const input: AWSS3UploadTaskParams = {
 			file,
-			s3Client: new S3Client(testOpts),
+			s3Config: defaultS3Config,
 			emitter: emitter,
 			storage: mockLocalStorage,
 			level: 'public' as StorageAccessLevel,
@@ -90,14 +96,11 @@ describe('resumable upload task test', () => {
 			},
 			prefixPromise: Promise.resolve('prefix'),
 		};
-		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
-			if (command instanceof AbortMultipartUploadCommand) {
-				return Promise.resolve({ Key: input.params.Key });
-			} else if (command instanceof ListObjectsV2Command) {
-				return Promise.resolve({
-					Contents: [{ Key: input.params.Key, Size: 25048576 }],
-				});
-			}
+		(abortMultipartUpload as jest.Mock).mockResolvedValue({
+			Key: input.params.Key,
+		});
+		(listObjectsV2 as jest.Mock).mockResolvedValue({
+			Contents: [{ Key: input.params.Key, Size: 25048576 }],
 		});
 		const uploadTask = new AWSS3UploadTask(input);
 		expect(uploadTask.percent).toEqual(0);
@@ -122,7 +125,7 @@ describe('resumable upload task test', () => {
 		const emitter = new events.EventEmitter();
 		const input: AWSS3UploadTaskParams = {
 			file,
-			s3Client: new S3Client(testOpts),
+			s3Config: defaultS3Config,
 			emitter: emitter,
 			storage: mockLocalStorage,
 			level: 'public' as StorageAccessLevel,
@@ -132,24 +135,18 @@ describe('resumable upload task test', () => {
 			},
 			prefixPromise: Promise.resolve('prefix'),
 		};
-		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
-			if (command instanceof AbortMultipartUploadCommand) {
-				return Promise.resolve({ Key: input.params.Key });
-			} else if (command instanceof ListObjectsV2Command) {
-				return Promise.resolve({
-					Contents: [{ Key: 'prefix' + input.params.Key, Size: 15048576 }],
-				});
-			} else if (command instanceof CompleteMultipartUploadCommand) {
-				return Promise.resolve();
-			} else if (command instanceof CreateMultipartUploadCommand) {
-				return Promise.resolve({
-					UploadId: 'test-upload-id',
-				});
-			} else if (command instanceof UploadPartCommand) {
-				return Promise.resolve({
-					ETag: 'test-upload-ETag',
-				});
-			}
+		(abortMultipartUpload as jest.Mock).mockResolvedValue({
+			Key: input.params.Key,
+		});
+		(listObjectsV2 as jest.Mock).mockResolvedValue({
+			Contents: [{ Key: input.params.Key, Size: 15048576 }],
+		});
+		(completeMultipartUpload as jest.Mock).mockResolvedValue({});
+		(createMultipartUpload as jest.Mock).mockResolvedValue({
+			UploadId: 'test-upload-id',
+		});
+		(uploadPart as jest.Mock).mockResolvedValue({
+			ETag: 'test-upload-ETag',
 		});
 		const uploadTask = new AWSS3UploadTask(input);
 
@@ -176,38 +173,13 @@ describe('resumable upload task test', () => {
 	});
 
 	test('should send listParts request if the upload task is cached', async () => {
-		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
-			if (command instanceof ListPartsCommand) {
-				return Promise.resolve({
-					Parts: [
-						{
-							PartNumber: 1,
-							Size: 5 * 1024 * 1024,
-							ETag: 'etag-1',
-						},
-						{
-							PartNumber: 2,
-							Size: 5 * 1024 * 1024,
-							ETag: 'etag-2',
-						},
-					],
-				});
-			} else if (command instanceof CreateMultipartUploadCommand) {
-				return Promise.resolve({
-					UploadId: 'uploadId',
-				});
-			} else if (command instanceof ListObjectsV2Command) {
-				return Promise.resolve({
-					Contents: [{ Key: 'prefix' + input.params.Key, Size: 25048576 }],
-				});
-			}
-		});
 		const file = new File(['TestFileContent'], 'testFileName');
 		Object.defineProperty(file, 'size', { value: 25048576 });
 		const emitter = new events.EventEmitter();
 		const input: AWSS3UploadTaskParams = {
 			file,
-			s3Client: new S3Client(testOpts),
+			// s3Client: new S3Client(testOpts),
+			s3Config: defaultS3Config,
 			emitter: emitter,
 			storage: mockLocalStorage,
 			level: 'public',
@@ -217,6 +189,26 @@ describe('resumable upload task test', () => {
 			},
 			prefixPromise: Promise.resolve('prefix'),
 		};
+		(listParts as jest.Mock).mockResolvedValue({
+			Parts: [
+				{
+					PartNumber: 1,
+					Size: 5 * 1024 * 1024,
+					ETag: 'etag-1',
+				},
+				{
+					PartNumber: 2,
+					Size: 5 * 1024 * 1024,
+					ETag: 'etag-2',
+				},
+			],
+		});
+		(createMultipartUpload as jest.Mock).mockResolvedValue({
+			UploadId: 'uploadId',
+		});
+		(listObjectsV2 as jest.Mock).mockResolvedValue({
+			Contents: [{ Key: 'prefix' + input.params.Key, Size: 25048576 }],
+		});
 		const fileMetadata: FileMetadata = {
 			bucket: 'bucket',
 			key: 'key',
@@ -251,6 +243,79 @@ describe('resumable upload task test', () => {
 		);
 	});
 
+	test('Should complete upload if all parts have been uploaded on resume', done => {
+		const file = new File(['TestFileContent'], 'testFileName');
+		Object.defineProperty(file, 'size', { value: 25048576 });
+		const emitter = new events.EventEmitter();
+		const input: AWSS3UploadTaskParams = {
+			file,
+			// s3Client: new S3Client(testOpts),
+			s3Config: defaultS3Config,
+			emitter: emitter,
+			storage: mockLocalStorage,
+			level: 'public',
+			params: {
+				Bucket: 'bucket',
+				Key: 'key',
+			},
+			prefixPromise: Promise.resolve('prefix'),
+		};
+		(listParts as jest.Mock).mockResolvedValue({
+			Parts: [
+				{
+					PartNumber: 1,
+					Size: 25048576 / 2,
+					ETag: 'etag-1',
+				},
+				{
+					PartNumber: 2,
+					Size: 25048576 / 2,
+					ETag: 'etag-2',
+				},
+			],
+		});
+		(createMultipartUpload as jest.Mock).mockResolvedValue({
+			UploadId: 'uploadId',
+		});
+		(listObjectsV2 as jest.Mock).mockResolvedValue({
+			Contents: [{ Key: 'prefix' + input.params.Key, Size: 25048576 }],
+		});
+		(completeMultipartUpload as jest.Mock).mockResolvedValue({
+			Key: input.params.Key,
+		});
+		const fileMetadata: FileMetadata = {
+			bucket: 'bucket',
+			key: 'key',
+			lastTouched: Date.now(),
+			uploadId: 'uploadId',
+			fileName: file.name,
+		};
+		const fileId = [
+			file.name,
+			file.lastModified,
+			file.size,
+			file.type,
+			input.params.Bucket,
+			input.level,
+			input.params.Key,
+		].join('-');
+		const cachedUploadTasks = {
+			[fileId]: fileMetadata,
+		};
+		mockLocalStorage.setItem(
+			UPLOADS_STORAGE_KEY,
+			JSON.stringify(cachedUploadTasks)
+		);
+		const uploadTask = new AWSS3UploadTask(input);
+		// kick off the upload task
+		uploadTask.resume();
+
+		emitter.on(TaskEvents.UPLOAD_COMPLETE, () => {
+			expect(completeMultipartUpload).toBeCalledTimes(1);
+			done();
+		});
+	});
+
 	test('upload a body that exceeds the size of default part size and parts count', done => {
 		const testUploadId = 'testUploadId';
 		let buffer: ArrayBuffer;
@@ -264,29 +329,21 @@ describe('resumable upload task test', () => {
 			}),
 		} as any as File;
 		const key = 'key';
-
-		const s3ServiceCallSpy = jest
-			.spyOn(S3Client.prototype, 'send')
-			.mockImplementation(async command => {
-				if (command instanceof CreateMultipartUploadCommand) {
-					return Promise.resolve({ UploadId: testUploadId });
-				} else if (command instanceof UploadPartCommand) {
-					return Promise.resolve({
-						ETag: 'test_etag_' + command.input.PartNumber,
-					});
-				} else if (command instanceof CompleteMultipartUploadCommand) {
-					return Promise.resolve({ Key: key });
-				} else if (command instanceof ListObjectsV2Command) {
-					return Promise.resolve({
-						Contents: [{ Key: 'prefix' + key, Size: file.size }],
-					});
-				}
-			});
+		(createMultipartUpload as jest.Mock).mockResolvedValue({
+			UploadId: testUploadId,
+		});
+		(uploadPart as jest.Mock).mockImplementation(async (_, input) => {
+			return { ETag: 'test_etag_' + input.PartNumber };
+		});
+		(completeMultipartUpload as jest.Mock).mockResolvedValue({ Key: key });
+		(listObjectsV2 as jest.Mock).mockResolvedValue({
+			Contents: [{ Key: 'prefix' + key, Size: file.size }],
+		});
 
 		const emitter = new events.EventEmitter();
 		const input: AWSS3UploadTaskParams = {
 			file,
-			s3Client: new S3Client(testOpts),
+			s3Config: defaultS3Config,
 			emitter,
 			storage: mockLocalStorage,
 			level: 'public' as StorageAccessLevel,
@@ -300,7 +357,9 @@ describe('resumable upload task test', () => {
 		uploadTask.resume();
 		emitter.on(TaskEvents.UPLOAD_COMPLETE, () => {
 			expect(file.slice).toBeCalledTimes(10000); // S3 limit of parts count.
-			expect(s3ServiceCallSpy).toBeCalledTimes(10000 + 3);
+			expect(createMultipartUpload).toBeCalledTimes(1);
+			expect(uploadPart).toBeCalledTimes(10000);
+			expect(completeMultipartUpload).toBeCalledTimes(1);
 			done();
 		});
 	});
@@ -310,7 +369,7 @@ describe('resumable upload task test', () => {
 		const emitter = new events.EventEmitter();
 		const input: AWSS3UploadTaskParams = {
 			file: { size: 5 * 1024 * GB + 1 } as File,
-			s3Client: new S3Client(testOpts),
+			s3Config: defaultS3Config,
 			emitter: emitter,
 			storage: mockLocalStorage,
 			level: 'public' as StorageAccessLevel,
