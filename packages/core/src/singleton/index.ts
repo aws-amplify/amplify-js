@@ -21,12 +21,15 @@ let singletonResourcesConfig: ResourceConfig = {};
 let singletonLibraryOptions: LibraryOptions = {
 	Auth: {
 		keyValueStorage: new MemoryKeyValueStorage(), // Initialize automatically Depends on platform,
-		tokenRefresher: () => { throw new Error('No token refresher') },
-	}
+		tokenRefresher: () => {
+			throw new Error('No token refresher');
+		},
+	},
 };
 
-let authTokenStore: AuthTokenStore = new DefaultTokenStore();
-let tokenOrchestrator: AuthTokenOrchestrator = new DefaultAuthTokensOrchestrator();
+const authTokenStore: AuthTokenStore = new DefaultTokenStore();
+const tokenOrchestrator: AuthTokenOrchestrator =
+	new DefaultAuthTokensOrchestrator();
 tokenOrchestrator.setAuthTokenStore(authTokenStore);
 
 // add listeners of User changes
@@ -43,13 +46,23 @@ export namespace Amplify {
 		libraryOptions?: LibraryOptions
 	): void {
 		// TODO: check if exists or not
-		authTokenStore.setKeyValueStorage(singletonLibraryOptions.Auth.keyValueStorage);
+		authTokenStore.setKeyValueStorage(
+			singletonLibraryOptions.Auth.keyValueStorage
+		);
 		authTokenStore.setAuthConfig(resourcesConfig.Auth);
 
-		tokenOrchestrator.setTokenRefresher(singletonLibraryOptions.Auth.tokenRefresher);
+		tokenOrchestrator.setTokenRefresher(
+			singletonLibraryOptions.Auth.tokenRefresher
+		);
 
-		singletonResourcesConfig = incrementResourceConfig(singletonResourcesConfig, resourcesConfig);
-		singletonLibraryOptions = incrementLibraryOptions(singletonLibraryOptions, libraryOptions);
+		singletonResourcesConfig = incrementResourceConfig(
+			singletonResourcesConfig,
+			resourcesConfig
+		);
+		singletonLibraryOptions = incrementLibraryOptions(
+			singletonLibraryOptions,
+			libraryOptions
+		);
 
 		Hub.dispatch(
 			'core',
@@ -74,7 +87,7 @@ export namespace Amplify {
 	export namespace Auth {
 		/**
 		 * @private
-			 * Internal use of Amplify only
+		 * Internal use of Amplify only
 		 * Obtain current Auth Tokens
 		 * @param options GetTokensOptions
 		 * @returns Promise<AuthTokens>
@@ -87,16 +100,18 @@ export namespace Amplify {
 			let awsCredsIdentityId: string;
 
 			try {
-				tokens = await tokenOrchestrator.getTokens(
-					{ options });
-
+				tokens = await tokenOrchestrator.getTokens({ options });
 			} catch (error) {
 				console.warn(error);
 			}
 
 			try {
 				if (singletonLibraryOptions.Auth.identityIdProvider) {
-					awsCredsIdentityId = await singletonLibraryOptions.Auth.identityIdProvider({ tokens, authConfig: singletonResourcesConfig.Auth });
+					awsCredsIdentityId =
+						await singletonLibraryOptions.Auth.identityIdProvider({
+							tokens,
+							authConfig: singletonResourcesConfig.Auth,
+						});
 				}
 			} catch (err) {
 				console.warn(err);
@@ -108,19 +123,19 @@ export namespace Amplify {
 						authConfig: singletonResourcesConfig.Auth,
 						identityId: awsCredsIdentityId,
 						tokens,
-						options
+						options,
 					});
 				}
 			} catch (err) {
-				 console.warn(err);
+				console.warn(err);
 			}
 
 			return {
-				authenticated: tokens != undefined,
+				authenticated: tokens !== undefined,
 				tokens,
 				awsCreds,
-				awsCredsIdentityId
-			}
+				awsCredsIdentityId,
+			};
 		}
 
 		/**
@@ -151,7 +166,7 @@ export namespace Amplify {
 				// TODO: Add load the identityId and credentials part
 				observer.next({
 					authenticated: true,
-					tokens
+					tokens,
 				});
 			}
 			return;
@@ -177,12 +192,15 @@ export namespace Amplify {
 		/**
 		 * Internal use only by AuthTokenOrchestrator
 		 */
-		export const tokenRefresher: TokenRefresher = singletonLibraryOptions.Auth.tokenRefresher;
-
+		export const tokenRefresher: TokenRefresher =
+			singletonLibraryOptions.Auth.tokenRefresher;
 	}
 }
 
-function incrementResourceConfig(existingConfig: ResourceConfig, newConfig: ResourceConfig): ResourceConfig {
+function incrementResourceConfig(
+	existingConfig: ResourceConfig,
+	newConfig: ResourceConfig
+): ResourceConfig {
 	const resultConfig: ResourceConfig = {};
 
 	if (existingConfig) {
@@ -193,14 +211,20 @@ function incrementResourceConfig(existingConfig: ResourceConfig, newConfig: Reso
 
 	if (newConfig) {
 		for (const category of Object.keys(newConfig)) {
-			resultConfig[category] = { ...resultConfig[category], ...newConfig[category] };
+			resultConfig[category] = {
+				...resultConfig[category],
+				...newConfig[category],
+			};
 		}
 	}
 
 	return resultConfig;
 }
 
-function incrementLibraryOptions(existingConfig: LibraryOptions, newConfig: LibraryOptions): LibraryOptions {
+function incrementLibraryOptions(
+	existingConfig: LibraryOptions,
+	newConfig: LibraryOptions
+): LibraryOptions {
 	const resultConfig: LibraryOptions = {};
 
 	if (existingConfig) {
@@ -211,7 +235,10 @@ function incrementLibraryOptions(existingConfig: LibraryOptions, newConfig: Libr
 
 	if (newConfig) {
 		for (const category of Object.keys(newConfig)) {
-			resultConfig[category] = { ...resultConfig[category], ...newConfig[category] };
+			resultConfig[category] = {
+				...resultConfig[category],
+				...newConfig[category],
+			};
 		}
 	}
 

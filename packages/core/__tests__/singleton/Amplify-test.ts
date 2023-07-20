@@ -1,5 +1,5 @@
 import { Amplify } from '../../src/singleton';
-import '@types/jest';
+import { decodeJWT } from '../../src/singleton/Auth';
 
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any ? A : never;
 
@@ -30,7 +30,7 @@ describe('Amplify config test', () => {
         };
 
         Amplify.configure(config1);
-        
+
         const config2: ArgumentTypes<typeof Amplify.configure>[0] = {
             Auth: {
                 identityPoolId: 'us-east-1:bbbbb'
@@ -77,20 +77,12 @@ describe('Session tests', () => {
         };
 
         Amplify.configure(config);
-        const mockTokens = {
-            accessToken: {
-                payload: {}
-            },
-            oidcProvider: 'COGNITO', // for logins map
-            accessTokenExpAt: 0
-        };
+        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
+        const mockToken = decodeJWT(token);
         function signIn() {
             Amplify.Auth.setTokens({
-                accessToken: {
-                    payload: {}
-                },
-                oidcProvider: 'COGNITO', // for logins map
-                accessTokenExpAt: 0
+                accessToken: mockToken,
+                accessTokenExpAt: 2000000000000,
             });
         }
 
@@ -98,7 +90,14 @@ describe('Session tests', () => {
 
         const session = await Amplify.Auth.fetchAuthSession();
 
-        expect(session.tokens).toBe(mockTokens)
+        expect(session.tokens?.accessToken.payload).toEqual({
+            "exp": 1710293130,
+            "iat": 1516239022,
+            "name": "John Doe",
+            "sub": "1234567890"
+        });
+
+        expect(session.tokens?.accessTokenExpAt).toBe(2000000000000);
     })
 });
 // TODO: add test listen session
