@@ -2,6 +2,12 @@ name: Publish to NPM
 description: Publish changes from
 
 inputs:
+  github_user:
+    description: The git user to make commits with
+    required: true
+  github_email:
+    description: The git email to make commits with
+    required: true
   target:
     description: The release process target (either release or preid)
     required: true
@@ -19,6 +25,15 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Set github commit user
+      shell: bash
+      env:
+        GITHUB_EMAIL: ${{ inputs.github_email }}
+        GITHUB_USER: ${{ inputs.github_user }}
+      run: |
+        git config --global user.email $GITHUB_EMAIL
+        git config --global user.name $GITHUB_USER
+
     - name: Run npm publish
       shell: bash
       working-directory: ./amplify-js
@@ -34,8 +49,6 @@ runs:
         echo "export PREID_HASH_SUFFIX=$(echo $GH_SHA | cut -c -7 | sed 's/^/\./')" >> $BASH_ENV
         echo "export PREID_PREFIX=$PREID" >> $BASH_ENV
         source $BASH_ENV
-        git config --global user.email $GITHUB_EMAIL
-        git config --global user.name $GITHUB_USER
         git status
         git --no-pager diff
         yarn publish:$TARGET

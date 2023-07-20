@@ -33,8 +33,8 @@ jobs:
       - name: Run npm publish
         uses: ./amplify-js/.github/actions/npm-publish
         with:
-          github_email: aws@amazon.com
-          github_name: aws-amplify-bot
           target: preid
           preid: ${{ inputs.preid }}
           npm_token: ${{ secrets.NPM_TOKEN }}
+          github_user: ${{ vars.GH_USER}}
+          github_email: ${{ vars.GH_EMAIL}}

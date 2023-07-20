@@ -6,10 +6,6 @@ on:
       - feat/github-actions/test-ashwinkumar6
       - feat/github-actions/test-yingku
 
-env:
-  GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
-  GITHUB_USER: ${{ vars.GH_USER }}
-
 jobs:
   e2e:
     secrets: inherit

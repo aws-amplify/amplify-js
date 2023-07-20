@@ -26,12 +26,20 @@ jobs:
         with:
           target: release
           npm_token: ${{ secrets.NPM_TOKEN }}
+          github_user: ${{ vars.GH_USER}}
+          github_email: ${{ vars.GH_EMAIL}}
+
+      - name: Set github commit user
+        env:
+          GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
+          GITHUB_USER: ${{ vars.GH_USER }}
+        run: |
+          git config --global user.email $GITHUB_EMAIL
+          git config --global user.name $GITHUB_USER
 
       - name: Update roll-back infrastructure
         working-directory: ./amplify-js
         run: |
-          git config --global user.email $GITHUB_EMAIL
-          git config --global user.name $GITHUB_USER
           git pull origin release
           PUBLISH_COMMIT_HASH=$(git log -n 1 --pretty=format:"%H")
           RELEASE_COMMIT_MESSAGE=$(git log -n 1 --skip 1 --pretty=oneline)

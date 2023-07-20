@@ -6,10 +6,6 @@ on:
       # Change this to your branch name where "example-preid" corresponds to the preid you want your changes released on
       - feat/example-preid/main
 
-env:
-  GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
-  GITHUB_USER: ${{ vars.GH_USER }}
-
 jobs:
   e2e:
     secrets: inherit
