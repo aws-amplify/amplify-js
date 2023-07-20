@@ -4,8 +4,7 @@ import { SessionInfo } from './DataType';
 import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
 import { v1 as uuid } from 'uuid';
-import { ConsoleLogger as Logger, browserOrNode } from '@aws-amplify/core';
-import { Cache } from '@aws-amplify/cache';
+import { ConsoleLogger as Logger, browserOrNode, Cache } from '@aws-amplify/core';
 
 const PERSONALIZE_CACHE = '_awsct';
 const PERSONALIZE_CACHE_USERID = '_awsct_uid';

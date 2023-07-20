@@ -75,4 +75,6 @@ class LocalStorageMock {
 	}
 }
 
-window.localStorage = new LocalStorageMock();
+if (typeof window !== 'undefined') {
+	window.localStorage = new LocalStorageMock();
+}
