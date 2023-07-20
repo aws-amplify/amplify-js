@@ -7,7 +7,7 @@
 		"setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
 		"setup-dev:react-native": "node ./scripts/setup-dev-rn",
 		"bootstrap": "lerna bootstrap",
-		"test": "lerna run test --stream",
+		"test": "lerna run test --stream && yarn test:license",
 		"test:size": "lerna run test:size --no-bail",
 		"test:duplicates": "./scripts/duplicates-yarn.sh",
 		"test:license": "license-check-and-add check -f license_config.json",
