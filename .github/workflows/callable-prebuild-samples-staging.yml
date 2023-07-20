@@ -6,7 +6,8 @@ on:
       GH_TOKEN_STAGING_READ:
         required: true
 jobs:
-  prebuild:
+  pre-staging:
+    name: Prebuild Staging
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

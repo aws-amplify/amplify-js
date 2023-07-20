@@ -9,6 +9,7 @@ on:
 
 jobs:
   prebuild:
+    name: Prebuild Amplify ${{ inputs.runs_on }}
     runs-on: ${{ inputs.runs_on }}
     steps:
       - name: Checkout repository

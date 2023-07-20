@@ -70,7 +70,7 @@ jobs:
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
         if: failure()
         with:
-          name: e2e-test-artifacts
+          name: ${{ inputs.test_name }}
           if-no-files-found: ignore
           path: |
             amplify-js-samples-staging/cypress/videos
