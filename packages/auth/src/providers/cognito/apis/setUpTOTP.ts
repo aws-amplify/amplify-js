@@ -9,7 +9,9 @@ import { getTOTPSetupDetails } from '../utils/signInHelpers';
 
 /**
  * Sets up TOTP for the user.
- * @throws  service error thrown when setting up TOTP: {@link AssociateSoftwareTokenException}.
+ *
+ * @throws -{@link AssociateSoftwareTokenException} 
+ * Thrown if a service occurs while setting up TOTP.
  *
  * @returns TOTPSetupDetails
  *
