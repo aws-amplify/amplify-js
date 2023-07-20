@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.7.0...@aws-amplify/storage@5.8.0) (2023-07-20)
+
+### Features
+
+- **storage:** supporting put api when the objectLock is enabled ([#11611](https://github.com/aws-amplify/amplify-js/issues/11611)) ([817a08c](https://github.com/aws-amplify/amplify-js/commit/817a08c8b36efbe103ca2dd25cf65d5369418a4c))
+
 # [5.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.6.3...@aws-amplify/storage@5.7.0) (2023-07-13)
 
 ### Bug Fixes
