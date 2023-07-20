@@ -3,7 +3,6 @@
 
 import { InputLogEvent, LogGroup } from '@aws-sdk/client-cloudwatch-logs';
 import { Credentials } from '@aws-sdk/types';
-import { JWT } from '../Singleton/Auth/types';
 
 export interface AmplifyConfig {
 	Analytics?: object;
@@ -87,104 +86,9 @@ export type ServiceError = {
 	message: string;
 };
 
-export type ResourceConfig = {
-	API?: {};
-	Analytics?: {};
-	Auth?: {
-		userPoolId?: string;
-		identityPoolId?: string;
-		userPoolWebClientId?: string;
-	};
-	DataStore?: {};
-	Interactions?: {};
-	Notifications?: {};
-	Predictions?: {};
-	Storage?: {};
-};
-
-export type LibraryOptions = {
-	Auth?: {
-		tokenRefresher?: TokenRefresher;
-		credentialsProvider?: CredentialsProvider;
-		identityIdProvider?: IdentityIdProvider;
-		keyValueStorage?: KeyValueStorageInterface;
-	} | null;
-};
-
-export interface AuthTokenOrchestrator {
-	setTokenRefresher(tokenRefresher: TokenRefresher): void;
-	setAuthTokenStore(tokenStore: AuthTokenStore): void;
-	setAuthConfig(authConfig: AuthConfig): void;
-
-	getTokens: ({
-		options,
-	}: {
-		options?: GetAuthTokensOptions;
-	}) => Promise<AuthTokens>;
-	setTokens: ({ tokens }: { tokens: AuthTokens }) => Promise<void>;
-	clearTokens: () => Promise<void>;
-}
-
-export type TokenRefresher = ({
-	tokens,
-	authConfig,
-}: {
-	tokens: AuthTokens;
-	authConfig?: AuthConfig;
-}) => Promise<AuthTokens>;
-
-export type IdentityIdProvider = ({
-	tokens,
-	authConfig,
-}: {
-	tokens?: AuthTokens;
-	authConfig?: AuthConfig;
-}) => Promise<string>;
-
-export type CredentialsProvider = ({
-	options,
-	tokens,
-	authConfig,
-	identityId,
-}: {
-	options?: GetAuthTokensOptions;
-	tokens?: AuthTokens;
-	authConfig?: AuthConfig;
-	identityId?: string;
-}) => Promise<Credentials>;
-
-export type GetAuthTokensOptions = {
-	forceRefresh?: boolean;
-};
-
-export type AuthTokens = {
-	idToken?: JWT;
-	accessToken: JWT;
-	accessTokenExpAt: number;
-	clockDrift?: number;
-	metadata?: Record<string, string>; // Generic for each service supported
-};
-
 export interface KeyValueStorageInterface {
 	setItem(key: string, value: string): Promise<void>;
 	getItem(key: string): Promise<string | null>;
 	removeItem(key: string): Promise<void>;
 	clear(): Promise<void>;
 }
-
-export type AuthConfig = ResourceConfig['Auth'];
-
-export interface AuthTokenStore {
-	setAuthConfig(authConfig: AuthConfig): void;
-	loadTokens(): Promise<AuthTokens>;
-	storeTokens(tokens: AuthTokens): Promise<void>;
-	clearTokens(): Promise<void>;
-	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
-}
-
-export type AuthSession = {
-	tokens?: AuthTokens;
-	awsCreds?: Credentials;
-	awsCredsIdentityId?: string;
-	authenticated: boolean;
-};

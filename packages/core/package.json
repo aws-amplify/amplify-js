@@ -14,14 +14,26 @@
 		"./lib-esm/I18n/index.js",
 		"./lib-esm/Credentials.js"
 	],
+	"typesVersions": {
+		">=3.8": {
+			"*": [
+				"./lib-esm/index.d.ts"
+			],
+			"singleton": [
+				"./lib-esm/Singleton/index.d.ts"
+			]
+		}
+	},
 	"exports": {
-		"./singleton": {
-			"import": "./lib-esm/Singleton/index.js",
-			"require": "./lib/Singleton/index.js"
-		},
 		".": {
+			"types": "./lib-esm/index.d.ts",
 			"import": "./lib-esm/index.js",
 			"require": "./lib/index.js"
+		},
+		"./singleton": {
+			"types": "./lib-esm/Singleton/index.d.ts",
+			"import": "./lib-esm/Singleton/index.js",
+			"require": "./lib/Singleton/index.js"
 		}
 	},
 	"scripts": {
@@ -71,8 +83,7 @@
 		"src",
 		"typings.d.ts",
 		"internals",
-		"polyfills",
-		"singleton.d.ts"
+		"polyfills"
 	],
 	"dependencies": {
 		"@aws-crypto/sha256-js": "1.2.2",

@@ -1,68 +1,63 @@
-import {
-	AuthSession,
-	AuthTokenOrchestrator,
-	AuthTokenStore,
-	AuthTokens,
-	GetAuthTokensOptions,
-	LibraryOptions,
-	ResourceConfig,
-	TokenRefresher,
-} from '../types';
+import { Auth } from './Auth';
 import { Hub } from '../Hub';
-import { Observable, Observer } from 'rxjs';
-import { Credentials } from '@aws-sdk/types';
-import { DefaultAuthTokensOrchestrator, DefaultTokenStore } from './Auth';
 import { MemoryKeyValueStorage } from '../StorageHelper';
-
-let singletonResourcesConfig: ResourceConfig = {};
+import { LibraryOptions, ResourcesConfig } from './types';
+import { AmplifyError } from '../Errors';
 
 // TODO: add default AuthTokenStore for each platform
-// TODO: add default providers for getting started
-let singletonLibraryOptions: LibraryOptions = {
-	Auth: {
-		keyValueStorage: new MemoryKeyValueStorage(), // Initialize automatically Depends on platform,
-		tokenRefresher: () => {
-			throw new Error('No token refresher');
-		},
-	},
-};
 
-const authTokenStore: AuthTokenStore = new DefaultTokenStore();
-const tokenOrchestrator: AuthTokenOrchestrator =
-	new DefaultAuthTokensOrchestrator();
-tokenOrchestrator.setAuthTokenStore(authTokenStore);
-
-// add listeners of User changes
-const observersList: Set<Observer<AuthSession>> = new Set();
-
-export namespace Amplify {
+class AmplifyClass {
+	resourcesConfig: ResourcesConfig;
+	libraryOptions: LibraryOptions;
 	/**
-	 * Configure Amplify Library with backend resources and library options
-	 * @param resourcesConfig ResourceConfig
-	 * @param libraryOptions LibraryOptions
+	 * Cross-category Auth utilities.
+	 *
+	 * @internal
 	 */
-	export function configure(
-		resourcesConfig: ResourceConfig,
-		libraryOptions?: LibraryOptions
+	public readonly Auth: Auth;
+	constructor() {
+		this.resourcesConfig = {};
+		this.Auth = new Auth();
+
+		// TODO: add default providers for getting started
+		this.libraryOptions = {
+			Auth: {
+				keyValueStorage: new MemoryKeyValueStorage(), // Initialize automatically Depending on platform,
+				tokenRefresher: () => {
+					throw new AmplifyError({
+						message: 'No tokenRefresher configured',
+						name: 'No tokenRefresher',
+						recoverySuggestion: 'Add token refresher on Amplify.configure(...)',
+					});
+				},
+			},
+		};
+	}
+
+	/**
+	 * Configures Amplify for use with your back-end resources.
+	 *
+	 * @remarks
+	 * `configure` can be used to specify additional library options where available for supported categories.
+	 *
+	 * @param resourceConfig - Back-end resource configuration. Typically provided via the `aws-exports.js` file.
+	 * @param libraryOptions - Additional options for customizing the behavior of the library.
+	 */
+	configure(
+		resourcesConfig: ResourcesConfig,
+		libraryOptions: LibraryOptions = {}
 	): void {
-		// TODO: check if exists or not
-		authTokenStore.setKeyValueStorage(
-			singletonLibraryOptions.Auth.keyValueStorage
-		);
-		authTokenStore.setAuthConfig(resourcesConfig.Auth);
-
-		tokenOrchestrator.setTokenRefresher(
-			singletonLibraryOptions.Auth.tokenRefresher
-		);
-
-		singletonResourcesConfig = incrementResourceConfig(
-			singletonResourcesConfig,
+		this.resourcesConfig = mergeResourceConfig(
+			this.resourcesConfig,
 			resourcesConfig
 		);
-		singletonLibraryOptions = incrementLibraryOptions(
-			singletonLibraryOptions,
+
+		this.libraryOptions = mergeLibraryOptions(
+			this.libraryOptions,
 			libraryOptions
 		);
+
+		this.Auth.configure(this.resourcesConfig.Auth, this.libraryOptions.Auth);
 
 		Hub.dispatch(
 			'core',
@@ -75,171 +70,59 @@ export namespace Amplify {
 	}
 
 	/**
-	 * Obtain the backend resources the library is configured
-	 * @returns ResourceConfig
+	 * Provides access to the current back-end resource configuration for the Library.
+	 *
+	 * @returns Returns the current back-end resource configuration.
 	 */
-	export function getConfig(): ResourceConfig {
-		return JSON.parse(JSON.stringify(singletonResourcesConfig));
-	}
-
-	// TODO: Add more cross category functionality
-
-	export namespace Auth {
-		/**
-		 * @private
-		 * Internal use of Amplify only
-		 * Obtain current Auth Tokens
-		 * @param options GetTokensOptions
-		 * @returns Promise<AuthTokens>
-		 */
-		export async function fetchAuthSession(
-			options?: GetAuthTokensOptions
-		): Promise<AuthSession> {
-			let tokens: AuthTokens;
-			let awsCreds: Credentials;
-			let awsCredsIdentityId: string;
-
-			try {
-				tokens = await tokenOrchestrator.getTokens({ options });
-			} catch (error) {
-				console.warn(error);
-			}
-
-			try {
-				if (singletonLibraryOptions.Auth.identityIdProvider) {
-					awsCredsIdentityId =
-						await singletonLibraryOptions.Auth.identityIdProvider({
-							tokens,
-							authConfig: singletonResourcesConfig.Auth,
-						});
-				}
-			} catch (err) {
-				console.warn(err);
-			}
-
-			try {
-				if (singletonLibraryOptions.Auth.credentialsProvider) {
-					awsCreds = await singletonLibraryOptions.Auth.credentialsProvider({
-						authConfig: singletonResourcesConfig.Auth,
-						identityId: awsCredsIdentityId,
-						tokens,
-						options,
-					});
-				}
-			} catch (err) {
-				console.warn(err);
-			}
-
-			return {
-				authenticated: tokens !== undefined,
-				tokens,
-				awsCreds,
-				awsCredsIdentityId,
-			};
-		}
-
-		/**
-		 * Obtain an Observable that notifies on session changes
-		 * @returns Observable<AmplifyUserSession>
-		 */
-		export function listenSessionChanges(): Observable<AuthSession> {
-			return new Observable(observer => {
-				observersList.add(observer);
-
-				return () => {
-					observersList.delete(observer);
-				};
-			});
-		}
-
-		/**
-		 * @private
-		 * Internal use of Amplify only, Persist Auth Tokens
-		 * @param tokens AuthTokens
-		 * @returns Promise<void>
-		 */
-		export async function setTokens(tokens: AuthTokens): Promise<void> {
-			await tokenOrchestrator.setTokens({ tokens });
-
-			// Notify observers
-			for (const observer of observersList) {
-				// TODO: Add load the identityId and credentials part
-				observer.next({
-					authenticated: true,
-					tokens,
-				});
-			}
-			return;
-		}
-
-		/**
-		 * @private
-		 * Clear tokens
-		 * @return Promise<void>
-		 */
-		export async function clearTokens(): Promise<void> {
-			await tokenOrchestrator.clearTokens();
-
-			// Notify observers
-			for (const observer of observersList) {
-				observer.next({
-					authenticated: false,
-				});
-			}
-			return;
-		}
-
-		/**
-		 * Internal use only by AuthTokenOrchestrator
-		 */
-		export const tokenRefresher: TokenRefresher =
-			singletonLibraryOptions.Auth.tokenRefresher;
+	getConfig(): ResourcesConfig {
+		return JSON.parse(JSON.stringify(this.resourcesConfig));
 	}
 }
 
-function incrementResourceConfig(
-	existingConfig: ResourceConfig,
-	newConfig: ResourceConfig
-): ResourceConfig {
-	const resultConfig: ResourceConfig = {};
+/**
+ * The `Amplify` utility is used to configure the library.
+ *
+ * @remarks
+ * `Amplify` is responsible for orchestrating cross-category communication within the library.
+ */
+export const Amplify = new AmplifyClass();
 
-	if (existingConfig) {
-		for (const category of Object.keys(existingConfig)) {
-			resultConfig[category] = existingConfig[category];
-		}
+// TODO: validate until which level this will nested, during Amplify.configure API review.
+function mergeResourceConfig(
+	existingConfig: ResourcesConfig,
+	newConfig: ResourcesConfig
+): ResourcesConfig {
+	const resultConfig: ResourcesConfig = {};
+
+	for (const category of Object.keys(existingConfig)) {
+		resultConfig[category] = existingConfig[category];
 	}
 
-	if (newConfig) {
-		for (const category of Object.keys(newConfig)) {
-			resultConfig[category] = {
-				...resultConfig[category],
-				...newConfig[category],
-			};
-		}
+	for (const category of Object.keys(newConfig)) {
+		resultConfig[category] = {
+			...resultConfig[category],
+			...newConfig[category],
+		};
 	}
 
 	return resultConfig;
 }
 
-function incrementLibraryOptions(
+function mergeLibraryOptions(
 	existingConfig: LibraryOptions,
 	newConfig: LibraryOptions
 ): LibraryOptions {
 	const resultConfig: LibraryOptions = {};
 
-	if (existingConfig) {
-		for (const category of Object.keys(existingConfig)) {
-			resultConfig[category] = existingConfig[category];
-		}
+	for (const category of Object.keys(existingConfig)) {
+		resultConfig[category] = existingConfig[category];
 	}
 
-	if (newConfig) {
-		for (const category of Object.keys(newConfig)) {
-			resultConfig[category] = {
-				...resultConfig[category],
-				...newConfig[category],
-			};
-		}
+	for (const category of Object.keys(newConfig)) {
+		resultConfig[category] = {
+			...resultConfig[category],
+			...newConfig[category],
+		};
 	}
 
 	return resultConfig;

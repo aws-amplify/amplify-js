@@ -1,107 +1,29 @@
-import type {
+import { Buffer } from 'buffer'; // TODO: this needs to be a platform operation
+import { Credentials } from '@aws-sdk/types';
+import { Observable, Observer } from 'rxjs';
+
+import { DefaultAuthTokensOrchestrator } from './TokenOrchestrator';
+import { DefaultTokenStore } from './TokenStore';
+import {
 	AuthConfig,
+	AuthSession,
 	AuthTokenOrchestrator,
 	AuthTokenStore,
 	AuthTokens,
-	GetAuthTokensOptions,
-	KeyValueStorageInterface,
-	TokenRefresher,
-} from '../../types';
-import { Amplify } from '../../Singleton';
-import { JWT, AuthStorageKeys } from './types';
-import { Buffer } from 'buffer'; // TODO: this needs to be a platform operation
+	FetchAuthSessionOptions,
+	JWT,
+	LibraryAuthOptions,
+} from './types';
 
-export class DefaultAuthTokensOrchestrator implements AuthTokenOrchestrator {
-	tokenStore: AuthTokenStore;
-	tokenRefresher: TokenRefresher;
-	authConfig: AuthConfig;
-
-	setAuthConfig(authConfig: AuthConfig) {
-		this.authConfig = authConfig;
-	}
-	setTokenRefresher(tokenRefresher: TokenRefresher) {
-		this.tokenRefresher = tokenRefresher;
-	}
-	setAuthTokenStore(tokenStore: AuthTokenStore) {
-		this.tokenStore = tokenStore;
-	}
-	async getTokens({
-		options,
-	}: {
-		options?: GetAuthTokensOptions;
-	}): Promise<AuthTokens> {
-		// TODO: how to handle if there are not tokens on tokenManager
-		let tokens: AuthTokens;
-
-		try {
-			tokens = await this.tokenStore.loadTokens();
-
-			const idTokenExpired = !!tokens.idToken && isTokenExpired({
-				expiresAt: tokens.idToken.payload.exp * 1000,
-				clockDrift: tokens.clockDrift,
-			});
-			const accessTokenExpired = isTokenExpired({
-				expiresAt: tokens.accessTokenExpAt,
-				clockDrift: tokens.clockDrift,
-			});
-
-			if (
-				(options && options.forceRefresh) ||
-				idTokenExpired ||
-				accessTokenExpired
-			) {
-				tokens = await refreshTokens({
-					tokens,
-					tokenRefresher: this.tokenRefresher,
-					authConfig: this.authConfig,
-				});
-			}
-		} catch (err) {
-			console.warn(err);
-			throw new Error('No session');
-		}
-
-		return { ...tokens };
-	}
-
-	async setTokens({ tokens }: { tokens: AuthTokens }) {
-		return await this.tokenStore.storeTokens(tokens);
-	}
-
-	async clearTokens() {
-		return await this.tokenStore.clearTokens();
-	}
-}
-
-function isTokenExpired({
+export function isTokenExpired({
 	expiresAt,
 	clockDrift,
 }: {
 	expiresAt: number;
 	clockDrift: number;
 }): boolean {
-	// compare expiration against token exp and clock drift
 	const currentTime = Date.now();
 	return currentTime + clockDrift > expiresAt;
-}
-
-async function refreshTokens({
-	tokens,
-	tokenRefresher,
-	authConfig,
-}: {
-	tokens: AuthTokens;
-	tokenRefresher: TokenRefresher;
-	authConfig: AuthConfig;
-}): Promise<AuthTokens> {
-	try {
-		const newTokens = await tokenRefresher({ tokens, authConfig });
-		await Amplify.Auth.setTokens(newTokens);
-		return newTokens;
-	} catch (err) {
-		await Amplify.Auth.clearTokens();
-		throw err;
-	}
 }
 
 export function decodeJWT(token: string): JWT {
@@ -111,142 +33,165 @@ export function decodeJWT(token: string): JWT {
 	}
 
 	const payloadString = tokenSplitted[1];
+	const payload = JSON.parse(
+		Buffer.from(payloadString, 'base64').toString('utf8')
+	);
 
 	try {
 		return {
 			toString: () => token,
-			payload: JSON.parse(
-				Buffer.from(payloadString, 'base64').toString('utf8')
-			),
+			payload,
 		};
 	} catch (err) {
 		throw new Error('Invalid token payload');
 	}
 }
 
-export class DefaultTokenStore implements AuthTokenStore {
-	keyValueStorage: KeyValueStorageInterface;
-	authConfig: AuthConfig;
+export class Auth {
+	private authTokenStore: AuthTokenStore;
+	private tokenOrchestrator: AuthTokenOrchestrator;
+	private authSessionObservers: Set<Observer<AuthSession>>;
+	private authConfig: AuthConfig;
+	private authOptions: LibraryAuthOptions;
 
-	setAuthConfig(authConfigParam: AuthConfig) {
-		this.authConfig = authConfigParam;
-		return;
+	constructor() {
+		this.authTokenStore = new DefaultTokenStore();
+		this.tokenOrchestrator = new DefaultAuthTokensOrchestrator();
+		this.tokenOrchestrator.setAuthTokenStore(this.authTokenStore);
+		this.authSessionObservers = new Set();
 	}
 
-	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface) {
-		this.keyValueStorage = keyValueStorage;
-		return;
+	/**
+	 * Configure Auth category
+	 *
+	 * @internal
+	 *
+	 * @param authResourcesConfig - Resources configurations required by Auth providers.
+	 * @param authOptions - Client options used by library
+	 *
+	 * @returns void
+	 */
+	configure(
+		authResourcesConfig: AuthConfig,
+		authOptions?: LibraryAuthOptions
+	): void {
+		this.authConfig = authResourcesConfig;
+		this.authOptions = authOptions;
+
+		this.authTokenStore.setKeyValueStorage(this.authOptions.keyValueStorage);
+		this.authTokenStore.setAuthConfig(this.authConfig);
+
+		this.tokenOrchestrator.setTokenRefresher(this.authOptions.tokenRefresher);
 	}
 
-	async loadTokens(): Promise<AuthTokens> {
-		if (this.authConfig === undefined) {
-			throw new Error('Auth not configured');
-		}
-		// TODO: migration logic should be here
-		// Reading V5 tokens old format
+	/**
+	 * Returns current session tokens and credentials
+	 *
+	 * @internal
+	 *
+	 * @param options - Options for fetching session.
+	 *
+	 * @returns Returns a promise that will resolve with fresh authentication tokens.
+	 */
+	async fetchAuthSession(
+		options?: FetchAuthSessionOptions
+	): Promise<AuthSession> {
+		let tokens: AuthTokens;
+		let awsCreds: Credentials;
+		let awsCredsIdentityId: string;
 
-		// Reading V6 tokens
 		try {
-			const name = 'Cognito'; // TODO: update after API review for Amplify.configure
-			const authKeys = createKeysForAuthStorage(
-				name,
-				this.authConfig.userPoolWebClientId
-			);
-			const atString = await this.keyValueStorage.getItem(authKeys.accessToken);
-			const itString = await this.keyValueStorage.getItem(authKeys.idToken);
+			tokens = await this.tokenOrchestrator.getTokens({ options });
+		} catch (error) {
+			// TODO: validate error depending on conditions it can proceed or throw
+		}
 
-			return {
-				accessToken: decodeJWT(atString),
-				idToken: itString ? decodeJWT(itString) : undefined,
-				accessTokenExpAt:
-					Number.parseInt(
-						await this.keyValueStorage.getItem(authKeys.accessTokenExpAt)
-					) || 0,
-				metadata: JSON.parse(
-					(await this.keyValueStorage.getItem(authKeys.metadata)) || '{}'
-				),
-				clockDrift:
-					Number.parseInt(
-						await this.keyValueStorage.getItem(authKeys.clockDrift)
-					) || 0,
-			};
+		try {
+			if (this.authOptions.identityIdProvider) {
+				awsCredsIdentityId = await this.authOptions.identityIdProvider({
+					tokens,
+					authConfig: this.authConfig,
+				});
+			}
 		} catch (err) {
-			throw new Error('No valid tokens');
+			// TODO: validate error depending on conditions it can proceed or throw
 		}
-	}
-	async storeTokens(tokens: AuthTokens): Promise<void> {
-		if (this.authConfig === undefined) {
-			throw new Error('Auth not configured');
-		}
-        
-        if (tokens === undefined) {
-            throw new Error('Tokens not valid');
-        }
 
-		const name = 'Cognito'; // TODO: update after API review for Amplify.configure
-		const authKeys = createKeysForAuthStorage(
-			name,
-			this.authConfig.userPoolWebClientId
-		);
-		this.keyValueStorage.setItem(
-			authKeys.accessToken,
-			tokens.accessToken.toString()
-		);
-        if (!!tokens.idToken) {
-            this.keyValueStorage.setItem(authKeys.idToken, tokens.idToken.toString());
-        }
-		this.keyValueStorage.setItem(
-			authKeys.accessTokenExpAt,
-			`${tokens.accessTokenExpAt}`
-		);
-		this.keyValueStorage.setItem(
-			authKeys.metadata,
-			JSON.stringify(tokens.metadata)
-		);
-		this.keyValueStorage.setItem(authKeys.clockDrift, `${tokens.clockDrift}`);
+		try {
+			if (this.authOptions.credentialsProvider) {
+				awsCreds = await this.authOptions.credentialsProvider({
+					authConfig: this.authConfig,
+					identityId: awsCredsIdentityId,
+					tokens,
+					options,
+				});
+			}
+		} catch (err) {
+			// TODO: validate error depending on conditions it can proceed or throw
+		}
+
+		return {
+			authenticated: tokens !== undefined,
+			tokens,
+			awsCreds,
+			awsCredsIdentityId,
+		};
 	}
 
+	/**
+	 * Obtain an Observable that notifies on session changes
+	 *
+	 * @returns Observable<AmplifyUserSession>
+	 */
+	listenSessionChanges(): Observable<AuthSession> {
+		return new Observable(observer => {
+			this.authSessionObservers.add(observer);
+
+			return () => {
+				this.authSessionObservers.delete(observer);
+			};
+		});
+	}
+
+	/**
+	 * @internal
+	 *
+	 * Internal use of Amplify only, Persist Auth Tokens
+	 *
+	 * @param tokens AuthTokens
+	 *
+	 * @returns Promise<void>
+	 */
+	async setTokens(tokens: AuthTokens): Promise<void> {
+		await this.tokenOrchestrator.setTokens({ tokens });
+
+		// Notify observers
+		for (const observer of this.authSessionObservers) {
+			// TODO: Add load the identityId and credentials part
+			observer.next({
+				authenticated: true,
+				tokens,
+			});
+		}
+		return;
+	}
+
+	/**
+	 * @internal
+	 *
+	 * Clear tokens persisted on the client
+	 *
+	 * @return Promise<void>
+	 */
 	async clearTokens(): Promise<void> {
-		if (this.authConfig === undefined) {
-			throw new Error('Auth not configured');
+		await this.tokenOrchestrator.clearTokens();
+
+		// Notify observers
+		for (const observer of this.authSessionObservers) {
+			observer.next({
+				authenticated: false,
+			});
 		}
-
-		const name = 'Cognito'; // TODO: update after API review for Amplify.configure
-		const authKeys = createKeysForAuthStorage(
-			name,
-			this.authConfig.userPoolWebClientId
-		);
-
-		// Not calling clear because it can remove data that is not managed by AuthTokenStore
-		await this.keyValueStorage.removeItem(authKeys.accessToken);
-		await this.keyValueStorage.removeItem(authKeys.idToken);
-		await this.keyValueStorage.removeItem(authKeys.accessTokenExpAt);
-		await this.keyValueStorage.removeItem(authKeys.clockDrift);
-		await this.keyValueStorage.removeItem(authKeys.metadata);
+		return;
 	}
 }
-
-const createKeysForAuthStorage = (provider: string, identifier: string) => {
-	return getAuthStorageKeys(AuthStorageKeys)(
-		`com.amplify.${provider}`,
-		identifier
-	);
-};
-
-export function getAuthStorageKeys<T extends Record<string, string>>(
-	authKeys: T
-) {
-	const keys = Object.values({ ...authKeys });
-	return (prefix: string, identifier: string) =>
-		keys.reduce(
-			(acc, authKey) => ({
-				...acc,
-				[authKey]: `${prefix}.${identifier}.${authKey}`,
-			}),
-			{} as AuthKeys<keyof T & string>
-		);
-}
-
-type AuthKeys<AuthKey extends string> = {
-	[Key in AuthKey]: string;
-};

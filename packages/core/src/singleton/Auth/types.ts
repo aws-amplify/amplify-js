@@ -1,6 +1,9 @@
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/safe-json-parse.ts
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/jwt-model.ts
 
+import { Credentials } from '@aws-sdk/types';
+import { KeyValueStorageInterface } from '../../types';
+
 interface JwtPayloadStandardFields {
 	exp?: number; // expires: https://tools.ietf.org/html/rfc7519#section-4.1.4
 	iss?: string; // issuer: https://tools.ietf.org/html/rfc7519#section-4.1.1
@@ -20,18 +23,103 @@ type JsonObject = { [name: string]: Json };
 type JwtPayload = JwtPayloadStandardFields & JsonObject;
 
 export type JWT = {
-	payload: JwtPayload,
-	toString: () => string
+	payload: JwtPayload;
+	toString: () => string;
 };
 
 export type JWTCreator = (stringJWT: string) => JWT;
 
 export const AuthStorageKeys = {
-	'accessToken': 'accessToken',
-	'idToken': 'idToken',
-	'accessTokenExpAt': 'accessTokenExpAt',
-	'oidcProvider': 'oidcProvider',
-	'clockDrift': 'clockDrift',
-	'metadata': 'metadata'
+	accessToken: 'accessToken',
+	idToken: 'idToken',
+	accessTokenExpAt: 'accessTokenExpAt',
+	oidcProvider: 'oidcProvider',
+	clockDrift: 'clockDrift',
+	metadata: 'metadata',
 };
 
+export interface AuthTokenStore {
+	setAuthConfig(authConfig: AuthConfig): void;
+	loadTokens(): Promise<AuthTokens>;
+	storeTokens(tokens: AuthTokens): Promise<void>;
+	clearTokens(): Promise<void>;
+	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
+}
+
+export type AuthSession = {
+	tokens?: AuthTokens;
+	awsCreds?: Credentials;
+	awsCredsIdentityId?: string;
+	authenticated: boolean;
+};
+
+export type LibraryAuthOptions = {
+	tokenRefresher?: TokenRefresher;
+	credentialsProvider?: CredentialsProvider;
+	identityIdProvider?: IdentityIdProvider;
+	keyValueStorage?: KeyValueStorageInterface;
+};
+
+export interface AuthTokenOrchestrator {
+	setTokenRefresher(tokenRefresher: TokenRefresher): void;
+	setAuthTokenStore(tokenStore: AuthTokenStore): void;
+	setAuthConfig(authConfig: AuthConfig): void;
+
+	getTokens: ({
+		options,
+	}: {
+		options?: FetchAuthSessionOptions;
+	}) => Promise<AuthTokens>;
+	setTokens: ({ tokens }: { tokens: AuthTokens }) => Promise<void>;
+	clearTokens: () => Promise<void>;
+}
+
+export type TokenRefresher = ({
+	tokens,
+	authConfig,
+}: {
+	tokens: AuthTokens;
+	authConfig?: AuthConfig;
+}) => Promise<AuthTokens>;
+
+export type IdentityIdProvider = ({
+	tokens,
+	authConfig,
+}: {
+	tokens?: AuthTokens;
+	authConfig?: AuthConfig;
+}) => Promise<string>;
+
+export type CredentialsProvider = ({
+	options,
+	tokens,
+	authConfig,
+	identityId,
+}: {
+	options?: FetchAuthSessionOptions;
+	tokens?: AuthTokens;
+	authConfig?: AuthConfig;
+	identityId?: string;
+}) => Promise<Credentials>;
+
+export type FetchAuthSessionOptions = {
+	forceRefresh?: boolean;
+};
+
+export type AuthTokens = {
+	idToken?: JWT;
+	accessToken: JWT;
+	accessTokenExpAt: number;
+	clockDrift?: number;
+	metadata?: Record<string, string>; // Generic for each service supported
+};
+
+export type AuthKeys<AuthKey extends string> = {
+	[Key in AuthKey]: string;
+};
+
+export type AuthConfig = {
+	userPoolWebClientId: string;
+	userPoolId: string;
+	identityPoolId: string;
+};
