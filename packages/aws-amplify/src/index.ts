@@ -13,18 +13,8 @@ export {
 export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
 export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
-export {
-	AuthModeStrategyType,
-	DataStore,
-	Predicates,
-	SortDirection,
-	syncExpression,
-} from '@aws-amplify/datastore';
 export { PubSub } from '@aws-amplify/pubsub';
 export { Cache } from '@aws-amplify/cache';
-export { Interactions } from '@aws-amplify/interactions';
-export { Notifications } from '@aws-amplify/notifications';
-export { Predictions } from '@aws-amplify/predictions';
 export {
 	ConsoleLogger as Logger,
 	Hub,
@@ -35,4 +25,18 @@ export {
 	AWSCloudWatchProvider,
 } from '@aws-amplify/core';
 export { withSSRContext } from './withSSRContext';
+
+// TODO(v6): Re-enable these exports when available
+/*
+export {
+	AuthModeStrategyType,
+	DataStore,
+	Predicates,
+	SortDirection,
+	syncExpression,
+} from '@aws-amplify/datastore';
+export { Interactions } from '@aws-amplify/interactions';
+export { Notifications } from '@aws-amplify/notifications';
+export { Predictions } from '@aws-amplify/predictions';
 export { Geo } from '@aws-amplify/geo';
+*/
