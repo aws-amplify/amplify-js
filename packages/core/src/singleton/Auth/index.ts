@@ -120,7 +120,7 @@ export class Auth {
 
 		try {
 			if (this.authOptions.credentialsProvider) {
-				awsCreds = await this.authOptions.credentialsProvider({
+				awsCreds = await this.authOptions.credentialsProvider.getCredentials({
 					authConfig: this.authConfig,
 					identityId: awsCredsIdentityId,
 					tokens,

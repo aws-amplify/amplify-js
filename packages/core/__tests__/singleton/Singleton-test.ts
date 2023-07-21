@@ -192,7 +192,10 @@ describe('Session tests', () => {
 		Amplify.configure(config, {
 			Auth: {
 				identityIdProvider: identitySpy,
-				credentialsProvider: credentialsSpy,
+				credentialsProvider: {
+					getCredentials: credentialsSpy,
+					clearCredentials: () => {},
+				},
 			},
 		});
 		const token =

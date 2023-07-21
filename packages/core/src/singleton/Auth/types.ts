@@ -60,6 +60,21 @@ export type LibraryAuthOptions = {
 	keyValueStorage?: KeyValueStorageInterface;
 };
 
+export interface CredentialsProvider {
+	getCredentials: ({
+		options,
+		tokens,
+		authConfig,
+		identityId,
+	}: {
+		options?: FetchAuthSessionOptions;
+		tokens?: AuthTokens;
+		authConfig?: AuthConfig;
+		identityId?: string;
+	}) => Promise<Credentials>;
+	clearCredentials: () => void;
+}
+
 export interface AuthTokenOrchestrator {
 	setTokenRefresher(tokenRefresher: TokenRefresher): void;
 	setAuthTokenStore(tokenStore: AuthTokenStore): void;
@@ -89,18 +104,6 @@ export type IdentityIdProvider = ({
 	tokens?: AuthTokens;
 	authConfig?: AuthConfig;
 }) => Promise<string>;
-
-export type CredentialsProvider = ({
-	options,
-	tokens,
-	authConfig,
-	identityId,
-}: {
-	options?: FetchAuthSessionOptions;
-	tokens?: AuthTokens;
-	authConfig?: AuthConfig;
-	identityId?: string;
-}) => Promise<Credentials>;
 
 export type FetchAuthSessionOptions = {
 	forceRefresh?: boolean;
