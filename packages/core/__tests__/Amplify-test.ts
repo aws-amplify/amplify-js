@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import { Amplify } from '../src';
 
 describe('Amplify config test', () => {
