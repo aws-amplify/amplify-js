@@ -8,11 +8,13 @@ import { changePasswordClient } from '../utils/clients/ChangePasswordClient';
 import { ChangePasswordException } from '../../cognito/types/errors';
 
 /**
- * update password when the user is authenticated
+ * Updates user's password while authenticated.
  *
- * @param updatePasswordRequest - The updatePasswordRequest object
- * @throws service: {@link ChangePasswordException } - Cognito service errors thrown when updatinga  password.
- * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown when oldPassword or newPassword are empty.
+ * @param updatePasswordRequest - The updatePasswordRequest object.
+ *
+ * @throws - {@link ChangePasswordException} - Cognito service errors thrown when updatinga password.
+ *
+ * @throws - {@link AuthValidationErrorCode} - Validation errors thrown when oldPassword or newPassword are empty.
  *
  * TODO: add config errors
  */
