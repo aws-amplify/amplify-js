@@ -5,12 +5,12 @@
 This file maps exports from `aws-amplify/utils`.
 */
 export {
-	AWSCloudWatchProvider, 
+	AWSCloudWatchProvider,
 	Cache,
-	ClientDevice, 
-	Hub, 
-	I18n, 
-	ConsoleLogger as Logger, 
-	ServiceWorker, 
-	Signer
-} from '@aws-amplify/core/utils';
+	ClientDevice,
+	Hub,
+	I18n,
+	ConsoleLogger as Logger,
+	ServiceWorker,
+	Signer,
+} from '@aws-amplify/core';
