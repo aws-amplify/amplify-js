@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer'; // TODO: this needs to be a platform operation
+import { Buffer } from 'buffer'; // TODO(v6): this needs to be a platform operation
 import { Credentials } from '@aws-sdk/types';
 import { Observable, Observer } from 'rxjs';
 
@@ -104,7 +104,7 @@ export class Auth {
 		try {
 			tokens = await this.tokenOrchestrator.getTokens({ options });
 		} catch (error) {
-			// TODO: validate error depending on conditions it can proceed or throw
+			// TODO(v6): validate error depending on conditions it can proceed or throw
 		}
 
 		try {
@@ -115,7 +115,7 @@ export class Auth {
 				});
 			}
 		} catch (err) {
-			// TODO: validate error depending on conditions it can proceed or throw
+			// TODO(v6): validate error depending on conditions it can proceed or throw
 		}
 
 		try {
@@ -128,11 +128,11 @@ export class Auth {
 				});
 			}
 		} catch (err) {
-			// TODO: validate error depending on conditions it can proceed or throw
+			// TODO(v6): validate error depending on conditions it can proceed or throw
 		}
 
 		return {
-			authenticated: tokens !== undefined,
+			isSignedIn: tokens !== undefined,
 			tokens,
 			awsCreds,
 			awsCredsIdentityId,
@@ -168,9 +168,9 @@ export class Auth {
 
 		// Notify observers (await is required to work with jest)
 		for await (const observer of this.authSessionObservers) {
-			// TODO: Add load the identityId and credentials part
+			// TODO(v6): Add load the identityId and credentials part
 			observer.next({
-				authenticated: true,
+				isSignedIn: true,
 				tokens,
 			});
 		}
@@ -190,7 +190,7 @@ export class Auth {
 		// Notify observers
 		for await (const observer of this.authSessionObservers) {
 			observer.next({
-				authenticated: false,
+				isSignedIn: false,
 			});
 		}
 		return;

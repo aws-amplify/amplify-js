@@ -27,17 +27,16 @@ export class DefaultTokenStore implements AuthTokenStore {
 		if (this.authConfig === undefined) {
 			throw new AmplifyError({
 				message: 'Auth not configured',
-                                name: 'AuthConfigException',
-				recoverySuggestion:
-					'Make sure to call Amplify.configure in your app',
+				name: 'AuthConfigException',
+				recoverySuggestion: 'Make sure to call Amplify.configure in your app',
 			});
 		}
-		// TODO: migration logic should be here
+		// TODO(v6): migration logic should be here
 		// Reading V5 tokens old format
 
 		// Reading V6 tokens
 		try {
-			const name = 'Cognito'; // TODO: update after API review for Amplify.configure
+			const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 			const authKeys = createKeysForAuthStorage(
 				name,
 				this.authConfig.userPoolWebClientId
@@ -89,7 +88,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 			});
 		}
 
-		const name = 'Cognito'; // TODO: update after API review for Amplify.configure
+		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,
 			this.authConfig.userPoolWebClientId
@@ -127,7 +126,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 			});
 		}
 
-		const name = 'Cognito'; // TODO: update after API review for Amplify.configure
+		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,
 			this.authConfig.userPoolWebClientId

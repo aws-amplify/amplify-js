@@ -295,7 +295,7 @@ describe('Session tests', () => {
 
 		let subscription = auth.listenSessionChanges().subscribe({
 			next: authSession => {
-				expect(authSession.authenticated).toBe(true);
+				expect(authSession.isSignedIn).toBe(true);
 				expect(authSession.tokens?.accessTokenExpAt).toBe(2000000000000);
 				expect(authSession.tokens?.metadata).toBe(undefined);
 			},
@@ -318,7 +318,7 @@ describe('Session tests', () => {
 
 		subscription = auth.listenSessionChanges().subscribe({
 			next: authSession => {
-				expect(authSession.authenticated).toBe(false);
+				expect(authSession.isSignedIn).toBe(false);
 			},
 		});
 

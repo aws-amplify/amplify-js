@@ -28,10 +28,11 @@ export class DefaultAuthTokensOrchestrator implements AuthTokenOrchestrator {
 	}: {
 		options?: FetchAuthSessionOptions;
 	}): Promise<AuthTokens> {
-		// TODO: how to handle if there are not tokens on tokenManager
+		// TODO(v6): how to handle if there are not tokens on tokenManager
 		let tokens: AuthTokens;
 
 		try {
+			// TODO(v6): add wait for inflight OAuth in case there is one
 			tokens = await this.tokenStore.loadTokens();
 
 			const idTokenExpired =
@@ -51,7 +52,7 @@ export class DefaultAuthTokensOrchestrator implements AuthTokenOrchestrator {
 				});
 			}
 		} catch (err) {
-			// TODO: review token handling mechanism, including exponential retry, offline, etc
+			// TODO(v6): review token handling mechanism, including exponential retry, offline, etc
 			throw new Error('No session');
 		}
 

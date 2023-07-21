@@ -50,7 +50,7 @@ export type AuthSession = {
 	tokens?: AuthTokens;
 	awsCreds?: Credentials;
 	awsCredsIdentityId?: string;
-	authenticated: boolean;
+	isSignedIn: boolean;
 };
 
 export type LibraryAuthOptions = {
