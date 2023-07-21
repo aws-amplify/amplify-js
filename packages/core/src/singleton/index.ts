@@ -4,7 +4,7 @@ import { MemoryKeyValueStorage } from '../StorageHelper';
 import { LibraryOptions, ResourcesConfig } from './types';
 import { AmplifyError } from '../Errors';
 
-// TODO: add default AuthTokenStore for each platform
+// TODO(v6): add default AuthTokenStore for each platform
 
 class AmplifyClass {
 	resourcesConfig: ResourcesConfig;
@@ -19,15 +19,16 @@ class AmplifyClass {
 		this.resourcesConfig = {};
 		this.Auth = new Auth();
 
-		// TODO: add default providers for getting started
+		// TODO(v6): add default providers for getting started
 		this.libraryOptions = {
 			Auth: {
 				keyValueStorage: new MemoryKeyValueStorage(), // Initialize automatically Depending on platform,
 				tokenRefresher: () => {
 					throw new AmplifyError({
-						message: 'No tokenRefresher configured',
-						name: 'No tokenRefresher',
-						recoverySuggestion: 'Add token refresher on Amplify.configure(...)',
+						message: 'No tokenRefresher not provided',
+						name: 'MissingTokenRefresher',
+						recoverySuggestion:
+							'Make sure to call Amplify.configure in your app with a tokenRefresher',
 					});
 				},
 			},
@@ -87,7 +88,7 @@ class AmplifyClass {
  */
 export const Amplify = new AmplifyClass();
 
-// TODO: validate until which level this will nested, during Amplify.configure API review.
+// TODO(v6): validate until which level this will nested, during Amplify.configure API review.
 function mergeResourceConfig(
 	existingConfig: ResourcesConfig,
 	newConfig: ResourcesConfig

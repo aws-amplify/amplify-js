@@ -7,7 +7,7 @@ import {
 	AuthTokens,
 } from './types';
 import { KeyValueStorageInterface } from '../../types';
-import { AmplifyError } from '../../Errors';
+import { asserts } from '../../Util/errors/AssertError';
 
 export class DefaultTokenStore implements AuthTokenStore {
 	keyValueStorage: KeyValueStorageInterface;
@@ -68,14 +68,11 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 	async storeTokens(tokens: AuthTokens): Promise<void> {
 		assertTokenProviderConfig(this.authConfig);
-
-		if (tokens === undefined) {
-			throw new AmplifyError({
-				message: 'Invalid tokens',
-				name: 'Invalid tokens',
-				recoverySuggestion: 'Make sure the tokens are valid',
-			});
-		}
+		asserts(!(tokens === undefined), {
+			message: 'Invalid tokens',
+			name: 'InvalidAuthTokens',
+			recoverySuggestion: 'Make sure the tokens are valid',
+		});
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
