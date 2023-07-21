@@ -17,6 +17,8 @@ import {
 	NonRetryableError,
 	ICredentials,
 	isNonRetryableError,
+	CustomUserAgentDetails,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import { Cache } from '@aws-amplify/cache';
 import { Auth, GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
@@ -156,7 +158,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 							ConnectionState.ConnectedPendingDisconnect,
 							ConnectionState.ConnectedPendingKeepAlive,
 							ConnectionState.ConnectedPendingNetwork,
-							ConnectionState.ConnectedPendingNetwork,
 							ConnectionState.ConnectionDisruptedPendingNetwork,
 							ConnectionState.Disconnected,
 						].includes(connectionState)
@@ -208,7 +209,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 
 	subscribe(
 		_topics: string[] | string,
-		options?: AWSAppSyncRealTimeProviderOptions
+		options?: AWSAppSyncRealTimeProviderOptions,
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<Record<string, unknown>> {
 		const appSyncGraphqlEndpoint = options?.appSyncGraphqlEndpoint;
 
@@ -230,11 +232,13 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 				const startSubscription = () => {
 					if (!subscriptionStartActive) {
 						subscriptionStartActive = true;
+
 						const startSubscriptionPromise =
 							this._startSubscriptionWithAWSAppSyncRealTime({
 								options,
 								observer,
 								subscriptionId,
+								customUserAgentDetails,
 							}).catch<any>(err => {
 								logger.debug(
 									`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`
@@ -301,10 +305,12 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		options,
 		observer,
 		subscriptionId,
+		customUserAgentDetails,
 	}: {
 		options: AWSAppSyncRealTimeProviderOptions;
 		observer: PubSubContentObserver;
 		subscriptionId: string;
+		customUserAgentDetails: CustomUserAgentDetails;
 	}) {
 		const {
 			appSyncGraphqlEndpoint,
@@ -346,7 +352,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 			})),
 			...(await graphql_headers()),
 			...additionalHeaders,
-			[USER_AGENT_HEADER]: Constants.userAgent,
+			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 		};
 
 		const subscriptionMessage = {

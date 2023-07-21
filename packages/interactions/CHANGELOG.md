@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.2.4...@aws-amplify/interactions@5.2.5) (2023-07-20)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+## [5.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.2.3...@aws-amplify/interactions@5.2.4) (2023-07-13)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+## [5.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.2.2...@aws-amplify/interactions@5.2.3) (2023-06-28)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+## [5.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.2.1...@aws-amplify/interactions@5.2.2) (2023-06-27)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+## [5.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.2.0...@aws-amplify/interactions@5.2.1) (2023-06-21)
+
+### Bug Fixes
+
+- Update getAmplifyUserAgent to retain original interface ([#11535](https://github.com/aws-amplify/amplify-js/issues/11535)) ([dc84cc8](https://github.com/aws-amplify/amplify-js/commit/dc84cc8bfa7811b5f4f8ac2f7e5ea1b5edc54fe1))
+
+# [5.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.1.1...@aws-amplify/interactions@5.2.0) (2023-06-20)
+
+### Bug Fixes
+
+- Add upkeep to platform/framework caches ([#11505](https://github.com/aws-amplify/amplify-js/issues/11505)) ([03aa356](https://github.com/aws-amplify/amplify-js/commit/03aa3560e921f08717594bdf679b62501bc6de77))
+
+### Features
+
+- **core:** API detection for 8 framework targets ([#11384](https://github.com/aws-amplify/amplify-js/issues/11384)) ([388f207](https://github.com/aws-amplify/amplify-js/commit/388f2074db0640f2d22aa7cd1a44d8eb8f2301d2))
+- Custom user agent enhancement for api-rest ([#11457](https://github.com/aws-amplify/amplify-js/issues/11457)) ([4315ba0](https://github.com/aws-amplify/amplify-js/commit/4315ba05ad2e4463a4ef19431f20f8d5308cdc62))
+
+## [5.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.1.0...@aws-amplify/interactions@5.1.1) (2023-06-14)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
 # [5.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.0.33...@aws-amplify/interactions@5.1.0) (2023-06-05)
 
 ### Features

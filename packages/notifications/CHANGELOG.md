@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.4.0...@aws-amplify/notifications@1.5.0) (2023-07-20)
+
+### Features
+
+- custom user agent core changes for UI handoff ([#11602](https://github.com/aws-amplify/amplify-js/issues/11602)) ([7365c34](https://github.com/aws-amplify/amplify-js/commit/7365c34b28015af199dbfdb3713cc26e096d1213))
+
+# [1.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.3.2...@aws-amplify/notifications@1.4.0) (2023-07-13)
+
+### Bug Fixes
+
+- **storage:** custom client base64 encoded SSE-C headers ([#11567](https://github.com/aws-amplify/amplify-js/issues/11567)) ([ee19046](https://github.com/aws-amplify/amplify-js/commit/ee190460c01250b693c163f83be412abf3acc234))
+
+### Features
+
+- **s3:** omit double encoding of path for S3 when signing ([#11538](https://github.com/aws-amplify/amplify-js/issues/11538)) ([d46d2d1](https://github.com/aws-amplify/amplify-js/commit/d46d2d1d4263e3b8bcfc03af473d7445af12e5b7))
+
+## [1.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.3.1...@aws-amplify/notifications@1.3.2) (2023-06-28)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [1.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.3.0...@aws-amplify/notifications@1.3.1) (2023-06-21)
+
+### Bug Fixes
+
+- Update getAmplifyUserAgent to retain original interface ([#11535](https://github.com/aws-amplify/amplify-js/issues/11535)) ([dc84cc8](https://github.com/aws-amplify/amplify-js/commit/dc84cc8bfa7811b5f4f8ac2f7e5ea1b5edc54fe1))
+
+# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.2.0...@aws-amplify/notifications@1.3.0) (2023-06-20)
+
+### Bug Fixes
+
+- Add upkeep to platform/framework caches ([#11505](https://github.com/aws-amplify/amplify-js/issues/11505)) ([03aa356](https://github.com/aws-amplify/amplify-js/commit/03aa3560e921f08717594bdf679b62501bc6de77))
+- **storage:** Add getProperties user agent action ([#11501](https://github.com/aws-amplify/amplify-js/issues/11501)) ([019b5b1](https://github.com/aws-amplify/amplify-js/commit/019b5b1115bebc92f2c44bbf285d1d916cb08492))
+
+### Features
+
+- **core:** API detection for 8 framework targets ([#11384](https://github.com/aws-amplify/amplify-js/issues/11384)) ([388f207](https://github.com/aws-amplify/amplify-js/commit/388f2074db0640f2d22aa7cd1a44d8eb8f2301d2))
+
 # [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.7...@aws-amplify/notifications@1.2.0) (2023-06-05)
 
 ### Bug Fixes

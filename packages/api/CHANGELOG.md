@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@5.3.4...@aws-amplify/api@5.3.5) (2023-07-20)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [5.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@5.3.3...@aws-amplify/api@5.3.4) (2023-07-13)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [5.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@5.3.2...@aws-amplify/api@5.3.3) (2023-06-28)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [5.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@5.3.1...@aws-amplify/api@5.3.2) (2023-06-27)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [5.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@5.3.0...@aws-amplify/api@5.3.1) (2023-06-21)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@5.2.1...@aws-amplify/api@5.3.0) (2023-06-20)
+
+### Features
+
+- **core:** API detection for 8 framework targets ([#11384](https://github.com/aws-amplify/amplify-js/issues/11384)) ([388f207](https://github.com/aws-amplify/amplify-js/commit/388f2074db0640f2d22aa7cd1a44d8eb8f2301d2))
+- Custom user agent enhancement for api-rest ([#11457](https://github.com/aws-amplify/amplify-js/issues/11457)) ([4315ba0](https://github.com/aws-amplify/amplify-js/commit/4315ba05ad2e4463a4ef19431f20f8d5308cdc62))
+- user agent enhancements - cross-category api>api-graphql>pubsub ([#11368](https://github.com/aws-amplify/amplify-js/issues/11368)) ([a88dda2](https://github.com/aws-amplify/amplify-js/commit/a88dda202919aa1d4dc2af48f33c3533d8626261))
+
+## [5.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@5.2.0...@aws-amplify/api@5.2.1) (2023-06-14)
+
+**Note:** Version bump only for package @aws-amplify/api
+
 # [5.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@5.1.1...@aws-amplify/api@5.2.0) (2023-06-05)
 
 ### Bug Fixes

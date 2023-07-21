@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { Buffer } from 'buffer';
 import { monotonicFactory, ULID } from 'ulid';
 import { v4 as uuid } from 'uuid';
@@ -75,7 +77,6 @@ const SYNC = NAMESPACES.SYNC;
 const STORAGE = NAMESPACES.STORAGE;
 
 export { USER, SYNC, STORAGE, DATASTORE };
-export const USER_AGENT_SUFFIX_DATASTORE = '/DataStore';
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {

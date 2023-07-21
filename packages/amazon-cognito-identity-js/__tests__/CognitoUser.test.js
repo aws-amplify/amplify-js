@@ -187,7 +187,10 @@ describe('initiateAuth()', () => {
 });
 
 describe('authenticateUser()', () => {
-	afterAll(() => {
+	afterEach(() => {
+		callback.onFailure.mockClear();
+		callback.onSuccess.mockClear();
+		callback.customChallenge.mockClear();
 		jest.restoreAllMocks();
 	});
 
@@ -1660,36 +1663,34 @@ describe('refreshSession()', () => {
 
 	test('update attributes usage of three out of three parameters in callback', () => {
 		const codeDeliverDetailsResult = {
-			'CodeDeliveryDetailsList': [ 
-			   { 
-				  'AttributeName': 'email',
-				  'DeliveryMedium': 'EMAIL',
-				  'Destination': 'e***@e***'
-			   }
-			]
+			CodeDeliveryDetailsList: [
+				{
+					AttributeName: 'email',
+					DeliveryMedium: 'EMAIL',
+					Destination: 'e***@e***',
+				},
+			],
 		};
-		const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
+		const spyon = jest
+			.spyOn(CognitoUser.prototype, 'updateAttributes')
 			.mockImplementationOnce((attrs, callback) => {
 				callback(null, 'SUCCESS', codeDeliverDetailsResult);
-		});
+			});
 		const attrs = [
 			{
 				Name: 'email',
-				Value: 'email@email.com'
+				Value: 'email@email.com',
 			},
 			{
 				Name: 'family_name',
-				Value: 'familyName'
-			}
+				Value: 'familyName',
+			},
 		];
-		cognitoUser.updateAttributes(
-			attrs,
-			(err, result, details) => {
-				expect(err).toBe(null);
-				expect(result).toBe('SUCCESS');
-				expect(details).toBe(codeDeliverDetailsResult);
-			} 
-		);
+		cognitoUser.updateAttributes(attrs, (err, result, details) => {
+			expect(err).toBe(null);
+			expect(result).toBe('SUCCESS');
+			expect(details).toBe(codeDeliverDetailsResult);
+		});
 		spyon.mockClear();
 	});
 });

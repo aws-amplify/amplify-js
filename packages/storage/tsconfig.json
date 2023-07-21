@@ -1,0 +1,10 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"importHelpers": false
+	},
+	"include": ["./src"],
+	"watchOptions": {
+		"excludeDirectories": ["lib*"]
+	}
+}

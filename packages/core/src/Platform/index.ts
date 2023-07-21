@@ -1,30 +1,59 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
+import { CustomUserAgentDetails, Framework } from './types';
 import { version } from './version';
+import { detectFramework, observeFrameworkChanges } from './detectFramework';
+import type { UserAgent as AWSUserAgent } from '@aws-sdk/types';
 
-const BASE_USER_AGENT = `aws-amplify/${version}`;
+const BASE_USER_AGENT = `aws-amplify`;
 
-export const Platform = {
-	userAgent: `${BASE_USER_AGENT} js`,
-	product: '',
-	navigator: null,
-	isReactNative: false,
-};
-if (typeof navigator !== 'undefined' && navigator.product) {
-	Platform.product = navigator.product || '';
-	Platform.navigator = navigator || null;
-	switch (navigator.product) {
-		case 'ReactNative':
-			Platform.userAgent = `${BASE_USER_AGENT} react-native`;
-			Platform.isReactNative = true;
-			break;
-		default:
-			Platform.userAgent = `${BASE_USER_AGENT} js`;
-			Platform.isReactNative = false;
-			break;
+class PlatformBuilder {
+	userAgent = `${BASE_USER_AGENT}/${version}`;
+	get framework() {
+		return detectFramework();
+	}
+
+	get isReactNative() {
+		return (
+			this.framework === Framework.ReactNative ||
+			this.framework === Framework.Expo
+		);
+	}
+
+	observeFrameworkChanges(fcn: () => void) {
+		observeFrameworkChanges(fcn);
 	}
 }
 
-export const getAmplifyUserAgent = (content?: string) => {
-	return `${Platform.userAgent}${content ? content : ''}`;
+export const Platform = new PlatformBuilder();
+
+export const getAmplifyUserAgentObject = ({
+	category,
+	action,
+	framework,
+	additionalInfo,
+}: CustomUserAgentDetails = {}): AWSUserAgent => {
+	let userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
+	if (category) {
+		userAgent.push([category, action]);
+	}
+	userAgent.push(['framework', framework || detectFramework()]);
+
+	if (additionalInfo) {
+		userAgent = userAgent.concat(additionalInfo);
+	}
+
+	return userAgent;
+};
+
+export const getAmplifyUserAgent = (
+	customUserAgentDetails?: CustomUserAgentDetails
+): string => {
+	const userAgent = getAmplifyUserAgentObject(customUserAgentDetails);
+	const userAgentString = userAgent
+		.map(([agentKey, agentValue]) => `${agentKey}/${agentValue}`)
+		.join(' ');
+
+	return userAgentString;
 };

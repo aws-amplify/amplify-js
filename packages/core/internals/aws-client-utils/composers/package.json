@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/core/internals/aws-client-utils/composers",
+	"types": "../../../lib-esm/clients/internal/index.d.ts",
+	"main": "../../../lib/clients/internal/index.js",
+	"module": "../../../lib-esm/clients/internal/index.js",
+	"react-native": "../../../lib-esm/clients/internal/index.js",
+	"sideEffects": false
+}

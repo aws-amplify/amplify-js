@@ -28,6 +28,7 @@ describe('getSigningValues', () => {
 			shortDate,
 			signingRegion,
 			signingService,
+			uriEscapePath: true,
 		});
 	});
 });
