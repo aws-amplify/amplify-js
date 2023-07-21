@@ -118,7 +118,24 @@ export type AuthKeys<AuthKey extends string> = {
 	[Key in AuthKey]: string;
 };
 
-export type AuthConfig = {
+export type AuthConfig =
+	| IdentityPoolConfig
+	| UserPoolConfig
+	| UserPoolConfigAndIdentityPoolConfig;
+
+type IdentityPoolConfig = {
+	identityPoolId: string;
+	userPoolWebClientId?: never;
+	userPoolId?: never;
+};
+
+type UserPoolConfig = {
+	userPoolWebClientId: string;
+	userPoolId: string;
+	identityPoolId?: never;
+};
+
+type UserPoolConfigAndIdentityPoolConfig = {
 	userPoolWebClientId: string;
 	userPoolId: string;
 	identityPoolId: string;

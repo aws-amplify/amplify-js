@@ -82,6 +82,7 @@ export class Auth {
 		this.authTokenStore.setAuthConfig(this.authConfig);
 
 		this.tokenOrchestrator.setTokenRefresher(this.authOptions.tokenRefresher);
+		this.tokenOrchestrator.setAuthConfig(this.authConfig);
 	}
 
 	/**
@@ -165,8 +166,8 @@ export class Auth {
 	async setTokens(tokens: AuthTokens): Promise<void> {
 		await this.tokenOrchestrator.setTokens({ tokens });
 
-		// Notify observers
-		for (const observer of this.authSessionObservers) {
+		// Notify observers (await is required to work with jest)
+		for await (const observer of this.authSessionObservers) {
 			// TODO: Add load the identityId and credentials part
 			observer.next({
 				authenticated: true,
@@ -187,7 +188,7 @@ export class Auth {
 		await this.tokenOrchestrator.clearTokens();
 
 		// Notify observers
-		for (const observer of this.authSessionObservers) {
+		for await (const observer of this.authSessionObservers) {
 			observer.next({
 				authenticated: false,
 			});
