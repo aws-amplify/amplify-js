@@ -48,8 +48,6 @@ export class DefaultAuthTokensOrchestrator implements AuthTokenOrchestrator {
 			if (options?.forceRefresh || idTokenExpired || accessTokenExpired) {
 				tokens = await this.refreshTokens({
 					tokens,
-					tokenRefresher: this.tokenRefresher,
-					authConfig: this.authConfig,
 				});
 			}
 		} catch (err) {
@@ -62,15 +60,14 @@ export class DefaultAuthTokensOrchestrator implements AuthTokenOrchestrator {
 
 	private async refreshTokens({
 		tokens,
-		tokenRefresher,
-		authConfig,
 	}: {
 		tokens: AuthTokens;
-		tokenRefresher: TokenRefresher;
-		authConfig: AuthConfig;
 	}): Promise<AuthTokens> {
 		try {
-			const newTokens = await tokenRefresher({ tokens, authConfig });
+			const newTokens = await this.tokenRefresher({
+				tokens,
+				authConfig: this.authConfig,
+			});
 			await Amplify.Auth.setTokens(newTokens);
 			return newTokens;
 		} catch (err) {

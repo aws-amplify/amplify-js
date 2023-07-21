@@ -34,6 +34,24 @@
 			"types": "./lib-esm/Singleton/index.d.ts",
 			"import": "./lib-esm/Singleton/index.js",
 			"require": "./lib/Singleton/index.js"
+		},
+		"./internals/aws-client-utils": {
+			"types": "./lib-esm/clients/index.d.ts",
+			"main": "./lib/clients/index.js",
+			"module": "./lib-esm/clients/index.js",
+			"react-native": "./lib-esm/clients/index.js"
+		},
+		"./internals/aws-client-utils/composers": {
+			"types": "./lib-esm/clients/internal/index.d.ts",
+			"main": "./lib/clients/internal/index.js",
+			"module": "./lib-esm/clients/internal/index.js",
+			"react-native": "./lib-esm/clients/internal/index.js"
+		},
+		"./internals/aws-clients/pinpoint": {
+			"types": "./lib-esm/AwsClients/Pinpoint/index.d.ts",
+			"main": "./lib/AwsClients/Pinpoint/index.js",
+			"module": "./lib-esm/AwsClients/Pinpoint/index.js",
+			"react-native": "./lib-esm/AwsClients/Pinpoint/index.js"
 		}
 	},
 	"scripts": {
