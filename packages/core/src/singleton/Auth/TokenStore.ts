@@ -29,7 +29,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 				message: 'Auth not configured',
                                 name: 'AuthConfigException',
 				recoverySuggestion:
-					'Add Amplify.configure({ Auth: {...} }) to your App',
+					'Make sure to call Amplify.configure in your app',
 			});
 		}
 		// TODO: migration logic should be here
