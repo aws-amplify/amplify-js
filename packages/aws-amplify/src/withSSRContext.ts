@@ -4,7 +4,8 @@ import { API } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import { Auth } from '@aws-amplify/auth';
 import { AmplifyClass, Credentials, UniversalStorage } from '@aws-amplify/core';
-import { DataStore } from '@aws-amplify/datastore';
+// TODO(v6): Refactor with v6 SSR changes
+// import { DataStore } from '@aws-amplify/datastore';
 
 // ! We have to use this exact reference, since it gets mutated with Amplify.Auth
 import { Amplify } from './index';
@@ -17,7 +18,7 @@ const requiredModules = [
 ];
 
 // These modules have been tested with SSR
-const defaultModules = [API, Auth, DataStore];
+const defaultModules = [API, Auth /* DataStore */];
 
 type Context = {
 	req?: any;
@@ -26,9 +27,10 @@ type Context = {
 
 export function withSSRContext(context: Context = {}) {
 	const { modules = defaultModules, req } = context;
-	if (modules.includes(DataStore)) {
+	// TODO(v6): Refactor with v6 SSR changes
+	/* if (modules.includes(DataStore)) {
 		modules.push(InternalAPI);
-	}
+	} */
 	const previousConfig = Amplify.configure();
 	const amplify = new AmplifyClass();
 	const storage = new UniversalStorage({ req });
