@@ -12,9 +12,7 @@ export async function changePasswordClient(
 	params: ChangePasswordCommandInput
 ): Promise<ChangePasswordCommandOutput> {
 	const client = new UserPoolHttpClient(UserPoolClient.region);
-	const result: ChangePasswordCommandOutput =
-		await client.send<ChangePasswordCommandOutput>('ChangePassword', {
-			...params,
-		});
-	return result;
+	return client.send<ChangePasswordCommandOutput>('ChangePassword', {
+		...params,
+	});
 }
