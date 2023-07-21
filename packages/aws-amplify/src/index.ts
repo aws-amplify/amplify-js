@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { Amplify } from '@aws-amplify/core';
+export { Amplify, Cache } from '@aws-amplify/core';
 export {
 	Analytics,
 	AnalyticsProvider,
@@ -14,7 +14,6 @@ export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
 export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
 export { PubSub } from '@aws-amplify/pubsub';
-export { Cache } from '@aws-amplify/cache';
 export {
 	ConsoleLogger as Logger,
 	Hub,

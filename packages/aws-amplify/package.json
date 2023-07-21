@@ -43,7 +43,6 @@
     "@aws-amplify/analytics": "7.0.0",
     "@aws-amplify/api": "6.0.0",
     "@aws-amplify/auth": "6.0.0",
-    "@aws-amplify/cache": "6.0.0",
     "@aws-amplify/core": "6.0.0",
     "@aws-amplify/pubsub": "6.0.0",
     "@aws-amplify/storage": "6.0.0",

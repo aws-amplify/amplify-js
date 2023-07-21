@@ -1,7 +1,7 @@
-import { CacheConfig } from '../src/types/Cache';
-import { StorageCache } from '../src/StorageCache';
-import { defaultConfig } from '../src/Utils';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { CacheConfig } from '../../src/Cache/types/Cache';
+import { StorageCache } from '../../src/Cache/StorageCache';
+import { defaultConfig } from '../../src/Cache/Utils';
+import { ConsoleLogger as Logger } from '../../src/Logger';
 
 const config: CacheConfig = {
 	keyPrefix: 'aws-amplify#$#',

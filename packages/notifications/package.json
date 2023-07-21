@@ -50,7 +50,6 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/cache": "6.0.0",
 		"@aws-amplify/rtn-push-notification": "1.2.0",
 		"lodash": "^4.17.21",
 		"uuid": "^3.2.1"

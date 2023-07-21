@@ -1,4 +1,4 @@
-import { getByteLength, getCurrTime } from '../../src/Utils/CacheUtils';
+import { getByteLength } from '../../../src/Cache/Utils/CacheUtils';
 
 describe('CacheUtils', () => {
 	describe('getByteLength test', () => {

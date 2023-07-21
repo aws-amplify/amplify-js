@@ -14,9 +14,9 @@ import {
 	Framework,
 	ApiAction,
 	CustomUserAgentDetails,
+	Cache
 } from '@aws-amplify/core';
 import { InternalPubSub } from '@aws-amplify/pubsub/internals';
-import { Cache } from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';
 import axios, { CancelTokenStatic } from 'axios';
 

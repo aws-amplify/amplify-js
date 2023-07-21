@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Amplify } from '../Amplify';
+import { ConsoleLogger as Logger } from '../Logger';
 import { StorageCache } from './StorageCache';
 import { defaultConfig, getCurrTime } from './Utils';
 import { ICache } from './types';
