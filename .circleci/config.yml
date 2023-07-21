@@ -196,7 +196,7 @@ commands:
       - run:
           name: 'Link packages into samples staging root'
           command: |
-            yarn link amazon-cognito-identity-js @aws-amplify/core @aws-amplify/cache @aws-amplify/auth
+            yarn link amazon-cognito-identity-js @aws-amplify/core @aws-amplify/auth
       - run:
           name: 'Run cypress test << parameters.spec >>'
           command: |

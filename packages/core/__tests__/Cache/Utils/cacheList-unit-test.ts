@@ -1,4 +1,4 @@
-import CacheList from '../../src/Utils/CacheList';
+import CacheList from '../../../src/Cache/Utils/CacheList';
 
 describe('cacheList', () => {
 	describe('isEmpty', () => {

@@ -48,7 +48,6 @@
   ],
   "dependencies": {
     "@aws-amplify/auth": "6.0.0",
-    "@aws-amplify/cache": "6.0.0",
     "graphql": "15.8.0",
     "tslib": "^2.5.0",
     "url": "0.11.0",

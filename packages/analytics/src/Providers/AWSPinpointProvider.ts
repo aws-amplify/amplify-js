@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Cache } from '@aws-amplify/cache';
 import {
 	ConsoleLogger as Logger,
 	ClientDevice,
@@ -11,6 +10,7 @@ import {
 	transferKeyToLowerCase,
 	transferKeyToUpperCase,
 	AnalyticsAction,
+	Cache,
 } from '@aws-amplify/core';
 import {
 	putEvents,

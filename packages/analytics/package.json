@@ -48,7 +48,6 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/cache": "6.0.0",
 		"@aws-sdk/client-firehose": "3.6.1",
 		"@aws-sdk/client-kinesis": "3.6.1",
 		"@aws-sdk/client-personalize-events": "3.6.1",

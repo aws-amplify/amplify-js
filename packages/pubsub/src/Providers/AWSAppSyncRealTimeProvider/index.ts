@@ -11,7 +11,6 @@ import {
 	Credentials,
 	Signer,
 	Hub,
-	Constants,
 	USER_AGENT_HEADER,
 	jitteredExponentialRetry,
 	NonRetryableError,
@@ -19,8 +18,8 @@ import {
 	isNonRetryableError,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
+	Cache
 } from '@aws-amplify/core';
-import { Cache } from '@aws-amplify/cache';
 import { Auth, GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from '../PubSubProvider';
 import {
