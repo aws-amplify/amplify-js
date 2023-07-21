@@ -27,7 +27,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		if (this.authConfig === undefined) {
 			throw new AmplifyError({
 				message: 'Auth not configured',
-				name: 'Auth not configure',
+                                name: 'AuthConfigException',
 				recoverySuggestion:
 					'Add Amplify.configure({ Auth: {...} }) to your App',
 			});
