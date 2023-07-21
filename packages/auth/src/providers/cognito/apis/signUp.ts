@@ -16,7 +16,7 @@ import {
 import {
 	CognitoSignUpOptions,
 	CustomAttribute,
-	CognitoUserAttributeKey
+	CognitoUserAttributeKey,
 } from '../types';
 import { signUpClient } from '../utils/clients/SignUpClient';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
@@ -70,7 +70,7 @@ export async function signUp(
 		ValidationData: validationData,
 	});
 
-	const { UserConfirmed, CodeDeliveryDetails } = res;
+	const { UserConfirmed, CodeDeliveryDetails, UserSub } = res;
 	const { DeliveryMedium, Destination, AttributeName } = {
 		...CodeDeliveryDetails,
 	};
@@ -97,6 +97,7 @@ export async function signUp(
 						: undefined,
 				},
 			},
+			userId: UserSub,
 		};
 	}
 }
