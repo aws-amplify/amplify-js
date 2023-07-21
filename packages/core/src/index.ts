@@ -102,6 +102,7 @@ export {
 import { BrowserStorageCache } from './Cache/BrowserStorageCache';
 export { InMemoryCache } from './Cache/InMemoryCache';
 export { CacheConfig } from './Cache/types';
+export { ICache } from './Cache/types';
 export { BrowserStorageCache };
 
 // Standard `Cache` export to maintain interoperability with React Native
