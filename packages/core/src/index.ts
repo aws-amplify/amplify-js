@@ -105,8 +105,8 @@ export { CacheConfig } from './Cache/types';
 export { ICache } from './Cache/types';
 export { BrowserStorageCache };
 
-import { Amplify as AmplifyV6 } from './Singleton';
-export { AmplifyV6 };
+export { AmplifyV6 } from './singleton';
+
 // Standard `Cache` export to maintain interoperability with React Native
 export { BrowserStorageCache as Cache };
 
