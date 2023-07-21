@@ -8,6 +8,44 @@
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
+  "exports": {
+    ".": {
+      "types": "./lib-esm/index.d.ts",
+      "import": "./lib-esm/index.js",
+      "require": "./lib/index.js"
+    },
+    "./utils": {
+      "types": "./lib-esm/utils/index.d.ts",
+      "import": "./lib-esm/utils/index.js",
+      "require": "./lib/utils/index.js"
+    },
+    "./auth": {
+      "types": "./lib-esm/categories/auth/index.d.ts",
+      "import": "./lib-esm/categories/auth/index.js",
+      "require": "./lib/categories/auth/index.js"
+    },
+    "./auth/cognito": {
+      "types": "./lib-esm/categories/auth/cognito/index.d.ts",
+      "import": "./lib-esm/categories/auth/cognito/index.js",
+      "require": "./lib/categories/auth/cognito/index.js"
+    }
+  },
+  "typesVersions": {
+    ">=3.8": {
+      "*": [
+        "./lib-esm/index.d.ts"
+      ],
+      "utils": [
+        "./lib-esm/utils/index.d.ts"
+      ],
+      "auth": [
+        "./lib-esm/categories/auth/index.d.ts"
+      ],
+      "auth/cognito": [
+        "./lib-esm/categories/auth/cognito/index.d.ts"
+      ]
+    }
+  },
   "sideEffects": false,
   "scripts": {
     "test": "npm run lint && jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
@@ -31,7 +69,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/aws/aws-amplify/issues"
+    "url": "https://github.com/aws-amplify/amplify-js/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
   "files": [
