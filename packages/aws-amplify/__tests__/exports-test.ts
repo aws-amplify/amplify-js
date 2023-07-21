@@ -6,7 +6,7 @@ describe('aws-amplify', () => {
 			expect(Object.keys(exported)).toMatchInlineSnapshot(`
 			Array [
 			  "Amplify",
-				"Cache",
+			  "Cache",
 			  "Analytics",
 			  "AWSPinpointProvider",
 			  "AWSKinesisProvider",
