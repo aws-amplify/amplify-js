@@ -260,25 +260,13 @@ type GraphQLResponse<QueryKey extends string, ResponseType> = Prettify<{
 	};
 }>;
 
-/* tslint:disable semicolon */
 // If no T is passed, ExcludeNeverFields removes "models" from the client
-declare type V6Client<T = never> = ExcludeNeverFields<{
+type V6Client<T = never> = ExcludeNeverFields<{
 	graphql: typeof v6graphql;
 	models: {
-		[K in keyof T]: K extends string
-			? {
-					create: (post: T[K]) => Promise<GraphQLResponse<`create${K}`, T[K]>>;
-					update: (
-						post: Prettify<{ id: string } & Partial<T[K]>>
-					) => Promise<GraphQLResponse<`update${K}`, T[K]>>;
-					delete: (id: string) => Promise<GraphQLResponse<`delete${K}`, T[K]>>;
-					get: (id: string) => Promise<GraphQLResponse<`get${K}`, T[K]>>;
-					list: () => Promise<
-						GraphQLResponse<`list${K}s`, { items: Array<T[K]> }>
-					>;
-					type: T[K];
-			  }
-			: never;
+		[K in keyof T]: {
+			[K in OperationPrefix]: (...args: any[]) => Promise<any>;
+		};
 	};
 }>;
 

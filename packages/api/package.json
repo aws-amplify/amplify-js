@@ -6,9 +6,9 @@
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
 	"typesVersions": {
-		"<3.8": {
+		"<5": {
 			"lib-esm/index.d.ts": [
-				"index.v37.d.ts"
+				"index.v3.d.ts"
 			]
 		}
 	},
@@ -26,16 +26,16 @@
 		"test": "npm run lint && jest -w 1 --coverage",
 		"test:size": "size-limit",
 		"build-with-test": "npm test && npm run build",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "node ./build es6 --watch",
+		"build:cjs": "rimraf lib && tsc -p ./tsconfig.build.json -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "rimraf lib-esm && tsc -p ./tsconfig.build.json -m esnext --outDir lib-esm",
+		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
+		"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 91.14"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 91.14 -i \"src/API.v3.ts\""
 	},
 	"repository": {
 		"type": "git",
@@ -48,7 +48,8 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
-		"@types/zen-observable": "^0.8.0"
+		"@types/zen-observable": "^0.8.0",
+		"typescript": "5.1.6"
 	},
 	"files": [
 		"lib",
@@ -60,7 +61,7 @@
 	"dependencies": {
 		"@aws-amplify/api-graphql": "3.4.5",
 		"@aws-amplify/api-rest": "3.4.0",
-		"tslib": "^1.8.0"
+		"tslib": "^2.6.0"
 	},
 	"size-limit": [
 		{
