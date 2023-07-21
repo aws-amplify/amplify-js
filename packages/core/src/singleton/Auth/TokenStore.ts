@@ -1,4 +1,4 @@
-import { decodeJWT } from '.';
+import { assertTokenProviderConfig, decodeJWT } from '.';
 import {
 	AuthConfig,
 	AuthKeys,
@@ -24,13 +24,8 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	async loadTokens(): Promise<AuthTokens> {
-		if (this.authConfig === undefined) {
-			throw new AmplifyError({
-				message: 'Auth not configured',
-				name: 'AuthConfigException',
-				recoverySuggestion: 'Make sure to call Amplify.configure in your app',
-			});
-		}
+		assertTokenProviderConfig(this.authConfig);
+
 		// TODO(v6): migration logic should be here
 		// Reading V5 tokens old format
 
@@ -67,18 +62,12 @@ export class DefaultTokenStore implements AuthTokenStore {
 				clockDrift,
 			};
 		} catch (err) {
+			// TODO(v6): validate partial results with mobile implementation
 			throw new Error('No valid tokens');
 		}
 	}
 	async storeTokens(tokens: AuthTokens): Promise<void> {
-		if (this.authConfig === undefined) {
-			throw new AmplifyError({
-				message: 'Auth not configured',
-				name: 'Auth not configure',
-				recoverySuggestion:
-					'Add Amplify.configure({ Auth: {...} }) to your App',
-			});
-		}
+		assertTokenProviderConfig(this.authConfig);
 
 		if (tokens === undefined) {
 			throw new AmplifyError({
@@ -117,14 +106,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	async clearTokens(): Promise<void> {
-		if (this.authConfig === undefined) {
-			throw new AmplifyError({
-				message: 'Auth not configured',
-				name: 'Auth not configure',
-				recoverySuggestion:
-					'Add Amplify.configure({ Auth: {...} }) to your App',
-			});
-		}
+		assertTokenProviderConfig(this.authConfig);
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(

@@ -14,6 +14,7 @@ import {
 	JWT,
 	LibraryAuthOptions,
 } from './types';
+import { asserts } from '../../Util/errors/AssertError';
 
 export function isTokenExpired({
 	expiresAt,
@@ -195,4 +196,23 @@ export class Auth {
 		}
 		return;
 	}
+}
+
+export function assertTokenProviderConfig(authConfig: AuthConfig) {
+	const validConfig =
+		!!authConfig?.userPoolId && !!authConfig?.userPoolWebClientId;
+	return asserts(validConfig, {
+		name: 'AuthTokenConfigException',
+		message: 'Auth Token Provider not configured',
+		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
+	});
+}
+
+export function assertCredentialsProviderConfig(authConfig: AuthConfig) {
+	const validConfig = !!authConfig?.identityPoolId;
+	return asserts(validConfig, {
+		name: 'AuthCredentialConfigException',
+		message: 'Auth Credentials provider not configured',
+		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
+	});
 }
