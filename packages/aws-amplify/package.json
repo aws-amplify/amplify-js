@@ -6,7 +6,10 @@
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./lib/index": "./lib-esm/index.js"
+    "./lib/index": "./lib-esm/index.js",
+    "./lib/utils/index": "./lib-esm/utils/index.js",
+    "./lib/categories/auth/index": "./lib/categories/auth/index.js",
+    "./lib/categories/auth/cognito/index": "./lib/categories/auth/cognito/index.js"
   },
   "exports": {
     ".": {

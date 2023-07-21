@@ -4,5 +4,4 @@
 /*
 This file maps exports from `aws-amplify/auth`. It provides access to the default Auth provider.
 */
-export * from '@aws-amplify/auth/types';
-export * from '@aws-amplify/auth/cognito';
+export * from '@aws-amplify/auth';
