@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.4.0...@aws-amplify/pubsub@5.4.1) (2023-07-20)
+
+### Bug Fixes
+
+- duplicate entry in connection states ([#11579](https://github.com/aws-amplify/amplify-js/issues/11579)) ([88a74e7](https://github.com/aws-amplify/amplify-js/commit/88a74e71c0875cc2baae3f7f99bffb9a9be2bcd0))
+
 # [5.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.3.3...@aws-amplify/pubsub@5.4.0) (2023-07-13)
 
 ### Features
