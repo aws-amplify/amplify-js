@@ -9,3 +9,4 @@ export { resendSignUpCode } from './apis/resendSignUpCode';
 export { confirmSignUp } from './apis/confirmSignUp';
 export { confirmSignIn } from './apis/confirmSignIn';
 export { verifyTOTPSetup } from './apis/verifyTOTPSetup';
+export { setUpTOTP } from './apis/setUpTOTP';
