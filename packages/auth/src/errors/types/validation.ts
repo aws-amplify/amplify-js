@@ -16,4 +16,5 @@ export enum AuthValidationErrorCode {
 	EmptyConfirmResetPasswordConfirmationCode = 'EmptyConfirmResetPasswordConfirmationCode',
 	EmptyResetPasswordUsername = 'EmptyResetPasswordUsername',
 	IncorrectMFAMethod = 'IncorrectMFAMethod',
+	EmptyUpdatePassword = 'EmptyUpdatePassword',
 }

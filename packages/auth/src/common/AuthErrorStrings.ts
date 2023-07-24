@@ -49,6 +49,9 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 		message: 'Incorrect MFA method was chosen. It should be either SMS or TOTP',
 		recoverySuggestion: 'Try to pass TOTP or SMS as the challengeResponse',
 	},
+	[AuthValidationErrorCode.EmptyUpdatePassword]: {
+		message: 'oldPassword and newPassword are required to changePassword',
+	},
 };
 
 // TODO: delete this code when the Auth class is removed.
