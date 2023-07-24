@@ -1,12 +1,16 @@
-import { getIdClient } from '../utils/clients/IdentityIdForPoolIdClient';
 import { credentialsForIdentityIdClient } from '../utils/clients/CredentialsForIdentityIdClient';
-import { AuthTokens, AuthTokensProvider } from './tokensProvider';
+import { Credentials } from '@aws-sdk/types';
 
-// TODO: Confirm use of this type from the sdk is necessary
-import { Credentials } from '@aws-sdk/client-cognito-identity';
+// TODO(V6): Confirm use of this type from the sdk is necessary
 import { Amplify } from './MockAmplifySingleton';
-import { CognitoIdentityIdProvider } from './IdentityIdProvider';
-import { Logger, AuthCredentialsProvider } from '@aws-amplify/core';
+import { Logger } from '@aws-amplify/core';
+import {
+	AuthConfig,
+	AuthTokens,
+	CredentialsProvider,
+	GetAuthTokensOptions,
+} from '@aws-amplify/core/lib/types';
+import { setIdentityId } from './IdentityIdProvider';
 
 const logger = new Logger('CredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
@@ -14,25 +18,29 @@ const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if 
 type AWSCredentialsWithExpiration = Credentials & {
 	expiration?: Date;
 };
-export class CognitoCredentialsProvider implements AuthCredentialsProvider {
+export class CognitoCredentialsProvider implements CredentialsProvider {
+	// TODO(V6): find what needs to happen to locally stored identityId
 	clearCredentials: () => Promise<void>;
 	private _credentials?: AWSCredentialsWithExpiration;
-	private identityIdProvider = new CognitoIdentityIdProvider();
 	private _nextCredentialsRefresh: number =
 		new Date().getTime() + CREDENTIALS_TTL;
-	async getCredentials(): Promise<Credentials> {
+	async getCredentials(
+		options?: GetAuthTokensOptions,
+		tokens?: AuthTokens,
+		authConfig?: AuthConfig,
+		identityId?: string
+	): Promise<Credentials> {
 		try {
-			// get auth tokens from the provider
-			let oidcTokens = await Amplify.authTokensProvider.getAuthTokens();
-
 			// check eligibility for guest credentials
 			// - if there is error fetching tokens
 			// - if user is not signed in
-			// TODO: Determine if tokens not being present is enough to decide we need to fetch guest credentials, do we need isSignedIn?
-			if (!oidcTokens || !oidcTokens.isSignedIn) {
-				return await this.getGuestCredentials();
+			// TODO(V6): Determine if tokens not being present is enough to decide we need to fetch guest credentials, do we need isSignedIn?
+			if (!tokens) {
+				// TODO(V6): Attempt to get the tokens from the provider once
+				// tokens = await Amplify.authTokensProvider.getAuthTokens();
+				return await this.getGuestCredentials(identityId);
 			} else {
-				return await this.credsForOIDCTokens(oidcTokens);
+				return await this.credsForOIDCTokens(tokens, identityId);
 			}
 		} catch (e) {
 			// return guest credentials if there is any error fetching the auth tokens
@@ -40,26 +48,22 @@ export class CognitoCredentialsProvider implements AuthCredentialsProvider {
 		}
 	}
 
-	formDomainName(authProvider: AuthProvider) {
-		switch (authProvider) {
-			case 'GOOGLE':
-				return 'www.google.com';
-			default:
-				return 'www.google.com';
-		}
-	}
+	private async getGuestCredentials(identityId?: string): Promise<Credentials> {
+		// if (
+		// 	this._credentials &&
+		// 	!this._isExpired(this._credentials) &&
+		// 	!this._isPastTTL()
+		// 	TODO(V6): How to know the locally stored credentials is guest or authenticated?
+		// 	&& this._credentials.authenticated === false
+		// ) {
+		// 	logger.debug('credentials not changed and not expired, directly return');
+		// 	return this._credentials;
+		// }
 
-	private async getGuestCredentials(): Promise<Credentials> {
-		if (
-			this._credentials &&
-			!this._isExpired(this._credentials) &&
-			!this._isPastTTL() &&
-			this._credentials.authenticated === false
-		) {
-			logger.debug('credentials not changed and not expired, directly return');
-			return this._credentials;
-		}
-		// TODO: Access config to check for this value
+		// Clear to discard if any authenticated credentials are set and start with a clean slate
+		this.clearCredentials();
+
+		// TODO(V6): Access config to check for this value
 		const amplifyConfig = Amplify.config;
 		const { isMandatorySignInEnabled } = amplifyConfig;
 
@@ -70,26 +74,24 @@ export class CognitoCredentialsProvider implements AuthCredentialsProvider {
 			);
 		}
 
-		// TODO: make sure this is a guest identityId
-		let identityId = await this.identityIdProvider.getIdentityId();
-
 		// use identityId to obtain guest credentials
 		// save credentials in-memory
 		// No logins params should be passed for guest creds: https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetCredentialsForIdentity.html#API_GetCredentialsForIdentity_RequestSyntax
-		// TODO: Provide params that include identityId and no logins (guest)
+
+		// TODO(V6): The API reference says identityId is required but the type can take undefined, why?
 		const clientResult = await credentialsForIdentityIdClient({
-			IdentityId: identityId.id,
+			IdentityId: identityId,
 		});
 		if (clientResult.Credentials) {
-			const res: AWSTemporaryCredentials = {
-				accessKeyId: clientResult.Credentials.AccessKeyId,
-				secretAccessKey: clientResult.Credentials.SecretKey,
+			// TODO(V6): The values in this type is non optional but we get optional values from client
+			const res: Credentials = {
+				accessKeyId: clientResult.Credentials.AccessKeyId ?? '',
+				secretAccessKey: clientResult.Credentials.SecretKey ?? '',
 				sessionToken: clientResult.Credentials.SessionToken,
-				authenticated: false,
 			};
 			let identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
-				this.identityIdProvider.setIdentityId({
+				setIdentityId({
 					id: identityIdRes,
 					type: 'guest',
 				});
@@ -105,54 +107,41 @@ export class CognitoCredentialsProvider implements AuthCredentialsProvider {
 	}
 
 	private async credsForOIDCTokens(
-		authTokens: AuthTokens
-	): Promise<AWSTemporaryCredentials> {
-		if (
-			this._credentials &&
-			!this._isExpired(this._credentials) &&
-			!this._isPastTTL() &&
-			this._credentials.authenticated === true
-		) {
-			logger.debug('credentials not changed and not expired, directly return');
-			return this._credentials;
-		}
+		authTokens: AuthTokens,
+		identityId?: string
+	): Promise<Credentials> {
+		// if (
+		// 	this._credentials &&
+		// 	!this._isExpired(this._credentials) &&
+		// 	!this._isPastTTL()
+		// 	TODO(V6): How to know the locally stored credentials is guest or authenticated?
+		// 	&& this._credentials.authenticated === true
+		// ) {
+		// 	logger.debug('credentials not changed and not expired, directly return');
+		// 	return this._credentials;
+		// }
 
-		const idToken = authTokens.idToken;
-		const amplifyConfig = Amplify.config;
-		const { region, userPoolId } = amplifyConfig;
+		// Clear to discard if any unauthenticated credentials are set and start with a clean slate
+		this.clearCredentials();
 
-		// TODO: see why we need identityPoolRegion check here
-		if (!region) {
-			logger.debug('region is not configured for getting the credentials');
-			return Promise.reject(
-				'region is not configured for getting the credentials'
-			);
-		}
+		// TODO(V6): make sure this is not a guest idenityId and is the one associated with the logins
+		// let identityId = await getIdentityId(logins);
 
-		let domainName: string;
-		if (authTokens.oidcProvider === 'COGNITO') {
-			domainName = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
-		} else {
-			domainName = authTokens.oidcProvider.custom;
-		}
-		const logins = {
-			domainName: idToken,
-		};
-
-		// TODO: make sure this is not a guest idenityId and is the one associated with the logins
-		let identityId = await this.identityIdProvider.getIdentityId(logins);
-
+		// TODO(V6): oidcProvider should come from config, TBD
+		let logins = authTokens.idToken
+			? formLoginsMap(authTokens.idToken.toString(), 'COGNITO')
+			: {};
 		const clientResult = await credentialsForIdentityIdClient({
-			IdentityId: identityId.id,
+			IdentityId: identityId,
 			Logins: logins,
 		});
 
 		if (clientResult.Credentials) {
-			const res: AWSTemporaryCredentials = {
-				accessKeyId: clientResult.Credentials.AccessKeyId,
-				secretAccessKey: clientResult.Credentials.SecretKey,
+			// TODO(V6): The values in this type is non optional but we get optional values from client
+			const res: Credentials = {
+				accessKeyId: clientResult.Credentials.AccessKeyId ?? '',
+				secretAccessKey: clientResult.Credentials.SecretKey ?? '',
 				sessionToken: clientResult.Credentials.SessionToken,
-				authenticated: true,
 			};
 			// Store the credentials in-memory along with the expiration
 			this._credentials = {
@@ -161,7 +150,7 @@ export class CognitoCredentialsProvider implements AuthCredentialsProvider {
 			};
 			let identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
-				this.identityIdProvider.setIdentityId({
+				setIdentityId({
 					id: identityIdRes,
 					type: 'primary',
 				});
@@ -184,6 +173,8 @@ export class CognitoCredentialsProvider implements AuthCredentialsProvider {
 			https://github.com/aws/aws-sdk-js-v3/blob/v1.0.0-beta.1/packages/types/src/credentials.ts#L26
 		*/
 		const { expiration } = credentials;
+		// TODO(V6)(V6): when  there is no expiration should we consider it not expired?
+		if (!expiration) return true;
 		return expiration.getTime() <= ts;
 	}
 
@@ -192,4 +183,25 @@ export class CognitoCredentialsProvider implements AuthCredentialsProvider {
 	}
 }
 
-type AuthProvider = 'AMAZON' | 'APPLE' | 'FACEBOOK' | 'GOOGLE' | 'TWITTER';
+export function formLoginsMap(idToken: string, oidcProvider: string) {
+	const amplifyConfig = Amplify.config;
+	const { region, userPoolId } = amplifyConfig;
+
+	// TODO(V6): see why we need identityPoolRegion check here
+	if (!region) {
+		logger.debug('region is not configured for getting the credentials');
+		throw Error('region is not configured for getting the credentials');
+	}
+	let domainName: string;
+	if (oidcProvider === 'COGNITO') {
+		domainName = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
+	} else {
+		// TODO(V6): Update this to have the actual value
+		domainName = 'custom';
+	}
+
+	// TODO(V6): Make sure this takes idToken and not accessToken
+	return {
+		domainName: idToken,
+	};
+}

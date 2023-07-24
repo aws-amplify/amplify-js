@@ -1,6 +1,8 @@
 import { getIdClient } from '../utils/clients/IdentityIdForPoolIdClient';
 import { Amplify } from './MockAmplifySingleton';
 import { Logger } from '@aws-amplify/core';
+import { formLoginsMap } from './credentialsProvider';
+import { AuthConfig, AuthTokens } from '@aws-amplify/core/lib/types';
 
 const logger = new Logger('IdentityIdProvider');
 
@@ -9,83 +11,90 @@ type IdentityId = {
 	type: 'guest' | 'primary';
 };
 
-interface IdentityIdProvider {
-	generateOrRetrieveIdentityId(logins: {}): Promise<string>;
+let identityId: IdentityId;
+
+export async function getIdentityId(
+	tokens?: AuthTokens,
+	authConfig?: AuthConfig
+): Promise<string> {
+	if (tokens) {
+		// retrun primary identityId
+		// look in-memory
+		if (identityId && identityId.type === 'primary') {
+			return identityId.id;
+		} else {
+			let logins =
+				tokens && tokens.idToken
+					? formLoginsMap(tokens.idToken.toString(), 'COGNITO')
+					: {};
+			let generatedIdentityId = await generateIdentityId(logins);
+			// Store in-memory
+			identityId = {
+				id: generatedIdentityId,
+				type: 'primary',
+			};
+			//TODO(V6): clear guest id in local storage
+		}
+	} else {
+		// return guest identityId
+		if (identityId && identityId.type === 'guest') {
+			return identityId.id;
+		} else {
+			// Store in-memory
+			identityId = {
+				id: await generateIdentityId({}),
+				type: 'guest',
+			};
+			//TODO(V6): store guest id in local storage
+		}
+	}
+	return identityId.id;
 }
 
-export class CognitoIdentityIdProvider implements IdentityIdProvider {
-	private identityId: IdentityId;
+async function generateIdentityId(logins: {}): Promise<string> {
+	const amplifyConfig = Amplify.config;
+	const { identityPoolId } = amplifyConfig;
 
-	async generateOrRetrieveIdentityId(logins: {}): Promise<string> {
-		const amplifyConfig = Amplify.config;
-		const { identityPoolId } = amplifyConfig;
-
-		// Access config to obtain IdentityPoolId & region
-		if (!identityPoolId) {
-			logger.debug('No Cognito Federated Identity pool provided');
-			return Promise.reject('No Cognito Federated Identity pool provided');
-		}
-
-		// IdentityId is absent so get it using IdentityPoolId with Cognito's GetId API
-		// Region is not needed for this API as suggested by the API spec: https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetId.html
-		const idResult =
-			// for a first-time user, this will return a brand new identity
-			// for a returning user, this will retrieve the previous identity assocaited with the logins
-			(
-				await getIdClient({
-					IdentityPoolId: identityPoolId,
-					Logins: logins,
-				})
-			).IdentityId;
-		if (!idResult) {
-			throw Error('Cannot fetch IdentityId');
-		}
-
-		return idResult;
+	// Access config to obtain IdentityPoolId & region
+	if (!identityPoolId) {
+		logger.debug('No Cognito Federated Identity pool provided');
+		return Promise.reject('No Cognito Federated Identity pool provided');
 	}
 
-	async getIdentityId(logins?: {}): Promise<IdentityId> {
-		// TODO: get the idenityId in this order,
-		// 1. check for in-memory idenityId (Primary) presence, if present remove the guest ID in local storage as it shouldn't exist
-		// 2. if in-memory primary id is absent, check for guest Id in local storage
-		// 3. If both are absent, generate a new one
-		// 4. Store it (TODO: where to store? in-mem or local storage? is it primary or guest?)
-		if (!this.identityId) {
-			// TODO: get guest id from local storage
-			let localStrageGuestID = false;
-			if (localStrageGuestID) {
-				return (this.identityId = { id: 'guestId', type: 'guest' }); // TODO: change to the actual guest ID
-			} else {
-				this.identityId = {
-					id: await this.generateOrRetrieveIdentityId(logins ?? {}),
-					type: logins ? 'primary' : 'guest',
-				};
-				if (!logins) {
-					// TODO: [CHECK IF THIS IS RIGHT WAY] if no logins then it's a guest user, store Guest identityID in local storage
-				}
-				return this.identityId;
-			}
-		}
-		return this.identityId;
+	// IdentityId is absent so get it using IdentityPoolId with Cognito's GetId API
+	// Region is not needed for this API as suggested by the API spec: https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetId.html
+	const idResult =
+		// for a first-time user, this will return a brand new identity
+		// for a returning user, this will retrieve the previous identity assocaited with the logins
+		(
+			await getIdClient({
+				IdentityPoolId: identityPoolId,
+				Logins: logins,
+			})
+		).IdentityId;
+	if (!idResult) {
+		throw Error('Cannot fetch IdentityId');
 	}
 
-	async setIdentityId(newIdentityId: IdentityId): Promise<void> {
-		if (
-			newIdentityId.id === this.identityId.id &&
-			newIdentityId.type === 'primary' &&
-			this.identityId.type === 'guest'
-		) {
-			// if guestIdentity is found and used by GetCredentialsForIdentity
-			// it will be linked to the logins provided, and disqualified as an unauth identity
-			logger.debug(
-				`The guest identity ${this.identityId.id} has become the primary identity`
-			);
-			// TODO: clear guestIdentityId in local storage
-		} else if (newIdentityId.type === 'guest') {
-			// TODO: Store the guest identityId in local storage
-		}
+	return idResult;
+}
 
-		// update the in-memory identityId to the new primary identityId
-		this.identityId = newIdentityId;
+export async function setIdentityId(newIdentityId: IdentityId): Promise<void> {
+	if (
+		newIdentityId.id === identityId.id &&
+		newIdentityId.type === 'primary' &&
+		identityId.type === 'guest'
+	) {
+		// if guestIdentity is found and used by GetCredentialsForIdentity
+		// it will be linked to the logins provided, and disqualified as an unauth identity
+		logger.debug(
+			`The guest identity ${identityId.id} has become the primary identity`
+		);
+		// TODO(V6): clear guestIdentityId in local storage
+	} else if (newIdentityId.type === 'guest') {
+		// TODO(V6): Store the guest identityId in local storage
 	}
+
+	// update the in-memory identityId to the new primary identityId
+	identityId = newIdentityId;
 }
