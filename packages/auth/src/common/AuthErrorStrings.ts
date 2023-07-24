@@ -51,7 +51,10 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 	},
 	[AuthValidationErrorCode.EmptyVerifyTOTPSetupCode]:{
 		message: 'code is required to verifyTotpSetup',
-	}
+	},
+	[AuthValidationErrorCode.EmptyUpdatePassword]: {
+		message: 'oldPassword and newPassword are required to changePassword',
+	},
 };
 
 // TODO: delete this code when the Auth class is removed.

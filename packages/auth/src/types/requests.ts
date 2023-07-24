@@ -99,4 +99,15 @@ export type VerifyTOTPSetupRequest<
 > = {
 	code: string;
 	options?: { serviceOptions?: ServiceOptions };
+ };
+
+/**
+ * Constructs a `updatePassword` request.
+ *
+ * @param oldPassword - previous password used for `signIn`
+ * @param newPassword - new password to be used for `signIn`
+ */
+export type UpdatePasswordRequest = {
+	oldPassword: string;
+	newPassword: string;
 };
