@@ -4,7 +4,7 @@
 import { getCurrTime, getByteLength, defaultConfig, isInteger } from './Utils';
 
 import { CacheConfig, CacheItem, CacheItemOptions } from './types';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '../Logger';
 
 const logger = new Logger('StorageCache');
 
