@@ -75,4 +75,6 @@ class SessionStorageMock {
 	}
 }
 
-window.sessionStorage = new SessionStorageMock();
+if (typeof window !== 'undefined') {	
+	window.sessionStorage = new SessionStorageMock();
+}

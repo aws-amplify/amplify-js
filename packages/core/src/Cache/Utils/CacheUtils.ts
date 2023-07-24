@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CacheConfig, CacheItem, CacheItemOptions } from '../types';
-import { StorageHelper } from '@aws-amplify/core';
+import { CacheConfig } from '../types';
+import { StorageHelper } from '../../StorageHelper';
 /**
  * Default cache config
  */
