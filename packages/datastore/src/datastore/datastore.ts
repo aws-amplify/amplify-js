@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 import { InternalAPI } from '@aws-amplify/api/internals';
 import { Auth } from '@aws-amplify/auth';
-import { Cache } from '@aws-amplify/cache';
 import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Hub,
 	browserOrNode,
 	BackgroundProcessManager,
+	Cache
 } from '@aws-amplify/core';
 import {
 	Draft,

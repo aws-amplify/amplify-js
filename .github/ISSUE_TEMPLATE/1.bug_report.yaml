@@ -26,7 +26,6 @@ body:
           | `@aws-amplify/api-graphql`      | [![version](https://img.shields.io/npm/v/@aws-amplify/api-graphql/latest.svg)](https://www.npmjs.com/package/@aws-amplify/api-graphql)           |
           | `@aws-amplify/api-rest`         | [![version](https://img.shields.io/npm/v/@aws-amplify/api-rest/latest.svg)](https://www.npmjs.com/package/@aws-amplify/api-rest)                 |
           | `@aws-amplify/auth`             | [![version](https://img.shields.io/npm/v/@aws-amplify/auth/latest.svg)](https://www.npmjs.com/package/@aws-amplify/auth)                         |
-          | `@aws-amplify/cache`            | [![version](https://img.shields.io/npm/v/@aws-amplify/cache/latest.svg)](https://www.npmjs.com/package/@aws-amplify/cache)                       |
           | `@aws-amplify/core`             | [![version](https://img.shields.io/npm/v/@aws-amplify/core/latest.svg)](https://www.npmjs.com/package/@aws-amplify/core)                         |
           | `@aws-amplify/datastore`        | [![version](https://img.shields.io/npm/v/@aws-amplify/datastore/latest.svg)](https://www.npmjs.com/package/@aws-amplify/datastore)               |
           | `@aws-amplify/interactions`     | [![version](https://img.shields.io/npm/v/@aws-amplify/interactions/latest.svg)](https://www.npmjs.com/package/@aws-amplify/interactions)         |
