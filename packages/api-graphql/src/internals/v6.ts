@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { GraphQLAPI } from '../GraphQLAPI';
 import { GraphQLOptionsV6, GraphQLResponseV6 } from '../types';
 
