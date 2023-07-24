@@ -1,11 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
-import { GraphQLOptions, GraphQLResult } from '@aws-amplify/api-graphql';
+import {
+	GraphQLOptions,
+	GraphQLResult,
+	GraphQLQuery,
+	GraphQLSubscription,
+} from '@aws-amplify/api-graphql';
 import { graphql as v6graphql } from '@aws-amplify/api-graphql/internals';
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
-import { GraphQLQuery, GraphQLSubscription } from './types';
 import { InternalAPIClass } from './internals/InternalAPI';
 
 const logger = new Logger('API');

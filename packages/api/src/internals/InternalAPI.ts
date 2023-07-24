@@ -5,6 +5,8 @@ import {
 	GraphQLOptions,
 	GraphQLResult,
 	OperationTypeNode,
+	GraphQLQuery,
+	GraphQLSubscription,
 } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
 import { RestAPIClass } from '@aws-amplify/api-rest';
@@ -20,7 +22,6 @@ import {
 } from '@aws-amplify/core';
 import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
 import Observable from 'zen-observable-ts';
-import { GraphQLQuery, GraphQLSubscription } from '../types';
 
 const logger = new Logger('API');
 /**
