@@ -22,7 +22,7 @@ export async function confirmSignUpClient(
 ): Promise<ConfirmSignUpCommandOutput> {
 	const client = new UserPoolHttpClient(UserPoolClient.region);
 	return client.send<ConfirmSignUpCommandOutput>('ConfirmSignUp', {
-			...params,
-			ClientId: UserPoolClient.clientId,
-    });
+		...params,
+		ClientId: UserPoolClient.clientId,
+	});
 }

@@ -12,8 +12,8 @@ import {
 	PushNotificationAction,
 	StorageHelper,
 	transferKeyToUpperCase,
+	Cache,
 } from '@aws-amplify/core';
-import { Cache } from '@aws-amplify/cache';
 import {
 	Event as AWSPinpointAnalyticsEvent,
 	putEvents,

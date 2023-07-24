@@ -9,10 +9,10 @@ import {
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
 import { RestAPIClass } from '@aws-amplify/api-rest';
 import { Auth } from '@aws-amplify/auth';
-import { Cache } from '@aws-amplify/cache';
 import {
 	Amplify,
 	ApiAction,
+	Cache,
 	Category,
 	Credentials,
 	CustomUserAgentDetails,
