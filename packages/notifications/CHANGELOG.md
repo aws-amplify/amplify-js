@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.4.0...@aws-amplify/notifications@1.5.0) (2023-07-20)
+
+### Features
+
+- custom user agent core changes for UI handoff ([#11602](https://github.com/aws-amplify/amplify-js/issues/11602)) ([7365c34](https://github.com/aws-amplify/amplify-js/commit/7365c34b28015af199dbfdb3713cc26e096d1213))
+
 # [1.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.3.2...@aws-amplify/notifications@1.4.0) (2023-07-13)
 
 ### Bug Fixes
