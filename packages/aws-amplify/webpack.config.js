@@ -3,7 +3,8 @@ module.exports = {
 		'aws-amplify.min': [
 			'./lib-esm/index.js',
 			'./lib-esm/utils/index.js',
-			'./lib-esm/categories/auth/index.js',
+			'./lib-esm/auth/index.js',
+			'./lib-esm/auth/cognito/index.js',
 		],
 	},
 	output: {

@@ -4,7 +4,8 @@ var entry = {
 	'aws-amplify': [
 		'./lib-esm/index.js',
 		'./lib-esm/utils/index.js',
-		'./lib-esm/categories/auth/index.js',
+		'./lib-esm/auth/index.js',
+		'./lib-esm/auth/cognito/index.js',
 	],
 };
 module.exports = Object.assign(config, { entry, mode: 'development' });

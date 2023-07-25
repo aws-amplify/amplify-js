@@ -5,12 +5,7 @@
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
-  "react-native": {
-    "./lib/index": "./lib-esm/index.js",
-    "./lib/utils/index": "./lib-esm/utils/index.js",
-    "./lib/categories/auth/index": "./lib/categories/auth/index.js",
-    "./lib/categories/auth/cognito/index": "./lib/categories/auth/cognito/index.js"
-  },
+  "react-native": "./lib-esm/index.js",
   "exports": {
     ".": {
       "types": "./lib-esm/index.d.ts",
@@ -31,7 +26,8 @@
       "types": "./lib-esm/categories/auth/cognito/index.d.ts",
       "import": "./lib-esm/categories/auth/cognito/index.js",
       "require": "./lib/categories/auth/cognito/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "typesVersions": {
     ">=3.8": {
@@ -51,19 +47,19 @@
   },
   "sideEffects": false,
   "scripts": {
-    "test": "npm run lint && jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
+    "test": "npm run lint && jest -w 1 --coverage",
     "build-with-test": "npm run clean && npm test && tsc && webpack -p",
-    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-    "build:esm": "node ./build es6",
-    "build:cjs:watch": "node ./build es5 --watch",
-    "build:esm:watch": "node ./build es6 --watch",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "rimraf lib-esm && tsc -m es6 --outDir lib-esm",
+		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
+		"build:esm:watch": "rimraf lib-esm && tsc -m es6 --outDir lib-esm --watch",
+		"build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
     "generate-docs-local": "typedoc --out docs src",
     "generate-docs-root": "typedoc --out ../../docs src",
-    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 93.26"
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 93.26"
   },
   "repository": {
     "type": "git",
@@ -78,7 +74,8 @@
   "files": [
     "lib",
     "lib-esm",
-    "src"
+    "src",
+    "**/package.json"
   ],
   "dependencies": {
     "@aws-amplify/analytics": "7.0.0",
@@ -89,29 +86,23 @@
     "@aws-amplify/storage": "6.0.0",
     "tslib": "^2.5.0"
   },
+  "devDependencies": {
+    "typescript": "5.0.2"
+  },
   "jest": {
     "globals": {
       "ts-jest": {
         "diagnostics": false,
         "tsConfig": {
-          "lib": [
-            "es5",
-            "es2015",
-            "dom",
-            "esnext.asynciterable",
-            "es2017.object"
-          ],
-          "allowJs": true
+          "allowJs": true,
+          "noEmitOnError": false
         }
       }
     },
     "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-    },
-    "preset": "ts-jest",
-    "testMatch": [
-      "**/__tests__/**/*-test.[jt]s?(x)"
-    ],
+			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+		},
+		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -130,7 +121,7 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/",
+      "node_modules",
       "dist",
       "lib",
       "lib-esm"
