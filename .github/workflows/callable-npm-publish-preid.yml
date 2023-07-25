@@ -6,6 +6,10 @@ on:
       preid:
         required: false
         type: string
+      allow-protected-preid:
+        required: false
+        default: false
+        type: boolean
 
 # TODO: configure these env variables
 env:
@@ -17,6 +21,20 @@ jobs:
     name: Publish to Amplify Package
     runs-on: ubuntu-latest
     steps:
+      - name: Forbidden and protected preid protection
+        # Protection for npm tags that we want to protect from accidental use
+        env:
+          ALLOW_PROTECTED_PREIDS: ${{ inputs.allow-protected-preid }}
+          PREID: ${{ inputs.preid }}
+          FORBIDDEN_PREIDS: latest
+          PROTECTED_PREIDS: next unstable
+        run: |
+          echo "Testing to see if $PREID is in the forbidden list ($FORBIDDEN_PREIDS)"
+          for e in $FORBIDDEN_PREIDS; do [[ $PREID == $e ]] && echo "$PREID is forbidden from preid release" && exit 1; done
+          [[ $ALLOW_PROTECTED_PREIDS == 'false' ]] && echo "Testing to see if $PREID is in the protected list ($PROTECTED_PREIDS)"
+          [[ $ALLOW_PROTECTED_PREIDS == 'false' ]] && for e in $PROTECTED_PREIDS; do [[ $PREID == $e ]] && echo "$PREID is protected from preid release" && exit 1; done
+          echo "$PREID is allowed for preid release"
+
       - name: Checkout repository
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
         with:

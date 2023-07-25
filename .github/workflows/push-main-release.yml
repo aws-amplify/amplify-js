@@ -16,3 +16,4 @@ jobs:
     uses: ./.github/workflows/callable-npm-publish-preid.yml
     with:
       preid: unstable
+      allow-protected-preid: true

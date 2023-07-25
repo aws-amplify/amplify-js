@@ -6,6 +6,8 @@ concurrency:
 
 on: pull_request
 
+permissions: read-all
+
 jobs:
   prebuild:
     runs-on: ubuntu-latest

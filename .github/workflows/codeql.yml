@@ -7,7 +7,8 @@ on:
   pull_request:
     branches: ['main']
   schedule:
-    - cron: '28 21 * * 2'
+    # Run every Tuesday at midnight GMT
+    - cron: '0 0 * * 2'
 
 jobs:
   analyze:
