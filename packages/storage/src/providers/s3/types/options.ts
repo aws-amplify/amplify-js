@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StorageOptions, TransferProgressEvent } from '../../../types';
+import { TransferProgressEvent } from '../../../types';
+import { StorageOptions } from '../../../types/params';
 
 interface S3Options extends StorageOptions {
 	// Whether to head object to make sure the object existence before downloading; Default false
