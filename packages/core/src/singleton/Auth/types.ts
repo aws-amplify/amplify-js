@@ -130,7 +130,7 @@ type IdentityPoolConfig = {
 	identityPoolId: string;
 	userPoolWebClientId?: never;
 	userPoolId?: never;
-	clientMetadata?: Record<string, string>;
+	clientMetadata?: never;
 };
 
 export type UserPoolConfig = {

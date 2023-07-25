@@ -109,6 +109,8 @@ export { Amplify as AmplifyV6 } from './singleton';
 
 export type { AuthConfig, UserPoolConfig } from './singleton/types';
 
+export { Amplify as AmplifyV6 } from './singleton';
+
 // Standard `Cache` export to maintain interoperability with React Native
 export { BrowserStorageCache as Cache };
 
