@@ -14,15 +14,17 @@ import {
 	ChallengeParameters,
 } from '../utils/clients/types/models';
 import {
+	cacheTokens,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
 } from '../utils/signInHelpers';
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
 import { InitiateAuthException } from '../types/errors';
 import { CognitoSignInOptions } from '../types';
 import {
-	cleanActiveSignInState, setActiveSignInState
+	cleanActiveSignInState,
+	setActiveSignInState,
 } from '../utils/signInStore';
 
 /**
@@ -40,7 +42,7 @@ export async function signInWithUserPassword(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { username, password, options } = signInRequest;
-	const clientMetadata = Amplify.config.clientMetadata;
+	const clientMetadata = AmplifyV6.getConfig().Auth?.clientMetadata;
 	const metadata = options?.serviceOptions?.clientMetadata || clientMetadata;
 	assertValidationError(
 		!!username,
@@ -66,7 +68,7 @@ export async function signInWithUserPassword(
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
-			// TODO(israx): cache tokens
+			await cacheTokens(AuthenticationResult);
 			cleanActiveSignInState();
 			return {
 				isSignedIn: true,
@@ -74,7 +76,6 @@ export async function signInWithUserPassword(
 			};
 		}
 
-		// TODO(israx): set AmplifyUserSession via singleton
 		return getSignInResult({
 			challengeName: ChallengeName as ChallengeName,
 			challengeParameters: ChallengeParameters as ChallengeParameters,
