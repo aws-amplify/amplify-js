@@ -268,14 +268,15 @@ export class InternalStorageClass {
 				`.copy is not implemented on provider ${plugin.getProviderName()}`
 			) as StorageCopyOutput<T>;
 		}
-		const responsePromise = plugin.copy(src, dest, {
-			...config,
-			abortSignal: abortController.signal,
-			userAgentValue: getStorageUserAgentValue(
-				StorageAction.Copy,
-				customUserAgentDetails
-			),
-		});
+		const responsePromise = plugin.copy(
+			src,
+			dest,
+			{
+				...config,
+				abortSignal: abortController.signal,
+			},
+			getStorageUserAgentValue(StorageAction.Copy, customUserAgentDetails)
+		);
 		this.updateRequestToBeCancellable(responsePromise, abortController);
 		return responsePromise as StorageCopyOutput<T>;
 	}
@@ -311,14 +312,14 @@ export class InternalStorageClass {
 			) as StorageGetOutput<T>;
 		}
 		const abortController = this.getAbortController();
-		const responsePromise = plugin.get(key, {
-			...config,
-			abortSignal: abortController.signal,
-			userAgentValue: getStorageUserAgentValue(
-				StorageAction.Get,
-				customUserAgentDetails
-			),
-		});
+		const responsePromise = plugin.get(
+			key,
+			{
+				...config,
+				abortSignal: abortController.signal,
+			},
+			getStorageUserAgentValue(StorageAction.Get, customUserAgentDetails)
+		);
 		this.updateRequestToBeCancellable(responsePromise, abortController);
 		return responsePromise as StorageGetOutput<T>;
 	}
@@ -347,13 +348,14 @@ export class InternalStorageClass {
 			) as StorageGetPropertiesOutput<T>;
 		}
 
-		const responsePromise = plugin?.getProperties(key, {
-			...config,
-			userAgentValue: getStorageUserAgentValue(
+		const responsePromise = plugin?.getProperties(
+			key,
+			config,
+			getStorageUserAgentValue(
 				StorageAction.GetProperties,
 				customUserAgentDetails
-			),
-		});
+			)
+		);
 		this.updateRequestToBeCancellable(responsePromise, abortController);
 		return responsePromise as StorageGetPropertiesOutput<T>;
 	}
@@ -388,14 +390,15 @@ export class InternalStorageClass {
 			) as StoragePutOutput<T>;
 		}
 		const abortController = this.getAbortController();
-		const response = plugin.put(key, object, {
-			...config,
-			abortSignal: abortController.signal,
-			userAgentValue: getStorageUserAgentValue(
-				StorageAction.Put,
-				customUserAgentDetails
-			),
-		});
+		const response = plugin.put(
+			key,
+			object,
+			{
+				...config,
+				abortSignal: abortController.signal,
+			},
+			getStorageUserAgentValue(StorageAction.Put, customUserAgentDetails)
+		);
 		if (!this.isUploadTask(response)) {
 			this.updateRequestToBeCancellable(response, abortController);
 		}
@@ -428,13 +431,11 @@ export class InternalStorageClass {
 				'No plugin found in Storage for the provider'
 			) as StorageRemoveOutput<T>;
 		}
-		return plugin.remove(key, {
-			...config,
-			userAgentValue: getStorageUserAgentValue(
-				StorageAction.Remove,
-				customUserAgentDetails
-			),
-		}) as StorageRemoveOutput<T>;
+		return plugin.remove(
+			key,
+			config,
+			getStorageUserAgentValue(StorageAction.Remove, customUserAgentDetails)
+		) as StorageRemoveOutput<T>;
 	}
 
 	/**
@@ -463,13 +464,11 @@ export class InternalStorageClass {
 				'No plugin found in Storage for the provider'
 			) as StorageListOutput<T>;
 		}
-		return plugin.list(path, {
-			...config,
-			userAgentValue: getStorageUserAgentValue(
-				StorageAction.List,
-				customUserAgentDetails
-			),
-		}) as StorageListOutput<T>;
+		return plugin.list(
+			path,
+			config,
+			getStorageUserAgentValue(StorageAction.List, customUserAgentDetails)
+		) as StorageListOutput<T>;
 	}
 }
 

@@ -237,7 +237,8 @@ export class AWSS3Provider implements StorageProvider {
 	public async copy(
 		src: S3CopySource,
 		dest: S3CopyDestination,
-		config?: S3ProviderCopyConfig
+		config?: S3ProviderCopyConfig,
+		userAgentValue?: string
 	): Promise<S3ProviderCopyOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
@@ -311,7 +312,7 @@ export class AWSS3Provider implements StorageProvider {
 		if (acl) params.ACL = acl;
 
 		try {
-			await copyObject(loadS3Config(opt), params);
+			await copyObject(loadS3Config({ ...opt, userAgentValue }), params);
 			dispatchStorageEvent(
 				track,
 				'copy',
@@ -350,11 +351,13 @@ export class AWSS3Provider implements StorageProvider {
 	 */
 	public async get<T extends S3ProviderGetConfig & StorageOptions>(
 		key: string,
-		config?: T
+		config?: T,
+		userAgentValue?: string
 	): Promise<S3ProviderGetOuput<T>>;
 	public async get(
 		key: string,
-		config?: S3ProviderGetConfig
+		config?: S3ProviderGetConfig,
+		userAgentValue?: string
 	): Promise<string | GetObjectOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
@@ -383,6 +386,7 @@ export class AWSS3Provider implements StorageProvider {
 		const s3Config = loadS3Config({
 			...opt,
 			emitter,
+			userAgentValue,
 		});
 		logger.debug('get ' + key + ' from ' + final_key);
 
@@ -508,7 +512,8 @@ export class AWSS3Provider implements StorageProvider {
 	 */
 	public async getProperties(
 		key: string,
-		config?: S3ProviderGetPropertiesConfig
+		config?: S3ProviderGetPropertiesConfig,
+		userAgentValue?: string
 	): Promise<S3ProviderGetPropertiesOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
@@ -526,7 +531,7 @@ export class AWSS3Provider implements StorageProvider {
 		const final_key = prefix + key;
 		logger.debug(`getProperties ${key} from ${final_key}`);
 
-		const s3Config = loadS3Config(opt);
+		const s3Config = loadS3Config({ ...opt, userAgentValue });
 		const params: HeadObjectInput = {
 			Bucket: bucket,
 			Key: final_key,
@@ -587,7 +592,8 @@ export class AWSS3Provider implements StorageProvider {
 	public put<T extends S3ProviderPutConfig>(
 		key: string,
 		object: PutObjectInput['Body'],
-		config?: T
+		config?: T,
+		userAgentValue?: string
 	): S3ProviderPutOutput<T> {
 		const opt = Object.assign({}, this._config, config);
 		const { bucket, track, progressCallback, level, resumable } = opt;
@@ -658,7 +664,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		if (resumable === true) {
-			const s3Config = loadS3Config(opt);
+			const s3Config = loadS3Config({ ...opt, userAgentValue });
 			const addTaskInput: AddTaskInput = {
 				bucket,
 				key,
@@ -721,7 +727,8 @@ export class AWSS3Provider implements StorageProvider {
 	 */
 	public async remove(
 		key: string,
-		config?: S3ProviderRemoveConfig
+		config?: S3ProviderRemoveConfig,
+		userAgentValue?: string
 	): Promise<S3ProviderRemoveOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
@@ -739,7 +746,7 @@ export class AWSS3Provider implements StorageProvider {
 			Key: final_key,
 		};
 
-		const s3Config = loadS3Config(opt);
+		const s3Config = loadS3Config({ ...opt, userAgentValue });
 		try {
 			const response = await deleteObject(s3Config, params);
 			dispatchStorageEvent(
@@ -764,13 +771,17 @@ export class AWSS3Provider implements StorageProvider {
 	private async _list(
 		params: ListObjectsV2Input,
 		opt: S3ClientOptions,
-		prefix: string
+		prefix: string,
+		userAgentValue?: string
 	): Promise<S3ProviderListOutput> {
 		const list: S3ProviderListOutput = {
 			results: [],
 			hasNextToken: false,
 		};
-		const response = await listObjectsV2(loadS3Config(opt), { ...params });
+		const response = await listObjectsV2(
+			loadS3Config({ ...opt, userAgentValue }),
+			{ ...params }
+		);
 		if (response && response.Contents) {
 			list.results = response.Contents.map(item => {
 				return {
@@ -795,7 +806,8 @@ export class AWSS3Provider implements StorageProvider {
 	 */
 	public async list(
 		path: string,
-		config?: S3ProviderListConfig
+		config?: S3ProviderListConfig,
+		userAgentValue?: string
 	): Promise<S3ProviderListOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
@@ -822,7 +834,7 @@ export class AWSS3Provider implements StorageProvider {
 			params.ContinuationToken = nextToken;
 			if (pageSize === 'ALL') {
 				do {
-					listResult = await this._list(params, opt, prefix);
+					listResult = await this._list(params, opt, prefix, userAgentValue);
 					list.results.push(...listResult.results);
 					if (listResult.nextToken)
 						params.ContinuationToken = listResult.nextToken;

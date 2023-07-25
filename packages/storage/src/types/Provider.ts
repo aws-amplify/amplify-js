@@ -20,26 +20,36 @@ export interface StorageProvider {
 	copy?(
 		src: StorageCopySource,
 		dest: StorageCopyDestination,
-		config?
+		config?,
+		userAgentValue?: string
 	): Promise<any>;
 
 	// configure your provider
 	configure(config: object): object;
 
 	// get object/pre-signed url from storage
-	get(key: string, options?): Promise<string | Object>;
+	get(key: string, options?, userAgentValue?: string): Promise<string | Object>;
 
 	// get properties of object
-	getProperties?(key: string, options?): Promise<Object>;
+	getProperties?(
+		key: string,
+		options?,
+		userAgentValue?: string
+	): Promise<Object>;
 
 	// upload storage object
-	put(key: string, object, options?): Promise<Object> | UploadTask;
+	put(
+		key: string,
+		object,
+		options?,
+		userAgentValue?: string
+	): Promise<Object> | UploadTask;
 
 	// remove object
-	remove(key: string, options?): Promise<any>;
+	remove(key: string, options?, userAgentValue?: string): Promise<any>;
 
 	// list objects for the path
-	list(path, options?): Promise<any>;
+	list(path, options?, userAgentValue?: string): Promise<any>;
 
 	// return 'Storage';
 	getCategory(): string;
