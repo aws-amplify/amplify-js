@@ -4,7 +4,7 @@
 import { StorageDownloadDataParameter } from '../../../types';
 import { S3GetUrlOptions, S3GetUrlResult } from '../types';
 
-// TODO
+// TODO: pending implementation
 export declare const getUrl: (
 	params: StorageDownloadDataParameter<S3GetUrlOptions>
 ) => Promise<S3GetUrlResult>;

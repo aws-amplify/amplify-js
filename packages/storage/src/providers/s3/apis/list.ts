@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // TODO: pending implementation
-export declare const remove: (params: any) => Promise<any>;
+export declare const list: (params: any) => Promise<any>;

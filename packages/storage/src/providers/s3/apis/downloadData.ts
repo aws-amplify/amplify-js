@@ -4,7 +4,7 @@
 import { StorageOperationParameter, DownloadTask } from '../../../types';
 import { S3TransferOptions, S3DownloadDataResult } from '../types';
 
-// TODO
+// TODO: pending implementation
 export declare const downloadData: (
 	params: StorageOperationParameter<S3TransferOptions>
 ) => DownloadTask<S3DownloadDataResult>;
