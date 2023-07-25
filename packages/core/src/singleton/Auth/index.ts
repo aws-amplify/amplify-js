@@ -198,7 +198,7 @@ export class Auth {
 	}
 }
 
-export function assertTokenProviderConfig(authConfig: AuthConfig) {
+export function assertTokenProviderConfig(authConfig?: AuthConfig) {
 	const validConfig =
 		!!authConfig?.userPoolId && !!authConfig?.userPoolWebClientId;
 	return asserts(validConfig, {

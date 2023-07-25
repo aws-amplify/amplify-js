@@ -130,16 +130,19 @@ type IdentityPoolConfig = {
 	identityPoolId: string;
 	userPoolWebClientId?: never;
 	userPoolId?: never;
+	clientMetadata?: Record<string, string>;
 };
 
-type UserPoolConfig = {
+export type UserPoolConfig = {
 	userPoolWebClientId: string;
 	userPoolId: string;
 	identityPoolId?: never;
+	clientMetadata?: Record<string, string>;
 };
 
 type UserPoolConfigAndIdentityPoolConfig = {
 	userPoolWebClientId: string;
 	userPoolId: string;
 	identityPoolId: string;
+	clientMetadata?: Record<string, string>;
 };
