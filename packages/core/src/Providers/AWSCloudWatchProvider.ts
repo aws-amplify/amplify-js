@@ -30,7 +30,7 @@ import {
 	CloudWatchDataTracker,
 	LoggingProvider,
 } from '../types/types';
-import { Credentials } from '../..';
+import { Credentials } from '../Credentials';
 import { ConsoleLogger as Logger } from '../Logger';
 import { getAmplifyUserAgentObject } from '../Platform';
 import { parseAWSExports } from '../parseAWSExports';
