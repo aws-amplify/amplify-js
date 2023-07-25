@@ -11,11 +11,8 @@ import {
 import type { Credentials as AwsCredentials } from '@aws-sdk/types';
 import type { EventEmitter } from 'events';
 
-import { StorageAccessLevel } from '../types';
+import { StorageAccessLevel, CustomPrefix } from '../types';
 import { localTestingStorageEndpoint } from './StorageConstants';
-
-// TODO: remove API level custom prefix with category level prefixResolver
-type CustomPrefix = { [key in StorageAccessLevel]: string | undefined };
 
 const logger = new Logger('S3ClientUtils');
 // placeholder credentials in order to satisfy type requirement, always results in 403 when used
@@ -29,7 +26,7 @@ export const getPrefix = (config: {
 }): string => {
 	const { credentials, level, customPrefix, identityId } = config;
 
-	const resolvedCustomPrefix = customPrefix || ({} as CustomPrefix);
+	const resolvedCustomPrefix = customPrefix || {};
 	const resolvedIdentityId = identityId || credentials.identityId;
 	const privatePath =
 		(resolvedCustomPrefix.private !== undefined
@@ -44,8 +41,8 @@ export const getPrefix = (config: {
 		resolvedIdentityId +
 		'/';
 	const publicPath =
-		resolvedCustomPrefix.guest !== undefined
-			? resolvedCustomPrefix.guest
+		resolvedCustomPrefix.public !== undefined
+			? resolvedCustomPrefix.public
 			: 'public/';
 
 	switch (level) {

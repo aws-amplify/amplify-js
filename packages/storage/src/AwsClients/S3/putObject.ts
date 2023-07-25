@@ -18,7 +18,7 @@ import {
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
 } from './utils';
-// import type { S3ProviderPutConfig } from '../../types';
+import type { S3ProviderPutConfig } from '../../types';
 
 /**
  * Reference: {@link S3ProviderPutConfig}
