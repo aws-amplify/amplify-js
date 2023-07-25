@@ -43,7 +43,14 @@ export {
 	AmplifyErrorMap,
 	ServiceError,
 } from './types';
-export { StorageHelper, MemoryStorage } from './StorageHelper';
+export {
+	StorageHelper,
+	MemoryStorage,
+	LocalStorage,
+	CookieStorage,
+	SessionStorage,
+	MemoryKeyValueStorage,
+} from './StorageHelper';
 export { UniversalStorage } from './UniversalStorage';
 export {
 	Platform,

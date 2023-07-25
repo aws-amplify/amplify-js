@@ -72,7 +72,8 @@
 		"tslib": "^2.5.0",
 		"universal-cookie": "^4.0.4",
 		"zen-observable-ts": "0.8.19",
-		"rxjs": "^7.8.1"
+		"rxjs": "^7.8.1",
+		"js-cookie": "3.0.5"
 	},
 	"devDependencies": {
 		"@react-native-async-storage/async-storage": "1.15.17",
