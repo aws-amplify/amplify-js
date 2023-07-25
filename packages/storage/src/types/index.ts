@@ -1,15 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// export {
-// 	StorageDownloadDataOptions,
-// 	StorageDownloadFileParams,
-// } from './options';
 export {
 	DownloadTask,
-	StorageDownloadDataResult,
 	StorageOperationParameter,
-	StorageDownloadFileParameter,
 	FileDownloadOptions,
-	StorageUrl,
+	TransferProgressEvent,
 } from './common';
+export {
+	StorageDownloadDataParameter,
+	StorageDownloadFileParameter,
+	StorageOptions,
+	StorageUploadDataParameter,
+	StorageUploadFileParameter, // TODO: open question - should we export this?
+} from './params';
+export {
+	StorageDownloadDataResult,
+	StorageGetUrlResult,
+	StorageUploadResult,
+} from './results';
