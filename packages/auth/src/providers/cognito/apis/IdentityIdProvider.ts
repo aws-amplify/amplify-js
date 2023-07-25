@@ -1,8 +1,11 @@
 import { getIdClient } from '../utils/clients/IdentityIdForPoolIdClient';
-import { Amplify } from './MockAmplifySingleton';
+// import { Amplify } from './MockAmplifySingleton';
 import { Logger } from '@aws-amplify/core';
 import { formLoginsMap } from './credentialsProvider';
-import { AuthConfig, AuthTokens } from '@aws-amplify/core/lib/types';
+import {
+	AuthConfig,
+	AuthTokens,
+} from '@aws-amplify/core/lib-esm/singleton/Auth/types';
 
 const logger = new Logger('IdentityIdProvider');
 
@@ -13,10 +16,13 @@ type IdentityId = {
 
 let identityId: IdentityId;
 
-export async function getIdentityId(
-	tokens?: AuthTokens,
-	authConfig?: AuthConfig
-): Promise<string> {
+export async function getIdentityId({
+	tokens,
+	authConfig,
+}: {
+	tokens?: AuthTokens;
+	authConfig?: AuthConfig;
+}): Promise<string> {
 	if (tokens) {
 		// retrun primary identityId
 		// look in-memory
@@ -52,7 +58,7 @@ export async function getIdentityId(
 }
 
 async function generateIdentityId(logins: {}): Promise<string> {
-	const amplifyConfig = Amplify.config;
+	const amplifyConfig = { identityPoolId: '' };
 	const { identityPoolId } = amplifyConfig;
 
 	// Access config to obtain IdentityPoolId & region

@@ -42,8 +42,6 @@ export {
 	ErrorParams,
 	AmplifyErrorMap,
 	ServiceError,
-	AWSTemporaryCredentials,
-	AuthCredentialsProvider,
 } from './types';
 export { StorageHelper, MemoryStorage } from './StorageHelper';
 export { UniversalStorage } from './UniversalStorage';

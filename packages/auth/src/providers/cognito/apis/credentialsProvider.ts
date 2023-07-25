@@ -2,14 +2,14 @@ import { credentialsForIdentityIdClient } from '../utils/clients/CredentialsForI
 import { Credentials } from '@aws-sdk/types';
 
 // TODO(V6): Confirm use of this type from the sdk is necessary
-import { Amplify } from './MockAmplifySingleton';
+// import { Amplify } from './MockAmplifySingleton';
 import { Logger } from '@aws-amplify/core';
 import {
 	AuthConfig,
 	AuthTokens,
 	CredentialsProvider,
-	GetAuthTokensOptions,
-} from '@aws-amplify/core/lib/types';
+	FetchAuthSessionOptions,
+} from '@aws-amplify/core/lib-esm/singleton/Auth/types';
 import { setIdentityId } from './IdentityIdProvider';
 
 const logger = new Logger('CredentialsProvider');
@@ -18,18 +18,24 @@ const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if 
 type AWSCredentialsWithExpiration = Credentials & {
 	expiration?: Date;
 };
-export class CognitoCredentialsProvider implements CredentialsProvider {
+
+class CognitoCredentialsProvider implements CredentialsProvider {
 	// TODO(V6): find what needs to happen to locally stored identityId
 	clearCredentials: () => Promise<void>;
 	private _credentials?: AWSCredentialsWithExpiration;
 	private _nextCredentialsRefresh: number =
 		new Date().getTime() + CREDENTIALS_TTL;
-	async getCredentials(
-		options?: GetAuthTokensOptions,
-		tokens?: AuthTokens,
-		authConfig?: AuthConfig,
-		identityId?: string
-	): Promise<Credentials> {
+	async getCredentials({
+		options,
+		tokens,
+		authConfig,
+		identityId,
+	}: {
+		options?: FetchAuthSessionOptions;
+		tokens?: AuthTokens;
+		authConfig?: AuthConfig;
+		identityId?: string;
+	}): Promise<Credentials> {
 		try {
 			// check eligibility for guest credentials
 			// - if there is error fetching tokens
@@ -64,7 +70,7 @@ export class CognitoCredentialsProvider implements CredentialsProvider {
 		this.clearCredentials();
 
 		// TODO(V6): Access config to check for this value
-		const amplifyConfig = Amplify.config;
+		const amplifyConfig = { isMandatorySignInEnabled: false };
 		const { isMandatorySignInEnabled } = amplifyConfig;
 
 		// Check if mandatory sign-in is enabled
@@ -184,7 +190,7 @@ export class CognitoCredentialsProvider implements CredentialsProvider {
 }
 
 export function formLoginsMap(idToken: string, oidcProvider: string) {
-	const amplifyConfig = Amplify.config;
+	const amplifyConfig = { region: 'region', userPoolId: '' };
 	const { region, userPoolId } = amplifyConfig;
 
 	// TODO(V6): see why we need identityPoolRegion check here
@@ -205,3 +211,5 @@ export function formLoginsMap(idToken: string, oidcProvider: string) {
 		domainName: idToken,
 	};
 }
+
+export const cognitoCredentialsProvider = new CognitoCredentialsProvider();

@@ -10,3 +10,5 @@ export { confirmSignUp } from './apis/confirmSignUp';
 export { confirmSignIn } from './apis/confirmSignIn';
 export { updatePassword } from './apis/updatePassword';
 export { setUpTOTP } from './apis/setUpTOTP';
+export { cognitoCredentialsProvider } from './apis/credentialsProvider';
+export { getIdentityId } from './apis/IdentityIdProvider';
