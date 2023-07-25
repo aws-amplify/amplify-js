@@ -6,6 +6,7 @@ export {
 	StorageOperationParameter,
 	FileDownloadOptions,
 	TransferProgressEvent,
+	StorageAccessLevel,
 } from './common';
 export {
 	StorageDownloadDataParameter,
