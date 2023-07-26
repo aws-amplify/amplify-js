@@ -29,12 +29,3 @@ export type UploadTask<Result> = PromiseLike<Result> & {
 export type DownloadTask<Result> = Omit<UploadTask<Result>, 'pause' | 'resume'>;
 
 export type TransferTask<Result> = DownloadTask<Result> | UploadTask<Result>;
-
-type FileNameToSave = string;
-
-export type FileDownloadOptions =
-	| FileNameToSave
-	| {
-			name: FileNameToSave;
-			contentType?: string;
-	  };

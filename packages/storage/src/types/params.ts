@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { FileDownloadOptions } from './common';
-
 export type StorageOptions =
 	| { level?: 'guest' | 'private' }
 	| {
@@ -19,7 +17,14 @@ export type StorageDownloadDataParameter<Options extends StorageOptions> =
 	StorageOperationParameter<Options>;
 
 export type StorageDownloadFileParameter<Options extends StorageOptions> =
-	StorageOperationParameter<Options> & { localFile: FileDownloadOptions };
+	StorageOperationParameter<Options> & {
+		/**
+		 * If supplied full file path in browsers(e.g. path/to/foo.bar)
+		 * the directory will be stripped. However, full directory could be
+		 * supported in RN.
+		 */
+		localFile: string;
+	};
 
 // TODO: open question whether we should treat uploadFile differently from uploadData
 export type StorageUploadDataParameter<Options extends StorageOptions> =

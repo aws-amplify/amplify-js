@@ -56,9 +56,4 @@ export type S3UploadOptions = S3TransferOptions & {
 	 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html#UserMetadata
 	 */
 	metadata?: Record<string, string>;
-	/**
-	 * The tag-set for the object. The tag-set must be encoded as URL Query parameters. (For example, "Key1=Value1")
-	 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-tagging.html
-	 */
-	tagging?: string;
 };
