@@ -1,4 +1,3 @@
-import { assertIdentityIdProviderConfig } from '.';
 import {
 	AuthConfig,
 	AuthKeys,
@@ -12,6 +11,7 @@ import {
 import { KeyValueStorageInterface } from '../../types';
 import { asserts } from '../../Util/errors/AssertError';
 import { MemoryKeyValueStorage } from '../../StorageHelper';
+import { assertIdentityIdProviderConfig } from './utils';
 
 class DefaultIdentityIdStore implements IdenityIdStore {
 	inMemoryStorage: KeyValueStorageInterface;

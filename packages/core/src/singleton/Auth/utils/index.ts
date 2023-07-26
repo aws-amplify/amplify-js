@@ -20,6 +20,16 @@ export function assertCredentialsProviderConfig(authConfig: AuthConfig) {
 	});
 }
 
+export function assertIdentityIdProviderConfig(authConfig: AuthConfig) {
+	const validConfig = !!authConfig?.identityPoolId;
+	return asserts(validConfig, {
+		name: 'AuthIdentityIdConfigException',
+		message: 'Auth IdentityId provider not configured',
+		recoverySuggestion:
+			'Make sure to call Amplify.configure in your app and include valid identityPoolId',
+	});
+}
+
 export function decodeJWT(token: string): JWT {
 	const tokenSplitted = token.split('.');
 	if (tokenSplitted.length !== 3) {

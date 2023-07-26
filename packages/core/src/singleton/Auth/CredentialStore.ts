@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { assertCredentialsProviderConfig, decodeJWT } from '.';
 import {
 	AuthConfig,
 	AuthCredentialStore,
@@ -11,6 +10,7 @@ import {
 import { KeyValueStorageInterface } from '../../types';
 import { asserts } from '../../Util/errors/AssertError';
 import { Credentials } from '@aws-sdk/types';
+import { assertCredentialsProviderConfig } from './utils';
 
 export class DefaultCredentialStore implements AuthCredentialStore {
 	keyValueStorage: KeyValueStorageInterface;
