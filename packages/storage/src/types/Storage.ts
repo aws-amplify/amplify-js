@@ -29,7 +29,8 @@ type Tail<T extends any[]> = ((...t: T) => void) extends (
 
 type Last<T extends any[]> = T[Exclude<keyof T, keyof Tail<T>>];
 
-// Utility type to extract the last parameter type of a function
+// Utility type to extract the config parameter type of a function
+// Uses position of params per API to determine which parameter to target
 type ConfigParameter<
 	F extends (...args: any) => any,
 	U extends StorageProviderApi
