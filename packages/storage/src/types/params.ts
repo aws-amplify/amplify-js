@@ -3,9 +3,9 @@
 
 import { FileDownloadOptions, StorageOperationParameter } from './common';
 
-export type StorageOptions = { level?: 'guest' } & {
-	level?: 'protected' | 'private';
-	identityId?: string;
+export type StorageOptions = { level?: 'guest'  |  'private'} | {
+	level: 'protected';
+	identityId: string;
 };
 
 export type StorageDownloadDataParameter<Options extends StorageOptions> =
