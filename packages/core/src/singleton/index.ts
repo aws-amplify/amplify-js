@@ -1,4 +1,4 @@
-import { Auth } from './Auth';
+import { AuthClass } from './Auth';
 import { Hub } from '../Hub';
 import { MemoryKeyValueStorage } from '../StorageHelper';
 import { LibraryOptions, ResourcesConfig } from './types';
@@ -14,10 +14,10 @@ class AmplifyClass {
 	 *
 	 * @internal
 	 */
-	public readonly Auth: Auth;
+	public readonly Auth: AuthClass;
 	constructor() {
 		this.resourcesConfig = {};
-		this.Auth = new Auth();
+		this.Auth = new AuthClass();
 
 		// TODO(v6): add default providers for getting started
 		this.libraryOptions = {
@@ -86,7 +86,11 @@ class AmplifyClass {
  * @remarks
  * `Amplify` is responsible for orchestrating cross-category communication within the library.
  */
-export const Amplify = new AmplifyClass();
+export let AmplifyV6: AmplifyClass;
+
+if (!AmplifyV6) {
+	AmplifyV6 = new AmplifyClass();
+}
 
 // TODO(v6): validate until which level this will nested, during Amplify.configure API review.
 function mergeResourceConfig(
