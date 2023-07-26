@@ -9,7 +9,7 @@ import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { ConfirmSignUpException } from '../../../src/providers/cognito/types/errors';
-import { Amplify, AmplifyErrorString } from '@aws-amplify/core';
+import { AmplifyV6, AmplifyErrorString } from '@aws-amplify/core';
 
 describe('confirmSignUp API Happy Path Cases:', () => {
 	let confirmSignUpClientSpy;
@@ -90,7 +90,13 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 	});
 
 	test('confirmSignUp API input should contain clientMetadata from config', async () => {
-		Amplify.configure(authAPITestParams.configWithClientMetadata);
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				...authAPITestParams.configWithClientMetadata,
+			},
+		});
 		await confirmSignUp({
 			username: user1.username,
 			confirmationCode,

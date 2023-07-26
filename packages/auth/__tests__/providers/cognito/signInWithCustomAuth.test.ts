@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, AmplifyErrorString } from '@aws-amplify/core';
+import { AmplifyV6, AmplifyErrorString } from '@aws-amplify/core';
 import { InitiateAuthCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
@@ -10,12 +10,6 @@ import { signIn } from '../../../src/providers/cognito/apis/signIn';
 import { signInWithCustomAuth } from '../../../src/providers/cognito/apis/signInWithCustomAuth';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
-
-Amplify.configure({
-	aws_cognito_region: 'us-west-2',
-	aws_user_pools_web_client_id: '4a93aeb3-01af-42d8-891d-ee8aa1549398',
-	aws_user_pools_id: 'us-west-2_80ede80b',
-});
 
 describe('signIn API happy path cases', () => {
 	let handleCustomAuthFlowWithoutSRPSpy;
@@ -34,6 +28,12 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signIn API invoked with authFlowType should return a SignInResult', async () => {
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		const result = await signIn({
 			username: authAPITestParams.user1.username,
 			options: {
@@ -47,6 +47,12 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signInWithCustomAuth API should return a SignInResult', async () => {
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		const result = await signInWithCustomAuth({
 			username: authAPITestParams.user1.username,
 		});
@@ -55,6 +61,12 @@ describe('signIn API happy path cases', () => {
 	});
 	test('handleCustomAuthFlowWithoutSRP should be called with clientMetada from request', async () => {
 		const username = authAPITestParams.user1.username;
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		await signInWithCustomAuth({
 			username,
 			options: {
@@ -68,7 +80,13 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('handleCustomAuthFlowWithoutSRP should be called with clientMetada from config', async () => {
-		Amplify.configure(authAPITestParams.configWithClientMetadata);
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				...authAPITestParams.configWithClientMetadata,
+			},
+		});
 		const username = authAPITestParams.user1.username;
 		await signInWithCustomAuth({
 			username,
@@ -86,6 +104,12 @@ describe('signIn API error path cases:', () => {
 	test('signIn API should throw a validation AuthError when username is empty', async () => {
 		expect.assertions(2);
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await signIn({
 				username: '',
 				options: {
@@ -103,6 +127,12 @@ describe('signIn API error path cases:', () => {
 	test('signIn API should throw a validation AuthError when password is not empty and when authFlow is CUSTOM_WITHOUT_SRP', async () => {
 		expect.assertions(2);
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await signIn({
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,
@@ -124,6 +154,12 @@ describe('signIn API error path cases:', () => {
 		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
 		expect.assertions(3);
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await signIn({
 				username: authAPITestParams.user1.username,
 				options: {
@@ -146,6 +182,12 @@ describe('signIn API error path cases:', () => {
 			Promise.reject(new Error('unknown error'))
 		);
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await signIn({
 				username: authAPITestParams.user1.username,
 				options: {
@@ -165,6 +207,12 @@ describe('signIn API error path cases:', () => {
 		expect.assertions(3);
 		globalMock.fetch = jest.fn(() => Promise.reject(null));
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await signIn({
 				username: authAPITestParams.user1.username,
 				options: {
