@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { asserts } from '../../../Util/errors/AssertError';
 import { AuthConfig, JWT } from '../types';
 
