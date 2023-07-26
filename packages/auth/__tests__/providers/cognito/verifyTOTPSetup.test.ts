@@ -82,7 +82,6 @@ describe('verifyTOTPSetup  API error path cases:', () => {
 			});
 			await verifyTOTPSetup({ code });
 		} catch (error) {
-			console.log(error);
 			expect(fetch).toBeCalled();
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(

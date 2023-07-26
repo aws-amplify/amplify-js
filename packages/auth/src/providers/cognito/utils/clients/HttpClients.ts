@@ -20,6 +20,8 @@ import type {
 	VerifySoftwareTokenCommandOutput,
 	AssociateSoftwareTokenCommandInput,
 	AssociateSoftwareTokenCommandOutput,
+	GetUserCommandInput,
+	GetUserCommandOutput,
 	ChangePasswordCommandInput,
 	ChangePasswordCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
@@ -41,6 +43,7 @@ export type ClientInputs =
 	| ConfirmSignUpCommandInput
 	| VerifySoftwareTokenCommandInput
 	| AssociateSoftwareTokenCommandInput
+	| GetUserCommandInput
 	| ChangePasswordCommandInput;
 
 export type ClientOutputs =
@@ -53,6 +56,7 @@ export type ClientOutputs =
 	| ConfirmSignUpCommandOutput
 	| VerifySoftwareTokenCommandOutput
 	| AssociateSoftwareTokenCommandOutput
+	| GetUserCommandOutput
 	| ChangePasswordCommandOutput;
 
 export type ClientOperations =
@@ -65,6 +69,7 @@ export type ClientOperations =
 	| 'ResendConfirmationCode'
 	| 'VerifySoftwareToken'
 	| 'AssociateSoftwareToken'
+	| 'GetUser'
 	| 'ChangePassword';
 
 export class UserPoolHttpClient {
