@@ -13,7 +13,7 @@ type S3Options = StorageOptions & {
 };
 
 /**
- * Parameter options interface for S3 downloadData, downloadFile, uploadData, uploadFile APIs.
+ * Parameter options type for S3 downloadData, downloadFile, uploadData, uploadFile APIs.
  */
 export type S3TransferOptions = S3Options & {
 	/**

@@ -21,8 +21,8 @@ type S3ObjectInformation = {
 	 */
 	eTag?: string;
 	/**
-	 * The tag-set for the object. The tag-set must be encoded as URL Query parameters. (For example, "Key1=Value1")
-	 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-tagging.html
+	 * The user-defined metadata for the object uploaded to S3.
+	 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html#UserMetadata
 	 */
 	metadata?: Record<string, string>;
 };
