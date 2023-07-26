@@ -3,7 +3,7 @@ import type {
 	RespondToAuthChallengeCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { UserPoolHttpClient } from './HttpClients';
-import { UserPoolClient } from './UserPoolClient';
+import { AmplifyV6 } from '@aws-amplify/core';
 
 export type RespondToAuthChallengeClientInput = Pick<
 	RespondToAuthChallengeCommandInput,
@@ -13,13 +13,14 @@ export type RespondToAuthChallengeClientInput = Pick<
 export async function respondToAuthChallengeClient(
 	params: RespondToAuthChallengeClientInput
 ): Promise<RespondToAuthChallengeCommandOutput> {
-	const client = new UserPoolHttpClient(UserPoolClient.region);
+	const authConfig = AmplifyV6.getConfig().Auth;
+	const client = new UserPoolHttpClient(authConfig);
 	const result: RespondToAuthChallengeCommandOutput =
 		await client.send<RespondToAuthChallengeCommandOutput>(
 			'RespondToAuthChallenge',
 			{
 				...params,
-				ClientId: UserPoolClient.clientId,
+				ClientId: authConfig?.userPoolWebClientId,
 			}
 		);
 	return result;

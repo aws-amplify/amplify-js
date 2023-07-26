@@ -71,20 +71,43 @@ export type ConfirmSignUpRequest<
 > = {
 	username: string;
 	confirmationCode: string;
-	options?:{
-		serviceOptions?: ServiceOptions
-	}
+	options?: {
+		serviceOptions?: ServiceOptions;
+	};
 };
 /**
  * Constructs a `confirmSignIn` request.
  *
  * @param challengeResponse - required parameter for responding to {@link AuthSignInStep } returned during
  * the sign in process.
- * @param options - optional parameters for the Confirm Sign In process such as the plugin options
+ * @param options - optional parameters for the Confirm Sign In process such as the service options
  */
 export type ConfirmSignInRequest<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
 	challengeResponse: string;
 	options?: { serviceOptions?: ServiceOptions };
+};
+
+/**
+ * Constructs a `VerifyTOTPSetup` request.
+ * @param code - required parameter for verifying the TOTP setup.
+ * @param options - optional parameters for the Verify TOTP Setup process such as the service options.
+ */
+export type VerifyTOTPSetupRequest<
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+> = {
+	code: string;
+	options?: { serviceOptions?: ServiceOptions };
+ };
+
+/**
+ * Constructs a `updatePassword` request.
+ *
+ * @param oldPassword - previous password used for `signIn`
+ * @param newPassword - new password to be used for `signIn`
+ */
+export type UpdatePasswordRequest = {
+	oldPassword: string;
+	newPassword: string;
 };

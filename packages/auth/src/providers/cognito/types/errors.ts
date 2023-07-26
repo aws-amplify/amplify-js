@@ -353,3 +353,5 @@ export enum ListDevicesException {
 	UserNotConfirmedException = 'UserNotConfirmedException',
 	UserNotFoundException = 'UserNotFoundException',
 }
+
+export const SETUP_TOTP_EXCEPTION = 'SetUpTOTPException';

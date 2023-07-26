@@ -177,7 +177,7 @@ To publish in Verdaccio, start a Verdaccio instance and then,
 
 ```
 yarn config set registry http://localhost:4873/
-yarn lerna publish --no-git-tag-version --no-push --force-publish
+yarn publish:verdaccio
 ```
 
 To publish a local version of a specific package,

@@ -8,3 +8,6 @@ export { signIn } from './apis/signIn';
 export { resendSignUpCode } from './apis/resendSignUpCode';
 export { confirmSignUp } from './apis/confirmSignUp';
 export { confirmSignIn } from './apis/confirmSignIn';
+export { verifyTOTPSetup } from './apis/verifyTOTPSetup';
+export { updatePassword } from './apis/updatePassword';
+export { setUpTOTP } from './apis/setUpTOTP';
