@@ -13,7 +13,7 @@ import {
 	handleCustomSRPAuthFlow,
 	getSignInResult,
 	getSignInResultFromError,
-	cacheTokens,
+	cacheCognitoTokens,
 } from '../utils/signInHelpers';
 import {
 	InitiateAuthException,
@@ -73,7 +73,7 @@ export async function signInWithCustomSRPAuth(
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
-			await cacheTokens(AuthenticationResult);
+			await cacheCognitoTokens(AuthenticationResult);
 			cleanActiveSignInState();
 			return {
 				isSignedIn: true,

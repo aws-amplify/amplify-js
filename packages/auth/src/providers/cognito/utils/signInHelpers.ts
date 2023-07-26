@@ -1,14 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import {
-	AmplifyV6,
-	assertTokenProviderConfig,
-	decodeJWT,
-	AmplifyError,
-} from '@aws-amplify/core';
-import {
-	AuthenticationResultType,
 	InitiateAuthCommandOutput,
 	RespondToAuthChallengeCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
@@ -54,6 +48,7 @@ import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { signInStore } from './signInStore';
+export { cacheCognitoTokens } from '@aws-amplify/core/internals/aws-client-utils';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 type HandleAuthChallengeRequest = {
@@ -580,48 +575,4 @@ export function isMFATypeEnabled(
 	const isMFAparseMFATypes = parseMFATypes(MFAS_CAN_SETUP).includes(mfaType);
 
 	return isMFAparseMFATypes;
-}
-
-export async function cacheTokens(
-	AuthenticationResult: AuthenticationResultType
-): Promise<void> {
-	if (AuthenticationResult.AccessToken) {
-		const accessToken = decodeJWT(AuthenticationResult.AccessToken || '');
-		const accessTokenExpAtInMillis = (accessToken.payload.exp || 0) * 1000;
-		const accessTokenIssuedAtInMillis = (accessToken.payload.iat || 0) * 1000;
-		const currentTime = new Date().getTime();
-		const clockDrift =
-			accessTokenIssuedAtInMillis > 0
-				? accessTokenIssuedAtInMillis - currentTime
-				: 0;
-		let idToken;
-		const metadata: Record<string, string> = {};
-
-		if (AuthenticationResult.RefreshToken) {
-			metadata.refreshToken = AuthenticationResult.RefreshToken;
-		}
-		if (AuthenticationResult.NewDeviceMetadata) {
-			metadata.NewDeviceMetadata = JSON.stringify(
-				AuthenticationResult.NewDeviceMetadata
-			); // TODO: Needs to parse to get metadata
-		}
-		if (AuthenticationResult.IdToken) {
-			idToken = decodeJWT(AuthenticationResult.IdToken);
-		}
-
-		AmplifyV6.Auth.setTokens({
-			accessToken,
-			accessTokenExpAt: accessTokenExpAtInMillis,
-			idToken,
-			metadata,
-			clockDrift,
-		});
-	} else {
-		// This would be a service error
-		throw new AmplifyError({
-			message: 'Invalid tokens',
-			name: 'InvalidTokens',
-			recoverySuggestion: 'Check Cognito UserPool settings',
-		});
-	}
 }

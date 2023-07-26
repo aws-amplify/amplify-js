@@ -14,7 +14,7 @@ import {
 } from '../types/errors';
 import { AmplifyV6 } from '@aws-amplify/core';
 import {
-	cacheTokens,
+	cacheCognitoTokens,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
@@ -29,6 +29,7 @@ import {
 	setActiveSignInState,
 	cleanActiveSignInState,
 } from '../utils/signInStore';
+
 /**
  * Signs a user in
  *
@@ -73,7 +74,7 @@ export async function signInWithSRP(
 		});
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
-			await cacheTokens(AuthenticationResult);
+			await cacheCognitoTokens(AuthenticationResult);
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: AuthSignInStep.DONE },

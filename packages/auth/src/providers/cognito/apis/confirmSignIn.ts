@@ -23,7 +23,7 @@ import {
 } from '../utils/signInStore';
 import { AuthError } from '../../../errors/AuthError';
 import {
-	cacheTokens,
+	cacheCognitoTokens,
 	getSignInResult,
 	getSignInResultFromError,
 	handleChallengeName,
@@ -112,7 +112,7 @@ export async function confirmSignIn(
 
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
-			await cacheTokens(AuthenticationResult);
+			await cacheCognitoTokens(AuthenticationResult);
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: AuthSignInStep.DONE },

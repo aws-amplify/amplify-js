@@ -14,7 +14,7 @@ import {
 	ChallengeParameters,
 } from '../utils/clients/types/models';
 import {
-	cacheTokens,
+	cacheCognitoTokens,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
@@ -68,7 +68,7 @@ export async function signInWithUserPassword(
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
-			await cacheTokens(AuthenticationResult);
+			await cacheCognitoTokens(AuthenticationResult);
 			cleanActiveSignInState();
 			return {
 				isSignedIn: true,

@@ -18,7 +18,7 @@ import {
 	handleCustomAuthFlowWithoutSRP,
 	getSignInResult,
 	getSignInResultFromError,
-	cacheTokens,
+	cacheCognitoTokens,
 } from '../utils/signInHelpers';
 
 import { AmplifyV6 } from '@aws-amplify/core';
@@ -72,7 +72,7 @@ export async function signInWithCustomAuth(
 		});
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
-			await cacheTokens(AuthenticationResult);
+			await cacheCognitoTokens(AuthenticationResult);
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: AuthSignInStep.DONE },
