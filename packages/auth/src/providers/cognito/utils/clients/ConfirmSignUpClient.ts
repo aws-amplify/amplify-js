@@ -6,8 +6,7 @@ import type {
 	ConfirmSignUpCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { UserPoolHttpClient } from './HttpClients';
-import { UserPoolClient } from './UserPoolClient';
-
+import { AmplifyV6 } from '@aws-amplify/core';
 export type ConfirmSignUpClientInput = Pick<
 	ConfirmSignUpCommandInput,
 	| 'Username'
@@ -20,9 +19,10 @@ export type ConfirmSignUpClientInput = Pick<
 export async function confirmSignUpClient(
 	params: ConfirmSignUpClientInput
 ): Promise<ConfirmSignUpCommandOutput> {
-	const client = new UserPoolHttpClient(UserPoolClient.region);
+	const authConfig = AmplifyV6.getConfig().Auth;
+	const client = new UserPoolHttpClient(authConfig);
 	return client.send<ConfirmSignUpCommandOutput>('ConfirmSignUp', {
-			...params,
-			ClientId: UserPoolClient.clientId,
-    });
+		...params,
+		ClientId: authConfig?.userPoolWebClientId,
+	});
 }

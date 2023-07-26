@@ -3,7 +3,6 @@
 import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import { Auth } from '@aws-amplify/auth';
-import { Cache } from '@aws-amplify/cache';
 import {
 	Category,
 	ConsoleLogger as Logger,
@@ -12,6 +11,7 @@ import {
 	Hub,
 	HubCapsule,
 	BackgroundProcessManager,
+	Cache
 } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';

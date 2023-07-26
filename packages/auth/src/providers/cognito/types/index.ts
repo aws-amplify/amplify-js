@@ -13,7 +13,7 @@ export {
 	CognitoSignInOptions,
 	CognitoResendSignUpCodeOptions,
 	CognitoConfirmSignUpOptions,
-	CognitoConfirmSignInOptions
+	CognitoConfirmSignInOptions,
 } from './options';
 
 export { UpdateMFAPreferenceRequest } from './requests';

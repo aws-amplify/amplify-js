@@ -1,6 +1,6 @@
 import { Amplify, UniversalStorage } from '@aws-amplify/core';
 
-import { withSSRContext } from '../src/withSSRContext';
+import { withSSRContext } from '../src/ssr/withSSRContext';
 
 describe('withSSRContext', () => {
 	it('should not require context (for client-side requests)', () => {
@@ -65,7 +65,8 @@ describe('withSSRContext', () => {
 		});
 	});
 
-	describe('DataStore', () => {
+	// TODO(v6): Refactor with new SSR utilities
+	/*describe('DataStore', () => {
 		it('should be a different instance than Amplify.DataStore', () => {
 			expect(withSSRContext().DataStore).not.toBe(Amplify.DataStore);
 		});
@@ -78,7 +79,7 @@ describe('withSSRContext', () => {
 
 			expect(DataStore.InternalAPI).toBe(InternalAPI);
 		});
-	});
+	});*/
 
 	describe('I18n', () => {
 		// I18n isn't scoped to SSR (yet)

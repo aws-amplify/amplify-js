@@ -4,7 +4,7 @@
 import { Amplify } from './Amplify';
 import { Platform } from './Platform';
 
-export { Amplify } from './Amplify';
+export { Amplify };
 export { AmplifyClass } from './Amplify';
 export { ClientDevice } from './ClientDevice';
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
@@ -97,6 +97,20 @@ export {
 	urlSafeDecode,
 	urlSafeEncode,
 } from './Util';
+
+// Cache exports
+import { BrowserStorageCache } from './Cache/BrowserStorageCache';
+export { InMemoryCache } from './Cache/InMemoryCache';
+export { CacheConfig } from './Cache/types';
+export { ICache } from './Cache/types';
+export { BrowserStorageCache };
+export { decodeJWT, assertTokenProviderConfig } from './singleton/Auth/utils';
+export { AuthConfig, UserPoolConfig } from './singleton/types';
+
+export { AmplifyV6 } from './singleton';
+
+// Standard `Cache` export to maintain interoperability with React Native
+export { BrowserStorageCache as Cache };
 
 /**
  * @deprecated use named import

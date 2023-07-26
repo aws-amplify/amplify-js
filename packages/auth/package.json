@@ -1,13 +1,11 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "5.5.3",
+  "version": "6.0.0",
   "description": "Auth category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
-  "react-native": {
-    "./lib/index": "./lib-esm/index.js"
-  },
+  "react-native": "./lib-esm/index.js",
   "sideEffects": [
     "./lib/Auth.js",
     "./lib-esm/Auth.js"
@@ -50,7 +48,8 @@
       "types": "./lib-esm/providers/cognito/index.d.ts",
       "import": "./lib-esm/providers/cognito/index.js",
       "require": "./lib/providers/cognito/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "repository": {
     "type": "git",
@@ -65,17 +64,21 @@
   "files": [
     "lib",
     "lib-esm",
-    "src"
+    "src",
+    "**/package.json"
   ],
   "dependencies": {
-    "@aws-amplify/core": "5.5.2",
-    "amazon-cognito-identity-js": "6.3.1",
-    "tslib": "^1.8.0",
+    "amazon-cognito-identity-js": "6.4.0",
+    "tslib": "^2.5.0",
     "url": "0.11.0"
   },
+  "peerDependencies": {
+    "@aws-amplify/core": "^6.0.0"
+  },
   "devDependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "3.54.0",
+    "@aws-amplify/core": "6.0.0",
     "@aws-sdk/client-cognito-identity": "3.54.0",
+    "@aws-sdk/client-cognito-identity-provider": "3.54.0",
     "@jest/test-sequencer": "^24.9.0"
   },
   "size-limit": [
@@ -107,9 +110,9 @@
     },
     "preset": "ts-jest",
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"testPathIgnorePatterns": [
-			"__tests__/providers/.*/testUtils"
-		],
+    "testPathIgnorePatterns": [
+      "__tests__/providers/.*/testUtils"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",

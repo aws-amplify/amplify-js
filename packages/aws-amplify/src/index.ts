@@ -1,7 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+/*
+This file maps top-level exports from `aws-amplify`.
+*/
 export { Amplify } from '@aws-amplify/core';
+export { withSSRContext } from './ssr/withSSRContext';
+
+// TODO(v6): Refactor these into category-specific exports as they come online
 export {
 	Analytics,
 	AnalyticsProvider,
@@ -13,6 +19,10 @@ export {
 export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
 export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
+export { PubSub } from '@aws-amplify/pubsub';
+
+// TODO(v6): Re-enable these exports when available
+/*
 export {
 	AuthModeStrategyType,
 	DataStore,
@@ -20,19 +30,8 @@ export {
 	SortDirection,
 	syncExpression,
 } from '@aws-amplify/datastore';
-export { PubSub } from '@aws-amplify/pubsub';
-export { Cache } from '@aws-amplify/cache';
 export { Interactions } from '@aws-amplify/interactions';
 export { Notifications } from '@aws-amplify/notifications';
 export { Predictions } from '@aws-amplify/predictions';
-export {
-	ConsoleLogger as Logger,
-	Hub,
-	ClientDevice,
-	Signer,
-	I18n,
-	ServiceWorker,
-	AWSCloudWatchProvider,
-} from '@aws-amplify/core';
-export { withSSRContext } from './withSSRContext';
 export { Geo } from '@aws-amplify/geo';
+*/
