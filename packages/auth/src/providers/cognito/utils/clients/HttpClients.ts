@@ -31,6 +31,8 @@ import {
 } from '@aws-sdk/client-cognito-identity';
 import { AuthError } from '../../../../errors/AuthError';
 import { assertServiceError } from '../../../../errors/utils/assertServiceError';
+import { AuthConfig } from '@aws-amplify/core';
+import { isTypeUserPoolConfig } from '../types';
 
 // TODO: Update the user-agent value
 const USER_AGENT = 'amplify test';
@@ -93,12 +95,17 @@ export class UserPoolHttpClient {
 		'Cache-Control': 'no-store',
 	};
 
-	constructor(region: string, serviceType: ServiceTypes = 'idp') {
-		this._service =
-			serviceType === 'identity'
-				? 'AWSCognitoIdentityService'
-				: 'AWSCognitoIdentityProviderService';
-		this._endpoint = `https://cognito-${serviceType}.${region}.amazonaws.com/`;
+	constructor(authConfig?: AuthConfig, serviceType: ServiceTypes = 'idp') {
+		if (authConfig && isTypeUserPoolConfig(authConfig)) {
+			this._service =
+				serviceType === 'identity'
+					? 'AWSCognitoIdentityService'
+					: 'AWSCognitoIdentityProviderService';
+			const region = authConfig.userPoolId.split('_')[0];
+			this._endpoint = `https://cognito-${serviceType}.${region}.amazonaws.com/`;
+		} else {
+			throw new Error('error'); // TODO: update error
+		}
 	}
 
 	async send<T extends ClientOutputs>(

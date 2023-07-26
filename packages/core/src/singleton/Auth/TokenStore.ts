@@ -1,4 +1,4 @@
-import { assertTokenProviderConfig, decodeJWT } from '.';
+import { assertTokenProviderConfig, decodeJWT } from './utils';
 import {
 	AuthConfig,
 	AuthKeys,

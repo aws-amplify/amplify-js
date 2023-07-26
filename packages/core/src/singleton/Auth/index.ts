@@ -14,7 +14,6 @@ import {
 	JWT,
 	LibraryAuthOptions,
 } from './types';
-import { asserts } from '../../Util/errors/AssertError';
 
 export function isTokenExpired({
 	expiresAt,
@@ -27,28 +26,7 @@ export function isTokenExpired({
 	return currentTime + clockDrift > expiresAt;
 }
 
-export function decodeJWT(token: string): JWT {
-	const tokenSplitted = token.split('.');
-	if (tokenSplitted.length !== 3) {
-		throw new Error('Invalid token');
-	}
-
-	const payloadString = tokenSplitted[1];
-	const payload = JSON.parse(
-		Buffer.from(payloadString, 'base64').toString('utf8')
-	);
-
-	try {
-		return {
-			toString: () => token,
-			payload,
-		};
-	} catch (err) {
-		throw new Error('Invalid token payload');
-	}
-}
-
-export class Auth {
+export class AuthClass {
 	private authTokenStore: AuthTokenStore;
 	private tokenOrchestrator: AuthTokenOrchestrator;
 	private authSessionObservers: Set<Observer<AuthSession>>;
@@ -196,34 +174,4 @@ export class Auth {
 		}
 		return;
 	}
-}
-
-export function assertTokenProviderConfig(authConfig: AuthConfig) {
-	const validConfig =
-		!!authConfig?.userPoolId && !!authConfig?.userPoolWebClientId;
-	return asserts(validConfig, {
-		name: 'AuthTokenConfigException',
-		message: 'Auth Token Provider not configured',
-		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
-	});
-}
-
-export function assertCredentialsProviderConfig(authConfig: AuthConfig) {
-	const validConfig = !!authConfig?.identityPoolId;
-	return asserts(validConfig, {
-		name: 'AuthCredentialConfigException',
-		message: 'Auth Credentials provider not configured',
-		recoverySuggestion:
-			'Make sure to call Amplify.configure in your app and include valid identityPoolId',
-	});
-}
-
-export function assertIdentityIdProviderConfig(authConfig: AuthConfig) {
-	const validConfig = !!authConfig?.identityPoolId;
-	return asserts(validConfig, {
-		name: 'AuthIdentityIdConfigException',
-		message: 'Auth IdentityId provider not configured',
-		recoverySuggestion:
-			'Make sure to call Amplify.configure in your app and include valid identityPoolId',
-	});
 }

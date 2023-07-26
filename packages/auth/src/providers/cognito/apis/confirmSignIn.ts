@@ -23,6 +23,7 @@ import {
 } from '../utils/signInStore';
 import { AuthError } from '../../../errors/AuthError';
 import {
+	cacheCognitoTokens,
 	getSignInResult,
 	getSignInResultFromError,
 	handleChallengeName,
@@ -31,7 +32,7 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -61,9 +62,9 @@ export async function confirmSignIn(
 	const { challengeResponse, options } = confirmSignInRequest;
 	const { username, challengeName, signInSession } = signInStore.getState();
 
-	const config = Amplify.config;
+	const authConfig = AmplifyV6.getConfig().Auth;
 	const clientMetaData =
-		options?.serviceOptions?.clientMetadata || config.clientMetadata;
+		options?.serviceOptions?.clientMetadata || authConfig?.clientMetadata;
 
 	assertValidationError(
 		!!challengeResponse,
@@ -110,15 +111,14 @@ export async function confirmSignIn(
 		});
 
 		if (AuthenticationResult) {
-			// TODO(israx): cache tokens
 			cleanActiveSignInState();
+			await cacheCognitoTokens(AuthenticationResult);
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: AuthSignInStep.DONE },
 			};
 		}
 
-		// TODO(israx): set AmplifyUserSession via singleton
 		return getSignInResult({
 			challengeName: ChallengeName as ChallengeName,
 			challengeParameters: ChallengeParameters as ChallengeParameters,
