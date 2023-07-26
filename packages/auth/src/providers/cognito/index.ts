@@ -8,6 +8,7 @@ export { signIn } from './apis/signIn';
 export { resendSignUpCode } from './apis/resendSignUpCode';
 export { confirmSignUp } from './apis/confirmSignUp';
 export { confirmSignIn } from './apis/confirmSignIn';
+export { updateMFAPreference } from './apis/updateMFAPreference';
 export { fetchMFAPreference } from './apis/fetchMFAPreference';
 export { verifyTOTPSetup } from './apis/verifyTOTPSetup';
 export { updatePassword } from './apis/updatePassword';

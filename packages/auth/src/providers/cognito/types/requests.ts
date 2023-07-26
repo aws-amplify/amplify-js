@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { MFAType } from "../../../types/models";
+import { MFAPreference } from './models';
 
-export type FetchMFAPreferenceRequest = {
-	enabled?: MFAType[];
-	preferred?: MFAType;
+export type UpdateMFAPreferenceRequest = {
+	sms?: MFAPreference;
+	totp?: MFAPreference;
 };
