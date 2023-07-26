@@ -14,10 +14,6 @@ inputs:
   preid:
     description: The preid to release to when the target is preid. The preid process will fail if this isn't provided.
     required: false
-  bash_env:
-    description: The bash_env filename to use to construct and execute PREID content from
-    required: false
-    default: .env
   npm_token:
     description: The npm token the gives the job npm permissions
     required: true
@@ -35,20 +31,17 @@ runs:
         git config --global user.name $GITHUB_USER
 
     - name: Run npm publish
+      if: github.repository_owner == 'aws-amplify'
       shell: bash
       working-directory: ./amplify-js
       env:
         NPM_TOKEN: ${{ inputs.npm_token }}
         GH_SHA: ${{ github.sha }}
-        PREID: ${{ inputs.preid || '' }}
-        BASH_ENV: ${{ inputs.bash_env }}
         TARGET: ${{ inputs.target }}
+        PREID_PREFIX: ${{ inputs.preid || '' }}
       run: |
         echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-        touch $BASH_ENV
-        echo "export PREID_HASH_SUFFIX=$(echo $GH_SHA | cut -c -7 | sed 's/^/\./')" >> $BASH_ENV
-        echo "export PREID_PREFIX=$PREID" >> $BASH_ENV
-        source $BASH_ENV
+        export PREID_HASH_SUFFIX=$(echo $GH_SHA | cut -c -7 | sed 's/^/\./')
         git status
         git --no-pager diff
         yarn publish:$TARGET

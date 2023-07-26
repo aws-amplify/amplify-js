@@ -17,7 +17,7 @@ jobs:
       BRANCH: ${{ github.ref_name }}
     steps:
       - id: output_preid
-        run: echo "preid=$(echo $BRANCH |  tr -cd '[:alnum:]_-/.' | cut -d \/ -f 2)" >> $GITHUB_OUTPUT
+        run: echo "preid=$(echo $BRANCH |  tr -cd '[:alnum:]_\-/.' | cut -d \/ -f 2)" >> $GITHUB_OUTPUT
     outputs:
       preid: ${{ steps.output_preid.outputs.preid }}
 
