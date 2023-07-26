@@ -175,4 +175,5 @@ class AsyncStorageClass implements KeyValueStorageInterface {
 	}
 }
 
+// TODO: Add this to the react-native Amplify package.
 export const AsyncStorageKeyValue = new AsyncStorageClass();
