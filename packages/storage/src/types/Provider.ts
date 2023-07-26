@@ -91,6 +91,8 @@ export type StorageProviderApi =
 	| 'list'
 	| 'getProperties';
 
+// Map of api to index of options (config) parameter
+// Used to glean config type from StorageProvider
 export type StorageProviderApiOptionsIndexMap = {
 	copy: 2;
 	get: 1;
