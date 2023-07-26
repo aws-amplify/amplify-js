@@ -114,14 +114,9 @@ export class Auth {
 					tokens,
 					authConfig: this.authConfig,
 				});
-				console.log(
-					'awsCredsIdentityId received by fetchAuthSession: ',
-					awsCredsIdentityId
-				);
 			}
 		} catch (err) {
 			// TODO(v6): validate error depending on conditions it can proceed or throw
-			console.log('Error getting identityId: ', err);
 		}
 
 		try {

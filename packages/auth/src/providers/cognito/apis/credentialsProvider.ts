@@ -23,7 +23,7 @@ const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if 
 class CognitoCredentialsProvider implements CredentialsProvider {
 	// TODO(V6): find what needs to happen to locally stored identityId
 	async clearCredentials(): Promise<void> {
-		console.log('Clearing credentials');
+		logger.debug('Clearing out credentials');
 		await this._credentialsStore.clearCredentials();
 	}
 	private _nextCredentialsRefresh: number =
@@ -52,6 +52,7 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		identityId?: string;
 	}): Promise<Credentials> {
 		try {
+			// TODO(V6): If there is no identityId attempt once to get it
 			if (authConfig) this._credentialsStore.setAuthConfig(authConfig);
 			if (options?.forceRefresh) {
 				if (AmplifyV6.libraryOptions.Auth?.tokenRefresher && tokens) {
@@ -81,10 +82,7 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 
 	private async getGuestCredentials(identityId?: string): Promise<Credentials> {
 		const credentials = await this._credentialsStore.loadCredentials();
-		console.log(
-			'Credentials loaded from store for guest function: ',
-			credentials
-		);
+
 		if (
 			credentials &&
 			!this._isExpired(credentials) &&
@@ -92,7 +90,9 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 			// TODO(V6): How to know the locally stored credentials is guest or authenticated?
 			credentials.isAuthenticatedCreds === true
 		) {
-			logger.debug('credentials not changed and not expired, directly return');
+			logger.info(
+				'returning stored credentials as they neither past TTL nor expired'
+			);
 			return credentials;
 		}
 
@@ -105,7 +105,7 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 
 		// Check if mandatory sign-in is enabled
 		if (isMandatorySignInEnabled) {
-			return Promise.reject(
+			throw Error(
 				'Cannot get guest credentials when mandatory signin is enabled'
 			);
 		}
@@ -139,7 +139,7 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 			});
 			return res;
 		} else {
-			return Promise.reject('Unable to fetch credentials');
+			throw Error('Unable to fetch credentials');
 		}
 	}
 
@@ -148,10 +148,6 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		identityId?: string
 	): Promise<Credentials> {
 		const credentials = await this._credentialsStore.loadCredentials();
-		console.log(
-			'Credentials loaded from store for oidc function: ',
-			credentials
-		);
 
 		if (
 			credentials &&
@@ -160,7 +156,9 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 			// TODO(V6): How to know the locally stored credentials is guest or authenticated?
 			credentials.isAuthenticatedCreds === true
 		) {
-			logger.debug('credentials not changed and not expired, directly return');
+			logger.info(
+				'returning stored credentials as they neither past TTL nor expired'
+			);
 			return credentials;
 		}
 
@@ -201,7 +199,7 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 			}
 			return res;
 		} else {
-			return Promise.reject('Unable to fetch credentials');
+			throw Error('Unable to fetch credentials');
 		}
 	}
 

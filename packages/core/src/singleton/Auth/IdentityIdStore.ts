@@ -47,8 +47,6 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 			let identityId: string = await this.inMemoryStorage.getItem(
 				authKeys.identityId
 			);
-			console.log('Here, inMemoryStorage.getItem identityId: ', identityId);
-
 			if (!!identityId) {
 				return {
 					id: identityId,
@@ -56,8 +54,6 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 				};
 			} else {
 				identityId = await this.localStorage.getItem(authKeys.identityId);
-				console.log('Here, localStorage.getItem identityId: ', identityId);
-
 				if (!!identityId) {
 					return {
 						id: identityId,
@@ -83,9 +79,6 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 			name,
 			this.authConfig.identityPoolId
 		);
-
-		console.log(`identity being stored ${identity.id} & ${identity.type}`);
-
 		if (identity.type === 'guest') {
 			this.inMemoryStorage.setItem(authKeys.identityId, identity.id);
 		} else {

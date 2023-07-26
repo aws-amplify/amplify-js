@@ -12,13 +12,6 @@ import {
 } from '@aws-amplify/core';
 import { formLoginsMap } from './credentialsProvider';
 
-// import {
-// 	AuthConfig,
-// 	AuthTokens,
-// } from '@aws-amplify/core/src/singleton/Auth/types';
-// import { Identity } from '@aws-amplify/core/src/singleton/Auth/types';
-// import { DefaultIdentityIdStore } from '@aws-amplify/core/src/singleton/Auth/IdentityIdStore';
-
 const logger = new Logger('IdentityIdProvider');
 
 export async function getIdentityId({
@@ -28,35 +21,18 @@ export async function getIdentityId({
 	tokens?: AuthTokens;
 	authConfig?: AuthConfig;
 }): Promise<string> {
-	console.log('tokens: ', tokens);
-	// tokens = {
-	// 	accessToken: decodeJWT(
-	// 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0'
-	// 	),
-	// 	accessTokenExpAt: Date.UTC(2023, 7, 24, 17, 55),
-	// 	idToken: decodeJWT(
-	// 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0'
-	// 	),
-	// };
 	if (authConfig) defaultIdentityIdStore.setAuthConfig(authConfig);
-	console.log('Here 1');
-
 	let identityId = await defaultIdentityIdStore.loadIdentityId();
-	console.log('Here, loaded identityId: ', identityId);
 
 	if (tokens) {
 		// Tokens are avaliable so retrun primary identityId
 		// look in-memory
 		if (identityId && identityId.type === 'primary') {
-			console.log('IdentityID, Existing identityId: ', identityId);
-
 			return identityId.id;
 		} else {
 			let logins = tokens.idToken
 				? formLoginsMap(tokens.idToken.toString(), 'COGNITO')
 				: {};
-			console.log('IdentityID, logins: ', logins);
-
 			let generatedIdentityId = await generateIdentityId(logins, authConfig);
 
 			if (identityId && identityId.id === generatedIdentityId) {
@@ -78,7 +54,6 @@ export async function getIdentityId({
 		if (identityId && identityId.type === 'guest') {
 			return identityId.id;
 		} else {
-			console.log('Here, no tokens & generating id');
 			identityId = {
 				id: await generateIdentityId({}, authConfig),
 				type: 'guest',
@@ -117,12 +92,9 @@ async function generateIdentityId(
 				Logins: logins,
 			})
 		).IdentityId;
-
 	if (!idResult) {
 		throw Error('Cannot fetch IdentityId');
 	}
-	console.log('generated IdentityId: ', idResult);
-
 	return idResult;
 }
 

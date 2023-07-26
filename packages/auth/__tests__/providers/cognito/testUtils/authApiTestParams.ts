@@ -122,6 +122,13 @@ export const authAPITestParams = {
 		Session: 'aaabbbcccddd',
 		$metadata: {},
 	},
+	CredentialsForIdentityIdResult: {
+		AccessKeyId: 'AccessKeyId',
+		SecretAccessKey: 'SecretAccessKey',
+		SessionToken: 'SessionToken',
+		Expiration: Date.now(),
+		$metadata: {},
+	},
 	signInResultWithCustomAuth: () => {
 		return {
 			isSignedIn: false,

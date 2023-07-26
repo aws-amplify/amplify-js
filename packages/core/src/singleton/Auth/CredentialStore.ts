@@ -86,8 +86,6 @@ export class DefaultCredentialStore implements AuthCredentialStore {
 			name: 'InvalidAuthcredentials',
 			recoverySuggestion: 'Make sure the credentials are valid',
 		});
-
-		console.log('Storing creds: ', credentials);
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,
