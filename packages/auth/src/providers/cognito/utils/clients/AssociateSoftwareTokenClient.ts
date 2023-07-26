@@ -6,15 +6,16 @@ import type {
 	AssociateSoftwareTokenCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { UserPoolHttpClient } from './HttpClients';
-import { UserPoolClient } from './UserPoolClient';
+import { AmplifyV6 } from '@aws-amplify/core';
 
 export async function associateSoftwareTokenClient(
 	params: AssociateSoftwareTokenCommandInput
 ): Promise<AssociateSoftwareTokenCommandOutput> {
-	const client = new UserPoolHttpClient(UserPoolClient.region);
+	const authConfig = AmplifyV6.getConfig().Auth;
+	const client = new UserPoolHttpClient(authConfig);
 	const result = await client.send<AssociateSoftwareTokenCommandOutput>(
 		'AssociateSoftwareToken',
-		{ ...params, ClientId: UserPoolClient.clientId }
+		{ ...params, ClientId: authConfig?.userPoolWebClientId }
 	);
 	return result;
 }

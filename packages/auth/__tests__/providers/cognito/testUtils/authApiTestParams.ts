@@ -108,9 +108,11 @@ export const authAPITestParams = {
 		ChallengeName: undefined,
 		ChallengeParameters: {},
 		AuthenticationResult: {
-			AccessToken: 'axxcasfsfsadfqwersdf',
+			AccessToken:
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
 			ExpiresIn: 1000,
-			IdToken: 'sfsfasqwerqwrsfsfsfd',
+			IdToken:
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
 			RefreshToken: 'qwersfsafsfssfasf',
 		},
 		Session: 'aaabbbcccddd',

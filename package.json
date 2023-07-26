@@ -27,10 +27,11 @@
 		"lint:license": "license-check-and-add add -f license_config.json",
 		"link-all": "yarn unlink-all && lerna exec --no-bail --parallel yarn link",
 		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
-		"publish:main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=unstable --preid=unstable${PREID_HASH_SUFFIX} --exact --no-verify-access",		
-		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
-		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes --no-verify-access",
-		"ts-coverage": "lerna run ts-coverage"
+		"publish:main": "lerna publish --canary --force-publish --dist-tag=unstable --preid=unstable${PREID_HASH_SUFFIX} --yes",	
+		"publish:release": "lerna publish --conventional-commits --message 'chore(release): Publish [ci skip]' --yes",
+		"publish:verdaccio": "lerna publish --canary --force-publish --no-push --dist-tag=unstable --preid=unstable --yes",	
+		"ts-coverage": "lerna run ts-coverage",
+		"prepare": "./scripts/set-preid-versions.sh"
 	},
 	"husky": {
 		"hooks": {
@@ -43,9 +44,7 @@
 		],
 		"nohoist": [
 			"**/@types/react-native",
-			"**/@types/react-native/**",
-			"aws-amplify-react-native/prettier",
-			"aws-amplify-react-native/eslint-plugin-prettier"
+			"**/@types/react-native/**"
 		]
 	},
 	"repository": {
@@ -112,7 +111,8 @@
 	"resolutions": {
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
-		"**/glob/minipass": "6.0.2"
+		"**/glob/minipass": "6.0.2",
+		"@smithy/types": "1.1.0"
 	},
 	"jest": {
 		"resetMocks": true,

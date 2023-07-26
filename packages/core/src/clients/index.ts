@@ -25,4 +25,5 @@ export {
 export { userAgentMiddleware, UserAgentOptions } from './middleware/userAgent';
 export { parseJsonBody, parseJsonError, parseMetadata } from './serde';
 export { withMemoization } from './utils/memoization';
+export { cacheCognitoTokens } from './utils/cacheTokens';
 export * from './types';

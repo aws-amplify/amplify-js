@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, AmplifyErrorString } from '@aws-amplify/core';
+import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
 import { RespondToAuthChallengeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
@@ -11,10 +11,11 @@ import { signInWithSRP } from '../../../src/providers/cognito/apis/signInWithSRP
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 
-Amplify.configure({
-	aws_cognito_region: 'us-west-2',
-	aws_user_pools_web_client_id: '4a93aeb3-01af-42d8-891d-ee8aa1549398',
-	aws_user_pools_id: 'us-west-2_80ede80b',
+AmplifyV6.configure({
+	Auth: {
+		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 });
 
 describe('signIn API happy path cases', () => {

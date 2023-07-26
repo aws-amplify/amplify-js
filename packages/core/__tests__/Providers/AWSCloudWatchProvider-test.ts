@@ -5,7 +5,7 @@ import {
 	AWS_CLOUDWATCH_PROVIDER_NAME,
 	NO_CREDS_ERROR_STRING,
 } from '../../src/Util/Constants';
-import { Credentials } from '../..';
+import { Credentials } from '../../src/Credentials';
 import {
 	CloudWatchLogsClient,
 	CreateLogGroupCommand,
