@@ -70,12 +70,17 @@ export interface StorageProviderWithCopy extends StorageProvider {
 	copy(
 		src: StorageCopySource,
 		dest: StorageCopyDestination,
-		config?
+		config?,
+		userAgentValue?: string
 	): Promise<any>;
 }
 
 export interface StorageProviderWithGetProperties extends StorageProvider {
-	getProperties(key: string, options?): Promise<Object>;
+	getProperties(
+		key: string,
+		options?,
+		userAgentValue?: string
+	): Promise<Object>;
 }
 
 export type StorageProviderApi =
@@ -85,3 +90,12 @@ export type StorageProviderApi =
 	| 'remove'
 	| 'list'
 	| 'getProperties';
+
+export type StorageProviderApiOptionsIndexMap = {
+	copy: 2;
+	get: 1;
+	put: 2;
+	remove: 1;
+	list: 1;
+	getProperties: 1;
+};
