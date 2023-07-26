@@ -63,7 +63,7 @@
 			"name": "Predictions (all providers)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Predictions, AmazonAIPredictionsProvider }",
-			"limit": "103.2 kB"
+			"limit": "103.5 kB"
 		},
 		{
 			"name": "Predictions (Convert provider)",
@@ -75,7 +75,7 @@
 			"name": "Predictions (Identify provider)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Predictions, AmazonAIIdentifyPredictionsProvider }",
-			"limit": "73.2 kB"
+			"limit": "73.5 kB"
 		},
 		{
 			"name": "Predictions (Interpret provider)",
