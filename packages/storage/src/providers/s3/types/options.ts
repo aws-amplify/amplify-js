@@ -4,7 +4,7 @@
 import { TransferProgressEvent } from '../../../types';
 import { StorageOptions } from '../../../types/params';
 
-interface S3Options extends StorageOptions {
+type S3Options = StorageOptions & {
 	/**
 	 * Whether to head object to make sure the object existence before downloading.
 	 * @default false
@@ -15,27 +15,27 @@ interface S3Options extends StorageOptions {
 	 * @default false
 	 */
 	useAccelerateEndpoint?: boolean;
-}
+};
 
 /**
  * Parameter options interface for S3 downloadData, downloadFile, uploadData, uploadFile APIs.
  */
-export interface S3TransferOptions extends S3Options {
+export type S3TransferOptions = S3Options & {
 	/**
 	 * Callback function tracking the upload/download progress.
 	 */
 	onProgress?: (event: TransferProgressEvent) => void;
-}
+};
 
-export interface S3GetUrlOptions extends S3Options {
+export type S3GetUrlOptions = S3Options & {
 	/**
 	 * Number of seconds till the URL expires.
 	 * @default 900 (15 minutes)
 	 */
 	expiration?: number;
-}
+};
 
-export interface S3UploadOptions extends S3TransferOptions {
+export type S3UploadOptions = S3TransferOptions & {
 	/**
 	 * The default content-disposition header value of the file when downloading it.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
@@ -61,4 +61,4 @@ export interface S3UploadOptions extends S3TransferOptions {
 	 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-tagging.html
 	 */
 	tagging?: string;
-}
+};
