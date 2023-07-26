@@ -142,7 +142,7 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 
 	/**
 	 * Get the map resources that are currently available through the provider
-	 * @param {CustomUserAgentDetails} customUserAgentDetails optional parameter for sending user agent details to service calls
+	 * @param {CustomUserAgentDetails} customUserAgentDetails optional parameter to send user agent details
 	 * @returns - Array of available map resources
 	 */
 	public syncMessages(
