@@ -8,7 +8,7 @@ import { AmplifyClass, Credentials, UniversalStorage } from '@aws-amplify/core';
 // import { DataStore } from '@aws-amplify/datastore';
 
 // ! We have to use this exact reference, since it gets mutated with Amplify.Auth
-import { Amplify } from './index';
+import { Amplify } from '../index';
 
 const requiredModules = [
 	// API cannot function without Auth
