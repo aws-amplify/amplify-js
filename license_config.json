@@ -31,6 +31,7 @@
 		"**/lib-esm",
 		"**/node_modules",
 		"**/pushnotification",
+		"**/polyfills/URL/*.js",
 		"**/vendor",
 		"**/__tests__",
 		"**/__mocks__"
