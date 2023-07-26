@@ -20,6 +20,8 @@ import type {
 	VerifySoftwareTokenCommandOutput,
 	AssociateSoftwareTokenCommandInput,
 	AssociateSoftwareTokenCommandOutput,
+	SetUserMFAPreferenceCommandInput,
+	SetUserMFAPreferenceCommandOutput,
 	GetUserCommandInput,
 	GetUserCommandOutput,
 	ChangePasswordCommandInput,
@@ -43,6 +45,7 @@ export type ClientInputs =
 	| ConfirmSignUpCommandInput
 	| VerifySoftwareTokenCommandInput
 	| AssociateSoftwareTokenCommandInput
+	| SetUserMFAPreferenceCommandInput
 	| GetUserCommandInput
 	| ChangePasswordCommandInput;
 
@@ -56,6 +59,7 @@ export type ClientOutputs =
 	| ConfirmSignUpCommandOutput
 	| VerifySoftwareTokenCommandOutput
 	| AssociateSoftwareTokenCommandOutput
+	| SetUserMFAPreferenceCommandOutput
 	| GetUserCommandOutput
 	| ChangePasswordCommandOutput;
 
@@ -69,6 +73,7 @@ export type ClientOperations =
 	| 'ResendConfirmationCode'
 	| 'VerifySoftwareToken'
 	| 'AssociateSoftwareToken'
+	| 'SetUserMFAPreference'
 	| 'GetUser'
 	| 'ChangePassword';
 

@@ -36,3 +36,12 @@ export type CustomAttribute = string & {};
  * One or more name-value pairs containing the validation data in the request to register a user.
  */
 export type ValidationData = { [key: string]: string };
+
+/**
+ * Cognito supported MFAPreference values that may be passed as part of the UpdateMFAPreferenceRequest.
+ */
+export type MFAPreference =
+	| 'ENABLED'
+	| 'DISABLED'
+	| 'PREFERRED'
+	| 'NOT_PREFERRED';
