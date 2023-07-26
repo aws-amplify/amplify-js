@@ -77,12 +77,16 @@ export default abstract class AWSPinpointProviderCommon
 		return this.config;
 	}
 
-	identifyUser = async (userId: string, userInfo: UserInfo): Promise<void> => {
+	identifyUser = async (
+		userId: string,
+		userInfo: UserInfo,
+		userAgentValue?: string
+	): Promise<void> => {
 		if (!this.initialized) {
 			await this.init();
 		}
 		try {
-			await this.updateEndpoint(userId, userInfo);
+			await this.updateEndpoint(userId, userInfo, userAgentValue);
 		} catch (err) {
 			this.logger.error('Error identifying user', err);
 			throw err;
@@ -161,7 +165,8 @@ export default abstract class AWSPinpointProviderCommon
 
 	protected updateEndpoint = async (
 		userId: string = null,
-		userInfo: AWSPinpointUserInfo = null
+		userInfo: AWSPinpointUserInfo = null,
+		userAgentValue?: string
 	): Promise<void> => {
 		const credentials = await this.getCredentials();
 		// Shallow compare to determine if credentials stored here are outdated
@@ -230,7 +235,11 @@ export default abstract class AWSPinpointProviderCommon
 			};
 			this.logger.debug('updating endpoint');
 			await updateEndpoint(
-				{ credentials, region, userAgentValue: this.getUserAgentValue() },
+				{
+					credentials,
+					region,
+					userAgentValue: userAgentValue || this.getUserAgentValue(),
+				},
 				input
 			);
 			this.endpointInitialized = true;

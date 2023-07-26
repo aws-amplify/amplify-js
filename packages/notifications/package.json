@@ -46,7 +46,8 @@
 	"files": [
 		"lib",
 		"lib-esm",
-		"src"
+		"src",
+		"internals"
 	],
 	"dependencies": {
 		"@aws-amplify/cache": "5.1.5",
