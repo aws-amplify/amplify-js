@@ -6,10 +6,8 @@ import { updateMFAPreference } from '../../../src/providers/cognito';
 import * as setUserMFAPreferenceClient from '../../../src/providers/cognito/utils/clients/SetUserMFAPreferenceClient';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthError } from '../../../src/errors/AuthError';
-import {
-	SetUserMFAPreferenceException,
-} from '../../../src/providers/cognito/types/errors';
-import { AmplifyErrorString } from '@aws-amplify/core';
+import { SetUserMFAPreferenceException } from '../../../src/providers/cognito/types/errors';
+import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
 import { UpdateMFAPreferenceRequest } from '../../../src/providers/cognito/types';
 import { getMFASettings } from '../../../src/providers/cognito/apis/updateMFAPreference';
 
@@ -69,6 +67,12 @@ describe('updateMFAPreference Error Path Cases:', () => {
 		const serviceError = new Error('service error');
 		serviceError.name = SetUserMFAPreferenceException.InvalidParameterException;
 		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		try {
 			await updateMFAPreference({ sms: 'ENABLED', totp: 'PREFERRED' });
 		} catch (error) {
@@ -79,18 +83,27 @@ describe('updateMFAPreference Error Path Cases:', () => {
 		}
 	});
 
-	test('updateMFAPreference should expect an unknown error'+
-	' when underlying error is not coming from the service', async () => {
-		expect.assertions(3);
-		globalMock.fetch = jest.fn(() =>
-			Promise.reject(new Error('unknown error'))
-		);
-		try {
-			await updateMFAPreference({ sms: 'ENABLED', totp: 'PREFERRED' });
-		} catch (error) {
-			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
-			expect(error.underlyingError).toBeInstanceOf(Error);
+	test(
+		'updateMFAPreference should expect an unknown error' +
+			' when underlying error is not coming from the service',
+		async () => {
+			expect.assertions(3);
+			globalMock.fetch = jest.fn(() =>
+				Promise.reject(new Error('unknown error'))
+			);
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
+			try {
+				await updateMFAPreference({ sms: 'ENABLED', totp: 'PREFERRED' });
+			} catch (error) {
+				expect(error).toBeInstanceOf(AuthError);
+				expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
+				expect(error.underlyingError).toBeInstanceOf(Error);
+			}
 		}
-	});
+	);
 });
