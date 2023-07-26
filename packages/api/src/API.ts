@@ -71,14 +71,22 @@ export class APIClass extends InternalAPIClass {
 					const operation = key as ModelOperation;
 
 					// e.g. clients.models.Todo.update
-					client.models[name][operationPrefix] = async (arg: any) => {
+					client.models[name][operationPrefix] = async (arg?: any) => {
 						const query = generateGraphQLDocument(model, operation);
 						const variables = buildGraphQLVariables(model, operation, arg);
 
-						return this.graphql({
+						const res = (await this.graphql({
 							query,
 							variables,
-						});
+						})) as any;
+
+						// flatten response
+						if (res.data !== undefined) {
+							const [key] = Object.keys(res.data);
+							return res.data[key];
+						}
+
+						return res;
 					};
 				}
 			);
@@ -256,13 +264,31 @@ type ExcludeNeverFields<O> = {
 	[K in FilteredKeys<O>]: O[K];
 };
 
+type Prettify<T> = T extends object
+	? {
+			[P in keyof T]: Prettify<T[P]>;
+	  }
+	: T;
+
 // If no T is passed, ExcludeNeverFields removes "models" from the client
-type V6Client<T = never> = ExcludeNeverFields<{
+declare type V6Client<T = never> = ExcludeNeverFields<{
 	graphql: typeof v6graphql;
 	models: {
-		[K in keyof T]: {
-			[K in OperationPrefix]: (...args: any[]) => Promise<any>;
-		};
+		[K in keyof T]: K extends string
+			? {
+					create: (model: T[K]) => Promise<T[K]>;
+					update: (
+						model: Prettify<
+							{
+								id: string;
+							} & Partial<T[K]>
+						>
+					) => Promise<T[K]>;
+					delete: (id: string) => Promise<T[K]>;
+					get: (id: string) => Promise<T[K]>;
+					list: () => Promise<Array<T[K]>>;
+			  }
+			: never;
 	};
 }>;
 
