@@ -17,7 +17,8 @@ type S3ObjectInformation = {
 	 */
 	contentLength?: number;
 	/**
-	 * An entity tag (ETag) is an opaque identifier assigned by a web server to a specific version of a resource found at a URL.
+	 * An entity tag (ETag) is an opaque identifier assigned by a web server to a specific version of a resource found at
+	 * a URL.
 	 */
 	eTag?: string;
 	/**
