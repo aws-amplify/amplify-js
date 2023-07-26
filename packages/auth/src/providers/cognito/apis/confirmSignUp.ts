@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
 import {
 	AuthSignUpResult,
 	AuthSignUpStep,
@@ -32,8 +32,7 @@ export async function confirmSignUp(
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
 	const { username, confirmationCode, options } = confirmSignUpRequest;
 
-	// TODO: replace by singleton implementation.
-	const config = Amplify.config;
+	const authConfig = AmplifyV6.getConfig().Auth;
 
 	assertValidationError(
 		!!username,
@@ -48,7 +47,7 @@ export async function confirmSignUp(
 		Username: username,
 		ConfirmationCode: confirmationCode,
 		ClientMetadata:
-			options?.serviceOptions?.clientMetadata ?? config.clientMetadata,
+			options?.serviceOptions?.clientMetadata ?? authConfig?.clientMetadata,
 		ForceAliasCreation: options?.serviceOptions?.forceAliasCreation,
 		// TODO: handle UserContextData
 	});

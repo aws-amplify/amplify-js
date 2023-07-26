@@ -1,5 +1,5 @@
 import { isTokenExpired } from '.';
-import { Amplify } from '../';
+import { AmplifyV6 } from '../';
 import {
 	AuthConfig,
 	AuthTokenOrchestrator,
@@ -69,10 +69,10 @@ export class DefaultAuthTokensOrchestrator implements AuthTokenOrchestrator {
 				tokens,
 				authConfig: this.authConfig,
 			});
-			await Amplify.Auth.setTokens(newTokens);
+			await AmplifyV6.Auth.setTokens(newTokens);
 			return newTokens;
 		} catch (err) {
-			await Amplify.Auth.clearTokens();
+			await AmplifyV6.Auth.clearTokens();
 			throw err;
 		}
 	}
