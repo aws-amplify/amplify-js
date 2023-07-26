@@ -12,7 +12,8 @@ export type IdentityIdForPoolIdClientInput = Pick<
 export async function getIdClient(
 	params: IdentityIdForPoolIdClientInput
 ): Promise<GetIdCommandOutput> {
-	const client = new UserPoolHttpClient(UserPoolClient.region, 'identity');
+	// TODO(V6): Update the region value
+	const client = new UserPoolHttpClient('us-east-2', 'identity');
 	const result: GetIdCommandOutput = await client.send<GetIdCommandOutput>(
 		'GetId',
 		{

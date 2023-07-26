@@ -43,7 +43,11 @@ export {
 	AmplifyErrorMap,
 	ServiceError,
 } from './types';
-export { StorageHelper, MemoryStorage } from './StorageHelper';
+export {
+	StorageHelper,
+	MemoryStorage,
+	MemoryKeyValueStorage,
+} from './StorageHelper';
 export { UniversalStorage } from './UniversalStorage';
 export {
 	Platform,
@@ -105,6 +109,19 @@ export { CacheConfig } from './Cache/types';
 export { ICache } from './Cache/types';
 export { BrowserStorageCache };
 
+// Credentials and IdentityId exports
+export {
+	AuthConfig,
+	AuthTokens,
+	CredentialsProvider,
+	FetchAuthSessionOptions,
+	AuthCredentialStore,
+	Identity,
+} from './singleton/Auth/types';
+
+export { DefaultCredentialStore } from './singleton/Auth/CredentialStore';
+export { defaultIdentityIdStore } from './singleton/Auth/IdentityIdStore';
+export { decodeJWT } from './singleton/Auth';
 export { Amplify as AmplifyV6 } from './singleton';
 
 // Standard `Cache` export to maintain interoperability with React Native

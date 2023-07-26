@@ -12,7 +12,8 @@ export type CredentialsForIdentityIdClientInput = Pick<
 export async function credentialsForIdentityIdClient(
 	params: CredentialsForIdentityIdClientInput
 ): Promise<GetCredentialsForIdentityCommandOutput> {
-	const client = new UserPoolHttpClient(UserPoolClient.region, 'identity');
+	// TODO(V6): Update the region value
+	const client = new UserPoolHttpClient('us-east-2', 'identity');
 	const result: GetCredentialsForIdentityCommandOutput =
 		await client.send<GetCredentialsForIdentityCommandOutput>(
 			'GetCredentialsForIdentity',

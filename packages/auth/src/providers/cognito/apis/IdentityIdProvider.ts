@@ -1,20 +1,25 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { getIdClient } from '../utils/clients/IdentityIdForPoolIdClient';
-// import { Amplify } from './MockAmplifySingleton';
-import { Logger } from '@aws-amplify/core';
-import { formLoginsMap } from './credentialsProvider';
 import {
+	Logger,
 	AuthConfig,
 	AuthTokens,
-} from '@aws-amplify/core/lib-esm/singleton/Auth/types';
+	Identity,
+	defaultIdentityIdStore,
+	decodeJWT,
+} from '@aws-amplify/core';
+import { formLoginsMap } from './credentialsProvider';
+
+// import {
+// 	AuthConfig,
+// 	AuthTokens,
+// } from '@aws-amplify/core/src/singleton/Auth/types';
+// import { Identity } from '@aws-amplify/core/src/singleton/Auth/types';
+// import { DefaultIdentityIdStore } from '@aws-amplify/core/src/singleton/Auth/IdentityIdStore';
 
 const logger = new Logger('IdentityIdProvider');
-
-type IdentityId = {
-	id: string;
-	type: 'guest' | 'primary';
-};
-
-let identityId: IdentityId;
 
 export async function getIdentityId({
 	tokens,
@@ -23,43 +28,77 @@ export async function getIdentityId({
 	tokens?: AuthTokens;
 	authConfig?: AuthConfig;
 }): Promise<string> {
+	console.log('tokens: ', tokens);
+	// tokens = {
+	// 	accessToken: decodeJWT(
+	// 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0'
+	// 	),
+	// 	accessTokenExpAt: Date.UTC(2023, 7, 24, 17, 55),
+	// 	idToken: decodeJWT(
+	// 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0'
+	// 	),
+	// };
+	if (authConfig) defaultIdentityIdStore.setAuthConfig(authConfig);
+	console.log('Here 1');
+
+	let identityId = await defaultIdentityIdStore.loadIdentityId();
+	console.log('Here, loaded identityId: ', identityId);
+
 	if (tokens) {
-		// retrun primary identityId
+		// Tokens are avaliable so retrun primary identityId
 		// look in-memory
 		if (identityId && identityId.type === 'primary') {
+			console.log('IdentityID, Existing identityId: ', identityId);
+
 			return identityId.id;
 		} else {
-			let logins =
-				tokens && tokens.idToken
-					? formLoginsMap(tokens.idToken.toString(), 'COGNITO')
-					: {};
-			let generatedIdentityId = await generateIdentityId(logins);
-			// Store in-memory
+			let logins = tokens.idToken
+				? formLoginsMap(tokens.idToken.toString(), 'COGNITO')
+				: {};
+			console.log('IdentityID, logins: ', logins);
+
+			let generatedIdentityId = await generateIdentityId(logins, authConfig);
+
+			if (identityId && identityId.id === generatedIdentityId) {
+				// if guestIdentity is found and used by GetCredentialsForIdentity
+				// it will be linked to the logins provided, and disqualified as an unauth identity
+				logger.debug(
+					`The guest identity ${identityId.id} has become the primary identity`
+				);
+			}
 			identityId = {
 				id: generatedIdentityId,
 				type: 'primary',
 			};
+
 			//TODO(V6): clear guest id in local storage
 		}
 	} else {
-		// return guest identityId
+		// Tokens are avaliable so return guest identityId
 		if (identityId && identityId.type === 'guest') {
 			return identityId.id;
 		} else {
-			// Store in-memory
+			console.log('Here, no tokens & generating id');
 			identityId = {
-				id: await generateIdentityId({}),
+				id: await generateIdentityId({}, authConfig),
 				type: 'guest',
 			};
+
 			//TODO(V6): store guest id in local storage
 		}
 	}
+
+	// Store in-memory
+	defaultIdentityIdStore.storeIdentityId(identityId);
+	logger.debug(`The identity being returned ${identityId}`);
 	return identityId.id;
 }
 
-async function generateIdentityId(logins: {}): Promise<string> {
-	const amplifyConfig = { identityPoolId: '' };
-	const { identityPoolId } = amplifyConfig;
+async function generateIdentityId(
+	logins: {},
+	authConfig?: AuthConfig
+): Promise<string> {
+	const identityPoolId = authConfig?.identityPoolId;
 
 	// Access config to obtain IdentityPoolId & region
 	if (!identityPoolId) {
@@ -78,29 +117,15 @@ async function generateIdentityId(logins: {}): Promise<string> {
 				Logins: logins,
 			})
 		).IdentityId;
+
 	if (!idResult) {
 		throw Error('Cannot fetch IdentityId');
 	}
+	console.log('generated IdentityId: ', idResult);
 
 	return idResult;
 }
 
-export async function setIdentityId(newIdentityId: IdentityId): Promise<void> {
-	if (
-		newIdentityId.id === identityId.id &&
-		newIdentityId.type === 'primary' &&
-		identityId.type === 'guest'
-	) {
-		// if guestIdentity is found and used by GetCredentialsForIdentity
-		// it will be linked to the logins provided, and disqualified as an unauth identity
-		logger.debug(
-			`The guest identity ${identityId.id} has become the primary identity`
-		);
-		// TODO(V6): clear guestIdentityId in local storage
-	} else if (newIdentityId.type === 'guest') {
-		// TODO(V6): Store the guest identityId in local storage
-	}
-
-	// update the in-memory identityId to the new primary identityId
-	identityId = newIdentityId;
+export async function setIdentityId(newIdentityId: Identity): Promise<void> {
+	defaultIdentityIdStore.storeIdentityId(newIdentityId);
 }

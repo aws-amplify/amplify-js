@@ -114,9 +114,14 @@ export class Auth {
 					tokens,
 					authConfig: this.authConfig,
 				});
+				console.log(
+					'awsCredsIdentityId received by fetchAuthSession: ',
+					awsCredsIdentityId
+				);
 			}
 		} catch (err) {
 			// TODO(v6): validate error depending on conditions it can proceed or throw
+			console.log('Error getting identityId: ', err);
 		}
 
 		try {
@@ -213,6 +218,17 @@ export function assertCredentialsProviderConfig(authConfig: AuthConfig) {
 	return asserts(validConfig, {
 		name: 'AuthCredentialConfigException',
 		message: 'Auth Credentials provider not configured',
-		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
+		recoverySuggestion:
+			'Make sure to call Amplify.configure in your app and include valid identityPoolId',
+	});
+}
+
+export function assertIdentityIdProviderConfig(authConfig: AuthConfig) {
+	const validConfig = !!authConfig?.identityPoolId;
+	return asserts(validConfig, {
+		name: 'AuthIdentityIdConfigException',
+		message: 'Auth IdentityId provider not configured',
+		recoverySuggestion:
+			'Make sure to call Amplify.configure in your app and include valid identityPoolId',
 	});
 }

@@ -1,30 +1,45 @@
-import { credentialsForIdentityIdClient } from '../utils/clients/CredentialsForIdentityIdClient';
-import { Credentials } from '@aws-sdk/types';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
+import { credentialsForIdentityIdClient } from '../utils/clients/CredentialsForIdentityIdClient';
 // TODO(V6): Confirm use of this type from the sdk is necessary
-// import { Amplify } from './MockAmplifySingleton';
-import { Logger } from '@aws-amplify/core';
+import { Credentials } from '@aws-sdk/types';
+import { setIdentityId } from './IdentityIdProvider';
 import {
+	Logger,
 	AuthConfig,
 	AuthTokens,
 	CredentialsProvider,
 	FetchAuthSessionOptions,
-} from '@aws-amplify/core/lib-esm/singleton/Auth/types';
-import { setIdentityId } from './IdentityIdProvider';
+	AuthCredentialStore,
+	DefaultCredentialStore,
+	AmplifyV6,
+	MemoryKeyValueStorage,
+} from '@aws-amplify/core';
 
 const logger = new Logger('CredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
 
-type AWSCredentialsWithExpiration = Credentials & {
-	expiration?: Date;
-};
-
 class CognitoCredentialsProvider implements CredentialsProvider {
 	// TODO(V6): find what needs to happen to locally stored identityId
-	clearCredentials: () => Promise<void>;
-	private _credentials?: AWSCredentialsWithExpiration;
+	async clearCredentials(): Promise<void> {
+		console.log('Clearing credentials');
+		await this._credentialsStore.clearCredentials();
+	}
 	private _nextCredentialsRefresh: number =
 		new Date().getTime() + CREDENTIALS_TTL;
+	private _credentialsStore: AuthCredentialStore;
+	constructor() {
+		this._credentialsStore = new DefaultCredentialStore();
+		// Initialize the storage with what's given during config or create a new instance
+		if (AmplifyV6.libraryOptions.Auth?.keyValueStorage) {
+			this._credentialsStore.setKeyValueStorage(
+				AmplifyV6.libraryOptions.Auth?.keyValueStorage
+			);
+		} else {
+			this._credentialsStore.setKeyValueStorage(new MemoryKeyValueStorage());
+		}
+	}
 	async getCredentials({
 		options,
 		tokens,
@@ -37,13 +52,23 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		identityId?: string;
 	}): Promise<Credentials> {
 		try {
+			if (authConfig) this._credentialsStore.setAuthConfig(authConfig);
+			if (options?.forceRefresh) {
+				if (AmplifyV6.libraryOptions.Auth?.tokenRefresher && tokens) {
+					tokens = await AmplifyV6.libraryOptions.Auth?.tokenRefresher({
+						tokens,
+						authConfig,
+					});
+					this.clearCredentials();
+				}
+			}
 			// check eligibility for guest credentials
 			// - if there is error fetching tokens
 			// - if user is not signed in
 			// TODO(V6): Determine if tokens not being present is enough to decide we need to fetch guest credentials, do we need isSignedIn?
 			if (!tokens) {
 				// TODO(V6): Attempt to get the tokens from the provider once
-				// tokens = await Amplify.authTokensProvider.getAuthTokens();
+				// tokens = await AmplifyV6.authTokensProvider.getAuthTokens();
 				return await this.getGuestCredentials(identityId);
 			} else {
 				return await this.credsForOIDCTokens(tokens, identityId);
@@ -55,16 +80,21 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 	}
 
 	private async getGuestCredentials(identityId?: string): Promise<Credentials> {
-		// if (
-		// 	this._credentials &&
-		// 	!this._isExpired(this._credentials) &&
-		// 	!this._isPastTTL()
-		// 	TODO(V6): How to know the locally stored credentials is guest or authenticated?
-		// 	&& this._credentials.authenticated === false
-		// ) {
-		// 	logger.debug('credentials not changed and not expired, directly return');
-		// 	return this._credentials;
-		// }
+		const credentials = await this._credentialsStore.loadCredentials();
+		console.log(
+			'Credentials loaded from store for guest function: ',
+			credentials
+		);
+		if (
+			credentials &&
+			!this._isExpired(credentials) &&
+			!this._isPastTTL() &&
+			// TODO(V6): How to know the locally stored credentials is guest or authenticated?
+			credentials.isAuthenticatedCreds === true
+		) {
+			logger.debug('credentials not changed and not expired, directly return');
+			return credentials;
+		}
 
 		// Clear to discard if any authenticated credentials are set and start with a clean slate
 		this.clearCredentials();
@@ -94,6 +124,7 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 				accessKeyId: clientResult.Credentials.AccessKeyId ?? '',
 				secretAccessKey: clientResult.Credentials.SecretKey ?? '',
 				sessionToken: clientResult.Credentials.SessionToken,
+				expiration: clientResult.Credentials.Expiration,
 			};
 			let identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
@@ -102,10 +133,10 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 					type: 'guest',
 				});
 			}
-			this._credentials = {
+			this._credentialsStore.storeCredentials({
 				...res,
-				expiration: clientResult.Credentials.Expiration,
-			};
+				isAuthenticatedCreds: false,
+			});
 			return res;
 		} else {
 			return Promise.reject('Unable to fetch credentials');
@@ -116,16 +147,22 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		authTokens: AuthTokens,
 		identityId?: string
 	): Promise<Credentials> {
-		// if (
-		// 	this._credentials &&
-		// 	!this._isExpired(this._credentials) &&
-		// 	!this._isPastTTL()
-		// 	TODO(V6): How to know the locally stored credentials is guest or authenticated?
-		// 	&& this._credentials.authenticated === true
-		// ) {
-		// 	logger.debug('credentials not changed and not expired, directly return');
-		// 	return this._credentials;
-		// }
+		const credentials = await this._credentialsStore.loadCredentials();
+		console.log(
+			'Credentials loaded from store for oidc function: ',
+			credentials
+		);
+
+		if (
+			credentials &&
+			!this._isExpired(credentials) &&
+			!this._isPastTTL() &&
+			// TODO(V6): How to know the locally stored credentials is guest or authenticated?
+			credentials.isAuthenticatedCreds === true
+		) {
+			logger.debug('credentials not changed and not expired, directly return');
+			return credentials;
+		}
 
 		// Clear to discard if any unauthenticated credentials are set and start with a clean slate
 		this.clearCredentials();
@@ -143,17 +180,18 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		});
 
 		if (clientResult.Credentials) {
-			// TODO(V6): The values in this type is non optional but we get optional values from client
+			// TODO(V6): The values in this Credentials type is non optional but we get optional values from client
 			const res: Credentials = {
 				accessKeyId: clientResult.Credentials.AccessKeyId ?? '',
 				secretAccessKey: clientResult.Credentials.SecretKey ?? '',
 				sessionToken: clientResult.Credentials.SessionToken,
-			};
-			// Store the credentials in-memory along with the expiration
-			this._credentials = {
-				...res,
 				expiration: clientResult.Credentials.Expiration,
 			};
+			// Store the credentials in-memory along with the expiration
+			this._credentialsStore.storeCredentials({
+				...res,
+				isAuthenticatedCreds: true,
+			});
 			let identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
 				setIdentityId({
@@ -167,21 +205,22 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		}
 	}
 
-	private _isExpired(credentials: AWSCredentialsWithExpiration): boolean {
+	private _isExpired(credentials: Credentials): boolean {
 		if (!credentials) {
 			logger.debug('no credentials for expiration check');
 			return true;
 		}
-		logger.debug('are these credentials expired?', credentials);
 		const ts = Date.now();
 
 		/* returns date object.
 			https://github.com/aws/aws-sdk-js-v3/blob/v1.0.0-beta.1/packages/types/src/credentials.ts#L26
 		*/
 		const { expiration } = credentials;
-		// TODO(V6)(V6): when  there is no expiration should we consider it not expired?
-		if (!expiration) return true;
-		return expiration.getTime() <= ts;
+		// TODO(V6): when  there is no expiration should we consider it not expired?
+		if (!expiration) return false;
+		const isExp = expiration.getTime() <= ts;
+		logger.debug('are the credentials expired?', isExp);
+		return isExp;
 	}
 
 	private _isPastTTL(): boolean {
@@ -190,7 +229,11 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 }
 
 export function formLoginsMap(idToken: string, oidcProvider: string) {
-	const amplifyConfig = { region: 'region', userPoolId: '' };
+	// TODO(V6): Update with Amplify.config values
+	const amplifyConfig = {
+		region: 'us-east-2',
+		userPoolId: 'us-east-2_Q4ii7edTI',
+	};
 	const { region, userPoolId } = amplifyConfig;
 
 	// TODO(V6): see why we need identityPoolRegion check here
@@ -207,9 +250,9 @@ export function formLoginsMap(idToken: string, oidcProvider: string) {
 	}
 
 	// TODO(V6): Make sure this takes idToken and not accessToken
-	return {
-		domainName: idToken,
-	};
+	let res = {};
+	res[domainName] = idToken;
+	return res;
 }
 
 export const cognitoCredentialsProvider = new CognitoCredentialsProvider();

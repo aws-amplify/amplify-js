@@ -36,6 +36,12 @@ export const AuthStorageKeys = {
 	oidcProvider: 'oidcProvider',
 	clockDrift: 'clockDrift',
 	metadata: 'metadata',
+	accessKeyId: 'accessKeyId',
+	secretAccessKey: 'secretAccessKey',
+	sessionToken: 'sessionToken',
+	expiration: 'expiration',
+	identityId: 'identityId',
+	isAuthenticatedCreds: 'isAuthenticatedCreds',
 };
 
 export interface AuthTokenStore {
@@ -59,6 +65,29 @@ export type LibraryAuthOptions = {
 	identityIdProvider?: IdentityIdProvider;
 	keyValueStorage?: KeyValueStorageInterface;
 };
+
+export type Identity = {
+	id: string;
+	type: 'guest' | 'primary';
+};
+export interface IdenityIdStore {
+	setAuthConfig(authConfig: AuthConfig): void;
+	loadIdentityId(): Promise<Identity | undefined>;
+	storeIdentityId(identityId: Identity): Promise<void>;
+	clearIdentityId(): Promise<void>;
+}
+
+export interface AuthCredentialStore {
+	setAuthConfig(authConfig: AuthConfig): void;
+	loadCredentials(): Promise<
+		(Credentials & { isAuthenticatedCreds: boolean }) | undefined
+	>;
+	storeCredentials(
+		credentials: Credentials & { isAuthenticatedCreds: boolean }
+	): Promise<void>;
+	clearCredentials(): Promise<void>;
+	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
+}
 
 export interface CredentialsProvider {
 	getCredentials: ({
