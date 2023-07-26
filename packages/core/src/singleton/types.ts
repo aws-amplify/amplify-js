@@ -1,4 +1,4 @@
-import { AuthConfig, LibraryAuthOptions } from './Auth/types';
+import { AuthConfig, LibraryAuthOptions, UserPoolConfig } from './Auth/types';
 
 export type ResourcesConfig = {
 	API?: {};
@@ -14,3 +14,5 @@ export type ResourcesConfig = {
 export type LibraryOptions = {
 	Auth?: LibraryAuthOptions;
 };
+
+export { AuthConfig, UserPoolConfig };
