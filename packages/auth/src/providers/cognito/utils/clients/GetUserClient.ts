@@ -6,12 +6,16 @@ import type {
 	GetUserCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { UserPoolHttpClient } from './HttpClients';
-import { UserPoolClient } from './UserPoolClient';
+import { AmplifyV6 } from '@aws-amplify/core';
 
 export async function getUserClient(
 	params: GetUserCommandInput
 ): Promise<GetUserCommandOutput> {
-	const client = new UserPoolHttpClient(UserPoolClient.region);
+	const authConfig = AmplifyV6.getConfig().Auth;
+	const client = new UserPoolHttpClient(authConfig);
 
-	return client.send<GetUserCommandOutput>('GetUser', params);
+	return client.send<GetUserCommandOutput>('GetUser', {
+		...params,
+		ClientId: authConfig?.userPoolWebClientId,
+	});
 }

@@ -4,7 +4,7 @@
 import { GetUserCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import * as getUserClient from '../../../src/providers/cognito/utils/clients/GetUserClient';
 import { AuthError } from '../../../src/errors/AuthError';
-import { AmplifyErrorString } from '@aws-amplify/core';
+import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
 import { fetchMFAPreference } from '../../../src/providers/cognito/apis/fetchMFAPreference';
 import { GetUserException } from '../../../src/providers/cognito/types/errors';
 
@@ -47,6 +47,12 @@ describe('fetchMFAPreference Error Path Cases:', () => {
 		const serviceError = new Error('service error');
 		serviceError.name = GetUserException.InvalidParameterException;
 		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		try {
 			await fetchMFAPreference();
 		} catch (error) {
@@ -61,6 +67,12 @@ describe('fetchMFAPreference Error Path Cases:', () => {
 		globalMock.fetch = jest.fn(() =>
 			Promise.reject(new Error('unknown error'))
 		);
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		try {
 			await fetchMFAPreference();
 		} catch (error) {
