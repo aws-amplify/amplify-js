@@ -122,6 +122,7 @@ export enum StorageAction {
 	Copy = '4',
 	Remove = '5',
 	GetProperties = '6',
+	Cancel = '7',
 }
 
 type ActionMap = {
