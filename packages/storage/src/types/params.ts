@@ -1,11 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { FileDownloadOptions, StorageOperationParameter } from './common';
+import { FileDownloadOptions } from './common';
 
-export type StorageOptions = { level?: 'guest'  |  'private'} | {
-	level: 'protected';
-	identityId: string;
+export type StorageOptions =
+	| { level?: 'guest' | 'private' }
+	| {
+			level: 'protected';
+			identityId: string;
+	  };
+
+export type StorageOperationParameter<Options extends StorageOptions> = {
+	key: string;
+	options?: Options;
 };
 
 export type StorageDownloadDataParameter<Options extends StorageOptions> =

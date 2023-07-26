@@ -1,11 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export type StorageOperationParameter<Options> = {
-	key: string;
-	options?: Options;
-};
-
 export type StorageAccessLevel = 'guest' | 'protected' | 'private';
 
 export enum TransferTaskState {

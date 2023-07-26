@@ -6,11 +6,6 @@ import { StorageOptions } from '../../../types/params';
 
 type S3Options = StorageOptions & {
 	/**
-	 * Whether to head object to make sure the object existence before downloading.
-	 * @default false
-	 */
-	validateObjectExistence?: boolean;
-	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false
 	 */
@@ -28,6 +23,11 @@ export type S3TransferOptions = S3Options & {
 };
 
 export type S3GetUrlOptions = S3Options & {
+	/**
+	 * Whether to head object to make sure the object existence before downloading.
+	 * @default false
+	 */
+	validateObjectExistence?: boolean;
 	/**
 	 * Number of seconds till the URL expires.
 	 * @default 900 (15 minutes)
