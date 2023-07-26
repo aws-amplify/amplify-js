@@ -158,7 +158,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 							ConnectionState.ConnectedPendingDisconnect,
 							ConnectionState.ConnectedPendingKeepAlive,
 							ConnectionState.ConnectedPendingNetwork,
-							ConnectionState.ConnectedPendingNetwork,
 							ConnectionState.ConnectionDisruptedPendingNetwork,
 							ConnectionState.Disconnected,
 						].includes(connectionState)

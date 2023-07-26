@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pubsub",
-  "version": "5.4.0",
+  "version": "5.4.1",
   "description": "Pubsub category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -51,9 +51,9 @@
     "internals"
   ],
   "dependencies": {
-    "@aws-amplify/auth": "5.5.4",
-    "@aws-amplify/cache": "5.1.4",
-    "@aws-amplify/core": "5.6.0",
+    "@aws-amplify/auth": "5.5.5",
+    "@aws-amplify/cache": "5.1.5",
+    "@aws-amplify/core": "5.7.0",
     "graphql": "15.8.0",
     "tslib": "^1.8.0",
     "url": "0.11.0",
