@@ -232,6 +232,7 @@ export class AWSS3Provider implements StorageProvider {
 	 * @param {S3CopySource} src - Key and optionally access level and identityId of the source object.
 	 * @param {S3CopyDestination} dest - Key and optionally access level of the destination object.
 	 * @param {S3ProviderCopyConfig} [config] - Optional configuration for s3 commands.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @return {Promise<S3ProviderCopyOutput>} The key of the copied object.
 	 */
 	public async copy(
@@ -346,6 +347,7 @@ export class AWSS3Provider implements StorageProvider {
 	 *
 	 * @param {string} key - key of the object
 	 * @param {S3ProviderGetConfig} [config] - Optional configuration for the underlying S3 command
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @return {Promise<string | GetObjectOutput>} - A promise resolves to Amazon S3 presigned URL or the
 	 * GetObjectCommandOutput if download is set to true on success
 	 */
@@ -507,6 +509,7 @@ export class AWSS3Provider implements StorageProvider {
 	 *
 	 * @param {string} key - key of the object
 	 * @param {S3ProviderGetPropertiesConfig} [config] - Optional configuration for the underlying S3 command
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @return {Promise<S3ProviderGetPropertiesOutput>} - A promise resolves to contentType,
 	 * contentLength, eTag, lastModified, metadata
 	 */
@@ -586,6 +589,7 @@ export class AWSS3Provider implements StorageProvider {
 	 * @param key - key of the object
 	 * @param object - File to be put in Amazon S3 bucket
 	 * @param [config] - Optional configuration for the underlying S3 command
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @return an instance of AWSS3UploadTask or a promise that resolves to an object with the new object's key on
 	 * success.
 	 */
@@ -723,6 +727,7 @@ export class AWSS3Provider implements StorageProvider {
 	 * Remove the object for specified key
 	 * @param {string} key - key of the object
 	 * @param {S3ProviderRemoveConfig} [config] - Optional configuration for the underlying S3 command
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @return {Promise<S3ProviderRemoveOutput>} - Promise resolves upon successful removal of the object
 	 */
 	public async remove(
@@ -801,6 +806,7 @@ export class AWSS3Provider implements StorageProvider {
 	 * List bucket objects relative to the level and prefix specified
 	 * @param {string} path - the path that contains objects
 	 * @param {S3ProviderListConfig} [config] - Optional configuration for the underlying S3 command
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @return {Promise<S3ProviderListOutput>} - Promise resolves to list of keys, eTags, lastModified
 	 * and file size for all objects in path
 	 */
