@@ -74,9 +74,8 @@ describe('Each Storage call should create a client with the right StorageAction'
 		await storage.get('test');
 		expect(provider.get).toBeCalledWith(
 			'test',
-			expect.objectContaining({
-				userAgentValue: getStorageUserAgentValue(StorageAction.Get),
-			})
+			expect.anything(),
+			getStorageUserAgentValue(StorageAction.Get)
 		);
 	});
 
@@ -86,9 +85,8 @@ describe('Each Storage call should create a client with the right StorageAction'
 		await storage.getProperties('test');
 		expect(provider.getProperties).toBeCalledWith(
 			'test',
-			expect.objectContaining({
-				userAgentValue: getStorageUserAgentValue(StorageAction.GetProperties),
-			})
+			undefined,
+			getStorageUserAgentValue(StorageAction.GetProperties)
 		);
 	});
 
@@ -105,9 +103,8 @@ describe('Each Storage call should create a client with the right StorageAction'
 		await storage.get('test', { download: true });
 		expect(provider.get).toBeCalledWith(
 			'test',
-			expect.objectContaining({
-				userAgentValue: getStorageUserAgentValue(StorageAction.Get),
-			})
+			expect.anything(),
+			getStorageUserAgentValue(StorageAction.Get)
 		);
 	});
 
@@ -118,9 +115,8 @@ describe('Each Storage call should create a client with the right StorageAction'
 		expect(provider.put).toBeCalledWith(
 			'test',
 			'testData',
-			expect.objectContaining({
-				userAgentValue: getStorageUserAgentValue(StorageAction.Put),
-			})
+			expect.anything(),
+			getStorageUserAgentValue(StorageAction.Put)
 		);
 	});
 
@@ -131,9 +127,8 @@ describe('Each Storage call should create a client with the right StorageAction'
 		expect(provider.copy).toBeCalledWith(
 			{ key: 'testSrc' },
 			{ key: 'testDest' },
-			expect.objectContaining({
-				userAgentValue: getStorageUserAgentValue(StorageAction.Copy),
-			})
+			expect.anything(),
+			getStorageUserAgentValue(StorageAction.Copy)
 		);
 	});
 
@@ -143,9 +138,8 @@ describe('Each Storage call should create a client with the right StorageAction'
 		await storage.list('');
 		expect(provider.list).toBeCalledWith(
 			'',
-			expect.objectContaining({
-				userAgentValue: getStorageUserAgentValue(StorageAction.List),
-			})
+			undefined,
+			getStorageUserAgentValue(StorageAction.List)
 		);
 	});
 
@@ -155,9 +149,8 @@ describe('Each Storage call should create a client with the right StorageAction'
 		await storage.remove('test');
 		expect(provider.remove).toBeCalledWith(
 			'test',
-			expect.objectContaining({
-				userAgentValue: getStorageUserAgentValue(StorageAction.Remove),
-			})
+			undefined,
+			getStorageUserAgentValue(StorageAction.Remove)
 		);
 	});
 });
