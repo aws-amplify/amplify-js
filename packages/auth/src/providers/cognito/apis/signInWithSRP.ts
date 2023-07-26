@@ -12,8 +12,9 @@ import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
 import {
+	cacheCognitoTokens,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
@@ -45,10 +46,9 @@ export async function signInWithSRP(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { username, password } = signInRequest;
-	const config = Amplify.config;
 	const clientMetaData =
 		signInRequest.options?.serviceOptions?.clientMetadata ||
-		config.clientMetadata;
+		AmplifyV6.getConfig().Auth?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -73,15 +73,14 @@ export async function signInWithSRP(
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
-			// TODO(israx): cache tokens
 			cleanActiveSignInState();
+			await cacheCognitoTokens(AuthenticationResult);
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: AuthSignInStep.DONE },
 			};
 		}
 
-		// TODO(israx): set AmplifyUserSession via singleton
 		return getSignInResult({
 			challengeName: ChallengeName as ChallengeName,
 			challengeParameters: ChallengeParameters as ChallengeParameters,

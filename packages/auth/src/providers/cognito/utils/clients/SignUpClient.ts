@@ -6,7 +6,7 @@ import type {
 	SignUpCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { UserPoolHttpClient } from './HttpClients';
-import { UserPoolClient } from './UserPoolClient';
+import { AmplifyV6 } from '@aws-amplify/core';
 
 export type SignUpClientInput = Pick<
 	SignUpCommandInput,
@@ -20,12 +20,13 @@ export type SignUpClientInput = Pick<
 export async function signUpClient(
 	params: SignUpClientInput
 ): Promise<SignUpCommandOutput> {
-	const client = new UserPoolHttpClient(UserPoolClient.region);
+	const authConfig = AmplifyV6.getConfig().Auth;
+	const client = new UserPoolHttpClient(authConfig);
 	const result: SignUpCommandOutput = await client.send<SignUpCommandOutput>(
 		'SignUp',
 		{
 			...params,
-			ClientId: UserPoolClient.clientId,
+			ClientId: authConfig?.userPoolWebClientId,
 		}
 	);
 	return result;

@@ -6,6 +6,7 @@ import { AuthError } from '../../../src/errors/AuthError';
 import { AssociateSoftwareTokenException } from '../../../src/providers/cognito/types/errors';
 import * as associateSoftwareTokenClient from '../../../src/providers/cognito/utils/clients/AssociateSoftwareTokenClient';
 import { setUpTOTP } from '../../../src/providers/cognito';
+import { AmplifyV6 } from '@aws-amplify/core';
 
 describe('setUpTOTP API happy path cases', () => {
 	let associateSoftwareTokenClientSpy;
@@ -44,6 +45,12 @@ describe('setUpTOTP API error path cases:', () => {
 			AssociateSoftwareTokenException.InvalidParameterException;
 		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await setUpTOTP();
 		} catch (error) {
 			expect(fetch).toBeCalled();

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyErrorString, Amplify } from '@aws-amplify/core';
+import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { updatePassword } from '../../../src/providers/cognito';
@@ -30,6 +30,12 @@ describe('updatePassword API happy path cases', () => {
 	});
 
 	test('updatePassword should call changePasswordClient', async () => {
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		await updatePassword({ oldPassword, newPassword });
 
 		expect(changePasswordClientSpy).toHaveBeenCalledWith(
@@ -51,6 +57,12 @@ describe('updatePassword API error path cases:', () => {
 	test('updatePassword API should throw a validation AuthError when oldPassword is empty', async () => {
 		expect.assertions(2);
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await updatePassword({ oldPassword: '', newPassword });
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
@@ -61,6 +73,12 @@ describe('updatePassword API error path cases:', () => {
 	test('updatePassword API should throw a validation AuthError when newPassword is empty', async () => {
 		expect.assertions(2);
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await updatePassword({ oldPassword, newPassword: '' });
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
@@ -74,6 +92,12 @@ describe('updatePassword API error path cases:', () => {
 		serviceError.name = ChangePasswordException.InvalidParameterException;
 		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await updatePassword({ oldPassword, newPassword });
 		} catch (error) {
 			expect(fetch).toBeCalled();
@@ -93,6 +117,12 @@ describe('updatePassword API error path cases:', () => {
 				Promise.reject(new Error('unknown error'))
 			);
 			try {
+				AmplifyV6.configure({
+					Auth: {
+						userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+						userPoolId: 'us-west-2_zzzzz',
+					},
+				});
 				await updatePassword({ oldPassword, newPassword });
 			} catch (error) {
 				expect(error).toBeInstanceOf(AuthError);
@@ -106,6 +136,12 @@ describe('updatePassword API error path cases:', () => {
 		expect.assertions(3);
 		globalMock.fetch = jest.fn(() => Promise.reject(null));
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await updatePassword({ oldPassword, newPassword });
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);

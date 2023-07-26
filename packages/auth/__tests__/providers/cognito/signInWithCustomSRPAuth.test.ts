@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, AmplifyErrorString } from '@aws-amplify/core';
+import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
 import { RespondToAuthChallengeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
@@ -10,12 +10,6 @@ import { signIn } from '../../../src/providers/cognito/apis/signIn';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInWithCustomSRPAuth } from '../../../src/providers/cognito/apis/signInWithCustomSRPAuth';
-
-Amplify.configure({
-	aws_cognito_region: 'us-west-2',
-	aws_user_pools_web_client_id: '4a93aeb3-01af-42d8-891d-ee8aa1549398',
-	aws_user_pools_id: 'us-west-2_80ede80b',
-});
 
 describe('signIn API happy path cases', () => {
 	let handleCustomSRPAuthFlowSpy;
@@ -35,6 +29,12 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signIn API invoked with CUSTOM_WITH_SRP authFlowType should return a SignInResult', async () => {
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		const result = await signIn({
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
@@ -49,6 +49,12 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('signInWithCustomSRPAuth API should return a SignInResult', async () => {
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		const result = await signInWithCustomSRPAuth({
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
@@ -60,6 +66,12 @@ describe('signIn API happy path cases', () => {
 	test('handleCustomSRPAuthFlow should be called with clientMetada from request', async () => {
 		const username = authAPITestParams.user1.username;
 		const password = authAPITestParams.user1.password;
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		await signInWithCustomSRPAuth({
 			username,
 			password,
@@ -75,7 +87,13 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('handleCustomSRPAuthFlow should be called with clientMetada from config', async () => {
-		Amplify.configure(authAPITestParams.configWithClientMetadata);
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				...authAPITestParams.configWithClientMetadata,
+			},
+		});
 		const username = authAPITestParams.user1.username;
 		const password = authAPITestParams.user1.password;
 		await signInWithCustomSRPAuth({
@@ -96,6 +114,12 @@ describe('signIn API error path cases:', () => {
 	test('signIn API should throw a validation AuthError when username is empty', async () => {
 		expect.assertions(2);
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await signIn({ username: '' });
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
@@ -109,6 +133,12 @@ describe('signIn API error path cases:', () => {
 		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
 		expect.assertions(3);
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await signIn({
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,

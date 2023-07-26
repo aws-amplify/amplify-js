@@ -1,4 +1,4 @@
-import { AmplifyErrorString } from '@aws-amplify/core';
+import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
 import { RespondToAuthChallengeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
@@ -36,6 +36,12 @@ describe('confirmSignIn API error path cases:', () => {
 	test('confirmSignIn API should throw a validation AuthError when challengeResponse is empty', async () => {
 		expect.assertions(2);
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await confirmSignIn({ challengeResponse: '' });
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
@@ -47,6 +53,12 @@ describe('confirmSignIn API error path cases:', () => {
      ${AuthSignInStep.CONTINUE_SIGN_IN_WITH_MFA_SELECTION} and challengeResponse is not "SMS" or "TOTP" `, async () => {
 		expect.assertions(2);
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await signIn({ username, password });
 			await confirmSignIn({ challengeResponse: 'NO_SMS' });
 		} catch (error) {
@@ -63,6 +75,12 @@ describe('confirmSignIn API error path cases:', () => {
 		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
 
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await signIn({ username, password });
 			await confirmSignIn({
 				challengeResponse: 'TOTP',
@@ -84,6 +102,12 @@ describe('confirmSignIn API error path cases:', () => {
 		);
 
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await confirmSignIn({
 				challengeResponse: 'TOTP',
 			});

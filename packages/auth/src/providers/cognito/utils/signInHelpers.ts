@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import {
 	InitiateAuthCommandOutput,
 	RespondToAuthChallengeCommandOutput,
@@ -48,6 +48,7 @@ import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { signInStore } from './signInStore';
+export { cacheCognitoTokens } from '@aws-amplify/core/internals/aws-client-utils';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 type HandleAuthChallengeRequest = {
@@ -213,9 +214,10 @@ export async function handleUserSRPAuthFlow(
 	password: string,
 	clientMetadata: ClientMetadata | undefined
 ): Promise<RespondToAuthChallengeCommandOutput> {
-	const config = Amplify.config;
-	const userPoolId = config['aws_user_pools_id'];
-	const userPoolName = userPoolId.split('_')[1];
+	const config = AmplifyV6.getConfig().Auth;
+
+	const userPoolId = config?.userPoolId;
+	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = new AuthenticationHelper(userPoolName);
 
 	const jsonReq: InitiateAuthClientInput = {
@@ -260,8 +262,11 @@ export async function handleCustomSRPAuthFlow(
 	password: string,
 	clientMetadata: ClientMetadata | undefined
 ) {
-	const userPoolId = Amplify.config['aws_user_pools_id'];
-	const userPoolName = userPoolId.split('_')[1];
+	const config = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(config);
+
+	const userPoolId = config?.userPoolId;
+	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = new AuthenticationHelper(userPoolName);
 	const jsonReq: InitiateAuthClientInput = {
 		AuthFlow: 'CUSTOM_AUTH',

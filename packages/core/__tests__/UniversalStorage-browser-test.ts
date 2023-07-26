@@ -24,7 +24,6 @@ import { UniversalStorage } from '../src/UniversalStorage';
 
 describe(UniversalStorage.name, () => {
 	describe('on client side', () => {
-		let originalLocalStorage;
 		let universalStorage: UniversalStorage;
 
 		beforeEach(() => {
@@ -34,9 +33,7 @@ describe(UniversalStorage.name, () => {
 			universalStorage = new UniversalStorage();
 		});
 
-		afterEach(() => {
-			window.localStorage = originalLocalStorage;
-		});
+		afterEach(() => {});
 
 		describe('constructor', () => {
 			test('initiates store with cookies', () => {
