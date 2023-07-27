@@ -142,10 +142,6 @@ export type GraphQLVariablesV6<
 	? IN
 	: any;
 
-type Sentinel = {
-	sentinel: true;
-};
-
 /**
  * The expected return type with respect to the given `FALLBACK_TYPE`
  * and `TYPED_GQL_STRING`.
