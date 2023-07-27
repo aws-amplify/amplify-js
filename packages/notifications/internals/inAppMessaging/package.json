@@ -1,8 +1,0 @@
-{
-	"name": "@aws-amplify/notifications/internals/inAppMessaging",
-	"types": "../../../lib-esm/InAppMessaging/internals/index.d.ts",
-	"main": "../../../lib/InAppMessaging/internals/index.js",
-	"module": "../../../lib-esm/InAppMessaging/internals/index.js",
-	"react-native": "../../../lib-esm/InAppMessaging/internals/index.js",
-	"sideEffects": false
-}

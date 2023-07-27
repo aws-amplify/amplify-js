@@ -17,9 +17,9 @@ import {
 	addEventListener,
 	EventListener,
 	notifyEventListeners,
-} from '../../common';
-import { NotificationsConfig, UserInfo } from '../../types';
-import { AWSPinpointProvider } from '../Providers';
+} from '../common';
+import { NotificationsConfig, UserInfo } from '../types';
+import { AWSPinpointProvider } from '../InAppMessaging/Providers';
 import {
 	InAppMessage,
 	InAppMessageInteractionEvent,
@@ -31,7 +31,7 @@ import {
 	OnMessageInteractionEventHandler,
 	InternalNotificationsSubCategory,
 	NotificationsSubCategory,
-} from '../types';
+} from '../InAppMessaging/types';
 import { getUserAgentValue } from './utils';
 
 const STORAGE_KEY_SUFFIX = '_inAppMessages';
