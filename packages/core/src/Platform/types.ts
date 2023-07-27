@@ -94,7 +94,14 @@ export enum DataStoreAction {
 	GraphQl = '2',
 }
 export enum GeoAction {
-	None = '0',
+	SearchByText = '1',
+	SearchForSuggestions = '2',
+	SearchByPlaceId = '3',
+	SearchByCoordinates = '4',
+	SaveGeofences = '5',
+	GetGeofence = '6',
+	ListGeofences = '7',
+	DeleteGeofences = '8',
 }
 export enum InAppMessagingAction {
 	None = '0',
@@ -122,6 +129,7 @@ export enum StorageAction {
 	Copy = '4',
 	Remove = '5',
 	GetProperties = '6',
+	Cancel = '7',
 }
 
 type ActionMap = {
