@@ -1,7 +1,15 @@
 import { Buffer } from 'buffer';
 import { asserts } from '../../../Util/errors/AssertError';
-import { AuthConfig, AuthKeys, JWT } from '../types';
+import {
+	AUTH_TOKEN_STORE_VERSION_KEY,
+	AuthConfig,
+	AuthKeys,
+	AuthTokenStoreVersion,
+	JWT,
+} from '../types';
 import { KeyValueStorageInterface } from '../../../types';
+import { DefaultTokenStore } from '../TokenStore';
+import { LegacyTokenStore } from '../LegacyTokenStore';
 
 export function assertTokenProviderConfig(authConfig?: AuthConfig) {
 	const validConfig =
@@ -64,4 +72,33 @@ export async function getUsernameFromStorage(
 	legacyKey: string
 ): Promise<string | null> {
 	return storage.getItem(legacyKey);
+}
+
+export async function migrateTokens(
+	legacyStore: LegacyTokenStore,
+	tokenStore: DefaultTokenStore
+): Promise<void> {
+	const storage = tokenStore.keyValueStorage;
+	const tokenManagerVersion =
+		(await storage.getItem(AUTH_TOKEN_STORE_VERSION_KEY)) ??
+		AuthTokenStoreVersion.none;
+
+	if (tokenManagerVersion !== AuthTokenStoreVersion.none) return;
+
+	try {
+		const legacyTokens = await legacyStore.loadTokens();
+		if (legacyTokens !== null) {
+			await tokenStore.storeTokens(legacyTokens);
+		}
+	} catch (error) {
+		// TODO: log error
+	} finally {
+		try {
+			await legacyStore.clearTokens();
+		} catch (error) {
+			// TODO: log error
+		}
+	}
+	// set the token manager version after
+	await storage.setItem(AUTH_TOKEN_STORE_VERSION_KEY, AuthTokenStoreVersion.v1);
 }

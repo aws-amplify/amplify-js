@@ -2,6 +2,7 @@ import {
 	assertTokenProviderConfig,
 	decodeJWT,
 	getAuthStorageKeys,
+	migrateTokens,
 } from './utils';
 import {
 	AuthConfig,
@@ -11,6 +12,7 @@ import {
 } from './types';
 import { KeyValueStorageInterface } from '../../types';
 import { asserts } from '../../Util/errors/AssertError';
+import { LegacyTokenStore } from './LegacyTokenStore';
 
 export class DefaultTokenStore implements AuthTokenStore {
 	keyValueStorage: KeyValueStorageInterface;
@@ -29,8 +31,12 @@ export class DefaultTokenStore implements AuthTokenStore {
 	async loadTokens(): Promise<AuthTokens> {
 		assertTokenProviderConfig(this.authConfig);
 
-		// TODO(v6): migration logic should be here
-		// Reading V5 tokens old format
+		const legacyTokenStore = new LegacyTokenStore();
+		legacyTokenStore.setAuthConfig(this.authConfig);
+		legacyTokenStore.setKeyValueStorage(this.keyValueStorage);
+
+		// Reading and migrating V5 tokens
+		await migrateTokens(legacyTokenStore, this);
 
 		// Reading V6 tokens
 		try {

@@ -60,6 +60,29 @@ export const AuthDeviceKeys = {
 	randomPasswordKey: 'randomPasswordKey',
 };
 
+/**
+ * The key to get/set the auth token storage manager version.
+ */
+export const AUTH_TOKEN_STORE_VERSION_KEY = 'authTokenStoreVersion';
+
+
+/**
+ * The token manager version.
+ */
+export enum AuthTokenStoreVersion {
+	/**
+	 * No auth token store manager version is present.
+	 *
+	 * Either the token manager has never been initialized, or
+	 * the tokens are stored in a legacy format.
+	 * */
+	none = 'none',
+	/**
+	 * The initial implementation of auth token manager version
+	 */
+	v1 = 'v1',
+}
+
 export interface AuthTokenStore {
 	setAuthConfig(authConfig: AuthConfig): void;
 	loadTokens(): Promise<AuthTokens>;

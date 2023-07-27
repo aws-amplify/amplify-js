@@ -15,7 +15,7 @@ import { KeyValueStorageInterface } from '../../types';
 import { LegacyAuthStorageKeys } from './types';
 import { AmplifyError } from '../../Errors';
 
-export class LegacyDefaultTokenStore implements AuthTokenStore {
+export class LegacyTokenStore implements AuthTokenStore {
 	keyValueStorage: KeyValueStorageInterface;
 	authConfig: AuthConfig;
 
