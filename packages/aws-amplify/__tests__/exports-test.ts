@@ -22,7 +22,6 @@ describe('aws-amplify', () => {
 			  "I18n",
 			  "ServiceWorker",
 			  "AWSCloudWatchProvider",
-			  "withSSRContext",
 			]
 		`);
 		});
