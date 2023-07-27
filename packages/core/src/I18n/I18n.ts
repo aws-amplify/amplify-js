@@ -7,7 +7,9 @@ import { ConsoleLogger as Logger } from '../Logger';
 const logger = new Logger('I18n');
 
 /**
- * Language transition class
+ * Language translation utility.
+ * 
+ * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
  */
 export class I18n {
 	/**
@@ -29,6 +31,8 @@ export class I18n {
 	 * @constructor
 	 * Initialize with configurations
 	 * @param {Object} options
+	 * 
+	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	constructor(options: I18nOptions) {
 		this._options = Object.assign({}, options);
@@ -50,6 +54,8 @@ export class I18n {
 	 * @method
 	 * Explicitly setting language
 	 * @param {String} lang
+	 * 
+	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	setLanguage(lang: string) {
 		this._lang = lang;
@@ -60,6 +66,8 @@ export class I18n {
 	 * Get value
 	 * @param {String} key
 	 * @param {String} defVal - Default value
+	 * 
+	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	get(key, defVal = undefined) {
 		if (!this._lang) {
@@ -88,6 +96,8 @@ export class I18n {
 	 * @param {String} key
 	 * @param {String} language - Specified langurage to be used
 	 * @param {String} defVal - Default value
+	 * 
+	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	getByLanguage(key, language, defVal = null) {
 		if (!language) {
@@ -107,6 +117,8 @@ export class I18n {
 	 * Add vocabularies for one language
 	 * @param {String} language - Language of the dictionary
 	 * @param {Object} vocabularies - Object that has key-value as dictionary entry
+	 * 
+	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	putVocabulariesForLanguage(language, vocabularies) {
 		let lang_dict = this._dict[language];
@@ -121,6 +133,8 @@ export class I18n {
 	 * Add vocabularies for one language
 	 * @param {Object} vocabularies - Object that has language as key,
 	 *                                vocabularies of each language as value
+	 * 
+	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	putVocabularies(vocabularies) {
 		Object.keys(vocabularies).map(key => {

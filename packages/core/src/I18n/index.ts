@@ -13,6 +13,8 @@ let _i18n = null;
 
 /**
  * Export I18n APIs
+ * 
+ * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
  */
 export class I18n {
 	/**
@@ -20,6 +22,8 @@ export class I18n {
 	 * @method
 	 * Configure I18n part
 	 * @param {Object} config - Configuration of the I18n
+	 * 
+	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	static configure(config) {
 		logger.debug('configure I18n');
@@ -42,6 +46,8 @@ export class I18n {
 	 * @static
 	 * @method
 	 * Create an instance of I18n for the library
+	 * 
+	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	static createInstance() {
 		logger.debug('create I18n instance');
@@ -55,6 +61,8 @@ export class I18n {
 	 * @static @method
 	 * Explicitly setting language
 	 * @param {String} lang
+	 * 
+	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	static setLanguage(lang) {
 		I18n.checkConfig();
@@ -67,6 +75,8 @@ export class I18n {
 	 * Get value
 	 * @param {String} key
 	 * @param {String} defVal - Default value
+	 * 
+	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	static get(key, defVal?) {
 		if (!I18n.checkConfig()) {
@@ -82,6 +92,8 @@ export class I18n {
 	 * Add vocabularies for one language
 	 * @param {String} langurage - Language of the dictionary
 	 * @param {Object} vocabularies - Object that has key-value as dictionary entry
+	 * 
+	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	static putVocabulariesForLanguage(language, vocabularies) {
 		I18n.checkConfig();
@@ -95,6 +107,8 @@ export class I18n {
 	 * Add vocabularies for one language
 	 * @param {Object} vocabularies - Object that has language as key,
 	 *                                vocabularies of each language as value
+	 * 
+	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	static putVocabularies(vocabularies) {
 		I18n.checkConfig();
