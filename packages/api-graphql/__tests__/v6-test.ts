@@ -615,8 +615,8 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
-			// Customers would not specify these types. They're shown to demonstrate
-			// the return type for the test.
+			// Customers would not likely annotate the types in both places. They are provided
+			// in both places to trigger type errors if the right-hand side changes.
 			const result: GraphQLResult<CreateThreadMutation> = await client.graphql<
 				GraphQLQuery<CreateThreadMutation>
 			>({
@@ -655,8 +655,8 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
-			// Customers would not specify these types. They're shown to demonstrate
-			// the return type for the test.
+			// Customers would not likely annotate the types in both places. They are provided
+			// in both places to trigger type errors if the right-hand side changes.
 			const result: GraphQLResult<UpdateThreadMutation> = await client.graphql<
 				GraphQLQuery<UpdateThreadMutation>
 			>({
@@ -693,8 +693,8 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
-			// Customers would not specify these types. They're shown to demonstrate
-			// the return type for the test.
+			// Customers would not likely annotate the types in both places. They are provided
+			// in both places to trigger type errors if the right-hand side changes.
 			const result: GraphQLResult<DeleteThreadMutation> = await client.graphql<
 				GraphQLQuery<DeleteThreadMutation>
 			>({
@@ -735,8 +735,8 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
-			// Customers would not specify these types. They're shown to demonstrate
-			// the return type for the test.
+			// Customers would not likely annotate the types in both places. They are provided
+			// in both places to trigger type errors if the right-hand side changes.
 			const result: GraphQLResult<GetThreadQuery> = await client.graphql<
 				GraphQLQuery<GetThreadQuery>
 			>({
@@ -782,8 +782,8 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
-			// Customers would not specify these types. They're shown to demonstrate
-			// the return type for the test.
+			// Customers would not likely annotate the types in both places. They are provided
+			// in both places to trigger type errors if the right-hand side changes.
 			const result: GraphQLResult<ListThreadsQuery> = await client.graphql<
 				GraphQLQuery<ListThreadsQuery>
 			>({
@@ -826,8 +826,8 @@ describe('client', () => {
 				},
 			};
 
-			// Customers would not specify these types. They're shown to demonstrate
-			// the return type for the test.
+			// Customers would not likely annotate the types in both places. They are provided
+			// in both places to trigger type errors if the right-hand side changes.
 			const result: GraphqlSubscriptionResult<OnCreateThreadSubscription> =
 				client.graphql<GraphQLSubscription<OnCreateThreadSubscription>>({
 					query: untypedSubscriptions.onCreateThread,
