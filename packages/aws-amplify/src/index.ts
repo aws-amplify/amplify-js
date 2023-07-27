@@ -12,8 +12,6 @@ export {
 } from '@aws-amplify/analytics';
 export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
-export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
-export { PubSub } from '@aws-amplify/pubsub';
 export {
 	ConsoleLogger as Logger,
 	Hub,
@@ -27,6 +25,8 @@ export { withSSRContext } from './withSSRContext';
 
 // TODO(v6): Re-enable these exports when available
 /*
+export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
+export { PubSub } from '@aws-amplify/pubsub';
 export {
 	AuthModeStrategyType,
 	DataStore,
