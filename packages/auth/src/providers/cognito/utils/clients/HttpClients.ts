@@ -20,6 +20,10 @@ import type {
 	VerifySoftwareTokenCommandOutput,
 	AssociateSoftwareTokenCommandInput,
 	AssociateSoftwareTokenCommandOutput,
+	SetUserMFAPreferenceCommandInput,
+	SetUserMFAPreferenceCommandOutput,
+	GetUserCommandInput,
+	GetUserCommandOutput,
 	ChangePasswordCommandInput,
 	ChangePasswordCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
@@ -47,9 +51,11 @@ export type ClientInputs =
 	| ConfirmSignUpCommandInput
 	| VerifySoftwareTokenCommandInput
 	| AssociateSoftwareTokenCommandInput
-	| ChangePasswordCommandInput
 	| GetIdCommandInput
-	| GetCredentialsForIdentityCommandInput;
+	| GetCredentialsForIdentityCommandInput
+	| SetUserMFAPreferenceCommandInput
+	| GetUserCommandInput
+	| ChangePasswordCommandInput;
 
 export type ClientOutputs =
 	| SignUpCommandOutput
@@ -61,9 +67,11 @@ export type ClientOutputs =
 	| ConfirmSignUpCommandOutput
 	| VerifySoftwareTokenCommandOutput
 	| AssociateSoftwareTokenCommandOutput
-	| ChangePasswordCommandOutput
 	| GetIdCommandOutput
-	| GetCredentialsForIdentityCommandOutput;
+	| GetCredentialsForIdentityCommandOutput
+	| SetUserMFAPreferenceCommandOutput
+	| GetUserCommandOutput
+	| ChangePasswordCommandOutput;
 
 export type ClientOperations =
 	| 'SignUp'
@@ -75,16 +83,16 @@ export type ClientOperations =
 	| 'ResendConfirmationCode'
 	| 'VerifySoftwareToken'
 	| 'AssociateSoftwareToken'
-	| 'ChangePassword'
 	| 'GetId'
-	| 'GetCredentialsForIdentity';
-
+	| 'GetCredentialsForIdentity'
+	| 'SetUserMFAPreference'
+	| 'GetUser'
+	| 'ChangePassword';
 export type ServiceTypes = 'identity' | 'idp';
 
 type Services =
 	| 'AWSCognitoIdentityProviderService'
 	| 'AWSCognitoIdentityService';
-
 export class UserPoolHttpClient {
 	private _endpoint: string;
 	private _service: Services = 'AWSCognitoIdentityProviderService';

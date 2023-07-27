@@ -1,6 +1,6 @@
 import { Amplify, UniversalStorage } from '@aws-amplify/core';
 
-import { withSSRContext } from '../src/withSSRContext';
+import { withSSRContext } from '../src/ssr/withSSRContext';
 
 describe('withSSRContext', () => {
 	it('should not require context (for client-side requests)', () => {
