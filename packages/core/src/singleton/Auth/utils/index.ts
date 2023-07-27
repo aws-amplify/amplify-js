@@ -1,6 +1,7 @@
 import { Buffer } from 'buffer';
 import { asserts } from '../../../Util/errors/AssertError';
-import { AuthConfig, JWT } from '../types';
+import { AuthConfig, AuthKeys, JWT } from '../types';
+import { KeyValueStorageInterface } from '../../../types';
 
 export function assertTokenProviderConfig(authConfig?: AuthConfig) {
 	const validConfig =
@@ -40,4 +41,27 @@ export function decodeJWT(token: string): JWT {
 	} catch (err) {
 		throw new Error('Invalid token payload');
 	}
+}
+
+export function getAuthStorageKeys<T extends Record<string, string>>(
+	authKeys: T
+) {
+	const keys = Object.values({ ...authKeys });
+	return (prefix: string, identifier: string) =>
+		keys.reduce(
+			(acc, authKey) => ({
+				...acc,
+				[authKey]: `${prefix}.${identifier}.${authKey}`,
+			}),
+			{} as AuthKeys<keyof T & string>
+		);
+}
+
+export const LEGACY_KEY_PREFIX = 'CognitoIdentityServiceProvider';
+
+export async function getUsernameFromStorage(
+	storage: KeyValueStorageInterface,
+	legacyKey: string
+): Promise<string | null> {
+	return storage.getItem(legacyKey);
 }

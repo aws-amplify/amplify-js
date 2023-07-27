@@ -1,7 +1,10 @@
-import { assertTokenProviderConfig, decodeJWT } from './utils';
+import {
+	assertTokenProviderConfig,
+	decodeJWT,
+	getAuthStorageKeys,
+} from './utils';
 import {
 	AuthConfig,
-	AuthKeys,
 	AuthStorageKeys,
 	AuthTokenStore,
 	AuthTokens,
@@ -80,26 +83,32 @@ export class DefaultTokenStore implements AuthTokenStore {
 			this.authConfig.userPoolWebClientId
 		);
 
-		this.keyValueStorage.setItem(
+		await this.keyValueStorage.setItem(
 			authKeys.accessToken,
 			tokens.accessToken.toString()
 		);
 
 		if (!!tokens.idToken) {
-			this.keyValueStorage.setItem(authKeys.idToken, tokens.idToken.toString());
+			await this.keyValueStorage.setItem(
+				authKeys.idToken,
+				tokens.idToken.toString()
+			);
 		}
 
-		this.keyValueStorage.setItem(
+		await this.keyValueStorage.setItem(
 			authKeys.accessTokenExpAt,
 			`${tokens.accessTokenExpAt}`
 		);
 
-		this.keyValueStorage.setItem(
+		await this.keyValueStorage.setItem(
 			authKeys.metadata,
 			JSON.stringify(tokens.metadata)
 		);
 
-		this.keyValueStorage.setItem(authKeys.clockDrift, `${tokens.clockDrift}`);
+		await this.keyValueStorage.setItem(
+			authKeys.clockDrift,
+			`${tokens.clockDrift}`
+		);
 	}
 
 	async clearTokens(): Promise<void> {
@@ -128,17 +137,3 @@ const createKeysForAuthStorage = (provider: string, identifier: string) => {
 		identifier
 	);
 };
-
-export function getAuthStorageKeys<T extends Record<string, string>>(
-	authKeys: T
-) {
-	const keys = Object.values({ ...authKeys });
-	return (prefix: string, identifier: string) =>
-		keys.reduce(
-			(acc, authKey) => ({
-				...acc,
-				[authKey]: `${prefix}.${identifier}.${authKey}`,
-			}),
-			{} as AuthKeys<keyof T & string>
-		);
-}

@@ -38,6 +38,28 @@ export const AuthStorageKeys = {
 	metadata: 'metadata',
 };
 
+export const LegacyAuthStorageKeys = {
+	accessToken: 'accessToken',
+
+	refreshToken: 'refreshToken',
+
+	idToken: 'idToken',
+
+	lastAuthUser: 'LastAuthUser',
+
+	clockDrift: 'clockDrift',
+
+	userData: 'userData',
+};
+
+export const AuthDeviceKeys = {
+	deviceKey: 'deviceKey',
+
+	deviceGroupKey: 'deviceGroupKey',
+
+	randomPasswordKey: 'randomPasswordKey',
+};
+
 export interface AuthTokenStore {
 	setAuthConfig(authConfig: AuthConfig): void;
 	loadTokens(): Promise<AuthTokens>;
@@ -117,6 +139,17 @@ export type AuthTokens = {
 	metadata?: Record<string, string>; // Generic for each service supported
 };
 
+export type AuthConfigKeys =
+	| typeof AuthStorageKeys
+	| typeof LegacyAuthStorageKeys
+	| typeof AuthDeviceKeys;
+
+export type AuthConfigKey = keyof typeof AuthStorageKeys;
+
+export type AuthConfigKeyAndValue = {
+	key: AuthConfigKey;
+	value: string;
+};
 export type AuthKeys<AuthKey extends string> = {
 	[Key in AuthKey]: string;
 };
