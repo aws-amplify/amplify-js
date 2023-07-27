@@ -661,7 +661,11 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		const emitter = new events.EventEmitter();
-		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
+		const uploader = new AWSS3ProviderManagedUpload(
+			params,
+			{ ...opt, userAgentValue },
+			emitter
+		);
 
 		if (acl) {
 			params.ACL = acl;
@@ -853,7 +857,7 @@ export class AWSS3Provider implements StorageProvider {
 				)
 					params.MaxKeys = pageSize;
 				else logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
-				listResult = await this._list(params, opt, prefix);
+				listResult = await this._list(params, opt, prefix, userAgentValue);
 				list.results.push(...listResult.results);
 				list.hasNextToken = listResult.hasNextToken;
 				list.nextToken = null ?? listResult.nextToken;
