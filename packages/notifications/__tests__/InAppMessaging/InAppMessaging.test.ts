@@ -29,7 +29,7 @@ import {
 import InAppMessaging, {
 	InAppMessageInteractionEvent,
 } from '../../src/InAppMessaging';
-import { getUserAgentValue } from '../../src/InAppMessaging/internals/utils';
+import { getUserAgentValue } from '../../src/internals/utils';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../src/common/eventListeners');
