@@ -55,6 +55,7 @@ export class AWSS3ProviderManagedUpload {
 	private totalBytesToUpload = 0;
 	private emitter: EventEmitter | null = null;
 
+	// TODO: Add userAgentValue
 	constructor(params: PutObjectInput, opts, emitter: EventEmitter) {
 		this.params = params;
 		this.opts = {
@@ -65,7 +66,6 @@ export class AWSS3ProviderManagedUpload {
 		this.s3Config = loadS3Config({
 			...opts,
 			emitter,
-			storageAction: StorageAction.Put,
 		});
 	}
 
