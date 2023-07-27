@@ -27,7 +27,6 @@ export {
 	ServiceWorker,
 	AWSCloudWatchProvider,
 } from '@aws-amplify/core';
-export { withSSRContext } from './withSSRContext';
 
 // TODO(v6): Re-enable these exports when available
 /*
