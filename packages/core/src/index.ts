@@ -42,6 +42,7 @@ export {
 	ErrorParams,
 	AmplifyErrorMap,
 	ServiceError,
+	KeyValueStorageInterface,
 } from './types';
 export {
 	StorageHelper,
