@@ -1,6 +1,7 @@
 import { Credentials } from '@aws-sdk/types';
-import { Amplify } from '../../src/singleton';
-import { Auth, decodeJWT } from '../../src/singleton/Auth';
+import { AmplifyV6 as Amplify } from '../../src/singleton';
+import { AuthClass as Auth } from '../../src/singleton/Auth';
+import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { MemoryKeyValueStorage } from '../../src/StorageHelper';
 
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any

@@ -20,9 +20,17 @@ import type {
 	VerifySoftwareTokenCommandOutput,
 	AssociateSoftwareTokenCommandInput,
 	AssociateSoftwareTokenCommandOutput,
+	SetUserMFAPreferenceCommandInput,
+	SetUserMFAPreferenceCommandOutput,
+	GetUserCommandInput,
+	GetUserCommandOutput,
+	ChangePasswordCommandInput,
+	ChangePasswordCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../../errors/AuthError';
 import { assertServiceError } from '../../../../errors/utils/assertServiceError';
+import { AuthConfig } from '@aws-amplify/core';
+import { isTypeUserPoolConfig } from '../types';
 
 // TODO: Update the user-agent value
 const USER_AGENT = 'amplify test';
@@ -36,7 +44,10 @@ export type ClientInputs =
 	| ResendConfirmationCodeCommandInput
 	| ConfirmSignUpCommandInput
 	| VerifySoftwareTokenCommandInput
-	| AssociateSoftwareTokenCommandInput;
+	| AssociateSoftwareTokenCommandInput
+	| SetUserMFAPreferenceCommandInput
+	| GetUserCommandInput
+	| ChangePasswordCommandInput;
 
 export type ClientOutputs =
 	| SignUpCommandOutput
@@ -47,7 +58,10 @@ export type ClientOutputs =
 	| ResendConfirmationCodeCommandOutput
 	| ConfirmSignUpCommandOutput
 	| VerifySoftwareTokenCommandOutput
-	| AssociateSoftwareTokenCommandOutput;
+	| AssociateSoftwareTokenCommandOutput
+	| SetUserMFAPreferenceCommandOutput
+	| GetUserCommandOutput
+	| ChangePasswordCommandOutput;
 
 export type ClientOperations =
 	| 'SignUp'
@@ -58,7 +72,10 @@ export type ClientOperations =
 	| 'RespondToAuthChallenge'
 	| 'ResendConfirmationCode'
 	| 'VerifySoftwareToken'
-	| 'AssociateSoftwareToken';
+	| 'AssociateSoftwareToken'
+	| 'SetUserMFAPreference'
+	| 'GetUser'
+	| 'ChangePassword';
 
 export class UserPoolHttpClient {
 	private _endpoint: string;
@@ -68,8 +85,13 @@ export class UserPoolHttpClient {
 		'Cache-Control': 'no-store',
 	};
 
-	constructor(region: string) {
-		this._endpoint = `https://cognito-idp.${region}.amazonaws.com/`;
+	constructor(authConfig?: AuthConfig) {
+		if (authConfig && isTypeUserPoolConfig(authConfig)) {
+			const region = authConfig.userPoolId.split('_')[0];
+			this._endpoint = `https://cognito-idp.${region}.amazonaws.com/`;
+		} else {
+			throw new Error('error'); // TODO: update error
+		}
 	}
 
 	async send<T extends ClientOutputs>(

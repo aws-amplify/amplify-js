@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
 import type {
 	AttributeType,
 	SignUpCommandOutput,
@@ -51,7 +51,6 @@ export async function signUp(
 	// TODO: implement autoSignIn
 	let validationData: AttributeType[] | undefined;
 	let attributes: AttributeType[] | undefined;
-	const config = Amplify.config;
 
 	if (options?.serviceOptions?.validationData) {
 		validationData = toAttributeType(options?.serviceOptions?.validationData);
@@ -66,7 +65,7 @@ export async function signUp(
 		UserAttributes: attributes,
 		ClientMetadata:
 			signUpRequest.options?.serviceOptions?.clientMetadata ??
-			config.clientMetadata,
+			AmplifyV6.getConfig().Auth?.clientMetadata,
 		ValidationData: validationData,
 	});
 

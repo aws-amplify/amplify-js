@@ -15,3 +15,5 @@ export {
 	CognitoConfirmSignUpOptions,
 	CognitoConfirmSignInOptions,
 } from './options';
+
+export { UpdateMFAPreferenceRequest } from './requests';
