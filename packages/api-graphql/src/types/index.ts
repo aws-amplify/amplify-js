@@ -5,6 +5,7 @@ export { OperationTypeNode } from 'graphql';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 export { GRAPHQL_AUTH_MODE };
 import { Observable } from 'zen-observable-ts';
+import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
 
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
@@ -27,6 +28,14 @@ export interface GraphQLResult<T = object> {
 		[key: string]: any;
 	};
 }
+
+// Opaque type used for determining the graphql query type
+declare const queryType: unique symbol;
+
+export type GraphQLQuery<T> = T & { readonly [queryType]: 'query' };
+export type GraphQLSubscription<T> = T & {
+	readonly [queryType]: 'subscription';
+};
 
 /**
  * The return value from a `graphql({query})` call when `query` is a subscription.
@@ -69,8 +78,8 @@ export type GraphqlSubscriptionResult<T> = Observable<
  * ```
  */
 export type GraphqlSubscriptionMessage<T> = {
-	provider: any;
-	value: { data: T };
+	provider: AWSAppSyncRealTimeProvider;
+	value: { data?: T };
 };
 
 export enum GraphQLAuthError {
@@ -138,18 +147,20 @@ export type GraphQLVariablesV6<
  * and `TYPED_GQL_STRING`.
  */
 export type GraphQLResponseV6<
-	FALLBACK_TYPE = UnknownGraphQLResponse,
+	FALLBACK_TYPE = unknown,
 	TYPED_GQL_STRING extends string = string
-> = TYPED_GQL_STRING extends GeneratedQuery<any, infer QUERY_OUT>
+> = TYPED_GQL_STRING extends GeneratedQuery<infer IN, infer QUERY_OUT>
 	? Promise<GraphQLResult<QUERY_OUT>>
-	: TYPED_GQL_STRING extends GeneratedMutation<any, infer MUTATION_OUT>
+	: TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer MUTATION_OUT>
 	? Promise<GraphQLResult<MUTATION_OUT>>
-	: TYPED_GQL_STRING extends GeneratedSubscription<any, infer SUB_OUT>
+	: TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer SUB_OUT>
 	? GraphqlSubscriptionResult<SUB_OUT>
-	: FALLBACK_TYPE extends GraphQLOperationType<any, infer CUSTOM_OUT>
+	: FALLBACK_TYPE extends GraphQLQuery<infer T>
+	? Promise<GraphQLResult<FALLBACK_TYPE>>
+	: FALLBACK_TYPE extends GraphQLSubscription<infer T>
+	? GraphqlSubscriptionResult<FALLBACK_TYPE>
+	: FALLBACK_TYPE extends GraphQLOperationType<infer IN, infer CUSTOM_OUT>
 	? CUSTOM_OUT
-	: FALLBACK_TYPE extends {}
-	? FALLBACK_TYPE
 	: UnknownGraphQLResponse;
 
 /**
