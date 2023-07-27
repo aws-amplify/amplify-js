@@ -34,7 +34,7 @@ const packageFolderMap = {
 	auth: '@aws-amplify/auth',
 	'aws-amplify': 'aws-amplify',
 	core: '@aws-amplify/core',
-  datastore: '@aws-amplify/datastore',
+	datastore: '@aws-amplify/datastore',
 	interactions: '@aws-amplify/interactions',
 	pubsub: '@aws-amplify/pubsub',
 	storage: '@aws-amplify/storage',
