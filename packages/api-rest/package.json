@@ -1,5 +1,6 @@
 {
   "name": "@aws-amplify/api-rest",
+  "private": true,
   "version": "4.0.0",
   "description": "Api-rest category of aws-amplify",
   "main": "./lib/index.js",
