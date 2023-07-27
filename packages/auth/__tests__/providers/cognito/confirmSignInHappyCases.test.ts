@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
 import { RespondToAuthChallengeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { signIn } from '../../../src/providers/cognito/apis/signIn';
@@ -9,10 +9,11 @@ import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpe
 import { AuthSignInStep } from '../../../src/types';
 import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn';
 
-Amplify.configure({
-	aws_cognito_region: 'us-west-2',
-	aws_user_pools_web_client_id: '111111-aaaaa-42d8-891d-ee81a1549398',
-	aws_user_pools_id: 'us-west-2_zzzzz',
+AmplifyV6.configure({
+	Auth: {
+		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 });
 
 describe('confirmSignIn API happy path cases', () => {
@@ -27,9 +28,11 @@ describe('confirmSignIn API happy path cases', () => {
 					ChallengeName: undefined,
 					ChallengeParameters: {},
 					AuthenticationResult: {
-						AccessToken: 'axxcasfsfsadfqwersdf',
+						AccessToken:
+							'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
 						ExpiresIn: 1000,
-						IdToken: 'sfsfasqwerqwrsfsfsfd',
+						IdToken:
+							'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
 						RefreshToken: 'qwersfsafsfssfasf',
 					},
 					Session: 'aaabbbcccddd',
@@ -237,7 +240,13 @@ describe('confirmSignIn API happy path cases', () => {
 			);
 		await signIn({ username, password });
 
-		Amplify.configure(authAPITestParams.configWithClientMetadata);
+		AmplifyV6.configure({
+			Auth: {
+				...authAPITestParams.configWithClientMetadata,
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		const challengeResponse = '123456';
 		await confirmSignIn({
 			challengeResponse,

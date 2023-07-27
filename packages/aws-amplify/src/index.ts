@@ -1,7 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { Amplify, Cache } from '@aws-amplify/core';
+/*
+This file maps top-level exports from `aws-amplify`.
+*/
+export { Amplify } from '@aws-amplify/core';
+export { withSSRContext } from './ssr/withSSRContext';
+
+// TODO(v6): Refactor these into category-specific exports as they come online
 export {
 	Analytics,
 	AnalyticsProvider,

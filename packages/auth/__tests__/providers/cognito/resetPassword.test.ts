@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyErrorString, Amplify } from '@aws-amplify/core';
+import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
 import { ForgotPasswordCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
@@ -14,10 +14,13 @@ describe('ResetPassword API happy path cases', () => {
 	let resetPasswordSpy;
 
 	beforeEach(() => {
-		resetPasswordSpy = jest.spyOn(resetPasswordClient, 'resetPasswordClient')
-			.mockImplementationOnce(async (params: resetPasswordClient.ResetPasswordClientInput) => {
-				return authAPITestParams.resetPasswordHttpCallResult as ForgotPasswordCommandOutput;
-			});
+		resetPasswordSpy = jest
+			.spyOn(resetPasswordClient, 'resetPasswordClient')
+			.mockImplementationOnce(
+				async (params: resetPasswordClient.ResetPasswordClientInput) => {
+					return authAPITestParams.resetPasswordHttpCallResult as ForgotPasswordCommandOutput;
+				}
+			);
 	});
 
 	afterEach(() => {
@@ -30,20 +33,31 @@ describe('ResetPassword API happy path cases', () => {
 	});
 
 	test('ResetPassword API input should contain clientMetadata from request', async () => {
-		await resetPassword(authAPITestParams.resetPasswordRequestWithClientMetadata);
+		await resetPassword(
+			authAPITestParams.resetPasswordRequestWithClientMetadata
+		);
 		expect(resetPasswordSpy).toHaveBeenCalledWith(
-			expect.objectContaining(authAPITestParams.forgotPasswordCommandWithClientMetadata)
+			expect.objectContaining(
+				authAPITestParams.forgotPasswordCommandWithClientMetadata
+			)
 		);
 	});
 
 	test('ResetPassword API input should contain clientMetadata from config', async () => {
-		Amplify.configure(authAPITestParams.configWithClientMetadata);
-		await resetPassword({username: 'username'});
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+				...authAPITestParams.configWithClientMetadata,
+			},
+		});
+		await resetPassword({ username: 'username' });
 		expect(resetPasswordSpy).toHaveBeenCalledWith(
-			expect.objectContaining(authAPITestParams.forgotPasswordCommandWithClientMetadata)
+			expect.objectContaining(
+				authAPITestParams.forgotPasswordCommandWithClientMetadata
+			)
 		);
 	});
-
 });
 
 describe('ResetPassword API error path cases:', () => {
@@ -52,10 +66,12 @@ describe('ResetPassword API error path cases:', () => {
 	test('ResetPassword API should throw a validation AuthError when username is empty', async () => {
 		expect.assertions(2);
 		try {
-			await resetPassword({username: ''});
+			await resetPassword({ username: '' });
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(AuthValidationErrorCode.EmptyResetPasswordUsername);
+			expect(error.name).toBe(
+				AuthValidationErrorCode.EmptyResetPasswordUsername
+			);
 		}
 	});
 
@@ -69,27 +85,40 @@ describe('ResetPassword API error path cases:', () => {
 		} catch (error) {
 			expect(fetch).toBeCalled();
 			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(ForgotPasswordException.InvalidParameterException);
+			expect(error.name).toBe(
+				ForgotPasswordException.InvalidParameterException
+			);
 		}
 	});
 
-	test('ResetPassword API should raise an unknown error when underlying error is' +
-		+ 'not coming from the service', async () => {
-		expect.assertions(3);
-		globalMock.fetch = jest.fn(() => Promise.reject(new Error('unknown error')));
-		try {
-			await resetPassword(authAPITestParams.resetPasswordRequest);
-		} catch (error) {
-			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
-			expect(error.underlyingError).toBeInstanceOf(Error);
+	test(
+		'ResetPassword API should raise an unknown error when underlying error is' +
+			+'not coming from the service',
+		async () => {
+			expect.assertions(3);
+			globalMock.fetch = jest.fn(() =>
+				Promise.reject(new Error('unknown error'))
+			);
+			try {
+				await resetPassword(authAPITestParams.resetPasswordRequest);
+			} catch (error) {
+				expect(error).toBeInstanceOf(AuthError);
+				expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
+				expect(error.underlyingError).toBeInstanceOf(Error);
+			}
 		}
-	});
+	);
 
 	test('ResetPassword API should raise an unknown error when the underlying error is null', async () => {
 		expect.assertions(3);
 		globalMock.fetch = jest.fn(() => Promise.reject(null));
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await resetPassword(authAPITestParams.resetPasswordRequest);
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);

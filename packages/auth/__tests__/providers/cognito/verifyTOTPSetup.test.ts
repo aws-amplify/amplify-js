@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyErrorString } from '@aws-amplify/core';
+import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
 import { VerifySoftwareTokenCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
@@ -27,6 +27,12 @@ describe('verifyTOTPSetup  API happy path cases', () => {
 	});
 
 	test('verifyTOTPSetup API should return successful response', async () => {
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		await verifyTOTPSetup({
 			code,
 			options: { serviceOptions: { friendlyDeviceName } },
@@ -49,6 +55,12 @@ describe('verifyTOTPSetup  API error path cases:', () => {
 	test('verifyTOTPSetup API should throw a validation AuthError when code is empty', async () => {
 		expect.assertions(2);
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await verifyTOTPSetup({ code: '' });
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
@@ -62,9 +74,14 @@ describe('verifyTOTPSetup  API error path cases:', () => {
 		serviceError.name = VerifySoftwareTokenException.InvalidParameterException;
 		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
 		try {
+			AmplifyV6.configure({
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+				},
+			});
 			await verifyTOTPSetup({ code });
 		} catch (error) {
-			console.log(error);
 			expect(fetch).toBeCalled();
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
@@ -82,6 +99,12 @@ describe('verifyTOTPSetup  API error path cases:', () => {
 				Promise.reject(new Error('unknown error'))
 			);
 			try {
+				AmplifyV6.configure({
+					Auth: {
+						userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+						userPoolId: 'us-west-2_zzzzz',
+					},
+				});
 				await verifyTOTPSetup({ code });
 			} catch (error) {
 				expect(error).toBeInstanceOf(AuthError);
