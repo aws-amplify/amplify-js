@@ -3,7 +3,7 @@
 
 import { UserInfo } from '../types';
 import { InAppMessagingInterface, NotificationsSubCategory } from './types';
-import { InternalInAppMessagingClass } from './internals/InternalInAppMessaging';
+import { InternalInAppMessagingClass } from '../internals/InternalInAppMessaging';
 
 export default class InAppMessaging
 	extends InternalInAppMessagingClass
