@@ -1,4 +1,8 @@
-import { AuthConfig, UserPoolConfig } from '@aws-amplify/core';
+import {
+	AuthConfig,
+	UserPoolConfig,
+	IdentityPoolConfig,
+} from '@aws-amplify/core';
 
 export function isTypeUserPoolConfig(
 	authConfig?: AuthConfig
@@ -7,5 +11,14 @@ export function isTypeUserPoolConfig(
 		return true;
 	}
 
+	return false;
+}
+
+export function isTypeIdentityPoolConfig(
+	authConfig?: AuthConfig
+): authConfig is IdentityPoolConfig {
+	if (authConfig && authConfig.identityPoolId) {
+		return true;
+	}
 	return false;
 }

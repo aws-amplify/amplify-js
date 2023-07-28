@@ -109,7 +109,11 @@ export { CacheConfig } from './Cache/types';
 export { ICache } from './Cache/types';
 export { BrowserStorageCache };
 export { decodeJWT, assertTokenProviderConfig } from './singleton/Auth/utils';
-export { AuthConfig, UserPoolConfig } from './singleton/types';
+export {
+	AuthConfig,
+	UserPoolConfig,
+	IdentityPoolConfig,
+} from './singleton/types';
 
 // Credentials and IdentityId exports
 export {
@@ -120,7 +124,6 @@ export {
 	Identity,
 } from './singleton/Auth/types';
 
-export { DefaultCredentialStore } from './singleton/Auth/CredentialStore';
 export { defaultIdentityIdStore } from './singleton/Auth/IdentityIdStore';
 export { AmplifyV6 } from './singleton';
 

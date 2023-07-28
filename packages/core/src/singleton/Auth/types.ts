@@ -29,21 +29,15 @@ export type JWT = {
 
 export type JWTCreator = (stringJWT: string) => JWT;
 
-export const AuthStorageKeys = {
+export const AuthTokenStorageKeys = {
 	accessToken: 'accessToken',
 	idToken: 'idToken',
 	accessTokenExpAt: 'accessTokenExpAt',
 	oidcProvider: 'oidcProvider',
 	clockDrift: 'clockDrift',
 	metadata: 'metadata',
-	accessKeyId: 'accessKeyId',
-	secretAccessKey: 'secretAccessKey',
-	sessionToken: 'sessionToken',
-	expiration: 'expiration',
 	identityId: 'identityId',
-	isAuthenticatedCreds: 'isAuthenticatedCreds',
 };
-
 export interface AuthTokenStore {
 	setAuthConfig(authConfig: AuthConfig): void;
 	loadTokens(): Promise<AuthTokens>;
@@ -70,6 +64,7 @@ export type Identity = {
 	id: string;
 	type: 'guest' | 'primary';
 };
+
 export interface IdenityIdStore {
 	setAuthConfig(authConfig: AuthConfig): void;
 	loadIdentityId(): Promise<Identity | undefined>;
@@ -155,7 +150,7 @@ export type AuthConfig =
 	| UserPoolConfig
 	| UserPoolConfigAndIdentityPoolConfig;
 
-type IdentityPoolConfig = {
+export type IdentityPoolConfig = {
 	identityPoolId: string;
 	userPoolWebClientId?: never;
 	userPoolId?: never;

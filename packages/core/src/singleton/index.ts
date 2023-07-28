@@ -1,4 +1,8 @@
 import { AuthClass } from './Auth';
+import {
+	cognitoCredentialsProvider,
+	getIdentityId,
+} from '@aws-amplify/auth/cognito';
 import { Hub } from '../Hub';
 import { MemoryKeyValueStorage } from '../StorageHelper';
 import { LibraryOptions, ResourcesConfig } from './types';
@@ -31,6 +35,8 @@ class AmplifyClass {
 							'Make sure to call Amplify.configure in your app with a tokenRefresher',
 					});
 				},
+				credentialsProvider: cognitoCredentialsProvider,
+				identityIdProvider: getIdentityId,
 			},
 		};
 	}

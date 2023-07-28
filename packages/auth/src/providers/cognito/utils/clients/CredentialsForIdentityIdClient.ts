@@ -1,5 +1,5 @@
-import { UserPoolHttpClient } from './HttpClients';
-import { UserPoolClient } from './UserPoolClient';
+import { AmplifyV6 } from '@aws-amplify/core';
+import { IdentityPoolHttpClient } from './HttpClients';
 import {
 	GetCredentialsForIdentityCommandOutput,
 	GetCredentialsForIdentityCommandInput,
@@ -12,8 +12,8 @@ export type CredentialsForIdentityIdClientInput = Pick<
 export async function credentialsForIdentityIdClient(
 	params: CredentialsForIdentityIdClientInput
 ): Promise<GetCredentialsForIdentityCommandOutput> {
-	// TODO(V6): Update the region value
-	const client = new UserPoolHttpClient('us-east-2', 'identity');
+	const authConfig = AmplifyV6.getConfig().Auth;
+	const client = new IdentityPoolHttpClient(authConfig);
 	const result: GetCredentialsForIdentityCommandOutput =
 		await client.send<GetCredentialsForIdentityCommandOutput>(
 			'GetCredentialsForIdentity',

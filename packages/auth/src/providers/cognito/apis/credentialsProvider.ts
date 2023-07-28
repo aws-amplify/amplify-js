@@ -11,35 +11,22 @@ import {
 	AuthTokens,
 	CredentialsProvider,
 	FetchAuthSessionOptions,
-	AuthCredentialStore,
-	DefaultCredentialStore,
 	AmplifyV6,
-	MemoryKeyValueStorage,
 } from '@aws-amplify/core';
 
 const logger = new Logger('CredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
 
 class CognitoCredentialsProvider implements CredentialsProvider {
+	private _credentials?: Credentials & { isAuthenticatedCreds: boolean };
+	private _nextCredentialsRefresh: number =
+		new Date().getTime() + CREDENTIALS_TTL;
 	// TODO(V6): find what needs to happen to locally stored identityId
 	async clearCredentials(): Promise<void> {
 		logger.debug('Clearing out credentials');
-		await this._credentialsStore.clearCredentials();
+		this._credentials = undefined;
 	}
-	private _nextCredentialsRefresh: number =
-		new Date().getTime() + CREDENTIALS_TTL;
-	private _credentialsStore: AuthCredentialStore;
-	constructor() {
-		this._credentialsStore = new DefaultCredentialStore();
-		// Initialize the storage with what's given during config or create a new instance
-		if (AmplifyV6.libraryOptions.Auth?.keyValueStorage) {
-			this._credentialsStore.setKeyValueStorage(
-				AmplifyV6.libraryOptions.Auth?.keyValueStorage
-			);
-		} else {
-			this._credentialsStore.setKeyValueStorage(new MemoryKeyValueStorage());
-		}
-	}
+
 	async getCredentials({
 		options,
 		tokens,
@@ -52,8 +39,11 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		identityId?: string;
 	}): Promise<Credentials> {
 		try {
-			// TODO(V6): If there is no identityId attempt once to get it
-			if (authConfig) this._credentialsStore.setAuthConfig(authConfig);
+			if (!identityId) {
+				// TODO(V6): If there is no identityId attempt once to get it
+				throw Error('IdentityId is required to get credentials');
+			}
+
 			if (options?.forceRefresh) {
 				if (AmplifyV6.libraryOptions.Auth?.tokenRefresher && tokens) {
 					tokens = await AmplifyV6.libraryOptions.Auth?.tokenRefresher({
@@ -75,25 +65,22 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 				return await this.credsForOIDCTokens(tokens, identityId);
 			}
 		} catch (e) {
-			// return guest credentials if there is any error fetching the auth tokens
-			return await this.getGuestCredentials();
+			throw Error(`Error getting credentials: ${e}`);
 		}
 	}
 
-	private async getGuestCredentials(identityId?: string): Promise<Credentials> {
-		const credentials = await this._credentialsStore.loadCredentials();
-
+	private async getGuestCredentials(identityId: string): Promise<Credentials> {
 		if (
-			credentials &&
-			!this._isExpired(credentials) &&
+			this._credentials &&
+			!this._isExpired(this._credentials) &&
 			!this._isPastTTL() &&
 			// TODO(V6): How to know the locally stored credentials is guest or authenticated?
-			credentials.isAuthenticatedCreds === true
+			this._credentials.isAuthenticatedCreds === false
 		) {
 			logger.info(
 				'returning stored credentials as they neither past TTL nor expired'
 			);
-			return credentials;
+			return this._credentials;
 		}
 
 		// Clear to discard if any authenticated credentials are set and start with a clean slate
@@ -133,10 +120,10 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 					type: 'guest',
 				});
 			}
-			this._credentialsStore.storeCredentials({
+			this._credentials = {
 				...res,
 				isAuthenticatedCreds: false,
-			});
+			};
 			return res;
 		} else {
 			throw Error('Unable to fetch credentials');
@@ -147,19 +134,17 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		authTokens: AuthTokens,
 		identityId?: string
 	): Promise<Credentials> {
-		const credentials = await this._credentialsStore.loadCredentials();
-
 		if (
-			credentials &&
-			!this._isExpired(credentials) &&
+			this._credentials &&
+			!this._isExpired(this._credentials) &&
 			!this._isPastTTL() &&
 			// TODO(V6): How to know the locally stored credentials is guest or authenticated?
-			credentials.isAuthenticatedCreds === true
+			this._credentials.isAuthenticatedCreds === true
 		) {
-			logger.info(
+			logger.debug(
 				'returning stored credentials as they neither past TTL nor expired'
 			);
-			return credentials;
+			return this._credentials;
 		}
 
 		// Clear to discard if any unauthenticated credentials are set and start with a clean slate
@@ -186,10 +171,10 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 				expiration: clientResult.Credentials.Expiration,
 			};
 			// Store the credentials in-memory along with the expiration
-			this._credentialsStore.storeCredentials({
+			this._credentials = {
 				...res,
 				isAuthenticatedCreds: true,
-			});
+			};
 			let identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
 				setIdentityId({
@@ -216,7 +201,8 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		const { expiration } = credentials;
 		// TODO(V6): when  there is no expiration should we consider it not expired?
 		if (!expiration) return false;
-		const isExp = expiration.getTime() <= ts;
+		const expDate = new Date(Number.parseInt(expiration.toString()) * 1000);
+		const isExp = expDate.getTime() <= ts;
 		logger.debug('are the credentials expired?', isExp);
 		return isExp;
 	}

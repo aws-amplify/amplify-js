@@ -1,13 +1,13 @@
-import {
-	AuthConfig,
-	AuthKeys,
-	AuthStorageKeys,
-	IdenityIdStore,
-	Identity,
-} from './types';
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import {
+	AuthConfig,
+	AuthKeys,
+	AuthTokenStorageKeys,
+	IdenityIdStore,
+	Identity,
+} from './types';
 import { KeyValueStorageInterface } from '../../types';
 import { asserts } from '../../Util/errors/AssertError';
 import { MemoryKeyValueStorage } from '../../StorageHelper';
@@ -104,7 +104,7 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 }
 
 const createKeysForAuthStorage = (provider: string, identifier: string) => {
-	return getAuthStorageKeys(AuthStorageKeys)(
+	return getAuthStorageKeys(AuthTokenStorageKeys)(
 		`com.amplify.${provider}`,
 		identifier
 	);

@@ -1,9 +1,10 @@
-import { UserPoolHttpClient } from './HttpClients';
-import { UserPoolClient } from './UserPoolClient';
+import { IdentityPoolHttpClient } from './HttpClients';
 import {
 	GetIdCommandOutput,
 	GetIdCommandInput,
 } from '@aws-sdk/client-cognito-identity';
+import { AmplifyV6 } from '@aws-amplify/core';
+
 export type IdentityIdForPoolIdClientInput = Pick<
 	GetIdCommandInput,
 	'IdentityPoolId' | 'Logins'
@@ -12,8 +13,8 @@ export type IdentityIdForPoolIdClientInput = Pick<
 export async function getIdClient(
 	params: IdentityIdForPoolIdClientInput
 ): Promise<GetIdCommandOutput> {
-	// TODO(V6): Update the region value
-	const client = new UserPoolHttpClient('us-east-2', 'identity');
+	const authConfig = AmplifyV6.getConfig().Auth;
+	const client = new IdentityPoolHttpClient(authConfig);
 	const result: GetIdCommandOutput = await client.send<GetIdCommandOutput>(
 		'GetId',
 		{

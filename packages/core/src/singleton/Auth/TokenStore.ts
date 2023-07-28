@@ -2,7 +2,7 @@ import { assertTokenProviderConfig, decodeJWT } from './utils';
 import {
 	AuthConfig,
 	AuthKeys,
-	AuthStorageKeys,
+	AuthTokenStorageKeys,
 	AuthTokenStore,
 	AuthTokens,
 } from './types';
@@ -123,7 +123,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 }
 
 const createKeysForAuthStorage = (provider: string, identifier: string) => {
-	return getAuthStorageKeys(AuthStorageKeys)(
+	return getAuthStorageKeys(AuthTokenStorageKeys)(
 		`com.amplify.${provider}`,
 		identifier
 	);

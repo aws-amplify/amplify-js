@@ -36,7 +36,7 @@ import {
 import { AuthError } from '../../../../errors/AuthError';
 import { assertServiceError } from '../../../../errors/utils/assertServiceError';
 import { AuthConfig } from '@aws-amplify/core';
-import { isTypeUserPoolConfig } from '../types';
+import { isTypeIdentityPoolConfig, isTypeUserPoolConfig } from '../types';
 
 // TODO: Update the user-agent value
 const USER_AGENT = 'amplify test';
@@ -88,14 +88,9 @@ export type ClientOperations =
 	| 'SetUserMFAPreference'
 	| 'GetUser'
 	| 'ChangePassword';
-export type ServiceTypes = 'identity' | 'idp';
 
-type Services =
-	| 'AWSCognitoIdentityProviderService'
-	| 'AWSCognitoIdentityService';
 export class UserPoolHttpClient {
 	private _endpoint: string;
-	private _service: Services = 'AWSCognitoIdentityProviderService';
 
 	private _headers = {
 		'Content-Type': 'application/x-amz-json-1.1',
@@ -103,14 +98,14 @@ export class UserPoolHttpClient {
 		'Cache-Control': 'no-store',
 	};
 
-	constructor(authConfig?: AuthConfig, serviceType: ServiceTypes = 'idp') {
-		if (authConfig && isTypeUserPoolConfig(authConfig)) {
-			this._service =
-				serviceType === 'identity'
-					? 'AWSCognitoIdentityService'
-					: 'AWSCognitoIdentityProviderService';
+	constructor(authConfig?: AuthConfig) {
+		if (
+			authConfig &&
+			isTypeUserPoolConfig(authConfig) &&
+			authConfig.userPoolId
+		) {
 			const region = authConfig.userPoolId.split('_')[0];
-			this._endpoint = `https://cognito-${serviceType}.${region}.amazonaws.com/`;
+			this._endpoint = `https://cognito-idp.${region}.amazonaws.com/`;
 		} else {
 			throw new Error('error'); // TODO: update error
 		}
@@ -122,7 +117,52 @@ export class UserPoolHttpClient {
 	): Promise<T> {
 		const headers = {
 			...this._headers,
-			'X-Amz-Target': `${this._service}.${operation}`,
+			'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
+		};
+		const options: RequestInit = {
+			headers,
+			method: 'POST',
+			mode: 'cors',
+			body: JSON.stringify(input),
+		};
+		try {
+			return (await (await fetch(this._endpoint, options)).json()) as T;
+		} catch (error) {
+			assertServiceError(error);
+			throw new AuthError({ name: error.name, message: error.message });
+		}
+	}
+}
+
+export class IdentityPoolHttpClient {
+	private _endpoint: string;
+
+	private _headers = {
+		'Content-Type': 'application/x-amz-json-1.1',
+		'X-Amz-User-Agent': USER_AGENT,
+		'Cache-Control': 'no-store',
+	};
+
+	constructor(authConfig?: AuthConfig) {
+		if (
+			authConfig &&
+			isTypeIdentityPoolConfig(authConfig) &&
+			authConfig.identityPoolId
+		) {
+			const region = authConfig.identityPoolId.split(':')[0];
+			this._endpoint = `https://cognito-identity.${region}.amazonaws.com/`;
+		} else {
+			throw new Error('error'); // TODO: update error
+		}
+	}
+
+	async send<T extends ClientOutputs>(
+		operation: ClientOperations,
+		input: ClientInputs
+	): Promise<T> {
+		const headers = {
+			...this._headers,
+			'X-Amz-Target': `AWSCognitoIdentityService.${operation}`,
 		};
 		const options: RequestInit = {
 			headers,
