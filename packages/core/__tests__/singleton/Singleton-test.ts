@@ -3,6 +3,9 @@ import { AmplifyV6 as Amplify } from '../../src/singleton';
 import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { MemoryKeyValueStorage } from '../../src/StorageHelper';
+import { mockJsonResponse, mockRequestId } from './testUtils/data';
+import { fetchTransferHandler } from '../../src/clients/handlers/fetch';
+import { AuthTokens } from '../../src/singleton/Auth/types';
 
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	? A
@@ -463,3 +466,78 @@ describe('Session tests', () => {
 		expect(tokenRefresherSpy).toBeCalled();
 	});
 });
+
+jest.mock('../../src/clients/handlers/fetch');
+
+// describe('refresh token tests', () => {
+// 	test('Default Cognito Token Refresh Handler', async () => {
+// 		const succeedResponse = {
+// 			status: 200,
+// 			headers: {
+// 				'x-amzn-requestid': mockRequestId,
+// 			},
+// 			body: {
+// 				AuthenticationResult: {
+// 					AccessToken:
+// 						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
+// 					ExpiresIn: 3600,
+// 					IdToken:
+// 						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
+// 					TokenType: 'Bearer',
+// 				},
+// 				ChallengeParameters: {},
+// 				$metadata: {
+// 					attempts: 1,
+// 					httpStatusCode: 200,
+// 					requestId: mockRequestId,
+// 				},
+// 			},
+// 		};
+// 		const expectedOutput: AuthTokens = {
+// 			accessToken: decodeJWT(
+// 				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0'
+// 			),
+// 			accessTokenExpAt: 3600,
+// 			idToken: decodeJWT(
+// 				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0'
+// 			),
+// 		};
+// 		const expectedRequest = {
+// 			url: new URL('https://cognito-identity.us-east-1.amazonaws.com/'),
+// 			method: 'POST',
+// 			headers: expect.objectContaining({
+// 				'cache-control': 'no-store',
+// 				'content-type': 'application/x-amz-json-1.1',
+// 				'x-amz-target': 'AWSCognitoIdentityService.GetCredentialsForIdentity',
+// 				'x-amz-user-agent': expect.stringContaining('aws-amplify'),
+// 			}),
+// 			body: {},
+// 		};
+
+// 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
+// 			mockJsonResponse(succeedResponse)
+// 		);
+
+// 		const response = await CognitoUserPoolTokenRefresher({
+// 			tokens: {
+// 				accessToken: {
+// 					payload: {},
+// 				},
+// 				accessTokenExpAt: 0,
+// 				metadata: {
+// 					refreshToken: 'refreshtoken',
+// 				},
+// 			},
+// 			authConfig: {
+// 				userPoolId: 'us-east-1_aaaaaaa',
+// 				userPoolWebClientId: 'aaaaaaaaaaaa',
+// 			},
+// 		});
+
+// 		expect(response).toEqual(expectedOutput);
+// 		expect(fetchTransferHandler).toBeCalledWith(
+// 			expectedRequest,
+// 			expect.anything()
+// 		);
+// 	});
+// });

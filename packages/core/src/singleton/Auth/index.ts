@@ -1,4 +1,3 @@
-import { Buffer } from 'buffer'; // TODO(v6): this needs to be a platform operation
 import { Credentials } from '@aws-sdk/types';
 import { Observable, Observer } from 'rxjs';
 
@@ -14,7 +13,6 @@ import {
 	JWT,
 	LibraryAuthOptions,
 } from './types';
-import { asserts } from '../../Util/errors/AssertError';
 
 export function isTokenExpired({
 	expiresAt,
