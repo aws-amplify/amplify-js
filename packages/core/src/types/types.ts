@@ -92,3 +92,13 @@ export interface KeyValueStorageInterface {
 	removeItem(key: string): Promise<void>;
 	clear(): Promise<void>;
 }
+
+export type SameSite = 'strict' | 'lax' | 'none';
+
+export type CookieStorageData = {
+	domain?: string;
+	path?: string;
+	expires?: number;
+	secure?: boolean;
+	sameSite?: SameSite;
+};
