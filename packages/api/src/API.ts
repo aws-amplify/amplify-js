@@ -83,6 +83,11 @@ export class APIClass extends InternalAPIClass {
 						// flatten response
 						if (res.data !== undefined) {
 							const [key] = Object.keys(res.data);
+
+							if (res.data[key].items) {
+								return res.data[key].items;
+							}
+
 							return res.data[key];
 						}
 
@@ -284,8 +289,8 @@ declare type V6Client<T = never> = ExcludeNeverFields<{
 							} & Partial<T[K]>
 						>
 					) => Promise<T[K]>;
-					delete: (id: string) => Promise<T[K]>;
-					get: (id: string) => Promise<T[K]>;
+					delete: (id: { id: string }) => Promise<T[K]>;
+					get: (id: { id: string }) => Promise<T[K]>;
 					list: () => Promise<Array<T[K]>>;
 			  }
 			: never;
