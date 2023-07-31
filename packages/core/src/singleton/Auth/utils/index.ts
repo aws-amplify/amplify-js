@@ -74,6 +74,13 @@ export async function getUsernameFromStorage(
 	return storage.getItem(legacyKey);
 }
 
+/**
+ * Migrates legacy token keys to the new format
+ * 
+ * @param legacyStore - Token store to migrate from
+ * @param tokenStore - Token store to migrate to
+ * 
+ */
 export async function migrateTokens(
 	legacyStore: LegacyTokenStore,
 	tokenStore: DefaultTokenStore
