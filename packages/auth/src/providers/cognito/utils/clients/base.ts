@@ -12,8 +12,8 @@ import {
 	unauthenticatedHandler,
 	parseJsonError,
 	getRetryDecider,
+	jitteredBackoff,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { jitteredBackoff } from '@aws-amplify/core';
 import { getAmplifyUserAgent } from '@aws-amplify/core';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
@@ -52,35 +52,35 @@ export const cognitoUserPoolTransferHandler = composeTransferHandler<
 	typeof unauthenticatedHandler
 >(unauthenticatedHandler, [disableCacheMiddleware]);
 
-// /**
-//  * @internal
-//  */
-// export const defaultConfig = {
-// 	service: SERVICE_NAME,
-// 	endpointResolver,
-// 	retryDecider: getRetryDecider(parseJsonError),
-// 	computeDelay: jitteredBackoff,
-// 	userAgentValue: getAmplifyUserAgent(),
-// };
+/**
+ * @internal
+ */
+export const defaultConfig = {
+	service: SERVICE_NAME,
+	endpointResolver,
+	retryDecider: getRetryDecider(parseJsonError),
+	computeDelay: jitteredBackoff,
+	userAgentValue: getAmplifyUserAgent(),
+};
 
-// /**
-//  * @internal
-//  */
-// export const getSharedHeaders = (operation: string): Headers => ({
-// 	'content-type': 'application/x-amz-json-1.1',
-// 	'x-amz-target': `AWSCognitoIdentityProviderService.${operation}`,
-// });
+/**
+ * @internal
+ */
+export const getSharedHeaders = (operation: string): Headers => ({
+	'content-type': 'application/x-amz-json-1.1',
+	'x-amz-target': `AWSCognitoIdentityProviderService.${operation}`,
+});
 
-// /**
-//  * @internal
-//  */
-// export const buildHttpRpcRequest = (
-// 	{ url }: Endpoint,
-// 	headers: Headers,
-// 	body: any
-// ): HttpRequest => ({
-// 	headers,
-// 	url,
-// 	body,
-// 	method: 'POST',
-// });
+/**
+ * @internal
+ */
+export const buildHttpRpcRequest = (
+	{ url }: Endpoint,
+	headers: Headers,
+	body: any
+): HttpRequest => ({
+	headers,
+	url,
+	body,
+	method: 'POST',
+});
