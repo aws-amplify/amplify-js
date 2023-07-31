@@ -486,12 +486,12 @@ export default class CognitoUser extends InternalCognitoUser {
 		super.signOut(revokeTokenCallback);
 	}
 
-	revokeTokens(revokeTokenCallback = () => {}) {
+	revokeTokens(revokeTokenCallback = () => { }) {
 		super.revokeTokens(revokeTokenCallback);
 	}
 
 	revokeToken({ token, callback }) {
-		super.revokeTokens({ token, callback });
+		super.revokeToken({ token, callback });
 	}
 
 	/**
