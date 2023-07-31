@@ -10,9 +10,9 @@ import {
 	AuthDeviceKeys,
 	AuthTokenStore,
 	AuthTokens,
+	LegacyAuthStorageKeys,
 } from './types';
 import { KeyValueStorageInterface } from '../../types';
-import { LegacyAuthStorageKeys } from './types';
 import { AmplifyError } from '../../Errors';
 
 export class LegacyTokenStore implements AuthTokenStore {
@@ -74,7 +74,16 @@ export class LegacyTokenStore implements AuthTokenStore {
 			const randomPasswordKey = await this.keyValueStorage.getItem(
 				legacyKeyValues.randomPasswordKey
 			);
-			const metadata = { deviceGroupKey, deviceKey, randomPasswordKey };
+
+			const refreshToken = await this.keyValueStorage.getItem(
+				legacyKeyValues.refreshToken
+			);
+			const metadata = {
+				deviceGroupKey,
+				deviceKey,
+				randomPasswordKey,
+				refreshToken,
+			};
 
 			return {
 				accessToken,
