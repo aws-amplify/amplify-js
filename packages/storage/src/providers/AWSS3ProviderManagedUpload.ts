@@ -55,6 +55,7 @@ export class AWSS3ProviderManagedUpload {
 	private totalBytesToUpload = 0;
 	private emitter: EventEmitter | null = null;
 
+	// TODO: Add userAgentValue
 	constructor(params: PutObjectInput, opts, emitter: EventEmitter) {
 		this.params = params;
 		this.opts = {
