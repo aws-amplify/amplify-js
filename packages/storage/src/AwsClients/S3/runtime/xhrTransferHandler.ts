@@ -9,10 +9,7 @@ import {
 	withMemoization,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import type { EventEmitter } from 'events';
 import {
-	SEND_DOWNLOAD_PROGRESS_EVENT,
-	SEND_UPLOAD_PROGRESS_EVENT,
 	ABORT_ERROR_CODE,
 	ABORT_ERROR_MESSAGE,
 	CANCELED_ERROR_CODE,
@@ -31,7 +28,8 @@ export interface XhrTransferHandlerOptions {
 	// download binary data. Otherwise, use `text` to return the response as a string.
 	responseType: 'text' | 'blob';
 	abortSignal?: AbortSignal;
-	emitter?: EventEmitter;
+	onDownloadProgress?: (event: ProgressEvent) => void;
+	onUploadProgress?: (event: ProgressEvent) => void;
 }
 
 /**
@@ -49,7 +47,8 @@ export const xhrTransferHandler: TransferHandler<
 	XhrTransferHandlerOptions
 > = (request, options): Promise<HttpResponse> => {
 	const { url, method, headers, body } = request;
-	const { emitter, responseType, abortSignal } = options;
+	const { onDownloadProgress, onUploadProgress, responseType, abortSignal } =
+		options;
 
 	return new Promise((resolve, reject) => {
 		let xhr: XMLHttpRequest | null = new XMLHttpRequest();
@@ -63,13 +62,15 @@ export const xhrTransferHandler: TransferHandler<
 
 		xhr.responseType = responseType;
 
-		if (emitter) {
-			xhr.upload.addEventListener('progress', event => {
-				emitter.emit(SEND_UPLOAD_PROGRESS_EVENT, event);
+		if (onDownloadProgress) {
+			xhr.addEventListener('progress', event => {
+				onDownloadProgress(event);
 				logger.debug(event);
 			});
-			xhr.addEventListener('progress', event => {
-				emitter.emit(SEND_DOWNLOAD_PROGRESS_EVENT, event);
+		}
+		if (onUploadProgress) {
+			xhr.upload.addEventListener('progress', event => {
+				onUploadProgress(event);
 				logger.debug(event);
 			});
 		}

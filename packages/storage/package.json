@@ -48,7 +48,6 @@
   "dependencies": {
     "@aws-sdk/md5-js": "3.6.1",
     "@aws-sdk/types": "3.6.1",
-    "events": "^3.1.0",
     "fast-xml-parser": "^4.2.5",
     "tslib": "^2.5.0",
     "typescript": "5.0.2"

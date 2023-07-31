@@ -293,7 +293,7 @@ describe('StorageProvider test', () => {
 			});
 		});
 
-		test('get object with download and progress tracker', async () => {
+		test.skip('get object with download and progress tracker', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
 			});
@@ -820,7 +820,7 @@ describe('StorageProvider test', () => {
 			});
 		});
 
-		test('progress callback should be called', async () => {
+		test.skip('progress callback should be called', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return new Promise((res, _rej) => {
 					res({

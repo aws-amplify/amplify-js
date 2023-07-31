@@ -220,19 +220,19 @@ describe('xhrTransferHandler', () => {
 
 	it('should add progress event listener to xhr.upload and xhr(download) when emitter is supplied', async () => {
 		const mockXhr = spyOnXhr();
-		const emitter = {
-			emit: jest.fn(),
-		} as any;
+		const onDownloadProgress = jest.fn();
+		const onUploadProgress = jest.fn();
 		const requestPromise = xhrTransferHandler(defaultRequest, {
 			responseType: 'text',
-			emitter,
+			onDownloadProgress,
+			onUploadProgress,
 		});
 		mockXhrResponse(mockXhr, mock200Response);
 		await requestPromise;
-		expect(emitter.emit).toHaveBeenCalledWith(SEND_UPLOAD_PROGRESS_EVENT, {
+		expect(onUploadProgress).toHaveBeenCalledWith({
 			name: 'MockUploadEvent',
 		});
-		expect(emitter.emit).toHaveBeenCalledWith(SEND_DOWNLOAD_PROGRESS_EVENT, {
+		expect(onDownloadProgress).toHaveBeenCalledWith({
 			name: 'MockDownloadEvent',
 		});
 	});

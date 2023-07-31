@@ -3,8 +3,6 @@
 
 export { parseXmlBody, parseXmlError } from './parsePayload';
 export {
-	SEND_DOWNLOAD_PROGRESS_EVENT,
-	SEND_UPLOAD_PROGRESS_EVENT,
 	s3TransferHandler,
 	CANCELED_ERROR_MESSAGE,
 	isCancelError,
@@ -25,3 +23,7 @@ export {
 	serializeObjectSsecOptionsToHeaders,
 } from './serializeHelpers';
 export { toBase64, utf8Encode } from '../runtime';
+
+// TODO: remove this after functional refactor
+export const SEND_DOWNLOAD_PROGRESS_EVENT = 'sendUploadProgress';
+export const SEND_UPLOAD_PROGRESS_EVENT = 'sendDownloadProgress';
