@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.4.0...@aws-amplify/analytics@6.4.1) (2023-07-20)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+# [6.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.3.2...@aws-amplify/analytics@6.4.0) (2023-07-13)
+
+### Features
+
+- **s3:** omit double encoding of path for S3 when signing ([#11538](https://github.com/aws-amplify/amplify-js/issues/11538)) ([d46d2d1](https://github.com/aws-amplify/amplify-js/commit/d46d2d1d4263e3b8bcfc03af473d7445af12e5b7))
+- **storage:** integrate custom s3 client ([#11542](https://github.com/aws-amplify/amplify-js/issues/11542)) ([fe05494](https://github.com/aws-amplify/amplify-js/commit/fe05494c75ab6d1561863f4dfaf1107bc1f256a6))
+
 ## [6.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.3.1...@aws-amplify/analytics@6.3.2) (2023-06-28)
 
 **Note:** Version bump only for package @aws-amplify/analytics

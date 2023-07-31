@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>AxiosTransformer | amplify-js</title>
+	<title>CopyObjectCommandOutput | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
@@ -917,7 +917,45 @@ img { max-width: 100%; }
 <nav class="tsd-navigation secondary">
 <ul>
 	<li class="current tsd-kind-interface">
-		<a href="axiostransformer.html" class="tsd-kind-icon">Axios<wbr>Transformer</a>
+		<a href="copyobjectcommandoutput.html" class="tsd-kind-icon">Copy<wbr>Object<wbr>Command<wbr>Output</a>
+		<ul>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="copyobjectcommandoutput.html#_metadata" class="tsd-kind-icon">$metadata</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="copyobjectcommandoutput.html#bucketkeyenabled" class="tsd-kind-icon">Bucket<wbr>Key<wbr>Enabled</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="copyobjectcommandoutput.html#copyobjectresult" class="tsd-kind-icon">Copy<wbr>Object<wbr>Result</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="copyobjectcommandoutput.html#copysourceversionid" class="tsd-kind-icon">Copy<wbr>Source<wbr>Version<wbr>Id</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="copyobjectcommandoutput.html#expiration" class="tsd-kind-icon">Expiration</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="copyobjectcommandoutput.html#requestcharged" class="tsd-kind-icon">Request<wbr>Charged</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="copyobjectcommandoutput.html#ssecustomeralgorithm" class="tsd-kind-icon">SSECustomer<wbr>Algorithm</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="copyobjectcommandoutput.html#ssecustomerkeymd5" class="tsd-kind-icon">SSECustomer<wbr>KeyMD5</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="copyobjectcommandoutput.html#ssekmsencryptioncontext" class="tsd-kind-icon">SSEKMSEncryption<wbr>Context</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="copyobjectcommandoutput.html#ssekmskeyid" class="tsd-kind-icon">SSEKMSKey<wbr>Id</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="copyobjectcommandoutput.html#serversideencryption" class="tsd-kind-icon">Server<wbr>Side<wbr>Encryption</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<a href="copyobjectcommandoutput.html#versionid" class="tsd-kind-icon">Version<wbr>Id</a>
+			</li>
+		</ul>
 	</li>
 </ul>
 </nav>
@@ -925,59 +963,251 @@ img { max-width: 100%; }
 <div class="content-wrap">
 	<section class="tsd-panel tsd-comment">
 		<div class="tsd-comment tsd-typography">
-			<div class="lead">
-				<p>Extending the axios interface here to make headers required, (previously,
-					they were not required on the type we were using, but our implementation
-					does not currently account for missing headers. This worked previously,
-				because the previous <code>headers</code> type was <code>any</code>.</p>
-			</div>
 		</div>
 	</section>
 	<section class="tsd-panel tsd-hierarchy">
 		<h3>Hierarchy</h3>
 		<ul class="tsd-hierarchy">
 			<li>
-				<span class="tsd-signature-type">object</span>
+				<a href="copyobjectoutput.html" class="tsd-signature-type">CopyObjectOutput</a>
+			</li>
+			<li>
+				<span class="tsd-signature-type">MetadataBearer</span>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">AxiosTransformer</span>
+						<span class="target">CopyObjectCommandOutput</span>
 					</li>
 				</ul>
 			</li>
 		</ul>
 	</section>
-	<section class="tsd-panel">
-		<h3 class="tsd-before-signature">Callable</h3>
-		<ul class="tsd-signatures tsd-kind-interface">
-			<li class="tsd-signature tsd-kind-icon">__call<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, headers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AxiosRequestHeaders</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
-		</ul>
-		<ul class="tsd-descriptions">
-			<li class="tsd-description">
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/providers/axios-http-handler.ts#L25">packages/storage/src/providers/axios-http-handler.ts:25</a></li>
+	<section class="tsd-panel-group tsd-index-group">
+		<h2>Index</h2>
+		<section class="tsd-panel tsd-index-panel">
+			<div class="tsd-index-content">
+				<section class="tsd-index-section tsd-is-inherited">
+					<h3>Properties</h3>
+					<ul class="tsd-index-list">
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="copyobjectcommandoutput.html#_metadata" class="tsd-kind-icon">$metadata</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="copyobjectcommandoutput.html#bucketkeyenabled" class="tsd-kind-icon">Bucket<wbr>Key<wbr>Enabled</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="copyobjectcommandoutput.html#copyobjectresult" class="tsd-kind-icon">Copy<wbr>Object<wbr>Result</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="copyobjectcommandoutput.html#copysourceversionid" class="tsd-kind-icon">Copy<wbr>Source<wbr>Version<wbr>Id</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="copyobjectcommandoutput.html#expiration" class="tsd-kind-icon">Expiration</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="copyobjectcommandoutput.html#requestcharged" class="tsd-kind-icon">Request<wbr>Charged</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="copyobjectcommandoutput.html#ssecustomeralgorithm" class="tsd-kind-icon">SSECustomer<wbr>Algorithm</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="copyobjectcommandoutput.html#ssecustomerkeymd5" class="tsd-kind-icon">SSECustomer<wbr>KeyMD5</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="copyobjectcommandoutput.html#ssekmsencryptioncontext" class="tsd-kind-icon">SSEKMSEncryption<wbr>Context</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="copyobjectcommandoutput.html#ssekmskeyid" class="tsd-kind-icon">SSEKMSKey<wbr>Id</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="copyobjectcommandoutput.html#serversideencryption" class="tsd-kind-icon">Server<wbr>Side<wbr>Encryption</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="copyobjectcommandoutput.html#versionid" class="tsd-kind-icon">Version<wbr>Id</a></li>
 					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Extending the axios interface here to make headers required, (previously,
-							they were not required on the type we were using, but our implementation
-							does not currently account for missing headers. This worked previously,
-						because the previous <code>headers</code> type was <code>any</code>.</p>
-					</div>
-				</div>
-				<h4 class="tsd-parameters-title">Parameters</h4>
-				<ul class="tsd-parameters">
-					<li>
-						<h5>data: <span class="tsd-signature-type">any</span></h5>
-					</li>
-					<li>
-						<h5>headers: <span class="tsd-signature-type">AxiosRequestHeaders</span></h5>
-					</li>
+				</section>
+			</div>
+		</section>
+	</section>
+	<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+		<h2>Properties</h2>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="_metadata" class="tsd-anchor"></a>
+			<h3>$metadata</h3>
+			<div class="tsd-signature tsd-kind-icon">$metadata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ResponseMetadata</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="getcredentialsforidentitycommandoutput.html">GetCredentialsForIdentityCommandOutput</a>.<a href="getcredentialsforidentitycommandoutput.html#_metadata">$metadata</a></p>
+				<ul>
+					<li>Defined in node_modules/@aws-sdk/types/types/ts3.4/response.d.ts:33</li>
 				</ul>
-				<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
-			</li>
-		</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Metadata pertaining to this request.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="bucketkeyenabled" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> Bucket<wbr>Key<wbr>Enabled</h3>
+			<div class="tsd-signature tsd-kind-icon">Bucket<wbr>Key<wbr>Enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="copyobjectcommandoutput.html">CopyObjectCommandOutput</a>.<a href="copyobjectcommandoutput.html#bucketkeyenabled">BucketKeyEnabled</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/storage/src/AwsClients/S3/types.ts#L490">packages/storage/src/AwsClients/S3/types.ts:490</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Indicates whether the copied object uses an S3 Bucket Key for server-side encryption
+					with Amazon Web Services KMS (SSE-KMS).</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="copyobjectresult" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> Copy<wbr>Object<wbr>Result</h3>
+			<div class="tsd-signature tsd-kind-icon">Copy<wbr>Object<wbr>Result<span class="tsd-signature-symbol">:</span> <a href="copyobjectresult.html" class="tsd-signature-type">CopyObjectResult</a></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="copyobjectcommandoutput.html">CopyObjectCommandOutput</a>.<a href="copyobjectcommandoutput.html#copyobjectresult">CopyObjectResult</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/storage/src/AwsClients/S3/types.ts#L446">packages/storage/src/AwsClients/S3/types.ts:446</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Container for all response elements.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="copysourceversionid" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> Copy<wbr>Source<wbr>Version<wbr>Id</h3>
+			<div class="tsd-signature tsd-kind-icon">Copy<wbr>Source<wbr>Version<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="copyobjectcommandoutput.html">CopyObjectCommandOutput</a>.<a href="copyobjectcommandoutput.html#copysourceversionid">CopySourceVersionId</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/storage/src/AwsClients/S3/types.ts#L454">packages/storage/src/AwsClients/S3/types.ts:454</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Version of the copied object in the destination bucket.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="expiration" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> Expiration</h3>
+			<div class="tsd-signature tsd-kind-icon">Expiration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="copyobjectcommandoutput.html">CopyObjectCommandOutput</a>.<a href="copyobjectcommandoutput.html#expiration">Expiration</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/storage/src/AwsClients/S3/types.ts#L450">packages/storage/src/AwsClients/S3/types.ts:450</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>If the object expiration is configured, the response includes this header.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="requestcharged" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> Request<wbr>Charged</h3>
+			<div class="tsd-signature tsd-kind-icon">Request<wbr>Charged<span class="tsd-signature-symbol">:</span> <a href="copyobjectcommandoutput.html#requestcharged" class="tsd-signature-type">RequestCharged</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="copyobjectcommandoutput.html">CopyObjectCommandOutput</a>.<a href="copyobjectcommandoutput.html#requestcharged">RequestCharged</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/storage/src/AwsClients/S3/types.ts#L495">packages/storage/src/AwsClients/S3/types.ts:495</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>If present, indicates that the requester was successfully charged for the
+					request.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="ssecustomeralgorithm" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> SSECustomer<wbr>Algorithm</h3>
+			<div class="tsd-signature tsd-kind-icon">SSECustomer<wbr>Algorithm<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="copyobjectcommandoutput.html">CopyObjectCommandOutput</a>.<a href="copyobjectcommandoutput.html#ssecustomeralgorithm">SSECustomerAlgorithm</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/storage/src/AwsClients/S3/types.ts#L468">packages/storage/src/AwsClients/S3/types.ts:468</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>If server-side encryption with a customer-provided encryption key was requested, the
+					response will include this header confirming the encryption algorithm used.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="ssecustomerkeymd5" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> SSECustomer<wbr>KeyMD5</h3>
+			<div class="tsd-signature tsd-kind-icon">SSECustomer<wbr>KeyMD5<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="copyobjectcommandoutput.html">CopyObjectCommandOutput</a>.<a href="copyobjectcommandoutput.html#ssecustomerkeymd5">SSECustomerKeyMD5</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/storage/src/AwsClients/S3/types.ts#L474">packages/storage/src/AwsClients/S3/types.ts:474</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>If server-side encryption with a customer-provided encryption key was requested, the
+						response will include this header to provide round-trip message integrity verification of
+					the customer-provided encryption key.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="ssekmsencryptioncontext" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> SSEKMSEncryption<wbr>Context</h3>
+			<div class="tsd-signature tsd-kind-icon">SSEKMSEncryption<wbr>Context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="copyobjectcommandoutput.html">CopyObjectCommandOutput</a>.<a href="copyobjectcommandoutput.html#ssekmsencryptioncontext">SSEKMSEncryptionContext</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/storage/src/AwsClients/S3/types.ts#L485">packages/storage/src/AwsClients/S3/types.ts:485</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>If present, specifies the Amazon Web Services KMS Encryption Context to use for object encryption. The
+						value of this header is a base64-encoded UTF-8 string holding JSON with the encryption
+					context key-value pairs.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="ssekmskeyid" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> SSEKMSKey<wbr>Id</h3>
+			<div class="tsd-signature tsd-kind-icon">SSEKMSKey<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="copyobjectcommandoutput.html">CopyObjectCommandOutput</a>.<a href="copyobjectcommandoutput.html#ssekmskeyid">SSEKMSKeyId</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/storage/src/AwsClients/S3/types.ts#L479">packages/storage/src/AwsClients/S3/types.ts:479</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>If present, specifies the ID of the Amazon Web Services Key Management Service (Amazon Web Services KMS) symmetric
+					encryption customer managed key that was used for the object.</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="serversideencryption" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> Server<wbr>Side<wbr>Encryption</h3>
+			<div class="tsd-signature tsd-kind-icon">Server<wbr>Side<wbr>Encryption<span class="tsd-signature-symbol">:</span> <a href="copyobjectcommandoutput.html#serversideencryption" class="tsd-signature-type">ServerSideEncryption</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="copyobjectcommandoutput.html">CopyObjectCommandOutput</a>.<a href="copyobjectcommandoutput.html#serversideencryption">ServerSideEncryption</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/storage/src/AwsClients/S3/types.ts#L463">packages/storage/src/AwsClients/S3/types.ts:463</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>The server-side encryption algorithm used when storing this object in Amazon S3 (for example,
+					AES256, <code>aws:kms</code>).</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+			<a name="versionid" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> Version<wbr>Id</h3>
+			<div class="tsd-signature tsd-kind-icon">Version<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="copyobjectcommandoutput.html">CopyObjectCommandOutput</a>.<a href="copyobjectcommandoutput.html#versionid">VersionId</a></p>
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/storage/src/AwsClients/S3/types.ts#L458">packages/storage/src/AwsClients/S3/types.ts:458</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Version ID of the newly created copy.</p>
+				</div>
+			</div>
+		</section>
 	</section>
 	<footer>
 		<div class="container">

@@ -1,22 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	parseAWSExports,
-} from '@aws-amplify/core';
-import { AmazonLocationServiceProvider } from './Providers/AmazonLocationServiceProvider';
-
-import { validateCoordinates } from './util';
-
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import {
 	Place,
-	GeoConfig,
 	Coordinates,
 	SearchByTextOptions,
 	SearchByCoordinatesOptions,
-	GeoProvider,
-	MapStyle,
 	GeofenceId,
 	GeofenceInput,
 	GeofenceOptions,
@@ -27,23 +16,10 @@ import {
 	DeleteGeofencesResults,
 	searchByPlaceIdOptions,
 } from './types';
+import { InternalGeoClass } from './internals/InternalGeo';
 
-const logger = new Logger('Geo');
-
-const DEFAULT_PROVIDER = 'AmazonLocationService';
-export class GeoClass {
+export class GeoClass extends InternalGeoClass {
 	static MODULE = 'Geo';
-	/**
-	 * @private
-	 */
-	private _config: GeoConfig;
-	private _pluggables: GeoProvider[];
-
-	constructor() {
-		this._config = {};
-		this._pluggables = [];
-		logger.debug('Geo Options', this._config);
-	}
 
 	/**
 	 * get the name of the module category
@@ -51,91 +27,6 @@ export class GeoClass {
 	 */
 	public getModuleName() {
 		return GeoClass.MODULE;
-	}
-
-	/**
-	 * add plugin into Geo category
-	 * @param {Object} pluggable - an instance of the plugin
-	 */
-	public addPluggable(pluggable: GeoProvider) {
-		if (pluggable && pluggable.getCategory() === 'Geo') {
-			this._pluggables.push(pluggable);
-			const config = pluggable.configure(
-				this._config[pluggable.getProviderName()]
-			);
-
-			return config;
-		}
-	}
-
-	/**
-	 * Get the plugin object
-	 * @param providerName - the name of the plugin
-	 */
-	public getPluggable(providerName: string) {
-		const pluggable = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === providerName
-		);
-		if (pluggable === undefined) {
-			logger.debug('No plugin found with providerName', providerName);
-			throw new Error('No plugin found in Geo for the provider');
-		} else return pluggable;
-	}
-
-	/**
-	 * Remove the plugin object
-	 * @param providerName - the name of the plugin
-	 */
-	public removePluggable(providerName: string) {
-		this._pluggables = this._pluggables.filter(
-			pluggable => pluggable.getProviderName() !== providerName
-		);
-		return;
-	}
-
-	/**
-	 * Configure Geo
-	 * @param {Object} config - Configuration object for Geo
-	 * @return {Object} - Current configuration
-	 */
-	configure(config?) {
-		logger.debug('configure Geo');
-
-		if (!config) return this._config;
-
-		const amplifyConfig = parseAWSExports(config);
-		this._config = Object.assign({}, this._config, amplifyConfig.Geo, config);
-
-		this._pluggables.forEach(pluggable => {
-			pluggable.configure(this._config[pluggable.getProviderName()]);
-		});
-
-		if (this._pluggables.length === 0) {
-			this.addPluggable(new AmazonLocationServiceProvider());
-		}
-		return this._config;
-	}
-
-	/**
-	 * Get the map resources that are currently available through the provider
-	 * @param {string} provider
-	 * @returns - Array of available map resources
-	 */
-	public getAvailableMaps(provider = DEFAULT_PROVIDER): MapStyle[] {
-		const prov = this.getPluggable(provider);
-
-		return prov.getAvailableMaps();
-	}
-
-	/**
-	 * Get the map resource set as default in amplify config
-	 * @param {string} provider
-	 * @returns - Map resource set as the default in amplify config
-	 */
-	public getDefaultMap(provider = DEFAULT_PROVIDER): MapStyle {
-		const prov = this.getPluggable(provider);
-
-		return prov.getDefaultMap();
 	}
 
 	/**
@@ -148,15 +39,7 @@ export class GeoClass {
 		text: string,
 		options?: SearchByTextOptions
 	): Promise<Place[]> {
-		const { providerName = DEFAULT_PROVIDER } = options || {};
-		const prov = this.getPluggable(providerName);
-
-		try {
-			return await prov.searchByText(text, options);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
-		}
+		return super.searchByText(text, options);
 	}
 
 	/**
@@ -169,15 +52,7 @@ export class GeoClass {
 		text: string,
 		options?: SearchByTextOptions
 	) {
-		const { providerName = DEFAULT_PROVIDER } = options || {};
-		const prov = this.getPluggable(providerName);
-
-		try {
-			return await prov.searchForSuggestions(text, options);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
-		}
+		return super.searchForSuggestions(text, options);
 	}
 
 	/**
@@ -190,15 +65,7 @@ export class GeoClass {
 		placeId: string,
 		options?: searchByPlaceIdOptions
 	) {
-		const providerName = DEFAULT_PROVIDER;
-		const prov = this.getPluggable(providerName);
-
-		try {
-			return await prov.searchByPlaceId(placeId, options);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
-		}
+		return super.searchByPlaceId(placeId, options);
 	}
 
 	/**
@@ -211,17 +78,7 @@ export class GeoClass {
 		coordinates: Coordinates,
 		options?: SearchByCoordinatesOptions
 	): Promise<Place> {
-		const { providerName = DEFAULT_PROVIDER } = options || {};
-		const prov = this.getPluggable(providerName);
-
-		const [lng, lat] = coordinates;
-		try {
-			validateCoordinates(lng, lat);
-			return await prov.searchByCoordinates(coordinates, options);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
-		}
+		return super.searchByCoordinates(coordinates, options);
 	}
 
 	/**
@@ -236,23 +93,7 @@ export class GeoClass {
 		geofences: GeofenceInput | GeofenceInput[],
 		options?: GeofenceOptions
 	): Promise<SaveGeofencesResults> {
-		const { providerName = DEFAULT_PROVIDER } = options || {};
-		const prov = this.getPluggable(providerName);
-
-		// If single geofence input, make it an array for batch call
-		let geofenceInputArray;
-		if (!Array.isArray(geofences)) {
-			geofenceInputArray = [geofences];
-		} else {
-			geofenceInputArray = geofences;
-		}
-
-		try {
-			return await prov.saveGeofences(geofenceInputArray, options);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
-		}
+		return super.saveGeofences(geofences, options);
 	}
 
 	/**
@@ -265,15 +106,7 @@ export class GeoClass {
 		geofenceId: GeofenceId,
 		options?: GeofenceOptions
 	): Promise<Geofence> {
-		const { providerName = DEFAULT_PROVIDER } = options || {};
-		const prov = this.getPluggable(providerName);
-
-		try {
-			return await prov.getGeofence(geofenceId, options);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
-		}
+		return super.getGeofence(geofenceId, options);
 	}
 
 	/**
@@ -286,15 +119,7 @@ export class GeoClass {
 	public async listGeofences(
 		options?: ListGeofenceOptions
 	): Promise<ListGeofenceResults> {
-		const { providerName = DEFAULT_PROVIDER } = options || {};
-		const prov = this.getPluggable(providerName);
-
-		try {
-			return await prov.listGeofences(options);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
-		}
+		return super.listGeofences(options);
 	}
 
 	/**
@@ -309,24 +134,7 @@ export class GeoClass {
 		geofenceIds: string | string[],
 		options?: GeofenceOptions
 	): Promise<DeleteGeofencesResults> {
-		const { providerName = DEFAULT_PROVIDER } = options || {};
-		const prov = this.getPluggable(providerName);
-
-		// If single geofence input, make it an array for batch call
-		let geofenceIdsInputArray;
-		if (!Array.isArray(geofenceIds)) {
-			geofenceIdsInputArray = [geofenceIds];
-		} else {
-			geofenceIdsInputArray = geofenceIds;
-		}
-
-		//  Delete geofences
-		try {
-			return await prov.deleteGeofences(geofenceIdsInputArray, options);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
-		}
+		return super.deleteGeofences(geofenceIds, options);
 	}
 }
 

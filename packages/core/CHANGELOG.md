@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.6.0...@aws-amplify/core@5.7.0) (2023-07-20)
+
+### Features
+
+- custom user agent core changes for UI handoff ([#11602](https://github.com/aws-amplify/amplify-js/issues/11602)) ([7365c34](https://github.com/aws-amplify/amplify-js/commit/7365c34b28015af199dbfdb3713cc26e096d1213))
+
+# [5.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.5.2...@aws-amplify/core@5.6.0) (2023-07-13)
+
+### Bug Fixes
+
+- **clients:** add missing export for getHashedPayload in RN ([#11528](https://github.com/aws-amplify/amplify-js/issues/11528)) ([b24b336](https://github.com/aws-amplify/amplify-js/commit/b24b33610b804870e17564917d93bb6f795453a0))
+- **core:** add @types/node-fetch to runtime dependency ([#11560](https://github.com/aws-amplify/amplify-js/issues/11560)) ([0dab406](https://github.com/aws-amplify/amplify-js/commit/0dab4066d1c65251be62d442f4fba99dda1168fa))
+- **s3:** add missing default content-type & support body.text() in RN & optimize retry ([#11537](https://github.com/aws-amplify/amplify-js/issues/11537)) ([33d858d](https://github.com/aws-amplify/amplify-js/commit/33d858d8d0ea112822e8b8289fc15761a053301d))
+- **storage:** custom client base64 encoded SSE-C headers ([#11567](https://github.com/aws-amplify/amplify-js/issues/11567)) ([ee19046](https://github.com/aws-amplify/amplify-js/commit/ee190460c01250b693c163f83be412abf3acc234))
+
+### Features
+
+- **s3:** add s3 transfer handler ([#11482](https://github.com/aws-amplify/amplify-js/issues/11482)) ([53aa94f](https://github.com/aws-amplify/amplify-js/commit/53aa94f95a3959d5e490b17d91c9b65b52847359))
+- **s3:** custom xhr transfer handler ([#11471](https://github.com/aws-amplify/amplify-js/issues/11471)) ([e1f2ca1](https://github.com/aws-amplify/amplify-js/commit/e1f2ca11f0179e51126e42360de19169ffc7c6e2))
+- **s3:** implement listObjectsV2 ([#11504](https://github.com/aws-amplify/amplify-js/issues/11504)) ([0c43bb3](https://github.com/aws-amplify/amplify-js/commit/0c43bb3c3eaff0ed287953b44186a82da9169cd4))
+- **s3:** implement multiparts upload APIs ([#11514](https://github.com/aws-amplify/amplify-js/issues/11514)) ([835b74f](https://github.com/aws-amplify/amplify-js/commit/835b74fa15a143f7490ffcfb7f5811594d5c5a8e))
+- **s3:** omit double encoding of path for S3 when signing ([#11538](https://github.com/aws-amplify/amplify-js/issues/11538)) ([d46d2d1](https://github.com/aws-amplify/amplify-js/commit/d46d2d1d4263e3b8bcfc03af473d7445af12e5b7))
+- **storage:** integrate custom s3 client ([#11542](https://github.com/aws-amplify/amplify-js/issues/11542)) ([fe05494](https://github.com/aws-amplify/amplify-js/commit/fe05494c75ab6d1561863f4dfaf1107bc1f256a6))
+
 ## [5.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.5.1...@aws-amplify/core@5.5.2) (2023-06-28)
 
 ### Bug Fixes
