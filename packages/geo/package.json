@@ -43,7 +43,8 @@
 	"files": [
 		"lib",
 		"lib-esm",
-		"src"
+		"src",
+		"internals"
 	],
 	"dependencies": {
 		"@aws-amplify/core": "5.7.0",
@@ -57,7 +58,7 @@
 			"name": "Geo (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Geo }",
-			"limit": "51.75 kB"
+			"limit": "52.1 kB"
 		}
 	],
 	"jest": {
