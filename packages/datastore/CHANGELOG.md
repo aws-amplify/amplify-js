@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.6.5...@aws-amplify/datastore@4.7.0) (2023-07-31)
+
+### Features
+
+- custom user agent Geo changes for UI handoff ([#11632](https://github.com/aws-amplify/amplify-js/issues/11632)) ([01bfa8f](https://github.com/aws-amplify/amplify-js/commit/01bfa8f692737bd14422f7dc2eae11ed00c19048))
+
 ## [4.6.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.6.4...@aws-amplify/datastore@4.6.5) (2023-07-20)
 
 **Note:** Version bump only for package @aws-amplify/datastore
