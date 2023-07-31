@@ -947,10 +947,10 @@ img { max-width: 100%; }
 				<span class="target">NotificationsProvider</span>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="inappmessagingprovider.html" class="tsd-signature-type">InAppMessagingProvider</a>
+						<a href="pushnotificationprovider.html" class="tsd-signature-type">PushNotificationProvider</a>
 					</li>
 					<li>
-						<a href="pushnotificationprovider.html" class="tsd-signature-type">PushNotificationProvider</a>
+						<a href="inappmessagingprovider.html" class="tsd-signature-type">InAppMessagingProvider</a>
 					</li>
 				</ul>
 			</li>
@@ -993,7 +993,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/notifications/src/types.ts#L13">packages/notifications/src/types.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/notifications/src/types.ts#L13">packages/notifications/src/types.ts:13</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1016,7 +1016,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/notifications/src/types.ts#L16">packages/notifications/src/types.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/notifications/src/types.ts#L16">packages/notifications/src/types.ts:16</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <a href="../globals.html#notificationscategory" class="tsd-signature-type">NotificationsCategory</a></h4>
@@ -1033,7 +1033,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/notifications/src/types.ts#L22">packages/notifications/src/types.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/notifications/src/types.ts#L22">packages/notifications/src/types.ts:22</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1050,7 +1050,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/notifications/src/types.ts#L19">packages/notifications/src/types.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/notifications/src/types.ts#L19">packages/notifications/src/types.ts:19</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <a href="../globals.html#notificationssubcategory" class="tsd-signature-type">NotificationsSubCategory</a></h4>
@@ -1061,13 +1061,13 @@ img { max-width: 100%; }
 			<a name="identifyuser" class="tsd-anchor"></a>
 			<h3>identify<wbr>User</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">identify<wbr>User<span class="tsd-signature-symbol">(</span>userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, userInfo<span class="tsd-signature-symbol">: </span><a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">identify<wbr>User<span class="tsd-signature-symbol">(</span>userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, userInfo<span class="tsd-signature-symbol">: </span><a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a>, userAgentValue<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/notifications/src/types.ts#L25">packages/notifications/src/types.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/notifications/src/types.ts#L25">packages/notifications/src/types.ts:25</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1077,6 +1077,9 @@ img { max-width: 100%; }
 						</li>
 						<li>
 							<h5>userInfo: <a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> userAgentValue: <span class="tsd-signature-type">string</span></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
