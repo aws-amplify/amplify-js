@@ -6,7 +6,6 @@ export type StorageAccessLevel = 'guest' | 'protected' | 'private';
 export interface StorageConfig {
 	bucket?: string;
 	region?: string;
-	defaultAccessLevel?: StorageAccessLevel;
 }
 
 export type StoragePrefixResolver = (params: {
@@ -16,4 +15,5 @@ export type StoragePrefixResolver = (params: {
 
 export interface LibraryStorageOptions {
 	prefixResolver?: StoragePrefixResolver;
+	defaultAccessLevel?: StorageAccessLevel;
 }
