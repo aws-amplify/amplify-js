@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.4.1...@aws-amplify/analytics@6.5.0) (2023-07-31)
+
+### Features
+
+- custom user agent Geo changes for UI handoff ([#11632](https://github.com/aws-amplify/amplify-js/issues/11632)) ([01bfa8f](https://github.com/aws-amplify/amplify-js/commit/01bfa8f692737bd14422f7dc2eae11ed00c19048))
+
 ## [6.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.4.0...@aws-amplify/analytics@6.4.1) (2023-07-20)
 
 **Note:** Version bump only for package @aws-amplify/analytics
