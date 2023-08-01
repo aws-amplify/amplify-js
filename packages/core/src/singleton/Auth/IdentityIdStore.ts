@@ -14,20 +14,20 @@ import { MemoryKeyValueStorage } from '../../StorageHelper';
 import { assertIdentityIdProviderConfig } from './utils';
 
 class DefaultIdentityIdStore implements IdenityIdStore {
-	inMemoryStorage: KeyValueStorageInterface;
-	localStorage: KeyValueStorageInterface;
+	keyValueStorage: KeyValueStorageInterface;
 	authConfig: AuthConfig;
+
+	// Used as in-memory storage
+	_identityId: string | undefined;
 
 	setAuthConfig(authConfigParam: AuthConfig) {
 		this.authConfig = authConfigParam;
 		return;
 	}
 
-	constructor() {
-		this.inMemoryStorage = new MemoryKeyValueStorage();
-
-		// TODO(V6): Change this to take a local storage adapter
-		this.localStorage = new MemoryKeyValueStorage();
+	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface) {
+		this.keyValueStorage = keyValueStorage;
+		return;
 	}
 
 	async loadIdentityId(): Promise<Identity | undefined> {
@@ -44,19 +44,18 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 				this.authConfig.identityPoolId
 			);
 
-			let identityId: string = await this.inMemoryStorage.getItem(
-				authKeys.identityId
-			);
-			if (!!identityId) {
+			if (!!this._identityId) {
 				return {
-					id: identityId,
+					id: this._identityId,
 					type: 'guest',
 				};
 			} else {
-				identityId = await this.localStorage.getItem(authKeys.identityId);
-				if (!!identityId) {
+				const storedIdentityId = await this.keyValueStorage.getItem(
+					authKeys.identityId
+				);
+				if (!!storedIdentityId) {
 					return {
-						id: identityId,
+						id: storedIdentityId,
 						type: 'primary',
 					};
 				}
@@ -66,12 +65,13 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 			throw new Error(`Error loading identityId from storage: ${err}`);
 		}
 	}
+
 	async storeIdentityId(identity: Identity): Promise<void> {
 		assertIdentityIdProviderConfig(this.authConfig);
 		asserts(!(identity === undefined), {
-			message: 'Invalid Identity',
+			message: 'Invalid Identity parameter',
 			name: 'InvalidAuthIdentity',
-			recoverySuggestion: 'Make sure identity is valid',
+			recoverySuggestion: 'Make sure a valid Identity object is passed',
 		});
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
@@ -80,9 +80,9 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 			this.authConfig.identityPoolId
 		);
 		if (identity.type === 'guest') {
-			this.inMemoryStorage.setItem(authKeys.identityId, identity.id);
+			this._identityId = identity.id;
 		} else {
-			this.localStorage.setItem(authKeys.identityId, identity.id);
+			this.keyValueStorage.setItem(authKeys.identityId, identity.id);
 		}
 	}
 
@@ -95,11 +95,8 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 			this.authConfig.identityPoolId
 		);
 
-		// Not calling clear because it can remove data that is not managed by AuthTokenStore
-		await Promise.all([
-			this.inMemoryStorage.removeItem(authKeys.identityId),
-			this.localStorage.removeItem(authKeys.identityId),
-		]);
+		this._identityId = undefined;
+		await Promise.all([this.keyValueStorage.removeItem(authKeys.identityId)]);
 	}
 }
 
@@ -110,9 +107,7 @@ const createKeysForAuthStorage = (provider: string, identifier: string) => {
 	);
 };
 
-export function getAuthStorageKeys<T extends Record<string, string>>(
-	authKeys: T
-) {
+function getAuthStorageKeys<T extends Record<string, string>>(authKeys: T) {
 	const keys = Object.values({ ...authKeys });
 	return (prefix: string, identifier: string) =>
 		keys.reduce(

@@ -15,11 +15,7 @@ export async function getIdClient(
 ): Promise<GetIdCommandOutput> {
 	const authConfig = AmplifyV6.getConfig().Auth;
 	const client = new IdentityPoolHttpClient(authConfig);
-	const result: GetIdCommandOutput = await client.send<GetIdCommandOutput>(
-		'GetId',
-		{
-			...params,
-		}
-	);
-	return result;
+	return client.send<GetIdCommandOutput>('GetId', {
+		...params,
+	});
 }

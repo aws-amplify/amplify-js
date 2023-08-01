@@ -14,4 +14,4 @@ export { verifyTOTPSetup } from './apis/verifyTOTPSetup';
 export { updatePassword } from './apis/updatePassword';
 export { setUpTOTP } from './apis/setUpTOTP';
 export { cognitoCredentialsProvider } from './apis/credentialsProvider';
-export { getIdentityId } from './apis/IdentityIdProvider';
+export { cognitoIdentityIdProvider } from './apis/IdentityIdProvider';

@@ -8,13 +8,23 @@ import {
 	AuthTokens,
 	Identity,
 	defaultIdentityIdStore,
-	decodeJWT,
 } from '@aws-amplify/core';
 import { formLoginsMap } from './credentialsProvider';
+import { AuthError } from '../../../errors/AuthError';
 
-const logger = new Logger('IdentityIdProvider');
+const logger = new Logger('CognitoIdentityIdProvider');
 
-export async function getIdentityId({
+/**
+ * Provides a Cognito identityId
+ *
+ * @param tokens - The AuthTokens received after SignIn
+ * @returns string
+ * @throws internal: {@link AuthError }
+ *  - Auth errors that may arise from misconfiguration.
+ *
+ * TODO(V6): convert the Auth errors to config errors
+ */
+export async function cognitoIdentityIdProvider({
 	tokens,
 	authConfig,
 }: {
@@ -25,8 +35,7 @@ export async function getIdentityId({
 	let identityId = await defaultIdentityIdStore.loadIdentityId();
 
 	if (tokens) {
-		// Tokens are avaliable so retrun primary identityId
-		// look in-memory
+		// Tokens are available so return primary identityId
 		if (identityId && identityId.type === 'primary') {
 			return identityId.id;
 		} else {
@@ -65,7 +74,7 @@ export async function getIdentityId({
 
 	// Store in-memory
 	defaultIdentityIdStore.storeIdentityId(identityId);
-	logger.debug(`The identity being returned ${identityId}`);
+	logger.debug(`The identity being returned ${identityId.id}`);
 	return identityId.id;
 }
 
@@ -77,8 +86,12 @@ async function generateIdentityId(
 
 	// Access config to obtain IdentityPoolId & region
 	if (!identityPoolId) {
-		logger.debug('No Cognito Federated Identity pool provided');
-		return Promise.reject('No Cognito Federated Identity pool provided');
+		throw new AuthError({
+			name: 'IdentityPoolIdConfigException',
+			message: 'No Cognito Identity pool provided',
+			recoverySuggestion:
+				'Make sure to pass a valid identityPoolId in the configuration.',
+		});
 	}
 
 	// IdentityId is absent so get it using IdentityPoolId with Cognito's GetId API
@@ -93,7 +106,12 @@ async function generateIdentityId(
 			})
 		).IdentityId;
 	if (!idResult) {
-		throw Error('Cannot fetch IdentityId');
+		throw new AuthError({
+			name: 'IdentityIdResponseException',
+			message: 'Did not receive an identityId from Cognito identity pool',
+			recoverySuggestion:
+				'Make sure to pass a valid identityPoolId in the configuration.',
+		});
 	}
 	return idResult;
 }

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { credentialsForIdentityIdClient } from '../utils/clients/CredentialsForIdentityIdClient';
-// TODO(V6): Confirm use of this type from the sdk is necessary
 import { Credentials } from '@aws-sdk/types';
 import { setIdentityId } from './IdentityIdProvider';
 import {
@@ -13,8 +12,9 @@ import {
 	FetchAuthSessionOptions,
 	AmplifyV6,
 } from '@aws-amplify/core';
+import { AuthError } from '../../../errors/AuthError';
 
-const logger = new Logger('CredentialsProvider');
+const logger = new Logger('CognitoCredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
 
 class CognitoCredentialsProvider implements CredentialsProvider {
@@ -39,9 +39,14 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		identityId?: string;
 	}): Promise<Credentials> {
 		try {
+			// TODO(V6): Listen to changes to AuthTokens and update the credentials
 			if (!identityId) {
 				// TODO(V6): If there is no identityId attempt once to get it
-				throw Error('IdentityId is required to get credentials');
+				throw new AuthError({
+					name: 'IdentityIdConfigException',
+					message: 'No Cognito Identity Id provided',
+					recoverySuggestion: 'Make sure to pass a valid identityId.',
+				});
 			}
 
 			if (options?.forceRefresh) {
@@ -65,7 +70,10 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 				return await this.credsForOIDCTokens(tokens, identityId);
 			}
 		} catch (e) {
-			throw Error(`Error getting credentials: ${e}`);
+			throw new AuthError({
+				name: 'CredentialsException',
+				message: `Error getting credentials. Error: ${e}`,
+			});
 		}
 	}
 
@@ -74,7 +82,6 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 			this._credentials &&
 			!this._isExpired(this._credentials) &&
 			!this._isPastTTL() &&
-			// TODO(V6): How to know the locally stored credentials is guest or authenticated?
 			this._credentials.isAuthenticatedCreds === false
 		) {
 			logger.info(
@@ -92,16 +99,18 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 
 		// Check if mandatory sign-in is enabled
 		if (isMandatorySignInEnabled) {
-			throw Error(
-				'Cannot get guest credentials when mandatory signin is enabled'
-			);
+			throw new AuthError({
+				name: 'AuthConfigException',
+				message:
+					'Cannot get guest credentials when mandatory signin is enabled',
+				recoverySuggestion: 'Make sure mandatory signin is disabled.',
+			});
 		}
 
 		// use identityId to obtain guest credentials
 		// save credentials in-memory
 		// No logins params should be passed for guest creds: https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetCredentialsForIdentity.html#API_GetCredentialsForIdentity_RequestSyntax
 
-		// TODO(V6): The API reference says identityId is required but the type can take undefined, why?
 		const clientResult = await credentialsForIdentityIdClient({
 			IdentityId: identityId,
 		});
@@ -113,7 +122,7 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 				sessionToken: clientResult.Credentials.SessionToken,
 				expiration: clientResult.Credentials.Expiration,
 			};
-			let identityIdRes = clientResult.IdentityId;
+			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
 				setIdentityId({
 					id: identityIdRes,
@@ -126,7 +135,10 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 			};
 			return res;
 		} else {
-			throw Error('Unable to fetch credentials');
+			throw new AuthError({
+				name: 'CredentialsException',
+				message: `Error getting credentials.`,
+			});
 		}
 	}
 
@@ -138,7 +150,6 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 			this._credentials &&
 			!this._isExpired(this._credentials) &&
 			!this._isPastTTL() &&
-			// TODO(V6): How to know the locally stored credentials is guest or authenticated?
 			this._credentials.isAuthenticatedCreds === true
 		) {
 			logger.debug(
@@ -149,9 +160,6 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 
 		// Clear to discard if any unauthenticated credentials are set and start with a clean slate
 		this.clearCredentials();
-
-		// TODO(V6): make sure this is not a guest idenityId and is the one associated with the logins
-		// let identityId = await getIdentityId(logins);
 
 		// TODO(V6): oidcProvider should come from config, TBD
 		let logins = authTokens.idToken
@@ -175,7 +183,7 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 				...res,
 				isAuthenticatedCreds: true,
 			};
-			let identityIdRes = clientResult.IdentityId;
+			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
 				setIdentityId({
 					id: identityIdRes,
@@ -184,7 +192,10 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 			}
 			return res;
 		} else {
-			throw Error('Unable to fetch credentials');
+			throw new AuthError({
+				name: 'CredentialsException',
+				message: `Error getting credentials.`,
+			});
 		}
 	}
 
@@ -214,16 +225,28 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 
 export function formLoginsMap(idToken: string, oidcProvider: string) {
 	// TODO(V6): Update with Amplify.config values
-	const amplifyConfig = {
-		region: 'us-east-2',
-		userPoolId: 'us-east-2_Q4ii7edTI',
-	};
-	const { region, userPoolId } = amplifyConfig;
 
+	const authConfig = AmplifyV6.getConfig().Auth;
+	const userPoolId = authConfig?.userPoolId;
+	if (!userPoolId) {
+		logger.debug('userPoolId is not found in the config');
+		throw new AuthError({
+			name: 'AuthConfigException',
+			message: 'Cannot get credentials without an userPoolId',
+			recoverySuggestion:
+				'Make sure a valid userPoolId is given in the config.',
+		});
+	}
+
+	const region = userPoolId.split('_')[0];
 	// TODO(V6): see why we need identityPoolRegion check here
 	if (!region) {
 		logger.debug('region is not configured for getting the credentials');
-		throw Error('region is not configured for getting the credentials');
+		throw new AuthError({
+			name: 'AuthConfigException',
+			message: 'Cannot get credentials without a region',
+			recoverySuggestion: 'Make sure a valid region is given in the config.',
+		});
 	}
 	let domainName: string;
 	if (oidcProvider === 'COGNITO') {
@@ -239,4 +262,13 @@ export function formLoginsMap(idToken: string, oidcProvider: string) {
 	return res;
 }
 
+/**
+ * Cognito specific implmentation of the CredentialsProvider interface
+ * that manages setting and getting of AWS Credentials.
+ *
+ * @throws internal: {@link AuthError }
+ *  - Auth errors that may arise from misconfiguration.
+ *
+ * TODO(V6): convert the Auth errors to config errors
+ */
 export const cognitoCredentialsProvider = new CognitoCredentialsProvider();

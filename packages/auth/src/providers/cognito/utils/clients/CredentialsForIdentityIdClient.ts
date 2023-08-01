@@ -14,12 +14,10 @@ export async function credentialsForIdentityIdClient(
 ): Promise<GetCredentialsForIdentityCommandOutput> {
 	const authConfig = AmplifyV6.getConfig().Auth;
 	const client = new IdentityPoolHttpClient(authConfig);
-	const result: GetCredentialsForIdentityCommandOutput =
-		await client.send<GetCredentialsForIdentityCommandOutput>(
-			'GetCredentialsForIdentity',
-			{
-				...params,
-			}
-		);
-	return result;
+	return client.send<GetCredentialsForIdentityCommandOutput>(
+		'GetCredentialsForIdentity',
+		{
+			...params,
+		}
+	);
 }

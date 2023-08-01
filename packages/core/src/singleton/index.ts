@@ -1,7 +1,7 @@
 import { AuthClass } from './Auth';
 import {
 	cognitoCredentialsProvider,
-	getIdentityId,
+	cognitoIdentityIdProvider,
 } from '@aws-amplify/auth/cognito';
 import { Hub } from '../Hub';
 import { MemoryKeyValueStorage } from '../StorageHelper';
@@ -36,7 +36,7 @@ class AmplifyClass {
 					});
 				},
 				credentialsProvider: cognitoCredentialsProvider,
-				identityIdProvider: getIdentityId,
+				identityIdProvider: cognitoIdentityIdProvider,
 			},
 		};
 	}

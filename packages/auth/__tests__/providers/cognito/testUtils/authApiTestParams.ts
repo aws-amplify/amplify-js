@@ -125,10 +125,12 @@ export const authAPITestParams = {
 		$metadata: {},
 	},
 	CredentialsForIdentityIdResult: {
-		AccessKeyId: 'AccessKeyId',
-		SecretAccessKey: 'SecretAccessKey',
-		SessionToken: 'SessionToken',
-		Expiration: Date.now(),
+		Credentials: {
+			AccessKeyId: 'AccessKeyId',
+			SecretAccessKey: 'SecretAccessKey',
+			SessionToken: 'SessionToken',
+			Expiration: new Date('2023-07-29'),
+		},
 		$metadata: {},
 	},
 	signInResultWithCustomAuth: () => {

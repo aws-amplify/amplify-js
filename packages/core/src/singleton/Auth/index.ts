@@ -14,6 +14,7 @@ import {
 	JWT,
 	LibraryAuthOptions,
 } from './types';
+import { defaultIdentityIdStore } from './IdentityIdStore';
 
 export function isTokenExpired({
 	expiresAt,
@@ -62,6 +63,8 @@ export class AuthClass {
 
 		this.tokenOrchestrator.setTokenRefresher(this.authOptions.tokenRefresher);
 		this.tokenOrchestrator.setAuthConfig(this.authConfig);
+
+		defaultIdentityIdStore.setKeyValueStorage(this.authOptions.keyValueStorage);
 	}
 
 	/**
