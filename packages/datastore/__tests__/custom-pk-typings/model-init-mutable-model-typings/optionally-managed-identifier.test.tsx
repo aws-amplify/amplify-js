@@ -52,19 +52,25 @@ describe('Optionally Managed Identifier', () => {
 
 		OptionallyManagedDefaultRO.copyOf({} as OptionallyManagedDefaultRO, d => {
 			d.id;
-			// @ts-expect-error
-			// d.id = '';
-
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
-			// @ts-expect-error
-			// d.createdAt = '';
-
 			d.updatedAt;
+		});
+
+		OptionallyManagedDefaultRO.copyOf({} as OptionallyManagedDefaultRO, d => {
 			// @ts-expect-error
-			// d.updatedAt = '';
+			d.id = '';
+
+			d.name = '';
+			d.description = '';
+
+			// @ts-expect-error
+			d.createdAt = '';
+
+			// @ts-expect-error
+			d.updatedAt = '';
 		});
 
 		// Query

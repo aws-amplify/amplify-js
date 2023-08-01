@@ -37,6 +37,15 @@ describe('Composite Identifier', () => {
 		});
 
 		CompositeDefaultRO.copyOf({} as CompositeDefaultRO, d => {
+			d.tenant;
+			d.dob;
+			d.name = '';
+			d.description = '';
+			d.createdAt;
+			d.updatedAt;
+		});
+
+		CompositeDefaultRO.copyOf({} as CompositeDefaultRO, d => {
 			// @ts-expect-error
 			// d.id;
 			// @ts-expect-error

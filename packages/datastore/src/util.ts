@@ -906,6 +906,7 @@ export const extractPrimaryKeysAndValues = <T extends PersistentModel>(
 // IdentifierFields<ManagedIdentifier>
 // Default behavior without explicit @primaryKey defined
 export const isIdManaged = (modelDefinition: SchemaModel): boolean => {
+	debugger;
 	const keyAttribute = extractKeyIfExists(modelDefinition);
 
 	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {

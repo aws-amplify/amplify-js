@@ -7,6 +7,7 @@ import {
 	ManagedIdentifier,
 	MutableModel,
 	OptionallyManagedIdentifier,
+	OptionallyManagedCompositeIdentifier,
 } from '../../../src';
 
 export const DataStore: typeof DS = (() => {
@@ -142,7 +143,7 @@ export class ManagedDefaultRO {
 
 //#endregion
 
-//#region Optionally Managed
+//#region Optionally Managed (single and composite)
 
 export class OptionallyManagedCustomRO {
 	readonly [__modelMeta__]: {
@@ -183,6 +184,30 @@ export class OptionallyManagedDefaultRO {
 		) => MutableModel<OptionallyManagedDefaultRO> | void
 	): OptionallyManagedDefaultRO {
 		return <OptionallyManagedDefaultRO>(<unknown>undefined);
+	}
+}
+
+export class OptionallyManagedCompositeDefaultRO {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedCompositeIdentifier<
+			OptionallyManagedCompositeDefaultRO,
+			['id', 'name']
+		>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly name: string;
+	readonly description?: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(init: ModelInit<OptionallyManagedCompositeDefaultRO>) {}
+	static copyOf(
+		source: OptionallyManagedCompositeDefaultRO,
+		mutator: (
+			draft: MutableModel<OptionallyManagedCompositeDefaultRO>
+		) => MutableModel<OptionallyManagedCompositeDefaultRO> | void
+	): OptionallyManagedCompositeDefaultRO {
+		return <OptionallyManagedCompositeDefaultRO>(<unknown>undefined);
 	}
 }
 

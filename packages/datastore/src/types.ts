@@ -442,6 +442,15 @@ export type CompositeIdentifier<T, K extends Array<keyof T>> = IdentifierBrand<
 	'CompositeIdentifier'
 >;
 
+// You can provide a value, if not, DataStore generates a UUID for the `id` field
+export type OptionallyManagedCompositeIdentifier<
+	T,
+	K extends Array<keyof T>
+> = IdentifierBrand<
+	{ fields: K extends Array<keyof T> ? K : never; type: T },
+	'OptionallyManagedCompositeIdentifier'
+>;
+
 // You provide the value
 export type CustomIdentifier<T, K extends keyof T> = CompositeIdentifier<
 	T,
@@ -451,15 +460,18 @@ export type CustomIdentifier<T, K extends keyof T> = CompositeIdentifier<
 export type Identifier<T> =
 	| ManagedIdentifier<T, any>
 	| OptionallyManagedIdentifier<T, any>
+	| OptionallyManagedCompositeIdentifier<T, any>
 	| CompositeIdentifier<T, any>
 	| CustomIdentifier<T, any>;
 
+// TODO:
 export type IdentifierFields<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T> = never
 > = (MetadataOrDefault<T, M>['identifier'] extends
 	| ManagedIdentifier<any, any>
 	| OptionallyManagedIdentifier<any, any>
+	| OptionallyManagedCompositeIdentifier<any, any>
 	? MetadataOrDefault<T, M>['identifier']['field']
 	: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<
 			T,
@@ -469,6 +481,7 @@ export type IdentifierFields<
 	: MetadataOrDefault<T, M>['identifier']['field']) &
 	string;
 
+// TODO:
 export type IdentifierFieldsForInit<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
@@ -569,6 +582,7 @@ export type MetadataReadOnlyFields<
 // This type omits readOnlyFields in the constructor init object
 // This type requires some identifiers in the constructor init object (e.g. CustomIdentifier)
 // This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier)
+// TODO: add OptionallyManagedCompositeIdentifier
 export type ModelInitBase<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T> = {}
