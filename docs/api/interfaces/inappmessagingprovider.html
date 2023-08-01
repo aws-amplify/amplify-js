@@ -995,9 +995,9 @@ img { max-width: 100%; }
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="inappmessagingprovider.html">InAppMessagingProvider</a>.<a href="inappmessagingprovider.html#configure">configure</a></p>
+						<p>Inherited from <a href="pushnotificationprovider.html">PushNotificationProvider</a>.<a href="pushnotificationprovider.html#configure">configure</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/notifications/src/types.ts#L13">packages/notifications/src/types.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/notifications/src/types.ts#L13">packages/notifications/src/types.ts:13</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1019,9 +1019,9 @@ img { max-width: 100%; }
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="inappmessagingprovider.html">InAppMessagingProvider</a>.<a href="inappmessagingprovider.html#getcategory">getCategory</a></p>
+						<p>Inherited from <a href="pushnotificationprovider.html">PushNotificationProvider</a>.<a href="pushnotificationprovider.html#getcategory">getCategory</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/notifications/src/types.ts#L16">packages/notifications/src/types.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/notifications/src/types.ts#L16">packages/notifications/src/types.ts:16</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <a href="../globals.html#notificationscategory" class="tsd-signature-type">NotificationsCategory</a></h4>
@@ -1032,15 +1032,21 @@ img { max-width: 100%; }
 			<a name="getinappmessages" class="tsd-anchor"></a>
 			<h3>get<wbr>InApp<wbr>Messages</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">get<wbr>InApp<wbr>Messages<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<wbr>InApp<wbr>Messages<span class="tsd-signature-symbol">(</span>userAgentValue<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/notifications/src/InAppMessaging/types.ts#L51">packages/notifications/src/InAppMessaging/types.ts:51</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/notifications/src/InAppMessaging/types.ts#L55">packages/notifications/src/InAppMessaging/types.ts:55</a></li>
 						</ul>
 					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> userAgentValue: <span class="tsd-signature-type">string</span></h5>
+						</li>
+					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
@@ -1054,9 +1060,9 @@ img { max-width: 100%; }
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="inappmessagingprovider.html">InAppMessagingProvider</a>.<a href="inappmessagingprovider.html#getprovidername">getProviderName</a></p>
+						<p>Inherited from <a href="pushnotificationprovider.html">PushNotificationProvider</a>.<a href="pushnotificationprovider.html#getprovidername">getProviderName</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/notifications/src/types.ts#L22">packages/notifications/src/types.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/notifications/src/types.ts#L22">packages/notifications/src/types.ts:22</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1074,7 +1080,7 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Overrides <a href="notificationsprovider.html">NotificationsProvider</a>.<a href="notificationsprovider.html#getsubcategory">getSubCategory</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/notifications/src/InAppMessaging/types.ts#L48">packages/notifications/src/InAppMessaging/types.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/notifications/src/InAppMessaging/types.ts#L52">packages/notifications/src/InAppMessaging/types.ts:52</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <a href="../globals.html#notificationssubcategory" class="tsd-signature-type">NotificationsSubCategory</a></h4>
@@ -1085,14 +1091,14 @@ img { max-width: 100%; }
 			<a name="identifyuser" class="tsd-anchor"></a>
 			<h3>identify<wbr>User</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-				<li class="tsd-signature tsd-kind-icon">identify<wbr>User<span class="tsd-signature-symbol">(</span>userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, userInfo<span class="tsd-signature-symbol">: </span><a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">identify<wbr>User<span class="tsd-signature-symbol">(</span>userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, userInfo<span class="tsd-signature-symbol">: </span><a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a>, userAgentValue<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="inappmessagingprovider.html">InAppMessagingProvider</a>.<a href="inappmessagingprovider.html#identifyuser">identifyUser</a></p>
+						<p>Inherited from <a href="pushnotificationprovider.html">PushNotificationProvider</a>.<a href="pushnotificationprovider.html#identifyuser">identifyUser</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/notifications/src/types.ts#L25">packages/notifications/src/types.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/notifications/src/types.ts#L25">packages/notifications/src/types.ts:25</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1102,6 +1108,9 @@ img { max-width: 100%; }
 						</li>
 						<li>
 							<h5>userInfo: <a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> userAgentValue: <span class="tsd-signature-type">string</span></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1118,7 +1127,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ab413c264/packages/notifications/src/InAppMessaging/types.ts#L54">packages/notifications/src/InAppMessaging/types.ts:54</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/notifications/src/InAppMessaging/types.ts#L58">packages/notifications/src/InAppMessaging/types.ts:58</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
