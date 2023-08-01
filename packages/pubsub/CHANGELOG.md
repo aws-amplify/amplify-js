@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.4.1...@aws-amplify/pubsub@5.5.0) (2023-07-31)
+
+### Features
+
+- custom user agent Geo changes for UI handoff ([#11632](https://github.com/aws-amplify/amplify-js/issues/11632)) ([01bfa8f](https://github.com/aws-amplify/amplify-js/commit/01bfa8f692737bd14422f7dc2eae11ed00c19048))
+- custom user agent InAppMessaging changes for UI handoff ([#11639](https://github.com/aws-amplify/amplify-js/issues/11639)) ([4d389da](https://github.com/aws-amplify/amplify-js/commit/4d389da22c9f39d5a5d7cd6df9116327a9d6a04e))
+
 ## [5.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.4.0...@aws-amplify/pubsub@5.4.1) (2023-07-20)
 
 ### Bug Fixes
