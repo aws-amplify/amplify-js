@@ -12,6 +12,7 @@ export function invalidParameter(name: string) {
 
 export enum AmplifyErrorString {
 	UNKNOWN = 'UnknownError',
+	PLATFORM_NOT_SUPPORTED_ERROR = 'PlatformNotSupportedError',
 }
 export class AmplifyError extends Error {
 	underlyingError?: Error | unknown;
@@ -42,3 +43,8 @@ export class AmplifyError extends Error {
 		Object.setPrototypeOf(this, AmplifyError.prototype);
 	}
 }
+
+export const PlatformNotSupportedError = new AmplifyError({
+	name: AmplifyErrorString.PLATFORM_NOT_SUPPORTED_ERROR,
+	message: 'Function not supported on current platform',
+});

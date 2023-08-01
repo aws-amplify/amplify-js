@@ -42,10 +42,17 @@ export {
 	ErrorParams,
 	AmplifyErrorMap,
 	ServiceError,
+	KeyValueStorageInterface,
 } from './types';
 export {
 	StorageHelper,
 	MemoryStorage,
+<<<<<<< HEAD
+=======
+	LocalStorage,
+	CookieStorage,
+	SessionStorage,
+>>>>>>> next
 	MemoryKeyValueStorage,
 } from './StorageHelper';
 export { UniversalStorage } from './UniversalStorage';

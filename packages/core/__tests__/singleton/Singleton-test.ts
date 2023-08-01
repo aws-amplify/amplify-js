@@ -290,7 +290,7 @@ describe('Session tests', () => {
 				userPoolWebClientId: 'aaaaaaaaaaaa',
 			},
 			{
-				keyValueStorage: new MemoryKeyValueStorage(),
+				keyValueStorage: MemoryKeyValueStorage,
 			}
 		);
 
@@ -346,7 +346,7 @@ describe('Session tests', () => {
 				userPoolWebClientId: 'aaaaaaaaaaaa',
 			},
 			{
-				keyValueStorage: new MemoryKeyValueStorage(),
+				keyValueStorage: MemoryKeyValueStorage,
 				tokenRefresher: tokenRefresherSpy,
 			}
 		);
@@ -403,7 +403,7 @@ describe('Session tests', () => {
 				userPoolWebClientId: 'aaaaaaaaaaaa',
 			},
 			{
-				keyValueStorage: new MemoryKeyValueStorage(),
+				keyValueStorage: MemoryKeyValueStorage,
 				tokenRefresher: tokenRefresherSpy,
 			}
 		);
@@ -440,7 +440,7 @@ describe('Session tests', () => {
 				userPoolWebClientId: 'aaaaaaaaaaaa',
 			},
 			{
-				keyValueStorage: new MemoryKeyValueStorage(),
+				keyValueStorage: MemoryKeyValueStorage,
 				tokenRefresher: tokenRefresherSpy,
 			}
 		);

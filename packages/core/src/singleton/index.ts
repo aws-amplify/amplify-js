@@ -26,7 +26,7 @@ class AmplifyClass {
 		// TODO(v6): add default providers for getting started
 		this.libraryOptions = {
 			Auth: {
-				keyValueStorage: new MemoryKeyValueStorage(), // Initialize automatically Depending on platform,
+				keyValueStorage: MemoryKeyValueStorage, // Initialize automatically Depending on platform,
 				tokenRefresher: () => {
 					throw new AmplifyError({
 						message: 'No tokenRefresher not provided',
