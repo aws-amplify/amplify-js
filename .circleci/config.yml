@@ -362,6 +362,10 @@ jobs:
     executor: build-executor
     steps:
       - checkout
+      - run:
+          name: yarn install --non-interactive
+          command: |
+            yarn
       - run: yarn bootstrap
       - run: yarn build
       - save_cache:
