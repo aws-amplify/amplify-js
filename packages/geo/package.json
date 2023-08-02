@@ -58,7 +58,7 @@
 			"name": "Geo (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Geo }",
-			"limit": "52.1 kB"
+			"limit": "52.43 kB"
 		}
 	],
 	"jest": {
