@@ -76,11 +76,13 @@ describe('Optionally Managed Composite Identifier', () => {
 				name: 'somename',
 			})
 		);
+
 		expectType<OptionallyManagedCompositeDefaultRO | undefined>(
 			await DataStore.query(OptionallyManagedCompositeDefaultRO, {
 				id: 'someid',
 			})
 		);
+
 		expectType<OptionallyManagedCompositeDefaultRO[]>(
 			await DataStore.query(OptionallyManagedCompositeDefaultRO)
 		);
@@ -96,6 +98,7 @@ describe('Optionally Managed Composite Identifier', () => {
 		expectType<OptionallyManagedCompositeDefaultRO[] | undefined>(
 			await DataStore.query(OptionallyManagedCompositeDefaultRO, Predicates.ALL)
 		);
+
 		expectType<OptionallyManagedCompositeDefaultRO[]>(
 			await DataStore.query(OptionallyManagedCompositeDefaultRO, c =>
 				c.createdAt.ge('2019')
@@ -106,6 +109,7 @@ describe('Optionally Managed Composite Identifier', () => {
 		expectType<OptionallyManagedCompositeDefaultRO>(
 			await DataStore.save(dummyInstance<OptionallyManagedCompositeDefaultRO>())
 		);
+
 		expectType<OptionallyManagedCompositeDefaultRO>(
 			await DataStore.save(
 				dummyInstance<OptionallyManagedCompositeDefaultRO>(),
@@ -119,29 +123,34 @@ describe('Optionally Managed Composite Identifier', () => {
 		expectType<OptionallyManagedCompositeDefaultRO[]>(
 			await DataStore.delete(OptionallyManagedCompositeDefaultRO, '')
 		);
+
 		expectType<OptionallyManagedCompositeDefaultRO[]>(
 			await DataStore.delete(OptionallyManagedCompositeDefaultRO, {
 				tenant: '',
 				dob: '',
 			})
 		);
+
 		expectType<OptionallyManagedCompositeDefaultRO>(
 			await DataStore.delete(
 				dummyInstance<OptionallyManagedCompositeDefaultRO>()
 			)
 		);
+
 		expectType<OptionallyManagedCompositeDefaultRO>(
 			await DataStore.delete(
 				dummyInstance<OptionallyManagedCompositeDefaultRO>(),
 				c => c.description.contains('something')
 			)
 		);
+
 		expectType<OptionallyManagedCompositeDefaultRO[]>(
 			await DataStore.delete(
 				OptionallyManagedCompositeDefaultRO,
 				Predicates.ALL
 			)
 		);
+
 		expectType<OptionallyManagedCompositeDefaultRO[]>(
 			await DataStore.delete(OptionallyManagedCompositeDefaultRO, c =>
 				c.createdAt.le('2019')
@@ -154,23 +163,28 @@ describe('Optionally Managed Composite Identifier', () => {
 				expectType<
 					PersistentModelConstructor<OptionallyManagedCompositeDefaultRO>
 				>(model);
+
 				expectType<OptionallyManagedCompositeDefaultRO>(element);
 			}
 		);
+
 		DataStore.observe(OptionallyManagedCompositeDefaultRO, c =>
 			c.description.beginsWith('something')
 		).subscribe(({ model, element }) => {
 			expectType<
 				PersistentModelConstructor<OptionallyManagedCompositeDefaultRO>
 			>(model);
+
 			expectType<OptionallyManagedCompositeDefaultRO>(element);
 		});
+
 		DataStore.observe(
 			dummyInstance<OptionallyManagedCompositeDefaultRO>()
 		).subscribe(({ model, element }) => {
 			expectType<
 				PersistentModelConstructor<OptionallyManagedCompositeDefaultRO>
 			>(model);
+
 			expectType<OptionallyManagedCompositeDefaultRO>(element);
 		});
 
@@ -180,11 +194,13 @@ describe('Optionally Managed Composite Identifier', () => {
 				expectType<OptionallyManagedCompositeDefaultRO[]>(items);
 			}
 		);
+
 		DataStore.observeQuery(OptionallyManagedCompositeDefaultRO, c =>
 			c.description.notContains('something')
 		).subscribe(({ items }) => {
 			expectType<OptionallyManagedCompositeDefaultRO[]>(items);
 		});
+
 		DataStore.observeQuery(
 			OptionallyManagedCompositeDefaultRO,
 			c => c.description.notContains('something'),
