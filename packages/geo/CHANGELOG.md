@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.2.0...@aws-amplify/geo@2.3.0) (2023-07-31)
+
+### Features
+
+- custom user agent Geo changes for UI handoff ([#11632](https://github.com/aws-amplify/amplify-js/issues/11632)) ([01bfa8f](https://github.com/aws-amplify/amplify-js/commit/01bfa8f692737bd14422f7dc2eae11ed00c19048))
+
 # [2.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.1.4...@aws-amplify/geo@2.2.0) (2023-07-20)
 
 ### Features
