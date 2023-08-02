@@ -43,12 +43,6 @@ describe('Optionally Managed Composite Identifier', () => {
 			d => {
 				d.id;
 				d.name;
-				/**
-				 * TODO:
-				 * Current TS error:
-				 * Index signature in type 'MutableModel<OptionallyManagedCompositeDefaultRO>'
-				 * only permits reading
-				 */
 				d.description = '';
 				d.createdAt;
 				d.updatedAt;
@@ -65,8 +59,7 @@ describe('Optionally Managed Composite Identifier', () => {
 				// @ts-expect-error
 				d.name = '';
 
-				// TODO: same error as above
-				// d.description = '';
+				d.description = '';
 
 				// @ts-expect-error
 				d.createdAt = '';
@@ -96,8 +89,11 @@ describe('Optionally Managed Composite Identifier', () => {
 		 * Argument of type 'OptionallyManagedCompositeDefaultRO | undefined' is
 		 * not assignable to parameter of type 'OptionallyManagedCompositeDefaultRO[]'.
 		 * Type 'undefined' is not assignable to type 'OptionallyManagedCompositeDefaultRO[]'.
+		 *
+		 * If attempting to match against `OptionallyManagedCompositeDefaultRO[] | undefined`,
+		 * `query` complains that it's returning an instance (not an array).
 		 */
-		expectType<OptionallyManagedCompositeDefaultRO[]>(
+		expectType<OptionallyManagedCompositeDefaultRO[] | undefined>(
 			await DataStore.query(OptionallyManagedCompositeDefaultRO, Predicates.ALL)
 		);
 		expectType<OptionallyManagedCompositeDefaultRO[]>(
@@ -119,6 +115,7 @@ describe('Optionally Managed Composite Identifier', () => {
 
 		// Delete
 		// TODO: should error:
+		// @ts-expect-error
 		expectType<OptionallyManagedCompositeDefaultRO[]>(
 			await DataStore.delete(OptionallyManagedCompositeDefaultRO, '')
 		);

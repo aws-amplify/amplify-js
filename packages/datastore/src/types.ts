@@ -457,6 +457,9 @@ export type CustomIdentifier<T, K extends keyof T> = CompositeIdentifier<
 	[K]
 >;
 
+/**
+ * Includes all identifier types.
+ */
 export type Identifier<T> =
 	| ManagedIdentifier<T, any>
 	| OptionallyManagedIdentifier<T, any>
@@ -464,7 +467,10 @@ export type Identifier<T> =
 	| CompositeIdentifier<T, any>
 	| CustomIdentifier<T, any>;
 
-// TODO:
+/**
+ * Determine if the identifier is managed. If not, determine if it is a composite
+ * identifier or optionally managed composite identifier.
+ */
 export type IdentifierFields<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T> = never
@@ -479,7 +485,9 @@ export type IdentifierFields<
 	: MetadataOrDefault<T, M>['identifier']['field']) &
 	string;
 
-// TODO:
+/**
+ * Used by `ModelInitBase` when determining which fields are required or optional
+ */
 export type IdentifierFieldsForInit<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
@@ -580,11 +588,19 @@ export type MetadataReadOnlyFields<
 	keyof T
 >;
 
-// This type omits the metadata field in the constructor init object
-// This type omits identifier fields in the constructor init object
-// This type omits readOnlyFields in the constructor init object
-// This type requires some identifiers in the constructor init object (e.g. CustomIdentifier)
-// This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier, OptionallyManagedCompositeIdentifier)
+/**
+ * This type omits:
+ * - the metadata field in the constructor init object
+ * - identifier fields in the constructor init object
+ * - readOnlyFields in the constructor init object.
+ *
+ * This type requires:
+ * - some identifiers in the constructor init object (e.g. CustomIdentifier).
+ *
+ * This type makes optional:
+ * - some identifiers in the constructor init object (e.g.
+ * OptionallyManagedIdentifier, OptionallyManagedCompositeIdentifier).
+ */
 export type ModelInitBase<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T> = {}
@@ -619,7 +635,7 @@ type DeepWritable<T> = {
 			? InnerPromiseType | null
 			: InnerPromiseType
 		: T[P] extends AsyncCollection<infer InnerCollectionType>
-		? InnerCollectionType[] | undefined | null
+		? InnerCollectionType[] | 'undefined' | null
 		: DeepWritable<T[P]>;
 };
 

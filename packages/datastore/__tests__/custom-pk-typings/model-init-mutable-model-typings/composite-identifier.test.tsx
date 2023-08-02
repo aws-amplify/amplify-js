@@ -100,7 +100,7 @@ describe('Composite Identifier', () => {
 		// Delete
 
 		// @ts-expect-error
-		// await DataStore.delete(CompositeDefaultRO, '')
+		await DataStore.delete(CompositeDefaultRO, '');
 
 		expectType<CompositeDefaultRO[]>(
 			await DataStore.delete(CompositeDefaultRO, { tenant: '', dob: '' })
