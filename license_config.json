@@ -3,6 +3,7 @@
 		"NOTICE",
 		".circleci",
 		".github",
+		"yarn.lock",
 		"**/*.config.dev.js",
 		"**/*.config.js",
 		"**/*.d.ts",

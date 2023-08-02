@@ -27,11 +27,15 @@ jobs:
   bundle-size-tests:
     needs: prebuild
     uses: ./.github/workflows/callable-bundle-size-tests.yml
+  license-test:
+    needs: prebuild
+    uses: ./.github/workflows/callable-test-license.yml
   all-unit-tests-pass:
     name: Unit and Bundle tests have passed
     needs:
       - unit-tests
       - bundle-size-tests
+      - license-test
     runs-on: ubuntu-latest
     # This is a bit of a hack - Branch protections depend upon selected
     #   workflows that run on hardware, not parents of many callable workflows.
