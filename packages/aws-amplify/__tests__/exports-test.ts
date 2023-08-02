@@ -15,10 +15,13 @@ describe('aws-amplify', () => {
 			  "Auth",
 			  "Storage",
 			  "StorageClass",
-			  "API",
-			  "APIClass",
-			  "graphqlOperation",
-			  "PubSub",
+			  "Logger",
+			  "Hub",
+			  "ClientDevice",
+			  "Signer",
+			  "I18n",
+			  "ServiceWorker",
+			  "AWSCloudWatchProvider",
 			]
 		`);
 		});
