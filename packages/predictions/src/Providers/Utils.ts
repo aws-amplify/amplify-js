@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 /**
  * Changes object keys to camel case. If optional parameter `keys` is given, then we extract only the
  * keys specified in `keys`.

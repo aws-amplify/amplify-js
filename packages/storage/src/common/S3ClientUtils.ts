@@ -1,32 +1,22 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import {
 	Category,
 	Credentials,
-	CustomUserAgentDetails,
 	ICredentials,
 	Logger,
 	StorageAction,
-	getAmplifyUserAgentObject,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
+import type { Credentials as AwsCredentials } from '@aws-sdk/types';
+import type { EventEmitter } from 'events';
+
 import { StorageAccessLevel, CustomPrefix } from '../types';
-import {
-	InitializeMiddleware,
-	InitializeHandlerOptions,
-	FinalizeRequestHandlerOptions,
-	FinalizeRequestMiddleware,
-	HandlerExecutionContext,
-} from '@aws-sdk/types';
-import { S3ClientConfig, S3Client } from '@aws-sdk/client-s3';
-import { CancelTokenSource } from 'axios';
-import * as events from 'events';
-import { AxiosHttpHandler } from '../providers/axios-http-handler';
-import {
-	localTestingStorageEndpoint,
-	SET_CONTENT_LENGTH_HEADER,
-} from './StorageConstants';
+import { localTestingStorageEndpoint } from './StorageConstants';
 
 const logger = new Logger('S3ClientUtils');
 // placeholder credentials in order to satisfy type requirement, always results in 403 when used
-const INVALID_CRED = { accessKeyId: '', secretAccessKey: '' };
+const INVALID_CRED = { accessKeyId: '', secretAccessKey: '' } as ICredentials;
 
 export const getPrefix = (config: {
 	credentials: ICredentials;
@@ -65,57 +55,6 @@ export const getPrefix = (config: {
 	}
 };
 
-export const createPrefixMiddleware =
-	(opt: Record<string, any>, key: string): InitializeMiddleware<any, any> =>
-	(next, _context) =>
-	async args => {
-		const credentials = await Credentials.get();
-		const cred = Credentials.shear(credentials);
-		const prefix = getPrefix({ ...opt, credentials: cred });
-		const clonedInput = Object.assign({}, args.input);
-		if (Object.prototype.hasOwnProperty.call(args.input, 'Key')) {
-			clonedInput.Key = prefix + key;
-			args.input = clonedInput;
-		} else if (Object.prototype.hasOwnProperty.call(args.input, 'Prefix')) {
-			clonedInput.Prefix = prefix + key;
-			args.input = clonedInput;
-		}
-		const result = next(args);
-		return result;
-	};
-
-const isTimeSkewedError = (err: any): boolean =>
-	err.ServerTime &&
-	typeof err.Code === 'string' &&
-	err.Code === 'RequestTimeTooSkewed';
-
-// we want to take the S3Client config in parameter so we can modify it's systemClockOffset
-export const autoAdjustClockskewMiddleware =
-	(config: S3ClientConfig): FinalizeRequestMiddleware<any, any> =>
-	(next, _context: HandlerExecutionContext) =>
-	async args => {
-		try {
-			return await next(args);
-		} catch (err) {
-			if (isTimeSkewedError(err)) {
-				const serverDate = new Date(err.ServerTime);
-				config.systemClockOffset = serverDate.getTime() - Date.now();
-			}
-			throw err;
-		}
-	};
-
-export const autoAdjustClockskewMiddlewareOptions: FinalizeRequestHandlerOptions =
-	{
-		step: 'finalizeRequest',
-		name: 'autoAdjustClockskewMiddleware',
-	};
-
-export const prefixMiddlewareOptions: InitializeHandlerOptions = {
-	step: 'initialize',
-	name: 'addPrefixMiddleware',
-};
-
 export const credentialsProvider = async () => {
 	try {
 		const credentials = await Credentials.get();
@@ -129,56 +68,56 @@ export const credentialsProvider = async () => {
 	}
 };
 
-export const createS3Client = (
-	config: {
-		region?: string;
-		cancelTokenSource?: CancelTokenSource;
-		dangerouslyConnectToHttpEndpointForTesting?: boolean;
-		useAccelerateEndpoint?: boolean;
-	},
-	storageAction: StorageAction,
-	emitter?: events.EventEmitter
-): S3Client => {
-	const {
-		region,
-		cancelTokenSource,
-		dangerouslyConnectToHttpEndpointForTesting,
-		useAccelerateEndpoint,
-	} = config;
-	let localTestingConfig = {};
+interface S3InputConfig {
+	credentials?: AwsCredentials;
+	region?: string;
+	useAccelerateEndpoint?: boolean;
+	abortSignal?: AbortSignal;
+	emitter?: EventEmitter;
+	userAgentValue?: string;
+	dangerouslyConnectToHttpEndpointForTesting?: boolean;
+}
 
-	if (dangerouslyConnectToHttpEndpointForTesting) {
-		localTestingConfig = {
-			endpoint: localTestingStorageEndpoint,
-			tls: false,
-			bucketEndpoint: false,
-			forcePathStyle: true,
-		};
+export interface S3ResolvedConfig
+	extends Omit<S3InputConfig, 'region' | 'credentials'> {
+	region: string;
+	credentials: () => Promise<AwsCredentials>;
+	customEndpoint?: string;
+	forcePathStyle?: boolean;
+}
+
+/**
+ * A function that persists the s3 configs, so we don't need to
+ * assign each config parameter for every s3 API call.
+ *
+ * @internal
+ */
+export const loadS3Config = (config: S3InputConfig): S3ResolvedConfig => {
+	if (!config.region) {
+		// Same error thrown by aws-sdk
+		throw new Error('Region is missing.');
 	}
-
-	const s3client = new S3Client({
-		region,
-		// Using provider instead of a static credentials, so that if an upload task was in progress, but credentials gets
-		// changed or invalidated (e.g user signed out), the subsequent requests will fail.
-		credentials: credentialsProvider,
-		customUserAgent: getAmplifyUserAgentObject({
-			category: Category.Storage,
-			action: storageAction,
-		}),
-		...localTestingConfig,
-		requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
-		useAccelerateEndpoint,
-	});
-	s3client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
-	return s3client;
+	return {
+		...config,
+		region: config.region,
+		credentials: config.credentials
+			? () => Promise.resolve(config.credentials!)
+			: credentialsProvider,
+		...(config.dangerouslyConnectToHttpEndpointForTesting
+			? {
+					customEndpoint: localTestingStorageEndpoint,
+					forcePathStyle: true,
+			  }
+			: {}),
+	};
 };
 
-const MB = 1024 * 1024;
-const GB = 1024 * MB;
-const TB = 1024 * GB;
+const MiB = 1024 * 1024;
+const GiB = 1024 * MiB;
+const TiB = 1024 * GiB;
 
-export const DEFAULT_PART_SIZE = 5 * MB;
-export const MAX_OBJECT_SIZE = 5 * TB;
+export const DEFAULT_PART_SIZE = 5 * MiB;
+export const MAX_OBJECT_SIZE = 5 * TiB;
 export const MAX_PARTS_COUNT = 10000;
 export const DEFAULT_QUEUE_SIZE = 4;
 

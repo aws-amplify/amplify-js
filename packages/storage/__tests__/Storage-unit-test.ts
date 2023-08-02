@@ -1,3 +1,7 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { Credentials } from '@aws-amplify/core';
 import { AWSS3Provider as AWSStorageProvider } from '../src/providers/AWSS3Provider';
 import { Storage as StorageClass } from '../src/Storage';
 import {
@@ -5,7 +9,15 @@ import {
 	Storage as StorageCategory,
 	StorageProvider,
 } from '../src';
-import axios, { CancelToken } from 'axios';
+import { isCancelError } from '../src/AwsClients/S3/utils';
+import { getPrefix } from '../src/common/S3ClientUtils';
+import { AWSS3UploadTask } from '../src/providers/AWSS3UploadTask';
+
+jest.mock('../src/AwsClients/S3/utils');
+jest.mock('../src/common/S3ClientUtils');
+jest.mock('../src/providers/AWSS3UploadTask');
+
+const mockGetPrefix = getPrefix as jest.Mock;
 
 type CustomProviderConfig = {
 	provider: string;
@@ -28,6 +40,11 @@ const options = {
 	level: 'level',
 };
 
+/**
+ * CAUTION: This mock class implements a publically available interface `StorageProvider` which customers can use to
+ * implement custom providers. Exercise caution when modifying this class as additive changes to this interface can
+ * break customers when not marked as optional.
+ */
 class TestCustomProvider implements StorageProvider {
 	getProviderName(): string {
 		return 'customProvider' as const;
@@ -58,6 +75,11 @@ class TestCustomProvider implements StorageProvider {
 	}
 }
 
+/**
+ * CAUTION: This mock class implements a publically available interface `StorageProvider` which customers can use to
+ * implement custom providers. Exercise caution when modifying this class as additive changes to this interface can
+ * break customers when not marked as optional.
+ */
 class TestCustomProviderWithCopy
 	extends TestCustomProvider
 	implements StorageProvider
@@ -71,6 +93,11 @@ class TestCustomProviderWithCopy
 	}
 }
 
+/**
+ * CAUTION: This mock class implements a publically available interface `StorageProvider` which customers can use to
+ * implement custom providers. Exercise caution when modifying this class as additive changes to this interface can
+ * break customers when not marked as optional.
+ */
 class TestCustomProviderWithGetProperties
 	extends TestCustomProvider
 	implements StorageProvider
@@ -80,6 +107,11 @@ class TestCustomProviderWithGetProperties
 	}
 }
 
+/**
+ * CAUTION: This mock class implements a publically available interface `StorageProvider` which customers can use to
+ * implement custom providers. Exercise caution when modifying this class as additive changes to this interface can
+ * break customers when not marked as optional.
+ */
 class TestCustomProviderWithOptionalAPI
 	extends TestCustomProvider
 	implements StorageProvider
@@ -305,22 +337,64 @@ describe('Storage', () => {
 			});
 		});
 
-		test('vault level is always private', () => {
+		describe('storage value', () => {
 			const storage = StorageCategory;
-			expect.assertions(3);
-			storage.vault.configure = jest.fn().mockImplementation(configure => {
-				expect(configure).toEqual({
-					AWSS3: { bucket: 'bucket', level: 'private', region: 'region' },
-				});
-			});
-			const aws_options = {
-				aws_user_files_s3_bucket: 'bucket',
-				aws_user_files_s3_bucket_region: 'region',
-			};
+			const originalConfigure = storage.vault.configure.bind(storage.vault);
 
-			storage.configure(aws_options);
-			storage.configure({ Storage: { level: 'protected' } });
-			storage.configure({ Storage: { level: 'public' } });
+			afterEach(() => {
+				storage.configure = originalConfigure;
+			});
+
+			it('should always use private access level when configure', () => {
+				expect.assertions(3);
+				storage.vault.configure = jest.fn().mockImplementation(configure => {
+					originalConfigure(configure);
+					expect(configure).toEqual({
+						AWSS3: { bucket: 'bucket', level: 'private', region: 'region' },
+					});
+				});
+				const aws_options = {
+					aws_user_files_s3_bucket: 'bucket',
+					aws_user_files_s3_bucket_region: 'region',
+				};
+
+				storage.configure(aws_options);
+				storage.configure({ Storage: { level: 'protected' } });
+				storage.configure({ Storage: { level: 'public' } });
+			});
+
+			it('should use private access level to initiate multipart upload', () => {
+				const aws_options = {
+					aws_user_files_s3_bucket: 'bucket',
+					aws_user_files_s3_bucket_region: 'region',
+				};
+				storage.configure(aws_options);
+
+				mockGetPrefix.mockImplementationOnce(config => {
+					expect(config).toHaveProperty('level', 'private');
+					return 'fake-prefix';
+				});
+
+				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
+
+				storage.vault.put(
+					'test-key',
+					new Blob([new Uint8Array(1024 * 1024 * 6)]),
+					{
+						resumable: true,
+					}
+				);
+
+				expect(AWSS3UploadTask).toHaveBeenCalledWith(
+					expect.objectContaining({
+						level: 'private',
+					})
+				);
+			});
 		});
 
 		test('normal storage level is public by default', () => {
@@ -614,6 +688,10 @@ describe('Storage', () => {
 			}
 		});
 
+		/**
+		 * Custom providers are a publically available feature via the `StorageProvider` interface. Exercise caution when
+		 * updating these to ensure backwards compatibility.
+		 */
 		test('get with custom provider', async () => {
 			const customProvider = new TestCustomProvider();
 			const customProviderGetSpy = jest.spyOn(customProvider, 'get');
@@ -626,7 +704,11 @@ describe('Storage', () => {
 			expect(customProviderGetSpy).toBeCalled();
 			expect(getRes.newKey).toEqual('get');
 		});
-		// backwards compatible with current custom provider user
+
+		/**
+		 * Custom providers are a publically available feature via the `StorageProvider` interface. Exercise caution when
+		 * updating these to ensure backwards compatibility.
+		 */
 		test('get with custom provider should work with no generic type provided', async () => {
 			const customProvider = new TestCustomProvider();
 			const customProviderGetSpy = jest.spyOn(customProvider, 'get');
@@ -1118,30 +1200,38 @@ describe('Storage', () => {
 	});
 
 	describe('cancel test', () => {
-		let isCancelSpy: jest.SpyInstance;
-		let cancelTokenSpy: jest.SpyInstance;
-		let cancelMock: jest.Mock;
-		let tokenMock: jest.Mock;
+		let mockIsCancelError = isCancelError as jest.Mock;
+		let originalAbortController = window.AbortController;
+		let signalAborted = false;
+		let abortError;
+		const mockAbort = jest.fn();
 
 		beforeEach(() => {
-			cancelMock = jest.fn();
-			tokenMock = jest.fn();
-			isCancelSpy = jest.spyOn(axios, 'isCancel').mockReturnValue(true);
-			cancelTokenSpy = jest
-				.spyOn(axios.CancelToken, 'source')
-				.mockImplementation(() => {
-					return {
-						token: tokenMock as unknown as CancelToken,
-						cancel: cancelMock,
-					};
-				});
+			window.AbortController = jest.fn().mockImplementation(function () {
+				return {
+					signal: {
+						aborted: signalAborted,
+					},
+					abort: mockAbort,
+				};
+			});
+			mockAbort.mockImplementation(message => {
+				signalAborted = true;
+				abortError = new Error(message);
+				throw abortError;
+			});
+			mockIsCancelError.mockImplementation(err => err && err === abortError);
 		});
 
 		afterEach(() => {
 			jest.clearAllMocks();
+			window.AbortController = originalAbortController;
+			signalAborted = false;
+			abortError = undefined;
 		});
 
 		test('happy case - cancel upload', async () => {
+			expect.assertions(3);
 			jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => {
 				return Promise.resolve({ key: 'new_object' });
 			});
@@ -1149,19 +1239,18 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			const request = storage.put('test.txt', 'test upload');
-			storage.cancel(request, 'request cancelled');
-			expect(cancelTokenSpy).toBeCalledTimes(1);
-			expect(cancelMock).toHaveBeenCalledTimes(1);
 			try {
-				await request;
+				const request = storage.put('test.txt', 'test upload');
+				storage.cancel(request, 'request cancelled');
 			} catch (err) {
-				expect(err).toEqual('request cancelled');
+				expect(mockAbort).toBeCalledTimes(1);
+				expect(err).toMatchObject(new Error('request cancelled'));
 				expect(storage.isCancelError(err)).toBeTruthy();
 			}
 		});
 
 		test('happy case - cancel download', async () => {
+			expect.assertions(3);
 			jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
 				return Promise.resolve('some_file_content');
 			});
@@ -1169,33 +1258,32 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			const request = storage.get('test.txt', {
-				download: true,
-			});
-			storage.cancel(request, 'request cancelled');
-			expect(cancelTokenSpy).toHaveBeenCalledTimes(1);
-			expect(cancelMock).toHaveBeenCalledWith('request cancelled');
 			try {
+				const request = storage.get('test.txt', {
+					download: true,
+				});
+				storage.cancel(request, 'request cancelled');
 				await request;
 			} catch (err) {
-				expect(err).toEqual('request cancelled');
+				expect(mockAbort).toBeCalledTimes(1);
+				expect(err).toMatchObject(new Error('request cancelled'));
 				expect(storage.isCancelError(err)).toBeTruthy();
 			}
 		});
 
 		test('happy case - cancel copy', async () => {
+			expect.assertions(3);
 			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			const request = storage.copy({ key: 'src' }, { key: 'dest' }, {});
-			storage.cancel(request, 'request cancelled');
-			expect(cancelTokenSpy).toHaveBeenCalledTimes(1);
-			expect(cancelMock).toHaveBeenCalledWith('request cancelled');
 			try {
+				const request = storage.copy({ key: 'src' }, { key: 'dest' }, {});
+				storage.cancel(request, 'request cancelled');
 				await request;
 			} catch (err) {
-				expect(err).toEqual('request cancelled');
+				expect(mockAbort).toBeCalledTimes(1);
+				expect(err).toMatchObject(new Error('request cancelled'));
 				expect(storage.isCancelError(err)).toBeTruthy();
 			}
 		});
@@ -1203,7 +1291,7 @@ describe('Storage', () => {
 		test('isCancelError called', () => {
 			const storage = new StorageClass();
 			storage.isCancelError({});
-			expect(isCancelSpy).toHaveBeenCalledTimes(1);
+			expect(mockIsCancelError).toHaveBeenCalledTimes(1);
 		});
 	});
 });

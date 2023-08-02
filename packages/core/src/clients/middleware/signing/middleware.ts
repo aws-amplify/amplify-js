@@ -15,9 +15,17 @@ import { getUpdatedSystemClockOffset } from './utils/getUpdatedSystemClockOffset
  * Configuration of the signing middleware
  */
 export interface SigningOptions {
-	credentials: Credentials;
+	credentials: Credentials | (() => Promise<Credentials>);
 	region: string;
 	service: string;
+
+	/**
+	 * Whether to uri encode the path as part of canonical uri. It's used for S3 only where the pathname
+	 * is already uri encoded, and the signing process is not expected to uri encode it again.
+	 *
+	 * @default true
+	 */
+	uriEscapePath?: boolean;
 }
 
 /**
@@ -28,16 +36,19 @@ export const signingMiddleware = ({
 	credentials,
 	region,
 	service,
+	uriEscapePath = true,
 }: SigningOptions) => {
 	let currentSystemClockOffset;
 	return (next: MiddlewareHandler<HttpRequest, HttpResponse>) =>
 		async function signingMiddleware(request: HttpRequest) {
 			currentSystemClockOffset = currentSystemClockOffset ?? 0;
 			const signRequestOptions = {
-				credentials,
+				credentials:
+					typeof credentials === 'function' ? await credentials() : credentials,
 				signingDate: getSkewCorrectedDate(currentSystemClockOffset),
 				signingRegion: region,
 				signingService: service,
+				uriEscapePath,
 			};
 			const signedRequest = await signRequest(request, signRequestOptions);
 			const response = await next(signedRequest);

@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.4.1...@aws-amplify/analytics@6.5.0) (2023-07-31)
+
+### Features
+
+- custom user agent Geo changes for UI handoff ([#11632](https://github.com/aws-amplify/amplify-js/issues/11632)) ([01bfa8f](https://github.com/aws-amplify/amplify-js/commit/01bfa8f692737bd14422f7dc2eae11ed00c19048))
+
+## [6.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.4.0...@aws-amplify/analytics@6.4.1) (2023-07-20)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+# [6.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.3.2...@aws-amplify/analytics@6.4.0) (2023-07-13)
+
+### Features
+
+- **s3:** omit double encoding of path for S3 when signing ([#11538](https://github.com/aws-amplify/amplify-js/issues/11538)) ([d46d2d1](https://github.com/aws-amplify/amplify-js/commit/d46d2d1d4263e3b8bcfc03af473d7445af12e5b7))
+- **storage:** integrate custom s3 client ([#11542](https://github.com/aws-amplify/amplify-js/issues/11542)) ([fe05494](https://github.com/aws-amplify/amplify-js/commit/fe05494c75ab6d1561863f4dfaf1107bc1f256a6))
+
+## [6.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.3.1...@aws-amplify/analytics@6.3.2) (2023-06-28)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
 ## [6.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.3.0...@aws-amplify/analytics@6.3.1) (2023-06-21)
 
 ### Bug Fixes

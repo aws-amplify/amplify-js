@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.5.5...@aws-amplify/auth@5.6.0) (2023-07-31)
+
+### Features
+
+- custom user agent Geo changes for UI handoff ([#11632](https://github.com/aws-amplify/amplify-js/issues/11632)) ([01bfa8f](https://github.com/aws-amplify/amplify-js/commit/01bfa8f692737bd14422f7dc2eae11ed00c19048))
+
+## [5.5.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.5.4...@aws-amplify/auth@5.5.5) (2023-07-20)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [5.5.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.5.3...@aws-amplify/auth@5.5.4) (2023-07-13)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [5.5.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.5.2...@aws-amplify/auth@5.5.3) (2023-06-28)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [5.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.5.1...@aws-amplify/auth@5.5.2) (2023-06-27)
+
+### Bug Fixes
+
+- **auth:** Catch password reset Cognito API error response ([#11274](https://github.com/aws-amplify/amplify-js/issues/11274)) ([18012b0](https://github.com/aws-amplify/amplify-js/commit/18012b0e2856ac0a8fc87a8dee775ffb1528c487))
+
 ## [5.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.5.0...@aws-amplify/auth@5.5.1) (2023-06-21)
 
 ### Bug Fixes

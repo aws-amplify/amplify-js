@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 const core_externals = ['aws-sdk', 'aws-sdk/global', 'react-native', 'url'];
 
 const analytics_externals = [
