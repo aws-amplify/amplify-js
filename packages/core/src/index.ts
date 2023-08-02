@@ -47,12 +47,9 @@ export {
 export {
 	StorageHelper,
 	MemoryStorage,
-<<<<<<< HEAD
-=======
 	LocalStorage,
 	CookieStorage,
 	SessionStorage,
->>>>>>> next
 	MemoryKeyValueStorage,
 } from './StorageHelper';
 export { UniversalStorage } from './UniversalStorage';
