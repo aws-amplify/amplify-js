@@ -269,84 +269,9 @@ type ExcludeNeverFields<O> = {
 	[K in FilteredKeys<O>]: O[K];
 };
 
-type Prettify<T> = T extends object
-	? {
-			[P in keyof T]: Prettify<T[P]>;
-	  }
-	: T;
-
-// If no T is passed, ExcludeNeverFields removes "models" from the client
-
-/* 
-type Schema = {
-	Post: {
-			postId: string;
-			title?: string | null | undefined;
-			viewCount?: number | null | undefined;
-	};
-	Comment: {
-			id: string;
-			beemo: string;
-	};
-}
-*/
-
-type FlattenKeys<
-	T extends Record<string, unknown> = {},
-	Key = keyof T
-> = Key extends string
-	? T[Key] extends Record<string, unknown>
-		? `${Key}.${FlattenKeys<T[Key]>}` | `${Key}.*`
-		: `${Key}`
-	: never;
-
-type Model = Record<string, any>;
-type Joined<
-	M extends Model,
-	Paths extends Array<FlattenKeys<M>>
-> = Paths extends never[]
-	? M
-	: Prettify<
-			{
-				[k in Paths[number] | keyof M as k extends `${infer A}.${string}`
-					? A
-					: never]: k extends `${infer A}.${infer B}`
-					? B extends `${string}.${string}`
-						? Joined<M[A], B extends FlattenKeys<M[A]> ? [B] : never>
-						: B extends `*`
-						? M[A]
-						: Pick<M[A], B>
-					: never;
-			} & {
-				[k in Paths[number] as k extends `${string}.${string}`
-					? never
-					: k]: M[k];
-			}
-	  >;
-
 declare type V6Client<T = never> = ExcludeNeverFields<{
 	graphql: typeof v6graphql;
-	models: {
-		[K in keyof T]: K extends string
-			? T[K] extends Record<string, unknown>
-				? {
-						create: (model: T[K]) => Promise<T[K]>;
-						update: (
-							model: Prettify<
-								{
-									id: string;
-								} & Partial<T[K]>
-							>
-						) => Promise<T[K]>;
-						delete: (id: { id: string }) => Promise<T[K]>;
-						get: (id: { id: string }) => Promise<T[K]>;
-						list<SS extends FlattenKeys<T[K]>[]>(obj: {
-							selectionSet?: SS;
-						}): Promise<Array<Joined<T[K], SS>>>;
-				  }
-				: never
-			: never;
-	};
+	models: any;
 }>;
 
 export const API = new APIClass(null);
