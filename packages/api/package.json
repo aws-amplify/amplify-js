@@ -35,7 +35,7 @@
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.94"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 91.06 -i \"src/API.v37.ts\""
 	},
 	"repository": {
 		"type": "git",
@@ -50,7 +50,8 @@
 	"devDependencies": {
 		"@types/zen-observable": "^0.8.0",
 		"typescript": "^5.1.6",
-		"downlevel-dts": "^0.11.0"
+		"downlevel-dts": "^0.11.0",
+		"@aws-amplify/types-package-alpha": "*"
 	},
 	"files": [
 		"lib",

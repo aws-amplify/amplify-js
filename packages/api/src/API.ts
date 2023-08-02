@@ -11,6 +11,10 @@ import { graphql as v6graphql } from '@aws-amplify/api-graphql/internals';
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
 import { InternalAPIClass } from './internals/InternalAPI';
+import type {
+	__modelMeta__,
+	ExtractModelMeta,
+} from '@aws-amplify/types-package-alpha';
 
 const logger = new Logger('API');
 /**
@@ -275,22 +279,8 @@ type Prettify<T> = T extends object
 	  }
 	: T;
 
-// If no T is passed, ExcludeNeverFields removes "models" from the client
-
-/* 
-type Schema = {
-	Post: {
-			postId: string;
-			title?: string | null | undefined;
-			viewCount?: number | null | undefined;
-	};
-	Comment: {
-			id: string;
-			beemo: string;
-	};
-}
-*/
-
+// tslint gets confused by template literal types
+// tslint:disable:semicolon
 type FlattenKeys<
 	T extends Record<string, unknown> = {},
 	Key = keyof T
@@ -324,7 +314,15 @@ type Joined<
 			}
 	  >;
 
-declare type V6Client<T = never> = ExcludeNeverFields<{
+type ModelIdentifier<Model extends Record<any, any>> = Prettify<
+	Record<Model['identifier'] & string, string>
+>;
+
+// If no T is passed, ExcludeNeverFields removes "models" from the client
+declare type V6Client<
+	T extends Record<any, any> = never,
+	ModelMeta extends Record<any, any> = ExtractModelMeta<T>
+> = ExcludeNeverFields<{
 	graphql: typeof v6graphql;
 	models: {
 		[K in keyof T]: K extends string
@@ -338,9 +336,11 @@ declare type V6Client<T = never> = ExcludeNeverFields<{
 								} & Partial<T[K]>
 							>
 						) => Promise<T[K]>;
-						delete: (id: { id: string }) => Promise<T[K]>;
-						get: (id: { id: string }) => Promise<T[K]>;
-						list<SS extends FlattenKeys<T[K]>[]>(obj: {
+						delete: (
+							identifier: ModelIdentifier<ModelMeta[K]>
+						) => Promise<T[K]>;
+						get: (identifier: ModelIdentifier<ModelMeta[K]>) => Promise<T[K]>;
+						list<SS extends FlattenKeys<T[K]>[]>(obj?: {
 							selectionSet?: SS;
 						}): Promise<Array<Joined<T[K], SS>>>;
 				  }
@@ -348,6 +348,5 @@ declare type V6Client<T = never> = ExcludeNeverFields<{
 			: never;
 	};
 }>;
-
-export const API = new APIClass(null);
-Amplify.register(API);
+export declare const API: APIClass;
+export {};
