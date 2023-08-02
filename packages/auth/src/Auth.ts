@@ -123,7 +123,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {string} mfaMethod - preferred mfa method
 	 * @return - A promise resolve if success
 	 */
-	public async setPreferredMFA(
+	public setPreferredMFA(
 		user: CognitoUser | any,
 		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
 	): Promise<string> {
@@ -234,7 +234,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @return {Promise}
 	 **/
 	// TODO: Check return type void
-	public async deleteUser(): Promise<string | void> {
+	public deleteUser(): Promise<string | void> {
 		return super.deleteUser();
 	}
 
@@ -281,7 +281,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {CurrentUserOpts} - options for getting the current user
 	 * @return - A promise resolves to current authenticated CognitoUser if success
 	 */
-	public async currentAuthenticatedUser(
+	public currentAuthenticatedUser(
 		params?: CurrentUserOpts
 	): Promise<CognitoUser | any> {
 		return super.currentAuthenticatedUser(params);
@@ -308,7 +308,7 @@ export class AuthClass extends InternalAuthClass {
 	 * Get authenticated credentials of current user.
 	 * @return - A promise resolves to be current user's credentials
 	 */
-	public async currentUserCredentials(): Promise<ICredentials> {
+	public currentUserCredentials(): Promise<ICredentials> {
 		return super.currentUserCredentials();
 	}
 
@@ -367,7 +367,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @
 	 * @return - A promise resolved if success
 	 */
-	public async signOut(opts?: SignOutOpts): Promise<any> {
+	public signOut(opts?: SignOutOpts): Promise<any> {
 		return super.signOut(opts);
 	}
 
@@ -420,22 +420,22 @@ export class AuthClass extends InternalAuthClass {
 	 * @async
 	 * @return {Object }- current User's information
 	 */
-	public async currentUserInfo() {
+	public currentUserInfo() {
 		return super.currentUserInfo();
 	}
 
-	public async federatedSignIn(
+	public federatedSignIn(
 		options?: FederatedSignInOptions
 	): Promise<ICredentials>;
-	public async federatedSignIn(
+	public federatedSignIn(
 		provider: LegacyProvider,
 		response: FederatedResponse,
 		user: FederatedUser
 	): Promise<ICredentials>;
-	public async federatedSignIn(
+	public federatedSignIn(
 		options?: FederatedSignInOptionsCustom
 	): Promise<ICredentials>;
-	public async federatedSignIn(
+	public federatedSignIn(
 		providerOrOptions:
 			| LegacyProvider
 			| FederatedSignInOptions
@@ -455,15 +455,15 @@ export class AuthClass extends InternalAuthClass {
 		return super.essentialCredentials(credentials);
 	}
 
-	public async rememberDevice(): Promise<string | AuthError> {
+	public rememberDevice(): Promise<string | AuthError> {
 		return super.rememberDevice();
 	}
 
-	public async forgetDevice(): Promise<void> {
+	public forgetDevice(): Promise<void> {
 		return super.forgetDevice();
 	}
 
-	public async fetchDevices(): Promise<IAuthDevice[]> {
+	public fetchDevices(): Promise<IAuthDevice[]> {
 		return super.fetchDevices();
 	}
 }
