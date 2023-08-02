@@ -471,12 +471,10 @@ export type IdentifierFields<
 > = (MetadataOrDefault<T, M>['identifier'] extends
 	| ManagedIdentifier<any, any>
 	| OptionallyManagedIdentifier<any, any>
-	| OptionallyManagedCompositeIdentifier<any, any>
 	? MetadataOrDefault<T, M>['identifier']['field']
-	: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<
-			T,
-			infer B
-	  >
+	: MetadataOrDefault<T, M>['identifier'] extends
+			| CompositeIdentifier<T, infer B>
+			| OptionallyManagedCompositeIdentifier<T, infer B>
 	? B[number] // B[number]
 	: MetadataOrDefault<T, M>['identifier']['field']) &
 	string;
@@ -495,6 +493,11 @@ export type IdentifierFieldsForInit<
 	  >
 	? IdentifierFields<T, M>
 	: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
+	? IdentifierFields<T, M>
+	: MetadataOrDefault<
+			T,
+			M
+	  >['identifier'] extends OptionallyManagedCompositeIdentifier<T, any>
 	? IdentifierFields<T, M>
 	: never;
 
@@ -581,8 +584,7 @@ export type MetadataReadOnlyFields<
 // This type omits identifier fields in the constructor init object
 // This type omits readOnlyFields in the constructor init object
 // This type requires some identifiers in the constructor init object (e.g. CustomIdentifier)
-// This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier)
-// TODO: add OptionallyManagedCompositeIdentifier
+// This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier, OptionallyManagedCompositeIdentifier)
 export type ModelInitBase<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T> = {}
@@ -590,10 +592,9 @@ export type ModelInitBase<
 	T,
 	typeof __modelMeta__ | IdentifierFields<T, M> | MetadataReadOnlyFields<T, M>
 > &
-	(MetadataOrDefault<T, M>['identifier'] extends OptionallyManagedIdentifier<
-		T,
-		any
-	>
+	(MetadataOrDefault<T, M>['identifier'] extends
+		| OptionallyManagedIdentifier<T, any>
+		| OptionallyManagedCompositeIdentifier<T, any>
 		? Partial<Pick<T, IdentifierFieldsForInit<T, M>>>
 		: Required<Pick<T, IdentifierFieldsForInit<T, M>>>);
 
