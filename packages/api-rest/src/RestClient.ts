@@ -171,39 +171,42 @@ export class RestClient {
 			return this._request(params, isAllResponse);
 		}
 
-		// Signing the request in case there credentials are available
-		return this.Credentials.get().then(
-			credentials => {
-				return this._signed({ ...params }, credentials, isAllResponse, {
-					region,
-					service,
-				}).catch(error => {
-					if (DateUtils.isClockSkewError(error)) {
-						const { headers } = error.response;
-						const dateHeader = headers && (headers.date || headers.Date);
-						const responseDate = new Date(dateHeader);
-						const requestDate = DateUtils.getDateFromHeaderString(
-							params.headers['x-amz-date']
-						);
+		let credentials;
+		try {
+			credentials = await this.Credentials.get();
+		} catch (error) {
+			logger.debug('No credentials available, the request will be unsigned');
+			return this._request(params, isAllResponse);
+		}
+		let signedParams;
+		try {
+			signedParams = this._sign({ ...params }, credentials, {
+				region,
+				service,
+			});
+			const response = await axios(signedParams);
+			return isAllResponse ? response : response.data;
+		} catch (error) {
+			logger.debug(error);
+			if (DateUtils.isClockSkewError(error)) {
+				const { headers } = error.response;
+				const dateHeader = headers && (headers.date || headers.Date);
+				const responseDate = new Date(dateHeader);
+				const requestDate = DateUtils.getDateFromHeaderString(
+					signedParams.headers['x-amz-date']
+				);
 
-						// Compare local clock to the server clock
-						if (DateUtils.isClockSkewed(responseDate)) {
-							DateUtils.setClockOffset(
-								responseDate.getTime() - requestDate.getTime()
-							);
+				// Compare local clock to the server clock
+				if (DateUtils.isClockSkewed(responseDate)) {
+					DateUtils.setClockOffset(
+						responseDate.getTime() - requestDate.getTime()
+					);
 
-							return this.ajax(urlOrApiInfo, method, init);
-						}
-					}
-
-					throw error;
-				});
-			},
-			err => {
-				logger.debug('No credentials available, the request will be unsigned');
-				return this._request(params, isAllResponse);
+					return this.ajax(urlOrApiInfo, method, init);
+				}
 			}
-		);
+			throw error;
+		}
 	}
 
 	/**
@@ -356,7 +359,7 @@ export class RestClient {
 
 	/** private methods **/
 
-	private _signed(params, credentials, isAllResponse, { service, region }) {
+	private _sign(params, credentials, { service, region }) {
 		const { signerServiceInfo: signerServiceInfoParams, ...otherParams } =
 			params;
 
@@ -391,12 +394,7 @@ export class RestClient {
 
 		delete signed_params.headers['host'];
 
-		return axios(signed_params)
-			.then(response => (isAllResponse ? response : response.data))
-			.catch(error => {
-				logger.debug(error);
-				throw error;
-			});
+		return signed_params;
 	}
 
 	private _request(params, isAllResponse = false) {
