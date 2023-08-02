@@ -11,11 +11,6 @@ on:
         default: false
         type: boolean
 
-# TODO: configure these env variables
-env:
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  # TODO verdaccio stuff we won't need in prod
-
 jobs:
   deploy:
     name: Publish to Amplify Package
@@ -39,14 +34,9 @@ jobs:
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
         with:
           path: amplify-js
+
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
-      ###
-      # TODO Remove this to enable real NPM interactions.
-      # <remove>
-      - name: Load Verdaccio with AmplifyJs
-        uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
-      ### </remove>
 
       - name: Run npm publish
         uses: ./amplify-js/.github/actions/npm-publish

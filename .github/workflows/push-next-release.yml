@@ -1,4 +1,4 @@
-name: Push - release from main to unstable
+name: Push - release from next to next
 
 concurrency:
   # group name unique for push to push-main-release
@@ -11,7 +11,7 @@ on: workflow_call # NEVER
 # on:
 #   push:
 #     branches:
-#       - main
+#       - next
 
 jobs:
   e2e:
@@ -23,5 +23,5 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/callable-npm-publish-preid.yml
     with:
-      preid: unstable
+      preid: next
       allow-protected-preid: true
