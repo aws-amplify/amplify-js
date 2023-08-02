@@ -362,23 +362,8 @@ jobs:
     executor: build-executor
     steps:
       - checkout
-      - run:
-          name: yarn install --non-interactive
-          # temporarily rename .yarnrc before installing so that we can generate a yarn.lock artifact
-          command: |
-            mv .yarnrc ._yarnrc
-            yarn
       - run: yarn bootstrap
       - run: yarn build
-      # storing yarn.lock as an artifact, so that we can quickly get a dependency diff
-      # with the last working build in the event that some upstream deps break the build in the future
-      - store_artifacts:
-          path: yarn.lock
-      - run:
-          name: delete lockfile after persisting
-          command: |
-            mv ._yarnrc .yarnrc
-            rm yarn.lock
       - save_cache:
           key: amplify-ssh-deps-{{ .Branch }}
           paths:
