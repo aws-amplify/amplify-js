@@ -1,9 +1,9 @@
-name: Test License
+name: Test Github Actions
 on: workflow_call
 
 jobs:
   license_tests:
-    name: License tests
+    name: Github Action format test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -12,6 +12,6 @@ jobs:
           path: amplify-js
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
-      - name: Run License Tests
+      - name: Run GithubAction tests
         working-directory: ./amplify-js
-        run: yarn test:license
+        run: yarn test:github-actions
