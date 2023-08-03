@@ -1,4 +1,4 @@
-name: Publish package to npm and create release on github
+name: Release to npm and update repository
 
 on: workflow_call
 

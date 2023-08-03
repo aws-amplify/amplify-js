@@ -1,5 +1,5 @@
 name: Publish to NPM
-description: Publish changes from
+description: Publish changes from the current commit to npm using the target release process.
 
 inputs:
   github_user:

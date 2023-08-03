@@ -17,7 +17,7 @@ jobs:
   e2e:
     secrets: inherit
     uses: ./.github/workflows/callable-release-verification.yml
-  unstable-release:
+  next-release:
     needs:
       - e2e
     secrets: inherit

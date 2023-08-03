@@ -1,5 +1,5 @@
-name: Setup Amplify Samples Staging
-description: Checks out Amplify Samples Staging and builds the package with caching
+name: Setup Amplify Integration Test Package
+description: Checks out "amplify-js-samples-staging" and builds the package with caching
 
 inputs:
   GH_TOKEN_STAGING_READ:

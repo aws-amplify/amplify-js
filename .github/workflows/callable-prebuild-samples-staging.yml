@@ -1,4 +1,4 @@
-name: Prebuild AmplifyJs
+name: Prebuild AmplifyJsSamplesStaging
 
 on:
   workflow_call:
