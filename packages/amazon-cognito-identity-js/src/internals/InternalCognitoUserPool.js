@@ -3,14 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import Client from './Client';
-import CognitoUser from './CognitoUser';
-import StorageHelper from './StorageHelper';
+import Client from '../Client';
+import CognitoUser from '../CognitoUser';
+import StorageHelper from '../StorageHelper';
 
 const USER_POOL_ID_MAX_LENGTH = 55;
 
 /** @class */
-export default class CognitoUserPool {
+export class InternalCognitoUserPool {
 	/**
 	 * Constructs a new CognitoUserPool object
 	 * @param {object} data Creation options.
