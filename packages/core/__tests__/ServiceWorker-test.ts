@@ -1,4 +1,4 @@
-import { ServiceWorker } from '../src';
+import { AmplifyError, ServiceWorker } from '../src';
 
 describe('ServiceWorker test', () => {
 	describe('Error conditions', () => {
@@ -15,7 +15,7 @@ describe('ServiceWorker test', () => {
 				serviceWorker.enablePush('publicKey');
 			};
 
-			return expect(enablePush).toThrow('Service Worker not registered');
+			return expect(enablePush).toThrow(AmplifyError);
 		});
 		test('fails when registering', async () => {
 			(global as any).navigator.serviceWorker = {
@@ -27,7 +27,8 @@ describe('ServiceWorker test', () => {
 			try {
 				await serviceWorker.register();
 			} catch (e) {
-				expect(e).toEqual('an error');
+				expect(e).toBeInstanceOf(AmplifyError);
+				expect(e.name).toBe('ServiceWorkerException');
 			}
 		});
 	});
