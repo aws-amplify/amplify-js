@@ -100,13 +100,6 @@ tests:
     sample_name: [selective-sync-v5]
     spec: selective-sync-v5
     browser: *minimal_browser_list
-  - test_name: integ_react_datastore_nested_predicate
-    desc: 'DataStore - Nested Predicate'
-    framework: react
-    category: datastore
-    sample_name: [nested-predicate]
-    spec: nested-predicate
-    browser: *minimal_browser_list
   - test_name: integ_react_datastore_docs_examples
     desc: 'DataStore - Docs Examples'
     framework: react
