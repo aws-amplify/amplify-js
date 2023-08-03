@@ -6,7 +6,7 @@
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
 	"typesVersions": {
-		"<5": {
+		"<3.8": {
 			"lib-esm/index.d.ts": [
 				"index.v37.d.ts"
 			]
@@ -35,7 +35,7 @@
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 91.06 -i \"src/API.v37.ts\""
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88"
 	},
 	"repository": {
 		"type": "git",
@@ -70,7 +70,7 @@
 			"name": "API (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, API }",
-			"limit": "95 kB"
+			"limit": "92 kB"
 		}
 	],
 	"jest": {

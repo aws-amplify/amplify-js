@@ -11,10 +11,7 @@ import { graphql as v6graphql } from '@aws-amplify/api-graphql/internals';
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
 import { InternalAPIClass } from './internals/InternalAPI';
-import type {
-	__modelMeta__,
-	ExtractModelMeta,
-} from '@aws-amplify/types-package-alpha';
+import type { ModelTypes } from '@aws-amplify/types-package-alpha';
 
 const logger = new Logger('API');
 /**
@@ -55,7 +52,7 @@ export class APIClass extends InternalAPIClass {
 	/**
 	 * Generates an API client that can work with models or raw GraphQL
 	 */
-	generateClient<T = never>(): V6Client<T> {
+	generateClient<T extends Record<any, any> = never>(): V6Client<T> {
 		const config = super.configure({});
 
 		const { modelIntrospection } = config;
@@ -273,80 +270,11 @@ type ExcludeNeverFields<O> = {
 	[K in FilteredKeys<O>]: O[K];
 };
 
-type Prettify<T> = T extends object
-	? {
-			[P in keyof T]: Prettify<T[P]>;
-	  }
-	: T;
-
-// tslint gets confused by template literal types
-// tslint:disable:semicolon
-type FlattenKeys<
-	T extends Record<string, unknown> = {},
-	Key = keyof T
-> = Key extends string
-	? T[Key] extends Record<string, unknown>
-		? `${Key}.${FlattenKeys<T[Key]>}` | `${Key}.*`
-		: `${Key}`
-	: never;
-
-type Model = Record<string, any>;
-type Joined<
-	M extends Model,
-	Paths extends Array<FlattenKeys<M>>
-> = Paths extends never[]
-	? M
-	: Prettify<
-			{
-				[k in Paths[number] | keyof M as k extends `${infer A}.${string}`
-					? A
-					: never]: k extends `${infer A}.${infer B}`
-					? B extends `${string}.${string}`
-						? Joined<M[A], B extends FlattenKeys<M[A]> ? [B] : never>
-						: B extends `*`
-						? M[A]
-						: Pick<M[A], B>
-					: never;
-			} & {
-				[k in Paths[number] as k extends `${string}.${string}`
-					? never
-					: k]: M[k];
-			}
-	  >;
-
-type ModelIdentifier<Model extends Record<any, any>> = Prettify<
-	Record<Model['identifier'] & string, string>
->;
-
 // If no T is passed, ExcludeNeverFields removes "models" from the client
-declare type V6Client<
-	T extends Record<any, any> = never,
-	ModelMeta extends Record<any, any> = ExtractModelMeta<T>
-> = ExcludeNeverFields<{
+declare type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	graphql: typeof v6graphql;
-	models: {
-		[K in keyof T]: K extends string
-			? T[K] extends Record<string, unknown>
-				? {
-						create: (model: T[K]) => Promise<T[K]>;
-						update: (
-							model: Prettify<
-								{
-									id: string;
-								} & Partial<T[K]>
-							>
-						) => Promise<T[K]>;
-						delete: (
-							identifier: ModelIdentifier<ModelMeta[K]>
-						) => Promise<T[K]>;
-						get: (identifier: ModelIdentifier<ModelMeta[K]>) => Promise<T[K]>;
-						list<SS extends FlattenKeys<T[K]>[]>(obj?: {
-							selectionSet?: SS;
-						}): Promise<Array<Joined<T[K], SS>>>;
-				  }
-				: never
-			: never;
-	};
+	models: ModelTypes<T>;
 }>;
-export declare const API: APIClass;
-export {};
+
+export const API = new APIClass(null);
+Amplify.register(API);
