@@ -95,6 +95,7 @@ export default class CognitoUserPool {
 	 * @param {(AttributeArg[])=} clientMetadata Client metadata.
 	 * @param {nodeCallback<SignUpResult>} callback Called on error or with the new user.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	signUp(
@@ -103,7 +104,8 @@ export default class CognitoUserPool {
 		userAttributes,
 		validationData,
 		callback,
-		clientMetadata
+		clientMetadata,
+		userAgentValue
 	) {
 		const jsonReq = {
 			ClientId: this.clientId,
