@@ -15,7 +15,7 @@ inputs:
     description: The preid to release to when the target is preid. The preid process will fail if this isn't provided.
     required: false
   npm_token:
-    description: The npm token the gives the job npm permissions
+    description: The npm token that gives the job npm permissions
     required: true
 
 runs:
