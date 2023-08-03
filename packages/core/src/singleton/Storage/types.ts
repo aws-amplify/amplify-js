@@ -8,11 +8,13 @@ export interface StorageConfig {
 	region?: string;
 }
 
-export type StoragePrefixResolver = (params: {
+type StoragePrefixResolver = (params: {
 	level: StorageAccessLevel;
 	identityId?: string;
 }) => Promise<string>;
 
+// TODO[AllanZhengYP]: support isObjectLockEnabled config to S3 plugin config
+// TODO[AllanZhengYP]: need to finalize the decision whether to move defaultAccessLevel to StorageConfig
 export interface LibraryStorageOptions {
 	prefixResolver?: StoragePrefixResolver;
 	defaultAccessLevel?: StorageAccessLevel;
