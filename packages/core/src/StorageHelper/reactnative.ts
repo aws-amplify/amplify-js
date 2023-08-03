@@ -4,18 +4,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KeyValueStorageInterface } from '../types';
 
 const MEMORY_KEY_PREFIX = '@MemoryStorage:';
-let dataMemory = {};
+let dataMemory: Record<string, string | null> = {};
 
 /** @class */
 class MemoryStorage {
-	static syncPromise = null;
+	static syncPromise: Promise<void> | null = null;
 	/**
 	 * This is used to set a specific item in storage
 	 * @param {string} key - the key for the item
 	 * @param {object} value - the value
 	 * @returns {string} value that was set
 	 */
-	static setItem(key, value) {
+	static setItem(key: string, value: string) {
 		if (value) {
 			AsyncStorage.setItem(MEMORY_KEY_PREFIX + key, value);
 			dataMemory[key] = value;
@@ -29,7 +29,7 @@ class MemoryStorage {
 	 * This is used to clear the storage
 	 * @returns {string} the data item
 	 */
-	static getItem(key) {
+	static getItem(key: string) {
 		return Object.prototype.hasOwnProperty.call(dataMemory, key)
 			? dataMemory[key]
 			: undefined;
@@ -40,7 +40,7 @@ class MemoryStorage {
 	 * @param {string} key - the key being set
 	 * @returns {string} value - value that was deleted
 	 */
-	static removeItem(key) {
+	static removeItem(key: string) {
 		AsyncStorage.removeItem(MEMORY_KEY_PREFIX + key);
 		return delete dataMemory[key];
 	}
@@ -63,17 +63,19 @@ class MemoryStorage {
 			MemoryStorage.syncPromise = new Promise<void>((res, rej) => {
 				AsyncStorage.getAllKeys((errKeys, keys) => {
 					if (errKeys) rej(errKeys);
-					const memoryKeys = keys.filter(key =>
-						key.startsWith(MEMORY_KEY_PREFIX)
-					);
+
+					const memoryKeys = keys
+						? keys.filter(key => key.startsWith(MEMORY_KEY_PREFIX))
+						: [];
 					AsyncStorage.multiGet(memoryKeys, (err, stores) => {
 						if (err) rej(err);
-						stores.map((result, index, store) => {
-							const key = store[index][0];
-							const value = store[index][1];
-							const memoryKey = key.replace(MEMORY_KEY_PREFIX, '');
-							dataMemory[memoryKey] = value;
-						});
+						stores &&
+							stores.map((result, index, store) => {
+								const key = store[index][0];
+								const value = store[index][1];
+								const memoryKey = key.replace(MEMORY_KEY_PREFIX, '');
+								dataMemory[memoryKey] = value;
+							});
 						res();
 					});
 				});
@@ -103,7 +105,7 @@ export class StorageHelper {
 }
 
 class AsyncStorageClass implements KeyValueStorageInterface {
-	syncPromise = null;
+	syncPromise: Promise<void> | null = null;
 	/**
 	 * This is used to set a specific item in storage
 	 * @param {string} key - the key for the item
@@ -156,17 +158,18 @@ class AsyncStorageClass implements KeyValueStorageInterface {
 			this.syncPromise = new Promise<void>((res, rej) => {
 				AsyncStorage.getAllKeys((errKeys, keys) => {
 					if (errKeys) rej(errKeys);
-					const memoryKeys = keys.filter(key =>
-						key.startsWith(MEMORY_KEY_PREFIX)
-					);
+					const memoryKeys = keys
+						? keys.filter(key => key.startsWith(MEMORY_KEY_PREFIX))
+						: [];
 					AsyncStorage.multiGet(memoryKeys, (err, stores) => {
 						if (err) rej(err);
-						stores.map((result, index, store) => {
-							const key = store[index][0];
-							const value = store[index][1];
-							const memoryKey = key.replace(MEMORY_KEY_PREFIX, '');
-							dataMemory[memoryKey] = value;
-						});
+						stores &&
+							stores.map((result, index, store) => {
+								const key = store[index][0];
+								const value = store[index][1];
+								const memoryKey = key.replace(MEMORY_KEY_PREFIX, '');
+								dataMemory[memoryKey] = value;
+							});
 						res();
 					});
 				});

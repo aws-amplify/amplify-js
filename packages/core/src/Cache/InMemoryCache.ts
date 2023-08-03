@@ -6,6 +6,8 @@ import { CacheList, defaultConfig, getCurrTime, CacheObject } from './Utils';
 import { StorageCache } from './StorageCache';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '../Logger';
+import { asserts } from '../Util/errors/AssertError';
+import { STORAGE_CACHE_EXCEPTION } from '../constants';
 
 const logger = new Logger('InMemoryCache');
 
@@ -15,13 +17,11 @@ const logger = new Logger('InMemoryCache');
  * @member cacheList - list of keys in the cache with LRU
  * @member curSizeInBytes - current size of the cache
  * @member maxPriority - max of the priority
- * @member cacheSizeLimit - the limit of cache size
  */
 export class InMemoryCacheClass extends StorageCache implements ICache {
 	private cacheList: CacheList[];
 	private curSizeInBytes: number;
 	private maxPriority: number;
-	private cacheSizeLimit: number;
 
 	/**
 	 * initialize the cache
@@ -75,7 +75,12 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	 */
 	private _isExpired(key: string): boolean {
 		const text: string | null = CacheObject.getItem(key);
-		const item: CacheItem = JSON.parse(text);
+
+		asserts(text !== null, {
+			name: STORAGE_CACHE_EXCEPTION,
+			message: 'item from storage is null',
+		});
+		const item: CacheItem = JSON.parse(text ?? '');
 		if (getCurrTime() >= item.expires) {
 			return true;
 		}
@@ -92,9 +97,12 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 		// delete the key from the list
 		this.cacheList[listIdx].removeItem(prefixedKey);
 		// decrease the current size of the cache
-		this._decreaseCurSizeInBytes(
-			JSON.parse(CacheObject.getItem(prefixedKey)).byteSize
-		);
+		const item = CacheObject.getItem(prefixedKey);
+		asserts(item !== null, {
+			name: STORAGE_CACHE_EXCEPTION,
+			message: 'item from storage is null',
+		});
+		this._decreaseCurSizeInBytes(JSON.parse(item).byteSize);
 		// finally remove the item from memory
 		CacheObject.removeItem(prefixedKey);
 	}
@@ -128,7 +136,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	 * @return true if cache is full
 	 */
 	private _isCacheFull(itemSize: number): boolean {
-		return this.curSizeInBytes + itemSize > this.config.capacityInBytes;
+		return this.curSizeInBytes + itemSize > (this.config.capacityInBytes ?? 0);
 	}
 
 	/**
@@ -193,10 +201,13 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 			expires:
 				options && options.expires !== undefined
 					? options.expires
-					: this.config.defaultTTL + getCurrTime(),
+					: (this.config.defaultTTL ?? 0) + getCurrTime(),
 		};
 
-		if (cacheItemOptions.priority < 1 || cacheItemOptions.priority > 5) {
+		if (
+			(cacheItemOptions.priority ?? 0) < 1 ||
+			(cacheItemOptions.priority ?? 0) > 5
+		) {
 			logger.warn(
 				`Invalid parameter: priority due to out or range. It should be within 1 and 5.`
 			);
@@ -210,7 +221,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 		);
 
 		// check wether this item is too big;
-		if (item.byteSize > this.config.itemMaxSize) {
+		if (item.byteSize > (this.config.itemMaxSize ?? 0)) {
 			logger.warn(
 				`Item with key: ${key} you are trying to put into is too big!`
 			);
@@ -270,7 +281,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 				this._removeItem(prefixedKey, presentKeyPrio - 1);
 			} else {
 				// if not expired, great, return the value and refresh it
-				ret = CacheObject.getItem(prefixedKey);
+				ret = CacheObject.getItem(prefixedKey) ?? '';
 				const item: CacheItem = JSON.parse(ret);
 				this.cacheList[item.priority - 1].refresh(prefixedKey);
 				return item.data;
@@ -320,7 +331,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 		const keys: string[] = [];
 		for (let i = 0; i < this.maxPriority; i += 1) {
 			for (const key of this.cacheList[i].getKeys()) {
-				keys.push(key.substring(this.config.keyPrefix.length));
+				keys.push(key.substring((this.config.keyPrefix ?? '').length));
 			}
 		}
 

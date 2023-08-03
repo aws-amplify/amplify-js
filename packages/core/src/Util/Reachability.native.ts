@@ -27,7 +27,7 @@ export default class ReachabilityNavigator implements Reachability {
 			logger.log('subscribing to reachability in React Native');
 
 			const unsubscribe = netInfo.addEventListener(
-				({ isInternetReachable }) => {
+				({ isInternetReachable }: { isInternetReachable: boolean }) => {
 					// `isInternetReachable` can sometimes be `null` initially, so we want
 					// to make sure it is a boolean first before sending it to the observer.
 					if (typeof isInternetReachable === 'boolean') {

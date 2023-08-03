@@ -5,11 +5,14 @@ import { I18n as I18nClass } from './I18n';
 
 import { ConsoleLogger as Logger } from '../Logger';
 import { Amplify } from '../Amplify';
+import { I18nOptions } from './types';
+import { asserts } from '../Util/errors/AssertError';
+import { I18N_EXCEPTION } from '../constants';
 
 const logger = new Logger('I18n');
 
-let _config = null;
-let _i18n = null;
+let _config: I18nOptions = { language: null };
+let _i18n: I18nClass | null = null;
 
 /**
  * Export I18n APIs
@@ -21,7 +24,7 @@ export class I18n {
 	 * Configure I18n part
 	 * @param {Object} config - Configuration of the I18n
 	 */
-	static configure(config) {
+	static configure(config: Record<string, any>) {
 		logger.debug('configure I18n');
 		if (!config) {
 			return _config;
@@ -56,9 +59,12 @@ export class I18n {
 	 * Explicitly setting language
 	 * @param {String} lang
 	 */
-	static setLanguage(lang) {
+	static setLanguage(lang: string) {
 		I18n.checkConfig();
-
+		asserts(!!_i18n, {
+			name: I18N_EXCEPTION,
+			message: 'I18N is not configured',
+		});
 		return _i18n.setLanguage(lang);
 	}
 
@@ -68,10 +74,14 @@ export class I18n {
 	 * @param {String} key
 	 * @param {String} defVal - Default value
 	 */
-	static get(key, defVal?) {
+	static get(key: string, defVal?: string) {
 		if (!I18n.checkConfig()) {
 			return typeof defVal === 'undefined' ? key : defVal;
 		}
+		asserts(!!_i18n, {
+			name: I18N_EXCEPTION,
+			message: 'I18N is not configured',
+		});
 
 		return _i18n.get(key, defVal);
 	}
@@ -83,8 +93,15 @@ export class I18n {
 	 * @param {String} langurage - Language of the dictionary
 	 * @param {Object} vocabularies - Object that has key-value as dictionary entry
 	 */
-	static putVocabulariesForLanguage(language, vocabularies) {
+	static putVocabulariesForLanguage(
+		language: string,
+		vocabularies: Record<string, string>
+	) {
 		I18n.checkConfig();
+		asserts(!!_i18n, {
+			name: I18N_EXCEPTION,
+			message: 'I18N is not configured',
+		});
 
 		return _i18n.putVocabulariesForLanguage(language, vocabularies);
 	}
@@ -96,8 +113,12 @@ export class I18n {
 	 * @param {Object} vocabularies - Object that has language as key,
 	 *                                vocabularies of each language as value
 	 */
-	static putVocabularies(vocabularies) {
+	static putVocabularies(vocabularies: Record<string, string>) {
 		I18n.checkConfig();
+		asserts(!!_i18n, {
+			name: I18N_EXCEPTION,
+			message: 'I18N is not configured',
+		});
 
 		return _i18n.putVocabularies(vocabularies);
 	}

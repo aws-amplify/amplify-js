@@ -13,17 +13,17 @@ export class I18n {
 	/**
 	 * @private
 	 */
-	_options: I18nOptions = null;
+	_options: I18nOptions | null = null;
 
 	/**
 	 * @private
 	 */
-	_lang = null;
+	_lang: string | null = null;
 
 	/**
 	 * @private
 	 */
-	_dict = {};
+	_dict: Record<string, any> = {};
 
 	/**
 	 * @constructor
@@ -61,7 +61,7 @@ export class I18n {
 	 * @param {String} key
 	 * @param {String} defVal - Default value
 	 */
-	get(key, defVal = undefined) {
+	get(key: string, defVal: string | undefined = undefined) {
 		if (!this._lang) {
 			return typeof defVal !== 'undefined' ? defVal : key;
 		}
@@ -89,7 +89,7 @@ export class I18n {
 	 * @param {String} language - Specified langurage to be used
 	 * @param {String} defVal - Default value
 	 */
-	getByLanguage(key, language, defVal = null) {
+	getByLanguage(key: string, language: string, defVal: string | null = null) {
 		if (!language) {
 			return defVal;
 		}
@@ -108,7 +108,10 @@ export class I18n {
 	 * @param {String} language - Language of the dictionary
 	 * @param {Object} vocabularies - Object that has key-value as dictionary entry
 	 */
-	putVocabulariesForLanguage(language, vocabularies) {
+	putVocabulariesForLanguage(
+		language: string,
+		vocabularies: Record<string, any>
+	) {
 		let lang_dict = this._dict[language];
 		if (!lang_dict) {
 			lang_dict = this._dict[language] = {};
@@ -122,7 +125,7 @@ export class I18n {
 	 * @param {Object} vocabularies - Object that has language as key,
 	 *                                vocabularies of each language as value
 	 */
-	putVocabularies(vocabularies) {
+	putVocabularies(vocabularies: Record<string, any>) {
 		Object.keys(vocabularies).map(key => {
 			this.putVocabulariesForLanguage(key, vocabularies[key]);
 		});

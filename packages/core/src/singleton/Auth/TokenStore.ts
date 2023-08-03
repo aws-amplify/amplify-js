@@ -1,4 +1,8 @@
-import { assertTokenProviderConfig, decodeJWT } from './utils';
+import {
+	assertTokenProviderConfig,
+	assertsKeyValueStorage,
+	decodeJWT,
+} from './utils';
 import {
 	AuthConfig,
 	AuthKeys,
@@ -8,10 +12,11 @@ import {
 } from './types';
 import { KeyValueStorageInterface } from '../../types';
 import { asserts } from '../../Util/errors/AssertError';
+import { AmplifyError } from '../../Errors';
 
 export class DefaultTokenStore implements AuthTokenStore {
-	keyValueStorage: KeyValueStorageInterface;
-	authConfig: AuthConfig;
+	keyValueStorage?: KeyValueStorageInterface;
+	authConfig?: AuthConfig;
 
 	setAuthConfig(authConfigParam: AuthConfig) {
 		this.authConfig = authConfigParam;
@@ -25,6 +30,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 
 	async loadTokens(): Promise<AuthTokens> {
 		assertTokenProviderConfig(this.authConfig);
+		assertsKeyValueStorage(this.keyValueStorage);
 
 		// TODO(v6): migration logic should be here
 		// Reading V5 tokens old format
@@ -38,20 +44,22 @@ export class DefaultTokenStore implements AuthTokenStore {
 			);
 
 			const accessToken = decodeJWT(
-				await this.keyValueStorage.getItem(authKeys.accessToken)
+				(await this.keyValueStorage.getItem(authKeys.accessToken)) as string
 			);
 			const itString = await this.keyValueStorage.getItem(authKeys.idToken);
 			const idToken = itString ? decodeJWT(itString) : undefined;
 			const accessTokenExpAt =
 				Number.parseInt(
-					await this.keyValueStorage.getItem(authKeys.accessTokenExpAt)
+					(await this.keyValueStorage.getItem(
+						authKeys.accessTokenExpAt
+					)) as string
 				) || 0;
 			const metadata = JSON.parse(
 				(await this.keyValueStorage.getItem(authKeys.metadata)) || '{}'
 			);
 			const clockDrift =
 				Number.parseInt(
-					await this.keyValueStorage.getItem(authKeys.clockDrift)
+					(await this.keyValueStorage.getItem(authKeys.clockDrift)) as string
 				) || 0;
 
 			return {
@@ -63,7 +71,12 @@ export class DefaultTokenStore implements AuthTokenStore {
 			};
 		} catch (err) {
 			// TODO(v6): validate partial results with mobile implementation
-			throw new Error('No valid tokens');
+
+			throw new AmplifyError({
+				name: 'InvalidTokenException',
+				message: 'Invalid tokens in storage',
+				underlyingError: err,
+			});
 		}
 	}
 	async storeTokens(tokens: AuthTokens): Promise<void> {
@@ -73,6 +86,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 			name: 'InvalidAuthTokens',
 			recoverySuggestion: 'Make sure the tokens are valid',
 		});
+		assertsKeyValueStorage(this.keyValueStorage);
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
@@ -104,6 +118,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 
 	async clearTokens(): Promise<void> {
 		assertTokenProviderConfig(this.authConfig);
+		assertsKeyValueStorage(this.keyValueStorage);
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(

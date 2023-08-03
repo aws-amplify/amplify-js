@@ -14,7 +14,6 @@ import {
 	JWT,
 	LibraryAuthOptions,
 } from './types';
-import { asserts } from '../../Util/errors/AssertError';
 
 export function isTokenExpired({
 	expiresAt,
@@ -31,8 +30,8 @@ export class AuthClass {
 	private authTokenStore: AuthTokenStore;
 	private tokenOrchestrator: AuthTokenOrchestrator;
 	private authSessionObservers: Set<Observer<AuthSession>>;
-	private authConfig: AuthConfig;
-	private authOptions: LibraryAuthOptions;
+	private authConfig?: AuthConfig;
+	private authOptions?: LibraryAuthOptions;
 
 	constructor() {
 		this.authTokenStore = new DefaultTokenStore();
@@ -57,11 +56,11 @@ export class AuthClass {
 	): void {
 		this.authConfig = authResourcesConfig;
 		this.authOptions = authOptions;
-
-		this.authTokenStore.setKeyValueStorage(this.authOptions.keyValueStorage);
+		// TODO: remove bang operator and address undefined scenarions
+		this.authTokenStore.setKeyValueStorage(this.authOptions!.keyValueStorage!);
 		this.authTokenStore.setAuthConfig(this.authConfig);
 
-		this.tokenOrchestrator.setTokenRefresher(this.authOptions.tokenRefresher);
+		this.tokenOrchestrator.setTokenRefresher(this.authOptions!.tokenRefresher!);
 		this.tokenOrchestrator.setAuthConfig(this.authConfig);
 	}
 
@@ -77,19 +76,19 @@ export class AuthClass {
 	async fetchAuthSession(
 		options?: FetchAuthSessionOptions
 	): Promise<AuthSession> {
-		let tokens: AuthTokens;
-		let awsCreds: Credentials;
-		let awsCredsIdentityId: string;
+		let tokens: AuthTokens | undefined;
+		let awsCreds: Credentials | undefined;
+		let awsCredsIdentityId: string | undefined;
 
 		try {
 			tokens = await this.tokenOrchestrator.getTokens({ options });
 		} catch (error) {
 			// TODO(v6): validate error depending on conditions it can proceed or throw
 		}
-
+		// TODO: remove bang operator and address undefined scenarions
 		try {
-			if (this.authOptions.identityIdProvider) {
-				awsCredsIdentityId = await this.authOptions.identityIdProvider({
+			if (this.authOptions!.identityIdProvider) {
+				awsCredsIdentityId = await this.authOptions!.identityIdProvider({
 					tokens,
 					authConfig: this.authConfig,
 				});
@@ -99,8 +98,9 @@ export class AuthClass {
 		}
 
 		try {
-			if (this.authOptions.credentialsProvider) {
-				awsCreds = await this.authOptions.credentialsProvider.getCredentials({
+			// TODO: remove bang operator and address undefined scenarions
+			if (this.authOptions!.credentialsProvider) {
+				awsCreds = await this.authOptions!.credentialsProvider.getCredentials({
 					authConfig: this.authConfig,
 					identityId: awsCredsIdentityId,
 					tokens,

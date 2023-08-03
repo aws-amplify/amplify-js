@@ -15,6 +15,9 @@
 import { ConsoleLogger as Logger } from '../Logger';
 import { browserOrNode } from '../JS';
 import { Amplify } from '../Amplify';
+import { asserts } from '../Util/errors/AssertError';
+import { AmplifyError } from '../Errors';
+import { SERVICE_WORKER_EXCEPTION } from '../constants';
 /**
  * Provides a means to registering a service worker in the browser
  * and communicating with it via postMessage events.
@@ -29,17 +32,17 @@ import { Amplify } from '../Amplify';
  */
 export class ServiceWorkerClass {
 	// The active service worker will be set once it is registered
-	private _serviceWorker: ServiceWorker;
+	private _serviceWorker?: ServiceWorker;
 
 	// The service worker registration object
-	private _registration: ServiceWorkerRegistration;
+	private _registration?: ServiceWorkerRegistration;
 
 	// The application server public key for Push
 	// https://web-push-codelab.glitch.me/
-	private _publicKey: string;
+	private _publicKey?: string;
 
 	// push subscription
-	private _subscription: PushSubscription;
+	private _subscription?: PushSubscription;
 
 	// The AWS Amplify logger
 	private _logger: Logger = new Logger('ServiceWorker');
@@ -50,6 +53,11 @@ export class ServiceWorkerClass {
 	 * Get the currently active service worker
 	 */
 	get serviceWorker(): ServiceWorker {
+		asserts(!(this._serviceWorker === undefined), {
+			name: SERVICE_WORKER_EXCEPTION,
+			message: 'Service Worker instance is undefined',
+		});
+
 		return this._serviceWorker;
 	}
 
@@ -91,10 +99,21 @@ export class ServiceWorkerClass {
 					})
 					.catch(error => {
 						this._logger.debug(`Service Worker Registration Failed ${error}`);
-						return reject(error);
+						return reject(
+							new AmplifyError({
+								name: SERVICE_WORKER_EXCEPTION,
+								message: 'Service Worker not available',
+								underlyingError: error,
+							})
+						);
 					});
 			} else {
-				return reject(new Error('Service Worker not available'));
+				return reject(
+					new AmplifyError({
+						name: SERVICE_WORKER_EXCEPTION,
+						message: 'Service Worker not available',
+					})
+				);
 			}
 		});
 	}
@@ -111,11 +130,16 @@ export class ServiceWorkerClass {
 	 *  - reject(Error)
 	 */
 	enablePush(publicKey: string) {
-		if (!this._registration) throw new Error('Service Worker not registered');
+		asserts(!(this._registration === undefined), {
+			name: SERVICE_WORKER_EXCEPTION,
+			message: 'Service Worker registration is undefined',
+		});
 		this._publicKey = publicKey;
 		return new Promise((resolve, reject) => {
 			if (browserOrNode().isBrowser) {
-				this._registration.pushManager.getSubscription().then(subscription => {
+				// using bang operator as compiler is not picking up the assertion function
+				// defined above
+				this._registration!.pushManager.getSubscription().then(subscription => {
 					if (subscription) {
 						this._subscription = subscription;
 						this._logger.debug(
@@ -124,11 +148,10 @@ export class ServiceWorkerClass {
 						resolve(subscription);
 					} else {
 						this._logger.debug(`User is NOT subscribed to push`);
-						return this._registration.pushManager
-							.subscribe({
-								userVisibleOnly: true,
-								applicationServerKey: this._urlB64ToUint8Array(publicKey),
-							})
+						return this._registration!.pushManager.subscribe({
+							userVisibleOnly: true,
+							applicationServerKey: this._urlB64ToUint8Array(publicKey),
+						})
 							.then(subscription => {
 								this._subscription = subscription;
 								this._logger.debug(
@@ -142,7 +165,12 @@ export class ServiceWorkerClass {
 					}
 				});
 			} else {
-				return reject(new Error('Service Worker not available'));
+				return reject(
+					new AmplifyError({
+						name: SERVICE_WORKER_EXCEPTION,
+						message: 'Service Worker not available',
+					})
+				);
 			}
 		});
 	}
@@ -187,11 +215,12 @@ export class ServiceWorkerClass {
 	 * https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/state
 	 **/
 	_setupListeners() {
-		this._serviceWorker.addEventListener('statechange', event => {
-			const currentState = this._serviceWorker.state;
+		this.serviceWorker.addEventListener('statechange', event => {
+			const currentState = this.serviceWorker.state;
 			this._logger.debug(`ServiceWorker statechange: ${currentState}`);
-			if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
-				Amplify.Analytics.record({
+			Amplify.Analytics;
+			if (isAmplifyWithAnalytics(Amplify)) {
+				(Amplify as AmplifyWithAnalytics).Analytics.record({
 					name: 'ServiceWorker',
 					attributes: {
 						state: currentState,
@@ -199,8 +228,17 @@ export class ServiceWorkerClass {
 				});
 			}
 		});
-		this._serviceWorker.addEventListener('message', event => {
+		this.serviceWorker.addEventListener('message', event => {
 			this._logger.debug(`ServiceWorker message event: ${event}`);
 		});
 	}
+}
+
+type AmplifyWithAnalytics = {
+	Analytics: {
+		record: Function;
+	};
+};
+function isAmplifyWithAnalytics(amplify: any): amplify is AmplifyWithAnalytics {
+	return amplify.Analytics && typeof amplify.Analytics.record === 'function';
 }

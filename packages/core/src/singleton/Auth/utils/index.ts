@@ -1,8 +1,35 @@
 import { Buffer } from 'buffer';
 import { asserts } from '../../../Util/errors/AssertError';
-import { AuthConfig, JWT } from '../types';
+import {
+	AuthConfig,
+	AuthTokenStore,
+	JWT
+} from '../types';
+import { KeyValueStorageInterface } from '../../../types';
 
-export function assertTokenProviderConfig(authConfig?: AuthConfig) {
+export function assertsKeyValueStorage(
+	keyValueStorage?: KeyValueStorageInterface
+): asserts keyValueStorage {
+	return asserts(!(keyValueStorage === undefined), {
+		name: 'AuthClientConfigException',
+		message: 'The storage mechanisms was not set in the client configuration',
+	});
+}
+
+export function assertsTokenStore(
+	tokenStore?: AuthTokenStore
+): asserts tokenStore {
+	return asserts(!(tokenStore === undefined), {
+		name: 'AuthTokenStoreException',
+		message: 'Token store is not configured',
+	});
+}
+
+export function assertTokenProviderConfig(
+	authConfig?: AuthConfig
+): asserts authConfig is { userPoolId: string; userPoolWebClientId: string } {
+	tokenProvider: 'cognito';
+
 	const validConfig =
 		!!authConfig?.userPoolId && !!authConfig?.userPoolWebClientId;
 	return asserts(validConfig, {

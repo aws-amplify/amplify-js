@@ -25,8 +25,8 @@ const getInAppMessagesSerializer = (
 	const headers = getSharedHeaders();
 	const url = new URL(endpoint.url);
 	url.pathname = `v1/apps/${extendedEncodeURIComponent(
-		ApplicationId
-	)}/endpoints/${extendedEncodeURIComponent(EndpointId)}/inappmessages`;
+		ApplicationId ?? ''
+	)}/endpoints/${extendedEncodeURIComponent(EndpointId ?? '')}/inappmessages`;
 	return { method: 'GET', headers, url };
 };
 

@@ -9,7 +9,7 @@ export function urlSafeEncode(str: string) {
 
 export function urlSafeDecode(hex: string) {
 	return hex
-		.match(/.{2}/g)
+		.match(/.{2}/g)!
 		.map(char => String.fromCharCode(parseInt(char, 16)))
 		.join('');
 }

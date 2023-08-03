@@ -24,7 +24,9 @@ const putEventsSerializer = (
 ): HttpRequest => {
 	const headers = getSharedHeaders();
 	const url = new URL(endpoint.url);
-	url.pathname = `v1/apps/${extendedEncodeURIComponent(ApplicationId)}/events`;
+	url.pathname = `v1/apps/${extendedEncodeURIComponent(
+		ApplicationId ?? ''
+	)}/events`;
 	const body = JSON.stringify(EventsRequest ?? {});
 	return { method: 'POST', headers, url, body };
 };

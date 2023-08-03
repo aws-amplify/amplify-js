@@ -60,14 +60,15 @@ export class StorageCache {
 			this.config.defaultPriority = defaultConfig.defaultPriority;
 		}
 
-		if (this.config.itemMaxSize > this.config.capacityInBytes) {
+		if ((this.config.itemMaxSize ?? 0) > (this.config.capacityInBytes ?? 0)) {
 			logger.error(
 				'Invalid parameter: itemMaxSize. It should be smaller than capacityInBytes. Setting back to default.'
 			);
 			this.config.itemMaxSize = defaultConfig.itemMaxSize;
 		}
 
-		if (this.config.defaultPriority > 5 || this.config.defaultPriority < 1) {
+		const defaultPriority = this.config.defaultPriority ?? 0;
+		if (defaultPriority > 5 || defaultPriority < 1) {
 			logger.error(
 				'Invalid parameter: defaultPriority. It should be between 1 and 5. Setting back to default.'
 			);
@@ -85,7 +86,7 @@ export class StorageCache {
 		}
 		// set 5MB limit
 		const cacheLimit: number = 5 * 1024 * 1024;
-		if (this.config.capacityInBytes > cacheLimit) {
+		if ((this.config.capacityInBytes ?? 0) > cacheLimit) {
 			logger.error(
 				'Cache Capacity should be less than 5MB. Setting back to default. Setting back to default.'
 			);
@@ -110,8 +111,8 @@ export class StorageCache {
 			data: value,
 			timestamp: getCurrTime(),
 			visitedTime: getCurrTime(),
-			priority: options.priority,
-			expires: options.expires,
+			priority: options.priority ?? 0,
+			expires: options.expires ?? 0,
 			type: typeof value,
 			byteSize: 0,
 		};

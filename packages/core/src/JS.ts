@@ -47,13 +47,17 @@ const MIME_MAP = [
 
 export const isEmpty = (obj = {}) => Object.keys(obj).length === 0;
 
-export const sortByField = (list, field, dir) => {
+export const sortByField = (
+	list: any[],
+	field: string | number,
+	dir: string
+) => {
 	if (!list || !list.sort) {
 		return false;
 	}
 
 	const dirX = dir && dir === 'desc' ? -1 : 1;
-	list.sort(function(a, b) {
+	list.sort(function(a, b){
 		const a_val = a[field];
 		const b_val = b[field];
 
@@ -78,7 +82,10 @@ export const sortByField = (list, field, dir) => {
 	return true;
 };
 
-export const objectLessAttributes = (obj, less) => {
+export const objectLessAttributes = (
+	obj: Record<string, any>,
+	less: string | string[]
+) => {
 	const ret = Object.assign({}, obj);
 	if (less) {
 		if (typeof less === 'string') {
@@ -94,7 +101,7 @@ export const objectLessAttributes = (obj, less) => {
 };
 
 export const filenameToContentType = (
-	filename,
+	filename: string,
 	defVal = 'application/octet-stream'
 ) => {
 	const name = filename.toLowerCase();
@@ -103,7 +110,7 @@ export const filenameToContentType = (
 	return filtered.length > 0 ? filtered[0].type : defVal;
 };
 
-export const isTextFile = contentType => {
+export const isTextFile = (contentType: string) => {
 	const type = contentType.toLowerCase();
 	if (type.startsWith('text/')) {
 		return true;
@@ -125,7 +132,7 @@ export const generateRandomString = () => {
 	return result;
 };
 
-export const makeQuerablePromise = promise => {
+export const makeQuerablePromise = (promise: any) => {
 	if (promise.isResolved) return promise;
 
 	let isPending = true;
@@ -133,12 +140,12 @@ export const makeQuerablePromise = promise => {
 	let isFullfilled = false;
 
 	const result = promise.then(
-		data => {
+		(data: unknown) => {
 			isFullfilled = true;
 			isPending = false;
 			return data;
 		},
-		e => {
+		(e: unknown) => {
 			isRejected = true;
 			isPending = false;
 			throw e;
@@ -156,7 +163,7 @@ export const isWebWorker = () => {
 	if (typeof self === 'undefined') {
 		return false;
 	}
-	const selfContext = self as { WorkerGlobalScope? };
+	const selfContext = self as { WorkerGlobalScope?: any };
 	return (
 		typeof selfContext.WorkerGlobalScope !== 'undefined' &&
 		self instanceof selfContext.WorkerGlobalScope
@@ -184,12 +191,12 @@ export const browserOrNode = () => {
  * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
  */
 export const transferKeyToLowerCase = (
-	obj,
-	whiteListForItself = [],
-	whiteListForChildren = []
+	obj: { [x: string]: any; hasOwnProperty: (arg0: string) => any },
+	whiteListForItself: string[] = [],
+	whiteListForChildren: string[] = []
 ) => {
 	if (!isStrictObject(obj)) return obj;
-	const ret = {};
+	const ret: Record<string, string> = {};
 
 	for (const key in obj) {
 		if (obj.hasOwnProperty(key)) {
@@ -217,12 +224,12 @@ export const transferKeyToLowerCase = (
  * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
  */
 export const transferKeyToUpperCase = (
-	obj,
-	whiteListForItself = [],
-	whiteListForChildren = []
+	obj: { [x: string]: any; hasOwnProperty: (arg0: string) => any },
+	whiteListForItself: string[] = [],
+	whiteListForChildren: string[] = []
 ) => {
 	if (!isStrictObject(obj)) return obj;
-	const ret = {};
+	const ret: Record<string, string> = {};
 
 	for (const key in obj) {
 		if (obj.hasOwnProperty(key)) {
@@ -247,7 +254,7 @@ export const transferKeyToUpperCase = (
  * which means it's not Array, Function, Number, String, Boolean or Null
  * @param obj the Object
  */
-export const isStrictObject = obj => {
+export const isStrictObject = (obj: any) => {
 	return (
 		obj instanceof Object &&
 		!(obj instanceof Array) &&

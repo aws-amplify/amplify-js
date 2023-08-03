@@ -10,8 +10,17 @@
 // Comment - TODO: remove
 
 const FIVE_MINUTES_IN_MS = 1000 * 60 * 5;
-
-export const DateUtils = {
+type DateUtils = {
+	clockOffset: number;
+	getDateWithClockOffset: () => Date;
+	getClockOffset: () => number;
+	getHeaderStringFromDate: (date: Date) => string;
+	getDateFromHeaderString: (header: string) => Date;
+	isClockSkewed: (serverDate: Date) => boolean;
+	isClockSkewError: (error: any) => boolean;
+	setClockOffset: (offset: number) => void;
+};
+export const DateUtils: DateUtils = {
 	/**
 	 * Milliseconds to offset the date to compensate for clock skew between device & services
 	 */
@@ -37,9 +46,9 @@ export const DateUtils = {
 	},
 
 	getDateFromHeaderString(header: string) {
-		const [, year, month, day, hour, minute, second] = header.match(
+		const [year, month, day, hour, minute, second] = header.match(
 			/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2}).+/
-		);
+		) as any[];
 
 		return new Date(
 			Date.UTC(
@@ -62,7 +71,7 @@ export const DateUtils = {
 		);
 	},
 
-	isClockSkewError(error: any) {
+	isClockSkewError(error: { response: { headers: any } }) {
 		if (!error.response || !error.response.headers) {
 			return false;
 		}

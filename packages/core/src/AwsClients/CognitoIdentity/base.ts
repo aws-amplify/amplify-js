@@ -58,7 +58,7 @@ export const cognitoIdentityTransferHandler = composeTransferHandler<
 /**
  * @internal
  */
-export const defaultConfig = {
+export const defaultConfig: Record<string, unknown> = {
 	service: SERVICE_NAME,
 	endpointResolver,
 	retryDecider: getRetryDecider(parseJsonError),

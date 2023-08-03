@@ -43,6 +43,8 @@ import {
 	NO_CREDS_ERROR_STRING,
 	RETRY_ERROR_CODES,
 } from '../Util/Constants';
+import { asserts } from '../Util/errors/AssertError';
+import { AWS_CLOUD_WATCH_PROVIDER_OPTIONS_EXCEPTION } from '../constants';
 
 const logger = new Logger('AWSCloudWatch');
 
@@ -50,10 +52,10 @@ class AWSCloudWatchProvider implements LoggingProvider {
 	static readonly PROVIDER_NAME = AWS_CLOUDWATCH_PROVIDER_NAME;
 	static readonly CATEGORY = AWS_CLOUDWATCH_CATEGORY;
 
-	private _config: AWSCloudWatchProviderOptions;
+	private _config?: AWSCloudWatchProviderOptions;
 	private _dataTracker: CloudWatchDataTracker;
 	private _currentLogBatch: InputLogEvent[];
-	private _timer;
+	private _timer?: NodeJS.Timer;
 	private _nextSequenceToken: string | undefined;
 
 	constructor(config?: AWSCloudWatchProviderOptions) {
@@ -213,7 +215,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 	private async _validateLogGroupExistsAndCreate(
 		logGroupName: string
-	): Promise<LogGroup> {
+	): Promise<LogGroup | null> {
 		if (this._dataTracker.verifiedLogGroup) {
 			return this._dataTracker.verifiedLogGroup;
 		}
@@ -256,7 +258,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 	private async _validateLogStreamExists(
 		logGroupName: string,
 		logStreamName: string
-	): Promise<LogStream> {
+	): Promise<LogStream | null> {
 		try {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
@@ -298,7 +300,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 	private async _sendLogEvents(
 		params: PutLogEventsCommandInput
-	): Promise<PutLogEventsCommandOutput> {
+	): Promise<PutLogEventsCommandOutput | undefined> {
 		try {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
@@ -318,6 +320,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 	}
 
 	private _initCloudWatchLogs() {
+		assertsAWSClouldWatchOptions(this._config);
 		return new CloudWatchLogsClient({
 			region: this._config.region,
 			credentials: this._config.credentials,
@@ -328,7 +331,8 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 	private async _ensureCredentials() {
 		return await Credentials.get()
-			.then(credentials => {
+			.then((credentials: any) => {
+				assertsAWSClouldWatchOptions(this._config);
 				if (!credentials) return false;
 				const cred = Credentials.shear(credentials);
 				logger.debug('set credentials for logging', cred);
@@ -336,13 +340,14 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 				return true;
 			})
-			.catch(error => {
+			.catch((error: unknown) => {
 				logger.warn('ensure credentials error', error);
 				return false;
 			});
 	}
 
-	private async _getNextSequenceToken(): Promise<string> {
+	private async _getNextSequenceToken(): Promise<string | undefined> {
+		assertsAWSClouldWatchOptions(this._config);
 		if (this._nextSequenceToken && this._nextSequenceToken.length > 0) {
 			return this._nextSequenceToken;
 		}
@@ -354,6 +359,14 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		 *   ...the log stream does exist but has no logs written to it yet
 		 */
 		try {
+			asserts(!(this._config.logGroupName === undefined), {
+				name: AWS_CLOUD_WATCH_PROVIDER_OPTIONS_EXCEPTION,
+				message: ' log group name is undefined',
+			});
+			asserts(!(this._config.logStreamName === undefined), {
+				name: AWS_CLOUD_WATCH_PROVIDER_OPTIONS_EXCEPTION,
+				message: ' log stream name is undefined',
+			});
 			await this._validateLogGroupExistsAndCreate(this._config.logGroupName);
 
 			this._nextSequenceToken = undefined;
@@ -374,7 +387,10 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		}
 	}
 
-	private async _safeUploadLogEvents(): Promise<PutLogEventsCommandOutput> {
+	private async _safeUploadLogEvents(): Promise<
+		PutLogEventsCommandOutput | undefined
+	> {
+		assertsAWSClouldWatchOptions(this._config);
 		try {
 			/**
 			 * CloudWatch has restrictions on the size of the log events that get sent up.
@@ -400,7 +416,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			this._dataTracker.eventUploadInProgress = true;
 			const sendLogEventsResponse = await this._sendLogEvents(putLogsPayload);
 
-			this._nextSequenceToken = sendLogEventsResponse.nextSequenceToken;
+			this._nextSequenceToken = sendLogEventsResponse?.nextSequenceToken;
 			this._dataTracker.eventUploadInProgress = false;
 			this._currentLogBatch = [];
 
@@ -408,7 +424,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		} catch (err) {
 			logger.error(`error during _safeUploadLogEvents: ${err}`);
 
-			if (RETRY_ERROR_CODES.includes(err.name)) {
+			if (err instanceof Error && RETRY_ERROR_CODES.includes(err.name)) {
 				this._getNewSequenceTokenAndSubmit({
 					logEvents: this._currentLogBatch,
 					logGroupName: this._config.logGroupName,
@@ -443,7 +459,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 				const errString = `Log entry exceeds maximum size for CloudWatch logs. Log size: ${eventSize}. Truncating log message.`;
 				logger.warn(errString);
 
-				currentEvent.message = currentEvent.message.substring(0, eventSize);
+				currentEvent.message = currentEvent.message?.substring(0, eventSize);
 			}
 
 			if (totalByteSize + eventSize > AWS_CLOUDWATCH_MAX_BATCH_EVENT_SIZE)
@@ -462,7 +478,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 	private async _getNewSequenceTokenAndSubmit(
 		payload: PutLogEventsCommandInput
-	): Promise<PutLogEventsCommandOutput> {
+	): Promise<PutLogEventsCommandOutput | undefined> {
 		try {
 			this._nextSequenceToken = undefined;
 			this._dataTracker.eventUploadInProgress = true;
@@ -510,6 +526,15 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			!this._dataTracker.eventUploadInProgress
 		);
 	}
+}
+
+function assertsAWSClouldWatchOptions(
+	options?: AWSCloudWatchProviderOptions
+): asserts options {
+	return asserts(!(options === undefined), {
+		name: AWS_CLOUD_WATCH_PROVIDER_OPTIONS_EXCEPTION,
+		message: 'AWSCloudWatchProviderOptions cannot be undefined',
+	});
 }
 
 export { AWSCloudWatchProvider };
