@@ -1,7 +1,6 @@
 {
 	"ignore": [
 		"NOTICE",
-		".circleci",
 		".github",
 		"yarn.lock",
 		"**/*.config.dev.js",
