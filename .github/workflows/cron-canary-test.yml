@@ -1,0 +1,9 @@
+on:
+  push:
+  schedule:
+  - cron: '0 */1 * * *'
+
+jobs:
+  canaries:
+    secrets: inherit
+    uses: ./.github/workflows/callable-canary-e2e.yml

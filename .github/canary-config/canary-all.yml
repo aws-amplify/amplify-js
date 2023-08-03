@@ -1,0 +1,301 @@
+minimal_browser_list: &minimal_browser_list
+  - chrome
+  - firefox
+extended_browser_list: &extended_browser_list
+  - chrome
+  - firefox
+  - edge
+tests:
+  - test_name: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: owner-based-default
+    spec: owner-based-default
+    browser: *minimal_browser_list
+  - test_name: 'React GraphQL API'
+    framework: react
+    category: api
+    sample_name: [graphql]
+    spec: graphql
+    browser: *minimal_browser_list
+  - test_name: 'React Authenticator'
+    framework: react
+    category: auth
+    sample_name: [amplify-authenticator]
+    spec: new-ui-authenticator
+    browser: *minimal_browser_list
+  - test_name: 'React Credentials Different Region'
+    framework: react
+    category: auth
+    sample_name: [credentials-auth]
+    spec: credentials-auth
+    browser: *minimal_browser_list
+  - test_name: 'amazon-cognito-identity-js-cookie-storage'
+    framework: react
+    category: auth
+    sample_name: [amazon-cognito-identity-js-cookie-storage]
+    spec: amazon-cognito-identity-js-cookie-storage
+    browser: *minimal_browser_list
+  - test_name: 'amazon-cognito-identity-js'
+    framework: react
+    category: auth
+    sample_name: [amazon-cognito-identity-js]
+    spec: amazon-cognito-identity-js
+    browser: *minimal_browser_list
+  - test_name: 'cognito-device-tracking'
+    framework: react
+    category: auth
+    sample_name: [device-tracking]
+    spec: device-tracking
+    browser: *minimal_browser_list
+  - test_name: 'delete-user'
+    framework: react
+    category: auth
+    sample_name: [delete-user]
+    spec: delete-user
+    browser: *minimal_browser_list
+  - test_name: 'Angular Authenticator'
+    framework: angular
+    category: auth
+    sample_name: [amplify-authenticator]
+    spec: ui-amplify-authenticator
+    browser: *minimal_browser_list
+  - test_name: 'JavaScript Auth CDN'
+    framework: javascript
+    category: auth
+    sample_name: [auth-cdn]
+    spec: auth-cdn
+    browser: *minimal_browser_list
+    amplifyjs_dir: true
+  - test_name: 'Legacy Vue Authenticator'
+    framework: vue
+    category: auth
+    sample_name: [amplify-authenticator-legacy]
+    spec: authenticator
+    browser: *minimal_browser_list
+  - test_name: 'Authenticator and SSR page'
+    framework: next
+    category: auth
+    sample_name: [auth-ssr]
+    spec: auth-ssr
+    browser: *minimal_browser_list
+  - test_name: 'amazon-cognito-identity-js'
+    framework: node
+    category: auth
+    sample_name: [amazon-cognito-identity-js]
+    build_type: dev
+  - test_name: 'React DataStore'
+    framework: react
+    category: datastore
+    sample_name: [many-to-many]
+    spec: many-to-many
+    browser: *minimal_browser_list
+  - test_name: 'React DataStore Multi-Auth - One Rule'
+    framework: react
+    category: datastore
+    sample_name: [multi-auth]
+    spec: multi-auth-one-rule
+    browser: *minimal_browser_list
+  - test_name: 'React DataStore Multi-Auth - Two Rules'
+    framework: react
+    category: datastore
+    sample_name: [multi-auth]
+    spec: multi-auth-two-rules
+    browser: *minimal_browser_list
+  - test_name: 'React DataStore Multi-Auth - Three Plus Rules'
+    framework: react
+    category: datastore
+    sample_name: [multi-auth]
+    spec: multi-auth-three-plus-rules
+    browser: *minimal_browser_list
+  - test_name: 'DataStore - Subs Disabled'
+    framework: react
+    category: datastore
+    sample_name: [subs-disabled]
+    spec: subs-disabled
+    browser: *minimal_browser_list
+  - test_name: 'DataStore - Subs Disabled'
+    framework: react
+    category: datastore
+    sample_name: [consecutive-saves]
+    spec: consecutive-saves
+    browser: *minimal_browser_list
+  - test_name: 'DataStore - Schema Drift'
+    framework: react
+    category: datastore
+    sample_name: [schema-drift]
+    spec: schema-drift
+    browser: *minimal_browser_list
+  - test_name: 'DataStore - Custom Primary Key (Has One)'
+    framework: react
+    category: datastore
+    sample_name: [v2/custom-pk-has-one]
+    spec: custom-pk-has-one
+    browser: *minimal_browser_list
+  - test_name: 'DataStore - Custom Primary Key (Has Many / Many to Many)'
+    framework: react
+    category: datastore
+    sample_name: [v2/custom-pk-has-many-many-to-many]
+    spec: custom-pk-has-many-many-to-many
+    browser: *minimal_browser_list
+  - test_name: 'DataStore - Background Process Manager'
+    framework: react
+    category: datastore
+    sample_name: [v2/background-process-manager]
+    spec: background-process-manager
+    browser: *extended_browser_list
+  - test_name: 'DataStore - Related Models'
+    framework: react
+    category: datastore
+    sample_name: [related-models]
+    spec: related-models
+    browser: *minimal_browser_list
+  - test_name: 'DataStore - Selective Sync'
+    framework: react
+    category: datastore
+    sample_name: [selective-sync-v5]
+    spec: selective-sync-v5
+    browser: *minimal_browser_list
+  - test_name: 'DataStore - Nested Predicate'
+    framework: react
+    category: datastore
+    sample_name: [nested-predicate]
+    spec: nested-predicate
+    browser: *minimal_browser_list
+  - test_name: 'DataStore - Docs Examples'
+    framework: react
+    category: datastore
+    sample_name: [v2/amplify-docs-examples]
+    spec: amplify-docs-examples
+    browser: *minimal_browser_list
+    timeout_minutes: 45
+    retry_count: 10
+  - test_name: 'DataStore - WebSocket Disruption'
+    framework: react
+    category: datastore
+    sample_name: [websocket-disruption]
+    spec: websocket-disruption
+    browser: *minimal_browser_list
+  - test_name: 'Vanilla JS + Webpack 4 + DataStore - Basic CRUD'
+    framework: javascript
+    category: datastore
+    sample_name: [basic-crud]
+    browser: *minimal_browser_list
+    spec: vanilla-js-basic-crud
+    amplifyjs_dir: true
+    timeout_minutes: 45
+    retry_count: 10
+  - test_name: 'next owner auth'
+    framework: next
+    category: datastore
+    sample_name: [owner-based-default]
+    spec: next-owner-based-default
+    browser: *minimal_browser_list
+  - test_name: 'DataStore - Nextjs 13 build with SWC - JS app'
+    framework: next
+    category: datastore
+    sample_name: [next-13-js]
+    spec: nextjs-13
+    browser: *minimal_browser_list
+  - test_name: 'Vite + DataStore - Basic CRUD'
+    framework: vite
+    category: datastore
+    sample_name: [v2/basic-crud]
+    spec: vite-basic-crud
+  - test_name: 'Rollup + DataStore - Basic CRUD'
+    framework: rollup
+    category: datastore
+    sample_name: [rollup-basic-crud]
+    spec: rollup-basic-crud
+  - test_name: 'Display Map'
+    framework: react
+    category: geo
+    sample_name: [display-map]
+    spec: display-map
+    # Temp fix:
+    browser: [chrome]
+  - test_name: 'Search Outside Map'
+    framework: react
+    category: geo
+    sample_name: [search-outside-map]
+    spec: search-outside-map
+    # Temp fix:
+    browser: [chrome]
+  - test_name: 'React Interactions'
+    framework: react
+    category: interactions
+    sample_name: [chatbot-component]
+    spec: chatbot-component
+    browser: *minimal_browser_list
+  - test_name: 'Chatbot V1'
+    framework: react
+    category: interactions
+    sample_name: [lex-test-component]
+    spec: chatbot-v1
+    browser: *minimal_browser_list
+  - test_name: 'Angular Interactions'
+    framework: angular
+    category: interactions
+    sample_name: [chatbot-component]
+    spec: chatbot-component
+    browser: *minimal_browser_list
+  - test_name: 'Vue 2 Interactions'
+    framework: vue
+    category: interactions
+    sample_name: [chatbot-component]
+    spec: chatbot-component
+    browser: [chrome]
+  - test_name: 'React Predictions'
+    framework: react
+    category: predictions
+    sample_name: [multi-user-translation]
+    spec: multiuser-translation
+    browser: *minimal_browser_list
+  - test_name: 'PubSub - Reconnection for IoT'
+    framework: react
+    category: pubsub
+    sample_name: [reconnection-iot]
+    spec: reconnection
+    # Firefox doesn't support network state management in cypress
+    browser: [chrome]
+  - test_name: 'PubSub - Reconnection for API'
+    framework: react
+    category: pubsub
+    sample_name: [reconnection-api]
+    spec: reconnection
+    # Firefox doesn't support network state management in cypress
+    browser: [chrome]
+  - test_name: 'React Storage'
+    framework: react
+    category: storage
+    sample_name: [storageApp]
+    spec: storage
+    browser: *minimal_browser_list
+  - test_name: 'React Storage Multi-Part Upload with Progress'
+    framework: react
+    category: storage
+    sample_name: [multi-part-upload-with-progress]
+    spec: multi-part-upload-with-progress
+    browser: *minimal_browser_list
+  - test_name: 'React Storage Copy'
+    framework: react
+    category: storage
+    sample_name: [multi-part-copy-with-progress]
+    spec: multi-part-copy-with-progress
+    browser: *minimal_browser_list
+  - test_name: 'Rollup + DataStore - Basic CRUD'
+    framework: rollup
+    category: datastore
+    sample_name: [rollup-basic-crud]
+    spec: rollup-basic-crud
+    browser: [chrome]
+    timeout_minutes: 45
+    retry_count: 10
+  - test_name: 'Vite + DataStore - Basic CRUD'
+    framework: vite
+    category: datastore
+    sample_name: [v2/basic-crud]
+    spec: vite-basic-crud
+    browser: [chrome]
+    timeout_minutes: 45
+    retry_count: 10
