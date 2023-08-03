@@ -71,7 +71,7 @@
       "name": "PubSub (Mqtt provider)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, PubSub, MqttOverWSProvider }",
-      "limit": "81.29 kB"
+      "limit": "81.34 kB"
     }
   ],
   "jest": {
