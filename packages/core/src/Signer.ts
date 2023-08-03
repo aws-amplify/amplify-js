@@ -52,7 +52,7 @@ export class Signer {
 	static sign(
 		request: {
 			headers: any;
-			body: BodyInit;
+			body?: BodyInit;
 			data?: any;
 			url: string;
 			method: string;

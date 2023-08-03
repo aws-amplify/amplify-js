@@ -57,7 +57,7 @@ export const sortByField = (
 	}
 
 	const dirX = dir && dir === 'desc' ? -1 : 1;
-	list.sort(function(a, b){
+	list.sort(function (a, b) {
 		const a_val = a[field];
 		const b_val = b[field];
 
@@ -191,12 +191,12 @@ export const browserOrNode = () => {
  * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
  */
 export const transferKeyToLowerCase = (
-	obj: { [x: string]: any; hasOwnProperty: (arg0: string) => any },
+	obj: Record<string, any>,
 	whiteListForItself: string[] = [],
 	whiteListForChildren: string[] = []
 ) => {
 	if (!isStrictObject(obj)) return obj;
-	const ret: Record<string, string> = {};
+	const ret: Record<string, any> = {};
 
 	for (const key in obj) {
 		if (obj.hasOwnProperty(key)) {
@@ -224,12 +224,12 @@ export const transferKeyToLowerCase = (
  * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
  */
 export const transferKeyToUpperCase = (
-	obj: { [x: string]: any; hasOwnProperty: (arg0: string) => any },
+	obj: Record<string, any>,
 	whiteListForItself: string[] = [],
 	whiteListForChildren: string[] = []
 ) => {
 	if (!isStrictObject(obj)) return obj;
-	const ret: Record<string, string> = {};
+	const ret: Record<string, any> = {};
 
 	for (const key in obj) {
 		if (obj.hasOwnProperty(key)) {
