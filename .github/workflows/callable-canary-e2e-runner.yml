@@ -38,4 +38,3 @@ jobs:
       browser: ${{ toJSON(matrix.canary-config.browser) || '[""]' }}
       timeout_minutes: ${{ matrix.canary-config.timeout_minutes || 35 }}
       retry_count: ${{ matrix.canary-config.retry_count || 3 }}
-

@@ -83,19 +83,16 @@ jobs:
         run: yarn build
         shell: bash
         working-directory: ./amplify-js
-        
       - name: Setup samples staging repository
         uses: ./amplify-js/.github/actions/setup-samples-staging
         with:
           GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
-
       - name: Modify package.json to run against aws-amplify latest 
         run: |
           tmpfile=$(mktemp)
           cp samples/${{ inputs.framework }}/${{ inputs.category }}/${{ matrix.sample_name }}/package.json "$tmpfile" &&
           jq 'select(.dependencies) |= with_entries(select(.key | startswith("aws-amplify")).value = "latest")' samples/${{ inputs.framework }}/${{ inputs.category }}/${{ matrix.sample_name }}/package.json "$tmpfile" > samples/${{ inputs.framework }}/${{ inputs.category }}/${{ matrix.sample_name }}/package.json && rm -f -- "$tmpfile"
         working-directory: amplify-js-samples-staging
-        
       - name: Run cypress tests for ${{ inputs.test_name }} dev
         run: |
           ../amplify-js/.circleci/retry-yarn-script.sh -s \
