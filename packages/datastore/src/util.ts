@@ -920,6 +920,7 @@ export const isIdManaged = (modelDefinition: SchemaModel): boolean => {
 export const isIdOptionallyManaged = (
 	modelDefinition: SchemaModel
 ): boolean => {
+	debugger;
 	const keyAttribute = extractKeyIfExists(modelDefinition);
 
 	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {

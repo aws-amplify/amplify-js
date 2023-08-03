@@ -6,6 +6,7 @@ import {
 	CustomIdentifier,
 	ManagedIdentifier,
 	OptionallyManagedIdentifier,
+	OptionallyManagedCompositeIdentifier,
 	AsyncItem,
 } from '../../../src';
 
@@ -230,6 +231,27 @@ export declare class BasicModel {
 			draft: MutableModel<BasicModel>
 		) => MutableModel<BasicModel> | void
 	): BasicModel;
+}
+
+export declare class BasicModelComposite {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedCompositeIdentifier<
+			BasicModelComposite,
+			['id', 'body']
+		>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly body: string;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<BasicModelComposite>);
+	static copyOf(
+		source: BasicModelComposite,
+		mutator: (
+			draft: MutableModel<BasicModelComposite>
+		) => MutableModel<BasicModelComposite> | void
+	): BasicModelComposite;
 }
 
 export declare class BasicModelWritableTS {
@@ -1443,6 +1465,55 @@ export function testSchema(): Schema {
 						type: 'key',
 						properties: {
 							fields: ['id'],
+						},
+					},
+				],
+			},
+			BasicModelComposite: {
+				name: 'BasicModelComposite',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					body: {
+						name: 'body',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'BasicModelComposites',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id', 'body'],
 						},
 					},
 				],

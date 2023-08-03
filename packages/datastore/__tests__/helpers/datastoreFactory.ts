@@ -40,6 +40,7 @@ import {
 	CompositePKParent,
 	CompositePKChild,
 	BasicModel,
+	BasicModelComposite,
 	BasicModelWritableTS,
 	BasicModelRequiredTS,
 	ModelWithExplicitOwner,
@@ -266,6 +267,7 @@ export function getDataStore({
 		CompositePKParent,
 		CompositePKChild,
 		BasicModel,
+		BasicModelComposite,
 		BasicModelWritableTS,
 		BasicModelRequiredTS,
 		ModelWithExplicitOwner,
@@ -300,6 +302,7 @@ export function getDataStore({
 		CompositePKParent: PersistentModelConstructor<CompositePKParent>;
 		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
 		BasicModel: PersistentModelConstructor<BasicModel>;
+		BasicModelComposite: PersistentModelConstructor<BasicModelComposite>;
 		BasicModelWritableTS: PersistentModelConstructor<BasicModelWritableTS>;
 		BasicModelRequiredTS: PersistentModelConstructor<BasicModelRequiredTS>;
 		ModelWithExplicitOwner: PersistentModelConstructor<ModelWithExplicitOwner>;
@@ -345,6 +348,7 @@ export function getDataStore({
 		CompositePKParent,
 		CompositePKChild,
 		BasicModel,
+		BasicModelComposite,
 		BasicModelWritableTS,
 		BasicModelRequiredTS,
 		ModelWithExplicitOwner,

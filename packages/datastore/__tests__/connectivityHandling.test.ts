@@ -55,6 +55,7 @@ describe('DataStore sync engine', () => {
 		ModelWithExplicitCustomOwner,
 		ModelWithMultipleCustomOwner,
 		BasicModel,
+		BasicModelComposite,
 		BasicModelWritableTS,
 		LegacyJSONPost,
 		LegacyJSONComment,
@@ -86,6 +87,7 @@ describe('DataStore sync engine', () => {
 			ModelWithExplicitCustomOwner,
 			ModelWithMultipleCustomOwner,
 			BasicModel,
+			BasicModelComposite,
 			BasicModelWritableTS,
 			LegacyJSONPost,
 			LegacyJSONComment,
@@ -174,6 +176,89 @@ describe('DataStore sync engine', () => {
 			for (const field of omitted_optional_fields) {
 				expect(mutation[field]).toEqual(undefined);
 			}
+		});
+
+		test('will auto-populate `id` for composite key when `id` is omitted', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.BasicModelComposite.fields.id.isRequired).toBe(
+				false
+			);
+			expect(schema.models.BasicModelComposite.fields.body.isRequired).toBe(
+				false
+			);
+
+			await DataStore.save(new BasicModelComposite({ body: 'whatever' }));
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('BasicModelComposite')!;
+			expect(table.size).toEqual(1);
+
+			const [mutation] = graphqlService.requests
+				.filter(
+					r =>
+						r.operation === 'mutation' && r.tableName === 'BasicModelComposite'
+				)
+				.map(req => req.variables.input);
+
+			expect(mutation.id).toBeDefined();
+		});
+
+		test('will auto-populate `id` for composite key when SK is omitted', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.BasicModelComposite.fields.id.isRequired).toBe(
+				false
+			);
+			expect(schema.models.BasicModelComposite.fields.body.isRequired).toBe(
+				false
+			);
+
+			await DataStore.save(new BasicModelComposite({ id: 'whatever' }));
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('BasicModelComposite')!;
+			expect(table.size).toEqual(1);
+
+			const [mutation] = graphqlService.requests
+				.filter(
+					r =>
+						r.operation === 'mutation' && r.tableName === 'BasicModelComposite'
+				)
+				.map(req => req.variables.input);
+
+			// for (const field of omitted_optional_fields) {
+			// 	expect(mutation[field]).toEqual(undefined);
+			// }
+			expect(mutation.id).toBe('whatever');
+			expect(mutation.body).toBeNull();
+		});
+
+		test('will auto-populate `id` for composite key when `id` and SK are omitted', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.BasicModelComposite.fields.id.isRequired).toBe(
+				false
+			);
+			expect(schema.models.BasicModelComposite.fields.body.isRequired).toBe(
+				false
+			);
+
+			await DataStore.save(new BasicModelComposite({}));
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('BasicModelComposite')!;
+			expect(table.size).toEqual(1);
+
+			const [mutation] = graphqlService.requests
+				.filter(
+					r =>
+						r.operation === 'mutation' && r.tableName === 'BasicModelComposite'
+				)
+				.map(req => req.variables.input);
+
+			expect(mutation.id).toBeDefined();
+			expect(mutation.body).toBeNull();
 		});
 
 		test('includes explicit null fields from mutation on create', async () => {
@@ -469,6 +554,23 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('sends model deletes to the cloud', async () => {
+			const post = await DataStore.save(new Post({ title: 'post title' }));
+			await waitForEmptyOutbox();
+
+			const retrieved = await DataStore.query(Post, post.id);
+			const deleted = await DataStore.delete(retrieved!);
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Post')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([post.id])) as any;
+			expect(savedItem.title).toEqual(deleted.title);
+			expect(savedItem._deleted).toEqual(true);
+		});
+
+		// TODO:
+		test.skip('sends model deletes to the cloud for composite key', async () => {
 			const post = await DataStore.save(new Post({ title: 'post title' }));
 			await waitForEmptyOutbox();
 
