@@ -75,11 +75,11 @@ export default class Client {
 	 * @param {function} callback Callback called when a response is returned
 	 * @returns {void}
 	 */
-	request(operation, params, callback) {
+	request(operation, params, callback, userAgentValue) {
 		const headers = {
 			'Content-Type': 'application/x-amz-json-1.1',
 			'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
-			'X-Amz-User-Agent': getAmplifyUserAgent(),
+			'X-Amz-User-Agent': userAgentValue || getAmplifyUserAgent(),
 			'Cache-Control': 'no-store',
 		};
 

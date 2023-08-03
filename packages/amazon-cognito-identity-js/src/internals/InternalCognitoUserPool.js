@@ -137,7 +137,7 @@ export class InternalCognitoUserPool {
 			};
 
 			return callback(null, returnData);
-		});
+		}, userAgentValue);
 	}
 
 	/**
