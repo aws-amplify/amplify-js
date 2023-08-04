@@ -10,7 +10,7 @@ type PrefixResolverOptions = {
 	targetIdentityId?: string;
 };
 
-export const prefixResolver = async ({
+export const prefixResolver = ({
 	accessLevel,
 	targetIdentityId,
 }: PrefixResolverOptions) => {
