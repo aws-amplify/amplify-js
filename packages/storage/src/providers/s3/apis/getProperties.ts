@@ -36,10 +36,10 @@ export const getProperties = async function (
 	try {
 		assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 		const final_key =
-			(await prefixResolver({
+			prefixResolver({
 				level,
 				identityId: awsCredsIdentityId,
-			})) + key;
+			}) + key;
 		const response = await headObject(options, {
 			Bucket: bucket,
 			Key: final_key,

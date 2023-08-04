@@ -7,8 +7,8 @@ export * from './AWSS3Provider';
 
 export { DownloadTask, TransferProgressEvent } from './common';
 export {
-	StorageOperationParameter,
-	StorageDownloadDataParameter,
+	StorageOperationRequest,
+	StorageDownloadDataRequest,
 	StorageDownloadFileParameter,
 	StorageUploadDataParameter,
 	StorageUploadFileParameter, // TODO: open question - should we export this?
