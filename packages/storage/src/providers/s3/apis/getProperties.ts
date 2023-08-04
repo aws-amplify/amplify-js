@@ -1,9 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
-
 import { headObject } from '../../../AwsClients/S3';
 import { StorageOperationRequest } from '../../../types';
 import { AmplifyV6 } from '@aws-amplify/core';
