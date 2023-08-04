@@ -1,17 +1,19 @@
-import { headObject } from '../../../src/AwsClients/S3/headObject';
 import { getProperties } from '../../../src/providers/s3';
-jest.mock('../../../src/AwsClients/S3');
-const mockHeadObject = headObject as jest.Mock;
 
-describe('getProperties API happy path case', async () => {
+jest.mock('../../../src/AwsClients/S3');
+const headObject = jest.fn();
+
+test('getProperties API happy path case', async () => {
 	// TODO test credentials
-	mockHeadObject.mockReturnValueOnce({
-		Key: 'key',
-		ContentLength: '100',
-		ContentType: 'text/plain',
-		ETag: 'etag',
-		LastModified: 'last-modified',
-		Metadata: { key: 'value' },
+	headObject.mockImplementation(() => {
+		return {
+			Key: 'key',
+			ContentLength: '100',
+			ContentType: 'text/plain',
+			ETag: 'etag',
+			LastModified: 'last-modified',
+			Metadata: { key: 'value' },
+		};
 	});
 	const metadata = { key: 'value' };
 	expect(await getProperties({ key: 'key' })).toEqual({
@@ -23,16 +25,17 @@ describe('getProperties API happy path case', async () => {
 		metadata,
 	});
 });
-describe('getProperties API should return a not found error', async () => {
+
+test('getProperties API should return a not found error', async () => {
 	// TODO test credentials
-	mockHeadObject.mockRejectedValueOnce(
+	headObject.mockImplementation(() =>
 		Object.assign(new Error(), {
 			$metadata: { httpStatusCode: 404 },
 			name: 'NotFound',
 		})
 	);
 	try {
-		getProperties({ key: 'invalid_key' });
+		await getProperties({ key: 'invalid_key' });
 	} catch (error) {
 		expect(error.$metadata.httpStatusCode).toBe(404);
 	}
