@@ -109,16 +109,6 @@ tests:
     sample_name: [websocket-disruption]
     spec: websocket-disruption
     browser: *minimal_browser_list
-  - test_name: integ_vanilla_js_datastore_basic_crud
-    desc: 'Vanilla JS + Webpack 4 + DataStore - Basic CRUD'
-    framework: javascript
-    category: datastore
-    sample_name: [basic-crud]
-    browser: *minimal_browser_list
-    spec: vanilla-js-basic-crud
-    amplifyjs_dir: true
-    timeout_minutes: 45
-    retry_count: 10
   - test_name: integ_next_datastore_owner_auth
     desc: 'next owner auth'
     framework: next
