@@ -1,4 +1,12 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { AuthConfig, LibraryAuthOptions, UserPoolConfig } from './Auth/types';
+import {
+	LibraryStorageOptions,
+	StorageAccessLevel,
+	StorageConfig,
+} from './Storage/types';
 
 export type ResourcesConfig = {
 	API?: {};
@@ -8,11 +16,12 @@ export type ResourcesConfig = {
 	Interactions?: {};
 	Notifications?: {};
 	Predictions?: {};
-	Storage?: {};
+	Storage?: StorageConfig;
 };
 
 export type LibraryOptions = {
 	Auth?: LibraryAuthOptions;
+	Storage?: LibraryStorageOptions;
 };
 
-export { AuthConfig, UserPoolConfig };
+export { AuthConfig, UserPoolConfig, StorageAccessLevel, StorageConfig };
