@@ -18,11 +18,9 @@ on:
       spec:
         required: false
         type: string
-        default: ''
       browser:
         required: false
         type: string
-        default: ''
       amplifyjs_dir:
         required: false
         type: boolean
@@ -35,10 +33,6 @@ on:
         type: number
 
 env:
-  NPM_REGISTRY: http://localhost:4873/
-  NPM_USER: circleci
-  NPM_PASS: circleci
-  NPM_EMAIL: circleci@amplify.js
   AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/amplify-js
   CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
   CYPRESS_GOOGLE_CLIENT_SECRET: ${{ secrets.CYPRESS_GOOGLE_CLIENT_SECRET }}
@@ -123,9 +117,9 @@ jobs:
         shell: bash
       - name: Upload artifact
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
-        if: always()
+        if: failure()
         with:
-          name: canary-e2e-test-artifacts
+          name: ${{ inputs.test_name }}
           if-no-files-found: ignore
           path: |
             amplify-js-samples-staging/cypress/videos

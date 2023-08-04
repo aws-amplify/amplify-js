@@ -8,7 +8,7 @@ extended_browser_list: &extended_browser_list
   - edge
 
 tests:
-    #DATASTORE
+    # DATASTORE
   - test_name: integ_datastore_auth-owner-based-default
     desc: 'DataStore Auth - Chrome'
     framework: react
@@ -159,7 +159,7 @@ tests:
     timeout_minutes: 45
     retry_count: 10
 
-    #GEO
+    # GEO
   - test_name: integ_react_geo_display_map
     desc: 'Display Map'
     framework: react
@@ -177,7 +177,7 @@ tests:
     # Temp fix:
     browser: [chrome]
 
-    #INTERACTIONS
+    # INTERACTIONS
   - test_name: integ_react_interactions_react_interactions
     desc: 'React Interactions'
     framework: react
@@ -207,7 +207,7 @@ tests:
     spec: chatbot-component
     browser: [chrome]
 
-    #PREDICTIONS
+    # PREDICTIONS
   - test_name: integ_react_predictions
     desc: 'React Predictions'
     framework: react
@@ -216,7 +216,7 @@ tests:
     spec: multiuser-translation
     browser: *minimal_browser_list
 
-    #PUBSUB
+    # PUBSUB
   - test_name: integ_react_iot_reconnect
     desc: 'PubSub - Reconnection for IoT'
     framework: react
@@ -234,7 +234,7 @@ tests:
     # Firefox doesn't support network state management in cypress
     browser: [chrome]
 
-    #STORAGE
+    # STORAGE
   - test_name: integ_react_storage
     desc: 'React Storage'
     framework: react
@@ -257,7 +257,7 @@ tests:
     spec: multi-part-copy-with-progress
     browser: *minimal_browser_list
  
-    #API
+    # API
   - test_name: integ_react_graphql_api
     desc: 'React GraphQL API'
     framework: react
@@ -266,7 +266,7 @@ tests:
     spec: graphql
     browser: *minimal_browser_list
 
-    #AUTH
+    # AUTH
   - test_name: integ_react_auth_1_react_authenticator
     desc: 'React Authenticator'
     framework: react

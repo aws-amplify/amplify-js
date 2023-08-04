@@ -9,10 +9,6 @@ on:
         default: true
 
 env:      
-  NPM_REGISTRY: http://localhost:4873/
-  NPM_USER: circleci
-  NPM_PASS: circleci
-  NPM_EMAIL: circleci@amplify.js
   AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/amplify-js
   CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
   CYPRESS_GOOGLE_CLIENT_SECRET: ${{ secrets.CYPRESS_GOOGLE_CLIENT_SECRET }}
@@ -40,7 +36,7 @@ jobs:
       - name: Setup node and build the repository
         uses: stocaaro/amplify-js/.github/actions/node-and-build@main
 
-        #React
+        # React
       - name: Create react application
         run: npx create-react-app new-react-app
         working-directory: amplify-js-samples-staging/samples/react/auth
@@ -73,7 +69,7 @@ jobs:
         working-directory: amplify-js-samples-staging
         shell: bash
       
-      #Angular
+      # Angular
       - name: Install angular CLI
         run: npm install -g @angular/cli
       - name: Create angular application
@@ -113,7 +109,7 @@ jobs:
         working-directory: amplify-js-samples-staging
         shell: bash
 
-      #Next
+      # Next
       - name: Create next application
         run: npx create-next-app new-next-app --no-app
         working-directory: amplify-js-samples-staging/samples/next/auth
@@ -151,7 +147,7 @@ jobs:
         working-directory: amplify-js-samples-staging
         shell: bash
       
-        #Vue
+        # Vue
       - name: Create Vue application
         run: | 
           npm init vue@3
@@ -186,7 +182,7 @@ jobs:
         working-directory: amplify-js-samples-staging
         shell: bash
 
-        #Javascript
+        # Javascript
       - name: Create javascript application
         run: |
           mkdir -p new-javascript-app/src && cd new-javascript-app
