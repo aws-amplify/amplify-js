@@ -6,6 +6,7 @@ import {
 	StorageGetUrlResult,
 	StorageUploadResult,
 } from '../../../types';
+import { StorageGetPropertiesResult } from '../../../types/results';
 
 type S3ObjectInformation = {
 	/**
@@ -38,3 +39,6 @@ export type S3GetUrlResult = StorageGetUrlResult;
 export type S3UploadDataResult = StorageUploadResult;
 
 export type S3UploadFileResult = StorageUploadResult;
+
+export type S3GetPropertiesResult = StorageGetPropertiesResult &
+	S3ObjectInformation;
