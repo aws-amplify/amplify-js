@@ -117,7 +117,11 @@ export {
 	AuthConfig,
 	UserPoolConfig,
 	IdentityPoolConfig,
+	UserPoolConfigAndIdentityPoolConfig,
 } from './singleton/types';
+
+//AWSClients exports
+export { getCredentialsForIdentity, getId } from './AwsClients/CognitoIdentity';
 
 // Credentials and IdentityId exports
 export {

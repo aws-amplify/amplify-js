@@ -155,6 +155,8 @@ export type IdentityPoolConfig = {
 	userPoolWebClientId?: never;
 	userPoolId?: never;
 	clientMetadata?: never;
+	isMandatorySignInEnabled?: never;
+	oidcProvider?: never;
 };
 
 export type UserPoolConfig = {
@@ -164,9 +166,11 @@ export type UserPoolConfig = {
 	clientMetadata?: Record<string, string>;
 };
 
-type UserPoolConfigAndIdentityPoolConfig = {
+export type UserPoolConfigAndIdentityPoolConfig = {
 	userPoolWebClientId: string;
 	userPoolId: string;
 	identityPoolId: string;
 	clientMetadata?: Record<string, string>;
+	isMandatorySignInEnabled?: boolean;
+	oidcProvider?: string;
 };

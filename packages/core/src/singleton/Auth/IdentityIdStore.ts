@@ -33,10 +33,14 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 	async loadIdentityId(): Promise<Identity | undefined> {
 		assertIdentityIdProviderConfig(this.authConfig);
 
+		asserts(!(this.keyValueStorage === undefined), {
+			message: 'No KeyValueStorage available',
+			name: 'KeyValueStorageNotFound',
+			recoverySuggestion:
+				'Make sure to set the keyValueStorage before using this method',
+		});
 		// TODO(v6): migration logic should be here
 		// Reading V5 tokens old format
-
-		// Reading V6 tokens
 		try {
 			const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 			const authKeys = createKeysForAuthStorage(
@@ -72,6 +76,12 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 			message: 'Invalid Identity parameter',
 			name: 'InvalidAuthIdentity',
 			recoverySuggestion: 'Make sure a valid Identity object is passed',
+		});
+		asserts(!(this.keyValueStorage === undefined), {
+			message: 'No KeyValueStorage available',
+			name: 'KeyValueStorageNotFound',
+			recoverySuggestion:
+				'Make sure to set the keyValueStorage before using this method',
 		});
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure

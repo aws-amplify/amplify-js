@@ -11,6 +11,8 @@ import {
 	CredentialsProvider,
 	FetchAuthSessionOptions,
 	AmplifyV6,
+	UserPoolConfigAndIdentityPoolConfig,
+	getCredentialsForIdentity,
 } from '@aws-amplify/core';
 import { AuthError } from '../../../errors/AuthError';
 
@@ -38,46 +40,44 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		authConfig?: AuthConfig;
 		identityId?: string;
 	}): Promise<Credentials> {
-		try {
-			// TODO(V6): Listen to changes to AuthTokens and update the credentials
-			if (!identityId) {
-				// TODO(V6): If there is no identityId attempt once to get it
-				throw new AuthError({
-					name: 'IdentityIdConfigException',
-					message: 'No Cognito Identity Id provided',
-					recoverySuggestion: 'Make sure to pass a valid identityId.',
-				});
-			}
-
-			if (options?.forceRefresh) {
-				if (AmplifyV6.libraryOptions.Auth?.tokenRefresher && tokens) {
-					tokens = await AmplifyV6.libraryOptions.Auth?.tokenRefresher({
-						tokens,
-						authConfig,
-					});
-					this.clearCredentials();
-				}
-			}
-			// check eligibility for guest credentials
-			// - if there is error fetching tokens
-			// - if user is not signed in
-			// TODO(V6): Determine if tokens not being present is enough to decide we need to fetch guest credentials, do we need isSignedIn?
-			if (!tokens) {
-				// TODO(V6): Attempt to get the tokens from the provider once
-				// tokens = await AmplifyV6.authTokensProvider.getAuthTokens();
-				return await this.getGuestCredentials(identityId);
-			} else {
-				return await this.credsForOIDCTokens(tokens, identityId);
-			}
-		} catch (e) {
+		// TODO(V6): Listen to changes to AuthTokens and update the credentials
+		if (!identityId) {
+			// TODO(V6): If there is no identityId attempt once to get it
 			throw new AuthError({
-				name: 'CredentialsException',
-				message: `Error getting credentials. Error: ${e}`,
+				name: 'IdentityIdConfigException',
+				message: 'No Cognito Identity Id provided',
+				recoverySuggestion: 'Make sure to pass a valid identityId.',
 			});
+		}
+
+		if (options?.forceRefresh) {
+			if (AmplifyV6.libraryOptions.Auth?.tokenRefresher && tokens) {
+				tokens = await AmplifyV6.libraryOptions.Auth?.tokenRefresher({
+					tokens,
+					authConfig,
+				});
+				this.clearCredentials();
+			}
+		}
+		authConfig = AmplifyV6.getConfig()
+			.Auth as UserPoolConfigAndIdentityPoolConfig;
+		// check eligibility for guest credentials
+		// - if there is error fetching tokens
+		// - if user is not signed in
+		// TODO(V6): Determine if tokens not being present is enough to decide we need to fetch guest credentials, do we need isSignedIn?
+		if (!tokens) {
+			// TODO(V6): Attempt to get the tokens from the provider once
+			// tokens = await AmplifyV6.authTokensProvider.getAuthTokens();
+			return await this.getGuestCredentials(identityId, authConfig);
+		} else {
+			return await this.credsForOIDCTokens(authConfig, tokens, identityId);
 		}
 	}
 
-	private async getGuestCredentials(identityId: string): Promise<Credentials> {
+	private async getGuestCredentials(
+		identityId: string,
+		authConfig: UserPoolConfigAndIdentityPoolConfig
+	): Promise<Credentials> {
 		if (
 			this._credentials &&
 			!this._isExpired(this._credentials) &&
@@ -94,11 +94,9 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		this.clearCredentials();
 
 		// TODO(V6): Access config to check for this value
-		const amplifyConfig = { isMandatorySignInEnabled: false };
-		const { isMandatorySignInEnabled } = amplifyConfig;
 
 		// Check if mandatory sign-in is enabled
-		if (isMandatorySignInEnabled) {
+		if (authConfig.isMandatorySignInEnabled) {
 			throw new AuthError({
 				name: 'AuthConfigException',
 				message:
@@ -114,11 +112,15 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		const clientResult = await credentialsForIdentityIdClient({
 			IdentityId: identityId,
 		});
-		if (clientResult.Credentials) {
+		if (
+			clientResult.Credentials &&
+			clientResult.Credentials.AccessKeyId &&
+			clientResult.Credentials.SecretKey
+		) {
 			// TODO(V6): The values in this type is non optional but we get optional values from client
 			const res: Credentials = {
-				accessKeyId: clientResult.Credentials.AccessKeyId ?? '',
-				secretAccessKey: clientResult.Credentials.SecretKey ?? '',
+				accessKeyId: clientResult.Credentials.AccessKeyId,
+				secretAccessKey: clientResult.Credentials.SecretKey,
 				sessionToken: clientResult.Credentials.SessionToken,
 				expiration: clientResult.Credentials.Expiration,
 			};
@@ -143,6 +145,7 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 	}
 
 	private async credsForOIDCTokens(
+		authConfig: UserPoolConfigAndIdentityPoolConfig,
 		authTokens: AuthTokens,
 		identityId?: string
 	): Promise<Credentials> {
@@ -165,17 +168,34 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		let logins = authTokens.idToken
 			? formLoginsMap(authTokens.idToken.toString(), 'COGNITO')
 			: {};
+		const identityPoolId = authConfig.identityPoolId;
+		if (!identityPoolId) {
+			logger.debug('identityPoolId is not found in the config');
+			throw new AuthError({
+				name: 'AuthConfigException',
+				message: 'Cannot get credentials without an identityPoolId',
+				recoverySuggestion:
+					'Make sure a valid identityPoolId is given in the config.',
+			});
+		}
+		const region = identityPoolId.split(':')[0];
+		// TODO(V6): Replace with existing identityPoolClient
 		const clientResult = await credentialsForIdentityIdClient({
 			IdentityId: identityId,
 			Logins: logins,
 		});
 
-		if (clientResult.Credentials) {
+		if (
+			clientResult.Credentials &&
+			clientResult.Credentials.AccessKeyId &&
+			clientResult.Credentials.SecretKey
+		) {
 			// TODO(V6): The values in this Credentials type is non optional but we get optional values from client
 			const res: Credentials = {
 				accessKeyId: clientResult.Credentials.AccessKeyId ?? '',
 				secretAccessKey: clientResult.Credentials.SecretKey ?? '',
 				sessionToken: clientResult.Credentials.SessionToken,
+				// TODO(V6): Fixed expiration now + 50 mins
 				expiration: clientResult.Credentials.Expiration,
 			};
 			// Store the credentials in-memory along with the expiration

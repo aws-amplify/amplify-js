@@ -3,6 +3,7 @@ import {
 	LibraryAuthOptions,
 	UserPoolConfig,
 	IdentityPoolConfig,
+	UserPoolConfigAndIdentityPoolConfig,
 } from './Auth/types';
 
 export type ResourcesConfig = {
@@ -20,4 +21,9 @@ export type LibraryOptions = {
 	Auth?: LibraryAuthOptions;
 };
 
-export { AuthConfig, UserPoolConfig, IdentityPoolConfig };
+export {
+	AuthConfig,
+	UserPoolConfig,
+	IdentityPoolConfig,
+	UserPoolConfigAndIdentityPoolConfig,
+};
