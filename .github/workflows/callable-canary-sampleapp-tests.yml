@@ -30,7 +30,7 @@ jobs:
         with:
           GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
       - name: Setup node and build the repository
-        uses: ./amplify-js/.github/actions/node-and-build@main
+        uses: ./amplify-js/.github/actions/node-and-build
 
         # React
       - name: Create react application
