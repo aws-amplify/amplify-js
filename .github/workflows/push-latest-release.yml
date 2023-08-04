@@ -14,10 +14,10 @@ jobs:
   e2e:
     secrets: inherit
     uses: ./.github/workflows/callable-release-verification.yml
-  release:
-    needs:
-      - e2e
-    permissions:
-      contents: write
-    secrets: inherit
-    uses: ./.github/workflows/callable-npm-publish-release.yml
+  # release:
+  #   needs:
+  #     - e2e
+  #   permissions:
+  #     contents: write
+  #   secrets: inherit
+  #   uses: ./.github/workflows/callable-npm-publish-release.yml
