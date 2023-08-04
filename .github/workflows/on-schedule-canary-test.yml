@@ -1,0 +1,10 @@
+on:
+  pull_request:
+  # Tests scheduled for every 1 hour
+  schedule:
+  - cron: '0 */1 * * *'
+
+jobs:
+  canaries:
+    secrets: inherit
+    uses: ./.github/workflows/callable-canary-e2e.yml
