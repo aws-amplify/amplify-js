@@ -11,6 +11,7 @@ import { graphql as v6graphql } from '@aws-amplify/api-graphql/internals';
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
 import { InternalAPIClass } from './internals/InternalAPI';
+import type { ModelTypes } from '@aws-amplify/types-package-alpha';
 
 const logger = new Logger('API');
 /**
@@ -51,7 +52,7 @@ export class APIClass extends InternalAPIClass {
 	/**
 	 * Generates an API client that can work with models or raw GraphQL
 	 */
-	generateClient<T = never>(): V6Client<T> {
+	generateClient<T extends Record<any, any> = never>(): V6Client<T> {
 		const config = super.configure({});
 
 		const { modelIntrospection } = config;
@@ -83,6 +84,11 @@ export class APIClass extends InternalAPIClass {
 						// flatten response
 						if (res.data !== undefined) {
 							const [key] = Object.keys(res.data);
+
+							if (res.data[key].items) {
+								return res.data[key].items;
+							}
+
 							return res.data[key];
 						}
 
@@ -264,32 +270,10 @@ type ExcludeNeverFields<O> = {
 	[K in FilteredKeys<O>]: O[K];
 };
 
-type Prettify<T> = T extends object
-	? {
-			[P in keyof T]: Prettify<T[P]>;
-	  }
-	: T;
-
 // If no T is passed, ExcludeNeverFields removes "models" from the client
-declare type V6Client<T = never> = ExcludeNeverFields<{
+declare type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	graphql: typeof v6graphql;
-	models: {
-		[K in keyof T]: K extends string
-			? {
-					create: (model: T[K]) => Promise<T[K]>;
-					update: (
-						model: Prettify<
-							{
-								id: string;
-							} & Partial<T[K]>
-						>
-					) => Promise<T[K]>;
-					delete: (id: string) => Promise<T[K]>;
-					get: (id: string) => Promise<T[K]>;
-					list: () => Promise<Array<T[K]>>;
-			  }
-			: never;
-	};
+	models: ModelTypes<T>;
 }>;
 
 export const API = new APIClass(null);
