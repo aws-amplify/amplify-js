@@ -5,6 +5,7 @@ on:
 
 env:
   WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
 
 jobs:
   prebuild-ubuntu:
@@ -36,9 +37,12 @@ jobs:
     if: failure()
     steps:
       - name: Send slack message
+        env:
+          WORKFLOW_URL: ${{ env.WORKFLOW_URL }}
+          WEBHOOK_URL: ${{ env.WEBHOOK_URL }}
         run: |
           curl -X POST -H "Content-Type: application/json" \
-          --data '{"URL":"${{ env.WORKFLOW_URL }}"}' \
-          https://hooks.slack.com/workflows/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
+          --data '{"URL":"$WORKFLOW_URL"}' \
+          $WEBHOOK_URL
          
         

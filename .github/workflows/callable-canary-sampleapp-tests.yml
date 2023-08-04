@@ -18,10 +18,6 @@ jobs:
   build_apps:
     name: Build Sample App Tests
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        BROWSER: [chrome]
-
     steps: 
       - name: Checkout repository
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
@@ -34,7 +30,7 @@ jobs:
         with:
           GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
       - name: Setup node and build the repository
-        uses: stocaaro/amplify-js/.github/actions/node-and-build@main
+        uses: ./amplify-js/.github/actions/node-and-build@main
 
         # React
       - name: Create react application
@@ -63,7 +59,7 @@ jobs:
             auth \
             new-react-app \
             new-react-app \
-            ${{ matrix.BROWSER }} \
+            chrome \
             dev" \
             -n 3
         working-directory: amplify-js-samples-staging
@@ -103,7 +99,7 @@ jobs:
             interactions \
             new-angular-app \
             new-angular-app \
-            ${{ matrix.BROWSER }} \
+            chrome \
             dev" \
             -n 3
         working-directory: amplify-js-samples-staging
@@ -141,7 +137,7 @@ jobs:
             auth \
             new-next-app \
             new-next-app \
-            ${{ matrix.BROWSER }} \
+            chrome \
             dev" \
             -n 3
         working-directory: amplify-js-samples-staging
@@ -176,7 +172,7 @@ jobs:
             auth \
             new-vue-app \
             new-vue-app \
-            ${{ matrix.BROWSER }} \
+            chrome \
             dev" \
             -n 3
         working-directory: amplify-js-samples-staging
@@ -209,6 +205,8 @@ jobs:
         run: npm install --save --legacy-peer-deps
         working-directory: amplify-js-samples-staging/samples/javascript/auth/new-javascript-app
       - name: Start application and run test
+        env:
+          AMPLIFY_DIR: ${{ env.AMPLIFY_DIR }}
         run: |
             ../amplify-js/.circleci/retry-yarn-script.sh -s \
             "ci:test \
@@ -216,9 +214,9 @@ jobs:
             auth \
             new-javascript-app \
             new-javascript-app \
-            ${{ matrix.BROWSER }} \
+            chrome \
             dev \
-            ${{ env.AMPLIFY_DIR }}" \
+            $AMPLIFY_DIR" \
             -n 3
         working-directory: amplify-js-samples-staging
         shell: bash
