@@ -1,0 +1,50 @@
+name: Load Verdaccio with AmplifyJs
+description: Turn on Verdaccio and load up all of the AmplifyJS build artifacts
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Start verdaccio
+      run: |
+        npx verdaccio@5.25.0 &
+        while ! nc -z localhost 4873; do
+          echo "Verdaccio not running yet"
+          sleep 1
+        done
+
+        # Run your commands after verdaccio is up and running
+        echo "Verdaccio is up and running, proceeding with the script..."
+      shell: bash
+    - name: Install and run npm-cli-login
+      shell: bash
+      env:
+        NPM_REGISTRY: http://localhost:4873/
+        NPM_USER: verdaccio
+        NPM_PASS: verdaccio
+        NPM_EMAIL: verdaccio@amplify.js
+      run: |
+        npm i -g npm-cli-adduser
+        npm-cli-adduser
+        sleep 1
+    - name: Configure registry and git
+      shell: bash
+      working-directory: ./amplify-js
+      env:
+        NPM_REGISTRY: http://localhost:4873/
+        NPM_USER: verdaccio
+        NPM_PASS: verdaccio
+        NPM_EMAIL: verdaccio@amplify.js
+      run: |
+        yarn config set registry $NPM_REGISTRY
+        npm set registry $NPM_REGISTRY
+        git config --global user.email $NPM_EMAIL
+        git config --global user.name $NPM_USER
+        git status
+        git --no-pager diff
+    - name: Publish to verdaccio
+      shell: bash
+      working-directory: ./amplify-js
+      run: |
+        scripts/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
+        yarn info aws-amplify@unstable description
+        npm info aws-amplify@unstable version
