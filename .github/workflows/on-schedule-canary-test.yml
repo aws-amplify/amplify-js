@@ -1,5 +1,4 @@
 on:
-  pull_request:
   # Tests scheduled for every 1 hour
   schedule:
   - cron: '0 */1 * * *'
