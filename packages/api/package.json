@@ -50,8 +50,7 @@
 	"devDependencies": {
 		"@types/zen-observable": "^0.8.0",
 		"typescript": "^5.1.6",
-		"downlevel-dts": "^0.11.0",
-		"@aws-amplify/types-package-alpha": "*"
+		"downlevel-dts": "^0.11.0"
 	},
 	"files": [
 		"lib",
@@ -63,6 +62,7 @@
 	"dependencies": {
 		"@aws-amplify/api-graphql": "3.4.6",
 		"@aws-amplify/api-rest": "3.5.0",
+		"@aws-amplify/types-package-alpha": "*",
 		"tslib": "^2.6.1"
 	},
 	"size-limit": [
