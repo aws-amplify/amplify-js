@@ -1,7 +1,7 @@
 on:
   # Tests scheduled for every 1 hour
   schedule:
-  - cron: '0 */1 * * *'
+    - cron: '0 9 * * *'
 
 jobs:
   canaries:
