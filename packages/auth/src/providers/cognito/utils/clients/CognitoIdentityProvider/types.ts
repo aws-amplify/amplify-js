@@ -153,12 +153,6 @@ declare namespace ForgotPasswordResponse {
 	 */
 	const filterSensitiveLog: (obj: ForgotPasswordResponse) => any;
 }
-declare namespace GetCSVHeaderResponse {
-	/**
-	 * @internal
-	 */
-	const filterSensitiveLog: (obj: GetCSVHeaderResponse) => any;
-}
 declare namespace GetUserAttributeVerificationCodeRequest {
 	/**
 	 * @internal
@@ -188,6 +182,12 @@ declare namespace GlobalSignOutRequest {
 	 * @internal
 	 */
 	const filterSensitiveLog: (obj: GlobalSignOutRequest) => any;
+}
+declare namespace GlobalSignOutResponse {
+	/**
+	 * @internal
+	 */
+	const filterSensitiveLog: (obj: GlobalSignOutResponse) => any;
 }
 declare namespace InitiateAuthRequest {
 	/**
@@ -781,22 +781,6 @@ export interface ForgotPasswordResponse {
 	 */
 	CodeDeliveryDetails?: CodeDeliveryDetailsType;
 }
-export interface GetCSVHeaderCommandOutput extends GetCSVHeaderResponse, __MetadataBearer {
-}
-/**
- * <p>Represents the response from the server to the request to get the header information of the CSV file for the user import job.</p>
- */
-export interface GetCSVHeaderResponse {
-	/**
-	 * <p>The user pool ID for the user pool that the users are to be imported
-	 *     into.</p>
-	 */
-	UserPoolId?: string;
-	/**
-	 * <p>The header information of the CSV file for the user import job.</p>
-	 */
-	CSVHeader?: string[];
-}
 export interface GetUserAttributeVerificationCodeCommandInput extends GetUserAttributeVerificationCodeRequest {
 }
 export interface GetUserAttributeVerificationCodeCommandOutput extends GetUserAttributeVerificationCodeResponse, __MetadataBearer {
@@ -897,6 +881,8 @@ export interface GetUserResponse {
 }
 export interface GlobalSignOutCommandInput extends GlobalSignOutRequest {
 }
+export interface GlobalSignOutCommandOutput extends GlobalSignOutResponse, __MetadataBearer {
+}
 /**
  * <p>Represents the request to sign out all devices.</p>
  */
@@ -905,6 +891,11 @@ export interface GlobalSignOutRequest {
 	 * <p>The access token.</p>
 	 */
 	AccessToken: string | undefined;
+}
+/**
+ * <p>The response to the request to sign out all devices.</p>
+ */
+export interface GlobalSignOutResponse {
 }
 export interface InitiateAuthCommandInput extends InitiateAuthRequest {
 }
