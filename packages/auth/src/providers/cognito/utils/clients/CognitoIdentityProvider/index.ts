@@ -58,6 +58,8 @@ import {
 	parseJsonBody,
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
+import { assertServiceError } from '../../../../../errors/utils/assertServiceError';
+import { AuthError } from '../../../../../errors/AuthError';
 
 type ClientOperation =
 	| 'SignUp'
@@ -95,7 +97,8 @@ const userPoolDeserializer = async <Output>(
 ): Promise<Output> => {
 	if (response.statusCode >= 300) {
 		const error = await parseJsonError(response);
-		throw error;
+		assertServiceError(error);
+		throw new AuthError({ name: error.name, message: error.message });
 	} else {
 		const body = await parseJsonBody(response);
 		return body as Output;
