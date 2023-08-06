@@ -6,6 +6,7 @@ import { AmplifyErrorMap } from '@aws-amplify/core';
 export enum StorageValidationErrorCode {
 	NoCredentials = 'NoCredentials',
 	NoIdentityId = 'NoIdentityId',
+	NoKey = 'NoKey',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
@@ -15,5 +16,8 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	[StorageValidationErrorCode.NoIdentityId]: {
 		message:
 			'Missing identity ID when accessing objects in protected or private access level',
+	},
+	[StorageValidationErrorCode.NoKey]: {
+		message: 'Missing key',
 	},
 };
