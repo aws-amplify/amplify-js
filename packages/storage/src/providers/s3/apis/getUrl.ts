@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { S3GetUrlOptions, S3GetUrlResult } from '../types';
-
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import {
 	GetObjectInput,
