@@ -7,7 +7,7 @@ test('getProperties API happy path case', async () => {
 	// TODO test credentials
 	headObject.mockImplementation(() => {
 		return {
-			Key: 'key',
+			Key: 'getKey',
 			ContentLength: '100',
 			ContentType: 'text/plain',
 			ETag: 'etag',
@@ -16,7 +16,7 @@ test('getProperties API happy path case', async () => {
 		};
 	});
 	const metadata = { key: 'value' };
-	expect(await getProperties({ key: 'key' })).toEqual({
+	expect(await getProperties({ key: 'getKey' })).toEqual({
 		key: 'key',
 		contentLength: '100',
 		contentType: 'text/plain',
