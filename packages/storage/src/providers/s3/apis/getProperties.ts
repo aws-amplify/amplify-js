@@ -9,15 +9,17 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
 import { S3GetPropertiesResult } from '../types/results';
+import { assertServiceError } from '../../../errors/utils/assertServiceError';
+import { GetPropertiesException } from '../types/errors';
 
 /**
  * Get Properties of the object
  *
  * @param {StorageOperationRequest} The request object
  * @return {Promise<S3GetPropertiesResult>} Properties of the object
- * @throws service: {@link NotFoundException} - thrown when there is no given object in bucket
- * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown either username or key are not defined.
- *
+ * @throws service: {@link GetPropertiesException}
+ * - S3 service errors thrown while getting properties
+ * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
  * TODO: add config errors
  */
 export const getProperties = async function (
@@ -28,26 +30,30 @@ export const getProperties = async function (
 		await AmplifyV6.Auth.fetchAuthSession();
 	assertValidationError(!!awsCreds, StorageValidationErrorCode.NoCredentials);
 	const { bucket, defaultAccessLevel } = AmplifyV6.getConfig().Storage;
-	// TODO: assert bucket and region;
-	const { key, options: { level = defaultAccessLevel } = {} } = req;
+	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	const { prefixResolver = defaultPrefixResolver } =
 		AmplifyV6.libraryOptions?.Storage ?? {};
+	const { key, options: { level = defaultAccessLevel } = {} } = req;
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 	const finalKey =
 		prefixResolver({
 			level,
 			identityId: awsCredsIdentityId,
 		}) + key;
-	const response = await headObject(options, {
-		Bucket: bucket,
-		Key: finalKey,
-	});
-	return {
-		key: finalKey,
-		contentType: response.ContentType,
-		contentLength: response.ContentLength,
-		eTag: response.ETag,
-		lastModified: response.LastModified,
-		metadata: response.Metadata,
-	};
+	try {
+		const response = await headObject(options, {
+			Bucket: bucket,
+			Key: finalKey,
+		});
+		return {
+			key: finalKey,
+			contentType: response.ContentType,
+			contentLength: response.ContentLength,
+			eTag: response.ETag,
+			lastModified: response.LastModified,
+			metadata: response.Metadata,
+		};
+	} catch (error) {
+		assertServiceError(error);
+	}
 };
