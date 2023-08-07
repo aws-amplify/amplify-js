@@ -8,8 +8,8 @@ import { assertValidationError } from '../../../errors/assertValidationErrors';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver ';
 import { StorageError } from '../../../errors/StorageError';
-import { SERVICE_NAME as S3_SERVICE_NAME } from '../../../AwsClients/S3';
 import {
+	SERVICE_NAME as S3_SERVICE_NAME,
 	GetObjectInput,
 	getPresignedGetObjectUrl,
 } from '../../../AwsClients/S3';
