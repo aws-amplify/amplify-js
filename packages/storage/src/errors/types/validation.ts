@@ -8,7 +8,6 @@ export enum StorageValidationErrorCode {
 	NoIdentityId = 'NoIdentityId',
 	NoKey = 'NoKey',
 	NoBucket = 'NoBucket',
-	NoRegion = 'NoRegion',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
