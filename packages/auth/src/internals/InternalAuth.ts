@@ -316,13 +316,6 @@ export class InternalAuthClass {
 	 */
 	public signUp(
 		params: string | SignUpParams,
-		...restOfAttrs: string[]
-	): Promise<ISignUpResult> {
-		return this.internalSignUp(params, restOfAttrs);
-	}
-
-	public internalSignUp(
-		params: string | SignUpParams,
 		restOfAttrs?: string[],
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<ISignUpResult> {
