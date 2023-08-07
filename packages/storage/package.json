@@ -43,29 +43,30 @@
   "files": [
     "lib",
     "lib-esm",
-    "src"
+    "src",
+    "internals"
   ],
   "dependencies": {
     "@aws-sdk/md5-js": "3.6.1",
     "@aws-sdk/types": "3.6.1",
     "events": "^3.1.0",
     "fast-xml-parser": "^4.2.5",
-    "tslib": "^2.5.0",
-    "typescript": "5.0.2"
+    "tslib": "^2.5.0"
   },
   "peerDependencies": {
     "@aws-amplify/core": "^6.0.0"
   },
   "devDependencies": {
     "@aws-amplify/core": "6.0.0",
-    "@types/sinon": "^7.5.1"
+    "@types/sinon": "^7.5.1",
+    "typescript": "5.0.2"
   },
   "size-limit": [
     {
       "name": "Storage (top-level class)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, Storage }",
-      "limit": "38.15 kB"
+      "limit": "38.95 kB"
     }
   ],
   "jest": {

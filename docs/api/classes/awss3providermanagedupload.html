@@ -922,9 +922,6 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-constructor tsd-parent-kind-class">
 				<a href="awss3providermanagedupload.html#constructor" class="tsd-kind-icon">constructor</a>
 			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-				<a href="awss3providermanagedupload.html#_createnews3client" class="tsd-kind-icon">_create<wbr>New<wbr>S3Client</a>
-			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="awss3providermanagedupload.html#upload" class="tsd-kind-icon">upload</a>
 			</li>
@@ -955,7 +952,6 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
-						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="awss3providermanagedupload.html#_createnews3client" class="tsd-kind-icon">_create<wbr>New<wbr>S3Client</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awss3providermanagedupload.html#upload" class="tsd-kind-icon">upload</a></li>
 					</ul>
 				</section>
@@ -968,25 +964,25 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new AWSS3<wbr>Provider<wbr>Managed<wbr>Upload<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PutObjectCommandInput</span>, opts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, emitter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">events.EventEmitter</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="awss3providermanagedupload.html" class="tsd-signature-type">AWSS3ProviderManagedUpload</a></li>
+				<li class="tsd-signature tsd-kind-icon">new AWSS3<wbr>Provider<wbr>Managed<wbr>Upload<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><a href="../globals.html#putobjectinput" class="tsd-signature-type">PutObjectInput</a>, opts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, emitter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventEmitter</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="awss3providermanagedupload.html" class="tsd-signature-type">AWSS3ProviderManagedUpload</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L58">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:58</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L56">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:56</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>params: <span class="tsd-signature-type">PutObjectCommandInput</span></h5>
+							<h5>params: <a href="../globals.html#putobjectinput" class="tsd-signature-type">PutObjectInput</a></h5>
 						</li>
 						<li>
 							<h5>opts: <span class="tsd-signature-type">any</span></h5>
 						</li>
 						<li>
-							<h5>emitter: <span class="tsd-signature-type">events.EventEmitter</span></h5>
+							<h5>emitter: <span class="tsd-signature-type">EventEmitter</span></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="awss3providermanagedupload.html" class="tsd-signature-type">AWSS3ProviderManagedUpload</a></h4>
@@ -996,46 +992,20 @@ img { max-width: 100%; }
 	</section>
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Methods</h2>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-			<a name="_createnews3client" class="tsd-anchor"></a>
-			<h3><span class="tsd-flag ts-flagProtected">Protected</span> _create<wbr>New<wbr>S3Client</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-				<li class="tsd-signature tsd-kind-icon">_create<wbr>New<wbr>S3Client<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, emitter<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">events.EventEmitter</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">S3Client</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L323">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:323</a></li>
-						</ul>
-					</aside>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>config: <span class="tsd-signature-type">any</span></h5>
-						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> emitter: <span class="tsd-signature-type">events.EventEmitter</span></h5>
-						</li>
-					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">S3Client</span></h4>
-				</li>
-			</ul>
-		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 			<a name="upload" class="tsd-anchor"></a>
 			<h3>upload</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">upload<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PutObjectOutput</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MetadataBearer</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">upload<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b1061a190/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L71">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:71</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L71">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:71</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PutObjectOutput</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MetadataBearer</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>

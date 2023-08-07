@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.8.0...@aws-amplify/storage@5.9.0) (2023-07-31)
+
+### Features
+
+- custom user agent Geo changes for UI handoff ([#11632](https://github.com/aws-amplify/amplify-js/issues/11632)) ([01bfa8f](https://github.com/aws-amplify/amplify-js/commit/01bfa8f692737bd14422f7dc2eae11ed00c19048))
+- custom user agent Storage changes for UI handoff ([#11627](https://github.com/aws-amplify/amplify-js/issues/11627)) ([b0231af](https://github.com/aws-amplify/amplify-js/commit/b0231af9d7fe631ef9e0e669df7a20802e3a21b3)), closes [#11656](https://github.com/aws-amplify/amplify-js/issues/11656) [#11657](https://github.com/aws-amplify/amplify-js/issues/11657)
+
+# [5.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.7.0...@aws-amplify/storage@5.8.0) (2023-07-20)
+
+### Features
+
+- **storage:** supporting put api when the objectLock is enabled ([#11611](https://github.com/aws-amplify/amplify-js/issues/11611)) ([817a08c](https://github.com/aws-amplify/amplify-js/commit/817a08c8b36efbe103ca2dd25cf65d5369418a4c))
+
+# [5.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.6.3...@aws-amplify/storage@5.7.0) (2023-07-13)
+
+### Bug Fixes
+
+- **s3:** add missing default content-type & support body.text() in RN & optimize retry ([#11537](https://github.com/aws-amplify/amplify-js/issues/11537)) ([33d858d](https://github.com/aws-amplify/amplify-js/commit/33d858d8d0ea112822e8b8289fc15761a053301d))
+- **storage:** custom client base64 encoded SSE-C headers ([#11567](https://github.com/aws-amplify/amplify-js/issues/11567)) ([ee19046](https://github.com/aws-amplify/amplify-js/commit/ee190460c01250b693c163f83be412abf3acc234))
+- **storage:** fail to avoid double signing for presigned URL ([cf51899](https://github.com/aws-amplify/amplify-js/commit/cf51899bee30de86ee9ea583e7cd9225ebcf2dfe))
+- **storage:** missing Size in listParts output ([679d78a](https://github.com/aws-amplify/amplify-js/commit/679d78a3f36fa995a787afb9c802720025e7ef69))
+- **storage:** multipart upload cannot complete ([0175d3d](https://github.com/aws-amplify/amplify-js/commit/0175d3d358bcdf1a5e39bc862f383ed3d44d6135))
+- **storage:** not pass the input to SSE-C serializer output ([#11607](https://github.com/aws-amplify/amplify-js/issues/11607)) ([28bc873](https://github.com/aws-amplify/amplify-js/commit/28bc8739ed6e6e941f893c2d7cf1354ebd65ba9d))
+- **storage:** vault uploads with public level with multipart upload ([416d797](https://github.com/aws-amplify/amplify-js/commit/416d797b0ab2e538bef37b7eb33851c7774ad6b9))
+
+### Features
+
+- **s3:** add s3 transfer handler ([#11482](https://github.com/aws-amplify/amplify-js/issues/11482)) ([53aa94f](https://github.com/aws-amplify/amplify-js/commit/53aa94f95a3959d5e490b17d91c9b65b52847359))
+- **s3:** custom xhr transfer handler ([#11471](https://github.com/aws-amplify/amplify-js/issues/11471)) ([e1f2ca1](https://github.com/aws-amplify/amplify-js/commit/e1f2ca11f0179e51126e42360de19169ffc7c6e2))
+- **s3:** dom based xml parser ([#11300](https://github.com/aws-amplify/amplify-js/issues/11300)) ([f54b603](https://github.com/aws-amplify/amplify-js/commit/f54b603991200ca37cfabd1629f6c5584227e5a8))
+- **s3:** implement listObjectsV2 ([#11504](https://github.com/aws-amplify/amplify-js/issues/11504)) ([0c43bb3](https://github.com/aws-amplify/amplify-js/commit/0c43bb3c3eaff0ed287953b44186a82da9169cd4))
+- **s3:** implement multiparts upload APIs ([#11514](https://github.com/aws-amplify/amplify-js/issues/11514)) ([835b74f](https://github.com/aws-amplify/amplify-js/commit/835b74fa15a143f7490ffcfb7f5811594d5c5a8e))
+- **s3:** implement putObject ([#11513](https://github.com/aws-amplify/amplify-js/issues/11513)) ([9efe09a](https://github.com/aws-amplify/amplify-js/commit/9efe09a3c13a4b51cdd8d8bd1f24599aeb3760e2))
+- **s3:** omit double encoding of path for S3 when signing ([#11538](https://github.com/aws-amplify/amplify-js/issues/11538)) ([d46d2d1](https://github.com/aws-amplify/amplify-js/commit/d46d2d1d4263e3b8bcfc03af473d7445af12e5b7))
+- **s3:** support copy/delete/get/head object APIs ([#11515](https://github.com/aws-amplify/amplify-js/issues/11515)) ([3e2c1a9](https://github.com/aws-amplify/amplify-js/commit/3e2c1a94ddcc3cfea1db81ca6a5c3b8075e738b8))
+- **storage:** integrate custom s3 client ([#11542](https://github.com/aws-amplify/amplify-js/issues/11542)) ([fe05494](https://github.com/aws-amplify/amplify-js/commit/fe05494c75ab6d1561863f4dfaf1107bc1f256a6))
+
 ## [5.6.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.6.2...@aws-amplify/storage@5.6.3) (2023-06-28)
 
 **Note:** Version bump only for package @aws-amplify/storage

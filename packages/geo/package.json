@@ -44,7 +44,8 @@
 	"files": [
 		"lib",
 		"lib-esm",
-		"src"
+		"src",
+		"internals"
 	],
 	"dependencies": {
 		"@aws-sdk/client-location": "3.186.3",
@@ -63,7 +64,7 @@
 			"name": "Geo (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Geo }",
-			"limit": "51.7 kB"
+			"limit": "52.1 kB"
 		}
 	],
 	"jest": {

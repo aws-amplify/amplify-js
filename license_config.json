@@ -1,8 +1,8 @@
 {
 	"ignore": [
 		"NOTICE",
-		".circleci",
 		".github",
+		"yarn.lock",
 		"**/*.config.dev.js",
 		"**/*.config.js",
 		"**/*.d.ts",
@@ -30,6 +30,7 @@
 		"**/lib-esm",
 		"**/node_modules",
 		"**/pushnotification",
+		"**/polyfills/URL/*.js",
 		"**/vendor",
 		"**/__tests__",
 		"**/__mocks__"
