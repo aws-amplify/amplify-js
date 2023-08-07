@@ -10,6 +10,7 @@ import {
 } from 'amazon-cognito-identity-js';
 
 import { AuthOptions } from '../src/types';
+import { InternalAuthClass } from '../src/internals/InternalAuth';
 
 const authOptions: AuthOptions = {
 	userPoolId: 'us-west-2_0xxxxxxxx',
@@ -22,7 +23,7 @@ const authOptions: AuthOptions = {
 describe('User-Attribute-validation', () => {
 	it('Check-non-verified-attributes', async () => {
 		const spyonAuthUserAttributes = jest
-			.spyOn(Auth.prototype, 'userAttributes')
+			.spyOn(InternalAuthClass.prototype, 'userAttributes')
 			.mockImplementation((user: CognitoUser) => {
 				const emailAttribute = new CognitoUserAttribute({
 					Name: 'email',
