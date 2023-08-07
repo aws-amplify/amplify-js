@@ -312,6 +312,7 @@ export class InternalAuthClass {
 	 * Sign up with username, password and other attributes like phone, email
 	 * @param {String | object} params - The user attributes used for signin
 	 * @param {String[]} restOfAttrs - for the backward compatability
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves callback data if success
 	 */
 	public signUp(
@@ -539,6 +540,7 @@ export class InternalAuthClass {
 	 * @param {String} username - The username to be confirmed
 	 * @param {String} code - The verification code
 	 * @param {ConfirmSignUpOptions} options - other options for confirm signup
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves callback data if success
 	 */
 	public confirmSignUp(
@@ -608,6 +610,7 @@ export class InternalAuthClass {
 	 * Resend the verification code
 	 * @param {String} username - The username to be confirmed
 	 * @param {ClientMetadata} clientMetadata - Metadata to be passed to Cognito Lambda triggers
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves code delivery details if successful
 	 */
 	public resendSignUp(
@@ -838,6 +841,7 @@ export class InternalAuthClass {
 	 * how to setup and use MFA: https://docs.amplify.aws/lib/auth/mfa/q/platform/js
 	 * @deprecated
 	 * @param {CognitoUser} user - the current user
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves the current preferred mfa option if success
 	 */
 	public getMFAOptions(
@@ -862,6 +866,7 @@ export class InternalAuthClass {
 	 * get preferred mfa method
 	 * @param {CognitoUser} user - the current cognito user
 	 * @param {GetPreferredMFAOpts} params - options for getting the current user preferred MFA
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 */
 	public getPreferredMFA(
 		user: CognitoUser | any,
@@ -967,6 +972,7 @@ export class InternalAuthClass {
 	 * set preferred MFA method
 	 * @param {CognitoUser} user - the current Cognito user
 	 * @param {string} mfaMethod - preferred mfa method
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolve if success
 	 */
 	public async setPreferredMFA(
@@ -1088,6 +1094,7 @@ export class InternalAuthClass {
 	 * disable SMS
 	 * @deprecated
 	 * @param {CognitoUser} user - the current user
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves is success
 	 */
 	public disableSMS(
@@ -1112,6 +1119,7 @@ export class InternalAuthClass {
 	 * enable SMS
 	 * @deprecated
 	 * @param {CognitoUser} user - the current user
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves is success
 	 */
 	public enableSMS(
@@ -1135,6 +1143,7 @@ export class InternalAuthClass {
 	/**
 	 * Setup TOTP
 	 * @param {CognitoUser} user - the current user
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves with the secret code if success
 	 */
 	public setupTOTP(
@@ -1161,6 +1170,7 @@ export class InternalAuthClass {
 	 * verify TOTP setup
 	 * @param {CognitoUser} user - the current user
 	 * @param {string} challengeAnswer - challenge answer
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves is success
 	 */
 	public verifyTotpToken(
@@ -1208,6 +1218,9 @@ export class InternalAuthClass {
 	 * Send MFA code to confirm sign in
 	 * @param {Object} user - The CognitoUser object
 	 * @param {String} code - The confirmation code
+	 * @param {string} mfaType - optional mfaType: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
+	 * @param {ClientMetaData} clientMetadata - optional client metadata defaults to config
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 */
 	public confirmSignIn(
 		user: CognitoUser | any,
@@ -1332,6 +1345,8 @@ export class InternalAuthClass {
 	 * Send the answer to a custom challenge
 	 * @param {CognitoUser} user - The CognitoUser object
 	 * @param {String} challengeResponses - The confirmation code
+	 * @param {ClientMetaData} clientMetadata - optional client metadata defaults to config
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 */
 	public sendCustomChallengeAnswer(
 		user: CognitoUser | any,
@@ -1358,7 +1373,9 @@ export class InternalAuthClass {
 
 	/**
 	 * Delete an authenticated users' attributes
-	 * @param {CognitoUser} - The currently logged in user object
+	 * @param {CognitoUser} user - The currently logged in user object
+	 * @param {string[]} attributeNames - Attributes to delete
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return {Promise}
 	 **/
 	public deleteUserAttributes(
@@ -1382,6 +1399,7 @@ export class InternalAuthClass {
 
 	/**
 	 * Delete the current authenticated user
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return {Promise}
 	 **/
 	// TODO: Check return type void
@@ -1466,7 +1484,10 @@ export class InternalAuthClass {
 
 	/**
 	 * Update an authenticated users' attributes
-	 * @param {CognitoUser} - The currently logged in user object
+	 * @param {CognitoUser} user - The currently logged in user object
+	 * @param {object} attributes - attributes to update
+	 * @param {ClientMetaData} clientMetadata - optional client metadata, defaults to config
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return {Promise}
 	 **/
 	public updateUserAttributes(
@@ -1540,6 +1561,7 @@ export class InternalAuthClass {
 	/**
 	 * Return user attributes
 	 * @param {Object} user - The CognitoUser object
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves to user attributes if success
 	 */
 	public userAttributes(
@@ -1684,6 +1706,8 @@ export class InternalAuthClass {
 
 	/**
 	 * Get current authenticated user
+	 * @param {CurrentUserOpts} params - options for getting the current user
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves to current authenticated CognitoUser if success
 	 */
 	public currentUserPoolUser(
@@ -1817,6 +1841,7 @@ export class InternalAuthClass {
 	/**
 	 * Get current authenticated user
 	 * @param {CurrentUserOpts} - options for getting the current user
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves to current authenticated CognitoUser if success
 	 */
 	public async currentAuthenticatedUser(
@@ -1872,6 +1897,7 @@ export class InternalAuthClass {
 
 	/**
 	 * Get current user's session
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves to session object if success
 	 */
 	public currentSession(
@@ -1964,6 +1990,7 @@ export class InternalAuthClass {
 	/**
 	 * Get the corresponding user session
 	 * @param {Object} user - The CognitoUser object
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves to the session
 	 */
 	public userSession(
@@ -1975,6 +2002,7 @@ export class InternalAuthClass {
 
 	/**
 	 * Get authenticated credentials of current user.
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves to be current user's credentials
 	 */
 	public async currentUserCredentials(
@@ -2055,6 +2083,7 @@ export class InternalAuthClass {
 	 * @param {Object} user - The CognitoUser
 	 * @param {Object} attr - The attribute to be verified
 	 * @param {String} code - The confirmation code
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves to callback data if success
 	 */
 	public verifyUserAttributeSubmit(
@@ -2095,6 +2124,7 @@ export class InternalAuthClass {
 	 * Confirm current user's attribute using a confirmation code
 	 * @param {Object} attr - The attribute to be verified
 	 * @param {String} code - The confirmation code
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves to callback data if success
 	 */
 	verifyCurrentUserAttributeSubmit(
@@ -2205,7 +2235,8 @@ export class InternalAuthClass {
 
 	/**
 	 * Sign out method
-	 * @
+	 * @param {SignOutOpts} opts - options for sign out
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolved if success
 	 */
 	public async signOut(
@@ -2249,6 +2280,8 @@ export class InternalAuthClass {
 	 * @param {Object} user - The CognitoUser object
 	 * @param {String} oldPassword - the current password
 	 * @param {String} newPassword - the requested new password
+	 * @param {ClientMetaData} clientMetadata - optional client metadata, defaults to config
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves if success
 	 */
 	public changePassword(
@@ -2280,6 +2313,8 @@ export class InternalAuthClass {
 	/**
 	 * Initiate a forgot password request
 	 * @param {String} username - the username to change password
+	 * @param {ClientMetaData} clientMetadata - optional client metadata, defaults to config
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves if success
 	 */
 	public forgotPassword(
@@ -2332,6 +2367,8 @@ export class InternalAuthClass {
 	 * @param {String} username - The username
 	 * @param {String} code - The confirmation code
 	 * @param {String} password - The new password
+	 * @param {ClientMetaData} clientMetadata - optional client metadata, defaults to config
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise that resolves if success
 	 */
 	public forgotPasswordSubmit(
@@ -2387,6 +2424,7 @@ export class InternalAuthClass {
 	/**
 	 * Get user information
 	 * @async
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return {Object }- current User's information
 	 */
 	public async currentUserInfo(
@@ -2527,10 +2565,7 @@ export class InternalAuthClass {
 	 * Used to complete the OAuth flow with or without the Cognito Hosted UI
 	 * @param {String} URL - optional parameter for customers to pass in the response URL
 	 */
-	private async _handleAuthResponse(
-		URL?: string,
-		customUserAgentDetails?: CustomUserAgentDetails
-	) {
+	private async _handleAuthResponse(URL?: string) {
 		if (this.oAuthFlowInProgress) {
 			logger.debug(`Skipping URL ${URL} current flow in progress`);
 			return;
@@ -2676,10 +2711,7 @@ export class InternalAuthClass {
 	 * @param {Object} credentials
 	 * @return {Object} - Credentials
 	 */
-	public essentialCredentials(
-		credentials,
-		customUserAgentDetails?: CustomUserAgentDetails
-	): ICredentials {
+	public essentialCredentials(credentials): ICredentials {
 		return {
 			accessKeyId: credentials.accessKeyId,
 			sessionToken: credentials.sessionToken,
