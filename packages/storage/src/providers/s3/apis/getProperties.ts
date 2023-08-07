@@ -55,5 +55,6 @@ export const getProperties = async function (
 		};
 	} catch (error) {
 		assertServiceError(error);
+		throw error;
 	}
 };

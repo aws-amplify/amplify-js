@@ -23,6 +23,7 @@ import {
 	serializeObjectSsecOptionsToHeaders,
 	serializePathnameObjectKey,
 } from './utils';
+import { StorageError } from '../../errors/StorageError';
 
 export type HeadObjectInput = Pick<
 	HeadObjectCommandInput,
@@ -64,7 +65,10 @@ const headObjectDeserializer = async (
 ): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
-		throw error;
+		throw new StorageError({
+			name: error.name,
+			message: error.message,
+		});
 	} else {
 		const contents = {
 			...map(response.headers, {
