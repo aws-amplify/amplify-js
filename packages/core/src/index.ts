@@ -113,7 +113,12 @@ export { CacheConfig } from './Cache/types';
 export { ICache } from './Cache/types';
 export { BrowserStorageCache };
 export { decodeJWT, assertTokenProviderConfig } from './singleton/Auth/utils';
-export { AuthConfig, UserPoolConfig } from './singleton/types';
+export {
+	AuthConfig,
+	UserPoolConfig,
+	StorageAccessLevel,
+	StorageConfig,
+} from './singleton/types';
 
 export { AmplifyV6 } from './singleton';
 
