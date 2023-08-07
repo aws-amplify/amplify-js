@@ -1,5 +1,4 @@
-// version 3.11.0
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// Webpack version: ^4.46.0
 const CompressionPlugin = require('compression-webpack-plugin');
 
 /* eslint-disable */
@@ -28,16 +27,12 @@ var config = {
 		crypto: 'crypto',
 	},
 	plugins: [
-		new webpack.optimize.OccurrenceOrderPlugin(),
 		new webpack.BannerPlugin({ banner, raw: true }),
-		new UglifyJsPlugin({
-			sourceMap: true,
-			include: /\.min\.js$/,
-		}),
 		new CompressionPlugin({
 			include: /\.min\.js$/,
 		}),
 	],
+	mode: 'production',
 	module: {
 		rules: [
 			// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
@@ -45,10 +40,7 @@ var config = {
 			{
 				test: /\.js$/,
 				exclude: /node_modules/,
-				loader: 'babel-loader',
-				query: {
-					cacheDirectory: './node_modules/.cache/babel',
-				},
+				loader: 'babel-loader'
 			},
 		],
 	},
