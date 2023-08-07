@@ -1,5 +1,5 @@
 on:
-  # Tests scheduled for every 1 hour
+  # Tests scheduled at 9am(PDT) everyday
   schedule:
     - cron: '0 9 * * *'
 
