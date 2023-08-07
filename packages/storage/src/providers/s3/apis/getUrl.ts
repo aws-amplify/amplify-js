@@ -13,14 +13,15 @@ import {
 } from '../../../AwsClients/S3';
 import { getProperties } from './getProperties';
 import { StorageDownloadDataRequest } from '../../../types/params';
+import { GetPropertiesException } from '../types/errors';
 const DEFAULT_PRESIGN_EXPIRATION = 900;
 
 /**
  * Get Presigned url of the object
  *
- * @param {StorageOperationRequest} The request object
+ * @param {StorageDownloadDataRequest<S3GetUrlOptions>} The request object
  * @return {Promise<S3GetUrlResult>} url of the object
- * @throws service: {@link NotFoundException} - thrown when there is no given object in bucket
+ * @throws service: {@link GetPropertiesException} - thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown either username or key are not defined.
  *
  * TODO: add config errors
@@ -43,7 +44,7 @@ export const getUrl = async function (
 		AmplifyV6.libraryOptions?.Storage ?? {};
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 	if (options?.validateObjectExistence) {
-		getProperties(key);
+		await getProperties(key);
 	}
 	const finalKey =
 		prefixResolver({
@@ -72,6 +73,5 @@ export const getUrl = async function (
 	// expiresAt is the minimum of credential expiration and url expiration
 	result.expiresAt =
 		urlExpiration < awsCredExpiration ? urlExpiration : awsCredExpiration;
-
 	return result;
 };
