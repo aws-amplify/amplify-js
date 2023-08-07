@@ -5,8 +5,10 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { VerifyTOTPSetupRequest } from '../../../types/requests';
 import { CogntioVerifyTOTPSetupOptions } from '../types/options';
-import { verifySoftwareTokenClient } from '../utils/clients/VerifySoftwareTokenClient';
+import { verifySoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { VerifySoftwareTokenException } from '../types/errors';
+import { AmplifyV6 } from '@aws-amplify/core';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**
  * Verifies an OTP code retrieved from an associated authentication app.
@@ -27,15 +29,19 @@ export async function verifyTOTPSetup(
 ): Promise<void> {
 	// TODO: remove mocked when auth token provider is implemented.
 	const accessToken = 'mockAccessToken';
+	const { userPoolId } = AmplifyV6.getConfig().Auth;
 	const { code, options } = verifyTOTPSetupRequest;
 	assertValidationError(
 		!!code,
 		AuthValidationErrorCode.EmptyVerifyTOTPSetupCode
 	);
 
-	await verifySoftwareTokenClient({
-		AccessToken: accessToken,
-		UserCode: code,
-		FriendlyDeviceName: options?.serviceOptions?.friendlyDeviceName,
-	});
+	await verifySoftwareToken(
+		{ region: getRegion(userPoolId) },
+		{
+			AccessToken: accessToken,
+			UserCode: code,
+			FriendlyDeviceName: options?.serviceOptions?.friendlyDeviceName,
+		}
+	);
 }

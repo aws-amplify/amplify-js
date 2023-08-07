@@ -4,21 +4,22 @@
 import { AmplifyV6 } from '@aws-amplify/core';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { confirmResetPasswordClient } from '../utils/clients/ConfirmResetPasswordClient';
 import { ConfirmResetPasswordRequest } from '../../../types';
 import { CognitoConfirmResetPasswordOptions } from '../types';
+import { confirmForgotPassword } from '../utils/clients/CognitoIdentityProvider';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 export async function confirmResetPassword(
 	confirmResetPasswordRequest: ConfirmResetPasswordRequest<CognitoConfirmResetPasswordOptions>
 ): Promise<void> {
-	const username = confirmResetPasswordRequest.username;
+	const { username, newPassword } = confirmResetPasswordRequest;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptyConfirmResetPasswordUsername
 	);
-	const password = confirmResetPasswordRequest.newPassword;
+
 	assertValidationError(
-		!!password,
+		!!newPassword,
 		AuthValidationErrorCode.EmptyConfirmResetPasswordNewPassword
 	);
 	const code = confirmResetPasswordRequest.confirmationCode;
@@ -26,13 +27,18 @@ export async function confirmResetPassword(
 		!!code,
 		AuthValidationErrorCode.EmptyConfirmResetPasswordConfirmationCode
 	);
-	const authConfig = AmplifyV6.getConfig().Auth;
-	await confirmResetPasswordClient({
-		Username: username,
-		ConfirmationCode: code,
-		Password: password,
-		ClientMetadata:
-			confirmResetPasswordRequest.options?.serviceOptions?.clientMetadata ??
-			authConfig?.clientMetadata,
-	});
+	const { clientMetadata, userPoolId, userPoolWebClientId } =
+		AmplifyV6.getConfig().Auth;
+	await confirmForgotPassword(
+		{ region: getRegion(userPoolId) },
+		{
+			Username: username,
+			ConfirmationCode: code,
+			Password: newPassword,
+			ClientMetadata:
+				confirmResetPasswordRequest.options?.serviceOptions?.clientMetadata ??
+				clientMetadata,
+			ClientId: userPoolWebClientId,
+		}
+	);
 }

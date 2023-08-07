@@ -7,7 +7,7 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
 	ChallengeName,
 	ChallengeParameters,
-} from '../utils/clients/types/models';
+} from '../utils/clients/CognitoIdentityProvider/types';
 import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
@@ -46,9 +46,10 @@ export async function signInWithSRP(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { username, password } = signInRequest;
+	const authConfig = AmplifyV6.getConfig().Auth;
 	const clientMetaData =
 		signInRequest.options?.serviceOptions?.clientMetadata ||
-		AmplifyV6.getConfig().Auth?.clientMetadata;
+		authConfig.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -64,7 +65,12 @@ export async function signInWithSRP(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleUserSRPAuthFlow(username, password, clientMetaData);
+		} = await handleUserSRPAuthFlow(
+			username,
+			password,
+			clientMetaData,
+			authConfig
+		);
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({

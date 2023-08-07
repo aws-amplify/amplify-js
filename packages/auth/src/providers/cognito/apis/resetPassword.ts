@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyV6 } from '@aws-amplify/core';
-import type { ForgotPasswordCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { resetPasswordClient } from '../utils/clients/ResetPasswordClient';
 import {
 	AuthResetPasswordStep,
 	AuthStandardAttributeKey,
@@ -14,6 +12,8 @@ import {
 	ResetPasswordResult,
 } from '../../../types';
 import { CognitoResetPasswordOptions, CustomAttribute } from '../types';
+import { forgotPassword } from '../utils/clients/CognitoIdentityProvider';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 export async function resetPassword(
 	resetPasswordRequest: ResetPasswordRequest<CognitoResetPasswordOptions>
@@ -23,13 +23,18 @@ export async function resetPassword(
 		!!username,
 		AuthValidationErrorCode.EmptyResetPasswordUsername
 	);
-	const authConfig = AmplifyV6.getConfig().Auth;
-	const res: ForgotPasswordCommandOutput = await resetPasswordClient({
-		Username: username,
-		ClientMetadata:
-			resetPasswordRequest.options?.serviceOptions?.clientMetadata ??
-			authConfig?.clientMetadata,
-	});
+	const { clientMetadata, userPoolId, userPoolWebClientId } =
+		AmplifyV6.getConfig().Auth;
+	const res = await forgotPassword(
+		{ region: getRegion(userPoolId) },
+		{
+			Username: username,
+			ClientMetadata:
+				resetPasswordRequest.options?.serviceOptions?.clientMetadata ??
+				clientMetadata,
+			ClientId: userPoolWebClientId,
+		}
+	);
 	const codeDeliveryDetails = res.CodeDeliveryDetails;
 	return {
 		isPasswordReset: false,

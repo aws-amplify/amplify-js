@@ -2,21 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyV6 } from '@aws-amplify/core';
-import type { ResendConfirmationCodeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import {
 	AuthCodeDeliveryDetails,
 	AuthStandardAttributeKey,
 	DeliveryMedium,
 	ResendSignUpCodeRequest,
 } from '../../../types';
-// import { CognitoResendSignUpCodeOptions, CognitoUserAttributeKey } from '..';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { resendSignUpConfirmationCodeClient } from '../utils/clients/ResendSignUpCodeClient';
 import {
 	CognitoResendSignUpCodeOptions,
 	CognitoUserAttributeKey,
 } from '../types';
+import {
+	getRegion
+} from '../utils/clients/CognitoIdentityProvider/utils';
+import { resendConfirmationCode } from '../utils/clients/CognitoIdentityProvider';
 
 /**
  * Resend the confirmation code while signing up
@@ -37,14 +38,20 @@ export async function resendSignUpCode(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
 	);
-	const authConfig = AmplifyV6.getConfig().Auth;
-	const { CodeDeliveryDetails }: ResendConfirmationCodeCommandOutput =
-		await resendSignUpConfirmationCodeClient({
-			Username: username,
-			ClientMetadata:
-				resendRequest.options?.serviceOptions?.clientMetadata ??
-				authConfig?.clientMetadata,
-		});
+	const { userPoolId, userPoolWebClientId, clientMetadata } =
+		AmplifyV6.getConfig().Auth;
+
+	const { CodeDeliveryDetails } =
+		await resendConfirmationCode(
+			{ region: getRegion(userPoolId) },
+			{
+				Username: username,
+				ClientMetadata:
+					resendRequest.options?.serviceOptions?.clientMetadata ??
+					clientMetadata,
+				ClientId: userPoolWebClientId,
+			}
+		);
 	const { DeliveryMedium, AttributeName, Destination } = {
 		...CodeDeliveryDetails,
 	};

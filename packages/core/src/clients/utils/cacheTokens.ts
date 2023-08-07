@@ -1,7 +1,25 @@
 import { AmplifyError } from '../../Errors';
 import { AmplifyV6 } from '../../singleton';
 import { decodeJWT } from '../../singleton/Auth/utils';
-import { AuthenticationResultType } from '@aws-sdk/client-cognito-identity-provider';
+
+type NewDeviceMetadataType = {
+	DeviceKey?: string;
+
+	DeviceGroupKey?: string;
+};
+type AuthenticationResultType = {
+	AccessToken?: string;
+
+	ExpiresIn?: number;
+
+	TokenType?: string;
+
+	RefreshToken?: string;
+
+	IdToken?: string;
+
+	NewDeviceMetadata?: NewDeviceMetadataType;
+};
 
 export async function cacheCognitoTokens(
 	AuthenticationResult: AuthenticationResultType

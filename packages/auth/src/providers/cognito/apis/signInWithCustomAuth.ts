@@ -9,18 +9,12 @@ import {
 	AuthSignInStep,
 } from '../../../types';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
-
-import {
-	ChallengeName,
-	ChallengeParameters,
-} from '../utils/clients/types/models';
 import {
 	handleCustomAuthFlowWithoutSRP,
 	getSignInResult,
 	getSignInResultFromError,
 	cacheCognitoTokens,
 } from '../utils/signInHelpers';
-
 import { AmplifyV6 } from '@aws-amplify/core';
 import { InitiateAuthException } from '../types/errors';
 import { CognitoSignInOptions } from '../types';
@@ -28,6 +22,10 @@ import {
 	cleanActiveSignInState,
 	setActiveSignInState,
 } from '../utils/signInStore';
+import {
+	ChallengeName,
+	ChallengeParameters,
+} from '../utils/clients/CognitoIdentityProvider/types';
 
 /**
  * Signs a user in using a custom authentication flow without password
@@ -62,7 +60,7 @@ export async function signInWithCustomAuth(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleCustomAuthFlowWithoutSRP(username, metadata);
+		} = await handleCustomAuthFlowWithoutSRP(username, metadata, authConfig);
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({

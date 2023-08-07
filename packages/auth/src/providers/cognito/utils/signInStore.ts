@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ChallengeName } from './clients/types/models';
+import { ChallengeName } from './clients/CognitoIdentityProvider/types';
 
 // TODO: replace all of this implementation with state machines
 type SignInState = {
@@ -13,9 +13,9 @@ type SignInState = {
 type SignInAction =
 	| { type: 'SET_INITIAL_STATE' }
 	| { type: 'SET_SIGN_IN_STATE'; value: SignInState }
-	| { type: 'SET_USERNAME'; value?: string  }
-	| { type: 'SET_CHALLENGE_NAME'; value?: ChallengeName  }
-	| { type: 'SET_SIGN_IN_SESSION'; value?: string  };
+	| { type: 'SET_USERNAME'; value?: string }
+	| { type: 'SET_CHALLENGE_NAME'; value?: ChallengeName }
+	| { type: 'SET_SIGN_IN_SESSION'; value?: string };
 
 type Store<State, Action> = (reducer: Reducer<State, Action>) => {
 	getState: () => ReturnType<Reducer<State, Action>>;

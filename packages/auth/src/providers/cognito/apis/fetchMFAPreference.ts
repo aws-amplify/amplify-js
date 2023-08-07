@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { FetchMFAPreferenceResult } from '../types/results';
-import { getUserClient } from '../utils/clients/GetUserClient';
 import { getMFAType, getMFATypes } from '../utils/signInHelpers';
 import { GetUserException } from '../types/errors';
+import { getUser } from '../utils/clients/CognitoIdentityProvider';
+import { AmplifyV6 } from '@aws-amplify/core';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**
  * Fetches the preferred MFA setting and enabled MFA settings for the user.
@@ -13,12 +15,16 @@ import { GetUserException } from '../types/errors';
  * @returns FetchMFAPreferenceResult
  */
 export async function fetchMFAPreference(): Promise<FetchMFAPreferenceResult> {
+	const { userPoolId } = AmplifyV6.getConfig().Auth;
 	// TODO: replace mocked token when auth token provider is done
 	const mockedAccessToken = 'mockedAccessToken';
 
-	const { PreferredMfaSetting, UserMFASettingList } = await getUserClient({
-		AccessToken: mockedAccessToken,
-	});
+	const { PreferredMfaSetting, UserMFASettingList } = await getUser(
+		{ region: getRegion(userPoolId) },
+		{
+			AccessToken: mockedAccessToken,
+		}
+	);
 
 	return {
 		preferred: getMFAType(PreferredMfaSetting),
