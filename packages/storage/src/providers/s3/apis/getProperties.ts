@@ -9,12 +9,17 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
 import { S3GetPropertiesResult } from '../types/results';
+import { assertServiceError } from '../../../errors/utils/assertServiceError';
 
 /**
  * Get Properties of the object
  *
- * @param {StorageOperationRequest} req
- * @return {Promise<S3GetPropertiesResult>}
+ * @param {StorageOperationRequest} The request object
+ * @return {Promise<S3GetPropertiesResult>} Properties of the object
+ * @throws service: {@link NotFoundException} - thrown when there is no given object in bucket
+ * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown either username or key are not defined.
+ *
+ * TODO: add config errors
  */
 export const getProperties = async function (
 	req: StorageOperationRequest<StorageOptions>
