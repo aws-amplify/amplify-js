@@ -30,18 +30,14 @@ const DEFAULT_PRESIGN_EXPIRATION = 900;
 export const getUrl = async function (
 	req: StorageDownloadDataRequest<S3GetUrlOptions>
 ): Promise<S3GetUrlResult> {
-	const result: S3GetUrlResult = {
-		url: undefined,
-		expiresAt: undefined,
-		headers: undefined,
-	};
+	let result: S3GetUrlResult;
 	const options = req?.options;
 	AmplifyV6.getConfig().Storage;
 	const { awsCreds, awsCredsIdentityId } =
 		await AmplifyV6.Auth.fetchAuthSession();
 	assertValidationError(!!awsCreds, StorageValidationErrorCode.NoCredentials);
 	const { bucket, region, defaultAccessLevel } = AmplifyV6.getConfig().Storage;
-	// TODO: assert bucket and region;
+	// TODO assert bucket
 	const { key, options: { level = defaultAccessLevel } = {} } = req;
 	const { prefixResolver = defaultPrefixResolver } =
 		AmplifyV6.libraryOptions?.Storage ?? {};

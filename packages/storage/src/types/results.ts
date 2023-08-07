@@ -13,7 +13,6 @@ export type StorageDownloadDataResult = {
 export type StorageGetUrlResult = {
 	url: URL;
 	expiresAt: Date;
-	headers?: Headers;
 };
 
 export type StorageUploadResult = {
