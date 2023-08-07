@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 /* tslint:disable */
 
 // A small implementation of BigInteger based on http://www-cs-students.stanford.edu/~tjw/jsbn/

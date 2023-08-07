@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { Buffer } from 'buffer'; // TODO(v6): this needs to be a platform operation
 import { Credentials } from '@aws-sdk/types';
 import { Observable, Observer } from 'rxjs';
