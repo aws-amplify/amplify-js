@@ -32,17 +32,17 @@ export const getProperties = async function (
 		AmplifyV6.libraryOptions?.Storage ?? {};
 	try {
 		assertValidationError(!!key, StorageValidationErrorCode.NoKey);
-		const final_key =
+		const finalKey =
 			prefixResolver({
 				level,
 				identityId: awsCredsIdentityId,
 			}) + key;
 		const response = await headObject(options, {
 			Bucket: bucket,
-			Key: final_key,
+			Key: finalKey,
 		});
 		const getPropertiesResponse: S3GetPropertiesResult = {
-			key: final_key,
+			key: finalKey,
 			contentType: response.ContentType,
 			contentLength: response.ContentLength,
 			eTag: response.ETag,
