@@ -1,5 +1,6 @@
 // Webpack version: ^4.46.0
 const CompressionPlugin = require('compression-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 /* eslint-disable */
 var webpack = require('webpack');
@@ -32,6 +33,14 @@ var config = {
 			include: /\.min\.js$/,
 		}),
 	],
+	optimization: {
+		minimizer: [
+			new UglifyJsPlugin({
+				sourceMap: true,
+				include: /\.min\.js$/,
+			})
+		]
+	},
 	mode: 'production',
 	module: {
 		rules: [
