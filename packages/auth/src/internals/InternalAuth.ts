@@ -316,6 +316,10 @@ export class InternalAuthClass {
 	 */
 	public signUp(
 		params: string | SignUpParams,
+		...restOfAttrs: any
+	): Promise<ISignUpResult>;
+	public signUp(
+		params: string | SignUpParams,
 		restOfAttrs?: string[],
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<ISignUpResult> {

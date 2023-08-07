@@ -43,7 +43,6 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {String[]} restOfAttrs - for the backward compatability
 	 * @return - A promise resolves callback data if success
 	 */
-	// @ts-ignore
 	public signUp(
 		params: string | SignUpParams,
 		...restOfAttrs: string[]
