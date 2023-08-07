@@ -8,4 +8,7 @@ export {
 	AWSKinesisProvider,
 	AWSKinesisFirehoseProvider,
 	AmazonPersonalizeProvider,
-} from './Providers';
+} from './providers';
+
+// Default provider types
+export * from './providers/pinpoint';
