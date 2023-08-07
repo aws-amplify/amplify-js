@@ -5,7 +5,4 @@
 		"types": ["jest"]
 	},
 	"include": ["src"],
-	"watchOptions": {
-		"excludeDirectories": ["lib*"]
-	}
 }

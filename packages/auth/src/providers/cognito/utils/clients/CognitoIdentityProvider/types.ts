@@ -1,37 +1,38 @@
+/* tslint:disable */ 
 import { MetadataBearer as __MetadataBearer } from '@aws-sdk/types';
 
 declare enum AuthFlowType {
-	ADMIN_NO_SRP_AUTH = "ADMIN_NO_SRP_AUTH",
-	ADMIN_USER_PASSWORD_AUTH = "ADMIN_USER_PASSWORD_AUTH",
-	CUSTOM_AUTH = "CUSTOM_AUTH",
-	REFRESH_TOKEN = "REFRESH_TOKEN",
-	REFRESH_TOKEN_AUTH = "REFRESH_TOKEN_AUTH",
-	USER_PASSWORD_AUTH = "USER_PASSWORD_AUTH",
-	USER_SRP_AUTH = "USER_SRP_AUTH"
+	ADMIN_NO_SRP_AUTH = 'ADMIN_NO_SRP_AUTH',
+	ADMIN_USER_PASSWORD_AUTH = 'ADMIN_USER_PASSWORD_AUTH',
+	CUSTOM_AUTH = 'CUSTOM_AUTH',
+	REFRESH_TOKEN = 'REFRESH_TOKEN',
+	REFRESH_TOKEN_AUTH = 'REFRESH_TOKEN_AUTH',
+	USER_PASSWORD_AUTH = 'USER_PASSWORD_AUTH',
+	USER_SRP_AUTH = 'USER_SRP_AUTH',
 }
 declare enum ChallengeNameType {
-	ADMIN_NO_SRP_AUTH = "ADMIN_NO_SRP_AUTH",
-	CUSTOM_CHALLENGE = "CUSTOM_CHALLENGE",
-	DEVICE_PASSWORD_VERIFIER = "DEVICE_PASSWORD_VERIFIER",
-	DEVICE_SRP_AUTH = "DEVICE_SRP_AUTH",
-	MFA_SETUP = "MFA_SETUP",
-	NEW_PASSWORD_REQUIRED = "NEW_PASSWORD_REQUIRED",
-	PASSWORD_VERIFIER = "PASSWORD_VERIFIER",
-	SELECT_MFA_TYPE = "SELECT_MFA_TYPE",
-	SMS_MFA = "SMS_MFA",
-	SOFTWARE_TOKEN_MFA = "SOFTWARE_TOKEN_MFA"
+	ADMIN_NO_SRP_AUTH = 'ADMIN_NO_SRP_AUTH',
+	CUSTOM_CHALLENGE = 'CUSTOM_CHALLENGE',
+	DEVICE_PASSWORD_VERIFIER = 'DEVICE_PASSWORD_VERIFIER',
+	DEVICE_SRP_AUTH = 'DEVICE_SRP_AUTH',
+	MFA_SETUP = 'MFA_SETUP',
+	NEW_PASSWORD_REQUIRED = 'NEW_PASSWORD_REQUIRED',
+	PASSWORD_VERIFIER = 'PASSWORD_VERIFIER',
+	SELECT_MFA_TYPE = 'SELECT_MFA_TYPE',
+	SMS_MFA = 'SMS_MFA',
+	SOFTWARE_TOKEN_MFA = 'SOFTWARE_TOKEN_MFA',
 }
 declare enum DeliveryMediumType {
-	EMAIL = "EMAIL",
-	SMS = "SMS"
+	EMAIL = 'EMAIL',
+	SMS = 'SMS',
 }
 declare enum DeviceRememberedStatusType {
-	NOT_REMEMBERED = "not_remembered",
-	REMEMBERED = "remembered"
+	NOT_REMEMBERED = 'not_remembered',
+	REMEMBERED = 'remembered',
 }
 declare enum VerifySoftwareTokenResponseType {
-	ERROR = "ERROR",
-	SUCCESS = "SUCCESS"
+	ERROR = 'ERROR',
+	SUCCESS = 'SUCCESS',
 }
 declare namespace AnalyticsMetadataType {
 	/**
@@ -157,13 +158,17 @@ declare namespace GetUserAttributeVerificationCodeRequest {
 	/**
 	 * @internal
 	 */
-	const filterSensitiveLog: (obj: GetUserAttributeVerificationCodeRequest) => any;
+	const filterSensitiveLog: (
+		obj: GetUserAttributeVerificationCodeRequest
+	) => any;
 }
 declare namespace GetUserAttributeVerificationCodeResponse {
 	/**
 	 * @internal
 	 */
-	const filterSensitiveLog: (obj: GetUserAttributeVerificationCodeResponse) => any;
+	const filterSensitiveLog: (
+		obj: GetUserAttributeVerificationCodeResponse
+	) => any;
 }
 declare namespace GetUserRequest {
 	/**
@@ -352,10 +357,11 @@ export interface AnalyticsMetadataType {
 	 */
 	AnalyticsEndpointId?: string;
 }
-export interface AssociateSoftwareTokenCommandInput extends AssociateSoftwareTokenRequest {
-}
-export interface AssociateSoftwareTokenCommandOutput extends AssociateSoftwareTokenResponse, __MetadataBearer {
-}
+export interface AssociateSoftwareTokenCommandInput
+	extends AssociateSoftwareTokenRequest {}
+export interface AssociateSoftwareTokenCommandOutput
+	extends AssociateSoftwareTokenResponse,
+		__MetadataBearer {}
 export interface AssociateSoftwareTokenRequest {
 	/**
 	 * <p>The access token.</p>
@@ -418,10 +424,10 @@ export interface AuthenticationResultType {
 	 */
 	NewDeviceMetadata?: NewDeviceMetadataType;
 }
-export interface ChangePasswordCommandInput extends ChangePasswordRequest {
-}
-export interface ChangePasswordCommandOutput extends ChangePasswordResponse, __MetadataBearer {
-}
+export interface ChangePasswordCommandInput extends ChangePasswordRequest {}
+export interface ChangePasswordCommandOutput
+	extends ChangePasswordResponse,
+		__MetadataBearer {}
 /**
  * <p>Represents the request to change a user password.</p>
  */
@@ -442,8 +448,7 @@ export interface ChangePasswordRequest {
 /**
  * <p>The response from the server to the change password request.</p>
  */
-export interface ChangePasswordResponse {
-}
+export interface ChangePasswordResponse {}
 /**
  * <p>The code delivery details being returned from the server.</p>
  */
@@ -461,10 +466,10 @@ export interface CodeDeliveryDetailsType {
 	 */
 	AttributeName?: string;
 }
-export interface ConfirmDeviceCommandInput extends ConfirmDeviceRequest {
-}
-export interface ConfirmDeviceCommandOutput extends ConfirmDeviceResponse, __MetadataBearer {
-}
+export interface ConfirmDeviceCommandInput extends ConfirmDeviceRequest {}
+export interface ConfirmDeviceCommandOutput
+	extends ConfirmDeviceResponse,
+		__MetadataBearer {}
 /**
  * <p>Confirms the device request.</p>
  */
@@ -495,10 +500,11 @@ export interface ConfirmDeviceResponse {
 	 */
 	UserConfirmationNecessary?: boolean;
 }
-export interface ConfirmForgotPasswordCommandInput extends ConfirmForgotPasswordRequest {
-}
-export interface ConfirmForgotPasswordCommandOutput extends ConfirmForgotPasswordResponse, __MetadataBearer {
-}
+export interface ConfirmForgotPasswordCommandInput
+	extends ConfirmForgotPasswordRequest {}
+export interface ConfirmForgotPasswordCommandOutput
+	extends ConfirmForgotPasswordResponse,
+		__MetadataBearer {}
 /**
  * <p>The request representing the confirmation for a password reset.</p>
  */
@@ -567,12 +573,11 @@ export interface ConfirmForgotPasswordRequest {
 /**
  * <p>The response from the server that results from a user's request to retrieve a forgotten password.</p>
  */
-export interface ConfirmForgotPasswordResponse {
-}
-export interface ConfirmSignUpCommandInput extends ConfirmSignUpRequest {
-}
-export interface ConfirmSignUpCommandOutput extends ConfirmSignUpResponse, __MetadataBearer {
-}
+export interface ConfirmForgotPasswordResponse {}
+export interface ConfirmSignUpCommandInput extends ConfirmSignUpRequest {}
+export interface ConfirmSignUpCommandOutput
+	extends ConfirmSignUpResponse,
+		__MetadataBearer {}
 /**
  * <p>Represents the request to confirm registration of a user.</p>
  */
@@ -643,12 +648,9 @@ export interface ConfirmSignUpRequest {
 /**
  * <p>Represents the response from the server for the registration confirmation.</p>
  */
-export interface ConfirmSignUpResponse {
-}
-export interface DeleteUserCommandInput extends DeleteUserRequest {
-}
-export interface DeleteUserCommandOutput extends __MetadataBearer {
-}
+export interface ConfirmSignUpResponse {}
+export interface DeleteUserCommandInput extends DeleteUserRequest {}
+export interface DeleteUserCommandOutput extends __MetadataBearer {}
 /**
  * <p>Represents the request to delete a user.</p>
  */
@@ -696,10 +698,8 @@ export interface DeviceType {
 	 */
 	DeviceLastAuthenticatedDate?: Date;
 }
-export interface ForgetDeviceCommandInput extends ForgetDeviceRequest {
-}
-export interface ForgetDeviceCommandOutput extends __MetadataBearer {
-}
+export interface ForgetDeviceCommandInput extends ForgetDeviceRequest {}
+export interface ForgetDeviceCommandOutput extends __MetadataBearer {}
 /**
  * <p>Represents the request to forget the device.</p>
  */
@@ -713,10 +713,10 @@ export interface ForgetDeviceRequest {
 	 */
 	DeviceKey: string | undefined;
 }
-export interface ForgotPasswordCommandInput extends ForgotPasswordRequest {
-}
-export interface ForgotPasswordCommandOutput extends ForgotPasswordResponse, __MetadataBearer {
-}
+export interface ForgotPasswordCommandInput extends ForgotPasswordRequest {}
+export interface ForgotPasswordCommandOutput
+	extends ForgotPasswordResponse,
+		__MetadataBearer {}
 /**
  * <p>Represents the request to reset a user's password.</p>
  */
@@ -781,10 +781,11 @@ export interface ForgotPasswordResponse {
 	 */
 	CodeDeliveryDetails?: CodeDeliveryDetailsType;
 }
-export interface GetUserAttributeVerificationCodeCommandInput extends GetUserAttributeVerificationCodeRequest {
-}
-export interface GetUserAttributeVerificationCodeCommandOutput extends GetUserAttributeVerificationCodeResponse, __MetadataBearer {
-}
+export interface GetUserAttributeVerificationCodeCommandInput
+	extends GetUserAttributeVerificationCodeRequest {}
+export interface GetUserAttributeVerificationCodeCommandOutput
+	extends GetUserAttributeVerificationCodeResponse,
+		__MetadataBearer {}
 /**
  * <p>Represents the request to get user attribute verification.</p>
  */
@@ -838,10 +839,10 @@ export interface GetUserAttributeVerificationCodeResponse {
 	 */
 	CodeDeliveryDetails?: CodeDeliveryDetailsType;
 }
-export interface GetUserCommandInput extends GetUserRequest {
-}
-export interface GetUserCommandOutput extends GetUserResponse, __MetadataBearer {
-}
+export interface GetUserCommandInput extends GetUserRequest {}
+export interface GetUserCommandOutput
+	extends GetUserResponse,
+		__MetadataBearer {}
 /**
  * <p>Represents the request to get information about the user.</p>
  */
@@ -879,10 +880,10 @@ export interface GetUserResponse {
 	 */
 	UserMFASettingList?: string[];
 }
-export interface GlobalSignOutCommandInput extends GlobalSignOutRequest {
-}
-export interface GlobalSignOutCommandOutput extends GlobalSignOutResponse, __MetadataBearer {
-}
+export interface GlobalSignOutCommandInput extends GlobalSignOutRequest {}
+export interface GlobalSignOutCommandOutput
+	extends GlobalSignOutResponse,
+		__MetadataBearer {}
 /**
  * <p>Represents the request to sign out all devices.</p>
  */
@@ -895,12 +896,11 @@ export interface GlobalSignOutRequest {
 /**
  * <p>The response to the request to sign out all devices.</p>
  */
-export interface GlobalSignOutResponse {
-}
-export interface InitiateAuthCommandInput extends InitiateAuthRequest {
-}
-export interface InitiateAuthCommandOutput extends InitiateAuthResponse, __MetadataBearer {
-}
+export interface GlobalSignOutResponse {}
+export interface InitiateAuthCommandInput extends InitiateAuthRequest {}
+export interface InitiateAuthCommandOutput
+	extends InitiateAuthResponse,
+		__MetadataBearer {}
 /**
  * <p>Initiates the authentication request.</p>
  */
@@ -1108,10 +1108,10 @@ export interface InitiateAuthResponse {
 	 */
 	AuthenticationResult?: AuthenticationResultType;
 }
-export interface ListDevicesCommandInput extends ListDevicesRequest {
-}
-export interface ListDevicesCommandOutput extends ListDevicesResponse, __MetadataBearer {
-}
+export interface ListDevicesCommandInput extends ListDevicesRequest {}
+export interface ListDevicesCommandOutput
+	extends ListDevicesResponse,
+		__MetadataBearer {}
 /**
  * <p>Represents the request to list the devices.</p>
  */
@@ -1170,10 +1170,11 @@ export interface NewDeviceMetadataType {
 	 */
 	DeviceGroupKey?: string;
 }
-export interface ResendConfirmationCodeCommandInput extends ResendConfirmationCodeRequest {
-}
-export interface ResendConfirmationCodeCommandOutput extends ResendConfirmationCodeResponse, __MetadataBearer {
-}
+export interface ResendConfirmationCodeCommandInput
+	extends ResendConfirmationCodeRequest {}
+export interface ResendConfirmationCodeCommandOutput
+	extends ResendConfirmationCodeResponse,
+		__MetadataBearer {}
 /**
  * <p>Represents the request to resend the confirmation code.</p>
  */
@@ -1239,10 +1240,11 @@ export interface ResendConfirmationCodeResponse {
 	 */
 	CodeDeliveryDetails?: CodeDeliveryDetailsType;
 }
-export interface RespondToAuthChallengeCommandInput extends RespondToAuthChallengeRequest {
-}
-export interface RespondToAuthChallengeCommandOutput extends RespondToAuthChallengeResponse, __MetadataBearer {
-}
+export interface RespondToAuthChallengeCommandInput
+	extends RespondToAuthChallengeRequest {}
+export interface RespondToAuthChallengeCommandOutput
+	extends RespondToAuthChallengeResponse,
+		__MetadataBearer {}
 /**
  * <p>The request to respond to an authentication challenge.</p>
  */
@@ -1386,10 +1388,11 @@ export interface SMSMfaSettingsType {
 	 */
 	PreferredMfa?: boolean;
 }
-export interface SetUserMFAPreferenceCommandInput extends SetUserMFAPreferenceRequest {
-}
-export interface SetUserMFAPreferenceCommandOutput extends SetUserMFAPreferenceResponse, __MetadataBearer {
-}
+export interface SetUserMFAPreferenceCommandInput
+	extends SetUserMFAPreferenceRequest {}
+export interface SetUserMFAPreferenceCommandOutput
+	extends SetUserMFAPreferenceResponse,
+		__MetadataBearer {}
 export interface SetUserMFAPreferenceRequest {
 	/**
 	 * <p>The SMS text message multi-factor authentication (MFA) settings.</p>
@@ -1404,12 +1407,9 @@ export interface SetUserMFAPreferenceRequest {
 	 */
 	AccessToken: string | undefined;
 }
-export interface SetUserMFAPreferenceResponse {
-}
-export interface SignUpCommandInput extends SignUpRequest {
-}
-export interface SignUpCommandOutput extends SignUpResponse, __MetadataBearer {
-}
+export interface SetUserMFAPreferenceResponse {}
+export interface SignUpCommandInput extends SignUpRequest {}
+export interface SignUpCommandOutput extends SignUpResponse, __MetadataBearer {}
 /**
  * <p>Represents the request to register a user.</p>
  */
@@ -1512,10 +1512,11 @@ export interface SoftwareTokenMfaSettingsType {
 	 */
 	PreferredMfa?: boolean;
 }
-export interface UpdateDeviceStatusCommandInput extends UpdateDeviceStatusRequest {
-}
-export interface UpdateDeviceStatusCommandOutput extends UpdateDeviceStatusResponse, __MetadataBearer {
-}
+export interface UpdateDeviceStatusCommandInput
+	extends UpdateDeviceStatusRequest {}
+export interface UpdateDeviceStatusCommandOutput
+	extends UpdateDeviceStatusResponse,
+		__MetadataBearer {}
 /**
  * <p>Represents the request to update the device status.</p>
  */
@@ -1536,12 +1537,12 @@ export interface UpdateDeviceStatusRequest {
 /**
  * <p>The response to the request to update the device status.</p>
  */
-export interface UpdateDeviceStatusResponse {
-}
-export interface UpdateUserAttributesCommandInput extends UpdateUserAttributesRequest {
-}
-export interface UpdateUserAttributesCommandOutput extends UpdateUserAttributesResponse, __MetadataBearer {
-}
+export interface UpdateDeviceStatusResponse {}
+export interface UpdateUserAttributesCommandInput
+	extends UpdateUserAttributesRequest {}
+export interface UpdateUserAttributesCommandOutput
+	extends UpdateUserAttributesResponse,
+		__MetadataBearer {}
 /**
  * <p>Represents the request to update user attributes.</p>
  */
@@ -1604,10 +1605,11 @@ export interface UserContextDataType {
 	 */
 	EncodedData?: string;
 }
-export interface VerifySoftwareTokenCommandInput extends VerifySoftwareTokenRequest {
-}
-export interface VerifySoftwareTokenCommandOutput extends VerifySoftwareTokenResponse, __MetadataBearer {
-}
+export interface VerifySoftwareTokenCommandInput
+	extends VerifySoftwareTokenRequest {}
+export interface VerifySoftwareTokenCommandOutput
+	extends VerifySoftwareTokenResponse,
+		__MetadataBearer {}
 export interface VerifySoftwareTokenRequest {
 	/**
 	 * <p>The access token.</p>
@@ -1637,10 +1639,11 @@ export interface VerifySoftwareTokenResponse {
 	 */
 	Session?: string;
 }
-export interface VerifyUserAttributeCommandInput extends VerifyUserAttributeRequest {
-}
-export interface VerifyUserAttributeCommandOutput extends VerifyUserAttributeResponse, __MetadataBearer {
-}
+export interface VerifyUserAttributeCommandInput
+	extends VerifyUserAttributeRequest {}
+export interface VerifyUserAttributeCommandOutput
+	extends VerifyUserAttributeResponse,
+		__MetadataBearer {}
 /**
  * <p>Represents the request to verify user attributes.</p>
  */
@@ -1661,7 +1664,6 @@ export interface VerifyUserAttributeRequest {
 /**
  * <p>A container representing the response from the server from the request to verify user attributes.</p>
  */
-export interface VerifyUserAttributeResponse {
-}
+export interface VerifyUserAttributeResponse {}
 
 export {};
