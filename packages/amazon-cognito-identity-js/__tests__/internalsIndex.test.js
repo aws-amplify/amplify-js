@@ -6,6 +6,7 @@ describe('import * keys', () => {
 		Array [
 		  "addAuthCategoryToCognitoUserAgent",
 		  "addFrameworkToCognitoUserAgent",
+		  "InternalCognitoUser",
 		]
 	`);
 	});
