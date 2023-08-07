@@ -79,13 +79,15 @@ tests:
     sample_name: [v2/background-process-manager]
     spec: background-process-manager
     browser: *extended_browser_list
-  # - test_name: integ_react_datastore_related_models
-  #   desc: 'DataStore - Related Models'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: [related-models]
-  #   spec: related-models
-  #   browser: *minimal_browser_list
+  - test_name: integ_react_datastore_related_models
+    desc: 'DataStore - Related Models'
+    framework: react
+    category: datastore
+    sample_name: [related-models]
+    spec: related-models
+    browser: *minimal_browser_list
+    timeout_minutes: 45
+    retry_count: 10
   - test_name: integ_react_datastore_selective_sync
     desc: 'DataStore - Selective Sync'
     framework: react
