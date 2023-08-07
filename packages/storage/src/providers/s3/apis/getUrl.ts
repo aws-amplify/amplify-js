@@ -3,6 +3,7 @@
 import { S3GetUrlOptions, S3GetUrlResult } from '../types';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import {
+	SERVICE_NAME as S3_SERVICE_NAME,
 	GetObjectInput,
 	getPresignedGetObjectUrl,
 } from '../../../AwsClients/S3';
@@ -52,7 +53,7 @@ export const getUrl = async function (
 		expiration: options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION,
 		signingRegion: region,
 		region,
-		signingService: 's3',
+		signingService: S3_SERVICE_NAME,
 	};
 	let result: S3GetUrlResult;
 
