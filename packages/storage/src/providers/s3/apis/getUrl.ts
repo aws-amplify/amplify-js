@@ -65,10 +65,7 @@ export const getUrl = async function (
 		);
 		// TODO add headers in result
 	} catch (error) {
-		throw new StorageError({
-			name: 'KeyNotFound',
-			message: 'Error retrieving the key',
-		});
+		throw error;
 	}
 	return result;
 };
