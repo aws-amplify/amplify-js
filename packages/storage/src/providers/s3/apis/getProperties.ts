@@ -9,7 +9,6 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
 import { S3GetPropertiesResult } from '../types/results';
-import { assertServiceError } from '../../../errors/utils/assertServiceError';
 
 /**
  * Get Properties of the object
