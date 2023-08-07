@@ -10,6 +10,7 @@ import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
 import { S3GetPropertiesResult } from '../types/results';
 import { StorageError } from '../../../errors/StorageError';
+import { NETWORK_ERROR_CODE } from '../../../AwsClients/S3/runtime/constants';
 
 /**
  * Get Properties of the object
@@ -21,7 +22,6 @@ export const getProperties = async function (
 	req: StorageOperationRequest<StorageOptions>
 ): Promise<S3GetPropertiesResult> {
 	const options = req?.options;
-	AmplifyV6.getConfig().Storage;
 	const { awsCreds, awsCredsIdentityId } =
 		await AmplifyV6.Auth.fetchAuthSession();
 	assertValidationError(!!awsCreds, StorageValidationErrorCode.NoCredentials);
@@ -30,8 +30,8 @@ export const getProperties = async function (
 	const { key, options: { level = defaultAccessLevel } = {} } = req;
 	const { prefixResolver = defaultPrefixResolver } =
 		AmplifyV6.libraryOptions?.Storage ?? {};
+	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 	try {
-		assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 		const finalKey =
 			prefixResolver({
 				level,
@@ -50,10 +50,7 @@ export const getProperties = async function (
 			metadata: response.Metadata,
 		};
 		return getPropertiesResponse;
-	} catch {
-		throw new StorageError({
-			name: 'KeyNotFound',
-			message: 'Error retrieving the key',
-		});
+	} catch (error) {
+		throw error;
 	}
 };
