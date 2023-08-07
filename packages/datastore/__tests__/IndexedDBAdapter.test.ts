@@ -439,6 +439,8 @@ describe('IndexedDB benchmarks', () => {
 			expect(fetched.length).toBe(1);
 		});
 
+		console.log({ byPkTime, byNameTime });
+
 		// clamp indexed queries on a small data-set to be less than 1/2
 		// of the runtime of their non-indexed equivalent.
 		//
@@ -472,6 +474,8 @@ describe('IndexedDB benchmarks', () => {
 			const fetched = await DataStore.query(User, u => u.name.eq(user.name));
 			expect(fetched.length).toBe(1);
 		});
+
+		console.log({ byPkTime, byNameTime });
 
 		// clamp indexed queries on a small data-set to be less than 1/2
 		// of the runtime of their non-indexed equivalent.
@@ -513,6 +517,8 @@ describe('IndexedDB benchmarks', () => {
 			expect(fetched.length).toBe(1);
 		});
 
+		console.log({ byPKEqTime, byContentTime });
+
 		// clamp indexed queries on a small data-set to be less than 1/2
 		// of the runtime of their non-indexed equivalent.
 		//
@@ -523,6 +529,16 @@ describe('IndexedDB benchmarks', () => {
 	});
 
 	test('deep joins are within time limits expected if indexes are being used using default PK', async () => {
+		// Predicating 11 layers deep on a single ID should result in 11 sub-queries.
+		// The first sub-query should fetch a child by `id`. Each query back "up" the chain
+		// should also fetch a record by key field. When parents are fetched it's by `id` (because
+		// child refers to parent by ID). When children are fetched it's by `parentId`, again, because
+		// children refer to parents by `parentId`. Both of these queries should leverage an index.
+
+		// To benchmark, ensuring that these key fetches are occurring, we'll compare the time it takes
+		// to execute this nested predicate (12 queries) to the time it takes to execute 12 unindexed
+		// queries.
+
 		const parents: DefaultPKParent[] = [];
 		await sideloadIDBData(250, 'DefaultPKParent', i => {
 			const parent = new DefaultPKParent({
@@ -541,8 +557,18 @@ describe('IndexedDB benchmarks', () => {
 			return child;
 		});
 
+		const baselineTime = await benchmark(async () => {
+			for (let i = 0; i < 12; i++) {
+				const fetched = await DataStore.query(DefaultPKParent, p =>
+					p.content.contains(parents[parents.length - 1].content)
+				);
+				expect(fetched.length).toBe(1);
+			}
+		}, 1);
+
 		const time = await benchmark(async () => {
 			const fetched = await DataStore.query(DefaultPKParent, p =>
+				//       1.     2.       3.     4.       5.     6.       7.     8.       9.    10.      11.id
 				p.children.parent.children.parent.children.parent.children.parent.children.parent.children.id.eq(
 					child.id
 				)
@@ -550,12 +576,24 @@ describe('IndexedDB benchmarks', () => {
 			expect(fetched.length).toBe(1);
 		}, 1);
 
+		console.log({ baselineTime, time });
+
 		// actual time on a decent dev machine is around 15ms, compared
 		// to over 130ms when the optimization is disabled.
-		expect(time).toBeLessThan(100);
+		expect(time).toBeLessThan(baselineTime);
 	});
 
 	test('deep joins are within time limits expected if indexes are being used using custom PK', async () => {
+		// Predicating 11 layers deep on a single ID should result in 11 sub-queries.
+		// The first sub-query should fetch a child by `id`. Each query back "up" the chain
+		// should also fetch a record by key field. When parents are fetched it's by `id` (because
+		// child refers to parent by ID). When children are fetched it's by `parentId`, again, because
+		// children refer to parents by `parentId`. Both of these queries should leverage an index.
+
+		// To benchmark, ensuring that these key fetches are occurring, we'll compare the time it takes
+		// to execute this nested predicate (12 queries) to the time it takes to execute 12 unindexed
+		// queries.
+
 		const parents: CompositePKParent[] = [];
 		await sideloadIDBData(250, 'CompositePKParent', i => {
 			const parent = new CompositePKParent({
@@ -576,8 +614,18 @@ describe('IndexedDB benchmarks', () => {
 			return child;
 		});
 
+		const baselineTime = await benchmark(async () => {
+			for (let i = 0; i < 12; i++) {
+				const fetched = await DataStore.query(CompositePKParent, p =>
+					p.content.contains(parents[parents.length - 1].content)
+				);
+				expect(fetched.length).toBe(1);
+			}
+		}, 1);
+
 		const time = await benchmark(async () => {
 			const fetched = await DataStore.query(CompositePKParent, p =>
+				//       1.     2.       3.     4.       5.     6.       7.     8.       9.    10.      11.id
 				p.children.parent.children.parent.children.parent.children.parent.children.parent.children.and(
 					c => [c.childId.eq(child.childId), c.content.eq(child.content)]
 				)
@@ -585,12 +633,17 @@ describe('IndexedDB benchmarks', () => {
 			expect(fetched.length).toBe(1);
 		}, 1);
 
+		console.log({ baselineTime, time });
+
 		// actual time on a decent dev machine is around 20ms, compared
 		// to over 150ms when the optimization is disabled.
-		expect(time).toBeLessThan(100);
+		expect(time).toBeLessThan(baselineTime);
 	});
 
 	test('wide joins operate within expeted time limits', async () => {
+		// This test stresses "wide" join, wherein the predicate refers to 100 children.
+		// Performance should be about equivalent to two table scans, one for each table.
+
 		const parents: CompositePKParent[] = [];
 		await sideloadIDBData(100, 'CompositePKParent', i => {
 			const parent = new CompositePKParent({
@@ -610,6 +663,18 @@ describe('IndexedDB benchmarks', () => {
 			});
 			return child;
 		});
+
+		const baselineTime = await benchmark(async () => {
+			const fetchedChild = await DataStore.query(CompositePKChild, c =>
+				c.content.beginsWith('content')
+			);
+			expect(fetchedChild.length).toBe(100);
+
+			const fetchedParent = await DataStore.query(CompositePKParent, p =>
+				p.content.beginsWith('content')
+			);
+			expect(fetchedParent.length).toBe(100);
+		}, 1);
 
 		const time = await benchmark(async () => {
 			const fetched = await DataStore.query(CompositePKParent, p =>
@@ -618,10 +683,22 @@ describe('IndexedDB benchmarks', () => {
 			expect(fetched.length).toBe(100);
 		}, 1);
 
-		expect(time).toBeLessThan(100);
+		console.log({ baselineTime, time });
+
+		// 2x margin allows for a lot of variability due to external factors
+		// while still be below 2X+ we see if each child results if we naively
+		// iterate through children and join one-at-a-time.
+		// Note sure this is a super meaningful clamp down on, but it does gate
+		// against drastic changes in performance.
+		expect(time).toBeLessThan(baselineTime * 2);
 	});
 
 	test('wide joins with outer level ORs operate within expected time limits', async () => {
+		// This test stresses "wide" join, wherein the predicate refers to 100 children.
+		// Performance should be about equivalent to two table scans, one for each table.
+		// Distinct from previous wide join test in that the `or` condition is an explicit
+		// list of child ids seeded into the query.
+
 		const parents: CompositePKParent[] = [];
 		await sideloadIDBData(100, 'CompositePKParent', i => {
 			const parent = new CompositePKParent({
@@ -643,6 +720,18 @@ describe('IndexedDB benchmarks', () => {
 			return child;
 		});
 
+		const baselineTime = await benchmark(async () => {
+			const fetchedChild = await DataStore.query(CompositePKChild, c =>
+				c.content.beginsWith('content')
+			);
+			expect(fetchedChild.length).toBe(100);
+
+			const fetchedParent = await DataStore.query(CompositePKParent, p =>
+				p.content.beginsWith('content')
+			);
+			expect(fetchedParent.length).toBe(100);
+		}, 1);
+
 		const time = await benchmark(async () => {
 			const fetched = await DataStore.query(CompositePKParent, p =>
 				p.children.or(child => children.map(c => child.childId.eq(c.childId)))
@@ -650,10 +739,21 @@ describe('IndexedDB benchmarks', () => {
 			expect(fetched.length).toBe(100);
 		}, 1);
 
-		expect(time).toBeLessThan(100);
+		console.log({ baselineTime, time });
+
+		// 2x margin allows for a lot of variability due to external factors
+		// while still be below 2X+ we see if each child results if we naively
+		// iterate through children and join one-at-a-time.
+		// Note sure this is a super meaningful clamp down on, but it does gate
+		// against drastic changes in performance.
+		expect(time).toBeLessThan(baselineTime * 2);
 	});
 
 	test('semi-wide joins (limit 7) with outer level ORs operate within expected time limits', async () => {
+		// This test stresses "wide" join, wherein the predicate refers to 100 children.
+		// Distinct from previous wide join test in that it operations on a small slice of children.
+		// Performance should therefore be less than two table scans, one for each table.
+
 		const parents: CompositePKParent[] = [];
 		await sideloadIDBData(250, 'CompositePKParent', i => {
 			const parent = new CompositePKParent({
@@ -674,6 +774,18 @@ describe('IndexedDB benchmarks', () => {
 			children.push(child);
 			return child;
 		});
+
+		const baselineTime = await benchmark(async () => {
+			const fetchedChild = await DataStore.query(CompositePKChild, c =>
+				c.content.beginsWith('content')
+			);
+			expect(fetchedChild.length).toBe(250);
+
+			const fetchedParent = await DataStore.query(CompositePKParent, p =>
+				p.content.beginsWith('content')
+			);
+			expect(fetchedParent.length).toBe(250);
+		}, 1);
 
 		const size = 7;
 		const time = await benchmark(async () => {
@@ -685,6 +797,13 @@ describe('IndexedDB benchmarks', () => {
 			expect(fetched.length).toBe(size);
 		}, 1);
 
-		expect(time).toBeLessThan(100);
+		console.log({ baselineTime, time });
+
+		// 2x margin allows for a lot of variability due to external factors
+		// while still be below 2X+ we see if each child results if we naively
+		// iterate through children and join one-at-a-time.
+		// Note sure this is a super meaningful clamp down on, but it does gate
+		// against drastic changes in performance.
+		expect(time).toBeLessThan(baselineTime * 2);
 	});
 });
