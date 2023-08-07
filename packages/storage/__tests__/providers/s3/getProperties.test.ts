@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { getProperties } from '../../../src/providers/s3';
 
 jest.mock('../../../src/AwsClients/S3');
