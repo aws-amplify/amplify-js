@@ -9,8 +9,6 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
 import { S3GetPropertiesResult } from '../types/results';
-import { StorageError } from '../../../errors/StorageError';
-import { NETWORK_ERROR_CODE } from '../../../AwsClients/S3/runtime/constants';
 
 /**
  * Get Properties of the object
@@ -31,25 +29,21 @@ export const getProperties = async function (
 	const { prefixResolver = defaultPrefixResolver } =
 		AmplifyV6.libraryOptions?.Storage ?? {};
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
-	try {
-		const finalKey =
-			prefixResolver({
-				level,
-				identityId: awsCredsIdentityId,
-			}) + key;
-		const response = await headObject(options, {
-			Bucket: bucket,
-			Key: finalKey,
-		});
-		return {
-			key: finalKey,
-			contentType: response.ContentType,
-			contentLength: response.ContentLength,
-			eTag: response.ETag,
-			lastModified: response.LastModified,
-			metadata: response.Metadata,
-		};
-	} catch (error) {
-		throw error;
-	}
+	const finalKey =
+		prefixResolver({
+			level,
+			identityId: awsCredsIdentityId,
+		}) + key;
+	const response = await headObject(options, {
+		Bucket: bucket,
+		Key: finalKey,
+	});
+	return {
+		key: finalKey,
+		contentType: response.ContentType,
+		contentLength: response.ContentLength,
+		eTag: response.ETag,
+		lastModified: response.LastModified,
+		metadata: response.Metadata,
+	};
 };
