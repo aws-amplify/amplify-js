@@ -5,7 +5,7 @@ import { headObject } from '../../../AwsClients/S3';
 import { StorageOperationRequest } from '../../../types';
 import { AmplifyV6 } from '@aws-amplify/core';
 import { StorageOptions } from '../../../types/params';
-import { assertValidationError } from '../../../errors/assertValidationErrors';
+import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
 import { S3GetPropertiesResult } from '../types/results';
@@ -41,7 +41,7 @@ export const getProperties = async function (
 			Bucket: bucket,
 			Key: finalKey,
 		});
-		const getPropertiesResponse: S3GetPropertiesResult = {
+		return {
 			key: finalKey,
 			contentType: response.ContentType,
 			contentLength: response.ContentLength,
@@ -49,7 +49,6 @@ export const getProperties = async function (
 			lastModified: response.LastModified,
 			metadata: response.Metadata,
 		};
-		return getPropertiesResponse;
 	} catch (error) {
 		throw error;
 	}

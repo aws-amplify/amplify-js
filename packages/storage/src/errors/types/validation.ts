@@ -18,6 +18,6 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 			'Missing identity ID when accessing objects in protected or private access level',
 	},
 	[StorageValidationErrorCode.NoKey]: {
-		message: 'Missing key',
+		message: 'Missing key in getProperties api call',
 	},
 };
