@@ -8,16 +8,16 @@ export type StorageOptions =
 			identityId: string;
 	  };
 
-export type StorageOperationParameter<Options extends StorageOptions> = {
+export type StorageOperationRequest<Options extends StorageOptions> = {
 	key: string;
 	options?: Options;
 };
 
-export type StorageDownloadDataParameter<Options extends StorageOptions> =
-	StorageOperationParameter<Options>;
+export type StorageDownloadDataRequest<Options extends StorageOptions> =
+	StorageOperationRequest<Options>;
 
 export type StorageDownloadFileParameter<Options extends StorageOptions> =
-	StorageOperationParameter<Options> & {
+	StorageOperationRequest<Options> & {
 		/**
 		 * If supplied full file path in browsers(e.g. path/to/foo.bar)
 		 * the directory will be stripped. However, full directory could be
@@ -28,12 +28,12 @@ export type StorageDownloadFileParameter<Options extends StorageOptions> =
 
 // TODO: open question whether we should treat uploadFile differently from uploadData
 export type StorageUploadDataParameter<Options extends StorageOptions> =
-	StorageOperationParameter<Options> & {
+	StorageOperationRequest<Options> & {
 		data: Blob | BufferSource | FormData | URLSearchParams | string;
 	};
 
 // TODO: open question whether we should treat uploadFile differently from uploadData
 export type StorageUploadFileParameter<Options extends StorageOptions> =
-	StorageOperationParameter<Options> & {
+	StorageOperationRequest<Options> & {
 		data: File;
 	};
