@@ -11,12 +11,11 @@ import { getProperties } from './getProperties';
 import { StorageDownloadDataRequest } from '../../../types/params';
 import { GetPropertiesException } from '../types/errors';
 import {
-	resolveStorageConfig,
 	getKeyWithPrefix,
 	resolveCredentials,
+	resolveStorageConfig,
 } from '../utils';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-
 const DEFAULT_PRESIGN_EXPIRATION = 900;
 
 /**
