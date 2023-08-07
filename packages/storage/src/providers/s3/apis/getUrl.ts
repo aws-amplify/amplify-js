@@ -5,7 +5,6 @@ import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import {
 	SERVICE_NAME as S3_SERVICE_NAME,
 	GetObjectInput,
-	SERVICE_NAME as S3_SERVICE_NAME,
 	getPresignedGetObjectUrl,
 } from '../../../AwsClients/S3';
 import { getProperties } from './getProperties';
