@@ -203,7 +203,7 @@ describe('authenticateUser()', () => {
 		user.setAuthenticationFlowType('USER_PASSWORD_AUTH');
 		user.authenticateUser(authDetails, callback);
 
-		expect(spyon).toHaveBeenCalledWith(authDetails, callback);
+		expect(spyon).toHaveBeenCalledWith(authDetails, callback, undefined);
 	});
 
 	test('USER_SRP_AUTH and CUSTOM_AUTH flow types', () => {
@@ -212,12 +212,12 @@ describe('authenticateUser()', () => {
 		user.setAuthenticationFlowType('USER_SRP_AUTH');
 		user.authenticateUser(authDetails, callback);
 
-		expect(spyon).toHaveBeenCalledWith(authDetails, callback);
+		expect(spyon).toHaveBeenCalledWith(authDetails, callback, undefined);
 
 		user.setAuthenticationFlowType('CUSTOM_AUTH');
 		user.authenticateUser(authDetails, callback);
 
-		expect(spyon).toHaveBeenCalledWith(authDetails, callback);
+		expect(spyon).toHaveBeenCalledWith(authDetails, callback, undefined);
 	});
 
 	test('throws error for invalid Authentication flow type', () => {
@@ -310,7 +310,8 @@ describe('authenticateUserPlainUsernamePassword()', () => {
 		expect(userSpy3).toBeCalledWith(
 			'test auth result',
 			userSpy3.mock.calls[0][1],
-			callback
+			callback,
+			undefined
 		);
 		expect(userSpy3.mock.results[0].value).toBe('test return value');
 	});
@@ -755,7 +756,8 @@ describe('sendCustomChallengeAnswer()', () => {
 		expect(spyon3).toBeCalledWith(
 			vCognitoUserSession,
 			expect.any(AuthenticationHelper),
-			callback
+			callback,
+			undefined
 		);
 	});
 
@@ -1176,33 +1178,33 @@ describe('confirmPassword() and forgotPassword()', () => {
 		jest.clearAllMocks();
 	});
 
-	test('happy path should callback onSuccess', () => {
+	test('confirmPassword happy path should callback onSuccess', () => {
 		netRequestMockSuccess(true);
 		cognitoUser.confirmPassword(...confirmPasswordDefaults);
 		expect(callback.onSuccess).toHaveBeenCalledWith('SUCCESS');
 	});
 
-	test('client request throws an error', () => {
+	test('confirmPassword client request throws an error', () => {
 		netRequestMockSuccess(false);
 		cognitoUser.confirmPassword(...confirmPasswordDefaults);
 		expect(callback.onFailure.mock.calls.length).toEqual(1);
 	});
 
-	test('happy path should callback onSuccess', () => {
+	test('forgotPassword happy path should callback onSuccess', () => {
 		callback.inputVerificationCode = null;
 		netRequestMockSuccess(true);
 		cognitoUser.forgotPassword(...forgotPasswordDefaults);
 		expect(callback.onSuccess.mock.calls.length).toEqual(1);
 	});
 
-	test('inputVerification code is a function should callback inputVerificationCode', () => {
+	test('forgotPassword inputVerification code is a function should callback inputVerificationCode', () => {
 		callback.inputVerificationCode = jest.fn();
 		netRequestMockSuccess(true);
 		cognitoUser.forgotPassword(...forgotPasswordDefaults);
 		expect(callback.inputVerificationCode.mock.calls.length).toEqual(1);
 	});
 
-	test('client returning an error should call onFailure', () => {
+	test('forgotPassword client returning an error should call onFailure', () => {
 		netRequestMockSuccess(false);
 		cognitoUser.forgotPassword(...forgotPasswordDefaults);
 		expect(callback.onFailure.mock.calls.length).toEqual(1);
