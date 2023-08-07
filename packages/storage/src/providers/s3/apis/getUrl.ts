@@ -40,14 +40,14 @@ export const getUrl = async function (
 		if (options?.validateObjectExistence) {
 			getProperties(key);
 		}
-		const final_key =
+		const finalKey =
 			prefixResolver({
 				level,
 				identityId: awsCredsIdentityId,
 			}) + key;
 		const params: GetObjectInput = {
 			Bucket: bucket,
-			Key: final_key,
+			Key: finalKey,
 		};
 		const url = await getPresignedGetObjectUrl(
 			{
