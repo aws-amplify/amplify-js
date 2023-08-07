@@ -7,7 +7,6 @@ import { S3GetUrlOptions, S3GetUrlResult } from '../types';
 import { assertValidationError } from '../../../errors/assertValidationErrors';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver ';
-import { StorageError } from '../../../errors/StorageError';
 import {
 	SERVICE_NAME as S3_SERVICE_NAME,
 	GetObjectInput,
@@ -60,10 +59,13 @@ export const getUrl = async function (
 			params
 		);
 		result.url = new URL(url);
-		result.expiresAt = new Date(
-			Math.min(options?.expiration || DEFAULT_PRESIGN_EXPIRATION, 0)
+		const urlExpiration = new Date(
+			options?.expiration || DEFAULT_PRESIGN_EXPIRATION
 		);
-		// TODO add headers in result
+		const awsCredExpiration = awsCreds.expiration;
+		// expiresAt is the min of credential expiration and url expiration
+		result.expiresAt =
+			urlExpiration < awsCredExpiration ? urlExpiration : awsCredExpiration;
 	} catch (error) {
 		throw error;
 	}
