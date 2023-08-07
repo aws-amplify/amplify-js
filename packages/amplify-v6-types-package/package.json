@@ -12,6 +12,9 @@
 			]
 		}
 	},
+  "publishConfig": {
+		"access": "public"
+	},
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "build:cjs": "rimraf lib && tsc -p ./tsconfig.build.json -m commonjs --outDir lib",
