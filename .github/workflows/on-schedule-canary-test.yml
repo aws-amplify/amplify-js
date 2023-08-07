@@ -1,7 +1,8 @@
 on:
   # Tests scheduled at 9am(PDT) everyday
+  # default supported timezone is UTC
   schedule:
-    - cron: '0 9 * * *'
+    - cron: '0 16 * * *'
 
 jobs:
   canaries:
