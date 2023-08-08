@@ -14,7 +14,6 @@ import {
 } from '../types/errors';
 import { AmplifyV6 } from '@aws-amplify/core';
 import {
-	cacheCognitoTokens,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
@@ -29,6 +28,7 @@ import {
 	setActiveSignInState,
 	cleanActiveSignInState,
 } from '../utils/signInStore';
+import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 
 /**
  * Signs a user in

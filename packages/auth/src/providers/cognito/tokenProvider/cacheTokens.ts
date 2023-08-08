@@ -1,13 +1,13 @@
-import { AmplifyError } from '../../Errors';
-import { AmplifyV6 } from '../../singleton';
-import { decodeJWT } from '../../singleton/Auth/utils';
+import { AmplifyError } from '@aws-amplify/core';
+import { decodeJWT } from '@aws-amplify/core';
 import { AuthenticationResultType } from '@aws-sdk/client-cognito-identity-provider';
+import { tokenOrchestrator } from '.';
 
 export async function cacheCognitoTokens(
 	AuthenticationResult: AuthenticationResultType
 ): Promise<void> {
 	if (AuthenticationResult.AccessToken) {
-		const accessToken = decodeJWT(AuthenticationResult.AccessToken || '');
+		const accessToken = decodeJWT(AuthenticationResult.AccessToken);
 		const accessTokenExpAtInMillis = (accessToken.payload.exp || 0) * 1000;
 		const accessTokenIssuedAtInMillis = (accessToken.payload.iat || 0) * 1000;
 		const currentTime = new Date().getTime();
@@ -30,12 +30,14 @@ export async function cacheCognitoTokens(
 			idToken = decodeJWT(AuthenticationResult.IdToken);
 		}
 
-		AmplifyV6.Auth.setTokens({
-			accessToken,
-			accessTokenExpAt: accessTokenExpAtInMillis,
-			idToken,
-			metadata,
-			clockDrift,
+		tokenOrchestrator.setTokens({
+			tokens: {
+				accessToken,
+				accessTokenExpAt: accessTokenExpAtInMillis,
+				idToken,
+				metadata,
+				clockDrift,
+			},
 		});
 	} else {
 		// This would be a service error

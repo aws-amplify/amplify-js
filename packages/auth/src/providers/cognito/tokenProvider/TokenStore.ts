@@ -1,22 +1,16 @@
-import { assertTokenProviderConfig, decodeJWT } from './utils';
 import {
-	AuthConfig,
-	AuthKeys,
-	AuthStorageKeys,
-	AuthTokenStore,
+	AmplifyV6,
 	AuthTokens,
-} from './types';
-import { KeyValueStorageInterface } from '../../types';
-import { asserts } from '../../Util/errors/AssertError';
+	KeyValueStorageInterface,
+	assertTokenProviderConfig,
+	asserts,
+	decodeJWT,
+} from '@aws-amplify/core';
+import { AuthKeys, AuthStorageKeys, AuthTokenStore } from './types';
 
 export class DefaultTokenStore implements AuthTokenStore {
+	constructor() {}
 	keyValueStorage: KeyValueStorageInterface;
-	authConfig: AuthConfig;
-
-	setAuthConfig(authConfigParam: AuthConfig) {
-		this.authConfig = authConfigParam;
-		return;
-	}
 
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface) {
 		this.keyValueStorage = keyValueStorage;
@@ -24,7 +18,8 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	async loadTokens(): Promise<AuthTokens> {
-		assertTokenProviderConfig(this.authConfig);
+		const authConfig = AmplifyV6.getConfig().Auth;
+		assertTokenProviderConfig(authConfig);
 
 		// TODO(v6): migration logic should be here
 		// Reading V5 tokens old format
@@ -34,25 +29,31 @@ export class DefaultTokenStore implements AuthTokenStore {
 			const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 			const authKeys = createKeysForAuthStorage(
 				name,
-				this.authConfig.userPoolWebClientId
+				authConfig?.userPoolWebClientId || 'cliendId'
 			);
 
-			const accessToken = decodeJWT(
-				await this.keyValueStorage.getItem(authKeys.accessToken)
+			const accessTokenString = await this.keyValueStorage.getItem(
+				authKeys.accessToken
 			);
+
+			if (accessTokenString === null || accessTokenString === undefined) {
+				throw new Error('No session');
+			}
+
+			const accessToken = decodeJWT(accessTokenString);
 			const itString = await this.keyValueStorage.getItem(authKeys.idToken);
 			const idToken = itString ? decodeJWT(itString) : undefined;
-			const accessTokenExpAt =
-				Number.parseInt(
-					await this.keyValueStorage.getItem(authKeys.accessTokenExpAt)
-				) || 0;
+			const accessTokenExpAtString =
+				(await this.keyValueStorage.getItem(authKeys.accessTokenExpAt)) || '0';
+			const accessTokenExpAt = Number.parseInt(accessTokenExpAtString);
+
 			const metadata = JSON.parse(
 				(await this.keyValueStorage.getItem(authKeys.metadata)) || '{}'
 			);
-			const clockDrift =
-				Number.parseInt(
-					await this.keyValueStorage.getItem(authKeys.clockDrift)
-				) || 0;
+
+			const clockDriftString =
+				(await this.keyValueStorage.getItem(authKeys.clockDrift)) || '0';
+			const clockDrift = Number.parseInt(clockDriftString);
 
 			return {
 				accessToken,
@@ -62,12 +63,14 @@ export class DefaultTokenStore implements AuthTokenStore {
 				clockDrift,
 			};
 		} catch (err) {
+			console.warn(err);
 			// TODO(v6): validate partial results with mobile implementation
 			throw new Error('No valid tokens');
 		}
 	}
 	async storeTokens(tokens: AuthTokens): Promise<void> {
-		assertTokenProviderConfig(this.authConfig);
+		const authConfig = AmplifyV6.getConfig().Auth;
+		assertTokenProviderConfig(authConfig);
 		asserts(!(tokens === undefined), {
 			message: 'Invalid tokens',
 			name: 'InvalidAuthTokens',
@@ -77,7 +80,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.userPoolWebClientId
+			authConfig.userPoolWebClientId || 'clientId'
 		);
 
 		this.keyValueStorage.setItem(
@@ -103,12 +106,13 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	async clearTokens(): Promise<void> {
-		assertTokenProviderConfig(this.authConfig);
+		const authConfig = AmplifyV6.getConfig().Auth;
+		assertTokenProviderConfig(authConfig);
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.userPoolWebClientId
+			authConfig?.userPoolWebClientId || 'clientId'
 		);
 
 		// Not calling clear because it can remove data that is not managed by AuthTokenStore

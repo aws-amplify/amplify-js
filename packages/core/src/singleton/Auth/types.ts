@@ -29,23 +29,6 @@ export type JWT = {
 
 export type JWTCreator = (stringJWT: string) => JWT;
 
-export const AuthStorageKeys = {
-	accessToken: 'accessToken',
-	idToken: 'idToken',
-	accessTokenExpAt: 'accessTokenExpAt',
-	oidcProvider: 'oidcProvider',
-	clockDrift: 'clockDrift',
-	metadata: 'metadata',
-};
-
-export interface AuthTokenStore {
-	setAuthConfig(authConfig: AuthConfig): void;
-	loadTokens(): Promise<AuthTokens>;
-	storeTokens(tokens: AuthTokens): Promise<void>;
-	clearTokens(): Promise<void>;
-	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
-}
-
 export type AuthSession = {
 	tokens?: AuthTokens;
 	awsCreds?: Credentials;
@@ -54,7 +37,7 @@ export type AuthSession = {
 };
 
 export type LibraryAuthOptions = {
-	tokenRefresher?: TokenRefresher;
+	tokenProvider?: TokenProvider;
 	credentialsProvider?: CredentialsProvider;
 	identityIdProvider?: IdentityIdProvider;
 	keyValueStorage?: KeyValueStorageInterface;
@@ -75,27 +58,13 @@ export interface CredentialsProvider {
 	clearCredentials: () => void;
 }
 
-export interface AuthTokenOrchestrator {
-	setTokenRefresher(tokenRefresher: TokenRefresher): void;
-	setAuthTokenStore(tokenStore: AuthTokenStore): void;
-	setAuthConfig(authConfig: AuthConfig): void;
-
+export type TokenProvider = {
 	getTokens: ({
-		options,
+		forceRefresh,
 	}: {
-		options?: FetchAuthSessionOptions;
+		forceRefresh?: boolean;
 	}) => Promise<AuthTokens>;
-	setTokens: ({ tokens }: { tokens: AuthTokens }) => Promise<void>;
-	clearTokens: () => Promise<void>;
-}
-
-export type TokenRefresher = ({
-	tokens,
-	authConfig,
-}: {
-	tokens: AuthTokens;
-	authConfig?: AuthConfig;
-}) => Promise<AuthTokens>;
+};
 
 export type IdentityIdProvider = ({
 	tokens,
@@ -115,10 +84,6 @@ export type AuthTokens = {
 	accessTokenExpAt: number;
 	clockDrift?: number;
 	metadata?: Record<string, string>; // Generic for each service supported
-};
-
-export type AuthKeys<AuthKey extends string> = {
-	[Key in AuthKey]: string;
 };
 
 export type AuthConfig =

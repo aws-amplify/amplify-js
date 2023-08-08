@@ -13,7 +13,6 @@ import {
 	handleCustomSRPAuthFlow,
 	getSignInResult,
 	getSignInResultFromError,
-	cacheCognitoTokens,
 } from '../utils/signInHelpers';
 import {
 	InitiateAuthException,
@@ -29,6 +28,7 @@ import {
 	cleanActiveSignInState,
 	setActiveSignInState,
 } from '../utils/signInStore';
+import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 
 /**
  * Signs a user in using a custom authentication flow with SRP

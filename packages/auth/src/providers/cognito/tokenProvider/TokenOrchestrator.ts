@@ -1,22 +1,16 @@
-import { isTokenExpired } from '.';
-import { AmplifyV6 } from '../';
+import { AmplifyV6, isTokenExpired } from '@aws-amplify/core';
 import {
 	AuthConfig,
-	AuthTokenOrchestrator,
-	AuthTokenStore,
 	AuthTokens,
 	FetchAuthSessionOptions,
-	TokenRefresher,
-} from './types';
+} from '@aws-amplify/core';
+import { AuthTokenStore, TokenRefresher } from './types';
+import { tokenOrchestrator } from '.';
 
-export class DefaultAuthTokensOrchestrator implements AuthTokenOrchestrator {
+export class TokenOrchestrator {
 	tokenStore: AuthTokenStore;
 	tokenRefresher: TokenRefresher;
-	authConfig: AuthConfig;
 
-	setAuthConfig(authConfig: AuthConfig) {
-		this.authConfig = authConfig;
-	}
 	setTokenRefresher(tokenRefresher: TokenRefresher) {
 		this.tokenRefresher = tokenRefresher;
 	}
@@ -36,14 +30,14 @@ export class DefaultAuthTokensOrchestrator implements AuthTokenOrchestrator {
 			tokens = await this.tokenStore.loadTokens();
 
 			const idTokenExpired =
-				!!tokens.idToken &&
+				!!tokens?.idToken &&
 				isTokenExpired({
-					expiresAt: tokens.idToken.payload.exp * 1000,
-					clockDrift: tokens.clockDrift,
+					expiresAt: (tokens.idToken?.payload?.exp || 0) * 1000,
+					clockDrift: tokens?.clockDrift || 0,
 				});
 			const accessTokenExpired = isTokenExpired({
 				expiresAt: tokens.accessTokenExpAt,
-				clockDrift: tokens.clockDrift,
+				clockDrift: tokens.clockDrift || 0,
 			});
 
 			if (options?.forceRefresh || idTokenExpired || accessTokenExpired) {
@@ -52,6 +46,7 @@ export class DefaultAuthTokensOrchestrator implements AuthTokenOrchestrator {
 				});
 			}
 		} catch (err) {
+			console.warn(err);
 			// TODO(v6): review token handling mechanism, including exponential retry, offline, etc
 			throw new Error('No session');
 		}
@@ -65,14 +60,17 @@ export class DefaultAuthTokensOrchestrator implements AuthTokenOrchestrator {
 		tokens: AuthTokens;
 	}): Promise<AuthTokens> {
 		try {
+			const authConfig = AmplifyV6.getConfig().Auth;
+
 			const newTokens = await this.tokenRefresher({
 				tokens,
-				authConfig: this.authConfig,
+				authConfig,
 			});
-			await AmplifyV6.Auth.setTokens(newTokens);
+
+			tokenOrchestrator.setTokens({ tokens: newTokens });
 			return newTokens;
 		} catch (err) {
-			await AmplifyV6.Auth.clearTokens();
+			tokenOrchestrator.clearTokens();
 			throw err;
 		}
 	}

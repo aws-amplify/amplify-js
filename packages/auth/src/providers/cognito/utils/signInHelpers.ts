@@ -37,7 +37,6 @@ import {
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
 import {
-	AllowedMFATypes,
 	AuthUserAttribute,
 	MFAType,
 	TOTPSetupDetails,
@@ -48,7 +47,6 @@ import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { signInStore } from './signInStore';
-export { cacheCognitoTokens } from '@aws-amplify/core/internals/aws-client-utils';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 type HandleAuthChallengeRequest = {

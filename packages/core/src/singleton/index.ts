@@ -23,13 +23,15 @@ class AmplifyClass {
 		this.libraryOptions = {
 			Auth: {
 				keyValueStorage: MemoryKeyValueStorage, // Initialize automatically Depending on platform,
-				tokenRefresher: () => {
-					throw new AmplifyError({
-						message: 'No tokenRefresher not provided',
-						name: 'MissingTokenRefresher',
-						recoverySuggestion:
-							'Make sure to call Amplify.configure in your app with a tokenRefresher',
-					});
+				tokenProvider: {
+					getTokens: () => {
+						throw new AmplifyError({
+							message: 'No tokenRefresher not provided',
+							name: 'MissingTokenRefresher',
+							recoverySuggestion:
+								'Make sure to call Amplify.configure in your app with a tokenRefresher',
+						});
+					},
 				},
 			},
 		};
