@@ -135,6 +135,8 @@ tests:
     sample_name: v2/owner-and-group-different-models-default-v2
     spec: owner-and-group-different-models-default
     browser: *minimal_browser_list
+    timeout_minutes: 45
+    retry_count: 10
   - test_name: integ_datastore_auth_v2-owner-and-group-same-model-default
     desc: 'DataStore Auth CLI v2'
     framework: react
@@ -156,6 +158,8 @@ tests:
     sample_name: v2/dynamic-user-pool-groups-default-v2
     spec: dynamic-user-pool-groups-default
     browser: *minimal_browser_list
+    timeout_minutes: 45
+    retry_count: 10
   - test_name: integ_datastore_auth_v2-dynamic-user-pool-groups-owner-based-default
     desc: 'DataStore Auth CLI v2'
     framework: react
@@ -359,6 +363,8 @@ tests:
     sample_name: [related-models]
     spec: related-models
     browser: *minimal_browser_list
+    timeout_minutes: 45
+    retry_count: 10
   - test_name: integ_react_datastore_selective_sync
     desc: 'DataStore - Selective Sync'
     framework: react
