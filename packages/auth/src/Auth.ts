@@ -47,7 +47,7 @@ export class AuthClass extends InternalAuthClass {
 		params: string | SignUpParams,
 		...restOfAttrs: string[]
 	): Promise<ISignUpResult> {
-		return super.signUp(params, ...restOfAttrs);
+		return super.signUp(params, restOfAttrs);
 	}
 
 	/**

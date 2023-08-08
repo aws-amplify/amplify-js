@@ -6,7 +6,7 @@
 import CognitoRefreshToken from './CognitoRefreshToken';
 import CognitoUserSession from './CognitoUserSession';
 import CognitoUserAttribute from './CognitoUserAttribute';
-import { InternalCognitoUser } from './internals/InternalCognitoUser';
+import { InternalCognitoUser } from './internals';
 
 /**
  * @callback nodeCallback

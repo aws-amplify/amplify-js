@@ -83,6 +83,7 @@ export default class Client {
 	 * @param {string} operation API operation
 	 * @param {object} params Input parameters
 	 * @param {function} callback Callback called when a response is returned
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
 	request(operation, params, callback, userAgentValue) {

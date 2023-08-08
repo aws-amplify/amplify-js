@@ -316,23 +316,14 @@ export class InternalAuthClass {
 	 * Sign up with username, password and other attributes like phone, email
 	 * @param {String | object} params - The user attributes used for signin
 	 * @param {String[]} restOfAttrs - for the backward compatability
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves callback data if success
 	 */
 	public signUp(
 		params: string | SignUpParams,
-		...restOfAttrs: string[]
-	): Promise<ISignUpResult> {
-		return this.internalSignUp(params, restOfAttrs);
-	}
-
-	/**
-	 * Sign up with username, password and other attributes like phone, email
-	 * @param {String | object} params - The user attributes used for signin
-	 * @param {String[]} restOfAttrs - for the backward compatability
-	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
-	 * @return - A promise resolves callback data if success
-	 */
-	public internalSignUp(
+		...restOfAttrs: any
+	): Promise<ISignUpResult>;
+	public signUp(
 		params: string | SignUpParams,
 		restOfAttrs?: string[],
 		customUserAgentDetails?: CustomUserAgentDetails
