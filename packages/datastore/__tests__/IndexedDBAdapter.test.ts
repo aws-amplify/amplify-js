@@ -31,7 +31,7 @@ let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
 let Predicates = PredicatesClass;
 
-const JOIN_TIME_LIMIT = 125 // ms
+const JOIN_TIME_LIMIT = 125; // ms
 
 describe('IndexedDBAdapter tests', () => {
 	async function getMutations(adapter) {
