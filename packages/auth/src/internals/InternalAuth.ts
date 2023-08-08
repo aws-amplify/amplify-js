@@ -753,7 +753,7 @@ export class InternalAuthClass {
 					try {
 						// In order to get user attributes and MFA methods
 						// We need to trigger currentUserPoolUser again
-						const currentUser = await this._currentAuthenticatedUser(
+						const currentUser = await this._currentUserPoolUser(
 							undefined,
 							customUserAgentDetails
 						);
@@ -2736,10 +2736,10 @@ export class InternalAuthClass {
 
 		if (!source || source === 'aws' || source === 'userPool') {
 			// ####
-			const internalUser: InternalCognitoUser =
-				await this._currentAuthenticatedUser(undefined, userAgentDetails).catch(
-					err => logger.error(err)
-				);
+			const internalUser: InternalCognitoUser = await this._currentUserPoolUser(
+				undefined,
+				userAgentDetails
+			).catch(err => logger.error(err));
 			if (!internalUser) {
 				return null;
 			}
@@ -3122,7 +3122,7 @@ export class InternalAuthClass {
 		);
 
 		try {
-			internalUser = await this._currentAuthenticatedUser(
+			internalUser = await this._currentUserPoolUser(
 				undefined,
 				userAgentDetails
 			);
@@ -3163,7 +3163,7 @@ export class InternalAuthClass {
 		);
 
 		try {
-			internalUser = await this._currentAuthenticatedUser(
+			internalUser = await this._currentUserPoolUser(
 				undefined,
 				userAgentDetails
 			);
@@ -3204,7 +3204,7 @@ export class InternalAuthClass {
 		);
 
 		try {
-			internalUser = await this._currentAuthenticatedUser(
+			internalUser = await this._currentUserPoolUser(
 				undefined,
 				userAgentDetails
 			);
