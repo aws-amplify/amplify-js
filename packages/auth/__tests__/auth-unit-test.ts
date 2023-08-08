@@ -3741,7 +3741,7 @@ describe('auth unit test', () => {
 			(oauthStorage.getState as jest.Mock<any>).mockReturnValueOnce(state);
 			await (auth as any)._handleAuthResponse(url);
 
-			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
+			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url, undefined);
 			expect(replaceStateSpy).toHaveBeenCalledWith(
 				{},
 				null,
@@ -3806,7 +3806,7 @@ describe('auth unit test', () => {
 
 			await (auth as any)._handleAuthResponse(url);
 
-			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
+			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url, undefined);
 			expect(replaceStateSpy).toHaveBeenCalledWith(
 				{},
 				null,
@@ -3870,7 +3870,7 @@ describe('auth unit test', () => {
 			}?code=${code}`;
 			await (auth as any)._handleAuthResponse(url);
 
-			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
+			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url, undefined);
 			expect(replaceStateSpy).toHaveBeenCalledWith(
 				{},
 				null,
