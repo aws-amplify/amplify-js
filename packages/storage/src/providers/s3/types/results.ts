@@ -8,7 +8,7 @@ import {
 } from '../../../types';
 import { StorageGetPropertiesResult } from '../../../types/results';
 
-type S3ObjectInformation = {
+type S3Item = {
 	/**
 	 * Creation date of the object.
 	 */
@@ -27,12 +27,12 @@ type S3ObjectInformation = {
 	 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html#UserMetadata
 	 */
 	metadata?: Record<string, string>;
+	//TODO add versionId
 };
 
-export type S3DownloadDataResult = StorageDownloadDataResult &
-	S3ObjectInformation;
+export type S3DownloadDataResult = StorageDownloadDataResult & S3Item;
 
-export type S3DownloadFileResult = S3ObjectInformation;
+export type S3DownloadFileResult = S3Item;
 
 export type S3GetUrlResult = StorageGetUrlResult;
 
@@ -40,5 +40,4 @@ export type S3UploadDataResult = StorageUploadResult;
 
 export type S3UploadFileResult = StorageUploadResult;
 
-export type S3GetPropertiesResult = StorageGetPropertiesResult &
-	S3ObjectInformation;
+export type S3GetPropertiesResult = StorageGetPropertiesResult & S3Item;

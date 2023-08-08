@@ -21,6 +21,5 @@ export type StorageUploadResult = {
 };
 
 export type StorageGetPropertiesResult = {
-	key: string;
 	contentType?: string;
 };
