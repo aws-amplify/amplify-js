@@ -13,15 +13,15 @@ import type {
 	HeadObjectCommandOutput,
 } from './types';
 import {
-	deserializeMetadata,
 	deserializeNumber,
 	deserializeTimestamp,
 	map,
 	parseXmlError,
 	s3TransferHandler,
+	serializeObjectSsecOptionsToHeaders,
 	serializePathnameObjectKey,
 } from './utils';
-import { StorageError } from '../../errors/StorageError';
+import { assertServiceError } from '../../errors/utils/assertServiceError';
 
 export type HeadObjectInput = Pick<HeadObjectCommandInput, 'Bucket' | 'Key'>;
 
@@ -39,12 +39,13 @@ const headObjectSerializer = async (
 	input: HeadObjectInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	// TODO need to check with BR
-	//const headers = await serializeObjectSsecOptionsToHeaders(input);
+	// TODO need to check with BR for headers
+	const headers = {};
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'HEAD',
+		headers,
 		url,
 	};
 };
@@ -54,10 +55,7 @@ const headObjectDeserializer = async (
 ): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
-		throw new StorageError({
-			name: error.name,
-			message: error.message,
-		});
+		assertServiceError(error);
 	} else {
 		const contents = {
 			...map(response.headers, {
@@ -67,7 +65,6 @@ const headObjectDeserializer = async (
 				LastModified: ['last-modified', deserializeTimestamp],
 				VersionId: 'x-amz-version-id',
 			}),
-			Metadata: deserializeMetadata(response.headers),
 		};
 		return {
 			...contents,

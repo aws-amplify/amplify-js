@@ -9,7 +9,6 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
 import { S3GetPropertiesResult } from '../types/results';
-import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { GetPropertiesException } from '../types/errors';
 
 /**
@@ -26,38 +25,29 @@ export const getProperties = async function (
 	req: StorageOperationRequest<StorageOptions>
 ): Promise<S3GetPropertiesResult> {
 	const options = req?.options;
-	const { awsCredsIdentityId }: { awsCredsIdentityId: string } =
-		await AmplifyV6.Auth.fetchAuthSession();
+	const { awsCredsIdentityId } = await AmplifyV6.Auth.fetchAuthSession();
 	const { bucket, defaultAccessLevel } = AmplifyV6.getConfig().Storage;
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	const { prefixResolver = defaultPrefixResolver } =
 		AmplifyV6.libraryOptions?.Storage ?? {};
-	const {
-		key,
-		options: { level = defaultAccessLevel } = {},
-	}: StorageOperationRequest<StorageOptions> = req;
+	const { key, options: { accessLevel = defaultAccessLevel } = {} } = req;
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 	const finalKey =
 		prefixResolver({
-			level,
+			accessLevel,
 			targetIdentityId: awsCredsIdentityId,
 		}) + key;
 	const params: HeadObjectInput = {
 		Bucket: bucket,
 		Key: finalKey,
 	};
-	try {
-		const response = await headObject(options, params);
-		return {
-			key: finalKey,
-			contentType: response.ContentType,
-			contentLength: response.ContentLength,
-			eTag: response.ETag,
-			lastModified: response.LastModified,
-			metadata: response.Metadata,
-		};
-	} catch (error) {
-		assertServiceError(error);
-		throw error;
-	}
+	const response = await headObject(options, params);
+	return {
+		key: finalKey,
+		contentType: response.ContentType,
+		contentLength: response.ContentLength,
+		eTag: response.ETag,
+		lastModified: response.LastModified,
+		metadata: response.Metadata,
+	};
 };
