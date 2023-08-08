@@ -38,7 +38,8 @@ export const getUrl = async function (
 		await AmplifyV6.Auth.fetchAuthSession();
 	assertValidationError(!!awsCreds, StorageValidationErrorCode.NoCredentials);
 	const { bucket, region, defaultAccessLevel } = AmplifyV6.getConfig().Storage;
-	// TODO assert bucket
+	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
+	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
 	const { key, options: { level = defaultAccessLevel } = {} } = req;
 	const { prefixResolver = defaultPrefixResolver } =
 		AmplifyV6.libraryOptions?.Storage ?? {};

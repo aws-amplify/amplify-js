@@ -7,6 +7,8 @@ export enum StorageValidationErrorCode {
 	NoCredentials = 'NoCredentials',
 	NoIdentityId = 'NoIdentityId',
 	NoKey = 'NoKey',
+	NoBucket = 'NoBucket',
+	NoRegion = 'NoRegion',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
@@ -18,6 +20,12 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 			'Missing identity ID when accessing objects in protected or private access level',
 	},
 	[StorageValidationErrorCode.NoKey]: {
-		message: 'Missing key',
+		message: 'Missing key in getProperties api call',
+	},
+	[StorageValidationErrorCode.NoBucket]: {
+		message: 'Missing Bucket name while accessing object',
+	},
+	[StorageValidationErrorCode.NoRegion]: {
+		message: 'Missing region while accessing object',
 	},
 };
