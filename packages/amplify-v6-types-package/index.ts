@@ -69,7 +69,7 @@ export type ModelTypes<
 					delete: (identifier: ModelIdentifier<ModelMeta[K]>) => Promise<T[K]>;
 					get: (identifier: ModelIdentifier<ModelMeta[K]>) => Promise<T[K]>;
 					list<SS extends FlattenKeys<T[K]>[]>(obj?: {
-						selectionSet?: SS;
+						fields?: SS;
 					}): Promise<Array<Joined<T[K], SS>>>;
 			  }
 			: never

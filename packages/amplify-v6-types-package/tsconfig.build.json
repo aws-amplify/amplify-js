@@ -1,4 +1,5 @@
 {
 	"extends": "../tsconfig.base.json",
-	"compilerOptions": {}
+	"compilerOptions": {},
+	"include": ["index.ts", "index.v3.ts"]
 }

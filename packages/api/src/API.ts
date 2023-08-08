@@ -12,6 +12,10 @@ import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
 import { InternalAPIClass } from './internals/InternalAPI';
 import type { ModelTypes } from '@aws-amplify/types-package-alpha';
+import { List } from 'lodash';
+
+// TODO: extract
+type ListArgs = { fields?: string[] };
 
 const logger = new Logger('API');
 /**
@@ -71,29 +75,48 @@ export class APIClass extends InternalAPIClass {
 				([key, { operationPrefix }]) => {
 					const operation = key as ModelOperation;
 
-					// e.g. clients.models.Todo.update
-					client.models[name][operationPrefix] = async (arg?: any) => {
-						const query = generateGraphQLDocument(model, operation);
-						const variables = buildGraphQLVariables(model, operation, arg);
+					if (operation === 'LIST') {
+						client.models[name][operationPrefix] = async (args?: any) => {
+							const query = generateGraphQLDocument(model, 'LIST', args);
+							const variables = buildGraphQLVariables(model, 'LIST', undefined);
 
-						const res = (await this.graphql({
-							query,
-							variables,
-						})) as any;
+							const res = (await this.graphql({
+								query,
+								variables,
+							})) as any;
 
-						// flatten response
-						if (res.data !== undefined) {
-							const [key] = Object.keys(res.data);
+							// flatten response
+							if (res.data !== undefined) {
+								const [key] = Object.keys(res.data);
 
-							if (res.data[key].items) {
-								return res.data[key].items;
+								if (res.data[key].items) {
+									return res.data[key].items;
+								}
+
+								return res.data[key];
 							}
 
-							return res.data[key];
-						}
+							return res as any;
+						};
+					} else {
+						client.models[name][operationPrefix] = async (arg?: any) => {
+							const query = generateGraphQLDocument(model, operation);
+							const variables = buildGraphQLVariables(model, operation, arg);
 
-						return res;
-					};
+							const res = (await this.graphql({
+								query,
+								variables,
+							})) as any;
+
+							// flatten response
+							if (res.data !== undefined) {
+								const [key] = Object.keys(res.data);
+								return res.data[key];
+							}
+
+							return res;
+						};
+					}
 				}
 			);
 		}
@@ -115,9 +138,22 @@ type OperationPrefix =
 
 const graphQLDocumentsCache = new Map<string, Map<ModelOperation, string>>();
 
+function filterSelectionSet(field, selectionSet?: string[]) {
+	if (!selectionSet || !Array.isArray(selectionSet)) {
+		return true;
+	}
+
+	if (selectionSet.includes(field)) {
+		return true;
+	}
+
+	return false;
+}
+
 function generateGraphQLDocument(
 	modelDefinition: any,
-	modelOperation: ModelOperation
+	modelOperation: ModelOperation,
+	listArgs?: ListArgs
 ): string {
 	const {
 		name,
@@ -130,6 +166,8 @@ function generateGraphQLDocument(
 		},
 	} = modelDefinition;
 	const { operationPrefix, usePlural } = graphQLOperationsInfo[modelOperation];
+
+	const { fields: selectionSet } = listArgs || {};
 
 	const fromCache = graphQLDocumentsCache.get(name)?.get(modelOperation);
 
@@ -149,6 +187,7 @@ function generateGraphQLDocument(
 	const selectionSetFields = Object.values<any>(fields)
 		.map(({ type, name }) => typeof type === 'string' && name) // Only scalars for now
 		.filter(Boolean)
+		.filter(field => filterSelectionSet(field, selectionSet))
 		.join(' ');
 
 	switch (modelOperation) {
