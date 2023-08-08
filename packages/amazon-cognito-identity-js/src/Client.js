@@ -32,33 +32,43 @@ export default class Client {
 	 * @param {object} params Input parameters
 	 * @returns Promise<object>
 	 */
-	promisifyRequest(operation, params) {
+	promisifyRequest(operation, params, userAgentValue) {
 		return new Promise((resolve, reject) => {
-			this.request(operation, params, (err, data) => {
-				if (err) {
-					reject(
-						new CognitoError(err.message, err.code, err.name, err.statusCode)
-					);
-				} else {
-					resolve(data);
-				}
-			});
+			this.request(
+				operation,
+				params,
+				(err, data) => {
+					if (err) {
+						reject(
+							new CognitoError(err.message, err.code, err.name, err.statusCode)
+						);
+					} else {
+						resolve(data);
+					}
+				},
+				userAgentValue
+			);
 		});
 	}
 
-	requestWithRetry(operation, params, callback) {
+	requestWithRetry(operation, params, callback, userAgentValue) {
 		const MAX_DELAY_IN_MILLIS = 5 * 1000;
 
 		jitteredExponentialRetry(
 			p =>
 				new Promise((res, rej) => {
-					this.request(operation, p, (error, result) => {
-						if (error) {
-							rej(error);
-						} else {
-							res(result);
-						}
-					});
+					this.request(
+						operation,
+						p,
+						(error, result) => {
+							if (error) {
+								rej(error);
+							} else {
+								res(result);
+							}
+						},
+						userAgentValue
+					);
 				}),
 			[params],
 			MAX_DELAY_IN_MILLIS
