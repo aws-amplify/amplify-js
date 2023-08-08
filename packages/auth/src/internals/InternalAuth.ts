@@ -2916,9 +2916,8 @@ export class InternalAuthClass {
 
 			if (hasCodeOrError || hasTokenOrError) {
 				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
-				const userAgentValue = this._storage.getItem(
-					'aws-amplify-federatedUserAgent'
-				);
+				const userAgentValue =
+					this._storage.getItem('aws-amplify-federatedUserAgent') || undefined;
 				this._storage.removeItem('aws-amplify-federatedUserAgent');
 				try {
 					const { accessToken, idToken, refreshToken, state } =
