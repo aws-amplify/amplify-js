@@ -27,7 +27,7 @@ const authOptions: AuthOptions = {
 describe('User-Attribute-validation', () => {
 	it('Check-non-verified-attributes', async () => {
 		const spyonAuthUserAttributes = jest
-			.spyOn(InternalAuthClass.prototype, 'userAttributes')
+			.spyOn(InternalAuthClass.prototype as any, '_userAttributes')
 			.mockImplementation((user: CognitoUser) => {
 				const emailAttribute = new CognitoUserAttribute({
 					Name: 'email',
