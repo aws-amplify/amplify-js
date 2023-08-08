@@ -1,5 +1,5 @@
-// Webpack version: ^4.46.0
 const TerserPlugin = require('terser-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin");
 
 /* eslint-disable */
 var webpack = require('webpack');
@@ -10,10 +10,13 @@ var banner =
 	' * SPDX-License-Identifier: Apache-2.0\n' +
 	' */\n\n';
 
-var config = {
+module.exports = {
 	entry: {
 		'amazon-cognito-identity': './src/index.js',
 		'amazon-cognito-identity.min': './src/index.js',
+	},
+	externals: {
+		crypto: 'crypto',
 	},
 	output: {
 		filename: '[name].js',
@@ -23,35 +26,45 @@ var config = {
 		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils')
 			.devtoolModuleFilenameTemplate,
 	},
-	externals: {
-		crypto: 'crypto',
+	resolve: {
+		extensions: ['.js', '.json'],
 	},
+	mode: 'production',
 	plugins: [
-		new webpack.BannerPlugin({ banner, raw: true })
+		new webpack.BannerPlugin({ banner, raw: true }),
+		new CompressionPlugin({
+			include: /\.min\.js$/,
+		})
 	],
 	optimization: {
 		minimizer: [
 			new TerserPlugin({
-				sourceMap: true,
+				extractComments: false,
 				terserOptions: {
-					compress: true
+					compress: true,
+					sourceMap: true,
 				},
 				include: /\.min\.js$/,
 			})
 		]
 	},
-	mode: 'production',
 	module: {
 		rules: [
 			// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
 			//{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
 			{
-				test: /\.js$/,
+				test: /\.js?$/,
 				exclude: /node_modules/,
-				loader: 'babel-loader'
+				use: [
+					'babel-loader',
+					{
+						loader: 'babel-loader',
+						options: {
+							presets: ['@babel/preset-env'],
+						},
+					},
+				],
 			},
 		],
 	},
 };
-
-module.exports = config;

@@ -36,7 +36,7 @@
     "reactnative"
   ],
   "scripts": {
-    "clean": "rimraf lib es",
+    "clean": "rimraf lib es dist",
     "build:cjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:cjs:watch": "cross-env BABEL_ENV=commonjs babel src --out-dir lib --watch",
     "build:esm": "cross-env BABEL_ENV=es babel src --out-dir es",
@@ -67,18 +67,11 @@
     "js-cookie": "^2.2.1"
   },
   "devDependencies": {
-    "@babel/cli": "7.17.0",
-    "@babel/core": "7.17.2",
-    "@babel/preset-env": "^7.7.4",
-    "@babel/preset-react": "^7.0.0",
     "@react-native-async-storage/async-storage": "^1.17.12",
-    "babel-loader": "^8.0.6",
     "cross-env": "^3.1.4",
     "genversion": "^2.2.0",
     "react": "^16.0.0",
     "rimraf": "^2.5.4",
-    "terser-webpack-plugin": "^1.4.3",
-    "webpack": "^4.46.0",
-    "webpack-cli": "^4.10.0"
+    "compression-webpack-plugin": "^10.0.0"
   }
 }
