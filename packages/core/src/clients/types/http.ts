@@ -12,7 +12,7 @@ export type Headers = Record<string, string>;
 
 export interface HttpRequest extends Request {
 	method: string;
-	headers?: Headers;
+	headers: Headers;
 	body?: BodyInit;
 }
 
