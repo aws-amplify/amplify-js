@@ -753,7 +753,7 @@ export class InternalAuthClass {
 					try {
 						// In order to get user attributes and MFA methods
 						// We need to trigger currentUserPoolUser again
-						const currentUser = await this.currentUserPoolUser(
+						const currentUser = await this._currentAuthenticatedUser(
 							undefined,
 							customUserAgentDetails
 						);
@@ -1343,7 +1343,7 @@ export class InternalAuthClass {
 						} finally {
 							that.user = internalUser;
 							try {
-								const currentUser = await this.currentUserPoolUser(
+								const currentUser = await this._currentUserPoolUser(
 									undefined,
 									userAgentDetails
 								);
@@ -1499,8 +1499,12 @@ export class InternalAuthClass {
 	) {
 		const internalUser: InternalCognitoUser | any = user;
 		const that = this;
+		const userAgentValue = getAuthUserAgentValue(
+			AuthAction.DeleteUserAttributes,
+			customUserAgentDetails
+		);
 		return new Promise((resolve, reject) => {
-			that.userSession(internalUser).then(session => {
+			that._userSession(userAgentValue, internalUser).then(session => {
 				internalUser.deleteAttributes(
 					attributeNames,
 					(err, result) => {
@@ -1510,10 +1514,7 @@ export class InternalAuthClass {
 							return resolve(result);
 						}
 					},
-					getAuthUserAgentValue(
-						AuthAction.DeleteUserAttributes,
-						customUserAgentDetails
-					)
+					userAgentValue
 				);
 			});
 		});
@@ -1629,8 +1630,12 @@ export class InternalAuthClass {
 		const internalUser: InternalCognitoUser | any = user;
 		const attributeList: ICognitoUserAttributeData[] = [];
 		const that = this;
+		const userAgentValue = getAuthUserAgentValue(
+			AuthAction.UpdateUserAttributes,
+			customUserAgentDetails
+		);
 		return new Promise((resolve, reject) => {
-			that.userSession(internalUser).then(session => {
+			that._userSession(userAgentValue, internalUser).then(session => {
 				for (const key in attributes) {
 					if (key !== 'sub' && key.indexOf('_verified') < 0) {
 						const attr: ICognitoUserAttributeData = {
@@ -1664,10 +1669,7 @@ export class InternalAuthClass {
 						}
 					},
 					clientMetadata,
-					getAuthUserAgentValue(
-						AuthAction.UpdateUserAttributes,
-						customUserAgentDetails
-					)
+					userAgentValue
 				);
 			});
 		});
@@ -1703,17 +1705,27 @@ export class InternalAuthClass {
 		user: CognitoUser | any,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUserAttribute[]> {
-		const internalUser: InternalCognitoUser | any = user;
+		return this._userAttributes(user, customUserAgentDetails);
+	}
 
+	private _userAttributes(
+		user: CognitoUser | any,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<CognitoUserAttribute[]> {
+		const internalUser: InternalCognitoUser | any = user;
+		const userAgentValue = getAuthUserAgentValue(
+			AuthAction.UserAttributes,
+			customUserAgentDetails
+		);
 		return new Promise((resolve, reject) => {
-			this.userSession(internalUser).then(session => {
+			this._userSession(userAgentValue, internalUser).then(session => {
 				internalUser.getUserAttributes((err, attributes) => {
 					if (err) {
 						reject(err);
 					} else {
 						resolve(attributes);
 					}
-				}, getAuthUserAgentValue(AuthAction.UserAttributes, customUserAgentDetails));
+				}, userAgentValue);
 			});
 		});
 	}
@@ -1723,7 +1735,7 @@ export class InternalAuthClass {
 		customUserAgentDetails?: CustomUserAgentDetails
 	) {
 		const that = this;
-		return this.userAttributes(
+		return this._userAttributes(
 			user,
 			getAuthUserAgentDetails(
 				AuthAction.VerifiedContact,
@@ -1857,6 +1869,13 @@ export class InternalAuthClass {
 	 * @return - A promise resolves to current authenticated CognitoUser if success
 	 */
 	public currentUserPoolUser(
+		params?: CurrentUserOpts,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<CognitoUser | any> {
+		return this._currentUserPoolUser(params, customUserAgentDetails);
+	}
+
+	private _currentUserPoolUser(
 		params?: CurrentUserOpts,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUser | any> {
@@ -2002,7 +2021,14 @@ export class InternalAuthClass {
 	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves to current authenticated CognitoUser if success
 	 */
-	public async currentAuthenticatedUser(
+	public currentAuthenticatedUser(
+		params?: CurrentUserOpts,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<CognitoUser | any> {
+		return this._currentAuthenticatedUser(params, customUserAgentDetails);
+	}
+
+	private async _currentAuthenticatedUser(
 		params?: CurrentUserOpts,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUser | any> {
@@ -2037,7 +2063,7 @@ export class InternalAuthClass {
 			logger.debug('get current authenticated userpool user');
 			let user = null;
 			try {
-				user = await this.currentUserPoolUser(
+				user = await this._currentUserPoolUser(
 					params,
 					getAuthUserAgentDetails(
 						AuthAction.CurrentAuthenticatedUser,
@@ -2067,6 +2093,12 @@ export class InternalAuthClass {
 	public currentSession(
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUserSession> {
+		return this._currentSession(customUserAgentDetails);
+	}
+
+	private _currentSession(
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<CognitoUserSession> {
 		const that = this;
 		const userAgentDetails = getAuthUserAgentDetails(
 			AuthAction.CurrentSession,
@@ -2080,10 +2112,10 @@ export class InternalAuthClass {
 
 		return new Promise((res, rej) => {
 			that
-				.currentUserPoolUser(undefined, userAgentDetails)
+				._currentUserPoolUser(undefined, userAgentDetails)
 				.then(user => {
 					that
-						.userSession(user, userAgentDetails)
+						._userSession(getAmplifyUserAgent(userAgentDetails), user)
 						.then(session => {
 							res(session);
 							return;
@@ -2212,7 +2244,7 @@ export class InternalAuthClass {
 			// refresh the jwt token here if necessary
 			return this.Credentials.refreshFederatedToken(federatedInfo);
 		} else {
-			return this.currentSession(
+			return this._currentSession(
 				getAuthUserAgentDetails(
 					AuthAction.CurrentUserCredentials,
 					customUserAgentDetails
@@ -2243,6 +2275,20 @@ export class InternalAuthClass {
 	 * @return - A promise resolves to callback data if success
 	 */
 	public verifyUserAttribute(
+		user: CognitoUser | any,
+		attr: string,
+		clientMetadata: ClientMetaData = this._config.clientMetadata,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<void> {
+		return this._verifyUserAttribute(
+			user,
+			attr,
+			clientMetadata,
+			customUserAgentDetails
+		);
+	}
+
+	private _verifyUserAttribute(
 		user: CognitoUser | any,
 		attr: string,
 		clientMetadata: ClientMetaData = this._config.clientMetadata,
@@ -2279,6 +2325,20 @@ export class InternalAuthClass {
 	 * @return - A promise resolves to callback data if success
 	 */
 	public verifyUserAttributeSubmit(
+		user: CognitoUser | any,
+		attr: string,
+		code: string,
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<string> {
+		return this._verifyUserAttributeSubmit(
+			user,
+			attr,
+			code,
+			customUserAgentDetails
+		);
+	}
+
+	private _verifyUserAttributeSubmit(
 		user: CognitoUser | any,
 		attr: string,
 		code: string,
@@ -2321,9 +2381,9 @@ export class InternalAuthClass {
 		);
 		const that = this;
 		return that
-			.currentUserPoolUser(undefined, userAgentDetails)
+			._currentUserPoolUser(undefined, userAgentDetails)
 			.then(user =>
-				that.verifyUserAttribute(user, attr, undefined, userAgentDetails)
+				that._verifyUserAttribute(user, attr, undefined, userAgentDetails)
 			);
 	}
 
@@ -2345,9 +2405,9 @@ export class InternalAuthClass {
 		);
 		const that = this;
 		return that
-			.currentUserPoolUser(undefined, userAgentDetails)
+			._currentUserPoolUser(undefined, userAgentDetails)
 			.then(user =>
-				that.verifyUserAttributeSubmit(user, attr, code, userAgentDetails)
+				that._verifyUserAttributeSubmit(user, attr, code, userAgentDetails)
 			);
 	}
 
@@ -2524,7 +2584,7 @@ export class InternalAuthClass {
 		);
 
 		return new Promise((resolve, reject) => {
-			this.userSession(internalUser, userAgentDetails).then(session => {
+			this._userSession(userAgentDetails, internalUser).then(session => {
 				internalUser.changePassword(
 					oldPassword,
 					newPassword,
@@ -2676,16 +2736,16 @@ export class InternalAuthClass {
 
 		if (!source || source === 'aws' || source === 'userPool') {
 			// ####
-			const internalUser: InternalCognitoUser = await this.currentUserPoolUser(
-				undefined,
-				userAgentDetails
-			).catch(err => logger.error(err));
+			const internalUser: InternalCognitoUser =
+				await this._currentAuthenticatedUser(undefined, userAgentDetails).catch(
+					err => logger.error(err)
+				);
 			if (!internalUser) {
 				return null;
 			}
 
 			try {
-				const attributes = await this.userAttributes(
+				const attributes = await this._userAttributes(
 					internalUser,
 					userAgentDetails
 				);
@@ -2805,7 +2865,7 @@ export class InternalAuthClass {
 				{ provider, token, identity_id, user, expires_at },
 				'federation'
 			);
-			const currentUser = await this.currentAuthenticatedUser();
+			const currentUser = await this._currentAuthenticatedUser();
 			dispatchAuthEvent(
 				'signIn',
 				currentUser,
@@ -3062,7 +3122,7 @@ export class InternalAuthClass {
 		);
 
 		try {
-			internalUser = await this.currentUserPoolUser(
+			internalUser = await this._currentAuthenticatedUser(
 				undefined,
 				userAgentDetails
 			);
@@ -3103,7 +3163,7 @@ export class InternalAuthClass {
 		);
 
 		try {
-			internalUser = await this.currentUserPoolUser(
+			internalUser = await this._currentAuthenticatedUser(
 				undefined,
 				userAgentDetails
 			);
@@ -3144,7 +3204,7 @@ export class InternalAuthClass {
 		);
 
 		try {
-			internalUser = await this.currentUserPoolUser(
+			internalUser = await this._currentAuthenticatedUser(
 				undefined,
 				userAgentDetails
 			);
