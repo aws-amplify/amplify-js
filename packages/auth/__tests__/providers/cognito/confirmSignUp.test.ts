@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConfirmSignUpCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { confirmSignUp } from '../../../src/providers/cognito';
 import { AuthSignUpStep } from '../../../src/types';
-import * as confirmSignUpClient from '../../../src/providers/cognito/utils/clients/ConfirmSignUpClient';
+import * as confirmSignUpClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { ConfirmSignUpException } from '../../../src/providers/cognito/types/errors';
 import { AmplifyV6, AmplifyErrorString } from '@aws-amplify/core';
+import { ConfirmSignUpCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 
 describe('confirmSignUp API Happy Path Cases:', () => {
 	let confirmSignUpClientSpy;
@@ -17,10 +17,10 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 	const confirmationCode = '123456';
 	beforeEach(() => {
 		confirmSignUpClientSpy = jest
-			.spyOn(confirmSignUpClient, 'confirmSignUpClient')
+			.spyOn(confirmSignUpClient, 'confirmSignUp')
 			.mockImplementationOnce(
 				async (
-					params: confirmSignUpClient.ConfirmSignUpClientInput
+					
 				): Promise<ConfirmSignUpCommandOutput> => {
 					return {} as ConfirmSignUpCommandOutput;
 				}

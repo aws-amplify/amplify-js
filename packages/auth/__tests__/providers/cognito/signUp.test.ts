@@ -1,27 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SignUpCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { signUp } from '../../../src/providers/cognito';
 import { AuthSignUpStep } from '../../../src/types';
-import * as signUpClient from '../../../src/providers/cognito/utils/clients/SignUpClient';
+import * as signUpClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { SignUpException } from '../../../src/providers/cognito/types/errors';
 import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
+import { SignUpCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 
 describe('SignUp API Happy Path Cases:', () => {
 	let signUpSpy;
 	const { user1 } = authAPITestParams;
 	beforeEach(() => {
 		signUpSpy = jest
-			.spyOn(signUpClient, 'signUpClient')
-			.mockImplementationOnce(
-				async (params: signUpClient.SignUpClientInput) => {
-					return authAPITestParams.signUpHttpCallResult as SignUpCommandOutput;
-				}
-			);
+			.spyOn(signUpClient, 'signUp')
+			.mockImplementationOnce(async () => {
+				return authAPITestParams.signUpHttpCallResult as SignUpCommandOutput;
+			});
 	});
 	afterEach(() => {
 		signUpSpy.mockClear();

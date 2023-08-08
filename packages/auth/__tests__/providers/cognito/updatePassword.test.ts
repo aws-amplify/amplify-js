@@ -6,8 +6,9 @@ import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { updatePassword } from '../../../src/providers/cognito';
 import { ChangePasswordException } from '../../../src/providers/cognito/types/errors';
-import * as changePasswordClient from '../../../src/providers/cognito/utils/clients/ChangePasswordClient';
-import type { ChangePasswordCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
+import * as changePasswordClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { ChangePasswordCommandOutput }
+ from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 
 describe('updatePassword API happy path cases', () => {
 	const oldPassword = 'oldPassword';
@@ -29,7 +30,7 @@ describe('updatePassword API happy path cases', () => {
 		changePasswordClientSpy.mockClear();
 	});
 
-	test('updatePassword should call changePasswordClient', async () => {
+	test('updatePassword should call changePassword', async () => {
 		AmplifyV6.configure({
 			Auth: {
 				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',

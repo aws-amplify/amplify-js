@@ -18,7 +18,7 @@ import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { SignUpException } from '../types/errors';
-import { AttributeType } from '../utils/clients/CognitoIdentityProvider/types';
+import { AttributeType, CodeDeliveryDetailsType } from '../utils/clients/CognitoIdentityProvider/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**
@@ -71,10 +71,7 @@ export async function signUp(
 		}
 	);
 
-	const { UserConfirmed, CodeDeliveryDetails, UserSub } = res;
-	const { DeliveryMedium, Destination, AttributeName } = {
-		...CodeDeliveryDetails,
-	};
+	const { UserConfirmed, CodeDeliveryDetails, UserSub } = res;	
 
 	if (UserConfirmed) {
 		return {
@@ -89,13 +86,11 @@ export async function signUp(
 			nextStep: {
 				signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
 				codeDeliveryDetails: {
-					deliveryMedium: DeliveryMedium
-						? (DeliveryMedium as DeliveryMedium)
+					deliveryMedium: CodeDeliveryDetails.DeliveryMedium
+						? (CodeDeliveryDetails.DeliveryMedium as DeliveryMedium)
 						: undefined,
-					destination: Destination ? (Destination as string) : undefined,
-					attributeName: AttributeName
-						? (AttributeName as AuthStandardAttributeKey)
-						: undefined,
+					destination: CodeDeliveryDetails.Destination,
+					attributeName: CodeDeliveryDetails.AttributeName,
 				},
 			},
 			userId: UserSub,

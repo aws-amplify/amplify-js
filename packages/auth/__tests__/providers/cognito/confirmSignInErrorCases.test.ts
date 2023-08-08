@@ -1,5 +1,4 @@
 import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
-import { RespondToAuthChallengeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { authAPITestParams } from './testUtils/authApiTestParams';
@@ -8,6 +7,7 @@ import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpe
 import { AuthSignInStep } from '../../../src/types';
 import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn';
 import { RespondToAuthChallengeException } from '../../../src/providers/cognito/types/errors';
+import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 
 describe('confirmSignIn API error path cases:', () => {
 	let handleUserSRPAuthflowSpy;

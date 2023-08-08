@@ -1,19 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AssociateSoftwareTokenCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AssociateSoftwareTokenException } from '../../../src/providers/cognito/types/errors';
-import * as associateSoftwareTokenClient from '../../../src/providers/cognito/utils/clients/AssociateSoftwareTokenClient';
+import * as associateSoftwareTokenClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { setUpTOTP } from '../../../src/providers/cognito';
 import { AmplifyV6 } from '@aws-amplify/core';
+import { AssociateSoftwareTokenCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 
 describe('setUpTOTP API happy path cases', () => {
 	let associateSoftwareTokenClientSpy;
 	const secretCode = 'asfdasdfwefasdfasf';
 	beforeEach(() => {
 		associateSoftwareTokenClientSpy = jest
-			.spyOn(associateSoftwareTokenClient, 'associateSoftwareTokenClient')
+			.spyOn(associateSoftwareTokenClient, 'associateSoftwareToken')
 			.mockImplementationOnce(
 				async (): Promise<AssociateSoftwareTokenCommandOutput> => {
 					return {

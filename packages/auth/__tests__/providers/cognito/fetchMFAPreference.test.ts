@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { GetUserCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
-import * as getUserClient from '../../../src/providers/cognito/utils/clients/GetUserClient';
+import * as getUserClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
 import { fetchMFAPreference } from '../../../src/providers/cognito/apis/fetchMFAPreference';
 import { GetUserException } from '../../../src/providers/cognito/types/errors';
+import { GetUserCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 
 describe('fetchMFAPreference Happy Path Cases:', () => {
 	const mockedAccessToken = 'mockedAccessToken';
@@ -14,7 +14,7 @@ describe('fetchMFAPreference Happy Path Cases:', () => {
 
 	beforeEach(() => {
 		getUserClientSpy = jest
-			.spyOn(getUserClient, 'getUserClient')
+			.spyOn(getUserClient, 'getUser')
 			.mockImplementationOnce(async (): Promise<GetUserCommandOutput> => {
 				return {
 					UserAttributes: [],

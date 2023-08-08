@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
-import { RespondToAuthChallengeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { authAPITestParams } from './testUtils/authApiTestParams';
@@ -10,6 +9,7 @@ import { signIn } from '../../../src/providers/cognito/apis/signIn';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInWithCustomSRPAuth } from '../../../src/providers/cognito/apis/signInWithCustomSRPAuth';
+import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 
 describe('signIn API happy path cases', () => {
 	let handleCustomSRPAuthFlowSpy;

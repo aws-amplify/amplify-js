@@ -2,22 +2,24 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
-import { ForgotPasswordCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
+
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { resetPassword } from '../../../src/providers/cognito';
 import { ForgotPasswordException } from '../../../src/providers/cognito/types/errors';
-import * as resetPasswordClient from '../../../src/providers/cognito/utils/clients/ResetPasswordClient';
+import * as resetPasswordClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
+import { ForgotPasswordCommandOutput } from 
+'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 
 describe('ResetPassword API happy path cases', () => {
 	let resetPasswordSpy;
 
 	beforeEach(() => {
 		resetPasswordSpy = jest
-			.spyOn(resetPasswordClient, 'resetPasswordClient')
+			.spyOn(resetPasswordClient, 'forgotPassword')
 			.mockImplementationOnce(
-				async (params: resetPasswordClient.ResetPasswordClientInput) => {
+				async () => {
 					return authAPITestParams.resetPasswordHttpCallResult as ForgotPasswordCommandOutput;
 				}
 			);
