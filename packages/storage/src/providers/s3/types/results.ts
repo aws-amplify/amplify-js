@@ -10,6 +10,10 @@ import { StorageGetPropertiesResult } from '../../../types/results';
 
 type S3Item = {
 	/**
+	 * Key of the object
+	 */
+	key?: string;
+	/**
 	 * Creation date of the object.
 	 */
 	lastModified?: Date;
