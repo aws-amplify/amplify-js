@@ -1,6 +1,5 @@
 // Webpack version: ^4.46.0
-const CompressionPlugin = require('compression-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 /* eslint-disable */
 var webpack = require('webpack');
@@ -28,15 +27,15 @@ var config = {
 		crypto: 'crypto',
 	},
 	plugins: [
-		new webpack.BannerPlugin({ banner, raw: true }),
-		new CompressionPlugin({
-			include: /\.min\.js$/,
-		}),
+		new webpack.BannerPlugin({ banner, raw: true })
 	],
 	optimization: {
 		minimizer: [
-			new UglifyJsPlugin({
+			new TerserPlugin({
 				sourceMap: true,
+				terserOptions: {
+					compress: true
+				},
 				include: /\.min\.js$/,
 			})
 		]
