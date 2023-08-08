@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { headObject } from '../../../AwsClients/S3';
+import { HeadObjectInput, headObject } from '../../../AwsClients/S3';
 import { StorageOperationRequest } from '../../../types';
 import { AmplifyV6 } from '@aws-amplify/core';
 import { StorageOptions } from '../../../types/params';
@@ -40,11 +40,12 @@ export const getProperties = async function (
 			level,
 			identityId: awsCredsIdentityId,
 		}) + key;
+	const params: HeadObjectInput = {
+		Bucket: bucket,
+		Key: finalKey,
+	};
 	try {
-		const response = await headObject(options, {
-			Bucket: bucket,
-			Key: finalKey,
-		});
+		const response = await headObject(options, params);
 		return {
 			key: finalKey,
 			contentType: response.ContentType,
