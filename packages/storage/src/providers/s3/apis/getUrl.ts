@@ -52,20 +52,18 @@ export const getUrl = async function (
 			level,
 			identityId: awsCredsIdentityId,
 		}) + key;
-	const params: GetObjectInput = {
+	const getUrlParams: GetObjectInput = {
 		Bucket: bucket,
 		Key: finalKey,
 	};
-	const url = await getPresignedGetObjectUrl(
-		{
-			expiration: options?.expiration || DEFAULT_PRESIGN_EXPIRATION,
-			credentials: awsCreds,
-			signingRegion: region,
-			signingService: S3_SERVICE_NAME,
-			region: region,
-		},
-		params
-	);
+	const getUrlOptions = {
+		expiration: options?.expiration || DEFAULT_PRESIGN_EXPIRATION,
+		credentials: awsCreds,
+		signingRegion: region,
+		signingService: S3_SERVICE_NAME,
+		region: region,
+	};
+	const url = await getPresignedGetObjectUrl(getUrlOptions, getUrlParams);
 	result.url = new URL(url);
 	const urlExpiration = new Date(
 		options?.expiration || DEFAULT_PRESIGN_EXPIRATION
