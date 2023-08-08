@@ -40,7 +40,7 @@ const headObjectSerializer = async (
 	input: HeadObjectInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	const headers = await serializeObjectSsecOptionsToHeaders(input);
+	//const headers = await serializeObjectSsecOptionsToHeaders(input);
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
