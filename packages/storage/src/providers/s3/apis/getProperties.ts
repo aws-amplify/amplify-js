@@ -26,19 +26,21 @@ export const getProperties = async function (
 	req: StorageOperationRequest<StorageOptions>
 ): Promise<S3GetPropertiesResult> {
 	const options = req?.options;
-	const { awsCreds, awsCredsIdentityId } =
+	const { awsCredsIdentityId }: { awsCredsIdentityId: string } =
 		await AmplifyV6.Auth.fetchAuthSession();
-	assertValidationError(!!awsCreds, StorageValidationErrorCode.NoCredentials);
 	const { bucket, defaultAccessLevel } = AmplifyV6.getConfig().Storage;
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	const { prefixResolver = defaultPrefixResolver } =
 		AmplifyV6.libraryOptions?.Storage ?? {};
-	const { key, options: { level = defaultAccessLevel } = {} } = req;
+	const {
+		key,
+		options: { level = defaultAccessLevel } = {},
+	}: StorageOperationRequest<StorageOptions> = req;
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 	const finalKey =
 		prefixResolver({
 			level,
-			identityId: awsCredsIdentityId,
+			targetIdentityId: awsCredsIdentityId,
 		}) + key;
 	const params: HeadObjectInput = {
 		Bucket: bucket,
