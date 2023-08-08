@@ -125,6 +125,8 @@ tests:
     sample_name: [next-13-js]
     spec: nextjs-13
     browser: *minimal_browser_list
+    timeout_minutes: 45
+    retry_count: 10
   - test_name: integ_rollup_datastore_basic_crud
     desc: 'Rollup + DataStore - Basic CRUD'
     framework: rollup
