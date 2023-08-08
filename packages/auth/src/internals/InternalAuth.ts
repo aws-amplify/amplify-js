@@ -412,6 +412,10 @@ export class InternalAuthClass {
 		logger.debug('signUp validation data:', validationData);
 
 		return new Promise((resolve, reject) => {
+			const userAgentDetails = getAuthUserAgentDetails(
+				AuthAction.SignUp,
+				customUserAgentDetails
+			);
 			this.userPool.signUp(
 				username,
 				password,
@@ -438,14 +442,14 @@ export class InternalAuthClass {
 								autoSignInValidationData,
 								autoSignInClientMetaData,
 								data,
-								getAuthUserAgentValue(AuthAction.SignUp, customUserAgentDetails)
+								userAgentDetails
 							);
 						}
 						resolve(data);
 					}
 				},
 				clientMetadata,
-				getAuthUserAgentValue(AuthAction.SignUp, customUserAgentDetails)
+				getAmplifyUserAgent(userAgentDetails)
 			);
 		});
 	}
@@ -456,7 +460,7 @@ export class InternalAuthClass {
 		validationData: {},
 		clientMetadata: any,
 		data: any,
-		userAgentValue: string
+		customUserAgentDetails: CustomUserAgentDetails
 	) {
 		this.autoSignInInitiated = true;
 		const authDetails = new AuthenticationDetails({
@@ -466,21 +470,25 @@ export class InternalAuthClass {
 			ClientMetadata: clientMetadata,
 		});
 		if (data.userConfirmed) {
-			this.signInAfterUserConfirmed(authDetails, userAgentValue);
+			this.signInAfterUserConfirmed(authDetails, customUserAgentDetails);
 		} else if (this._config.signUpVerificationMethod === 'link') {
-			this.handleLinkAutoSignIn(authDetails, userAgentValue);
+			this.handleLinkAutoSignIn(authDetails, customUserAgentDetails);
 		} else {
-			this.handleCodeAutoSignIn(authDetails, userAgentValue);
+			this.handleCodeAutoSignIn(authDetails, customUserAgentDetails);
 		}
 	}
 
 	private handleCodeAutoSignIn(
 		authDetails: AuthenticationDetails,
-		userAgentValue: string
+		customUserAgentDetails: CustomUserAgentDetails
 	) {
 		const listenEvent = ({ payload }) => {
 			if (payload.event === 'confirmSignUp') {
-				this.signInAfterUserConfirmed(authDetails, userAgentValue, listenEvent);
+				this.signInAfterUserConfirmed(
+					authDetails,
+					customUserAgentDetails,
+					listenEvent
+				);
 			}
 		};
 		Hub.listen('auth', listenEvent);
@@ -488,7 +496,7 @@ export class InternalAuthClass {
 
 	private handleLinkAutoSignIn(
 		authDetails: AuthenticationDetails,
-		userAgentValue: string
+		customUserAgentDetails: CustomUserAgentDetails
 	) {
 		this._storage.setItem('amplify-polling-started', 'true');
 		const start = Date.now();
@@ -504,7 +512,7 @@ export class InternalAuthClass {
 			} else {
 				this.signInAfterUserConfirmed(
 					authDetails,
-					userAgentValue,
+					customUserAgentDetails,
 					undefined,
 					autoSignInPollingIntervalId
 				);
@@ -514,7 +522,7 @@ export class InternalAuthClass {
 
 	private async signInAfterUserConfirmed(
 		authDetails: AuthenticationDetails,
-		userAgentValue: string,
+		customUserAgentDetails: CustomUserAgentDetails,
 		listenEvent?: HubCallback,
 		autoSignInPollingIntervalId?: ReturnType<typeof setInterval>
 	) {
@@ -542,9 +550,10 @@ export class InternalAuthClass {
 					error => {
 						logger.error(error);
 						this._storage.removeItem('amplify-auto-sign-in');
-					}
+					},
+					customUserAgentDetails
 				),
-				userAgentValue
+				getAmplifyUserAgent(customUserAgentDetails)
 			);
 		} catch (error) {
 			logger.error(error);
@@ -704,16 +713,14 @@ export class InternalAuthClass {
 			ValidationData: validationData,
 			ClientMetadata: clientMetadata,
 		});
+		const userAgentDetails = getAuthUserAgentDetails(
+			AuthAction.SignIn,
+			customUserAgentDetails
+		);
 		if (password) {
-			return this.signInWithPassword(
-				authDetails,
-				getAuthUserAgentValue(AuthAction.SignIn, customUserAgentDetails)
-			);
+			return this.signInWithPassword(authDetails, userAgentDetails);
 		} else {
-			return this.signInWithoutPassword(
-				authDetails,
-				getAuthUserAgentValue(AuthAction.SignIn, customUserAgentDetails)
-			);
+			return this.signInWithoutPassword(authDetails, userAgentDetails);
 		}
 	}
 
@@ -727,7 +734,8 @@ export class InternalAuthClass {
 	private authCallbacks(
 		user: InternalCognitoUser,
 		resolve: (value?: InternalCognitoUser | any) => void,
-		reject: (value?: any) => void
+		reject: (value?: any) => void,
+		customUserAgentDetails: CustomUserAgentDetails
 	): IAuthenticationCallback {
 		const that = this;
 		return {
@@ -745,7 +753,10 @@ export class InternalAuthClass {
 					try {
 						// In order to get user attributes and MFA methods
 						// We need to trigger currentUserPoolUser again
-						const currentUser = await this.currentUserPoolUser();
+						const currentUser = await this.currentUserPoolUser(
+							undefined,
+							customUserAgentDetails
+						);
 						that.user = currentUser;
 						dispatchAuthEvent(
 							'signIn',
@@ -814,12 +825,12 @@ export class InternalAuthClass {
 	 * Sign in with a password
 	 * @private
 	 * @param {AuthenticationDetails} authDetails - the user sign in data
-	 * @param {string} userAgentValue - custom user agent value for metrics
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves the CognitoUser object if success or mfa required
 	 */
 	private signInWithPassword(
 		authDetails: AuthenticationDetails,
-		userAgentValue: string
+		customUserAgentDetails: CustomUserAgentDetails
 	): Promise<InternalCognitoUser | any> {
 		if (this.pendingSignIn) {
 			throw new Error('Pending sign-in attempt already in progress');
@@ -839,9 +850,10 @@ export class InternalAuthClass {
 					error => {
 						this.pendingSignIn = null;
 						reject(error);
-					}
+					},
+					customUserAgentDetails
 				),
-				userAgentValue
+				getAmplifyUserAgent(customUserAgentDetails)
 			);
 		});
 
@@ -852,12 +864,12 @@ export class InternalAuthClass {
 	 * Sign in without a password
 	 * @private
 	 * @param {AuthenticationDetails} authDetails - the user sign in data
-	 * @param {string} userAgentValue - custom user agent value for metrics
+	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves the InternalCognitoUser object if success or mfa required
 	 */
 	private signInWithoutPassword(
 		authDetails: AuthenticationDetails,
-		userAgentValue: string
+		customUserAgentDetails: CustomUserAgentDetails
 	): Promise<InternalCognitoUser | any> {
 		const user = this.createCognitoUser(authDetails.getUsername());
 		user.setAuthenticationFlowType('CUSTOM_AUTH');
@@ -865,8 +877,8 @@ export class InternalAuthClass {
 		return new Promise((resolve, reject) => {
 			user.initiateAuth(
 				authDetails,
-				this.authCallbacks(user, resolve, reject),
-				userAgentValue
+				this.authCallbacks(user, resolve, reject, customUserAgentDetails),
+				getAmplifyUserAgent(customUserAgentDetails)
 			);
 		});
 	}
@@ -917,19 +929,17 @@ export class InternalAuthClass {
 			const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
 			const bypassCache = params ? params.bypassCache : false;
+			const userAgentValue = getAuthUserAgentValue(
+				AuthAction.GetPreferredMFA,
+				customUserAgentDetails
+			);
 			internalUser.getUserData(
 				async (err, data) => {
 					if (err) {
 						logger.debug('getting preferred mfa failed', err);
 						if (this.isSessionInvalid(err)) {
 							try {
-								await this.cleanUpInvalidSession(
-									user,
-									getAuthUserAgentValue(
-										AuthAction.GetPreferredMFA,
-										customUserAgentDetails
-									)
-								);
+								await this.cleanUpInvalidSession(user, userAgentValue);
 							} catch (cleanUpError) {
 								rej(
 									new Error(
@@ -953,10 +963,7 @@ export class InternalAuthClass {
 					}
 				},
 				{ bypassCache, clientMetadata },
-				getAuthUserAgentValue(
-					AuthAction.GetPreferredMFA,
-					customUserAgentDetails
-				)
+				userAgentValue
 			);
 		});
 	}
@@ -1317,6 +1324,10 @@ export class InternalAuthClass {
 		}
 
 		const that = this;
+		const userAgentDetails = getAuthUserAgentDetails(
+			AuthAction.ConfirmSignIn,
+			customUserAgentDetails
+		);
 		return new Promise((resolve, reject) => {
 			internalUser.sendMFACode(
 				code,
@@ -1332,7 +1343,10 @@ export class InternalAuthClass {
 						} finally {
 							that.user = internalUser;
 							try {
-								const currentUser = await this.currentUserPoolUser();
+								const currentUser = await this.currentUserPoolUser(
+									undefined,
+									userAgentDetails
+								);
 								Object.assign(internalUser, {
 									attributes: currentUser.attributes,
 								});
@@ -1354,7 +1368,7 @@ export class InternalAuthClass {
 				},
 				mfaType,
 				clientMetadata,
-				getAuthUserAgentValue(AuthAction.ConfirmSignIn, customUserAgentDetails)
+				getAmplifyUserAgent(userAgentDetails)
 			);
 		});
 	}
@@ -1457,15 +1471,16 @@ export class InternalAuthClass {
 		}
 
 		const that = this;
+		const userAgentDetails = getAuthUserAgentDetails(
+			AuthAction.SendCustomChallengeAnswer,
+			customUserAgentDetails
+		);
 		return new Promise((resolve, reject) => {
 			internalUser.sendCustomChallengeAnswer(
 				challengeResponses,
-				this.authCallbacks(internalUser, resolve, reject),
+				this.authCallbacks(internalUser, resolve, reject, userAgentDetails),
 				clientMetadata,
-				getAuthUserAgentValue(
-					AuthAction.SendCustomChallengeAnswer,
-					customUserAgentDetails
-				)
+				getAmplifyUserAgent(userAgentDetails)
 			);
 		});
 	}
@@ -2509,7 +2524,7 @@ export class InternalAuthClass {
 		);
 
 		return new Promise((resolve, reject) => {
-			this.userSession(internalUser, customUserAgentDetails).then(session => {
+			this.userSession(internalUser, userAgentDetails).then(session => {
 				internalUser.changePassword(
 					oldPassword,
 					newPassword,
