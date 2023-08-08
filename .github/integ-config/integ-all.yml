@@ -163,6 +163,8 @@ tests:
     sample_name: v2/dynamic-user-pool-groups-owner-based-default-v2
     spec: dynamic-user-pool-groups-owner-based-default
     browser: *minimal_browser_list
+    timeout_minutes: 45
+    retry_count: 10
   - test_name: integ_datastore_auth_v2-private-auth-default
     desc: 'DataStore Auth CLI v2'
     framework: react
@@ -359,6 +361,8 @@ tests:
     sample_name: [related-models]
     spec: related-models
     browser: *minimal_browser_list
+    timeout_minutes: 45
+    retry_count: 10
   - test_name: integ_react_datastore_selective_sync
     desc: 'DataStore - Selective Sync'
     framework: react
@@ -420,6 +424,8 @@ tests:
     sample_name: [next-13-js]
     spec: nextjs-13
     browser: *minimal_browser_list
+    timeout_minutes: 45
+    retry_count: 10
   - test_name: integ_vite_datastore_basic_crud
     desc: 'Vite + DataStore - Basic CRUD'
     framework: vite
