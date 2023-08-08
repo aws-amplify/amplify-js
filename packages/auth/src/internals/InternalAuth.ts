@@ -2317,7 +2317,7 @@ export class InternalAuthClass {
 		return that
 			.currentUserPoolUser(undefined, userAgentDetails)
 			.then(user =>
-				that.verifyUserAttribute(user, attr, undefined, customUserAgentDetails)
+				that.verifyUserAttribute(user, attr, undefined, userAgentDetails)
 			);
 	}
 
@@ -2341,7 +2341,7 @@ export class InternalAuthClass {
 		return that
 			.currentUserPoolUser(undefined, userAgentDetails)
 			.then(user =>
-				that.verifyUserAttributeSubmit(user, attr, code, customUserAgentDetails)
+				that.verifyUserAttributeSubmit(user, attr, code, userAgentDetails)
 			);
 	}
 
