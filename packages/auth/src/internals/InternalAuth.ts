@@ -2578,13 +2578,13 @@ export class InternalAuthClass {
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<'SUCCESS'> {
 		const internalUser: InternalCognitoUser | any = user;
-		const userAgentDetails = getAuthUserAgentDetails(
+		const userAgentValue = getAuthUserAgentValue(
 			AuthAction.ChangePassword,
 			customUserAgentDetails
 		);
 
 		return new Promise((resolve, reject) => {
-			this._userSession(userAgentDetails, internalUser).then(session => {
+			this._userSession(userAgentValue, internalUser).then(session => {
 				internalUser.changePassword(
 					oldPassword,
 					newPassword,
@@ -2597,7 +2597,7 @@ export class InternalAuthClass {
 						}
 					},
 					clientMetadata,
-					getAmplifyUserAgent(userAgentDetails)
+					userAgentValue
 				);
 			});
 		});
