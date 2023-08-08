@@ -19,7 +19,6 @@ import {
 	map,
 	parseXmlError,
 	s3TransferHandler,
-	serializeObjectSsecOptionsToHeaders,
 	serializePathnameObjectKey,
 } from './utils';
 import { StorageError } from '../../errors/StorageError';
@@ -40,12 +39,12 @@ const headObjectSerializer = async (
 	input: HeadObjectInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
+	// TODO need to check with BR
 	//const headers = await serializeObjectSsecOptionsToHeaders(input);
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'HEAD',
-		headers,
 		url,
 	};
 };
