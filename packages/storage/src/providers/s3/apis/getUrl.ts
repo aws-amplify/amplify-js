@@ -33,6 +33,7 @@ export const getUrl = async function (
 ): Promise<S3GetUrlResult> {
 	let result: S3GetUrlResult;
 	const options = req?.options;
+	// TODO extract common functionality
 	AmplifyV6.getConfig().Storage;
 	const { awsCreds, awsCredsIdentityId } =
 		await AmplifyV6.Auth.fetchAuthSession();
