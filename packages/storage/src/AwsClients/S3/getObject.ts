@@ -32,20 +32,7 @@ import {
 	CONTENT_SHA256_HEADER,
 } from './utils';
 
-export type GetObjectInput = Pick<
-	GetObjectCommandInput,
-	| 'Bucket'
-	| 'Key'
-	| 'ResponseCacheControl'
-	| 'ResponseContentDisposition'
-	| 'ResponseContentEncoding'
-	| 'ResponseContentLanguage'
-	| 'ResponseContentType'
-	| 'SSECustomerAlgorithm'
-	| 'SSECustomerKey'
-	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
->;
+export type GetObjectInput = Pick<GetObjectCommandInput, 'Bucket' | 'Key'>;
 
 export type GetObjectOutput = GetObjectCommandOutput;
 
