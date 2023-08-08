@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HeadObjectInput, headObject } from '../../../AwsClients/S3';
-import { StorageOperationRequest } from '../../../types';
 import { AmplifyV6 } from '@aws-amplify/core';
-import { StorageOptions } from '../../../types/params';
+import { StorageOptions, StorageOperationRequest } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
