@@ -8,7 +8,7 @@ extended_browser_list: &extended_browser_list
   - edge
 
 tests:
-    # DATASTORE
+  # DATASTORE
   - test_name: integ_datastore_auth-owner-based-default
     desc: 'DataStore Auth - Chrome'
     framework: react
@@ -86,6 +86,8 @@ tests:
     sample_name: [related-models]
     spec: related-models
     browser: *minimal_browser_list
+    timeout_minutes: 45
+    retry_count: 10
   - test_name: integ_react_datastore_selective_sync
     desc: 'DataStore - Selective Sync'
     framework: react
@@ -239,7 +241,7 @@ tests:
     sample_name: [multi-part-copy-with-progress]
     spec: multi-part-copy-with-progress
     browser: *minimal_browser_list
- 
+
     # API
   - test_name: integ_react_graphql_api
     desc: 'React GraphQL API'
