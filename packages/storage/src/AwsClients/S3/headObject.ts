@@ -4,7 +4,6 @@
 import {
 	Endpoint,
 	HttpRequest,
-	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import { defaultConfig } from './base';
@@ -25,19 +24,10 @@ import {
 } from './utils';
 import { StorageError } from '../../errors/StorageError';
 
-export type HeadObjectInput = Pick<
-	HeadObjectCommandInput,
-	| 'Bucket'
-	| 'Key'
-	| 'SSECustomerKey'
-	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
-	| 'SSECustomerAlgorithm'
->;
+export type HeadObjectInput = Pick<HeadObjectCommandInput, 'Bucket' | 'Key'>;
 
 export type HeadObjectOutput = Pick<
 	HeadObjectCommandOutput,
-	| '$metadata'
 	| 'ContentLength'
 	| 'ContentType'
 	| 'ETag'
@@ -81,7 +71,6 @@ const headObjectDeserializer = async (
 			Metadata: deserializeMetadata(response.headers),
 		};
 		return {
-			$metadata: parseMetadata(response),
 			...contents,
 		};
 	}
