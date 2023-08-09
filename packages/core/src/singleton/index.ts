@@ -24,10 +24,10 @@ class AmplifyClass {
 				tokenProvider: {
 					getTokens: () => {
 						throw new AmplifyError({
-							message: 'No tokenRefresher not provided',
-							name: 'MissingTokenRefresher',
+							message: 'No tokenProvider provided',
+							name: 'MissingTokenProvider',
 							recoverySuggestion:
-								'Make sure to call Amplify.configure in your app with a tokenRefresher',
+								'Make sure to call Amplify.configure in your app with a tokenProvider',
 						});
 					},
 				},
