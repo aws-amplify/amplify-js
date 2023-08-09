@@ -1,6 +1,6 @@
 import { CognitoAuthTokens, TokenRefresher } from '../tokenProvider/types';
-import { initiateAuth } from '../utils/InitiateAuth';
 import { AuthConfig, decodeJWT } from '@aws-amplify/core';
+import { initiateAuth } from '../utils/clients/CognitoIdentityProvider';
 
 export const CognitoUserPoolTokenRefresher: TokenRefresher = async ({
 	tokens,
