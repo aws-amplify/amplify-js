@@ -1,8 +1,10 @@
 import { Buffer } from 'buffer';
 import { asserts } from '../../../Util/errors/AssertError';
-import { AuthConfig, JWT } from '../types';
+import { AuthConfig, JWT, UserPoolConfig } from '../types';
 
-export function assertTokenProviderConfig(authConfig?: AuthConfig) {
+export function assertTokenProviderConfig(
+	authConfig?: AuthConfig
+): asserts authConfig is UserPoolConfig {
 	const validConfig =
 		!!authConfig?.userPoolId && !!authConfig?.userPoolWebClientId;
 	return asserts(validConfig, {

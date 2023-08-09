@@ -108,11 +108,18 @@ export {
 
 // Cache exports
 import { BrowserStorageCache } from './Cache/BrowserStorageCache';
+export { asserts } from './Util/errors/AssertError';
+export { isTokenExpired } from './singleton/Auth';
 export { InMemoryCache } from './Cache/InMemoryCache';
 export { CacheConfig } from './Cache/types';
 export { ICache } from './Cache/types';
 export { BrowserStorageCache };
 export { decodeJWT, assertTokenProviderConfig } from './singleton/Auth/utils';
+export {
+	TokenProvider,
+	AuthTokens,
+	FetchAuthSessionOptions,
+} from './singleton/Auth/types';
 export {
 	AuthConfig,
 	UserPoolConfig,

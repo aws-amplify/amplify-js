@@ -1,20 +1,13 @@
-import { Buffer } from 'buffer'; // TODO(v6): this needs to be a platform operation
-import { Credentials } from '@aws-sdk/types';
 import { Observable, Observer } from 'rxjs';
 
-import { DefaultAuthTokensOrchestrator } from './TokenOrchestrator';
-import { DefaultTokenStore } from './TokenStore';
 import {
+	AWSCredentialsAndIdentityId,
 	AuthConfig,
 	AuthSession,
-	AuthTokenOrchestrator,
-	AuthTokenStore,
 	AuthTokens,
 	FetchAuthSessionOptions,
-	JWT,
 	LibraryAuthOptions,
 } from './types';
-import { asserts } from '../../Util/errors/AssertError';
 
 export function isTokenExpired({
 	expiresAt,
@@ -28,16 +21,11 @@ export function isTokenExpired({
 }
 
 export class AuthClass {
-	private authTokenStore: AuthTokenStore;
-	private tokenOrchestrator: AuthTokenOrchestrator;
 	private authSessionObservers: Set<Observer<AuthSession>>;
 	private authConfig: AuthConfig;
 	private authOptions: LibraryAuthOptions;
 
 	constructor() {
-		this.authTokenStore = new DefaultTokenStore();
-		this.tokenOrchestrator = new DefaultAuthTokensOrchestrator();
-		this.tokenOrchestrator.setAuthTokenStore(this.authTokenStore);
 		this.authSessionObservers = new Set();
 	}
 
@@ -57,12 +45,6 @@ export class AuthClass {
 	): void {
 		this.authConfig = authResourcesConfig;
 		this.authOptions = authOptions;
-
-		this.authTokenStore.setKeyValueStorage(this.authOptions.keyValueStorage);
-		this.authTokenStore.setAuthConfig(this.authConfig);
-
-		this.tokenOrchestrator.setTokenRefresher(this.authOptions.tokenRefresher);
-		this.tokenOrchestrator.setAuthConfig(this.authConfig);
 	}
 
 	/**
@@ -78,44 +60,33 @@ export class AuthClass {
 		options?: FetchAuthSessionOptions
 	): Promise<AuthSession> {
 		let tokens: AuthTokens;
-		let awsCreds: Credentials;
-		let awsCredsIdentityId: string;
+		let credentialsAndIdentityId: AWSCredentialsAndIdentityId;
 
 		try {
-			tokens = await this.tokenOrchestrator.getTokens({ options });
+			tokens = await this.authOptions.tokenProvider?.getTokens(options);
 		} catch (error) {
 			// TODO(v6): validate error depending on conditions it can proceed or throw
 		}
 
 		try {
-			if (this.authOptions.identityIdProvider) {
-				awsCredsIdentityId = await this.authOptions.identityIdProvider({
-					tokens,
-					authConfig: this.authConfig,
-				});
-			}
-		} catch (err) {
-			// TODO(v6): validate error depending on conditions it can proceed or throw
-		}
-
-		try {
 			if (this.authOptions.credentialsProvider) {
-				awsCreds = await this.authOptions.credentialsProvider.getCredentials({
-					authConfig: this.authConfig,
-					identityId: awsCredsIdentityId,
-					tokens,
-					options,
-				});
+				credentialsAndIdentityId =
+					await this.authOptions.credentialsProvider.getCredentialsAndIdentityId(
+						{
+							authConfig: this.authConfig,
+							tokens,
+							options,
+						}
+					);
 			}
 		} catch (err) {
 			// TODO(v6): validate error depending on conditions it can proceed or throw
 		}
 
 		return {
-			isSignedIn: tokens !== undefined,
 			tokens,
-			awsCreds,
-			awsCredsIdentityId,
+			credentials: credentialsAndIdentityId?.credentials,
+			identityId: credentialsAndIdentityId?.identityId,
 		};
 	}
 
@@ -132,47 +103,5 @@ export class AuthClass {
 				this.authSessionObservers.delete(observer);
 			};
 		});
-	}
-
-	/**
-	 * @internal
-	 *
-	 * Internal use of Amplify only, Persist Auth Tokens
-	 *
-	 * @param tokens AuthTokens
-	 *
-	 * @returns Promise<void>
-	 */
-	async setTokens(tokens: AuthTokens): Promise<void> {
-		await this.tokenOrchestrator.setTokens({ tokens });
-
-		// Notify observers (await is required to work with jest)
-		for await (const observer of this.authSessionObservers) {
-			// TODO(v6): Add load the identityId and credentials part
-			observer.next({
-				isSignedIn: true,
-				tokens,
-			});
-		}
-		return;
-	}
-
-	/**
-	 * @internal
-	 *
-	 * Clear tokens persisted on the client
-	 *
-	 * @return Promise<void>
-	 */
-	async clearTokens(): Promise<void> {
-		await this.tokenOrchestrator.clearTokens();
-
-		// Notify observers
-		for await (const observer of this.authSessionObservers) {
-			observer.next({
-				isSignedIn: false,
-			});
-		}
-		return;
 	}
 }

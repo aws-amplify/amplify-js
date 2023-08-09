@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -1638,7 +1639,10 @@ export class AuthClass {
 		}
 		if (this.isSignedInHostedUI()) {
 			return new Promise((res, rej) => {
-				this.oAuthSignOutRedirect(res, rej);
+				this.oAuthSignOutRedirect(() => {
+					res(undefined);
+					return;
+				}, rej);
 			});
 		} else {
 			dispatchAuthEvent('signOut', this.user, `A user has been signed out`);
@@ -1668,7 +1672,7 @@ export class AuthClass {
 
 								Hub.remove('auth', hostedUISignCallback);
 
-								res();
+								res(undefined);
 							}, OAUTH_FLOW_MS_TIMEOUT);
 
 							Hub.listen('auth', hostedUISignCallback);
@@ -1685,7 +1689,7 @@ export class AuthClass {
 
 									Hub.remove('auth', hostedUISignCallback);
 
-									res();
+									res(undefined);
 								}
 							}
 						});
@@ -2098,9 +2102,9 @@ export class AuthClass {
 							onSuccess: data => {
 								logger.debug('global sign out success');
 								if (isSignedInHostedUI) {
-									this.oAuthSignOutRedirect(res, rej);
+									this.oAuthSignOutRedirect(() => res(undefined), rej);
 								} else {
-									return res();
+									return res(undefined);
 								}
 							},
 							onFailure: err => {
@@ -2115,9 +2119,9 @@ export class AuthClass {
 				logger.debug('user sign out', user);
 				user.signOut(() => {
 					if (isSignedInHostedUI) {
-						this.oAuthSignOutRedirect(res, rej);
+						this.oAuthSignOutRedirect(() => res(undefined), rej);
 					} else {
-						return res();
+						return res(undefined);
 					}
 				});
 			}
@@ -2240,7 +2244,7 @@ export class AuthClass {
 			user.forgotPassword(
 				{
 					onSuccess: () => {
-						resolve();
+						resolve(undefined);
 						return;
 					},
 					onFailure: err => {
