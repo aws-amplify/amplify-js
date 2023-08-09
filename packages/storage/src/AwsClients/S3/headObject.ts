@@ -18,7 +18,6 @@ import {
 	map,
 	parseXmlError,
 	s3TransferHandler,
-	serializeObjectSsecOptionsToHeaders,
 	serializePathnameObjectKey,
 } from './utils';
 import { assertServiceError } from '../../errors/utils/assertServiceError';
