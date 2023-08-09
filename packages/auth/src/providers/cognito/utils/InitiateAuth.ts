@@ -21,7 +21,7 @@ import {
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-const refreshTokenSerializer = (
+const initiateAuthSerializer = (
 	input: InitiateAuthCommandInput,
 	endpoint: Endpoint
 ): HttpRequest => {
@@ -30,7 +30,7 @@ const refreshTokenSerializer = (
 	return buildHttpRpcRequest(endpoint, headers, body);
 };
 
-const refreshTokenDeserializer = async (
+const initiateAuthDeserializer = async (
 	response: HttpResponse
 ): Promise<InitiateAuthCommandOutput> => {
 	if (response.statusCode >= 300) {
@@ -49,9 +49,9 @@ const refreshTokenDeserializer = async (
 /**
  * @internal
  */
-export const refreshToken = composeServiceApi(
+export const initiateAuth = composeServiceApi(
 	cognitoUserPoolTransferHandler,
-	refreshTokenSerializer,
-	refreshTokenDeserializer,
+	initiateAuthSerializer,
+	initiateAuthDeserializer,
 	defaultConfig
 );

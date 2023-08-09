@@ -1,5 +1,5 @@
 import { CognitoAuthTokens, TokenRefresher } from '../tokenProvider/types';
-import { refreshToken } from '../utils/refreshTokens';
+import { initiateAuth } from '../utils/InitiateAuth';
 import { AuthConfig, decodeJWT } from '@aws-amplify/core';
 
 export const CognitoUserPoolTokenRefresher: TokenRefresher = async ({
@@ -11,7 +11,7 @@ export const CognitoUserPoolTokenRefresher: TokenRefresher = async ({
 }) => {
 	const region = authConfig.userPoolId.split('_')[0];
 	const refreshTokenString = tokens.metadata['refreshToken'];
-	const result = await refreshToken(
+	const result = await initiateAuth(
 		{ region },
 		{
 			ClientId: authConfig.userPoolWebClientId,
