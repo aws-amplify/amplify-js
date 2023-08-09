@@ -212,10 +212,11 @@ export async function handleUserSRPAuthFlow(
 	password: string,
 	clientMetadata: ClientMetadata | undefined
 ): Promise<RespondToAuthChallengeCommandOutput> {
-	const config = AmplifyV6.getConfig().Auth;
+	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
 
-	const userPoolId = config?.userPoolId;
-	const userPoolName = userPoolId?.split('_')[1] || '';
+	const userPoolId = authConfig.userPoolId;
+	const userPoolName = userPoolId.split('_')[1] || '';
 	const authenticationHelper = new AuthenticationHelper(userPoolName);
 
 	const jsonReq: InitiateAuthClientInput = {
@@ -260,11 +261,11 @@ export async function handleCustomSRPAuthFlow(
 	password: string,
 	clientMetadata: ClientMetadata | undefined
 ) {
-	const config = AmplifyV6.getConfig().Auth;
-	assertTokenProviderConfig(config);
+	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
 
-	const userPoolId = config?.userPoolId;
-	const userPoolName = userPoolId?.split('_')[1] || '';
+	const userPoolId = authConfig.userPoolId;
+	const userPoolName = userPoolId.split('_')[1] || '';
 	const authenticationHelper = new AuthenticationHelper(userPoolName);
 	const jsonReq: InitiateAuthClientInput = {
 		AuthFlow: 'CUSTOM_AUTH',

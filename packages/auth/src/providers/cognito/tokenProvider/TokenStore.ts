@@ -33,7 +33,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 			const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 			const authKeys = createKeysForAuthStorage(
 				name,
-				authConfig?.userPoolWebClientId || 'cliendId'
+				authConfig.userPoolWebClientId
 			);
 
 			const accessTokenString = await this.keyValueStorage.getItem(
@@ -80,7 +80,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,
-			authConfig.userPoolWebClientId || 'clientId'
+			authConfig.userPoolWebClientId
 		);
 
 		this.keyValueStorage.setItem(
@@ -107,7 +107,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,
-			authConfig?.userPoolWebClientId || 'clientId'
+			authConfig.userPoolWebClientId
 		);
 
 		// Not calling clear because it can remove data that is not managed by AuthTokenStore
