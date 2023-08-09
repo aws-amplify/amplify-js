@@ -3,6 +3,7 @@
 	"devDependencies": {
 		"@aws-sdk/client-pinpoint": "3.335.1",
 		"@aws-sdk/client-cognito-identity": "3.335.0",
+		"@aws-sdk/client-cognito-identity-provider": "3.386.0",
 		"@aws-sdk/client-s3": "3.335.0",
 		"dts-bundle-generator": "^8.0.1"
 	},
