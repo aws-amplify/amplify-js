@@ -28,6 +28,8 @@ export {
 	AWSCloudWatchProvider,
 } from '@aws-amplify/core';
 
+export { InitializedAmplifyV6 as AmplifyV6 } from './initSingleton';
+
 // TODO(v6): Re-enable these exports when available
 /*
 export { API, APIClass, graphqlOperation } from '@aws-amplify/api';

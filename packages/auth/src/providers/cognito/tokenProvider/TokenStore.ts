@@ -21,7 +21,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		return;
 	}
 
-	async loadTokens(): Promise<CognitoAuthTokens> {
+	async loadTokens(): Promise<CognitoAuthTokens | null> {
 		const authConfig = AmplifyV6.getConfig().Auth;
 		assertTokenProviderConfig(authConfig);
 
@@ -67,8 +67,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 				clockDrift,
 			};
 		} catch (err) {
-			// TODO(v6): validate partial results with mobile implementation
-			throw new Error('No valid tokens');
+			return null;
 		}
 	}
 	async storeTokens(tokens: CognitoAuthTokens): Promise<void> {

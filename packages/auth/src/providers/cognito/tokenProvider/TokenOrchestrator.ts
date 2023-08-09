@@ -18,7 +18,9 @@ export class TokenOrchestrator {
 		this.tokenStore = tokenStore;
 	}
 
-	async getTokens(options?: FetchAuthSessionOptions): Promise<AuthTokens> {
+	async getTokens(
+		options?: FetchAuthSessionOptions
+	): Promise<AuthTokens | null> {
 		// TODO(v6): how to handle if there are not tokens on tokenManager
 		let tokens: CognitoAuthTokens;
 
@@ -26,6 +28,9 @@ export class TokenOrchestrator {
 			// TODO(v6): add wait for inflight OAuth in case there is one
 			tokens = await this.tokenStore.loadTokens();
 
+			if (tokens === null) {
+				return null;
+			}
 			const idTokenExpired =
 				!!tokens?.idToken &&
 				isTokenExpired({
