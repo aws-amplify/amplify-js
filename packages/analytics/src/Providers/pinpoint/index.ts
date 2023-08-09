@@ -1,6 +1,4 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export const testFunction = () => {
-	console.log('Test!');
-}
+// TODO(v6): Export Pinpoint functional APIs & types
