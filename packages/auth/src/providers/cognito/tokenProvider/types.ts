@@ -22,7 +22,8 @@ export const AuthStorageKeys = {
 	idToken: 'idToken',
 	oidcProvider: 'oidcProvider',
 	clockDrift: 'clockDrift',
-	metadata: 'metadata',
+	refreshToken: 'refreshToken',
+	NewDeviceMetadata: 'NewDeviceMetadata',
 };
 
 export interface AuthTokenStore {
@@ -45,6 +46,7 @@ export interface AuthTokenOrchestrator {
 }
 
 export type CognitoAuthTokens = AuthTokens & {
-	metadata: Record<string, string>;
+	refreshToken?: string;
+	NewDeviceMetadata?: string;
 	clockDrift: number;
 };
