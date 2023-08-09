@@ -33,10 +33,10 @@ export class TokenOrchestrator {
 				!!tokens?.idToken &&
 				isTokenExpired({
 					expiresAt: (tokens.idToken?.payload?.exp || 0) * 1000,
-					clockDrift: tokens?.clockDrift || 0,
+					clockDrift: tokens.clockDrift || 0,
 				});
 			const accessTokenExpired = isTokenExpired({
-				expiresAt: (tokens.idToken?.payload?.exp || 0) * 1000,
+				expiresAt: (tokens.accessToken?.payload?.exp || 0) * 1000,
 				clockDrift: tokens.clockDrift || 0,
 			});
 
@@ -46,7 +46,6 @@ export class TokenOrchestrator {
 				});
 			}
 		} catch (err) {
-			console.warn(err);
 			// TODO(v6): review token handling mechanism, including exponential retry, offline, etc
 			throw new Error('No session');
 		}
