@@ -25,6 +25,7 @@ const corePackageSrcClientsPath = join(
 	'src',
 	'AwsClients'
 );
+
 const storagePackageSrcClientsPath = join(
 	__dirname,
 	'..',
@@ -33,6 +34,18 @@ const storagePackageSrcClientsPath = join(
 	'storage',
 	'src',
 	'AwsClients'
+);
+const authPackageSrcClientsPath = join(
+	__dirname,
+	'..',
+	'..',
+	'packages',
+	'auth',
+	'src',
+	'providers',
+	'cognito',
+	'utils',
+	'clients'
 );
 
 /** @type import('dts-bundle-generator/config-schema').BundlerConfig */
@@ -62,6 +75,14 @@ const config = {
 			outFile: join(storagePackageSrcClientsPath, 'S3', 'types.ts'),
 			libraries: {
 				inlinedLibraries: ['@aws-sdk/client-s3'],
+			},
+			output: outputConfig,
+		},
+		{
+			filePath: './cognito-identity-provider.d.ts',
+			outFile: join(authPackageSrcClientsPath, 'CognitoIdentityProvider', 'types.ts'),
+			libraries: {
+				inlinedLibraries: ['@aws-sdk/client-cognito-identity-provider'],
 			},
 			output: outputConfig,
 		},
