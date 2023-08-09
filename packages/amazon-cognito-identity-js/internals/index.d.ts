@@ -211,6 +211,7 @@ export class InternalCognitoUser {
 	): void;
 	public deleteUser(
 		callback: NodeCallback<Error, string>,
+		clientMetaData?: ClientMetadata,
 		userAgentValue?: string
 	): void;
 	public enableMFA(

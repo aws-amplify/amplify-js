@@ -1573,36 +1573,40 @@ export class InternalAuthClass {
 							}
 							return rej(err);
 						} else {
-							internalUser.deleteUser((err, result: string) => {
-								if (err) {
-									rej(err);
-								} else {
-									dispatchAuthEvent(
-										'userDeleted',
-										result,
-										'The authenticated user has been deleted.'
-									);
-									internalUser.signOut(undefined, userAgentValue);
-									this.user = null;
-									try {
-										this.cleanCachedItems(); // clean aws credentials
-									} catch (e) {
-										// TODO: change to rejects in refactor
-										logger.debug('failed to clear cached items');
-									}
-
-									if (isSignedInHostedUI) {
-										this.oAuthSignOutRedirect(res, rej);
+							internalUser.deleteUser(
+								(err, result: string) => {
+									if (err) {
+										rej(err);
 									} else {
 										dispatchAuthEvent(
-											'signOut',
-											this.user,
-											`A user has been signed out`
+											'userDeleted',
+											result,
+											'The authenticated user has been deleted.'
 										);
-										res(result);
+										internalUser.signOut(undefined, userAgentValue);
+										this.user = null;
+										try {
+											this.cleanCachedItems(); // clean aws credentials
+										} catch (e) {
+											// TODO: change to rejects in refactor
+											logger.debug('failed to clear cached items');
+										}
+
+										if (isSignedInHostedUI) {
+											this.oAuthSignOutRedirect(res, rej);
+										} else {
+											dispatchAuthEvent(
+												'signOut',
+												this.user,
+												`A user has been signed out`
+											);
+											res(result);
+										}
 									}
-								}
-							}, userAgentValue);
+								},
+								undefined,
+								userAgentValue
+							);
 						}
 					});
 				}
