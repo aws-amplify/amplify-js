@@ -34,14 +34,13 @@ export const getUrl = async function (
 	let result: S3GetUrlResult;
 	const options = req?.options;
 	// TODO extract common functionality
-	AmplifyV6.getConfig().Storage;
 	const { awsCreds, awsCredsIdentityId } =
 		await AmplifyV6.Auth.fetchAuthSession();
 	assertValidationError(!!awsCreds, StorageValidationErrorCode.NoCredentials);
 	const { bucket, region, defaultAccessLevel } = AmplifyV6.getConfig().Storage;
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
-	const { key, options: { level = defaultAccessLevel } = {} } = req;
+	const { key, options: { accessLevel = defaultAccessLevel } = {} } = req;
 	const { prefixResolver = defaultPrefixResolver } =
 		AmplifyV6.libraryOptions?.Storage ?? {};
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
@@ -50,15 +49,15 @@ export const getUrl = async function (
 	}
 	const finalKey =
 		prefixResolver({
-			level,
-			identityId: awsCredsIdentityId,
+			accessLevel,
+			targetIdentityId: awsCredsIdentityId,
 		}) + key;
 	const getUrlParams: GetObjectInput = {
 		Bucket: bucket,
 		Key: finalKey,
 	};
 	const getUrlOptions = {
-		expiration: options?.expiration || DEFAULT_PRESIGN_EXPIRATION,
+		expiration: options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION,
 		credentials: awsCreds,
 		signingRegion: region,
 		signingService: S3_SERVICE_NAME,
@@ -67,9 +66,9 @@ export const getUrl = async function (
 	const url = await getPresignedGetObjectUrl(getUrlOptions, getUrlParams);
 	result.url = new URL(url);
 	const urlExpiration = new Date(
-		options?.expiration || DEFAULT_PRESIGN_EXPIRATION
+		options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION
 	);
-	const awsCredExpiration = awsCreds.expiration;
+	const awsCredExpiration = awsCreds?.expiration;
 	// expiresAt is the minimum of credential expiration and url expiration
 	result.expiresAt =
 		urlExpiration < awsCredExpiration ? urlExpiration : awsCredExpiration;

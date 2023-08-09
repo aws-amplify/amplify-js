@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export type StorageOptions =
-	| { level?: 'guest' | 'private' }
+	| { accessLevel?: 'guest' | 'private' }
 	| {
-			level: 'protected';
-			identityId: string;
+			accessLevel: 'protected';
+			targetIdentityId: string;
 	  };
 
 export type StorageOperationRequest<Options extends StorageOptions> = {
