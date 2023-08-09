@@ -67,7 +67,6 @@ export class DefaultTokenStore implements AuthTokenStore {
 				clockDrift,
 			};
 		} catch (err) {
-			console.warn(err);
 			// TODO(v6): validate partial results with mobile implementation
 			throw new Error('No valid tokens');
 		}
