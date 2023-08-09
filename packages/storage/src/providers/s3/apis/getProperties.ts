@@ -23,15 +23,15 @@ export const getProperties = async function (
 ): Promise<S3GetPropertiesResult> {
 	const { awsCredsIdentityId, awsCreds, defaultAccessLevel, bucket, region } =
 		await getStorageConfig();
-  // TODO should we use targetIdentityId from req as well 
+	// TODO should we use targetIdentityId from req as well
 	const { key, options: { accessLevel = defaultAccessLevel } = {} } = req;
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 	const finalKey = getFinalKey(accessLevel, awsCredsIdentityId, key);
 	const headObjectOptions = {
 		accessLevel,
-		awsCredsIdentityId,
+		targetIdentityId: awsCredsIdentityId,
 		region,
-		awsCreds,
+		credentials: awsCreds,
 	};
 	const headObjectParams: HeadObjectInput = {
 		Bucket: bucket,
