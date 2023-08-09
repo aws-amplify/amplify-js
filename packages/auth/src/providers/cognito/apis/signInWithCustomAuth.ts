@@ -18,7 +18,6 @@ import {
 	handleCustomAuthFlowWithoutSRP,
 	getSignInResult,
 	getSignInResultFromError,
-	cacheCognitoTokens,
 } from '../utils/signInHelpers';
 
 import { AmplifyV6 } from '@aws-amplify/core';
@@ -28,6 +27,7 @@ import {
 	cleanActiveSignInState,
 	setActiveSignInState,
 } from '../utils/signInStore';
+import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 
 /**
  * Signs a user in using a custom authentication flow without password
