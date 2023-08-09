@@ -7,8 +7,7 @@ import { StorageOptions, StorageOperationRequest } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
-import { S3GetPropertiesResult } from '../types/results';
-import { GetPropertiesException } from '../types/errors';
+import { GetPropertiesException, S3GetPropertiesResult } from '../types';
 
 /**
  * Get Properties of the object
