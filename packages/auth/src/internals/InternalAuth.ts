@@ -2735,7 +2735,6 @@ export class InternalAuthClass {
 		);
 
 		if (!source || source === 'aws' || source === 'userPool') {
-			// ####
 			const internalUser: InternalCognitoUser = await this._currentUserPoolUser(
 				undefined,
 				userAgentDetails
