@@ -108,29 +108,30 @@ export {
 
 // Cache exports
 import { BrowserStorageCache } from './Cache/BrowserStorageCache';
+export { asserts } from './Util/errors/AssertError';
+export { isTokenExpired } from './singleton/Auth';
 export { InMemoryCache } from './Cache/InMemoryCache';
 export { CacheConfig } from './Cache/types';
 export { ICache } from './Cache/types';
 export { BrowserStorageCache };
 export { decodeJWT, assertTokenProviderConfig } from './singleton/Auth/utils';
 export {
+	TokenProvider,
+	AuthTokens,
+	FetchAuthSessionOptions,
+	CredentialsProvider,
+	AuthCredentialStore,
+	Identity,
+} from './singleton/Auth/types';
+export {
 	AuthConfig,
 	UserPoolConfig,
-	IdentityPoolConfig,
-	UserPoolConfigAndIdentityPoolConfig,
+	StorageAccessLevel,
+	StorageConfig,
 } from './singleton/types';
 
 //AWSClients exports
 export { getCredentialsForIdentity, getId } from './AwsClients/CognitoIdentity';
-
-// Credentials and IdentityId exports
-export {
-	AuthTokens,
-	CredentialsProvider,
-	FetchAuthSessionOptions,
-	AuthCredentialStore,
-	Identity,
-} from './singleton/Auth/types';
 
 export { defaultIdentityIdStore } from './singleton/Auth/IdentityIdStore';
 export { AmplifyV6 } from './singleton';

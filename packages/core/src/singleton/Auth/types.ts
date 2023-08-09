@@ -2,7 +2,6 @@
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/jwt-model.ts
 
 import { Credentials } from '@aws-sdk/types';
-import { KeyValueStorageInterface } from '../../types';
 
 interface JwtPayloadStandardFields {
 	exp?: number; // expires: https://tools.ietf.org/html/rfc7519#section-4.1.4
@@ -29,35 +28,15 @@ export type JWT = {
 
 export type JWTCreator = (stringJWT: string) => JWT;
 
-export const AuthTokenStorageKeys = {
-	accessToken: 'accessToken',
-	idToken: 'idToken',
-	accessTokenExpAt: 'accessTokenExpAt',
-	oidcProvider: 'oidcProvider',
-	clockDrift: 'clockDrift',
-	metadata: 'metadata',
-	identityId: 'identityId',
-};
-export interface AuthTokenStore {
-	setAuthConfig(authConfig: AuthConfig): void;
-	loadTokens(): Promise<AuthTokens>;
-	storeTokens(tokens: AuthTokens): Promise<void>;
-	clearTokens(): Promise<void>;
-	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
-}
-
 export type AuthSession = {
 	tokens?: AuthTokens;
-	awsCreds?: Credentials;
-	awsCredsIdentityId?: string;
-	isSignedIn: boolean;
+	credentials?: AWSCredentials;
+	identityId?: string;
 };
 
 export type LibraryAuthOptions = {
-	tokenRefresher?: TokenRefresher;
-	credentialsProvider?: CredentialsProvider;
-	identityIdProvider?: IdentityIdProvider;
-	keyValueStorage?: KeyValueStorageInterface;
+	tokenProvider?: TokenProvider;
+	credentialsProvider?: AWSCredentialsAndIdentityIdProvider;
 };
 
 export type Identity = {
@@ -83,51 +62,26 @@ export interface AuthCredentialStore {
 	clearCredentials(): Promise<void>;
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
 }
-
-export interface CredentialsProvider {
-	getCredentials: ({
+export interface AWSCredentialsAndIdentityIdProvider {
+	getCredentialsAndIdentityId: ({
 		options,
 		tokens,
 		authConfig,
-		identityId,
 	}: {
 		options?: FetchAuthSessionOptions;
 		tokens?: AuthTokens;
 		authConfig?: AuthConfig;
-		identityId?: string;
-	}) => Promise<Credentials>;
+	}) => Promise<AWSCredentialsAndIdentityId>;
 	clearCredentials: () => void;
 }
 
-export interface AuthTokenOrchestrator {
-	setTokenRefresher(tokenRefresher: TokenRefresher): void;
-	setAuthTokenStore(tokenStore: AuthTokenStore): void;
-	setAuthConfig(authConfig: AuthConfig): void;
-
+export type TokenProvider = {
 	getTokens: ({
-		options,
+		forceRefresh,
 	}: {
-		options?: FetchAuthSessionOptions;
+		forceRefresh?: boolean;
 	}) => Promise<AuthTokens>;
-	setTokens: ({ tokens }: { tokens: AuthTokens }) => Promise<void>;
-	clearTokens: () => Promise<void>;
-}
-
-export type TokenRefresher = ({
-	tokens,
-	authConfig,
-}: {
-	tokens: AuthTokens;
-	authConfig?: AuthConfig;
-}) => Promise<AuthTokens>;
-
-export type IdentityIdProvider = ({
-	tokens,
-	authConfig,
-}: {
-	tokens?: AuthTokens;
-	authConfig?: AuthConfig;
-}) => Promise<string>;
+};
 
 export type FetchAuthSessionOptions = {
 	forceRefresh?: boolean;
@@ -136,13 +90,6 @@ export type FetchAuthSessionOptions = {
 export type AuthTokens = {
 	idToken?: JWT;
 	accessToken: JWT;
-	accessTokenExpAt: number;
-	clockDrift?: number;
-	metadata?: Record<string, string>; // Generic for each service supported
-};
-
-export type AuthKeys<AuthKey extends string> = {
-	[Key in AuthKey]: string;
 };
 
 export type AuthConfig =
@@ -173,4 +120,34 @@ export type UserPoolConfigAndIdentityPoolConfig = {
 	clientMetadata?: Record<string, string>;
 	isMandatorySignInEnabled?: boolean;
 	oidcProvider?: string;
+};
+
+type GetCredentialsOptions =
+	| GetCredentialsAuthenticatedUser
+	| GetCredentialsUnauthenticatedUser;
+
+type GetCredentialsAuthenticatedUser = {
+	authenticated: true;
+	forceRefresh?: boolean;
+	authConfig: AuthConfig;
+	tokens?: AuthTokens;
+};
+
+type GetCredentialsUnauthenticatedUser = {
+	authenticated: false;
+	forceRefresh?: boolean;
+	authConfig: AuthConfig;
+	tokens: never;
+};
+
+export type AWSCredentialsAndIdentityId = {
+	credentials: AWSCredentials;
+	identityId?: string;
+};
+
+type AWSCredentials = {
+	accessKeyId: string;
+	secretAccessKey: string;
+	sessionToken?: string;
+	expiration?: Date;
 };

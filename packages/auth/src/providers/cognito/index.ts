@@ -15,3 +15,4 @@ export { updatePassword } from './apis/updatePassword';
 export { setUpTOTP } from './apis/setUpTOTP';
 export { cognitoCredentialsProvider } from './apis/credentialsProvider';
 export { cognitoIdentityIdProvider } from './apis/IdentityIdProvider';
+export { CognitoUserPoolsTokenProvider } from './tokenProvider';
