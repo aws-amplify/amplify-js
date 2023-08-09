@@ -14,15 +14,15 @@ import { getStorageConfig, getFinalKey } from '../utils/apiHelper';
  * @param {StorageOperationRequest} The request object
  * @return {Promise<S3GetPropertiesResult>} Properties of the object
  * @throws service: {@link GetPropertiesException}
- * - S3 service errors thrown while getting properties
+ * - S3 Service errors thrown while getting properties
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
- * TODO: add config errors
+ *
  */
 export const getProperties = async function (
 	req: StorageOperationRequest<StorageOptions>
 ): Promise<S3GetPropertiesResult> {
 	const { awsCredsIdentityId, awsCreds, defaultAccessLevel, bucket, region } =
-		getStorageConfig();
+		await getStorageConfig();
 	const { key, options: { accessLevel = defaultAccessLevel } = {} } = req;
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 	const finalKey = getFinalKey(accessLevel, awsCredsIdentityId, key);

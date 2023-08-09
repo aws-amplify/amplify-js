@@ -6,20 +6,18 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
 
-const { awsCredsIdentityId, awsCreds } =
-	await AmplifyV6.Auth.fetchAuthSession();
-assertValidationError(
-	!!awsCredsIdentityId,
-	StorageValidationErrorCode.NoCredentials
-);
-assertValidationError(!!awsCreds, StorageValidationErrorCode.NoCredentials);
-const { bucket, region } = AmplifyV6.getConfig().Storage;
-assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
-assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
-const { prefixResolver = defaultPrefixResolver, defaultAccessLevel } =
-	AmplifyV6.libraryOptions?.Storage ?? {};
-
-export function getStorageConfig() {
+export async function getStorageConfig() {
+	const { awsCredsIdentityId, awsCreds } =
+		await AmplifyV6.Auth.fetchAuthSession();
+	assertValidationError(
+		!!awsCredsIdentityId,
+		StorageValidationErrorCode.NoCredentials
+	);
+	assertValidationError(!!awsCreds, StorageValidationErrorCode.NoCredentials);
+	const { bucket, region } = AmplifyV6.getConfig()?.Storage ?? {};
+	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
+	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
+	const { defaultAccessLevel } = AmplifyV6.libraryOptions?.Storage ?? {};
 	return {
 		awsCredsIdentityId,
 		awsCreds,
@@ -31,6 +29,8 @@ export function getStorageConfig() {
 
 // use prefixResolver to get the final key
 export function getFinalKey(accessLevel, awsCredsIdentityId, key) {
+	const { prefixResolver = defaultPrefixResolver } =
+		AmplifyV6.libraryOptions?.Storage ?? {};
 	return (
 		prefixResolver({
 			accessLevel,
