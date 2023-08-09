@@ -31,7 +31,6 @@
 		"publish:next": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=next --preid=next${PREID_HASH_SUFFIX} --exact --no-verify-access",
 		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes --no-verify-access",
-		"publish:feat/auth-internals": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=v5-auth-internals --preid=v5-auth-internals${PREID_HASH_SUFFIX} --exact --no-verify-access",
 		"ts-coverage": "lerna run ts-coverage"
 	},
 	"husky": {
