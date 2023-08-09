@@ -18,24 +18,24 @@
       "require": "./lib/utils/index.js"
     },
     "./auth": {
-      "types": "./lib-esm/categories/auth/index.d.ts",
-      "import": "./lib-esm/categories/auth/index.js",
-      "require": "./lib/categories/auth/index.js"
+      "types": "./lib-esm/auth/index.d.ts",
+      "import": "./lib-esm/auth/index.js",
+      "require": "./lib/auth/index.js"
     },
     "./auth/cognito": {
-      "types": "./lib-esm/categories/auth/cognito/index.d.ts",
-      "import": "./lib-esm/categories/auth/cognito/index.js",
-      "require": "./lib/categories/auth/cognito/index.js"
+      "types": "./lib-esm/auth/cognito/index.d.ts",
+      "import": "./lib-esm/auth/cognito/index.js",
+      "require": "./lib/auth/cognito/index.js"
     },
     "./analytics": {
-      "types": "./lib-esm/categories/analytics/index.d.ts",
-      "import": "./lib-esm/categories/analytics/index.js",
-      "require": "./lib/categories/analytics/index.js"
+      "types": "./lib-esm/analytics/index.d.ts",
+      "import": "./lib-esm/analytics/index.js",
+      "require": "./lib/analytics/index.js"
     },
     "./analytics/pinpoint": {
-      "types": "./lib-esm/categories/analytics/pinpoint/index.d.ts",
-      "import": "./lib-esm/categories/analytics/pinpoint/index.js",
-      "require": "./lib/categories/analytics/pinpoint/index.js"
+      "types": "./lib-esm/analytics/pinpoint/index.d.ts",
+      "import": "./lib-esm/analytics/pinpoint/index.js",
+      "require": "./lib/analytics/pinpoint/index.js"
     },
     "./package.json": "./package.json"
   },
@@ -48,16 +48,16 @@
         "./lib-esm/utils/index.d.ts"
       ],
       "auth": [
-        "./lib-esm/categories/auth/index.d.ts"
+        "./lib-esm/auth/index.d.ts"
       ],
       "auth/cognito": [
-        "./lib-esm/categories/auth/cognito/index.d.ts"
+        "./lib-esm/auth/cognito/index.d.ts"
       ],
       "analytics": [
-        "./lib-esm/categories/analytics/index.d.ts"
+        "./lib-esm/analytics/index.d.ts"
       ],
       "analytics/pinpoint": [
-        "./lib-esm/categories/analytics/pinpoint/index.d.ts"
+        "./lib-esm/analytics/pinpoint/index.d.ts"
       ]
     }
   },
