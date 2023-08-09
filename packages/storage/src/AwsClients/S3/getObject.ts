@@ -132,7 +132,7 @@ export const getObject = composeServiceApi(
 export const getPresignedGetObjectUrl = async (
 	config: UserAgentOptions & PresignUrlOptions & S3EndpointResolverOptions,
 	input: GetObjectInput
-): Promise<string> => {
+): Promise<URL> => {
 	const endpoint = defaultConfig.endpointResolver(config, input);
 	const { url, headers, method } = await getObjectSerializer(input, endpoint);
 
@@ -150,11 +150,13 @@ export const getPresignedGetObjectUrl = async (
 	)) {
 		url.searchParams.append(headerName, value);
 	}
-	return presignUrl(
-		{ method, url, body: null },
-		{
-			...defaultConfig,
-			...config,
-		}
-	).toString();
+	return new URL(
+		presignUrl(
+			{ method, url, body: null },
+			{
+				...defaultConfig,
+				...config,
+			}
+		).toString()
+	);
 };

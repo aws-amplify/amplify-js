@@ -31,7 +31,6 @@ const DEFAULT_PRESIGN_EXPIRATION = 900;
 export const getUrl = async function (
 	req: StorageDownloadDataRequest<S3GetUrlOptions>
 ): Promise<S3GetUrlResult> {
-	let result: S3GetUrlResult;
 	const options = req?.options;
 	// TODO extract common functionality
 	const { awsCreds, awsCredsIdentityId } =
@@ -61,10 +60,10 @@ export const getUrl = async function (
 		credentials: awsCreds,
 		signingRegion: region,
 		signingService: S3_SERVICE_NAME,
-		region: region,
+		region,
 	};
-	const url = await getPresignedGetObjectUrl(getUrlOptions, getUrlParams);
-	result.url = new URL(url);
+	let result: S3GetUrlResult;
+	result.url = await getPresignedGetObjectUrl(getUrlOptions, getUrlParams);
 	const urlExpiration = new Date(
 		options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION
 	);
