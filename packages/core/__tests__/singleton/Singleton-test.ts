@@ -1,8 +1,6 @@
-import { Credentials } from '@aws-sdk/types';
 import { AmplifyV6 as Amplify } from '../../src/singleton';
 import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
-import { MemoryKeyValueStorage } from '../../src/StorageHelper';
 import { AWSCredentialsAndIdentityId } from '../../src/singleton/Auth/types';
 
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
@@ -196,130 +194,59 @@ describe('Session tests', () => {
 		});
 	});
 
-	// test('refresh tokens with forceRefresh success', async () => {
-	// 	expect.assertions(1);
-	// 	const auth = new Auth();
-	// 	const tokenRefresherSpy = jest.fn(async () => {
-	// 		const token =
-	// 			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
-	// 		const mockToken = decodeJWT(token);
-	// 		return {
-	// 			accessToken: mockToken,
-	// 			accessTokenExpAt: 2000000000000,
-	// 		};
-	// 	});
+	test('refresh tokens with forceRefresh success', async () => {
+		expect.assertions(1);
+		const auth = new Auth();
+		const tokenProvider = jest.fn(async () => {
+			const token =
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
+			const mockToken = decodeJWT(token);
+			return {
+				accessToken: mockToken,
+			};
+		});
 
-	// 	auth.configure(
-	// 		{
-	// 			userPoolId: 'us-east-1:aaaaaaa',
-	// 			identityPoolId: 'us-east-1:bbbbb',
-	// 			userPoolWebClientId: 'aaaaaaaaaaaa',
-	// 		},
-	// 		{
-	// 			keyValueStorage: MemoryKeyValueStorage,
-	// 			tokenRefresher: tokenRefresherSpy,
-	// 		}
-	// 	);
+		auth.configure(
+			{
+				userPoolId: 'us-east-1:aaaaaaa',
+				identityPoolId: 'us-east-1:bbbbb',
+				userPoolWebClientId: 'aaaaaaaaaaaa',
+			},
+			{
+				tokenProvider: {
+					getTokens: tokenProvider,
+				},
+			}
+		);
 
-	// 	const token =
-	// 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
-	// 	const mockToken = decodeJWT(token);
+		await auth.fetchAuthSession({ forceRefresh: true });
+		expect(tokenProvider).toBeCalledWith({
+			forceRefresh: true,
+		});
+	});
 
-	// 	async function signIn() {
-	// 		await auth.setTokens({
-	// 			accessToken: mockToken,
-	// 			accessTokenExpAt: 2000000000000,
-	// 		});
-	// 	}
+	test('refresh tokens with forceRefresh failed', async () => {
+		expect.assertions(2);
+		const auth = new Auth();
+		const tokenProvider = jest.fn(async () => {
+			throw new Error('no no no');
+		});
 
-	// 	await signIn();
+		auth.configure(
+			{
+				userPoolId: 'us-east-1:aaaaaaa',
+				identityPoolId: 'us-east-1:bbbbb',
+				userPoolWebClientId: 'aaaaaaaaaaaa',
+			},
+			{
+				tokenProvider: {
+					getTokens: tokenProvider,
+				},
+			}
+		);
 
-	// 	const tokens = await auth.fetchAuthSession({ forceRefresh: true });
-	// 	expect(tokenRefresherSpy).toBeCalledWith({
-	// 		authConfig: {
-	// 			userPoolId: 'us-east-1:aaaaaaa',
-	// 			identityPoolId: 'us-east-1:bbbbb',
-	// 			userPoolWebClientId: 'aaaaaaaaaaaa',
-	// 		},
-	// 		tokens: {
-	// 			accessToken: {
-	// 				payload: {
-	// 					exp: 1710293130,
-	// 					iat: 1516239022,
-	// 					name: 'John Doe',
-	// 					sub: '1234567890',
-	// 				},
-	// 				toString: expect.anything(),
-	// 			},
-	// 			accessTokenExpAt: 2000000000000,
-	// 			clockDrift: 0,
-	// 			idToken: undefined,
-	// 			metadata: {},
-	// 		},
-	// 	});
-	// });
-
-	// test('refresh tokens with forceRefresh failed', async () => {
-	// 	expect.assertions(2);
-	// 	const auth = new Auth();
-	// 	const tokenRefresherSpy = jest.fn(async () => {
-	// 		throw new Error('no no no');
-	// 	});
-
-	// 	auth.configure(
-	// 		{
-	// 			userPoolId: 'us-east-1:aaaaaaa',
-	// 			identityPoolId: 'us-east-1:bbbbb',
-	// 			userPoolWebClientId: 'aaaaaaaaaaaa',
-	// 		},
-	// 		{
-	// 			keyValueStorage: MemoryKeyValueStorage,
-	// 			tokenRefresher: tokenRefresherSpy,
-	// 		}
-	// 	);
-
-	// 	const token =
-	// 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
-	// 	const mockToken = decodeJWT(token);
-
-	// 	async function signIn() {
-	// 		await auth.setTokens({
-	// 			accessToken: mockToken,
-	// 			accessTokenExpAt: 2000000000000,
-	// 		});
-	// 	}
-
-	// 	await signIn();
-
-	// 	const session = await auth.fetchAuthSession({ forceRefresh: true });
-	// 	expect(session.tokens).toBe(undefined);
-	// 	expect(tokenRefresherSpy).toBeCalled();
-	// });
-
-	// test('refresh tokens with accessToken expired failed', async () => {
-	// 	expect.assertions(2);
-	// 	const auth = new Auth();
-	// 	const tokenRefresherSpy = jest.fn(async () => {
-	// 		throw new Error('no no no');
-	// 	});
-
-	// 	auth.configure(
-	// 		{
-	// 			userPoolId: 'us-east-1:aaaaaaa',
-	// 			identityPoolId: 'us-east-1:bbbbb',
-	// 			userPoolWebClientId: 'aaaaaaaaaaaa',
-	// 		},
-	// 		{
-	// 			tokenProvider
-	// 		}
-	// 	);
-
-	// 	const token =
-	// 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
-	// 	const mockToken = decodeJWT(token);
-
-	// 	const session = await auth.fetchAuthSession({ forceRefresh: false });
-	// 	expect(session.tokens).toBe(undefined);
-	// 	expect(tokenRefresherSpy).toBeCalled();
-	// });
+		const session = await auth.fetchAuthSession({ forceRefresh: true });
+		expect(session.tokens).toBe(undefined);
+		expect(tokenProvider).toBeCalled();
+	});
 });
