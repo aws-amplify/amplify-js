@@ -1,12 +1,12 @@
-import { TokenRefresher } from '../tokenProvider/types';
+import { CognitoAuthTokens, TokenRefresher } from '../tokenProvider/types';
 import { refreshToken } from '../utils/refreshTokens';
-import { AuthConfig, AuthTokens, decodeJWT } from '@aws-amplify/core';
+import { AuthConfig, decodeJWT } from '@aws-amplify/core';
 
 export const CognitoUserPoolTokenRefresher: TokenRefresher = async ({
 	tokens,
 	authConfig,
 }: {
-	tokens: AuthTokens;
+	tokens: CognitoAuthTokens;
 	authConfig: AuthConfig;
 }) => {
 	const region = authConfig.userPoolId.split('_')[0];
@@ -24,7 +24,6 @@ export const CognitoUserPoolTokenRefresher: TokenRefresher = async ({
 	);
 
 	const accessToken = decodeJWT(result.AuthenticationResult.AccessToken);
-	const accessTokenExpAt = accessToken.payload.exp;
 	const idToken = result.AuthenticationResult.IdToken
 		? decodeJWT(result.AuthenticationResult.IdToken)
 		: undefined;
@@ -33,7 +32,6 @@ export const CognitoUserPoolTokenRefresher: TokenRefresher = async ({
 
 	return {
 		accessToken,
-		accessTokenExpAt,
 		idToken,
 		clockDrift,
 		metadata,

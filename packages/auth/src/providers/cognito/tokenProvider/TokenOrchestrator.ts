@@ -1,10 +1,10 @@
-import { AmplifyV6, isTokenExpired } from '@aws-amplify/core';
 import {
-	AuthConfig,
+	AmplifyV6,
+	isTokenExpired,
 	AuthTokens,
 	FetchAuthSessionOptions,
 } from '@aws-amplify/core';
-import { AuthTokenStore, TokenRefresher } from './types';
+import { AuthTokenStore, CognitoAuthTokens, TokenRefresher } from './types';
 import { tokenOrchestrator } from '.';
 
 export class TokenOrchestrator {
@@ -23,7 +23,7 @@ export class TokenOrchestrator {
 		options?: FetchAuthSessionOptions;
 	}): Promise<AuthTokens> {
 		// TODO(v6): how to handle if there are not tokens on tokenManager
-		let tokens: AuthTokens;
+		let tokens: CognitoAuthTokens;
 
 		try {
 			// TODO(v6): add wait for inflight OAuth in case there is one
@@ -36,7 +36,7 @@ export class TokenOrchestrator {
 					clockDrift: tokens?.clockDrift || 0,
 				});
 			const accessTokenExpired = isTokenExpired({
-				expiresAt: tokens.accessTokenExpAt,
+				expiresAt: (tokens.idToken?.payload?.exp || 0) * 1000,
 				clockDrift: tokens.clockDrift || 0,
 			});
 
@@ -51,14 +51,17 @@ export class TokenOrchestrator {
 			throw new Error('No session');
 		}
 
-		return { ...tokens };
+		return {
+			accessToken: tokens?.accessToken,
+			idToken: tokens?.idToken,
+		};
 	}
 
 	private async refreshTokens({
 		tokens,
 	}: {
-		tokens: AuthTokens;
-	}): Promise<AuthTokens> {
+		tokens: CognitoAuthTokens;
+	}): Promise<CognitoAuthTokens> {
 		try {
 			const authConfig = AmplifyV6.getConfig().Auth;
 
@@ -75,7 +78,7 @@ export class TokenOrchestrator {
 		}
 	}
 
-	async setTokens({ tokens }: { tokens: AuthTokens }) {
+	async setTokens({ tokens }: { tokens: CognitoAuthTokens }) {
 		return this.tokenStore.storeTokens(tokens);
 	}
 

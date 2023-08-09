@@ -1,6 +1,5 @@
 import { AuthClass } from './Auth';
 import { Hub } from '../Hub';
-import { MemoryKeyValueStorage } from '../StorageHelper';
 import { LibraryOptions, ResourcesConfig } from './types';
 import { AmplifyError } from '../Errors';
 
@@ -22,7 +21,6 @@ class AmplifyClass {
 		// TODO(v6): add default providers for getting started
 		this.libraryOptions = {
 			Auth: {
-				keyValueStorage: MemoryKeyValueStorage, // Initialize automatically Depending on platform,
 				tokenProvider: {
 					getTokens: () => {
 						throw new AmplifyError({

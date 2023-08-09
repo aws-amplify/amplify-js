@@ -1,7 +1,7 @@
-import { Credentials } from '@aws-sdk/types';
 import { Observable, Observer } from 'rxjs';
 
 import {
+	AWSCredentialsAndIdentityId,
 	AuthConfig,
 	AuthSession,
 	AuthTokens,
@@ -60,8 +60,7 @@ export class AuthClass {
 		options?: FetchAuthSessionOptions
 	): Promise<AuthSession> {
 		let tokens: AuthTokens;
-		let awsCreds: Credentials;
-		let awsCredsIdentityId: string;
+		let credentialsAndIdentityId: AWSCredentialsAndIdentityId;
 
 		try {
 			tokens = await this.authOptions.tokenProvider?.getTokens(options);
@@ -70,34 +69,24 @@ export class AuthClass {
 		}
 
 		try {
-			if (this.authOptions.identityIdProvider) {
-				awsCredsIdentityId = await this.authOptions.identityIdProvider({
-					tokens,
-					authConfig: this.authConfig,
-				});
-			}
-		} catch (err) {
-			// TODO(v6): validate error depending on conditions it can proceed or throw
-		}
-
-		try {
 			if (this.authOptions.credentialsProvider) {
-				awsCreds = await this.authOptions.credentialsProvider.getCredentials({
-					authConfig: this.authConfig,
-					identityId: awsCredsIdentityId,
-					tokens,
-					options,
-				});
+				credentialsAndIdentityId =
+					await this.authOptions.credentialsProvider.getCredentialsAndIdentityId(
+						{
+							authConfig: this.authConfig,
+							tokens,
+							options,
+						}
+					);
 			}
 		} catch (err) {
 			// TODO(v6): validate error depending on conditions it can proceed or throw
 		}
 
 		return {
-			isSignedIn: tokens !== undefined,
 			tokens,
-			awsCreds,
-			awsCredsIdentityId,
+			credentials: credentialsAndIdentityId?.credentials,
+			identityId: credentialsAndIdentityId?.identityId,
 		};
 	}
 

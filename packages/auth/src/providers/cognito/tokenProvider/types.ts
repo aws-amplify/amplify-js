@@ -9,9 +9,9 @@ export type TokenRefresher = ({
 	tokens,
 	authConfig,
 }: {
-	tokens: AuthTokens;
+	tokens: CognitoAuthTokens;
 	authConfig?: AuthConfig;
-}) => Promise<AuthTokens>;
+}) => Promise<CognitoAuthTokens>;
 
 export type AuthKeys<AuthKey extends string> = {
 	[Key in AuthKey]: string;
@@ -20,15 +20,14 @@ export type AuthKeys<AuthKey extends string> = {
 export const AuthStorageKeys = {
 	accessToken: 'accessToken',
 	idToken: 'idToken',
-	accessTokenExpAt: 'accessTokenExpAt',
 	oidcProvider: 'oidcProvider',
 	clockDrift: 'clockDrift',
 	metadata: 'metadata',
 };
 
 export interface AuthTokenStore {
-	loadTokens(): Promise<AuthTokens>;
-	storeTokens(tokens: AuthTokens): Promise<void>;
+	loadTokens(): Promise<CognitoAuthTokens>;
+	storeTokens(tokens: CognitoAuthTokens): Promise<void>;
 	clearTokens(): Promise<void>;
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
 }
@@ -41,6 +40,11 @@ export interface AuthTokenOrchestrator {
 	}: {
 		options?: FetchAuthSessionOptions;
 	}) => Promise<AuthTokens>;
-	setTokens: ({ tokens }: { tokens: AuthTokens }) => Promise<void>;
+	setTokens: ({ tokens }: { tokens: CognitoAuthTokens }) => Promise<void>;
 	clearTokens: () => Promise<void>;
 }
+
+export type CognitoAuthTokens = AuthTokens & {
+	metadata: Record<string, string>;
+	clockDrift: number;
+};

@@ -1,5 +1,4 @@
-import { AmplifyError } from '@aws-amplify/core';
-import { decodeJWT } from '@aws-amplify/core';
+import { AmplifyError, decodeJWT } from '@aws-amplify/core';
 import { AuthenticationResultType } from '@aws-sdk/client-cognito-identity-provider';
 import { tokenOrchestrator } from '.';
 
@@ -8,7 +7,6 @@ export async function cacheCognitoTokens(
 ): Promise<void> {
 	if (AuthenticationResult.AccessToken) {
 		const accessToken = decodeJWT(AuthenticationResult.AccessToken);
-		const accessTokenExpAtInMillis = (accessToken.payload.exp || 0) * 1000;
 		const accessTokenIssuedAtInMillis = (accessToken.payload.iat || 0) * 1000;
 		const currentTime = new Date().getTime();
 		const clockDrift =
@@ -33,7 +31,6 @@ export async function cacheCognitoTokens(
 		tokenOrchestrator.setTokens({
 			tokens: {
 				accessToken,
-				accessTokenExpAt: accessTokenExpAtInMillis,
 				idToken,
 				metadata,
 				clockDrift,

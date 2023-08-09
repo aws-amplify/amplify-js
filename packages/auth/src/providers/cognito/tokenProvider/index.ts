@@ -1,9 +1,9 @@
 import {
+	AuthTokens,
 	KeyValueStorageInterface,
 	MemoryKeyValueStorage,
 	TokenProvider,
 } from '@aws-amplify/core';
-import { AuthTokens } from '@aws-amplify/core';
 import { DefaultTokenStore } from './TokenStore';
 import { TokenOrchestrator } from './TokenOrchestrator';
 import { CognitoUserPoolTokenRefresher } from '../apis/tokenRefresher';
@@ -18,16 +18,14 @@ interface CognitoUserPoolTokenProviderType extends TokenProvider {
 }
 
 export const CognitoUserPoolsTokenProvider: CognitoUserPoolTokenProviderType = {
-	getTokens: function ({
+	getTokens: ({
 		forceRefresh,
 	}: {
 		forceRefresh?: boolean;
-	}): Promise<AuthTokens> {
+	}): Promise<AuthTokens> => {
 		return tokenOrchestrator.getTokens({ options: { forceRefresh } });
 	},
-	setKeyValueStorage: function (
-		keyValueStorage: KeyValueStorageInterface
-	): void {
+	setKeyValueStorage: (keyValueStorage: KeyValueStorageInterface): void => {
 		authTokenStore.setKeyValueStorage(keyValueStorage);
 	},
 };

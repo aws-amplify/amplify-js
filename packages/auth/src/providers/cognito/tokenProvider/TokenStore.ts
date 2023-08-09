@@ -1,12 +1,16 @@
 import {
 	AmplifyV6,
-	AuthTokens,
 	KeyValueStorageInterface,
 	assertTokenProviderConfig,
 	asserts,
 	decodeJWT,
 } from '@aws-amplify/core';
-import { AuthKeys, AuthStorageKeys, AuthTokenStore } from './types';
+import {
+	AuthKeys,
+	AuthStorageKeys,
+	AuthTokenStore,
+	CognitoAuthTokens,
+} from './types';
 
 export class DefaultTokenStore implements AuthTokenStore {
 	constructor() {}
@@ -17,7 +21,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		return;
 	}
 
-	async loadTokens(): Promise<AuthTokens> {
+	async loadTokens(): Promise<CognitoAuthTokens> {
 		const authConfig = AmplifyV6.getConfig().Auth;
 		assertTokenProviderConfig(authConfig);
 
@@ -43,9 +47,6 @@ export class DefaultTokenStore implements AuthTokenStore {
 			const accessToken = decodeJWT(accessTokenString);
 			const itString = await this.keyValueStorage.getItem(authKeys.idToken);
 			const idToken = itString ? decodeJWT(itString) : undefined;
-			const accessTokenExpAtString =
-				(await this.keyValueStorage.getItem(authKeys.accessTokenExpAt)) || '0';
-			const accessTokenExpAt = Number.parseInt(accessTokenExpAtString);
 
 			const metadata = JSON.parse(
 				(await this.keyValueStorage.getItem(authKeys.metadata)) || '{}'
@@ -58,7 +59,6 @@ export class DefaultTokenStore implements AuthTokenStore {
 			return {
 				accessToken,
 				idToken,
-				accessTokenExpAt,
 				metadata,
 				clockDrift,
 			};
@@ -68,7 +68,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 			throw new Error('No valid tokens');
 		}
 	}
-	async storeTokens(tokens: AuthTokens): Promise<void> {
+	async storeTokens(tokens: CognitoAuthTokens): Promise<void> {
 		const authConfig = AmplifyV6.getConfig().Auth;
 		assertTokenProviderConfig(authConfig);
 		asserts(!(tokens === undefined), {
@@ -93,11 +93,6 @@ export class DefaultTokenStore implements AuthTokenStore {
 		}
 
 		this.keyValueStorage.setItem(
-			authKeys.accessTokenExpAt,
-			`${tokens.accessTokenExpAt}`
-		);
-
-		this.keyValueStorage.setItem(
 			authKeys.metadata,
 			JSON.stringify(tokens.metadata)
 		);
@@ -119,7 +114,6 @@ export class DefaultTokenStore implements AuthTokenStore {
 		await Promise.all([
 			this.keyValueStorage.removeItem(authKeys.accessToken),
 			this.keyValueStorage.removeItem(authKeys.idToken),
-			this.keyValueStorage.removeItem(authKeys.accessTokenExpAt),
 			this.keyValueStorage.removeItem(authKeys.clockDrift),
 			this.keyValueStorage.removeItem(authKeys.metadata),
 		]);
