@@ -8,60 +8,63 @@ import * as client from '../../../src/providers/cognito/utils/clients/IdentityId
 import { GetIdCommandOutput } from '@aws-sdk/client-cognito-identity';
 import { AmplifyV6, Identity, defaultIdentityIdStore } from '@aws-amplify/core';
 
+// TODO(V6): import these from top level core/ and not lib/
+import * as cogId from '@aws-amplify/core/lib/AwsClients/CognitoIdentity';
+jest.mock('@aws-amplify/core/lib/AwsClients/CognitoIdentity');
+
+const loadIdentityIdSpy = jest.spyOn(defaultIdentityIdStore, 'loadIdentityId');
+
+const storeIdentityIdSpy = jest.spyOn(
+	defaultIdentityIdStore,
+	'storeIdentityId'
+);
+
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	? A
 	: never;
 const ampConfig: ArgumentTypes<typeof AmplifyV6.configure>[0] = {
 	Auth: {
-		userPoolId: 'us-east-1:aaaaaaa',
-		userPoolWebClientId: 'aaaaaaaaaaaa',
-		identityPoolId: 'us-east-1:aaaaaaa',
+		userPoolId: 'us-east-1:test-id',
+		userPoolWebClientId: 'test-id',
+		identityPoolId: 'us-east-1:test-id',
 	},
 };
-
+const getIdClientSpy = jest.spyOn(cogId, 'getId');
 describe('Cognito IdentityId Provider Happy Path Cases:', () => {
-	let getIdClientSpy;
 	beforeAll(() => {
 		jest.spyOn(AmplifyV6, 'getConfig').mockImplementationOnce(() => ampConfig);
-		getIdClientSpy = jest
-			.spyOn(client, 'getIdClient')
-			.mockImplementation(
-				async (params: client.IdentityIdForPoolIdClientInput) => {
-					if (params.Logins && Object.keys(params.Logins).length === 0) {
-						return {
-							IdentityId: authAPITestParams.GuestIdentityId.id,
-						} as GetIdCommandOutput;
-					} else {
-						return {
-							IdentityId: authAPITestParams.PrimaryIdentityId.id,
-						} as GetIdCommandOutput;
-					}
+
+		getIdClientSpy.mockImplementation(
+			async (config: {}, params: client.IdentityIdForPoolIdClientInput) => {
+				if (params.Logins && Object.keys(params.Logins).length === 0) {
+					return {
+						IdentityId: authAPITestParams.GuestIdentityId.id,
+					} as GetIdCommandOutput;
+				} else {
+					return {
+						IdentityId: authAPITestParams.PrimaryIdentityId.id,
+					} as GetIdCommandOutput;
 				}
-			);
+			}
+		);
 	});
 	test('Should return stored guest identityId', async () => {
-		jest
-			.spyOn(defaultIdentityIdStore, 'loadIdentityId')
-			.mockImplementationOnce(async () => {
-				return authAPITestParams.GuestIdentityId as Identity;
-			});
+		loadIdentityIdSpy.mockImplementationOnce(async () => {
+			return authAPITestParams.GuestIdentityId as Identity;
+		});
 		expect(await cognitoIdentityIdProvider({})).toBe(
 			authAPITestParams.GuestIdentityId.id
 		);
 		expect(getIdClientSpy).toBeCalledTimes(0);
 	});
 	test('Should generate a guest identityId and return it', async () => {
-		jest
-			.spyOn(defaultIdentityIdStore, 'loadIdentityId')
-			.mockImplementationOnce(async () => {
-				return undefined;
-			});
-		jest
-			.spyOn(defaultIdentityIdStore, 'storeIdentityId')
-			.mockImplementationOnce(async (identity: Identity) => {
-				expect(identity.id).toBe(authAPITestParams.GuestIdentityId.id);
-				expect(identity.type).toBe(authAPITestParams.GuestIdentityId.type);
-			});
+		loadIdentityIdSpy.mockImplementationOnce(async () => {
+			return undefined;
+		});
+		storeIdentityIdSpy.mockImplementationOnce(async (identity: Identity) => {
+			expect(identity.id).toBe(authAPITestParams.GuestIdentityId.id);
+			expect(identity.type).toBe(authAPITestParams.GuestIdentityId.type);
+		});
 		expect(
 			await cognitoIdentityIdProvider({
 				authConfig: ampConfig.Auth,
@@ -70,11 +73,9 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		expect(getIdClientSpy).toBeCalledTimes(1);
 	});
 	test('Should return stored primary identityId', async () => {
-		jest
-			.spyOn(defaultIdentityIdStore, 'loadIdentityId')
-			.mockImplementationOnce(async () => {
-				return authAPITestParams.PrimaryIdentityId as Identity;
-			});
+		loadIdentityIdSpy.mockImplementationOnce(async () => {
+			return authAPITestParams.PrimaryIdentityId as Identity;
+		});
 		expect(
 			await cognitoIdentityIdProvider({
 				tokens: authAPITestParams.ValidAuthTokens,
@@ -83,17 +84,13 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		expect(getIdClientSpy).toBeCalledTimes(0);
 	});
 	test('Should generate a primary identityId and return it', async () => {
-		jest
-			.spyOn(defaultIdentityIdStore, 'loadIdentityId')
-			.mockImplementationOnce(async () => {
-				return undefined;
-			});
-		jest
-			.spyOn(defaultIdentityIdStore, 'storeIdentityId')
-			.mockImplementationOnce(async (identity: Identity) => {
-				expect(identity.id).toBe(authAPITestParams.PrimaryIdentityId.id);
-				expect(identity.type).toBe(authAPITestParams.PrimaryIdentityId.type);
-			});
+		loadIdentityIdSpy.mockImplementationOnce(async () => {
+			return undefined;
+		});
+		storeIdentityIdSpy.mockImplementationOnce(async (identity: Identity) => {
+			expect(identity.id).toBe(authAPITestParams.PrimaryIdentityId.id);
+			expect(identity.type).toBe(authAPITestParams.PrimaryIdentityId.type);
+		});
 		expect(
 			await cognitoIdentityIdProvider({
 				tokens: authAPITestParams.ValidAuthTokens,

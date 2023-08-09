@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { credentialsForIdentityIdClient } from '../utils/clients/CredentialsForIdentityIdClient';
 import { Credentials } from '@aws-sdk/types';
 import { setIdentityId } from './IdentityIdProvider';
 import {
@@ -19,10 +18,11 @@ import { AuthError } from '../../../errors/AuthError';
 const logger = new Logger('CognitoCredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
 
-class CognitoCredentialsProvider implements CredentialsProvider {
+class CognitoAWSCredentialsAndIdentityIdProvider
+	implements CredentialsProvider
+{
 	private _credentials?: Credentials & { isAuthenticatedCreds: boolean };
-	private _nextCredentialsRefresh: number =
-		new Date().getTime() + CREDENTIALS_TTL;
+	private _nextCredentialsRefresh: number;
 	// TODO(V6): find what needs to happen to locally stored identityId
 	async clearCredentials(): Promise<void> {
 		logger.debug('Clearing out credentials');
@@ -64,7 +64,6 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		// check eligibility for guest credentials
 		// - if there is error fetching tokens
 		// - if user is not signed in
-		// TODO(V6): Determine if tokens not being present is enough to decide we need to fetch guest credentials, do we need isSignedIn?
 		if (!tokens) {
 			// TODO(V6): Attempt to get the tokens from the provider once
 			// tokens = await AmplifyV6.authTokensProvider.getAuthTokens();
@@ -93,8 +92,6 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		// Clear to discard if any authenticated credentials are set and start with a clean slate
 		this.clearCredentials();
 
-		// TODO(V6): Access config to check for this value
-
 		// Check if mandatory sign-in is enabled
 		if (authConfig.isMandatorySignInEnabled) {
 			throw new AuthError({
@@ -109,15 +106,21 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 		// save credentials in-memory
 		// No logins params should be passed for guest creds: https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetCredentialsForIdentity.html#API_GetCredentialsForIdentity_RequestSyntax
 
-		const clientResult = await credentialsForIdentityIdClient({
-			IdentityId: identityId,
-		});
+		const region = authConfig.identityPoolId.split(':')[0];
+
+		const clientResult = await getCredentialsForIdentity(
+			{ region: region },
+			{
+				IdentityId: identityId,
+			}
+		);
+
 		if (
 			clientResult.Credentials &&
 			clientResult.Credentials.AccessKeyId &&
 			clientResult.Credentials.SecretKey
 		) {
-			// TODO(V6): The values in this type is non optional but we get optional values from client
+			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 			const res: Credentials = {
 				accessKeyId: clientResult.Credentials.AccessKeyId,
 				secretAccessKey: clientResult.Credentials.SecretKey,
@@ -179,21 +182,22 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 			});
 		}
 		const region = identityPoolId.split(':')[0];
-		// TODO(V6): Replace with existing identityPoolClient
-		const clientResult = await credentialsForIdentityIdClient({
-			IdentityId: identityId,
-			Logins: logins,
-		});
+		const clientResult = await getCredentialsForIdentity(
+			{ region: region },
+			{
+				IdentityId: identityId,
+				Logins: logins,
+			}
+		);
 
 		if (
 			clientResult.Credentials &&
 			clientResult.Credentials.AccessKeyId &&
 			clientResult.Credentials.SecretKey
 		) {
-			// TODO(V6): The values in this Credentials type is non optional but we get optional values from client
 			const res: Credentials = {
-				accessKeyId: clientResult.Credentials.AccessKeyId ?? '',
-				secretAccessKey: clientResult.Credentials.SecretKey ?? '',
+				accessKeyId: clientResult.Credentials.AccessKeyId,
+				secretAccessKey: clientResult.Credentials.SecretKey,
 				sessionToken: clientResult.Credentials.SessionToken,
 				// TODO(V6): Fixed expiration now + 50 mins
 				expiration: clientResult.Credentials.Expiration,
@@ -239,13 +243,13 @@ class CognitoCredentialsProvider implements CredentialsProvider {
 	}
 
 	private _isPastTTL(): boolean {
-		return this._nextCredentialsRefresh <= Date.now();
+		return this._nextCredentialsRefresh === undefined
+			? true
+			: this._nextCredentialsRefresh <= Date.now();
 	}
 }
 
 export function formLoginsMap(idToken: string, oidcProvider: string) {
-	// TODO(V6): Update with Amplify.config values
-
 	const authConfig = AmplifyV6.getConfig().Auth;
 	const userPoolId = authConfig?.userPoolId;
 	if (!userPoolId) {
@@ -259,7 +263,6 @@ export function formLoginsMap(idToken: string, oidcProvider: string) {
 	}
 
 	const region = userPoolId.split('_')[0];
-	// TODO(V6): see why we need identityPoolRegion check here
 	if (!region) {
 		logger.debug('region is not configured for getting the credentials');
 		throw new AuthError({
@@ -268,15 +271,18 @@ export function formLoginsMap(idToken: string, oidcProvider: string) {
 			recoverySuggestion: 'Make sure a valid region is given in the config.',
 		});
 	}
-	let domainName: string;
+	let domainName: string = '';
 	if (oidcProvider === 'COGNITO') {
 		domainName = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
 	} else {
-		// TODO(V6): Update this to have the actual value
-		domainName = 'custom';
+		// TODO: Support custom OIDC providers
+		throw new AuthError({
+			name: 'AuthConfigException',
+			message: 'OIDC provider not supported',
+			recoverySuggestion:
+				'Currently only COGNITO as OIDC provider is supported',
+		});
 	}
-
-	// TODO(V6): Make sure this takes idToken and not accessToken
 	let res = {};
 	res[domainName] = idToken;
 	return res;
@@ -291,4 +297,5 @@ export function formLoginsMap(idToken: string, oidcProvider: string) {
  *
  * TODO(V6): convert the Auth errors to config errors
  */
-export const cognitoCredentialsProvider = new CognitoCredentialsProvider();
+export const cognitoCredentialsProvider =
+	new CognitoAWSCredentialsAndIdentityIdProvider();

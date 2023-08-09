@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getIdClient } from '../utils/clients/IdentityIdForPoolIdClient';
 import {
 	Logger,
 	AuthConfig,
@@ -11,6 +10,7 @@ import {
 } from '@aws-amplify/core';
 import { formLoginsMap } from './credentialsProvider';
 import { AuthError } from '../../../errors/AuthError';
+import { getId } from '@aws-amplify/core';
 
 const logger = new Logger('CognitoIdentityIdProvider');
 
@@ -55,8 +55,6 @@ export async function cognitoIdentityIdProvider({
 				id: generatedIdentityId,
 				type: 'primary',
 			};
-
-			//TODO(V6): clear guest id in local storage
 		}
 	} else {
 		// Tokens are avaliable so return guest identityId
@@ -67,12 +65,10 @@ export async function cognitoIdentityIdProvider({
 				id: await generateIdentityId({}, authConfig),
 				type: 'guest',
 			};
-
-			//TODO(V6): store guest id in local storage
 		}
 	}
 
-	// Store in-memory
+	// Store in-memory or local storage
 	defaultIdentityIdStore.storeIdentityId(identityId);
 	logger.debug(`The identity being returned ${identityId.id}`);
 	return identityId.id;
@@ -93,6 +89,7 @@ async function generateIdentityId(
 				'Make sure to pass a valid identityPoolId in the configuration.',
 		});
 	}
+	const region = identityPoolId.split(':')[0];
 
 	// IdentityId is absent so get it using IdentityPoolId with Cognito's GetId API
 	// Region is not needed for this API as suggested by the API spec: https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetId.html
@@ -100,10 +97,15 @@ async function generateIdentityId(
 		// for a first-time user, this will return a brand new identity
 		// for a returning user, this will retrieve the previous identity assocaited with the logins
 		(
-			await getIdClient({
-				IdentityPoolId: identityPoolId,
-				Logins: logins,
-			})
+			await getId(
+				{
+					region: region,
+				},
+				{
+					IdentityPoolId: identityPoolId,
+					Logins: logins,
+				}
+			)
 		).IdentityId;
 	if (!idResult) {
 		throw new AuthError({

@@ -13,12 +13,3 @@ export function isTypeUserPoolConfig(
 
 	return false;
 }
-
-export function isTypeIdentityPoolConfig(
-	authConfig?: AuthConfig
-): authConfig is IdentityPoolConfig {
-	if (authConfig && authConfig.identityPoolId) {
-		return true;
-	}
-	return false;
-}

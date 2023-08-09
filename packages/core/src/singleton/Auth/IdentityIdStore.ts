@@ -10,7 +10,6 @@ import {
 } from './types';
 import { KeyValueStorageInterface } from '../../types';
 import { asserts } from '../../Util/errors/AssertError';
-import { MemoryKeyValueStorage } from '../../StorageHelper';
 import { assertIdentityIdProviderConfig } from './utils';
 
 class DefaultIdentityIdStore implements IdenityIdStore {
@@ -18,7 +17,7 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 	authConfig: AuthConfig;
 
 	// Used as in-memory storage
-	_identityId: string | undefined;
+	_primaryIdentityId: string | undefined;
 
 	setAuthConfig(authConfigParam: AuthConfig) {
 		this.authConfig = authConfigParam;
@@ -48,10 +47,10 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 				this.authConfig.identityPoolId
 			);
 
-			if (!!this._identityId) {
+			if (!!this._primaryIdentityId) {
 				return {
-					id: this._identityId,
-					type: 'guest',
+					id: this._primaryIdentityId,
+					type: 'primary',
 				};
 			} else {
 				const storedIdentityId = await this.keyValueStorage.getItem(
@@ -60,7 +59,7 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 				if (!!storedIdentityId) {
 					return {
 						id: storedIdentityId,
-						type: 'primary',
+						type: 'guest',
 					};
 				}
 			}
@@ -90,9 +89,13 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 			this.authConfig.identityPoolId
 		);
 		if (identity.type === 'guest') {
-			this._identityId = identity.id;
-		} else {
 			this.keyValueStorage.setItem(authKeys.identityId, identity.id);
+			// Clear in-memory storage of primary identityId
+			this._primaryIdentityId = undefined;
+		} else {
+			this._primaryIdentityId = identity.id;
+			// Clear locally stored guest id
+			this.keyValueStorage.clear();
 		}
 	}
 
@@ -105,7 +108,7 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 			this.authConfig.identityPoolId
 		);
 
-		this._identityId = undefined;
+		this._primaryIdentityId = undefined;
 		await Promise.all([this.keyValueStorage.removeItem(authKeys.identityId)]);
 	}
 }
