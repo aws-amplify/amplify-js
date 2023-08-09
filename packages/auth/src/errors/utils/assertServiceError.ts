@@ -9,8 +9,8 @@ export function assertServiceError(
 ): asserts error is ServiceError {
 	if (
 		!error ||
-		(error as ServiceError).name === Error.name ||
-		!((error as ServiceError).name && (error as ServiceError).message)
+		(error as ServiceError).name === 'Error' ||
+		error instanceof TypeError
 	) {
 		throw new AuthError({
 			name: AmplifyErrorString.UNKNOWN,
