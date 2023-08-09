@@ -3,6 +3,7 @@ import {
 	AuthTokens,
 	FetchAuthSessionOptions,
 	KeyValueStorageInterface,
+	TokenProvider,
 } from '@aws-amplify/core';
 
 export type TokenRefresher = ({
@@ -43,6 +44,10 @@ export interface AuthTokenOrchestrator {
 	}) => Promise<AuthTokens>;
 	setTokens: ({ tokens }: { tokens: CognitoAuthTokens }) => Promise<void>;
 	clearTokens: () => Promise<void>;
+}
+
+export interface CognitoUserPoolTokenProviderType extends TokenProvider {
+	setKeyValueStorage: (keyValueStorage: KeyValueStorageInterface) => void;
 }
 
 export type CognitoAuthTokens = AuthTokens & {

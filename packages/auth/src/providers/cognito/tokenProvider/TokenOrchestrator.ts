@@ -17,11 +17,8 @@ export class TokenOrchestrator {
 	setAuthTokenStore(tokenStore: AuthTokenStore) {
 		this.tokenStore = tokenStore;
 	}
-	async getTokens({
-		options,
-	}: {
-		options?: FetchAuthSessionOptions;
-	}): Promise<AuthTokens> {
+
+	async getTokens(options?: FetchAuthSessionOptions): Promise<AuthTokens> {
 		// TODO(v6): how to handle if there are not tokens on tokenManager
 		let tokens: CognitoAuthTokens;
 
