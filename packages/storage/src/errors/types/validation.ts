@@ -8,6 +8,7 @@ export enum StorageValidationErrorCode {
 	NoIdentityId = 'NoIdentityId',
 	NoKey = 'NoKey',
 	NoBucket = 'NoBucket',
+	NoRegion = 'NoRegion',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
@@ -22,6 +23,9 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 		message: 'Missing key in getProperties api call',
 	},
 	[StorageValidationErrorCode.NoBucket]: {
-		message: 'Missing Bucket name while accessing object',
+		message: 'Missing bucket name while accessing object',
+	},
+	[StorageValidationErrorCode.NoRegion]: {
+		message: 'Missing region while accessing object',
 	},
 };

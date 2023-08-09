@@ -2,12 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HeadObjectInput, headObject } from '../../../AwsClients/S3';
-import { AmplifyV6 } from '@aws-amplify/core';
 import { StorageOptions, StorageOperationRequest } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
 import { GetPropertiesException, S3GetPropertiesResult } from '../types';
+import { getStorageConfig, getFinalKey } from '../utils/apiHelper';
 
 /**
  * Get Properties of the object
@@ -22,24 +21,22 @@ import { GetPropertiesException, S3GetPropertiesResult } from '../types';
 export const getProperties = async function (
 	req: StorageOperationRequest<StorageOptions>
 ): Promise<S3GetPropertiesResult> {
-	const options = req?.options;
-	const { awsCredsIdentityId } = await AmplifyV6.Auth.fetchAuthSession();
-	const { bucket, defaultAccessLevel } = AmplifyV6.getConfig().Storage;
-	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
-	const { prefixResolver = defaultPrefixResolver } =
-		AmplifyV6.libraryOptions?.Storage ?? {};
+	const { awsCredsIdentityId, awsCreds, defaultAccessLevel, bucket, region } =
+		getStorageConfig();
 	const { key, options: { accessLevel = defaultAccessLevel } = {} } = req;
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
-	const finalKey =
-		prefixResolver({
-			accessLevel,
-			targetIdentityId: awsCredsIdentityId,
-		}) + key;
-	const params: HeadObjectInput = {
+	const finalKey = getFinalKey(accessLevel, awsCredsIdentityId, key);
+	const headObjectOptions = {
+		accessLevel,
+		awsCredsIdentityId,
+		region,
+		awsCreds,
+	};
+	const headObjectParams: HeadObjectInput = {
 		Bucket: bucket,
 		Key: finalKey,
 	};
-	const response = await headObject(options, params);
+	const response = await headObject(headObjectOptions, headObjectParams);
 	return {
 		key: finalKey,
 		contentType: response.ContentType,
