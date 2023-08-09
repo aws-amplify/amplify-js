@@ -40,7 +40,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 				authKeys.accessToken
 			);
 
-			if (accessTokenString === null || accessTokenString === undefined) {
+			if (!accessTokenString) {
 				throw new Error('No session');
 			}
 
