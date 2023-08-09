@@ -19,8 +19,8 @@
     "test": "npm run lint && jest -w 1 --coverage",
     "test:size": "size-limit",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
-    "build:cjs": "node ./build es5 && cpx src/vendor/** lib/vendor && webpack && webpack --config ./webpack.config.dev.js",
-    "build:esm": "node ./build es6 && cpx src/vendor/** lib-esm/vendor",
+    "build:cjs": "node ./build es5 && cp src/vendor/* lib/vendor && webpack && webpack --config ./webpack.config.dev.js",
+    "build:esm": "node ./build es6 && cp src/vendor/* lib-esm/vendor",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
@@ -41,8 +41,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
-    "@types/zen-observable": "^0.8.0",
-    "cpx": "^1.5.0"
+    "@types/zen-observable": "^0.8.0"
   },
   "files": [
     "lib",
@@ -54,6 +53,7 @@
     "@aws-amplify/auth": "5.6.0",
     "@aws-amplify/cache": "5.1.6",
     "@aws-amplify/core": "5.8.0",
+    "buffer": "4.9.2",
     "graphql": "15.8.0",
     "tslib": "^1.8.0",
     "url": "0.11.0",
@@ -65,13 +65,13 @@
       "name": "PubSub (IoT provider)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, PubSub, AWSIoTProvider }",
-      "limit": "80.9 kB"
+      "limit": "81.37 kB"
     },
     {
       "name": "PubSub (Mqtt provider)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, PubSub, MqttOverWSProvider }",
-      "limit": "80.8 kB"
+      "limit": "81.24 kB"
     }
   ],
   "jest": {
