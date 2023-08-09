@@ -50,6 +50,7 @@
     "@aws-amplify/core": "5.8.0",
     "@aws-sdk/md5-js": "3.6.1",
     "@aws-sdk/types": "3.6.1",
+    "buffer": "4.9.2",
     "events": "^3.1.0",
     "fast-xml-parser": "^4.2.5",
     "tslib": "^1.8.0"
