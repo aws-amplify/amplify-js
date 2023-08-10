@@ -18,7 +18,7 @@ export type AuthKeys<AuthKey extends string> = {
 	[Key in AuthKey]: string;
 };
 
-export const AuthStorageKeys = {
+export const AuthTokenStorageKeys = {
 	accessToken: 'accessToken',
 	idToken: 'idToken',
 	oidcProvider: 'oidcProvider',
