@@ -37,7 +37,7 @@ export interface AuthTokenStore {
 export interface AuthTokenOrchestrator {
 	setTokenRefresher(tokenRefresher: TokenRefresher): void;
 	setAuthTokenStore(tokenStore: AuthTokenStore): void;
-	getTokens: (options?: FetchAuthSessionOptions) => Promise<AuthTokens>;
+	getTokens: (options?: FetchAuthSessionOptions) => Promise<AuthTokens | null>;
 	setTokens: ({ tokens }: { tokens: CognitoAuthTokens }) => Promise<void>;
 	clearTokens: () => Promise<void>;
 }

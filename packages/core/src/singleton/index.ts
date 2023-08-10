@@ -96,11 +96,9 @@ export const AmplifyV6 = new AmplifyClass();
  *
  * @returns Returns a promise that will resolve with fresh authentication tokens.
  */
-const fetchAuthSession = (options: FetchAuthSessionOptions) => {
+export const fetchAuthSession = (options: FetchAuthSessionOptions) => {
 	return AmplifyV6.Auth.fetchAuthSession(options);
 };
-
-export { fetchAuthSession };
 
 // TODO(v6): validate until which level this will nested, during Amplify.configure API review.
 function mergeResourceConfig(

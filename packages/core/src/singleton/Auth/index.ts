@@ -53,7 +53,7 @@ export class AuthClass {
 		let tokens: AuthTokens;
 		let credentialsAndIdentityId: AWSCredentialsAndIdentityId;
 
-		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if
+		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if not available
 		tokens = await this.authOptions.tokenProvider?.getTokens(options);
 		if (tokens) {
 			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)

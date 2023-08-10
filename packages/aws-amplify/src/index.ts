@@ -28,7 +28,7 @@ export {
 	AWSCloudWatchProvider,
 } from '@aws-amplify/core';
 
-export { InitializedAmplifyV6 as AmplifyV6 } from './initSingleton';
+export { DefaultAmplifyV6 as AmplifyV6 } from './initSingleton';
 
 // TODO(v6): Re-enable these exports when available
 /*

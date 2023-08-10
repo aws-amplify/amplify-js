@@ -4,10 +4,15 @@ import {
 	AuthTokens,
 	FetchAuthSessionOptions,
 } from '@aws-amplify/core';
-import { AuthTokenStore, CognitoAuthTokens, TokenRefresher } from './types';
+import {
+	AuthTokenOrchestrator,
+	AuthTokenStore,
+	CognitoAuthTokens,
+	TokenRefresher,
+} from './types';
 import { tokenOrchestrator } from '.';
 
-export class TokenOrchestrator {
+export class TokenOrchestrator implements AuthTokenOrchestrator {
 	tokenStore: AuthTokenStore;
 	tokenRefresher: TokenRefresher;
 
