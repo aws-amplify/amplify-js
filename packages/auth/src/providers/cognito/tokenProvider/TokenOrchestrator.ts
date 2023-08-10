@@ -4,10 +4,15 @@ import {
 	AuthTokens,
 	FetchAuthSessionOptions,
 } from '@aws-amplify/core';
-import { AuthTokenStore, CognitoAuthTokens, TokenRefresher } from './types';
+import {
+	AuthTokenOrchestrator,
+	AuthTokenStore,
+	CognitoAuthTokens,
+	TokenRefresher,
+} from './types';
 import { tokenOrchestrator } from '.';
 
-export class TokenOrchestrator {
+export class TokenOrchestrator implements AuthTokenOrchestrator {
 	tokenStore: AuthTokenStore;
 	tokenRefresher: TokenRefresher;
 
@@ -17,37 +22,37 @@ export class TokenOrchestrator {
 	setAuthTokenStore(tokenStore: AuthTokenStore) {
 		this.tokenStore = tokenStore;
 	}
-	async getTokens({
-		options,
-	}: {
-		options?: FetchAuthSessionOptions;
-	}): Promise<AuthTokens> {
-		// TODO(v6): how to handle if there are not tokens on tokenManager
+
+	async getTokens(
+		options?: FetchAuthSessionOptions
+	): Promise<AuthTokens | null> {
 		let tokens: CognitoAuthTokens;
 
-		try {
-			// TODO(v6): add wait for inflight OAuth in case there is one
-			tokens = await this.tokenStore.loadTokens();
+		// TODO(v6): add wait for inflight OAuth in case there is one
+		tokens = await this.tokenStore.loadTokens();
 
-			const idTokenExpired =
-				!!tokens?.idToken &&
-				isTokenExpired({
-					expiresAt: (tokens.idToken?.payload?.exp || 0) * 1000,
-					clockDrift: tokens.clockDrift || 0,
-				});
-			const accessTokenExpired = isTokenExpired({
-				expiresAt: (tokens.accessToken?.payload?.exp || 0) * 1000,
+		if (tokens === null) {
+			return null;
+		}
+		const idTokenExpired =
+			!!tokens?.idToken &&
+			isTokenExpired({
+				expiresAt: (tokens.idToken?.payload?.exp || 0) * 1000,
 				clockDrift: tokens.clockDrift || 0,
 			});
+		const accessTokenExpired = isTokenExpired({
+			expiresAt: (tokens.accessToken?.payload?.exp || 0) * 1000,
+			clockDrift: tokens.clockDrift || 0,
+		});
 
-			if (options?.forceRefresh || idTokenExpired || accessTokenExpired) {
-				tokens = await this.refreshTokens({
-					tokens,
-				});
+		if (options?.forceRefresh || idTokenExpired || accessTokenExpired) {
+			tokens = await this.refreshTokens({
+				tokens,
+			});
+
+			if (tokens === null) {
+				return null;
 			}
-		} catch (err) {
-			// TODO(v6): review token handling mechanism, including exponential retry, offline, etc
-			throw new Error('No session');
 		}
 
 		return {
@@ -60,7 +65,7 @@ export class TokenOrchestrator {
 		tokens,
 	}: {
 		tokens: CognitoAuthTokens;
-	}): Promise<CognitoAuthTokens> {
+	}): Promise<CognitoAuthTokens | null> {
 		try {
 			const authConfig = AmplifyV6.getConfig().Auth;
 
@@ -72,11 +77,21 @@ export class TokenOrchestrator {
 			tokenOrchestrator.setTokens({ tokens: newTokens });
 			return newTokens;
 		} catch (err) {
-			tokenOrchestrator.clearTokens();
-			throw err;
+			return this.handleErrors(err);
 		}
 	}
 
+	private handleErrors(err: Error) {
+		if (err.message !== 'Network error') {
+			// TODO(v6): Check errors on client
+			tokenOrchestrator.clearTokens();
+		}
+		if (err.name.startsWith('NotAuthorizedException')) {
+			return null;
+		} else {
+			throw err;
+		}
+	}
 	async setTokens({ tokens }: { tokens: CognitoAuthTokens }) {
 		return this.tokenStore.storeTokens(tokens);
 	}

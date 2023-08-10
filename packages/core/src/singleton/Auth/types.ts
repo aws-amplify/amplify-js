@@ -40,15 +40,9 @@ export type LibraryAuthOptions = {
 };
 
 export interface AWSCredentialsAndIdentityIdProvider {
-	getCredentialsAndIdentityId: ({
-		options,
-		tokens,
-		authConfig,
-	}: {
-		options?: FetchAuthSessionOptions;
-		tokens?: AuthTokens;
-		authConfig?: AuthConfig;
-	}) => Promise<AWSCredentialsAndIdentityId>;
+	getCredentialsAndIdentityId: (
+		getCredentialsOptions: GetCredentialsOptions
+	) => Promise<AWSCredentialsAndIdentityId>;
 	clearCredentials: () => void;
 }
 
@@ -57,7 +51,7 @@ export type TokenProvider = {
 		forceRefresh,
 	}: {
 		forceRefresh?: boolean;
-	}) => Promise<AuthTokens>;
+	}) => Promise<AuthTokens | null>;
 };
 
 export type FetchAuthSessionOptions = {
@@ -110,7 +104,6 @@ type GetCredentialsUnauthenticatedUser = {
 	authenticated: false;
 	forceRefresh?: boolean;
 	authConfig: AuthConfig;
-	tokens: never;
 };
 
 export type AWSCredentialsAndIdentityId = {

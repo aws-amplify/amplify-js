@@ -68,9 +68,7 @@ describe('refresh token tests', () => {
 					payload: {},
 				},
 				clockDrift: 0,
-				metadata: {
-					refreshToken: 'refreshtoken',
-				},
+				refreshToken: 'refreshtoken',
 			},
 			authConfig: {
 				userPoolId: 'us-east-1_aaaaaaa',
