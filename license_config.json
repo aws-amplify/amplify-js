@@ -2,6 +2,7 @@
 	"ignore": [
 		"NOTICE",
 		".github",
+		".husky",
 		"yarn.lock",
 		"**/*.config.dev.js",
 		"**/*.config.js",
