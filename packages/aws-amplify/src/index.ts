@@ -12,9 +12,9 @@ export {
 	Analytics,
 	AnalyticsProvider,
 	AWSPinpointProvider,
-//	AWSKinesisProvider,
-//	AWSKinesisFirehoseProvider,
-//	AmazonPersonalizeProvider,
+// AWSKinesisProvider,
+// AWSKinesisFirehoseProvider,
+// AmazonPersonalizeProvider,
 } from '@aws-amplify/analytics';
 export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
