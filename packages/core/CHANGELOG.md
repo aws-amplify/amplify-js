@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 5.8.1 (2023-08-10)
+
+**Note:** Version bump only for package @aws-amplify/core
+
 # [5.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.7.0...@aws-amplify/core@5.8.0) (2023-07-31)
 
 ### Features
