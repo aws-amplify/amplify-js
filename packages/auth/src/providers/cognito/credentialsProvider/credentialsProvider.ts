@@ -7,13 +7,13 @@ import {
 	Logger,
 	AuthTokens,
 	AmplifyV6,
-	getCredentialsForIdentity,
 	AWSCredentialsAndIdentityIdProvider,
 	AWSCredentialsAndIdentityId,
 	UserPoolConfigAndIdentityPoolConfig,
+	getCredentialsForIdentity,
+	GetCredentialsOptions,
 } from '@aws-amplify/core';
 import { AuthError } from '../../../errors/AuthError';
-import { GetCredentialsOptions } from '@aws-amplify/core';
 
 const logger = new Logger('CognitoCredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
@@ -26,6 +26,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	};
 	private _nextCredentialsRefresh: number;
 	// TODO(V6): find what needs to happen to locally stored identityId
+	// TODO(V6): export clear crecentials to singleton
 	async clearCredentials(): Promise<void> {
 		logger.debug('Clearing out credentials');
 		this._credentialsAndIdentityId = undefined;
@@ -41,21 +42,25 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		const forceRefresh = getCredentialsOptions.forceRefresh;
 		// TODO(V6): Listen to changes to AuthTokens and update the credentials
 		const identityId = await cognitoIdentityIdProvider({ tokens, authConfig });
+
 		if (forceRefresh) {
-			if (AmplifyV6.libraryOptions.Auth?.tokenProvider) {
-				tokens = await AmplifyV6.libraryOptions.Auth?.tokenProvider.getTokens({
-					forceRefresh: forceRefresh,
-				});
-				this.clearCredentials();
-			}
+			this.clearCredentials();
 		}
 
 		// check eligibility for guest credentials
 		// - if there is error fetching tokens
 		// - if user is not signed in
 		if (!isAuthenticated) {
-			// TODO(V6): Attempt to get the tokens from the provider once
-			// tokens = await AmplifyV6.authTokensProvider.getAuthTokens();
+			// Check if mandatory sign-in is enabled
+			if (authConfig.isMandatorySignInEnabled) {
+				// TODO(V6): confirm if this needs to throw or log
+				throw new AuthError({
+					name: 'AuthConfigException',
+					message:
+						'Cannot get guest credentials when mandatory signin is enabled',
+					recoverySuggestion: 'Make sure mandatory signin is disabled.',
+				});
+			}
 			return await this.getGuestCredentials(identityId, authConfig);
 		} else {
 			return await this.credsForOIDCTokens(authConfig, tokens, identityId);
@@ -80,16 +85,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		// Clear to discard if any authenticated credentials are set and start with a clean slate
 		this.clearCredentials();
-
-		// Check if mandatory sign-in is enabled
-		if (authConfig.isMandatorySignInEnabled) {
-			throw new AuthError({
-				name: 'AuthConfigException',
-				message:
-					'Cannot get guest credentials when mandatory signin is enabled',
-				recoverySuggestion: 'Make sure mandatory signin is disabled.',
-			});
-		}
 
 		// use identityId to obtain guest credentials
 		// save credentials in-memory

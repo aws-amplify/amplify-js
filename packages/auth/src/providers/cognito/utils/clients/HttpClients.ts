@@ -87,11 +87,7 @@ export class UserPoolHttpClient {
 	};
 
 	constructor(authConfig?: AuthConfig) {
-		if (
-			authConfig &&
-			isTypeUserPoolConfig(authConfig) &&
-			authConfig.userPoolId
-		) {
+		if (authConfig && isTypeUserPoolConfig(authConfig)) {
 			const region = authConfig.userPoolId.split('_')[0];
 			this._endpoint = `https://cognito-idp.${region}.amazonaws.com/`;
 		} else {

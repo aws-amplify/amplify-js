@@ -27,8 +27,8 @@ export async function cognitoIdentityIdProvider({
 	authConfig?: AuthConfig;
 }): Promise<string> {
 	if (authConfig) defaultIdentityIdStore.setAuthConfig(authConfig);
-
 	let identityId = await defaultIdentityIdStore.loadIdentityId();
+
 	if (tokens) {
 		// Tokens are available so return primary identityId
 		if (identityId && identityId.type === 'primary') {

@@ -117,7 +117,7 @@ export { BrowserStorageCache };
 export {
 	decodeJWT,
 	assertTokenProviderConfig,
-	assertIdentityPoolIdInConfig,
+	assertIdentityPooIdConfig,
 } from './singleton/Auth/utils';
 export {
 	TokenProvider,

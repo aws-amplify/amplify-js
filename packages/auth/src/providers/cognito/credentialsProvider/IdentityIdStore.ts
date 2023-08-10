@@ -5,7 +5,7 @@ import {
 	AuthConfig,
 	Identity,
 	KeyValueStorageInterface,
-	assertIdentityPoolIdInConfig,
+	assertIdentityPooIdConfig,
 } from '@aws-amplify/core';
 import { IdentityIdStorageKeys } from './types';
 import { AuthKeys } from '../tokenProvider/types';
@@ -29,7 +29,7 @@ export class DefaultIdentityIdStore {
 	}
 
 	async loadIdentityId(): Promise<Identity | undefined> {
-		assertIdentityPoolIdInConfig(this.authConfig);
+		assertIdentityPooIdConfig(this.authConfig);
 		if (this.keyValueStorage === undefined) {
 			throw new AuthError({
 				message: 'No KeyValueStorage available',
@@ -70,7 +70,7 @@ export class DefaultIdentityIdStore {
 	}
 
 	async storeIdentityId(identity: Identity): Promise<void> {
-		assertIdentityPoolIdInConfig(this.authConfig);
+		assertIdentityPooIdConfig(this.authConfig);
 		if (identity === undefined) {
 			throw new AuthError({
 				message: 'Invalid Identity parameter',
@@ -104,7 +104,7 @@ export class DefaultIdentityIdStore {
 	}
 
 	async clearIdentityId(): Promise<void> {
-		assertIdentityPoolIdInConfig(this.authConfig);
+		assertIdentityPooIdConfig(this.authConfig);
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
