@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
-import { VerifySoftwareTokenCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { VerifySoftwareTokenException } from '../../../src/providers/cognito/types/errors';
 import { verifyTOTPSetup } from '../../../src/providers/cognito';
-import * as verifySoftwareTokenClient from '../../../src/providers/cognito/utils/clients/VerifySoftwareTokenClient';
+import * as verifySoftwareTokenClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { VerifySoftwareTokenCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 
 describe('verifyTOTPSetup  API happy path cases', () => {
 	let verifySoftwareTokenClientSpy;
@@ -16,7 +16,7 @@ describe('verifyTOTPSetup  API happy path cases', () => {
 	const mockedAccssToken = 'mockAccessToken';
 	beforeEach(() => {
 		verifySoftwareTokenClientSpy = jest
-			.spyOn(verifySoftwareTokenClient, 'verifySoftwareTokenClient')
+			.spyOn(verifySoftwareTokenClient, 'verifySoftwareToken')
 			.mockImplementationOnce(async () => {
 				return {} as VerifySoftwareTokenCommandOutput;
 			});

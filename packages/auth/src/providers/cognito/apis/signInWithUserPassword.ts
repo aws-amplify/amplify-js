@@ -12,7 +12,7 @@ import {
 import {
 	ChallengeName,
 	ChallengeParameters,
-} from '../utils/clients/types/models';
+} from '../utils/clients/CognitoIdentityProvider/types';
 import {
 	getSignInResult,
 	getSignInResultFromError,
@@ -42,8 +42,9 @@ export async function signInWithUserPassword(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { username, password, options } = signInRequest;
-	const clientMetadata = AmplifyV6.getConfig().Auth?.clientMetadata;
-	const metadata = options?.serviceOptions?.clientMetadata || clientMetadata;
+	const authConfig = AmplifyV6.getConfig().Auth;
+	const metadata =
+		options?.serviceOptions?.clientMetadata || authConfig.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -59,7 +60,12 @@ export async function signInWithUserPassword(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleUserPasswordAuthFlow(username, password, metadata);
+		} = await handleUserPasswordAuthFlow(
+			username,
+			password,
+			metadata,
+			authConfig
+		);
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({

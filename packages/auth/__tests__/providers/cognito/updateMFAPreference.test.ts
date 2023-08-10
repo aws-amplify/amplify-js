@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SetUserMFAPreferenceCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { updateMFAPreference } from '../../../src/providers/cognito';
-import * as setUserMFAPreferenceClient from '../../../src/providers/cognito/utils/clients/SetUserMFAPreferenceClient';
+import * as setUserMFAPreferenceClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthError } from '../../../src/errors/AuthError';
 import { SetUserMFAPreferenceException } from '../../../src/providers/cognito/types/errors';
 import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
 import { UpdateMFAPreferenceRequest } from '../../../src/providers/cognito/types';
 import { getMFASettings } from '../../../src/providers/cognito/apis/updateMFAPreference';
+import { SetUserMFAPreferenceCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 
 const mfaChoises: UpdateMFAPreferenceRequest[] = [
 	{ sms: 'DISABLED', totp: 'DISABLED' },
@@ -37,7 +37,7 @@ describe('updateMFAPreference Happy Path Cases:', () => {
 	const { user1 } = authAPITestParams;
 	beforeEach(() => {
 		setUserMFAPreferenceClientSpy = jest
-			.spyOn(setUserMFAPreferenceClient, 'setUserMFAPreferenceClient')
+			.spyOn(setUserMFAPreferenceClient, 'setUserMFAPreference')
 			.mockImplementationOnce(async () => {
 				return {} as SetUserMFAPreferenceCommandOutput;
 			});

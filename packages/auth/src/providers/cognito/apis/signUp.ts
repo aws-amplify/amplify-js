@@ -2,10 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyV6 } from '@aws-amplify/core';
-import type {
-	AttributeType,
-	SignUpCommandOutput,
-} from '@aws-sdk/client-cognito-identity-provider';
 import {
 	AuthSignUpResult,
 	AuthSignUpStep,
@@ -18,10 +14,12 @@ import {
 	CustomAttribute,
 	CognitoUserAttributeKey,
 } from '../types';
-import { signUpClient } from '../utils/clients/SignUpClient';
+import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { SignUpException } from '../types/errors';
+import { AttributeType, CodeDeliveryDetailsType } from '../utils/clients/CognitoIdentityProvider/types';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**
  * Creates a user
@@ -39,7 +37,8 @@ export async function signUp(
 	signUpRequest: SignUpRequest<CognitoUserAttributeKey, CognitoSignUpOptions>
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
 	const { username, password, options } = signUpRequest;
-
+	const { clientMetadata, userPoolId, userPoolWebClientId } =
+		AmplifyV6.getConfig().Auth;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
@@ -59,20 +58,20 @@ export async function signUp(
 		attributes = toAttributeType(options?.userAttributes);
 	}
 
-	const res: SignUpCommandOutput = await signUpClient({
-		Username: username,
-		Password: password,
-		UserAttributes: attributes,
-		ClientMetadata:
-			signUpRequest.options?.serviceOptions?.clientMetadata ??
-			AmplifyV6.getConfig().Auth?.clientMetadata,
-		ValidationData: validationData,
-	});
+	const res = await signUpClient(
+		{ region: getRegion(userPoolId) },
+		{
+			Username: username,
+			Password: password,
+			UserAttributes: attributes,
+			ClientMetadata:
+				signUpRequest.options?.serviceOptions?.clientMetadata ?? clientMetadata,
+			ValidationData: validationData,
+			ClientId: userPoolWebClientId,
+		}
+	);
 
-	const { UserConfirmed, CodeDeliveryDetails } = res;
-	const { DeliveryMedium, Destination, AttributeName } = {
-		...CodeDeliveryDetails,
-	};
+	const { UserConfirmed, CodeDeliveryDetails, UserSub } = res;	
 
 	if (UserConfirmed) {
 		return {
@@ -87,15 +86,14 @@ export async function signUp(
 			nextStep: {
 				signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
 				codeDeliveryDetails: {
-					deliveryMedium: DeliveryMedium
-						? (DeliveryMedium as DeliveryMedium)
+					deliveryMedium: CodeDeliveryDetails.DeliveryMedium
+						? (CodeDeliveryDetails.DeliveryMedium as DeliveryMedium)
 						: undefined,
-					destination: Destination ? (Destination as string) : undefined,
-					attributeName: AttributeName
-						? (AttributeName as AuthStandardAttributeKey)
-						: undefined,
+					destination: CodeDeliveryDetails.Destination,
+					attributeName: CodeDeliveryDetails.AttributeName,
 				},
 			},
+			userId: UserSub,
 		};
 	}
 }

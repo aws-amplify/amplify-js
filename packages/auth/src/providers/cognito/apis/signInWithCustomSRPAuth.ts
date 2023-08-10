@@ -6,10 +6,6 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
-	ChallengeName,
-	ChallengeParameters,
-} from '../utils/clients/types/models';
-import {
 	handleCustomSRPAuthFlow,
 	getSignInResult,
 	getSignInResultFromError,
@@ -29,6 +25,10 @@ import {
 	setActiveSignInState,
 } from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+import {
+	ChallengeName,
+	ChallengeParameters,
+} from '../utils/clients/CognitoIdentityProvider/types';
 
 /**
  * Signs a user in using a custom authentication flow with SRP
@@ -46,9 +46,9 @@ export async function signInWithCustomSRPAuth(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { username, password, options } = signInRequest;
+	const authConfig = AmplifyV6.getConfig().Auth;
 	const metadata =
-		options?.serviceOptions?.clientMetadata ||
-		AmplifyV6.getConfig().Auth?.clientMetadata;
+		options?.serviceOptions?.clientMetadata || authConfig.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -64,7 +64,7 @@ export async function signInWithCustomSRPAuth(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleCustomSRPAuthFlow(username, password, metadata);
+		} = await handleCustomSRPAuthFlow(username, password, metadata, authConfig);
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({

@@ -4,8 +4,10 @@
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { UpdatePasswordRequest } from '../../../types/requests';
-import { changePasswordClient } from '../utils/clients/ChangePasswordClient';
+import { changePassword } from '../utils/clients/CognitoIdentityProvider';
 import { ChangePasswordException } from '../../cognito/types/errors';
+import { AmplifyV6 } from '@aws-amplify/core';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**
  * Updates user's password while authenticated.
@@ -23,6 +25,7 @@ export async function updatePassword(
 ): Promise<void> {
 	// TODO: replace this when TokenProvider is implemented
 	const accessToken = 'mockedAccessToken';
+	const { userPoolId } = AmplifyV6.getConfig().Auth;
 	const { oldPassword, newPassword } = updatePasswordRequest;
 	assertValidationError(
 		!!oldPassword,
@@ -34,9 +37,12 @@ export async function updatePassword(
 		AuthValidationErrorCode.EmptyUpdatePassword
 	);
 
-	await changePasswordClient({
-		AccessToken: accessToken,
-		PreviousPassword: oldPassword,
-		ProposedPassword: newPassword,
-	});
+	await changePassword(
+		{ region: getRegion(userPoolId) },
+		{
+			AccessToken: accessToken,
+			PreviousPassword: oldPassword,
+			ProposedPassword: newPassword,
+		}
+	);
 }

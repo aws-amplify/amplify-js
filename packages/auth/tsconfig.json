@@ -2,7 +2,7 @@
 	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
 		"importHelpers": false,
-		"types": ["jest"]
+		"types": ["jest", "node"]
 	},
 	"include": ["src"]
 }

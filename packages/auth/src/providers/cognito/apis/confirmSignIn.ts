@@ -12,10 +12,7 @@ import {
 	ConfirmSignInRequest,
 } from '../../../types';
 import { CognitoConfirmSignInOptions } from '../types';
-import {
-	ChallengeName,
-	ChallengeParameters,
-} from '../utils/clients/types/models';
+
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
@@ -33,6 +30,10 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { AmplifyV6 } from '@aws-amplify/core';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+import {
+	ChallengeName,
+	ChallengeParameters,
+} from '../utils/clients/CognitoIdentityProvider/types';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -99,6 +100,7 @@ export async function confirmSignIn(
 			challengeName as ChallengeName,
 			signInSession,
 			challengeResponse,
+			authConfig,
 			clientMetaData,
 			options?.serviceOptions
 		);

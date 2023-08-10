@@ -1,31 +1,24 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ResendConfirmationCodeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { resendSignUpCode } from '../../../src/providers/cognito';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { ResendConfirmationException } from '../../../src/providers/cognito/types/errors';
 import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
-import * as resendSignUpConfirmationCodeClient from '../../../src/providers/cognito/utils/clients/ResendSignUpCodeClient';
+import * as resendSignUpConfirmationCodeClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { ResendConfirmationCodeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 
 describe('ResendSignUp API Happy Path Cases:', () => {
 	let resendSignUpSpy;
 	const { user1 } = authAPITestParams;
 	beforeEach(() => {
 		resendSignUpSpy = jest
-			.spyOn(
-				resendSignUpConfirmationCodeClient,
-				'resendSignUpConfirmationCodeClient'
-			)
-			.mockImplementationOnce(
-				async (
-					params: resendSignUpConfirmationCodeClient.ResendConfirmationCodeClientInput
-				) => {
-					return authAPITestParams.resendSignUpClientResult as ResendConfirmationCodeCommandOutput;
-				}
-			);
+			.spyOn(resendSignUpConfirmationCodeClient, 'resendConfirmationCode')
+			.mockImplementationOnce(async () => {
+				return authAPITestParams.resendSignUpClientResult as ResendConfirmationCodeCommandOutput;
+			});
 	});
 	afterEach(() => {
 		resendSignUpSpy.mockClear();

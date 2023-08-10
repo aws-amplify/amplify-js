@@ -78,8 +78,6 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
-		"@aws-sdk/client-cognito-identity": "3.54.0",
-		"@aws-sdk/client-cognito-identity-provider": "3.54.0",
 		"@jest/test-sequencer": "^24.9.0"
 	},
 	"size-limit": [
