@@ -2,7 +2,7 @@ import {
 	AmazonPersonalizeProvider,
 	AWSKinesisFirehoseProvider,
 	AWSKinesisProvider,
-} from '../../src/Providers';
+} from '../../src/providers';
 
 describe('Each provider client is configured with the custom user client', () => {
 	describe('AmazonPersonalizeProvider', () => {
