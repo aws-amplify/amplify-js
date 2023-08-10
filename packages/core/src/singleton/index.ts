@@ -8,7 +8,10 @@ import { FetchAuthSessionOptions } from './Auth/types';
 
 // TODO(v6): add default AuthTokenStore for each platform
 
-class AmplifyClass {
+/**
+ * @internal
+ */
+export class AmplifyClass {
 	resourcesConfig: ResourcesConfig;
 	libraryOptions: LibraryOptions;
 	/**
