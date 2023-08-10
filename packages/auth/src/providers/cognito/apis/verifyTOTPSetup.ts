@@ -7,7 +7,11 @@ import { VerifyTOTPSetupRequest } from '../../../types/requests';
 import { CogntioVerifyTOTPSetupOptions } from '../types/options';
 import { verifySoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { VerifySoftwareTokenException } from '../types/errors';
-import { AmplifyV6 } from '@aws-amplify/core';
+import {
+	AmplifyV6,
+	assertTokenProviderConfig,
+	fetchAuthSession,
+} from '@aws-amplify/core';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**
@@ -21,25 +25,24 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
  * @throws  -{@link AuthValidationErrorCode }:
  * Thrown when `code` is not defined.
  *
- * TODO: add config errors
- *
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function verifyTOTPSetup(
 	verifyTOTPSetupRequest: VerifyTOTPSetupRequest<CogntioVerifyTOTPSetupOptions>
 ): Promise<void> {
 	// TODO: remove mocked when auth token provider is implemented.
-	const accessToken = 'mockAccessToken';
-	const { userPoolId } = AmplifyV6.getConfig().Auth;
+	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
 	const { code, options } = verifyTOTPSetupRequest;
 	assertValidationError(
 		!!code,
 		AuthValidationErrorCode.EmptyVerifyTOTPSetupCode
 	);
-
+	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	await verifySoftwareToken(
-		{ region: getRegion(userPoolId) },
+		{ region: getRegion(authConfig.userPoolId) },
 		{
-			AccessToken: accessToken,
+			AccessToken: JSON.stringify(tokens.accessToken),
 			UserCode: code,
 			FriendlyDeviceName: options?.serviceOptions?.friendlyDeviceName,
 		}

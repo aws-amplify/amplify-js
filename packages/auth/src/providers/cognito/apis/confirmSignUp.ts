@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import {
 	AuthSignUpResult,
 	AuthSignUpStep,
@@ -24,7 +24,7 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
  * @throws -{@link AuthValidationErrorCode }
  * Thrown due to an empty confirmation code
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  *
  * @returns AuthSignUpResult
  */
@@ -33,9 +33,10 @@ export async function confirmSignUp(
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
 	const { username, confirmationCode, options } = confirmSignUpRequest;
 
-	const { userPoolId, userPoolWebClientId, clientMetadata } =
-		AmplifyV6.getConfig().Auth;
-
+	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
+	const clientMetadata =
+		options?.serviceOptions?.clientMetadata ?? authConfig.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptyConfirmSignUpUsername
@@ -46,13 +47,13 @@ export async function confirmSignUp(
 	);
 
 	await confirmSignUpClient(
-		{ region: getRegion(userPoolId) },
+		{ region: getRegion(authConfig.userPoolId) },
 		{
 			Username: username,
 			ConfirmationCode: confirmationCode,
-			ClientMetadata: options?.serviceOptions?.clientMetadata ?? clientMetadata,
+			ClientMetadata: clientMetadata,
 			ForceAliasCreation: options?.serviceOptions?.forceAliasCreation,
-			ClientId: userPoolWebClientId,
+			ClientId: authConfig.userPoolWebClientId,
 			// TODO: handle UserContextData
 		}
 	);

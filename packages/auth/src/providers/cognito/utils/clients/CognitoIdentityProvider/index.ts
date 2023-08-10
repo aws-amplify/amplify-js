@@ -102,7 +102,7 @@ const buildUserPoolDeserializer = <Output>(): ((
 			throw new AuthError({ name: error.name, message: error.message });
 		} else {
 			const body = await parseJsonBody(response);
-			return body;
+			return body
 		}
 	};
 };

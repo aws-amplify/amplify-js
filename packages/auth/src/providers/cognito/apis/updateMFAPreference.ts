@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import {
+	AmplifyV6,
+	assertTokenProviderConfig,
+	fetchAuthSession,
+} from '@aws-amplify/core';
 import { UpdateMFAPreferenceRequest } from '../types';
 import { SetUserMFAPreferenceException } from '../types/errors';
 import { MFAPreference } from '../types/models';
@@ -17,18 +21,19 @@ import { CognitoMFASettings } from '../utils/clients/CognitoIdentityProvider/typ
  * @throws -{@link SetUserMFAPreferenceException } - Service error thrown when the MFA preference cannot be updated.
  *
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function updateMFAPreference(
 	updateMFAPreferenceRequest: UpdateMFAPreferenceRequest
 ): Promise<void> {
 	const { sms, totp } = updateMFAPreferenceRequest;
-	const { userPoolId } = AmplifyV6.getConfig().Auth;
-	const mockedAccessToken = 'mockedAccessToken';
+	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
+	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	await setUserMFAPreference(
-		{ region: getRegion(userPoolId) },
+		{ region: getRegion(authConfig.userPoolId) },
 		{
-			AccessToken: mockedAccessToken,
+			AccessToken: JSON.stringify(tokens.accessToken),
 			SMSMfaSettings: getMFASettings(sms),
 			SoftwareTokenMfaSettings: getMFASettings(totp),
 		}

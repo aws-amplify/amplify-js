@@ -6,7 +6,11 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { UpdatePasswordRequest } from '../../../types/requests';
 import { changePassword } from '../utils/clients/CognitoIdentityProvider';
 import { ChangePasswordException } from '../../cognito/types/errors';
-import { AmplifyV6 } from '@aws-amplify/core';
+import {
+	AmplifyV6,
+	assertTokenProviderConfig,
+	fetchAuthSession,
+} from '@aws-amplify/core';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**
@@ -18,14 +22,13 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
  *
  * @throws - {@link AuthValidationErrorCode} - Validation errors thrown when oldPassword or newPassword are empty.
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function updatePassword(
 	updatePasswordRequest: UpdatePasswordRequest
 ): Promise<void> {
-	// TODO: replace this when TokenProvider is implemented
-	const accessToken = 'mockedAccessToken';
-	const { userPoolId } = AmplifyV6.getConfig().Auth;
+	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
 	const { oldPassword, newPassword } = updatePasswordRequest;
 	assertValidationError(
 		!!oldPassword,
@@ -36,11 +39,11 @@ export async function updatePassword(
 		!!newPassword,
 		AuthValidationErrorCode.EmptyUpdatePassword
 	);
-
+	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	await changePassword(
-		{ region: getRegion(userPoolId) },
+		{ region: getRegion(authConfig.userPoolId) },
 		{
-			AccessToken: accessToken,
+			AccessToken: JSON.stringify(tokens.accessToken),
 			PreviousPassword: oldPassword,
 			ProposedPassword: newPassword,
 		}

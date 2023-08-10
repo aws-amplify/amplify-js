@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import {
 	AuthSignUpResult,
 	AuthSignUpStep,
@@ -18,7 +18,9 @@ import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { SignUpException } from '../types/errors';
-import { AttributeType, CodeDeliveryDetailsType } from '../utils/clients/CognitoIdentityProvider/types';
+import {
+	AttributeType,
+} from '../utils/clients/CognitoIdentityProvider/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**
@@ -31,14 +33,17 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
  *  are not defined.
  *
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signUp(
 	signUpRequest: SignUpRequest<CognitoUserAttributeKey, CognitoSignUpOptions>
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
 	const { username, password, options } = signUpRequest;
-	const { clientMetadata, userPoolId, userPoolWebClientId } =
-		AmplifyV6.getConfig().Auth;
+	const authConfig = AmplifyV6.getConfig().Auth;
+	const clientMetadata =
+		signUpRequest.options?.serviceOptions?.clientMetadata ??
+		authConfig.clientMetadata;
+	assertTokenProviderConfig(authConfig);
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
@@ -59,19 +64,18 @@ export async function signUp(
 	}
 
 	const res = await signUpClient(
-		{ region: getRegion(userPoolId) },
+		{ region: getRegion(authConfig.userPoolId) },
 		{
 			Username: username,
 			Password: password,
 			UserAttributes: attributes,
-			ClientMetadata:
-				signUpRequest.options?.serviceOptions?.clientMetadata ?? clientMetadata,
+			ClientMetadata: clientMetadata,
 			ValidationData: validationData,
-			ClientId: userPoolWebClientId,
+			ClientId: authConfig.userPoolWebClientId,
 		}
 	);
 
-	const { UserConfirmed, CodeDeliveryDetails, UserSub } = res;	
+	const { UserConfirmed, CodeDeliveryDetails, UserSub } = res;
 
 	if (UserConfirmed) {
 		return {

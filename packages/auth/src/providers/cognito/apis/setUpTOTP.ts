@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import {
+	AmplifyV6,
+	assertTokenProviderConfig,
+	fetchAuthSession,
+} from '@aws-amplify/core';
 import { AuthError } from '../../../errors/AuthError';
 import { TOTPSetupDetails } from '../../../types/models';
 import {
@@ -17,21 +21,21 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
  *
  * @throws -{@link AssociateSoftwareTokenException}
  * Thrown if a service occurs while setting up TOTP.
- *
+ * 
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * 
  * @returns TOTPSetupDetails
  *
  **/
 export async function setUpTOTP(): Promise<TOTPSetupDetails> {
-	// TODO: delete this mock when auth token provider is implemented.
-	const accessToken =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
-	// TODO: extract username from auth token provider.
-	const username = 'mockedUsername';
-	const { userPoolId } = AmplifyV6.getConfig().Auth;
+	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
+	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	const username = tokens.idToken.payload['cognito:username'] ?? '';
 	const { SecretCode } = await associateSoftwareToken(
-		{ region: getRegion(userPoolId) },
+		{ region: getRegion(authConfig.userPoolId) },
 		{
-			AccessToken: accessToken,
+			AccessToken: JSON.stringify(tokens.accessToken),
 		}
 	);
 
@@ -42,5 +46,5 @@ export async function setUpTOTP(): Promise<TOTPSetupDetails> {
 			message: 'Failed to set up TOTP.',
 		});
 	}
-	return getTOTPSetupDetails(SecretCode, username);
+	return getTOTPSetupDetails(SecretCode, JSON.stringify(username));
 }

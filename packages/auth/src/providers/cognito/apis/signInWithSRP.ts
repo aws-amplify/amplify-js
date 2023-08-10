@@ -12,7 +12,7 @@ import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
-import { AmplifyV6 } from '@aws-amplify/core';
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import {
 	getSignInResult,
 	getSignInResultFromError,
@@ -40,13 +40,14 @@ import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithSRP(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { username, password } = signInRequest;
 	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
 	const clientMetaData =
 		signInRequest.options?.serviceOptions?.clientMetadata ||
 		authConfig.clientMetadata;
