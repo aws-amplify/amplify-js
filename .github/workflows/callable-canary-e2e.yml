@@ -42,5 +42,5 @@ jobs:
           WEBHOOK_URL: ${{ env.WEBHOOK_URL }}
         run: |
           curl -X POST -H "Content-Type: application/json" \
-          --data '{"URL":"$WORKFLOW_URL"}' \
+          --data {URL:$WORKFLOW_URL} \
           $WEBHOOK_URL

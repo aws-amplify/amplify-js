@@ -52,6 +52,7 @@
 		"@aws-amplify/auth": "6.0.0",
 		"@aws-amplify/pubsub": "6.0.0",
 		"amazon-cognito-identity-js": "6.4.0",
+		"buffer": "4.9.2",
 		"idb": "5.0.6",
 		"immer": "9.0.6",
 		"ulid": "2.3.0",
@@ -76,7 +77,7 @@
 			"name": "DataStore (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, DataStore }",
-			"limit": "137.1 kB"
+			"limit": "138.27 kB"
 		}
 	],
 	"jest": {

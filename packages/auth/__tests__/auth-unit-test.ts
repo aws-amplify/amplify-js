@@ -285,6 +285,7 @@ import { Credentials, StorageHelper, Hub } from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
 import { mockDeviceArray, transformedMockData } from './mockData';
+import { InternalAuthClass } from '../src/internals/InternalAuth';
 
 const authOptions: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
@@ -1407,38 +1408,38 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-        test('currentUserPoolUser fails but hub event still dispatches', async () => {
-            const auth = new Auth(authOptions);
-            const spyon = jest
-                .spyOn(CognitoUser.prototype, 'sendMFACode')
-                .mockImplementationOnce((code, callback) => {
-                    callback.onSuccess(session);
-                });
+		test('currentUserPoolUser fails but hub event still dispatches', async () => {
+			const auth = new Auth(authOptions);
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'sendMFACode')
+				.mockImplementationOnce((code, callback) => {
+					callback.onSuccess(session);
+				});
 
-            const spyon2 = jest
-                .spyOn(auth, 'currentUserPoolUser')
-                .mockImplementationOnce(() => {
-                    return Promise.reject('Could not get current user.');
-                });
-            const hubSpy = jest.spyOn(Hub, 'dispatch');
-            const user = new CognitoUser({
-                Username: 'username',
-                Pool: userPool,
-            });
-            const result = await auth.confirmSignIn(user, 'code', null);
-            expect(result).toEqual(user);
-            expect(hubSpy).toHaveBeenCalledWith(
-                'auth',
-                {
-                    data: user,
-                    event: 'signIn',
-                    message: 'A user username has been signed in',
-                },
-                'Auth',
-                Symbol.for('amplify_default')
-            );
-            spyon.mockClear();
-        });
+			const spyon2 = jest
+				.spyOn(auth, 'currentUserPoolUser')
+				.mockImplementationOnce(() => {
+					return Promise.reject('Could not get current user.');
+				});
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			const result = await auth.confirmSignIn(user, 'code', null);
+			expect(result).toEqual(user);
+			expect(hubSpy).toHaveBeenCalledWith(
+				'auth',
+				{
+					data: user,
+					event: 'signIn',
+					message: 'A user username has been signed in',
+				},
+				'Auth',
+				Symbol.for('amplify_default')
+			);
+			spyon.mockClear();
+		});
 
 		test('onFailure', async () => {
 			const spyon = jest
@@ -1646,7 +1647,7 @@ describe('auth unit test', () => {
 	describe('userAttributes', () => {
 		test('happy case', async () => {
 			const spyon = jest
-				.spyOn(Auth.prototype, 'userSession')
+				.spyOn(InternalAuthClass.prototype, 'userSession')
 				.mockImplementationOnce(user => {
 					return new Promise((res: any, rej) => {
 						res('session');
@@ -1670,7 +1671,7 @@ describe('auth unit test', () => {
 
 		test('get userattributes failed', async () => {
 			const spyon = jest
-				.spyOn(Auth.prototype, 'userSession')
+				.spyOn(InternalAuthClass.prototype, 'userSession')
 				.mockImplementationOnce(user => {
 					return new Promise((res: any, rej) => {
 						res('session');
@@ -1720,7 +1721,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon2 = jest
-				.spyOn(Auth.prototype, 'userSession')
+				.spyOn(InternalAuthClass.prototype, 'userSession')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(session);
@@ -1809,7 +1810,7 @@ describe('auth unit test', () => {
 			});
 
 			const spyon = jest
-				.spyOn(Auth.prototype, 'currentUserPoolUser')
+				.spyOn(InternalAuthClass.prototype, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(user);
@@ -2299,7 +2300,7 @@ describe('auth unit test', () => {
 			});
 
 			const spyon = jest
-				.spyOn(Auth.prototype, 'currentUserPoolUser')
+				.spyOn(InternalAuthClass.prototype, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(user);
@@ -2307,7 +2308,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon2 = jest
-				.spyOn(Auth.prototype, 'verifyUserAttribute')
+				.spyOn(InternalAuthClass.prototype, 'verifyUserAttribute')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res();
@@ -2318,7 +2319,7 @@ describe('auth unit test', () => {
 
 			expect.assertions(2);
 			expect(spyon).toBeCalled();
-			expect(spyon2).toBeCalledWith(user, 'attr');
+			expect(spyon2).toBeCalledWith(user, 'attr', undefined);
 
 			spyon.mockClear();
 			spyon2.mockClear();
@@ -2334,7 +2335,7 @@ describe('auth unit test', () => {
 			});
 
 			const spyon = jest
-				.spyOn(Auth.prototype, 'currentUserPoolUser')
+				.spyOn(InternalAuthClass.prototype, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(user);
@@ -2342,7 +2343,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon2 = jest
-				.spyOn(Auth.prototype, 'verifyUserAttributeSubmit')
+				.spyOn(InternalAuthClass.prototype, 'verifyUserAttributeSubmit')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res();
@@ -2414,7 +2415,7 @@ describe('auth unit test', () => {
 			};
 
 			const spyonAuth = jest
-				.spyOn(Auth.prototype, 'currentUserCredentials')
+				.spyOn(InternalAuthClass.prototype, 'currentUserCredentials')
 				.mockImplementationOnce(() => {
 					return new Promise((resolve, reject) => {
 						resolve();
@@ -2505,7 +2506,7 @@ describe('auth unit test', () => {
 			const newPassword = 'newPassword1.';
 
 			const spyon = jest
-				.spyOn(Auth.prototype, 'userSession')
+				.spyOn(InternalAuthClass.prototype, 'userSession')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(session);
@@ -2835,7 +2836,7 @@ describe('auth unit test', () => {
 			});
 
 			const spyon = jest
-				.spyOn(Auth.prototype, 'currentUserPoolUser')
+				.spyOn(InternalAuthClass.prototype, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(user);
@@ -2843,7 +2844,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon2 = jest
-				.spyOn(Auth.prototype, 'userAttributes')
+				.spyOn(InternalAuthClass.prototype, 'userAttributes')
 				.mockImplementationOnce(() => {
 					auth['credentials'] = {
 						IdentityPoolId: 'identityPoolId',
@@ -2902,7 +2903,7 @@ describe('auth unit test', () => {
 			});
 
 			const spyon = jest
-				.spyOn(Auth.prototype, 'currentUserPoolUser')
+				.spyOn(InternalAuthClass.prototype, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res({
@@ -2912,7 +2913,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon2 = jest
-				.spyOn(Auth.prototype, 'userAttributes')
+				.spyOn(InternalAuthClass.prototype, 'userAttributes')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						rej('err');
@@ -2920,7 +2921,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon3 = jest
-				.spyOn(Auth.prototype, 'currentCredentials')
+				.spyOn(InternalAuthClass.prototype, 'currentCredentials')
 				.mockImplementationOnce(() => {
 					return Promise.resolve({
 						IdentityPoolId: 'identityPoolId',
@@ -2952,7 +2953,7 @@ describe('auth unit test', () => {
 			auth['credentials_source'] = 'aws';
 
 			const spyon = jest
-				.spyOn(Auth.prototype, 'currentUserPoolUser')
+				.spyOn(InternalAuthClass.prototype, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(null);
@@ -3009,7 +3010,7 @@ describe('auth unit test', () => {
 			};
 
 			const spyon = jest
-				.spyOn(Auth.prototype, 'userSession')
+				.spyOn(InternalAuthClass.prototype, 'userSession')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(session);
@@ -3058,12 +3059,13 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-		test('error hub event', async (done) => {
+		test('error hub event', async done => {
 			expect.assertions(3);
-			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'updateAttributes')
 				.mockImplementationOnce((attrs, callback: any) => {
 					callback(new Error('Error'), null, null);
-			});
+				});
 
 			const auth = new Auth(authOptions);
 
@@ -3097,19 +3099,20 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-		test('happy case code delivery details hub event', async (done) => {
+		test('happy case code delivery details hub event', async done => {
 			expect.assertions(2);
-			
+
 			const codeDeliverDetailsResult: any = {
-				'CodeDeliveryDetailsList': [ 
-				   { 
-					  'AttributeName': 'email',
-					  'DeliveryMedium': 'EMAIL',
-					  'Destination': 'e***@e***'
-				   }
-				]
+				CodeDeliveryDetailsList: [
+					{
+						AttributeName: 'email',
+						DeliveryMedium: 'EMAIL',
+						Destination: 'e***@e***',
+					},
+				],
 			};
-			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'updateAttributes')
 				.mockImplementationOnce((attrs, callback: any) => {
 					callback(null, 'SUCCESS', codeDeliverDetailsResult);
 				});
@@ -3126,20 +3129,20 @@ describe('auth unit test', () => {
 				sub: 'sub',
 			};
 			const payloadData = {
-				'email': {
+				email: {
 					isUpdated: false,
 					codeDeliveryDetails: {
 						AttributeName: 'email',
 						DeliveryMedium: 'EMAIL',
-						Destination: 'e***@e***'
-					}
+						Destination: 'e***@e***',
+					},
 				},
-				'phone_number': {
-					isUpdated: true
+				phone_number: {
+					isUpdated: true,
 				},
-				'sub': {
-					isUpdated: true
-				}
+				sub: {
+					isUpdated: true,
+				},
 			};
 			const listenToHub = Hub.listen('auth', ({ payload }) => {
 				const { event } = payload;
@@ -3167,7 +3170,7 @@ describe('auth unit test', () => {
 			const attributeNames = ['email', 'phone_number'];
 
 			const spyon = jest
-				.spyOn(Auth.prototype, 'userSession')
+				.spyOn(InternalAuthClass.prototype, 'userSession')
 				.mockImplementationOnce(() => {
 					return new Promise(res => {
 						res(session);
@@ -3414,7 +3417,7 @@ describe('auth unit test', () => {
 					return Promise.resolve('cred' as any);
 				});
 			const spyon2 = jest
-				.spyOn(Auth.prototype, 'currentAuthenticatedUser')
+				.spyOn(InternalAuthClass.prototype, 'currentAuthenticatedUser')
 				.mockImplementation(() => {
 					if (!user) return Promise.reject('error');
 					else return Promise.resolve(user);
@@ -3488,7 +3491,7 @@ describe('auth unit test', () => {
 					return Promise.resolve('cred' as any);
 				});
 			const spyon2 = jest
-				.spyOn(Auth.prototype, 'currentAuthenticatedUser')
+				.spyOn(InternalAuthClass.prototype, 'currentAuthenticatedUser')
 				.mockImplementation(() => {
 					if (!user) return Promise.reject('error');
 					else return Promise.resolve(user);
@@ -3514,7 +3517,7 @@ describe('auth unit test', () => {
 	describe('handleAuthResponse test', () => {
 		beforeAll(() => {
 			jest
-				.spyOn(Auth.prototype, 'currentAuthenticatedUser')
+				.spyOn(InternalAuthClass.prototype, 'currentAuthenticatedUser')
 				.mockImplementation(() => {
 					throw new Error('no user logged in');
 				});
@@ -3727,7 +3730,7 @@ describe('auth unit test', () => {
 	describe('verifiedContact test', () => {
 		test('happy case with unverified', async () => {
 			const spyon = jest
-				.spyOn(Auth.prototype, 'userAttributes')
+				.spyOn(InternalAuthClass.prototype, 'userAttributes')
 				.mockImplementationOnce(() => {
 					return new Promise((res: any, rej) => {
 						res([
@@ -3759,7 +3762,7 @@ describe('auth unit test', () => {
 
 		test('happy case with verified', async () => {
 			const spyon = jest
-				.spyOn(Auth.prototype, 'userAttributes')
+				.spyOn(InternalAuthClass.prototype, 'userAttributes')
 				.mockImplementationOnce(() => {
 					return new Promise((res: any, rej) => {
 						res([
@@ -3799,7 +3802,7 @@ describe('auth unit test', () => {
 
 		test('happy case with verified as strings', async () => {
 			const spyon = jest
-				.spyOn(Auth.prototype, 'userAttributes')
+				.spyOn(InternalAuthClass.prototype, 'userAttributes')
 				.mockImplementationOnce(() => {
 					return new Promise((res: any, rej) => {
 						res([
