@@ -38,3 +38,5 @@ export * from './providers/cognito';
 
 // Category specific types
 export * from './types';
+
+export { fetchAuthSession } from '@aws-amplify/core';

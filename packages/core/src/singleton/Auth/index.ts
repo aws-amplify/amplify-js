@@ -47,40 +47,35 @@ export class AuthClass {
 		this.authOptions = authOptions;
 	}
 
-	/**
-	 * Returns current session tokens and credentials
-	 *
-	 * @internal
-	 *
-	 * @param options - Options for fetching session.
-	 *
-	 * @returns Returns a promise that will resolve with fresh authentication tokens.
-	 */
 	async fetchAuthSession(
-		options?: FetchAuthSessionOptions
+		options: FetchAuthSessionOptions = {}
 	): Promise<AuthSession> {
 		let tokens: AuthTokens;
 		let credentialsAndIdentityId: AWSCredentialsAndIdentityId;
 
-		try {
-			tokens = await this.authOptions.tokenProvider?.getTokens(options);
-		} catch (error) {
-			// TODO(v6): validate error depending on conditions it can proceed or throw
-		}
-
-		try {
-			if (this.authOptions.credentialsProvider) {
-				credentialsAndIdentityId =
-					await this.authOptions.credentialsProvider.getCredentialsAndIdentityId(
-						{
-							authConfig: this.authConfig,
-							tokens,
-							options,
-						}
-					);
-			}
-		} catch (err) {
-			// TODO(v6): validate error depending on conditions it can proceed or throw
+		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if not available
+		tokens = await this.authOptions.tokenProvider?.getTokens(options);
+		if (tokens) {
+			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
+			credentialsAndIdentityId =
+				await this.authOptions.credentialsProvider?.getCredentialsAndIdentityId(
+					{
+						authConfig: this.authConfig,
+						tokens,
+						authenticated: true,
+						forceRefresh: options.forceRefresh,
+					}
+				);
+		} else {
+			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
+			credentialsAndIdentityId =
+				await this.authOptions.credentialsProvider?.getCredentialsAndIdentityId(
+					{
+						authConfig: this.authConfig,
+						authenticated: false,
+						forceRefresh: options.forceRefresh,
+					}
+				);
 		}
 
 		return {

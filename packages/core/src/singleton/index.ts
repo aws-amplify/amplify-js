@@ -2,6 +2,7 @@ import { AuthClass } from './Auth';
 import { Hub } from '../Hub';
 import { LibraryOptions, ResourcesConfig } from './types';
 import { AmplifyError } from '../Errors';
+import { FetchAuthSessionOptions } from './Auth/types';
 
 // TODO(v6): add default AuthTokenStore for each platform
 
@@ -87,6 +88,17 @@ class AmplifyClass {
  * `Amplify` is responsible for orchestrating cross-category communication within the library.
  */
 export const AmplifyV6 = new AmplifyClass();
+
+/**
+ * Returns current session tokens and credentials
+ *
+ * @param options{FetchAuthSessionOptions} - Options for fetching session.
+ *
+ * @returns Returns a promise that will resolve with fresh authentication tokens.
+ */
+export const fetchAuthSession = (options: FetchAuthSessionOptions) => {
+	return AmplifyV6.Auth.fetchAuthSession(options);
+};
 
 // TODO(v6): validate until which level this will nested, during Amplify.configure API review.
 function mergeResourceConfig(

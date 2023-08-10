@@ -127,7 +127,8 @@ export {
 	StorageConfig,
 } from './singleton/types';
 
-export { AmplifyV6 } from './singleton';
+export { AmplifyV6, fetchAuthSession } from './singleton';
+export { LibraryOptions, ResourcesConfig } from './singleton/types';
 
 // Standard `Cache` export to maintain interoperability with React Native
 export { BrowserStorageCache as Cache };
