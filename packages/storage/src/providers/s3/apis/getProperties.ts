@@ -26,7 +26,7 @@ export const getProperties = async function (
 
 	const { key, options: { accessLevel = defaultAccessLevel } = {} } = req;
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
-	const finalKey = getKeyWithPrefix(accessLevel!, identityId!, key);
+	const finalKey = await getKeyWithPrefix(accessLevel!, identityId!, key);
 	const headObjectOptions = {
 		accessLevel,
 		targetIdentityId: identityId,

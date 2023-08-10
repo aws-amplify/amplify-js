@@ -20,9 +20,17 @@ import {
 	s3TransferHandler,
 	serializePathnameObjectKey,
 } from './utils';
-import { assertServiceError } from '../../errors/utils/assertServiceError';
+import { StorageError } from '../../errors/StorageError';
 
-export type HeadObjectInput = Pick<HeadObjectCommandInput, 'Bucket' | 'Key'>;
+export type HeadObjectInput = Pick<
+	HeadObjectCommandInput,
+	| 'Bucket'
+	| 'Key'
+	| 'SSECustomerKey'
+	// TODO(AllanZhengYP): remove in V6.
+	| 'SSECustomerKeyMD5'
+	| 'SSECustomerAlgorithm'
+>;
 
 export type HeadObjectOutput = Pick<
 	HeadObjectCommandOutput,
@@ -38,13 +46,12 @@ const headObjectSerializer = async (
 	input: HeadObjectInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	// TODO need to check with BR for headers
-	const headers = {};
 	const url = new URL(endpoint.url.toString());
-	url.pathname = serializePathnameObjectKey(url, input.Key);
+	url.pathname = serializePathnameObjectKey(url, input.Key!);
 	return {
 		method: 'HEAD',
-		headers,
+		// TODO need to check with BR for headers
+		headers: {},
 		url,
 	};
 };
