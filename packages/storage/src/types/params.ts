@@ -2,15 +2,28 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export type StorageOptions =
-	| { level?: 'guest' | 'private' }
+	| { accessLevel?: 'guest' | 'private' }
 	| {
-			level: 'protected';
-			identityId: string;
+			accessLevel: 'protected';
+			targetIdentityId: string;
 	  };
 
 export type StorageOperationParameter<Options extends StorageOptions> = {
 	key: string;
 	options?: Options;
+};
+
+export type StorageListRequest<Options extends StorageOptions> = {
+	path?: string;
+	options?: Options;
+};
+
+// TODO do we need intersection type with 'StorageOptions' here ?
+// 'StorageListRequest' already includes 'StorageOptions'
+export type StorageListOptions = StorageOptions & {
+	pageSize?: number;
+	nextToken?: string;
+	listAll?: boolean;
 };
 
 export type StorageDownloadDataParameter<Options extends StorageOptions> =

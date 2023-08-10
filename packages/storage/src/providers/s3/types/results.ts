@@ -5,6 +5,7 @@ import {
 	StorageDownloadDataResult,
 	StorageGetUrlResult,
 	StorageUploadResult,
+	StorageListOutputItem,
 } from '../../../types';
 
 type S3ObjectInformation = {
@@ -28,6 +29,11 @@ type S3ObjectInformation = {
 	metadata?: Record<string, string>;
 };
 
+// type S3ListResult = {
+// 	results: S3ListOutputItem[];
+// 	nextToken?: string;
+// };
+
 export type S3DownloadDataResult = StorageDownloadDataResult &
 	S3ObjectInformation;
 
@@ -38,3 +44,5 @@ export type S3GetUrlResult = StorageGetUrlResult;
 export type S3UploadDataResult = StorageUploadResult;
 
 export type S3UploadFileResult = StorageUploadResult;
+
+export type S3ListOutputItem = StorageListOutputItem & S3ObjectInformation;

@@ -19,3 +19,12 @@ export type StorageGetUrlResult = {
 export type StorageUploadResult = {
 	key: string;
 };
+
+export type StorageListOutputItem = {
+	key?: string;
+};
+
+export type StorageListResult = {
+	results: StorageListOutputItem[];
+	nextToken?: string;
+};

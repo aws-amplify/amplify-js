@@ -7,6 +7,8 @@ export * from './AWSS3Provider';
 
 export { DownloadTask, TransferProgressEvent } from './common';
 export {
+	StorageListRequest,
+	StorageListOptions,
 	StorageOperationParameter,
 	StorageDownloadDataParameter,
 	StorageDownloadFileParameter,
@@ -14,6 +16,8 @@ export {
 	StorageUploadFileParameter, // TODO: open question - should we export this?
 } from './params';
 export {
+	StorageListOutputItem, // TODO is this correct ?
+	StorageListResult,
 	StorageDownloadDataResult,
 	StorageGetUrlResult,
 	StorageUploadResult,
