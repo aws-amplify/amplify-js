@@ -48,10 +48,6 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-sdk/client-firehose": "3.388.0",
-		"@aws-sdk/client-kinesis": "3.388.0",
-		"@aws-sdk/client-personalize-events": "3.388.0",
-		"@aws-sdk/util-utf8-browser": "3.259.0",
 		"lodash": "^4.17.20",
 		"tslib": "^2.5.0",
 		"uuid": "^3.2.1"
