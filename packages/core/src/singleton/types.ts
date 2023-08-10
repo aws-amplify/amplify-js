@@ -7,6 +7,7 @@ import {
 	UserPoolConfig,
 	IdentityPoolConfig,
 	UserPoolConfigAndIdentityPoolConfig,
+	GetCredentialsOptions,
 } from './Auth/types';
 import {
 	LibraryStorageOptions,
@@ -35,6 +36,7 @@ export {
 	UserPoolConfig,
 	IdentityPoolConfig,
 	UserPoolConfigAndIdentityPoolConfig,
+	GetCredentialsOptions,
 	StorageAccessLevel,
 	StorageConfig,
 };

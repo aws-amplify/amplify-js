@@ -1,8 +1,4 @@
 import { AuthClass } from './Auth';
-import {
-	cognitoCredentialsProvider,
-	cognitoIdentityIdProvider,
-} from '@aws-amplify/auth/cognito';
 import { Hub } from '../Hub';
 import { LibraryOptions, ResourcesConfig } from './types';
 import { AmplifyError } from '../Errors';
@@ -35,8 +31,6 @@ class AmplifyClass {
 						});
 					},
 				},
-				credentialsProvider: cognitoCredentialsProvider,
-				identityIdProvider: cognitoIdentityIdProvider,
 			},
 		};
 	}

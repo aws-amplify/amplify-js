@@ -2,69 +2,58 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { setIdentityId } from './IdentityIdProvider';
+import { cognitoIdentityIdProvider, setIdentityId } from './IdentityIdProvider';
 import {
 	Logger,
-	AuthConfig,
 	AuthTokens,
-	CredentialsProvider,
-	FetchAuthSessionOptions,
 	AmplifyV6,
-	UserPoolConfigAndIdentityPoolConfig,
 	getCredentialsForIdentity,
+	AWSCredentialsAndIdentityIdProvider,
+	AWSCredentialsAndIdentityId,
+	UserPoolConfigAndIdentityPoolConfig,
 } from '@aws-amplify/core';
 import { AuthError } from '../../../errors/AuthError';
+import { GetCredentialsOptions } from '@aws-amplify/core';
 
 const logger = new Logger('CognitoCredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
 
-class CognitoAWSCredentialsAndIdentityIdProvider
-	implements CredentialsProvider
+export class CognitoAWSCredentialsAndIdentityIdProvider
+	implements AWSCredentialsAndIdentityIdProvider
 {
-	private _credentials?: Credentials & { isAuthenticatedCreds: boolean };
+	private _credentialsAndIdentityId?: AWSCredentialsAndIdentityId & {
+		isAuthenticatedCreds: boolean;
+	};
 	private _nextCredentialsRefresh: number;
 	// TODO(V6): find what needs to happen to locally stored identityId
 	async clearCredentials(): Promise<void> {
 		logger.debug('Clearing out credentials');
-		this._credentials = undefined;
+		this._credentialsAndIdentityId = undefined;
 	}
 
-	async getCredentials({
-		options,
-		tokens,
-		authConfig,
-		identityId,
-	}: {
-		options?: FetchAuthSessionOptions;
-		tokens?: AuthTokens;
-		authConfig?: AuthConfig;
-		identityId?: string;
-	}): Promise<Credentials> {
+	async getCredentialsAndIdentityId(
+		getCredentialsOptions: GetCredentialsOptions
+	): Promise<AWSCredentialsAndIdentityId> {
+		const isAuthenticated = getCredentialsOptions.authenticated;
+		let tokens = getCredentialsOptions.tokens;
+		const authConfig =
+			getCredentialsOptions.authConfig as UserPoolConfigAndIdentityPoolConfig;
+		const forceRefresh = getCredentialsOptions.forceRefresh;
 		// TODO(V6): Listen to changes to AuthTokens and update the credentials
-		if (!identityId) {
-			// TODO(V6): If there is no identityId attempt once to get it
-			throw new AuthError({
-				name: 'IdentityIdConfigException',
-				message: 'No Cognito Identity Id provided',
-				recoverySuggestion: 'Make sure to pass a valid identityId.',
-			});
-		}
-
-		if (options?.forceRefresh) {
-			if (AmplifyV6.libraryOptions.Auth?.tokenRefresher && tokens) {
-				tokens = await AmplifyV6.libraryOptions.Auth?.tokenRefresher({
-					tokens,
-					authConfig,
+		const identityId = await cognitoIdentityIdProvider({ tokens, authConfig });
+		if (forceRefresh) {
+			if (AmplifyV6.libraryOptions.Auth?.tokenProvider) {
+				tokens = await AmplifyV6.libraryOptions.Auth?.tokenProvider.getTokens({
+					forceRefresh: forceRefresh,
 				});
 				this.clearCredentials();
 			}
 		}
-		authConfig = AmplifyV6.getConfig()
-			.Auth as UserPoolConfigAndIdentityPoolConfig;
+
 		// check eligibility for guest credentials
 		// - if there is error fetching tokens
 		// - if user is not signed in
-		if (!tokens) {
+		if (!isAuthenticated) {
 			// TODO(V6): Attempt to get the tokens from the provider once
 			// tokens = await AmplifyV6.authTokensProvider.getAuthTokens();
 			return await this.getGuestCredentials(identityId, authConfig);
@@ -76,17 +65,17 @@ class CognitoAWSCredentialsAndIdentityIdProvider
 	private async getGuestCredentials(
 		identityId: string,
 		authConfig: UserPoolConfigAndIdentityPoolConfig
-	): Promise<Credentials> {
+	): Promise<AWSCredentialsAndIdentityId> {
 		if (
-			this._credentials &&
-			!this._isExpired(this._credentials) &&
+			this._credentialsAndIdentityId &&
+			!this._isExpired(this._credentialsAndIdentityId.credentials) &&
 			!this._isPastTTL() &&
-			this._credentials.isAuthenticatedCreds === false
+			this._credentialsAndIdentityId.isAuthenticatedCreds === false
 		) {
 			logger.info(
 				'returning stored credentials as they neither past TTL nor expired'
 			);
-			return this._credentials;
+			return this._credentialsAndIdentityId;
 		}
 
 		// Clear to discard if any authenticated credentials are set and start with a clean slate
@@ -108,6 +97,7 @@ class CognitoAWSCredentialsAndIdentityIdProvider
 
 		const region = authConfig.identityPoolId.split(':')[0];
 
+		// TODO(V6): When unauth role is diabled and crdentials are absent, we need to return null not throw an error
 		const clientResult = await getCredentialsForIdentity(
 			{ region: region },
 			{
@@ -121,20 +111,23 @@ class CognitoAWSCredentialsAndIdentityIdProvider
 			clientResult.Credentials.SecretKey
 		) {
 			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
-			const res: Credentials = {
-				accessKeyId: clientResult.Credentials.AccessKeyId,
-				secretAccessKey: clientResult.Credentials.SecretKey,
-				sessionToken: clientResult.Credentials.SessionToken,
-				expiration: clientResult.Credentials.Expiration,
+			const res: AWSCredentialsAndIdentityId = {
+				credentials: {
+					accessKeyId: clientResult.Credentials.AccessKeyId,
+					secretAccessKey: clientResult.Credentials.SecretKey,
+					sessionToken: clientResult.Credentials.SessionToken,
+					expiration: clientResult.Credentials.Expiration,
+				},
 			};
 			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
+				res.identityId = identityIdRes;
 				setIdentityId({
 					id: identityIdRes,
 					type: 'guest',
 				});
 			}
-			this._credentials = {
+			this._credentialsAndIdentityId = {
 				...res,
 				isAuthenticatedCreds: false,
 			};
@@ -151,17 +144,17 @@ class CognitoAWSCredentialsAndIdentityIdProvider
 		authConfig: UserPoolConfigAndIdentityPoolConfig,
 		authTokens: AuthTokens,
 		identityId?: string
-	): Promise<Credentials> {
+	): Promise<AWSCredentialsAndIdentityId> {
 		if (
-			this._credentials &&
-			!this._isExpired(this._credentials) &&
+			this._credentialsAndIdentityId &&
+			!this._isExpired(this._credentialsAndIdentityId.credentials) &&
 			!this._isPastTTL() &&
-			this._credentials.isAuthenticatedCreds === true
+			this._credentialsAndIdentityId.isAuthenticatedCreds === true
 		) {
 			logger.debug(
 				'returning stored credentials as they neither past TTL nor expired'
 			);
-			return this._credentials;
+			return this._credentialsAndIdentityId;
 		}
 
 		// Clear to discard if any unauthenticated credentials are set and start with a clean slate
@@ -195,20 +188,23 @@ class CognitoAWSCredentialsAndIdentityIdProvider
 			clientResult.Credentials.AccessKeyId &&
 			clientResult.Credentials.SecretKey
 		) {
-			const res: Credentials = {
-				accessKeyId: clientResult.Credentials.AccessKeyId,
-				secretAccessKey: clientResult.Credentials.SecretKey,
-				sessionToken: clientResult.Credentials.SessionToken,
-				// TODO(V6): Fixed expiration now + 50 mins
-				expiration: clientResult.Credentials.Expiration,
+			const res: AWSCredentialsAndIdentityId = {
+				credentials: {
+					accessKeyId: clientResult.Credentials.AccessKeyId,
+					secretAccessKey: clientResult.Credentials.SecretKey,
+					sessionToken: clientResult.Credentials.SessionToken,
+					// TODO(V6): Fixed expiration now + 50 mins
+					expiration: clientResult.Credentials.Expiration,
+				},
 			};
 			// Store the credentials in-memory along with the expiration
-			this._credentials = {
+			this._credentialsAndIdentityId = {
 				...res,
 				isAuthenticatedCreds: true,
 			};
 			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
+				res.identityId = identityIdRes;
 				setIdentityId({
 					id: identityIdRes,
 					type: 'primary',
@@ -287,15 +283,3 @@ export function formLoginsMap(idToken: string, oidcProvider: string) {
 	res[domainName] = idToken;
 	return res;
 }
-
-/**
- * Cognito specific implmentation of the CredentialsProvider interface
- * that manages setting and getting of AWS Credentials.
- *
- * @throws internal: {@link AuthError }
- *  - Auth errors that may arise from misconfiguration.
- *
- * TODO(V6): convert the Auth errors to config errors
- */
-export const cognitoCredentialsProvider =
-	new CognitoAWSCredentialsAndIdentityIdProvider();

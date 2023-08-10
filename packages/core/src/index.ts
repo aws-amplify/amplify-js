@@ -114,26 +114,36 @@ export { InMemoryCache } from './Cache/InMemoryCache';
 export { CacheConfig } from './Cache/types';
 export { ICache } from './Cache/types';
 export { BrowserStorageCache };
-export { decodeJWT, assertTokenProviderConfig } from './singleton/Auth/utils';
+export {
+	decodeJWT,
+	assertTokenProviderConfig,
+	assertIdentityPoolIdInConfig,
+} from './singleton/Auth/utils';
 export {
 	TokenProvider,
 	AuthTokens,
 	FetchAuthSessionOptions,
-	CredentialsProvider,
-	AuthCredentialStore,
+	AWSCredentialsAndIdentityIdProvider,
+	AWSCredentialsAndIdentityId,
 	Identity,
 } from './singleton/Auth/types';
 export {
 	AuthConfig,
 	UserPoolConfig,
+	UserPoolConfigAndIdentityPoolConfig,
 	StorageAccessLevel,
 	StorageConfig,
+	GetCredentialsOptions,
 } from './singleton/types';
 
 //AWSClients exports
-export { getCredentialsForIdentity, getId } from './AwsClients/CognitoIdentity';
+export {
+	getCredentialsForIdentity,
+	getId,
+	GetCredentialsForIdentityInput,
+	GetCredentialsForIdentityOutput,
+} from './AwsClients/CognitoIdentity';
 
-export { defaultIdentityIdStore } from './singleton/Auth/IdentityIdStore';
 export { AmplifyV6 } from './singleton';
 
 // Standard `Cache` export to maintain interoperability with React Native

@@ -3,16 +3,15 @@
 
 import {
 	AuthConfig,
-	AuthKeys,
-	AuthTokenStorageKeys,
-	IdenityIdStore,
 	Identity,
-} from './types';
-import { KeyValueStorageInterface } from '../../types';
-import { asserts } from '../../Util/errors/AssertError';
-import { assertIdentityIdProviderConfig } from './utils';
+	KeyValueStorageInterface,
+	assertIdentityPoolIdInConfig,
+} from '@aws-amplify/core';
+import { IdentityIdStorageKeys } from './types';
+import { AuthKeys } from '../tokenProvider/types';
+import { AuthError } from '../../../errors/AuthError';
 
-class DefaultIdentityIdStore implements IdenityIdStore {
+export class DefaultIdentityIdStore {
 	keyValueStorage: KeyValueStorageInterface;
 	authConfig: AuthConfig;
 
@@ -24,20 +23,21 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 		return;
 	}
 
-	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface) {
+	constructor(keyValueStorage: KeyValueStorageInterface) {
 		this.keyValueStorage = keyValueStorage;
 		return;
 	}
 
 	async loadIdentityId(): Promise<Identity | undefined> {
-		assertIdentityIdProviderConfig(this.authConfig);
-
-		asserts(!(this.keyValueStorage === undefined), {
-			message: 'No KeyValueStorage available',
-			name: 'KeyValueStorageNotFound',
-			recoverySuggestion:
-				'Make sure to set the keyValueStorage before using this method',
-		});
+		assertIdentityPoolIdInConfig(this.authConfig);
+		if (this.keyValueStorage === undefined) {
+			throw new AuthError({
+				message: 'No KeyValueStorage available',
+				name: 'KeyValueStorageNotFound',
+				recoverySuggestion:
+					'Make sure to set the keyValueStorage before using this method',
+			});
+		}
 		// TODO(v6): migration logic should be here
 		// Reading V5 tokens old format
 		try {
@@ -70,18 +70,22 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 	}
 
 	async storeIdentityId(identity: Identity): Promise<void> {
-		assertIdentityIdProviderConfig(this.authConfig);
-		asserts(!(identity === undefined), {
-			message: 'Invalid Identity parameter',
-			name: 'InvalidAuthIdentity',
-			recoverySuggestion: 'Make sure a valid Identity object is passed',
-		});
-		asserts(!(this.keyValueStorage === undefined), {
-			message: 'No KeyValueStorage available',
-			name: 'KeyValueStorageNotFound',
-			recoverySuggestion:
-				'Make sure to set the keyValueStorage before using this method',
-		});
+		assertIdentityPoolIdInConfig(this.authConfig);
+		if (identity === undefined) {
+			throw new AuthError({
+				message: 'Invalid Identity parameter',
+				name: 'InvalidAuthIdentity',
+				recoverySuggestion: 'Make sure a valid Identity object is passed',
+			});
+		}
+		if (this.keyValueStorage === undefined) {
+			throw new AuthError({
+				message: 'No KeyValueStorage available',
+				name: 'KeyValueStorageNotFound',
+				recoverySuggestion:
+					'Make sure to set the keyValueStorage before using this method',
+			});
+		}
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
@@ -100,7 +104,7 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 	}
 
 	async clearIdentityId(): Promise<void> {
-		assertIdentityIdProviderConfig(this.authConfig);
+		assertIdentityPoolIdInConfig(this.authConfig);
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
@@ -114,7 +118,7 @@ class DefaultIdentityIdStore implements IdenityIdStore {
 }
 
 const createKeysForAuthStorage = (provider: string, identifier: string) => {
-	return getAuthStorageKeys(AuthTokenStorageKeys)(
+	return getAuthStorageKeys(IdentityIdStorageKeys)(
 		`com.amplify.${provider}`,
 		identifier
 	);
@@ -131,5 +135,3 @@ function getAuthStorageKeys<T extends Record<string, string>>(authKeys: T) {
 			{} as AuthKeys<keyof T & string>
 		);
 }
-
-export const defaultIdentityIdStore = new DefaultIdentityIdStore();

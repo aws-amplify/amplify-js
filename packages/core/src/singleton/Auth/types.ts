@@ -44,34 +44,10 @@ export type Identity = {
 	type: 'guest' | 'primary';
 };
 
-export interface IdenityIdStore {
-	setAuthConfig(authConfig: AuthConfig): void;
-	loadIdentityId(): Promise<Identity | undefined>;
-	storeIdentityId(identityId: Identity): Promise<void>;
-	clearIdentityId(): Promise<void>;
-}
-
-export interface AuthCredentialStore {
-	setAuthConfig(authConfig: AuthConfig): void;
-	loadCredentials(): Promise<
-		(Credentials & { isAuthenticatedCreds: boolean }) | undefined
-	>;
-	storeCredentials(
-		credentials: Credentials & { isAuthenticatedCreds: boolean }
-	): Promise<void>;
-	clearCredentials(): Promise<void>;
-	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
-}
 export interface AWSCredentialsAndIdentityIdProvider {
-	getCredentialsAndIdentityId: ({
-		options,
-		tokens,
-		authConfig,
-	}: {
-		options?: FetchAuthSessionOptions;
-		tokens?: AuthTokens;
-		authConfig?: AuthConfig;
-	}) => Promise<AWSCredentialsAndIdentityId>;
+	getCredentialsAndIdentityId: (
+		getCredentialsOptions: GetCredentialsOptions
+	) => Promise<AWSCredentialsAndIdentityId>;
 	clearCredentials: () => void;
 }
 
@@ -122,7 +98,7 @@ export type UserPoolConfigAndIdentityPoolConfig = {
 	oidcProvider?: string;
 };
 
-type GetCredentialsOptions =
+export type GetCredentialsOptions =
 	| GetCredentialsAuthenticatedUser
 	| GetCredentialsUnauthenticatedUser;
 
@@ -137,7 +113,7 @@ type GetCredentialsUnauthenticatedUser = {
 	authenticated: false;
 	forceRefresh?: boolean;
 	authConfig: AuthConfig;
-	tokens: never;
+	tokens?: never;
 };
 
 export type AWSCredentialsAndIdentityId = {

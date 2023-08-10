@@ -14,22 +14,12 @@ export function assertTokenProviderConfig(
 	});
 }
 
-export function assertCredentialsProviderConfig(authConfig: AuthConfig) {
+export function assertIdentityPoolIdInConfig(authConfig: AuthConfig) {
 	const validConfig = !!authConfig?.identityPoolId;
 	return asserts(validConfig, {
 		name: 'AuthCredentialConfigException',
 		message: 'Auth Credentials provider not configured',
 		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
-	});
-}
-
-export function assertIdentityIdProviderConfig(authConfig: AuthConfig) {
-	const validConfig = !!authConfig?.identityPoolId;
-	return asserts(validConfig, {
-		name: 'AuthIdentityIdConfigException',
-		message: 'Auth IdentityId provider not configured',
-		recoverySuggestion:
-			'Make sure to call Amplify.configure in your app and include valid identityPoolId',
 	});
 }
 

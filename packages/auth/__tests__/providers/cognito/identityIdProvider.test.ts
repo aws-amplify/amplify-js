@@ -1,15 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { cognitoIdentityIdProvider } from '../../../src/providers/cognito';
 import { authAPITestParams } from './testUtils/authApiTestParams';
-
-import * as client from '../../../src/providers/cognito/utils/clients/IdentityIdForPoolIdClient';
-import { GetIdCommandOutput } from '@aws-sdk/client-cognito-identity';
-import { AmplifyV6, Identity, defaultIdentityIdStore } from '@aws-amplify/core';
+import { AmplifyV6, Identity } from '@aws-amplify/core';
 
 // TODO(V6): import these from top level core/ and not lib/
 import * as cogId from '@aws-amplify/core/lib/AwsClients/CognitoIdentity';
+import { defaultIdentityIdStore } from '../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
+import { cognitoIdentityIdProvider } from '../../../src/providers/cognito/credentialsProvider/IdentityIdProvider';
 jest.mock('@aws-amplify/core/lib/AwsClients/CognitoIdentity');
 
 const loadIdentityIdSpy = jest.spyOn(defaultIdentityIdStore, 'loadIdentityId');
@@ -35,15 +33,15 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		jest.spyOn(AmplifyV6, 'getConfig').mockImplementationOnce(() => ampConfig);
 
 		getIdClientSpy.mockImplementation(
-			async (config: {}, params: client.IdentityIdForPoolIdClientInput) => {
+			async (config: {}, params: cogId.GetIdInput) => {
 				if (params.Logins && Object.keys(params.Logins).length === 0) {
 					return {
 						IdentityId: authAPITestParams.GuestIdentityId.id,
-					} as GetIdCommandOutput;
+					} as cogId.GetIdOutput;
 				} else {
 					return {
 						IdentityId: authAPITestParams.PrimaryIdentityId.id,
-					} as GetIdCommandOutput;
+					} as cogId.GetIdOutput;
 				}
 			}
 		);

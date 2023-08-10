@@ -1,16 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Logger,
-	AuthConfig,
-	AuthTokens,
-	Identity,
-	defaultIdentityIdStore,
-} from '@aws-amplify/core';
+import { Logger, AuthConfig, AuthTokens, Identity } from '@aws-amplify/core';
 import { formLoginsMap } from './credentialsProvider';
 import { AuthError } from '../../../errors/AuthError';
 import { getId } from '@aws-amplify/core';
+import { defaultIdentityIdStore } from '.';
 
 const logger = new Logger('CognitoIdentityIdProvider');
 
@@ -32,8 +27,8 @@ export async function cognitoIdentityIdProvider({
 	authConfig?: AuthConfig;
 }): Promise<string> {
 	if (authConfig) defaultIdentityIdStore.setAuthConfig(authConfig);
-	let identityId = await defaultIdentityIdStore.loadIdentityId();
 
+	let identityId = await defaultIdentityIdStore.loadIdentityId();
 	if (tokens) {
 		// Tokens are available so return primary identityId
 		if (identityId && identityId.type === 'primary') {
