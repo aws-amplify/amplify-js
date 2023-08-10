@@ -8,7 +8,7 @@ import {
 } from '../../../types';
 import { StorageGetPropertiesResult } from '../../../types/results';
 
-type S3Item = {
+type S3ObjectInformation = {
 	/**
 	 * Key of the object
 	 */
@@ -22,6 +22,10 @@ type S3Item = {
 	 */
 	contentLength?: number;
 	/**
+	 * A standard MIME type describing the format of the object data.
+	 */
+	contentType?: string;
+	/**
 	 * An entity tag (ETag) is an opaque identifier assigned by a web server to a specific version of a resource found at
 	 * a URL.
 	 */
@@ -32,11 +36,16 @@ type S3Item = {
 	 */
 	metadata?: Record<string, string>;
 	//TODO add versionId
+	/**
+	 * VersionId used to reference a specific version of the object.
+	 */
+	versionId?: string;
 };
 
-export type S3DownloadDataResult = StorageDownloadDataResult & S3Item;
+export type S3DownloadDataResult = StorageDownloadDataResult &
+	S3ObjectInformation;
 
-export type S3DownloadFileResult = S3Item;
+export type S3DownloadFileResult = S3ObjectInformation;
 
 export type S3GetUrlResult = StorageGetUrlResult;
 
@@ -44,4 +53,4 @@ export type S3UploadDataResult = StorageUploadResult;
 
 export type S3UploadFileResult = StorageUploadResult;
 
-export type S3GetPropertiesResult = StorageGetPropertiesResult & S3Item;
+export type S3GetPropertiesResult = S3ObjectInformation;

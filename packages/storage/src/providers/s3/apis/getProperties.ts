@@ -45,5 +45,6 @@ export const getProperties = async function (
 		eTag: response.ETag,
 		lastModified: response.LastModified,
 		metadata: response.Metadata,
+		versionId: response.VersionId,
 	};
 };
