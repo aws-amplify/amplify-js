@@ -136,7 +136,7 @@ export {
 	GetCredentialsOptions,
 } from './singleton/types';
 
-//AWSClients exports
+// AWSClients exports
 export {
 	getCredentialsForIdentity,
 	getId,
