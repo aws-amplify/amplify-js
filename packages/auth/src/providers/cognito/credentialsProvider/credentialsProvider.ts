@@ -35,12 +35,20 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		getCredentialsOptions: GetCredentialsOptions
 	): Promise<AWSCredentialsAndIdentityId> {
 		const isAuthenticated = getCredentialsOptions.authenticated;
-		let tokens = getCredentialsOptions.tokens;
+		const tokens = getCredentialsOptions.tokens;
 		const authConfig =
 			getCredentialsOptions.authConfig as UserPoolConfigAndIdentityPoolConfig;
 		const forceRefresh = getCredentialsOptions.forceRefresh;
 		// TODO(V6): Listen to changes to AuthTokens and update the credentials
 		const identityId = await cognitoIdentityIdProvider({ tokens, authConfig });
+		if (!identityId) {
+			throw new AuthError({
+				name: 'IdentityIdConfigException',
+				message: 'No Cognito Identity Id provided',
+				recoverySuggestion: 'Make sure to pass a valid identityId.',
+			});
+		}
+		console.log('identityId: ', identityId);
 
 		if (forceRefresh) {
 			this.clearCredentials();
@@ -86,13 +94,14 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		// use identityId to obtain guest credentials
 		// save credentials in-memory
-		// No logins params should be passed for guest creds: https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetCredentialsForIdentity.html#API_GetCredentialsForIdentity_RequestSyntax
+		// No logins params should be passed for guest creds:
+		// https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetCredentialsForIdentity.html
 
 		const region = authConfig.identityPoolId.split(':')[0];
 
 		// TODO(V6): When unauth role is diabled and crdentials are absent, we need to return null not throw an error
 		const clientResult = await getCredentialsForIdentity(
-			{ region: region },
+			{ region },
 			{
 				IdentityId: identityId,
 			}
@@ -153,7 +162,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		this.clearCredentials();
 
 		// TODO(V6): oidcProvider should come from config, TBD
-		let logins = authTokens.idToken
+		const logins = authTokens.idToken
 			? formLoginsMap(authTokens.idToken.toString(), 'COGNITO')
 			: {};
 		const identityPoolId = authConfig.identityPoolId;
@@ -168,7 +177,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		}
 		const region = identityPoolId.split(':')[0];
 		const clientResult = await getCredentialsForIdentity(
-			{ region: region },
+			{ region },
 			{
 				IdentityId: identityId,
 				Logins: logins,
@@ -237,6 +246,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 export function formLoginsMap(idToken: string, oidcProvider: string) {
 	const authConfig = AmplifyV6.getConfig().Auth;
 	const userPoolId = authConfig?.userPoolId;
+	const res = {};
 	if (!userPoolId) {
 		logger.debug('userPoolId is not found in the config');
 		throw new AuthError({
@@ -268,7 +278,6 @@ export function formLoginsMap(idToken: string, oidcProvider: string) {
 				'Currently only COGNITO as OIDC provider is supported',
 		});
 	}
-	let res = {};
 	res[domainName] = idToken;
 	return res;
 }

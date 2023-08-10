@@ -1,10 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Logger, AuthConfig, AuthTokens, Identity } from '@aws-amplify/core';
+import {
+	Logger,
+	AuthConfig,
+	AuthTokens,
+	Identity,
+	getId,
+} from '@aws-amplify/core';
 import { formLoginsMap } from './credentialsProvider';
 import { AuthError } from '../../../errors/AuthError';
-import { getId } from '@aws-amplify/core';
 import { defaultIdentityIdStore } from '.';
 
 const logger = new Logger('CognitoIdentityIdProvider');
@@ -34,10 +39,10 @@ export async function cognitoIdentityIdProvider({
 		if (identityId && identityId.type === 'primary') {
 			return identityId.id;
 		} else {
-			let logins = tokens.idToken
+			const logins = tokens.idToken
 				? formLoginsMap(tokens.idToken.toString(), 'COGNITO')
 				: {};
-			let generatedIdentityId = await generateIdentityId(logins, authConfig);
+			const generatedIdentityId = await generateIdentityId(logins, authConfig);
 
 			if (identityId && identityId.id === generatedIdentityId) {
 				// if guestIdentity is found and used by GetCredentialsForIdentity
@@ -80,21 +85,21 @@ async function generateIdentityId(
 		throw new AuthError({
 			name: 'IdentityPoolIdConfigException',
 			message: 'No Cognito Identity pool provided',
-			recoverySuggestion:
-				'Make sure to pass a valid identityPoolId in the configuration.',
+			recoverySuggestion: 'Make sure to pass a valid identityPoolId to config.',
 		});
 	}
 	const region = identityPoolId.split(':')[0];
 
 	// IdentityId is absent so get it using IdentityPoolId with Cognito's GetId API
-	// Region is not needed for this API as suggested by the API spec: https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetId.html
+	// Region is not needed for this API as suggested by the API spec:
+	// https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetId.html
 	const idResult =
 		// for a first-time user, this will return a brand new identity
 		// for a returning user, this will retrieve the previous identity assocaited with the logins
 		(
 			await getId(
 				{
-					region: region,
+					region,
 				},
 				{
 					IdentityPoolId: identityPoolId,
