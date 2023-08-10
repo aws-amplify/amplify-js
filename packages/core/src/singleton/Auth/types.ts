@@ -56,7 +56,7 @@ export type TokenProvider = {
 		forceRefresh,
 	}: {
 		forceRefresh?: boolean;
-	}) => Promise<AuthTokens>;
+	}) => Promise<AuthTokens | null>;
 };
 
 export type FetchAuthSessionOptions = {
@@ -111,7 +111,6 @@ type GetCredentialsUnauthenticatedUser = {
 	authenticated: false;
 	forceRefresh?: boolean;
 	authConfig: AuthConfig;
-	tokens?: never;
 };
 
 export type AWSCredentialsAndIdentityId = {
