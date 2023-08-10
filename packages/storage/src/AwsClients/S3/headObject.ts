@@ -61,6 +61,7 @@ const headObjectDeserializer = async (
 ): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
+		// TODO need to assert service error
 		throw new StorageError({ ...error }); // basically create `StorageError` with name and message
 	} else {
 		const contents = {
