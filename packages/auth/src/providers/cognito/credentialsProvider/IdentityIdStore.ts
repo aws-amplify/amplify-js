@@ -8,8 +8,8 @@ import {
 	assertIdentityPooIdConfig,
 } from '@aws-amplify/core';
 import { IdentityIdStorageKeys } from './types';
-import { AuthKeys } from '../tokenProvider/types';
 import { AuthError } from '../../../errors/AuthError';
+import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
 
 export class DefaultIdentityIdStore {
 	keyValueStorage: KeyValueStorageInterface;
@@ -123,15 +123,3 @@ const createKeysForAuthStorage = (provider: string, identifier: string) => {
 		identifier
 	);
 };
-
-function getAuthStorageKeys<T extends Record<string, string>>(authKeys: T) {
-	const keys = Object.values({ ...authKeys });
-	return (prefix: string, identifier: string) =>
-		keys.reduce(
-			(acc, authKey) => ({
-				...acc,
-				[authKey]: `${prefix}.${identifier}.${authKey}`,
-			}),
-			{} as AuthKeys<keyof T & string>
-		);
-}

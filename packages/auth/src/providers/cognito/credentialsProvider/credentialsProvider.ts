@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Credentials } from '@aws-sdk/types';
 import { cognitoIdentityIdProvider, setIdentityId } from './IdentityIdProvider';
 import {
 	Logger,
@@ -73,8 +72,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	): Promise<AWSCredentialsAndIdentityId> {
 		if (
 			this._credentialsAndIdentityId &&
-			!this._isExpired(this._credentialsAndIdentityId.credentials) &&
-			!this._isPastTTL() &&
+			!this.isPastTTL() &&
 			this._credentialsAndIdentityId.isAuthenticatedCreds === false
 		) {
 			logger.info(
@@ -142,8 +140,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	): Promise<AWSCredentialsAndIdentityId> {
 		if (
 			this._credentialsAndIdentityId &&
-			!this._isExpired(this._credentialsAndIdentityId.credentials) &&
-			!this._isPastTTL() &&
+			!this.isPastTTL() &&
 			this._credentialsAndIdentityId.isAuthenticatedCreds === true
 		) {
 			logger.debug(
@@ -214,26 +211,23 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		}
 	}
 
-	private _isExpired(credentials: Credentials): boolean {
-		if (!credentials) {
-			logger.debug('no credentials for expiration check');
-			return true;
-		}
-		const ts = Date.now();
+	// TODO(V6): Make sure this check is not needed, it is present in v5
+	// private _isExpired(credentials: Credentials): boolean {
+	// 	const ts = Date.now();
 
-		/* returns date object.
-			https://github.com/aws/aws-sdk-js-v3/blob/v1.0.0-beta.1/packages/types/src/credentials.ts#L26
-		*/
-		const { expiration } = credentials;
-		// TODO(V6): when  there is no expiration should we consider it not expired?
-		if (!expiration) return false;
-		const expDate = new Date(Number.parseInt(expiration.toString()) * 1000);
-		const isExp = expDate.getTime() <= ts;
-		logger.debug('are the credentials expired?', isExp);
-		return isExp;
-	}
+	// 	/* returns date object.
+	// 		https://github.com/aws/aws-sdk-js-v3/blob/v1.0.0-beta.1/packages/types/src/credentials.ts#L26
+	// 	*/
+	// 	const { expiration } = credentials;
+	// 	// TODO(V6): when  there is no expiration should we consider it not expired?
+	// 	if (!expiration) return false;
+	// 	const expDate = new Date(Number.parseInt(expiration.toString()) * 1000);
+	// 	const isExp = expDate.getTime() <= ts;
+	// 	logger.debug('are the credentials expired?', isExp);
+	// 	return isExp;
+	// }
 
-	private _isPastTTL(): boolean {
+	private isPastTTL(): boolean {
 		return this._nextCredentialsRefresh === undefined
 			? true
 			: this._nextCredentialsRefresh <= Date.now();

@@ -6,8 +6,8 @@ import { AmplifyV6, Identity } from '@aws-amplify/core';
 
 // TODO(V6): import these from top level core/ and not lib/
 import * as cogId from '@aws-amplify/core/lib/AwsClients/CognitoIdentity';
-import { defaultIdentityIdStore } from '../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
 import { cognitoIdentityIdProvider } from '../../../src/providers/cognito/credentialsProvider/IdentityIdProvider';
+import { defaultIdentityIdStore } from '../../../src/providers/cognito/credentialsProvider';
 jest.mock('@aws-amplify/core/lib/AwsClients/CognitoIdentity');
 
 const loadIdentityIdSpy = jest.spyOn(defaultIdentityIdStore, 'loadIdentityId');
