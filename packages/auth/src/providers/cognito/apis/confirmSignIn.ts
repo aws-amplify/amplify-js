@@ -23,7 +23,6 @@ import {
 } from '../utils/signInStore';
 import { AuthError } from '../../../errors/AuthError';
 import {
-	cacheCognitoTokens,
 	getSignInResult,
 	getSignInResultFromError,
 	handleChallengeName,
@@ -33,6 +32,7 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { AmplifyV6 } from '@aws-amplify/core';
+import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
