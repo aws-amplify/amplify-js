@@ -6,7 +6,7 @@ import { StorageOptions, StorageOperationRequest } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { GetPropertiesException, S3GetPropertiesResult } from '../types';
-import { getStorageConfig, getFinalKey } from '../utils/apiHelper';
+import { resolveStorageConfig, getKeyWithPrefix } from '../utils';
 
 /**
  * Get Properties of the object
@@ -21,17 +21,17 @@ import { getStorageConfig, getFinalKey } from '../utils/apiHelper';
 export const getProperties = async function (
 	req: StorageOperationRequest<StorageOptions>
 ): Promise<S3GetPropertiesResult> {
-	const { awsCredsIdentityId, awsCreds, defaultAccessLevel, bucket, region } =
-		await getStorageConfig();
-	// TODO should we use targetIdentityId from req as well
+	const { identityId, credentials, defaultAccessLevel, bucket, region } =
+		await resolveStorageConfig();
+
 	const { key, options: { accessLevel = defaultAccessLevel } = {} } = req;
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
-	const finalKey = getFinalKey(accessLevel, awsCredsIdentityId, key);
+	const finalKey = getKeyWithPrefix(accessLevel!, identityId!, key);
 	const headObjectOptions = {
 		accessLevel,
-		targetIdentityId: awsCredsIdentityId,
+		targetIdentityId: identityId,
 		region,
-		credentials: awsCreds,
+		credentials: credentials,
 	};
 	const headObjectParams: HeadObjectInput = {
 		Bucket: bucket,
