@@ -52,7 +52,7 @@ executors:
 
   macos-executor:
     macos:
-      xcode: 13.2.1
+      xcode: 13.4.1
     resource_class: large
 
   webkit-test-executor:
