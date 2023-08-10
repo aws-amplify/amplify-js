@@ -7,7 +7,6 @@ jest.mock('../../../src/AwsClients/S3');
 const headObject = jest.fn();
 describe('getProperties happy path case', () => {
 	test.skip('getProperties return result', async () => {
-		// TODO test credentials
 		headObject.mockImplementation(() => {
 			return {
 				Key: 'key',
@@ -15,17 +14,16 @@ describe('getProperties happy path case', () => {
 				ContentType: 'text/plain',
 				ETag: 'etag',
 				LastModified: 'last-modified',
-				Metadata: { key: 'value' },
+				VersionId: 'version-id',
 			};
 		});
-		const metadata = { key: 'value' };
 		expect(await getProperties({ key: 'key' })).toEqual({
 			key: 'key',
 			contentLength: '100',
 			contentType: 'text/plain',
 			eTag: 'etag',
 			lastModified: 'last-modified',
-			metadata,
+			versionId: 'version-id',
 		});
 	});
 });
