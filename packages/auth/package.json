@@ -43,11 +43,13 @@
   "files": [
     "lib",
     "lib-esm",
-    "src"
+    "src",
+    "internals"
   ],
   "dependencies": {
     "@aws-amplify/core": "5.8.0",
     "amazon-cognito-identity-js": "6.3.1",
+    "buffer": "4.9.2",
     "tslib": "^1.8.0",
     "url": "0.11.0"
   },
@@ -59,7 +61,7 @@
       "name": "Auth (top-level class)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, Auth }",
-      "limit": "55.15 kB"
+      "limit": "56.38 kB"
     }
   ],
   "jest": {
