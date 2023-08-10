@@ -56,6 +56,7 @@ describe('Amplify config test', () => {
 
 describe('Session tests', () => {
 	test('fetch empty session', async () => {
+		expect.assertions(1);
 		const config: ArgumentTypes<typeof Amplify.configure>[0] = {
 			Auth: {
 				userPoolId: 'us-east-1:aaaaaaa',
@@ -66,8 +67,9 @@ describe('Session tests', () => {
 
 		Amplify.configure(config);
 
-		const session = await Amplify.Auth.fetchAuthSession();
-		// session.
+		const action = async () => await Amplify.Auth.fetchAuthSession();
+
+		expect(action()).rejects.toThrow('No tokenProvider provided');
 	});
 
 	test('fetch user after no credentials', async () => {
@@ -108,6 +110,8 @@ describe('Session tests', () => {
 	});
 
 	test('fetch session with token and credentials', async () => {
+		expect.assertions(4);
+
 		const config: ArgumentTypes<typeof Amplify.configure>[0] = {
 			Auth: {
 				userPoolId: 'us-east-1:aaaaaaa',
@@ -191,6 +195,75 @@ describe('Session tests', () => {
 				},
 				idToken: undefined,
 			},
+			authenticated: true,
+		});
+	});
+
+	test('fetch session without tokens and credentials', async () => {
+		expect.assertions(4);
+
+		const config: ArgumentTypes<typeof Amplify.configure>[0] = {
+			Auth: {
+				userPoolId: 'us-east-1:aaaaaaa',
+				identityPoolId: 'us-east-1:bbbbb',
+				userPoolWebClientId: 'aaaaaaaaaaaa',
+			},
+		};
+
+		const credentialsSpy = jest.fn(
+			async ({
+				tokens,
+				authConfig,
+				identityId,
+			}): Promise<AWSCredentialsAndIdentityId> => {
+				return {
+					credentials: {
+						accessKeyId: 'accessKeyIdValue',
+						secretAccessKey: 'secretAccessKeyValue',
+						sessionToken: 'sessionTokenValue',
+						expiration: new Date(123),
+					},
+					identityId: 'identityIdValue',
+				};
+			}
+		);
+
+		const spyTokenProvider = jest.fn(async () => {
+			return null;
+		});
+
+		Amplify.configure(config, {
+			Auth: {
+				credentialsProvider: {
+					getCredentialsAndIdentityId: credentialsSpy,
+					clearCredentials: () => {},
+				},
+				tokenProvider: {
+					getTokens: spyTokenProvider,
+				},
+			},
+		});
+
+		const session = await Amplify.Auth.fetchAuthSession();
+
+		expect(session.tokens).toEqual(null);
+
+		expect(session.identityId).toBe('identityIdValue');
+
+		expect(session.credentials).toEqual({
+			accessKeyId: 'accessKeyIdValue',
+			secretAccessKey: 'secretAccessKeyValue',
+			sessionToken: 'sessionTokenValue',
+			expiration: new Date(123),
+		});
+
+		expect(credentialsSpy).toBeCalledWith({
+			authConfig: {
+				identityPoolId: 'us-east-1:bbbbb',
+				userPoolId: 'us-east-1:aaaaaaa',
+				userPoolWebClientId: 'aaaaaaaaaaaa',
+			},
+			authenticated: false,
 		});
 	});
 
@@ -228,7 +301,7 @@ describe('Session tests', () => {
 	test('refresh tokens with forceRefresh failed', async () => {
 		expect.assertions(2);
 		const auth = new Auth();
-		const tokenProvider = jest.fn(async () => {
+		const tokenProvider = jest.fn(() => {
 			throw new Error('no no no');
 		});
 
@@ -245,8 +318,11 @@ describe('Session tests', () => {
 			}
 		);
 
-		const session = await auth.fetchAuthSession({ forceRefresh: true });
-		expect(session.tokens).toBe(undefined);
+		const action = async () =>
+			await auth.fetchAuthSession({ forceRefresh: true });
+
+		await expect(action()).rejects.toThrow('no no no');
+
 		expect(tokenProvider).toBeCalled();
 	});
 });
