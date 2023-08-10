@@ -38,7 +38,7 @@
         "./lib-esm/index.d.ts"
       ],
       "pinpoint": [
-        "./lib-esm/providers/pinpoint/index.d.ts"
+        "./lib-esm/Providers/pinpoint/index.d.ts"
       ]
     }
   },
@@ -49,9 +49,9 @@
       "require": "./lib/index.js"
     },
     "./pinpoint": {
-      "types": "./lib-esm/providers/pinpoint/index.d.ts",
-      "import": "./lib-esm/providers/pinpoint/index.js",
-      "require": "./lib/providers/pinpoint/index.js"
+      "types": "./lib-esm/Providers/pinpoint/index.d.ts",
+      "import": "./lib-esm/Providers/pinpoint/index.js",
+      "require": "./lib/Providers/pinpoint/index.js"
     },
     "./package.json": "./package.json"
   },
