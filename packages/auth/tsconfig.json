@@ -4,5 +4,5 @@
 		"importHelpers": false,
 		"types": ["jest"]
 	},
-	"include": ["src"],
+	"include": ["src"]
 }
