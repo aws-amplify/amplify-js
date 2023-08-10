@@ -13,6 +13,7 @@ import type {
 	HeadObjectCommandOutput,
 } from './types';
 import {
+	deserializeMetadata,
 	deserializeNumber,
 	deserializeTimestamp,
 	map,
@@ -72,6 +73,7 @@ const headObjectDeserializer = async (
 				LastModified: ['last-modified', deserializeTimestamp],
 				VersionId: 'x-amz-version-id',
 			}),
+			Metadata: deserializeMetadata(response.headers),
 		};
 		return {
 			...contents,
