@@ -11,11 +11,10 @@ module.exports = {
 	collectCoverage: true,
 	globals: {
 		'ts-jest': {
-			diagnostics: true,
+			diagnostics: false,
 			tsConfig: {
-				lib: ['es5', 'es2015', 'dom', 'esnext.asynciterable', 'es2017.object'],
 				allowJs: true,
-				esModuleInterop: true,
+				noEmitOnError: false,
 			},
 		},
 	},
