@@ -20,6 +20,7 @@
     "build:cjs": "rimraf lib && tsc -p ./tsconfig.build.json -m commonjs --outDir lib",
     "build:esm": "rimraf lib-esm && tsc -p ./tsconfig.build.json -m esnext --outDir lib-esm",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "test": "echo \"No tests\"",
     "clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*"
   },

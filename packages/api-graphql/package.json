@@ -56,6 +56,7 @@
     "@aws-amplify/core": "5.8.0",
     "@aws-amplify/pubsub": "5.5.0",
     "graphql": "15.8.0",
+    "tslib": "^1.8.0",
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
   },
@@ -64,7 +65,7 @@
       "name": "API (GraphQL client)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, GraphQLAPI }",
-      "limit": "90.46 kB"
+      "limit": "91.7 kB"
     }
   ],
   "jest": {
@@ -88,8 +89,8 @@
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
     "testPathIgnorePatterns": [
-      "__tests__/fixtures/",
-      "__tests__/utils/"
+      "__tests__/fixtures",
+      "__tests__/utils"
     ],
     "moduleFileExtensions": [
       "ts",
