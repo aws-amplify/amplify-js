@@ -1752,7 +1752,7 @@ class DataStore {
 				const initPatchesTuple = initPatches.has(model)
 					? ([initPatches.get(model)!, {}] as [
 							Patch[],
-							Readonly<Record<string, any>>
+							Readonly<Record<string, any>>,
 					  ])
 					: undefined;
 

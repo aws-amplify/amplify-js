@@ -1,5 +1,5 @@
 const TerserPlugin = require('terser-webpack-plugin');
-const CompressionPlugin = require("compression-webpack-plugin");
+const CompressionPlugin = require('compression-webpack-plugin');
 
 /* eslint-disable */
 var webpack = require('webpack');
@@ -34,7 +34,7 @@ module.exports = {
 		new webpack.BannerPlugin({ banner, raw: true }),
 		new CompressionPlugin({
 			include: /\.min\.js$/,
-		})
+		}),
 	],
 	optimization: {
 		minimizer: [
@@ -45,8 +45,8 @@ module.exports = {
 					sourceMap: true,
 				},
 				include: /\.min\.js$/,
-			})
-		]
+			}),
+		],
 	},
 	module: {
 		rules: [

@@ -19,8 +19,8 @@ describe('cryptoSecureRandomInt test', () => {
 			},
 		}));
 
-		const cryptoSecureRandomInt = require('../src/utils/cryptoSecureRandomInt')
-			.default;
+		const cryptoSecureRandomInt =
+			require('../src/utils/cryptoSecureRandomInt').default;
 		expect(window.crypto).toBeTruthy();
 		expect(cryptoSecureRandomInt()).toBe(12345);
 	});
@@ -33,8 +33,8 @@ describe('cryptoSecureRandomInt test', () => {
 			},
 		}));
 
-		const cryptoSecureRandomInt = require('../src/utils/cryptoSecureRandomInt')
-			.default;
+		const cryptoSecureRandomInt =
+			require('../src/utils/cryptoSecureRandomInt').default;
 		expect(window.msCrypto).toBeTruthy();
 		expect(cryptoSecureRandomInt()).toBe(67890);
 	});
@@ -50,8 +50,8 @@ describe('cryptoSecureRandomInt test', () => {
 				readInt32LE: jest.fn().mockReturnValueOnce(54321),
 			}));
 
-		const cryptoSecureRandomInt = require('../src/utils/cryptoSecureRandomInt')
-			.default;
+		const cryptoSecureRandomInt =
+			require('../src/utils/cryptoSecureRandomInt').default;
 		expect(cryptoSecureRandomInt()).toBe(54321);
 
 		randomBytesMock.mockRestore();

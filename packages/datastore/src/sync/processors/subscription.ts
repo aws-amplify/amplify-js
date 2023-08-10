@@ -277,7 +277,7 @@ class SubscriptionProcessor {
 
 	start(): [
 		Observable<CONTROL_MSG>,
-		Observable<[TransformerMutationType, SchemaModel, PersistentModel]>
+		Observable<[TransformerMutationType, SchemaModel, PersistentModel]>,
 	] {
 		this.runningProcesses =
 			this.runningProcesses || new BackgroundProcessManager();

@@ -456,7 +456,7 @@ export type Identifier<T> =
 
 export type IdentifierFields<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = never
+	M extends PersistentModelMetaData<T> = never,
 > = (MetadataOrDefault<T, M>['identifier'] extends
 	| ManagedIdentifier<any, any>
 	| OptionallyManagedIdentifier<any, any>
@@ -471,7 +471,7 @@ export type IdentifierFields<
 
 export type IdentifierFieldsForInit<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T>
+	M extends PersistentModelMetaData<T>,
 > = MetadataOrDefault<T, M>['identifier'] extends
 	| DefaultPersistentModelMetaData
 	| ManagedIdentifier<T, any>
@@ -547,7 +547,7 @@ export type DefaultPersistentModelMetaData = {
 
 export type MetadataOrDefault<
 	T extends PersistentModel,
-	_ extends PersistentModelMetaData<T> = never
+	_ extends PersistentModelMetaData<T> = never,
 > = T extends {
 	[__modelMeta__]: PersistentModelMetaData<T>;
 }
@@ -558,7 +558,7 @@ export type PersistentModel = Readonly<Record<string, any>>;
 
 export type MetadataReadOnlyFields<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T>
+	M extends PersistentModelMetaData<T>,
 > = Extract<
 	MetadataOrDefault<T, M>['readOnlyFields'] | M['readOnlyFields'],
 	keyof T
@@ -571,7 +571,7 @@ export type MetadataReadOnlyFields<
 // This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier)
 export type ModelInitBase<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = {}
+	M extends PersistentModelMetaData<T> = {},
 > = Omit<
 	T,
 	typeof __modelMeta__ | IdentifierFields<T, M> | MetadataReadOnlyFields<T, M>
@@ -585,7 +585,7 @@ export type ModelInitBase<
 
 export type ModelInit<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = {}
+	M extends PersistentModelMetaData<T> = {},
 > = {
 	[P in keyof OmitOptionalRelatives<ModelInitBase<T, M>>]: SettableFieldType<
 		ModelInitBase<T, M>[P]
@@ -610,7 +610,7 @@ type DeepWritable<T> = {
 
 export type MutableModel<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = {}
+	M extends PersistentModelMetaData<T> = {},
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
 > = DeepWritable<
@@ -626,7 +626,7 @@ export type ModelInstanceMetadata = {
 
 export type IdentifierFieldValue<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T>
+	M extends PersistentModelMetaData<T>,
 > = MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
 	? MetadataOrDefault<T, M>['identifier']['fields'] extends [any]
 		? T[MetadataOrDefault<T, M>['identifier']['fields'][0]]
@@ -635,7 +635,7 @@ export type IdentifierFieldValue<
 
 export type IdentifierFieldOrIdentifierObject<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T>
+	M extends PersistentModelMetaData<T>,
 > = Pick<T, IdentifierFields<T, M>> | IdentifierFieldValue<T, M>;
 
 export function isIdentifierObject<T extends PersistentModel>(
@@ -680,7 +680,7 @@ export type DataStoreSnapshot<T extends PersistentModel> = {
 
 export type PredicateExpression<
 	M extends PersistentModel,
-	FT
+	FT,
 > = TypeName<FT> extends keyof MapTypeToOperands<FT>
 	? (
 			operator: keyof MapTypeToOperands<FT>[TypeName<FT>],
@@ -845,7 +845,7 @@ export type SortPredicate<T extends PersistentModel> = {
 
 export type SortPredicateExpression<
 	M extends PersistentModel,
-	FT
+	FT,
 > = TypeName<FT> extends keyof MapTypeToOperands<FT>
 	? (sortDirection: keyof typeof SortDirection) => SortPredicate<M>
 	: never;
@@ -1030,7 +1030,7 @@ type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
 
 export async function syncExpression<
 	T extends PersistentModel,
-	A extends Option<T>
+	A extends Option<T>,
 >(
 	modelConstructor: PersistentModelConstructor<T>,
 	conditionProducer: ConditionProducer<T, A>
@@ -1153,7 +1153,7 @@ export type RecursiveModelPredicateExtender<RT extends PersistentModel> = (
 ) => PredicateInternalsKey;
 
 export type RecursiveModelPredicateAggregateExtender<
-	RT extends PersistentModel
+	RT extends PersistentModel,
 > = (lambda: RecursiveModelPredicate<RT>) => PredicateInternalsKey[];
 
 export type RecursiveModelPredicateOperator<RT extends PersistentModel> = (
@@ -1205,7 +1205,7 @@ export type ModelPredicateAggregateExtender<RT extends PersistentModel> = (
 
 export type ValuePredicate<
 	RT extends PersistentModel,
-	MT extends MatchableTypes
+	MT extends MatchableTypes,
 > = {
 	[K in AllFieldOperators]: K extends 'between'
 		? (

@@ -36,7 +36,10 @@ export class InternalCognitoUserPool {
 		if (!UserPoolId || !ClientId) {
 			throw new Error('Both UserPoolId and ClientId are required.');
 		}
-		if (UserPoolId.length > USER_POOL_ID_MAX_LENGTH || !/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId)) {
+		if (
+			UserPoolId.length > USER_POOL_ID_MAX_LENGTH ||
+			!/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId)
+		) {
 			throw new Error('Invalid UserPoolId format.');
 		}
 		const region = UserPoolId.split('_')[0];
@@ -118,26 +121,31 @@ export class InternalCognitoUserPool {
 		if (this.getUserContextData(username)) {
 			jsonReq.UserContextData = this.getUserContextData(username);
 		}
-		this.client.request('SignUp', jsonReq, (err, data) => {
-			if (err) {
-				return callback(err, null);
-			}
+		this.client.request(
+			'SignUp',
+			jsonReq,
+			(err, data) => {
+				if (err) {
+					return callback(err, null);
+				}
 
-			const cognitoUser = {
-				Username: username,
-				Pool: this,
-				Storage: this.storage,
-			};
+				const cognitoUser = {
+					Username: username,
+					Pool: this,
+					Storage: this.storage,
+				};
 
-			const returnData = {
-				user: new CognitoUser(cognitoUser),
-				userConfirmed: data.UserConfirmed,
-				userSub: data.UserSub,
-				codeDeliveryDetails: data.CodeDeliveryDetails,
-			};
+				const returnData = {
+					user: new CognitoUser(cognitoUser),
+					userConfirmed: data.UserConfirmed,
+					userSub: data.UserSub,
+					codeDeliveryDetails: data.CodeDeliveryDetails,
+				};
 
-			return callback(null, returnData);
-		}, userAgentValue);
+				return callback(null, returnData);
+			},
+			userAgentValue
+		);
 	}
 
 	/**
@@ -175,15 +183,17 @@ export class InternalCognitoUserPool {
 			return undefined;
 		}
 		/* eslint-disable */
-		const amazonCognitoAdvancedSecurityDataConst = AmazonCognitoAdvancedSecurityData;
+		const amazonCognitoAdvancedSecurityDataConst =
+			AmazonCognitoAdvancedSecurityData;
 		/* eslint-enable */
 
 		if (this.advancedSecurityDataCollectionFlag) {
-			const advancedSecurityData = amazonCognitoAdvancedSecurityDataConst.getData(
-				username,
-				this.userPoolId,
-				this.clientId
-			);
+			const advancedSecurityData =
+				amazonCognitoAdvancedSecurityDataConst.getData(
+					username,
+					this.userPoolId,
+					this.clientId
+				);
 			if (advancedSecurityData) {
 				const userContextData = {
 					EncodedData: advancedSecurityData,

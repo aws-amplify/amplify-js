@@ -33,7 +33,7 @@ type Last<T extends any[]> = T[Exclude<keyof T, keyof Tail<T>>];
 // Uses position of params per API to determine which parameter to target
 type ConfigParameter<
 	F extends (...args: any) => any,
-	U extends StorageProviderApi
+	U extends StorageProviderApi,
 > = Parameters<F>[StorageProviderApiOptionsIndexMap[U]];
 
 export interface StorageOptions {
@@ -80,7 +80,7 @@ type StorageOperationConfig<
 		| StorageProvider
 		| StorageProviderWithCopy
 		| StorageProviderWithGetProperties,
-	U extends StorageProviderApi
+	U extends StorageProviderApi,
 > = ReturnType<T['getProviderName']> extends 'AWSS3'
 	? ConfigParameter<AWSS3Provider[U], U> // check if it has 'copy' function because 'copy' is optional
 	: T extends StorageProviderWithGetProperties & StorageProviderWithCopy
@@ -156,7 +156,7 @@ export type StorageCopyConfig<T extends Record<string, any>> =
 type PickProviderOutput<
 	DefaultOutput,
 	T,
-	api extends StorageProviderApi
+	api extends StorageProviderApi,
 > = T extends StorageProvider
 	? T['getProviderName'] extends 'AWSS3'
 		? DefaultOutput
@@ -212,7 +212,7 @@ export type StorageGetPropertiesOutput<T> = PickProviderOutput<
  */
 export type StorageOperationConfigMap<
 	Default,
-	T extends Record<string, any>
+	T extends Record<string, any>,
 > = T extends { provider: string }
 	? T extends { provider: 'AWSS3' }
 		? Default

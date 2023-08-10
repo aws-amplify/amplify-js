@@ -295,7 +295,7 @@ export class InternalStorageClass {
 		customUserAgentDetails?: CustomUserAgentDetails
 	): StorageGetOutput<T>;
 	public get<
-		T extends StorageProvider | { [key: string]: any; download?: boolean }
+		T extends StorageProvider | { [key: string]: any; download?: boolean },
 	>(
 		key: string,
 		config?: StorageGetConfig<T>,

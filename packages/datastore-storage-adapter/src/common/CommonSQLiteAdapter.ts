@@ -85,8 +85,8 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			const usesCPKCodegen = Object.values(
 				this.schema.namespaces.user.models
 			).some(model =>
-				Object.values(model.fields).some(field =>
-					field.association?.hasOwnProperty('targetNames')
+				Object.values(model.fields).some(
+					field => field.association?.hasOwnProperty('targetNames')
 				)
 			);
 			if (usesCPKCodegen) {

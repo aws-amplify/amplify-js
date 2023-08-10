@@ -2,7 +2,10 @@ module.exports = {
 	entry: {
 		'aws-amplify-interactions.min': './lib-esm/index.js',
 	},
-	externals: ['aws-sdk/clients/lexruntime', { '@aws-amplify/core': 'aws_amplify_core' }],
+	externals: [
+		'aws-sdk/clients/lexruntime',
+		{ '@aws-amplify/core': 'aws_amplify_core' },
+	],
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',

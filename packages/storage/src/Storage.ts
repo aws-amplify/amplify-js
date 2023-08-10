@@ -91,7 +91,7 @@ export class Storage extends InternalStorageClass {
 		config?: StorageGetConfig<T>
 	): StorageGetOutput<T>;
 	public get<
-		T extends StorageProvider | { [key: string]: any; download?: boolean }
+		T extends StorageProvider | { [key: string]: any; download?: boolean },
 	>(key: string, config?: StorageGetConfig<T>): StorageGetOutput<T> {
 		return super.get(key, config);
 	}

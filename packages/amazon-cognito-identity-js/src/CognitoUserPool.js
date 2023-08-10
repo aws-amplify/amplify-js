@@ -10,7 +10,6 @@ const USER_POOL_ID_MAX_LENGTH = 55;
 
 /** @class */
 export default class CognitoUserPool extends InternalCognitoUserPool {
-
 	/**
 	 * @typedef {object} SignUpResult
 	 * @property {CognitoUser} user New user.
