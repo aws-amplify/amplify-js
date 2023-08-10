@@ -34,7 +34,6 @@ type S3Item = {
 	 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html#UserMetadata
 	 */
 	metadata?: Record<string, string>;
-	//TODO add versionId
 	/**
 	 * VersionId used to reference a specific version of the object.
 	 */

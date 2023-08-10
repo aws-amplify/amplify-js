@@ -6,15 +6,13 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 export async function resolveStorageConfig() {
+	// TODO import fetchAuthSession from
 	const { identityId, credentials } = await AmplifyV6.Auth.fetchAuthSession();
 	assertValidationError(
 		!!credentials,
 		StorageValidationErrorCode.NoCredentials
 	);
-	assertValidationError(
-		!!credentials,
-		StorageValidationErrorCode.NoCredentials
-	);
+
 	const { bucket, region } = AmplifyV6.getConfig()?.Storage ?? {};
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);

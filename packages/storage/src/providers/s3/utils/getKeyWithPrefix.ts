@@ -6,7 +6,7 @@ import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixRe
 
 export function getKeyWithPrefix(
 	accessLevel: StorageAccessLevel,
-	identityId: string,
+	targetIdentityId: string,
 	key: string
 ) {
 	const { prefixResolver = defaultPrefixResolver } =
@@ -14,7 +14,7 @@ export function getKeyWithPrefix(
 	return (
 		prefixResolver({
 			accessLevel,
-			targetIdentityId: identityId,
+			targetIdentityId,
 		}) + key
 	);
 }

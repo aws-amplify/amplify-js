@@ -8,6 +8,7 @@ import {
 	Hub,
 	parseAWSExports,
 	StorageAction,
+	AmplifyV6,
 } from '@aws-amplify/core';
 import {
 	copyObject,
@@ -63,7 +64,6 @@ import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
 import * as events from 'events';
-import { AmplifyV6 } from '@aws-amplify/core';
 
 const logger = new Logger('AWSS3Provider');
 

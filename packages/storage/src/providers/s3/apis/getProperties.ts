@@ -24,14 +24,25 @@ export const getProperties = async function (
 	const { identityId, credentials, defaultAccessLevel, bucket, region } =
 		await resolveStorageConfig();
 
-	const { key, options: { accessLevel = defaultAccessLevel } = {} } = req;
+	const {
+		key,
+		options: { accessLevel },
+	} = req;
+	let targetIdentityId;
+	if (req?.options?.accessLevel === 'protected') {
+		targetIdentityId = req.options?.targetIdentityId;
+	}
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
-	const finalKey = await getKeyWithPrefix(accessLevel!, identityId!, key);
+	const finalKey = getKeyWithPrefix(
+		accessLevel ?? defaultAccessLevel,
+		targetIdentityId ?? identityId,
+		key
+	);
 	const headObjectOptions = {
 		accessLevel,
 		targetIdentityId: identityId,
 		region,
-		credentials: credentials,
+		credentials,
 	};
 	const headObjectParams: HeadObjectInput = {
 		Bucket: bucket,
