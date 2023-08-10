@@ -7,7 +7,7 @@ import {
 	Hub,
 	parseAWSExports,
 } from '@aws-amplify/core';
-import { AWSPinpointProvider } from './providers/AWSPinpointProvider';
+import { AWSPinpointProvider } from './Providers/AWSPinpointProvider';
 
 import {
 	AnalyticsProvider,

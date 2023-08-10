@@ -83,5 +83,5 @@ export interface AnalyticsEvent {
 	immediate?: boolean;
 }
 
-export { PersonalizeAnalyticsEvent } from './providers/AmazonPersonalizeProvider';
-export { KinesisAnalyticsEvent } from './providers/AWSKinesisProvider';
+export { PersonalizeAnalyticsEvent } from './Providers/AmazonPersonalizeProvider';
+export { KinesisAnalyticsEvent } from './Providers/AWSKinesisProvider';

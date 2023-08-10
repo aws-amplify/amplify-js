@@ -8,7 +8,7 @@ jest.mock('../src/vendor/dom-utils', () => {
 
 import { ClientDevice, parseAWSExports, Hub } from '@aws-amplify/core';
 import { AnalyticsClass as Analytics } from '../src/Analytics';
-import { AWSPinpointProvider as AWSAnalyticsProvider } from '../src/providers/AWSPinpointProvider';
+import { AWSPinpointProvider as AWSAnalyticsProvider } from '../src/Providers/AWSPinpointProvider';
 
 jest.mock('@aws-amplify/core');
 const mockHubDispatch = Hub.dispatch as jest.Mock;

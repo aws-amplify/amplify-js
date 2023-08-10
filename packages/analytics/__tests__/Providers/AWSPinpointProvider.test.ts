@@ -3,7 +3,7 @@ import {
 	putEvents,
 	updateEndpoint,
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
-import { AWSPinpointProvider as AnalyticsProvider } from '../../src/providers/AWSPinpointProvider';
+import { AWSPinpointProvider as AnalyticsProvider } from '../../src/Providers/AWSPinpointProvider';
 
 const endpointConfigure = {
 	address: 'configured', // The unique identifier for the recipient. For example, an address could be a device token, email address, or mobile phone number.

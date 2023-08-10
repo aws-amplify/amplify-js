@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Credentials } from '@aws-amplify/core';
-import { AmazonPersonalizeProvider } from '../../src/providers/AmazonPersonalizeProvider';
+import { AmazonPersonalizeProvider } from '../../src/Providers/AmazonPersonalizeProvider';
 import {
 	PersonalizeEventsClient,
 	PutEventsCommand,
