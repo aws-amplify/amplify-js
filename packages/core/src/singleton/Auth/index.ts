@@ -48,7 +48,7 @@ export class AuthClass {
 	}
 
 	async fetchAuthSession(
-		options?: FetchAuthSessionOptions
+		options: FetchAuthSessionOptions = {}
 	): Promise<AuthSession> {
 		let tokens: AuthTokens;
 		let credentialsAndIdentityId: AWSCredentialsAndIdentityId;
