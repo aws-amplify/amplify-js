@@ -69,10 +69,7 @@ export abstract class StorageAdapterBase implements Adapter {
 		theSchema: InternalSchema,
 		namespaceResolver: NamespaceResolver,
 		modelInstanceCreator: ModelInstanceCreator,
-		getModelConstructorByModelName: (
-			namsespaceName: NAMESPACES,
-			modelName: string
-		) => PersistentModelConstructor<any>,
+		getModelConstructorByModelName: (namsespaceName: NAMESPACES, modelName: string) => PersistentModelConstructor<any>,
 		sessionId?: string
 	): Promise<void> {
 		await this.preSetUpChecks();
@@ -111,10 +108,7 @@ export abstract class StorageAdapterBase implements Adapter {
 	 */
 	public abstract clear(): Promise<void>;
 
-	public abstract save<T extends PersistentModel>(
-		model: T,
-		condition?: ModelPredicate<T>
-	);
+	public abstract save<T extends PersistentModel>(model: T, condition?: ModelPredicate<T>);
 
 	public abstract query<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
@@ -136,9 +130,7 @@ export abstract class StorageAdapterBase implements Adapter {
 	 * @param modelConstructor
 	 * @returns local DB table name
 	 */
-	protected getStorenameForModel(
-		modelConstructor: PersistentModelConstructor<any>
-	): string {
+	protected getStorenameForModel(modelConstructor: PersistentModelConstructor<any>): string {
 		const namespace = this.namespaceResolver(modelConstructor);
 		const { name: modelName } = modelConstructor;
 
@@ -150,17 +142,11 @@ export abstract class StorageAdapterBase implements Adapter {
 	 * @param model - instantiated model record
 	 * @returns the record's primary key values
 	 */
-	protected getIndexKeyValuesFromModel<T extends PersistentModel>(
-		model: T
-	): string[] {
-		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T>;
+	protected getIndexKeyValuesFromModel<T extends PersistentModel>(model: T): string[] {
+		const modelConstructor = Object.getPrototypeOf(model).constructor as PersistentModelConstructor<T>;
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
-		const keys = getIndexKeys(
-			this.schema.namespaces[namespaceName],
-			modelConstructor.name
-		);
+		const keys = getIndexKeys(this.schema.namespaces[namespaceName], modelConstructor.name);
 
 		return extractPrimaryKeyValues(model, keys);
 	}
@@ -179,8 +165,7 @@ export abstract class StorageAdapterBase implements Adapter {
 		connectionStoreNames;
 		modelKeyValues: string[];
 	} {
-		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T>;
+		const modelConstructor = Object.getPrototypeOf(model).constructor as PersistentModelConstructor<T>;
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
@@ -193,17 +178,12 @@ export abstract class StorageAdapterBase implements Adapter {
 		);
 
 		const set = new Set<string>();
-		const connectionStoreNames = Object.values(connectedModels).map(
-			({ modelName, item, instance }) => {
-				const storeName = getStorename(namespaceName, modelName);
-				set.add(storeName);
-				const keys = getIndexKeys(
-					this.schema.namespaces[namespaceName],
-					modelName
-				);
-				return { storeName, item, instance, keys };
-			}
-		);
+		const connectionStoreNames = Object.values(connectedModels).map(({ modelName, item, instance }) => {
+			const storeName = getStorename(namespaceName, modelName);
+			set.add(storeName);
+			const keys = getIndexKeys(this.schema.namespaces[namespaceName], modelName);
+			return { storeName, item, instance, keys };
+		});
 
 		const modelKeyValues = this.getIndexKeyValuesFromModel(model);
 
@@ -216,10 +196,7 @@ export abstract class StorageAdapterBase implements Adapter {
 	 *
 	 * @param model
 	 */
-	protected validateSaveCondition<T extends PersistentModel>(
-		condition?: ModelPredicate<T>,
-		fromDB?: unknown
-	): void {
+	protected validateSaveCondition<T extends PersistentModel>(condition?: ModelPredicate<T>, fromDB?: unknown): void {
 		if (!(condition && fromDB)) {
 			return;
 		}
@@ -237,10 +214,7 @@ export abstract class StorageAdapterBase implements Adapter {
 		}
 	}
 
-	protected abstract _get<T>(
-		storeOrStoreName: IDBPObjectStore | string,
-		keyArr: string[]
-	): Promise<T>;
+	protected abstract _get<T>(storeOrStoreName: IDBPObjectStore | string, keyArr: string[]): Promise<T>;
 
 	/**
 	 * Instantiate models from POJO records returned from the database
@@ -250,30 +224,19 @@ export abstract class StorageAdapterBase implements Adapter {
 	 * @param records - array of uninstantiated records
 	 * @returns
 	 */
-	protected async load<T>(
-		namespaceName: NAMESPACES,
-		srcModelName: string,
-		records: T[]
-	): Promise<T[]> {
+	protected async load<T>(namespaceName: NAMESPACES, srcModelName: string, records: T[]): Promise<T[]> {
 		const namespace = this.schema.namespaces[namespaceName];
 		const relations = namespace.relationships![srcModelName].relationTypes;
 		const connectionStoreNames = relations.map(({ modelName }) => {
 			return getStorename(namespaceName, modelName);
 		});
-		const modelConstructor = this.getModelConstructorByModelName!(
-			namespaceName,
-			srcModelName
-		);
+		const modelConstructor = this.getModelConstructorByModelName!(namespaceName, srcModelName);
 
 		if (connectionStoreNames.length === 0) {
-			return records.map(record =>
-				this.modelInstanceCreator(modelConstructor, record)
-			);
+			return records.map(record => this.modelInstanceCreator(modelConstructor, record));
 		}
 
-		return records.map(record =>
-			this.modelInstanceCreator(modelConstructor, record)
-		);
+		return records.map(record => this.modelInstanceCreator(modelConstructor, record));
 	}
 
 	/**
@@ -310,11 +273,7 @@ export abstract class StorageAdapterBase implements Adapter {
 				p =>
 					// it's a relevant predicate object only if it's an equality
 					// operation for a key field from the key:
-					isPredicateObj(p) &&
-					p.field === key &&
-					p.operator === 'eq' &&
-					p.operand !== null &&
-					p.operand !== undefined
+					isPredicateObj(p) && p.field === key && p.operator === 'eq' && p.operand !== null && p.operand !== undefined
 			) as PredicateObject<T>;
 
 			predicateObj && keyValues.push(predicateObj.operand);
@@ -337,18 +296,11 @@ export abstract class StorageAdapterBase implements Adapter {
 		pagination?: PaginationInput<T>
 	) {
 		const storeName = this.getStorenameForModel(modelConstructor);
-		const namespaceName = this.namespaceResolver(
-			modelConstructor
-		) as NAMESPACES;
+		const namespaceName = this.namespaceResolver(modelConstructor) as NAMESPACES;
 
-		const predicates =
-			predicate && ModelPredicateCreator.getPredicates(predicate);
-		const keyPath = getIndexKeys(
-			this.schema.namespaces[namespaceName],
-			modelConstructor.name
-		);
-		const queryByKey =
-			predicates && this.keyValueFromPredicate(predicates, keyPath);
+		const predicates = predicate && ModelPredicateCreator.getPredicates(predicate);
+		const keyPath = getIndexKeys(this.schema.namespaces[namespaceName], modelConstructor.name);
+		const queryByKey = predicates && this.keyValueFromPredicate(predicates, keyPath);
 
 		const hasSort = pagination && pagination.sort;
 		const hasPagination = pagination && pagination.limit;
@@ -380,53 +332,33 @@ export abstract class StorageAdapterBase implements Adapter {
 		const deleteQueue: { storeName: string; items: T[] }[] = [];
 
 		if (isModelConstructor(modelOrModelConstructor)) {
-			const modelConstructor =
-				modelOrModelConstructor as PersistentModelConstructor<T>;
+			const modelConstructor = modelOrModelConstructor as PersistentModelConstructor<T>;
 			const namespace = this.namespaceResolver(modelConstructor) as NAMESPACES;
 			const models = await this.query(modelConstructor, condition);
 
 			if (condition !== undefined) {
-				await this.deleteTraverse(
-					models,
-					modelConstructor,
-					namespace,
-					deleteQueue
-				);
+				await this.deleteTraverse(models, modelConstructor, namespace, deleteQueue);
 
 				await this.deleteItem(deleteQueue);
 
-				const deletedModels = deleteQueue.reduce(
-					(acc, { items }) => acc.concat(items),
-					<T[]>[]
-				);
+				const deletedModels = deleteQueue.reduce((acc, { items }) => acc.concat(items), <T[]>[]);
 
 				return [models, deletedModels];
 			} else {
-				await this.deleteTraverse(
-					models,
-					modelConstructor,
-					namespace,
-					deleteQueue
-				);
+				await this.deleteTraverse(models, modelConstructor, namespace, deleteQueue);
 
 				await this.deleteItem(deleteQueue);
 
-				const deletedModels = deleteQueue.reduce(
-					(acc, { items }) => acc.concat(items),
-					<T[]>[]
-				);
+				const deletedModels = deleteQueue.reduce((acc, { items }) => acc.concat(items), <T[]>[]);
 
 				return [models, deletedModels];
 			}
 		} else {
 			const model = modelOrModelConstructor as T;
 
-			const modelConstructor = Object.getPrototypeOf(model)
-				.constructor as PersistentModelConstructor<T>;
+			const modelConstructor = Object.getPrototypeOf(model).constructor as PersistentModelConstructor<T>;
 
-			const namespaceName = this.namespaceResolver(
-				modelConstructor
-			) as NAMESPACES;
+			const namespaceName = this.namespaceResolver(modelConstructor) as NAMESPACES;
 
 			const storeName = this.getStorenameForModel(modelConstructor);
 
@@ -442,8 +374,7 @@ export abstract class StorageAdapterBase implements Adapter {
 				}
 
 				const predicates = ModelPredicateCreator.getPredicates(condition);
-				const { predicates: predicateObjs, type } =
-					predicates as PredicatesGroup<T>;
+				const { predicates: predicateObjs, type } = predicates as PredicatesGroup<T>;
 
 				const isValid = validatePredicate(fromDB as T, type, predicateObjs);
 				if (!isValid) {
@@ -453,26 +384,13 @@ export abstract class StorageAdapterBase implements Adapter {
 					throw new Error(msg);
 				}
 
-				await this.deleteTraverse(
-					[model],
-					modelConstructor,
-					namespaceName,
-					deleteQueue
-				);
+				await this.deleteTraverse([model], modelConstructor, namespaceName, deleteQueue);
 			} else {
-				await this.deleteTraverse(
-					[model],
-					modelConstructor,
-					namespaceName,
-					deleteQueue
-				);
+				await this.deleteTraverse([model], modelConstructor, namespaceName, deleteQueue);
 			}
 			await this.deleteItem(deleteQueue);
 
-			const deletedModels = deleteQueue.reduce(
-				(acc, { items }) => acc.concat(items),
-				<T[]>[]
-			);
+			const deletedModels = deleteQueue.reduce((acc, { items }) => acc.concat(items), <T[]>[]);
 
 			return [[model], deletedModels];
 		}
@@ -505,8 +423,7 @@ export abstract class StorageAdapterBase implements Adapter {
 		const cascadingRelationTypes = ['HAS_ONE', 'HAS_MANY'];
 
 		for await (const model of models) {
-			const modelDefinition =
-				this.schema.namespaces[namespace].models[modelConstructor.name];
+			const modelDefinition = this.schema.namespaces[namespace].models[modelConstructor.name];
 
 			const modelMeta = {
 				builder: modelConstructor,
@@ -514,27 +431,17 @@ export abstract class StorageAdapterBase implements Adapter {
 				pkField: extractPrimaryKeyFieldNames(modelDefinition),
 			};
 
-			const relationships = ModelRelationship.allFrom(modelMeta).filter(r =>
-				cascadingRelationTypes.includes(r.type)
-			);
+			const relationships = ModelRelationship.allFrom(modelMeta).filter(r => cascadingRelationTypes.includes(r.type));
 
 			for await (const r of relationships) {
 				const queryObject = r.createRemoteQueryObject(model);
 				if (queryObject !== null) {
 					const relatedRecords = await this.query(
 						r.remoteModelConstructor,
-						ModelPredicateCreator.createFromFlatEqualities(
-							r.remoteDefinition!,
-							queryObject
-						)
+						ModelPredicateCreator.createFromFlatEqualities(r.remoteDefinition!, queryObject)
 					);
 
-					await this.deleteTraverse(
-						relatedRecords,
-						r.remoteModelConstructor,
-						namespace,
-						deleteQueue
-					);
+					await this.deleteTraverse(relatedRecords, r.remoteModelConstructor, namespace, deleteQueue);
 				}
 			}
 		}

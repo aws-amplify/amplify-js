@@ -1,13 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	Category,
-	Credentials,
-	ICredentials,
-	Logger,
-	StorageAction,
-	getAmplifyUserAgent,
-} from '@aws-amplify/core';
+import { Category, Credentials, ICredentials, Logger, StorageAction, getAmplifyUserAgent } from '@aws-amplify/core';
 import type { Credentials as AwsCredentials } from '@aws-sdk/types';
 import type { EventEmitter } from 'events';
 
@@ -29,21 +22,12 @@ export const getPrefix = (config: {
 	const resolvedCustomPrefix = customPrefix || {};
 	const resolvedIdentityId = identityId || credentials.identityId;
 	const privatePath =
-		(resolvedCustomPrefix.private !== undefined
-			? resolvedCustomPrefix.private
-			: 'private/') +
-		resolvedIdentityId +
-		'/';
+		(resolvedCustomPrefix.private !== undefined ? resolvedCustomPrefix.private : 'private/') + resolvedIdentityId + '/';
 	const protectedPath =
-		(resolvedCustomPrefix.protected !== undefined
-			? resolvedCustomPrefix.protected
-			: 'protected/') +
+		(resolvedCustomPrefix.protected !== undefined ? resolvedCustomPrefix.protected : 'protected/') +
 		resolvedIdentityId +
 		'/';
-	const publicPath =
-		resolvedCustomPrefix.public !== undefined
-			? resolvedCustomPrefix.public
-			: 'public/';
+	const publicPath = resolvedCustomPrefix.public !== undefined ? resolvedCustomPrefix.public : 'public/';
 
 	switch (level) {
 		case 'private':
@@ -78,8 +62,7 @@ interface S3InputConfig {
 	dangerouslyConnectToHttpEndpointForTesting?: boolean;
 }
 
-export interface S3ResolvedConfig
-	extends Omit<S3InputConfig, 'region' | 'credentials'> {
+export interface S3ResolvedConfig extends Omit<S3InputConfig, 'region' | 'credentials'> {
 	region: string;
 	credentials: () => Promise<AwsCredentials>;
 	customEndpoint?: string;
@@ -100,9 +83,7 @@ export const loadS3Config = (config: S3InputConfig): S3ResolvedConfig => {
 	return {
 		...config,
 		region: config.region,
-		credentials: config.credentials
-			? () => Promise.resolve(config.credentials!)
-			: credentialsProvider,
+		credentials: config.credentials ? () => Promise.resolve(config.credentials!) : credentialsProvider,
 		...(config.dangerouslyConnectToHttpEndpointForTesting
 			? {
 					customEndpoint: localTestingStorageEndpoint,

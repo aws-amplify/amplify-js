@@ -1,7 +1,4 @@
-import {
-	InMemoryCache as cache,
-	InMemoryCacheClass,
-} from '../src/InMemoryCache';
+import { InMemoryCache as cache, InMemoryCacheClass } from '../src/InMemoryCache';
 import { defaultConfig, getByteLength } from '../src/Utils/CacheUtils';
 import { CacheConfig, CacheItem, CacheItemOptions } from '../src/types/Cache';
 
@@ -143,9 +140,7 @@ describe('InMemoryCache', () => {
 			const cacheSizeAfter = cache.getCacheCurSize();
 			expect(cache.getItem(key)).toBe(val2);
 
-			expect(cacheSizeAfter - cacheSizeBefore).toBe(
-				getItemSize(val2) - getItemSize(val1)
-			);
+			expect(cacheSizeAfter - cacheSizeBefore).toBe(getItemSize(val2) - getItemSize(val1));
 			cache.clear();
 		});
 
@@ -367,9 +362,7 @@ describe('InMemoryCache', () => {
 
 	describe('createInstance', () => {
 		test('happy case, return new instance', () => {
-			expect(cache.createInstance({ keyPrefix: 'abc' })).toBeInstanceOf(
-				InMemoryCacheClass
-			);
+			expect(cache.createInstance({ keyPrefix: 'abc' })).toBeInstanceOf(InMemoryCacheClass);
 		});
 	});
 });

@@ -1,14 +1,7 @@
 import { ModelMerger } from '../src/sync/merger';
 import { PersistentModelConstructor } from '../src/';
-import {
-	DataStore as DataStoreType,
-	initSchema as initSchemaType,
-} from '../src/datastore/datastore';
-import {
-	Model as ModelType,
-	PostCustomPK as PostCustomPKType,
-	testSchema,
-} from './helpers';
+import { DataStore as DataStoreType, initSchema as initSchemaType } from '../src/datastore/datastore';
+import { Model as ModelType, PostCustomPK as PostCustomPKType, testSchema } from './helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -204,12 +197,7 @@ describe('Merger', () => {
 				];
 
 				await Storage.runExclusive(async storage => {
-					await modelMerger.mergePage(
-						storage,
-						PostCustomPK,
-						items,
-						modelDefinition
-					);
+					await modelMerger.mergePage(storage, PostCustomPK, items, modelDefinition);
 				});
 
 				const record = await DataStore.query(PostCustomPK, customPk);
@@ -251,12 +239,7 @@ describe('Merger', () => {
 				];
 
 				await Storage.runExclusive(async storage => {
-					await modelMerger.mergePage(
-						storage,
-						PostCustomPK,
-						items,
-						modelDefinition
-					);
+					await modelMerger.mergePage(storage, PostCustomPK, items, modelDefinition);
 				});
 
 				const record = await DataStore.query(PostCustomPK, customPk);
@@ -299,12 +282,7 @@ describe('Merger', () => {
 				];
 
 				await Storage.runExclusive(async storage => {
-					await modelMerger.mergePage(
-						storage,
-						PostCustomPK,
-						items,
-						modelDefinition
-					);
+					await modelMerger.mergePage(storage, PostCustomPK, items, modelDefinition);
 				});
 
 				const record = await DataStore.query(PostCustomPK, customPk);

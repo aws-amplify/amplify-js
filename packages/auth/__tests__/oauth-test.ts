@@ -87,9 +87,7 @@ describe('OAuth', () => {
 				id_token: mockIdToken,
 			});
 
-			const handleResponse = await oAuth.handleAuthResponse(
-				`${currentUrl}?code=12345`
-			);
+			const handleResponse = await oAuth.handleAuthResponse(`${currentUrl}?code=12345`);
 			expect(handleResponse).toEqual({
 				state: undefined,
 				accessToken: mockAccessToken,
@@ -114,9 +112,7 @@ describe('OAuth', () => {
 				cognitoClientId: '',
 			});
 
-			const handleResponse = await oAuth.handleAuthResponse(
-				'https://test2.com'
-			);
+			const handleResponse = await oAuth.handleAuthResponse('https://test2.com');
 			expect(handleResponse).toEqual({ state: undefined });
 		});
 		test('an error is thrown for the code flow when there is an error calling the token endpoint', async () => {
@@ -177,9 +173,7 @@ describe('OAuth', () => {
 				id_token: mockIdToken,
 			});
 
-			const handleResponse = await oAuth.handleAuthResponse(
-				`${currentUrl}?code=12345`
-			);
+			const handleResponse = await oAuth.handleAuthResponse(`${currentUrl}?code=12345`);
 			expect(handleResponse).toEqual({
 				state: undefined,
 				accessToken: mockAccessToken,

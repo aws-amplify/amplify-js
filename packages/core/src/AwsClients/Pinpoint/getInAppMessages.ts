@@ -4,11 +4,7 @@
 import { authenticatedHandler } from '../../clients/handlers/authenticated';
 import { composeServiceApi } from '../../clients/internal/composeServiceApi';
 import { extendedEncodeURIComponent } from '../../clients/middleware/signing/utils/extendedEncodeURIComponent';
-import {
-	parseJsonBody,
-	parseJsonError,
-	parseMetadata,
-} from '../../clients/serde';
+import { parseJsonBody, parseJsonError, parseMetadata } from '../../clients/serde';
 import { Endpoint, HttpRequest, HttpResponse } from '../../clients/types';
 import { defaultConfig, getSharedHeaders } from './base';
 import type {
@@ -24,15 +20,13 @@ const getInAppMessagesSerializer = (
 ): HttpRequest => {
 	const headers = getSharedHeaders();
 	const url = new URL(endpoint.url);
-	url.pathname = `v1/apps/${extendedEncodeURIComponent(
-		ApplicationId
-	)}/endpoints/${extendedEncodeURIComponent(EndpointId)}/inappmessages`;
+	url.pathname = `v1/apps/${extendedEncodeURIComponent(ApplicationId)}/endpoints/${extendedEncodeURIComponent(
+		EndpointId
+	)}/inappmessages`;
 	return { method: 'GET', headers, url };
 };
 
-const getInAppMessagesDeserializer = async (
-	response: HttpResponse
-): Promise<GetInAppMessagesOutput> => {
+const getInAppMessagesDeserializer = async (response: HttpResponse): Promise<GetInAppMessagesOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseJsonError(response);
 		throw error;

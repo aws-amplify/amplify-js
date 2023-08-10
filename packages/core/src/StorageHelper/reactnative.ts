@@ -29,9 +29,7 @@ class MemoryStorage {
 	 * @returns {string} the data item
 	 */
 	static getItem(key) {
-		return Object.prototype.hasOwnProperty.call(dataMemory, key)
-			? dataMemory[key]
-			: undefined;
+		return Object.prototype.hasOwnProperty.call(dataMemory, key) ? dataMemory[key] : undefined;
 	}
 
 	/**
@@ -62,9 +60,7 @@ class MemoryStorage {
 			MemoryStorage.syncPromise = new Promise<void>((res, rej) => {
 				AsyncStorage.getAllKeys((errKeys, keys) => {
 					if (errKeys) rej(errKeys);
-					const memoryKeys = keys.filter(key =>
-						key.startsWith(MEMORY_KEY_PREFIX)
-					);
+					const memoryKeys = keys.filter(key => key.startsWith(MEMORY_KEY_PREFIX));
 					AsyncStorage.multiGet(memoryKeys, (err, stores) => {
 						if (err) rej(err);
 						stores.map((result, index, store) => {

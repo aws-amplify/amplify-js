@@ -47,21 +47,15 @@ export type S3EndpointResolverOptions = EndpointResolverOptions & {
 /**
  * The endpoint resolver function that returns the endpoint URL for a given region, and input parameters.
  */
-const endpointResolver = (
-	options: S3EndpointResolverOptions,
-	apiInput?: { Bucket?: string }
-) => {
-	const { region, useAccelerateEndpoint, customEndpoint, forcePathStyle } =
-		options;
+const endpointResolver = (options: S3EndpointResolverOptions, apiInput?: { Bucket?: string }) => {
+	const { region, useAccelerateEndpoint, customEndpoint, forcePathStyle } = options;
 	let endpoint: URL;
 	// 1. get base endpoint
 	if (customEndpoint) {
 		endpoint = new URL(customEndpoint);
 	} else if (useAccelerateEndpoint) {
 		if (forcePathStyle) {
-			throw new Error(
-				'Path style URLs are not supported with S3 Transfer Acceleration.'
-			);
+			throw new Error('Path style URLs are not supported with S3 Transfer Acceleration.');
 		}
 		endpoint = new URL(`https://s3-accelerate.${getDnsSuffix(region)}`);
 	} else {
@@ -91,9 +85,7 @@ const endpointResolver = (
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
  */
 export const isDnsCompatibleBucketName = (bucketName: string): boolean =>
-	DOMAIN_PATTERN.test(bucketName) &&
-	!IP_ADDRESS_PATTERN.test(bucketName) &&
-	!DOTS_PATTERN.test(bucketName);
+	DOMAIN_PATTERN.test(bucketName) && !IP_ADDRESS_PATTERN.test(bucketName) && !DOTS_PATTERN.test(bucketName);
 
 /**
  * @internal

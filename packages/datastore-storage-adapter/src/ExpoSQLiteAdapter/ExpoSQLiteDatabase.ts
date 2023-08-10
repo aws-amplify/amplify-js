@@ -51,18 +51,12 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		}
 	}
 
-	public async get<T extends PersistentModel>(
-		statement: string,
-		params: (string | number)[]
-	): Promise<T> {
+	public async get<T extends PersistentModel>(statement: string, params: (string | number)[]): Promise<T> {
 		const results: T[] = await this.getAll(statement, params);
 		return results[0];
 	}
 
-	public getAll<T extends PersistentModel>(
-		statement: string,
-		params: (string | number)[]
-	): Promise<T[]> {
+	public getAll<T extends PersistentModel>(statement: string, params: (string | number)[]): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			this.db.readTransaction(transaction => {
 				transaction.executeSql(
@@ -100,9 +94,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		});
 	}
 
-	public batchQuery<T = any>(
-		queryParameterizedStatements: Set<ParameterizedStatement> = new Set()
-	): Promise<T[]> {
+	public batchQuery<T = any>(queryParameterizedStatements: Set<ParameterizedStatement> = new Set()): Promise<T[]> {
 		return new Promise((resolveTransaction, rejectTransaction) => {
 			this.db.transaction(async transaction => {
 				try {

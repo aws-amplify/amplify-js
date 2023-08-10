@@ -3,18 +3,12 @@
 
 import { isEmpty } from 'lodash';
 
-import {
-	NormalizedValues,
-	PushNotificationMessage,
-	PushNotificationPermissionStatus,
-} from './types';
+import { NormalizedValues, PushNotificationMessage, PushNotificationPermissionStatus } from './types';
 
 const DEEP_LINK_ACTION = 'deeplink';
 const URL_ACTION = 'url';
 
-export const normalizeNativePermissionStatus = (
-	nativeStatus?
-): PushNotificationPermissionStatus => {
+export const normalizeNativePermissionStatus = (nativeStatus?): PushNotificationPermissionStatus => {
 	switch (nativeStatus) {
 		case 'ShouldRequest':
 			return PushNotificationPermissionStatus.SHOULD_REQUEST;
@@ -29,9 +23,7 @@ export const normalizeNativePermissionStatus = (
 	}
 };
 
-export const normalizeNativeMessage = (
-	nativeMessage?
-): PushNotificationMessage | null => {
+export const normalizeNativeMessage = (nativeMessage?): PushNotificationMessage | null => {
 	let normalized: NormalizedValues;
 	if (nativeMessage?.aps) {
 		normalized = normalizeApnsMessage(nativeMessage);
@@ -69,17 +61,13 @@ const normalizeFcmMessage = (fcmMessage): NormalizedValues => {
 	return { body, imageUrl, title, action, options, data };
 };
 
-const getApnsAction = (
-	action = {}
-): Pick<PushNotificationMessage, 'deeplinkUrl'> => {
+const getApnsAction = (action = {}): Pick<PushNotificationMessage, 'deeplinkUrl'> => {
 	if (action[DEEP_LINK_ACTION]) {
 		return { deeplinkUrl: action[DEEP_LINK_ACTION] };
 	}
 };
 
-const getFcmAction = (
-	action = {}
-): Pick<PushNotificationMessage, 'goToUrl' | 'deeplinkUrl'> => {
+const getFcmAction = (action = {}): Pick<PushNotificationMessage, 'goToUrl' | 'deeplinkUrl'> => {
 	if (action[URL_ACTION]) {
 		return { goToUrl: action[URL_ACTION] };
 	}
@@ -88,20 +76,13 @@ const getFcmAction = (
 	}
 };
 
-const getApnsOptions = ({
-	aps,
-}): Pick<PushNotificationMessage, 'apnsOptions'> => {
+const getApnsOptions = ({ aps }): Pick<PushNotificationMessage, 'apnsOptions'> => {
 	const { subtitle } = aps.alert ?? {};
 	const apnsOptions = { ...(subtitle && { subtitle }) };
 	return { ...(!isEmpty(apnsOptions) && { apnsOptions }) };
 };
 
-const getFcmOptions = ({
-	channelId,
-	messageId,
-	senderId,
-	sendTime,
-}): Pick<PushNotificationMessage, 'fcmOptions'> => {
+const getFcmOptions = ({ channelId, messageId, senderId, sendTime }): Pick<PushNotificationMessage, 'fcmOptions'> => {
 	const fcmOptions = {
 		...(channelId && { channelId }),
 		...(messageId && { messageId }),

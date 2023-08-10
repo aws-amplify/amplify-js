@@ -13,10 +13,7 @@ import { toHex } from '@aws-sdk/util-hex-encoding';
  * @param data Hashable `SourceData`.
  * @returns `Uint8Array` created from the data as input to a hash function.
  */
-export const getHashedData = (
-	key: SourceData | null,
-	data: SourceData
-): Uint8Array => {
+export const getHashedData = (key: SourceData | null, data: SourceData): Uint8Array => {
 	const sha256 = new Sha256(key);
 	sha256.update(data);
 	// TODO: V6 flip to async digest
@@ -33,10 +30,7 @@ export const getHashedData = (
  *
  * @internal
  */
-export const getHashedDataAsHex = (
-	key: SourceData | null,
-	data: SourceData
-): string => {
+export const getHashedDataAsHex = (key: SourceData | null, data: SourceData): string => {
 	const hashedData = getHashedData(key, data);
 	return toHex(hashedData);
 };

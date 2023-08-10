@@ -16,25 +16,13 @@ describe('PushNotification', () => {
 		expect(pushNotification.removePluggable).toThrow(notSupportedError);
 		expect(pushNotification.enable).toThrow(notSupportedError);
 		expect(pushNotification.identifyUser).toThrow(notSupportedError);
-		await expect(pushNotification.getLaunchNotification()).rejects.toThrow(
-			notSupportedError
-		);
-		await expect(pushNotification.getBadgeCount()).rejects.toThrow(
-			notSupportedError
-		);
+		await expect(pushNotification.getLaunchNotification()).rejects.toThrow(notSupportedError);
+		await expect(pushNotification.getBadgeCount()).rejects.toThrow(notSupportedError);
 		expect(pushNotification.setBadgeCount).toThrow(notSupportedError);
-		await expect(pushNotification.getPermissionStatus()).rejects.toThrow(
-			notSupportedError
-		);
-		await expect(pushNotification.requestPermissions()).rejects.toThrow(
-			notSupportedError
-		);
-		expect(pushNotification.onNotificationReceivedInBackground).toThrow(
-			notSupportedError
-		);
-		expect(pushNotification.onNotificationReceivedInForeground).toThrow(
-			notSupportedError
-		);
+		await expect(pushNotification.getPermissionStatus()).rejects.toThrow(notSupportedError);
+		await expect(pushNotification.requestPermissions()).rejects.toThrow(notSupportedError);
+		expect(pushNotification.onNotificationReceivedInBackground).toThrow(notSupportedError);
+		expect(pushNotification.onNotificationReceivedInForeground).toThrow(notSupportedError);
 		expect(pushNotification.onTokenReceived).toThrow(notSupportedError);
 		expect(pushNotification.onNotificationOpened).toThrow(notSupportedError);
 	});

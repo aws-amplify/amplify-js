@@ -25,10 +25,7 @@ import {
 	SERVICE_NAME as S3_SERVICE_NAME,
 	HeadObjectInput,
 } from '../AwsClients/S3';
-import {
-	SEND_DOWNLOAD_PROGRESS_EVENT,
-	SEND_UPLOAD_PROGRESS_EVENT,
-} from '../AwsClients/S3/utils';
+import { SEND_DOWNLOAD_PROGRESS_EVENT, SEND_UPLOAD_PROGRESS_EVENT } from '../AwsClients/S3/utils';
 import {
 	StorageOptions,
 	StorageProvider,
@@ -54,11 +51,7 @@ import {
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
-import {
-	getPrefix,
-	S3ResolvedConfig,
-	loadS3Config,
-} from '../common/S3ClientUtils';
+import { getPrefix, S3ResolvedConfig, loadS3Config } from '../common/S3ClientUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
@@ -139,12 +132,7 @@ export class AWSS3Provider implements StorageProvider {
 		config: S3ProviderPutConfig & ResumableUploadConfig
 	): UploadTask {
 		const { s3Config, emitter, key, file, params } = addTaskInput;
-		const {
-			progressCallback,
-			completeCallback,
-			errorCallback,
-			track = false,
-		} = config;
+		const { progressCallback, completeCallback, errorCallback, track = false } = config;
 		if (!(file instanceof Blob)) {
 			throw new Error(StorageErrorStrings.INVALID_BLOB);
 		}
@@ -154,10 +142,7 @@ export class AWSS3Provider implements StorageProvider {
 				if (typeof progressCallback === 'function') {
 					progressCallback(event);
 				} else {
-					logger.warn(
-						'progressCallback should be a function, not a ' +
-							typeof progressCallback
-					);
+					logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
 				}
 			}
 		});
@@ -167,10 +152,7 @@ export class AWSS3Provider implements StorageProvider {
 				if (typeof completeCallback === 'function') {
 					completeCallback(event);
 				} else {
-					logger.warn(
-						'completeCallback should be a function, not a ' +
-							typeof completeCallback
-					);
+					logger.warn('completeCallback should be a function, not a ' + typeof completeCallback);
 				}
 			}
 		});
@@ -180,25 +162,21 @@ export class AWSS3Provider implements StorageProvider {
 				if (typeof errorCallback === 'function') {
 					errorCallback(err);
 				} else {
-					logger.warn(
-						'errorCallback should be a function, not a ' + typeof errorCallback
-					);
+					logger.warn('errorCallback should be a function, not a ' + typeof errorCallback);
 				}
 			}
 		});
 
 		// we want to keep this function sync so we defer this promise to AWSS3UploadTask to resolve when it's needed
 		// when its doing a final check with _listSingleFile function
-		const prefixPromise: Promise<string> = Credentials.get().then(
-			(credentials: any) => {
-				const cred = Credentials.shear(credentials);
-				return getPrefix({
-					...config,
-					level: addTaskInput.accessLevel,
-					credentials: cred,
-				});
-			}
-		);
+		const prefixPromise: Promise<string> = Credentials.get().then((credentials: any) => {
+			const cred = Credentials.shear(credentials);
+			return getPrefix({
+				...config,
+				level: addTaskInput.accessLevel,
+				credentials: cred,
+			});
+		});
 
 		const task = new AWSS3UploadTask({
 			s3Config,
@@ -258,11 +236,7 @@ export class AWSS3Provider implements StorageProvider {
 			SSECustomerKeyMD5,
 			SSEKMSKeyId,
 		} = opt;
-		const {
-			level: srcLevel = DEFAULT_STORAGE_LEVEL,
-			identityId: srcIdentityId,
-			key: srcKey,
-		} = src;
+		const { level: srcLevel = DEFAULT_STORAGE_LEVEL, identityId: srcIdentityId, key: srcKey } = src;
 		const { level: destLevel = DEFAULT_STORAGE_LEVEL, key: destKey } = dest;
 		if (!srcKey || typeof srcKey !== 'string') {
 			throw new Error(StorageErrorStrings.NO_SRC_KEY);
@@ -398,8 +372,7 @@ export class AWSS3Provider implements StorageProvider {
 		};
 		// See: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
 		if (cacheControl) params.ResponseCacheControl = cacheControl;
-		if (contentDisposition)
-			params.ResponseContentDisposition = contentDisposition;
+		if (contentDisposition) params.ResponseContentDisposition = contentDisposition;
 		if (contentEncoding) params.ResponseContentEncoding = contentEncoding;
 		if (contentLanguage) params.ResponseContentLanguage = contentLanguage;
 		if (contentType) params.ResponseContentType = contentType;
@@ -421,10 +394,7 @@ export class AWSS3Provider implements StorageProvider {
 							progressCallback(progress);
 						});
 					} else {
-						logger.warn(
-							'progressCallback should be a function, not a ' +
-								typeof progressCallback
-						);
+						logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
 					}
 				}
 				const response = await getObject(s3Config, params);
@@ -483,13 +453,7 @@ export class AWSS3Provider implements StorageProvider {
 				},
 				params
 			);
-			dispatchStorageEvent(
-				track,
-				'getSignedUrl',
-				{ method: 'get', result: 'success' },
-				null,
-				`Signed URL: ${url}`
-			);
+			dispatchStorageEvent(track, 'getSignedUrl', { method: 'get', result: 'success' }, null, `Signed URL: ${url}`);
 			return url;
 		} catch (error) {
 			logger.warn('get signed url error', error);
@@ -523,13 +487,7 @@ export class AWSS3Provider implements StorageProvider {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
 		}
 		const opt = Object.assign({}, this._config, config);
-		const {
-			bucket,
-			track = false,
-			SSECustomerAlgorithm,
-			SSECustomerKey,
-			SSECustomerKeyMD5,
-		} = opt;
+		const { bucket, track = false, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5 } = opt;
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		logger.debug(`getProperties ${key} from ${final_key}`);
@@ -601,23 +559,8 @@ export class AWSS3Provider implements StorageProvider {
 	): S3ProviderPutOutput<T> {
 		const opt = Object.assign({}, this._config, config);
 		const { bucket, track, progressCallback, level, resumable } = opt;
-		const {
-			contentType,
-			contentDisposition,
-			contentEncoding,
-			cacheControl,
-			expires,
-			metadata,
-			tagging,
-			acl,
-		} = opt;
-		const {
-			serverSideEncryption,
-			SSECustomerAlgorithm,
-			SSECustomerKey,
-			SSECustomerKeyMD5,
-			SSEKMSKeyId,
-		} = opt;
+		const { contentType, contentDisposition, contentEncoding, cacheControl, expires, metadata, tagging, acl } = opt;
+		const { serverSideEncryption, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, SSEKMSKeyId } = opt;
 		const type = contentType ? contentType : 'binary/octet-stream';
 
 		const params: PutObjectInput = {
@@ -661,11 +604,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		const emitter = new events.EventEmitter();
-		const uploader = new AWSS3ProviderManagedUpload(
-			params,
-			{ ...opt, userAgentValue },
-			emitter
-		);
+		const uploader = new AWSS3ProviderManagedUpload(params, { ...opt, userAgentValue }, emitter);
 
 		if (acl) {
 			params.ACL = acl;
@@ -696,33 +635,18 @@ export class AWSS3Provider implements StorageProvider {
 						progressCallback(progress);
 					});
 				} else {
-					logger.warn(
-						'progressCallback should be a function, not a ' +
-							typeof progressCallback
-					);
+					logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
 				}
 			}
 
 			return uploader.upload().then(response => {
 				logger.debug('upload result', response);
-				dispatchStorageEvent(
-					track,
-					'upload',
-					{ method: 'put', result: 'success' },
-					null,
-					`Upload success for ${key}`
-				);
+				dispatchStorageEvent(track, 'upload', { method: 'put', result: 'success' }, null, `Upload success for ${key}`);
 				return { key };
 			}) as S3ProviderPutOutput<T>;
 		} catch (error) {
 			logger.warn('error uploading', error);
-			dispatchStorageEvent(
-				track,
-				'upload',
-				{ method: 'put', result: 'failed' },
-				null,
-				`Error uploading ${key}`
-			);
+			dispatchStorageEvent(track, 'upload', { method: 'put', result: 'failed' }, null, `Error uploading ${key}`);
 			throw error;
 		}
 	}
@@ -787,10 +711,7 @@ export class AWSS3Provider implements StorageProvider {
 			results: [],
 			hasNextToken: false,
 		};
-		const response = await listObjectsV2(
-			loadS3Config({ ...opt, userAgentValue }),
-			{ ...params }
-		);
+		const response = await listObjectsV2(loadS3Config({ ...opt, userAgentValue }), { ...params });
 		if (response && response.Contents) {
 			list.results = response.Contents.map(item => {
 				return {
@@ -846,16 +767,10 @@ export class AWSS3Provider implements StorageProvider {
 				do {
 					listResult = await this._list(params, opt, prefix, userAgentValue);
 					list.results.push(...listResult.results);
-					if (listResult.nextToken)
-						params.ContinuationToken = listResult.nextToken;
+					if (listResult.nextToken) params.ContinuationToken = listResult.nextToken;
 				} while (listResult.nextToken);
 			} else {
-				if (
-					pageSize &&
-					pageSize <= MAX_PAGE_SIZE &&
-					typeof pageSize === 'number'
-				)
-					params.MaxKeys = pageSize;
+				if (pageSize && pageSize <= MAX_PAGE_SIZE && typeof pageSize === 'number') params.MaxKeys = pageSize;
 				else logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
 				listResult = await this._list(params, opt, prefix, userAgentValue);
 				list.results.push(...listResult.results);
@@ -899,9 +814,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 	}
 
-	private _isWithCredentials(
-		config: StorageOptions
-	): config is StorageOptions & { credentials: ICredentials } {
+	private _isWithCredentials(config: StorageOptions): config is StorageOptions & { credentials: ICredentials } {
 		return typeof config === 'object' && config.hasOwnProperty('credentials');
 	}
 
@@ -915,18 +828,10 @@ export class AWSS3Provider implements StorageProvider {
 
 		const customPrefix = config.customPrefix || {};
 		const identityId = config.identityId || credentials.identityId;
-		const privatePath =
-			(customPrefix.private !== undefined ? customPrefix.private : 'private/') +
-			identityId +
-			'/';
+		const privatePath = (customPrefix.private !== undefined ? customPrefix.private : 'private/') + identityId + '/';
 		const protectedPath =
-			(customPrefix.protected !== undefined
-				? customPrefix.protected
-				: 'protected/') +
-			identityId +
-			'/';
-		const publicPath =
-			customPrefix.public !== undefined ? customPrefix.public : 'public/';
+			(customPrefix.protected !== undefined ? customPrefix.protected : 'protected/') + identityId + '/';
+		const publicPath = customPrefix.public !== undefined ? customPrefix.public : 'public/';
 
 		switch (level) {
 			case 'private':

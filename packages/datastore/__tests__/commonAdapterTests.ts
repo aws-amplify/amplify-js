@@ -8,10 +8,7 @@ import {
 } from '../src/';
 
 import { ModelRelationship } from '../src/storage/relationship';
-import {
-	extractPrimaryKeyFieldNames,
-	extractPrimaryKeysAndValues,
-} from '../src/util';
+import { extractPrimaryKeyFieldNames, extractPrimaryKeysAndValues } from '../src/util';
 
 import {
 	pause,
@@ -35,8 +32,7 @@ import {
 
 export { pause };
 
-const isSQLiteAdapter = () =>
-	expect.getState().testPath.includes('SQLiteAdapter');
+const isSQLiteAdapter = () => expect.getState().testPath.includes('SQLiteAdapter');
 
 /**
  * Adds common query test cases that all adapters should support.
@@ -99,8 +95,7 @@ export function addCommonQueryTests({
 			// establishing a fake appsync endpoint tricks DataStore into attempting
 			// sync operations, which we'll leverage to monitor how DataStore manages
 			// the outbox.
-			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
-				'https://0.0.0.0/does/not/exist/graphql';
+			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint = 'https://0.0.0.0/does/not/exist/graphql';
 
 			const classes = initSchema(testSchema());
 			({ Comment, Model, Post, ModelWithIndexes } = classes as {
@@ -134,9 +129,7 @@ export function addCommonQueryTests({
 		});
 
 		it('should match fields of any non-empty value for `("ne", undefined)`', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1.ne(undefined!)
-			);
+			const results = await DataStore.query(Model, m => m.field1.ne(undefined!));
 			expect(results.length).toEqual(3);
 		});
 
@@ -146,9 +139,7 @@ export function addCommonQueryTests({
 		});
 
 		it('should NOT match fields of any non-empty value for `("eq", undefined)`', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1.eq(undefined!)
-			);
+			const results = await DataStore.query(Model, m => m.field1.eq(undefined!));
 			expect(results.length).toEqual(0);
 		});
 
@@ -178,72 +169,52 @@ export function addCommonQueryTests({
 		});
 
 		it('should NOT match fields of any non-empty value for `("gt", undefined)`', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1.gt(undefined!)
-			);
+			const results = await DataStore.query(Model, m => m.field1.gt(undefined!));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("ge", undefined)`', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1.ge(undefined!)
-			);
+			const results = await DataStore.query(Model, m => m.field1.ge(undefined!));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("lt", undefined)`', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1.lt(undefined!)
-			);
+			const results = await DataStore.query(Model, m => m.field1.lt(undefined!));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("le", undefined)`', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1.le(undefined!)
-			);
+			const results = await DataStore.query(Model, m => m.field1.le(undefined!));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should match gt', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1.gt('field1 value 0')
-			);
+			const results = await DataStore.query(Model, m => m.field1.gt('field1 value 0'));
 			expect(results.length).toEqual(2);
 		});
 
 		it('should match ge', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1.ge('field1 value 1')
-			);
+			const results = await DataStore.query(Model, m => m.field1.ge('field1 value 1'));
 			expect(results.length).toEqual(2);
 		});
 
 		it('should match lt', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1.lt('field1 value 2')
-			);
+			const results = await DataStore.query(Model, m => m.field1.lt('field1 value 2'));
 			expect(results.length).toEqual(2);
 		});
 
 		it('should match le', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1.le('field1 value 1')
-			);
+			const results = await DataStore.query(Model, m => m.field1.le('field1 value 1'));
 			expect(results.length).toEqual(2);
 		});
 
 		it('should match eq', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1.eq('field1 value 1')
-			);
+			const results = await DataStore.query(Model, m => m.field1.eq('field1 value 1'));
 			expect(results.length).toEqual(1);
 		});
 
 		it('should match ne', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1.ne('field1 value 1')
-			);
+			const results = await DataStore.query(Model, m => m.field1.ne('field1 value 1'));
 			expect(results.length).toEqual(2);
 		});
 
@@ -260,9 +231,7 @@ export function addCommonQueryTests({
 				})
 			);
 
-			const retrieved = await DataStore.query(ModelWithIndexes, m =>
-				m.stringField.eq('expected value')
-			);
+			const retrieved = await DataStore.query(ModelWithIndexes, m => m.stringField.eq('expected value'));
 			expect(retrieved.map(m => m.stringField)).toEqual(['expected value']);
 		});
 
@@ -275,9 +244,7 @@ export function addCommonQueryTests({
 				);
 			}
 
-			const retrieved = await DataStore.query(ModelWithIndexes, m =>
-				m.intField.eq(2)
-			);
+			const retrieved = await DataStore.query(ModelWithIndexes, m => m.intField.eq(2));
 			expect(retrieved.map(m => m.intField)).toEqual([2]);
 		});
 
@@ -290,9 +257,7 @@ export function addCommonQueryTests({
 				);
 			}
 
-			const retrieved = await DataStore.query(ModelWithIndexes, m =>
-				m.floatField.eq(1.5)
-			);
+			const retrieved = await DataStore.query(ModelWithIndexes, m => m.floatField.eq(1.5));
 			expect(retrieved.map(m => m.floatField)).toEqual([1.5]);
 		});
 	});
@@ -308,8 +273,7 @@ export function addCommonQueryTests({
 			// establishing a fake appsync endpoint tricks DataStore into attempting
 			// sync operations, which we'll leverage to monitor how DataStore manages
 			// the outbox.
-			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
-				'https://0.0.0.0/does/not/exist/graphql';
+			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint = 'https://0.0.0.0/does/not/exist/graphql';
 
 			const classes = initSchema(testSchema());
 			({ User, Profile, Comment, Post } = classes as {
@@ -339,13 +303,9 @@ export function addCommonQueryTests({
 		});
 
 		it('should allow linking model via model field', async () => {
-			const profile = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
-			);
+			const profile = await DataStore.save(new Profile({ firstName: 'Rick', lastName: 'Bob' }));
 
-			const savedUser = await DataStore.save(
-				new User({ name: 'test', profile })
-			);
+			const savedUser = await DataStore.save(new User({ name: 'test', profile }));
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
@@ -354,13 +314,9 @@ export function addCommonQueryTests({
 		});
 
 		it('should allow linking model via FK', async () => {
-			const profile = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
-			);
+			const profile = await DataStore.save(new Profile({ firstName: 'Rick', lastName: 'Bob' }));
 
-			const savedUser = await DataStore.save(
-				new User({ name: 'test', profileID: profile.id })
-			);
+			const savedUser = await DataStore.save(new User({ name: 'test', profileID: profile.id }));
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
@@ -405,9 +361,7 @@ export function addCommonQueryTests({
 		});
 
 		it('only includes changed fields in mutations', async () => {
-			const profile = await DataStore.save(
-				new Profile({ firstName: 'original first', lastName: 'original last' })
-			);
+			const profile = await DataStore.save(new Profile({ firstName: 'original first', lastName: 'original last' }));
 
 			await clearOutbox(adapter);
 
@@ -440,15 +394,7 @@ export function addCommonQueryTests({
 
 		beforeEach(async () => {
 			const classes = initSchema(testSchema());
-			({
-				Comment,
-				Blog,
-				Post,
-				HasOneParent,
-				HasOneChild,
-				DefaultPKHasOneParent,
-				DefaultPKHasOneChild,
-			} = classes as {
+			({ Comment, Blog, Post, HasOneParent, HasOneChild, DefaultPKHasOneParent, DefaultPKHasOneChild } = classes as {
 				Comment: PersistentModelConstructor<Comment>;
 				Blog: PersistentModelConstructor<Blog>;
 				Post: PersistentModelConstructor<Post>;
@@ -816,79 +762,67 @@ export function addCommonQueryTests({
 		// we don't want to try to enforce the requirementon SQLiteAdapter, which appears
 		// to be knowingly in an unfinished state.
 
-		(isSQLiteAdapter() ? test.skip : test)(
-			'deleting hasMany side of relationship cascades',
-			async () => {
-				const post = await DataStore.save(
-					new Post({
-						title: 'parent post',
-					})
-				);
-				const comment = await DataStore.save(
-					new Comment({
-						content: 'first!',
-						post,
-					})
-				);
+		(isSQLiteAdapter() ? test.skip : test)('deleting hasMany side of relationship cascades', async () => {
+			const post = await DataStore.save(
+				new Post({
+					title: 'parent post',
+				})
+			);
+			const comment = await DataStore.save(
+				new Comment({
+					content: 'first!',
+					post,
+				})
+			);
 
-				// sanity check. make sure things were created.
-				const retrievedPost = await DataStore.query(Post, post.id);
-				expect(retrievedPost).not.toBeUndefined();
-				expect(retrievedPost!.id).toEqual(post.id);
+			// sanity check. make sure things were created.
+			const retrievedPost = await DataStore.query(Post, post.id);
+			expect(retrievedPost).not.toBeUndefined();
+			expect(retrievedPost!.id).toEqual(post.id);
 
-				const retrievedComment = await DataStore.query(Comment, comment.id);
-				expect(retrievedComment).not.toBeUndefined();
-				expect(retrievedComment!.id).toEqual(comment.id);
+			const retrievedComment = await DataStore.query(Comment, comment.id);
+			expect(retrievedComment).not.toBeUndefined();
+			expect(retrievedComment!.id).toEqual(comment.id);
 
-				await DataStore.delete(post);
+			await DataStore.delete(post);
 
-				const retrievedDeletedPost = await DataStore.query(Post, post.id);
-				expect(retrievedDeletedPost).toBeUndefined();
+			const retrievedDeletedPost = await DataStore.query(Post, post.id);
+			expect(retrievedDeletedPost).toBeUndefined();
 
-				const retrievedDeletedComment = await DataStore.query(
-					Comment,
-					comment.id
-				);
-				expect(retrievedDeletedComment).toBeUndefined();
-			}
-		);
+			const retrievedDeletedComment = await DataStore.query(Comment, comment.id);
+			expect(retrievedDeletedComment).toBeUndefined();
+		});
 
-		(isSQLiteAdapter() ? test.skip : test)(
-			'deleting hasMany side of relationship by predicate cascades',
-			async () => {
-				const post = await DataStore.save(
-					new Post({
-						title: 'parent post',
-					})
-				);
-				const comment = await DataStore.save(
-					new Comment({
-						content: 'first!',
-						post,
-					})
-				);
+		(isSQLiteAdapter() ? test.skip : test)('deleting hasMany side of relationship by predicate cascades', async () => {
+			const post = await DataStore.save(
+				new Post({
+					title: 'parent post',
+				})
+			);
+			const comment = await DataStore.save(
+				new Comment({
+					content: 'first!',
+					post,
+				})
+			);
 
-				// sanity check. make sure things were created.
-				const retrievedPost = await DataStore.query(Post, post.id);
-				expect(retrievedPost).not.toBeUndefined();
-				expect(retrievedPost!.id).toEqual(post.id);
+			// sanity check. make sure things were created.
+			const retrievedPost = await DataStore.query(Post, post.id);
+			expect(retrievedPost).not.toBeUndefined();
+			expect(retrievedPost!.id).toEqual(post.id);
 
-				const retrievedComment = await DataStore.query(Comment, comment.id);
-				expect(retrievedComment).not.toBeUndefined();
-				expect(retrievedComment!.id).toEqual(comment.id);
+			const retrievedComment = await DataStore.query(Comment, comment.id);
+			expect(retrievedComment).not.toBeUndefined();
+			expect(retrievedComment!.id).toEqual(comment.id);
 
-				await DataStore.delete(Post, p => p.title.eq('parent post'));
+			await DataStore.delete(Post, p => p.title.eq('parent post'));
 
-				const retrievedDeletedPost = await DataStore.query(Post, post.id);
-				expect(retrievedDeletedPost).toBeUndefined();
+			const retrievedDeletedPost = await DataStore.query(Post, post.id);
+			expect(retrievedDeletedPost).toBeUndefined();
 
-				const retrievedDeletedComment = await DataStore.query(
-					Comment,
-					comment.id
-				);
-				expect(retrievedDeletedComment).toBeUndefined();
-			}
-		);
+			const retrievedDeletedComment = await DataStore.query(Comment, comment.id);
+			expect(retrievedDeletedComment).toBeUndefined();
+		});
 
 		/**
 		 * Distinct from other hasMany delete cascade tests in that the model
@@ -897,34 +831,31 @@ export function addCommonQueryTests({
 		 * which has seen a regression at least once!
 		 * See: https://github.com/aws-amplify/amplify-js/issues/10866
 		 */
-		(isSQLiteAdapter() ? test.skip : test)(
-			'deleting nested hasMany cascades',
-			async () => {
-				const blog = await DataStore.save(
-					new Blog({
-						title: 'my blog',
-					})
-				);
+		(isSQLiteAdapter() ? test.skip : test)('deleting nested hasMany cascades', async () => {
+			const blog = await DataStore.save(
+				new Blog({
+					title: 'my blog',
+				})
+			);
 
-				const post = await DataStore.save(
-					new Post({
-						title: 'my post',
-						blogId: blog.id,
-					})
-				);
+			const post = await DataStore.save(
+				new Post({
+					title: 'my post',
+					blogId: blog.id,
+				})
+			);
 
-				const retrievedBlog = await DataStore.query(Blog, blog.id);
-				expect(retrievedBlog!.id).toEqual(blog.id);
+			const retrievedBlog = await DataStore.query(Blog, blog.id);
+			expect(retrievedBlog!.id).toEqual(blog.id);
 
-				const posts = await retrievedBlog!.posts.toArray();
-				expect(posts.length).toEqual(1);
-				expect(posts[0].id).toEqual(post.id);
+			const posts = await retrievedBlog!.posts.toArray();
+			expect(posts.length).toEqual(1);
+			expect(posts[0].id).toEqual(post.id);
 
-				await DataStore.delete(Blog, blog.id);
+			await DataStore.delete(Blog, blog.id);
 
-				expect(await DataStore.query(Post, post.id)).toBeUndefined();
-			}
-		);
+			expect(await DataStore.query(Post, post.id)).toBeUndefined();
+		});
 
 		test('deleting belongsTo side of relationship does not cascade', async () => {
 			const post = await DataStore.save(
@@ -953,80 +884,47 @@ export function addCommonQueryTests({
 			const retrievedNOTDeletedPost = await DataStore.query(Post, post.id);
 			expect(retrievedNOTDeletedPost).not.toBeUndefined();
 
-			const retrievedDeletedComment = await DataStore.query(
-				Comment,
-				comment.id
-			);
+			const retrievedDeletedComment = await DataStore.query(Comment, comment.id);
 			expect(retrievedDeletedComment).toBeUndefined();
 		});
 
-		(isSQLiteAdapter() ? test.skip : test)(
-			'deleting disconnected hasOne with cpk',
-			async () => {
-				const hasOneParent = await DataStore.save(new HasOneParent({}));
+		(isSQLiteAdapter() ? test.skip : test)('deleting disconnected hasOne with cpk', async () => {
+			const hasOneParent = await DataStore.save(new HasOneParent({}));
 
-				await DataStore.delete(hasOneParent);
+			await DataStore.delete(hasOneParent);
 
-				expect(
-					await DataStore.query(HasOneParent, hasOneParent.id)
-				).toBeUndefined();
-			}
-		);
+			expect(await DataStore.query(HasOneParent, hasOneParent.id)).toBeUndefined();
+		});
 
-		(isSQLiteAdapter() ? test.skip : test)(
-			'deleting connected hasOne with cpk',
-			async () => {
-				const hasOneChild = await DataStore.save(new HasOneChild({}));
-				const hasOneParent = await DataStore.save(
-					new HasOneParent({ child: hasOneChild })
-				);
+		(isSQLiteAdapter() ? test.skip : test)('deleting connected hasOne with cpk', async () => {
+			const hasOneChild = await DataStore.save(new HasOneChild({}));
+			const hasOneParent = await DataStore.save(new HasOneParent({ child: hasOneChild }));
 
-				await DataStore.delete(hasOneParent);
+			await DataStore.delete(hasOneParent);
 
-				expect(
-					await DataStore.query(HasOneParent, hasOneParent.id)
-				).toBeUndefined();
+			expect(await DataStore.query(HasOneParent, hasOneParent.id)).toBeUndefined();
 
-				expect(
-					await DataStore.query(HasOneChild, hasOneChild.id)
-				).toBeUndefined();
-			}
-		);
+			expect(await DataStore.query(HasOneChild, hasOneChild.id)).toBeUndefined();
+		});
 
-		(isSQLiteAdapter() ? test.skip : test)(
-			'deleting disconnected hasOne without cpk',
-			async () => {
-				const hasOneParent = await DataStore.save(
-					new DefaultPKHasOneParent({})
-				);
+		(isSQLiteAdapter() ? test.skip : test)('deleting disconnected hasOne without cpk', async () => {
+			const hasOneParent = await DataStore.save(new DefaultPKHasOneParent({}));
 
-				await DataStore.delete(hasOneParent);
+			await DataStore.delete(hasOneParent);
 
-				expect(
-					await DataStore.query(DefaultPKHasOneParent, hasOneParent.id)
-				).toBeUndefined();
-			}
-		);
+			expect(await DataStore.query(DefaultPKHasOneParent, hasOneParent.id)).toBeUndefined();
+		});
 
-		(isSQLiteAdapter() ? test.skip : test)(
-			'deleting connected hasOne without cpk',
-			async () => {
-				const hasOneChild = await DataStore.save(new DefaultPKHasOneChild({}));
-				const hasOneParent = await DataStore.save(
-					new DefaultPKHasOneParent({ child: hasOneChild })
-				);
+		(isSQLiteAdapter() ? test.skip : test)('deleting connected hasOne without cpk', async () => {
+			const hasOneChild = await DataStore.save(new DefaultPKHasOneChild({}));
+			const hasOneParent = await DataStore.save(new DefaultPKHasOneParent({ child: hasOneChild }));
 
-				await DataStore.delete(hasOneParent);
+			await DataStore.delete(hasOneParent);
 
-				expect(
-					await DataStore.query(DefaultPKHasOneParent, hasOneParent.id)
-				).toBeUndefined();
+			expect(await DataStore.query(DefaultPKHasOneParent, hasOneParent.id)).toBeUndefined();
 
-				expect(
-					await DataStore.query(DefaultPKHasOneChild, hasOneChild.id)
-				).toBeUndefined();
-			}
-		);
+			expect(await DataStore.query(DefaultPKHasOneChild, hasOneChild.id)).toBeUndefined();
+		});
 	});
 
 	describe('Related models', () => {
@@ -1041,9 +939,7 @@ export function addCommonQueryTests({
 
 		const allFKFields = meta => {
 			const fields = new Set<string>();
-			const relationships = ModelRelationship.allFrom(meta).filter(
-				r => r.type === 'BELONGS_TO'
-			);
+			const relationships = ModelRelationship.allFrom(meta).filter(r => r.type === 'BELONGS_TO');
 			for (const relationship of relationships) {
 				for (const field of relationship.localJoinFields) {
 					fields.add(field);
@@ -1066,8 +962,7 @@ export function addCommonQueryTests({
 						initializer[field] = `some random content ${ulid()}`;
 						break;
 					case 'Int':
-						initializer[field] =
-							new Date().getTime() * 100 + Math.floor(Math.random() * 100);
+						initializer[field] = new Date().getTime() * 100 + Math.floor(Math.random() * 100);
 						break;
 					default:
 						break;
@@ -1086,14 +981,7 @@ export function addCommonQueryTests({
 			 * Sampling of fields present on the models.
 			 * We'll just use the first one we find on a model.
 			 */
-			const fieldNamesToSelectFrom = [
-				'content',
-				'name',
-				'title',
-				'firstName',
-				'lastName',
-				'description',
-			];
+			const fieldNamesToSelectFrom = ['content', 'name', 'title', 'firstName', 'lastName', 'description'];
 
 			for (const [field, def] of Object.entries(meta.schema.fields)) {
 				if (fieldNamesToSelectFrom.includes(field)) {
@@ -1162,9 +1050,7 @@ export function addCommonQueryTests({
 						case 'BELONGS_TO':
 							test(`can lazy load ${testname}`, async () => {
 								// Create the "remote" instance first, because the "local" one will point to it.
-								const remoteInit = new R.remoteModelConstructor(
-									randomInitializer(R.remoteModelConstructor)
-								);
+								const remoteInit = new R.remoteModelConstructor(randomInitializer(R.remoteModelConstructor));
 								const remote = await DataStore.save(remoteInit);
 
 								const localInit = new R.localConstructor({
@@ -1188,9 +1074,7 @@ export function addCommonQueryTests({
 								 */
 
 								// Create the "remote" instance first, because the "local" one will point to it.
-								const remoteInit = new R.remoteModelConstructor(
-									randomInitializer(R.remoteModelConstructor)
-								);
+								const remoteInit = new R.remoteModelConstructor(randomInitializer(R.remoteModelConstructor));
 								const remote = await DataStore.save(remoteInit);
 
 								const localInit = new R.localConstructor({
@@ -1211,9 +1095,7 @@ export function addCommonQueryTests({
 								expect(lazyLoaded).toBeUndefined();
 							});
 							test(`can query ${testname}`, async () => {
-								const remoteInit = new R.remoteModelConstructor(
-									randomInitializer(R.remoteModelConstructor)
-								);
+								const remoteInit = new R.remoteModelConstructor(randomInitializer(R.remoteModelConstructor));
 								const remote = await DataStore.save(remoteInit);
 
 								const localInit = new R.localConstructor({
@@ -1227,19 +1109,15 @@ export function addCommonQueryTests({
 								const remoteField = pickField(R.remoteModelConstructor);
 								expect(remoteField).toBeDefined();
 
-								const fetched = await DataStore.query(
-									R.localConstructor,
-									local =>
-										local[field][remoteField!].eq(remoteInit[remoteField!])
+								const fetched = await DataStore.query(R.localConstructor, local =>
+									local[field][remoteField!].eq(remoteInit[remoteField!])
 								);
 
 								expect(fetched.length).toBe(1);
 								expect(fetched[0]).toEqual(local);
 							});
 							test(`finds empty sets when target related instance field misatches ${testname}`, async () => {
-								const remoteInit = new R.remoteModelConstructor(
-									randomInitializer(R.remoteModelConstructor)
-								);
+								const remoteInit = new R.remoteModelConstructor(randomInitializer(R.remoteModelConstructor));
 								const remote = await DataStore.save(remoteInit);
 
 								const localInit = new R.localConstructor({
@@ -1253,22 +1131,16 @@ export function addCommonQueryTests({
 								const remoteField = pickField(R.remoteModelConstructor);
 								expect(remoteField).toBeDefined();
 
-								const fetched = await DataStore.query(
-									R.localConstructor,
-									local =>
-										// HERE'S THE DIFFERENCE!
-										local[field][remoteField!].eq(
-											remoteInit[remoteField! + ' MISMATCHED!']
-										)
+								const fetched = await DataStore.query(R.localConstructor, local =>
+									// HERE'S THE DIFFERENCE!
+									local[field][remoteField!].eq(remoteInit[remoteField! + ' MISMATCHED!'])
 								);
 
 								// HERE'S THE DIFFERENT ASSERTION. expecting no results.
 								expect(fetched.length).toBe(0);
 							});
 							test(`finds empty sets when target instance isn't related ${testname}`, async () => {
-								const remoteInit = new R.remoteModelConstructor(
-									randomInitializer(R.remoteModelConstructor)
-								);
+								const remoteInit = new R.remoteModelConstructor(randomInitializer(R.remoteModelConstructor));
 								const remote = await DataStore.save(remoteInit);
 
 								const localInit = new R.localConstructor({
@@ -1284,11 +1156,9 @@ export function addCommonQueryTests({
 								const remoteField = pickField(R.remoteModelConstructor);
 								expect(remoteField).toBeDefined();
 
-								const fetched = await DataStore.query(
-									R.localConstructor,
-									local =>
-										// HERE'S THE DIFFERENCE!
-										local[field][remoteField!].eq(remoteInit[remoteField!])
+								const fetched = await DataStore.query(R.localConstructor, local =>
+									// HERE'S THE DIFFERENCE!
+									local[field][remoteField!].eq(remoteInit[remoteField!])
 								);
 
 								// HERE'S THE DIFFERENT ASSERTION. expecting no results.
@@ -1297,18 +1167,11 @@ export function addCommonQueryTests({
 							break;
 						case 'HAS_MANY':
 							test(`can lazy load ${testname}`, async () => {
-								const local = await DataStore.save(
-									new R.localConstructor(randomInitializer(R.localConstructor))
-								);
+								const local = await DataStore.save(new R.localConstructor(randomInitializer(R.localConstructor)));
 
 								const FK = {};
-								for (
-									let fieldIndex = 0;
-									fieldIndex < R.remoteJoinFields.length;
-									fieldIndex++
-								) {
-									FK[R.remoteJoinFields[fieldIndex]] =
-										local[R.localJoinFields[fieldIndex]];
+								for (let fieldIndex = 0; fieldIndex < R.remoteJoinFields.length; fieldIndex++) {
+									FK[R.remoteJoinFields[fieldIndex]] = local[R.localJoinFields[fieldIndex]];
 								}
 
 								const remotes = [1, 2, 3] as any[];
@@ -1334,9 +1197,7 @@ export function addCommonQueryTests({
 								 * Basically, we want to ensure lazy loading never regresses and starts
 								 * loading related instances that are not actually related by FK.
 								 */
-								const local = await DataStore.save(
-									new R.localConstructor(randomInitializer(R.localConstructor))
-								);
+								const local = await DataStore.save(new R.localConstructor(randomInitializer(R.localConstructor)));
 
 								const remotes = [1, 2, 3] as any[];
 								for (const [index, value] of remotes.entries()) {
@@ -1367,13 +1228,8 @@ export function addCommonQueryTests({
 								);
 
 								const FK = {};
-								for (
-									let fieldIndex = 0;
-									fieldIndex < R.remoteJoinFields.length;
-									fieldIndex++
-								) {
-									FK[R.remoteJoinFields[fieldIndex]] =
-										local[R.localJoinFields[fieldIndex]];
+								for (let fieldIndex = 0; fieldIndex < R.remoteJoinFields.length; fieldIndex++) {
+									FK[R.remoteJoinFields[fieldIndex]] = local[R.localJoinFields[fieldIndex]];
 								}
 
 								const remotes = [1, 2, 3] as any[];
@@ -1394,9 +1250,8 @@ export function addCommonQueryTests({
 								// any one of the children should be able to serve as the target
 								// of a nested predicate.
 								for (const remote of remotes) {
-									const fetched = await DataStore.query(
-										R.localConstructor,
-										local => local[field][remoteField!].eq(remote[remoteField!])
+									const fetched = await DataStore.query(R.localConstructor, local =>
+										local[field][remoteField!].eq(remote[remoteField!])
 									);
 									expect(fetched.length).toBe(1);
 									expect(fetched[0]).toEqual(local);
@@ -1410,13 +1265,8 @@ export function addCommonQueryTests({
 								);
 
 								const FK = {};
-								for (
-									let fieldIndex = 0;
-									fieldIndex < R.remoteJoinFields.length;
-									fieldIndex++
-								) {
-									FK[R.remoteJoinFields[fieldIndex]] =
-										local[R.localJoinFields[fieldIndex]];
+								for (let fieldIndex = 0; fieldIndex < R.remoteJoinFields.length; fieldIndex++) {
+									FK[R.remoteJoinFields[fieldIndex]] = local[R.localJoinFields[fieldIndex]];
 								}
 
 								const remotes = [1, 2, 3] as any[];
@@ -1437,13 +1287,9 @@ export function addCommonQueryTests({
 								// any one of the children should be able to serve as the target
 								// of a nested predicate.
 								for (const remote of remotes) {
-									const fetched = await DataStore.query(
-										R.localConstructor,
-										local =>
-											// HERE'S THE DIFFERENCE!
-											local[field][remoteField!].eq(
-												remote[remoteField! + ' MISMATCHED!']
-											)
+									const fetched = await DataStore.query(R.localConstructor, local =>
+										// HERE'S THE DIFFERENCE!
+										local[field][remoteField!].eq(remote[remoteField! + ' MISMATCHED!'])
 									);
 
 									// DIFFERENCE IN ASSERTION
@@ -1477,11 +1323,9 @@ export function addCommonQueryTests({
 								// any one of the children should be able to serve as the target
 								// of a nested predicate.
 								for (const remote of remotes) {
-									const fetched = await DataStore.query(
-										R.localConstructor,
-										local =>
-											// HERE'S THE DIFFERENCE!
-											local[field][remoteField!].eq(remote[remoteField!])
+									const fetched = await DataStore.query(R.localConstructor, local =>
+										// HERE'S THE DIFFERENCE!
+										local[field][remoteField!].eq(remote[remoteField!])
 									);
 
 									// DIFFERENCE IN ASSERTION
@@ -1556,10 +1400,7 @@ export function addCommonQueryTests({
 		 * @param leftOnes A list of content values to use on the side.
 		 * @param rightOnes A list of content values to use on the right side.
 		 */
-		const saveManyToManys = async (
-			leftOnes: string[],
-			rightOnes: string[]
-		): Promise<MtmBag> => {
+		const saveManyToManys = async (leftOnes: string[], rightOnes: string[]): Promise<MtmBag> => {
 			const left = [] as MtmLeft[];
 			const right = [] as MtmRight[];
 			const join = [] as MtmJoin[];
@@ -1589,15 +1430,10 @@ export function addCommonQueryTests({
 		 * @param item The item to re-fetch.
 		 */
 		const refetch = async <T extends PersistentModel>(item: T) => {
-			const fetched = await DataStore.query(
-				item.constructor as PersistentModelConstructor<T>,
-				item.id
-			);
+			const fetched = await DataStore.query(item.constructor as PersistentModelConstructor<T>, item.id);
 
 			if (!fetched) {
-				throw new Error(
-					`Instance of ${item.constructor.name} (${item?.id}) doesn't exist in DataStore!`
-				);
+				throw new Error(`Instance of ${item.constructor.name} (${item?.id}) doesn't exist in DataStore!`);
 			} else {
 				return fetched;
 			}
@@ -1645,14 +1481,8 @@ export function addCommonQueryTests({
 		 */
 
 		test('sets can be established and traversed, cardinality 1x1', async () => {
-			const expectedGroupA = await saveManyToManys(
-				['left content A'],
-				['right content A']
-			);
-			const expectedGroupB = await saveManyToManys(
-				['left content B'],
-				['right content B']
-			);
+			const expectedGroupA = await saveManyToManys(['left content A'], ['right content A']);
+			const expectedGroupB = await saveManyToManys(['left content B'], ['right content B']);
 
 			await expectMatchingMtmsInDataStore(expectedGroupA);
 			await expectMatchingMtmsInDataStore(expectedGroupB);
@@ -1673,41 +1503,19 @@ export function addCommonQueryTests({
 		});
 
 		test('sets can be queried by nested predicate, cardinality 1x1', async () => {
-			const expectedGroupA = await saveManyToManys(
-				['left content A'],
-				['right content A']
-			);
-			const expectedGroupB = await saveManyToManys(
-				['left content B'],
-				['right content B']
-			);
+			const expectedGroupA = await saveManyToManys(['left content A'], ['right content A']);
+			const expectedGroupB = await saveManyToManys(['left content B'], ['right content B']);
 
-			const fetchedRightOnesA = await DataStore.query(MtmRight, r =>
-				r.leftOnes.mtmLeft.content.eq('left content A')
-			);
-			expect(fetchedRightOnesA.map(r => r.content)).toEqual([
-				'right content A',
-			]);
+			const fetchedRightOnesA = await DataStore.query(MtmRight, r => r.leftOnes.mtmLeft.content.eq('left content A'));
+			expect(fetchedRightOnesA.map(r => r.content)).toEqual(['right content A']);
 
-			const fetchedRightOnesB = await DataStore.query(MtmRight, r =>
-				r.leftOnes.mtmLeft.content.eq('left content B')
-			);
-			expect(fetchedRightOnesB.map(r => r.content)).toEqual([
-				'right content B',
-			]);
+			const fetchedRightOnesB = await DataStore.query(MtmRight, r => r.leftOnes.mtmLeft.content.eq('left content B'));
+			expect(fetchedRightOnesB.map(r => r.content)).toEqual(['right content B']);
 		});
 
 		test('sets can be queried by nested predicate, cardinality 3x3', async () => {
-			const expectedNamesARight = [
-				'right content A 1',
-				'right content A 2',
-				'right content A 3',
-			];
-			const expectedNamesBRight = [
-				'right content B 1',
-				'right content B 2',
-				'right content B 3',
-			];
+			const expectedNamesARight = ['right content A 1', 'right content A 2', 'right content A 3'];
+			const expectedNamesBRight = ['right content B 1', 'right content B 2', 'right content B 3'];
 
 			const expectedGroupA = await saveManyToManys(
 				['left content A 1', 'left content A 2', 'left content A 3'],
@@ -1722,16 +1530,12 @@ export function addCommonQueryTests({
 				r.leftOnes.mtmLeft.content.contains('left content A')
 			);
 
-			expect(fetchedRightOnesA.map(r => r.content)).toEqual(
-				expectedNamesARight
-			);
+			expect(fetchedRightOnesA.map(r => r.content)).toEqual(expectedNamesARight);
 
 			const fetchedRightOnesB = await DataStore.query(MtmRight, r =>
 				r.leftOnes.mtmLeft.content.contains('left content B')
 			);
-			expect(fetchedRightOnesB.map(r => r.content)).toEqual(
-				expectedNamesBRight
-			);
+			expect(fetchedRightOnesB.map(r => r.content)).toEqual(expectedNamesBRight);
 		});
 	});
 }

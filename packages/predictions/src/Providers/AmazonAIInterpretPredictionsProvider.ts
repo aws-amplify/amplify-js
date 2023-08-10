@@ -1,11 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	Category,
-	Credentials,
-	PredictionsAction,
-	getAmplifyUserAgentObject,
-} from '@aws-amplify/core';
+import { Category, Credentials, PredictionsAction, getAmplifyUserAgentObject } from '@aws-amplify/core';
 import { AbstractInterpretPredictionsProvider } from '../types/Providers';
 
 import {
@@ -41,21 +36,10 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 		return new Promise(async (res, rej) => {
 			const credentials = await Credentials.get();
 			if (!credentials) return rej('No credentials');
-			const {
-				interpretText: {
-					region = '',
-					defaults: { type: interpretTypeConfig = '' } = {},
-				} = {},
-			} = this._config;
-			const {
-				text: {
-					source: { text = '' } = {},
-					type: interpretType = interpretTypeConfig,
-				} = {},
-			} = ({} = input);
+			const { interpretText: { region = '', defaults: { type: interpretTypeConfig = '' } = {} } = {} } = this._config;
+			const { text: { source: { text = '' } = {}, type: interpretType = interpretTypeConfig } = {} } = ({} = input);
 
-			const { text: { source: { language = undefined } = {} } = {} } = ({} =
-				input as any); // language is only required for specific interpret types
+			const { text: { source: { language = undefined } = {} } = {} } = ({} = input as any); // language is only required for specific interpret types
 
 			this.comprehendClient = new ComprehendClient({
 				credentials,
@@ -191,11 +175,9 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 	private serializeSyntaxFromComprehend(tokens): Array<TextSyntax> {
 		let response = [];
 		if (tokens && Array.isArray(tokens)) {
-			response = tokens.map(
-				({ Text: text = '', PartOfSpeech: { Tag: syntax = '' } = {} }) => {
-					return { text, syntax };
-				}
-			);
+			response = tokens.map(({ Text: text = '', PartOfSpeech: { Tag: syntax = '' } = {} }) => {
+				return { text, syntax };
+			});
 		}
 		return response;
 	}
@@ -206,12 +188,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 			const data = await this.comprehendClient.send(detectSentimentCommand);
 			const {
 				Sentiment: predominant = '',
-				SentimentScore: {
-					Positive: positive = 0,
-					Negative: negative = 0,
-					Neutral: neutral = 0,
-					Mixed: mixed = 0,
-				} = {},
+				SentimentScore: { Positive: positive = 0, Negative: negative = 0, Neutral: neutral = 0, Mixed: mixed = 0 } = {},
 			} = ({} = data);
 			return { predominant, positive, negative, neutral, mixed };
 		} catch (err) {
@@ -256,12 +233,8 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 
 	private async detectLanguage(params): Promise<string> {
 		try {
-			const detectDominantLanguageCommand = new DetectDominantLanguageCommand(
-				params
-			);
-			const data = await this.comprehendClient.send(
-				detectDominantLanguageCommand
-			);
+			const detectDominantLanguageCommand = new DetectDominantLanguageCommand(params);
+			const data = await this.comprehendClient.send(detectDominantLanguageCommand);
 			const { Languages: [{ LanguageCode }] = [{}] } = ({} = data || {});
 			if (!LanguageCode) {
 				Promise.reject('Language not detected');

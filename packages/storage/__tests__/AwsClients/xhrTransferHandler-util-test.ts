@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { xhrTransferHandler } from '../../src/AwsClients/S3/runtime/xhrTransferHandler';
-import {
-	SEND_UPLOAD_PROGRESS_EVENT,
-	SEND_DOWNLOAD_PROGRESS_EVENT,
-} from '../../src/AwsClients/S3/utils';
+import { SEND_UPLOAD_PROGRESS_EVENT, SEND_DOWNLOAD_PROGRESS_EVENT } from '../../src/AwsClients/S3/utils';
 import {
 	spyOnXhr,
 	mockXhrResponse,
@@ -58,10 +55,7 @@ describe('xhrTransferHandler', () => {
 		});
 		mockXhrResponse(mockXhr, mock200Response);
 		await requestPromise;
-		expect(mockXhr.open).toHaveBeenCalledWith(
-			defaultRequest.method,
-			defaultRequest.url.toString()
-		);
+		expect(mockXhr.open).toHaveBeenCalledWith(defaultRequest.method, defaultRequest.url.toString());
 	});
 
 	it('should call xhr.setRequestHeader ignoring forbidden header -- host', async () => {
@@ -273,15 +267,12 @@ describe('xhrTransferHandler', () => {
 		const requestPromise = xhrTransferHandler(defaultRequest, {
 			responseType: 'text',
 		});
-		[
-			XMLHttpRequest.UNSENT,
-			XMLHttpRequest.OPENED,
-			XMLHttpRequest.HEADERS_RECEIVED,
-			XMLHttpRequest.LOADING,
-		].forEach(readyState => {
-			mockXhrReadyState(mockXhr, readyState);
-			expect(mockXhr.getAllResponseHeaders).not.toHaveBeenCalled();
-		});
+		[XMLHttpRequest.UNSENT, XMLHttpRequest.OPENED, XMLHttpRequest.HEADERS_RECEIVED, XMLHttpRequest.LOADING].forEach(
+			readyState => {
+				mockXhrReadyState(mockXhr, readyState);
+				expect(mockXhr.getAllResponseHeaders).not.toHaveBeenCalled();
+			}
+		);
 		mockXhrResponse(mockXhr, mock200Response);
 		await requestPromise;
 		expect(mockXhr.getAllResponseHeaders).toBeCalledTimes(1);
@@ -318,9 +309,7 @@ describe('xhrTransferHandler', () => {
 
 		await expect(body!.json()).rejects.toThrow(
 			expect.objectContaining({
-				message: expect.stringContaining(
-					'Parsing response to JSON is not implemented.'
-				),
+				message: expect.stringContaining('Parsing response to JSON is not implemented.'),
 			})
 		);
 	});

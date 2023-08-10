@@ -23,12 +23,7 @@ export const parseJsonError: ErrorParser = async (response?: HttpResponse) => {
 		}
 		return cleanValue;
 	};
-	const code = sanitizeErrorCode(
-		response.headers['x-amzn-errortype'] ??
-			body.code ??
-			body.__type ??
-			'UnknownError'
-	);
+	const code = sanitizeErrorCode(response.headers['x-amzn-errortype'] ?? body.code ?? body.__type ?? 'UnknownError');
 	const message = body.message ?? body.Message ?? 'Unknown error';
 	const error = new Error(message);
 	return Object.assign(error, {

@@ -233,12 +233,7 @@ describe('Sync', () => {
 			}
 		});
 
-		[
-			'No api-key configured',
-			'No current user',
-			'No credentials',
-			'No federated jwt',
-		].forEach(authError => {
+		['No api-key configured', 'No current user', 'No credentials', 'No federated jwt'].forEach(authError => {
 			it(`should return NonRetryableError for client-side error: ${authError}`, async () => {
 				const rejectResponse = {
 					message: authError,
@@ -436,9 +431,7 @@ function jitteredRetrySyncProcessorSetup({
 	);
 	// mock graphql to return a mockable observable
 	jest.mock('@aws-amplify/api/internals', () => {
-		const actualInternalAPIModule = jest.requireActual(
-			'@aws-amplify/api/internals'
-		);
+		const actualInternalAPIModule = jest.requireActual('@aws-amplify/api/internals');
 		const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 
 		return {
@@ -458,8 +451,7 @@ function jitteredRetrySyncProcessorSetup({
 		...coreMocks,
 	}));
 
-	const SyncProcessorClass =
-		require('../src/sync/processors/sync').SyncProcessor;
+	const SyncProcessorClass = require('../src/sync/processors/sync').SyncProcessor;
 
 	const testInternalSchema = {
 		namespaces: {},

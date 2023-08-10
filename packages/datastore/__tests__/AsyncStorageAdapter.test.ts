@@ -1,19 +1,7 @@
 import AsyncStorageAdapter from '../src/storage/adapter/AsyncStorageAdapter';
-import {
-	DataStore as DataStoreType,
-	initSchema as initSchemaType,
-	syncClasses,
-} from '../src/datastore/datastore';
+import { DataStore as DataStoreType, initSchema as initSchemaType, syncClasses } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
-import {
-	Model,
-	User,
-	Profile,
-	Post,
-	Comment,
-	testSchema,
-	pause,
-} from './helpers';
+import { Model, User, Profile, Post, Comment, testSchema, pause } from './helpers';
 import { Predicates } from '../src/predicates';
 import { addCommonQueryTests } from './commonAdapterTests';
 
@@ -109,9 +97,7 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getAll for query with a predicate', async () => {
-			const results = await DataStore.query(Model, c =>
-				c.field1.contains('value')
-			);
+			const results = await DataStore.query(Model, c => c.field1.contains('value'));
 
 			expect(results.length).toEqual(3);
 			expect(spyOnGetAll).toHaveBeenCalled();
@@ -119,13 +105,9 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getAll & inMemoryPagination for query with a predicate and sort', async () => {
-			const results = await DataStore.query(
-				Model,
-				c => c.field1.contains('value'),
-				{
-					sort: s => s.dateCreated(SortDirection.DESCENDING),
-				}
-			);
+			const results = await DataStore.query(Model, c => c.field1.contains('value'), {
+				sort: s => s.dateCreated(SortDirection.DESCENDING),
+			});
 
 			expect(results.length).toEqual(3);
 			expect(results[0].field1).toEqual('a third value');
@@ -186,13 +168,9 @@ describe('AsyncStorageAdapter tests', () => {
 				Profile: PersistentModelConstructor<Profile>;
 			});
 
-			({ id: profile1Id } = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
-			));
+			({ id: profile1Id } = await DataStore.save(new Profile({ firstName: 'Rick', lastName: 'Bob' })));
 
-			({ id: user1Id } = await DataStore.save(
-				new User({ name: 'test', profileID: profile1Id })
-			));
+			({ id: user1Id } = await DataStore.save(new User({ name: 'test', profileID: profile1Id })));
 		});
 
 		beforeEach(async () => {
@@ -209,9 +187,7 @@ describe('AsyncStorageAdapter tests', () => {
 			const post = await DataStore.save(new Post({ title: 'Test' }));
 			({ id: post1Id } = post);
 
-			({ id: comment1Id } = await DataStore.save(
-				new Comment({ content: 'Test Content', post })
-			));
+			({ id: comment1Id } = await DataStore.save(new Comment({ content: 'Test Content', post })));
 		});
 
 		it('Should perform a cascading delete on a record with a Has One relationship', async () => {
@@ -269,15 +245,11 @@ describe('AsyncStorageAdapter tests', () => {
 				Profile: PersistentModelConstructor<Profile>;
 			});
 
-			profile = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
-			);
+			profile = await DataStore.save(new Profile({ firstName: 'Rick', lastName: 'Bob' }));
 		});
 
 		it('should allow linking model via model field', async () => {
-			const savedUser = await DataStore.save(
-				new User({ name: 'test', profile })
-			);
+			const savedUser = await DataStore.save(new User({ name: 'test', profile }));
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
@@ -286,9 +258,7 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('should allow linking model via FK', async () => {
-			const savedUser = await DataStore.save(
-				new User({ name: 'test', profileID: profile.id })
-			);
+			const savedUser = await DataStore.save(new User({ name: 'test', profileID: profile.id }));
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
@@ -315,15 +285,11 @@ describe('AsyncStorageAdapter tests', () => {
 				Profile: PersistentModelConstructor<Profile>;
 			});
 
-			profile = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
-			);
+			profile = await DataStore.save(new Profile({ firstName: 'Rick', lastName: 'Bob' }));
 		});
 
 		it('should allow linking model via model field', async () => {
-			const savedUser = await DataStore.save(
-				new User({ name: 'test', profile })
-			);
+			const savedUser = await DataStore.save(new User({ name: 'test', profile }));
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
@@ -332,9 +298,7 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('should allow linking model via FK', async () => {
-			const savedUser = await DataStore.save(
-				new User({ name: 'test', profileID: profile.id })
-			);
+			const savedUser = await DataStore.save(new User({ name: 'test', profileID: profile.id }));
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);

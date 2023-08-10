@@ -5,10 +5,7 @@ import { UserInfo } from '../types';
 import { InAppMessagingInterface, NotificationsSubCategory } from './types';
 import { InternalInAppMessagingClass } from '../internals/InternalInAppMessaging';
 
-export default class InAppMessaging
-	extends InternalInAppMessagingClass
-	implements InAppMessagingInterface
-{
+export default class InAppMessaging extends InternalInAppMessagingClass implements InAppMessagingInterface {
 	/**
 	 * Get the name of this module
 	 * @returns {string} name of this module
@@ -24,6 +21,5 @@ export default class InAppMessaging
 	 */
 	syncMessages = (): Promise<void[]> => super.syncMessages();
 
-	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> =>
-		super.identifyUser(userId, userInfo);
+	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> => super.identifyUser(userId, userInfo);
 }

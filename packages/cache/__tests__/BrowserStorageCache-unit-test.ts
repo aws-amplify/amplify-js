@@ -1,9 +1,6 @@
 import { CacheConfig, CacheItem } from '../src/types/Cache';
 import { defaultConfig, getByteLength } from '../src/Utils/CacheUtils';
-import {
-	BrowserStorageCache as cache,
-	BrowserStorageCacheClass,
-} from '../src/BrowserStorageCache';
+import { BrowserStorageCache as cache, BrowserStorageCacheClass } from '../src/BrowserStorageCache';
 
 const config: CacheConfig = {
 	capacityInBytes: 3000,
@@ -37,8 +34,7 @@ describe('BrowserStorageCache', () => {
 	const cache_size = config.capacityInBytes || defaultConfig.capacityInBytes;
 	const default_ttl = config.defaultTTL || defaultConfig.defaultTTL;
 	const item_max_size = config.itemMaxSize || defaultConfig.itemMaxSize;
-	const warningThreshold =
-		config.warningThreshold || defaultConfig.warningThreshold;
+	const warningThreshold = config.warningThreshold || defaultConfig.warningThreshold;
 
 	let regularItem: string = '';
 	for (let i = 0; i < item_max_size / 2; i++) {
@@ -48,9 +44,7 @@ describe('BrowserStorageCache', () => {
 	const regularItemSize: number = getItemSize(regularItem);
 
 	const maxItemNum: number = Math.floor(cache_size / regularItemSize);
-	const itemsNeedToPop: number = Math.ceil(
-		(cache_size * (1 - warningThreshold)) / regularItemSize
-	);
+	const itemsNeedToPop: number = Math.ceil((cache_size * (1 - warningThreshold)) / regularItemSize);
 
 	if (maxItemNum > default_ttl) {
 		console.error('incorrect paratmeter for test!');
@@ -159,9 +153,7 @@ describe('BrowserStorageCache', () => {
 			const ret2 = cache.getItem(key);
 			expect(ret2).toBe(val2);
 
-			expect(cacheSizeAfter - cacheSizeBefore).toBe(
-				getItemSize(val2) - getItemSize(val1)
-			);
+			expect(cacheSizeAfter - cacheSizeBefore).toBe(getItemSize(val2) - getItemSize(val1));
 			cache.clear();
 		});
 
@@ -436,9 +428,7 @@ describe('BrowserStorageCache', () => {
 
 	describe('createInstance', () => {
 		test('happy case, return new instance', () => {
-			expect(cache.createInstance({ keyPrefix: 'abc' })).toBeInstanceOf(
-				BrowserStorageCacheClass
-			);
+			expect(cache.createInstance({ keyPrefix: 'abc' })).toBeInstanceOf(BrowserStorageCacheClass);
 		});
 	});
 });

@@ -20,9 +20,7 @@ const mockBinaryResponse = ({
 }): HttpResponse => {
 	const responseBody = {
 		json: async (): Promise<any> => {
-			throw new Error(
-				'Parsing response to JSON is not implemented. Please use response.text() instead.'
-			);
+			throw new Error('Parsing response to JSON is not implemented. Please use response.text() instead.');
 		},
 		blob: async () => new Blob([body], { type: 'plain/text' }),
 		text: async () => body,
@@ -40,29 +38,15 @@ describe('S3 APIs functional test', () => {
 	});
 	test.each(cases)(
 		'%s %s',
-		async (
-			caseType,
-			name,
-			handler,
-			config,
-			input,
-			expectedRequest,
-			response,
-			outputOrError
-		) => {
+		async (caseType, name, handler, config, input, expectedRequest, response, outputOrError) => {
 			expect.assertions(2);
-			mockFetchTransferHandler.mockResolvedValue(
-				mockBinaryResponse(response as any)
-			);
+			mockFetchTransferHandler.mockResolvedValue(mockBinaryResponse(response as any));
 			try {
 				// @ts-ignore
 				const output = await handler(config, input);
 				if (caseType === 'happy case') {
 					expect(output).toEqual(outputOrError);
-					expect(fetchTransferHandler).toBeCalledWith(
-						expectedRequest,
-						expect.anything()
-					);
+					expect(fetchTransferHandler).toBeCalledWith(expectedRequest, expect.anything());
 				} else {
 					fail(`${name} ${caseType} should fail`);
 				}

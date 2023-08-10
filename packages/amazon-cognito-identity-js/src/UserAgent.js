@@ -10,14 +10,8 @@ export const appendToCognitoUserAgent = content => {
 	if (!content) {
 		return;
 	}
-	if (
-		UserAgent.prototype.userAgent &&
-		!UserAgent.prototype.userAgent.includes(content)
-	) {
-		UserAgent.prototype.userAgent = UserAgent.prototype.userAgent.concat(
-			' ',
-			content
-		);
+	if (UserAgent.prototype.userAgent && !UserAgent.prototype.userAgent.includes(content)) {
+		UserAgent.prototype.userAgent = UserAgent.prototype.userAgent.concat(' ', content);
 	}
 	if (!UserAgent.prototype.userAgent || UserAgent.prototype.userAgent === '') {
 		UserAgent.prototype.userAgent = content;
@@ -34,9 +28,7 @@ export const addFrameworkToCognitoUserAgent = framework => {
 
 export const getAmplifyUserAgent = action => {
 	const uaCategoryAction = UserAgent.category ? ` ${UserAgent.category}` : '';
-	const uaFramework = UserAgent.framework
-		? ` framework/${UserAgent.framework}`
-		: '';
+	const uaFramework = UserAgent.framework ? ` framework/${UserAgent.framework}` : '';
 
 	const userAgent = `${UserAgent.prototype.userAgent}${uaCategoryAction}${uaFramework}`;
 

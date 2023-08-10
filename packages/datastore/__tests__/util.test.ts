@@ -26,38 +26,20 @@ import { testSchema } from './helpers';
 
 describe('datastore util', () => {
 	test('validatePredicateField', () => {
-		expect(validatePredicateField(undefined, 'contains', 'test')).toEqual(
-			false
-		);
+		expect(validatePredicateField(undefined, 'contains', 'test')).toEqual(false);
 		expect(validatePredicateField(null, 'contains', 'test')).toEqual(false);
-		expect(validatePredicateField('some test', 'contains', 'test')).toEqual(
-			true
-		);
+		expect(validatePredicateField('some test', 'contains', 'test')).toEqual(true);
 
-		expect(validatePredicateField(undefined, 'beginsWith', 'test')).toEqual(
-			false
-		);
+		expect(validatePredicateField(undefined, 'beginsWith', 'test')).toEqual(false);
 		expect(validatePredicateField(null, 'beginsWith', 'test')).toEqual(false);
-		expect(validatePredicateField('some test', 'beginsWith', 'test')).toEqual(
-			false
-		);
-		expect(validatePredicateField('testing', 'beginsWith', 'test')).toEqual(
-			true
-		);
+		expect(validatePredicateField('some test', 'beginsWith', 'test')).toEqual(false);
+		expect(validatePredicateField('testing', 'beginsWith', 'test')).toEqual(true);
 
-		expect(validatePredicateField(undefined, 'notContains', 'test')).toEqual(
-			true
-		);
+		expect(validatePredicateField(undefined, 'notContains', 'test')).toEqual(true);
 		expect(validatePredicateField(null, 'notContains', 'test')).toEqual(true);
-		expect(validatePredicateField('abcdef', 'notContains', 'test')).toEqual(
-			true
-		);
-		expect(validatePredicateField('test', 'notContains', 'test')).toEqual(
-			false
-		);
-		expect(validatePredicateField('testing', 'notContains', 'test')).toEqual(
-			false
-		);
+		expect(validatePredicateField('abcdef', 'notContains', 'test')).toEqual(true);
+		expect(validatePredicateField('test', 'notContains', 'test')).toEqual(false);
+		expect(validatePredicateField('testing', 'notContains', 'test')).toEqual(false);
 	});
 
 	test('valuesEqual', () => {
@@ -68,16 +50,10 @@ describe('datastore util', () => {
 		expect(valuesEqual([1, 2, 3], [1, 2, 3, 4])).toEqual(false);
 		expect(valuesEqual({ a: 1 }, { a: 1 })).toEqual(true);
 		expect(valuesEqual({ a: 1 }, { a: 2 })).toEqual(false);
-		expect(
-			valuesEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 3 }] })
-		).toEqual(true);
-		expect(
-			valuesEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 4 }] })
-		).toEqual(false);
+		expect(valuesEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 3 }] })).toEqual(true);
+		expect(valuesEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 4 }] })).toEqual(false);
 		expect(valuesEqual(new Set([1, 2, 3]), new Set([1, 2, 3]))).toEqual(true);
-		expect(valuesEqual(new Set([1, 2, 3]), new Set([1, 2, 3, 4]))).toEqual(
-			false
-		);
+		expect(valuesEqual(new Set([1, 2, 3]), new Set([1, 2, 3, 4]))).toEqual(false);
 
 		const map1 = new Map();
 		map1.set('a', 1);
@@ -93,9 +69,7 @@ describe('datastore util', () => {
 		expect(valuesEqual({ a: 1, b: null }, { a: 1 }, true)).toEqual(true);
 		expect(valuesEqual({ a: 1 }, { a: 1, b: null }, true)).toEqual(true);
 		expect(valuesEqual({ a: 1 }, { a: 1, b: 2 }, true)).toEqual(false);
-		expect(
-			valuesEqual({ a: 1, b: null }, { a: 1, b: undefined }, true)
-		).toEqual(true);
+		expect(valuesEqual({ a: 1, b: null }, { a: 1, b: undefined }, true)).toEqual(true);
 		expect(valuesEqual({ a: 1, b: false }, { a: 1 }, true)).toEqual(false);
 
 		const map3 = new Map();
@@ -113,9 +87,7 @@ describe('datastore util', () => {
 		// array nullish explicit undefined
 		expect(valuesEqual([null], [undefined], true)).toEqual(true);
 		expect(valuesEqual([undefined], [null], true)).toEqual(true);
-		expect(valuesEqual(new Set([null]), new Set([undefined]), true)).toEqual(
-			true
-		);
+		expect(valuesEqual(new Set([null]), new Set([undefined]), true)).toEqual(true);
 
 		// empty list [] should not equal [null]
 		expect(valuesEqual([null], [], true)).toEqual(false);
@@ -124,9 +96,7 @@ describe('datastore util', () => {
 		expect(valuesEqual([null], [], false)).toEqual(false);
 		expect(valuesEqual([null], [undefined], false)).toEqual(false);
 		expect(valuesEqual(new Set([null]), new Set([]), false)).toEqual(false);
-		expect(valuesEqual(new Set([null]), new Set([undefined]), false)).toEqual(
-			false
-		);
+		expect(valuesEqual(new Set([null]), new Set([undefined]), false)).toEqual(false);
 
 		// primitive types
 		expect(valuesEqual(null, undefined)).toEqual(false);
@@ -382,12 +352,7 @@ describe('datastore util', () => {
 	});
 
 	test('isAWSDate', () => {
-		const valid = [
-			'2020-01-01',
-			'1979-01-01Z',
-			'2021-01-01+05:30',
-			'2021-01-01-05:30:12',
-		];
+		const valid = ['2020-01-01', '1979-01-01Z', '2021-01-01+05:30', '2021-01-01-05:30:12'];
 		const invalid = [
 			'',
 			'2021-01-1',
@@ -492,18 +457,7 @@ describe('datastore util', () => {
 
 	test('isAWSEmail', () => {
 		const valid = ['a@b', 'a@b.c', 'john@doe.com'];
-		const invalid = [
-			'',
-			'@',
-			'a',
-			'a@',
-			'a@@',
-			'@a',
-			'@@',
-			'a @b.c',
-			'a@ b.c',
-			'a@b. c',
-		];
+		const invalid = ['', '@', 'a', 'a@', 'a@@', '@a', '@@', 'a @b.c', 'a@ b.c', 'a@b. c'];
 		valid.forEach(test => {
 			expect(isAWSEmail(test)).toBe(true);
 		});
@@ -525,14 +479,7 @@ describe('datastore util', () => {
 			'true',
 			'false',
 		];
-		const invalid = [
-			'',
-			'#',
-			'2020-01-01',
-			'{a: 1}',
-			'{‘a’: 1}',
-			'Unquoted string',
-		];
+		const invalid = ['', '#', '2020-01-01', '{a: 1}', '{‘a’: 1}', 'Unquoted string'];
 		valid.forEach(test => {
 			expect(isAWSJSON(test)).toBe(true);
 		});
@@ -553,13 +500,7 @@ describe('datastore util', () => {
 	});
 
 	test('isAWSPhone', () => {
-		const valid = [
-			'+10000000000',
-			'+100 00 00',
-			'000 00000',
-			'123-456-7890',
-			'+44123456789',
-		];
+		const valid = ['+10000000000', '+100 00 00', '000 00000', '123-456-7890', '+44123456789'];
 		const invalid = ['', '+', '+-', 'a', 'bad-number'];
 		valid.forEach(test => {
 			expect(isAWSPhone(test)).toBe(true);
@@ -737,9 +678,7 @@ describe('datastore util', () => {
 				expect(result.type).toBe('key');
 			});
 			test('model definition with custom pk + sk', () => {
-				const result = extractKeyIfExists(
-					testUserSchema.models.PostCustomPKSort
-				)!;
+				const result = extractKeyIfExists(testUserSchema.models.PostCustomPKSort)!;
 				expect(result.properties!.fields.length).toBe(2);
 				expect(result.properties!.fields[0]).toBe('id');
 				expect(result.properties!.fields[1]).toBe('postId');
@@ -753,16 +692,12 @@ describe('datastore util', () => {
 		describe('extractPrimaryKeyFieldNames', () => {
 			const testUserSchema = testSchema();
 			test('model definition with custom pk', () => {
-				const result = extractPrimaryKeyFieldNames(
-					testUserSchema.models.PostCustomPK
-				);
+				const result = extractPrimaryKeyFieldNames(testUserSchema.models.PostCustomPK);
 				expect(result.length).toBe(1);
 				expect(result[0]).toBe('postId');
 			});
 			test('model definition with custom pk + sk', () => {
-				const result = extractPrimaryKeyFieldNames(
-					testUserSchema.models.PostCustomPKSort
-				);
+				const result = extractPrimaryKeyFieldNames(testUserSchema.models.PostCustomPKSort);
 				expect(result.length).toBe(2);
 				expect(result[0]).toBe('id');
 				expect(result[1]).toBe('postId');
@@ -803,9 +738,7 @@ describe('datastore util', () => {
 		describe('isIdOptionallyManaged', () => {
 			test('should return `false` for model with custom primary key', () => {
 				const testUserSchema = testSchema();
-				const result = isIdOptionallyManaged(
-					testUserSchema.models.PostCustomPK
-				);
+				const result = isIdOptionallyManaged(testUserSchema.models.PostCustomPK);
 				expect(result).toBeFalsy();
 			});
 			test('should return `false` for model without custom primary key', () => {

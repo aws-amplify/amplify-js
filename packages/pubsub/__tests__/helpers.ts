@@ -284,9 +284,7 @@ export class FakeWebSocketInterface {
 	 * @returns a Promise that will wait until the current state is one of the provided states
 	 */
 	async waitUntilConnectionStateIn(connectionStates: CS[]) {
-		return this.hubConnectionListener.waitUntilConnectionStateIn(
-			connectionStates
-		);
+		return this.hubConnectionListener.waitUntilConnectionStateIn(connectionStates);
 	}
 }
 
@@ -339,11 +337,7 @@ class FakeWebSocket implements WebSocket {
 		listener: EventListenerOrEventListenerObject,
 		options?: boolean | EventListenerOptions
 	): void;
-	removeEventListener(
-		type: unknown,
-		listener: unknown,
-		options?: unknown
-	): void {
+	removeEventListener(type: unknown, listener: unknown, options?: unknown): void {
 		throw new Error('Method not implemented removeEventListener.');
 	}
 	dispatchEvent(event: Event): boolean {
@@ -355,11 +349,7 @@ class FakeWebSocket implements WebSocket {
 	}
 }
 
-export async function replaceConstant(
-	name: string,
-	replacementValue: any,
-	testFn: () => Promise<void>
-) {
+export async function replaceConstant(name: string, replacementValue: any, testFn: () => Promise<void>) {
 	const initialValue = constants[name];
 	Object.defineProperty(constants, name, {
 		value: replacementValue,

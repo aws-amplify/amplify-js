@@ -24,11 +24,7 @@ BigInteger.prototype.modPow = function nativeModPow(e, m, callback) {
 	);
 };
 
-src.AuthenticationHelper.prototype.calculateS = function nativeComputeS(
-	xValue,
-	serverBValue,
-	callback
-) {
+src.AuthenticationHelper.prototype.calculateS = function nativeComputeS(xValue, serverBValue, callback) {
 	RNAWSCognito.computeS(
 		{
 			g: this.g.toString(16),

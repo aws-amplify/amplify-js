@@ -1,9 +1,4 @@
-import {
-	Category,
-	Credentials,
-	PredictionsAction,
-	getAmplifyUserAgentObject,
-} from '@aws-amplify/core';
+import { Category, Credentials, PredictionsAction, getAmplifyUserAgentObject } from '@aws-amplify/core';
 import {
 	ComprehendClient,
 	DetectSyntaxCommand,
@@ -208,8 +203,7 @@ jest.spyOn(Credentials, 'get').mockImplementation(() => {
 	return Promise.resolve(credentials);
 });
 
-const textToTest =
-	'Well this is the end, William what do you think about global warming?';
+const textToTest = 'Well this is the end, William what do you think about global warming?';
 
 describe('Predictions interpret provider test', () => {
 	afterEach(() => {
@@ -251,10 +245,7 @@ describe('Predictions interpret provider test', () => {
 			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
 			predictionsProvider.configure(happyConfig);
 
-			const dominantLanguageSpy = jest.spyOn(
-				ComprehendClient.prototype,
-				'send'
-			);
+			const dominantLanguageSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 
 			expect.assertions(2);
 
@@ -386,11 +377,7 @@ describe('Predictions interpret provider test', () => {
 				})
 			).resolves.toMatchObject({
 				textInterpretation: {
-					keyPhrases: [
-						{ text: 'the end' },
-						{ text: 'William' },
-						{ text: 'global warming' },
-					],
+					keyPhrases: [{ text: 'the end' }, { text: 'William' }, { text: 'global warming' }],
 				},
 			});
 
@@ -416,11 +403,7 @@ describe('Predictions interpret provider test', () => {
 				})
 			).resolves.toMatchObject({
 				textInterpretation: {
-					keyPhrases: [
-						{ text: 'the end' },
-						{ text: 'William' },
-						{ text: 'global warming' },
-					],
+					keyPhrases: [{ text: 'the end' }, { text: 'William' }, { text: 'global warming' }],
 					language: 'en-US',
 					sentiment: {
 						mixed: 0.0065774936228990555,
@@ -453,10 +436,7 @@ describe('Predictions interpret provider test', () => {
 			const keyPhrasesSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 			const syntaxSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 			const sentimentSpy = jest.spyOn(ComprehendClient.prototype, 'send');
-			const dominantLanguageSpy = jest.spyOn(
-				ComprehendClient.prototype,
-				'send'
-			);
+			const dominantLanguageSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 			const detectEntitiesSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 
 			expect.assertions(6);
@@ -489,9 +469,7 @@ describe('Predictions interpret provider test', () => {
 					type: InterpretTextCategories.ALL,
 				},
 			});
-			expect(
-				predictionsProvider['comprehendClient'].config.customUserAgent
-			).toEqual(
+			expect(predictionsProvider['comprehendClient'].config.customUserAgent).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Interpret,

@@ -61,18 +61,10 @@ describe('CognitoIdentity - getCredentialsForIdentity', () => {
 			}),
 		};
 
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(succeedResponse)
-		);
-		const response = await getCredentialsForIdentity(
-			cognitoIdentityHandlerOptions,
-			params
-		);
+		(fetchTransferHandler as jest.Mock).mockResolvedValue(mockJsonResponse(succeedResponse));
+		const response = await getCredentialsForIdentity(cognitoIdentityHandlerOptions, params);
 		expect(response).toEqual(expectedOutput);
-		expect(fetchTransferHandler).toBeCalledWith(
-			expectedRequest,
-			expect.anything()
-		);
+		expect(fetchTransferHandler).toBeCalledWith(expectedRequest, expect.anything());
 	});
 
 	test('error case', async () => {
@@ -91,9 +83,7 @@ describe('CognitoIdentity - getCredentialsForIdentity', () => {
 			name: 'NotAuthorizedException',
 			message: failureResponse.body.message,
 		};
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(failureResponse)
-		);
+		(fetchTransferHandler as jest.Mock).mockResolvedValue(mockJsonResponse(failureResponse));
 		expect.assertions(1);
 		try {
 			await getCredentialsForIdentity(cognitoIdentityHandlerOptions, params);

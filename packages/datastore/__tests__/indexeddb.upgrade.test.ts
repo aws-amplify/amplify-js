@@ -2,13 +2,7 @@ import Dexie from 'dexie';
 import 'dexie-export-import';
 import 'fake-indexeddb/auto';
 import * as idb from 'idb';
-import {
-	initSchema,
-	ModelInit,
-	MutableModel,
-	PersistentModelConstructor,
-	DataStore,
-} from '../src/index';
+import { initSchema, ModelInit, MutableModel, PersistentModelConstructor, DataStore } from '../src/index';
 import { Schema } from '../src/types';
 
 const DB_VERSION = 3;
@@ -91,9 +85,7 @@ describe('DB versions migration with destructive schema change', () => {
 		await DataStore.start();
 
 		const blogRes = await DataStore.query(Blog);
-		const expectedCount = v1Data.data.tables.find(
-			t => t.name === 'user_Blog'
-		).rowCount;
+		const expectedCount = v1Data.data.tables.find(t => t.name === 'user_Blog').rowCount;
 
 		expect(blogRes.length).toEqual(expectedCount);
 

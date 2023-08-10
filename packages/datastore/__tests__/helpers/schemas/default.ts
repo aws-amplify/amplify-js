@@ -23,10 +23,7 @@ export declare class Model {
 
 	constructor(init: ModelInit<Model>);
 
-	static copyOf(
-		src: Model,
-		mutator: (draft: MutableModel<Model>) => void | Model
-	): Model;
+	static copyOf(src: Model, mutator: (draft: MutableModel<Model>) => void | Model): Model;
 }
 
 export declare class Metadata {
@@ -52,10 +49,7 @@ export declare class Blog {
 
 	constructor(init: ModelInit<Blog>);
 
-	static copyOf(
-		src: Blog,
-		mutator: (draft: MutableModel<Blog>) => void | Blog
-	): Blog;
+	static copyOf(src: Blog, mutator: (draft: MutableModel<Blog>) => void | Blog): Blog;
 }
 
 export declare class Post {
@@ -68,10 +62,7 @@ export declare class Post {
 
 	constructor(init: ModelInit<Post>);
 
-	static copyOf(
-		src: Post,
-		mutator: (draft: MutableModel<Post>) => void | Post
-	): Post;
+	static copyOf(src: Post, mutator: (draft: MutableModel<Post>) => void | Post): Post;
 }
 
 export declare class Comment {
@@ -82,10 +73,7 @@ export declare class Comment {
 
 	constructor(init: ModelInit<Comment>);
 
-	static copyOf(
-		src: Comment,
-		mutator: (draft: MutableModel<Comment>) => void | Comment
-	): Comment;
+	static copyOf(src: Comment, mutator: (draft: MutableModel<Comment>) => void | Comment): Comment;
 }
 export declare class PostUni {
 	public readonly id: string;
@@ -96,10 +84,7 @@ export declare class PostUni {
 
 	constructor(init: ModelInit<Post>);
 
-	static copyOf(
-		src: Post,
-		mutator: (draft: MutableModel<Post>) => void | Post
-	): Post;
+	static copyOf(src: Post, mutator: (draft: MutableModel<Post>) => void | Post): Post;
 }
 
 export declare class CommentUni {
@@ -109,10 +94,7 @@ export declare class CommentUni {
 
 	constructor(init: ModelInit<Comment>);
 
-	static copyOf(
-		src: Comment,
-		mutator: (draft: MutableModel<Comment>) => void | Comment
-	): Comment;
+	static copyOf(src: Comment, mutator: (draft: MutableModel<Comment>) => void | Comment): Comment;
 }
 
 export declare class User {
@@ -123,10 +105,7 @@ export declare class User {
 
 	constructor(init: ModelInit<User>);
 
-	static copyOf(
-		src: User,
-		mutator: (draft: MutableModel<User>) => void | User
-	): User;
+	static copyOf(src: User, mutator: (draft: MutableModel<User>) => void | User): User;
 }
 export declare class Profile {
 	public readonly id: string;
@@ -135,10 +114,7 @@ export declare class Profile {
 
 	constructor(init: ModelInit<Profile>);
 
-	static copyOf(
-		src: Profile,
-		mutator: (draft: MutableModel<Profile>) => void | Profile
-	): Profile;
+	static copyOf(src: Profile, mutator: (draft: MutableModel<Profile>) => void | Profile): Profile;
 }
 
 export declare class PostComposite {
@@ -171,10 +147,7 @@ export declare class PostCustomPK {
 
 	constructor(init: ModelInit<PostCustomPK>);
 
-	static copyOf(
-		src: PostCustomPK,
-		mutator: (draft: MutableModel<PostCustomPK>) => void | PostCustomPK
-	): PostCustomPK;
+	static copyOf(src: PostCustomPK, mutator: (draft: MutableModel<PostCustomPK>) => void | PostCustomPK): PostCustomPK;
 }
 
 export declare class PostCustomPKSort {
@@ -208,9 +181,7 @@ export declare class PostCustomPKComposite {
 
 	static copyOf(
 		src: PostCustomPKComposite,
-		mutator: (
-			draft: MutableModel<PostCustomPKComposite>
-		) => void | PostCustomPKComposite
+		mutator: (draft: MutableModel<PostCustomPKComposite>) => void | PostCustomPKComposite
 	): PostCustomPKComposite;
 }
 
@@ -226,9 +197,7 @@ export declare class BasicModel {
 	constructor(init: ModelInit<BasicModel>);
 	static copyOf(
 		source: BasicModel,
-		mutator: (
-			draft: MutableModel<BasicModel>
-		) => MutableModel<BasicModel> | void
+		mutator: (draft: MutableModel<BasicModel>) => MutableModel<BasicModel> | void
 	): BasicModel;
 }
 
@@ -244,9 +213,7 @@ export declare class BasicModelWritableTS {
 	constructor(init: ModelInit<BasicModelWritableTS>);
 	static copyOf(
 		source: BasicModelWritableTS,
-		mutator: (
-			draft: MutableModel<BasicModelWritableTS>
-		) => MutableModel<BasicModelWritableTS> | void
+		mutator: (draft: MutableModel<BasicModelWritableTS>) => MutableModel<BasicModelWritableTS> | void
 	): BasicModelWritableTS;
 }
 
@@ -262,9 +229,7 @@ export declare class BasicModelRequiredTS {
 	constructor(init: ModelInit<BasicModelRequiredTS>);
 	static copyOf(
 		source: BasicModelRequiredTS,
-		mutator: (
-			draft: MutableModel<BasicModelRequiredTS>
-		) => MutableModel<BasicModelRequiredTS> | void
+		mutator: (draft: MutableModel<BasicModelRequiredTS>) => MutableModel<BasicModelRequiredTS> | void
 	): BasicModelRequiredTS;
 }
 
@@ -281,9 +246,7 @@ export declare class HasOneParent {
 	constructor(init: ModelInit<HasOneParent>);
 	static copyOf(
 		source: HasOneParent,
-		mutator: (
-			draft: MutableModel<HasOneParent>
-		) => MutableModel<HasOneParent> | void
+		mutator: (draft: MutableModel<HasOneParent>) => MutableModel<HasOneParent> | void
 	): HasOneParent;
 }
 
@@ -299,9 +262,7 @@ export declare class HasOneChild {
 	constructor(init: ModelInit<HasOneChild>);
 	static copyOf(
 		source: HasOneChild,
-		mutator: (
-			draft: MutableModel<HasOneChild>
-		) => MutableModel<HasOneChild> | void
+		mutator: (draft: MutableModel<HasOneChild>) => MutableModel<HasOneChild> | void
 	): HasOneChild;
 }
 
@@ -317,10 +278,7 @@ export declare class MtmLeft {
 	readonly updatedAt?: string | null;
 
 	constructor(init: ModelInit<MtmLeft>);
-	static copyOf(
-		source: MtmLeft,
-		mutator: (draft: MutableModel<MtmLeft>) => MutableModel<MtmLeft> | void
-	): MtmLeft;
+	static copyOf(source: MtmLeft, mutator: (draft: MutableModel<MtmLeft>) => MutableModel<MtmLeft> | void): MtmLeft;
 }
 
 export declare class MtmRight {
@@ -335,10 +293,7 @@ export declare class MtmRight {
 	readonly updatedAt?: string | null;
 
 	constructor(init: ModelInit<MtmRight>);
-	static copyOf(
-		source: MtmRight,
-		mutator: (draft: MutableModel<MtmRight>) => MutableModel<MtmRight> | void
-	): MtmRight;
+	static copyOf(source: MtmRight, mutator: (draft: MutableModel<MtmRight>) => MutableModel<MtmRight> | void): MtmRight;
 }
 
 export declare class MtmJoin {
@@ -355,10 +310,7 @@ export declare class MtmJoin {
 	readonly updatedAt?: string | null;
 
 	constructor(init: ModelInit<MtmJoin>);
-	static copyOf(
-		source: MtmJoin,
-		mutator: (draft: MutableModel<MtmJoin>) => MutableModel<MtmJoin> | void
-	): MtmJoin;
+	static copyOf(source: MtmJoin, mutator: (draft: MutableModel<MtmJoin>) => MutableModel<MtmJoin> | void): MtmJoin;
 }
 
 export declare class DefaultPKParent {
@@ -374,9 +326,7 @@ export declare class DefaultPKParent {
 	constructor(init: ModelInit<DefaultPKParent>);
 	static copyOf(
 		source: DefaultPKParent,
-		mutator: (
-			draft: MutableModel<DefaultPKParent>
-		) => MutableModel<DefaultPKParent> | void
+		mutator: (draft: MutableModel<DefaultPKParent>) => MutableModel<DefaultPKParent> | void
 	): DefaultPKParent;
 }
 
@@ -394,9 +344,7 @@ export declare class DefaultPKChild {
 	constructor(init: ModelInit<DefaultPKChild>);
 	static copyOf(
 		source: DefaultPKChild,
-		mutator: (
-			draft: MutableModel<DefaultPKChild>
-		) => MutableModel<DefaultPKChild> | void
+		mutator: (draft: MutableModel<DefaultPKChild>) => MutableModel<DefaultPKChild> | void
 	): DefaultPKChild;
 }
 
@@ -409,9 +357,7 @@ export declare class DefaultPKHasOneParent {
 	constructor(init: ModelInit<DefaultPKParent>);
 	static copyOf(
 		source: DefaultPKHasOneParent,
-		mutator: (
-			draft: MutableModel<DefaultPKHasOneParent>
-		) => MutableModel<DefaultPKHasOneParent> | void
+		mutator: (draft: MutableModel<DefaultPKHasOneParent>) => MutableModel<DefaultPKHasOneParent> | void
 	): DefaultPKHasOneParent;
 }
 
@@ -424,9 +370,7 @@ export declare class DefaultPKHasOneChild {
 	constructor(init: ModelInit<DefaultPKHasOneChild>);
 	static copyOf(
 		source: DefaultPKHasOneChild,
-		mutator: (
-			draft: MutableModel<DefaultPKHasOneChild>
-		) => MutableModel<DefaultPKHasOneChild> | void
+		mutator: (draft: MutableModel<DefaultPKHasOneChild>) => MutableModel<DefaultPKHasOneChild> | void
 	): DefaultPKHasOneChild;
 }
 
@@ -449,9 +393,7 @@ export declare class CompositePKParent {
 	constructor(init: ModelInit<CompositePKParent>);
 	static copyOf(
 		source: CompositePKParent,
-		mutator: (
-			draft: MutableModel<CompositePKParent>
-		) => MutableModel<CompositePKParent> | void
+		mutator: (draft: MutableModel<CompositePKParent>) => MutableModel<CompositePKParent> | void
 	): CompositePKParent;
 }
 
@@ -470,9 +412,7 @@ export declare class CompositePKChild {
 	constructor(init: ModelInit<CompositePKChild>);
 	static copyOf(
 		source: CompositePKChild,
-		mutator: (
-			draft: MutableModel<CompositePKChild>
-		) => MutableModel<CompositePKChild> | void
+		mutator: (draft: MutableModel<CompositePKChild>) => MutableModel<CompositePKChild> | void
 	): CompositePKChild;
 }
 
@@ -491,18 +431,13 @@ export declare class ImplicitChild {
 	constructor(init: ModelInit<ImplicitChild>);
 	static copyOf(
 		source: ImplicitChild,
-		mutator: (
-			draft: MutableModel<ImplicitChild>
-		) => MutableModel<ImplicitChild> | void
+		mutator: (draft: MutableModel<ImplicitChild>) => MutableModel<ImplicitChild> | void
 	): ImplicitChild;
 }
 
 export declare class StrangeExplicitChild {
 	readonly [__modelMeta__]: {
-		identifier: CompositeIdentifier<
-			StrangeExplicitChild,
-			['strangeId', 'content']
-		>;
+		identifier: CompositeIdentifier<StrangeExplicitChild, ['strangeId', 'content']>;
 		readOnlyFields: 'createdAt' | 'updatedAt';
 	};
 	readonly strangeId: string;
@@ -515,9 +450,7 @@ export declare class StrangeExplicitChild {
 	constructor(init: ModelInit<StrangeExplicitChild>);
 	static copyOf(
 		source: StrangeExplicitChild,
-		mutator: (
-			draft: MutableModel<StrangeExplicitChild>
-		) => MutableModel<StrangeExplicitChild> | void
+		mutator: (draft: MutableModel<StrangeExplicitChild>) => MutableModel<StrangeExplicitChild> | void
 	): StrangeExplicitChild;
 }
 
@@ -535,9 +468,7 @@ export declare class ChildSansBelongsTo {
 	constructor(init: ModelInit<ChildSansBelongsTo>);
 	static copyOf(
 		source: ChildSansBelongsTo,
-		mutator: (
-			draft: MutableModel<ChildSansBelongsTo>
-		) => MutableModel<ChildSansBelongsTo> | void
+		mutator: (draft: MutableModel<ChildSansBelongsTo>) => MutableModel<ChildSansBelongsTo> | void
 	): ChildSansBelongsTo;
 }
 
@@ -626,9 +557,7 @@ export declare class ModelWithExplicitOwner {
 	constructor(init: ModelInit<ModelWithExplicitOwner>);
 	static copyOf(
 		source: ModelWithExplicitOwner,
-		mutator: (
-			draft: MutableModel<ModelWithExplicitOwner>
-		) => MutableModel<ModelWithExplicitOwner> | void
+		mutator: (draft: MutableModel<ModelWithExplicitOwner>) => MutableModel<ModelWithExplicitOwner> | void
 	): ModelWithExplicitOwner;
 }
 
@@ -645,9 +574,7 @@ export declare class ModelWithExplicitCustomOwner {
 	constructor(init: ModelInit<ModelWithExplicitCustomOwner>);
 	static copyOf(
 		source: ModelWithExplicitCustomOwner,
-		mutator: (
-			draft: MutableModel<ModelWithExplicitCustomOwner>
-		) => MutableModel<ModelWithExplicitCustomOwner> | void
+		mutator: (draft: MutableModel<ModelWithExplicitCustomOwner>) => MutableModel<ModelWithExplicitCustomOwner> | void
 	): ModelWithExplicitCustomOwner;
 }
 
@@ -665,9 +592,7 @@ export declare class ModelWithMultipleCustomOwner {
 	constructor(init: ModelInit<ModelWithMultipleCustomOwner>);
 	static copyOf(
 		source: ModelWithMultipleCustomOwner,
-		mutator: (
-			draft: MutableModel<ModelWithMultipleCustomOwner>
-		) => MutableModel<ModelWithMultipleCustomOwner> | void
+		mutator: (draft: MutableModel<ModelWithMultipleCustomOwner>) => MutableModel<ModelWithMultipleCustomOwner> | void
 	): ModelWithMultipleCustomOwner;
 }
 
@@ -2169,10 +2094,7 @@ export function testSchema(): Schema {
 						isArrayNullable: true,
 						association: {
 							connectionType: 'HAS_MANY',
-							associatedWith: [
-								'compositePKParentImplicitChildrenCustomId',
-								'compositePKParentImplicitChildrenContent',
-							],
+							associatedWith: ['compositePKParentImplicitChildrenCustomId', 'compositePKParentImplicitChildrenContent'],
 						},
 					},
 					strangeChildren: {
@@ -2348,10 +2270,7 @@ export function testSchema(): Schema {
 						attributes: [],
 						association: {
 							connectionType: 'BELONGS_TO',
-							targetNames: [
-								'compositePKParentImplicitChildrenCustomId',
-								'compositePKParentImplicitChildrenContent',
-							],
+							targetNames: ['compositePKParentImplicitChildrenCustomId', 'compositePKParentImplicitChildrenContent'],
 						},
 					},
 					createdAt: {

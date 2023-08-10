@@ -5,11 +5,7 @@ import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internals';
 import Observable from 'zen-observable-ts';
 
-export const graphqlOperation = (
-	query,
-	variables = {},
-	authToken?: string
-) => ({
+export const graphqlOperation = (query, variables = {}, authToken?: string) => ({
 	query,
 	variables,
 	authToken,

@@ -151,9 +151,7 @@ export const signingTestTable: TestCase[] = [
 	{
 		name: 'unreserved characters in url',
 		request: {
-			url: new URL(
-				`${url}-._~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`
-			),
+			url: new URL(`${url}-._~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`),
 		},
 		expectedAuthorization:
 			'AWS4-HMAC-SHA256 Credential=access-key-id/20200918/signing-region/signing-service/aws4_request, SignedHeaders=host;x-amz-date, Signature=298d61b98e17ec3b2aa025787c586b073dd0b331f8f8f74ff5d5654810bc8d83',

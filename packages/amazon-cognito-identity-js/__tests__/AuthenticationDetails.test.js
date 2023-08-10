@@ -13,20 +13,14 @@ describe('AuthenticationDetails getter methods', () => {
 	});
 
 	test('getValidationData()', () => {
-		expect(authDetails.getValidationData()).toEqual(
-			authDetailData.ValidationData
-		);
+		expect(authDetails.getValidationData()).toEqual(authDetailData.ValidationData);
 	});
 
 	test('getAuthParameters()', () => {
-		expect(authDetails.getAuthParameters()).toEqual(
-			authDetailData.AuthParameters
-		);
+		expect(authDetails.getAuthParameters()).toEqual(authDetailData.AuthParameters);
 	});
 
 	test('getClientMetadata()', () => {
-		expect(authDetails.getClientMetadata()).toEqual(
-			authDetailData.ClientMetadata
-		);
+		expect(authDetails.getClientMetadata()).toEqual(authDetailData.ClientMetadata);
 	});
 });

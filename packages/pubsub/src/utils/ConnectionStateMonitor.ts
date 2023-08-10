@@ -64,20 +64,15 @@ export class ConnectionStateMonitor {
 		};
 
 		// Attempt to update the state with the current actual network state
-		this._initialNetworkStateSubscription = ReachabilityMonitor().subscribe(
-			({ online }) => {
-				this.record(
-					online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE
-				);
-				this._initialNetworkStateSubscription?.unsubscribe();
-			}
-		);
+		this._initialNetworkStateSubscription = ReachabilityMonitor().subscribe(({ online }) => {
+			this.record(online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE);
+			this._initialNetworkStateSubscription?.unsubscribe();
+		});
 
-		this._linkedConnectionStateObservable =
-			new Observable<LinkedConnectionStates>(connectionStateObserver => {
-				connectionStateObserver.next(this._linkedConnectionState);
-				this._linkedConnectionStateObserver = connectionStateObserver;
-			});
+		this._linkedConnectionStateObservable = new Observable<LinkedConnectionStates>(connectionStateObserver => {
+			connectionStateObserver.next(this._linkedConnectionState);
+			this._linkedConnectionStateObserver = connectionStateObserver;
+		});
 	}
 
 	/**
@@ -89,13 +84,9 @@ export class ConnectionStateMonitor {
 
 		// Maintain the network state based on the reachability monitor
 		if (this._networkMonitoringSubscription === undefined) {
-			this._networkMonitoringSubscription = ReachabilityMonitor().subscribe(
-				({ online }) => {
-					this.record(
-						online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE
-					);
-				}
-			);
+			this._networkMonitoringSubscription = ReachabilityMonitor().subscribe(({ online }) => {
+				this.record(online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE);
+			});
 		}
 	}
 
@@ -165,10 +156,7 @@ export class ConnectionStateMonitor {
 		if (connectionState === 'connected' && networkState === 'disconnected')
 			return ConnectionState.ConnectedPendingNetwork;
 
-		if (
-			connectionState === 'connected' &&
-			intendedConnectionState === 'disconnected'
-		)
+		if (connectionState === 'connected' && intendedConnectionState === 'disconnected')
 			return ConnectionState.ConnectedPendingDisconnect;
 
 		if (
@@ -178,10 +166,7 @@ export class ConnectionStateMonitor {
 		)
 			return ConnectionState.ConnectionDisruptedPendingNetwork;
 
-		if (
-			connectionState === 'disconnected' &&
-			intendedConnectionState === 'connected'
-		)
+		if (connectionState === 'disconnected' && intendedConnectionState === 'connected')
 			return ConnectionState.ConnectionDisrupted;
 
 		if (connectionState === 'connected' && keepAliveState === 'unhealthy')

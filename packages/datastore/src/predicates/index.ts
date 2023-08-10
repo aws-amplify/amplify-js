@@ -1,21 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	ModelPredicate,
-	PersistentModel,
-	PredicatesGroup,
-	ProducerModelPredicate,
-	SchemaModel,
-} from '../types';
+import { ModelPredicate, PersistentModel, PredicatesGroup, ProducerModelPredicate, SchemaModel } from '../types';
 import { extractPrimaryKeyFieldNames, extractPrimaryKeyValues } from '../util';
 
 export { ModelSortPredicateCreator } from './sort';
 
 const predicatesAllSet = new WeakSet<ProducerModelPredicate<any>>();
 
-export function isPredicatesAll(
-	predicate: any
-): predicate is typeof PredicateAll {
+export function isPredicatesAll(predicate: any): predicate is typeof PredicateAll {
 	return predicatesAllSet.has(predicate);
 }
 
@@ -110,10 +102,7 @@ export class ModelPredicateCreator {
 	/**
 	 * Map of storage predicates (key objects) to storage predicate AST's.
 	 */
-	private static predicateGroupsMap = new WeakMap<
-		ModelPredicate<any>,
-		PredicatesGroup<any>
-	>();
+	private static predicateGroupsMap = new WeakMap<ModelPredicate<any>, PredicatesGroup<any>>();
 
 	/**
 	 * Determines whether the given storage predicate (lookup key) is a predicate
@@ -121,9 +110,7 @@ export class ModelPredicateCreator {
 	 *
 	 * @param predicate The storage predicate (lookup key) to test.
 	 */
-	static isValidPredicate<T extends PersistentModel>(
-		predicate: any
-	): predicate is ModelPredicate<T> {
+	static isValidPredicate<T extends PersistentModel>(predicate: any): predicate is ModelPredicate<T> {
 		return ModelPredicateCreator.predicateGroupsMap.has(predicate);
 	}
 
@@ -138,10 +125,7 @@ export class ModelPredicateCreator {
 	 * @param throwOnInvalid Whether to throw an exception if the predicate
 	 * isn't a valid DataStore predicate.
 	 */
-	static getPredicates<T extends PersistentModel>(
-		predicate: ModelPredicate<T>,
-		throwOnInvalid: boolean = true
-	) {
+	static getPredicates<T extends PersistentModel>(predicate: ModelPredicate<T>, throwOnInvalid: boolean = true) {
 		if (throwOnInvalid && !ModelPredicateCreator.isValidPredicate(predicate)) {
 			throw new Error('The predicate is not valid');
 		}
@@ -157,10 +141,7 @@ export class ModelPredicateCreator {
 	 * @param modelDefinition The model definition to create a predicate for.
 	 * @param model The model instance to extract value equalities from.
 	 */
-	static createForPk<T extends PersistentModel>(
-		modelDefinition: SchemaModel,
-		model: T
-	) {
+	static createForPk<T extends PersistentModel>(modelDefinition: SchemaModel, model: T) {
 		const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
 		const keyValues = extractPrimaryKeyValues(model, keyFields);
 
@@ -216,9 +197,7 @@ export class ModelPredicateCreator {
 	 */
 	static transformGraphQLFilterNodeToPredicateAST(gql: any) {
 		if (!isValid(gql)) {
-			throw new Error(
-				'Invalid GraphQL Condition or subtree: ' + JSON.stringify(gql)
-			);
+			throw new Error('Invalid GraphQL Condition or subtree: ' + JSON.stringify(gql));
 		}
 
 		if (isEmpty(gql)) {
@@ -228,9 +207,7 @@ export class ModelPredicateCreator {
 			};
 		} else if (isGroup(gql)) {
 			const groupkey = Object.keys(gql)[0];
-			const children = this.transformGraphQLFilterNodeToPredicateAST(
-				gql[groupkey]
-			);
+			const children = this.transformGraphQLFilterNodeToPredicateAST(gql[groupkey]);
 			return {
 				type: groupkey,
 				predicates: Array.isArray(children) ? children : [children],
@@ -276,16 +253,10 @@ export class ModelPredicateCreator {
 	 * @param modelDefinition The model that the AST/predicate must be compatible with.
 	 * @param ast The graphQL style AST that should specify conditions for `modelDefinition`.
 	 */
-	static createFromAST<T extends PersistentModel>(
-		modelDefinition: SchemaModel,
-		ast: any
-	): ModelPredicate<T> {
+	static createFromAST<T extends PersistentModel>(modelDefinition: SchemaModel, ast: any): ModelPredicate<T> {
 		const key = {} as ModelPredicate<T>;
 
-		ModelPredicateCreator.predicateGroupsMap.set(
-			key,
-			this.transformGraphQLFilterNodeToPredicateAST(ast)
-		);
+		ModelPredicateCreator.predicateGroupsMap.set(key, this.transformGraphQLFilterNodeToPredicateAST(ast));
 
 		return key;
 	}

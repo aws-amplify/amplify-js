@@ -26,21 +26,7 @@ export default class CognitoUserPool extends InternalCognitoUserPool {
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	signUp(
-		username,
-		password,
-		userAttributes,
-		validationData,
-		callback,
-		clientMetadata
-	) {
-		return super.signUp(
-			username,
-			password,
-			userAttributes,
-			validationData,
-			callback,
-			clientMetadata
-		);
+	signUp(username, password, userAttributes, validationData, callback, clientMetadata) {
+		return super.signUp(username, password, userAttributes, validationData, callback, clientMetadata);
 	}
 }

@@ -38,14 +38,10 @@ describe('withSSRContext', () => {
 			const config = amplify.configure();
 
 			// GraphQLAPI uses Credentials internally
-			expect(Amplify.API._graphqlApi.Credentials).not.toBe(
-				amplify.API._graphqlApi.Credentials
-			);
+			expect(Amplify.API._graphqlApi.Credentials).not.toBe(amplify.API._graphqlApi.Credentials);
 
 			// RestAPI._api is a RestClient with Credentials
-			expect(Amplify.API._restApi._api.Credentials).not.toBe(
-				amplify.API._restApi._api.Credentials
-			);
+			expect(Amplify.API._restApi._api.Credentials).not.toBe(amplify.API._restApi._api.Credentials);
 		});
 	});
 

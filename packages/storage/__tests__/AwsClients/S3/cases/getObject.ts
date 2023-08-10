@@ -4,28 +4,20 @@
 import { getObject } from '../../../../src/AwsClients/S3';
 import { toBase64 } from '../../../../src/AwsClients/S3/utils';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
-import {
-	defaultConfig,
-	DEFAULT_RESPONSE_HEADERS,
-	expectedMetadata,
-	EMPTY_SHA256,
-} from './shared';
+import { defaultConfig, DEFAULT_RESPONSE_HEADERS, expectedMetadata, EMPTY_SHA256 } from './shared';
 
 const getObjectResponseHeaders = {
 	'x-amz-delete-marker': 'true',
 	'accept-ranges': 'types',
-	'x-amz-expiration':
-		'expiry-date="Fri, 23 Dec 2012 00:00:00 GMT", rule-id="picture-deletion-rule"',
-	'x-amz-restore':
-		'ongoing-request="false", expiry-date="Fri, 21 Dec 2012 00:00:00 GMT"', // Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadObject.html#AmazonS3-HeadObject-response-header-Restore
+	'x-amz-expiration': 'expiry-date="Fri, 23 Dec 2012 00:00:00 GMT", rule-id="picture-deletion-rule"',
+	'x-amz-restore': 'ongoing-request="false", expiry-date="Fri, 21 Dec 2012 00:00:00 GMT"', // Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadObject.html#AmazonS3-HeadObject-response-header-Restore
 	'last-modified': 'Sun, 1 Jan 2006 12:00:00 GMT',
 	'content-length': '434234',
 	etag: 'fba9dede5f27731c9771645a39863328',
 	'x-amz-checksum-crc32': '696e1637',
 	'x-amz-checksum-crc32c': '028A5A90',
 	'x-amz-checksum-sha1': '5f3446f6cb2f4962082dfe2d298d1b1a32a21b21',
-	'x-amz-checksum-sha256':
-		'1643577c036c1e057505b4dce59f3d34bd3fe6224f1064c80dd5426b27a12360',
+	'x-amz-checksum-sha256': '1643577c036c1e057505b4dce59f3d34bd3fe6224f1064c80dd5426b27a12360',
 	'x-amz-missing-meta': '2',
 	'x-amz-version-id': '3HL4kqtJlcpXroDTDmjVBH40Nrjfkd',
 	'cache-control': 'no-store',
@@ -85,8 +77,7 @@ const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
 			host: 'bucket.s3.us-east-1.amazonaws.com',
 			'x-amz-server-side-encryption-customer-algorithm': 'SSECustomerAlgorithm',
 			'x-amz-server-side-encryption-customer-key': toBase64('SSECustomerKey'),
-			'x-amz-server-side-encryption-customer-key-md5':
-				'u2yTVQWmqQ+XbBDNNmwr4Q==',
+			'x-amz-server-side-encryption-customer-key-md5': 'u2yTVQWmqQ+XbBDNNmwr4Q==',
 			'x-amz-content-sha256': EMPTY_SHA256,
 			'x-amz-date': expect.stringMatching(/^\d{8}T\d{6}Z/),
 			'x-amz-user-agent': expect.stringContaining('aws-amplify'),
@@ -122,18 +113,11 @@ const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
 		ContentRange: getObjectResponseHeaders['content-range'],
 		ContentType: getObjectResponseHeaders['content-type'],
 		Expires: new Date(getObjectResponseHeaders.expires),
-		WebsiteRedirectLocation:
-			getObjectResponseHeaders['x-amz-website-redirect-location'],
-		ServerSideEncryption:
-			getObjectResponseHeaders['x-amz-server-side-encryption'],
-		SSECustomerAlgorithm:
-			getObjectResponseHeaders[
-				'x-amz-server-side-encryption-customer-algorithm'
-			],
-		SSECustomerKeyMD5:
-			getObjectResponseHeaders['x-amz-server-side-encryption-customer-key-md5'],
-		SSEKMSKeyId:
-			getObjectResponseHeaders['x-amz-server-side-encryption-aws-kms-key-id'],
+		WebsiteRedirectLocation: getObjectResponseHeaders['x-amz-website-redirect-location'],
+		ServerSideEncryption: getObjectResponseHeaders['x-amz-server-side-encryption'],
+		SSECustomerAlgorithm: getObjectResponseHeaders['x-amz-server-side-encryption-customer-algorithm'],
+		SSECustomerKeyMD5: getObjectResponseHeaders['x-amz-server-side-encryption-customer-key-md5'],
+		SSEKMSKeyId: getObjectResponseHeaders['x-amz-server-side-encryption-aws-kms-key-id'],
 		BucketKeyEnabled: true,
 		StorageClass: getObjectResponseHeaders['x-amz-storage-class'],
 		RequestCharged: getObjectResponseHeaders['x-amz-request-charged'],
@@ -141,11 +125,8 @@ const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
 		PartsCount: Number(getObjectResponseHeaders['x-amz-mp-parts-count']),
 		TagCount: Number(getObjectResponseHeaders['x-amz-tagging-count']),
 		ObjectLockMode: getObjectResponseHeaders['x-amz-object-lock-mode'],
-		ObjectLockRetainUntilDate: new Date(
-			getObjectResponseHeaders['x-amz-object-lock-retain-until-date']
-		),
-		ObjectLockLegalHoldStatus:
-			getObjectResponseHeaders['x-amz-object-lock-legal-hold'],
+		ObjectLockRetainUntilDate: new Date(getObjectResponseHeaders['x-amz-object-lock-retain-until-date']),
+		ObjectLockLegalHoldStatus: getObjectResponseHeaders['x-amz-object-lock-legal-hold'],
 		Metadata: {
 			param1: 'value 1',
 			param2: 'value 2',
@@ -214,8 +195,4 @@ const getObjectCustomEndpoint: ApiFunctionalTestCase<typeof getObject> = [
 	}) as any,
 ];
 
-export default [
-	getObjectHappyCase,
-	getObjectAccelerateEndpoint,
-	getObjectCustomEndpoint,
-];
+export default [getObjectHappyCase, getObjectAccelerateEndpoint, getObjectCustomEndpoint];

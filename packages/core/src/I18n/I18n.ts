@@ -34,12 +34,7 @@ export class I18n {
 		this._options = Object.assign({}, options);
 		this._lang = this._options.language;
 
-		if (
-			!this._lang &&
-			typeof window !== 'undefined' &&
-			window &&
-			window.navigator
-		) {
+		if (!this._lang && typeof window !== 'undefined' && window && window.navigator) {
 			this._lang = window.navigator.language;
 		}
 

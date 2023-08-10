@@ -54,5 +54,4 @@ export enum ConnectionState {
 }
 
 export type PubSubContent = Record<string, unknown> | string;
-export type PubSubContentObserver =
-	ZenObservable.SubscriptionObserver<PubSubContent>;
+export type PubSubContentObserver = ZenObservable.SubscriptionObserver<PubSubContent>;

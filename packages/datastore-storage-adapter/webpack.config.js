@@ -1,8 +1,7 @@
 module.exports = {
 	entry: {
 		'aws-amplify-datastore-storage-adapter.min': './lib-esm/index.js',
-		'aws-amplify-datastore-sqlite-adapter-expo.min':
-			'./lib-esm/ExpoSQLiteAdapter/ExpoSQLiteAdapter.js',
+		'aws-amplify-datastore-sqlite-adapter-expo.min': './lib-esm/ExpoSQLiteAdapter/ExpoSQLiteAdapter.js',
 	},
 	externals: [
 		'@aws-amplify/datastore',
@@ -17,8 +16,7 @@ module.exports = {
 		library: 'aws-amplify-datastore-storage-adapter',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
-		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils')
-			.devtoolModuleFilenameTemplate,
+		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils').devtoolModuleFilenameTemplate,
 	},
 	// Enable sourcemaps for debugging webpack's output.
 	devtool: 'source-map',

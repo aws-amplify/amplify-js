@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	ErrorParser,
-	HttpResponse,
-	parseMetadata,
-} from '@aws-amplify/core/internals/aws-client-utils';
+import { ErrorParser, HttpResponse, parseMetadata } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { parser } from '../runtime';
 
@@ -15,11 +11,7 @@ export const parseXmlError: ErrorParser = async (response?: HttpResponse) => {
 	}
 	const { statusCode } = response;
 	const body = await parseXmlBody(response);
-	const code = body?.['Code']
-		? (body.Code as string)
-		: statusCode === 404
-		? 'NotFound'
-		: statusCode.toString();
+	const code = body?.['Code'] ? (body.Code as string) : statusCode === 404 ? 'NotFound' : statusCode.toString();
 	const message = body?.['message'] ?? body?.['Message'] ?? code;
 	const error = new Error(message);
 	return Object.assign(error, {

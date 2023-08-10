@@ -41,8 +41,5 @@ const detectionMap: PlatformDetectionEntry[] = [
 ];
 
 export function detect() {
-	return (
-		detectionMap.find(detectionEntry => detectionEntry.detectionMethod())
-			?.platform || Framework.ServerSideUnknown
-	);
+	return detectionMap.find(detectionEntry => detectionEntry.detectionMethod())?.platform || Framework.ServerSideUnknown;
 }

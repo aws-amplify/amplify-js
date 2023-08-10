@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Credentials,
-	HttpRequest,
-	HttpResponse,
-	MiddlewareHandler,
-} from '../../types';
+import { Credentials, HttpRequest, HttpResponse, MiddlewareHandler } from '../../types';
 import { signRequest } from './signer/signatureV4';
 import { getSkewCorrectedDate } from './utils/getSkewCorrectedDate';
 import { getUpdatedSystemClockOffset } from './utils/getUpdatedSystemClockOffset';
@@ -32,19 +27,13 @@ export interface SigningOptions {
  * Middleware that SigV4 signs request with AWS credentials, and correct system clock offset.
  * This middleware is expected to be placed after retry middleware.
  */
-export const signingMiddleware = ({
-	credentials,
-	region,
-	service,
-	uriEscapePath = true,
-}: SigningOptions) => {
+export const signingMiddleware = ({ credentials, region, service, uriEscapePath = true }: SigningOptions) => {
 	let currentSystemClockOffset;
 	return (next: MiddlewareHandler<HttpRequest, HttpResponse>) =>
 		async function signingMiddleware(request: HttpRequest) {
 			currentSystemClockOffset = currentSystemClockOffset ?? 0;
 			const signRequestOptions = {
-				credentials:
-					typeof credentials === 'function' ? await credentials() : credentials,
+				credentials: typeof credentials === 'function' ? await credentials() : credentials,
 				signingDate: getSkewCorrectedDate(currentSystemClockOffset),
 				signingRegion: region,
 				signingService: service,
@@ -57,10 +46,7 @@ export const signingMiddleware = ({
 			// only thrown by the retry middleware.
 			const dateString = getDateHeader(response);
 			if (dateString) {
-				currentSystemClockOffset = getUpdatedSystemClockOffset(
-					Date.parse(dateString),
-					currentSystemClockOffset
-				);
+				currentSystemClockOffset = getUpdatedSystemClockOffset(Date.parse(dateString), currentSystemClockOffset);
 			}
 			return response;
 		};

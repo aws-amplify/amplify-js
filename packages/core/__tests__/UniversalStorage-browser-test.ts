@@ -52,46 +52,38 @@ describe(UniversalStorage.name, () => {
 				expect(universalStorage.store).toMatchObject({ foo: 'bar' });
 			});
 
-			test.each([
-				['LastAuthUser'],
-				['accessToken'],
-				['refreshToken'],
-				['idToken'],
-			])('sets session token %s to permenent cookie', tokenType => {
-				const key = `ProviderName.someid.someid.${tokenType}`;
-				const value = `${tokenType}-value`;
-				universalStorage.setItem(key, value);
-				expect(mockCookiesSet).toBeCalledWith(
-					key,
-					value,
-					expect.objectContaining({ path: '/', sameSite: true, secure: false })
-				);
-				expect(mockCookiesSet.mock.calls.length).toBe(1);
-				const expiresParam = mockCookiesSet.mock.calls[0]?.[2]?.expires;
-				expect(expiresParam).toBeInstanceOf(Date);
-				expect(expiresParam.valueOf()).toBeGreaterThan(Date.now());
-			});
+			test.each([['LastAuthUser'], ['accessToken'], ['refreshToken'], ['idToken']])(
+				'sets session token %s to permenent cookie',
+				tokenType => {
+					const key = `ProviderName.someid.someid.${tokenType}`;
+					const value = `${tokenType}-value`;
+					universalStorage.setItem(key, value);
+					expect(mockCookiesSet).toBeCalledWith(
+						key,
+						value,
+						expect.objectContaining({ path: '/', sameSite: true, secure: false })
+					);
+					expect(mockCookiesSet.mock.calls.length).toBe(1);
+					const expiresParam = mockCookiesSet.mock.calls[0]?.[2]?.expires;
+					expect(expiresParam).toBeInstanceOf(Date);
+					expect(expiresParam.valueOf()).toBeGreaterThan(Date.now());
+				}
+			);
 
-			test.each([
-				['LastAuthUser'],
-				['accessToken'],
-				['refreshToken'],
-				['idToken'],
-			])('sets session token %s to secure cookie(not localhost)', tokenType => {
-				// @ts-ignore
-				delete window.location;
-				// @ts-ignore
-				window.location = new URL('http://domain');
-				const key = `ProviderName.someid.someid.${tokenType}`;
-				const value = `${tokenType}-value`;
-				universalStorage.setItem(key, value);
-				window.location.hostname = 'http://domain';
-				expect(mockCookiesSet).toBeCalledWith(
-					key,
-					value,
-					expect.objectContaining({ secure: true })
-				);
-			});
+			test.each([['LastAuthUser'], ['accessToken'], ['refreshToken'], ['idToken']])(
+				'sets session token %s to secure cookie(not localhost)',
+				tokenType => {
+					// @ts-ignore
+					delete window.location;
+					// @ts-ignore
+					window.location = new URL('http://domain');
+					const key = `ProviderName.someid.someid.${tokenType}`;
+					const value = `${tokenType}-value`;
+					universalStorage.setItem(key, value);
+					window.location.hostname = 'http://domain';
+					expect(mockCookiesSet).toBeCalledWith(key, value, expect.objectContaining({ secure: true }));
+				}
+			);
 		});
 
 		describe('getItem', () => {

@@ -1,10 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	ICookieStorageData,
-	ICognitoStorage,
-} from 'amazon-cognito-identity-js';
+import { ICookieStorageData, ICognitoStorage } from 'amazon-cognito-identity-js';
 
 /**
  * Parameters for user sign up
@@ -52,12 +49,7 @@ export enum CognitoHostedUIIdentityProvider {
 	Apple = 'SignInWithApple',
 }
 
-export type LegacyProvider =
-	| 'google'
-	| 'facebook'
-	| 'amazon'
-	| 'developer'
-	| string;
+export type LegacyProvider = 'google' | 'facebook' | 'amazon' | 'developer' | string;
 
 export type FederatedSignInOptions = {
 	provider: CognitoHostedUIIdentityProvider;
@@ -69,25 +61,18 @@ export type FederatedSignInOptionsCustom = {
 	customState?: string;
 };
 
-export function isFederatedSignInOptions(
-	obj: any
-): obj is FederatedSignInOptions {
+export function isFederatedSignInOptions(obj: any): obj is FederatedSignInOptions {
 	const keys: (keyof FederatedSignInOptions)[] = ['provider'];
 	return obj && !!keys.find(k => obj.hasOwnProperty(k));
 }
 
-export function isFederatedSignInOptionsCustom(
-	obj: any
-): obj is FederatedSignInOptionsCustom {
+export function isFederatedSignInOptionsCustom(obj: any): obj is FederatedSignInOptionsCustom {
 	const keys: (keyof FederatedSignInOptionsCustom)[] = ['customProvider'];
 	return obj && !!keys.find(k => obj.hasOwnProperty(k));
 }
 
 export function hasCustomState(obj: any): boolean {
-	const keys: (keyof (
-		| FederatedSignInOptions
-		| FederatedSignInOptionsCustom
-	))[] = ['customState'];
+	const keys: (keyof (FederatedSignInOptions | FederatedSignInOptionsCustom))[] = ['customState'];
 	return obj && !!keys.find(k => obj.hasOwnProperty(k));
 }
 
@@ -130,9 +115,7 @@ export interface AwsCognitoOAuthOpts {
 	urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
 }
 
-export function isCognitoHostedOpts(
-	oauth: OAuthOpts
-): oauth is AwsCognitoOAuthOpts {
+export function isCognitoHostedOpts(oauth: OAuthOpts): oauth is AwsCognitoOAuthOpts {
 	return (<AwsCognitoOAuthOpts>oauth).redirectSignIn !== undefined;
 }
 

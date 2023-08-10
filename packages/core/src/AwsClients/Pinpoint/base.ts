@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getDnsSuffix } from '../../clients/endpoints';
-import {
-	jitteredBackoff,
-	getRetryDecider,
-} from '../../clients/middleware/retry';
+import { jitteredBackoff, getRetryDecider } from '../../clients/middleware/retry';
 import { parseJsonError } from '../../clients/serde/json';
 import type { EndpointResolverOptions, Headers } from '../../clients/types';
 import { getAmplifyUserAgent } from '../../Platform';

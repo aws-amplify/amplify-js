@@ -11,10 +11,7 @@ export const notifyEventListeners = (type: EventType, ...args: any[]): void => {
 	});
 };
 
-export const notifyEventListenersAndAwaitHandlers = (
-	type: EventType,
-	...args: any[]
-): Promise<void[]> =>
+export const notifyEventListenersAndAwaitHandlers = (type: EventType, ...args: any[]): Promise<void[]> =>
 	Promise.all<void>(
 		Array.from(eventListeners[type] ?? []).map(async listener => {
 			try {

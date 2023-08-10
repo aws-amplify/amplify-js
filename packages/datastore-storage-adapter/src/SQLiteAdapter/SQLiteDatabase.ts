@@ -51,39 +51,23 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 		logger.debug('Database deleted');
 	}
 
-	public async get<T extends PersistentModel>(
-		statement: string,
-		params: (string | number)[]
-	): Promise<T> {
+	public async get<T extends PersistentModel>(statement: string, params: (string | number)[]): Promise<T> {
 		const results: T[] = await this.getAll(statement, params);
 		return results[0];
 	}
 
-	public async getAll<T extends PersistentModel>(
-		statement: string,
-		params: (string | number)[]
-	): Promise<T[]> {
+	public async getAll<T extends PersistentModel>(statement: string, params: (string | number)[]): Promise<T[]> {
 		const [resultSet] = await this.db.executeSql(statement, params);
-		const result =
-			resultSet &&
-			resultSet.rows &&
-			resultSet.rows.length &&
-			resultSet.rows.raw &&
-			resultSet.rows.raw();
+		const result = resultSet && resultSet.rows && resultSet.rows.length && resultSet.rows.raw && resultSet.rows.raw();
 
 		return result || [];
 	}
 
-	public async save(
-		statement: string,
-		params: (string | number)[]
-	): Promise<void> {
+	public async save(statement: string, params: (string | number)[]): Promise<void> {
 		await this.db.executeSql(statement, params);
 	}
 
-	public async batchQuery<T = any>(
-		queryParameterizedStatements: Set<ParameterizedStatement>
-	): Promise<T[]> {
+	public async batchQuery<T = any>(queryParameterizedStatements: Set<ParameterizedStatement>): Promise<T[]> {
 		const results = [];
 
 		await this.db.readTransaction(tx => {

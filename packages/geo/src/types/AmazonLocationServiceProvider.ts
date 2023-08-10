@@ -1,13 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	MapStyle,
-	GeofenceOptions,
-	ListGeofenceOptions,
-	Geofence,
-	DeleteGeofencesResults,
-	GeofenceError,
-} from './Geo';
+import { MapStyle, GeofenceOptions, ListGeofenceOptions, Geofence, DeleteGeofencesResults, GeofenceError } from './Geo';
 
 // Maps
 export interface AmazonLocationServiceMapStyle extends MapStyle {
@@ -20,12 +13,7 @@ export type AmazonLocationServiceGeofenceOptions = GeofenceOptions & {
 };
 
 // Status types for Geofences
-export type AmazonLocationServiceGeofenceStatus =
-	| 'ACTIVE'
-	| 'PENDING'
-	| 'FAILED'
-	| 'DELETED'
-	| 'DELETING';
+export type AmazonLocationServiceGeofenceStatus = 'ACTIVE' | 'PENDING' | 'FAILED' | 'DELETED' | 'DELETING';
 
 export type AmazonLocationServiceGeofence = Omit<Geofence, 'status'> & {
 	status: AmazonLocationServiceGeofenceStatus;
@@ -44,19 +32,13 @@ export type AmazonLocationServiceBatchGeofenceErrorMessages =
 	| 'ThrottlingException'
 	| 'ValidationException';
 
-export type AmazonLocationServiceBatchGeofenceError = Omit<
-	GeofenceError,
-	'error'
-> & {
+export type AmazonLocationServiceBatchGeofenceError = Omit<GeofenceError, 'error'> & {
 	error: {
 		code: string;
 		message: AmazonLocationServiceBatchGeofenceErrorMessages;
 	};
 };
 
-export type AmazonLocationServiceDeleteGeofencesResults = Omit<
-	DeleteGeofencesResults,
-	'errors'
-> & {
+export type AmazonLocationServiceDeleteGeofencesResults = Omit<DeleteGeofencesResults, 'errors'> & {
 	errors: AmazonLocationServiceBatchGeofenceError[];
 };

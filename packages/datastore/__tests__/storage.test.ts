@@ -1,8 +1,5 @@
 import 'fake-indexeddb/auto';
-import {
-	DataStore as DataStoreType,
-	initSchema as initSchemaType,
-} from '../src/datastore/datastore';
+import { DataStore as DataStoreType, initSchema as initSchemaType } from '../src/datastore/datastore';
 import { PersistentModelConstructor } from '../src/types';
 import {
 	Model,
@@ -25,15 +22,7 @@ function getDataStore() {
 	} = require('../src/datastore/datastore');
 
 	const classes = initSchema(testSchema());
-	const {
-		Model,
-		Post,
-		Comment,
-		PostComposite,
-		PostCustomPK,
-		PostCustomPKSort,
-		PostCustomPKComposite,
-	} = classes as {
+	const { Model, Post, Comment, PostComposite, PostCustomPK, PostCustomPKSort, PostCustomPKComposite } = classes as {
 		Model: PersistentModelConstructor<Model>;
 		Post: PersistentModelConstructor<Post>;
 		Comment: PersistentModelConstructor<Comment>;
@@ -218,11 +207,7 @@ describe('Storage tests', () => {
 
 				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
 
-				const expectedValueEmails = [
-					'john@doe.com',
-					'jane@doe.com',
-					'joe@doe.com',
-				];
+				const expectedValueEmails = ['john@doe.com', 'jane@doe.com', 'joe@doe.com'];
 
 				expect(modelUpdate.element.dateCreated).toBeUndefined();
 				expect(modelUpdate.element.field1).toBeUndefined();
@@ -248,11 +233,7 @@ describe('Storage tests', () => {
 
 				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
 
-				const expectedValueEmails = [
-					'john@doe.com',
-					'jane@doe.com',
-					'joe@doe.com',
-				];
+				const expectedValueEmails = ['john@doe.com', 'jane@doe.com', 'joe@doe.com'];
 
 				expect(modelUpdate.element.dateCreated).toBeUndefined();
 				expect(modelUpdate.element.field1).toBeUndefined();
@@ -367,9 +348,7 @@ describe('Storage tests', () => {
 
 				expect(modelUpdate.element.dateCreated).toBeUndefined();
 				expect(modelUpdate.element.field1).toBeUndefined();
-				expect(modelUpdate.element.metadata).toMatchObject(
-					expectedValueMetadata
-				);
+				expect(modelUpdate.element.metadata).toMatchObject(expectedValueMetadata);
 			});
 
 			test('custom type (accessor)', async () => {
@@ -404,9 +383,7 @@ describe('Storage tests', () => {
 
 				expect(modelUpdate.element.dateCreated).toBeUndefined();
 				expect(modelUpdate.element.field1).toBeUndefined();
-				expect(modelUpdate.element.metadata).toMatchObject(
-					expectedValueMetadata
-				);
+				expect(modelUpdate.element.metadata).toMatchObject(expectedValueMetadata);
 			});
 
 			test('allowing nested BELONGS_TO to be set', async () => {
@@ -439,9 +416,7 @@ describe('Storage tests', () => {
 
 				const updatedComment = await DataStore.query(Comment, comment.id);
 
-				expect((await updatedComment!.post).title).toEqual(
-					'oops. i mean this is my best post'
-				);
+				expect((await updatedComment!.post).title).toEqual('oops. i mean this is my best post');
 			});
 
 			// TODO.
@@ -481,10 +456,7 @@ describe('Storage tests', () => {
 				const test = await DataStore.query(Post, post.id);
 
 				// might have to sort
-				expect((await test!.comments.toArray()).map(c => c.content)).toEqual([
-					'comment 1',
-					'comment 2',
-				]);
+				expect((await test!.comments.toArray()).map(c => c.content)).toEqual(['comment 1', 'comment 2']);
 			});
 
 			test('custom type unchanged', async () => {
@@ -550,8 +522,7 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_postSave, commentSave, _anotherPostSave, commentUpdate] =
-					processZenPushCalls(zenNext);
+				const [_postSave, commentSave, _anotherPostSave, commentUpdate] = processZenPushCalls(zenNext);
 
 				expect(commentSave.element.postId).toEqual(post.id);
 				expect(commentUpdate.element.postId).toEqual(anotherPost.id);
@@ -601,8 +572,7 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_postSave, postUpdate1, postUpdate2, postUpdate3] =
-					processZenPushCalls(zenNext);
+				const [_postSave, postUpdate1, postUpdate2, postUpdate3] = processZenPushCalls(zenNext);
 
 				expect(postUpdate1.element.title).toBeUndefined();
 				expect(postUpdate1.element.created).toEqual(createdTimestamp);

@@ -1,12 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-export {
-	NonRetryableError,
-	isNonRetryableError,
-	jitteredBackoff,
-	jitteredExponentialRetry,
-	retry,
-} from './Retry';
+export { NonRetryableError, isNonRetryableError, jitteredBackoff, jitteredExponentialRetry, retry } from './Retry';
 export { default as Mutex } from './Mutex';
 export { default as Reachability } from './Reachability';
 export { DateUtils } from './DateUtils';

@@ -1,8 +1,4 @@
-import {
-	AmazonPersonalizeProvider,
-	AWSKinesisFirehoseProvider,
-	AWSKinesisProvider,
-} from '../../src/Providers';
+import { AmazonPersonalizeProvider, AWSKinesisFirehoseProvider, AWSKinesisProvider } from '../../src/Providers';
 
 describe('Each provider client is configured with the custom user client', () => {
 	describe('AmazonPersonalizeProvider', () => {
@@ -11,9 +7,7 @@ describe('Each provider client is configured with the custom user client', () =>
 			// Run init to setup the client
 			provider['_init']({ region: 'us-east-1' }, {});
 
-			expect(
-				provider['_personalize']['config']['customUserAgent']
-			).toMatchObject([
+			expect(provider['_personalize']['config']['customUserAgent']).toMatchObject([
 				['aws-amplify', expect.any(String)],
 				['analytics', '1'],
 				['framework', '0'],
@@ -27,9 +21,7 @@ describe('Each provider client is configured with the custom user client', () =>
 			// Run init to setup the client
 			provider['_init']({ region: 'us-east-1' }, {});
 
-			expect(
-				provider['_kinesisFirehose']['config']['customUserAgent']
-			).toMatchObject([
+			expect(provider['_kinesisFirehose']['config']['customUserAgent']).toMatchObject([
 				['aws-amplify', expect.any(String)],
 				['analytics', '1'],
 				['framework', '0'],

@@ -74,79 +74,71 @@ describe('User-Attribute-validation', () => {
 	it('Checking not coerced values after sign in', async () => {
 		const auth = new Auth(authOptions);
 
-		const spyUserPoolCurrentUser = jest
-			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
-			.mockImplementation(() => {
-				return new CognitoUser({
-					Pool: new CognitoUserPool({
-						UserPoolId: authOptions.userPoolId,
-						ClientId: authOptions.userPoolWebClientId,
-					}),
-					Username: 'test',
-				});
+		const spyUserPoolCurrentUser = jest.spyOn(CognitoUserPool.prototype, 'getCurrentUser').mockImplementation(() => {
+			return new CognitoUser({
+				Pool: new CognitoUserPool({
+					UserPoolId: authOptions.userPoolId,
+					ClientId: authOptions.userPoolWebClientId,
+				}),
+				Username: 'test',
 			});
+		});
 
-		const spyUserGetSession = jest
-			.spyOn(CognitoUser.prototype, 'getSession')
-			.mockImplementation((callback: any) => {
-				const session = new CognitoUserSession({
-					AccessToken: new CognitoAccessToken({ AccessToken: 'accesstoken' }),
-					IdToken: new CognitoIdToken({ IdToken: 'Idtoken' }),
-				});
-				callback(null, session);
+		const spyUserGetSession = jest.spyOn(CognitoUser.prototype, 'getSession').mockImplementation((callback: any) => {
+			const session = new CognitoUserSession({
+				AccessToken: new CognitoAccessToken({ AccessToken: 'accesstoken' }),
+				IdToken: new CognitoIdToken({ IdToken: 'Idtoken' }),
 			});
+			callback(null, session);
+		});
 
-		const spyDecodePayload = jest
-			.spyOn(CognitoAccessToken.prototype, 'decodePayload')
-			.mockImplementation(() => {
-				return { scope: 'aws.cognito.signin.user.admin' };
+		const spyDecodePayload = jest.spyOn(CognitoAccessToken.prototype, 'decodePayload').mockImplementation(() => {
+			return { scope: 'aws.cognito.signin.user.admin' };
+		});
+
+		const spyGetUserData = jest.spyOn(CognitoUser.prototype, 'getUserData').mockImplementation(callback => {
+			const emailAttribute = {
+				Name: 'email',
+				Value: 'hello@amzn.com',
+			};
+			const emailVerified = {
+				Name: 'email_verified',
+				Value: 'true',
+			};
+			const phoneAttribute = {
+				Name: 'phone_number',
+				Value: '+12345678901',
+			};
+			const phoneVerified = {
+				Name: 'phone_number_verified',
+				Value: 'false',
+			};
+
+			const customAttribute1 = {
+				Name: 'custom:attribute1',
+				Value: 'false',
+			};
+
+			const customAttribute2 = {
+				Name: 'custom:attribute2',
+				Value: 'true',
+			};
+
+			callback(null, {
+				Username: 'test',
+				UserMFASettingList: ['SMS'],
+				PreferredMfaSetting: 'SMS',
+				UserAttributes: [
+					emailAttribute,
+					emailVerified,
+					phoneAttribute,
+					phoneVerified,
+					customAttribute1,
+					customAttribute2,
+				],
+				MFAOptions: [],
 			});
-
-		const spyGetUserData = jest
-			.spyOn(CognitoUser.prototype, 'getUserData')
-			.mockImplementation(callback => {
-				const emailAttribute = {
-					Name: 'email',
-					Value: 'hello@amzn.com',
-				};
-				const emailVerified = {
-					Name: 'email_verified',
-					Value: 'true',
-				};
-				const phoneAttribute = {
-					Name: 'phone_number',
-					Value: '+12345678901',
-				};
-				const phoneVerified = {
-					Name: 'phone_number_verified',
-					Value: 'false',
-				};
-
-				const customAttribute1 = {
-					Name: 'custom:attribute1',
-					Value: 'false',
-				};
-
-				const customAttribute2 = {
-					Name: 'custom:attribute2',
-					Value: 'true',
-				};
-
-				callback(null, {
-					Username: 'test',
-					UserMFASettingList: ['SMS'],
-					PreferredMfaSetting: 'SMS',
-					UserAttributes: [
-						emailAttribute,
-						emailVerified,
-						phoneAttribute,
-						phoneVerified,
-						customAttribute1,
-						customAttribute2,
-					],
-					MFAOptions: [],
-				});
-			});
+		});
 
 		const user = await auth.currentUserPoolUser();
 

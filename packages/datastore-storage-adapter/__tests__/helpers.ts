@@ -1,11 +1,6 @@
 import sqlite3 from 'sqlite3';
 sqlite3.verbose();
-import {
-	ModelInit,
-	MutableModel,
-	Schema,
-	InternalSchema,
-} from '@aws-amplify/datastore';
+import { ModelInit, MutableModel, Schema, InternalSchema } from '@aws-amplify/datastore';
 
 export declare class Model {
 	public readonly id: string;
@@ -20,10 +15,7 @@ export declare class Model {
 
 	constructor(init: ModelInit<Model>);
 
-	static copyOf(
-		src: Model,
-		mutator: (draft: MutableModel<Model>) => void | Model
-	): Model;
+	static copyOf(src: Model, mutator: (draft: MutableModel<Model>) => void | Model): Model;
 }
 export declare class Metadata {
 	readonly author: string;

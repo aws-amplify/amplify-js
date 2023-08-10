@@ -3,12 +3,7 @@
 
 import { listObjectsV2 } from '../../../../src/AwsClients/S3';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
-import {
-	defaultConfig,
-	defaultRequiredRequestHeaders,
-	DEFAULT_RESPONSE_HEADERS,
-	expectedMetadata,
-} from './shared';
+import { defaultConfig, defaultRequiredRequestHeaders, DEFAULT_RESPONSE_HEADERS, expectedMetadata } from './shared';
 
 // API Reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html
 const listObjectsV2HappyCase: ApiFunctionalTestCase<typeof listObjectsV2> = [

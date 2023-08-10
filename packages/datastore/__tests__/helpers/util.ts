@@ -21,8 +21,7 @@ export async function pause(ms) {
  * Case insensitive regex that matches GUID's and UUID's.
  * It does NOT permit whitespace on either end of the string. The caller must `trim()` first as-needed.
  */
-export const UUID_REGEX =
-	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Tests a mutation for expected values. If values are present on the mutation
@@ -41,14 +40,9 @@ export function expectMutation(mutation, values) {
 		id: UUID_REGEX,
 		...values,
 	};
-	const errors = [
-		...errorsFrom(data, matchers),
-		...extraFieldsFrom(data, matchers).map(f => `Unexpected field: ${f}`),
-	];
+	const errors = [...errorsFrom(data, matchers), ...extraFieldsFrom(data, matchers).map(f => `Unexpected field: ${f}`)];
 	if (errors.length > 0) {
-		throw new Error(
-			`Bad mutation: ${JSON.stringify(data, null, 2)}\n${errors.join('\n')}`
-		);
+		throw new Error(`Bad mutation: ${JSON.stringify(data, null, 2)}\n${errors.join('\n')}`);
 	}
 }
 
@@ -66,24 +60,18 @@ export function dummyInstance<T extends PersistentModel>(): T {
  * @param data the object to validate.
  * @param matchers the matcher functions/values/regexes to test the object with
  */
-export function errorsFrom<T extends Object>(
-	data: T,
-	matchers: Record<string, any>
-) {
+export function errorsFrom<T extends Object>(data: T, matchers: Record<string, any>) {
 	return Object.entries(matchers).reduce((errors, [property, matcher]) => {
 		const value = data[property];
 		if (
 			!(
 				(typeof matcher === 'function' && matcher(value)) ||
 				(matcher instanceof RegExp && matcher.test(value)) ||
-				(typeof matcher === 'object' &&
-					JSON.stringify(value) === JSON.stringify(matcher)) ||
+				(typeof matcher === 'object' && JSON.stringify(value) === JSON.stringify(matcher)) ||
 				value === matcher
 			)
 		) {
-			errors.push(
-				`Property '${property}' value "${value}" does not match "${matcher}"` as never
-			);
+			errors.push(`Property '${property}' value "${value}" does not match "${matcher}"` as never);
 		}
 		return errors;
 	}, []);
@@ -251,8 +239,7 @@ export function unwarpTime() {
  * at the AppSync endpoint.
  */
 export async function configureSync(DataStore, isReady = () => false) {
-	(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
-		'https://0.0.0.0/does/not/exist/graphql';
+	(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint = 'https://0.0.0.0/does/not/exist/graphql';
 
 	// WARNING: When DataStore starts, it immediately start the sync
 	// engine, which won't have our isReady mock in place yet. This
@@ -304,11 +291,7 @@ export async function pretendModelsAreSynced(DataStore: any) {
  * debug logging and include additional logging around each test cycle.
  */
 export async function expectIsolation(
-	script: (ctx: {
-		DataStore: any;
-		Post: PersistentModelConstructor<schemas.Post>;
-		cycle: number;
-	}) => Promise<any>,
+	script: (ctx: { DataStore: any; Post: PersistentModelConstructor<schemas.Post>; cycle: number }) => Promise<any>,
 	cycles = 5,
 	focusedLogging = false
 ) {
@@ -350,22 +333,14 @@ export async function expectIsolation(
 		for (let cycle = 1; cycle <= cycles; cycle++) {
 			// act
 			try {
-				log(
-					`start cycle:   "${expect.getState().currentTestName}" cycle ${cycle}`
-				);
+				log(`start cycle:   "${expect.getState().currentTestName}" cycle ${cycle}`);
 				await script({ DataStore, Post, cycle });
-				log(
-					`end cycle:     "${expect.getState().currentTestName}" cycle ${cycle}`
-				);
+				log(`end cycle:     "${expect.getState().currentTestName}" cycle ${cycle}`);
 			} finally {
 				// clean up
-				log(
-					`before clear: "${expect.getState().currentTestName}" cycle ${cycle}`
-				);
+				log(`before clear: "${expect.getState().currentTestName}" cycle ${cycle}`);
 				await DataStore.clear();
-				log(
-					`after clear:  "${expect.getState().currentTestName}" cycle ${cycle}`
-				);
+				log(`after clear:  "${expect.getState().currentTestName}" cycle ${cycle}`);
 			}
 
 			// expect no errors
@@ -394,10 +369,7 @@ export async function waitForEmptyOutbox(verbose = false) {
 		const { Hub } = require('@aws-amplify/core');
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
-			if (
-				message.payload.event === 'outboxStatus' &&
-				message.payload.data.isEmpty
-			) {
+			if (message.payload.event === 'outboxStatus' && message.payload.data.isEmpty) {
 				Hub.remove('datastore', hubCallback);
 				resolve();
 			}
@@ -484,43 +456,29 @@ export async function graphqlServiceSettled({
 	await jitteredExponentialRetry(
 		() => {
 			// The test should fail if we haven't ended the simulated disruption:
-			const subscriptionMessagesNotStopped =
-				!graphqlService.stopSubscriptionMessages;
+			const subscriptionMessagesNotStopped = !graphqlService.stopSubscriptionMessages;
 
 			// Ensure the service has received all the requests:
 			const allUpdatesSent =
 				graphqlService.requests.filter(
-					({ operation, type, tableName }) =>
-						operation === 'mutation' &&
-						type === 'update' &&
-						tableName === modelName
+					({ operation, type, tableName }) => operation === 'mutation' && type === 'update' && tableName === modelName
 				).length ===
 				expectedNumberOfUpdates + externalNumberOfUpdates;
 
 			// Ensure all mutations are complete:
-			const allRunningMutationsComplete =
-				graphqlService.runningMutations.size === 0;
+			const allRunningMutationsComplete = graphqlService.runningMutations.size === 0;
 
 			// Ensure we've notified subscribers:
 			const allSubscriptionsSent =
-				graphqlService.subscriptionMessagesSent.filter(
-					([observerMessageName, message]) => {
-						return observerMessageName === `onUpdate${modelName}`;
-					}
-				).length ===
+				graphqlService.subscriptionMessagesSent.filter(([observerMessageName, message]) => {
+					return observerMessageName === `onUpdate${modelName}`;
+				}).length ===
 				expectedNumberOfUpdates + externalNumberOfUpdates;
 
-			if (
-				allUpdatesSent &&
-				allRunningMutationsComplete &&
-				allSubscriptionsSent &&
-				subscriptionMessagesNotStopped
-			) {
+			if (allUpdatesSent && allRunningMutationsComplete && allSubscriptionsSent && subscriptionMessagesNotStopped) {
 				return true;
 			} else {
-				throw new Error(
-					'Fake GraphQL Service did not receive and/or process all updates and/or subscriptions'
-				);
+				throw new Error('Fake GraphQL Service did not receive and/or process all updates and/or subscriptions');
 			}
 		},
 		[null],

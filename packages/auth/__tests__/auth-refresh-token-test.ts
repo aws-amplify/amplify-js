@@ -31,36 +31,29 @@ describe('Refresh token', () => {
 
 		expect.assertions(1);
 
-		const getSessionSpy = jest
-			.spyOn(CognitoUser.prototype, 'getSession')
-			.mockImplementation(
-				// @ts-ignore
-				(
-					callback: (error: Error, session: CognitoUserSession) => void,
-					options: any
-				) => {
-					expect(options.clientMetadata).toEqual({
-						...clientMetadata,
-					});
-					const session = new CognitoUserSession({
-						AccessToken: new CognitoAccessToken({ AccessToken: 'accesstoken' }),
-						IdToken: new CognitoIdToken({ IdToken: 'Idtoken' }),
-					});
-					callback(null, session);
-				}
-			);
-
-		jest
-			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
-			.mockImplementation(() => {
-				return new CognitoUser({
-					Pool: new CognitoUserPool({
-						ClientId: authOptions.userPoolWebClientId,
-						UserPoolId: authOptions.userPoolId,
-					}),
-					Username: 'username',
+		const getSessionSpy = jest.spyOn(CognitoUser.prototype, 'getSession').mockImplementation(
+			// @ts-ignore
+			(callback: (error: Error, session: CognitoUserSession) => void, options: any) => {
+				expect(options.clientMetadata).toEqual({
+					...clientMetadata,
 				});
+				const session = new CognitoUserSession({
+					AccessToken: new CognitoAccessToken({ AccessToken: 'accesstoken' }),
+					IdToken: new CognitoIdToken({ IdToken: 'Idtoken' }),
+				});
+				callback(null, session);
+			}
+		);
+
+		jest.spyOn(CognitoUserPool.prototype, 'getCurrentUser').mockImplementation(() => {
+			return new CognitoUser({
+				Pool: new CognitoUserPool({
+					ClientId: authOptions.userPoolWebClientId,
+					UserPoolId: authOptions.userPoolId,
+				}),
+				Username: 'username',
 			});
+		});
 		await auth.currentUserPoolUser();
 	});
 
@@ -70,36 +63,29 @@ describe('Refresh token', () => {
 
 		expect.assertions(2);
 
-		const getSessionSpy = jest
-			.spyOn(CognitoUser.prototype, 'getSession')
-			.mockImplementation(
-				// @ts-ignore
-				(
-					callback: (error: Error, session: CognitoUserSession) => void,
-					options: any
-				) => {
-					expect(options.clientMetadata).toEqual({
-						...clientMetadata,
-					});
-					const session = new CognitoUserSession({
-						AccessToken: new CognitoAccessToken({ AccessToken: 'accesstoken' }),
-						IdToken: new CognitoIdToken({ IdToken: 'Idtoken' }),
-					});
-					callback(null, session);
-				}
-			);
-
-		jest
-			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
-			.mockImplementation(() => {
-				return new CognitoUser({
-					Pool: new CognitoUserPool({
-						ClientId: authOptions.userPoolWebClientId,
-						UserPoolId: authOptions.userPoolId,
-					}),
-					Username: 'username',
+		const getSessionSpy = jest.spyOn(CognitoUser.prototype, 'getSession').mockImplementation(
+			// @ts-ignore
+			(callback: (error: Error, session: CognitoUserSession) => void, options: any) => {
+				expect(options.clientMetadata).toEqual({
+					...clientMetadata,
 				});
+				const session = new CognitoUserSession({
+					AccessToken: new CognitoAccessToken({ AccessToken: 'accesstoken' }),
+					IdToken: new CognitoIdToken({ IdToken: 'Idtoken' }),
+				});
+				callback(null, session);
+			}
+		);
+
+		jest.spyOn(CognitoUserPool.prototype, 'getCurrentUser').mockImplementation(() => {
+			return new CognitoUser({
+				Pool: new CognitoUserPool({
+					ClientId: authOptions.userPoolWebClientId,
+					UserPoolId: authOptions.userPoolId,
+				}),
+				Username: 'username',
 			});
+		});
 		const user = await auth.currentUserPoolUser();
 
 		await auth.userSession(user);
@@ -113,10 +99,7 @@ describe('Refresh token', () => {
 
 		jest.spyOn(CognitoUser.prototype, 'getSession').mockImplementation(
 			// @ts-ignore
-			(
-				callback: (error: Error, session: CognitoUserSession) => void,
-				options: any
-			) => {
+			(callback: (error: Error, session: CognitoUserSession) => void, options: any) => {
 				expect(options.clientMetadata).toEqual({
 					...clientMetadata,
 				});
@@ -128,23 +111,19 @@ describe('Refresh token', () => {
 			}
 		);
 
-		jest
-			.spyOn(CognitoUser.prototype, 'globalSignOut')
-			.mockImplementation(({ onSuccess, onFailure }) => {
-				onSuccess('');
-			});
+		jest.spyOn(CognitoUser.prototype, 'globalSignOut').mockImplementation(({ onSuccess, onFailure }) => {
+			onSuccess('');
+		});
 
-		jest
-			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
-			.mockImplementation(() => {
-				return new CognitoUser({
-					Pool: new CognitoUserPool({
-						ClientId: authOptions.userPoolWebClientId,
-						UserPoolId: authOptions.userPoolId,
-					}),
-					Username: 'username',
-				});
+		jest.spyOn(CognitoUserPool.prototype, 'getCurrentUser').mockImplementation(() => {
+			return new CognitoUser({
+				Pool: new CognitoUserPool({
+					ClientId: authOptions.userPoolWebClientId,
+					UserPoolId: authOptions.userPoolId,
+				}),
+				Username: 'username',
 			});
+		});
 		const user = await auth.currentUserPoolUser();
 
 		// @ts-ignore
@@ -159,10 +138,7 @@ describe('Refresh token', () => {
 
 		jest.spyOn(CognitoUser.prototype, 'getSession').mockImplementation(
 			// @ts-ignore
-			(
-				callback: (error: Error, session: CognitoUserSession) => void,
-				options: any
-			) => {
+			(callback: (error: Error, session: CognitoUserSession) => void, options: any) => {
 				const session = new CognitoUserSession({
 					AccessToken: new CognitoAccessToken({
 						AccessToken:
@@ -174,31 +150,27 @@ describe('Refresh token', () => {
 			}
 		);
 
-		jest
-			.spyOn(CognitoUser.prototype, 'getUserData')
-			.mockImplementation((callback, params) => {
-				expect(params.clientMetadata).toEqual(clientMetadata);
+		jest.spyOn(CognitoUser.prototype, 'getUserData').mockImplementation((callback, params) => {
+			expect(params.clientMetadata).toEqual(clientMetadata);
 
-				callback(null, {
-					MFAOptions: [],
-					PreferredMfaSetting: 'NOMFA',
-					UserAttributes: [],
-					UserMFASettingList: [],
-					Username: 'username',
-				});
+			callback(null, {
+				MFAOptions: [],
+				PreferredMfaSetting: 'NOMFA',
+				UserAttributes: [],
+				UserMFASettingList: [],
+				Username: 'username',
 			});
+		});
 
-		jest
-			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
-			.mockImplementation(() => {
-				return new CognitoUser({
-					Pool: new CognitoUserPool({
-						ClientId: authOptions.userPoolWebClientId,
-						UserPoolId: authOptions.userPoolId,
-					}),
-					Username: 'username',
-				});
+		jest.spyOn(CognitoUserPool.prototype, 'getCurrentUser').mockImplementation(() => {
+			return new CognitoUser({
+				Pool: new CognitoUserPool({
+					ClientId: authOptions.userPoolWebClientId,
+					UserPoolId: authOptions.userPoolId,
+				}),
+				Username: 'username',
 			});
+		});
 
 		const user = await auth.currentUserPoolUser();
 	});
@@ -211,10 +183,7 @@ describe('Refresh token', () => {
 
 		jest.spyOn(CognitoUser.prototype, 'getSession').mockImplementation(
 			// @ts-ignore
-			(
-				callback: (error: Error, session: CognitoUserSession) => void,
-				options: any
-			) => {
+			(callback: (error: Error, session: CognitoUserSession) => void, options: any) => {
 				const session = new CognitoUserSession({
 					AccessToken: new CognitoAccessToken({
 						AccessToken:
@@ -226,31 +195,27 @@ describe('Refresh token', () => {
 			}
 		);
 
-		jest
-			.spyOn(CognitoUser.prototype, 'getUserData')
-			.mockImplementation((callback, params) => {
-				expect(params.clientMetadata).toEqual(clientMetadata);
+		jest.spyOn(CognitoUser.prototype, 'getUserData').mockImplementation((callback, params) => {
+			expect(params.clientMetadata).toEqual(clientMetadata);
 
-				callback(null, {
-					MFAOptions: [],
-					PreferredMfaSetting: 'NOMFA',
-					UserAttributes: [],
-					UserMFASettingList: [],
-					Username: 'username',
-				});
+			callback(null, {
+				MFAOptions: [],
+				PreferredMfaSetting: 'NOMFA',
+				UserAttributes: [],
+				UserMFASettingList: [],
+				Username: 'username',
 			});
+		});
 
-		jest
-			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
-			.mockImplementation(() => {
-				return new CognitoUser({
-					Pool: new CognitoUserPool({
-						ClientId: authOptions.userPoolWebClientId,
-						UserPoolId: authOptions.userPoolId,
-					}),
-					Username: 'username',
-				});
+		jest.spyOn(CognitoUserPool.prototype, 'getCurrentUser').mockImplementation(() => {
+			return new CognitoUser({
+				Pool: new CognitoUserPool({
+					ClientId: authOptions.userPoolWebClientId,
+					UserPoolId: authOptions.userPoolId,
+				}),
+				Username: 'username',
 			});
+		});
 
 		const user = await auth.currentUserPoolUser();
 
@@ -265,10 +230,7 @@ describe('Refresh token', () => {
 
 		jest.spyOn(CognitoUser.prototype, 'getSession').mockImplementation(
 			// @ts-ignore
-			(
-				callback: (error: Error, session: CognitoUserSession) => void,
-				options: any
-			) => {
+			(callback: (error: Error, session: CognitoUserSession) => void, options: any) => {
 				const session = new CognitoUserSession({
 					AccessToken: new CognitoAccessToken({
 						AccessToken:
@@ -280,39 +242,33 @@ describe('Refresh token', () => {
 			}
 		);
 
-		jest
-			.spyOn(CognitoUser.prototype, 'getUserData')
-			.mockImplementation((callback, params) => {
-				expect(params.clientMetadata).toEqual(clientMetadata);
+		jest.spyOn(CognitoUser.prototype, 'getUserData').mockImplementation((callback, params) => {
+			expect(params.clientMetadata).toEqual(clientMetadata);
 
-				callback(null, {
-					MFAOptions: [],
-					PreferredMfaSetting: 'NOMFA',
-					UserAttributes: [],
-					UserMFASettingList: [],
-					Username: 'username',
-				});
+			callback(null, {
+				MFAOptions: [],
+				PreferredMfaSetting: 'NOMFA',
+				UserAttributes: [],
+				UserMFASettingList: [],
+				Username: 'username',
 			});
+		});
 
-		jest
-			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
-			.mockImplementation(() => {
-				return new CognitoUser({
-					Pool: new CognitoUserPool({
-						ClientId: authOptions.userPoolWebClientId,
-						UserPoolId: authOptions.userPoolId,
-					}),
-					Username: 'username',
-				});
+		jest.spyOn(CognitoUserPool.prototype, 'getCurrentUser').mockImplementation(() => {
+			return new CognitoUser({
+				Pool: new CognitoUserPool({
+					ClientId: authOptions.userPoolWebClientId,
+					UserPoolId: authOptions.userPoolId,
+				}),
+				Username: 'username',
 			});
+		});
 
 		jest
 			.spyOn(CognitoUser.prototype, 'setUserMfaPreference')
-			.mockImplementation(
-				(smsMfaSettings, softwareTokenMfaSettings, callback) => {
-					callback();
-				}
-			);
+			.mockImplementation((smsMfaSettings, softwareTokenMfaSettings, callback) => {
+				callback();
+			});
 
 		const user = await auth.currentUserPoolUser();
 

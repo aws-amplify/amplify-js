@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { RestClient } from './RestClient';
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	Credentials,
-} from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import { ApiInfo } from './types';
 
 const logger = new Logger('RestAPI');
@@ -48,8 +44,7 @@ export class RestAPIClass {
 		if (opt['aws_project_region']) {
 			if (opt['aws_cloud_logic_custom']) {
 				const custom = opt['aws_cloud_logic_custom'];
-				opt.endpoints =
-					typeof custom === 'string' ? JSON.parse(custom) : custom;
+				opt.endpoints = typeof custom === 'string' ? JSON.parse(custom) : custom;
 			}
 
 			opt = Object.assign({}, opt, {
@@ -61,13 +56,8 @@ export class RestAPIClass {
 		if (Array.isArray(opt.endpoints)) {
 			// Check if endpoints has custom_headers and validate if is a function
 			opt.endpoints.forEach(endpoint => {
-				if (
-					typeof endpoint.custom_header !== 'undefined' &&
-					typeof endpoint.custom_header !== 'function'
-				) {
-					logger.warn(
-						'Rest API ' + endpoint.name + ', custom_header should be a function'
-					);
+				if (typeof endpoint.custom_header !== 'undefined' && typeof endpoint.custom_header !== 'function') {
+					logger.warn('Rest API ' + endpoint.name + ', custom_header should be a function');
 					endpoint.custom_header = undefined;
 				}
 			});

@@ -15,10 +15,7 @@ export interface InteractionsProvider {
 
 	sendMessage(botname: string, message: string | Object): Promise<object>;
 
-	onComplete(
-		botname: string,
-		callback: (err: any, confirmation: InteractionsResponse) => void
-	);
+	onComplete(botname: string, callback: (err: any, confirmation: InteractionsResponse) => void);
 }
 
 export interface InteractionsProviders {

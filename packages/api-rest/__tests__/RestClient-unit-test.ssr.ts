@@ -4,25 +4,14 @@
 
 import { Signer } from '@aws-amplify/core';
 
-jest
-	.spyOn(Signer, 'sign')
-	.mockImplementation(
-		(request: any, access_info: any, service_info?: any) => request
-	);
+jest.spyOn(Signer, 'sign').mockImplementation((request: any, access_info: any, service_info?: any) => request);
 
 jest.mock('axios', () => {
 	return {
 		default: signed_params => {
 			return new Promise((res, rej) => {
-				const withCredentialsSuffix =
-					signed_params && signed_params.withCredentials
-						? '-withCredentials'
-						: '';
-				if (
-					signed_params &&
-					signed_params.headers &&
-					signed_params.headers.reject
-				) {
+				const withCredentialsSuffix = signed_params && signed_params.withCredentials ? '-withCredentials' : '';
+				if (signed_params && signed_params.headers && signed_params.headers.reject) {
 					rej({
 						data: 'error' + withCredentialsSuffix,
 					});

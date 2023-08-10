@@ -54,8 +54,7 @@ export class FacebookOAuth {
 			fb.getLoginStatus(
 				fbResponse => {
 					if (!fbResponse || !fbResponse.authResponse) {
-						const errorMessage =
-							'no response from facebook when refreshing the jwt token';
+						const errorMessage = 'no response from facebook when refreshing the jwt token';
 						logger.debug(errorMessage);
 						// There is no definitive indication for a network error in
 						// fbResponse, so we are treating it as an invalid token.

@@ -61,21 +61,16 @@ describe('kinesis provider test', () => {
 		test('record without credentials', async () => {
 			const analytics = new KinesisProvider();
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.reject('err');
+			});
 
 			expect(await analytics.record('params')).toBe(false);
 		});
 
 		test('record with immediate transmission', async () => {
 			const kinesisProvider = new KinesisProvider();
-			const putRecordCommandSpy = jest.spyOn(
-				PutRecordsCommand.prototype,
-				'constructor'
-			);
+			const putRecordCommandSpy = jest.spyOn(PutRecordsCommand.prototype, 'constructor');
 
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
@@ -112,11 +107,9 @@ describe('kinesis provider test', () => {
 		test('record happy case', async () => {
 			const analytics = new KinesisProvider();
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.resolve(credentials);
-				});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
 
 			await analytics.record({
 				event: {
@@ -157,9 +150,7 @@ describe('kinesis provider test', () => {
 
 			jest.advanceTimersByTime(6000);
 
-			expect(KinesisClient).toHaveBeenCalledWith(
-				expect.objectContaining(config)
-			);
+			expect(KinesisClient).toHaveBeenCalledWith(expect.objectContaining(config));
 		});
 	});
 });

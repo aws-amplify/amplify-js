@@ -18,6 +18,4 @@ export type InteractionsVoiceMessage = {
 	};
 };
 
-export type InteractionsMessage =
-	| InteractionsTextMessage
-	| InteractionsVoiceMessage;
+export type InteractionsMessage = InteractionsTextMessage | InteractionsVoiceMessage;

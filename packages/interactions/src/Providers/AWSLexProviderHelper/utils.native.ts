@@ -32,9 +32,7 @@ export const base64ToArrayBuffer = (base64: string): Uint8Array => {
 	return Uint8Array.from(binaryString, c => c.charCodeAt(0));
 };
 
-export const gzipDecompressToString = async (
-	data: Uint8Array
-): Promise<string> => {
+export const gzipDecompressToString = async (data: Uint8Array): Promise<string> => {
 	return new Promise((resolve, reject) => {
 		try {
 			const result: string = ungzip(data, { to: 'string' });

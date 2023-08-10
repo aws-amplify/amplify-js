@@ -8,11 +8,7 @@ import CognitoIdToken from '../src/CognitoIdToken';
 import CognitoAccessToken from '../src/CognitoAccessToken';
 import CognitoRefreshToken from '../src/CognitoRefreshToken';
 
-import {
-	callback,
-	authHelperMock,
-	netRequestMockSuccess,
-} from '../__mocks__/mocks';
+import { callback, authHelperMock, netRequestMockSuccess } from '../__mocks__/mocks';
 
 import {
 	clientId,
@@ -78,8 +74,7 @@ describe('CognitoUser constructor', () => {
 
 describe('getters and setters', () => {
 	const user = new CognitoUser({ ...userDefaults });
-	const refreshTokenKey =
-		'CognitoIdentityServiceProvider.3pu8tnp684l4lmlfoth25ojmd2.username.refreshToken';
+	const refreshTokenKey = 'CognitoIdentityServiceProvider.3pu8tnp684l4lmlfoth25ojmd2.username.refreshToken';
 
 	describe('setSignInUserSession()', () => {
 		const cacheSpy = jest.spyOn(CognitoUser.prototype, 'clearCachedUserData');
@@ -96,9 +91,7 @@ describe('getters and setters', () => {
 
 			// post-condition
 			expect(user.getSignInUserSession()).toEqual(vCognitoUserSession);
-			expect(user.storage.getItem(refreshTokenKey)).toEqual(
-				vRefreshToken.token
-			);
+			expect(user.storage.getItem(refreshTokenKey)).toEqual(vRefreshToken.token);
 		});
 
 		test('checking that tokens are cleared properly', () => {
@@ -110,9 +103,7 @@ describe('getters and setters', () => {
 
 			// post-condition
 			expect(user.getSignInUserSession()).toEqual(ivCognitoUserSession);
-			expect(user.storage.getItem(refreshTokenKey)).toEqual(
-				ivRefreshToken.token
-			);
+			expect(user.storage.getItem(refreshTokenKey)).toEqual(ivRefreshToken.token);
 		});
 	});
 
@@ -248,9 +239,7 @@ describe('authenticateUserDefaultAuth()', () => {
 	});
 
 	test('errOnAValue fails gracefully', () => {
-		jest
-			.spyOn(AuthenticationHelper.prototype, 'getLargeAValue')
-			.mockImplementation(cb => cb('test error', 12345));
+		jest.spyOn(AuthenticationHelper.prototype, 'getLargeAValue').mockImplementation(cb => cb('test error', 12345));
 
 		user.authenticateUserDefaultAuth(authDetails, callback);
 
@@ -280,9 +269,7 @@ describe('authenticateUserPlainUsernamePassword()', () => {
 
 		user.authenticateUserPlainUsernamePassword(authDetails, callback);
 
-		expect(callback.onFailure).toBeCalledWith(
-			new Error('PASSWORD parameter is required')
-		);
+		expect(callback.onFailure).toBeCalledWith(new Error('PASSWORD parameter is required'));
 	});
 
 	test('Client request fails gracefully', () => {
@@ -307,12 +294,7 @@ describe('authenticateUserPlainUsernamePassword()', () => {
 		user.authenticateUserPlainUsernamePassword(authDetails, callback);
 
 		expect(userSpy).toBeCalled();
-		expect(userSpy3).toBeCalledWith(
-			'test auth result',
-			userSpy3.mock.calls[0][1],
-			callback,
-			undefined
-		);
+		expect(userSpy3).toBeCalledWith('test auth result', userSpy3.mock.calls[0][1], callback, undefined);
 		expect(userSpy3.mock.results[0].value).toBe('test return value');
 	});
 });
@@ -348,36 +330,27 @@ describe('authenticateUserInternal()', () => {
 		['MFA_SETUP', callback.mfaSetup],
 		['SOFTWARE_TOKEN_MFA', callback.totpRequired],
 		['CUSTOM_CHALLENGE', callback.customChallenge],
-	])(
-		'%s challenge sets user session and calls the corresponding cb',
-		(challengeName, cbMethod) => {
-			Object.assign(authData, { ChallengeName: challengeName });
-			user.authenticateUserInternal(authData, authHelper, callback);
+	])('%s challenge sets user session and calls the corresponding cb', (challengeName, cbMethod) => {
+		Object.assign(authData, { ChallengeName: challengeName });
+		user.authenticateUserInternal(authData, authHelper, callback);
 
-			expect(user.Session).toMatchObject(vCognitoUserSession);
+		expect(user.Session).toMatchObject(vCognitoUserSession);
 
-			if (challengeName === 'CUSTOM_CHALLENGE') {
-				// this cb signature only expects one arg
-				expect(cbMethod).toHaveBeenCalledWith(authData.ChallengeParameters);
-			} else {
-				// the rest expect two args
-				expect(cbMethod).toHaveBeenCalledWith(
-					challengeName,
-					authData.ChallengeParameters
-				);
-			}
+		if (challengeName === 'CUSTOM_CHALLENGE') {
+			// this cb signature only expects one arg
+			expect(cbMethod).toHaveBeenCalledWith(authData.ChallengeParameters);
+		} else {
+			// the rest expect two args
+			expect(cbMethod).toHaveBeenCalledWith(challengeName, authData.ChallengeParameters);
 		}
-	);
+	});
 
 	test('user and required attributes get parsed and call newPasswordRequired', () => {
 		Object.assign(authData, { ChallengeName: 'NEW_PASSWORD_REQUIRED' });
 
 		expect(user.Session).toMatchObject(vCognitoUserSession);
 
-		const spyon = jest.spyOn(
-			authHelper,
-			'getNewPasswordRequiredChallengeUserAttributePrefix'
-		);
+		const spyon = jest.spyOn(authHelper, 'getNewPasswordRequiredChallengeUserAttributePrefix');
 		user.authenticateUserInternal(authData, authHelper, callback);
 		expect(spyon).toHaveBeenCalledTimes(1);
 		expect(callback.newPasswordRequired).toHaveBeenCalledTimes(1);
@@ -385,9 +358,7 @@ describe('authenticateUserInternal()', () => {
 	});
 
 	test('DEVICE_SRP_AUTH calls getDeviceResponse and sends session', () => {
-		const clientSpy = jest
-			.spyOn(Client.prototype, 'request')
-			.mockImplementation((...args) => {});
+		const clientSpy = jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {});
 		const authDataGetDeviceResponse = {
 			...authData,
 			ChallengeName: 'DEVICE_SRP_AUTH',
@@ -395,11 +366,7 @@ describe('authenticateUserInternal()', () => {
 		};
 		const spyon = jest.spyOn(user, 'getDeviceResponse');
 
-		user.authenticateUserInternal(
-			authDataGetDeviceResponse,
-			authHelper,
-			callback
-		);
+		user.authenticateUserInternal(authDataGetDeviceResponse, authHelper, callback);
 		expect(clientSpy.mock.calls[0][1]).toMatchObject({ Session: 'abcd' });
 		expect(spyon).toHaveBeenCalledTimes(1);
 	});
@@ -421,9 +388,7 @@ describe('authenticateUserInternal()', () => {
 		expect(spyon).toHaveBeenCalledWith(authData.AuthenticationResult);
 		expect(spyon2).toBeCalledTimes(1);
 
-		const signInUserSession = user.getCognitoUserSession(
-			authData.AuthenticationResult
-		);
+		const signInUserSession = user.getCognitoUserSession(authData.AuthenticationResult);
 		expect(callback.onSuccess).toBeCalledWith(signInUserSession);
 	});
 
@@ -445,18 +410,9 @@ describe('authenticateUserInternal()', () => {
 	});
 
 	test('AuthHelper generateHashDevice with no error calls auth methods', () => {
-		const randomPasswordSpy = jest.spyOn(
-			AuthenticationHelper.prototype,
-			'getRandomPassword'
-		);
-		const getVerifierDevicesSpy = jest.spyOn(
-			AuthenticationHelper.prototype,
-			'getVerifierDevices'
-		);
-		const hashDeviceSpy = jest.spyOn(
-			AuthenticationHelper.prototype,
-			'generateHashDevice'
-		);
+		const randomPasswordSpy = jest.spyOn(AuthenticationHelper.prototype, 'getRandomPassword');
+		const getVerifierDevicesSpy = jest.spyOn(AuthenticationHelper.prototype, 'getVerifierDevices');
+		const hashDeviceSpy = jest.spyOn(AuthenticationHelper.prototype, 'generateHashDevice');
 
 		user.authenticateUserInternal(authData, authHelper, callback);
 
@@ -512,18 +468,10 @@ describe('completeNewPasswordChallenge()', () => {
 	});
 
 	test('completeNewPasswordChallenge calls expected helper methods', () => {
-		const spyon = jest.spyOn(
-			AuthenticationHelper.prototype,
-			'getNewPasswordRequiredChallengeUserAttributePrefix'
-		);
+		const spyon = jest.spyOn(AuthenticationHelper.prototype, 'getNewPasswordRequiredChallengeUserAttributePrefix');
 		const spyon2 = jest.spyOn(user, 'getUserContextData');
 
-		user.completeNewPasswordChallenge(
-			'NEWp@ssw0rd',
-			requiredAttributeData,
-			callback,
-			clientMetadata
-		);
+		user.completeNewPasswordChallenge('NEWp@ssw0rd', requiredAttributeData, callback, clientMetadata);
 
 		expect(spyon).toBeCalledTimes(1);
 		expect(spyon2).toHaveBeenCalled();
@@ -532,36 +480,22 @@ describe('completeNewPasswordChallenge()', () => {
 	test('Client request fails gracefully', () => {
 		const err = new Error('Respond to auth challenge error.');
 
-		jest
-			.spyOn(Client.prototype, 'request')
-			.mockImplementationOnce((...args) => {
-				args[2](err, {});
-			});
+		jest.spyOn(Client.prototype, 'request').mockImplementationOnce((...args) => {
+			args[2](err, {});
+		});
 
-		user.completeNewPasswordChallenge(
-			'NEWp@ssw0rd',
-			requiredAttributeData,
-			callback,
-			clientMetadata
-		);
+		user.completeNewPasswordChallenge('NEWp@ssw0rd', requiredAttributeData, callback, clientMetadata);
 
 		expect(callback.onFailure).toBeCalledWith(err);
 	});
 
 	test('Client request happy path', () => {
-		jest
-			.spyOn(Client.prototype, 'request')
-			.mockImplementationOnce((...args) => {
-				args[2](null, vCognitoUserSession);
-			});
+		jest.spyOn(Client.prototype, 'request').mockImplementationOnce((...args) => {
+			args[2](null, vCognitoUserSession);
+		});
 		const spyon2 = jest.spyOn(user, 'authenticateUserInternal');
 
-		user.completeNewPasswordChallenge(
-			'NEWp@ssw0rd',
-			requiredAttributeData,
-			callback,
-			clientMetadata
-		);
+		user.completeNewPasswordChallenge('NEWp@ssw0rd', requiredAttributeData, callback, clientMetadata);
 		expect(spyon2).toBeCalledTimes(1);
 	});
 });
@@ -581,18 +515,14 @@ describe('getDeviceResponse()', () => {
 
 	test('incorrect value for getLargeAValue fails gracefully', () => {
 		const err = new Error('Cannot get large A value for some reason.');
-		jest
-			.spyOn(AuthenticationHelper.prototype, 'getLargeAValue')
-			.mockImplementation(cb => cb(err, 12345));
+		jest.spyOn(AuthenticationHelper.prototype, 'getLargeAValue').mockImplementation(cb => cb(err, 12345));
 
 		user.getDeviceResponse(callback, {});
 		expect(callback.onFailure).toBeCalledWith(err);
 	});
 
 	test('Auth helper getLargeAValue happy path', () => {
-		jest
-			.spyOn(AuthenticationHelper.prototype, 'getLargeAValue')
-			.mockImplementation(cb => cb(null, 12345));
+		jest.spyOn(AuthenticationHelper.prototype, 'getLargeAValue').mockImplementation(cb => cb(null, 12345));
 		const spyon2 = jest.spyOn(user, 'getUserContextData');
 
 		user.getDeviceResponse(callback, {});
@@ -625,11 +555,9 @@ describe('getDeviceResponse()', () => {
 			user.deviceGroupKey = 'abc123';
 			user.deviceKey = '123abc';
 
-			clientRequestSpy = jest
-				.spyOn(Client.prototype, 'request')
-				.mockImplementation((...args) => {
-					args[2](null, defaultConfig);
-				});
+			clientRequestSpy = jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](null, defaultConfig);
+			});
 		});
 
 		afterEach(() => {
@@ -638,22 +566,18 @@ describe('getDeviceResponse()', () => {
 
 		test('Client request RespondToAuthChallenge - getPasswordAuthenticationKey cb fails gracefully', () => {
 			const err = new Error('errHkdf Error');
-			jest
-				.spyOn(AuthenticationHelper.prototype, 'getPasswordAuthenticationKey')
-				.mockImplementation((...args) => {
-					args[4](err, null);
-				});
+			jest.spyOn(AuthenticationHelper.prototype, 'getPasswordAuthenticationKey').mockImplementation((...args) => {
+				args[4](err, null);
+			});
 
 			user.getDeviceResponse(callback, {});
 			expect(callback.onFailure).toBeCalledWith(err);
 		});
 
 		test('Client request RespondToAuthChallenge - getPasswordAuthenticationKey CryptoJS code runs smoothly', () => {
-			jest
-				.spyOn(AuthenticationHelper.prototype, 'getPasswordAuthenticationKey')
-				.mockImplementation((...args) => {
-					args[4](null, 'hkdf value');
-				});
+			jest.spyOn(AuthenticationHelper.prototype, 'getPasswordAuthenticationKey').mockImplementation((...args) => {
+				args[4](null, 'hkdf value');
+			});
 
 			const spyon2 = jest.spyOn(user, 'getUserContextData');
 			user.getDeviceResponse(callback, {});
@@ -693,12 +617,7 @@ describe('confirmRegistration()', () => {
 		netRequestMockSuccess(false);
 
 		const spyon2 = jest.spyOn(user, 'getUserContextData');
-		user.confirmRegistration(
-			confirmationCode,
-			forceAliasCreation,
-			callback,
-			clientMetadata
-		);
+		user.confirmRegistration(confirmationCode, forceAliasCreation, callback, clientMetadata);
 
 		expect(spyon2).toBeCalled();
 		expect(callback).toBeCalledWith(networkError, null);
@@ -710,12 +629,7 @@ describe('confirmRegistration()', () => {
 		});
 
 		const spyon2 = jest.spyOn(user, 'getUserContextData');
-		user.confirmRegistration(
-			confirmationCode,
-			forceAliasCreation,
-			callback,
-			clientMetadata
-		);
+		user.confirmRegistration(confirmationCode, forceAliasCreation, callback, clientMetadata);
 
 		expect(spyon2).toBeCalled();
 		expect(callback).toBeCalledWith(null, 'SUCCESS');
@@ -753,12 +667,7 @@ describe('sendCustomChallengeAnswer()', () => {
 		user.sendCustomChallengeAnswer(answerChallenge, callback, clientMetadata);
 
 		expect(spyon2).toBeCalledTimes(1);
-		expect(spyon3).toBeCalledWith(
-			vCognitoUserSession,
-			expect.any(AuthenticationHelper),
-			callback,
-			undefined
-		);
+		expect(spyon3).toBeCalledWith(vCognitoUserSession, expect.any(AuthenticationHelper), callback, undefined);
 	});
 
 	test('send custom challenge fails gracefully', () => {
@@ -983,9 +892,7 @@ describe('setDeviceStatus[remembered,notRemembered]()', () => {
 
 	test('Client request does not work and method returns undefined', () => {
 		cognitoUser.setSignInUserSession(vCognitoUserSession);
-		expect(cognitoUser.setDeviceStatusNotRemembered(callback)).toEqual(
-			undefined
-		);
+		expect(cognitoUser.setDeviceStatusNotRemembered(callback)).toEqual(undefined);
 	});
 
 	test('Happy path for setDeviceStatusRemembered should callback with onSuccess ', () => {
@@ -1041,9 +948,7 @@ describe('forgetDevices()', () => {
 	});
 
 	test('Returns undefined when client request does not work properly', () => {
-		expect(cognitoUser.forgetSpecificDevice('deviceKey', callback)).toEqual(
-			undefined
-		);
+		expect(cognitoUser.forgetSpecificDevice('deviceKey', callback)).toEqual(undefined);
 	});
 	test('forgetSpecificDevice happy path should callback onSuccess', () => {
 		netRequestMockSuccess(true);
@@ -1119,9 +1024,7 @@ describe('verifyAttribute(), getAttributeVerificationCode', () => {
 	});
 
 	test('No client request method implementations, return undefined', () => {
-		expect(cognitoUser.verifyAttribute(...verifyAttributeDefaults)).toEqual(
-			undefined
-		);
+		expect(cognitoUser.verifyAttribute(...verifyAttributeDefaults)).toEqual(undefined);
 	});
 
 	const getAttrsVerifCodeDefaults = ['username', callback, {}];
@@ -1162,12 +1065,7 @@ describe('verifyAttribute(), getAttributeVerificationCode', () => {
 describe('confirmPassword() and forgotPassword()', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 	cognitoUser.setSignInUserSession(vCognitoUserSession);
-	const confirmPasswordDefaults = [
-		'confirmCode',
-		'newSecurePassword',
-		callback,
-		{},
-	];
+	const confirmPasswordDefaults = ['confirmCode', 'newSecurePassword', callback, {}];
 	const forgotPasswordDefaults = [callback, {}];
 
 	afterAll(() => {
@@ -1262,24 +1160,20 @@ describe('MFA test suite', () => {
 
 	test('when generateHashDevice fails, sendMFACode should call onFailure', () => {
 		netRequestMockSuccess(true, payload);
-		jest
-			.spyOn(AuthenticationHelper.prototype, 'generateHashDevice')
-			.mockImplementationOnce((...args) => {
-				args[2](new Error('Network Error'), null);
-			});
+		jest.spyOn(AuthenticationHelper.prototype, 'generateHashDevice').mockImplementationOnce((...args) => {
+			args[2](new Error('Network Error'), null);
+		});
 		cognitoUser.sendMFACode(...sendMfaDefaults);
 		expect(callback.onFailure.mock.calls.length).toEqual(1);
 	});
 
 	test('when AuthenticationResult.NewDeviceMetadata == null, callback onSuccess', () => {
-		jest
-			.spyOn(Client.prototype, 'request')
-			.mockImplementationOnce((...args) => {
-				args[2](null, {
-					ChallengeName: 'SMS_MFA',
-					AuthenticationResult: { NewDeviceMetadata: null },
-				});
+		jest.spyOn(Client.prototype, 'request').mockImplementationOnce((...args) => {
+			args[2](null, {
+				ChallengeName: 'SMS_MFA',
+				AuthenticationResult: { NewDeviceMetadata: null },
 			});
+		});
 
 		cognitoUser.sendMFACode(...sendMfaDefaults);
 		expect(callback.onSuccess.mock.calls.length).toEqual(1);
@@ -1328,9 +1222,7 @@ describe('enableMFA()', () => {
 	test('enableMFA should callback with an error when userSession is invalid', () => {
 		cognitoUser.setSignInUserSession(ivCognitoUserSession);
 		cognitoUser.enableMFA(callback);
-		expect(callback.mock.calls[0][0]).toMatchObject(
-			Error('User is not authenticated')
-		);
+		expect(callback.mock.calls[0][0]).toMatchObject(Error('User is not authenticated'));
 	});
 });
 
@@ -1339,11 +1231,7 @@ describe('setUserMfaPreference', () => {
 	cognitoUser.setSignInUserSession(vCognitoUserSession);
 	const callback = jest.fn();
 
-	const setUserMfaPreferenceDefaults = [
-		'smsMFASetting',
-		'swTokenMFASetting',
-		callback,
-	];
+	const setUserMfaPreferenceDefaults = ['smsMFASetting', 'swTokenMFASetting', callback];
 
 	afterAll(() => {
 		jest.restoreAllMocks();
@@ -1364,17 +1252,13 @@ describe('setUserMfaPreference', () => {
 	});
 
 	test('happy path for setUserMfaPreferences should callback(null,SUCCESS)', () => {
-		expect(
-			cognitoUser.setUserMfaPreference(...setUserMfaPreferenceDefaults)
-		).toEqual(undefined);
+		expect(cognitoUser.setUserMfaPreference(...setUserMfaPreferenceDefaults)).toEqual(undefined);
 	});
 
 	test('should callback error when cognito user session is invalid', () => {
 		cognitoUser.setSignInUserSession(ivCognitoUserSession);
 		cognitoUser.setUserMfaPreference(...setUserMfaPreferenceDefaults);
-		expect(callback.mock.calls[0][0]).toMatchObject(
-			new Error('User is not authenticated')
-		);
+		expect(callback.mock.calls[0][0]).toMatchObject(new Error('User is not authenticated'));
 	});
 });
 
@@ -1409,9 +1293,7 @@ describe('disableMFA()', () => {
 	test('when user is invalid, return callback with error', () => {
 		cognitoUser.setSignInUserSession(ivCognitoUserSession);
 		cognitoUser.disableMFA(callback);
-		expect(callback.mock.calls[0][0]).toMatchObject(
-			new Error('User is not authenticated')
-		);
+		expect(callback.mock.calls[0][0]).toMatchObject(new Error('User is not authenticated'));
 	});
 });
 
@@ -1442,9 +1324,7 @@ describe('getMFAOptions()', () => {
 	test('when user is invalid, return callback with error', () => {
 		cognitoUser.setSignInUserSession(ivCognitoUserSession);
 		cognitoUser.getMFAOptions(callback);
-		expect(callback.mock.calls[0][0]).toMatchObject(
-			new Error('User is not authenticated')
-		);
+		expect(callback.mock.calls[0][0]).toMatchObject(new Error('User is not authenticated'));
 	});
 });
 
@@ -1476,9 +1356,7 @@ describe('deleteUser()', () => {
 	test('having an invalid user session should callback with a new error', () => {
 		cognitoUser.setSignInUserSession(ivCognitoUserSession);
 		cognitoUser.deleteUser(callback, {});
-		expect(callback.mock.calls[0][0]).toMatchObject(
-			new Error('User is not authenticated')
-		);
+		expect(callback.mock.calls[0][0]).toMatchObject(new Error('User is not authenticated'));
 	});
 });
 
@@ -1501,9 +1379,7 @@ describe('getUserAttributes()', () => {
 		};
 		netRequestMockSuccess(true, userAttributesObject);
 		cognitoUser.getUserAttributes(callback);
-		expect(callback.mock.calls[0][1]).toMatchObject(
-			userAttributesObject.UserAttributes
-		);
+		expect(callback.mock.calls[0][1]).toMatchObject(userAttributesObject.UserAttributes);
 	});
 
 	test('client request throws an error', () => {
@@ -1515,9 +1391,7 @@ describe('getUserAttributes()', () => {
 	test('having an invalid user session should callback with a new error', () => {
 		cognitoUser.setSignInUserSession(ivCognitoUserSession);
 		cognitoUser.getUserAttributes(callback);
-		expect(callback.mock.calls[0][0]).toMatchObject(
-			new Error('User is not authenticated')
-		);
+		expect(callback.mock.calls[0][0]).toMatchObject(new Error('User is not authenticated'));
 	});
 });
 
@@ -1537,9 +1411,7 @@ describe('deleteAttributes()', () => {
 	test('happy path for deleteAttrbutes should call getUserData to update cache', () => {
 		netRequestMockSuccess(true);
 
-		const getUserDataSpy = jest
-			.spyOn(cognitoUser, 'getUserData')
-			.mockImplementationOnce(cb => cb());
+		const getUserDataSpy = jest.spyOn(cognitoUser, 'getUserData').mockImplementationOnce(cb => cb());
 
 		cognitoUser.deleteAttributes([], callback);
 		expect(getUserDataSpy).toBeCalled();
@@ -1555,9 +1427,7 @@ describe('deleteAttributes()', () => {
 	test('having an invalid user session should callback with a new error', () => {
 		cognitoUser.setSignInUserSession(ivCognitoUserSession);
 		cognitoUser.deleteAttributes([], callback);
-		expect(callback.mock.calls[0][0]).toMatchObject(
-			new Error('User is not authenticated')
-		);
+		expect(callback.mock.calls[0][0]).toMatchObject(new Error('User is not authenticated'));
 	});
 });
 
@@ -1573,9 +1443,7 @@ describe('getCognitoUserSession()', () => {
 		RefreshToken: refreshToken,
 	};
 	test('happy path should return a new CognitoUserSession', () => {
-		expect(cognitoUser.getCognitoUserSession({ sessionData })).toMatchObject(
-			new CognitoUserSession(sessionData)
-		);
+		expect(cognitoUser.getCognitoUserSession({ sessionData })).toMatchObject(new CognitoUserSession(sessionData));
 	});
 });
 
@@ -1584,9 +1452,7 @@ describe('refreshSession()', () => {
 	const callback = jest.fn();
 	const refreshSessionDefaults = [new CognitoRefreshToken(), callback, {}];
 
-	const keyPrefix = `CognitoIdentityServiceProvider.${cognitoUser.pool.getClientId()}.${
-		cognitoUser.username
-	}`;
+	const keyPrefix = `CognitoIdentityServiceProvider.${cognitoUser.pool.getClientId()}.${cognitoUser.username}`;
 
 	const idTokenKey = `${keyPrefix}.idToken`;
 	const accessTokenKey = `${keyPrefix}.accessToken`;
@@ -1615,9 +1481,7 @@ describe('refreshSession()', () => {
 			AuthenticationResult: { RefreshToken: null },
 		});
 		cognitoUser.refreshSession(...refreshSessionDefaults);
-		expect(callback.mock.calls[0][1]).toMatchObject(
-			new CognitoUserSession(sessionData)
-		);
+		expect(callback.mock.calls[0][1]).toMatchObject(new CognitoUserSession(sessionData));
 	});
 	test('client throws an error ', () => {
 		netRequestMockSuccess(false);
@@ -1627,22 +1491,10 @@ describe('refreshSession()', () => {
 
 	test('getSession()', () => {
 		cognitoUser.setSignInUserSession(ivCognitoUserSession);
-		cognitoUser.storage.setItem(
-			idTokenKey,
-			vCognitoUserSession.getIdToken().getJwtToken()
-		);
-		cognitoUser.storage.setItem(
-			accessTokenKey,
-			vCognitoUserSession.getAccessToken().getJwtToken()
-		);
-		cognitoUser.storage.setItem(
-			refreshTokenKey,
-			vCognitoUserSession.getRefreshToken().getToken()
-		);
-		cognitoUser.storage.setItem(
-			clockDriftKey,
-			vCognitoUserSession.getClockDrift()
-		);
+		cognitoUser.storage.setItem(idTokenKey, vCognitoUserSession.getIdToken().getJwtToken());
+		cognitoUser.storage.setItem(accessTokenKey, vCognitoUserSession.getAccessToken().getJwtToken());
+		cognitoUser.storage.setItem(refreshTokenKey, vCognitoUserSession.getRefreshToken().getToken());
+		cognitoUser.storage.setItem(clockDriftKey, vCognitoUserSession.getClockDrift());
 		cognitoUser.getSession(callback);
 		expect(callback.mock.calls[0][0]).toEqual(null);
 	});
@@ -1650,17 +1502,13 @@ describe('refreshSession()', () => {
 	test('when a valid userSession exists, return callback(null, signInUserSession) from instance vars', () => {
 		cognitoUser.setSignInUserSession(vCognitoUserSession);
 		cognitoUser.getSession(callback);
-		expect(callback.mock.calls[0][1]).toMatchObject(
-			cognitoUser.signInUserSession
-		);
+		expect(callback.mock.calls[0][1]).toMatchObject(cognitoUser.signInUserSession);
 	});
 
 	test('when a username is null, callback with an error', () => {
 		cognitoUser.username = null;
 		cognitoUser.getSession(callback);
-		expect(callback.mock.calls[0][0]).toMatchObject(
-			new Error('Username is null. Cannot retrieve a new session')
-		);
+		expect(callback.mock.calls[0][0]).toMatchObject(new Error('Username is null. Cannot retrieve a new session'));
 	});
 
 	test('update attributes usage of three out of three parameters in callback', () => {
@@ -1673,11 +1521,9 @@ describe('refreshSession()', () => {
 				},
 			],
 		};
-		const spyon = jest
-			.spyOn(CognitoUser.prototype, 'updateAttributes')
-			.mockImplementationOnce((attrs, callback) => {
-				callback(null, 'SUCCESS', codeDeliverDetailsResult);
-			});
+		const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes').mockImplementationOnce((attrs, callback) => {
+			callback(null, 'SUCCESS', codeDeliverDetailsResult);
+		});
 		const attrs = [
 			{
 				Name: 'email',

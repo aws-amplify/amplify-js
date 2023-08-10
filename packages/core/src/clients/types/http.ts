@@ -36,8 +36,4 @@ export interface HttpTransferOptions {
 	abortSignal?: AbortSignal;
 }
 
-export type HttpTransferHandler = TransferHandler<
-	HttpRequest,
-	HttpResponse,
-	HttpTransferOptions
->;
+export type HttpTransferHandler = TransferHandler<HttpRequest, HttpResponse, HttpTransferOptions>;

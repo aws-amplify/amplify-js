@@ -4,9 +4,7 @@
 import { Md5 } from '@aws-sdk/md5-js';
 import { toBase64 } from '../AwsClients/S3/utils';
 
-export const calculateContentMd5 = async (
-	content: Blob | string
-): Promise<string> => {
+export const calculateContentMd5 = async (content: Blob | string): Promise<string> => {
 	const hasher = new Md5();
 	if (typeof content === 'string') {
 		hasher.update(content);

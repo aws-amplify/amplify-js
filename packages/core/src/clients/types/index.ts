@@ -1,14 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export {
-	Middleware,
-	MiddlewareHandler,
-	Request,
-	Response,
-	TransferHandler,
-	Endpoint,
-} from './core';
+export { Middleware, MiddlewareHandler, Request, Response, TransferHandler, Endpoint } from './core';
 export {
 	Headers,
 	HttpRequest,
@@ -17,9 +10,4 @@ export {
 	HttpTransferOptions,
 	ResponseBodyMixin,
 } from './http';
-export {
-	Credentials,
-	EndpointResolverOptions,
-	ErrorParser,
-	ServiceClientOptions,
-} from './aws';
+export { Credentials, EndpointResolverOptions, ErrorParser, ServiceClientOptions } from './aws';

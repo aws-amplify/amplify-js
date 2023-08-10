@@ -9,14 +9,10 @@ export const parseMetadata = (response: HttpResponse): ResponseMetadata => {
 	return {
 		...(isMetadataBearer(response) ? response.$metadata : {}),
 		httpStatusCode: statusCode,
-		requestId:
-			headers['x-amzn-requestid'] ??
-			headers['x-amzn-request-id'] ??
-			headers['x-amz-request-id'],
+		requestId: headers['x-amzn-requestid'] ?? headers['x-amzn-request-id'] ?? headers['x-amz-request-id'],
 		extendedRequestId: headers['x-amz-id-2'],
 		cfId: headers['x-amz-cf-id'],
 	};
 };
 
-const isMetadataBearer = (response: unknown): response is MetadataBearer =>
-	typeof response?.['$metadata'] === 'object';
+const isMetadataBearer = (response: unknown): response is MetadataBearer => typeof response?.['$metadata'] === 'object';

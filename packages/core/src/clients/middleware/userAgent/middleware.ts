@@ -15,15 +15,8 @@ export interface UserAgentOptions {
  *
  * TODO: incorporate new user agent design
  */
-export const userAgentMiddleware: Middleware<
-	HttpRequest,
-	HttpResponse,
-	UserAgentOptions
-> =
-	({
-		userAgentHeader = 'x-amz-user-agent',
-		userAgentValue = '',
-	}: UserAgentOptions) =>
+export const userAgentMiddleware: Middleware<HttpRequest, HttpResponse, UserAgentOptions> =
+	({ userAgentHeader = 'x-amz-user-agent', userAgentValue = '' }: UserAgentOptions) =>
 	next => {
 		return async function userAgentMiddleware(request) {
 			if (userAgentValue.trim().length === 0) {

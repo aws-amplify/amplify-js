@@ -146,11 +146,10 @@ type ActionMap = {
 	[Category.Storage]: StorageAction;
 };
 
-type UserAgentDetailsWithCategory<T extends Category> =
-	CustomUserAgentDetailsBase & {
-		category: T;
-		action: T extends keyof ActionMap ? ActionMap[T] : never;
-	};
+type UserAgentDetailsWithCategory<T extends Category> = CustomUserAgentDetailsBase & {
+	category: T;
+	action: T extends keyof ActionMap ? ActionMap[T] : never;
+};
 
 type CustomUserAgentDetailsBase = {
 	framework?: Framework;

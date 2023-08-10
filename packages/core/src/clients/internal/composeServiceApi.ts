@@ -11,23 +11,13 @@ export const composeServiceApi = <
 	Output,
 	DefaultConfig extends Partial<TransferHandlerOptions & ServiceClientOptions>,
 >(
-	transferHandler: TransferHandler<
-		HttpRequest,
-		HttpResponse,
-		TransferHandlerOptions
-	>,
-	serializer: (
-		input: Input,
-		endpoint: Endpoint
-	) => Promise<HttpRequest> | HttpRequest,
+	transferHandler: TransferHandler<HttpRequest, HttpResponse, TransferHandlerOptions>,
+	serializer: (input: Input, endpoint: Endpoint) => Promise<HttpRequest> | HttpRequest,
 	deserializer: (output: HttpResponse) => Promise<Output>,
 	defaultConfig: DefaultConfig
 ) => {
 	return async (
-		config: OptionalizeKey<
-			TransferHandlerOptions & ServiceClientOptions & DefaultConfig,
-			keyof DefaultConfig
-		>,
+		config: OptionalizeKey<TransferHandlerOptions & ServiceClientOptions & DefaultConfig, keyof DefaultConfig>,
 		input: Input
 	) => {
 		const resolvedConfig = {
@@ -36,10 +26,7 @@ export const composeServiceApi = <
 		} as unknown as TransferHandlerOptions & ServiceClientOptions;
 		// We may want to allow different endpoints from given config(other than region) and input.
 		// Currently S3 supports additional `useAccelerateEndpoint` option to use accelerate endpoint.
-		const endpoint = await resolvedConfig.endpointResolver(
-			resolvedConfig,
-			input
-		);
+		const endpoint = await resolvedConfig.endpointResolver(resolvedConfig, input);
 		// Unlike AWS SDK clients, a serializer should NOT populate the `host` or `content-length` headers.
 		// Both of these headers are prohibited per Spec(https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name).
 		// They will be populated automatically by browser, or node-fetch polyfill.

@@ -36,9 +36,7 @@ export class MethodEmbed {
 }
 
 function getInstance(context, methodName): MethodEmbed {
-	let instance = lists.filter(
-		h => h.context === context && h.methodName === methodName
-	)[0];
+	let instance = lists.filter(h => h.context === context && h.methodName === methodName)[0];
 
 	if (!instance) {
 		instance = new MethodEmbed(context, methodName);

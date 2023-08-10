@@ -1,8 +1,5 @@
 const mockRestPost = jest.fn();
-import {
-	MutationProcessor,
-	safeJitteredBackoff,
-} from '../src/sync/processors/mutation';
+import { MutationProcessor, safeJitteredBackoff } from '../src/sync/processors/mutation';
 import {
 	Model as ModelType,
 	PostCustomPK as PostCustomPKType,
@@ -10,19 +7,10 @@ import {
 	testSchema,
 	internalTestSchema,
 } from './helpers';
-import {
-	PersistentModelConstructor,
-	InternalSchema,
-	OpType,
-} from '../src/types';
+import { PersistentModelConstructor, InternalSchema, OpType } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { MutationEvent } from '../src/sync/';
-import {
-	Category,
-	CustomUserAgentDetails,
-	DataStoreAction,
-	getAmplifyUserAgent,
-} from '@aws-amplify/core';
+import { Category, CustomUserAgentDetails, DataStoreAction, getAmplifyUserAgent } from '@aws-amplify/core';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
@@ -44,18 +32,14 @@ describe('Jittered backoff', () => {
 	it('should progress exponentially until some limit', () => {
 		const COUNT = 13;
 
-		const backoffs = [...Array(COUNT)].map((v, i) =>
-			safeJitteredBackoff(i)
-		) as (number | boolean)[];
+		const backoffs = [...Array(COUNT)].map((v, i) => safeJitteredBackoff(i)) as (number | boolean)[];
 
 		const isExpectedValue = (value, attempt) => {
 			const lowerLimit = 2 ** attempt * 100;
 			const upperLimit = lowerLimit + 100;
 
 			if (lowerLimit < 2 ** 12 * 100) {
-				console.log(
-					`attempt ${attempt} (${value}) should be between ${lowerLimit} and ${upperLimit} inclusively.`
-				);
+				console.log(`attempt ${attempt} (${value}) should be between ${lowerLimit} and ${upperLimit} inclusively.`);
 				return value >= lowerLimit && value <= upperLimit;
 			} else {
 				console.log(`attempt ${attempt} (${value}) should be false.`);
@@ -76,9 +60,10 @@ describe('Jittered backoff', () => {
 		const MAX_DELAY = 5 * 60 * 1000;
 		const COUNT = 1000;
 
-		const backoffs = [...Array(COUNT)].map((v, i) =>
-			safeJitteredBackoff(i, [], new Error('Network Error'))
-		) as (number | boolean)[];
+		const backoffs = [...Array(COUNT)].map((v, i) => safeJitteredBackoff(i, [], new Error('Network Error'))) as (
+			| number
+			| boolean
+		)[];
 
 		backoffs.forEach(v => {
 			expect(v).toBeTruthy();
@@ -103,16 +88,12 @@ describe('MutationProcessor', () => {
 
 			expect(mockRetry.mock.results).toHaveLength(1);
 
-			await expect(mockRetry.mock.results[0].value).rejects.toEqual(
-				new Error('Network Error')
-			);
+			await expect(mockRetry.mock.results[0].value).rejects.toEqual(new Error('Network Error'));
 
 			expect(mutationProcessorSpy).toHaveBeenCalled();
 
 			// MutationProcessor.resume exited successfully, i.e., did not throw
-			await expect(mutationProcessorSpy.mock.results[0].value).resolves.toEqual(
-				undefined
-			);
+			await expect(mutationProcessorSpy.mock.results[0].value).resolves.toEqual(undefined);
 		});
 	});
 	describe('createQueryVariables', () => {
@@ -280,22 +261,17 @@ jest.mock('@aws-amplify/api-rest', () => {
 jest.mock('@aws-amplify/api/internals', () => {
 	const awsconfig = {
 		aws_project_region: 'us-west-2',
-		aws_appsync_graphqlEndpoint:
-			'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
+		aws_appsync_graphqlEndpoint: 'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
 		aws_appsync_region: 'us-west-2',
 		aws_appsync_authenticationType: 'API_KEY',
 		aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 	};
 
-	const { InternalGraphQLAPIClass } = jest.requireActual(
-		'@aws-amplify/api-graphql/internals'
-	);
+	const { InternalGraphQLAPIClass } = jest.requireActual('@aws-amplify/api-graphql/internals');
 	const internalGraphqlInstance = new InternalGraphQLAPIClass(null);
 	internalGraphqlInstance.configure(awsconfig);
 
-	const actualInternalAPIModule = jest.requireActual(
-		'@aws-amplify/api/internals'
-	);
+	const actualInternalAPIModule = jest.requireActual('@aws-amplify/api/internals');
 	const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 
 	return {
@@ -324,9 +300,7 @@ jest.mock('@aws-amplify/core', () => {
 // Mocking just enough dependencies for us to be able to
 // instantiate a working MutationProcessor
 // includes functional mocked outbox containing a single MutationEvent
-async function instantiateMutationProcessor({
-	errorHandler = () => null,
-} = {}) {
+async function instantiateMutationProcessor({ errorHandler = () => null } = {}) {
 	let schema: InternalSchema = internalTestSchema();
 
 	jest.doMock('../src/sync/', () => ({
@@ -384,8 +358,7 @@ async function instantiateMutationProcessor({
 		{} as any,
 		{
 			aws_project_region: 'us-west-2',
-			aws_appsync_graphqlEndpoint:
-				'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
+			aws_appsync_graphqlEndpoint: 'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
 			aws_appsync_region: 'us-west-2',
 			aws_appsync_authenticationType: 'API_KEY',
 			aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
@@ -403,12 +376,9 @@ async function instantiateMutationProcessor({
 
 // Creates MutationEvent instance that can be added to the outbox
 async function createMutationEvent(model, opType): Promise<MutationEvent> {
-	const MutationEventConstructor = syncClasses[
-		'MutationEvent'
-	] as PersistentModelConstructor<MutationEvent>;
+	const MutationEventConstructor = syncClasses['MutationEvent'] as PersistentModelConstructor<MutationEvent>;
 
-	const modelConstructor = (Object.getPrototypeOf(model) as Object)
-		.constructor as PersistentModelConstructor<any>;
+	const modelConstructor = (Object.getPrototypeOf(model) as Object).constructor as PersistentModelConstructor<any>;
 
 	return createMutationInstanceFromModelOperation(
 		undefined!,

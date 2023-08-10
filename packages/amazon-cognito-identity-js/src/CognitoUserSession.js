@@ -20,8 +20,7 @@ export default class CognitoUserSession {
 		this.idToken = IdToken;
 		this.refreshToken = RefreshToken;
 		this.accessToken = AccessToken;
-		this.clockDrift =
-			ClockDrift === undefined ? this.calculateClockDrift() : ClockDrift;
+		this.clockDrift = ClockDrift === undefined ? this.calculateClockDrift() : ClockDrift;
 	}
 
 	/**
@@ -57,10 +56,7 @@ export default class CognitoUserSession {
 	 */
 	calculateClockDrift() {
 		const now = Math.floor(new Date() / 1000);
-		const iat = Math.min(
-			this.accessToken.getIssuedAt(),
-			this.idToken.getIssuedAt()
-		);
+		const iat = Math.min(this.accessToken.getIssuedAt(), this.idToken.getIssuedAt());
 
 		return now - iat;
 	}
@@ -74,9 +70,6 @@ export default class CognitoUserSession {
 		const now = Math.floor(new Date() / 1000);
 		const adjusted = now - this.clockDrift;
 
-		return (
-			adjusted < this.accessToken.getExpiration() &&
-			adjusted < this.idToken.getExpiration()
-		);
+		return adjusted < this.accessToken.getExpiration() && adjusted < this.idToken.getExpiration();
 	}
 }

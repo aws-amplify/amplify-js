@@ -39,15 +39,11 @@ describe('Util', () => {
 
 	describe('StringUtils', () => {
 		test('urlSafeEncode', () => {
-			expect(urlSafeEncode('some/path?to-whatever')).toBe(
-				'736f6d652f706174683f746f2d7768617465766572'
-			);
+			expect(urlSafeEncode('some/path?to-whatever')).toBe('736f6d652f706174683f746f2d7768617465766572');
 		});
 
 		test('urlSafeDecode', () => {
-			expect(urlSafeDecode('736f6d652f706174683f746f2d7768617465766572')).toBe(
-				'some/path?to-whatever'
-			);
+			expect(urlSafeDecode('736f6d652f706174683f746f2d7768617465766572')).toBe('some/path?to-whatever');
 		});
 	});
 
@@ -98,9 +94,7 @@ describe('Util', () => {
 			subscribe({ addEventListener: {} });
 		}
 
-		expect(subscribe).toThrowError(
-			'NetInfo must be passed to networkMonitor to enable reachability in React Native'
-		);
+		expect(subscribe).toThrowError('NetInfo must be passed to networkMonitor to enable reachability in React Native');
 		expect(subscribeWithNetInfo).not.toThrowError();
 	});
 	test('Should not throw an Error when NetInfo is not passed to networkMonitor in Web Reachability', () => {

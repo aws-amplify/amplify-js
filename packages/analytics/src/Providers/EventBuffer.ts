@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AnalyticsAction, ConsoleLogger as Logger } from '@aws-amplify/core';
-import {
-	putEvents,
-	PutEventsInput,
-	PutEventsOutput,
-} from '@aws-amplify/core/internals/aws-clients/pinpoint';
+import { putEvents, PutEventsInput, PutEventsOutput } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import { EventBuffer, EventObject, EventMap } from '../types';
 import { isAppInForeground } from '../utils/AppUtils';
 import { getAnalyticsUserAgentString } from '../utils/UserAgent';
@@ -42,9 +38,7 @@ export default class EventsBuffer {
 		// if the buffer is currently at the configured limit, pushing would exceed it
 		if (this._buffer.length >= this._config.bufferSize) {
 			logger.debug('Exceeded analytics events buffer size');
-			return event.handlers.reject(
-				new Error('Exceeded the size of analytics events buffer')
-			);
+			return event.handlers.reject(new Error('Exceeded the size of analytics events buffer'));
 		}
 
 		const { eventId } = event.params.event;
@@ -165,10 +159,7 @@ export default class EventsBuffer {
 		}
 	}
 
-	private _processPutEventsSuccessResponse(
-		data: PutEventsOutput,
-		eventMap: EventMap
-	) {
+	private _processPutEventsSuccessResponse(data: PutEventsOutput, eventMap: EventMap) {
 		const { Results = {} } = data.EventsResponse ?? {};
 		const retryableEvents: EventObject[] = [];
 
@@ -208,9 +199,7 @@ export default class EventsBuffer {
 
 				const { name } = eventObject.params.event;
 
-				logger.error(
-					`event ${eventId} : ${name} failed with error: ${Message}`
-				);
+				logger.error(`event ${eventId} : ${name} failed with error: ${Message}`);
 				return eventObject.handlers.reject(response);
 			});
 		});
@@ -229,16 +218,12 @@ export default class EventsBuffer {
 			const { eventId, name } = params.event;
 
 			if (params.resendLimit-- > 0) {
-				logger.debug(
-					`resending event ${eventId} : ${name} with ${params.resendLimit} retry attempts remaining`
-				);
+				logger.debug(`resending event ${eventId} : ${name} with ${params.resendLimit} retry attempts remaining`);
 				eligibleEvents.push({ [eventId]: event });
 				return;
 			}
 
-			logger.debug(
-				`no retry attempts remaining for event ${eventId} : ${name}`
-			);
+			logger.debug(`no retry attempts remaining for event ${eventId} : ${name}`);
 		});
 
 		// add the events to the front of the buffer

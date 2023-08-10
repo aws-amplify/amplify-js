@@ -107,15 +107,7 @@ export class AWSS3UploadTask implements UploadTask {
 
 	public state: AWSS3UploadTaskState = AWSS3UploadTaskState.INIT;
 
-	constructor({
-		s3Config,
-		file,
-		emitter,
-		storage,
-		params,
-		level,
-		prefixPromise,
-	}: AWSS3UploadTaskParams) {
+	constructor({ s3Config, file, emitter, storage, params, level, prefixPromise }: AWSS3UploadTaskParams) {
 		this.prefixPromise = prefixPromise;
 		this.s3Config = s3Config;
 		this.storage = storage;
@@ -144,13 +136,7 @@ export class AWSS3UploadTask implements UploadTask {
 		return this.state === AWSS3UploadTaskState.IN_PROGRESS;
 	}
 
-	private async _listSingleFile({
-		key,
-		bucket,
-	}: {
-		key: string;
-		bucket: string;
-	}) {
+	private async _listSingleFile({ key, bucket }: { key: string; bucket: string }) {
 		const objectKeyPrefix = await this.prefixPromise;
 		const { Contents = [] } = await listObjectsV2(this.s3Config, {
 			Bucket: bucket,
@@ -173,13 +159,7 @@ export class AWSS3UploadTask implements UploadTask {
 				this.params.Key,
 			].join('-');
 		} else {
-			return [
-				this.file.size,
-				this.file.type,
-				this.params.Bucket,
-				level,
-				this.params.Key,
-			].join('-');
+			return [this.file.size, this.file.type, this.params.Bucket, level, this.params.Key].join('-');
 		}
 	}
 
@@ -218,15 +198,11 @@ export class AWSS3UploadTask implements UploadTask {
 
 	private _validateParams() {
 		if (this.totalBytes > MAX_OBJECT_SIZE) {
-			throw new Error(
-				`File size bigger than S3 Object limit of 5TB, got ${this.totalBytes} Bytes`
-			);
+			throw new Error(`File size bigger than S3 Object limit of 5TB, got ${this.totalBytes} Bytes`);
 		}
 	}
 
-	private async _listCachedUploadTasks(): Promise<
-		Record<string, FileMetadata>
-	> {
+	private async _listCachedUploadTasks(): Promise<Record<string, FileMetadata>> {
 		await this.storageSync;
 		const tasks = this.storage.getItem(UPLOADS_STORAGE_KEY) || '{}';
 		return JSON.parse(tasks);
@@ -239,10 +215,7 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private async _isCached(): Promise<boolean> {
-		return Object.prototype.hasOwnProperty.call(
-			await this._listCachedUploadTasks(),
-			this.fileId
-		);
+		return Object.prototype.hasOwnProperty.call(await this._listCachedUploadTasks(), this.fileId);
 	}
 
 	private async _removeFromCache(): Promise<void> {
@@ -270,11 +243,8 @@ export class AWSS3UploadTask implements UploadTask {
 			total: this.totalBytes,
 		});
 		// Remove the completed item from the inProgress array
-		this.inProgress = this.inProgress.filter(
-			job => job.uploadPartInput.PartNumber !== partNumber
-		);
-		if (this.queued.length && this.state !== AWSS3UploadTaskState.PAUSED)
-			this._startNextPart();
+		this.inProgress = this.inProgress.filter(job => job.uploadPartInput.PartNumber !== partNumber);
+		if (this.queued.length && this.state !== AWSS3UploadTaskState.PAUSED) this._startNextPart();
 		if (this._isDone()) this._completeUpload();
 	}
 
@@ -301,10 +271,7 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 	}
 
-	private async _makeUploadPartRequest(
-		input: UploadPartInput,
-		abortSignal: AbortSignal
-	) {
+	private async _makeUploadPartRequest(input: UploadPartInput, abortSignal: AbortSignal) {
 		try {
 			const res = await uploadPart(
 				{
@@ -344,10 +311,7 @@ export class AWSS3UploadTask implements UploadTask {
 			const nextPart = this.queued.shift();
 			this.inProgress.push({
 				uploadPartInput: nextPart,
-				s3Request: this._makeUploadPartRequest(
-					nextPart,
-					abortController.signal
-				),
+				s3Request: this._makeUploadPartRequest(nextPart, abortController.signal),
 				abortController,
 			});
 		}
@@ -375,18 +339,12 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 
 		if (!valid) {
-			throw new Error(
-				'File size does not match between local file and file on s3'
-			);
+			throw new Error('File size does not match between local file and file on s3');
 		}
 	}
 
 	private _isDone() {
-		return (
-			!this.queued.length &&
-			!this.inProgress.length &&
-			this.bytesUploaded === this.totalBytes
-		);
+		return !this.queued.length && !this.inProgress.length && this.bytesUploaded === this.totalBytes;
 	}
 
 	private _createParts() {
@@ -409,12 +367,8 @@ export class AWSS3UploadTask implements UploadTask {
 	private _initCachedUploadParts(cachedParts: Part[]) {
 		this.bytesUploaded += cachedParts.reduce((acc, part) => acc + part.Size, 0);
 		// Find the set of part numbers that have already been uploaded
-		const uploadedPartNumSet = new Set(
-			cachedParts.map(part => part.PartNumber)
-		);
-		this.queued = this.queued.filter(
-			part => !uploadedPartNumSet.has(part.PartNumber)
-		);
+		const uploadedPartNumSet = new Set(cachedParts.map(part => part.PartNumber));
+		this.queued = this.queued.filter(part => !uploadedPartNumSet.has(part.PartNumber));
 		this.completedParts = cachedParts.map(part => ({
 			PartNumber: part.PartNumber,
 			ETag: part.ETag,
@@ -540,16 +494,11 @@ export class AWSS3UploadTask implements UploadTask {
 		this.state = AWSS3UploadTaskState.PAUSED;
 		// Abort the part request immediately
 		// Add the inProgress parts back to pending
-		const removedInProgressReq = this.inProgress.splice(
-			0,
-			this.inProgress.length
-		);
+		const removedInProgressReq = this.inProgress.splice(0, this.inProgress.length);
 		removedInProgressReq.forEach(req => {
 			req.abortController.abort();
 		});
 		// Put all removed in progress parts back into the queue
-		this.queued.unshift(
-			...removedInProgressReq.map(req => req.uploadPartInput)
-		);
+		this.queued.unshift(...removedInProgressReq.map(req => req.uploadPartInput));
 	}
 }

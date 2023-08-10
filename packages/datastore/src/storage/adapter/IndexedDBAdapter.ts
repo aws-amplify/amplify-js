@@ -86,12 +86,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 
 						Object.keys(namespace.models).forEach(modelName => {
 							const storeName = getStorename(namespaceName, modelName);
-							this.createObjectStoreForModel(
-								db,
-								namespaceName,
-								storeName,
-								modelName
-							);
+							this.createObjectStoreForModel(db, namespaceName, storeName, modelName);
 						});
 					});
 
@@ -108,11 +103,9 @@ class IndexedDBAdapter extends StorageAdapterBase {
 							const tmpName = `tmp_${storeName}`;
 							origStore.name = tmpName;
 
-							const { namespaceName, modelName } =
-								this.getNamespaceAndModelFromStorename(storeName);
+							const { namespaceName, modelName } = this.getNamespaceAndModelFromStorename(storeName);
 
-							const modelInCurrentSchema =
-								modelName in this.schema.namespaces[namespaceName].models;
+							const modelInCurrentSchema = modelName in this.schema.namespaces[namespaceName].models;
 
 							if (!modelInCurrentSchema) {
 								// delete original
@@ -120,12 +113,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 								continue;
 							}
 
-							const newStore = this.createObjectStoreForModel(
-								db,
-								namespaceName,
-								storeName,
-								modelName
-							);
+							const newStore = this.createObjectStoreForModel(db, namespaceName, storeName, modelName);
 
 							let cursor = await origStore.openCursor();
 							let count = 0;
@@ -158,12 +146,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 								})
 								.filter(([, storeName]) => !objectStoreNames.has(storeName))
 								.forEach(([modelName, storeName]) => {
-									this.createObjectStoreForModel(
-										db,
-										namespaceName,
-										storeName,
-										modelName
-									);
+									this.createObjectStoreForModel(db, namespaceName, storeName, modelName);
 								});
 						});
 					} catch (error) {
@@ -178,10 +161,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 		});
 	}
 
-	protected async _get<T>(
-		storeOrStoreName: idb.IDBPObjectStore | string,
-		keyArr: string[]
-	): Promise<T> {
+	protected async _get<T>(storeOrStoreName: idb.IDBPObjectStore | string, keyArr: string[]): Promise<T> {
 		let index: idb.IDBPIndex;
 
 		if (typeof storeOrStoreName === 'string') {
@@ -213,13 +193,9 @@ class IndexedDBAdapter extends StorageAdapterBase {
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		await this.checkPrivate();
 
-		const { storeName, set, connectionStoreNames, modelKeyValues } =
-			this.saveMetadata(model);
+		const { storeName, set, connectionStoreNames, modelKeyValues } = this.saveMetadata(model);
 
-		const tx = this.db.transaction(
-			[storeName, ...Array.from(set.values())],
-			'readwrite'
-		);
+		const tx = this.db.transaction([storeName, ...Array.from(set.values())], 'readwrite');
 
 		const store = tx.objectStore(storeName);
 		const fromDB = await this._get(store, modelKeyValues);
@@ -236,13 +212,8 @@ class IndexedDBAdapter extends StorageAdapterBase {
 			const fromDB = <T>await this._get(store, itemKeyValues);
 			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
 
-			if (
-				keysEqual(itemKeyValues, modelKeyValues) ||
-				opType === OpType.INSERT
-			) {
-				const key = await store
-					.index('byPk')
-					.getKey(this.canonicalKeyPath(itemKeyValues));
+			if (keysEqual(itemKeyValues, modelKeyValues) || opType === OpType.INSERT) {
+				const key = await store.index('byPk').getKey(this.canonicalKeyPath(itemKeyValues));
 				await store.put(item, key);
 				result.push([instance, opType]);
 			}
@@ -258,14 +229,11 @@ class IndexedDBAdapter extends StorageAdapterBase {
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		await this.checkPrivate();
-		const {
-			storeName,
-			namespaceName,
-			queryByKey,
-			predicates,
-			hasSort,
-			hasPagination,
-		} = this.queryMetadata(modelConstructor, predicate, pagination);
+		const { storeName, namespaceName, queryByKey, predicates, hasSort, hasPagination } = this.queryMetadata(
+			modelConstructor,
+			predicate,
+			pagination
+		);
 
 		const records: T[] = (await (async () => {
 			//
@@ -363,10 +331,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 					return keysEqual(instanceKeyValues, keyValues);
 				})!;
 
-				result.push([
-					<T>(<unknown>instance),
-					key ? OpType.UPDATE : OpType.INSERT,
-				]);
+				result.push([<T>(<unknown>instance), key ? OpType.UPDATE : OpType.INSERT]);
 				await store.put(instance, key);
 			} else {
 				result.push([<T>(<unknown>item), OpType.DELETE]);
@@ -403,9 +368,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 
 					if (typeof item === 'object') {
 						const keyValues = this.getIndexKeyValuesFromModel(item as T);
-						key = await store
-							.index('byPk')
-							.getKey(this.canonicalKeyPath(keyValues));
+						key = await store.index('byPk').getKey(this.canonicalKeyPath(keyValues));
 					} else {
 						const itemKey = item.toString();
 						key = await store.index('byPk').getKey(itemKey);
@@ -427,9 +390,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 		});
 		if (isPrivate) {
 			logger.error("IndexedDB not supported in this browser's private mode");
-			return Promise.reject(
-				"IndexedDB not supported in this browser's private mode"
-			);
+			return Promise.reject("IndexedDB not supported in this browser's private mode");
 		} else {
 			return Promise.resolve();
 		}
@@ -471,8 +432,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 			autoIncrement: true,
 		});
 
-		const { indexes } =
-			this.schema.namespaces[namespaceName].relationships![modelName];
+		const { indexes } = this.schema.namespaces[namespaceName].relationships![modelName];
 
 		indexes.forEach(([idxName, keyPath, options]) => {
 			store.createIndex(idxName, keyPath, options);
@@ -481,16 +441,11 @@ class IndexedDBAdapter extends StorageAdapterBase {
 		return store;
 	}
 
-	private async getByKey<T extends PersistentModel>(
-		storeName: string,
-		keyValue: string[]
-	): Promise<T> {
+	private async getByKey<T extends PersistentModel>(storeName: string, keyValue: string[]): Promise<T> {
 		return <T>await this._get(storeName, keyValue);
 	}
 
-	private async getAll<T extends PersistentModel>(
-		storeName: string
-	): Promise<T[]> {
+	private async getAll<T extends PersistentModel>(storeName: string): Promise<T[]> {
 		return await this.db.getAll(storeName);
 	}
 
@@ -569,9 +524,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 			predicateObjs = (predicateObjs[0] as PredicatesGroup<T>).predicates;
 		}
 
-		const fieldPredicates = predicateObjs.filter(
-			p => isPredicateObj(p) && p.operator === 'eq'
-		) as PredicateObject<T>[];
+		const fieldPredicates = predicateObjs.filter(p => isPredicateObj(p) && p.operator === 'eq') as PredicateObject<T>[];
 
 		// several sub-queries could occur here. explicitly start a txn here to avoid
 		// opening/closing multiple txns.
@@ -595,27 +548,17 @@ class IndexedDBAdapter extends StorageAdapterBase {
 			const groupQueries = await Promise.all(
 				predicateObjs
 					.filter(o => isPredicateGroup(o) && o.type === 'and')
-					.map(o =>
-						this.baseQueryIndex(storeName, o as PredicatesGroup<T>, txn)
-					)
-			).then(queries =>
-				queries
-					.filter(q => q.indexedQueries.length === 1)
-					.map(i => i.indexedQueries)
-			);
+					.map(o => this.baseQueryIndex(storeName, o as PredicatesGroup<T>, txn))
+			).then(queries => queries.filter(q => q.indexedQueries.length === 1).map(i => i.indexedQueries));
 
 			/**
 			 * Base queries for each simple child "object" (field condition).
 			 */
 			const objectQueries = predicateObjs
 				.filter(o => isPredicateObj(o))
-				.map(o =>
-					this.matchingIndexQueries(storeName, [o as PredicateObject<T>], txn)
-				);
+				.map(o => this.matchingIndexQueries(storeName, [o as PredicateObject<T>], txn));
 
-			const indexedQueries = [...groupQueries, ...objectQueries]
-				.map(q => q[0])
-				.filter(i => i);
+			const indexedQueries = [...groupQueries, ...objectQueries].map(q => q[0]).filter(i => i);
 
 			// if, after hunting for base queries, we don't have exactly 1 base query
 			// for each child group + object, stop trying to optimize. we're not dealing
@@ -636,11 +579,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 			// note that we're only optimizing for `eq` right now.
 			result = {
 				groupType: type,
-				indexedQueries: this.matchingIndexQueries(
-					storeName,
-					fieldPredicates,
-					txn
-				),
+				indexedQueries: this.matchingIndexQueries(storeName, fieldPredicates, txn),
 			};
 		} else {
 			result = {
@@ -658,16 +597,10 @@ class IndexedDBAdapter extends StorageAdapterBase {
 		return result;
 	}
 
-	private async filterOnPredicate<T extends PersistentModel>(
-		storeName: string,
-		predicates: PredicatesGroup<T>
-	) {
+	private async filterOnPredicate<T extends PersistentModel>(storeName: string, predicates: PredicatesGroup<T>) {
 		const { predicates: predicateObjs, type } = predicates;
 
-		const { groupType, indexedQueries } = await this.baseQueryIndex(
-			storeName,
-			predicates
-		);
+		const { groupType, indexedQueries } = await this.baseQueryIndex(storeName, predicates);
 
 		// where we'll accumulate candidate results, which will be filtered at the end.
 		let candidateResults: T[];
@@ -712,10 +645,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 		return filtered;
 	}
 
-	private inMemoryPagination<T extends PersistentModel>(
-		records: T[],
-		pagination?: PaginationInput<T>
-	): T[] {
+	private inMemoryPagination<T extends PersistentModel>(records: T[], pagination?: PaginationInput<T>): T[] {
 		return inMemoryPagination(records, pagination);
 	}
 
@@ -729,10 +659,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 			const { page = 0, limit = 0 } = pagination;
 			const initialRecord = Math.max(0, page * limit) || 0;
 
-			let cursor = await this.db
-				.transaction(storeName)
-				.objectStore(storeName)
-				.openCursor();
+			let cursor = await this.db.transaction(storeName).objectStore(storeName).openCursor();
 
 			if (cursor && initialRecord > 0) {
 				await cursor.advance(initialRecord);

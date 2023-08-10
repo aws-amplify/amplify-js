@@ -46,13 +46,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 		return 'currentUser';
 	};
 
-	CognitoUserPool.prototype.signUp = (
-		username,
-		password,
-		signUpAttributeList,
-		validationData,
-		callback
-	) => {
+	CognitoUserPool.prototype.signUp = (username, password, signUpAttributeList, validationData, callback) => {
 		callback(null, 'signUpResult');
 	};
 
@@ -84,10 +78,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback.onSuccess('success');
 	};
 
-	CognitoUser.prototype.authenticateUser = (
-		authenticationDetails,
-		callback
-	) => {
+	CognitoUser.prototype.authenticateUser = (authenticationDetails, callback) => {
 		callback.onSuccess('session');
 	};
 
@@ -99,11 +90,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback(null, 'result');
 	};
 
-	CognitoUser.prototype.changePassword = (
-		oldPassword,
-		newPassword,
-		callback
-	) => {
+	CognitoUser.prototype.changePassword = (oldPassword, newPassword, callback) => {
 		callback(null, 'SUCCESS');
 	};
 
@@ -117,19 +104,11 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 
 	CognitoUser.prototype.signOut = () => {};
 
-	CognitoUser.prototype.confirmRegistration = (
-		confirmationCode,
-		forceAliasCreation,
-		callback
-	) => {
+	CognitoUser.prototype.confirmRegistration = (confirmationCode, forceAliasCreation, callback) => {
 		callback(null, 'Success');
 	};
 
-	CognitoUser.prototype.completeNewPasswordChallenge = (
-		password,
-		requiredAttributes,
-		callback
-	) => {
+	CognitoUser.prototype.completeNewPasswordChallenge = (password, requiredAttributes, callback) => {
 		callback.onSuccess('session');
 	};
 
@@ -153,19 +132,11 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback.associateSecretCode('secretCode');
 	};
 
-	CognitoUser.prototype.verifySoftwareToken = (
-		challengeAnswer,
-		device,
-		callback
-	) => {
+	CognitoUser.prototype.verifySoftwareToken = (challengeAnswer, device, callback) => {
 		callback.onSuccess('Success');
 	};
 
-	CognitoUser.prototype.setUserMfaPreference = (
-		smsMfaSettings,
-		totpMfaSettings,
-		callback
-	) => {
+	CognitoUser.prototype.setUserMfaPreference = (smsMfaSettings, totpMfaSettings, callback) => {
 		callback(null, 'Success');
 	};
 
@@ -248,11 +219,9 @@ describe('auth unit test', () => {
 		test('err case', async () => {
 			const auth = new Auth(authOptions);
 
-			const spyon = jest
-				.spyOn(CognitoUser.prototype, 'getMFAOptions')
-				.mockImplementationOnce(callback => {
-					callback(new Error('err'), null);
-				});
+			const spyon = jest.spyOn(CognitoUser.prototype, 'getMFAOptions').mockImplementationOnce(callback => {
+				callback(new Error('err'), null);
+			});
 			try {
 				await auth.getMFAOptions(user);
 			} catch (e) {
@@ -276,11 +245,9 @@ describe('auth unit test', () => {
 		test('err case', async () => {
 			const auth = new Auth(authOptions);
 
-			const spyon = jest
-				.spyOn(CognitoUser.prototype, 'disableMFA')
-				.mockImplementationOnce(callback => {
-					callback(new Error('err'), null);
-				});
+			const spyon = jest.spyOn(CognitoUser.prototype, 'disableMFA').mockImplementationOnce(callback => {
+				callback(new Error('err'), null);
+			});
 			try {
 				await auth.disableSMS(user);
 			} catch (e) {
@@ -305,11 +272,9 @@ describe('auth unit test', () => {
 		test('err case', async () => {
 			const auth = new Auth(authOptions);
 
-			const spyon = jest
-				.spyOn(CognitoUser.prototype, 'enableMFA')
-				.mockImplementationOnce(callback => {
-					callback(new Error('err'), null);
-				});
+			const spyon = jest.spyOn(CognitoUser.prototype, 'enableMFA').mockImplementationOnce(callback => {
+				callback(new Error('err'), null);
+			});
 			try {
 				await auth.enableSMS(user);
 			} catch (e) {
@@ -334,11 +299,9 @@ describe('auth unit test', () => {
 		test('err case', async () => {
 			const auth = new Auth(authOptions);
 
-			const spyon = jest
-				.spyOn(CognitoUser.prototype, 'associateSoftwareToken')
-				.mockImplementationOnce(callback => {
-					callback.onFailure('err');
-				});
+			const spyon = jest.spyOn(CognitoUser.prototype, 'associateSoftwareToken').mockImplementationOnce(callback => {
+				callback.onFailure('err');
+			});
 			try {
 				await auth.setupTOTP(user);
 			} catch (e) {
@@ -364,9 +327,7 @@ describe('auth unit test', () => {
 			const spyon2 = jest.spyOn(CognitoUser.prototype, 'getUsername');
 			const hubSpy = jest.spyOn(Hub, 'dispatch');
 
-			expect(await auth.verifyTotpToken(happyCaseUser, 'challengeAnswer')).toBe(
-				'Success'
-			);
+			expect(await auth.verifyTotpToken(happyCaseUser, 'challengeAnswer')).toBe('Success');
 
 			expect(spyon).toBeCalled();
 			expect(spyon2).toBeCalled();
@@ -388,9 +349,7 @@ describe('auth unit test', () => {
 			const spyon2 = jest.spyOn(CognitoUser.prototype, 'getUsername');
 			const hubSpy = jest.spyOn(Hub, 'dispatch');
 
-			expect(await auth.verifyTotpToken(happyCaseUser, 'challengeAnswer')).toBe(
-				'Success'
-			);
+			expect(await auth.verifyTotpToken(happyCaseUser, 'challengeAnswer')).toBe('Success');
 
 			expect(spyon).toBeCalled();
 			expect(spyon2).toBeCalled();
@@ -429,11 +388,9 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptions);
 
 			const spyon = jest.spyOn(CognitoUser.prototype, 'setUserMfaPreference');
-			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype, 'getPreferredMFA')
-				.mockImplementationOnce(() => {
-					return Promise.resolve('SMS_MFA');
-				});
+			const spyon2 = jest.spyOn(InternalAuthClass.prototype, 'getPreferredMFA').mockImplementationOnce(() => {
+				return Promise.resolve('SMS_MFA');
+			});
 			expect(await auth.setPreferredMFA(user, 'TOTP')).toBe('Success');
 			expect(spyon).toBeCalled();
 
@@ -454,11 +411,9 @@ describe('auth unit test', () => {
 					};
 					callback(new Error('err'), null);
 				});
-			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype, 'getPreferredMFA')
-				.mockImplementationOnce(() => {
-					return Promise.resolve('SMS_MFA');
-				});
+			const spyon2 = jest.spyOn(InternalAuthClass.prototype, 'getPreferredMFA').mockImplementationOnce(() => {
+				return Promise.resolve('SMS_MFA');
+			});
 
 			try {
 				await auth.setPreferredMFA(user, 'TOTP');
@@ -492,11 +447,9 @@ describe('auth unit test', () => {
 		test('error case', async () => {
 			const auth = new Auth(authOptions);
 
-			const spyon = jest
-				.spyOn(CognitoUser.prototype, 'getUserData')
-				.mockImplementationOnce(callback => {
-					callback(new Error('err'), null);
-				});
+			const spyon = jest.spyOn(CognitoUser.prototype, 'getUserData').mockImplementationOnce(callback => {
+				callback(new Error('err'), null);
+			});
 			try {
 				await auth.getPreferredMFA(user);
 			} catch (e) {

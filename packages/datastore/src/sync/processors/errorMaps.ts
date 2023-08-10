@@ -6,11 +6,9 @@ export type ErrorMap = Partial<{
 	[key in ErrorType]: (error: Error) => boolean;
 }>;
 
-const connectionTimeout = error =>
-	/^Connection failed: Connection Timeout/.test(error.message);
+const connectionTimeout = error => /^Connection failed: Connection Timeout/.test(error.message);
 
-const serverError = error =>
-	/^Error: Request failed with status code 5\d\d/.test(error.message);
+const serverError = error => /^Error: Request failed with status code 5\d\d/.test(error.message);
 
 export const mutationErrorMap: ErrorMap = {
 	BadModel: () => false,
@@ -23,9 +21,7 @@ export const mutationErrorMap: ErrorMap = {
 	},
 	ConfigError: () => false,
 	Transient: error => connectionTimeout(error) || serverError(error),
-	Unauthorized: error =>
-		error.message === 'Unauthorized' ||
-		/^Request failed with status code 401/.test(error.message),
+	Unauthorized: error => error.message === 'Unauthorized' || /^Request failed with status code 401/.test(error.message),
 };
 
 export const subscriptionErrorMap: ErrorMap = {

@@ -5,29 +5,16 @@ import type { Event as AWSPinpointAnalyticsEvent } from '@aws-amplify/core/inter
 import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '../../../common';
 import { PushNotificationMessage } from '../../types';
-import {
-	AWSPinpointMessageEventSource,
-	AWSPinpointMessageEvent,
-} from './types';
+import { AWSPinpointMessageEventSource, AWSPinpointMessageEvent } from './types';
 
-const ANDROID_CAMPAIGN_ACTIVITY_ID_KEY =
-	'pinpoint.campaign.campaign_activity_id';
+const ANDROID_CAMPAIGN_ACTIVITY_ID_KEY = 'pinpoint.campaign.campaign_activity_id';
 const ANDROID_CAMPAIGN_ID_KEY = 'pinpoint.campaign.campaign_id';
 const ANDROID_CAMPAIGN_TREATMENT_ID_KEY = 'pinpoint.campaign.treatment_id';
 
 export const logger = new ConsoleLogger('PushNotification.AWSPinpointProvider');
 
-export const dispatchPushNotificationEvent = (
-	event: string,
-	data: any,
-	message?: string
-) => {
-	Hub.dispatch(
-		'pushNotification',
-		{ event, data, message },
-		'PushNotification',
-		AMPLIFY_SYMBOL
-	);
+export const dispatchPushNotificationEvent = (event: string, data: any, message?: string) => {
+	Hub.dispatch('pushNotification', { event, data, message }, 'PushNotification', AMPLIFY_SYMBOL);
 };
 
 export const getAnalyticsEvent = (
@@ -60,10 +47,7 @@ const getAnalyticsEventAttributes = (data: PushNotificationMessage['data']) => {
 			},
 		};
 	}
-	const pinpoint =
-		typeof data.pinpoint === 'string'
-			? JSON.parse(data.pinpoint)
-			: data.pinpoint;
+	const pinpoint = typeof data.pinpoint === 'string' ? JSON.parse(data.pinpoint) : data.pinpoint;
 	if (pinpoint?.campaign) {
 		return {
 			source: AWSPinpointMessageEventSource.CAMPAIGN,

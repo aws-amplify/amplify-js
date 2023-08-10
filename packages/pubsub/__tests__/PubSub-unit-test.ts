@@ -10,11 +10,7 @@ jest.mock('@aws-amplify/core', () => ({
 }));
 
 import { PubSubClass as PubSub } from '../src/PubSub';
-import {
-	MqttOverWSProvider,
-	AWSIoTProvider,
-	mqttTopicMatch,
-} from '../src/Providers';
+import { MqttOverWSProvider, AWSIoTProvider, mqttTopicMatch } from '../src/Providers';
 
 import { Credentials, Reachability } from '@aws-amplify/core';
 import * as Paho from '../src/vendor/paho-mqtt';
@@ -62,13 +58,7 @@ const credentials = {
 	authenticated: true,
 };
 
-const testPubSubAsync = (
-	pubsub,
-	topic,
-	message,
-	options?,
-	hubConnectionListener?
-) =>
+const testPubSubAsync = (pubsub, topic, message, options?, hubConnectionListener?) =>
 	new Promise(async (resolve, reject) => {
 		if (hubConnectionListener === undefined) {
 			hubConnectionListener = new HubConnectionListener('pubsub');
@@ -82,9 +72,7 @@ const testPubSubAsync = (
 			close: () => console.log('close'),
 			error: reject,
 		});
-		await hubConnectionListener.waitUntilConnectionStateIn([
-			ConnectionState.Connected,
-		]);
+		await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.Connected]);
 		pubsub.publish(topic, message, options);
 	});
 
@@ -169,9 +157,7 @@ describe('PubSub', () => {
 				error: error => console.log('error', error),
 			});
 
-			await hubConnectionListener.waitUntilConnectionStateIn([
-				ConnectionState.Connected,
-			]);
+			await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.Connected]);
 
 			await pubsub.publish('topicA', 'my message');
 		});
@@ -231,11 +217,9 @@ describe('PubSub', () => {
 			});
 			pubsub.addPluggable(awsIotProvider);
 
-			jest
-				.spyOn(MqttOverWSProvider.prototype, 'connect')
-				.mockImplementationOnce(async () => {
-					throw new Error('Failed to connect to the network');
-				});
+			jest.spyOn(MqttOverWSProvider.prototype, 'connect').mockImplementationOnce(async () => {
+				throw new Error('Failed to connect to the network');
+			});
 
 			expect(
 				testPubSubAsync(pubsub, 'topicA', 'my message AWSIoTProvider', {
@@ -257,17 +241,11 @@ describe('PubSub', () => {
 			pubsub.addPluggable(awsIotProvider);
 
 			pubsub.subscribe('topic', { clientId: '123' }).subscribe({});
-			await hubConnectionListener.waitUntilConnectionStateIn([
-				ConnectionState.Connected,
-			]);
+			await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.Connected]);
 
 			awsIotProvider.onDisconnect({ errorCode: 1, clientId: '123' });
-			await hubConnectionListener.waitUntilConnectionStateIn([
-				ConnectionState.ConnectionDisrupted,
-			]);
-			await hubConnectionListener.waitUntilConnectionStateIn([
-				ConnectionState.Connected,
-			]);
+			await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.ConnectionDisrupted]);
+			await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.Connected]);
 			expect(hubConnectionListener.observedConnectionStates).toEqual([
 				ConnectionState.Disconnected,
 				ConnectionState.Connecting,
@@ -342,14 +320,10 @@ describe('PubSub', () => {
 					error: () => {},
 				});
 
-				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.Connected,
-				]);
+				await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.Connected]);
 				sub.unsubscribe();
 				awsIotProvider.onDisconnect({ errorCode: 1, clientId: '123' });
-				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.Disconnected,
-				]);
+				await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.Disconnected]);
 				expect(hubConnectionListener.observedConnectionStates).toEqual([
 					ConnectionState.Disconnected,
 					ConnectionState.Connecting,
@@ -372,19 +346,13 @@ describe('PubSub', () => {
 					error: () => {},
 				});
 
-				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.Connected,
-				]);
+				await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.Connected]);
 
 				reachabilityObserver?.next?.({ online: false });
-				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.ConnectedPendingNetwork,
-				]);
+				await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.ConnectedPendingNetwork]);
 
 				reachabilityObserver?.next?.({ online: true });
-				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.Connected,
-				]);
+				await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.Connected]);
 
 				expect(hubConnectionListener.observedConnectionStates).toEqual([
 					ConnectionState.Disconnected,
@@ -408,19 +376,13 @@ describe('PubSub', () => {
 					error: () => {},
 				});
 
-				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.Connected,
-				]);
+				await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.Connected]);
 
 				reachabilityObserver?.next?.({ online: false });
-				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.ConnectedPendingNetwork,
-				]);
+				await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.ConnectedPendingNetwork]);
 
 				awsIotProvider.onDisconnect({ errorCode: 1, clientId: '123' });
-				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.ConnectionDisruptedPendingNetwork,
-				]);
+				await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.ConnectionDisruptedPendingNetwork]);
 
 				expect(hubConnectionListener.observedConnectionStates).toEqual([
 					ConnectionState.Disconnected,
@@ -514,9 +476,7 @@ describe('PubSub', () => {
 				});
 			};
 
-			expect(subscribe).toThrow(
-				`Could not find provider named ${testProviderName}`
-			);
+			expect(subscribe).toThrow(`Could not find provider named ${testProviderName}`);
 		});
 
 		test('throw a rejected promise when publish failed by any of the provider', () => {
@@ -537,19 +497,14 @@ describe('PubSub', () => {
 				return Promise.reject('Failed to publish');
 			});
 
-			expect(
-				pubsub.publish('topicA', 'my message AWSIoTProvider')
-			).rejects.toMatch('Failed to publish');
+			expect(pubsub.publish('topicA', 'my message AWSIoTProvider')).rejects.toMatch('Failed to publish');
 		});
 
 		test('On unsubscribe when is the last observer it should disconnect the websocket', async () => {
 			const hubConnectionListener = new HubConnectionListener('pubsub');
 			const pubsub = new PubSub();
 
-			const spyDisconnect = jest.spyOn(
-				MqttOverWSProvider.prototype,
-				'disconnect'
-			);
+			const spyDisconnect = jest.spyOn(MqttOverWSProvider.prototype, 'disconnect');
 			const mqttOverWSProvider = new MqttOverWSProvider({
 				aws_pubsub_endpoint: 'wss://iot.mock-endpoint.org:443/mqtt',
 			});
@@ -563,15 +518,11 @@ describe('PubSub', () => {
 				error: error => console.log('error', error),
 			});
 
-			await hubConnectionListener.waitUntilConnectionStateIn([
-				ConnectionState.Connected,
-			]);
+			await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.Connected]);
 
 			subscription1.unsubscribe();
 
-			await hubConnectionListener.waitUntilConnectionStateIn([
-				ConnectionState.Disconnected,
-			]);
+			await hubConnectionListener.waitUntilConnectionStateIn([ConnectionState.Disconnected]);
 
 			expect(spyDisconnect).toHaveBeenCalled();
 			spyDisconnect.mockClear();
@@ -583,10 +534,7 @@ describe('PubSub', () => {
 			async () => {
 				const pubsub = new PubSub();
 
-				const spyDisconnect = jest.spyOn(
-					MqttOverWSProvider.prototype,
-					'disconnect'
-				);
+				const spyDisconnect = jest.spyOn(MqttOverWSProvider.prototype, 'disconnect');
 				const mqttOverWSProvider = new MqttOverWSProvider({
 					aws_pubsub_endpoint: 'wss://iot.mock-endpoint.org:443/mqtt',
 				});

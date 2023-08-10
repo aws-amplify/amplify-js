@@ -2,36 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { composeTransferHandler } from '../../../../src/clients/internal/composeTransferHandler';
-import {
-	signingMiddleware,
-	SigningOptions,
-} from '../../../../src/clients/middleware/signing';
+import { signingMiddleware, SigningOptions } from '../../../../src/clients/middleware/signing';
 import { getSkewCorrectedDate } from '../../../../src/clients/middleware/signing/utils/getSkewCorrectedDate';
 import { getUpdatedSystemClockOffset } from '../../../../src/clients/middleware/signing/utils/getUpdatedSystemClockOffset';
-import {
-	HttpRequest,
-	HttpResponse,
-	MiddlewareHandler,
-} from '../../../../src/clients/types';
-import {
-	credentials,
-	signingDate,
-	signingRegion,
-	signingService,
-	url,
-} from './signer/signatureV4/testUtils/data';
+import { HttpRequest, HttpResponse, MiddlewareHandler } from '../../../../src/clients/types';
+import { credentials, signingDate, signingRegion, signingService, url } from './signer/signatureV4/testUtils/data';
 import { signingTestTable } from './signer/signatureV4/testUtils/signingTestTable';
 
-jest.mock(
-	'../../../../src/clients/middleware/signing/utils/getSkewCorrectedDate'
-);
-jest.mock(
-	'../../../../src/clients/middleware/signing/utils/getUpdatedSystemClockOffset'
-);
+jest.mock('../../../../src/clients/middleware/signing/utils/getSkewCorrectedDate');
+jest.mock('../../../../src/clients/middleware/signing/utils/getUpdatedSystemClockOffset');
 
 const mockGetSkewCorrectedDate = getSkewCorrectedDate as jest.Mock;
-const mockGetUpdatedSystemClockOffset =
-	getUpdatedSystemClockOffset as jest.Mock;
+const mockGetUpdatedSystemClockOffset = getUpdatedSystemClockOffset as jest.Mock;
 
 describe('Signing middleware', () => {
 	const defaultSigningOptions = {
@@ -48,10 +30,7 @@ describe('Signing middleware', () => {
 	const updatedOffset = 10000;
 	const [basicTestCase] = signingTestTable;
 	const getSignableHandler = (nextHandler: MiddlewareHandler<any, any>) =>
-		composeTransferHandler<[SigningOptions], HttpRequest, HttpResponse>(
-			nextHandler,
-			[signingMiddleware]
-		);
+		composeTransferHandler<[SigningOptions], HttpRequest, HttpResponse>(nextHandler, [signingMiddleware]);
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockGetSkewCorrectedDate.mockReturnValue(signingDate);
@@ -125,9 +104,7 @@ describe('Signing middleware', () => {
 			},
 		});
 
-		const middlewareFunction = signingMiddleware(defaultSigningOptions)(
-			nextHandler
-		);
+		const middlewareFunction = signingMiddleware(defaultSigningOptions)(nextHandler);
 
 		await middlewareFunction(defaultRequest);
 		expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(parsedServerTime, 0);
@@ -135,10 +112,7 @@ describe('Signing middleware', () => {
 		jest.clearAllMocks();
 		await middlewareFunction(defaultRequest);
 		expect(mockGetSkewCorrectedDate).toBeCalledWith(updatedOffset);
-		expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(
-			parsedServerTime,
-			updatedOffset
-		);
+		expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(parsedServerTime, updatedOffset);
 		expect.assertions(3);
 	});
 });

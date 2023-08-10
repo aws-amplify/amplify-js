@@ -4,9 +4,7 @@
 describe('Event listeners', () => {
 	const fooType = 'foo';
 	const fooHandler = jest.fn();
-	let addEventListener,
-		notifyEventListeners,
-		notifyEventListenersAndAwaitHandlers;
+	let addEventListener, notifyEventListeners, notifyEventListenersAndAwaitHandlers;
 	beforeEach(() => {
 		({
 			addEventListener,
@@ -108,8 +106,6 @@ describe('Event listeners', () => {
 	test('will not error out on an unregistered type', async () => {
 		const unknownType = 'unknown';
 		expect(notifyEventListeners(unknownType, {})).toBeUndefined();
-		expect(
-			await notifyEventListenersAndAwaitHandlers(unknownType, {})
-		).toStrictEqual([]);
+		expect(await notifyEventListenersAndAwaitHandlers(unknownType, {})).toStrictEqual([]);
 	});
 });

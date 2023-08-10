@@ -27,9 +27,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 	describe('isCustomDomain()', () => {
 		test('Custom domain returns `true`', () => {
 			const provider = new AWSAppSyncRealTimeProvider();
-			const result = (provider as any).isCustomDomain(
-				'https://unit-test.testurl.com/graphql'
-			);
+			const result = (provider as any).isCustomDomain('https://unit-test.testurl.com/graphql');
 			expect(result).toBe(true);
 		});
 
@@ -67,9 +65,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 	describe('publish()', () => {
 		test("rejects raising an error indicating publish isn't supported", async () => {
 			const provider = new AWSAppSyncRealTimeProvider();
-			await expect(
-				provider.publish('test', { content: 'test' })
-			).rejects.toThrow(Error('Operation not supported'));
+			await expect(provider.publish('test', { content: 'test' })).rejects.toThrow(Error('Operation not supported'));
 		});
 	});
 
@@ -82,10 +78,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 		describe('returned observer', () => {
 			describe('connection logic with mocked websocket', () => {
 				let fakeWebSocketInterface: FakeWebSocketInterface;
-				const loggerSpy: jest.SpyInstance = jest.spyOn(
-					Logger.prototype,
-					'_log'
-				);
+				const loggerSpy: jest.SpyInstance = jest.spyOn(Logger.prototype, '_log');
 
 				let provider: AWSAppSyncRealTimeProvider;
 				let reachabilityObserver: ZenObservable.Observer<{ online: boolean }>;
@@ -156,9 +149,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						})
 					);
 
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connected,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Connected]);
 					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
 						CS.Disconnected,
 						CS.Connecting,
@@ -167,9 +158,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					subscription.unsubscribe();
 
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.ConnectedPendingDisconnect,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.ConnectedPendingDisconnect]);
 
 					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
 						CS.Disconnected,
@@ -189,9 +178,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await Promise.resolve(
 						provider.subscribe('test', {}).subscribe({
 							error(err) {
-								expect(err.errors[0].message).toEqual(
-									'Subscribe only available for AWS AppSync endpoint'
-								);
+								expect(err.errors[0].message).toEqual('Subscribe only available for AWS AppSync endpoint');
 								mockError();
 							},
 						})
@@ -203,12 +190,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 				test('subscription waiting for onopen with ws://localhost:8080 goes untranslated', async () => {
 					expect.assertions(1);
 
-					const newSocketSpy = jest
-						.spyOn(provider, 'getNewWebSocket')
-						.mockImplementation(() => {
-							fakeWebSocketInterface.newWebSocket();
-							return fakeWebSocketInterface.webSocket;
-						});
+					const newSocketSpy = jest.spyOn(provider, 'getNewWebSocket').mockImplementation(() => {
+						fakeWebSocketInterface.newWebSocket();
+						return fakeWebSocketInterface.webSocket;
+					});
 
 					provider
 						.subscribe('test', {
@@ -229,12 +214,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 				test('subscription waiting for onopen with http://localhost:8080 translates to wss', async () => {
 					expect.assertions(1);
 
-					const newSocketSpy = jest
-						.spyOn(provider, 'getNewWebSocket')
-						.mockImplementation(() => {
-							fakeWebSocketInterface.newWebSocket();
-							return fakeWebSocketInterface.webSocket;
-						});
+					const newSocketSpy = jest.spyOn(provider, 'getNewWebSocket').mockImplementation(() => {
+						fakeWebSocketInterface.newWebSocket();
+						return fakeWebSocketInterface.webSocket;
+					});
 
 					provider
 						.subscribe('test', {
@@ -255,17 +238,14 @@ describe('AWSAppSyncRealTimeProvider', () => {
 				test('subscription waiting for onopen with https://testaccounturl123456789123.appsync-api.us-east-1.amazonaws.com/graphql" translates to wss', async () => {
 					expect.assertions(1);
 
-					const newSocketSpy = jest
-						.spyOn(provider, 'getNewWebSocket')
-						.mockImplementation(() => {
-							fakeWebSocketInterface.newWebSocket();
-							return fakeWebSocketInterface.webSocket;
-						});
+					const newSocketSpy = jest.spyOn(provider, 'getNewWebSocket').mockImplementation(() => {
+						fakeWebSocketInterface.newWebSocket();
+						return fakeWebSocketInterface.webSocket;
+					});
 
 					provider
 						.subscribe('test', {
-							appSyncGraphqlEndpoint:
-								'https://testaccounturl123456789123.appsync-api.us-east-1.amazonaws.com/graphql',
+							appSyncGraphqlEndpoint: 'https://testaccounturl123456789123.appsync-api.us-east-1.amazonaws.com/graphql',
 						})
 						.subscribe({ error: () => {} });
 
@@ -288,10 +268,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						.subscribe({ error: () => {} });
 					await fakeWebSocketInterface?.readyForUse;
 					await fakeWebSocketInterface?.triggerError();
-					expect(loggerSpy).toHaveBeenCalledWith(
-						'DEBUG',
-						'WebSocket connection error'
-					);
+					expect(loggerSpy).toHaveBeenCalledWith('DEBUG', 'WebSocket connection error');
 				});
 
 				test('subscription disrupted triggering reconnect when onclose triggered while waiting for onopen', async () => {
@@ -306,9 +283,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await fakeWebSocketInterface?.readyForUse;
 					await fakeWebSocketInterface?.triggerClose();
 
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.ConnectionDisrupted,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.ConnectionDisrupted]);
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
@@ -317,9 +292,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							message: expect.stringMatching('Connection handshake error'),
 						})
 					);
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connecting,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Connecting]);
 				});
 
 				test('subscription reconnects when onclose triggered while offline and waiting for onopen', async () => {
@@ -332,29 +305,21 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						})
 						.subscribe({ error: () => {} });
 					reachabilityObserver?.next?.({ online: false });
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connecting,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Connecting]);
 					await fakeWebSocketInterface?.readyForUse;
 
 					await fakeWebSocketInterface?.triggerClose();
 
 					// Wait until the socket is disrupted pending network
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.ConnectionDisruptedPendingNetwork,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.ConnectionDisruptedPendingNetwork]);
 
 					reachabilityObserver?.next?.({ online: true });
 
 					// Wait until the socket is disrupted
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.ConnectionDisrupted,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.ConnectionDisrupted]);
 
 					// Wait until we've started connecting the second time
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connecting,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Connecting]);
 
 					await fakeWebSocketInterface?.readyForUse;
 
@@ -367,9 +332,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await fakeWebSocketInterface?.startAckMessage();
 
 					// Wait until the socket is automatically reconnected
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connected,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Connected]);
 
 					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
 						CS.Disconnected,
@@ -395,10 +358,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						await fakeWebSocketInterface?.triggerError();
 					});
 					// When the socket throws an error during handshake
-					expect(loggerSpy).toHaveBeenCalledWith(
-						'DEBUG',
-						'WebSocket error {"isTrusted":false}'
-					);
+					expect(loggerSpy).toHaveBeenCalledWith('DEBUG', 'WebSocket error {"isTrusted":false}');
 				});
 
 				test('subscription fails when onclose triggered while waiting for handshake', async () => {
@@ -520,22 +480,14 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						type: MESSAGE_TYPES.GQL_ERROR,
 						payload: { data: {} },
 					});
-					expect(loggerSpy).toBeCalledWith(
-						'DEBUG',
-						'Connection failed: {"data":{}}'
-					);
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connecting,
-					]);
+					expect(loggerSpy).toBeCalledWith('DEBUG', 'Connection failed: {"data":{}}');
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Connecting]);
 				});
 
 				test('subscription observer error is triggered when a connection is formed and a non-retriable connection_error data message is received', async done => {
 					expect.assertions(3);
 
-					const socketCloseSpy = jest.spyOn(
-						fakeWebSocketInterface.webSocket,
-						'close'
-					);
+					const socketCloseSpy = jest.spyOn(fakeWebSocketInterface.webSocket, 'close');
 					fakeWebSocketInterface.webSocket.readyState = WebSocket.OPEN;
 
 					const observer = provider.subscribe('test', {
@@ -544,9 +496,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					observer.subscribe({
 						error: e => {
-							expect(e.errors[0].message).toEqual(
-								'Connection failed: Non-retriable Test'
-							);
+							expect(e.errors[0].message).toEqual('Connection failed: Non-retriable Test');
 							done();
 						},
 					});
@@ -594,10 +544,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					await fakeWebSocketInterface?.standardConnectionHandshake();
 					await fakeWebSocketInterface?.triggerError();
-					expect(loggerSpy).toBeCalledWith(
-						'DEBUG',
-						'Disconnect error: Connection closed'
-					);
+					expect(loggerSpy).toBeCalledWith('DEBUG', 'Disconnect error: Connection closed');
 				});
 
 				test('subscription observer error is not triggered when a connection is formed and a retriable connection_error data message is received', async () => {
@@ -645,14 +592,9 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						})
 					);
 
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.ConnectionDisrupted,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.ConnectionDisrupted]);
 
-					expect(loggerSpy).toBeCalledWith(
-						'DEBUG',
-						'Connection failed: Retriable Test'
-					);
+					expect(loggerSpy).toBeCalledWith('DEBUG', 'Connection failed: Retriable Test');
 				});
 
 				test('subscription observer error is triggered when a connection is formed and an ack data message is received then ka timeout prompts disconnect', async () => {
@@ -664,39 +606,26 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					observer.subscribe({ error: () => {} });
 					// Resolve the message delivery actions
-					await replaceConstant(
-						'DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT',
-						5,
-						async () => {
-							await fakeWebSocketInterface?.readyForUse;
-							await fakeWebSocketInterface?.triggerOpen();
-							await fakeWebSocketInterface?.handShakeMessage({
-								connectionTimeoutMs: 100,
-							});
+					await replaceConstant('DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT', 5, async () => {
+						await fakeWebSocketInterface?.readyForUse;
+						await fakeWebSocketInterface?.triggerOpen();
+						await fakeWebSocketInterface?.handShakeMessage({
+							connectionTimeoutMs: 100,
+						});
 
-							await fakeWebSocketInterface?.startAckMessage();
+						await fakeWebSocketInterface?.startAckMessage();
 
-							await fakeWebSocketInterface?.keepAlive();
-						}
-					);
+						await fakeWebSocketInterface?.keepAlive();
+					});
 
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connected,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Connected]);
 
 					// Wait until the socket is automatically disconnected
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.ConnectionDisrupted,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.ConnectionDisrupted]);
 
-					expect(fakeWebSocketInterface?.observedConnectionStates).toContain(
-						CS.ConnectedPendingKeepAlive
-					);
+					expect(fakeWebSocketInterface?.observedConnectionStates).toContain(CS.ConnectedPendingKeepAlive);
 
-					expect(loggerSpy).toBeCalledWith(
-						'DEBUG',
-						'Disconnect error: Timeout disconnect'
-					);
+					expect(loggerSpy).toBeCalledWith('DEBUG', 'Disconnect error: Timeout disconnect');
 				});
 
 				test('subscription connection disruption triggers automatic reconnection', async () => {
@@ -717,30 +646,22 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await fakeWebSocketInterface?.startAckMessage();
 					await fakeWebSocketInterface.keepAlive();
 
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connected,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Connected]);
 
 					// Wait until the socket is automatically disconnected
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.ConnectionDisrupted,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.ConnectionDisrupted]);
 
 					await fakeWebSocketInterface?.triggerOpen();
 
 					await fakeWebSocketInterface?.handShakeMessage({
 						connectionTimeoutMs: 100,
 					});
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connecting,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Connecting]);
 					fakeWebSocketInterface?.startAckMessage();
 					await fakeWebSocketInterface.keepAlive();
 
 					// Wait until the socket is automatically reconnected
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connected,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Connected]);
 
 					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
 						CS.Disconnected,
@@ -771,43 +692,31 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await fakeWebSocketInterface?.startAckMessage();
 					await fakeWebSocketInterface.keepAlive();
 
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connected,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Connected]);
 
 					reachabilityObserver?.next?.({ online: false });
 
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.ConnectedPendingNetwork,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.ConnectedPendingNetwork]);
 
 					fakeWebSocketInterface?.closeInterface();
 
 					// Wait until the socket is automatically disconnected
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.ConnectionDisruptedPendingNetwork,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.ConnectionDisruptedPendingNetwork]);
 
 					reachabilityObserver?.next?.({ online: true });
 
 					// Wait until the socket is automatically disconnected
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.ConnectionDisrupted,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.ConnectionDisrupted]);
 
 					await fakeWebSocketInterface?.triggerOpen();
 					await fakeWebSocketInterface?.handShakeMessage();
 
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connecting,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Connecting]);
 
 					await fakeWebSocketInterface?.startAckMessage();
 
 					// Wait until the socket is automatically reconnected
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connected,
-					]);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Connected]);
 
 					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
 						CS.Disconnected,
@@ -854,15 +763,9 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						await fakeWebSocketInterface?.standardConnectionHandshake();
 
 						// Wait until the socket is automatically disconnected
-						await fakeWebSocketInterface?.waitForConnectionState([
-							CS.ConnectionDisrupted,
-						]);
+						await fakeWebSocketInterface?.waitForConnectionState([CS.ConnectionDisrupted]);
 
-						expect(loggerSpy).toBeCalledWith(
-							'DEBUG',
-							'timeoutStartSubscription',
-							expect.anything()
-						);
+						expect(loggerSpy).toBeCalledWith('DEBUG', 'timeoutStartSubscription', expect.anything());
 					});
 				});
 
@@ -885,10 +788,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						await delay(20);
 
 						// Wait until the socket is automatically disconnected
-						await expect(
-							fakeWebSocketInterface?.hubConnectionListener
-								?.currentConnectionState
-						).toBe(CS.Connecting);
+						await expect(fakeWebSocketInterface?.hubConnectionListener?.currentConnectionState).toBe(CS.Connecting);
 
 						// Watching for raised exception to be caught and logged
 						expect(loggerSpy).not.toBeCalledWith(
@@ -921,9 +821,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						await delay(20);
 
 						// Wait until the socket is automatically disconnected
-						await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-							CS.Disconnected,
-						]);
+						await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Disconnected]);
 
 						// Watching for raised exception to be caught and logged
 						expect(loggerSpy).toBeCalledWith(
@@ -951,10 +849,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						await fakeWebSocketInterface?.readyForUse;
 
-						expect(loggerSpy).toBeCalledWith(
-							'DEBUG',
-							'Authenticating with API_KEY'
-						);
+						expect(loggerSpy).toBeCalledWith('DEBUG', 'Authenticating with API_KEY');
 					});
 
 					test('authenticating with AWS_IAM', async () => {
@@ -980,10 +875,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						await fakeWebSocketInterface?.readyForUse;
 
-						expect(loggerSpy).toBeCalledWith(
-							'DEBUG',
-							'Authenticating with AWS_IAM'
-						);
+						expect(loggerSpy).toBeCalledWith('DEBUG', 'Authenticating with AWS_IAM');
 					});
 
 					test('authenticating with AWS_IAM without credentials', async () => {
@@ -1050,27 +942,19 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						);
 
 						// Wait until the socket is automatically disconnected
-						await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-							CS.Disconnected,
-						]);
+						await fakeWebSocketInterface?.waitUntilConnectionStateIn([CS.Disconnected]);
 
-						expect(loggerSpy).toHaveBeenCalledWith(
-							'WARN',
-							'ensure credentials error',
-							'Errors out'
-						);
+						expect(loggerSpy).toHaveBeenCalledWith('WARN', 'ensure credentials error', 'Errors out');
 					});
 
 					test('authenticating with OPENID_CONNECT', async () => {
 						expect.assertions(1);
 
-						const userSpy = jest
-							.spyOn(Auth, 'currentAuthenticatedUser')
-							.mockImplementation(() => {
-								return Promise.resolve({
-									token: 'test',
-								});
+						const userSpy = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementation(() => {
+							return Promise.resolve({
+								token: 'test',
 							});
+						});
 
 						provider
 							.subscribe('test', {
@@ -1081,22 +965,17 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						await fakeWebSocketInterface?.readyForUse;
 
-						expect(loggerSpy).toBeCalledWith(
-							'DEBUG',
-							'Authenticating with OPENID_CONNECT'
-						);
+						expect(loggerSpy).toBeCalledWith('DEBUG', 'Authenticating with OPENID_CONNECT');
 					});
 
 					test('authenticating with OPENID_CONNECT with empty token', async () => {
 						expect.assertions(1);
 
-						jest
-							.spyOn(Auth, 'currentAuthenticatedUser')
-							.mockImplementation(() => {
-								return Promise.resolve({
-									token: undefined,
-								});
+						jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementation(() => {
+							return Promise.resolve({
+								token: undefined,
 							});
+						});
 
 						provider
 							.subscribe('test', {
@@ -1131,10 +1010,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							.subscribe({ error: () => {} });
 
 						await fakeWebSocketInterface?.readyForUse;
-						expect(loggerSpy).toBeCalledWith(
-							'DEBUG',
-							'Authenticating with OPENID_CONNECT'
-						);
+						expect(loggerSpy).toBeCalledWith('DEBUG', 'Authenticating with OPENID_CONNECT');
 					});
 
 					test('authenticating with AMAZON_COGNITO_USER_POOLS', async () => {
@@ -1159,10 +1035,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						await fakeWebSocketInterface?.readyForUse;
 
-						expect(loggerSpy).toBeCalledWith(
-							'DEBUG',
-							'Authenticating with AMAZON_COGNITO_USER_POOLS'
-						);
+						expect(loggerSpy).toBeCalledWith('DEBUG', 'Authenticating with AMAZON_COGNITO_USER_POOLS');
 					});
 
 					test('authenticating with AWS_LAMBDA', async () => {
@@ -1180,10 +1053,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						await fakeWebSocketInterface?.readyForUse;
 
-						expect(loggerSpy).toBeCalledWith(
-							'DEBUG',
-							'Authenticating with AWS_LAMBDA'
-						);
+						expect(loggerSpy).toBeCalledWith('DEBUG', 'Authenticating with AWS_LAMBDA');
 					});
 
 					test('authenticating with AWS_LAMBDA without Authorization', async () => {

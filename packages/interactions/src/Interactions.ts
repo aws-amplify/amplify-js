@@ -59,10 +59,7 @@ export class InteractionsClass {
 			const providerName = bot.providerName || 'AWSLexProvider';
 
 			// add default provider if required
-			if (
-				!this._pluggables.AWSLexProvider &&
-				providerName === 'AWSLexProvider'
-			) {
+			if (!this._pluggables.AWSLexProvider && providerName === 'AWSLexProvider') {
 				this._pluggables.AWSLexProvider = new AWSLexProvider();
 			}
 
@@ -70,9 +67,7 @@ export class InteractionsClass {
 			if (this._pluggables[providerName]) {
 				this._pluggables[providerName].configure({ [bot.name]: bot });
 			} else {
-				logger.debug(
-					`bot ${bot.name} was not configured as ${providerName} provider was not found`
-				);
+				logger.debug(`bot ${bot.name} was not configured as ${providerName} provider was not found`);
 			}
 		});
 
@@ -84,11 +79,7 @@ export class InteractionsClass {
 			if (!this._pluggables[pluggable.getProviderName()]) {
 				// configure bots for the new plugin
 				Object.keys(this._options.bots)
-					.filter(
-						botKey =>
-							this._options.bots[botKey].providerName ===
-							pluggable.getProviderName()
-					)
+					.filter(botKey => this._options.bots[botKey].providerName === pluggable.getProviderName())
 					.forEach(botKey => {
 						const bot = this._options.bots[botKey];
 						pluggable.configure({ [bot.name]: bot });
@@ -97,62 +88,35 @@ export class InteractionsClass {
 				this._pluggables[pluggable.getProviderName()] = pluggable;
 				return;
 			} else {
-				throw new Error(
-					'Pluggable ' + pluggable.getProviderName() + ' already plugged'
-				);
+				throw new Error('Pluggable ' + pluggable.getProviderName() + ' already plugged');
 			}
 		}
 	}
 
-	public async send(
-		botname: string,
-		message: string
-	): Promise<InteractionsResponse>;
-	public async send(
-		botname: string,
-		message: InteractionsMessage
-	): Promise<InteractionsResponse>;
-	public async send(
-		botname: string,
-		message: object
-	): Promise<InteractionsResponse>;
-	public async send(
-		botname: string,
-		message: string | object
-	): Promise<InteractionsResponse> {
+	public async send(botname: string, message: string): Promise<InteractionsResponse>;
+	public async send(botname: string, message: InteractionsMessage): Promise<InteractionsResponse>;
+	public async send(botname: string, message: object): Promise<InteractionsResponse>;
+	public async send(botname: string, message: string | object): Promise<InteractionsResponse> {
 		if (!this._options.bots || !this._options.bots[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');
 		}
 
-		const botProvider =
-			this._options.bots[botname].providerName || 'AWSLexProvider';
+		const botProvider = this._options.bots[botname].providerName || 'AWSLexProvider';
 
 		if (!this._pluggables[botProvider]) {
-			return Promise.reject(
-				'Bot ' +
-					botProvider +
-					' does not have valid pluggin did you try addPluggable first?'
-			);
+			return Promise.reject('Bot ' + botProvider + ' does not have valid pluggin did you try addPluggable first?');
 		}
 		return await this._pluggables[botProvider].sendMessage(botname, message);
 	}
 
-	public onComplete(
-		botname: string,
-		callback: (err, confirmation) => void
-	): void {
+	public onComplete(botname: string, callback: (err, confirmation) => void): void {
 		if (!this._options.bots || !this._options.bots[botname]) {
 			throw new Error('Bot ' + botname + ' does not exist');
 		}
-		const botProvider =
-			this._options.bots[botname].providerName || 'AWSLexProvider';
+		const botProvider = this._options.bots[botname].providerName || 'AWSLexProvider';
 
 		if (!this._pluggables[botProvider]) {
-			throw new Error(
-				'Bot ' +
-					botProvider +
-					' does not have valid pluggin did you try addPluggable first?'
-			);
+			throw new Error('Bot ' + botProvider + ' does not have valid pluggin did you try addPluggable first?');
 		}
 		this._pluggables[botProvider].onComplete(botname, callback);
 	}

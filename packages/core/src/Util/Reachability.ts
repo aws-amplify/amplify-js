@@ -8,9 +8,7 @@ type NetworkStatus = {
 };
 
 export default class ReachabilityNavigator implements Reachability {
-	private static _observers: Array<
-		ZenObservable.SubscriptionObserver<NetworkStatus>
-	> = [];
+	private static _observers: Array<ZenObservable.SubscriptionObserver<NetworkStatus>> = [];
 
 	networkMonitor(netInfo?: any): Observable<NetworkStatus> {
 		if (browserOrNode().isNode) {
@@ -34,10 +32,7 @@ export default class ReachabilityNavigator implements Reachability {
 				globalObj.removeEventListener('online', notifyOnline);
 				globalObj.removeEventListener('offline', notifyOffline);
 
-				ReachabilityNavigator._observers =
-					ReachabilityNavigator._observers.filter(
-						_observer => _observer !== observer
-					);
+				ReachabilityNavigator._observers = ReachabilityNavigator._observers.filter(_observer => _observer !== observer);
 			};
 		});
 	}
@@ -46,10 +41,7 @@ export default class ReachabilityNavigator implements Reachability {
 	private static _observerOverride(status: NetworkStatus): void {
 		for (const observer of ReachabilityNavigator._observers) {
 			if (observer.closed) {
-				ReachabilityNavigator._observers =
-					ReachabilityNavigator._observers.filter(
-						_observer => _observer !== observer
-					);
+				ReachabilityNavigator._observers = ReachabilityNavigator._observers.filter(_observer => _observer !== observer);
 				continue;
 			}
 			observer.next(status);

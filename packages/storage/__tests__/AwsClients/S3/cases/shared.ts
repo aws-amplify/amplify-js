@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export const EMPTY_SHA256 =
-	'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+export const EMPTY_SHA256 = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
 
 export const MOCK_REQUEST_ID = 'requestId';
 export const MOCK_EXTENDED_REQUEST_ID = 'requestId2';

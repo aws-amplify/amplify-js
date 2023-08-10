@@ -80,16 +80,9 @@ export class AmplifyClass {
 	}
 
 	addPluggable(pluggable) {
-		if (
-			pluggable &&
-			pluggable['getCategory'] &&
-			typeof pluggable['getCategory'] === 'function'
-		) {
+		if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
 			this._components.map(comp => {
-				if (
-					comp['addPluggable'] &&
-					typeof comp['addPluggable'] === 'function'
-				) {
+				if (comp['addPluggable'] && typeof comp['addPluggable'] === 'function') {
 					comp.addPluggable(pluggable);
 				}
 			});

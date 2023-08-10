@@ -72,8 +72,7 @@ const sampleSendResponse = {
 	message: 'In what city do you need to rent a car?',
 	sessionId: '2022-08-11T18:23:01.013Z-sTqDnpGk',
 	slotToElicit: 'PickUpCity',
-	slots:
-		'{"ReturnDate":null,"PickUpDate":null,"DriverAge":null,"CarType":null,"PickUpCity":null,"Location":null}',
+	slots: '{"ReturnDate":null,"PickUpDate":null,"DriverAge":null,"CarType":null,"PickUpCity":null,"Location":null}',
 };
 
 class DummyProvider extends AbstractInteractionsProvider {
@@ -149,9 +148,7 @@ describe('Interactions', () => {
 				},
 			});
 			// check if provider's configure was called
-			expect(providerConfigureSpy).toBeCalledTimes(
-				awsmobile.aws_bots_config.length
-			);
+			expect(providerConfigureSpy).toBeCalledTimes(awsmobile.aws_bots_config.length);
 			expect(providerConfigureSpy).toHaveBeenCalledWith({
 				BookTripMOBILEHUB: awsmobileBot,
 			});
@@ -165,9 +162,7 @@ describe('Interactions', () => {
 			});
 
 			// check if provider's configure was called
-			expect(providerConfigureSpy).toBeCalledTimes(
-				Object.keys(manualConfigBots).length
-			);
+			expect(providerConfigureSpy).toBeCalledTimes(Object.keys(manualConfigBots).length);
 
 			// provider's config get's called for each bot
 			expect(providerConfigureSpy).toHaveBeenCalledWith({
@@ -193,9 +188,7 @@ describe('Interactions', () => {
 			});
 
 			// check if provider's configure was called
-			expect(providerConfigureSpy).toBeCalledTimes(
-				Object.keys(manualConfigBots).length
-			);
+			expect(providerConfigureSpy).toBeCalledTimes(Object.keys(manualConfigBots).length);
 
 			// provider's config get's called for each bot
 			expect(providerConfigureSpy).toHaveBeenCalledWith({
@@ -208,10 +201,7 @@ describe('Interactions', () => {
 		});
 
 		test('Configure bot with default provider (AWSLexProvider) using manual config', async () => {
-			const lexV1ConfigureSpy = jest.spyOn(
-				AWSLexProvider.prototype,
-				'configure'
-			);
+			const lexV1ConfigureSpy = jest.spyOn(AWSLexProvider.prototype, 'configure');
 
 			const myBot = {
 				MyBot: {
@@ -237,10 +227,7 @@ describe('Interactions', () => {
 		});
 
 		test('Configure bot with default provider (AWSLexProvider) using aws-exports config', async () => {
-			const lexV1ConfigureSpy = jest.spyOn(
-				AWSLexProvider.prototype,
-				'configure'
-			);
+			const lexV1ConfigureSpy = jest.spyOn(AWSLexProvider.prototype, 'configure');
 
 			const awsmobileBot = {
 				name: 'BookTripMOBILEHUB',
@@ -259,9 +246,7 @@ describe('Interactions', () => {
 			interactions.configure(awsmobile);
 
 			// check if provider's configure was called
-			expect(lexV1ConfigureSpy).toBeCalledTimes(
-				awsmobile.aws_bots_config.length
-			);
+			expect(lexV1ConfigureSpy).toBeCalledTimes(awsmobile.aws_bots_config.length);
 			expect(lexV1ConfigureSpy).toHaveBeenCalledWith({
 				BookTripMOBILEHUB: awsmobileBot,
 			});
@@ -311,9 +296,7 @@ describe('Interactions', () => {
 		test('Add custom pluggable and configure a bot for that plugin successfully', async () => {
 			// first add custom plugin
 			// then configure bots for that plugin
-			expect(() =>
-				interactions.addPluggable(new DummyProvider())
-			).not.toThrow();
+			expect(() => interactions.addPluggable(new DummyProvider())).not.toThrow();
 
 			const config = interactions.configure(manualConfig);
 			expect(config).toEqual({
@@ -339,9 +322,7 @@ describe('Interactions', () => {
 				bots: manualConfigBots,
 			});
 
-			expect(() =>
-				interactions.addPluggable(new DummyProvider())
-			).not.toThrow();
+			expect(() => interactions.addPluggable(new DummyProvider())).not.toThrow();
 
 			// after adding pluggin provider's config get's called for each bot
 			expect(providerConfigureSpy).toHaveBeenCalledWith({
@@ -386,9 +367,7 @@ describe('Interactions', () => {
 		});
 
 		test('Send text message to non-existing bot', async () => {
-			await expect(interactions.send('unknownBot', 'hi')).rejects.toEqual(
-				'Bot unknownBot does not exist'
-			);
+			await expect(interactions.send('unknownBot', 'hi')).rejects.toEqual('Bot unknownBot does not exist');
 			expect.assertions(1);
 		});
 	});
@@ -416,9 +395,7 @@ describe('Interactions', () => {
 		});
 
 		test('Configure onComplete callback for non-existing bot', async () => {
-			expect(() => interactions.onComplete('unknownBot', callback)).toThrow(
-				'Bot unknownBot does not exist'
-			);
+			expect(() => interactions.onComplete('unknownBot', callback)).toThrow('Bot unknownBot does not exist');
 			expect.assertions(1);
 		});
 	});

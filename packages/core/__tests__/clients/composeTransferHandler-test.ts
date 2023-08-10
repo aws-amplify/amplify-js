@@ -2,12 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { composeTransferHandler } from '../../src/clients/internal/composeTransferHandler';
-import {
-	Middleware,
-	Request,
-	Response,
-	TransferHandler,
-} from '../../src/clients/types';
+import { Middleware, Request, Response, TransferHandler } from '../../src/clients/types';
 
 describe(composeTransferHandler.name, () => {
 	test('should call core handler', async () => {
@@ -18,10 +13,7 @@ describe(composeTransferHandler.name, () => {
 		const handler = composeTransferHandler(coreHandler, []);
 		const resp = await handler({ url: new URL('https://a.b') }, { foo: 'bar' });
 		expect(resp).toEqual({ body: 'Response' });
-		expect(coreHandler).toBeCalledWith(
-			{ url: new URL('https://a.b') },
-			{ foo: 'bar' }
-		);
+		expect(coreHandler).toBeCalledWith({ url: new URL('https://a.b') }, { foo: 'bar' });
 	});
 
 	test('should call execute middleware in order', async () => {
@@ -45,36 +37,21 @@ describe(composeTransferHandler.name, () => {
 		const coreHandler: TransferHandler<Request, Response, {}> = jest
 			.fn()
 			.mockResolvedValueOnce({ body: '' } as Response);
-		const handler = composeTransferHandler<[OptionsType, OptionsType]>(
-			coreHandler,
-			[middlewareA, middlewareB]
-		);
+		const handler = composeTransferHandler<[OptionsType, OptionsType]>(coreHandler, [middlewareA, middlewareB]);
 		const options = {
 			mockFnInOptions: jest.fn(),
 		};
-		const resp = await handler(
-			{ url: new URL('https://a.b'), body: '' },
-			options
-		);
+		const resp = await handler({ url: new URL('https://a.b'), body: '' }, options);
 		expect(resp).toEqual({ body: 'BA' });
-		expect(coreHandler).toBeCalledWith(
-			expect.objectContaining({ body: 'AB' }),
-			expect.anything()
-		);
+		expect(coreHandler).toBeCalledWith(expect.objectContaining({ body: 'AB' }), expect.anything());
 		// Validate middleware share a same option object
 		expect(options.mockFnInOptions).toHaveBeenNthCalledWith(1, 'A');
 		expect(options.mockFnInOptions).toHaveBeenNthCalledWith(2, 'B');
 
 		// order does not change in consecutive calls
 		(coreHandler as jest.Mock).mockResolvedValueOnce({ body: '' } as Response);
-		const resp2 = await handler(
-			{ url: new URL('https://a.b'), body: '' },
-			options
-		);
+		const resp2 = await handler({ url: new URL('https://a.b'), body: '' }, options);
 		expect(resp2).toEqual({ body: 'BA' });
-		expect(coreHandler).toBeCalledWith(
-			expect.objectContaining({ body: 'AB' }),
-			expect.anything()
-		);
+		expect(coreHandler).toBeCalledWith(expect.objectContaining({ body: 'AB' }), expect.anything());
 	});
 });

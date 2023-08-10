@@ -39,9 +39,7 @@ export default class Client {
 				params,
 				(err, data) => {
 					if (err) {
-						reject(
-							new CognitoError(err.message, err.code, err.name, err.statusCode)
-						);
+						reject(new CognitoError(err.message, err.code, err.name, err.statusCode));
 					} else {
 						resolve(data);
 					}
@@ -135,16 +133,10 @@ export default class Client {
 			})
 			.catch(err => {
 				// first check if we have a service error
-				if (
-					response &&
-					response.headers &&
-					response.headers.get('x-amzn-errortype')
-				) {
+				if (response && response.headers && response.headers.get('x-amzn-errortype')) {
 					try {
 						const code = response.headers.get('x-amzn-errortype').split(':')[0];
-						const error = new Error(
-							response.status ? response.status.toString() : null
-						);
+						const error = new Error(response.status ? response.status.toString() : null);
 						error.code = code;
 						error.name = code;
 						error.statusCode = response.status;
@@ -187,11 +179,7 @@ function retry(functionToRetry, args, delayFn, attempt = 1) {
 		throw Error('functionToRetry must be a function');
 	}
 
-	logger.debug(
-		`${functionToRetry.name} attempt #${attempt} with args: ${JSON.stringify(
-			args
-		)}`
-	);
+	logger.debug(`${functionToRetry.name} attempt #${attempt} with args: ${JSON.stringify(args)}`);
 
 	return functionToRetry(...args).catch(err => {
 		logger.debug(`error on ${functionToRetry.name}`, err);
@@ -226,10 +214,6 @@ function jitteredBackoff(maxDelayMs) {
 }
 
 const MAX_DELAY_MS = 5 * 60 * 1000;
-function jitteredExponentialRetry(
-	functionToRetry,
-	args,
-	maxDelayMs = MAX_DELAY_MS
-) {
+function jitteredExponentialRetry(functionToRetry, args, maxDelayMs = MAX_DELAY_MS) {
 	return retry(functionToRetry, args, jitteredBackoff(maxDelayMs));
 }

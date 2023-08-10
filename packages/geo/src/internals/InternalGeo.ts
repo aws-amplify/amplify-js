@@ -63,9 +63,7 @@ export class InternalGeoClass {
 	public addPluggable(pluggable: GeoProvider) {
 		if (pluggable && pluggable.getCategory() === 'Geo') {
 			this._pluggables.push(pluggable);
-			const config = pluggable.configure(
-				this._config[pluggable.getProviderName()]
-			);
+			const config = pluggable.configure(this._config[pluggable.getProviderName()]);
 
 			return config;
 		}
@@ -76,9 +74,7 @@ export class InternalGeoClass {
 	 * @param providerName - the name of the plugin
 	 */
 	public getPluggable(providerName: string) {
-		const pluggable = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === providerName
-		);
+		const pluggable = this._pluggables.find(pluggable => pluggable.getProviderName() === providerName);
 		if (pluggable === undefined) {
 			logger.debug('No plugin found with providerName', providerName);
 			throw new Error('No plugin found in Geo for the provider');
@@ -90,9 +86,7 @@ export class InternalGeoClass {
 	 * @param providerName - the name of the plugin
 	 */
 	public removePluggable(providerName: string) {
-		this._pluggables = this._pluggables.filter(
-			pluggable => pluggable.getProviderName() !== providerName
-		);
+		this._pluggables = this._pluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
 		return;
 	}
 
@@ -187,10 +181,7 @@ export class InternalGeoClass {
 			return await prov.searchForSuggestions(
 				text,
 				options,
-				getGeoUserAgentDetails(
-					GeoAction.SearchForSuggestions,
-					customUserAgentDetails
-				)
+				getGeoUserAgentDetails(GeoAction.SearchForSuggestions, customUserAgentDetails)
 			);
 		} catch (error) {
 			logger.debug(error);
@@ -217,10 +208,7 @@ export class InternalGeoClass {
 			return await prov.searchByPlaceId(
 				placeId,
 				options,
-				getGeoUserAgentDetails(
-					GeoAction.SearchByPlaceId,
-					customUserAgentDetails
-				)
+				getGeoUserAgentDetails(GeoAction.SearchByPlaceId, customUserAgentDetails)
 			);
 		} catch (error) {
 			logger.debug(error);
@@ -337,10 +325,7 @@ export class InternalGeoClass {
 		const prov = this.getPluggable(providerName);
 
 		try {
-			return await prov.listGeofences(
-				options,
-				getGeoUserAgentDetails(GeoAction.ListGeofences, customUserAgentDetails)
-			);
+			return await prov.listGeofences(options, getGeoUserAgentDetails(GeoAction.ListGeofences, customUserAgentDetails));
 		} catch (error) {
 			logger.debug(error);
 			throw error;
@@ -377,10 +362,7 @@ export class InternalGeoClass {
 			return await prov.deleteGeofences(
 				geofenceIdsInputArray,
 				options,
-				getGeoUserAgentDetails(
-					GeoAction.DeleteGeofences,
-					customUserAgentDetails
-				)
+				getGeoUserAgentDetails(GeoAction.DeleteGeofences, customUserAgentDetails)
 			);
 		} catch (error) {
 			logger.debug(error);

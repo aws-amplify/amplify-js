@@ -339,11 +339,7 @@ describe('Auth Strategies', () => {
 		});
 
 		test('owner/private IAM/API key', async () => {
-			const authRules = [
-				rules.owner,
-				rules.privateIAM,
-				rules.publicAPIKeyExplicit,
-			];
+			const authRules = [rules.owner, rules.privateIAM, rules.publicAPIKeyExplicit];
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
@@ -357,11 +353,7 @@ describe('Auth Strategies', () => {
 		});
 
 		test('owner/public IAM/API key', async () => {
-			const authRules = [
-				rules.owner,
-				rules.publicIAM,
-				rules.publicAPIKeyExplicit,
-			];
+			const authRules = [rules.owner, rules.publicIAM, rules.publicAPIKeyExplicit];
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
@@ -375,21 +367,11 @@ describe('Auth Strategies', () => {
 		});
 
 		test('function/owner/public IAM/API key', async () => {
-			const authRules = [
-				rules.function,
-				rules.owner,
-				rules.publicIAM,
-				rules.publicAPIKeyExplicit,
-			];
+			const authRules = [rules.function, rules.owner, rules.publicIAM, rules.publicAPIKeyExplicit];
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: [
-					'AWS_LAMBDA',
-					'AMAZON_COGNITO_USER_POOLS',
-					'AWS_IAM',
-					'API_KEY',
-				],
+				result: ['AWS_LAMBDA', 'AMAZON_COGNITO_USER_POOLS', 'AWS_IAM', 'API_KEY'],
 			});
 
 			await testMultiAuthStrategy({
@@ -424,8 +406,7 @@ describe('Auth Strategies', () => {
 
 	describe('defaultAuthStrategy', () => {
 		test('default', () => {
-			const defaultAuthStrategy =
-				require('../src/authModeStrategies/defaultAuthStrategy').defaultAuthStrategy;
+			const defaultAuthStrategy = require('../src/authModeStrategies/defaultAuthStrategy').defaultAuthStrategy;
 			const schema = getAuthSchema();
 			expect(
 				defaultAuthStrategy({
@@ -449,8 +430,7 @@ async function testMultiAuthStrategy({
 }) {
 	mockCurrentUser({ hasAuthenticatedUser });
 
-	const multiAuthStrategyWrapper =
-		require('../src/authModeStrategies/multiAuthStrategy').multiAuthStrategy;
+	const multiAuthStrategyWrapper = require('../src/authModeStrategies/multiAuthStrategy').multiAuthStrategy;
 
 	const multiAuthStrategy = multiAuthStrategyWrapper({});
 
@@ -470,9 +450,7 @@ async function testMultiAuthStrategy({
 	jest.resetAllMocks();
 }
 
-function getAuthSchema(
-	authRules: ModelAttributeAuthProperty[] = []
-): InternalSchema {
+function getAuthSchema(authRules: ModelAttributeAuthProperty[] = []): InternalSchema {
 	const baseSchema: InternalSchema = {
 		namespaces: {
 			[NAMESPACES.USER]: {
@@ -535,11 +513,7 @@ function getAuthSchema(
 	};
 }
 
-function mockCurrentUser({
-	hasAuthenticatedUser,
-}: {
-	hasAuthenticatedUser: boolean;
-}) {
+function mockCurrentUser({ hasAuthenticatedUser }: { hasAuthenticatedUser: boolean }) {
 	jest.mock('@aws-amplify/auth', () => ({
 		Auth: {
 			currentAuthenticatedUser: () => {

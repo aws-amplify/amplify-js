@@ -36,9 +36,7 @@ export class MediaAutoTrack {
 	constructor(params: RequestParams, provider) {
 		const { eventData } = params;
 		this._params = params;
-		this._mediaElement = document.getElementById(
-			eventData.properties['domElementId']
-		);
+		this._mediaElement = document.getElementById(eventData.properties['domElementId']);
 		this._started = false;
 		this._provider = provider;
 		const mediaTrackFunMapping = {
@@ -179,12 +177,9 @@ export class MediaAutoTrack {
 			eventData.properties.duration = this._mediaElement.duration;
 		} else {
 			currentPlayTime = this._financial(this._iframePlayer.getCurrentTime());
-			eventData.properties.duration = this._financial(
-				this._iframePlayer.getDuration()
-			);
+			eventData.properties.duration = this._financial(this._iframePlayer.getDuration());
 		}
-		const percentage =
-			parseFloat(currentPlayTime) / parseFloat(eventData.properties.duration);
+		const percentage = parseFloat(currentPlayTime) / parseFloat(eventData.properties.duration);
 		eventData.properties.eventValue = Number(percentage.toFixed(4));
 		delete eventData.properties.domElementId;
 		this._provider.putToBuffer(newParams);

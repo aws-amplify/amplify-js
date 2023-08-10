@@ -8,15 +8,7 @@ export interface Block {
 	/**
 	 * <p>The type of text that's recognized in a block. In text-detection operations, the following types are returned:</p> <ul> <li> <p> <i>PAGE</i> - Contains a list of the LINE Block objects that are detected on a document page.</p> </li> <li> <p> <i>WORD</i> - A word detected on a document page. A word is one or more ISO basic Latin script characters that aren't separated by spaces.</p> </li> <li> <p> <i>LINE</i> - A string of tab-delimited, contiguous words that's detected on a document page.</p> </li> </ul> <p>In text analysis operations, the following types are returned:</p> <ul> <li> <p> <i>PAGE</i> - Contains a list of child Block objects that are detected on a document page.</p> </li> <li> <p> <i>KEY_VALUE_SET</i> - Stores the KEY and VALUE Block objects for a field that's detected on a document page. Use the <code>EntityType</code> field to determine if a KEY_VALUE_SET object is a KEY Block object or a VALUE Block object. </p> </li> <li> <p> <i>WORD</i> - A word detected on a document page. A word is one or more ISO basic Latin script characters that aren't separated by spaces that's detected on a document page.</p> </li> <li> <p> <i>LINE</i> - A string of tab-delimited, contiguous words that's detected on a document page.</p> </li> <li> <p> <i>TABLE</i> - A table that's detected on a document page. A table is any grid-based information with 2 or more rows or columns with a cell span of 1 row and 1 column each. </p> </li> <li> <p> <i>CELL</i> - A cell within a detected table. The cell is the parent of the block that contains the text in the cell.</p> </li> <li> <p> <i>SELECTION_ELEMENT</i> - A selectable element such as a radio button or checkbox that's detected on a document page. Use the value of <code>SelectionStatus</code> to determine the status of the selection element.</p> </li> </ul>
 	 */
-	BlockType?:
-		| 'KEY_VALUE_SET'
-		| 'PAGE'
-		| 'LINE'
-		| 'WORD'
-		| 'TABLE'
-		| 'CELL'
-		| 'SELECTION_ELEMENT'
-		| string;
+	BlockType?: 'KEY_VALUE_SET' | 'PAGE' | 'LINE' | 'WORD' | 'TABLE' | 'CELL' | 'SELECTION_ELEMENT' | string;
 
 	/**
 	 * <p>The confidence that Amazon Textract has in the accuracy of the recognized text and the accuracy of the geometry points around the recognized text.</p>
@@ -66,9 +58,7 @@ export interface Block {
 	/**
 	 * <p>The type of entity. The following can be returned:</p> <ul> <li> <p> <i>KEY</i> - An identifier for a field on the document.</p> </li> <li> <p> <i>VALUE</i> - The field text.</p> </li> </ul> <p> <code>EntityTypes</code> isn't returned by <code>DetectDocumentText</code> and <code>GetDocumentTextDetection</code>.</p>
 	 */
-	EntityTypes?:
-		| Array<'KEY' | 'VALUE' | string>
-		| Iterable<'KEY' | 'VALUE' | string>;
+	EntityTypes?: Array<'KEY' | 'VALUE' | string> | Iterable<'KEY' | 'VALUE' | string>;
 
 	/**
 	 * <p>The selection status of a selectable element such as a radio button or checkbox. </p>

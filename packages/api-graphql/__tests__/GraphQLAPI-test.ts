@@ -78,29 +78,23 @@ describe('API test', () => {
 		tokenMock = jest.fn();
 		mockCancellableToken = { token: tokenMock, cancel: cancelMock };
 		isCancelSpy = jest.spyOn(axios, 'isCancel').mockReturnValue(true);
-		cancelTokenSpy = jest
-			.spyOn(axios.CancelToken, 'source')
-			.mockImplementation(() => {
-				return mockCancellableToken;
-			});
+		cancelTokenSpy = jest.spyOn(axios.CancelToken, 'source').mockImplementation(() => {
+			return mockCancellableToken;
+		});
 	});
 	describe('graphql test', () => {
 		test('happy-case-query', async () => {
-			const spyonAuth = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
+			});
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce((url, init) => {
-					return new Promise((res, rej) => {
-						res({});
-					});
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce((url, init) => {
+				return new Promise((res, rej) => {
+					res({});
 				});
+			});
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -141,21 +135,17 @@ describe('API test', () => {
 		});
 
 		test('cancel-graphql-query', async () => {
-			const spyonAuth = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
+			});
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce((url, init) => {
-					return new Promise((res, rej) => {
-						rej('error cancelled');
-					});
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce((url, init) => {
+				return new Promise((res, rej) => {
+					rej('error cancelled');
 				});
+			});
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -190,9 +180,7 @@ describe('API test', () => {
 				cancellableToken: mockCancellableToken,
 			};
 
-			const promiseResponse = api.graphql(
-				graphqlOperation(GetEvent, variables)
-			);
+			const promiseResponse = api.graphql(graphqlOperation(GetEvent, variables));
 			api.cancel(promiseResponse as Promise<any>, 'testmessage');
 
 			expect.assertions(5);
@@ -209,21 +197,17 @@ describe('API test', () => {
 		});
 
 		test('happy-case-query-ast', async () => {
-			const spyonAuth = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
+			});
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce((url, init) => {
-					return new Promise((res, rej) => {
-						res({});
-					});
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce((url, init) => {
+				return new Promise((res, rej) => {
+					res({});
 				});
+			});
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -264,13 +248,11 @@ describe('API test', () => {
 		});
 
 		test('happy-case-query-oidc with Cache token', async () => {
-			const spyonAuth = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
+			});
 
 			const cache_config = {
 				capacityInBytes: 3000,
@@ -283,21 +265,17 @@ describe('API test', () => {
 
 			Cache.configure(cache_config);
 
-			const spyonCache = jest
-				.spyOn(Cache, 'getItem')
-				.mockImplementationOnce(() => {
-					return {
-						token: 'id_token',
-					};
-				});
+			const spyonCache = jest.spyOn(Cache, 'getItem').mockImplementationOnce(() => {
+				return {
+					token: 'id_token',
+				};
+			});
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce((url, init) => {
-					return new Promise((res, rej) => {
-						res({});
-					});
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce((url, init) => {
+				return new Promise((res, rej) => {
+					res({});
 				});
+			});
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -337,13 +315,11 @@ describe('API test', () => {
 		});
 
 		test('happy-case-query-oidc with auth storage federated token', async () => {
-			const spyonCredentials = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyonCredentials = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
+			});
 
 			const cache_config = {
 				capacityInBytes: 3000,
@@ -356,30 +332,24 @@ describe('API test', () => {
 
 			Cache.configure(cache_config);
 
-			const spyonCache = jest
-				.spyOn(Cache, 'getItem')
-				.mockImplementationOnce(() => {
-					return null;
-				});
+			const spyonCache = jest.spyOn(Cache, 'getItem').mockImplementationOnce(() => {
+				return null;
+			});
 
-			const spyonAuth = jest
-				.spyOn(Auth, 'currentAuthenticatedUser')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res({
-							name: 'federated user',
-							token: 'federated_token_from_storage',
-						});
+			const spyonAuth = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res({
+						name: 'federated user',
+						token: 'federated_token_from_storage',
 					});
 				});
+			});
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce((url, init) => {
-					return new Promise((res, rej) => {
-						res({});
-					});
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce((url, init) => {
+				return new Promise((res, rej) => {
+					res({});
 				});
+			});
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -423,9 +393,7 @@ describe('API test', () => {
 		test('happy case query with AWS_LAMBDA', async () => {
 			expect.assertions(1);
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockReturnValue(Promise.resolve({}));
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockReturnValue(Promise.resolve({}));
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com';
@@ -470,9 +438,7 @@ describe('API test', () => {
 		test('additional headers with AWS_LAMBDA', async () => {
 			expect.assertions(1);
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockReturnValue(Promise.resolve({}));
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockReturnValue(Promise.resolve({}));
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com';
@@ -531,9 +497,7 @@ describe('API test', () => {
 
 			Cache.configure(cache_config);
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockReturnValue(Promise.resolve({}));
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockReturnValue(Promise.resolve({}));
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -581,9 +545,7 @@ describe('API test', () => {
 			expect.assertions(1);
 			jest.spyOn(Credentials, 'get').mockReturnValue(Promise.resolve('cred'));
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockReturnValue(Promise.resolve({}));
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockReturnValue(Promise.resolve({}));
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -628,9 +590,7 @@ describe('API test', () => {
 		test('multi-auth default case api-key, using AWS_LAMBDA as auth mode', async () => {
 			expect.assertions(1);
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockReturnValue(Promise.resolve({}));
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockReturnValue(Promise.resolve({}));
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -690,9 +650,7 @@ describe('API test', () => {
 
 			jest.spyOn(Cache, 'getItem').mockReturnValue({ token: 'oidc_token' });
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockReturnValue(Promise.resolve({}));
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockReturnValue(Promise.resolve({}));
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -880,9 +838,7 @@ describe('API test', () => {
 
 		test('multi-auth default case api-key, using CUP as auth mode', async () => {
 			expect.assertions(1);
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockReturnValue(Promise.resolve({}));
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockReturnValue(Promise.resolve({}));
 
 			jest.spyOn(Auth, 'currentSession').mockReturnValue({
 				getAccessToken: () => ({
@@ -934,15 +890,13 @@ describe('API test', () => {
 		test('authMode on subscription', async () => {
 			expect.assertions(1);
 
-			jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementation(async (url, init) => ({
-					extensions: {
-						subscription: {
-							newSubscriptions: {},
-						},
+			jest.spyOn(RestClient.prototype, 'post').mockImplementation(async (url, init) => ({
+				extensions: {
+					subscription: {
+						newSubscriptions: {},
 					},
-				}));
+				},
+			}));
 
 			const cache_config = {
 				capacityInBytes: 3000,
@@ -957,9 +911,7 @@ describe('API test', () => {
 
 			jest.spyOn(Cache, 'getItem').mockReturnValue({ token: 'id_token' });
 
-			const spyon_pubsub = jest
-				.spyOn(InternalPubSub, 'subscribe')
-				.mockImplementation(jest.fn(() => Observable.of({})));
+			const spyon_pubsub = jest.spyOn(InternalPubSub, 'subscribe').mockImplementation(jest.fn(() => Observable.of({})));
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -1003,15 +955,13 @@ describe('API test', () => {
 		});
 
 		test('happy-case-subscription', async done => {
-			jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementation(async (url, init) => ({
-					extensions: {
-						subscription: {
-							newSubscriptions: {},
-						},
+			jest.spyOn(RestClient.prototype, 'post').mockImplementation(async (url, init) => ({
+				extensions: {
+					subscription: {
+						newSubscriptions: {},
 					},
-				}));
+				},
+			}));
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -1039,16 +989,11 @@ describe('API test', () => {
 			const doc = parse(SubscribeToEventComments);
 			const query = print(doc);
 
-			const observable = (
-				api.graphql(graphqlOperation(query, variables)) as Observable<object>
-			).subscribe({
+			const observable = (api.graphql(graphqlOperation(query, variables)) as Observable<object>).subscribe({
 				next: () => {
 					expect(InternalPubSub.subscribe).toHaveBeenCalledTimes(1);
-					const subscribeOptions = (InternalPubSub.subscribe as any).mock
-						.calls[0][1];
-					expect(subscribeOptions.provider).toBe(
-						INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER
-					);
+					const subscribeOptions = (InternalPubSub.subscribe as any).mock.calls[0][1];
+					expect(subscribeOptions.provider).toBe(INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER);
 					done();
 				},
 			});
@@ -1057,15 +1002,13 @@ describe('API test', () => {
 		});
 
 		test('happy case subscription with additionalHeaders', async done => {
-			jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementation(async (url, init) => ({
-					extensions: {
-						subscription: {
-							newSubscriptions: {},
-						},
+			jest.spyOn(RestClient.prototype, 'post').mockImplementation(async (url, init) => ({
+				extensions: {
+					subscription: {
+						newSubscriptions: {},
 					},
-				}));
+				},
+			}));
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -1098,15 +1041,11 @@ describe('API test', () => {
 			};
 
 			const observable = (
-				api.graphql(
-					graphqlOperation(query, variables),
-					additionalHeaders
-				) as Observable<object>
+				api.graphql(graphqlOperation(query, variables), additionalHeaders) as Observable<object>
 			).subscribe({
 				next: () => {
 					expect(InternalPubSub.subscribe).toHaveBeenCalledTimes(1);
-					const subscribeOptions = (InternalPubSub.subscribe as any).mock
-						.calls[0][1];
+					const subscribeOptions = (InternalPubSub.subscribe as any).mock.calls[0][1];
 					expect(subscribeOptions.additionalHeaders).toBe(additionalHeaders);
 					done();
 				},
@@ -1116,21 +1055,17 @@ describe('API test', () => {
 		});
 
 		test('happy case mutation', async () => {
-			const spyonAuth = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
+			});
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce((url, init) => {
-					return new Promise((res, rej) => {
-						res({});
-					});
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce((url, init) => {
+				return new Promise((res, rej) => {
+					res({});
 				});
+			});
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
 				region = 'us-east-2',
@@ -1184,21 +1119,17 @@ describe('API test', () => {
 		});
 
 		test('happy case query with additionalHeaders', async () => {
-			const spyonAuth = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
+			});
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce((url, init) => {
-					return new Promise((res, rej) => {
-						res({});
-					});
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce((url, init) => {
+				return new Promise((res, rej) => {
+					res({});
 				});
+			});
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -1243,10 +1174,7 @@ describe('API test', () => {
 				someHeaderSetAtConfigThatWillBeOverridden: 'expectedValue',
 			};
 
-			await api.graphql(
-				graphqlOperation(GetEvent, variables),
-				additionalHeaders
-			);
+			await api.graphql(graphqlOperation(GetEvent, variables), additionalHeaders);
 
 			expect(spyon).toBeCalledWith(url, {
 				...init,
@@ -1275,21 +1203,17 @@ describe('API test', () => {
 		});
 
 		test('sends cookies with request', async () => {
-			const spyonAuth = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
+			});
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce((url, init) => {
-					return new Promise((res, rej) => {
-						res({});
-					});
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce((url, init) => {
+				return new Promise((res, rej) => {
+					res({});
 				});
+			});
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -1387,29 +1311,23 @@ describe('Internal API customUserAgent test', () => {
 		tokenMock = jest.fn();
 		mockCancellableToken = { token: tokenMock, cancel: cancelMock };
 		isCancelSpy = jest.spyOn(axios, 'isCancel').mockReturnValue(true);
-		cancelTokenSpy = jest
-			.spyOn(axios.CancelToken, 'source')
-			.mockImplementation(() => {
-				return mockCancellableToken;
-			});
+		cancelTokenSpy = jest.spyOn(axios.CancelToken, 'source').mockImplementation(() => {
+			return mockCancellableToken;
+		});
 	});
 	describe('graphql test', () => {
 		test('happy case mutation', async () => {
-			const spyonAuth = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
+			});
 
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce((url, init) => {
-					return new Promise((res, rej) => {
-						res({});
-					});
+			const spyon = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce((url, init) => {
+				return new Promise((res, rej) => {
+					res({});
 				});
+			});
 			const internalApi = new InternalAPI(config);
 			const url = 'https://appsync.amazonaws.com',
 				region = 'us-east-2',
@@ -1457,25 +1375,19 @@ describe('Internal API customUserAgent test', () => {
 				cancellableToken: mockCancellableToken,
 			};
 
-			await internalApi.graphql(
-				graphqlOperation(AddComment, variables),
-				undefined,
-				customUserAgentDetailsAPI
-			);
+			await internalApi.graphql(graphqlOperation(AddComment, variables), undefined, customUserAgentDetailsAPI);
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
 
 		test('happy case subscription', async done => {
-			jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementation(async (url, init) => ({
-					extensions: {
-						subscription: {
-							newSubscriptions: {},
-						},
+			jest.spyOn(RestClient.prototype, 'post').mockImplementation(async (url, init) => ({
+				extensions: {
+					subscription: {
+						newSubscriptions: {},
 					},
-				}));
+				},
+			}));
 
 			const internalApi = new InternalAPI(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -1517,11 +1429,8 @@ describe('Internal API customUserAgent test', () => {
 						expect.anything(),
 						customUserAgentDetailsAPI
 					);
-					const subscribeOptions = (InternalPubSub.subscribe as any).mock
-						.calls[0][1];
-					expect(subscribeOptions.provider).toBe(
-						INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER
-					);
+					const subscribeOptions = (InternalPubSub.subscribe as any).mock.calls[0][1];
+					expect(subscribeOptions.provider).toBe(INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER);
 					done();
 				},
 			});

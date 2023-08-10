@@ -1,10 +1,5 @@
 import CognitoJwtToken from '../src/CognitoJwtToken';
-import {
-	sampleEncodedToken,
-	expDecoded,
-	nameDecoded,
-	iatDecoded,
-} from './constants';
+import { sampleEncodedToken, expDecoded, nameDecoded, iatDecoded } from './constants';
 
 describe('Accessor methods', () => {
 	const cognitoJwtToken = new CognitoJwtToken(sampleEncodedToken);

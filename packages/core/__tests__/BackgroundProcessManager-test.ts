@@ -1,8 +1,5 @@
 import Observable from 'zen-observable-ts';
-import {
-	BackgroundProcessManager,
-	BackgroundProcessManagerState,
-} from '../src/Util/BackgroundProcessManager';
+import { BackgroundProcessManager, BackgroundProcessManagerState } from '../src/Util/BackgroundProcessManager';
 
 /**
  * NOTE: Jest's promise rejection assertion uses substring matching.
@@ -127,9 +124,9 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 		await manager.close();
 
-		expect(
-			manager.add(async () => Promise.resolve('This should never be returned.'))
-		).rejects.toThrow('BackgroundManagerNotOpenError');
+		expect(manager.add(async () => Promise.resolve('This should never be returned.'))).rejects.toThrow(
+			'BackgroundManagerNotOpenError'
+		);
 	});
 
 	test('can be explicitly re-opened to accept new work after close()', async () => {
@@ -500,9 +497,7 @@ describe('BackgroundProcessManager', () => {
 		const resolved = await Promise.allSettled(closes);
 
 		expect(terminateSignalCount).toEqual(1);
-		expect(resolved.map(r => r.status).every(v => v === 'fulfilled')).toBe(
-			true
-		);
+		expect(resolved.map(r => r.status).every(v => v === 'fulfilled')).toBe(true);
 	});
 
 	test('can contain a nested manager', async () => {
@@ -555,10 +550,7 @@ describe('BackgroundProcessManager', () => {
 	test('jobs can be named when adding an async function', async () => {
 		const manager = new BackgroundProcessManager();
 
-		manager.add(
-			async () => new Promise(unsleep => setTimeout(unsleep, 1)),
-			'async function'
-		);
+		manager.add(async () => new Promise(unsleep => setTimeout(unsleep, 1)), 'async function');
 
 		expect(manager.pending.length).toBe(1);
 		expect(manager.pending[0]).toEqual('async function');
@@ -627,25 +619,18 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 		await manager.close();
 
-		await expect(manager.add(async () => {}, 'some job')).rejects.toThrow(
-			'some job'
-		);
+		await expect(manager.add(async () => {}, 'some job')).rejects.toThrow('some job');
 	});
 
 	test('manager closed error shows names of pending items in error', async () => {
 		const manager = new BackgroundProcessManager();
 
 		let unblock;
-		manager.add(
-			() => new Promise(_unblock => (unblock = _unblock)),
-			'blocking job'
-		);
+		manager.add(() => new Promise(_unblock => (unblock = _unblock)), 'blocking job');
 
 		const close = manager.close();
 
-		await expect(manager.add(async () => {}, 'some job')).rejects.toThrow(
-			'blocking job'
-		);
+		await expect(manager.add(async () => {}, 'some job')).rejects.toThrow('blocking job');
 
 		unblock();
 		await close;

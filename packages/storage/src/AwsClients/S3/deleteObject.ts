@@ -1,38 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Endpoint,
-	HttpRequest,
-	HttpResponse,
-	parseMetadata,
-} from '@aws-amplify/core/internals/aws-client-utils';
+import { Endpoint, HttpRequest, HttpResponse, parseMetadata } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import type {
-	DeleteObjectCommandInput,
-	DeleteObjectCommandOutput,
-} from './types';
+import type { DeleteObjectCommandInput, DeleteObjectCommandOutput } from './types';
 
 import { defaultConfig } from './base';
-import {
-	deserializeBoolean,
-	map,
-	parseXmlError,
-	s3TransferHandler,
-	serializePathnameObjectKey,
-} from './utils';
+import { deserializeBoolean, map, parseXmlError, s3TransferHandler, serializePathnameObjectKey } from './utils';
 
-export type DeleteObjectInput = Pick<
-	DeleteObjectCommandInput,
-	'Bucket' | 'Key'
->;
+export type DeleteObjectInput = Pick<DeleteObjectCommandInput, 'Bucket' | 'Key'>;
 
 export type DeleteObjectOutput = DeleteObjectCommandOutput;
 
-const deleteObjectSerializer = (
-	input: DeleteObjectInput,
-	endpoint: Endpoint
-): HttpRequest => {
+const deleteObjectSerializer = (input: DeleteObjectInput, endpoint: Endpoint): HttpRequest => {
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
@@ -42,9 +22,7 @@ const deleteObjectSerializer = (
 	};
 };
 
-const deleteObjectDeserializer = async (
-	response: HttpResponse
-): Promise<DeleteObjectOutput> => {
+const deleteObjectDeserializer = async (response: HttpResponse): Promise<DeleteObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
 		throw error;
@@ -61,9 +39,7 @@ const deleteObjectDeserializer = async (
 	}
 };
 
-export const deleteObject = composeServiceApi(
-	s3TransferHandler,
-	deleteObjectSerializer,
-	deleteObjectDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
-);
+export const deleteObject = composeServiceApi(s3TransferHandler, deleteObjectSerializer, deleteObjectDeserializer, {
+	...defaultConfig,
+	responseType: 'text',
+});

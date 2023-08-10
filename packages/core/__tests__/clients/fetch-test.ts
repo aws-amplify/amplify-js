@@ -35,9 +35,7 @@ describe(fetchTransferHandler.name, () => {
 		const signal = new AbortController().signal;
 		await fetchTransferHandler(mockRequest, { abortSignal: signal });
 		expect(mockUnfetch).toBeCalledTimes(1);
-		expect(mockUnfetch.mock.calls[0][1]).toEqual(
-			expect.objectContaining({ signal })
-		);
+		expect(mockUnfetch.mock.calls[0][1]).toEqual(expect.objectContaining({ signal }));
 	});
 
 	test('should support headers', async () => {
@@ -81,15 +79,9 @@ describe(fetchTransferHandler.name, () => {
 		expect(mockBody.json).toBeCalledTimes(1); // test caching
 	});
 
-	test.each(['GET', 'HEAD', 'DELETE'])(
-		'should ignore request payload for %s request',
-		async method => {
-			await fetchTransferHandler(
-				{ ...mockRequest, method, body: 'Mock Body' },
-				{}
-			);
-			expect(mockUnfetch).toBeCalledTimes(1);
-			expect(mockUnfetch.mock.calls[0][0].body).toBeUndefined();
-		}
-	);
+	test.each(['GET', 'HEAD', 'DELETE'])('should ignore request payload for %s request', async method => {
+		await fetchTransferHandler({ ...mockRequest, method, body: 'Mock Body' }, {});
+		expect(mockUnfetch).toBeCalledTimes(1);
+		expect(mockUnfetch.mock.calls[0][0].body).toBeUndefined();
+	});
 });

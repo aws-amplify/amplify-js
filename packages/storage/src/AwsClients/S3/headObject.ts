@@ -1,18 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Endpoint,
-	HttpRequest,
-	parseMetadata,
-} from '@aws-amplify/core/internals/aws-client-utils';
+import { Endpoint, HttpRequest, parseMetadata } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import { defaultConfig } from './base';
-import type {
-	CompatibleHttpResponse,
-	HeadObjectCommandInput,
-	HeadObjectCommandOutput,
-} from './types';
+import type { CompatibleHttpResponse, HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
 import {
 	deserializeMetadata,
 	deserializeNumber,
@@ -36,19 +28,10 @@ export type HeadObjectInput = Pick<
 
 export type HeadObjectOutput = Pick<
 	HeadObjectCommandOutput,
-	| '$metadata'
-	| 'ContentLength'
-	| 'ContentType'
-	| 'ETag'
-	| 'LastModified'
-	| 'Metadata'
-	| 'VersionId'
+	'$metadata' | 'ContentLength' | 'ContentType' | 'ETag' | 'LastModified' | 'Metadata' | 'VersionId'
 >;
 
-const headObjectSerializer = async (
-	input: HeadObjectInput,
-	endpoint: Endpoint
-): Promise<HttpRequest> => {
+const headObjectSerializer = async (input: HeadObjectInput, endpoint: Endpoint): Promise<HttpRequest> => {
 	const headers = await serializeObjectSsecOptionsToHeaders(input);
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);
@@ -59,9 +42,7 @@ const headObjectSerializer = async (
 	};
 };
 
-const headObjectDeserializer = async (
-	response: CompatibleHttpResponse
-): Promise<HeadObjectOutput> => {
+const headObjectDeserializer = async (response: CompatibleHttpResponse): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
 		throw error;
@@ -83,9 +64,7 @@ const headObjectDeserializer = async (
 	}
 };
 
-export const headObject = composeServiceApi(
-	s3TransferHandler,
-	headObjectSerializer,
-	headObjectDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
-);
+export const headObject = composeServiceApi(s3TransferHandler, headObjectSerializer, headObjectDeserializer, {
+	...defaultConfig,
+	responseType: 'text',
+});

@@ -50,10 +50,7 @@ class SyncProcessor {
 
 	constructor(
 		private readonly schema: InternalSchema,
-		private readonly syncPredicates: WeakMap<
-			SchemaModel,
-			ModelPredicate<any> | null
-		>,
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any> | null>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
@@ -68,11 +65,7 @@ class SyncProcessor {
 			Object.values(namespace.models)
 				.filter(({ syncable }) => syncable)
 				.forEach(model => {
-					const [[, ...opNameQuery]] = buildGraphQLOperation(
-						namespace,
-						model,
-						'LIST'
-					);
+					const [[, ...opNameQuery]] = buildGraphQLOperation(namespace, model, 'LIST');
 
 					this.typeQuery.set(model, opNameQuery);
 				});
@@ -83,11 +76,10 @@ class SyncProcessor {
 		if (!this.syncPredicates) {
 			return null!;
 		}
-		const predicatesGroup: PredicatesGroup<any> =
-			ModelPredicateCreator.getPredicates(
-				this.syncPredicates.get(model)!,
-				false
-			)!;
+		const predicatesGroup: PredicatesGroup<any> = ModelPredicateCreator.getPredicates(
+			this.syncPredicates.get(model)!,
+			false
+		)!;
 
 		if (!predicatesGroup) {
 			return null!;
@@ -126,15 +118,11 @@ class SyncProcessor {
 		let authModeAttempts = 0;
 		const authModeRetry = async () => {
 			if (!this.runningProcesses.isOpen) {
-				throw new Error(
-					'sync.retreievePage termination was requested. Exiting.'
-				);
+				throw new Error('sync.retreievePage termination was requested. Exiting.');
 			}
 
 			try {
-				logger.debug(
-					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`
-				);
+				logger.debug(`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`);
 				const response = await this.jitteredRetry<T>({
 					query,
 					variables,
@@ -143,9 +131,7 @@ class SyncProcessor {
 					authMode: readAuthModes[authModeAttempts],
 					onTerminate,
 				});
-				logger.debug(
-					`Sync successful with authMode: ${readAuthModes[authModeAttempts]}`
-				);
+				logger.debug(`Sync successful with authMode: ${readAuthModes[authModeAttempts]}`);
 				return response;
 			} catch (error) {
 				authModeAttempts++;
@@ -167,9 +153,9 @@ class SyncProcessor {
 					throw error;
 				}
 				logger.debug(
-					`Sync failed with authMode: ${
-						readAuthModes[authModeAttempts - 1]
-					}. Retrying with authMode: ${readAuthModes[authModeAttempts]}`
+					`Sync failed with authMode: ${readAuthModes[authModeAttempts - 1]}. Retrying with authMode: ${
+						readAuthModes[authModeAttempts]
+					}`
 				);
 				return await authModeRetry();
 			}
@@ -214,10 +200,7 @@ class SyncProcessor {
 		return await jitteredExponentialRetry(
 			async (query, variables) => {
 				try {
-					const authToken = await getTokenForCustomAuth(
-						authMode,
-						this.amplifyConfig
-					);
+					const authToken = await getTokenForCustomAuth(authMode, this.amplifyConfig);
 
 					const customUserAgentDetails: CustomUserAgentDetails = {
 						category: Category.DataStore,
@@ -238,8 +221,7 @@ class SyncProcessor {
 					// TODO: onTerminate.then(() => API.cancel(...))
 				} catch (error) {
 					// Catch client-side (GraphQLAuthError) & 401/403 errors here so that we don't continue to retry
-					const clientOrForbiddenErrorMessage =
-						getClientSideAuthError(error) || getForbiddenError(error);
+					const clientOrForbiddenErrorMessage = getClientSideAuthError(error) || getForbiddenError(error);
 
 					if (clientOrForbiddenErrorMessage) {
 						logger.error('Sync processor retry error:', error);
@@ -248,24 +230,14 @@ class SyncProcessor {
 
 					const hasItems = Boolean(error?.data?.[opName]?.items);
 
-					const unauthorized =
-						error?.errors &&
-						(error.errors as [any]).some(
-							err => err.errorType === 'Unauthorized'
-						);
+					const unauthorized = error?.errors && (error.errors as [any]).some(err => err.errorType === 'Unauthorized');
 
-					const otherErrors =
-						error?.errors &&
-						(error.errors as [any]).filter(
-							err => err.errorType !== 'Unauthorized'
-						);
+					const otherErrors = error?.errors && (error.errors as [any]).filter(err => err.errorType !== 'Unauthorized');
 
 					const result = error;
 
 					if (hasItems) {
-						result.data[opName].items = result.data[opName].items.filter(
-							item => item !== null
-						);
+						result.data[opName].items = result.data[opName].items.filter(item => item !== null);
 					}
 
 					if (hasItems && otherErrors?.length) {
@@ -351,24 +323,17 @@ class SyncProcessor {
 		);
 	}
 
-	start(
-		typesLastSync: Map<SchemaModel, [string, number]>
-	): Observable<SyncModelPage> {
+	start(typesLastSync: Map<SchemaModel, [string, number]>): Observable<SyncModelPage> {
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
 		const observable = new Observable<SyncModelPage>(observer => {
-			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
-				(map, namespace) => {
-					for (const modelName of Array.from(
-						namespace.modelTopologicalOrdering!.keys()
-					)) {
-						const typeLastSync = typesLastSync.get(namespace.models[modelName]);
-						map.set(namespace.models[modelName], typeLastSync!);
-					}
-					return map;
-				},
-				new Map<SchemaModel, [string, number]>()
-			);
+			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce((map, namespace) => {
+				for (const modelName of Array.from(namespace.modelTopologicalOrdering!.keys())) {
+					const typeLastSync = typesLastSync.get(namespace.models[modelName]);
+					map.set(namespace.models[modelName], typeLastSync!);
+				}
+				return map;
+			}, new Map<SchemaModel, [string, number]>());
 
 			const allModelsReady = Array.from(sortedTypesLastSyncs.entries())
 				.filter(([{ syncable }]) => syncable)
@@ -384,12 +349,8 @@ class SyncProcessor {
 							let recordsReceived = 0;
 							const filter = this.graphqlFilterFromPredicate(modelDefinition);
 
-							const parents = this.schema.namespaces[
-								namespace
-							].modelTopologicalOrdering!.get(modelDefinition.name);
-							const promises = parents!.map(parent =>
-								parentPromises.get(`${namespace}_${parent}`)
-							);
+							const parents = this.schema.namespaces[namespace].modelTopologicalOrdering!.get(modelDefinition.name);
+							const promises = parents!.map(parent => parentPromises.get(`${namespace}_${parent}`));
 
 							const promise = new Promise<void>(async res => {
 								await Promise.all(promises);
@@ -401,16 +362,11 @@ class SyncProcessor {
 									 * finished terminating and/or waiting for its background processes to complete.
 									 */
 									if (!this.runningProcesses.isOpen) {
-										logger.debug(
-											`Sync processor has been stopped, terminating sync for ${modelDefinition.name}`
-										);
+										logger.debug(`Sync processor has been stopped, terminating sync for ${modelDefinition.name}`);
 										return res();
 									}
 
-									const limit = Math.min(
-										maxRecordsToSync - recordsReceived,
-										syncPageSize
-									);
+									const limit = Math.min(maxRecordsToSync - recordsReceived, syncPageSize);
 
 									/**
 									 * It's possible that `retrievePage` will fail.
@@ -456,8 +412,7 @@ class SyncProcessor {
 
 									recordsReceived += items.length;
 
-									done =
-										nextToken === null || recordsReceived >= maxRecordsToSync;
+									done = nextToken === null || recordsReceived >= maxRecordsToSync;
 
 									observer.next({
 										namespace,
@@ -472,10 +427,7 @@ class SyncProcessor {
 								res();
 							});
 
-							parentPromises.set(
-								`${namespace}_${modelDefinition.name}`,
-								promise
-							);
+							parentPromises.set(`${namespace}_${modelDefinition.name}`, promise);
 
 							await promise;
 						}, `adding model ${modelDefinition.name}`)

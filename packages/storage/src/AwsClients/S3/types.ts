@@ -10,10 +10,7 @@
  * * {@link UploadPartRequest.Body}: Remove Node.js specific `Readable` type
  */
 import { MetadataBearer as __MetadataBearer } from '@aws-sdk/types';
-import {
-	HttpResponse,
-	ResponseBodyMixin,
-} from '@aws-amplify/core/internals/aws-client-utils';
+import { HttpResponse, ResponseBodyMixin } from '@aws-amplify/core/internals/aws-client-utils';
 
 /**
  * Compatible type for S3 streaming body exposed via Amplify public interfaces, like {@link GetObjectCommandOutput}
@@ -110,16 +107,13 @@ declare const TaggingDirective: {
  *
  * The input for {@link AbortMultipartUploadCommand}.
  */
-export interface AbortMultipartUploadCommandInput
-	extends AbortMultipartUploadRequest {}
+export interface AbortMultipartUploadCommandInput extends AbortMultipartUploadRequest {}
 /**
  * @public
  *
  * The output of {@link AbortMultipartUploadCommand}.
  */
-export interface AbortMultipartUploadCommandOutput
-	extends AbortMultipartUploadOutput,
-		__MetadataBearer {}
+export interface AbortMultipartUploadCommandOutput extends AbortMultipartUploadOutput, __MetadataBearer {}
 /**
  * @public
  */
@@ -181,16 +175,13 @@ export interface CommonPrefix {
  *
  * The input for {@link CompleteMultipartUploadCommand}.
  */
-export interface CompleteMultipartUploadCommandInput
-	extends CompleteMultipartUploadRequest {}
+export interface CompleteMultipartUploadCommandInput extends CompleteMultipartUploadRequest {}
 /**
  * @public
  *
  * The output of {@link CompleteMultipartUploadCommand}.
  */
-export interface CompleteMultipartUploadCommandOutput
-	extends CompleteMultipartUploadOutput,
-		__MetadataBearer {}
+export interface CompleteMultipartUploadCommandOutput extends CompleteMultipartUploadOutput, __MetadataBearer {}
 /**
  * @public
  */
@@ -433,9 +424,7 @@ export interface CopyObjectCommandInput extends CopyObjectRequest {}
  *
  * The output of {@link CopyObjectCommand}.
  */
-export interface CopyObjectCommandOutput
-	extends CopyObjectOutput,
-		__MetadataBearer {}
+export interface CopyObjectCommandOutput extends CopyObjectOutput, __MetadataBearer {}
 /**
  * @public
  */
@@ -785,16 +774,13 @@ export interface CopyObjectResult {
  *
  * The input for {@link CreateMultipartUploadCommand}.
  */
-export interface CreateMultipartUploadCommandInput
-	extends CreateMultipartUploadRequest {}
+export interface CreateMultipartUploadCommandInput extends CreateMultipartUploadRequest {}
 /**
  * @public
  *
  * The output of {@link CreateMultipartUploadCommand}.
  */
-export interface CreateMultipartUploadCommandOutput
-	extends CreateMultipartUploadOutput,
-		__MetadataBearer {}
+export interface CreateMultipartUploadCommandOutput extends CreateMultipartUploadOutput, __MetadataBearer {}
 /**
  * @public
  */
@@ -1049,9 +1035,7 @@ export interface DeleteObjectCommandInput extends DeleteObjectRequest {}
  *
  * The output of {@link DeleteObjectCommand}.
  */
-export interface DeleteObjectCommandOutput
-	extends DeleteObjectOutput,
-		__MetadataBearer {}
+export interface DeleteObjectCommandOutput extends DeleteObjectOutput, __MetadataBearer {}
 /**
  * @public
  */
@@ -1128,9 +1112,7 @@ export interface GetObjectCommandInput extends GetObjectRequest {}
  *
  * The output of {@link GetObjectCommand}.
  */
-export interface GetObjectCommandOutput
-	extends GetObjectOutput,
-		__MetadataBearer {}
+export interface GetObjectCommandOutput extends GetObjectOutput, __MetadataBearer {}
 /**
  * @public
  */
@@ -1443,9 +1425,7 @@ export interface HeadObjectCommandInput extends HeadObjectRequest {}
  *
  * The output of {@link HeadObjectCommand}.
  */
-export interface HeadObjectCommandOutput
-	extends HeadObjectOutput,
-		__MetadataBearer {}
+export interface HeadObjectCommandOutput extends HeadObjectOutput, __MetadataBearer {}
 /**
  * @public
  */
@@ -1792,9 +1772,7 @@ export interface ListObjectsV2CommandInput extends ListObjectsV2Request {}
  *
  * The output of {@link ListObjectsV2Command}.
  */
-export interface ListObjectsV2CommandOutput
-	extends ListObjectsV2Output,
-		__MetadataBearer {}
+export interface ListObjectsV2CommandOutput extends ListObjectsV2Output, __MetadataBearer {}
 /**
  * @public
  */
@@ -1950,9 +1928,7 @@ export interface ListPartsCommandInput extends ListPartsRequest {}
  *
  * The output of {@link ListPartsCommand}.
  */
-export interface ListPartsCommandOutput
-	extends ListPartsOutput,
-		__MetadataBearer {}
+export interface ListPartsCommandOutput extends ListPartsOutput, __MetadataBearer {}
 /**
  * @public
  */
@@ -2204,9 +2180,7 @@ export interface PutObjectCommandInput extends PutObjectCommandInputType {}
  *
  * The output of {@link PutObjectCommand}.
  */
-export interface PutObjectCommandOutput
-	extends PutObjectOutput,
-		__MetadataBearer {}
+export interface PutObjectCommandOutput extends PutObjectOutput, __MetadataBearer {}
 /**
  * @public
  */
@@ -2542,9 +2516,7 @@ export interface UploadPartCommandInput extends UploadPartCommandInputType {}
  *
  * The output of {@link UploadPartCommand}.
  */
-export interface UploadPartCommandOutput
-	extends UploadPartOutput,
-		__MetadataBearer {}
+export interface UploadPartCommandOutput extends UploadPartOutput, __MetadataBearer {}
 /**
  * @public
  */
@@ -2788,8 +2760,7 @@ export type ArchiveStatus = (typeof ArchiveStatus)[keyof typeof ArchiveStatus];
 /**
  * @public
  */
-export type ChecksumAlgorithm =
-	(typeof ChecksumAlgorithm)[keyof typeof ChecksumAlgorithm];
+export type ChecksumAlgorithm = (typeof ChecksumAlgorithm)[keyof typeof ChecksumAlgorithm];
 /**
  * @public
  */
@@ -2801,28 +2772,23 @@ export type EncodingType = (typeof EncodingType)[keyof typeof EncodingType];
 /**
  * @public
  */
-export type MetadataDirective =
-	(typeof MetadataDirective)[keyof typeof MetadataDirective];
+export type MetadataDirective = (typeof MetadataDirective)[keyof typeof MetadataDirective];
 /**
  * @public
  */
-export type ObjectCannedACL =
-	(typeof ObjectCannedACL)[keyof typeof ObjectCannedACL];
+export type ObjectCannedACL = (typeof ObjectCannedACL)[keyof typeof ObjectCannedACL];
 /**
  * @public
  */
-export type ObjectLockLegalHoldStatus =
-	(typeof ObjectLockLegalHoldStatus)[keyof typeof ObjectLockLegalHoldStatus];
+export type ObjectLockLegalHoldStatus = (typeof ObjectLockLegalHoldStatus)[keyof typeof ObjectLockLegalHoldStatus];
 /**
  * @public
  */
-export type ObjectLockMode =
-	(typeof ObjectLockMode)[keyof typeof ObjectLockMode];
+export type ObjectLockMode = (typeof ObjectLockMode)[keyof typeof ObjectLockMode];
 /**
  * @public
  */
-export type ObjectStorageClass =
-	(typeof ObjectStorageClass)[keyof typeof ObjectStorageClass];
+export type ObjectStorageClass = (typeof ObjectStorageClass)[keyof typeof ObjectStorageClass];
 /**
  * @public
  *
@@ -2837,13 +2803,11 @@ export type PutObjectCommandInputType = Omit<PutObjectRequest, 'Body'> & {
 /**
  * @public
  */
-export type ReplicationStatus =
-	(typeof ReplicationStatus)[keyof typeof ReplicationStatus];
+export type ReplicationStatus = (typeof ReplicationStatus)[keyof typeof ReplicationStatus];
 /**
  * @public
  */
-export type RequestCharged =
-	(typeof RequestCharged)[keyof typeof RequestCharged];
+export type RequestCharged = (typeof RequestCharged)[keyof typeof RequestCharged];
 /**
  * @public
  */
@@ -2851,8 +2815,7 @@ export type RequestPayer = (typeof RequestPayer)[keyof typeof RequestPayer];
 /**
  * @public
  */
-export type ServerSideEncryption =
-	(typeof ServerSideEncryption)[keyof typeof ServerSideEncryption];
+export type ServerSideEncryption = (typeof ServerSideEncryption)[keyof typeof ServerSideEncryption];
 /**
  * @public
  */
@@ -2860,8 +2823,7 @@ export type StorageClass = (typeof StorageClass)[keyof typeof StorageClass];
 /**
  * @public
  */
-export type TaggingDirective =
-	(typeof TaggingDirective)[keyof typeof TaggingDirective];
+export type TaggingDirective = (typeof TaggingDirective)[keyof typeof TaggingDirective];
 /**
  * @public
  *

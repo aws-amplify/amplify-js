@@ -7,19 +7,10 @@ import {
 	PersistentModelConstructor,
 	initSchema as initSchemaType,
 } from '@aws-amplify/datastore';
-import {
-	Model,
-	Post,
-	Comment,
-	testSchema,
-	InnerSQLiteDatabase,
-} from './helpers';
+import { Model, Post, Comment, testSchema, InnerSQLiteDatabase } from './helpers';
 import { SyncEngine } from '@aws-amplify/datastore/lib-esm/sync';
 import Observable from 'zen-observable';
-import {
-	pause,
-	addCommonQueryTests,
-} from '../../datastore/__tests__/commonAdapterTests';
+import { pause, addCommonQueryTests } from '../../datastore/__tests__/commonAdapterTests';
 
 let innerSQLiteDatabase;
 
@@ -89,8 +80,7 @@ describe('SQLiteAdapter', () => {
 			DataStore.configure({
 				storageAdapter: SQLiteAdapter,
 			});
-			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
-				'https://0.0.0.0/does/not/exist/graphql';
+			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint = 'https://0.0.0.0/does/not/exist/graphql';
 			const classes = initSchema(testSchema());
 			({ Comment, Model, Post } = classes as {
 				Comment: PersistentModelConstructor<Comment>;
@@ -134,15 +124,7 @@ describe('SQLiteAdapter', () => {
 						"_lastChangedAt",
 						"_deleted"
 					) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-					[
-						'field1 value 0',
-						'2022-04-18T19:29:46.316Z',
-						[],
-						'a1d63606-bd3b-4641-870a-ac97694577a8',
-						null,
-						null,
-						null,
-					],
+					['field1 value 0', '2022-04-18T19:29:46.316Z', [], 'a1d63606-bd3b-4641-870a-ac97694577a8', null, null, null],
 				]);
 				await db.batchSave(saves);
 				const result = await db.get('select * from "Model" limit 1', []);
@@ -172,10 +154,7 @@ describe('SQLiteAdapter', () => {
 				);
 
 				const queries = new Set<ParameterizedStatement>();
-				queries.add([
-					'select * from "Model" where id = ? limit 1',
-					['a1d63606-bd3b-4641-870a-ac97694577a8'],
-				]);
+				queries.add(['select * from "Model" where id = ? limit 1', ['a1d63606-bd3b-4641-870a-ac97694577a8']]);
 				const result = await db.batchQuery(queries);
 
 				expect(result.length).toBe(1);

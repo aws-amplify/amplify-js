@@ -79,21 +79,15 @@ export default class PushNotification implements PushNotificationInterface {
 		throw new PlatformNotSupportedError();
 	};
 
-	requestPermissions = async (
-		_?: PushNotificationPermissions
-	): Promise<boolean> => {
+	requestPermissions = async (_?: PushNotificationPermissions): Promise<boolean> => {
 		throw new PlatformNotSupportedError();
 	};
 
-	onNotificationReceivedInBackground = (
-		_: OnPushNotificationMessageHandler
-	): any => {
+	onNotificationReceivedInBackground = (_: OnPushNotificationMessageHandler): any => {
 		throw new PlatformNotSupportedError();
 	};
 
-	onNotificationReceivedInForeground = (
-		_: OnPushNotificationMessageHandler
-	): any => {
+	onNotificationReceivedInForeground = (_: OnPushNotificationMessageHandler): any => {
 		throw new PlatformNotSupportedError();
 	};
 

@@ -23,17 +23,10 @@ import {
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import { v4 as uuid } from 'uuid';
 
-import {
-	NotificationsCategory,
-	NotificationsSubCategory,
-	NotificationsProvider,
-	UserInfo,
-} from '../../types';
+import { NotificationsCategory, NotificationsSubCategory, NotificationsProvider, UserInfo } from '../../types';
 import { AWSPinpointUserInfo } from './types';
 
-export default abstract class AWSPinpointProviderCommon
-	implements NotificationsProvider
-{
+export default abstract class AWSPinpointProviderCommon implements NotificationsProvider {
 	static category: NotificationsCategory = 'Notifications';
 	static providerName = 'AWSPinpoint';
 
@@ -70,18 +63,11 @@ export default abstract class AWSPinpointProviderCommon
 
 	configure(config = {}): Record<string, any> {
 		this.config = { ...this.config, ...config };
-		this.logger.debug(
-			`configure ${this.getProviderName()}${this.getSubCategory()}Provider`,
-			this.config
-		);
+		this.logger.debug(`configure ${this.getProviderName()}${this.getSubCategory()}Provider`, this.config);
 		return this.config;
 	}
 
-	identifyUser = async (
-		userId: string,
-		userInfo: UserInfo,
-		userAgentValue?: string
-	): Promise<void> => {
+	identifyUser = async (userId: string, userInfo: UserInfo, userAgentValue?: string): Promise<void> => {
 		if (!this.initialized) {
 			await this.init();
 		}
@@ -128,9 +114,7 @@ export default abstract class AWSPinpointProviderCommon
 		return getAmplifyUserAgent(customUserAgentDetails);
 	};
 
-	protected recordAnalyticsEvent = async (
-		event: AWSPinpointAnalyticsEvent
-	): Promise<void> => {
+	protected recordAnalyticsEvent = async (event: AWSPinpointAnalyticsEvent): Promise<void> => {
 		// Update credentials
 		this.config.credentials = await this.getCredentials();
 		// Assert required configuration properties to make `putEvents` request are present
@@ -153,10 +137,7 @@ export default abstract class AWSPinpointProviderCommon
 				},
 			};
 			this.logger.debug('recording analytics event');
-			await putEvents(
-				{ credentials, region, userAgentValue: this.getUserAgentValue() },
-				input
-			);
+			await putEvents({ credentials, region, userAgentValue: this.getUserAgentValue() }, input);
 		} catch (err) {
 			this.logger.error('Error recording analytics event', err);
 			throw err;
@@ -172,16 +153,9 @@ export default abstract class AWSPinpointProviderCommon
 		// Shallow compare to determine if credentials stored here are outdated
 		const credentialsUpdated =
 			!this.config.credentials ||
-			Object.keys(credentials).some(
-				key => credentials[key] !== this.config.credentials[key]
-			);
+			Object.keys(credentials).some(key => credentials[key] !== this.config.credentials[key]);
 		// If endpoint is already initialized, and nothing else is changing, just early return
-		if (
-			this.endpointInitialized &&
-			!credentialsUpdated &&
-			!userId &&
-			!userInfo
-		) {
+		if (this.endpointInitialized && !credentialsUpdated && !userId && !userInfo) {
 			return;
 		}
 		// Update credentials
@@ -190,8 +164,7 @@ export default abstract class AWSPinpointProviderCommon
 		this.assertNotEmptyConfiguration();
 		const { appId, endpointId, endpointInfo = {}, region } = this.config;
 		try {
-			const { address, attributes, demographic, location, metrics, optOut } =
-				userInfo ?? {};
+			const { address, attributes, demographic, location, metrics, optOut } = userInfo ?? {};
 			const { appVersion, make, model, platform, version } = this.clientInfo;
 			// Create the UpdateEndpoint input, prioritizing passed in user info and falling back to
 			// defaults (if any) obtained from the config
@@ -292,9 +265,7 @@ export default abstract class AWSPinpointProviderCommon
 	private assertNotEmptyConfiguration = () => {
 		const { appId, credentials, region } = this.config;
 		if (!appId || !credentials || !region) {
-			throw new Error(
-				'One or more of credentials, appId or region is not configured'
-			);
+			throw new Error('One or more of credentials, appId or region is not configured');
 		}
 	};
 }

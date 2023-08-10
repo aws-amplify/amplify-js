@@ -32,11 +32,7 @@ export interface ICredentials {
  * Internal use of Amplify only
  */
 
-export type DelayFunction = (
-	attempt: number,
-	args?: any[],
-	error?: Error
-) => number | false;
+export type DelayFunction = (attempt: number, args?: any[], error?: Error) => number | false;
 
 export interface LoggingProvider {
 	// return the name of you provider

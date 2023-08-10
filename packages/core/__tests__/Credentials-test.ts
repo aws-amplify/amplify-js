@@ -1,9 +1,6 @@
 import { CredentialsClass as Credentials } from '../src/Credentials';
 import { Amplify } from '../src/Amplify';
-import {
-	getCredentialsForIdentity,
-	getId,
-} from '../src/AwsClients/CognitoIdentity';
+import { getCredentialsForIdentity, getId } from '../src/AwsClients/CognitoIdentity';
 import { Hub } from '../src/Hub';
 
 jest.mock('../src/AwsClients/CognitoIdentity');
@@ -84,11 +81,7 @@ describe('Credentials test', () => {
 			};
 
 			Hub.listen('core', ({ channel, payload, source }) => {
-				if (
-					channel === 'core' &&
-					payload?.event === 'credentials_configured' &&
-					source === 'Credentials'
-				) {
+				if (channel === 'core' && payload?.event === 'credentials_configured' && source === 'Credentials') {
 					done();
 				}
 			});
@@ -172,15 +165,12 @@ describe('Credentials test', () => {
 
 			await credentials._setCredentialsFromSession(session);
 
-			expect(getId).toBeCalledWith(
-				expect.objectContaining({ region: identityPoolRegion }),
-				{
-					IdentityPoolId: identityPoolId,
-					Logins: {
-						[`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: 'token',
-					},
-				}
-			);
+			expect(getId).toBeCalledWith(expect.objectContaining({ region: identityPoolRegion }), {
+				IdentityPoolId: identityPoolId,
+				Logins: {
+					[`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: 'token',
+				},
+			});
 		});
 
 		test('should use identityPoolRegion param for credentials for guest', async () => {
@@ -197,12 +187,9 @@ describe('Credentials test', () => {
 
 			await credentials._setCredentialsForGuest();
 
-			expect(getId).toBeCalledWith(
-				expect.objectContaining({ region: identityPoolRegion }),
-				{
-					IdentityPoolId: identityPoolId,
-				}
-			);
+			expect(getId).toBeCalledWith(expect.objectContaining({ region: identityPoolRegion }), {
+				IdentityPoolId: identityPoolId,
+			});
 		});
 	});
 

@@ -5,9 +5,7 @@ import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
 
 type PropertyNameWithStringValue = string;
 type PropertyNameWithSubsequentDeserializer<T> = [string, (any) => T];
-type Instruction<T> =
-	| PropertyNameWithStringValue
-	| PropertyNameWithSubsequentDeserializer<T>;
+type Instruction<T> = PropertyNameWithStringValue | PropertyNameWithSubsequentDeserializer<T>;
 
 type InferInstructionResultType<T extends Instruction<any>> =
 	| (T extends PropertyNameWithSubsequentDeserializer<infer R> ? R : string)
@@ -53,13 +51,9 @@ export const map = <Instructions extends { [key: string]: Instruction<any> }>(
 } => {
 	const result = {} as Record<keyof Instructions, any>;
 	for (const [key, instruction] of Object.entries(instructions)) {
-		const [accessor, deserializer] = Array.isArray(instruction)
-			? instruction
-			: [instruction];
+		const [accessor, deserializer] = Array.isArray(instruction) ? instruction : [instruction];
 		if (obj.hasOwnProperty(accessor)) {
-			result[key as keyof Instructions] = deserializer
-				? deserializer(obj[accessor])
-				: String(obj[accessor]);
+			result[key as keyof Instructions] = deserializer ? deserializer(obj[accessor]) : String(obj[accessor]);
 		}
 	}
 	return result;
@@ -106,25 +100,18 @@ export const deserializeTimestamp = (value: string): Date | undefined => {
  *
  * @internal
  */
-export const emptyArrayGuard = <T extends Array<any>>(
-	value: any,
-	deserializer: (value: any[]) => T
-): T => {
+export const emptyArrayGuard = <T extends Array<any>>(value: any, deserializer: (value: any[]) => T): T => {
 	if (value === '') {
 		return [] as T;
 	}
-	const valueArray = (Array.isArray(value) ? value : [value]).filter(
-		e => e != null
-	);
+	const valueArray = (Array.isArray(value) ? value : [value]).filter(e => e != null);
 	return deserializer(valueArray);
 };
 
 /**
  * @internal
  */
-export const deserializeMetadata = (
-	headers: Headers
-): Record<string, string> => {
+export const deserializeMetadata = (headers: Headers): Record<string, string> => {
 	const objectMetadataHeaderPrefix = 'x-amz-meta-';
 	const deserialized = Object.keys(headers)
 		.filter(header => header.startsWith(objectMetadataHeaderPrefix))

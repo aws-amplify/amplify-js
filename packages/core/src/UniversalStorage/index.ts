@@ -17,9 +17,7 @@ export class UniversalStorage implements Storage {
 	store: Store = isBrowser ? window.localStorage : Object.create(null);
 
 	constructor(context: Context = {}) {
-		this.cookies = context.req
-			? new Cookies(context.req.headers.cookie)
-			: new Cookies();
+		this.cookies = context.req ? new Cookies(context.req.headers.cookie) : new Cookies();
 
 		Object.assign(this.store, this.cookies.getAll());
 	}
@@ -39,9 +37,7 @@ export class UniversalStorage implements Storage {
 	}
 
 	protected getLocalItem(key: keyof Store) {
-		return Object.prototype.hasOwnProperty.call(this.store, key)
-			? this.store[key]
-			: null;
+		return Object.prototype.hasOwnProperty.call(this.store, key) ? this.store[key] : null;
 	}
 
 	protected getUniversalItem(key: keyof Store) {
@@ -101,19 +97,14 @@ export class UniversalStorage implements Storage {
 		this.store[key] = value;
 	}
 
-	protected setUniversalItem(
-		key: keyof Store,
-		value: string,
-		options: CookieSetOptions = {}
-	) {
+	protected setUniversalItem(key: keyof Store, value: string, options: CookieSetOptions = {}) {
 		this.cookies.set(key, value, {
 			...options,
 			path: '/',
 			// `httpOnly` cannot be set via JavaScript: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#JavaScript_access_using_Document.cookie
 			sameSite: true,
 			// Allow unsecure requests to http://localhost:3000/ when in development.
-			secure:
-				isBrowser && window.location.hostname === 'localhost' ? false : true,
+			secure: isBrowser && window.location.hostname === 'localhost' ? false : true,
 		});
 	}
 }

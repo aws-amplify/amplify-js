@@ -160,9 +160,7 @@ describe('resumable upload task test', () => {
 		Object.defineProperty(uploadTask, 'completedParts', { value: [] });
 
 		function callback(err) {
-			expect(err?.message).toBe(
-				'File size does not match between local file and file on s3'
-			);
+			expect(err?.message).toBe('File size does not match between local file and file on s3');
 			done();
 		}
 		emitter.addListener(TaskEvents.ERROR, callback);
@@ -228,19 +226,13 @@ describe('resumable upload task test', () => {
 		const cachedUploadTasks = {
 			[fileId]: fileMetadata,
 		};
-		mockLocalStorage.setItem(
-			UPLOADS_STORAGE_KEY,
-			JSON.stringify(cachedUploadTasks)
-		);
+		mockLocalStorage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(cachedUploadTasks));
 		const uploadTask = new AWSS3UploadTask(input);
 		// kick off the upload task
 		uploadTask.resume();
 		await uploadTask._cancel();
 		expect(mockLocalStorage.getItem).toHaveBeenCalledWith(UPLOADS_STORAGE_KEY);
-		expect(mockLocalStorage.setItem).toHaveBeenLastCalledWith(
-			UPLOADS_STORAGE_KEY,
-			'{}'
-		);
+		expect(mockLocalStorage.setItem).toHaveBeenLastCalledWith(UPLOADS_STORAGE_KEY, '{}');
 	});
 
 	test('Should complete upload if all parts have been uploaded on resume', done => {
@@ -302,10 +294,7 @@ describe('resumable upload task test', () => {
 		const cachedUploadTasks = {
 			[fileId]: fileMetadata,
 		};
-		mockLocalStorage.setItem(
-			UPLOADS_STORAGE_KEY,
-			JSON.stringify(cachedUploadTasks)
-		);
+		mockLocalStorage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(cachedUploadTasks));
 		const uploadTask = new AWSS3UploadTask(input);
 		// kick off the upload task
 		uploadTask.resume();
@@ -383,9 +372,7 @@ describe('resumable upload task test', () => {
 			new AWSS3UploadTask(input);
 			fail('expect test to fail');
 		} catch (error) {
-			expect(error.message).toEqual(
-				expect.stringContaining('File size bigger than S3 Object limit of 5TB')
-			);
+			expect(error.message).toEqual(expect.stringContaining('File size bigger than S3 Object limit of 5TB'));
 		}
 	});
 });

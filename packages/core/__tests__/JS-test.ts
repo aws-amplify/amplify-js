@@ -87,9 +87,7 @@ describe('JS test', () => {
 		});
 
 		test('unknown file type is application/octet-stream', () => {
-			expect(filenameToContentType('a.xyz')).toEqual(
-				'application/octet-stream'
-			);
+			expect(filenameToContentType('a.xyz')).toEqual('application/octet-stream');
 		});
 
 		test('unknown file type is default', () => {

@@ -32,10 +32,7 @@ export class ReconnectionMonitor {
 	record(event: ReconnectEvent) {
 		if (event === ReconnectEvent.START_RECONNECT) {
 			// If the reconnection hasn't been started
-			if (
-				this.reconnectSetTimeoutId === undefined &&
-				this.reconnectIntervalId === undefined
-			) {
+			if (this.reconnectSetTimeoutId === undefined && this.reconnectIntervalId === undefined) {
 				this.reconnectSetTimeoutId = setTimeout(() => {
 					// Reconnect now
 					this._triggerReconnect();

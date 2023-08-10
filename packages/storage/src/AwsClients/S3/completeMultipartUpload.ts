@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Endpoint,
-	HttpRequest,
-	HttpResponse,
-	parseMetadata,
-} from '@aws-amplify/core/internals/aws-client-utils';
+import { Endpoint, HttpRequest, HttpResponse, parseMetadata } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import type {
 	CompleteMultipartUploadCommandInput,
@@ -24,8 +19,7 @@ import {
 	serializeObjectSsecOptionsToHeaders,
 } from './utils';
 
-const INVALID_PARAMETER_ERROR_MSG =
-	'Invalid parameter for ComplteMultipartUpload API';
+const INVALID_PARAMETER_ERROR_MSG = 'Invalid parameter for ComplteMultipartUpload API';
 
 export type CompleteMultipartUploadInput = Pick<
 	CompleteMultipartUploadCommandInput,
@@ -57,15 +51,11 @@ const completeMultipartUploadSerializer = async (
 		method: 'POST',
 		headers,
 		url,
-		body:
-			'<?xml version="1.0" encoding="UTF-8"?>' +
-			serializeCompletedMultipartUpload(input.MultipartUpload),
+		body: '<?xml version="1.0" encoding="UTF-8"?>' + serializeCompletedMultipartUpload(input.MultipartUpload),
 	};
 };
 
-const serializeCompletedMultipartUpload = (
-	input: CompletedMultipartUpload
-): string => {
+const serializeCompletedMultipartUpload = (input: CompletedMultipartUpload): string => {
 	if (!input.Parts?.length) {
 		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${input}`);
 	}
@@ -100,9 +90,7 @@ const parseXmlBodyOrThrow = async (response: HttpResponse): Promise<any> => {
 	return parsed;
 };
 
-const completeMultipartUploadDeserializer = async (
-	response: HttpResponse
-): Promise<CompleteMultipartUploadOutput> => {
+const completeMultipartUploadDeserializer = async (response: HttpResponse): Promise<CompleteMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
 		throw error;
@@ -123,10 +111,7 @@ const completeMultipartUploadDeserializer = async (
 // CompleteMultiPartUpload API returns 200 status code with empty body or error message.
 // This indicates internal server error after the response has been sent to the client.
 // Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html#API_CompleteMultipartUpload_Example_4
-const retryWhenErrorWith200StatusCode = async (
-	response: HttpResponse,
-	error?: Error
-): Promise<boolean> => {
+const retryWhenErrorWith200StatusCode = async (response: HttpResponse, error?: Error): Promise<boolean> => {
 	if (response.statusCode === 200) {
 		if (!response.body) {
 			return true;

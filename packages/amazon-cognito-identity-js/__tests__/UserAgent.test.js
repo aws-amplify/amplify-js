@@ -35,9 +35,7 @@ describe('UserAgent test', () => {
 	test('appendToCognitoUserAgent does not append duplicate content', () => {
 		appendToCognitoUserAgent('test');
 		appendToCognitoUserAgent('test');
-		expect(UserAgent.prototype.userAgent).not.toBe(
-			`${DEFAULT_USER_AGENT} test test`
-		);
+		expect(UserAgent.prototype.userAgent).not.toBe(`${DEFAULT_USER_AGENT} test test`);
 
 		expect(UserAgent.prototype.userAgent).toBe(`${DEFAULT_USER_AGENT} test`);
 
@@ -58,17 +56,13 @@ describe('UserAgent test', () => {
 		addAuthCategoryToCognitoUserAgent();
 		expect(UserAgent.category).toBe(AUTH_CATEGORY);
 
-		expect(getAmplifyUserAgent()).toBe(
-			`${DEFAULT_USER_AGENT} ${USER_AGENT_AUTH}`
-		);
+		expect(getAmplifyUserAgent()).toBe(`${DEFAULT_USER_AGENT} ${USER_AGENT_AUTH}`);
 	});
 
 	test('addFrameworkToCognitoUserAgent sets framework and shows framework in user agent', () => {
 		addFrameworkToCognitoUserAgent('0');
 		expect(UserAgent.framework).toBe('0');
 
-		expect(getAmplifyUserAgent()).toBe(
-			`${DEFAULT_USER_AGENT} ${USER_AGENT_FRAMEWORK0}`
-		);
+		expect(getAmplifyUserAgent()).toBe(`${DEFAULT_USER_AGENT} ${USER_AGENT_FRAMEWORK0}`);
 	});
 });

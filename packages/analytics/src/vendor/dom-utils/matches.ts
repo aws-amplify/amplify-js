@@ -4,10 +4,7 @@
 
 import { browserOrNode } from '@aws-amplify/core';
 
-const proto =
-	browserOrNode().isBrowser && window['Element']
-		? window['Element'].prototype
-		: null;
+const proto = browserOrNode().isBrowser && window['Element'] ? window['Element'].prototype : null;
 
 const nativeMatches = proto
 	? proto.matches ||
@@ -35,9 +32,7 @@ export function matches(element, test) {
 	if (element && element.nodeType === 1 && test) {
 		// if test is a string or DOM element test it.
 		if (typeof test === 'string' || test.nodeType === 1) {
-			return (
-				element === test || matchesSelector(element, /** @type {string} */ test)
-			);
+			return element === test || matchesSelector(element, /** @type {string} */ test);
 		} else if ('length' in test) {
 			// if it has a length property iterate over the items
 			// and return true if any match.

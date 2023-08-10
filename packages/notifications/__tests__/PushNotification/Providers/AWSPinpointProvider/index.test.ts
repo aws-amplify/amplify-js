@@ -27,9 +27,7 @@ jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('../../../../src/common/eventListeners');
 jest.mock('../../../../src/PushNotification/Platform');
-jest.mock(
-	'../../../../src/PushNotification/Providers/AWSPinpointProvider/utils'
-);
+jest.mock('../../../../src/PushNotification/Providers/AWSPinpointProvider/utils');
 
 const getStorageSpy = jest.spyOn(StorageHelper.prototype, 'getStorage');
 const credentialsGetSpy = jest.spyOn(Credentials, 'get');
@@ -111,19 +109,13 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 
 			test('launch notification opened listener', () => {
 				handlers[2](simplePushMessage);
-				expect(mockGetAnalyticsEvent).toBeCalledWith(
-					simplePushMessage,
-					AWSPinpointMessageEvent.NOTIFICATION_OPENED
-				);
+				expect(mockGetAnalyticsEvent).toBeCalledWith(simplePushMessage, AWSPinpointMessageEvent.NOTIFICATION_OPENED);
 				expect(removers[2]).toBeCalled();
 			});
 
 			test('notification opened listener', () => {
 				handlers[3](simplePushMessage);
-				expect(mockGetAnalyticsEvent).toBeCalledWith(
-					simplePushMessage,
-					AWSPinpointMessageEvent.NOTIFICATION_OPENED
-				);
+				expect(mockGetAnalyticsEvent).toBeCalledWith(simplePushMessage, AWSPinpointMessageEvent.NOTIFICATION_OPENED);
 				expect(removers[2]).toBeCalled();
 			});
 		});
@@ -146,10 +138,7 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 
 			await expect(provider.registerDevice(pushToken)).rejects.toThrow();
 
-			expect(mockLogger.error).toBeCalledWith(
-				expect.stringContaining('Error registering device'),
-				expect.any(Error)
-			);
+			expect(mockLogger.error).toBeCalledWith(expect.stringContaining('Error registering device'), expect.any(Error));
 		});
 	});
 });

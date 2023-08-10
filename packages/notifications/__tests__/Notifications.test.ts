@@ -2,13 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, ConsoleLogger } from '@aws-amplify/core';
-import {
-	adhocConfig,
-	awsConfig,
-	notificationsConfig,
-	userId,
-	userInfo,
-} from '../__mocks__/data';
+import { adhocConfig, awsConfig, notificationsConfig, userId, userInfo } from '../__mocks__/data';
 import PushNotification from '../src/PushNotification';
 
 jest.mock('@aws-amplify/core');
@@ -86,10 +80,7 @@ describe('Notifications', () => {
 			await Notifications.identifyUser(userId, userInfo);
 
 			expect(mockInAppMessaging.identifyUser).toBeCalledWith(userId, userInfo);
-			expect(mockPushNotification.identifyUser).toBeCalledWith(
-				userId,
-				userInfo
-			);
+			expect(mockPushNotification.identifyUser).toBeCalledWith(userId, userInfo);
 		});
 
 		test('rejects if there is a failure identifying user', async () => {
@@ -97,9 +88,7 @@ describe('Notifications', () => {
 				throw new Error();
 			});
 
-			await expect(
-				Notifications.identifyUser(userId, userInfo)
-			).rejects.toStrictEqual(expect.any(Error));
+			await expect(Notifications.identifyUser(userId, userInfo)).rejects.toStrictEqual(expect.any(Error));
 		});
 	});
 });

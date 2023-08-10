@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Endpoint,
-	HttpRequest,
-	HttpResponse,
-	parseMetadata,
-} from '@aws-amplify/core/internals/aws-client-utils';
+import { Endpoint, HttpRequest, HttpResponse, parseMetadata } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import { defaultConfig } from './base';
@@ -53,10 +48,7 @@ export type PutObjectOutput = Pick<
 	'$metadata' | 'ETag' | 'VersionId'
 >;
 
-const putObjectSerializer = async (
-	input: PutObjectInput,
-	endpoint: Endpoint
-): Promise<HttpRequest> => {
+const putObjectSerializer = async (input: PutObjectInput, endpoint: Endpoint): Promise<HttpRequest> => {
 	const headers = {
 		...(await serializeObjectConfigsToHeaders({
 			...input,
@@ -74,9 +66,7 @@ const putObjectSerializer = async (
 	};
 };
 
-const putObjectDeserializer = async (
-	response: HttpResponse
-): Promise<PutObjectOutput> => {
+const putObjectDeserializer = async (response: HttpResponse): Promise<PutObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
 		throw error;
@@ -91,9 +81,7 @@ const putObjectDeserializer = async (
 	}
 };
 
-export const putObject = composeServiceApi(
-	s3TransferHandler,
-	putObjectSerializer,
-	putObjectDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
-);
+export const putObject = composeServiceApi(s3TransferHandler, putObjectSerializer, putObjectDeserializer, {
+	...defaultConfig,
+	responseType: 'text',
+});

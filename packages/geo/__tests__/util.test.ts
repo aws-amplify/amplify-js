@@ -57,9 +57,7 @@ describe('Geo utility functions', () => {
 
 		test('should error with message for coordinates with infinity', () => {
 			infiniteCoordinates.forEach(([lng, lat]) => {
-				expect(() => validateCoordinates(lng, lat)).toThrowError(
-					`Invalid coordinates: [${lng},${lat}]`
-				);
+				expect(() => validateCoordinates(lng, lat)).toThrowError(`Invalid coordinates: [${lng},${lat}]`);
 			});
 		});
 	});
@@ -70,30 +68,22 @@ describe('Geo utility functions', () => {
 			expect(() => result).not.toThrowError();
 		});
 		test('should error if first and last coordinates do not match', () => {
-			expect(() =>
-				validateLinearRing(linearRingIncomplete, 'linearRingIncomplete')
-			).toThrowError(
+			expect(() => validateLinearRing(linearRingIncomplete, 'linearRingIncomplete')).toThrowError(
 				`linearRingIncomplete: LinearRing's first and last coordinates are not the same`
 			);
 		});
 		test('should error if LinearRing has less than 4 elements', () => {
-			expect(() =>
-				validateLinearRing(linearRingTooSmall, 'linearRingTooSmall')
-			).toThrowError(
+			expect(() => validateLinearRing(linearRingTooSmall, 'linearRingTooSmall')).toThrowError(
 				'linearRingTooSmall: LinearRing must contain 4 or more coordinates.'
 			);
 		});
 		test('should error if any coordinates are not valid', () => {
-			expect(() =>
-				validateLinearRing(linearRingBadCoordinates, 'linearRingBadCoordinates')
-			).toThrowError(
+			expect(() => validateLinearRing(linearRingBadCoordinates, 'linearRingBadCoordinates')).toThrowError(
 				'linearRingBadCoordinates: One or more of the coordinates in the Polygon LinearRing are not valid: [{"coordinates":[181,0],"error":"Longitude must be between -180 and 180 degrees inclusive."},{"coordinates":[0,-91],"error":"Latitude must be between -90 and 90 degrees inclusive."}]'
 			);
 		});
 		test('should error if the coordinates are not in counterclockwise order', () => {
-			expect(() =>
-				validateLinearRing(clockwiseLinearRing, 'clockwiseLinearRing')
-			).toThrowError(
+			expect(() => validateLinearRing(clockwiseLinearRing, 'clockwiseLinearRing')).toThrowError(
 				'clockwiseLinearRing: LinearRing coordinates must be wound counterclockwise'
 			);
 		});
@@ -104,9 +94,7 @@ describe('Geo utility functions', () => {
 			expect(() => validatePolygon(validPolygon)).not.toThrowError();
 		});
 		test('should error if polygon is not a length of 1', () => {
-			expect(() =>
-				validatePolygon(polygonTooBig, 'polygonTooBig')
-			).toThrowError(
+			expect(() => validatePolygon(polygonTooBig, 'polygonTooBig')).toThrowError(
 				`polygonTooBig: Polygon must have a single LinearRing array. Note: We do not currently support polygons with holes, multipolygons, polygons that are wound clockwise, or that cross the antimeridian.`
 			);
 			expect(() => validatePolygon([], 'emptyPolygon')).toThrowError(
@@ -114,9 +102,7 @@ describe('Geo utility functions', () => {
 			);
 		});
 		test('should error if polygon has more than 1000 vertices', () => {
-			expect(() =>
-				validatePolygon(polygonTooManyVertices, 'polygonTooManyVertices')
-			).toThrowError(
+			expect(() => validatePolygon(polygonTooManyVertices, 'polygonTooManyVertices')).toThrowError(
 				'polygonTooManyVertices: Polygon has more than the maximum 1000 vertices.'
 			);
 		});
@@ -173,9 +159,7 @@ describe('Geo utility functions', () => {
 		});
 	});
 	test('should error if polygon has more than 1000 vertices', () => {
-		expect(() =>
-			validateGeofencesInput([geofenceWithTooManyVertices])
-		).toThrowError(
+		expect(() => validateGeofencesInput([geofenceWithTooManyVertices])).toThrowError(
 			`Geofence 'geofenceWithTooManyVertices' has more than the maximum of 1000 vertices`
 		);
 	});
@@ -195,10 +179,7 @@ describe('Geo utility functions', () => {
 				...searchOptionsMappedToInput,
 				BiasPosition: searchOptionsWithBiasPosition.biasPosition,
 			};
-			const result = mapSearchOptions(
-				searchOptionsWithBiasPosition,
-				locationServiceInput
-			);
+			const result = mapSearchOptions(searchOptionsWithBiasPosition, locationServiceInput);
 			expect(result).toEqual(modifiedSearchOptionsMappedToInput);
 		});
 
@@ -209,13 +190,9 @@ describe('Geo utility functions', () => {
 			};
 			const modifiedSearchOptionsMappedToInput = {
 				...searchOptionsMappedToInput,
-				FilterBBox:
-					searchOptionsWithSearchAreaConstraints.searchAreaConstraints,
+				FilterBBox: searchOptionsWithSearchAreaConstraints.searchAreaConstraints,
 			};
-			const result = mapSearchOptions(
-				searchOptionsWithSearchAreaConstraints,
-				locationServiceInput
-			);
+			const result = mapSearchOptions(searchOptionsWithSearchAreaConstraints, locationServiceInput);
 			expect(result).toEqual(modifiedSearchOptionsMappedToInput);
 		});
 

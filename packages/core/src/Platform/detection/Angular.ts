@@ -6,9 +6,7 @@ import { documentExists, processExists, windowExists } from './helpers';
 // Tested with @angular/core 16.0.0
 
 export function angularWebDetect() {
-	const angularVersionSetInDocument = Boolean(
-		documentExists() && document.querySelector('[ng-version]')
-	);
+	const angularVersionSetInDocument = Boolean(documentExists() && document.querySelector('[ng-version]'));
 	const angularContentSetInWindow = Boolean(
 		// @ts-ignore
 		windowExists() && typeof window['ng'] !== 'undefined'
@@ -18,9 +16,7 @@ export function angularWebDetect() {
 
 export function angularSSRDetect() {
 	return (
-		(processExists() &&
-			typeof process.env === 'object' &&
-			process.env['npm_lifecycle_script']?.startsWith('ng ')) ||
+		(processExists() && typeof process.env === 'object' && process.env['npm_lifecycle_script']?.startsWith('ng ')) ||
 		false
 	);
 }

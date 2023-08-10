@@ -1,11 +1,7 @@
 import * as IDB from 'idb';
 import Adapter from '../src/storage/adapter/IndexedDBAdapter';
 import 'fake-indexeddb/auto';
-import {
-	DataStore as DataStoreType,
-	initSchema as initSchemaType,
-	syncClasses,
-} from '../src/datastore/datastore';
+import { DataStore as DataStoreType, initSchema as initSchemaType, syncClasses } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
 import {
 	pause,
@@ -65,8 +61,7 @@ describe('IndexedDBAdapter tests', () => {
 		beforeEach(async () => {
 			({ DataStore, Model } = getDataStore({
 				storageAdapterFactory: () => {
-					const IDBAdapter =
-						require('../src/storage/adapter/IndexedDBAdapter').default;
+					const IDBAdapter = require('../src/storage/adapter/IndexedDBAdapter').default;
 					spyOnGetOne = jest.spyOn(IDBAdapter, 'getByKey');
 					spyOnGetAll = jest.spyOn(IDBAdapter, 'getAll');
 					spyOnEngine = jest.spyOn(IDBAdapter, 'enginePagination');
@@ -128,9 +123,7 @@ describe('IndexedDBAdapter tests', () => {
 		});
 
 		it('Should call getAll & inMemoryPagination for query with a predicate', async () => {
-			const results = await DataStore.query(Model, c =>
-				c.field1.eq('field1 value 1')
-			);
+			const results = await DataStore.query(Model, c => c.field1.eq('field1 value 1'));
 
 			expect(results.length).toEqual(1);
 			expect(spyOnGetAll).toHaveBeenCalled();
@@ -180,11 +173,9 @@ describe('IndexedDBAdapter tests', () => {
 		let CommentUni: PersistentModelConstructor<CommentUni>;
 
 		beforeEach(async () => {
-			({ DataStore, User, Profile, Post, Comment, PostUni, CommentUni } =
-				getDataStore({
-					storageAdapterFactory: () =>
-						require('../src/storage/adapter/IndexedDBAdapter').default,
-				}));
+			({ DataStore, User, Profile, Post, Comment, PostUni, CommentUni } = getDataStore({
+				storageAdapterFactory: () => require('../src/storage/adapter/IndexedDBAdapter').default,
+			}));
 		});
 
 		afterEach(async () => {
@@ -197,13 +188,9 @@ describe('IndexedDBAdapter tests', () => {
 			let profile1Id: string;
 			let user1Id: string;
 
-			({ id: profile1Id } = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
-			));
+			({ id: profile1Id } = await DataStore.save(new Profile({ firstName: 'Rick', lastName: 'Bob' })));
 
-			({ id: user1Id } = await DataStore.save(
-				new User({ name: 'test', profileID: profile1Id })
-			));
+			({ id: user1Id } = await DataStore.save(new User({ name: 'test', profileID: profile1Id })));
 
 			let user = await DataStore.query(User, user1Id);
 			let profile = await DataStore.query(Profile, profile1Id);
@@ -231,9 +218,7 @@ describe('IndexedDBAdapter tests', () => {
 			const newPost = await DataStore.save(new Post({ title: 'Test' }));
 			({ id: post1Id } = newPost);
 
-			({ id: comment1Id } = await DataStore.save(
-				new Comment({ content: 'Test Content', post: newPost })
-			));
+			({ id: comment1Id } = await DataStore.save(new Comment({ content: 'Test Content', post: newPost })));
 
 			let post = await DataStore.query(Post, post1Id);
 			let comment = await DataStore.query(Comment, comment1Id);
@@ -294,13 +279,10 @@ describe('IndexedDBAdapter tests', () => {
 
 		beforeEach(async () => {
 			({ DataStore, User, Profile } = getDataStore({
-				storageAdapterFactory: () =>
-					require('../src/storage/adapter/IndexedDBAdapter').default,
+				storageAdapterFactory: () => require('../src/storage/adapter/IndexedDBAdapter').default,
 			}));
 
-			profile = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
-			);
+			profile = await DataStore.save(new Profile({ firstName: 'Rick', lastName: 'Bob' }));
 		});
 
 		afterEach(async () => {
@@ -308,9 +290,7 @@ describe('IndexedDBAdapter tests', () => {
 		});
 
 		it('should allow linking model via model field', async () => {
-			const savedUser = await DataStore.save(
-				new User({ name: 'test', profile })
-			);
+			const savedUser = await DataStore.save(new User({ name: 'test', profile }));
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
@@ -319,9 +299,7 @@ describe('IndexedDBAdapter tests', () => {
 		});
 
 		it('should allow linking model via FK', async () => {
-			const savedUser = await DataStore.save(
-				new User({ name: 'test', profileID: profile.id })
-			);
+			const savedUser = await DataStore.save(new User({ name: 'test', profileID: profile.id }));
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
@@ -342,14 +320,7 @@ describe('IndexedDBAdapter tests', () => {
 describe('IndexedDB benchmarks', () => {
 	let adapter: typeof Adapter;
 
-	const {
-		DataStore,
-		User,
-		DefaultPKParent,
-		DefaultPKChild,
-		CompositePKParent,
-		CompositePKChild,
-	} = getDataStore({
+	const { DataStore, User, DefaultPKParent, DefaultPKChild, CompositePKParent, CompositePKChild } = getDataStore({
 		storageAdapterFactory: () => {
 			adapter = require('../src/storage/adapter/IndexedDBAdapter').default;
 			return adapter;
@@ -382,11 +353,7 @@ describe('IndexedDB benchmarks', () => {
 	 * @param build a function that accepts an Int (number of record to add) and returns
 	 * an instantiated record to save.
 	 */
-	const sideloadIDBData = async <T>(
-		size: number,
-		table: string,
-		build: (i: number) => T
-	) => {
+	const sideloadIDBData = async <T>(size: number, table: string, build: (i: number) => T) => {
 		await DataStore.start();
 		const db = (adapter as any).db;
 
@@ -501,9 +468,7 @@ describe('IndexedDB benchmarks', () => {
 		// check timing of fetch byPk
 		const byContentTime = await benchmark(async () => {
 			// `content` alone will not be able to use the index.
-			const fetched = await DataStore.query(CompositePKParent, i =>
-				i.content.eq(item.content)
-			);
+			const fetched = await DataStore.query(CompositePKParent, i => i.content.eq(item.content));
 			expect(fetched).toBeDefined();
 		});
 
@@ -545,9 +510,7 @@ describe('IndexedDB benchmarks', () => {
 
 		const time = await benchmark(async () => {
 			const fetched = await DataStore.query(DefaultPKParent, p =>
-				p.children.parent.children.parent.children.parent.children.parent.children.parent.children.id.eq(
-					child.id
-				)
+				p.children.parent.children.parent.children.parent.children.parent.children.parent.children.id.eq(child.id)
 			);
 			expect(fetched.length).toBe(1);
 		}, 1);
@@ -580,9 +543,10 @@ describe('IndexedDB benchmarks', () => {
 
 		const time = await benchmark(async () => {
 			const fetched = await DataStore.query(CompositePKParent, p =>
-				p.children.parent.children.parent.children.parent.children.parent.children.parent.children.and(
-					c => [c.childId.eq(child.childId), c.content.eq(child.content)]
-				)
+				p.children.parent.children.parent.children.parent.children.parent.children.parent.children.and(c => [
+					c.childId.eq(child.childId),
+					c.content.eq(child.content),
+				])
 			);
 			expect(fetched.length).toBe(1);
 		}, 1);
@@ -614,9 +578,7 @@ describe('IndexedDB benchmarks', () => {
 		});
 
 		const time = await benchmark(async () => {
-			const fetched = await DataStore.query(CompositePKParent, p =>
-				p.children.content.beginsWith('content')
-			);
+			const fetched = await DataStore.query(CompositePKParent, p => p.children.content.beginsWith('content'));
 			expect(fetched.length).toBe(100);
 		}, 1);
 
@@ -680,9 +642,7 @@ describe('IndexedDB benchmarks', () => {
 		const size = 7;
 		const time = await benchmark(async () => {
 			const fetched = await DataStore.query(CompositePKParent, p =>
-				p.children.or(child =>
-					children.slice(200, 200 + size).map(c => child.childId.eq(c.childId))
-				)
+				p.children.or(child => children.slice(200, 200 + size).map(c => child.childId.eq(c.childId)))
 			);
 			expect(fetched.length).toBe(size);
 		}, 1);

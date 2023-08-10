@@ -67,16 +67,12 @@ const parseXmlNode = (node: Node): any => {
 	}
 };
 
-const isElementNode = (node: Node): node is Element =>
-	node.nodeType === Node.ELEMENT_NODE;
+const isElementNode = (node: Node): node is Element => node.nodeType === Node.ELEMENT_NODE;
 
-const isDocumentNode = (node: Node): node is Document =>
-	node.nodeType === Node.DOCUMENT_NODE;
+const isDocumentNode = (node: Node): node is Document => node.nodeType === Node.DOCUMENT_NODE;
 
 const isTextOnlyElementNode = (node: Element): boolean =>
-	hasOnlyNamespaceAttributes(node) &&
-	node.children.length === 0 &&
-	node.firstChild?.nodeType === Node.TEXT_NODE;
+	hasOnlyNamespaceAttributes(node) && node.children.length === 0 && node.firstChild?.nodeType === Node.TEXT_NODE;
 
 const hasOnlyNamespaceAttributes = (node: Element): boolean => {
 	for (let i = 0; i < node.attributes.length; i++) {
@@ -88,5 +84,4 @@ const hasOnlyNamespaceAttributes = (node: Element): boolean => {
 	return true;
 };
 
-const isNamespaceAttributeName = (name: string): boolean =>
-	name === 'xmlns' || name.startsWith('xmlns:');
+const isNamespaceAttributeName = (name: string): boolean => name === 'xmlns' || name.startsWith('xmlns:');

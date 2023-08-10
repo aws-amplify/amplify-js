@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Endpoint,
-	HttpRequest,
-	HttpResponse,
-	parseMetadata,
-} from '@aws-amplify/core/internals/aws-client-utils';
+import { Endpoint, HttpRequest, HttpResponse, parseMetadata } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import { defaultConfig } from './base';
@@ -36,15 +31,9 @@ export type UploadPartInput = Pick<
 	| 'SSECustomerKeyMD5'
 >;
 
-export type UploadPartOutput = Pick<
-	UploadPartCommandOutput,
-	'$metadata' | 'ETag'
->;
+export type UploadPartOutput = Pick<UploadPartCommandOutput, '$metadata' | 'ETag'>;
 
-const uploadPartSerializer = async (
-	input: UploadPartInput,
-	endpoint: Endpoint
-): Promise<HttpRequest> => {
+const uploadPartSerializer = async (input: UploadPartInput, endpoint: Endpoint): Promise<HttpRequest> => {
 	const headers = {
 		...(await serializeObjectSsecOptionsToHeaders(input)),
 		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
@@ -64,9 +53,7 @@ const uploadPartSerializer = async (
 	};
 };
 
-const uploadPartDeserializer = async (
-	response: HttpResponse
-): Promise<UploadPartOutput> => {
+const uploadPartDeserializer = async (response: HttpResponse): Promise<UploadPartOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
 		throw error;
@@ -80,9 +67,7 @@ const uploadPartDeserializer = async (
 	}
 };
 
-export const uploadPart = composeServiceApi(
-	s3TransferHandler,
-	uploadPartSerializer,
-	uploadPartDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
-);
+export const uploadPart = composeServiceApi(s3TransferHandler, uploadPartSerializer, uploadPartDeserializer, {
+	...defaultConfig,
+	responseType: 'text',
+});

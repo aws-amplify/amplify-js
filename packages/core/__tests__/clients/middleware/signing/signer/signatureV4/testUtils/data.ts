@@ -37,8 +37,7 @@ export const formattedDates: FormattedDates = {
 	shortDate: '20200918',
 };
 
-export const credentialScope =
-	'20200918/signing-region/signing-service/aws4_request';
+export const credentialScope = '20200918/signing-region/signing-service/aws4_request';
 
 export const getDefaultRequest = () => ({
 	headers: {},

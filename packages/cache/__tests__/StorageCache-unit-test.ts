@@ -18,9 +18,7 @@ describe('StorageCache', () => {
 			const tmp = config.capacityInBytes;
 			config.capacityInBytes = 1048576;
 			const storage: StorageCache = new StorageCache(config);
-			expect(storage.configure().capacityInBytes).toBe(
-				defaultConfig.capacityInBytes
-			);
+			expect(storage.configure().capacityInBytes).toBe(defaultConfig.capacityInBytes);
 			config.capacityInBytes = tmp;
 		});
 
@@ -28,9 +26,7 @@ describe('StorageCache', () => {
 			const tmp = config.capacityInBytes;
 			config.capacityInBytes = 1048576;
 			const storage: StorageCache = new StorageCache(config);
-			expect(storage.configure().capacityInBytes).toBe(
-				defaultConfig.capacityInBytes
-			);
+			expect(storage.configure().capacityInBytes).toBe(defaultConfig.capacityInBytes);
 			config.capacityInBytes = tmp;
 		});
 
@@ -38,9 +34,7 @@ describe('StorageCache', () => {
 			const tmp = config.capacityInBytes;
 			config.capacityInBytes = 1048576;
 			const storage: StorageCache = new StorageCache(config);
-			expect(storage.configure().capacityInBytes).toBe(
-				defaultConfig.capacityInBytes
-			);
+			expect(storage.configure().capacityInBytes).toBe(defaultConfig.capacityInBytes);
 			config.capacityInBytes = tmp;
 		});
 
@@ -64,9 +58,7 @@ describe('StorageCache', () => {
 			const tmp = config.defaultPriority;
 			config.defaultPriority = 5;
 			const storage: StorageCache = new StorageCache(config);
-			expect(storage.configure().defaultPriority).toBe(
-				defaultConfig.defaultPriority
-			);
+			expect(storage.configure().defaultPriority).toBe(defaultConfig.defaultPriority);
 			config.defaultPriority = tmp;
 		});
 
@@ -82,14 +74,10 @@ describe('StorageCache', () => {
 			const tmp = config.defaultPriority;
 			config.defaultPriority = 0;
 			const storage: StorageCache = new StorageCache(config);
-			expect(storage.configure().defaultPriority).toBe(
-				defaultConfig.defaultPriority
-			);
+			expect(storage.configure().defaultPriority).toBe(defaultConfig.defaultPriority);
 			config.defaultPriority = 6;
 			const storage: StorageCache = new StorageCache(config);
-			expect(storage.configure().defaultPriority).toBe(
-				defaultConfig.defaultPriority
-			);
+			expect(storage.configure().defaultPriority).toBe(defaultConfig.defaultPriority);
 			config.defaultPriority = tmp;
 		});
 
@@ -97,9 +85,7 @@ describe('StorageCache', () => {
 			const tmp = config.warningThreshold;
 			config.warningThreshold = Math.random() + 1;
 			const storage: StorageCache = new StorageCache(config);
-			expect(storage.configure().warningThreshold).toBe(
-				defaultConfig.warningThreshold
-			);
+			expect(storage.configure().warningThreshold).toBe(defaultConfig.warningThreshold);
 			config.warningThreshold = tmp;
 		});
 	});

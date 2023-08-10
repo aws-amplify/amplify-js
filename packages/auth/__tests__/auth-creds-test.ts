@@ -20,43 +20,35 @@ describe('credentials syncing tests', () => {
 	it('BypassCache clear credentials', async () => {
 		const auth = new Auth(authOptions);
 
-		jest
-			.spyOn(CognitoUser.prototype, 'authenticateUser')
-			.mockImplementation((authenticationDetails, callback) => {
-				const session = new CognitoUserSession({
-					AccessToken: new CognitoAccessToken({ AccessToken: 'accesstoken' }),
-					IdToken: new CognitoIdToken({ IdToken: 'Idtoken' }),
-				});
-
-				callback.onSuccess(session, false);
+		jest.spyOn(CognitoUser.prototype, 'authenticateUser').mockImplementation((authenticationDetails, callback) => {
+			const session = new CognitoUserSession({
+				AccessToken: new CognitoAccessToken({ AccessToken: 'accesstoken' }),
+				IdToken: new CognitoIdToken({ IdToken: 'Idtoken' }),
 			});
 
-		jest
-			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
-			.mockImplementation(() => {
-				return new CognitoUser({
-					Pool: new CognitoUserPool({
-						UserPoolId: authOptions.userPoolId,
-						ClientId: authOptions.userPoolWebClientId,
-					}),
-					Username: 'test',
-				});
+			callback.onSuccess(session, false);
+		});
+
+		jest.spyOn(CognitoUserPool.prototype, 'getCurrentUser').mockImplementation(() => {
+			return new CognitoUser({
+				Pool: new CognitoUserPool({
+					UserPoolId: authOptions.userPoolId,
+					ClientId: authOptions.userPoolWebClientId,
+				}),
+				Username: 'test',
 			});
+		});
 
 		const session = new CognitoUserSession({
 			AccessToken: new CognitoAccessToken({ AccessToken: 'accesstoken' }),
 			IdToken: new CognitoIdToken({ IdToken: 'Idtoken' }),
 		});
 
-		jest
-			.spyOn(CognitoUser.prototype, 'getSession')
-			.mockImplementation((callback: any) => {
-				callback(null, session);
-			});
+		jest.spyOn(CognitoUser.prototype, 'getSession').mockImplementation((callback: any) => {
+			callback(null, session);
+		});
 
-		const spyCredentials = jest
-			.spyOn(Credentials, 'set')
-			.mockImplementationOnce(c => c);
+		const spyCredentials = jest.spyOn(Credentials, 'set').mockImplementationOnce(c => c);
 
 		const username = 'test';
 		await auth.signIn({ username, password: 'test' });

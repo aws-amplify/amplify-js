@@ -89,9 +89,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 	}
 
 	protected async _get<T>(storeName: string, keyArr: string[]): Promise<T> {
-		const itemKeyValuesPath: string = keyArr.join(
-			DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR
-		);
+		const itemKeyValuesPath: string = keyArr.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
 
 		return <T>await this.db.get(itemKeyValuesPath, storeName);
 	}
@@ -100,8 +98,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 		model: T,
 		condition?: ModelPredicate<T>
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
-		const { storeName, connectionStoreNames, modelKeyValues } =
-			this.saveMetadata(model);
+		const { storeName, connectionStoreNames, modelKeyValues } = this.saveMetadata(model);
 
 		const fromDB = await this._get(storeName, modelKeyValues);
 
@@ -116,16 +113,8 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 			const fromDB = <T>await this._get(storeName, itemKeyValues);
 			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
 
-			if (
-				keysEqual(itemKeyValues, modelKeyValues) ||
-				opType === OpType.INSERT
-			) {
-				await this.db.save(
-					item,
-					storeName,
-					keys,
-					itemKeyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR)
-				);
+			if (keysEqual(itemKeyValues, modelKeyValues) || opType === OpType.INSERT) {
+				await this.db.save(item, storeName, keys, itemKeyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR));
 
 				result.push([instance, opType]);
 			}
@@ -138,14 +127,11 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
-		const {
-			storeName,
-			namespaceName,
-			queryByKey,
-			predicates,
-			hasSort,
-			hasPagination,
-		} = this.queryMetadata(modelConstructor, predicate, pagination);
+		const { storeName, namespaceName, queryByKey, predicates, hasSort, hasPagination } = this.queryMetadata(
+			modelConstructor,
+			predicate,
+			pagination
+		);
 
 		const records: T[] = (await (async () => {
 			if (queryByKey) {
@@ -170,38 +156,25 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
 
-	private async getByKey<T extends PersistentModel>(
-		storeName: string,
-		keyValuePath: string
-	): Promise<T> {
+	private async getByKey<T extends PersistentModel>(storeName: string, keyValuePath: string): Promise<T> {
 		return <T>await this.db.get(keyValuePath, storeName);
 	}
 
-	private async getAll<T extends PersistentModel>(
-		storeName: string
-	): Promise<T[]> {
+	private async getAll<T extends PersistentModel>(storeName: string): Promise<T[]> {
 		return await this.db.getAll(storeName);
 	}
 
-	private async filterOnPredicate<T extends PersistentModel>(
-		storeName: string,
-		predicates: PredicatesGroup<T>
-	) {
+	private async filterOnPredicate<T extends PersistentModel>(storeName: string, predicates: PredicatesGroup<T>) {
 		const { predicates: predicateObjs, type } = predicates;
 
 		const all = <T[]>await this.getAll(storeName);
 
-		const filtered = predicateObjs
-			? all.filter(m => validatePredicate(m, type, predicateObjs))
-			: all;
+		const filtered = predicateObjs ? all.filter(m => validatePredicate(m, type, predicateObjs)) : all;
 
 		return filtered;
 	}
 
-	private inMemoryPagination<T extends PersistentModel>(
-		records: T[],
-		pagination?: PaginationInput<T>
-	): T[] {
+	private inMemoryPagination<T extends PersistentModel>(records: T[], pagination?: PaginationInput<T>): T[] {
 		return inMemoryPagination(records, pagination);
 	}
 
@@ -241,9 +214,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 	 * @returns
 	 */
 	private getIndexKeyValuesPath<T extends PersistentModel>(model: T): string {
-		return this.getIndexKeyValuesFromModel(model).join(
-			DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR
-		);
+		return this.getIndexKeyValuesFromModel(model).join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
 	}
 
 	//#endregion

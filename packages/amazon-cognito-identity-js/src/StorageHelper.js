@@ -25,9 +25,7 @@ export class MemoryStorage {
 	 * @returns {string} the data item
 	 */
 	static getItem(key) {
-		return Object.prototype.hasOwnProperty.call(dataMemory, key)
-			? dataMemory[key]
-			: undefined;
+		return Object.prototype.hasOwnProperty.call(dataMemory, key) ? dataMemory[key] : undefined;
 	}
 
 	/**

@@ -4,33 +4,15 @@ const mockGraphQL = jest.fn(() => mockObservable);
 
 import { Amplify } from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import {
-	Category,
-	CustomUserAgentDetails,
-	DataStoreAction,
-	getAmplifyUserAgentObject,
-} from '@aws-amplify/core';
+import { Category, CustomUserAgentDetails, DataStoreAction, getAmplifyUserAgentObject } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
-import {
-	SubscriptionProcessor,
-	USER_CREDENTIALS,
-} from '../src/sync/processors/subscription';
-import {
-	internalTestSchema,
-	Model as ModelType,
-	smallTestSchema,
-} from './helpers';
-import {
-	SchemaModel,
-	InternalSchema,
-	PersistentModelConstructor,
-} from '../src/types';
+import { SubscriptionProcessor, USER_CREDENTIALS } from '../src/sync/processors/subscription';
+import { internalTestSchema, Model as ModelType, smallTestSchema } from './helpers';
+import { SchemaModel, InternalSchema, PersistentModelConstructor } from '../src/types';
 
 // mock graphql to return a mockable observable
 jest.mock('@aws-amplify/api/internals', () => {
-	const actualInternalAPIModule = jest.requireActual(
-		'@aws-amplify/api/internals'
-	);
+	const actualInternalAPIModule = jest.requireActual('@aws-amplify/api/internals');
 	const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 
 	return {
@@ -652,28 +634,18 @@ describe('error handler', () => {
 					// expect logger.debug to be called 6 times for auth mode (2 for each operation)
 					// can't use toHaveBeenCalledTimes because it is called elsewhere unrelated to the test
 					expect(debugLog).toHaveBeenCalledWith(
-						expect.stringMatching(
-							new RegExp(
-								`[DEBUG].*${operation} subscription failed with authMode: API_KEY`
-							)
-						)
+						expect.stringMatching(new RegExp(`[DEBUG].*${operation} subscription failed with authMode: API_KEY`))
 					);
 					expect(debugLog).toHaveBeenCalledWith(
 						expect.stringMatching(
-							new RegExp(
-								`[DEBUG].*${operation} subscription failed with authMode: AMAZON_COGNITO_USER_POOLS`
-							)
+							new RegExp(`[DEBUG].*${operation} subscription failed with authMode: AMAZON_COGNITO_USER_POOLS`)
 						)
 					);
 
-					expect(mockGraphQL).toHaveBeenCalledWith(
-						expect.anything(),
-						undefined,
-						{
-							category: Category.DataStore,
-							action: DataStoreAction.Subscribe,
-						}
-					);
+					expect(mockGraphQL).toHaveBeenCalledWith(expect.anything(), undefined, {
+						category: Category.DataStore,
+						action: DataStoreAction.Subscribe,
+					});
 				});
 
 				done();
@@ -681,9 +653,7 @@ describe('error handler', () => {
 		});
 	}, 500);
 
-	async function instantiateSubscriptionProcessor({
-		errorHandler = () => null,
-	}) {
+	async function instantiateSubscriptionProcessor({ errorHandler = () => null }) {
 		let schema: InternalSchema = internalTestSchema();
 
 		const { initSchema, DataStore } = require('../src/datastore/datastore');
@@ -706,16 +676,12 @@ describe('error handler', () => {
 			syncPredicates,
 			{
 				aws_project_region: 'us-west-2',
-				aws_appsync_graphqlEndpoint:
-					'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
+				aws_appsync_graphqlEndpoint: 'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
 				aws_appsync_region: 'us-west-2',
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 			},
-			() => [
-				GRAPHQL_AUTH_MODE.API_KEY,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-			],
+			() => [GRAPHQL_AUTH_MODE.API_KEY, GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS],
 			errorHandler
 		);
 
@@ -740,10 +706,7 @@ const accessTokenPayload = {
 	email: 'user1@user.com',
 };
 
-export function generateModelWithAuth(
-	authRules,
-	modelProperties = {}
-): SchemaModel {
+export function generateModelWithAuth(authRules, modelProperties = {}): SchemaModel {
 	return {
 		syncable: true,
 		name: 'Post',

@@ -8,12 +8,7 @@ import {
 	predicateToGraphQLFilter,
 } from '../src/sync/utils';
 import { PredicatesGroup } from '../src/types';
-import {
-	explicitOwnerSchema,
-	groupSchema,
-	implicitOwnerSchema,
-	newSchema,
-} from './schema';
+import { explicitOwnerSchema, groupSchema, implicitOwnerSchema, newSchema } from './schema';
 
 const postSelectionSet = `
 id
@@ -121,27 +116,18 @@ describe('DataStore GraphQL generation', () => {
 				}
 			`,
 		],
-	])(
-		'%s - has full selection set including types, and inputs',
-		(graphQLOpType, expectedGraphQL) => {
-			const namespace = <SchemaNamespace>(<unknown>newSchema);
+	])('%s - has full selection set including types, and inputs', (graphQLOpType, expectedGraphQL) => {
+		const namespace = <SchemaNamespace>(<unknown>newSchema);
 
-			const {
-				models: { Post: postModelDefinition },
-			} = namespace;
+		const {
+			models: { Post: postModelDefinition },
+		} = namespace;
 
-			const [[, , query]] = buildGraphQLOperation(
-				namespace,
-				postModelDefinition,
-				<any>graphQLOpType
-			);
+		const [[, , query]] = buildGraphQLOperation(namespace, postModelDefinition, <any>graphQLOpType);
 
-			// why does it think `expectedGraphQL` is `string[] | undefined`?
-			expect(print(parse(query))).toStrictEqual(
-				print(parse(expectedGraphQL as any))
-			);
-		}
-	);
+		// why does it think `expectedGraphQL` is `string[] | undefined`?
+		expect(print(parse(query))).toStrictEqual(print(parse(expectedGraphQL as any)));
+	});
 
 	test.each([
 		[
@@ -257,10 +243,7 @@ describe('DataStore PredicateGroups to GraphQL filter', () => {
 		};
 
 		const groupExpected = {
-			and: [
-				{ someField: { eq: 'value' } },
-				{ someOtherField: { gt: 'value2' } },
-			],
+			and: [{ someField: { eq: 'value' } }, { someOtherField: { gt: 'value2' } }],
 		};
 
 		const gqlResult = predicateToGraphQLFilter(group);
@@ -287,10 +270,7 @@ describe('DataStore PredicateGroups to GraphQL filter', () => {
 			and: [
 				{ someField: { eq: 'value' } },
 				{
-					or: [
-						{ someOtherField: { gt: 'value2' } },
-						{ orField: { contains: 'str' } },
-					],
+					or: [{ someOtherField: { gt: 'value2' } }, { orField: { contains: 'str' } }],
 				},
 			],
 		};
@@ -315,10 +295,7 @@ describe('DataStore PredicateGroups to GraphQL filter', () => {
 
 		const groupExpected = {
 			not: {
-				or: [
-					{ someOtherField: { gt: 'value2' } },
-					{ orField: { contains: 'str' } },
-				],
+				or: [{ someOtherField: { gt: 'value2' } }, { orField: { contains: 'str' } }],
 			},
 		};
 

@@ -13,10 +13,7 @@ import {
 	RecursiveModelPredicateAggregateExtender,
 } from '../types';
 
-import {
-	ModelPredicateCreator as FlatModelPredicateCreator,
-	comparisonKeys,
-} from './index';
+import { ModelPredicateCreator as FlatModelPredicateCreator, comparisonKeys } from './index';
 import { ExclusiveStorage as StorageAdapter } from '../storage/storage';
 import { ModelRelationship } from '../storage/relationship';
 import { asyncSome, asyncEvery } from '../util';
@@ -28,9 +25,7 @@ type GroupOperator = 'and' | 'or' | 'not';
 type UntypedCondition = {
 	fetch: (storage: StorageAdapter) => Promise<Record<string, any>[]>;
 	matches: (item: Record<string, any>) => Promise<boolean>;
-	copy(
-		extract?: GroupCondition
-	): [UntypedCondition, GroupCondition | undefined];
+	copy(extract?: GroupCondition): [UntypedCondition, GroupCondition | undefined];
 	toAST(): any;
 };
 
@@ -114,10 +109,7 @@ export class FieldCondition {
 	 * @returns A new, identitical `FieldCondition`.
 	 */
 	copy(extract?: GroupCondition): [FieldCondition, GroupCondition | undefined] {
-		return [
-			new FieldCondition(this.field, this.operator, [...this.operands]),
-			undefined,
-		];
+		return [new FieldCondition(this.field, this.operator, [...this.operands]), undefined];
 	}
 
 	/**
@@ -139,10 +131,7 @@ export class FieldCondition {
 	toAST() {
 		return {
 			[this.field]: {
-				[this.operator]:
-					this.operator === 'between'
-						? [this.operands[0], this.operands[1]]
-						: this.operands[0],
+				[this.operator]: this.operator === 'between' ? [this.operands[0], this.operands[1]] : this.operands[0],
 			},
 		};
 	}
@@ -177,11 +166,7 @@ export class FieldCondition {
 				new FieldCondition(this.field, 'beginsWith', [this.operands[0]]),
 			]);
 		} else {
-			return new FieldCondition(
-				this.field,
-				negations[this.operator],
-				this.operands
-			);
+			return new FieldCondition(this.field, negations[this.operator], this.operands);
 		}
 	}
 
@@ -263,8 +248,7 @@ export class FieldCondition {
 		const validate = validations[this.operator as keyof typeof validations];
 		if (validate) {
 			const e = validate();
-			if (typeof e === 'string')
-				throw new Error(`Incorrect usage of \`${this.operator}()\`: ${e}`);
+			if (typeof e === 'string') throw new Error(`Incorrect usage of \`${this.operator}()\`: ${e}`);
 		} else {
 			throw new Error(`Non-existent operator: \`${this.operator}()\``);
 		}
@@ -355,16 +339,9 @@ export class GroupCondition {
 	 * @returns [The full copy, the copy of `extract` | undefined]
 	 */
 	copy(extract?: GroupCondition): [GroupCondition, GroupCondition | undefined] {
-		const copied = new GroupCondition(
-			this.model,
-			this.field,
-			this.relationshipType,
-			this.operator,
-			[]
-		);
+		const copied = new GroupCondition(this.model, this.field, this.relationshipType, this.operator, []);
 
-		let extractedCopy: GroupCondition | undefined =
-			extract === this ? copied : undefined;
+		let extractedCopy: GroupCondition | undefined = extract === this ? copied : undefined;
 
 		this.operands.forEach(o => {
 			const [operandCopy, extractedFromOperand] = o.copy(extract);
@@ -390,15 +367,10 @@ export class GroupCondition {
 			this.model,
 			undefined,
 			undefined,
-			(negate ? negations[this.operator] : this.operator) as
-				| 'or'
-				| 'and'
-				| 'not',
+			(negate ? negations[this.operator] : this.operator) as 'or' | 'and' | 'not',
 			this.operands
 				.filter(o => o instanceof FieldCondition)
-				.map(o =>
-					negateChildren ? (o as FieldCondition).negated(this.model) : o
-				)
+				.map(o => (negateChildren ? (o as FieldCondition).negated(this.model) : o))
 		);
 	}
 
@@ -439,20 +411,13 @@ export class GroupCondition {
 	 * optimize below a `not` (for now), and it makes the query logic simpler later.
 	 */
 	optimized(preserveNode = true): UntypedCondition {
-		const operands = this.operands.map(o =>
-			o instanceof GroupCondition ? o.optimized(this.operator === 'not') : o
-		);
+		const operands = this.operands.map(o => (o instanceof GroupCondition ? o.optimized(this.operator === 'not') : o));
 
 		// we're only collapsing and/or groups that contains a single child for now,
 		// because they're much more common and much more trivial to collapse. basically,
 		// an `and`/`or` that contains a single child doesn't require the layer of
 		// logical grouping.
-		if (
-			!preserveNode &&
-			['and', 'or'].includes(this.operator) &&
-			!this.field &&
-			operands.length === 1
-		) {
+		if (!preserveNode && ['and', 'or'].includes(this.operator) && !this.field && operands.length === 1) {
 			const operand = operands[0];
 			if (operand instanceof FieldCondition) {
 				// between conditions should NOT be passed up the chain. if they
@@ -468,14 +433,7 @@ export class GroupCondition {
 			}
 		}
 
-		return new GroupCondition(
-			this.model,
-			this.field,
-			this.relationshipType,
-			this.operator,
-			operands,
-			true
-		);
+		return new GroupCondition(this.model, this.field, this.relationshipType, this.operator, operands, true);
 	}
 
 	/**
@@ -486,21 +444,14 @@ export class GroupCondition {
 	 * @param negate Whether to match on the `NOT` of `this`.
 	 * @returns An `Promise` of `any[]` from `storage` matching the child conditions.
 	 */
-	async fetch(
-		storage: StorageAdapter,
-		breadcrumb: string[] = [],
-		negate = false
-	): Promise<Record<string, any>[]> {
+	async fetch(storage: StorageAdapter, breadcrumb: string[] = [], negate = false): Promise<Record<string, any>[]> {
 		if (!this.isOptimized) {
 			return this.optimized().fetch(storage);
 		}
 
 		const resultGroups: Array<Record<string, any>[]> = [];
 
-		const operator = (negate ? negations[this.operator] : this.operator) as
-			| 'or'
-			| 'and'
-			| 'not';
+		const operator = (negate ? negations[this.operator] : this.operator) as 'or' | 'and' | 'not';
 
 		const negateChildren = negate !== (this.operator === 'not');
 
@@ -511,23 +462,15 @@ export class GroupCondition {
 		 * If `field` is populated, these groups select *related* records, and the base,
 		 * candidate results are selected to match those.
 		 */
-		const groups = this.operands.filter(
-			op => op instanceof GroupCondition
-		) as GroupCondition[];
+		const groups = this.operands.filter(op => op instanceof GroupCondition) as GroupCondition[];
 
 		/**
 		 * Simple conditions that must match the target model of `this`.
 		 */
-		const conditions = this.operands.filter(
-			op => op instanceof FieldCondition
-		) as FieldCondition[];
+		const conditions = this.operands.filter(op => op instanceof FieldCondition) as FieldCondition[];
 
 		for (const g of groups) {
-			const relatives = await g.fetch(
-				storage,
-				[...breadcrumb, this.groupId],
-				negateChildren
-			);
+			const relatives = await g.fetch(storage, [...breadcrumb, this.groupId], negateChildren);
 
 			// no relatives -> no need to attempt to perform a "join" query for
 			// candidate results:
@@ -579,12 +522,9 @@ export class GroupCondition {
 						allJoinConditions.push({ and: relativeConditions });
 					}
 
-					const predicate = FlatModelPredicateCreator.createFromAST(
-						this.model.schema,
-						{
-							or: allJoinConditions,
-						}
-					);
+					const predicate = FlatModelPredicateCreator.createFromAST(this.model.schema, {
+						or: allJoinConditions,
+					});
 
 					resultGroups.push(await storage.query(this.model.builder, predicate));
 				} else {
@@ -599,8 +539,7 @@ export class GroupCondition {
 		// if conditions is empty at this point, child predicates found no matches.
 		// i.e., we can stop looking and return empty.
 		if (conditions.length > 0) {
-			const predicate =
-				this.withFieldConditionsOnly(negateChildren).toStoragePredicate();
+			const predicate = this.withFieldConditionsOnly(negateChildren).toStoragePredicate();
 			resultGroups.push(await storage.query(this.model.builder, predicate));
 		} else if (conditions.length === 0 && resultGroups.length === 0) {
 			resultGroups.push(await storage.query(this.model.builder));
@@ -609,8 +548,7 @@ export class GroupCondition {
 		// PK might be a single field, like `id`, or it might be several fields.
 		// so, we'll need to extract the list of PK fields from an object
 		// and stringify the list for easy comparison / merging.
-		const getPKValue = item =>
-			JSON.stringify(this.model.pkField.map(name => item[name]));
+		const getPKValue = item => JSON.stringify(this.model.pkField.map(name => item[name]));
 
 		// will be used for intersecting or unioning results
 		let resultIndex: Map<string, Record<string, any>> | undefined;
@@ -626,9 +564,7 @@ export class GroupCondition {
 				if (resultIndex === undefined) {
 					resultIndex = new Map(group.map(item => [getPKValue(item), item]));
 				} else {
-					const intersectWith = new Map<string, Record<string, any>>(
-						group.map(item => [getPKValue(item), item])
-					);
+					const intersectWith = new Map<string, Record<string, any>>(group.map(item => [getPKValue(item), item]));
 					for (const k of resultIndex.keys()) {
 						if (!intersectWith.has(k)) {
 							resultIndex.delete(k);
@@ -663,12 +599,8 @@ export class GroupCondition {
 	 * (Used for iterating over children on HAS_MANY checks.)
 	 * @returns A boolean (promise): `true` if matched, `false` otherwise.
 	 */
-	async matches(
-		item: Record<string, any>,
-		ignoreFieldName: boolean = false
-	): Promise<boolean> {
-		const itemToCheck =
-			this.field && !ignoreFieldName ? await item[this.field] : item;
+	async matches(item: Record<string, any>, ignoreFieldName: boolean = false): Promise<boolean> {
+		const itemToCheck = this.field && !ignoreFieldName ? await item[this.field] : item;
 
 		// if there is no item to check, we can stop recursing immediately.
 		// a condition cannot match against an item that does not exist. this
@@ -677,10 +609,7 @@ export class GroupCondition {
 			return false;
 		}
 
-		if (
-			this.relationshipType === 'HAS_MANY' &&
-			typeof itemToCheck[Symbol.asyncIterator] === 'function'
-		) {
+		if (this.relationshipType === 'HAS_MANY' && typeof itemToCheck[Symbol.asyncIterator] === 'function') {
 			for await (const singleItem of itemToCheck) {
 				if (await this.matches(singleItem, true)) {
 					return true;
@@ -695,9 +624,7 @@ export class GroupCondition {
 			return asyncEvery(this.operands, c => c.matches(itemToCheck));
 		} else if (this.operator === 'not') {
 			if (this.operands.length !== 1) {
-				throw new Error(
-					'Invalid arguments! `not()` accepts exactly one predicate expression.'
-				);
+				throw new Error('Invalid arguments! `not()` accepts exactly one predicate expression.');
 			}
 			return !(await this.operands[0].matches(itemToCheck));
 		} else {
@@ -710,8 +637,7 @@ export class GroupCondition {
 	 * (Does not support filtering in nested types.)
 	 */
 	toAST() {
-		if (this.field)
-			throw new Error('Nested type conditions are not supported!');
+		if (this.field) throw new Error('Nested type conditions are not supported!');
 
 		return {
 			[this.operator]: this.operands.map(operand => operand.toAST()),
@@ -723,10 +649,7 @@ export class GroupCondition {
 	 * understands how to use.
 	 */
 	toStoragePredicate<T>(): StoragePredicate<T> {
-		return FlatModelPredicateCreator.createFromAST<T>(
-			this.model.schema,
-			this.toAST()
-		) as StoragePredicate<T>;
+		return FlatModelPredicateCreator.createFromAST<T>(this.model.schema, this.toAST()) as StoragePredicate<T>;
 	}
 
 	/**
@@ -789,13 +712,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 
 	const copyLink = () => {
 		const [query, newTail] = baseCondition.copy(tailCondition);
-		const newLink = recursivePredicateFor(
-			ModelType,
-			allowRecursion,
-			undefined,
-			query,
-			newTail
-		);
+		const newLink = recursivePredicateFor(ModelType, allowRecursion, undefined, query, newTail);
 		return { query, newTail, newLink };
 	};
 
@@ -807,13 +724,9 @@ export function recursivePredicateFor<T extends PersistentModel>(
 			// to head off mutability concerns.
 			const { query, newTail } = copyLink();
 
-			const childConditions = builder(
-				recursivePredicateFor(ModelType, allowRecursion)
-			);
+			const childConditions = builder(recursivePredicateFor(ModelType, allowRecursion));
 			if (!Array.isArray(childConditions)) {
-				throw new Error(
-					`Invalid predicate. \`${op}\` groups must return an array of child conditions.`
-				);
+				throw new Error(`Invalid predicate. \`${op}\` groups must return an array of child conditions.`);
 			}
 
 			// the customer will supply a child predicate, which apply to the `model.field`
@@ -834,9 +747,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 	});
 
 	// TODO: If revisiting this code, consider proxy.
-	link.not = (
-		builder: RecursiveModelPredicateExtender<T>
-	): PredicateInternalsKey => {
+	link.not = (builder: RecursiveModelPredicateExtender<T>): PredicateInternalsKey => {
 		// not() will return a copy of the original link
 		// to head off mutability concerns.
 		const { query, newTail } = copyLink();
@@ -885,15 +796,11 @@ export function recursivePredicateFor<T extends PersistentModel>(
 
 								// normalize operands. if any of the values are `undefiend`, use
 								// `null` instead, because that's what will be stored cross-platform.
-								const normalizedOperands = operands.map(o =>
-									o === undefined ? null : o
-								);
+								const normalizedOperands = operands.map(o => (o === undefined ? null : o));
 
 								// add the given condition to the link's TAIL node.
 								// remember: the base link might go N nodes deep! e.g.,
-								newTail?.operands.push(
-									new FieldCondition(fieldName, operator, normalizedOperands)
-								);
+								newTail?.operands.push(new FieldCondition(fieldName, operator, normalizedOperands));
 
 								// A `FinalModelPredicate`.
 								// Return a thing that can no longer be extended, but instead used to `async filter(items)`
@@ -904,9 +811,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 					}, {});
 				} else {
 					if (!allowRecursion) {
-						throw new Error(
-							'Predication on releated models is not supported in this context.'
-						);
+						throw new Error('Predication on releated models is not supported in this context.');
 					} else if (
 						def.association.connectionType === 'BELONGS_TO' ||
 						def.association.connectionType === 'HAS_ONE' ||
@@ -917,39 +822,23 @@ export function recursivePredicateFor<T extends PersistentModel>(
 
 						const relatedMeta = (def.type as ModelFieldType).modelConstructor;
 						if (!relatedMeta) {
-							throw new Error(
-								'Related model metadata is missing. This is a bug! Please report it.'
-							);
+							throw new Error('Related model metadata is missing. This is a bug! Please report it.');
 						}
 
 						// `Model.reletedModelField` returns a copy of the original link,
 						// and will contains copies of internal GroupConditions
 						// to head off mutability concerns.
 						const [newquery, oldtail] = baseCondition.copy(tailCondition);
-						const newtail = new GroupCondition(
-							relatedMeta,
-							fieldName,
-							def.association.connectionType,
-							'and',
-							[]
-						);
+						const newtail = new GroupCondition(relatedMeta, fieldName, def.association.connectionType, 'and', []);
 
 						// `oldtail` here refers to the *copy* of the old tail.
 						// so, it's safe to modify at this point. and we need to modify
 						// it to push the *new* tail onto the end of it.
 						(oldtail as GroupCondition).operands.push(newtail);
-						const newlink = recursivePredicateFor(
-							relatedMeta,
-							allowRecursion,
-							undefined,
-							newquery,
-							newtail
-						);
+						const newlink = recursivePredicateFor(relatedMeta, allowRecursion, undefined, newquery, newtail);
 						return newlink;
 					} else {
-						throw new Error(
-							"Related model definition doesn't have a typedef. This is a bug! Please report it."
-						);
+						throw new Error("Related model definition doesn't have a typedef. This is a bug! Please report it.");
 					}
 				}
 			},

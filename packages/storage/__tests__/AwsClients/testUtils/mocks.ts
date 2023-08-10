@@ -57,16 +57,12 @@ export const mockXhrResponse = (
 			if (mockXhr.responseType === 'text') {
 				return response.body as string;
 			}
-			throw new Error(
-				`Cannot read responseText when responseType is ${mockXhr.responseType}`
-			);
+			throw new Error(`Cannot read responseText when responseType is ${mockXhr.responseType}`);
 		},
 		configurable: true,
 	});
 	mockXhr.response = response.body;
-	(mockXhr.getAllResponseHeaders as jest.Mock).mockReturnValue(
-		response.headerString
-	);
+	(mockXhr.getAllResponseHeaders as jest.Mock).mockReturnValue(response.headerString);
 	mockXhr.uploadListeners.progress?.forEach(cb => {
 		cb({ name: 'MockUploadEvent' } as any);
 	});

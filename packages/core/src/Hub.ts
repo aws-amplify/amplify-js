@@ -46,17 +46,7 @@ export class HubClass {
 	private listeners: IListener[] = [];
 	private patterns: IPattern[] = [];
 
-	protectedChannels = [
-		'core',
-		'auth',
-		'api',
-		'analytics',
-		'interactions',
-		'pubsub',
-		'storage',
-		'ui',
-		'xr',
-	];
+	protectedChannels = ['core', 'auth', 'api', 'analytics', 'interactions', 'pubsub', 'storage', 'ui', 'xr'];
 
 	constructor(name: string) {
 		this.name = name;
@@ -70,9 +60,7 @@ export class HubClass {
 	 */
 	private _remove(channel: string | RegExp, listener: HubCallback) {
 		if (channel instanceof RegExp) {
-			const pattern = this.patterns.find(
-				({ pattern }) => pattern.source === channel.source
-			);
+			const pattern = this.patterns.find(({ pattern }) => pattern.source === channel.source);
 			if (!pattern) {
 				logger.warn(`No listeners for ${channel}`);
 				return;
@@ -84,9 +72,7 @@ export class HubClass {
 				logger.warn(`No listeners for ${channel}`);
 				return;
 			}
-			this.listeners[channel] = [
-				...holder.filter(({ callback }) => callback !== listener),
-			];
+			this.listeners[channel] = [...holder.filter(({ callback }) => callback !== listener)];
 		}
 	}
 
@@ -106,19 +92,12 @@ export class HubClass {
 	 * @param ampSymbol - Symbol used to determine if the event is dispatched internally on a protected channel
 	 *
 	 */
-	dispatch(
-		channel: string,
-		payload: HubPayload,
-		source: string = '',
-		ampSymbol?: Symbol
-	) {
+	dispatch(channel: string, payload: HubPayload, source: string = '', ampSymbol?: Symbol) {
 		if (this.protectedChannels.indexOf(channel) > -1) {
 			const hasAccess = ampSymbol === AMPLIFY_SYMBOL;
 
 			if (!hasAccess) {
-				logger.warn(
-					`WARNING: ${channel} is protected and dispatching on it can have unintended consequences`
-				);
+				logger.warn(`WARNING: ${channel} is protected and dispatching on it can have unintended consequences`);
 			}
 		}
 
@@ -145,17 +124,11 @@ export class HubClass {
 	 * @returns A function which can be called to cancel the listener.
 	 *
 	 */
-	listen(
-		channel: string | RegExp,
-		callback?: HubCallback | LegacyCallback,
-		listenerName = 'noname'
-	) {
+	listen(channel: string | RegExp, callback?: HubCallback | LegacyCallback, listenerName = 'noname') {
 		let cb: HubCallback;
 		// Check for legacy onHubCapsule callback for backwards compatability
 		if (isLegacyCallback(callback)) {
-			logger.warn(
-				`WARNING onHubCapsule is Deprecated. Please pass in a callback.`
-			);
+			logger.warn(`WARNING onHubCapsule is Deprecated. Please pass in a callback.`);
 			cb = callback.onHubCapsule.bind(callback);
 		} else if (typeof callback !== 'function') {
 			throw new Error('No callback supplied to Hub');

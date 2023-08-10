@@ -154,13 +154,7 @@ describe('DataStore sync engine', () => {
 				})
 			);
 
-			const omitted_optional_fields = [
-				'emails',
-				'ips',
-				'logins',
-				'metadata',
-				'optionalField',
-			];
+			const omitted_optional_fields = ['emails', 'ips', 'logins', 'metadata', 'optionalField'];
 
 			await waitForEmptyOutbox();
 
@@ -214,9 +208,7 @@ describe('DataStore sync engine', () => {
 			await waitForEmptyOutbox();
 			const retrieved = (await DataStore.query(Model, saved.id))!;
 
-			const updated = await DataStore.save(
-				Model.copyOf(retrieved, d => (d.optionalField1 = 'new value'))
-			);
+			const updated = await DataStore.save(Model.copyOf(retrieved, d => (d.optionalField1 = 'new value')));
 
 			const omitted_fields = ['field1', 'emails', 'ips', 'logins', 'metadata'];
 
@@ -249,9 +241,7 @@ describe('DataStore sync engine', () => {
 			await waitForEmptyOutbox();
 			const retrieved = (await DataStore.query(Model, saved.id))!;
 
-			await DataStore.save(
-				Model.copyOf(retrieved, d => (d.optionalField1 = null))
-			);
+			await DataStore.save(Model.copyOf(retrieved, d => (d.optionalField1 = null)));
 
 			await waitForEmptyOutbox();
 
@@ -389,9 +379,7 @@ describe('DataStore sync engine', () => {
 
 		test('includes timestamp fields in mutation events when NOT readonly', async () => {
 			// make sure our test model still meets requirements to make this test valid.
-			expect(
-				schema.models.BasicModelWritableTS.fields.createdAt.isReadOnly
-			).toBe(false);
+			expect(schema.models.BasicModelWritableTS.fields.createdAt.isReadOnly).toBe(false);
 
 			const m = await DataStore.save(
 				new BasicModelWritableTS({
@@ -450,10 +438,7 @@ describe('DataStore sync engine', () => {
 			await waitForEmptyOutbox();
 
 			const updated = await DataStore.save(
-				Model.copyOf(
-					(await DataStore.query(Model, original.id))!,
-					m => (m.optionalField1 = undefined)
-				)
+				Model.copyOf((await DataStore.query(Model, original.id))!, m => (m.optionalField1 = undefined))
 			);
 			const retrievedBeforeMutate = await DataStore.query(Model, original.id);
 			await waitForEmptyOutbox();
@@ -490,9 +475,7 @@ describe('DataStore sync engine', () => {
 
 			const retrieved = await DataStore.query(Post, post.id);
 
-			const deleted = await DataStore.delete(retrieved!, p =>
-				p.title.eq('post title')
-			);
+			const deleted = await DataStore.delete(retrieved!, p => p.title.eq('post title'));
 			await waitForEmptyOutbox();
 
 			const table = graphqlService.tables.get('Post')!;
@@ -505,9 +488,7 @@ describe('DataStore sync engine', () => {
 
 		[null, undefined].forEach(value => {
 			test(`model field can be set to ${value} to remove connection hasOne parent`, async () => {
-				const child = await DataStore.save(
-					new HasOneChild({ content: 'child content' })
-				);
+				const child = await DataStore.save(new HasOneChild({ content: 'child content' }));
 				const parent = await DataStore.save(
 					new HasOneParent({
 						child,
@@ -515,24 +496,17 @@ describe('DataStore sync engine', () => {
 				);
 				await waitForEmptyOutboxOrError(graphqlService);
 				const parentTable = graphqlService.tables.get('HasOneParent')!;
-				const savedParentWithChild = parentTable.get(
-					JSON.stringify([parent.id])
-				) as any;
+				const savedParentWithChild = parentTable.get(JSON.stringify([parent.id])) as any;
 				expect(savedParentWithChild.hasOneParentChildId).toEqual(child.id);
 
-				const parentWithoutChild = HasOneParent.copyOf(
-					(await DataStore.query(HasOneParent, parent.id))!,
-					draft => {
-						draft.child = value;
-					}
-				);
+				const parentWithoutChild = HasOneParent.copyOf((await DataStore.query(HasOneParent, parent.id))!, draft => {
+					draft.child = value;
+				});
 				await DataStore.save(parentWithoutChild);
 
 				await waitForEmptyOutboxOrError(graphqlService);
 
-				const savedParentWithoutChild = parentTable.get(
-					JSON.stringify([parent.id])
-				) as any;
+				const savedParentWithoutChild = parentTable.get(JSON.stringify([parent.id])) as any;
 				expect(savedParentWithoutChild.hasOneParentChildId).toEqual(null);
 			});
 
@@ -554,9 +528,7 @@ describe('DataStore sync engine', () => {
 
 				await waitForEmptyOutboxOrError(graphqlService);
 				const childTable = graphqlService.tables.get('CompositePKChild')!;
-				const savedChildWithParent = childTable.get(
-					JSON.stringify([child.childId, child.content])
-				) as any;
+				const savedChildWithParent = childTable.get(JSON.stringify([child.childId, child.content])) as any;
 				expect(savedChildWithParent.parentId).toEqual(parent.customId);
 				expect(savedChildWithParent.parentTitle).toEqual(parent.content);
 
@@ -573,9 +545,7 @@ describe('DataStore sync engine', () => {
 
 				await waitForEmptyOutboxOrError(graphqlService);
 
-				const savedChildWithoutParent = childTable.get(
-					JSON.stringify([child.childId, child.content])
-				) as any;
+				const savedChildWithoutParent = childTable.get(JSON.stringify([child.childId, child.content])) as any;
 				expect(savedChildWithoutParent.parentId).toEqual(null);
 				expect(savedChildWithoutParent.parentTitle).toEqual(null);
 			});
@@ -617,9 +587,7 @@ describe('DataStore sync engine', () => {
 			const cloudPost = table.get(JSON.stringify([post.id])) as any;
 			expect(cloudPost.title).toEqual('a title');
 
-			const cloudAnotherPost = table.get(
-				JSON.stringify([anotherPost.id])
-			) as any;
+			const cloudAnotherPost = table.get(JSON.stringify([anotherPost.id])) as any;
 			expect(cloudAnotherPost.title).toEqual('another title');
 		});
 
@@ -653,9 +621,7 @@ describe('DataStore sync engine', () => {
 			const cloudPost = table.get(JSON.stringify([post.id])) as any;
 			expect(cloudPost.title).toEqual('a title');
 
-			const cloudAnotherPost = table.get(
-				JSON.stringify([anotherPost.id])
-			) as any;
+			const cloudAnotherPost = table.get(JSON.stringify([anotherPost.id])) as any;
 			expect(cloudAnotherPost.title).toEqual('another title');
 		});
 
@@ -689,9 +655,7 @@ describe('DataStore sync engine', () => {
 			const cloudPost = table.get(JSON.stringify([post.id])) as any;
 			expect(cloudPost.title).toEqual('a title');
 
-			const cloudAnotherPost = table.get(
-				JSON.stringify([anotherPost.id])
-			) as any;
+			const cloudAnotherPost = table.get(JSON.stringify([anotherPost.id])) as any;
 			expect(cloudAnotherPost.title).toEqual('another title');
 		});
 
@@ -708,9 +672,7 @@ describe('DataStore sync engine', () => {
 			const outboxEmpty = waitForEmptyOutbox();
 
 			const retrieved = await DataStore.query(Post, post.id);
-			await DataStore.save(
-				Post.copyOf(retrieved!, updated => (updated.title = 'new title'))
-			);
+			await DataStore.save(Post.copyOf(retrieved!, updated => (updated.title = 'new title')));
 
 			// NO PAUSE: Simulate reconnect IMMEDIATELY, causing a race
 			// between the save and the sync engine reconnection operations.
@@ -802,9 +764,7 @@ describe('DataStore sync engine', () => {
 
 			expect((await DataStore.query(Post)).length).toEqual(2);
 			expect((await DataStore.query(Post, post.id))!.title).toEqual('a title');
-			expect((await DataStore.query(Post, secondPostId))!.title).toEqual(
-				'a title 2'
-			);
+			expect((await DataStore.query(Post, secondPostId))!.title).toEqual('a title 2');
 
 			const thirdPost = await DataStore.save(
 				new Post({
@@ -845,9 +805,7 @@ describe('DataStore sync engine', () => {
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);
 
-			const cloudPost = table.get(
-				JSON.stringify([(await postPromise).id])
-			) as any;
+			const cloudPost = table.get(JSON.stringify([(await postPromise).id])) as any;
 			expect(cloudPost.title).toEqual('a title');
 
 			/**
@@ -932,11 +890,7 @@ describe('DataStore sync engine', () => {
 				version: number | undefined;
 			};
 
-			const externalPostUpdate = async ({
-				originalPostId,
-				updatedFields,
-				version,
-			}: ExternalPostUpdateParams) => {
+			const externalPostUpdate = async ({ originalPostId, updatedFields, version }: ExternalPostUpdateParams) => {
 				await graphqlService.externalGraphql(
 					{
 						query: `
@@ -2142,30 +2096,21 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('basic contains() filtering', async () => {
-			await resyncWith([
-				syncExpression(Post, post => post?.title.contains('cleaning')),
-			]);
+			await resyncWith([syncExpression(Post, post => post?.title.contains('cleaning'))]);
 
 			const records = await DataStore.query(Post);
 			expect(records.length).toBe(2);
 		});
 
 		test('basic contains() filtering - as synchronous condition producer', async () => {
-			await resyncWith([
-				syncExpression(Post, () => post => post.title.contains('cleaning')),
-			]);
+			await resyncWith([syncExpression(Post, () => post => post.title.contains('cleaning'))]);
 
 			const records = await DataStore.query(Post);
 			expect(records.length).toBe(2);
 		});
 
 		test('basic contains() filtering - as asynchronous condition producer', async () => {
-			await resyncWith([
-				syncExpression(
-					Post,
-					async () => post => post.title.contains('cleaning')
-				),
-			]);
+			await resyncWith([syncExpression(Post, async () => post => post.title.contains('cleaning'))]);
 
 			const records = await DataStore.query(Post);
 			expect(records.length).toBe(2);
@@ -2178,20 +2123,12 @@ describe('DataStore sync engine', () => {
 
 			let selectionSet: string[];
 			graphqlService.log = (message, query) => {
-				if (
-					message === 'Parsed Request' &&
-					query.selection === 'syncLegacyJSONPosts'
-				) {
+				if (message === 'Parsed Request' && query.selection === 'syncLegacyJSONPosts') {
 					selectionSet = query.items;
 				}
 			};
 
-			await resyncWith([
-				syncExpression(
-					LegacyJSONPost,
-					p => p?.title.eq("whatever, it doesn't matter.")
-				),
-			]);
+			await resyncWith([syncExpression(LegacyJSONPost, p => p?.title.eq("whatever, it doesn't matter."))]);
 
 			expect(selectionSet!).toBeDefined();
 			expect(selectionSet!).toEqual([
@@ -2207,12 +2144,7 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('subscription query receives expected filter variable', async () => {
-			await resyncWith([
-				syncExpression(
-					Post,
-					async () => post => post.title.contains('cleaning')
-				),
-			]);
+			await resyncWith([syncExpression(Post, async () => post => post.title.contains('cleaning'))]);
 
 			// first 3 subscription requests are from calling DataStore.start in the `beforeEach`
 			const [, , , onCreate, onUpdate, onDelete] = graphqlService.requests
@@ -2240,15 +2172,9 @@ describe('DataStore sync engine', () => {
 					Model,
 					async () => m =>
 						m.or(or => [
+							or.and(and => [and.field1.eq('field'), and.createdAt.gt('1/1/2023')]),
 							or.and(and => [
-								and.field1.eq('field'),
-								and.createdAt.gt('1/1/2023'),
-							]),
-							or.and(and => [
-								and.or(or => [
-									or.optionalField1.beginsWith('a'),
-									or.optionalField1.notContains('z'),
-								]),
+								and.or(or => [or.optionalField1.beginsWith('a'), or.optionalField1.notContains('z')]),
 								and.emails.ne('-'),
 							]),
 						])
@@ -2333,8 +2259,7 @@ describe('DataStore sync engine', () => {
 								errorType: 'Unauthorized',
 								errorInfo: null,
 								locations: [{ line: 2, column: 3, sourceName: null }],
-								message:
-									'Not Authorized to access syncLegacyJSONComments on type Query',
+								message: 'Not Authorized to access syncLegacyJSONComments on type Query',
 							},
 						],
 					};
@@ -2362,8 +2287,7 @@ describe('DataStore sync engine', () => {
 								errorType: 'Unauthorized',
 								errorInfo: null,
 								locations: [{ line: 2, column: 3, sourceName: null }],
-								message:
-									'Not Authorized to access createLegacyJSONComment on type Mutation',
+								message: 'Not Authorized to access createLegacyJSONComment on type Mutation',
 							},
 						],
 					};

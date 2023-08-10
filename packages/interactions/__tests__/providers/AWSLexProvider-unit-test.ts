@@ -60,10 +60,7 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 			return Promise.resolve(result);
 		}
 	} else if (command instanceof PostContentCommand) {
-		if (
-			command.input.contentType ===
-			'audio/x-l16; sample-rate=16000; channel-count=1'
-		) {
+		if (command.input.contentType === 'audio/x-l16; sample-rate=16000; channel-count=1') {
 			const bot = command.input.botName as string;
 			const [botName, status] = bot.split(':');
 
@@ -196,9 +193,7 @@ describe('Interactions', () => {
 				},
 			};
 			// @ts-ignore
-			expect(() => provider.configure(invalidConfig)).toThrow(
-				'invalid bot configuration'
-			);
+			expect(() => provider.configure(invalidConfig)).toThrow('invalid bot configuration');
 			expect.assertions(1);
 		});
 	});
@@ -208,9 +203,7 @@ describe('Interactions', () => {
 		let provider;
 
 		beforeEach(() => {
-			jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
+			jest.spyOn(Credentials, 'get').mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
 			provider = new AWSLexProvider();
 			provider.configure(botConfig);
@@ -312,20 +305,14 @@ describe('Interactions', () => {
 		});
 
 		test('send a text message bot But with no credentials', async () => {
-			jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.reject({ identityId: undefined }));
+			jest.spyOn(Credentials, 'get').mockImplementation(() => Promise.reject({ identityId: undefined }));
 
-			await expect(provider.sendMessage('BookTrip', 'hi')).rejects.toEqual(
-				'No credentials'
-			);
+			await expect(provider.sendMessage('BookTrip', 'hi')).rejects.toEqual('No credentials');
 			expect.assertions(1);
 		});
 
 		test('send message to non-existing bot', async () => {
-			await expect(provider.sendMessage('unknownBot', 'hi')).rejects.toEqual(
-				'Bot unknownBot does not exist'
-			);
+			await expect(provider.sendMessage('unknownBot', 'hi')).rejects.toEqual('Bot unknownBot does not exist');
 			expect.assertions(1);
 		});
 
@@ -358,9 +345,7 @@ describe('Interactions', () => {
 		let provider;
 
 		beforeEach(() => {
-			jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
+			jest.spyOn(Credentials, 'get').mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
 			provider = new AWSLexProvider();
 			provider.configure(botConfig);
@@ -372,9 +357,7 @@ describe('Interactions', () => {
 		});
 
 		test('Configure onComplete callback for non-existing bot', async () => {
-			expect(() => provider.onComplete('unknownBot', callback)).toThrow(
-				'Bot unknownBot does not exist'
-			);
+			expect(() => provider.onComplete('unknownBot', callback)).toThrow('Bot unknownBot does not exist');
 			expect.assertions(1);
 		});
 	});
@@ -393,17 +376,13 @@ describe('Interactions', () => {
 		let completeFailCallback;
 
 		beforeEach(async () => {
-			jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
+			jest.spyOn(Credentials, 'get').mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
 			provider = new AWSLexProvider();
 			provider.configure(botConfig);
 
 			// mock callbacks
-			inProgressCallback = jest.fn((err, confirmation) =>
-				fail(`callback shouldn't be called`)
-			);
+			inProgressCallback = jest.fn((err, confirmation) => fail(`callback shouldn't be called`));
 
 			completeSuccessCallback = jest.fn((err, confirmation) => {
 				expect(err).toEqual(null);
@@ -417,25 +396,14 @@ describe('Interactions', () => {
 				});
 			});
 
-			completeFailCallback = jest.fn((err, confirmation) =>
-				expect(err).toEqual('Bot conversation failed')
-			);
+			completeFailCallback = jest.fn((err, confirmation) => expect(err).toEqual('Bot conversation failed'));
 
 			// mock responses
-			inProgressResp = (await provider.sendMessage(
-				'BookTrip',
-				'hi'
-			)) as PostTextCommandOutput;
+			inProgressResp = (await provider.sendMessage('BookTrip', 'hi')) as PostTextCommandOutput;
 
-			completeSuccessResp = (await provider.sendMessage(
-				'BookTrip',
-				'done'
-			)) as PostTextCommandOutput;
+			completeSuccessResp = (await provider.sendMessage('BookTrip', 'done')) as PostTextCommandOutput;
 
-			completeFailResp = (await provider.sendMessage(
-				'BookTrip',
-				'error'
-			)) as PostTextCommandOutput;
+			completeFailResp = (await provider.sendMessage('BookTrip', 'error')) as PostTextCommandOutput;
 		});
 
 		test('Configure onComplete callback using `Interactions.onComplete` API', async () => {

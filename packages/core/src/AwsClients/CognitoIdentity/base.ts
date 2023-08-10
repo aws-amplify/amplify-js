@@ -13,10 +13,7 @@ import {
 	parseJsonError,
 } from '../../clients';
 import { composeTransferHandler } from '../../clients/internal/composeTransferHandler';
-import {
-	jitteredBackoff,
-	getRetryDecider,
-} from '../../clients/middleware/retry';
+import { jitteredBackoff, getRetryDecider } from '../../clients/middleware/retry';
 import { getAmplifyUserAgent } from '../../Platform';
 import { observeFrameworkChanges } from '../../Platform/detectFramework';
 
@@ -35,12 +32,11 @@ const endpointResolver = ({ region }: EndpointResolverOptions) => ({
 /**
  * A Cognito Identity-specific middleware that disables caching for all requests.
  */
-const disableCacheMiddleware: Middleware<HttpRequest, HttpResponse, {}> =
-	() => (next, context) =>
-		async function disableCacheMiddleware(request) {
-			request.headers['cache-control'] = 'no-store';
-			return next(request);
-		};
+const disableCacheMiddleware: Middleware<HttpRequest, HttpResponse, {}> = () => (next, context) =>
+	async function disableCacheMiddleware(request) {
+		request.headers['cache-control'] = 'no-store';
+		return next(request);
+	};
 
 /**
  * A Cognito Identity-specific transfer handler that does NOT sign requests, and
@@ -81,11 +77,7 @@ export const getSharedHeaders = (operation: string): Headers => ({
 /**
  * @internal
  */
-export const buildHttpRpcRequest = (
-	{ url }: Endpoint,
-	headers: Headers,
-	body: any
-): HttpRequest => ({
+export const buildHttpRpcRequest = ({ url }: Endpoint, headers: Headers, body: any): HttpRequest => ({
 	headers,
 	url,
 	body,

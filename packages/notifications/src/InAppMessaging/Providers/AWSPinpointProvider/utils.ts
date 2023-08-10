@@ -24,23 +24,11 @@ let eventMetricsMemo = {};
 
 export const logger = new ConsoleLogger('InAppMessaging.AWSPinpointProvider');
 
-export const dispatchInAppMessagingEvent = (
-	event: string,
-	data: any,
-	message?: string
-) => {
-	Hub.dispatch(
-		'inAppMessaging',
-		{ event, data, message },
-		'InAppMessaging',
-		AMPLIFY_SYMBOL
-	);
+export const dispatchInAppMessagingEvent = (event: string, data: any, message?: string) => {
+	Hub.dispatch('inAppMessaging', { event, data, message }, 'InAppMessaging', AMPLIFY_SYMBOL);
 };
 
-export const recordAnalyticsEvent = (
-	event: AWSPinpointMessageEvent,
-	message: InAppMessage
-) => {
+export const recordAnalyticsEvent = (event: AWSPinpointMessageEvent, message: InAppMessage) => {
 	if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
 		const { id, metadata } = message;
 		Amplify.Analytics.record({
@@ -89,8 +77,8 @@ export const matchesAttributes = (
 	}
 	const memoKey = `${CampaignId}:${JSON.stringify(attributes)}`;
 	if (!eventAttributesMemo.hasOwnProperty(memoKey)) {
-		eventAttributesMemo[memoKey] = Object.entries(Attributes).every(
-			([key, { Values }]) => Values.includes(attributes[key])
+		eventAttributesMemo[memoKey] = Object.entries(Attributes).every(([key, { Values }]) =>
+			Values.includes(attributes[key])
 		);
 	}
 	return eventAttributesMemo[memoKey];
@@ -111,13 +99,11 @@ export const matchesMetrics = (
 	}
 	const memoKey = `${CampaignId}:${JSON.stringify(metrics)}`;
 	if (!eventMetricsMemo.hasOwnProperty(memoKey)) {
-		eventMetricsMemo[memoKey] = Object.entries(Metrics).every(
-			([key, { ComparisonOperator, Value }]) => {
-				const compare = getComparator(ComparisonOperator);
-				// if there is some unknown comparison operator, treat as a comparison failure
-				return compare ? compare(Value, metrics[key]) : false;
-			}
-		);
+		eventMetricsMemo[memoKey] = Object.entries(Metrics).every(([key, { ComparisonOperator, Value }]) => {
+			const compare = getComparator(ComparisonOperator);
+			// if there is some unknown comparison operator, treat as a comparison failure
+			return compare ? compare(Value, metrics[key]) : false;
+		});
 	}
 	return eventMetricsMemo[memoKey];
 };
@@ -139,9 +125,7 @@ export const getComparator = (operator: string): MetricsComparator => {
 	}
 };
 
-export const isBeforeEndDate = ({
-	Schedule,
-}: PinpointInAppMessage): boolean => {
+export const isBeforeEndDate = ({ Schedule }: PinpointInAppMessage): boolean => {
 	if (!Schedule?.EndDate) {
 		return true;
 	}
@@ -156,13 +140,7 @@ export const isQuietTime = (message: PinpointInAppMessage): boolean => {
 
 	const pattern = /^[0-2]\d:[0-5]\d$/; // basic sanity check, not a fully featured HH:MM validation
 	const { Start, End } = Schedule.QuietTime;
-	if (
-		!Start ||
-		!End ||
-		Start === End ||
-		!pattern.test(Start) ||
-		!pattern.test(End)
-	) {
+	if (!Start || !End || Start === End || !pattern.test(Start) || !pattern.test(End)) {
 		return false;
 	}
 
@@ -172,18 +150,8 @@ export const isQuietTime = (message: PinpointInAppMessage): boolean => {
 	const [startHours, startMinutes] = Start.split(':');
 	const [endHours, endMinutes] = End.split(':');
 
-	start.setHours(
-		Number.parseInt(startHours, 10),
-		Number.parseInt(startMinutes, 10),
-		0,
-		0
-	);
-	end.setHours(
-		Number.parseInt(endHours, 10),
-		Number.parseInt(endMinutes, 10),
-		0,
-		0
-	);
+	start.setHours(Number.parseInt(startHours, 10), Number.parseInt(startMinutes, 10), 0, 0);
+	end.setHours(Number.parseInt(endHours, 10), Number.parseInt(endMinutes, 10), 0, 0);
 
 	// if quiet time includes midnight, bump the end time to the next day
 	if (start > end) {
@@ -212,9 +180,7 @@ export const clearMemo = () => {
 // - 1. the usage of MOBILE_FEED and OVERLAYS as values for message layouts are not leaked
 //      outside the Pinpoint provider
 // - 2. Amplify correctly handles the legacy layout values from Pinpoint after they are updated
-export const interpretLayout = (
-	layout: PinpointInAppMessage['InAppMessage']['Layout']
-): InAppMessageLayout => {
+export const interpretLayout = (layout: PinpointInAppMessage['InAppMessage']['Layout']): InAppMessageLayout => {
 	if (layout === 'MOBILE_FEED') {
 		return 'MODAL';
 	}
@@ -227,19 +193,10 @@ export const interpretLayout = (
 	return layout as InAppMessageLayout;
 };
 
-export const extractContent = ({
-	InAppMessage: message,
-}: PinpointInAppMessage): InAppMessageContent[] => {
+export const extractContent = ({ InAppMessage: message }: PinpointInAppMessage): InAppMessageContent[] => {
 	return (
 		message?.Content?.map(content => {
-			const {
-				BackgroundColor,
-				BodyConfig,
-				HeaderConfig,
-				ImageUrl,
-				PrimaryBtn,
-				SecondaryBtn,
-			} = content;
+			const { BackgroundColor, BodyConfig, HeaderConfig, ImageUrl, PrimaryBtn, SecondaryBtn } = content;
 			const defaultPrimaryButton = PrimaryBtn?.DefaultConfig;
 			const defaultSecondaryButton = SecondaryBtn?.DefaultConfig;
 			const extractedContent: InAppMessageContent = {};
@@ -255,8 +212,7 @@ export const extractContent = ({
 					content: HeaderConfig.Header,
 					style: {
 						color: HeaderConfig.TextColor,
-						textAlign:
-							HeaderConfig.Alignment.toLowerCase() as InAppMessageTextAlign,
+						textAlign: HeaderConfig.Alignment.toLowerCase() as InAppMessageTextAlign,
 					},
 				};
 			}
@@ -265,8 +221,7 @@ export const extractContent = ({
 					content: BodyConfig.Body,
 					style: {
 						color: BodyConfig.TextColor,
-						textAlign:
-							BodyConfig.Alignment.toLowerCase() as InAppMessageTextAlign,
+						textAlign: BodyConfig.Alignment.toLowerCase() as InAppMessageTextAlign,
 					},
 				};
 			}

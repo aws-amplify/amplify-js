@@ -2,11 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { browserOrNode, ConsoleLogger as Logger } from '@aws-amplify/core';
 import noop from 'lodash/noop';
-import {
-	SessionState,
-	SessionStateChangeHandler,
-	SessionTrackerInterface,
-} from './types';
+import { SessionState, SessionStateChangeHandler, SessionTrackerInterface } from './types';
 
 // Per https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
 let hidden: string;
@@ -37,20 +33,14 @@ export default class SessionTracker implements SessionTrackerInterface {
 
 	start = (): SessionState => {
 		if (isBrowser) {
-			document?.addEventListener(
-				visibilityChange,
-				this.visibilityChangeHandler
-			);
+			document?.addEventListener(visibilityChange, this.visibilityChangeHandler);
 		}
 		return this.getSessionState();
 	};
 
 	end = (): SessionState => {
 		if (isBrowser) {
-			document?.removeEventListener(
-				visibilityChange,
-				this.visibilityChangeHandler
-			);
+			document?.removeEventListener(visibilityChange, this.visibilityChangeHandler);
 		}
 		return this.getSessionState();
 	};

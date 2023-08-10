@@ -73,10 +73,7 @@ export const inAppMessagingConfig = {
 
 export const simpleInAppMessagingEvent: InAppMessagingEvent = { name: 'foo' };
 
-export const simpleInAppMessages: Partial<InAppMessage>[] = [
-	{ id: 'foo' },
-	{ id: 'bar' },
-];
+export const simpleInAppMessages: Partial<InAppMessage>[] = [{ id: 'foo' }, { id: 'bar' }];
 
 export const closestExpiryMessage: InAppMessage = {
 	id: 'closest-expiry',
@@ -307,11 +304,9 @@ export const fcmMessage = {
 	...fcmMessageOptions,
 };
 
-export const ANDROID_CAMPAIGN_ACTIVITY_ID_KEY =
-	'pinpoint.campaign.campaign_activity_id';
+export const ANDROID_CAMPAIGN_ACTIVITY_ID_KEY = 'pinpoint.campaign.campaign_activity_id';
 export const ANDROID_CAMPAIGN_ID_KEY = 'pinpoint.campaign.campaign_id';
-export const ANDROID_CAMPAIGN_TREATMENT_ID_KEY =
-	'pinpoint.campaign.treatment_id';
+export const ANDROID_CAMPAIGN_TREATMENT_ID_KEY = 'pinpoint.campaign.treatment_id';
 
 export const androidCampaignData = {
 	title: simplePushMessage.title,

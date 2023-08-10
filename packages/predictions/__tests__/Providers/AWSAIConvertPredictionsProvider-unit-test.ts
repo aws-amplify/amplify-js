@@ -1,20 +1,7 @@
-import {
-	Category,
-	Credentials,
-	PredictionsAction,
-	getAmplifyUserAgentObject,
-} from '@aws-amplify/core';
-import {
-	TranslateTextInput,
-	TextToSpeechInput,
-	SpeechToTextInput,
-	SpeechToTextOutput,
-} from '../../src/types';
+import { Category, Credentials, PredictionsAction, getAmplifyUserAgentObject } from '@aws-amplify/core';
+import { TranslateTextInput, TextToSpeechInput, SpeechToTextInput, SpeechToTextOutput } from '../../src/types';
 import { AmazonAIConvertPredictionsProvider } from '../../src/Providers';
-import {
-	TranslateClient,
-	TranslateTextCommand,
-} from '@aws-sdk/client-translate';
+import { TranslateClient, TranslateTextCommand } from '@aws-sdk/client-translate';
 import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
 
 const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
@@ -138,9 +125,10 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
 			});
-			return expect(
-				predictionsProvider.convert(validTranslateTextInput)
-			).resolves.toMatchObject({ language: 'es', text: 'translatedText' });
+			return expect(predictionsProvider.convert(validTranslateTextInput)).resolves.toMatchObject({
+				language: 'es',
+				text: 'translatedText',
+			});
 		});
 		test('error case credentials do not exist', () => {
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
@@ -148,9 +136,7 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return null;
 			});
-			return expect(
-				predictionsProvider.convert(validTranslateTextInput)
-			).rejects.toMatch('No credentials');
+			return expect(predictionsProvider.convert(validTranslateTextInput)).rejects.toMatch('No credentials');
 		});
 		test('error case credentials exist but service fails', () => {
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
@@ -161,9 +147,7 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(TranslateClient.prototype, 'send').mockImplementation(() => {
 				return Promise.reject('error');
 			});
-			return expect(
-				predictionsProvider.convert(validTranslateTextInput)
-			).rejects.toMatch('error');
+			return expect(predictionsProvider.convert(validTranslateTextInput)).rejects.toMatch('error');
 		});
 	});
 
@@ -178,9 +162,7 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
 				return 'dummyURL';
 			});
-			return expect(
-				predictionsProvider.convert(validTextToSpeechInput)
-			).resolves.toMatchObject({
+			return expect(predictionsProvider.convert(validTextToSpeechInput)).resolves.toMatchObject({
 				speech: {
 					url: 'dummyURL',
 				},
@@ -194,9 +176,7 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return null;
 			});
-			return expect(
-				predictionsProvider.convert(validTextToSpeechInput)
-			).rejects.toMatch('No credentials');
+			return expect(predictionsProvider.convert(validTextToSpeechInput)).rejects.toMatch('No credentials');
 		});
 		test('error case credentials exist but service fails', () => {
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
@@ -207,19 +187,15 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(PollyClient.prototype, 'send').mockImplementation(() => {
 				return Promise.reject('error');
 			});
-			return expect(
-				predictionsProvider.convert(validTextToSpeechInput)
-			).rejects.toMatch('error');
+			return expect(predictionsProvider.convert(validTextToSpeechInput)).rejects.toMatch('error');
 		});
 	});
 
 	describe('speechToText tests', () => {
 		test('Error region not configured', () => {
-			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
-				() => {
-					return 'Hello how are you';
-				}
-			);
+			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(() => {
+				return 'Hello how are you';
+			});
 
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 			predictionsProvider.configure(options);
@@ -227,16 +203,14 @@ describe('Predictions convert provider test', () => {
 				return Promise.resolve(credentials);
 			});
 
-			return expect(
-				predictionsProvider.convert(validSpeechToTextInput)
-			).rejects.toMatch('region not configured for transcription');
+			return expect(predictionsProvider.convert(validSpeechToTextInput)).rejects.toMatch(
+				'region not configured for transcription'
+			);
 		});
 		test('Error languageCode not configured ', () => {
-			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
-				() => {
-					return 'Hello how are you';
-				}
-			);
+			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(() => {
+				return 'Hello how are you';
+			});
 
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 			const speechGenOptions = {
@@ -250,18 +224,14 @@ describe('Predictions convert provider test', () => {
 				return Promise.resolve(credentials);
 			});
 
-			return expect(
-				predictionsProvider.convert(validSpeechToTextInput)
-			).rejects.toMatch(
+			return expect(predictionsProvider.convert(validSpeechToTextInput)).rejects.toMatch(
 				'languageCode not configured or provided for transcription'
 			);
 		});
 		test('Happy case ', () => {
-			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
-				() => {
-					return 'Hello, how are you?';
-				}
-			);
+			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(() => {
+				return 'Hello, how are you?';
+			});
 
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 			const speechGenOptions = {
@@ -278,24 +248,17 @@ describe('Predictions convert provider test', () => {
 				return Promise.resolve(credentials);
 			});
 
-			return expect(
-				predictionsProvider.convert(validSpeechToTextInput)
-			).resolves.toMatchObject({
+			return expect(predictionsProvider.convert(validSpeechToTextInput)).resolves.toMatchObject({
 				transcription: {
 					fullText: 'Hello, how are you?',
 				},
 			} as SpeechToTextOutput);
 		});
 		test('Downsized Happy case ', async () => {
-			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
-				() => {
-					return 'Bonjour, comment vas tu?';
-				}
-			);
-			const downsampleBufferSpyon = jest.spyOn(
-				AmazonAIConvertPredictionsProvider.prototype as any,
-				'downsampleBuffer'
-			);
+			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(() => {
+				return 'Bonjour, comment vas tu?';
+			});
+			const downsampleBufferSpyon = jest.spyOn(AmazonAIConvertPredictionsProvider.prototype as any, 'downsampleBuffer');
 
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 			const speechGenOptions = {
@@ -313,9 +276,7 @@ describe('Predictions convert provider test', () => {
 			});
 
 			await predictionsProvider.convert(validSpeechToTextInput);
-			expect(downsampleBufferSpyon).toBeCalledWith(
-				expect.objectContaining({ outputSampleRate: 8000 })
-			);
+			expect(downsampleBufferSpyon).toBeCalledWith(expect.objectContaining({ outputSampleRate: 8000 }));
 			downsampleBufferSpyon.mockClear();
 		});
 	});
@@ -350,9 +311,7 @@ describe('Predictions convert provider test', () => {
 			});
 
 			await predictionsProvider.convert(validTranslateTextInput);
-			expect(
-				predictionsProvider['translateClient'].config.customUserAgent
-			).toEqual(
+			expect(predictionsProvider['translateClient'].config.customUserAgent).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Convert,

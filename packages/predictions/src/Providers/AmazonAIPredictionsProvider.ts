@@ -61,9 +61,7 @@ export class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
 
 	identify(
 		input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput
-	): Promise<
-		IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput
-	> {
+	): Promise<IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput> {
 		return this.identifyProvider.identify(input);
 	}
 }

@@ -167,16 +167,10 @@ function onMessageArrived(message) {
 			for (var key in obj) {
 				if (obj.hasOwnProperty(key)) {
 					if (keys.hasOwnProperty(key)) {
-						if (typeof obj[key] !== keys[key])
-							throw new Error(
-								format(ERROR.INVALID_TYPE, [typeof obj[key], key])
-							);
+						if (typeof obj[key] !== keys[key]) throw new Error(format(ERROR.INVALID_TYPE, [typeof obj[key], key]));
 					} else {
-						var errorStr =
-							'Unknown property, ' + key + '. Valid properties are:';
-						for (var validKey in keys)
-							if (keys.hasOwnProperty(validKey))
-								errorStr = errorStr + ' ' + validKey;
+						var errorStr = 'Unknown property, ' + key + '. Valid properties are:';
+						for (var validKey in keys) if (keys.hasOwnProperty(validKey)) errorStr = errorStr + ' ' + validKey;
 						throw new Error(errorStr);
 					}
 				}
@@ -292,9 +286,7 @@ function onMessageArrived(message) {
 		};
 
 		//MQTT protocol and version          6    M    Q    I    s    d    p    3
-		var MqttProtoIdentifierv3 = [
-			0x00, 0x06, 0x4d, 0x51, 0x49, 0x73, 0x64, 0x70, 0x03,
-		];
+		var MqttProtoIdentifierv3 = [0x00, 0x06, 0x4d, 0x51, 0x49, 0x73, 0x64, 0x70, 0x03];
 		//MQTT proto/version for 311         4    M    Q    T    T    4
 		var MqttProtoIdentifierv4 = [0x00, 0x04, 0x4d, 0x51, 0x54, 0x54, 0x04];
 
@@ -369,10 +361,8 @@ function onMessageArrived(message) {
 							willMessagePayloadBytes = new Uint8Array(payloadBytes);
 						remLength += willMessagePayloadBytes.byteLength + 2;
 					}
-					if (this.userName !== undefined)
-						remLength += UTF8Length(this.userName) + 2;
-					if (this.password !== undefined)
-						remLength += UTF8Length(this.password) + 2;
+					if (this.userName !== undefined) remLength += UTF8Length(this.userName) + 2;
+					if (this.password !== undefined) remLength += UTF8Length(this.password) + 2;
 					break;
 
 				// Subscribe, Unsubscribe can both contain topic strings
@@ -402,16 +392,12 @@ function onMessageArrived(message) {
 					if (this.payloadMessage.duplicate) first |= 0x08;
 					first = first |= this.payloadMessage.qos << 1;
 					if (this.payloadMessage.retained) first |= 0x01;
-					destinationNameLength = UTF8Length(
-						this.payloadMessage.destinationName
-					);
+					destinationNameLength = UTF8Length(this.payloadMessage.destinationName);
 					remLength += destinationNameLength + 2;
 					var payloadBytes = this.payloadMessage.payloadBytes;
 					remLength += payloadBytes.byteLength;
-					if (payloadBytes instanceof ArrayBuffer)
-						payloadBytes = new Uint8Array(payloadBytes);
-					else if (!(payloadBytes instanceof Uint8Array))
-						payloadBytes = new Uint8Array(payloadBytes.buffer);
+					if (payloadBytes instanceof ArrayBuffer) payloadBytes = new Uint8Array(payloadBytes);
+					else if (!(payloadBytes instanceof Uint8Array)) payloadBytes = new Uint8Array(payloadBytes.buffer);
 					break;
 
 				case MESSAGE_TYPE.DISCONNECT:
@@ -434,12 +420,7 @@ function onMessageArrived(message) {
 
 			// If this is a PUBLISH then the variable header starts with a topic
 			if (this.type == MESSAGE_TYPE.PUBLISH)
-				pos = writeString(
-					this.payloadMessage.destinationName,
-					destinationNameLength,
-					byteStream,
-					pos
-				);
+				pos = writeString(this.payloadMessage.destinationName, destinationNameLength, byteStream, pos);
 			// If this is a CONNECT then the variable header contains the protocol name/version, flags and keepalive time
 			else if (this.type == MESSAGE_TYPE.CONNECT) {
 				switch (this.mqttVersion) {
@@ -468,17 +449,11 @@ function onMessageArrived(message) {
 			}
 
 			// Output the messageIdentifier - if there is one
-			if (this.messageIdentifier !== undefined)
-				pos = writeUint16(this.messageIdentifier, byteStream, pos);
+			if (this.messageIdentifier !== undefined) pos = writeUint16(this.messageIdentifier, byteStream, pos);
 
 			switch (this.type) {
 				case MESSAGE_TYPE.CONNECT:
-					pos = writeString(
-						this.clientId,
-						UTF8Length(this.clientId),
-						byteStream,
-						pos
-					);
+					pos = writeString(this.clientId, UTF8Length(this.clientId), byteStream, pos);
 					if (this.willMessage !== undefined) {
 						pos = writeString(
 							this.willMessage.destinationName,
@@ -486,28 +461,12 @@ function onMessageArrived(message) {
 							byteStream,
 							pos
 						);
-						pos = writeUint16(
-							willMessagePayloadBytes.byteLength,
-							byteStream,
-							pos
-						);
+						pos = writeUint16(willMessagePayloadBytes.byteLength, byteStream, pos);
 						byteStream.set(willMessagePayloadBytes, pos);
 						pos += willMessagePayloadBytes.byteLength;
 					}
-					if (this.userName !== undefined)
-						pos = writeString(
-							this.userName,
-							UTF8Length(this.userName),
-							byteStream,
-							pos
-						);
-					if (this.password !== undefined)
-						pos = writeString(
-							this.password,
-							UTF8Length(this.password),
-							byteStream,
-							pos
-						);
+					if (this.userName !== undefined) pos = writeString(this.userName, UTF8Length(this.userName), byteStream, pos);
+					if (this.password !== undefined) pos = writeString(this.password, UTF8Length(this.password), byteStream, pos);
 					break;
 
 				case MESSAGE_TYPE.PUBLISH:
@@ -524,12 +483,7 @@ function onMessageArrived(message) {
 				case MESSAGE_TYPE.SUBSCRIBE:
 					// SUBSCRIBE has a list of topic strings and request QoS
 					for (var i = 0; i < this.topics.length; i++) {
-						pos = writeString(
-							this.topics[i],
-							topicStrLength[i],
-							byteStream,
-							pos
-						);
+						pos = writeString(this.topics[i], topicStrLength[i], byteStream, pos);
 						byteStream[pos++] = this.requestedQos[i];
 					}
 					break;
@@ -537,12 +491,7 @@ function onMessageArrived(message) {
 				case MESSAGE_TYPE.UNSUBSCRIBE:
 					// UNSUBSCRIBE has a list of topic strings
 					for (var i = 0; i < this.topics.length; i++)
-						pos = writeString(
-							this.topics[i],
-							topicStrLength[i],
-							byteStream,
-							pos
-						);
+						pos = writeString(this.topics[i], topicStrLength[i], byteStream, pos);
 					break;
 
 				default:
@@ -698,12 +647,9 @@ function onMessageArrived(message) {
 				if (0xd800 <= charCode && charCode <= 0xdbff) {
 					var lowCharCode = input.charCodeAt(++i);
 					if (isNaN(lowCharCode)) {
-						throw new Error(
-							format(ERROR.MALFORMED_UNICODE, [charCode, lowCharCode])
-						);
+						throw new Error(format(ERROR.MALFORMED_UNICODE, [charCode, lowCharCode]));
 					}
-					charCode =
-						((charCode - 0xd800) << 10) + (lowCharCode - 0xdc00) + 0x10000;
+					charCode = ((charCode - 0xd800) << 10) + (lowCharCode - 0xdc00) + 0x10000;
 				}
 
 				if (charCode <= 0x7f) {
@@ -735,14 +681,7 @@ function onMessageArrived(message) {
 				if (byte1 < 128) utf16 = byte1;
 				else {
 					var byte2 = input[pos++] - 128;
-					if (byte2 < 0)
-						throw new Error(
-							format(ERROR.MALFORMED_UTF, [
-								byte1.toString(16),
-								byte2.toString(16),
-								'',
-							])
-						);
+					if (byte2 < 0) throw new Error(format(ERROR.MALFORMED_UTF, [byte1.toString(16), byte2.toString(16), '']));
 					if (byte1 < 0xe0)
 						// 2 byte character
 						utf16 = 64 * (byte1 - 0xc0) + byte2;
@@ -750,11 +689,7 @@ function onMessageArrived(message) {
 						var byte3 = input[pos++] - 128;
 						if (byte3 < 0)
 							throw new Error(
-								format(ERROR.MALFORMED_UTF, [
-									byte1.toString(16),
-									byte2.toString(16),
-									byte3.toString(16),
-								])
+								format(ERROR.MALFORMED_UTF, [byte1.toString(16), byte2.toString(16), byte3.toString(16)])
 							);
 						if (byte1 < 0xf0)
 							// 3 byte character
@@ -772,8 +707,7 @@ function onMessageArrived(message) {
 								);
 							if (byte1 < 0xf8)
 								// 4 byte character
-								utf16 =
-									262144 * (byte1 - 0xf0) + 4096 * byte2 + 64 * byte3 + byte4;
+								utf16 = 262144 * (byte1 - 0xf0) + 4096 * byte2 + 64 * byte3 + byte4;
 							// longer encodings are not supported
 							else
 								throw new Error(
@@ -820,10 +754,7 @@ function onMessageArrived(message) {
 			var doPing = function () {
 				if (!this.isReset) {
 					this._client._trace('Pinger.doPing', 'Timed out');
-					this._client._disconnected(
-						ERROR.PING_TIMEOUT.code,
-						format(ERROR.PING_TIMEOUT)
-					);
+					this._client._disconnected(ERROR.PING_TIMEOUT.code, format(ERROR.PING_TIMEOUT));
 				} else {
 					this.isReset = false;
 					this._client._trace('Pinger.doPing', 'send PINGREQ');
@@ -835,8 +766,7 @@ function onMessageArrived(message) {
 			this.reset = function () {
 				this.isReset = true;
 				clearTimeout(this.timeout);
-				if (this._keepAliveInterval > 0)
-					this.timeout = setTimeout(doTimeout(this), this._keepAliveInterval);
+				if (this._keepAliveInterval > 0) this.timeout = setTimeout(doTimeout(this), this._keepAliveInterval);
 			};
 
 			this.cancel = function () {
@@ -856,10 +786,7 @@ function onMessageArrived(message) {
 					return action.apply(client, args);
 				};
 			};
-			this.timeout = setTimeout(
-				doTimeout(action, client, args),
-				timeoutSeconds * 1000
-			);
+			this.timeout = setTimeout(doTimeout(action, client, args), timeoutSeconds * 1000);
 
 			this.cancel = function () {
 				clearTimeout(this.timeout);
@@ -895,14 +822,7 @@ function onMessageArrived(message) {
 			// The conditional inclusion of path in the key is for backward
 			// compatibility to when the path was not configurable and assumed to
 			// be /mqtt
-			this._localKey =
-				host +
-				':' +
-				port +
-				(path != '/mqtt' ? ':' + path : '') +
-				':' +
-				clientId +
-				':';
+			this._localKey = host + ':' + port + (path != '/mqtt' ? ':' + path : '') + ':' + clientId + ':';
 
 			// Create private instance-only message queue
 			// Internal queue of messages to be sent, in sending order.
@@ -930,10 +850,7 @@ function onMessageArrived(message) {
 
 			// Load the local state, if any, from the saved version, only restore state relevant to this client.
 			for (var key in localStorage)
-				if (
-					key.indexOf('Sent:' + this._localKey) === 0 ||
-					key.indexOf('Received:' + this._localKey) === 0
-				)
+				if (key.indexOf('Sent:' + this._localKey) === 0 || key.indexOf('Received:' + this._localKey) === 0)
 					this.restore(key);
 		};
 
@@ -979,17 +896,10 @@ function onMessageArrived(message) {
 
 		ClientImpl.prototype.connect = function (connectOptions) {
 			var connectOptionsMasked = this._traceMask(connectOptions, 'password');
-			this._trace(
-				'Client.connect',
-				connectOptionsMasked,
-				this.socket,
-				this.connected
-			);
+			this._trace('Client.connect', connectOptionsMasked, this.socket, this.connected);
 
-			if (this.connected)
-				throw new Error(format(ERROR.INVALID_STATE, ['already connected']));
-			if (this.socket)
-				throw new Error(format(ERROR.INVALID_STATE, ['already connected']));
+			if (this.connected) throw new Error(format(ERROR.INVALID_STATE, ['already connected']));
+			if (this.socket) throw new Error(format(ERROR.INVALID_STATE, ['already connected']));
 
 			if (this._reconnecting) {
 				// connect() function is called while reconnect is in progress.
@@ -1013,15 +923,13 @@ function onMessageArrived(message) {
 		ClientImpl.prototype.subscribe = function (filter, subscribeOptions) {
 			this._trace('Client.subscribe', filter, subscribeOptions);
 
-			if (!this.connected)
-				throw new Error(format(ERROR.INVALID_STATE, ['not connected']));
+			if (!this.connected) throw new Error(format(ERROR.INVALID_STATE, ['not connected']));
 
 			var wireMessage = new WireMessage(MESSAGE_TYPE.SUBSCRIBE);
 			wireMessage.topics = filter.constructor === Array ? filter : [filter];
 			if (subscribeOptions.qos === undefined) subscribeOptions.qos = 0;
 			wireMessage.requestedQos = [];
-			for (var i = 0; i < wireMessage.topics.length; i++)
-				wireMessage.requestedQos[i] = subscribeOptions.qos;
+			for (var i = 0; i < wireMessage.topics.length; i++) wireMessage.requestedQos[i] = subscribeOptions.qos;
 
 			if (subscribeOptions.onSuccess) {
 				wireMessage.onSuccess = function (grantedQos) {
@@ -1043,18 +951,13 @@ function onMessageArrived(message) {
 			}
 
 			if (subscribeOptions.timeout) {
-				wireMessage.timeOut = new Timeout(
-					this,
-					subscribeOptions.timeout,
-					subscribeOptions.onFailure,
-					[
-						{
-							invocationContext: subscribeOptions.invocationContext,
-							errorCode: ERROR.SUBSCRIBE_TIMEOUT.code,
-							errorMessage: format(ERROR.SUBSCRIBE_TIMEOUT),
-						},
-					]
-				);
+				wireMessage.timeOut = new Timeout(this, subscribeOptions.timeout, subscribeOptions.onFailure, [
+					{
+						invocationContext: subscribeOptions.invocationContext,
+						errorCode: ERROR.SUBSCRIBE_TIMEOUT.code,
+						errorMessage: format(ERROR.SUBSCRIBE_TIMEOUT),
+					},
+				]);
 			}
 
 			// All subscriptions return a SUBACK.
@@ -1066,8 +969,7 @@ function onMessageArrived(message) {
 		ClientImpl.prototype.unsubscribe = function (filter, unsubscribeOptions) {
 			this._trace('Client.unsubscribe', filter, unsubscribeOptions);
 
-			if (!this.connected)
-				throw new Error(format(ERROR.INVALID_STATE, ['not connected']));
+			if (!this.connected) throw new Error(format(ERROR.INVALID_STATE, ['not connected']));
 
 			var wireMessage = new WireMessage(MESSAGE_TYPE.UNSUBSCRIBE);
 			wireMessage.topics = filter.constructor === Array ? filter : [filter];
@@ -1080,18 +982,13 @@ function onMessageArrived(message) {
 				};
 			}
 			if (unsubscribeOptions.timeout) {
-				wireMessage.timeOut = new Timeout(
-					this,
-					unsubscribeOptions.timeout,
-					unsubscribeOptions.onFailure,
-					[
-						{
-							invocationContext: unsubscribeOptions.invocationContext,
-							errorCode: ERROR.UNSUBSCRIBE_TIMEOUT.code,
-							errorMessage: format(ERROR.UNSUBSCRIBE_TIMEOUT),
-						},
-					]
-				);
+				wireMessage.timeOut = new Timeout(this, unsubscribeOptions.timeout, unsubscribeOptions.onFailure, [
+					{
+						invocationContext: unsubscribeOptions.invocationContext,
+						errorCode: ERROR.UNSUBSCRIBE_TIMEOUT.code,
+						errorMessage: format(ERROR.UNSUBSCRIBE_TIMEOUT),
+					},
+				]);
 			}
 
 			// All unsubscribes return a SUBACK.
@@ -1112,9 +1009,7 @@ function onMessageArrived(message) {
 				if (message.qos > 0) {
 					this._requires_ack(wireMessage);
 				} else if (this.onMessageDelivered) {
-					this._notify_msg_sent[wireMessage] = this.onMessageDelivered(
-						wireMessage.payloadMessage
-					);
+					this._notify_msg_sent[wireMessage] = this.onMessageDelivered(wireMessage.payloadMessage);
 				}
 				this._schedule_message(wireMessage);
 			} else {
@@ -1122,13 +1017,9 @@ function onMessageArrived(message) {
 				// Check if reconnecting is in progress and disconnected publish is enabled.
 				if (this._reconnecting && this.disconnectedPublishing) {
 					// Check the limit which include the "required ACK" messages
-					var messageCount =
-						Object.keys(this._sentMessages).length +
-						this._buffered_msg_queue.length;
+					var messageCount = Object.keys(this._sentMessages).length + this._buffered_msg_queue.length;
 					if (messageCount > this.disconnectedBufferSize) {
-						throw new Error(
-							format(ERROR.BUFFER_FULL, [this.disconnectedBufferSize])
-						);
+						throw new Error(format(ERROR.BUFFER_FULL, [this.disconnectedBufferSize]));
 					} else {
 						if (message.qos > 0) {
 							// Mark this message as "ACK required"
@@ -1156,10 +1047,7 @@ function onMessageArrived(message) {
 				this._reconnecting = false;
 			}
 
-			if (!this.socket)
-				throw new Error(
-					format(ERROR.INVALID_STATE, ['not connecting or connected'])
-				);
+			if (!this.socket) throw new Error(format(ERROR.INVALID_STATE, ['not connecting or connected']));
 
 			var wireMessage = new WireMessage(MESSAGE_TYPE.DISCONNECT);
 
@@ -1174,14 +1062,9 @@ function onMessageArrived(message) {
 		ClientImpl.prototype.getTraceLog = function () {
 			if (this._traceBuffer !== null) {
 				this._trace('Client.getTraceLog', new Date());
-				this._trace(
-					'Client.getTraceLog in flight messages',
-					this._sentMessages.length
-				);
-				for (var key in this._sentMessages)
-					this._trace('_sentMessages ', key, this._sentMessages[key]);
-				for (var key in this._receivedMessages)
-					this._trace('_receivedMessages ', key, this._receivedMessages[key]);
+				this._trace('Client.getTraceLog in flight messages', this._sentMessages.length);
+				for (var key in this._sentMessages) this._trace('_sentMessages ', key, this._sentMessages[key]);
+				for (var key in this._receivedMessages) this._trace('_receivedMessages ', key, this._receivedMessages[key]);
 
 				return this._traceBuffer;
 			}
@@ -1220,20 +1103,15 @@ function onMessageArrived(message) {
 			this.socket.onclose = scope(this._on_socket_close, this);
 
 			this.sendPinger = new Pinger(this, this.connectOptions.keepAliveInterval);
-			this.receivePinger = new Pinger(
-				this,
-				this.connectOptions.keepAliveInterval
-			);
+			this.receivePinger = new Pinger(this, this.connectOptions.keepAliveInterval);
 			if (this._connectTimeout) {
 				this._connectTimeout.cancel();
 				this._connectTimeout = null;
 			}
-			this._connectTimeout = new Timeout(
-				this,
-				this.connectOptions.timeout,
-				this._disconnected,
-				[ERROR.CONNECT_TIMEOUT.code, format(ERROR.CONNECT_TIMEOUT)]
-			);
+			this._connectTimeout = new Timeout(this, this.connectOptions.timeout, this._disconnected, [
+				ERROR.CONNECT_TIMEOUT.code,
+				format(ERROR.CONNECT_TIMEOUT),
+			]);
 		};
 
 		// Schedule a new message to be sent over the WebSockets
@@ -1266,40 +1144,29 @@ function onMessageArrived(message) {
 					var hex = '';
 					var messageBytes = wireMessage.payloadMessage.payloadBytes;
 					for (var i = 0; i < messageBytes.length; i++) {
-						if (messageBytes[i] <= 0xf)
-							hex = hex + '0' + messageBytes[i].toString(16);
+						if (messageBytes[i] <= 0xf) hex = hex + '0' + messageBytes[i].toString(16);
 						else hex = hex + messageBytes[i].toString(16);
 					}
 					storedMessage.payloadMessage.payloadHex = hex;
 
 					storedMessage.payloadMessage.qos = wireMessage.payloadMessage.qos;
-					storedMessage.payloadMessage.destinationName =
-						wireMessage.payloadMessage.destinationName;
-					if (wireMessage.payloadMessage.duplicate)
-						storedMessage.payloadMessage.duplicate = true;
-					if (wireMessage.payloadMessage.retained)
-						storedMessage.payloadMessage.retained = true;
+					storedMessage.payloadMessage.destinationName = wireMessage.payloadMessage.destinationName;
+					if (wireMessage.payloadMessage.duplicate) storedMessage.payloadMessage.duplicate = true;
+					if (wireMessage.payloadMessage.retained) storedMessage.payloadMessage.retained = true;
 
 					// Add a sequence number to sent messages.
 					if (prefix.indexOf('Sent:') === 0) {
-						if (wireMessage.sequence === undefined)
-							wireMessage.sequence = ++this._sequence;
+						if (wireMessage.sequence === undefined) wireMessage.sequence = ++this._sequence;
 						storedMessage.sequence = wireMessage.sequence;
 					}
 					break;
 
 				default:
 					throw Error(
-						format(ERROR.INVALID_STORED_DATA, [
-							prefix + this._localKey + wireMessage.messageIdentifier,
-							storedMessage,
-						])
+						format(ERROR.INVALID_STORED_DATA, [prefix + this._localKey + wireMessage.messageIdentifier, storedMessage])
 					);
 			}
-			localStorage.setItem(
-				prefix + this._localKey + wireMessage.messageIdentifier,
-				JSON.stringify(storedMessage)
-			);
+			localStorage.setItem(prefix + this._localKey + wireMessage.messageIdentifier, JSON.stringify(storedMessage));
 		};
 
 		ClientImpl.prototype.restore = function (key) {
@@ -1323,12 +1190,9 @@ function onMessageArrived(message) {
 					var payloadMessage = new Message(byteStream);
 
 					payloadMessage.qos = storedMessage.payloadMessage.qos;
-					payloadMessage.destinationName =
-						storedMessage.payloadMessage.destinationName;
-					if (storedMessage.payloadMessage.duplicate)
-						payloadMessage.duplicate = true;
-					if (storedMessage.payloadMessage.retained)
-						payloadMessage.retained = true;
+					payloadMessage.destinationName = storedMessage.payloadMessage.destinationName;
+					if (storedMessage.payloadMessage.duplicate) payloadMessage.duplicate = true;
+					if (storedMessage.payloadMessage.retained) payloadMessage.retained = true;
 					wireMessage.payloadMessage = payloadMessage;
 
 					break;
@@ -1366,8 +1230,7 @@ function onMessageArrived(message) {
 		 */
 		ClientImpl.prototype._requires_ack = function (wireMessage) {
 			var messageCount = Object.keys(this._sentMessages).length;
-			if (messageCount > this.maxMessageIdentifier)
-				throw Error('Too many messages:' + messageCount);
+			if (messageCount > this.maxMessageIdentifier) throw Error('Too many messages:' + messageCount);
 
 			while (this._sentMessages[this._message_identifier] !== undefined) {
 				this._message_identifier++;
@@ -1388,10 +1251,7 @@ function onMessageArrived(message) {
 		 */
 		ClientImpl.prototype._on_socket_open = function () {
 			// Create the CONNECT message object.
-			var wireMessage = new WireMessage(
-				MESSAGE_TYPE.CONNECT,
-				this.connectOptions
-			);
+			var wireMessage = new WireMessage(MESSAGE_TYPE.CONNECT, this.connectOptions);
 			wireMessage.clientId = this.clientId;
 			this._socket_send(wireMessage);
 		};
@@ -1412,9 +1272,7 @@ function onMessageArrived(message) {
 			var byteArray = new Uint8Array(data);
 			var messages = [];
 			if (this.receiveBuffer) {
-				var newData = new Uint8Array(
-					this.receiveBuffer.length + byteArray.length
-				);
+				var newData = new Uint8Array(this.receiveBuffer.length + byteArray.length);
 				newData.set(this.receiveBuffer);
 				newData.set(byteArray, this.receiveBuffer.length);
 				byteArray = newData;
@@ -1437,13 +1295,8 @@ function onMessageArrived(message) {
 				}
 			} catch (error) {
 				var errorStack =
-					error.hasOwnProperty('stack') == 'undefined'
-						? error.stack.toString()
-						: 'No Error Stack Available';
-				this._disconnected(
-					ERROR.INTERNAL_ERROR.code,
-					format(ERROR.INTERNAL_ERROR, [error.message, errorStack])
-				);
+					error.hasOwnProperty('stack') == 'undefined' ? error.stack.toString() : 'No Error Stack Available';
+				this._disconnected(ERROR.INTERNAL_ERROR.code, format(ERROR.INTERNAL_ERROR, [error.message, errorStack]));
 				return;
 			}
 			return messages;
@@ -1462,19 +1315,13 @@ function onMessageArrived(message) {
 						if (this.connectOptions.cleanSession) {
 							for (var key in this._sentMessages) {
 								var sentMessage = this._sentMessages[key];
-								localStorage.removeItem(
-									'Sent:' + this._localKey + sentMessage.messageIdentifier
-								);
+								localStorage.removeItem('Sent:' + this._localKey + sentMessage.messageIdentifier);
 							}
 							this._sentMessages = {};
 
 							for (var key in this._receivedMessages) {
 								var receivedMessage = this._receivedMessages[key];
-								localStorage.removeItem(
-									'Received:' +
-										this._localKey +
-										receivedMessage.messageIdentifier
-								);
+								localStorage.removeItem('Received:' + this._localKey + receivedMessage.messageIdentifier);
 							}
 							this._receivedMessages = {};
 						}
@@ -1483,15 +1330,11 @@ function onMessageArrived(message) {
 							this.connected = true;
 							// Jump to the end of the list of uris and stop looking for a good host.
 
-							if (this.connectOptions.uris)
-								this.hostIndex = this.connectOptions.uris.length;
+							if (this.connectOptions.uris) this.hostIndex = this.connectOptions.uris.length;
 						} else {
 							this._disconnected(
 								ERROR.CONNACK_RETURNCODE.code,
-								format(ERROR.CONNACK_RETURNCODE, [
-									wireMessage.returnCode,
-									CONNACK_RC[wireMessage.returnCode],
-								])
+								format(ERROR.CONNACK_RETURNCODE, [wireMessage.returnCode, CONNACK_RC[wireMessage.returnCode]])
 							);
 							break;
 						}
@@ -1499,8 +1342,7 @@ function onMessageArrived(message) {
 						// Resend messages.
 						var sequencedMessages = [];
 						for (var msgId in this._sentMessages) {
-							if (this._sentMessages.hasOwnProperty(msgId))
-								sequencedMessages.push(this._sentMessages[msgId]);
+							if (this._sentMessages.hasOwnProperty(msgId)) sequencedMessages.push(this._sentMessages[msgId]);
 						}
 
 						// Also schedule qos 0 buffered messages if any
@@ -1508,10 +1350,7 @@ function onMessageArrived(message) {
 							var msg = null;
 							while ((msg = this._buffered_msg_queue.pop())) {
 								sequencedMessages.push(msg);
-								if (this.onMessageDelivered)
-									this._notify_msg_sent[msg] = this.onMessageDelivered(
-										msg.payloadMessage
-									);
+								if (this.onMessageDelivered) this._notify_msg_sent[msg] = this.onMessageDelivered(msg.payloadMessage);
 							}
 						}
 
@@ -1521,10 +1360,7 @@ function onMessageArrived(message) {
 						});
 						for (var i = 0, len = sequencedMessages.length; i < len; i++) {
 							var sentMessage = sequencedMessages[i];
-							if (
-								sentMessage.type == MESSAGE_TYPE.PUBLISH &&
-								sentMessage.pubRecReceived
-							) {
+							if (sentMessage.type == MESSAGE_TYPE.PUBLISH && sentMessage.pubRecReceived) {
 								var pubRelMessage = new WireMessage(MESSAGE_TYPE.PUBREL, {
 									messageIdentifier: sentMessage.messageIdentifier,
 								});
@@ -1566,11 +1402,8 @@ function onMessageArrived(message) {
 						// If this is a re flow of a PUBACK after we have restarted receivedMessage will not exist.
 						if (sentMessage) {
 							delete this._sentMessages[wireMessage.messageIdentifier];
-							localStorage.removeItem(
-								'Sent:' + this._localKey + wireMessage.messageIdentifier
-							);
-							if (this.onMessageDelivered)
-								this.onMessageDelivered(sentMessage.payloadMessage);
+							localStorage.removeItem('Sent:' + this._localKey + wireMessage.messageIdentifier);
+							if (this.onMessageDelivered) this.onMessageDelivered(sentMessage.payloadMessage);
 						}
 						break;
 
@@ -1588,11 +1421,8 @@ function onMessageArrived(message) {
 						break;
 
 					case MESSAGE_TYPE.PUBREL:
-						var receivedMessage =
-							this._receivedMessages[wireMessage.messageIdentifier];
-						localStorage.removeItem(
-							'Received:' + this._localKey + wireMessage.messageIdentifier
-						);
+						var receivedMessage = this._receivedMessages[wireMessage.messageIdentifier];
+						localStorage.removeItem('Received:' + this._localKey + wireMessage.messageIdentifier);
 						// If this is a re flow of a PUBREL after we have restarted receivedMessage will not exist.
 						if (receivedMessage) {
 							this._receiveMessage(receivedMessage);
@@ -1609,11 +1439,8 @@ function onMessageArrived(message) {
 					case MESSAGE_TYPE.PUBCOMP:
 						var sentMessage = this._sentMessages[wireMessage.messageIdentifier];
 						delete this._sentMessages[wireMessage.messageIdentifier];
-						localStorage.removeItem(
-							'Sent:' + this._localKey + wireMessage.messageIdentifier
-						);
-						if (this.onMessageDelivered)
-							this.onMessageDelivered(sentMessage.payloadMessage);
+						localStorage.removeItem('Sent:' + this._localKey + wireMessage.messageIdentifier);
+						if (this.onMessageDelivered) this.onMessageDelivered(sentMessage.payloadMessage);
 						break;
 
 					case MESSAGE_TYPE.SUBACK:
@@ -1665,13 +1492,8 @@ function onMessageArrived(message) {
 				}
 			} catch (error) {
 				var errorStack =
-					error.hasOwnProperty('stack') == 'undefined'
-						? error.stack.toString()
-						: 'No Error Stack Available';
-				this._disconnected(
-					ERROR.INTERNAL_ERROR.code,
-					format(ERROR.INTERNAL_ERROR, [error.message, errorStack])
-				);
+					error.hasOwnProperty('stack') == 'undefined' ? error.stack.toString() : 'No Error Stack Available';
+				this._disconnected(ERROR.INTERNAL_ERROR.code, format(ERROR.INTERNAL_ERROR, [error.message, errorStack]));
 				return;
 			}
 		};
@@ -1679,10 +1501,7 @@ function onMessageArrived(message) {
 		/** @ignore */
 		ClientImpl.prototype._on_socket_error = function (error) {
 			if (!this._reconnecting) {
-				this._disconnected(
-					ERROR.SOCKET_ERROR.code,
-					format(ERROR.SOCKET_ERROR, [error.data])
-				);
+				this._disconnected(ERROR.SOCKET_ERROR.code, format(ERROR.SOCKET_ERROR, [error.data]));
 			}
 		};
 
@@ -1764,8 +1583,7 @@ function onMessageArrived(message) {
 				this._reconnecting = true;
 				this.sendPinger.cancel();
 				this.receivePinger.cancel();
-				if (this._reconnectInterval < 128)
-					this._reconnectInterval = this._reconnectInterval * 2;
+				if (this._reconnectInterval < 128) this._reconnectInterval = this._reconnectInterval * 2;
 				if (this.connectOptions.uris) {
 					this.hostIndex = 0;
 					this._doConnect(this.connectOptions.uris[0]);
@@ -1787,11 +1605,7 @@ function onMessageArrived(message) {
 
 			if (errorCode !== undefined && this._reconnecting) {
 				//Continue automatic reconnect process
-				this._reconnectTimeout = new Timeout(
-					this,
-					this._reconnectInterval,
-					this._reconnect
-				);
+				this._reconnectTimeout = new Timeout(this, this._reconnectInterval, this._reconnect);
 				return;
 			}
 
@@ -1817,10 +1631,7 @@ function onMessageArrived(message) {
 				delete this.socket;
 			}
 
-			if (
-				this.connectOptions.uris &&
-				this.hostIndex < this.connectOptions.uris.length - 1
-			) {
+			if (this.connectOptions.uris && this.hostIndex < this.connectOptions.uris.length - 1) {
 				// Try the next host.
 				this.hostIndex++;
 				this._doConnect(this.connectOptions.uris[this.hostIndex]);
@@ -1850,10 +1661,7 @@ function onMessageArrived(message) {
 					}
 				} else {
 					// Otherwise we never had a connection, so indicate that the connect has failed.
-					if (
-						this.connectOptions.mqttVersion === 4 &&
-						this.connectOptions.mqttVersionExplicit === false
-					) {
+					if (this.connectOptions.mqttVersion === 4 && this.connectOptions.mqttVersionExplicit === false) {
 						this._trace('Failed to connect V4, dropping back to V3');
 						this.connectOptions.mqttVersion = 3;
 						if (this.connectOptions.uris) {
@@ -1879,8 +1687,7 @@ function onMessageArrived(message) {
 			if (this.traceFunction) {
 				var args = Array.prototype.slice.call(arguments);
 				for (var i in args) {
-					if (typeof args[i] !== 'undefined')
-						args.splice(i, 1, JSON.stringify(args[i]));
+					if (typeof args[i] !== 'undefined') args.splice(i, 1, JSON.stringify(args[i]));
 				}
 				var record = args.join('');
 				this.traceFunction({ severity: 'Debug', message: record });
@@ -1893,8 +1700,7 @@ function onMessageArrived(message) {
 						this._traceBuffer.shift();
 					}
 					if (i === 0) this._traceBuffer.push(arguments[i]);
-					else if (typeof arguments[i] === 'undefined')
-						this._traceBuffer.push(arguments[i]);
+					else if (typeof arguments[i] === 'undefined') this._traceBuffer.push(arguments[i]);
 					else this._traceBuffer.push('  ' + JSON.stringify(arguments[i]));
 				}
 			}
@@ -1988,17 +1794,14 @@ function onMessageArrived(message) {
 		var Client = function (host, port, path, clientId) {
 			var uri;
 
-			if (typeof host !== 'string')
-				throw new Error(format(ERROR.INVALID_TYPE, [typeof host, 'host']));
+			if (typeof host !== 'string') throw new Error(format(ERROR.INVALID_TYPE, [typeof host, 'host']));
 
 			if (arguments.length == 2) {
 				// host: must be full ws:// uri
 				// port: clientId
 				clientId = port;
 				uri = host;
-				var match = uri.match(
-					/^(wss?):\/\/((\[(.+)\])|([^\/]+?))(:(\d+))?(\/.*)$/
-				);
+				var match = uri.match(/^(wss?):\/\/((\[(.+)\])|([^\/]+?))(:(\d+))?(\/.*)$/);
 				if (match) {
 					host = match[4] || match[2];
 					port = parseInt(match[7]);
@@ -2011,21 +1814,11 @@ function onMessageArrived(message) {
 					clientId = path;
 					path = '/mqtt';
 				}
-				if (typeof port !== 'number' || port < 0)
-					throw new Error(format(ERROR.INVALID_TYPE, [typeof port, 'port']));
-				if (typeof path !== 'string')
-					throw new Error(format(ERROR.INVALID_TYPE, [typeof path, 'path']));
+				if (typeof port !== 'number' || port < 0) throw new Error(format(ERROR.INVALID_TYPE, [typeof port, 'port']));
+				if (typeof path !== 'string') throw new Error(format(ERROR.INVALID_TYPE, [typeof path, 'path']));
 
-				var ipv6AddSBracket =
-					host.indexOf(':') !== -1 &&
-					host.slice(0, 1) !== '[' &&
-					host.slice(-1) !== ']';
-				uri =
-					'ws://' +
-					(ipv6AddSBracket ? '[' + host + ']' : host) +
-					':' +
-					port +
-					path;
+				var ipv6AddSBracket = host.indexOf(':') !== -1 && host.slice(0, 1) !== '[' && host.slice(-1) !== ']';
+				uri = 'ws://' + (ipv6AddSBracket ? '[' + host + ']' : host) + ':' + port + path;
 			}
 
 			var clientIdLength = 0;
@@ -2088,15 +1881,8 @@ function onMessageArrived(message) {
 						return client.onConnected;
 					},
 					set: function (newOnConnected) {
-						if (typeof newOnConnected === 'function')
-							client.onConnected = newOnConnected;
-						else
-							throw new Error(
-								format(ERROR.INVALID_TYPE, [
-									typeof newOnConnected,
-									'onConnected',
-								])
-							);
+						if (typeof newOnConnected === 'function') client.onConnected = newOnConnected;
+						else throw new Error(format(ERROR.INVALID_TYPE, [typeof newOnConnected, 'onConnected']));
 					},
 				},
 				disconnectedPublishing: {
@@ -2120,15 +1906,8 @@ function onMessageArrived(message) {
 						return client.onConnectionLost;
 					},
 					set: function (newOnConnectionLost) {
-						if (typeof newOnConnectionLost === 'function')
-							client.onConnectionLost = newOnConnectionLost;
-						else
-							throw new Error(
-								format(ERROR.INVALID_TYPE, [
-									typeof newOnConnectionLost,
-									'onConnectionLost',
-								])
-							);
+						if (typeof newOnConnectionLost === 'function') client.onConnectionLost = newOnConnectionLost;
+						else throw new Error(format(ERROR.INVALID_TYPE, [typeof newOnConnectionLost, 'onConnectionLost']));
 					},
 				},
 				onMessageDelivered: {
@@ -2136,15 +1915,8 @@ function onMessageArrived(message) {
 						return client.onMessageDelivered;
 					},
 					set: function (newOnMessageDelivered) {
-						if (typeof newOnMessageDelivered === 'function')
-							client.onMessageDelivered = newOnMessageDelivered;
-						else
-							throw new Error(
-								format(ERROR.INVALID_TYPE, [
-									typeof newOnMessageDelivered,
-									'onMessageDelivered',
-								])
-							);
+						if (typeof newOnMessageDelivered === 'function') client.onMessageDelivered = newOnMessageDelivered;
+						else throw new Error(format(ERROR.INVALID_TYPE, [typeof newOnMessageDelivered, 'onMessageDelivered']));
 					},
 				},
 				onMessageArrived: {
@@ -2152,15 +1924,8 @@ function onMessageArrived(message) {
 						return client.onMessageArrived;
 					},
 					set: function (newOnMessageArrived) {
-						if (typeof newOnMessageArrived === 'function')
-							client.onMessageArrived = newOnMessageArrived;
-						else
-							throw new Error(
-								format(ERROR.INVALID_TYPE, [
-									typeof newOnMessageArrived,
-									'onMessageArrived',
-								])
-							);
+						if (typeof newOnMessageArrived === 'function') client.onMessageArrived = newOnMessageArrived;
+						else throw new Error(format(ERROR.INVALID_TYPE, [typeof newOnMessageArrived, 'onMessageArrived']));
 					},
 				},
 				trace: {
@@ -2171,9 +1936,7 @@ function onMessageArrived(message) {
 						if (typeof trace === 'function') {
 							client.traceFunction = trace;
 						} else {
-							throw new Error(
-								format(ERROR.INVALID_TYPE, [typeof trace, 'onTrace'])
-							);
+							throw new Error(format(ERROR.INVALID_TYPE, [typeof trace, 'onTrace']));
 						}
 					},
 				},
@@ -2263,16 +2026,10 @@ function onMessageArrived(message) {
 				});
 
 				// If no keep alive interval is set, assume 60 seconds.
-				if (connectOptions.keepAliveInterval === undefined)
-					connectOptions.keepAliveInterval = 60;
+				if (connectOptions.keepAliveInterval === undefined) connectOptions.keepAliveInterval = 60;
 
 				if (connectOptions.mqttVersion > 4 || connectOptions.mqttVersion < 3) {
-					throw new Error(
-						format(ERROR.INVALID_ARGUMENT, [
-							connectOptions.mqttVersion,
-							'connectOptions.mqttVersion',
-						])
-					);
+					throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.mqttVersion, 'connectOptions.mqttVersion']));
 				}
 
 				if (connectOptions.mqttVersion === undefined) {
@@ -2283,25 +2040,12 @@ function onMessageArrived(message) {
 				}
 
 				//Check that if password is set, so is username
-				if (
-					connectOptions.password !== undefined &&
-					connectOptions.userName === undefined
-				)
-					throw new Error(
-						format(ERROR.INVALID_ARGUMENT, [
-							connectOptions.password,
-							'connectOptions.password',
-						])
-					);
+				if (connectOptions.password !== undefined && connectOptions.userName === undefined)
+					throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.password, 'connectOptions.password']));
 
 				if (connectOptions.willMessage) {
 					if (!(connectOptions.willMessage instanceof Message))
-						throw new Error(
-							format(ERROR.INVALID_TYPE, [
-								connectOptions.willMessage,
-								'connectOptions.willMessage',
-							])
-						);
+						throw new Error(format(ERROR.INVALID_TYPE, [connectOptions.willMessage, 'connectOptions.willMessage']));
 					// The will message must have a payload that can be represented as a string.
 					// Cause the willMessage to throw an exception if this is not the case.
 					connectOptions.willMessage.stringPayload = null;
@@ -2314,100 +2058,54 @@ function onMessageArrived(message) {
 							])
 						);
 				}
-				if (typeof connectOptions.cleanSession === 'undefined')
-					connectOptions.cleanSession = true;
+				if (typeof connectOptions.cleanSession === 'undefined') connectOptions.cleanSession = true;
 				if (connectOptions.hosts) {
 					if (!(connectOptions.hosts instanceof Array))
-						throw new Error(
-							format(ERROR.INVALID_ARGUMENT, [
-								connectOptions.hosts,
-								'connectOptions.hosts',
-							])
-						);
+						throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.hosts, 'connectOptions.hosts']));
 					if (connectOptions.hosts.length < 1)
-						throw new Error(
-							format(ERROR.INVALID_ARGUMENT, [
-								connectOptions.hosts,
-								'connectOptions.hosts',
-							])
-						);
+						throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.hosts, 'connectOptions.hosts']));
 
 					var usingURIs = false;
 					for (var i = 0; i < connectOptions.hosts.length; i++) {
 						if (typeof connectOptions.hosts[i] !== 'string')
 							throw new Error(
-								format(ERROR.INVALID_TYPE, [
-									typeof connectOptions.hosts[i],
-									'connectOptions.hosts[' + i + ']',
-								])
+								format(ERROR.INVALID_TYPE, [typeof connectOptions.hosts[i], 'connectOptions.hosts[' + i + ']'])
 							);
-						if (
-							/^(wss?):\/\/((\[(.+)\])|([^\/]+?))(:(\d+))?(\/.*)$/.test(
-								connectOptions.hosts[i]
-							)
-						) {
+						if (/^(wss?):\/\/((\[(.+)\])|([^\/]+?))(:(\d+))?(\/.*)$/.test(connectOptions.hosts[i])) {
 							if (i === 0) {
 								usingURIs = true;
 							} else if (!usingURIs) {
 								throw new Error(
-									format(ERROR.INVALID_ARGUMENT, [
-										connectOptions.hosts[i],
-										'connectOptions.hosts[' + i + ']',
-									])
+									format(ERROR.INVALID_ARGUMENT, [connectOptions.hosts[i], 'connectOptions.hosts[' + i + ']'])
 								);
 							}
 						} else if (usingURIs) {
 							throw new Error(
-								format(ERROR.INVALID_ARGUMENT, [
-									connectOptions.hosts[i],
-									'connectOptions.hosts[' + i + ']',
-								])
+								format(ERROR.INVALID_ARGUMENT, [connectOptions.hosts[i], 'connectOptions.hosts[' + i + ']'])
 							);
 						}
 					}
 
 					if (!usingURIs) {
 						if (!connectOptions.ports)
-							throw new Error(
-								format(ERROR.INVALID_ARGUMENT, [
-									connectOptions.ports,
-									'connectOptions.ports',
-								])
-							);
+							throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.ports, 'connectOptions.ports']));
 						if (!(connectOptions.ports instanceof Array))
-							throw new Error(
-								format(ERROR.INVALID_ARGUMENT, [
-									connectOptions.ports,
-									'connectOptions.ports',
-								])
-							);
+							throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.ports, 'connectOptions.ports']));
 						if (connectOptions.hosts.length !== connectOptions.ports.length)
-							throw new Error(
-								format(ERROR.INVALID_ARGUMENT, [
-									connectOptions.ports,
-									'connectOptions.ports',
-								])
-							);
+							throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.ports, 'connectOptions.ports']));
 
 						connectOptions.uris = [];
 
 						for (var i = 0; i < connectOptions.hosts.length; i++) {
-							if (
-								typeof connectOptions.ports[i] !== 'number' ||
-								connectOptions.ports[i] < 0
-							)
+							if (typeof connectOptions.ports[i] !== 'number' || connectOptions.ports[i] < 0)
 								throw new Error(
-									format(ERROR.INVALID_TYPE, [
-										typeof connectOptions.ports[i],
-										'connectOptions.ports[' + i + ']',
-									])
+									format(ERROR.INVALID_TYPE, [typeof connectOptions.ports[i], 'connectOptions.ports[' + i + ']'])
 								);
 							var host = connectOptions.hosts[i];
 							var port = connectOptions.ports[i];
 
 							var ipv6 = host.indexOf(':') !== -1;
-							uri =
-								'ws://' + (ipv6 ? '[' + host + ']' : host) + ':' + port + path;
+							uri = 'ws://' + (ipv6 ? '[' + host + ']' : host) + ':' + port + path;
 							connectOptions.uris.push(uri);
 						}
 					} else {
@@ -2451,8 +2149,7 @@ function onMessageArrived(message) {
 			 * @throws {InvalidState} if the client is not in connected state.
 			 */
 			this.subscribe = function (filter, subscribeOptions) {
-				if (typeof filter !== 'string' && filter.constructor !== Array)
-					throw new Error('Invalid argument:' + filter);
+				if (typeof filter !== 'string' && filter.constructor !== Array) throw new Error('Invalid argument:' + filter);
 				subscribeOptions = subscribeOptions || {};
 				validate(subscribeOptions, {
 					qos: 'number',
@@ -2462,23 +2159,12 @@ function onMessageArrived(message) {
 					timeout: 'number',
 				});
 				if (subscribeOptions.timeout && !subscribeOptions.onFailure)
-					throw new Error(
-						'subscribeOptions.timeout specified with no onFailure callback.'
-					);
+					throw new Error('subscribeOptions.timeout specified with no onFailure callback.');
 				if (
 					typeof subscribeOptions.qos !== 'undefined' &&
-					!(
-						subscribeOptions.qos === 0 ||
-						subscribeOptions.qos === 1 ||
-						subscribeOptions.qos === 2
-					)
+					!(subscribeOptions.qos === 0 || subscribeOptions.qos === 1 || subscribeOptions.qos === 2)
 				)
-					throw new Error(
-						format(ERROR.INVALID_ARGUMENT, [
-							subscribeOptions.qos,
-							'subscribeOptions.qos',
-						])
-					);
+					throw new Error(format(ERROR.INVALID_ARGUMENT, [subscribeOptions.qos, 'subscribeOptions.qos']));
 				client.subscribe(filter, subscribeOptions);
 			};
 
@@ -2511,8 +2197,7 @@ function onMessageArrived(message) {
 		 * @throws {InvalidState} if the client is not in connected state.
 		 */
 			this.unsubscribe = function (filter, unsubscribeOptions) {
-				if (typeof filter !== 'string' && filter.constructor !== Array)
-					throw new Error('Invalid argument:' + filter);
+				if (typeof filter !== 'string' && filter.constructor !== Array) throw new Error('Invalid argument:' + filter);
 				unsubscribeOptions = unsubscribeOptions || {};
 				validate(unsubscribeOptions, {
 					invocationContext: 'object',
@@ -2521,9 +2206,7 @@ function onMessageArrived(message) {
 					timeout: 'number',
 				});
 				if (unsubscribeOptions.timeout && !unsubscribeOptions.onFailure)
-					throw new Error(
-						'unsubscribeOptions.timeout specified with no onFailure callback.'
-					);
+					throw new Error('unsubscribeOptions.timeout specified with no onFailure callback.');
 				client.unsubscribe(filter, unsubscribeOptions);
 			};
 
@@ -2560,12 +2243,7 @@ function onMessageArrived(message) {
 
 					message = topic;
 					if (typeof message.destinationName === 'undefined')
-						throw new Error(
-							format(ERROR.INVALID_ARGUMENT, [
-								message.destinationName,
-								'Message.destinationName',
-							])
-						);
+						throw new Error(format(ERROR.INVALID_ARGUMENT, [message.destinationName, 'Message.destinationName']));
 					client.send(message);
 				} else {
 					//parameter checking in Message object
@@ -2611,12 +2289,7 @@ function onMessageArrived(message) {
 
 					message = topic;
 					if (typeof message.destinationName === 'undefined')
-						throw new Error(
-							format(ERROR.INVALID_ARGUMENT, [
-								message.destinationName,
-								'Message.destinationName',
-							])
-						);
+						throw new Error(format(ERROR.INVALID_ARGUMENT, [message.destinationName, 'Message.destinationName']));
 					client.send(message);
 				} else {
 					//parameter checking in Message object
@@ -2754,15 +2427,8 @@ function onMessageArrived(message) {
 						return destinationName;
 					},
 					set: function (newDestinationName) {
-						if (typeof newDestinationName === 'string')
-							destinationName = newDestinationName;
-						else
-							throw new Error(
-								format(ERROR.INVALID_ARGUMENT, [
-									newDestinationName,
-									'newDestinationName',
-								])
-							);
+						if (typeof newDestinationName === 'string') destinationName = newDestinationName;
+						else throw new Error(format(ERROR.INVALID_ARGUMENT, [newDestinationName, 'newDestinationName']));
 					},
 				},
 				qos: {
@@ -2782,10 +2448,7 @@ function onMessageArrived(message) {
 					},
 					set: function (newRetained) {
 						if (typeof newRetained === 'boolean') retained = newRetained;
-						else
-							throw new Error(
-								format(ERROR.INVALID_ARGUMENT, [newRetained, 'newRetained'])
-							);
+						else throw new Error(format(ERROR.INVALID_ARGUMENT, [newRetained, 'newRetained']));
 					},
 				},
 				topic: {

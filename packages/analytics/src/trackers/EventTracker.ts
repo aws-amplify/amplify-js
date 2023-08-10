@@ -40,23 +40,13 @@ export class EventTracker {
 
 		if (!this._config.enable) {
 			Object.keys(this._delegates).forEach(key => {
-				if (typeof this._delegates[key].destroy === 'function')
-					this._delegates[key].destroy();
+				if (typeof this._delegates[key].destroy === 'function') this._delegates[key].destroy();
 			});
 			this._delegates = {};
-		} else if (
-			this._config.enable &&
-			Object.keys(this._delegates).length === 0
-		) {
+		} else if (this._config.enable && Object.keys(this._delegates).length === 0) {
 			const selector = '[' + this._config.selectorPrefix + 'on]';
 			this._config.events.forEach(evt => {
-				this._delegates[evt] = delegate(
-					document,
-					evt,
-					selector,
-					this._trackFunc,
-					{ composed: true, useCapture: true }
-				);
+				this._delegates[evt] = delegate(document, evt, selector, this._trackFunc, { composed: true, useCapture: true });
 			});
 		}
 
@@ -66,12 +56,8 @@ export class EventTracker {
 	private async _trackFunc(event, element) {
 		// the events specifed in 'amplify-analytics-on' selector
 		const customAttrs = {};
-		const events = element
-			.getAttribute(this._config.selectorPrefix + 'on')
-			.split(/\s*,\s*/);
-		const eventName = element.getAttribute(
-			this._config.selectorPrefix + 'name'
-		);
+		const events = element.getAttribute(this._config.selectorPrefix + 'on').split(/\s*,\s*/);
+		const eventName = element.getAttribute(this._config.selectorPrefix + 'name');
 
 		const attrs = element.getAttribute(this._config.selectorPrefix + 'attrs');
 		if (attrs) {
@@ -82,9 +68,7 @@ export class EventTracker {
 		}
 
 		const defaultAttrs =
-			typeof this._config.attributes === 'function'
-				? await this._config.attributes()
-				: this._config.attributes;
+			typeof this._config.attributes === 'function' ? await this._config.attributes() : this._config.attributes;
 
 		const attributes = Object.assign(
 			{

@@ -5,9 +5,7 @@ describe('ServiceWorker test', () => {
 		test('fails when serviceworker not available', () => {
 			const serviceWorker = new ServiceWorker();
 
-			return expect(serviceWorker.register()).rejects.toThrow(
-				'Service Worker not available'
-			);
+			return expect(serviceWorker.register()).rejects.toThrow('Service Worker not available');
 		});
 		test('fails when enablePush and serviceworker is not registered', () => {
 			const serviceWorker = new ServiceWorker();
@@ -109,9 +107,7 @@ describe('ServiceWorker test', () => {
 
 			serviceWorker.send({ property: 'value' });
 
-			return expect(bla.installing.postMessage).toBeCalledWith(
-				JSON.stringify({ property: 'value' })
-			);
+			return expect(bla.installing.postMessage).toBeCalledWith(JSON.stringify({ property: 'value' }));
 		});
 	});
 	describe('Enable push', () => {
@@ -121,9 +117,7 @@ describe('ServiceWorker test', () => {
 			const bla = {
 				installing: { addEventListener: jest.fn() },
 				pushManager: {
-					getSubscription: jest
-						.fn()
-						.mockReturnValue(Promise.resolve(subscription)),
+					getSubscription: jest.fn().mockReturnValue(Promise.resolve(subscription)),
 				},
 			};
 
@@ -134,9 +128,7 @@ describe('ServiceWorker test', () => {
 			const serviceWorker = new ServiceWorker();
 			await serviceWorker.register();
 
-			return expect(serviceWorker.enablePush('publickKey')).resolves.toBe(
-				subscription
-			);
+			return expect(serviceWorker.enablePush('publickKey')).resolves.toBe(subscription);
 		});
 		test('can enable push when user is not subscribed', async () => {
 			const subscription = null;
@@ -156,9 +148,7 @@ describe('ServiceWorker test', () => {
 			const serviceWorker = new ServiceWorker();
 			await serviceWorker.register();
 
-			return expect(serviceWorker.enablePush('publickKey')).resolves.toBe(
-				subscription
-			);
+			return expect(serviceWorker.enablePush('publickKey')).resolves.toBe(subscription);
 		});
 	});
 });

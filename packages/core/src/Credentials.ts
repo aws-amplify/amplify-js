@@ -23,11 +23,7 @@ const AMPLIFY_SYMBOL = (
 		: '@@amplify_default'
 ) as Symbol;
 
-const dispatchCredentialsEvent = (
-	event: string,
-	data: any,
-	message: string
-) => {
+const dispatchCredentialsEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('core', { event, data, message }, 'Credentials', AMPLIFY_SYMBOL);
 };
 
@@ -84,11 +80,7 @@ export class CredentialsClass {
 			this._storageSync = this._storage['sync']();
 		}
 
-		dispatchCredentialsEvent(
-			'credentials_configured',
-			null,
-			`Credentials has been configured successfully`
-		);
+		dispatchCredentialsEvent('credentials_configured', null, `Credentials has been configured successfully`);
 
 		return this._config;
 	}
@@ -159,10 +151,7 @@ export class CredentialsClass {
 		let { expires_at } = federatedInfo;
 
 		// Make sure expires_at is in millis
-		expires_at =
-			new Date(expires_at).getFullYear() === 1970
-				? expires_at * 1000
-				: expires_at;
+		expires_at = new Date(expires_at).getFullYear() === 1970 ? expires_at * 1000 : expires_at;
 
 		const that = this;
 		logger.debug('checking if federated jwt token expired');
@@ -178,10 +167,7 @@ export class CredentialsClass {
 			});
 		} else {
 			// if refresh handler exists
-			if (
-				that._refreshHandlers[provider] &&
-				typeof that._refreshHandlers[provider] === 'function'
-			) {
+			if (that._refreshHandlers[provider] && typeof that._refreshHandlers[provider] === 'function') {
 				logger.debug('getting refreshed jwt token from federation provider');
 				return this._providerRefreshWithRetry({
 					refreshHandler: that._refreshHandlers[provider],
@@ -212,9 +198,7 @@ export class CredentialsClass {
 				});
 			})
 			.catch(e => {
-				const isNetworkError =
-					typeof e === 'string' &&
-					e.toLowerCase().lastIndexOf('network error', e.length) === 0;
+				const isNetworkError = typeof e === 'string' && e.toLowerCase().lastIndexOf('network error', e.length) === 0;
 
 				if (!isNetworkError) {
 					this.clear();
@@ -249,35 +233,22 @@ export class CredentialsClass {
 		if (!this._config?.identityPoolId) {
 			// If Credentials are not configured thru Auth module,
 			// doing best effort to check if the library was configured
-			this._config = Object.assign(
-				{},
-				this._config,
-				parseAWSExports(this._config || {}).Auth
-			);
+			this._config = Object.assign({}, this._config, parseAWSExports(this._config || {}).Auth);
 		}
-		const { identityPoolId, region, mandatorySignIn, identityPoolRegion } =
-			this._config;
+		const { identityPoolId, region, mandatorySignIn, identityPoolRegion } = this._config;
 
 		if (mandatorySignIn) {
-			return Promise.reject(
-				'cannot get guest credentials when mandatory signin enabled'
-			);
+			return Promise.reject('cannot get guest credentials when mandatory signin enabled');
 		}
 
 		if (!identityPoolId) {
-			logger.debug(
-				'No Cognito Identity pool provided for unauthenticated access'
-			);
-			return Promise.reject(
-				'No Cognito Identity pool provided for unauthenticated access'
-			);
+			logger.debug('No Cognito Identity pool provided for unauthenticated access');
+			return Promise.reject('No Cognito Identity pool provided for unauthenticated access');
 		}
 
 		if (!identityPoolRegion && !region) {
 			logger.debug('region is not configured for getting the credentials');
-			return Promise.reject(
-				'region is not configured for getting the credentials'
-			);
+			return Promise.reject('region is not configured for getting the credentials');
 		}
 
 		const identityId = (this._identityId = await this._getGuestIdentityId());
@@ -313,10 +284,7 @@ export class CredentialsClass {
 			.catch(async e => {
 				// If identity id is deleted in the console, we make one attempt to recreate it
 				// and remove existing id from cache.
-				if (
-					e.name === 'ResourceNotFoundException' &&
-					e.message === `Identity '${identityId}' not found.`
-				) {
+				if (e.name === 'ResourceNotFoundException' && e.message === `Identity '${identityId}' not found.`) {
 					logger.debug('Failed to load guest credentials');
 					await this._removeGuestIdentityId();
 
@@ -325,12 +293,9 @@ export class CredentialsClass {
 							IdentityPoolId: identityPoolId,
 						});
 						this._identityId = IdentityId;
-						const { Credentials } = await getCredentialsForIdentity(
-							cognitoConfig,
-							{
-								IdentityId,
-							}
-						);
+						const { Credentials } = await getCredentialsForIdentity(cognitoConfig, {
+							IdentityId,
+						});
 
 						return {
 							identityId: IdentityId,
@@ -378,9 +343,7 @@ export class CredentialsClass {
 		}
 		if (!identityPoolRegion && !region) {
 			logger.debug('region is not configured for getting the credentials');
-			return Promise.reject(
-				'region is not configured for getting the credentials'
-			);
+			return Promise.reject('region is not configured for getting the credentials');
 		}
 
 		const cognitoConfig = { region: identityPoolRegion ?? region };
@@ -416,17 +379,14 @@ export class CredentialsClass {
 	private _setCredentialsFromSession(session): Promise<ICredentials> {
 		logger.debug('set credentials from session');
 		const idToken = session.getIdToken().getJwtToken();
-		const { region, userPoolId, identityPoolId, identityPoolRegion } =
-			this._config;
+		const { region, userPoolId, identityPoolId, identityPoolRegion } = this._config;
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
 		}
 		if (!identityPoolRegion && !region) {
 			logger.debug('region is not configured for getting the credentials');
-			return Promise.reject(
-				'region is not configured for getting the credentials'
-			);
+			return Promise.reject('region is not configured for getting the credentials');
 		}
 		const key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
 		const logins = {};
@@ -469,13 +429,9 @@ export class CredentialsClass {
 			if (guestIdentityId) {
 				// if guestIdentity is found and used by GetCredentialsForIdentity
 				// it will be linked to the logins provided, and disqualified as an unauth identity
-				logger.debug(
-					`The guest identity ${guestIdentityId} has been successfully linked to the logins`
-				);
+				logger.debug(`The guest identity ${guestIdentityId} has been successfully linked to the logins`);
 				if (guestIdentityId === primaryIdentityId) {
-					logger.debug(
-						`The guest identity ${guestIdentityId} has become the primary identity`
-					);
+					logger.debug(`The guest identity ${guestIdentityId} has become the primary identity`);
 				}
 				// remove it from local storage to avoid being used as a guest Identity by _setCredentialsForGuest
 				await this._removeGuestIdentityId();
@@ -498,12 +454,7 @@ export class CredentialsClass {
 		return this._loadCredentials(credentials, 'userPool', true, null);
 	}
 
-	private _loadCredentials(
-		credentials,
-		source,
-		authenticated,
-		info
-	): Promise<ICredentials> {
+	private _loadCredentials(credentials, source, authenticated, info): Promise<ICredentials> {
 		const that = this;
 		return new Promise((res, rej) => {
 			credentials
@@ -518,10 +469,7 @@ export class CredentialsClass {
 					that._credentials_source = source;
 					that._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 					if (source === 'federated') {
-						const user = Object.assign(
-							{ id: this._credentials.identityId },
-							info.user
-						);
+						const user = Object.assign({ id: this._credentials.identityId }, info.user);
 						const { provider, token, expires_at, identity_id } = info;
 						try {
 							this._storage.setItem(
@@ -580,9 +528,7 @@ export class CredentialsClass {
 		const { identityPoolId } = this._config;
 		try {
 			await this._storageSync;
-			return this._storage.getItem(
-				this._getCognitoIdentityIdStorageKey(identityPoolId)
-			);
+			return this._storage.getItem(this._getCognitoIdentityIdStorageKey(identityPoolId));
 		} catch (e) {
 			logger.debug('Failed to get the cached guest identityId', e);
 		}
@@ -592,10 +538,7 @@ export class CredentialsClass {
 		const { identityPoolId } = this._config;
 		try {
 			await this._storageSync;
-			this._storage.setItem(
-				this._getCognitoIdentityIdStorageKey(identityPoolId),
-				identityId
-			);
+			this._storage.setItem(this._getCognitoIdentityIdStorageKey(identityPoolId), identityId);
 		} catch (e) {
 			logger.debug('Failed to cache guest identityId', e);
 		}
@@ -603,14 +546,8 @@ export class CredentialsClass {
 
 	private async _removeGuestIdentityId() {
 		const { identityPoolId } = this._config;
-		logger.debug(
-			`removing ${this._getCognitoIdentityIdStorageKey(
-				identityPoolId
-			)} from storage`
-		);
-		this._storage.removeItem(
-			this._getCognitoIdentityIdStorageKey(identityPoolId)
-		);
+		logger.debug(`removing ${this._getCognitoIdentityIdStorageKey(identityPoolId)} from storage`);
+		this._storage.removeItem(this._getCognitoIdentityIdStorageKey(identityPoolId));
 	}
 
 	/**

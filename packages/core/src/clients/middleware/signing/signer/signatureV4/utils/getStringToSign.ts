@@ -18,11 +18,5 @@ import { SHA256_ALGORITHM_IDENTIFIER } from '../constants';
  *
  * @internal
  */
-export const getStringToSign = (
-	date: string,
-	credentialScope: string,
-	hashedRequest: string
-): string =>
-	[SHA256_ALGORITHM_IDENTIFIER, date, credentialScope, hashedRequest].join(
-		'\n'
-	);
+export const getStringToSign = (date: string, credentialScope: string, hashedRequest: string): string =>
+	[SHA256_ALGORITHM_IDENTIFIER, date, credentialScope, hashedRequest].join('\n');

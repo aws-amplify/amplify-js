@@ -65,11 +65,7 @@ function devtoolModuleFilenameTemplate(info) {
 			const start = resource.indexOf(relative);
 			if (start !== -1) {
 				const after = start + relative.length;
-				return (
-					webpackNodeModules +
-					packageFolderMap[folder] +
-					resource.substring(after)
-				);
+				return webpackNodeModules + packageFolderMap[folder] + resource.substring(after);
 			}
 		}
 	}

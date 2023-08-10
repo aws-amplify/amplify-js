@@ -55,10 +55,7 @@ export class BackgroundProcessManager {
 	 * @param description Optional description to help identify pending jobs.
 	 * @returns The return value from the given function.
 	 */
-	add<T>(
-		job: (onTerminate: Promise<void>) => Promise<T>,
-		description?: string
-	): Promise<T>;
+	add<T>(job: (onTerminate: Promise<void>) => Promise<T>, description?: string): Promise<T>;
 
 	/**
 	 * Create a no-op job, registers it with the manager, and returns hooks
@@ -109,9 +106,7 @@ export class BackgroundProcessManager {
 		} else if (job instanceof BackgroundProcessManager) {
 			return this.addManager(job, description);
 		} else {
-			throw new Error(
-				'If `job` is provided, it must be an Observable, Function, or BackgroundProcessManager.'
-			);
+			throw new Error('If `job` is provided, it must be an Observable, Function, or BackgroundProcessManager.');
 		}
 	}
 
@@ -125,10 +120,7 @@ export class BackgroundProcessManager {
 	 * @param description Optional description to help identify pending jobs.
 	 * @returns A terminate function.
 	 */
-	addCleaner<T>(
-		clean: () => Promise<T>,
-		description?: string
-	): () => Promise<void> {
+	addCleaner<T>(clean: () => Promise<T>, description?: string): () => Promise<void> {
 		const { resolve, onTerminate } = this.addHook(description);
 
 		const proxy = async () => {
@@ -141,14 +133,8 @@ export class BackgroundProcessManager {
 		return proxy;
 	}
 
-	private addFunction<T>(
-		job: () => Promise<T>,
-		description?: string
-	): Promise<T>;
-	private addFunction<T>(
-		job: (onTerminate: Promise<void>) => Promise<T>,
-		description?: string
-	): Promise<T>;
+	private addFunction<T>(job: () => Promise<T>, description?: string): Promise<T>;
+	private addFunction<T>(job: (onTerminate: Promise<void>) => Promise<T>, description?: string): Promise<T>;
 	private addFunction(job, description) {
 		// the function we call when we want to try to terminate this job.
 		let terminate;
@@ -228,11 +214,7 @@ export class BackgroundProcessManager {
 	 * invoked to request the job stop.
 	 * @param description Optional description to help identify pending jobs.
 	 */
-	private registerPromise<T extends Promise<any>>(
-		promise: T,
-		terminate: () => void,
-		description?: string
-	) {
+	private registerPromise<T extends Promise<any>>(promise: T, terminate: () => void, description?: string) {
 		const jobEntry = { promise, terminate, description };
 		this.jobs.add(jobEntry);
 
@@ -318,9 +300,7 @@ export class BackgroundProcessManager {
 					[
 						`The manager is ${this.state}.`,
 						`You tried to add "${description}".`,
-						`Pending jobs: [\n${this.pending
-							.map(t => '    ' + t)
-							.join(',\n')}\n]`,
+						`Pending jobs: [\n${this.pending.map(t => '    ' + t).join(',\n')}\n]`,
 					].join('\n')
 				)
 			);
@@ -354,18 +334,13 @@ export class BackgroundProcessManager {
 					// Due to potential races with a job's natural completion, it's
 					// reasonable to expect the termination call to fail. Hence,
 					// not logging as an error.
-					console.warn(
-						`Failed to send termination signal to job. Error: ${error.message}`,
-						job
-					);
+					console.warn(`Failed to send termination signal to job. Error: ${error.message}`, job);
 				}
 			}
 
 			// Use `allSettled()` because we want to wait for all to finish. We do
 			// not want to stop waiting if there is a failure.
-			this._closingPromise = Promise.allSettled(
-				Array.from(this.jobs).map(j => j.promise)
-			);
+			this._closingPromise = Promise.allSettled(Array.from(this.jobs).map(j => j.promise));
 
 			await this._closingPromise;
 			this._state = BackgroundProcessManagerState.Closed;

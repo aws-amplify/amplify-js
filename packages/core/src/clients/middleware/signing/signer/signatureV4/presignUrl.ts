@@ -28,8 +28,7 @@ export const presignUrl = (
 	{ expiration, ...options }: PresignUrlOptions
 ): URL => {
 	const signingValues = getSigningValues(options);
-	const { accessKeyId, credentialScope, longDate, sessionToken } =
-		signingValues;
+	const { accessKeyId, credentialScope, longDate, sessionToken } = signingValues;
 
 	// create the request to sign
 	// @ts-ignore URL constructor accepts a URL object

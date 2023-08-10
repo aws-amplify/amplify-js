@@ -2,10 +2,7 @@ module.exports = {
 	entry: {
 		'aws-amplify-storage.min': './lib-esm/index.js',
 	},
-	externals: [
-		{ '@aws-amplify/core': 'aws_amplify_core' },
-		'aws-sdk/clients/s3',
-	],
+	externals: [{ '@aws-amplify/core': 'aws_amplify_core' }, 'aws-sdk/clients/s3'],
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',
@@ -13,8 +10,7 @@ module.exports = {
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
 		globalObject: 'this',
-		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils')
-			.devtoolModuleFilenameTemplate,
+		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils').devtoolModuleFilenameTemplate,
 	},
 	// Enable sourcemaps for debugging webpack's output.
 	devtool: 'source-map',

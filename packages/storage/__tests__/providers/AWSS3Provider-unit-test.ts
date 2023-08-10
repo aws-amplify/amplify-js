@@ -13,12 +13,7 @@ import {
 	copyObject,
 } from '../../src/AwsClients/S3';
 import { AWSS3Provider as StorageProvider } from '../../src/providers/AWSS3Provider';
-import {
-	S3CopySource,
-	S3CopyDestination,
-	StorageOptions,
-	S3ProviderGetConfig,
-} from '../../src/types';
+import { S3CopySource, S3CopyDestination, StorageOptions, S3ProviderGetConfig } from '../../src/types';
 import { AWSS3UploadTask } from '../../src/providers/AWSS3UploadTask';
 import * as StorageUtils from '../../src/common/StorageUtils';
 
@@ -167,8 +162,7 @@ describe('StorageProvider test', () => {
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
 				aws_user_files_s3_bucket_region: 'region',
-				aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing:
-					true,
+				aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing: true,
 			};
 
 			const config = storage.configure(aws_options);
@@ -202,11 +196,9 @@ describe('StorageProvider test', () => {
 
 		test('get object with custom response headers', async () => {
 			expect.assertions(2);
-			const curCredSpyOn = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => {
-					return Promise.resolve(credentials);
-				});
+			const curCredSpyOn = jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
 			mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
 			const params = {
 				cacheControl: 'no-cache',
@@ -245,9 +237,7 @@ describe('StorageProvider test', () => {
 			mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
 			const hubDispathSpy = jest.spyOn(Hub, 'dispatch');
 
-			expect(await storage.get('key', { downloaded: false, track: true })).toBe(
-				'url'
-			);
+			expect(await storage.get('key', { downloaded: false, track: true })).toBe('url');
 			expect(mockGetPresignedGetObjectUrl).toBeCalledWith(
 				expect.objectContaining({
 					region: options.region,
@@ -308,10 +298,7 @@ describe('StorageProvider test', () => {
 			expect(await storage.get('key', { download: true })).toEqual({
 				Body: [1, 2],
 			});
-			expect(mockEventEmitter.on).toBeCalledWith(
-				'sendDownloadProgress',
-				expect.any(Function)
-			);
+			expect(mockEventEmitter.on).toBeCalledWith('sendDownloadProgress', expect.any(Function));
 			// Get the anonymous function called by the emitter
 			const emitterOnFn = mockEventEmitter.on.mock.calls[0][1];
 			// Manully invoke it for testing
@@ -331,13 +318,9 @@ describe('StorageProvider test', () => {
 			mockGetObject.mockResolvedValueOnce({ Body: [1, 2] });
 			await storage.get('key', {
 				download: true,
-				progressCallback:
-					'this is not a function' as unknown as S3ProviderGetConfig['progressCallback'], // this is intentional
+				progressCallback: 'this is not a function' as unknown as S3ProviderGetConfig['progressCallback'], // this is intentional
 			});
-			expect(loggerSpy).toHaveBeenCalledWith(
-				'WARN',
-				'progressCallback should be a function, not a string'
-			);
+			expect(loggerSpy).toHaveBeenCalledWith('WARN', 'progressCallback should be a function, not a string');
 		});
 
 		test('get object with download with failure', async () => {
@@ -512,15 +495,13 @@ describe('StorageProvider test', () => {
 
 		test('always ask for the current credentials', async () => {
 			mockGetPresignedGetObjectUrl.mockReturnValue('url');
-			const curCredSpyOn = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => {
-					return new Promise((res, rej) => {
-						res({
-							cred: 'cred1',
-						});
+			const curCredSpyOn = jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return new Promise((res, rej) => {
+					res({
+						cred: 'cred1',
 					});
 				});
+			});
 
 			await storage.get('key', { download: false });
 
@@ -548,13 +529,9 @@ describe('StorageProvider test', () => {
 
 			test('get existing object with validateObjectExistence option', async () => {
 				expect.assertions(4);
-				const options_with_validateObjectExistence = Object.assign(
-					{},
-					options,
-					{
-						validateObjectExistence: true,
-					}
-				);
+				const options_with_validateObjectExistence = Object.assign({}, options, {
+					validateObjectExistence: true,
+				});
 				storage = new StorageProvider();
 				storage.configure(options_with_validateObjectExistence);
 				mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
@@ -832,10 +809,7 @@ describe('StorageProvider test', () => {
 			await storage.put('key', 'object', {
 				progressCallback: mockCallback,
 			});
-			expect(mockEventEmitter.on).toBeCalledWith(
-				'sendUploadProgress',
-				expect.any(Function)
-			);
+			expect(mockEventEmitter.on).toBeCalledWith('sendUploadProgress', expect.any(Function));
 			const emitterOnFn = mockEventEmitter.on.mock.calls[0][1];
 			// Manually invoke for testing
 			emitterOnFn('arg');
@@ -852,13 +826,9 @@ describe('StorageProvider test', () => {
 			});
 			const loggerSpy = jest.spyOn(Logger.prototype, '_log');
 			await storage.put('key', 'object', {
-				progressCallback:
-					'hello' as unknown as S3ProviderGetConfig['progressCallback'], // this is intentional
+				progressCallback: 'hello' as unknown as S3ProviderGetConfig['progressCallback'], // this is intentional
 			});
-			expect(loggerSpy).toHaveBeenCalledWith(
-				'WARN',
-				'progressCallback should be a function, not a string'
-			);
+			expect(loggerSpy).toHaveBeenCalledWith('WARN', 'progressCallback should be a function, not a string');
 		});
 
 		test('put (resumable upload) returns instance of AWSS3UploadTask', async () => {
@@ -1079,17 +1049,9 @@ describe('StorageProvider test', () => {
 			// listing three times for three pages
 			expect(listObjectsV2).toHaveBeenCalledTimes(3);
 			// first input recieves undefined as the Continuation Token
-			expect(listObjectsV2).toHaveBeenNthCalledWith(
-				1,
-				expect.anything(),
-				commandInput(undefined)
-			);
+			expect(listObjectsV2).toHaveBeenNthCalledWith(1, expect.anything(), commandInput(undefined));
 			// last input recieves TEST_TOKEN as the Continuation Token
-			expect(listObjectsV2).toHaveBeenNthCalledWith(
-				3,
-				expect.anything(),
-				commandInput('TEST_TOKEN')
-			);
+			expect(listObjectsV2).toHaveBeenNthCalledWith(3, expect.anything(), commandInput('TEST_TOKEN'));
 			mockListObjectsV2.mockClear();
 		});
 
@@ -1131,29 +1093,19 @@ describe('StorageProvider test', () => {
 			// listing three times for three pages
 			expect(listObjectsV2).toHaveBeenCalledTimes(3);
 			// first input recieves undefined as the Continuation Token
-			expect(listObjectsV2).toHaveBeenNthCalledWith(
-				1,
-				expect.anything(),
-				commandInput(undefined)
-			);
+			expect(listObjectsV2).toHaveBeenNthCalledWith(1, expect.anything(), commandInput(undefined));
 			// last input recieves TEST_TOKEN as the Continuation Token
-			expect(listObjectsV2).toHaveBeenNthCalledWith(
-				3,
-				expect.anything(),
-				commandInput('TEST_TOKEN')
-			);
+			expect(listObjectsV2).toHaveBeenNthCalledWith(3, expect.anything(), commandInput('TEST_TOKEN'));
 			mockListObjectsV2.mockClear();
 		});
 
 		test('list object with pageSize and nextToken', async () => {
 			expect.assertions(4);
-			const curCredSpyOn = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res({});
-					});
+			const curCredSpyOn = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res({});
 				});
+			});
 			mockListObjectsV2.mockImplementationOnce(async (_, input) => {
 				if (input.Prefix === 'public/listWithTokenResultsPath') {
 					return {
@@ -1255,18 +1207,14 @@ describe('StorageProvider test', () => {
 					key: 'dest',
 					level: 'public',
 				})
-			).rejects.toThrowError(
-				'source param should be an object with the property "key" with value of type string'
-			);
+			).rejects.toThrowError('source param should be an object with the property "key" with value of type string');
 			// wrong key type
 			await expect(
 				storage.copy({ level: 'public', key: 123 } as unknown as S3CopySource, {
 					key: 'dest',
 					level: 'public',
 				})
-			).rejects.toThrowError(
-				'source param should be an object with the property "key" with value of type string'
-			);
+			).rejects.toThrowError('source param should be an object with the property "key" with value of type string');
 		});
 
 		test('copy with invalid destination key should throw error', async () => {
@@ -1275,9 +1223,7 @@ describe('StorageProvider test', () => {
 				storage.copy({ key: 'src', level: 'public' }, {
 					level: 'public',
 				} as S3CopyDestination)
-			).rejects.toThrowError(
-				'destination param should be an object with the property "key" with value of type string'
-			);
+			).rejects.toThrowError('destination param should be an object with the property "key" with value of type string');
 
 			// wrong key type
 			await expect(
@@ -1285,9 +1231,7 @@ describe('StorageProvider test', () => {
 					key: 123,
 					level: 'public',
 				} as unknown as S3CopyDestination)
-			).rejects.toThrowError(
-				'destination param should be an object with the property "key" with value of type string'
-			);
+			).rejects.toThrowError('destination param should be an object with the property "key" with value of type string');
 		});
 
 		test('copy object with track', async () => {
@@ -1367,9 +1311,7 @@ describe('StorageProvider test', () => {
 			mockCopyObject.mockImplementationOnce(async () => {
 				throw new Error('err');
 			});
-			await expect(
-				storage.copy({ key: 'src' }, { key: 'dest' })
-			).rejects.toThrow('err');
+			await expect(storage.copy({ key: 'src' }, { key: 'dest' })).rejects.toThrow('err');
 			expect(copyObject).toBeCalledTimes(1);
 		});
 
@@ -1377,9 +1319,7 @@ describe('StorageProvider test', () => {
 			jest.spyOn(Credentials, 'get').mockReset();
 			storage = new StorageProvider();
 			storage.configure(options_no_cred);
-			await expect(
-				storage.copy({ key: 'src' }, { key: 'dest' })
-			).rejects.toThrowError('No credentials');
+			await expect(storage.copy({ key: 'src' }, { key: 'dest' })).rejects.toThrowError('No credentials');
 		});
 	});
 });

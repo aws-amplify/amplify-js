@@ -1,19 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	InteractionsProvider,
-	InteractionsOptions,
-	InteractionsResponse,
-} from '../types';
+import { InteractionsProvider, InteractionsOptions, InteractionsResponse } from '../types';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('AbstractInteractionsProvider');
 
-export abstract class AbstractInteractionsProvider
-	implements InteractionsProvider
-{
+export abstract class AbstractInteractionsProvider implements InteractionsProvider {
 	protected _config: InteractionsOptions;
 
 	constructor(options: InteractionsOptions = {}) {
@@ -38,13 +32,7 @@ export abstract class AbstractInteractionsProvider
 		return { ...this._config };
 	}
 
-	public abstract sendMessage(
-		botname: string,
-		message: string | Object
-	): Promise<object>;
+	public abstract sendMessage(botname: string, message: string | Object): Promise<object>;
 
-	public abstract onComplete(
-		botname: string,
-		callback: (err: any, confirmation: InteractionsResponse) => void
-	);
+	public abstract onComplete(botname: string, callback: (err: any, confirmation: InteractionsResponse) => void);
 }

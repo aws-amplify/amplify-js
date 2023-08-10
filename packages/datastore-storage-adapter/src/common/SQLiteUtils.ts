@@ -53,8 +53,7 @@ const updateSet: (model: any) => [any, any] = model => {
 function prepareValueForDML(value: unknown): any {
 	const scalarTypes = ['string', 'number', 'boolean'];
 
-	const isScalarType =
-		value === null || value === undefined || scalarTypes.includes(typeof value);
+	const isScalarType = value === null || value === undefined || scalarTypes.includes(typeof value);
 
 	if (isScalarType) {
 		return value;
@@ -74,10 +73,7 @@ function prepareValueForDML(value: unknown): any {
 }
 
 export function getSQLiteType(
-	scalar: keyof Omit<
-		typeof GraphQLScalarType,
-		'getJSType' | 'getValidationFunction' | 'getSQLiteType'
-	>
+	scalar: keyof Omit<typeof GraphQLScalarType, 'getJSType' | 'getValidationFunction' | 'getSQLiteType'>
 ): 'TEXT' | 'INTEGER' | 'REAL' | 'BLOB' {
 	switch (scalar) {
 		case 'Boolean':
@@ -108,21 +104,16 @@ export function generateSchemaStatements(schema: InternalSchema): string[] {
 		const namespace = schema.namespaces[namespaceName];
 		const isUserModel = namespaceName === USER;
 
-		return Object.values(namespace.models).map(model =>
-			modelCreateTableStatement(model, isUserModel)
-		);
+		return Object.values(namespace.models).map(model => modelCreateTableStatement(model, isUserModel));
 	});
 }
 
-export const implicitAuthFieldsForModel: (model: SchemaModel) => string[] = (
-	model: SchemaModel
-) => {
+export const implicitAuthFieldsForModel: (model: SchemaModel) => string[] = (model: SchemaModel) => {
 	if (!model.attributes || !model.attributes.length) {
 		return [];
 	}
 
-	const authRules: ModelAttributeAuth =
-		model.attributes.find(isModelAttributeAuth);
+	const authRules: ModelAttributeAuth = model.attributes.find(isModelAttributeAuth);
 
 	if (!authRules) {
 		return [];
@@ -133,17 +124,12 @@ export const implicitAuthFieldsForModel: (model: SchemaModel) => string[] = (
 		.map((rule: ModelAuthRule) => rule.ownerField || rule.groupsField);
 
 	return authFieldsForModel.filter((authField: string) => {
-		const authFieldExplicitlyDefined = Object.values(model.fields).find(
-			(f: ModelField) => f.name === authField
-		);
+		const authFieldExplicitlyDefined = Object.values(model.fields).find((f: ModelField) => f.name === authField);
 		return !authFieldExplicitlyDefined;
 	});
 };
 
-export function modelCreateTableStatement(
-	model: SchemaModel,
-	userModel: boolean = false
-): string {
+export function modelCreateTableStatement(model: SchemaModel, userModel: boolean = false): string {
 	// implicitly defined auth fields, e.g., `owner`, `groupsField`, etc.
 	const implicitAuthFields = implicitAuthFieldsForModel(model);
 
@@ -199,24 +185,14 @@ export function modelCreateTableStatement(
 	});
 
 	if (userModel) {
-		fields = [
-			...fields,
-			`"_version" INTEGER`,
-			`"_lastChangedAt" INTEGER`,
-			`"_deleted" INTEGER`,
-		];
+		fields = [...fields, `"_version" INTEGER`, `"_lastChangedAt" INTEGER`, `"_deleted" INTEGER`];
 	}
 
-	const createTableStatement = `CREATE TABLE IF NOT EXISTS "${
-		model.name
-	}" (${fields.join(', ')});`;
+	const createTableStatement = `CREATE TABLE IF NOT EXISTS "${model.name}" (${fields.join(', ')});`;
 	return createTableStatement;
 }
 
-export function modelInsertStatement(
-	model: PersistentModel,
-	tableName: string
-): ParameterizedStatement {
+export function modelInsertStatement(model: PersistentModel, tableName: string): ParameterizedStatement {
 	const keys = keysFromModel(model);
 	const [paramaterized, values] = valuesFromModel(model);
 
@@ -225,10 +201,7 @@ export function modelInsertStatement(
 	return [insertStatement, values];
 }
 
-export function modelUpdateStatement(
-	model: PersistentModel,
-	tableName: string
-): ParameterizedStatement {
+export function modelUpdateStatement(model: PersistentModel, tableName: string): ParameterizedStatement {
 	const [paramaterized, values] = updateSet(model);
 
 	const updateStatement = `UPDATE "${tableName}" SET ${paramaterized} WHERE id=?`;
@@ -236,10 +209,7 @@ export function modelUpdateStatement(
 	return [updateStatement, [...values, model.id]];
 }
 
-export function queryByIdStatement(
-	id: string,
-	tableName: string
-): ParameterizedStatement {
+export function queryByIdStatement(id: string, tableName: string): ParameterizedStatement {
 	return [`SELECT * FROM "${tableName}" WHERE "id" = ?`, [id]];
 }
 
@@ -297,16 +267,10 @@ export const whereConditionFromPredicateObject = ({
 	operand,
 }: {
 	field: string;
-	operator:
-		| keyof typeof logicalOperatorMap
-		| keyof typeof comparisonOperatorMap;
+	operator: keyof typeof logicalOperatorMap | keyof typeof comparisonOperatorMap;
 	operand: any;
 }): ParameterizedStatement => {
-	const specialNullClause = buildSpecialNullComparison(
-		field,
-		operator,
-		operand
-	);
+	const specialNullClause = buildSpecialNullComparison(field, operator, operand);
 	if (specialNullClause) {
 		return [specialNullClause, []];
 	}
@@ -327,12 +291,7 @@ export const whereConditionFromPredicateObject = ({
 		switch (logicalOperatorKey) {
 			case 'between':
 				rightExp = operand; // operand is a 2-tuple
-				statement = [
-					`"${field}" ${logicalOperator} ${rightExp
-						.map(_ => '?')
-						.join(' AND ')}`,
-					rightExp,
-				];
+				statement = [`"${field}" ${logicalOperator} ${rightExp.map(_ => '?').join(' AND ')}`, rightExp];
 				break;
 			case 'beginsWith':
 			case 'contains':
@@ -360,11 +319,7 @@ export function whereClauseFromPredicate<T extends PersistentModel>(
 
 	return [whereClause, params];
 
-	function recurse(
-		predicate: PredicatesGroup<T> | PredicateObject<T>,
-		result = [],
-		params = []
-	): void {
+	function recurse(predicate: PredicatesGroup<T> | PredicateObject<T>, result = [], params = []): void {
 		if (isPredicateGroup(predicate)) {
 			const { type: groupType, predicates: groupPredicates } = predicate;
 			let filterType: string = '';
@@ -388,12 +343,9 @@ export function whereClauseFromPredicate<T extends PersistentModel>(
 			for (const p of groupPredicates) {
 				recurse(p, groupResult, params);
 			}
-			result.push(
-				`${isNegation ? 'NOT' : ''}(${groupResult.join(` ${filterType} `)})`
-			);
+			result.push(`${isNegation ? 'NOT' : ''}(${groupResult.join(` ${filterType} `)})`);
 		} else if (isPredicateObj(predicate)) {
-			const [condition, conditionParams] =
-				whereConditionFromPredicateObject(predicate);
+			const [condition, conditionParams] = whereConditionFromPredicateObject(predicate);
 
 			result.push(condition);
 
@@ -407,13 +359,8 @@ const sortDirectionMap = {
 	DESCENDING: 'DESC',
 };
 
-export function orderByClauseFromSort<T extends PersistentModel>(
-	sortPredicate: SortPredicatesGroup<T> = []
-): string {
-	const orderByParts = sortPredicate.map(
-		({ field, sortDirection }) =>
-			`"${field}" ${sortDirectionMap[sortDirection]}`
-	);
+export function orderByClauseFromSort<T extends PersistentModel>(sortPredicate: SortPredicatesGroup<T> = []): string {
+	const orderByParts = sortPredicate.map(({ field, sortDirection }) => `"${field}" ${sortDirectionMap[sortDirection]}`);
 
 	// We always sort by _rowid_ last
 	orderByParts.push(`_rowid_ ${sortDirectionMap.ASCENDING}`);
@@ -421,10 +368,7 @@ export function orderByClauseFromSort<T extends PersistentModel>(
 	return `ORDER BY ${orderByParts.join(', ')}`;
 }
 
-export function limitClauseFromPagination(
-	limit: number,
-	page: number = 0
-): ParameterizedStatement {
+export function limitClauseFromPagination(limit: number, page: number = 0): ParameterizedStatement {
 	const params = [limit];
 	let clause = 'LIMIT ?';
 	if (page) {
@@ -464,10 +408,7 @@ export function queryAllStatement<T extends PersistentModel>(
 	return [statement, params];
 }
 
-export function queryOneStatement(
-	firstOrLast,
-	tableName: string
-): ParameterizedStatement {
+export function queryOneStatement(firstOrLast, tableName: string): ParameterizedStatement {
 	if (firstOrLast === QueryOne.FIRST) {
 		// ORDER BY rowid will no longer work as expected if a customer has
 		// a field by that name in their schema. We may want to enforce it
@@ -478,10 +419,7 @@ export function queryOneStatement(
 	}
 }
 
-export function deleteByIdStatement(
-	id: string,
-	tableName: string
-): ParameterizedStatement {
+export function deleteByIdStatement(id: string, tableName: string): ParameterizedStatement {
 	const deleteStatement = `DELETE FROM "${tableName}" WHERE "id"=?`;
 	return [deleteStatement, [id]];
 }

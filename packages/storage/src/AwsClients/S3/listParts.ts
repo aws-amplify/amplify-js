@@ -1,18 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Endpoint,
-	HttpRequest,
-	HttpResponse,
-	parseMetadata,
-} from '@aws-amplify/core/internals/aws-client-utils';
+import { Endpoint, HttpRequest, HttpResponse, parseMetadata } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import type {
-	ListPartsCommandInput,
-	ListPartsCommandOutput,
-	CompletedPart,
-} from './types';
+import type { ListPartsCommandInput, ListPartsCommandOutput, CompletedPart } from './types';
 import { defaultConfig } from './base';
 import {
 	emptyArrayGuard,
@@ -36,15 +27,9 @@ export type ListPartsInput = Pick<
 	| 'SSECustomerKeyMD5'
 >;
 
-export type ListPartsOutput = Pick<
-	ListPartsCommandOutput,
-	'Parts' | 'UploadId' | '$metadata'
->;
+export type ListPartsOutput = Pick<ListPartsCommandOutput, 'Parts' | 'UploadId' | '$metadata'>;
 
-const listPartsSerializer = async (
-	input: ListPartsInput,
-	endpoint: Endpoint
-): Promise<HttpRequest> => {
+const listPartsSerializer = async (input: ListPartsInput, endpoint: Endpoint): Promise<HttpRequest> => {
 	const headers = await serializeObjectSsecOptionsToHeaders(input);
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);
@@ -58,9 +43,7 @@ const listPartsSerializer = async (
 	};
 };
 
-const listPartsDeserializer = async (
-	response: HttpResponse
-): Promise<ListPartsOutput> => {
+const listPartsDeserializer = async (response: HttpResponse): Promise<ListPartsOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
 		throw error;
@@ -68,10 +51,7 @@ const listPartsDeserializer = async (
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {
 			UploadId: 'UploadId',
-			Parts: [
-				'Part',
-				value => emptyArrayGuard(value, deserializeCompletedPartList),
-			],
+			Parts: ['Part', value => emptyArrayGuard(value, deserializeCompletedPartList)],
 		});
 		return {
 			$metadata: parseMetadata(response),
@@ -89,9 +69,7 @@ const deserializeCompletedPartList = (input: any[]): CompletedPart[] =>
 		})
 	);
 
-export const listParts = composeServiceApi(
-	s3TransferHandler,
-	listPartsSerializer,
-	listPartsDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
-);
+export const listParts = composeServiceApi(s3TransferHandler, listPartsSerializer, listPartsDeserializer, {
+	...defaultConfig,
+	responseType: 'text',
+});

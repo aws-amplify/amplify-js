@@ -96,12 +96,8 @@ describe('Indexed db storage test', () => {
 		expect(createdObjStores).not.toContain(`${USER}_blah`);
 
 		// TODO: better way to get this
-		const commentStore = (<any>db)._rawDatabase.rawObjectStores.get(
-			`${USER}_Comment`
-		);
-		const postAuthorStore = (<any>db)._rawDatabase.rawObjectStores.get(
-			`${USER}_PostAuthorJoin`
-		);
+		const commentStore = (<any>db)._rawDatabase.rawObjectStores.get(`${USER}_Comment`);
+		const postAuthorStore = (<any>db)._rawDatabase.rawObjectStores.get(`${USER}_PostAuthorJoin`);
 
 		expect(commentStore.rawIndexes.has('byPk')).toBe(true); // checks byPkIndex
 		expect(postAuthorStore.rawIndexes.has('byPk')).toBe(true); // checks byPkIndex
@@ -122,9 +118,7 @@ describe('Indexed db storage test', () => {
 
 		expect(get1).toBeDefined();
 
-		expect([...Object.keys(blog).sort(), 'blogOwnerId']).toEqual(
-			expect.arrayContaining(Object.keys(get1).sort())
-		);
+		expect([...Object.keys(blog).sort(), 'blogOwnerId']).toEqual(expect.arrayContaining(Object.keys(get1).sort()));
 
 		expect(get1['blogOwnerId']).toBe(owner.id);
 
@@ -134,9 +128,7 @@ describe('Indexed db storage test', () => {
 			.index('byPk')
 			.get([owner.id]);
 
-		expect([...Object.keys(owner)].sort()).toEqual(
-			expect.arrayContaining(Object.keys(get2).sort())
-		);
+		expect([...Object.keys(owner)].sort()).toEqual(expect.arrayContaining(Object.keys(get2).sort()));
 
 		await DataStore.save(blog2);
 		const get3 = await db
@@ -145,9 +137,7 @@ describe('Indexed db storage test', () => {
 			.index('byPk')
 			.get([blog2.id]);
 
-		expect([...Object.keys(blog2).sort(), 'blogOwnerId']).toEqual(
-			expect.arrayContaining(Object.keys(get3).sort())
-		);
+		expect([...Object.keys(blog2).sort(), 'blogOwnerId']).toEqual(expect.arrayContaining(Object.keys(get3).sort()));
 	});
 
 	test('save stores non-model types along the item (including nested)', async () => {
@@ -442,10 +432,7 @@ describe('Indexed db storage test', () => {
 		const q2 = (await DataStore.query(Project, project1.id))!;
 
 		// Ensure that model fields are actually promises
-		if (
-			typeof q1.team.then !== 'function' ||
-			typeof q2.team.then !== 'function'
-		) {
+		if (typeof q1.team.then !== 'function' || typeof q2.team.then !== 'function') {
 			throw new Error('Not a promise');
 		}
 
@@ -467,12 +454,8 @@ describe('Indexed db storage test', () => {
 		const album1 = new Album({ name: "Lupe Fiasco's The Cool" });
 
 		await DataStore.save(album1);
-		await DataStore.save(
-			new Song({ name: 'Put you on Game', songID: album1.id })
-		);
-		await DataStore.save(
-			new Song({ name: 'Streets on Fire', songID: album1.id })
-		);
+		await DataStore.save(new Song({ name: 'Put you on Game', songID: album1.id }));
+		await DataStore.save(new Song({ name: 'Streets on Fire', songID: album1.id }));
 		await DataStore.save(new Song({ name: 'Superstar', songID: album1.id }));
 
 		const q1 = (await DataStore.query(Album, album1.id))!;
@@ -517,9 +500,7 @@ describe('Indexed db storage test', () => {
 				forum: f1 as any,
 				editor: f2 as any,
 			});
-		}).toThrow(
-			'Value passed to ForumEditorJoin.editor is not an instance of Editor'
-		);
+		}).toThrow('Value passed to ForumEditorJoin.editor is not an instance of Editor');
 	});
 
 	test('query with sort on a single field', async () => {
@@ -586,19 +567,12 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(p2);
 		await DataStore.save(p3);
 
-		const sortedPersons = await DataStore.query(
-			Person,
-			c => c.username.ne(undefined),
-			{
-				page: 0,
-				limit: 20,
-				sort: s =>
-					s
-						.firstName(SortDirection.ASCENDING)
-						.lastName(SortDirection.ASCENDING)
-						.username(SortDirection.ASCENDING),
-			}
-		);
+		const sortedPersons = await DataStore.query(Person, c => c.username.ne(undefined), {
+			page: 0,
+			limit: 20,
+			sort: s =>
+				s.firstName(SortDirection.ASCENDING).lastName(SortDirection.ASCENDING).username(SortDirection.ASCENDING),
+		});
 
 		expect(sortedPersons[0].username).toEqual('johnsnow');
 		expect(sortedPersons[1].username).toEqual('greatjohnumber');
@@ -615,13 +589,9 @@ describe('Indexed db storage test', () => {
 			})
 		);
 
-		const blog = await DataStore.save(
-			new Blog({ name: 'Avatar, the last whatever', owner })
-		);
+		const blog = await DataStore.save(new Blog({ name: 'Avatar, the last whatever', owner }));
 
-		const decoyOwner = await DataStore.save(
-			new BlogOwner({ name: 'another one' })
-		);
+		const decoyOwner = await DataStore.save(new BlogOwner({ name: 'another one' }));
 
 		const decoyBlog = await DataStore.save(
 			new Blog({
@@ -731,10 +701,7 @@ describe('Indexed db storage test', () => {
 
 		expect(deleted).toStrictEqual(author);
 
-		const fromDB = await db
-			.transaction(`${USER}_Author`, 'readonly')
-			.objectStore(`${USER}_Author`)
-			.get(author.id);
+		const fromDB = await db.transaction(`${USER}_Author`, 'readonly').objectStore(`${USER}_Author`).get(author.id);
 
 		expect(fromDB).toBeUndefined();
 	});

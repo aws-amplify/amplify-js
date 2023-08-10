@@ -121,9 +121,7 @@ const handleRecognizeUtteranceCommandAudio = async command => {
 					state: 'ReadyForFulfillment',
 				},
 			}),
-			messages: await gzipBase64Json([
-				{ content: 'voice:echo:' + command.input.botId },
-			]),
+			messages: await gzipBase64Json([{ content: 'voice:echo:' + command.input.botId }]),
 			audioStream: createBlob(),
 		};
 		return Promise.resolve(result);
@@ -132,9 +130,7 @@ const handleRecognizeUtteranceCommandAudio = async command => {
 			sessionState: await gzipBase64Json({
 				intent: { state: 'Failed' },
 			}),
-			messages: await gzipBase64Json([
-				{ content: 'voice:echo:' + command.input.botId },
-			]),
+			messages: await gzipBase64Json([{ content: 'voice:echo:' + command.input.botId }]),
 			audioStream: createBlob(),
 		};
 		return Promise.resolve(result);
@@ -143,9 +139,7 @@ const handleRecognizeUtteranceCommandAudio = async command => {
 			sessionState: await gzipBase64Json({
 				intent: { state: 'ElicitSlot' },
 			}),
-			messages: await gzipBase64Json([
-				{ content: 'voice:echo:' + command.input.botId },
-			]),
+			messages: await gzipBase64Json([{ content: 'voice:echo:' + command.input.botId }]),
 			audioStream: createBlob(),
 		};
 		return Promise.resolve(result);
@@ -161,9 +155,7 @@ const handleRecognizeUtteranceCommandText = async command => {
 					state: 'ReadyForFulfillment',
 				},
 			}),
-			messages: await gzipBase64Json([
-				{ content: 'echo:' + command.input.inputStream },
-			]),
+			messages: await gzipBase64Json([{ content: 'echo:' + command.input.inputStream }]),
 			audioStream: createBlob(),
 		};
 		return Promise.resolve(result);
@@ -172,9 +164,7 @@ const handleRecognizeUtteranceCommandText = async command => {
 			sessionState: await gzipBase64Json({
 				intent: { state: 'Failed' },
 			}),
-			messages: await gzipBase64Json([
-				{ content: 'echo:' + command.input.inputStream },
-			]),
+			messages: await gzipBase64Json([{ content: 'echo:' + command.input.inputStream }]),
 			audioStream: createBlob(),
 		};
 		return Promise.resolve(result);
@@ -183,9 +173,7 @@ const handleRecognizeUtteranceCommandText = async command => {
 			sessionState: await gzipBase64Json({
 				intent: { state: 'ElicitSlot' },
 			}),
-			messages: await gzipBase64Json([
-				{ content: 'echo:' + command.input.inputStream },
-			]),
+			messages: await gzipBase64Json([{ content: 'echo:' + command.input.inputStream }]),
 			audioStream: createBlob(),
 		};
 		return Promise.resolve(result);
@@ -197,10 +185,7 @@ LexRuntimeV2Client.prototype.send = jest.fn(async (command, callback) => {
 	if (command instanceof RecognizeTextCommand) {
 		response = handleRecognizeTextCommand(command);
 	} else if (command instanceof RecognizeUtteranceCommand) {
-		if (
-			command.input.requestContentType ===
-			'audio/x-l16; sample-rate=16000; channel-count=1'
-		) {
+		if (command.input.requestContentType === 'audio/x-l16; sample-rate=16000; channel-count=1') {
 			response = await handleRecognizeUtteranceCommandAudio(command);
 		} else {
 			response = await handleRecognizeUtteranceCommandText(command);
@@ -285,9 +270,7 @@ describe('Interactions', () => {
 				},
 			};
 			// @ts-ignore
-			expect(() => provider.configure(v1Bot)).toThrow(
-				'invalid bot configuration'
-			);
+			expect(() => provider.configure(v1Bot)).toThrow('invalid bot configuration');
 			expect.assertions(1);
 		});
 	});
@@ -297,9 +280,7 @@ describe('Interactions', () => {
 		let provider;
 
 		beforeEach(() => {
-			jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
+			jest.spyOn(Credentials, 'get').mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
 			provider = new AWSLexV2Provider();
 			provider.configure(botConfig);
@@ -416,20 +397,14 @@ describe('Interactions', () => {
 		});
 
 		test('send a text message bot But with no credentials', async () => {
-			jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.reject({ identityId: '1234' }));
+			jest.spyOn(Credentials, 'get').mockImplementation(() => Promise.reject({ identityId: '1234' }));
 
-			await expect(provider.sendMessage('BookTrip', 'hi')).rejects.toEqual(
-				'No credentials'
-			);
+			await expect(provider.sendMessage('BookTrip', 'hi')).rejects.toEqual('No credentials');
 			expect.assertions(1);
 		});
 
 		test('send message to non-existing bot', async () => {
-			await expect(provider.sendMessage('unknownBot', 'hi')).rejects.toEqual(
-				'Bot unknownBot does not exist'
-			);
+			await expect(provider.sendMessage('unknownBot', 'hi')).rejects.toEqual('Bot unknownBot does not exist');
 			expect.assertions(1);
 		});
 
@@ -462,9 +437,7 @@ describe('Interactions', () => {
 		let provider;
 
 		beforeEach(() => {
-			jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
+			jest.spyOn(Credentials, 'get').mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
 			provider = new AWSLexV2Provider();
 			provider.configure(botConfig);
@@ -476,9 +449,7 @@ describe('Interactions', () => {
 		});
 
 		test('Configure onComplete callback for non-existing bot', async () => {
-			expect(() => provider.onComplete('unknownBot', callback)).toThrow(
-				'Bot unknownBot does not exist'
-			);
+			expect(() => provider.onComplete('unknownBot', callback)).toThrow('Bot unknownBot does not exist');
 			expect.assertions(1);
 		});
 	});
@@ -499,9 +470,7 @@ describe('Interactions', () => {
 		let mockResponseProvider;
 
 		beforeEach(async () => {
-			jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
+			jest.spyOn(Credentials, 'get').mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
 			provider = new AWSLexV2Provider();
 			provider.configure(botConfig);
@@ -509,9 +478,7 @@ describe('Interactions', () => {
 			mockCallbackProvider = actionType => {
 				switch (actionType) {
 					case ACTION_TYPE.IN_PROGRESS:
-						return jest.fn((err, confirmation) =>
-							fail(`callback shouldn't be called`)
-						);
+						return jest.fn((err, confirmation) => fail(`callback shouldn't be called`));
 
 					case ACTION_TYPE.COMPLETE:
 						return jest.fn((err, confirmation) => {
@@ -527,9 +494,7 @@ describe('Interactions', () => {
 							});
 						});
 					case ACTION_TYPE.ERROR:
-						return jest.fn((err, confirmation) =>
-							expect(err).toEqual(new Error('Bot conversation failed'))
-						);
+						return jest.fn((err, confirmation) => expect(err).toEqual(new Error('Bot conversation failed')));
 				}
 			};
 
@@ -538,15 +503,9 @@ describe('Interactions', () => {
 				'in progress. callback isnt fired'
 			)) as RecognizeTextCommandOutput;
 
-			const completeSuccessResp = (await provider.sendMessage(
-				'BookTrip',
-				'done'
-			)) as RecognizeTextCommandOutput;
+			const completeSuccessResp = (await provider.sendMessage('BookTrip', 'done')) as RecognizeTextCommandOutput;
 
-			const completeFailResp = (await provider.sendMessage(
-				'BookTrip',
-				'error'
-			)) as RecognizeTextCommandOutput;
+			const completeFailResp = (await provider.sendMessage('BookTrip', 'error')) as RecognizeTextCommandOutput;
 
 			mockResponseProvider = actionType => {
 				switch (actionType) {
@@ -563,15 +522,10 @@ describe('Interactions', () => {
 		describe('onComplete callback from `Interactions.onComplete`', () => {
 			test(`In progress, callback shouldn't be called`, async () => {
 				// callback is only called once conversation is completed
-				const inProgressCallback = mockCallbackProvider(
-					ACTION_TYPE.IN_PROGRESS
-				);
+				const inProgressCallback = mockCallbackProvider(ACTION_TYPE.IN_PROGRESS);
 				provider.onComplete('BookTrip', inProgressCallback);
 
-				provider._reportBotStatus(
-					mockResponseProvider(ACTION_TYPE.IN_PROGRESS),
-					'BookTrip'
-				);
+				provider._reportBotStatus(mockResponseProvider(ACTION_TYPE.IN_PROGRESS), 'BookTrip');
 
 				jest.runAllTimers();
 				expect(inProgressCallback).toBeCalledTimes(0);
@@ -579,15 +533,10 @@ describe('Interactions', () => {
 			});
 
 			test(`task complete; callback with success resp`, async () => {
-				const completeSuccessCallback = mockCallbackProvider(
-					ACTION_TYPE.COMPLETE
-				);
+				const completeSuccessCallback = mockCallbackProvider(ACTION_TYPE.COMPLETE);
 
 				provider.onComplete('BookTrip', completeSuccessCallback);
-				provider._reportBotStatus(
-					mockResponseProvider(ACTION_TYPE.COMPLETE),
-					'BookTrip'
-				);
+				provider._reportBotStatus(mockResponseProvider(ACTION_TYPE.COMPLETE), 'BookTrip');
 
 				jest.runAllTimers();
 				expect(completeSuccessCallback).toBeCalledTimes(1);
@@ -599,10 +548,7 @@ describe('Interactions', () => {
 				const completeFailCallback = mockCallbackProvider(ACTION_TYPE.ERROR);
 				provider.onComplete('BookTrip', completeFailCallback);
 
-				provider._reportBotStatus(
-					mockResponseProvider(ACTION_TYPE.ERROR),
-					'BookTrip'
-				);
+				provider._reportBotStatus(mockResponseProvider(ACTION_TYPE.ERROR), 'BookTrip');
 
 				jest.runAllTimers();
 				expect(completeFailCallback).toBeCalledTimes(1);
@@ -624,16 +570,11 @@ describe('Interactions', () => {
 			};
 
 			test(`In progress, callback shouldn't be called`, async () => {
-				const inProgressCallback = mockCallbackProvider(
-					ACTION_TYPE.IN_PROGRESS
-				);
+				const inProgressCallback = mockCallbackProvider(ACTION_TYPE.IN_PROGRESS);
 				myBot.BookTrip.onComplete = inProgressCallback;
 
 				provider.configure(myBot);
-				provider._reportBotStatus(
-					mockResponseProvider(ACTION_TYPE.IN_PROGRESS),
-					'BookTrip'
-				);
+				provider._reportBotStatus(mockResponseProvider(ACTION_TYPE.IN_PROGRESS), 'BookTrip');
 
 				jest.runAllTimers();
 				expect(inProgressCallback).toBeCalledTimes(0);
@@ -641,16 +582,11 @@ describe('Interactions', () => {
 			});
 
 			test(`task complete; callback with success resp`, async () => {
-				const completeSuccessCallback = mockCallbackProvider(
-					ACTION_TYPE.COMPLETE
-				);
+				const completeSuccessCallback = mockCallbackProvider(ACTION_TYPE.COMPLETE);
 				myBot.BookTrip.onComplete = completeSuccessCallback;
 
 				provider.configure(myBot);
-				provider._reportBotStatus(
-					mockResponseProvider(ACTION_TYPE.COMPLETE),
-					'BookTrip'
-				);
+				provider._reportBotStatus(mockResponseProvider(ACTION_TYPE.COMPLETE), 'BookTrip');
 
 				jest.runAllTimers();
 				expect(completeSuccessCallback).toBeCalledTimes(1);
@@ -663,10 +599,7 @@ describe('Interactions', () => {
 				myBot.BookTrip.onComplete = completeFailCallback;
 
 				provider.configure(myBot);
-				provider._reportBotStatus(
-					mockResponseProvider(ACTION_TYPE.ERROR),
-					'BookTrip'
-				);
+				provider._reportBotStatus(mockResponseProvider(ACTION_TYPE.ERROR), 'BookTrip');
 
 				jest.runAllTimers();
 				expect(completeFailCallback).toBeCalledTimes(1);

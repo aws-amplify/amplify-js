@@ -25,9 +25,7 @@ describe('Getters and Setters', () => {
 
 describe('Testing different representation of CognitoUserAttrs', () => {
 	test('toString method', () => {
-		expect(cognitoUserAttribute.toString()).toEqual(
-			'{"Name":"testName","Value":"testValue"}'
-		);
+		expect(cognitoUserAttribute.toString()).toEqual('{"Name":"testName","Value":"testValue"}');
 	});
 
 	test('toJSON method', () => {

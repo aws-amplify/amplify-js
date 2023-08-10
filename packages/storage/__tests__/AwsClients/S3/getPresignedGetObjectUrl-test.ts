@@ -6,9 +6,7 @@ import { getPresignedGetObjectUrl } from '../../../src/AwsClients/S3';
 import { defaultConfig } from './cases/shared';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
-	const original = jest.requireActual(
-		'@aws-amplify/core/internals/aws-client-utils'
-	);
+	const original = jest.requireActual('@aws-amplify/core/internals/aws-client-utils');
 	const presignUrl = original.presignUrl;
 
 	return {
@@ -35,14 +33,10 @@ describe('serializeGetObjectRequest', () => {
 			}
 		);
 		const actualUrl = new URL(actual);
-		expect(actualUrl.hostname).toEqual(
-			`bucket.s3.${defaultConfig.region}.amazonaws.com`
-		);
+		expect(actualUrl.hostname).toEqual(`bucket.s3.${defaultConfig.region}.amazonaws.com`);
 		expect(actualUrl.pathname).toEqual('/key');
 		expect(actualUrl.searchParams.get('X-Amz-Expires')).toEqual('900');
-		expect(actualUrl.searchParams.get('x-amz-content-sha256')).toEqual(
-			expect.any(String)
-		);
+		expect(actualUrl.searchParams.get('x-amz-content-sha256')).toEqual(expect.any(String));
 		expect(actualUrl.searchParams.get('x-amz-user-agent')).toEqual('UA');
 	});
 

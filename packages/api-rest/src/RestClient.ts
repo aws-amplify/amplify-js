@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	ConsoleLogger as Logger,
-	Credentials,
-	DateUtils,
-	Signer,
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Credentials, DateUtils, Signer } from '@aws-amplify/core';
 
 import { apiOptions, ApiInfo } from './types';
 import axios, { CancelTokenSource } from 'axios';
@@ -112,10 +107,7 @@ export class RestClient {
 		const initParams = Object.assign({}, init);
 		const isAllResponse = initParams.response;
 		if (initParams.body) {
-			if (
-				typeof FormData === 'function' &&
-				initParams.body instanceof FormData
-			) {
+			if (typeof FormData === 'function' && initParams.body instanceof FormData) {
 				libraryHeaders['Content-Type'] = 'multipart/form-data';
 				params.data = initParams.body;
 			} else {
@@ -139,8 +131,7 @@ export class RestClient {
 		params['signerServiceInfo'] = initParams.signerServiceInfo;
 
 		// custom_header callback
-		const custom_header_obj =
-			typeof custom_header === 'function' ? await custom_header() : undefined;
+		const custom_header_obj = typeof custom_header === 'function' ? await custom_header() : undefined;
 
 		params.headers = {
 			...libraryHeaders,
@@ -192,15 +183,11 @@ export class RestClient {
 				const { headers } = error.response;
 				const dateHeader = headers && (headers.date || headers.Date);
 				const responseDate = new Date(dateHeader);
-				const requestDate = DateUtils.getDateFromHeaderString(
-					signedParams.headers['x-amz-date']
-				);
+				const requestDate = DateUtils.getDateFromHeaderString(signedParams.headers['x-amz-date']);
 
 				// Compare local clock to the server clock
 				if (DateUtils.isClockSkewed(responseDate)) {
-					DateUtils.setClockOffset(
-						responseDate.getTime() - requestDate.getTime()
-					);
+					DateUtils.setClockOffset(responseDate.getTime() - requestDate.getTime());
 
 					return this.ajax(urlOrApiInfo, method, init);
 				}
@@ -314,10 +301,7 @@ export class RestClient {
 	 * cancel token such that the cancel token can be easily
 	 * retrieved (and used for cancelling the request)
 	 */
-	updateRequestToBeCancellable(
-		promise: Promise<any>,
-		cancelTokenSource: CancelTokenSource
-	) {
+	updateRequestToBeCancellable(promise: Promise<any>, cancelTokenSource: CancelTokenSource) {
 		this._cancelTokenMap.set(promise, cancelTokenSource);
 	}
 
@@ -360,13 +344,10 @@ export class RestClient {
 	/** private methods **/
 
 	private _sign(params, credentials, { service, region }) {
-		const { signerServiceInfo: signerServiceInfoParams, ...otherParams } =
-			params;
+		const { signerServiceInfo: signerServiceInfoParams, ...otherParams } = params;
 
-		const endpoint_region: string =
-			region || this._region || this._options.region;
-		const endpoint_service: string =
-			service || this._service || this._options.service;
+		const endpoint_region: string = region || this._region || this._options.region;
+		const endpoint_service: string = service || this._service || this._options.service;
 
 		const creds = {
 			secret_key: credentials.secretAccessKey,
@@ -379,10 +360,7 @@ export class RestClient {
 			service: endpoint_service,
 		};
 
-		const signerServiceInfo = Object.assign(
-			endpointInfo,
-			signerServiceInfoParams
-		);
+		const signerServiceInfo = Object.assign(endpointInfo, signerServiceInfoParams);
 
 		const signed_params = Signer.sign(otherParams, creds, signerServiceInfo);
 

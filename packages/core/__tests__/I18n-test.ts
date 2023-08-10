@@ -22,9 +22,7 @@ describe('I18n test', () => {
 			const i18n = new I18n(null);
 
 			i18n._lang = 'en';
-			const spyon = jest
-				.spyOn(I18n.prototype, 'getByLanguage')
-				.mockReturnValueOnce('val');
+			const spyon = jest.spyOn(I18n.prototype, 'getByLanguage').mockReturnValueOnce('val');
 
 			expect(i18n.get('key')).toBe('val');
 
@@ -35,12 +33,10 @@ describe('I18n test', () => {
 			const i18n = new I18n(null);
 
 			i18n._lang = 'en-val';
-			const spyon = jest
-				.spyOn(I18n.prototype, 'getByLanguage')
-				.mockImplementationOnce((key, lang) => {
-					if (lang === 'en-val') return null;
-					else if (lang === 'en') return 'val';
-				});
+			const spyon = jest.spyOn(I18n.prototype, 'getByLanguage').mockImplementationOnce((key, lang) => {
+				if (lang === 'en-val') return null;
+				else if (lang === 'en') return 'val';
+			});
 
 			expect(i18n.get('key')).toBe('key');
 
@@ -51,9 +47,7 @@ describe('I18n test', () => {
 			const i18n = new I18n(null);
 
 			i18n._lang = 'other';
-			const spyon = jest
-				.spyOn(I18n.prototype, 'getByLanguage')
-				.mockReturnValueOnce(null);
+			const spyon = jest.spyOn(I18n.prototype, 'getByLanguage').mockReturnValueOnce(null);
 
 			expect(i18n.get('key')).toBe('key');
 

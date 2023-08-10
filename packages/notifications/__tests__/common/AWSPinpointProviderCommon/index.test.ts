@@ -2,20 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials, StorageHelper } from '@aws-amplify/core';
-import {
-	putEvents,
-	updateEndpoint,
-} from '@aws-amplify/core/internals/aws-clients/pinpoint';
+import { putEvents, updateEndpoint } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 
 import { AWSPinpointProviderCommon } from '../../../src/common';
 
-import {
-	analyticsEvent,
-	awsPinpointConfig,
-	credentials,
-	userId,
-	userInfo,
-} from '../../../__mocks__/data';
+import { analyticsEvent, awsPinpointConfig, credentials, userId, userInfo } from '../../../__mocks__/data';
 import { mockLogger, mockStorage } from '../../../__mocks__/mocks';
 import { NotificationsSubCategory } from '../../../src/types';
 
@@ -101,10 +92,7 @@ describe('AWSPinpoint Common Provider', () => {
 			credentialsGetSpy.mockResolvedValue(null);
 
 			await provider.testInit();
-			expect(mockLogger.error).toBeCalledWith(
-				expect.stringContaining('Failed to initialize'),
-				expect.any(Error)
-			);
+			expect(mockLogger.error).toBeCalledWith(expect.stringContaining('Failed to initialize'), expect.any(Error));
 		});
 	});
 
@@ -123,9 +111,7 @@ describe('AWSPinpoint Common Provider', () => {
 		test('throws an error if credentials are empty', async () => {
 			credentialsGetSpy.mockResolvedValue(null);
 
-			await expect(
-				provider.testRecordAnalyticsEvent(analyticsEvent)
-			).rejects.toThrow();
+			await expect(provider.testRecordAnalyticsEvent(analyticsEvent)).rejects.toThrow();
 
 			expect(mockLogger.debug).toBeCalledWith('no credentials found');
 			expect(mockPutEvents).not.toBeCalled();
@@ -136,14 +122,9 @@ describe('AWSPinpoint Common Provider', () => {
 				throw new Error();
 			});
 
-			await expect(
-				provider.testRecordAnalyticsEvent(analyticsEvent)
-			).rejects.toThrow();
+			await expect(provider.testRecordAnalyticsEvent(analyticsEvent)).rejects.toThrow();
 
-			expect(mockLogger.error).toBeCalledWith(
-				expect.stringContaining('Error getting credentials'),
-				expect.any(Error)
-			);
+			expect(mockLogger.error).toBeCalledWith(expect.stringContaining('Error getting credentials'), expect.any(Error));
 			expect(mockPutEvents).not.toBeCalled();
 		});
 
@@ -152,9 +133,7 @@ describe('AWSPinpoint Common Provider', () => {
 				throw new Error();
 			});
 
-			await expect(
-				provider.testRecordAnalyticsEvent(analyticsEvent)
-			).rejects.toThrow();
+			await expect(provider.testRecordAnalyticsEvent(analyticsEvent)).rejects.toThrow();
 
 			expect(mockLogger.error).toBeCalledWith(
 				expect.stringContaining('Error recording analytics event'),
@@ -182,10 +161,7 @@ describe('AWSPinpoint Common Provider', () => {
 
 			await expect(provider.identifyUser(userId, userInfo)).rejects.toThrow();
 
-			expect(mockLogger.error).toBeCalledWith(
-				expect.stringContaining('Error identifying user'),
-				expect.any(Error)
-			);
+			expect(mockLogger.error).toBeCalledWith(expect.stringContaining('Error identifying user'), expect.any(Error));
 		});
 	});
 });

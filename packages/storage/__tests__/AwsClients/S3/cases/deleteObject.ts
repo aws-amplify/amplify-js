@@ -3,11 +3,7 @@
 
 import { deleteObject } from '../../../../src/AwsClients/S3';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
-import {
-	defaultConfig,
-	DEFAULT_RESPONSE_HEADERS,
-	expectedMetadata,
-} from './shared';
+import { defaultConfig, DEFAULT_RESPONSE_HEADERS, expectedMetadata } from './shared';
 
 // API Reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html
 const deleteObjectHappyCase: ApiFunctionalTestCase<typeof deleteObject> = [

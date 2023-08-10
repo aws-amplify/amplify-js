@@ -86,9 +86,7 @@ export class LegacyNoMetadata {
 	constructor(init: ModelInit<LegacyNoMetadata>) {}
 	static copyOf(
 		source: LegacyNoMetadata,
-		mutator: (
-			draft: MutableModel<LegacyNoMetadata>
-		) => MutableModel<LegacyNoMetadata> | void
+		mutator: (draft: MutableModel<LegacyNoMetadata>) => MutableModel<LegacyNoMetadata> | void
 	): LegacyNoMetadata {
 		return <LegacyNoMetadata>(<unknown>undefined);
 	}
@@ -111,9 +109,7 @@ export class ManagedCustomRO {
 	constructor(init: ModelInit<ManagedCustomRO>) {}
 	static copyOf(
 		source: ManagedCustomRO,
-		mutator: (
-			draft: MutableModel<ManagedCustomRO>
-		) => MutableModel<ManagedCustomRO> | void
+		mutator: (draft: MutableModel<ManagedCustomRO>) => MutableModel<ManagedCustomRO> | void
 	): ManagedCustomRO {
 		return <ManagedCustomRO>(<unknown>undefined);
 	}
@@ -132,9 +128,7 @@ export class ManagedDefaultRO {
 	constructor(init: ModelInit<ManagedDefaultRO>) {}
 	static copyOf(
 		source: ManagedDefaultRO,
-		mutator: (
-			draft: MutableModel<ManagedDefaultRO>
-		) => MutableModel<ManagedDefaultRO> | void
+		mutator: (draft: MutableModel<ManagedDefaultRO>) => MutableModel<ManagedDefaultRO> | void
 	): ManagedDefaultRO {
 		return <ManagedDefaultRO>(<unknown>undefined);
 	}
@@ -157,9 +151,7 @@ export class OptionallyManagedCustomRO {
 	constructor(init: ModelInit<OptionallyManagedCustomRO>) {}
 	static copyOf(
 		source: OptionallyManagedCustomRO,
-		mutator: (
-			draft: MutableModel<OptionallyManagedCustomRO>
-		) => MutableModel<OptionallyManagedCustomRO> | void
+		mutator: (draft: MutableModel<OptionallyManagedCustomRO>) => MutableModel<OptionallyManagedCustomRO> | void
 	): OptionallyManagedCustomRO {
 		return <OptionallyManagedCustomRO>(<unknown>undefined);
 	}
@@ -178,9 +170,7 @@ export class OptionallyManagedDefaultRO {
 	constructor(init: ModelInit<OptionallyManagedDefaultRO>) {}
 	static copyOf(
 		source: OptionallyManagedDefaultRO,
-		mutator: (
-			draft: MutableModel<OptionallyManagedDefaultRO>
-		) => MutableModel<OptionallyManagedDefaultRO> | void
+		mutator: (draft: MutableModel<OptionallyManagedDefaultRO>) => MutableModel<OptionallyManagedDefaultRO> | void
 	): OptionallyManagedDefaultRO {
 		return <OptionallyManagedDefaultRO>(<unknown>undefined);
 	}
@@ -204,9 +194,7 @@ export class CompositeCustomRO {
 	constructor(init: ModelInit<CompositeCustomRO>) {}
 	static copyOf(
 		source: CompositeCustomRO,
-		mutator: (
-			draft: MutableModel<CompositeCustomRO>
-		) => MutableModel<CompositeCustomRO> | void
+		mutator: (draft: MutableModel<CompositeCustomRO>) => MutableModel<CompositeCustomRO> | void
 	): CompositeCustomRO {
 		return <CompositeCustomRO>(<unknown>undefined);
 	}
@@ -226,9 +214,7 @@ export class CompositeDefaultRO {
 	constructor(init: ModelInit<CompositeDefaultRO>) {}
 	static copyOf(
 		source: CompositeDefaultRO,
-		mutator: (
-			draft: MutableModel<CompositeDefaultRO>
-		) => MutableModel<CompositeDefaultRO> | void
+		mutator: (draft: MutableModel<CompositeDefaultRO>) => MutableModel<CompositeDefaultRO> | void
 	): CompositeDefaultRO {
 		return <CompositeDefaultRO>(<unknown>undefined);
 	}
@@ -251,9 +237,7 @@ export class CustomIdentifierCustomRO {
 	constructor(init: ModelInit<CustomIdentifierCustomRO>) {}
 	static copyOf(
 		source: CustomIdentifierCustomRO,
-		mutator: (
-			draft: MutableModel<CustomIdentifierCustomRO>
-		) => MutableModel<CustomIdentifierCustomRO> | void
+		mutator: (draft: MutableModel<CustomIdentifierCustomRO>) => MutableModel<CustomIdentifierCustomRO> | void
 	): CustomIdentifierCustomRO {
 		return <CustomIdentifierCustomRO>(<unknown>undefined);
 	}
@@ -272,9 +256,7 @@ export class CustomIdentifierDefaultRO {
 	constructor(init: ModelInit<CustomIdentifierDefaultRO>) {}
 	static copyOf(
 		source: CustomIdentifierDefaultRO,
-		mutator: (
-			draft: MutableModel<CustomIdentifierDefaultRO>
-		) => MutableModel<CustomIdentifierDefaultRO> | void
+		mutator: (draft: MutableModel<CustomIdentifierDefaultRO>) => MutableModel<CustomIdentifierDefaultRO> | void
 	): CustomIdentifierDefaultRO {
 		return <CustomIdentifierDefaultRO>(<unknown>undefined);
 	}
@@ -292,9 +274,7 @@ export class CustomIdentifierNoRO {
 	constructor(init: ModelInit<CustomIdentifierNoRO>) {}
 	static copyOf(
 		source: CustomIdentifierNoRO,
-		mutator: (
-			draft: MutableModel<CustomIdentifierNoRO>
-		) => MutableModel<CustomIdentifierNoRO> | void
+		mutator: (draft: MutableModel<CustomIdentifierNoRO>) => MutableModel<CustomIdentifierNoRO> | void
 	): CustomIdentifierDefaultRO {
 		return undefined!;
 	}

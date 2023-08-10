@@ -4,7 +4,5 @@
 import { NativeModules } from 'react-native';
 import { PushNotificationNativeModule } from './types';
 export { PushNotificationNativeModule } from './types';
-export const {
-	AmplifyRTNPushNotification,
-}: { AmplifyRTNPushNotification?: PushNotificationNativeModule } =
+export const { AmplifyRTNPushNotification }: { AmplifyRTNPushNotification?: PushNotificationNativeModule } =
 	NativeModules;

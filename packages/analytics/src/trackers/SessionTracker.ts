@@ -3,12 +3,7 @@
 
 // the session tracker for web
 
-import {
-	ConsoleLogger as Logger,
-	Hub,
-	Constants,
-	browserOrNode,
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Hub, Constants, browserOrNode } from '@aws-amplify/core';
 import { SessionTrackOpts } from '../types';
 
 const logger = new Logger('SessionTracker');
@@ -67,9 +62,7 @@ export class SessionTracker {
 
 	private async _trackFunc() {
 		const customAttrs =
-			typeof this._config.attributes === 'function'
-				? await this._config.attributes()
-				: this._config.attributes;
+			typeof this._config.attributes === 'function' ? await this._config.attributes() : this._config.attributes;
 
 		const attributes = Object.assign({}, customAttrs);
 
@@ -130,9 +123,7 @@ export class SessionTracker {
 		}
 
 		const customAttrs =
-			typeof this._config.attributes === 'function'
-				? await this._config.attributes()
-				: this._config.attributes;
+			typeof this._config.attributes === 'function' ? await this._config.attributes() : this._config.attributes;
 
 		const attributes = Object.assign({}, customAttrs);
 
@@ -161,16 +152,8 @@ export class SessionTracker {
 			window.addEventListener('beforeunload', this._trackBeforeUnload, false);
 			this._hasEnabled = true;
 		} else if (!this._config.enable && this._hasEnabled) {
-			document.removeEventListener(
-				this._visibilityChange,
-				this._trackFunc,
-				false
-			);
-			window.removeEventListener(
-				'beforeunload',
-				this._trackBeforeUnload,
-				false
-			);
+			document.removeEventListener(this._visibilityChange, this._trackFunc, false);
+			window.removeEventListener('beforeunload', this._trackBeforeUnload, false);
 			this._hasEnabled = false;
 		}
 

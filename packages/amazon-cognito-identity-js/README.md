@@ -184,11 +184,7 @@ var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 var CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool;
 
 // ES Modules, e.g. transpiling with Babel
-import {
-	CognitoUserPool,
-	CognitoUserAttribute,
-	CognitoUser,
-} from 'amazon-cognito-identity-js';
+import { CognitoUserPool, CognitoUserAttribute, CognitoUser } from 'amazon-cognito-identity-js';
 ```
 
 **Use case 1.** Registering a user with the application. One needs to create a CognitoUserPool object by providing a UserPoolId and a ClientId and signing up by using a username, password, attribute list, and validation data.
@@ -212,27 +208,19 @@ var dataPhoneNumber = {
 	Value: '+15555555555',
 };
 var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
-var attributePhoneNumber = new AmazonCognitoIdentity.CognitoUserAttribute(
-	dataPhoneNumber
-);
+var attributePhoneNumber = new AmazonCognitoIdentity.CognitoUserAttribute(dataPhoneNumber);
 
 attributeList.push(attributeEmail);
 attributeList.push(attributePhoneNumber);
 
-userPool.signUp(
-	'username',
-	'password',
-	attributeList,
-	null,
-	function (err, result) {
-		if (err) {
-			alert(err.message || JSON.stringify(err));
-			return;
-		}
-		var cognitoUser = result.user;
-		console.log('user name is ' + cognitoUser.getUsername());
+userPool.signUp('username', 'password', attributeList, null, function (err, result) {
+	if (err) {
+		alert(err.message || JSON.stringify(err));
+		return;
 	}
-);
+	var cognitoUser = result.user;
+	console.log('user name is ' + cognitoUser.getUsername());
+});
 ```
 
 **Use case 2.** Confirming a registered, unauthenticated user using a confirmation code received via SMS.
@@ -280,9 +268,7 @@ var authenticationData = {
 	Username: 'username',
 	Password: 'password',
 };
-var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
-	authenticationData
-);
+var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
 var poolData = {
 	UserPoolId: '...', // Your user pool id here
 	ClientId: '...', // Your client id here
@@ -304,9 +290,7 @@ cognitoUser.authenticateUser(authenticationDetails, {
 			IdentityPoolId: '...', // your identity pool id here
 			Logins: {
 				// Change the key below according to the specific region your user pool is in.
-				'cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>': result
-					.getIdToken()
-					.getJwtToken(),
+				'cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>': result.getIdToken().getJwtToken(),
 			},
 		});
 
@@ -341,9 +325,7 @@ cognitoUser.getUserAttributes(function (err, result) {
 		return;
 	}
 	for (i = 0; i < result.length; i++) {
-		console.log(
-			'attribute ' + result[i].getName() + ' has value ' + result[i].getValue()
-		);
+		console.log('attribute ' + result[i].getName() + ' has value ' + result[i].getValue());
 	}
 });
 ```
@@ -433,17 +415,13 @@ cognitoUser.disableMFA(function (err, result) {
 **Use case 11.** Changing the current password for an authenticated user.
 
 ```javascript
-cognitoUser.changePassword(
-	'oldPassword',
-	'newPassword',
-	function (err, result) {
-		if (err) {
-			alert(err.message || JSON.stringify(err));
-			return;
-		}
-		console.log('call result: ' + result);
+cognitoUser.changePassword('oldPassword', 'newPassword', function (err, result) {
+	if (err) {
+		alert(err.message || JSON.stringify(err));
+		return;
 	}
-);
+	console.log('call result: ' + result);
+});
 ```
 
 **Use case 12.** Starting and completing a forgot password flow for an unauthenticated user.
@@ -562,9 +540,7 @@ if (cognitoUser != null) {
 			IdentityPoolId: '...', // your identity pool id here
 			Logins: {
 				// Change the key below according to the specific region your user pool is in.
-				'cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>': session
-					.getIdToken()
-					.getJwtToken(),
+				'cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>': session.getIdToken().getJwtToken(),
 			},
 		});
 
@@ -591,9 +567,7 @@ if (cognitoUser != null) {
 			AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 				IdentityPoolId: 'YOUR_IDENTITY_POOL_ID',
 				Logins: {
-					'cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>': result
-						.getIdToken()
-						.getJwtToken(),
+					'cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>': result.getIdToken().getJwtToken(),
 				},
 			});
 		}
@@ -728,9 +702,7 @@ cognitoUser.getUserData((err, data) => {
 		return;
 	}
 	const { PreferredMfaSetting, UserMFASettingList } = data;
-	console.log(
-		JSON.stringify({ PreferredMfaSetting, UserMFASettingList }, null, 2)
-	);
+	console.log(JSON.stringify({ PreferredMfaSetting, UserMFASettingList }, null, 2));
 });
 ```
 
@@ -798,9 +770,7 @@ var authenticationData = {
 	Username: 'username',
 	Password: 'password',
 };
-var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
-	authenticationData
-);
+var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
 var poolData = {
 	UserPoolId: '...', // Your user pool id here
 	ClientId: '...', // Your client id here
@@ -931,9 +901,9 @@ if (AWS.config.credentials.needsRefresh()) {
 		if (err) {
 			console.log(err);
 		} else {
-			AWS.config.credentials.params.Logins[
-				'cognito-idp.<YOUR-REGION>.amazonaws.com/<YOUR_USER_POOL_ID>'
-			] = session.getIdToken().getJwtToken();
+			AWS.config.credentials.params.Logins['cognito-idp.<YOUR-REGION>.amazonaws.com/<YOUR_USER_POOL_ID>'] = session
+				.getIdToken()
+				.getJwtToken();
 			AWS.config.credentials.refresh(err => {
 				if (err) {
 					console.log(err);

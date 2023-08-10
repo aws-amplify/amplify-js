@@ -43,7 +43,5 @@ export default function cryptoSecureRandomInt() {
 		}
 	}
 
-	throw new Error(
-		'Native crypto module could not be used to get secure random number.'
-	);
+	throw new Error('Native crypto module could not be used to get secure random number.');
 }

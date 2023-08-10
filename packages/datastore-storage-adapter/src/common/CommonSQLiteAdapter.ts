@@ -31,11 +31,7 @@ import {
 	QueryOne,
 	utils,
 } from '@aws-amplify/datastore';
-import {
-	CommonSQLiteDatabase,
-	ParameterizedStatement,
-	ModelInstanceMetadataWithId,
-} from './types';
+import { CommonSQLiteDatabase, ParameterizedStatement, ModelInstanceMetadataWithId } from './types';
 
 const { traverseModel, validatePredicate, isModelConstructor } = utils;
 
@@ -62,10 +58,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		theSchema: InternalSchema,
 		namespaceResolver: NamespaceResolver,
 		modelInstanceCreator: ModelInstanceCreator,
-		getModelConstructorByModelName: (
-			namsespaceName: NAMESPACES,
-			modelName: string
-		) => PersistentModelConstructor<any>
+		getModelConstructorByModelName: (namsespaceName: NAMESPACES, modelName: string) => PersistentModelConstructor<any>
 	) {
 		if (!this.initPromise) {
 			this.initPromise = new Promise((res, rej) => {
@@ -82,12 +75,8 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		this.getModelConstructorByModelName = getModelConstructorByModelName;
 
 		try {
-			const usesCPKCodegen = Object.values(
-				this.schema.namespaces.user.models
-			).some(model =>
-				Object.values(model.fields).some(
-					field => field.association?.hasOwnProperty('targetNames')
-				)
+			const usesCPKCodegen = Object.values(this.schema.namespaces.user.models).some(model =>
+				Object.values(model.fields).some(field => field.association?.hasOwnProperty('targetNames'))
 			);
 			if (usesCPKCodegen) {
 				logger.error(
@@ -114,8 +103,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		model: T,
 		condition?: ModelPredicate<T>
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
-		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T>;
+		const modelConstructor = Object.getPrototypeOf(model).constructor as PersistentModelConstructor<T>;
 		const { name: tableName } = modelConstructor;
 		const connectedModels = traverseModel(
 			modelConstructor.name,
@@ -124,11 +112,9 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			this.modelInstanceCreator,
 			this.getModelConstructorByModelName
 		);
-		const connectionStoreNames = Object.values(connectedModels).map(
-			({ modelName, item, instance }) => {
-				return { modelName, item, instance };
-			}
-		);
+		const connectionStoreNames = Object.values(connectedModels).map(({ modelName, item, instance }) => {
+			return { modelName, item, instance };
+		});
 
 		const [queryStatement, params] = queryByIdStatement(model.id, tableName);
 
@@ -158,8 +144,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			const [queryStatement, params] = queryByIdStatement(id, modelName);
 			const fromDB = await this.db.get(queryStatement, params);
 
-			const opType: OpType =
-				fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
+			const opType: OpType = fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
 
 			const saveStatement = fromDB
 				? modelUpdateStatement(instance, modelName)
@@ -176,24 +161,15 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		return result;
 	}
 
-	private async load<T>(
-		namespaceName: string,
-		srcModelName: string,
-		records: T[]
-	): Promise<T[]> {
+	private async load<T>(namespaceName: string, srcModelName: string, records: T[]): Promise<T[]> {
 		const namespace = this.schema.namespaces[namespaceName];
 		const relations = namespace.relationships[srcModelName].relationTypes;
 		const connectionTableNames = relations.map(({ modelName }) => modelName);
 
-		const modelConstructor = this.getModelConstructorByModelName(
-			namespaceName,
-			srcModelName
-		);
+		const modelConstructor = this.getModelConstructorByModelName(namespaceName, srcModelName);
 
 		if (connectionTableNames.length === 0) {
-			return records.map(record =>
-				this.modelInstanceCreator(modelConstructor, record)
-			);
+			return records.map(record => this.modelInstanceCreator(modelConstructor, record));
 		}
 
 		// Remove related-model fields. They're all `null` in the database,
@@ -217,12 +193,8 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		const { name: tableName } = modelConstructor;
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
-		const predicates =
-			predicate && ModelPredicateCreator.getPredicates(predicate);
-		const sortPredicates =
-			pagination &&
-			pagination.sort &&
-			ModelSortPredicateCreator.getPredicates(pagination.sort);
+		const predicates = predicate && ModelPredicateCreator.getPredicates(predicate);
+		const sortPredicates = pagination && pagination.sort && ModelSortPredicateCreator.getPredicates(pagination.sort);
 		const limit = pagination && pagination.limit;
 		const page = limit && pagination.page;
 
@@ -234,13 +206,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 				return record ? [record] : [];
 			}
 
-			const [queryStatement, params] = queryAllStatement(
-				tableName,
-				predicates,
-				sortPredicates,
-				limit,
-				page
-			);
+			const [queryStatement, params] = queryAllStatement(tableName, predicates, sortPredicates, limit, page);
 
 			return await this.db.getAll(queryStatement, params);
 		})();
@@ -248,25 +214,18 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
 
-	private async getById<T extends PersistentModel>(
-		tableName: string,
-		id: string
-	): Promise<T> {
+	private async getById<T extends PersistentModel>(tableName: string, id: string): Promise<T> {
 		const [queryStatement, params] = queryByIdStatement(id, tableName);
 		const record = await this.db.get<T>(queryStatement, params);
 
 		return record;
 	}
 
-	private idFromPredicate<T extends PersistentModel>(
-		predicates: PredicatesGroup<T>
-	) {
+	private idFromPredicate<T extends PersistentModel>(predicates: PredicatesGroup<T>) {
 		const { predicates: predicateObjs } = predicates;
 		const idPredicate =
 			predicateObjs.length === 1 &&
-			(predicateObjs.find(
-				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
-			) as PredicateObject<T>);
+			(predicateObjs.find(p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq') as PredicateObject<T>);
 
 		return idPredicate && idPredicate.operand;
 	}
@@ -280,8 +239,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 		const result = await this.db.get<T>(queryStatement, params);
 
-		const modelInstance =
-			result && this.modelInstanceCreator(modelConstructor, result);
+		const modelInstance = result && this.modelInstanceCreator(modelConstructor, result);
 
 		return modelInstance;
 	}
@@ -298,35 +256,23 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			const namespaceName = this.namespaceResolver(modelConstructor);
 			const { name: tableName } = modelConstructor;
 
-			const predicates =
-				condition && ModelPredicateCreator.getPredicates(condition);
+			const predicates = condition && ModelPredicateCreator.getPredicates(condition);
 
 			const queryStatement = queryAllStatement(tableName, predicates);
 			const deleteStatement = deleteByPredicateStatement(tableName, predicates);
 
-			const models = await this.db.selectAndDelete(
-				queryStatement,
-				deleteStatement
-			);
+			const models = await this.db.selectAndDelete(queryStatement, deleteStatement);
 
-			const modelInstances = await this.load(
-				namespaceName,
-				modelConstructor.name,
-				models
-			);
+			const modelInstances = await this.load(namespaceName, modelConstructor.name, models);
 
 			return [modelInstances, modelInstances];
 		} else {
 			const model = modelOrModelConstructor as T;
-			const modelConstructor = Object.getPrototypeOf(model)
-				.constructor as PersistentModelConstructor<T>;
+			const modelConstructor = Object.getPrototypeOf(model).constructor as PersistentModelConstructor<T>;
 			const { name: tableName } = modelConstructor;
 
 			if (condition) {
-				const [queryStatement, params] = queryByIdStatement(
-					model.id,
-					tableName
-				);
+				const [queryStatement, params] = queryByIdStatement(model.id, tableName);
 
 				const fromDB = await this.db.get(queryStatement, params);
 
@@ -349,18 +295,12 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 					throw new Error(msg);
 				}
 
-				const [deleteStatement, deleteParams] = deleteByIdStatement(
-					model.id,
-					tableName
-				);
+				const [deleteStatement, deleteParams] = deleteByIdStatement(model.id, tableName);
 				await this.db.save(deleteStatement, deleteParams);
 
 				return [[model], [model]];
 			} else {
-				const [deleteStatement, params] = deleteByIdStatement(
-					model.id,
-					tableName
-				);
+				const [deleteStatement, params] = deleteByIdStatement(model.id, tableName);
 				await this.db.save(deleteStatement, params);
 
 				return [[model], [model]];
@@ -395,9 +335,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 			const { id, _deleted } = item;
 
-			const { instance } = connectedModels.find(
-				({ instance }) => instance.id === id
-			);
+			const { instance } = connectedModels.find(({ instance }) => instance.id === id);
 
 			if (_deleted) {
 				// create the delete statements right away
@@ -418,17 +356,11 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 		queryResponses.forEach((response, idx) => {
 			if (response === undefined) {
-				const insertStatement = modelInsertStatement(
-					itemsToSave[idx],
-					tableName
-				);
+				const insertStatement = modelInsertStatement(itemsToSave[idx], tableName);
 				saveStatements.add(insertStatement);
 				result.push([<T>(<unknown>itemsToSave[idx]), OpType.INSERT]);
 			} else {
-				const updateStatement = modelUpdateStatement(
-					itemsToSave[idx],
-					tableName
-				);
+				const updateStatement = modelUpdateStatement(itemsToSave[idx], tableName);
 				saveStatements.add(updateStatement);
 				result.push([<T>(<unknown>itemsToSave[idx]), OpType.UPDATE]);
 			}

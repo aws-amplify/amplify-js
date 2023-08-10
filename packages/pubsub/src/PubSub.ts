@@ -3,11 +3,7 @@
 // import '../Common/Polyfills';
 import Observable from 'zen-observable-ts';
 
-import {
-	Amplify,
-	browserOrNode,
-	ConsoleLogger as Logger,
-} from '@aws-amplify/core';
+import { Amplify, browserOrNode, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { PubSubProvider, ProviderOptions } from './types';
 import { InternalPubSubClass } from './internals';
 
@@ -21,10 +17,7 @@ export class PubSubClass extends InternalPubSubClass {
 		return 'PubSub';
 	}
 
-	subscribe(
-		topics: string[] | string,
-		options?: ProviderOptions
-	): Observable<PubSubObservable> {
+	subscribe(topics: string[] | string, options?: ProviderOptions): Observable<PubSubObservable> {
 		return super.subscribe(topics, options);
 	}
 }

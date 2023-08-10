@@ -1,12 +1,6 @@
 import CognitoUserPool from '../src/CognitoUserPool';
 import Client from '../src/Client';
-import {
-	clientId,
-	userPoolId,
-	userPoolName,
-	userName,
-	password,
-} from './constants';
+import { clientId, userPoolId, userPoolName, userName, password } from './constants';
 
 describe('Constructor and accessor methods', () => {
 	const minimalData = { UserPoolId: userPoolId, ClientId: clientId };

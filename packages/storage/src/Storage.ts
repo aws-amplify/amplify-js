@@ -50,10 +50,7 @@ export class Storage extends InternalStorageClass {
 	 */
 	public cancel(request: UploadTask, message?: string): Promise<boolean>;
 	public cancel(request: Promise<any>, message?: string): void;
-	public cancel(
-		request: Promise<any> | UploadTask,
-		message?: string
-	): void | Promise<boolean> {
+	public cancel(request: Promise<any> | UploadTask, message?: string): void | Promise<boolean> {
 		return super.cancel(request, message);
 	}
 
@@ -90,9 +87,10 @@ export class Storage extends InternalStorageClass {
 		key: string,
 		config?: StorageGetConfig<T>
 	): StorageGetOutput<T>;
-	public get<
-		T extends StorageProvider | { [key: string]: any; download?: boolean },
-	>(key: string, config?: StorageGetConfig<T>): StorageGetOutput<T> {
+	public get<T extends StorageProvider | { [key: string]: any; download?: boolean }>(
+		key: string,
+		config?: StorageGetConfig<T>
+	): StorageGetOutput<T> {
 		return super.get(key, config);
 	}
 
@@ -129,10 +127,7 @@ export class Storage extends InternalStorageClass {
 	 * @param [config] - { level : private|protected|public }
 	 * @return - Promise resolves upon successful removal of the object
 	 */
-	public remove<T extends Record<string, any>>(
-		key: string,
-		config?: StorageRemoveConfig<T>
-	): StorageRemoveOutput<T>;
+	public remove<T extends Record<string, any>>(key: string, config?: StorageRemoveConfig<T>): StorageRemoveOutput<T>;
 	public remove<T extends StorageProvider = AWSS3Provider>(
 		key: string,
 		config?: StorageRemoveConfig<T>
@@ -146,10 +141,7 @@ export class Storage extends InternalStorageClass {
 	 * @param [config] - { level : private|protected|public, maxKeys: NUMBER }
 	 * @return - Promise resolves to list of keys for all objects in path
 	 */
-	public list<T extends Record<string, any>>(
-		key: string,
-		config?: StorageListConfig<T>
-	): StorageListOutput<T>;
+	public list<T extends Record<string, any>>(key: string, config?: StorageListConfig<T>): StorageListOutput<T>;
 	public list<T extends StorageProvider = AWSS3Provider>(
 		path: string,
 		config?: StorageListConfig<T>

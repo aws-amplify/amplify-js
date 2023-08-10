@@ -1,10 +1,6 @@
 import { AWSCloudWatchProvider } from '../../src/Providers/AWSCloudWatchProvider';
 import { AWSCloudWatchProviderOptions } from '../../src/types';
-import {
-	AWS_CLOUDWATCH_CATEGORY,
-	AWS_CLOUDWATCH_PROVIDER_NAME,
-	NO_CREDS_ERROR_STRING,
-} from '../../src/Util/Constants';
+import { AWS_CLOUDWATCH_CATEGORY, AWS_CLOUDWATCH_PROVIDER_NAME, NO_CREDS_ERROR_STRING } from '../../src/Util/Constants';
 import { Credentials } from '../..';
 import {
 	CloudWatchLogsClient,
@@ -31,10 +27,7 @@ const testConfig: AWSCloudWatchProviderOptions = {
 
 describe('AWSCloudWatchProvider', () => {
 	it('should initiate a timer when the provider is created', () => {
-		const timer_spy = jest.spyOn(
-			AWSCloudWatchProvider.prototype,
-			'_initiateLogPushInterval'
-		);
+		const timer_spy = jest.spyOn(AWSCloudWatchProvider.prototype, '_initiateLogPushInterval');
 		const provider = new AWSCloudWatchProvider();
 		expect(timer_spy).toBeCalled();
 	});
@@ -102,11 +95,9 @@ describe('AWSCloudWatchProvider', () => {
 
 			it('should send a valid request to the client without error', async () => {
 				const provider = new AWSCloudWatchProvider(testConfig);
-				const clientSpy = jest
-					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						return 'data';
-					});
+				const clientSpy = jest.spyOn(CloudWatchLogsClient.prototype, 'send').mockImplementationOnce(async params => {
+					return 'data';
+				});
 
 				await provider.createLogGroup(createLogGroupParams);
 				expect(clientSpy.mock.calls[0][0].input).toEqual(createLogGroupParams);
@@ -123,11 +114,9 @@ describe('AWSCloudWatchProvider', () => {
 
 			it('should send a valid request to the client without error', async () => {
 				const provider = new AWSCloudWatchProvider(testConfig);
-				const clientSpy = jest
-					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						return 'data';
-					});
+				const clientSpy = jest.spyOn(CloudWatchLogsClient.prototype, 'send').mockImplementationOnce(async params => {
+					return 'data';
+				});
 
 				await provider.createLogStream(params);
 				expect(clientSpy.mock.calls[0][0].input).toEqual(params);
@@ -143,11 +132,9 @@ describe('AWSCloudWatchProvider', () => {
 
 			it('should send a valid request to the client without error', async () => {
 				const provider = new AWSCloudWatchProvider(testConfig);
-				const clientSpy = jest
-					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						return 'data';
-					});
+				const clientSpy = jest.spyOn(CloudWatchLogsClient.prototype, 'send').mockImplementationOnce(async params => {
+					return 'data';
+				});
 
 				await provider.getLogGroups(params);
 				expect(clientSpy.mock.calls[0][0].input).toEqual(params);
@@ -164,11 +151,9 @@ describe('AWSCloudWatchProvider', () => {
 
 			it('should send a valid request to the client without error', async () => {
 				const provider = new AWSCloudWatchProvider(testConfig);
-				const clientSpy = jest
-					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						return 'data';
-					});
+				const clientSpy = jest.spyOn(CloudWatchLogsClient.prototype, 'send').mockImplementationOnce(async params => {
+					return 'data';
+				});
 
 				await provider.getLogStreams(params);
 				expect(clientSpy.mock.calls[0][0].input).toEqual(params);
@@ -211,38 +196,28 @@ describe('AWSCloudWatchProvider', () => {
 			it('should send a valid request to the client without error', async () => {
 				const params = [{ message: 'hello', timestamp: 1111 }];
 				const provider = new AWSCloudWatchProvider(testConfig);
-				const clientSpy = jest
-					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementation(async params => 'data');
+				const clientSpy = jest.spyOn(CloudWatchLogsClient.prototype, 'send').mockImplementation(async params => 'data');
 
 				provider['_currentLogBatch'] = params;
 				await provider['_safeUploadLogEvents']();
 
-				expect(clientSpy.mock.calls[0][0]).toBeInstanceOf(
-					DescribeLogGroupsCommand
-				);
+				expect(clientSpy.mock.calls[0][0]).toBeInstanceOf(DescribeLogGroupsCommand);
 				expect(clientSpy.mock.calls[0][0].input).toEqual({
 					logGroupNamePrefix: testConfig.logGroupName,
 				});
 
-				expect(clientSpy.mock.calls[1][0]).toBeInstanceOf(
-					CreateLogGroupCommand
-				);
+				expect(clientSpy.mock.calls[1][0]).toBeInstanceOf(CreateLogGroupCommand);
 				expect(clientSpy.mock.calls[1][0].input).toEqual({
 					logGroupName: testConfig.logGroupName,
 				});
 
-				expect(clientSpy.mock.calls[2][0]).toBeInstanceOf(
-					DescribeLogStreamsCommand
-				);
+				expect(clientSpy.mock.calls[2][0]).toBeInstanceOf(DescribeLogStreamsCommand);
 				expect(clientSpy.mock.calls[2][0].input).toEqual({
 					logGroupName: testConfig.logGroupName,
 					logStreamNamePrefix: testConfig.logStreamName,
 				});
 
-				expect(clientSpy.mock.calls[3][0]).toBeInstanceOf(
-					CreateLogStreamCommand
-				);
+				expect(clientSpy.mock.calls[3][0]).toBeInstanceOf(CreateLogStreamCommand);
 				expect(clientSpy.mock.calls[3][0].input).toEqual({
 					logGroupName: testConfig.logGroupName,
 					logStreamName: testConfig.logStreamName,
@@ -272,24 +247,18 @@ describe('AWSCloudWatchProvider', () => {
 				provider['_currentLogBatch'] = params;
 				await provider['_safeUploadLogEvents']();
 
-				expect(clientSpy.mock.calls[0][0]).toBeInstanceOf(
-					DescribeLogGroupsCommand
-				);
+				expect(clientSpy.mock.calls[0][0]).toBeInstanceOf(DescribeLogGroupsCommand);
 				expect(clientSpy.mock.calls[0][0].input).toEqual({
 					logGroupNamePrefix: testConfig.logGroupName,
 				});
 
-				expect(clientSpy.mock.calls[1][0]).toBeInstanceOf(
-					DescribeLogStreamsCommand
-				);
+				expect(clientSpy.mock.calls[1][0]).toBeInstanceOf(DescribeLogStreamsCommand);
 				expect(clientSpy.mock.calls[1][0].input).toEqual({
 					logGroupName: testConfig.logGroupName,
 					logStreamNamePrefix: testConfig.logStreamName,
 				});
 
-				expect(clientSpy.mock.calls[2][0]).toBeInstanceOf(
-					CreateLogStreamCommand
-				);
+				expect(clientSpy.mock.calls[2][0]).toBeInstanceOf(CreateLogStreamCommand);
 				expect(clientSpy.mock.calls[2][0].input).toEqual({
 					logGroupName: testConfig.logGroupName,
 					logStreamName: testConfig.logStreamName,
@@ -322,16 +291,12 @@ describe('AWSCloudWatchProvider', () => {
 				provider['_currentLogBatch'] = params;
 				await provider['_safeUploadLogEvents']();
 
-				expect(clientSpy.mock.calls[0][0]).toBeInstanceOf(
-					DescribeLogGroupsCommand
-				);
+				expect(clientSpy.mock.calls[0][0]).toBeInstanceOf(DescribeLogGroupsCommand);
 				expect(clientSpy.mock.calls[0][0].input).toEqual({
 					logGroupNamePrefix: testConfig.logGroupName,
 				});
 
-				expect(clientSpy.mock.calls[1][0]).toBeInstanceOf(
-					DescribeLogStreamsCommand
-				);
+				expect(clientSpy.mock.calls[1][0]).toBeInstanceOf(DescribeLogStreamsCommand);
 				expect(clientSpy.mock.calls[1][0].input).toEqual({
 					logGroupName: testConfig.logGroupName,
 					logStreamNamePrefix: testConfig.logStreamName,
@@ -370,16 +335,12 @@ describe('AWSCloudWatchProvider', () => {
 				provider['_currentLogBatch'] = params;
 				await provider['_safeUploadLogEvents']();
 
-				expect(clientSpy.mock.calls[0][0]).toBeInstanceOf(
-					DescribeLogGroupsCommand
-				);
+				expect(clientSpy.mock.calls[0][0]).toBeInstanceOf(DescribeLogGroupsCommand);
 				expect(clientSpy.mock.calls[0][0].input).toEqual({
 					logGroupNamePrefix: testConfig.logGroupName,
 				});
 
-				expect(clientSpy.mock.calls[1][0]).toBeInstanceOf(
-					DescribeLogStreamsCommand
-				);
+				expect(clientSpy.mock.calls[1][0]).toBeInstanceOf(DescribeLogStreamsCommand);
 				expect(clientSpy.mock.calls[1][0].input).toEqual({
 					logGroupName: testConfig.logGroupName,
 					logStreamNamePrefix: testConfig.logStreamName,

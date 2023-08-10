@@ -17,7 +17,5 @@ export interface PushNotificationNativeModule {
 	getBadgeCount: () => Promise<number>;
 	setBadgeCount: (count: number) => void;
 	getPermissionStatus: () => Promise<string>;
-	requestPermissions: (
-		permissions: Record<string, boolean>
-	) => Promise<boolean>;
+	requestPermissions: (permissions: Record<string, boolean>) => Promise<boolean>;
 }

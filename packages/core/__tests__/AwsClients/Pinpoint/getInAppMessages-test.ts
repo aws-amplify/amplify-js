@@ -2,11 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { fetchTransferHandler } from '../../../src/clients/handlers/fetch';
-import {
-	getInAppMessages,
-	GetInAppMessagesInput,
-	GetInAppMessagesOutput,
-} from '../../../src/AwsClients/Pinpoint';
+import { getInAppMessages, GetInAppMessagesInput, GetInAppMessagesOutput } from '../../../src/AwsClients/Pinpoint';
 import {
 	mockApplicationId,
 	mockEndpointId,
@@ -57,15 +53,10 @@ describe('Pinpoint - getInAppMessages', () => {
 				httpStatusCode: 200,
 			}),
 		};
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(successfulResponse)
-		);
+		(fetchTransferHandler as jest.Mock).mockResolvedValue(mockJsonResponse(successfulResponse));
 		const response = await getInAppMessages(pinpointHandlerOptions, params);
 		expect(response).toEqual(expectedOutput);
-		expect(fetchTransferHandler).toBeCalledWith(
-			expectedRequest,
-			expect.anything()
-		);
+		expect(fetchTransferHandler).toBeCalledWith(expectedRequest, expect.anything());
 	});
 
 	test('error case', async () => {
@@ -73,9 +64,7 @@ describe('Pinpoint - getInAppMessages', () => {
 			name: 'ForbiddenException',
 			message: mockFailureResponse.body.message,
 		};
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(mockFailureResponse)
-		);
+		(fetchTransferHandler as jest.Mock).mockResolvedValue(mockJsonResponse(mockFailureResponse));
 		expect.assertions(1);
 		try {
 			await getInAppMessages(pinpointHandlerOptions, params);

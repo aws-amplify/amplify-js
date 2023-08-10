@@ -53,10 +53,7 @@ const UPDATE_ENDPOINT = '_update_endpoint';
 const SESSION_START = '_session.start';
 const SESSION_STOP = '_session.stop';
 
-const BEACON_SUPPORTED =
-	typeof navigator !== 'undefined' &&
-	navigator &&
-	typeof navigator.sendBeacon === 'function';
+const BEACON_SUPPORTED = typeof navigator !== 'undefined' && navigator && typeof navigator.sendBeacon === 'function';
 
 // events buffer
 const BUFFER_SIZE = 1000;
@@ -145,12 +142,8 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		logger.debug('_public record', params);
 		const credentials = await this._getCredentials();
 		if (!credentials || !this._config.appId || !this._config.region) {
-			logger.debug(
-				'cannot send events without credentials, applicationId or region'
-			);
-			return handlers.reject(
-				new Error('No credentials, applicationId or region')
-			);
+			logger.debug('cannot send events without credentials, applicationId or region');
+			return handlers.reject(new Error('No credentials, applicationId or region'));
 		}
 
 		this._init(credentials);
@@ -214,8 +207,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 				break;
 			case SESSION_STOP:
 				const stopTimestamp = new Date().getTime();
-				this._sessionStartTimestamp =
-					this._sessionStartTimestamp || new Date().getTime();
+				this._sessionStartTimestamp = this._sessionStartTimestamp || new Date().getTime();
 				this._sessionId = this._sessionId || uuid();
 				event.session = {
 					Id: this._sessionId,
@@ -227,8 +219,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 				this._sessionStartTimestamp = undefined;
 				break;
 			default:
-				this._sessionStartTimestamp =
-					this._sessionStartTimestamp || new Date().getTime();
+				this._sessionStartTimestamp = this._sessionStartTimestamp || new Date().getTime();
 				this._sessionId = this._sessionId || uuid();
 				event.session = {
 					Id: this._sessionId,
@@ -295,10 +286,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 				eventParams
 			);
 
-			const { StatusCode, Message } =
-				data.EventsResponse?.Results?.[endpointId]?.EventsItemResponse?.[
-					eventId
-				] ?? {};
+			const { StatusCode, Message } = data.EventsResponse?.Results?.[endpointId]?.EventsItemResponse?.[eventId] ?? {};
 
 			if (StatusCode && ACCEPTED_CODES.includes(StatusCode)) {
 				logger.debug('record event success. ', data);
@@ -307,9 +295,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 				// TODO: v6 integrate retry to the service handler retryDecider
 				this._retry(params, handlers);
 			} else {
-				logger.error(
-					`Event ${eventId} is not accepted, the error is ${Message}`
-				);
+				logger.error(`Event ${eventId} is not accepted, the error is ${Message}`);
 				return handlers.reject(data);
 			}
 		} catch (err) {
@@ -362,12 +348,9 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			config: { resendLimit },
 		} = params;
 		// For backward compatibility
-		params.resendLimit =
-			typeof params.resendLimit === 'number' ? params.resendLimit : resendLimit;
+		params.resendLimit = typeof params.resendLimit === 'number' ? params.resendLimit : resendLimit;
 		if (params.resendLimit-- > 0) {
-			logger.debug(
-				`resending event ${params.eventName} with ${params.resendLimit} retry times left`
-			);
+			logger.debug(`resending event ${params.eventName} with ${params.resendLimit} retry times left`);
 			this._pinpointPutEvents(params, handlers);
 		} else {
 			logger.debug(`retry times used up for event ${params.eventName}`);
@@ -381,11 +364,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 		const request = this._endpointRequest(
 			config,
-			transferKeyToLowerCase(
-				event,
-				[],
-				['attributes', 'userAttributes', 'Attributes', 'UserAttributes']
-			)
+			transferKeyToLowerCase(event, [], ['attributes', 'userAttributes', 'Attributes', 'UserAttributes'])
 		);
 		const update_params: UpdateEndpointInput = {
 			ApplicationId: appId,
@@ -399,9 +378,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 				{
 					credentials,
 					region,
-					userAgentValue: getAnalyticsUserAgentString(
-						AnalyticsAction.UpdateEndpoint
-					),
+					userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.UpdateEndpoint),
 				},
 				update_params
 			);
@@ -454,10 +431,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		this._retryEndpointUpdate(endpointObject);
 	}
 
-	private _retryEndpointUpdate(
-		endpointObject: EventObject,
-		exponential: boolean = false
-	) {
+	private _retryEndpointUpdate(endpointObject: EventObject, exponential: boolean = false) {
 		logger.debug('_retryEndpointUpdate', endpointObject);
 		const { params } = endpointObject;
 
@@ -466,23 +440,18 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			config: { resendLimit },
 		} = params;
 
-		params.resendLimit =
-			typeof params.resendLimit === 'number' ? params.resendLimit : resendLimit;
+		params.resendLimit = typeof params.resendLimit === 'number' ? params.resendLimit : resendLimit;
 
 		if (params.resendLimit-- > 0) {
 			logger.debug(
 				`resending endpoint update ${params.event.eventId} with ${params.resendLimit} retry attempts remaining`
 			);
 			// insert at the front of endpointBuffer
-			this._endpointBuffer.length
-				? this._endpointBuffer.unshift(endpointObject)
-				: this._updateEndpoint(endpointObject);
+			this._endpointBuffer.length ? this._endpointBuffer.unshift(endpointObject) : this._updateEndpoint(endpointObject);
 			return;
 		}
 
-		logger.warn(
-			`resending endpoint update ${params.event.eventId} failed after ${params.config.resendLimit} attempts`
-		);
+		logger.warn(`resending endpoint update ${params.event.eventId} failed after ${params.config.resendLimit} attempts`);
 
 		if (this._endpointGenerating) {
 			logger.error('Initial endpoint update failed. ');
@@ -506,9 +475,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			return;
 		}
 
-		const identityId = this._config.credentials
-			? this._config.credentials.identityId
-			: null;
+		const identityId = this._config.credentials ? this._config.credentials.identityId : null;
 
 		this._config.credentials = credentials;
 
@@ -554,12 +521,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 	private async _getEndpointId(cacheKey) {
 		// try to get from cache
 		let endpointId = await Cache.getItem(cacheKey);
-		logger.debug(
-			'endpointId from cache',
-			endpointId,
-			'type',
-			typeof endpointId
-		);
+		logger.debug('endpointId from cache', endpointId, 'type', typeof endpointId);
 		if (!endpointId) {
 			endpointId = uuid();
 			// set a longer TTL to avoid endpoint id being deleted after the default TTL (3 days)
@@ -595,19 +557,9 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			platform: clientInfo.platform,
 		};
 		// for backward compatibility
-		const {
-			clientId,
-			appTitle,
-			appVersionName,
-			appVersionCode,
-			appPackageName,
-			...demographicByClientContext
-		} = clientContext;
-		const channelType = event.address
-			? clientInfo.platform === 'android'
-				? 'GCM'
-				: 'APNS'
-			: undefined;
+		const { clientId, appTitle, appVersionName, appVersionCode, appPackageName, ...demographicByClientContext } =
+			clientContext;
+		const channelType = event.address ? (clientInfo.platform === 'android' ? 'GCM' : 'APNS') : undefined;
 		const tmp = {
 			channelType,
 			requestId: uuid(),
@@ -633,10 +585,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 				...event.metrics,
 			},
 			user: {
-				userId:
-					event.userId ||
-					defaultEndpointConfig.userId ||
-					credentials.identityId,
+				userId: event.userId || defaultEndpointConfig.userId || credentials.identityId,
 				userAttributes: {
 					...defaultEndpointConfig.userAttributes,
 					...event.userAttributes,
@@ -645,20 +594,8 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		};
 
 		// eliminate unnecessary params
-		const {
-			userId,
-			userAttributes,
-			name,
-			session,
-			eventId,
-			immediate,
-			...ret
-		} = tmp;
-		return transferKeyToUpperCase(
-			ret,
-			[],
-			['metrics', 'userAttributes', 'attributes']
-		);
+		const { userId, userAttributes, name, session, eventId, immediate, ...ret } = tmp;
+		return transferKeyToUpperCase(ret, [], ['metrics', 'userAttributes', 'attributes']);
 	}
 
 	private _eventError(err: any) {

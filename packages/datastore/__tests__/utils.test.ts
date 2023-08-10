@@ -123,9 +123,7 @@ _version
 _lastChangedAt
 _deleted`;
 
-			expect(generateSelectionSet(namespace, modelDefinition)).toEqual(
-				selectionSet
-			);
+			expect(generateSelectionSet(namespace, modelDefinition)).toEqual(selectionSet);
 		});
 		test('explicit owner', () => {
 			const namespace: SchemaNamespace = {
@@ -245,9 +243,7 @@ _version
 _lastChangedAt
 _deleted`;
 
-			expect(generateSelectionSet(namespace, modelDefinition)).toEqual(
-				selectionSet
-			);
+			expect(generateSelectionSet(namespace, modelDefinition)).toEqual(selectionSet);
 		});
 		test('explicit custom owner', () => {
 			const namespace: SchemaNamespace = {
@@ -367,17 +363,13 @@ _version
 _lastChangedAt
 _deleted`;
 
-			expect(generateSelectionSet(namespace, modelDefinition)).toEqual(
-				selectionSet
-			);
+			expect(generateSelectionSet(namespace, modelDefinition)).toEqual(selectionSet);
 		});
 	});
 
 	describe('getModel', () => {
 		test('handles an array of auth modes', async () => {
-			const authModeStrategy: AuthModeStrategy = () => [
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-			];
+			const authModeStrategy: AuthModeStrategy = () => [GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS];
 
 			const authModes = await getModelAuthModes({
 				authModeStrategy,
@@ -397,8 +389,7 @@ _deleted`;
 		});
 
 		test('handles a string auth mode', async () => {
-			const authModeStrategy: AuthModeStrategy = () =>
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
+			const authModeStrategy: AuthModeStrategy = () => GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
 
 			const authModes = await getModelAuthModes({
 				authModeStrategy,
@@ -561,8 +552,7 @@ _deleted`;
 		test('accepts custom error handler and throws custom error', async () => {
 			expect.assertions(4);
 			const limitTimerRaceCallback = jest.fn();
-			const customErrorMsg =
-				'something went wrong with the DeferredCallbackResolver';
+			const customErrorMsg = 'something went wrong with the DeferredCallbackResolver';
 			const limitTimerRaceErrorHandler = jest.fn(err => {
 				throw new Error(customErrorMsg);
 			});

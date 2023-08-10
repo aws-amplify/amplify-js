@@ -8,8 +8,7 @@ const BASE_USER_AGENT = `aws-amplify/${version}`;
 
 export const Platform = {
 	userAgent: BASE_USER_AGENT,
-	isReactNative:
-		typeof navigator !== 'undefined' && navigator.product === 'ReactNative',
+	isReactNative: typeof navigator !== 'undefined' && navigator.product === 'ReactNative',
 };
 
 export const getUserAgent = () => {

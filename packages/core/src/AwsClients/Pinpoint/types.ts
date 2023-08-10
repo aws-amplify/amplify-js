@@ -383,9 +383,7 @@ export interface GetInAppMessagesCommandInput extends GetInAppMessagesRequest {}
  *
  * The output of {@link GetInAppMessagesCommand}.
  */
-export interface GetInAppMessagesCommandOutput
-	extends GetInAppMessagesResponse,
-		__MetadataBearer {}
+export interface GetInAppMessagesCommandOutput extends GetInAppMessagesResponse, __MetadataBearer {}
 /**
  * @public
  */
@@ -697,9 +695,7 @@ export interface PutEventsCommandInput extends PutEventsRequest {}
  *
  * The output of {@link PutEventsCommand}.
  */
-export interface PutEventsCommandOutput
-	extends PutEventsResponse,
-		__MetadataBearer {}
+export interface PutEventsCommandOutput extends PutEventsResponse, __MetadataBearer {}
 /**
  * @public
  */
@@ -783,9 +779,7 @@ export interface UpdateEndpointCommandInput extends UpdateEndpointRequest {}
  *
  * The output of {@link UpdateEndpointCommand}.
  */
-export interface UpdateEndpointCommandOutput
-	extends UpdateEndpointResponse,
-		__MetadataBearer {}
+export interface UpdateEndpointCommandOutput extends UpdateEndpointResponse, __MetadataBearer {}
 /**
  * @public
  */

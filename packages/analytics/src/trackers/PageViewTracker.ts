@@ -60,19 +60,13 @@ export class PageViewTracker {
 	}
 
 	private async _pageViewTrackDefault() {
-		if (
-			!browserOrNode().isBrowser ||
-			!window.addEventListener ||
-			!window.sessionStorage
-		) {
+		if (!browserOrNode().isBrowser || !window.addEventListener || !window.sessionStorage) {
 			logger.debug('not in the supported web enviroment');
 			return;
 		}
 		const url = this._config.getUrl();
 		const customAttrs =
-			typeof this._config.attributes === 'function'
-				? await this._config.attributes()
-				: this._config.attributes;
+			typeof this._config.attributes === 'function' ? await this._config.attributes() : this._config.attributes;
 		const attributes = Object.assign(
 			{
 				url,
@@ -95,21 +89,14 @@ export class PageViewTracker {
 	}
 
 	private async _trackFunc() {
-		if (
-			!browserOrNode().isBrowser ||
-			!window.addEventListener ||
-			!history.pushState ||
-			!window.sessionStorage
-		) {
+		if (!browserOrNode().isBrowser || !window.addEventListener || !history.pushState || !window.sessionStorage) {
 			logger.debug('not in the supported web enviroment');
 			return;
 		}
 
 		const url = this._config.getUrl();
 		const customAttrs =
-			typeof this._config.attributes === 'function'
-				? await this._config.attributes()
-				: this._config.attributes;
+			typeof this._config.attributes === 'function' ? await this._config.attributes() : this._config.attributes;
 		const attributes = Object.assign(
 			{
 				url,
@@ -132,11 +119,7 @@ export class PageViewTracker {
 	}
 
 	private _pageViewTrackSPA() {
-		if (
-			!browserOrNode().isBrowser ||
-			!window.addEventListener ||
-			!history.pushState
-		) {
+		if (!browserOrNode().isBrowser || !window.addEventListener || !history.pushState) {
 			logger.debug('not in the supported web enviroment');
 			return;
 		}

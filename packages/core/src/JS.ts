@@ -93,10 +93,7 @@ export const objectLessAttributes = (obj, less) => {
 	return ret;
 };
 
-export const filenameToContentType = (
-	filename,
-	defVal = 'application/octet-stream'
-) => {
+export const filenameToContentType = (filename, defVal = 'application/octet-stream') => {
 	const name = filename.toLowerCase();
 
 	const filtered = MIME_MAP.filter(mime => name.endsWith('.' + mime.ext));
@@ -108,17 +105,12 @@ export const isTextFile = contentType => {
 	if (type.startsWith('text/')) {
 		return true;
 	}
-	return (
-		'application/json' === type ||
-		'application/xml' === type ||
-		'application/sh' === type
-	);
+	return 'application/json' === type || 'application/xml' === type || 'application/sh' === type;
 };
 
 export const generateRandomString = () => {
 	let result = '';
-	const chars =
-		'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 	for (let i = 32; i > 0; i -= 1) {
 		result += chars[Math.floor(Math.random() * chars.length)];
 	}
@@ -157,19 +149,12 @@ export const isWebWorker = () => {
 		return false;
 	}
 	const selfContext = self as { WorkerGlobalScope? };
-	return (
-		typeof selfContext.WorkerGlobalScope !== 'undefined' &&
-		self instanceof selfContext.WorkerGlobalScope
-	);
+	return typeof selfContext.WorkerGlobalScope !== 'undefined' && self instanceof selfContext.WorkerGlobalScope;
 };
 
 export const browserOrNode = () => {
-	const isBrowser =
-		typeof window !== 'undefined' && typeof window.document !== 'undefined';
-	const isNode =
-		typeof process !== 'undefined' &&
-		process.versions != null &&
-		process.versions.node != null;
+	const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+	const isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
 
 	return {
 		isBrowser,
@@ -183,27 +168,17 @@ export const browserOrNode = () => {
  * @param {Array} whiteListForItself - whitelist itself from being transferred
  * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
  */
-export const transferKeyToLowerCase = (
-	obj,
-	whiteListForItself = [],
-	whiteListForChildren = []
-) => {
+export const transferKeyToLowerCase = (obj, whiteListForItself = [], whiteListForChildren = []) => {
 	if (!isStrictObject(obj)) return obj;
 	const ret = {};
 
 	for (const key in obj) {
 		if (obj.hasOwnProperty(key)) {
-			const transferedKey = whiteListForItself.includes(key)
-				? key
-				: key[0].toLowerCase() + key.slice(1);
+			const transferedKey = whiteListForItself.includes(key) ? key : key[0].toLowerCase() + key.slice(1);
 
 			ret[transferedKey] = whiteListForChildren.includes(key)
 				? obj[key]
-				: transferKeyToLowerCase(
-						obj[key],
-						whiteListForItself,
-						whiteListForChildren
-				  );
+				: transferKeyToLowerCase(obj[key], whiteListForItself, whiteListForChildren);
 		}
 	}
 
@@ -216,27 +191,17 @@ export const transferKeyToLowerCase = (
  * @param {Array} whiteListForItself - whitelist itself from being transferred
  * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
  */
-export const transferKeyToUpperCase = (
-	obj,
-	whiteListForItself = [],
-	whiteListForChildren = []
-) => {
+export const transferKeyToUpperCase = (obj, whiteListForItself = [], whiteListForChildren = []) => {
 	if (!isStrictObject(obj)) return obj;
 	const ret = {};
 
 	for (const key in obj) {
 		if (obj.hasOwnProperty(key)) {
-			const transferredKey = whiteListForItself.includes(key)
-				? key
-				: key[0].toUpperCase() + key.slice(1);
+			const transferredKey = whiteListForItself.includes(key) ? key : key[0].toUpperCase() + key.slice(1);
 
 			ret[transferredKey] = whiteListForChildren.includes(key)
 				? obj[key]
-				: transferKeyToUpperCase(
-						obj[key],
-						whiteListForItself,
-						whiteListForChildren
-				  );
+				: transferKeyToUpperCase(obj[key], whiteListForItself, whiteListForChildren);
 		}
 	}
 	return ret;

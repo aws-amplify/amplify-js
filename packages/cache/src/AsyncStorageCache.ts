@@ -19,9 +19,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 * @param {Object} config - the configuration of the cache
 	 */
 	constructor(config?) {
-		const cache_config = config
-			? Object.assign({}, defaultConfig, config)
-			: defaultConfig;
+		const cache_config = config ? Object.assign({}, defaultConfig, config) : defaultConfig;
 		super(cache_config);
 		this.getItem = this.getItem.bind(this);
 		this.setItem = this.setItem.bind(this);
@@ -36,10 +34,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 */
 	async _decreaseCurSizeInBytes(amount) {
 		const curSize = await this.getCacheCurSize();
-		await AsyncStorage.setItem(
-			this.cacheCurSizeKey,
-			(curSize - amount).toString()
-		);
+		await AsyncStorage.setItem(this.cacheCurSizeKey, (curSize - amount).toString());
 	}
 
 	/**
@@ -49,10 +44,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 */
 	async _increaseCurSizeInBytes(amount) {
 		const curSize = await this.getCacheCurSize();
-		await AsyncStorage.setItem(
-			this.cacheCurSizeKey,
-			(curSize + amount).toString()
-		);
+		await AsyncStorage.setItem(this.cacheCurSizeKey, (curSize + amount).toString());
 	}
 
 	/**
@@ -92,9 +84,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 * @param size - optional, the byte size of the item
 	 */
 	async _removeItem(prefixedKey, size?) {
-		const itemSize = size
-			? size
-			: JSON.parse(await AsyncStorage.getItem(prefixedKey)).byteSize;
+		const itemSize = size ? size : JSON.parse(await AsyncStorage.getItem(prefixedKey)).byteSize;
 		// first try to update the current size of the cache
 		await this._decreaseCurSizeInBytes(itemSize);
 
@@ -137,13 +127,9 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 * @return total space needed
 	 */
 	async _sizeToPop(itemSize) {
-		const spaceItemNeed =
-			(await this.getCacheCurSize()) + itemSize - this.config.capacityInBytes;
-		const cacheThresholdSpace =
-			(1 - this.config.warningThreshold) * this.config.capacityInBytes;
-		return spaceItemNeed > cacheThresholdSpace
-			? spaceItemNeed
-			: cacheThresholdSpace;
+		const spaceItemNeed = (await this.getCacheCurSize()) + itemSize - this.config.capacityInBytes;
+		const cacheThresholdSpace = (1 - this.config.warningThreshold) * this.config.capacityInBytes;
+		return spaceItemNeed > cacheThresholdSpace ? spaceItemNeed : cacheThresholdSpace;
 	}
 
 	/**
@@ -154,9 +140,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 * @return true if cache is full
 	 */
 	async _isCacheFull(itemSize) {
-		return (
-			itemSize + (await this.getCacheCurSize()) > this.config.capacityInBytes
-		);
+		return itemSize + (await this.getCacheCurSize()) > this.config.capacityInBytes;
 	}
 
 	/**
@@ -171,10 +155,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 
 		for (let i = 0; i < keyInCache.length; i += 1) {
 			const key = keyInCache[i];
-			if (
-				key.indexOf(this.config.keyPrefix) === 0 &&
-				key !== this.cacheCurSizeKey
-			) {
+			if (key.indexOf(this.config.keyPrefix) === 0 && key !== this.cacheCurSizeKey) {
 				if (await this._isExpired(key)) {
 					await this._removeItem(key);
 				} else {
@@ -246,15 +227,10 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 * @return {Prmoise}
 	 */
 	async setItem(key, value, options) {
-		logger.debug(
-			`Set item: key is ${key}, value is ${value} with options: ${options}`
-		);
+		logger.debug(`Set item: key is ${key}, value is ${value} with options: ${options}`);
 		const prefixedKey = this.config.keyPrefix + key;
 		// invalid keys
-		if (
-			prefixedKey === this.config.keyPrefix ||
-			prefixedKey === this.cacheCurSizeKey
-		) {
+		if (prefixedKey === this.config.keyPrefix || prefixedKey === this.cacheCurSizeKey) {
 			logger.warn(`Invalid key: should not be empty or 'CurSize'`);
 			return;
 		}
@@ -265,20 +241,12 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 		}
 
 		const cacheItemOptions = {
-			priority:
-				options && options.priority !== undefined
-					? options.priority
-					: this.config.defaultPriority,
-			expires:
-				options && options.expires !== undefined
-					? options.expires
-					: this.config.defaultTTL + getCurrTime(),
+			priority: options && options.priority !== undefined ? options.priority : this.config.defaultPriority,
+			expires: options && options.expires !== undefined ? options.expires : this.config.defaultTTL + getCurrTime(),
 		};
 
 		if (cacheItemOptions.priority < 1 || cacheItemOptions.priority > 5) {
-			logger.warn(
-				`Invalid parameter: priority due to out or range. It should be within 1 and 5.`
-			);
+			logger.warn(`Invalid parameter: priority due to out or range. It should be within 1 and 5.`);
 			return;
 		}
 
@@ -286,9 +254,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 
 		// check wether this item is too big;
 		if (item.byteSize > this.config.itemMaxSize) {
-			logger.warn(
-				`Item with key: ${key} you are trying to put into is too big!`
-			);
+			logger.warn(`Item with key: ${key} you are trying to put into is too big!`);
 			return;
 		}
 
@@ -334,10 +300,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 		let ret = null;
 		const prefixedKey = this.config.keyPrefix + key;
 
-		if (
-			prefixedKey === this.config.keyPrefix ||
-			prefixedKey === this.cacheCurSizeKey
-		) {
+		if (prefixedKey === this.config.keyPrefix || prefixedKey === this.cacheCurSizeKey) {
 			logger.warn(`Invalid key: should not be empty or 'CurSize'`);
 			return null;
 		}
@@ -381,10 +344,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 		logger.debug(`Remove item: key is ${key}`);
 		const prefixedKey = this.config.keyPrefix + key;
 
-		if (
-			prefixedKey === this.config.keyPrefix ||
-			prefixedKey === this.cacheCurSizeKey
-		) {
+		if (prefixedKey === this.config.keyPrefix || prefixedKey === this.cacheCurSizeKey) {
 			return;
 		}
 
@@ -449,10 +409,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 
 			const retKeys = [];
 			for (let i = 0; i < keys.length; i += 1) {
-				if (
-					keys[i].indexOf(this.config.keyPrefix) === 0 &&
-					keys[i] !== this.cacheCurSizeKey
-				) {
+				if (keys[i].indexOf(this.config.keyPrefix) === 0 && keys[i] !== this.cacheCurSizeKey) {
 					retKeys.push(keys[i].substring(this.config.keyPrefix.length));
 				}
 			}

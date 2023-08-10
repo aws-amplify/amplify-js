@@ -47,15 +47,11 @@ describe('Mutex', function () {
 	});
 
 	test('runExclusive passes result (immediate)', function () {
-		return mutex
-			.runExclusive<number>(() => 10)
-			.then(value => expect(value).toBe(10));
+		return mutex.runExclusive<number>(() => 10).then(value => expect(value).toBe(10));
 	});
 
 	test('runExclusive passes result (promise)', function () {
-		return mutex
-			.runExclusive<number>(() => Promise.resolve(10))
-			.then(value => expect(value).toBe(10));
+		return mutex.runExclusive<number>(() => Promise.resolve(10)).then(value => expect(value).toBe(10));
 	});
 
 	test('runExclusive passes rejection', function () {

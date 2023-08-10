@@ -5,10 +5,7 @@ import {
 	ConnectionState,
 } from '@aws-amplify/pubsub';
 import { PersistentModelConstructor } from '../../src';
-import {
-	initSchema as _initSchema,
-	DataStore as DataStoreInstance,
-} from '../../src/datastore/datastore';
+import { initSchema as _initSchema, DataStore as DataStoreInstance } from '../../src/datastore/datastore';
 import { SyncError } from '../../src/types';
 import { FakeGraphQLService, FakeDataStoreConnectivity } from './fakes';
 import {
@@ -58,11 +55,7 @@ type DataStoreType = typeof DataStoreInstance;
  *
  * @returns The DataStore instance and models from `testSchema`.
  */
-export function getDataStore({
-	online = false,
-	isNode = true,
-	storageAdapterFactory = () => undefined as any,
-} = {}) {
+export function getDataStore({ online = false, isNode = true, storageAdapterFactory = () => undefined as any } = {}) {
 	jest.clearAllMocks();
 	jest.resetModules();
 
@@ -192,9 +185,7 @@ export function getDataStore({
 			JS: {
 				...actual.JS,
 				browserOrNode: () => {
-					throw new Error(
-						'amplify/core::JS.browserOrNode() does not exist anymore'
-					);
+					throw new Error('amplify/core::JS.browserOrNode() does not exist anymore');
 				},
 			},
 		};
@@ -208,9 +199,7 @@ export function getDataStore({
 		DataStore: DataStoreType;
 	} = require('../../src/datastore/datastore');
 
-	let errorHandlerSubscriber: ZenObservable.SubscriptionObserver<
-		SyncError<any>
-	> | null = null;
+	let errorHandlerSubscriber: ZenObservable.SubscriptionObserver<SyncError<any>> | null = null;
 
 	const errorHandler = new Observable<SyncError<any>>(subscriber => {
 		errorHandlerSubscriber = subscriber;
@@ -231,8 +220,7 @@ export function getDataStore({
 	if (online) {
 		(DataStore as any).amplifyContext.InternalAPI = graphqlService;
 		(DataStore as any).connectivityMonitor = connectivityMonitor;
-		(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
-			'https://0.0.0.0/graphql';
+		(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint = 'https://0.0.0.0/graphql';
 	}
 
 	const schema = testSchema();

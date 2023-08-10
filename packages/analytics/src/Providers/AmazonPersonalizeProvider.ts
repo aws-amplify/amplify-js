@@ -1,17 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	ConsoleLogger as Logger,
-	Credentials,
-	browserOrNode,
-	AnalyticsAction,
-} from '@aws-amplify/core';
-import {
-	PersonalizeEventsClient,
-	PutEventsCommand,
-	PutEventsCommandInput,
-} from '@aws-sdk/client-personalize-events';
+import { ConsoleLogger as Logger, Credentials, browserOrNode, AnalyticsAction } from '@aws-amplify/core';
+import { PersonalizeEventsClient, PutEventsCommand, PutEventsCommandInput } from '@aws-sdk/client-personalize-events';
 import {
 	SessionInfo,
 	RequestParams,
@@ -47,16 +38,13 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		this._buffer = [];
 		this._config = config ? config : {};
 		this._config.flushSize =
-			this._config.flushSize > 0 &&
-			this._config.flushSize <= FLUSH_SIZE_THRESHHOLD
+			this._config.flushSize > 0 && this._config.flushSize <= FLUSH_SIZE_THRESHHOLD
 				? this._config.flushSize
 				: FLUSH_SIZE;
 		this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
 		this._sessionManager = new SessionInfoManager();
 		if (!isEmpty(this._config.trackingId)) {
-			this._sessionInfo = this._sessionManager.retrieveSessionInfo(
-				this._config.trackingId
-			);
+			this._sessionInfo = this._sessionManager.retrieveSessionInfo(this._config.trackingId);
 		}
 		this._isBrowser = browserOrNode().isBrowser;
 
@@ -99,22 +87,12 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 			);
 			return;
 		} else if (!isEmpty(params.event.userId)) {
-			this._sessionManager.updateSessionInfo(
-				params.event.userId,
-				this._sessionInfo
-			);
+			this._sessionManager.updateSessionInfo(params.event.userId, this._sessionInfo);
 		}
-		const requestParams: RequestParams = this.generateRequestParams(
-			params,
-			this._sessionInfo
-		);
+		const requestParams: RequestParams = this.generateRequestParams(params, this._sessionInfo);
 		if (eventType === 'MediaAutoTrack') {
 			if (this._isBrowser) {
-				if (
-					!isEmpty(
-						get(requestParams, 'eventData.properties.domElementId', null)
-					)
-				) {
+				if (!isEmpty(get(requestParams, 'eventData.properties.domElementId', null))) {
 					const isLoaded = await this.isElementFullyLoaded(
 						this.loadElement,
 						requestParams.eventData.properties['domElementId'],
@@ -127,9 +105,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 						logger.debug('Cannot find the media element.');
 					}
 				} else {
-					logger.debug(
-						"Missing domElementId field in 'properties' for MediaAutoTrack event type."
-					);
+					logger.debug("Missing domElementId field in 'properties' for MediaAutoTrack event type.");
 				}
 			} else {
 				logger.debug('MediaAutoTrack only for browser');
@@ -142,10 +118,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 
 	private loadElement(domId): Promise<boolean> {
 		return new Promise((resolve, reject) => {
-			if (
-				document.getElementById(domId) &&
-				document.getElementById(domId).clientHeight
-			) {
+			if (document.getElementById(domId) && document.getElementById(domId).clientHeight) {
 				return resolve(true);
 			} else {
 				return reject(true);
@@ -153,12 +126,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		});
 	}
 
-	private isElementFullyLoaded(
-		operation,
-		params,
-		delay,
-		times
-	): Promise<boolean> {
+	private isElementFullyLoaded(operation, params, delay, times): Promise<boolean> {
 		const wait = ms => new Promise(r => setTimeout(r, ms));
 		return new Promise((resolve, reject) => {
 			return operation(params)
@@ -166,15 +134,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 				.catch(reason => {
 					if (times - 1 > 0) {
 						return wait(delay)
-							.then(
-								this.isElementFullyLoaded.bind(
-									null,
-									operation,
-									params,
-									delay,
-									times - 1
-								)
-							)
+							.then(this.isElementFullyLoaded.bind(null, operation, params, delay, times - 1))
 							.then(resolve)
 							.catch(reject);
 					}
@@ -206,9 +166,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		const conf = config ? config : {};
 		this._config = Object.assign({}, this._config, conf);
 		if (!isEmpty(this._config.trackingId)) {
-			this._sessionInfo = this._sessionManager.retrieveSessionInfo(
-				this._config.trackingId
-			);
+			this._sessionInfo = this._sessionManager.retrieveSessionInfo(this._config.trackingId);
 		}
 		this._setupTimer();
 		return this._config;
@@ -251,8 +209,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 			const events: RecordEventPayload[] = [];
 			for (let i = 0; i < groupLen; i += 1) {
 				const params: RequestParams = group.shift();
-				const eventPayload: RecordEventPayload =
-					this._generateSingleRecordPayload(params, sessionInfo);
+				const eventPayload: RecordEventPayload = this._generateSingleRecordPayload(params, sessionInfo);
 				events.push(eventPayload);
 			}
 			const payload = <PutEventsCommandInput>{};
@@ -334,17 +291,12 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 	 * @private
 	 * @param params - RequestParams
 	 */
-	private _generateSingleRecordPayload(
-		params: RequestParams,
-		sessionInfo
-	): RecordEventPayload {
+	private _generateSingleRecordPayload(params: RequestParams, sessionInfo): RecordEventPayload {
 		const { eventData, sentAt } = params;
 		const trackPayload = <RecordEventPayload>{};
 		trackPayload.sentAt = sentAt;
-		trackPayload.properties =
-			eventData.properties && JSON.stringify(eventData.properties);
-		trackPayload.eventId =
-			this._sessionManager.getTimerKey() + sessionInfo.sessionId;
+		trackPayload.properties = eventData.properties && JSON.stringify(eventData.properties);
+		trackPayload.eventId = this._sessionManager.getTimerKey() + sessionInfo.sessionId;
 		trackPayload.eventType = eventData.eventType;
 		return trackPayload;
 	}

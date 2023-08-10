@@ -32,16 +32,13 @@ export interface Credentials {
  *
  * The input for {@link GetCredentialsForIdentityCommand}.
  */
-export interface GetCredentialsForIdentityCommandInput
-	extends GetCredentialsForIdentityInput {}
+export interface GetCredentialsForIdentityCommandInput extends GetCredentialsForIdentityInput {}
 /**
  * @public
  *
  * The output of {@link GetCredentialsForIdentityCommand}.
  */
-export interface GetCredentialsForIdentityCommandOutput
-	extends GetCredentialsForIdentityResponse,
-		__MetadataBearer {}
+export interface GetCredentialsForIdentityCommandOutput extends GetCredentialsForIdentityResponse, __MetadataBearer {}
 /**
  * @public
  * <p>Input to the <code>GetCredentialsForIdentity</code> action.</p>

@@ -1,15 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	IdentifyTextOutput,
-	Table,
-	KeyValue,
-	TableCell,
-	Content,
-	BoundingBox,
-	Polygon,
-	Geometry,
-} from '../types';
+import { IdentifyTextOutput, Table, KeyValue, TableCell, Content, BoundingBox, Polygon, Geometry } from '../types';
 import { Block, BlockList, TextDetectionList } from '../types/AWSTypes';
 import { makeCamelCaseArray, makeCamelCase } from './Utils';
 
@@ -29,9 +20,7 @@ function getPolygon(geometry: Geometry): Polygon {
  * @param {BlockList} source - Array containing blocks returned from Textract API.
  * @return {IdentifyTextOutput} -  Object that categorizes each block and its information.
  */
-export function categorizeRekognitionBlocks(
-	blocks: TextDetectionList
-): IdentifyTextOutput {
+export function categorizeRekognitionBlocks(blocks: TextDetectionList): IdentifyTextOutput {
 	// Skeleton IdentifyText API response. We will populate it as we iterate through blocks.
 	const response: IdentifyTextOutput = {
 		text: {
@@ -64,10 +53,7 @@ export function categorizeRekognitionBlocks(
 		}
 	});
 	// remove trailing space of fullText
-	response.text.fullText = response.text.fullText.substr(
-		0,
-		response.text.fullText.length - 1
-	);
+	response.text.fullText = response.text.fullText.substr(0, response.text.fullText.length - 1);
 	return response;
 }
 
@@ -77,9 +63,7 @@ export function categorizeRekognitionBlocks(
  * @param {BlockList} source - Array containing blocks returned from Textract API.
  * @return {IdentifyTextOutput} -  Object that categorizes each block and its information.
  */
-export function categorizeTextractBlocks(
-	blocks: BlockList
-): IdentifyTextOutput {
+export function categorizeTextractBlocks(blocks: BlockList): IdentifyTextOutput {
 	// Skeleton IdentifyText API response. We will populate it as we iterate through blocks.
 	const response: IdentifyTextOutput = {
 		text: {
@@ -126,8 +110,7 @@ export function categorizeTextractBlocks(
 				blockMap[block.Id] = block;
 				break;
 			case 'SELECTION_ELEMENT':
-				const selectionStatus =
-					block.SelectionStatus === 'SELECTED' ? true : false;
+				const selectionStatus = block.SelectionStatus === 'SELECTED' ? true : false;
 				if (!response.text.selections) response.text.selections = [];
 				response.text.selections.push({
 					selected: selectionStatus,
@@ -148,10 +131,7 @@ export function categorizeTextractBlocks(
 		}
 	});
 	// remove trailing space in fullText
-	response.text.fullText = response.text.fullText.substr(
-		0,
-		response.text.fullText.length - 1
-	);
+	response.text.fullText = response.text.fullText.substr(0, response.text.fullText.length - 1);
 
 	// Post-process complex structures if they exist.
 	if (tableBlocks.length !== 0) {
@@ -180,10 +160,7 @@ export function categorizeTextractBlocks(
  * @param {Block} table - Table block that has references (`Relationships`) to its cells
  * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
-export function constructTable(
-	table: Block,
-	blockMap: { [key: string]: Block }
-): Table {
+export function constructTable(table: Block, blockMap: { [key: string]: Block }): Table {
 	let tableMatrix: TableCell[][];
 	tableMatrix = [];
 	// visit each of the cell associated with the table's relationship.
@@ -222,10 +199,7 @@ export function constructTable(
  * @param {Block} KeyValue - KeyValue block that has references (`Relationships`) to its children.
  * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
-export function constructKeyValue(
-	keyBlock: Block,
-	blockMap: { [key: string]: Block }
-): KeyValue {
+export function constructKeyValue(keyBlock: Block, blockMap: { [key: string]: Block }): KeyValue {
 	let keyText: string = '';
 	let valueText: string = '';
 	let valueSelected: boolean;
@@ -257,10 +231,7 @@ export function constructKeyValue(
  * @param {Block}} block - Block that we want to extract contents from.
  * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
-export function extractContentsFromBlock(
-	block: Block,
-	blockMap: { [id: string]: Block }
-): Content {
+export function extractContentsFromBlock(block: Block, blockMap: { [id: string]: Block }): Content {
 	let words: string = '';
 	let isSelected: boolean;
 

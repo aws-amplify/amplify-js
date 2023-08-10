@@ -14,10 +14,7 @@ export type InAppMessageCounts = {
 	totalCount: number;
 };
 
-export type MetricsComparator = (
-	metricsVal: number,
-	eventVal: number
-) => boolean;
+export type MetricsComparator = (metricsVal: number, eventVal: number) => boolean;
 
 export enum AWSPinpointMessageEvent {
 	MESSAGE_DISPLAYED = '_inapp.message_displayed',

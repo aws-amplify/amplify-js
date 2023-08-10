@@ -56,23 +56,17 @@ describe('SQLiteUtils tests', () => {
 		it('should generate valid CREATE TABLE statements from internal schema', () => {
 			const schema: InternalSchema = internalTestSchema();
 
-			expect(generateSchemaStatements(schema)).toEqual(
-				INTERNAL_TEST_SCHEMA_STATEMENTS
-			);
+			expect(generateSchemaStatements(schema)).toEqual(INTERNAL_TEST_SCHEMA_STATEMENTS);
 		});
 	});
 
 	describe('modelCreateTableStatement', () => {
 		it('should generate a valid CREATE TABLE statement from a M:N join table model with implicit FKs', () => {
-			expect(modelCreateTableStatement(postEditorImplicit, true)).toEqual(
-				INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT
-			);
+			expect(modelCreateTableStatement(postEditorImplicit, true)).toEqual(INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT);
 		});
 
 		it('should generate a valid CREATE TABLE statement from a M:N join table model with explicit FKs', () => {
-			expect(modelCreateTableStatement(postEditorExplicit, true)).toEqual(
-				INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT
-			);
+			expect(modelCreateTableStatement(postEditorExplicit, true)).toEqual(INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT);
 		});
 
 		it('should generate a valid CREATE TABLE statement from a 1:M join table model', () => {
@@ -92,9 +86,7 @@ describe('SQLiteUtils tests', () => {
 		});
 
 		it('should extract implicitly defined groups field from model attributes', () => {
-			expect(implicitAuthFieldsForModel(groupsAuthImplicit)).toEqual([
-				'allowedGroups',
-			]);
+			expect(implicitAuthFieldsForModel(groupsAuthImplicit)).toEqual(['allowedGroups']);
 		});
 
 		it('should skip explicitly defined groups field', () => {
@@ -165,15 +157,9 @@ describe('SQLiteUtils tests', () => {
 				['Bob', 'Sm', 5, 10, 30],
 			];
 
-			expect(
-				queryAllStatement(
-					tableName,
-					predicateGroup as any,
-					sortPredicateGroup as any,
-					limit,
-					page
-				)
-			).toEqual(expected);
+			expect(queryAllStatement(tableName, predicateGroup as any, sortPredicateGroup as any, limit, page)).toEqual(
+				expected
+			);
 		});
 	});
 
@@ -185,10 +171,7 @@ describe('SQLiteUtils tests', () => {
 		});
 
 		it('should generate valid SELECT statement for query last', () => {
-			const expected = [
-				`SELECT * FROM Model ORDER BY _rowid_ DESC LIMIT 1`,
-				[],
-			];
+			const expected = [`SELECT * FROM Model ORDER BY _rowid_ DESC LIMIT 1`, []];
 
 			expect(queryOneStatement(QueryOne.LAST, 'Model')).toEqual(expected);
 		});
@@ -275,10 +258,7 @@ describe('SQLiteUtils tests', () => {
 				],
 			};
 
-			const expected = [
-				`WHERE ("firstName" = ? AND instr("lastName", ?) = 1 AND "sortOrder" > ?)`,
-				['Bob', 'Sm', 5],
-			];
+			const expected = [`WHERE ("firstName" = ? AND instr("lastName", ?) = 1 AND "sortOrder" > ?)`, ['Bob', 'Sm', 5]];
 
 			expect(whereClauseFromPredicate(predicateGroup as any)).toEqual(expected);
 		});
@@ -294,9 +274,7 @@ describe('SQLiteUtils tests', () => {
 
 			const expected = [`instr("name", ?) = 1`, ['%']];
 
-			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
-				expected
-			);
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(expected);
 		});
 		it('should generate valid `contains` condition from predicate object', () => {
 			const predicate = {
@@ -307,9 +285,7 @@ describe('SQLiteUtils tests', () => {
 
 			const expected = [`instr("name", ?) > 0`, ['%']];
 
-			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
-				expected
-			);
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(expected);
 		});
 		it('should generate valid `notContains` condition from predicate object', () => {
 			const predicate = {
@@ -320,9 +296,7 @@ describe('SQLiteUtils tests', () => {
 
 			const expected = [`instr("name", ?) = 0`, ['%']];
 
-			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
-				expected
-			);
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(expected);
 		});
 		it('should generate valid `between` condition from predicate object', () => {
 			const predicate = {
@@ -333,9 +307,7 @@ describe('SQLiteUtils tests', () => {
 
 			const expected = [`"name" BETWEEN ? AND ?`, ['a', 'b']];
 
-			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
-				expected
-			);
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(expected);
 		});
 	});
 
@@ -369,9 +341,7 @@ describe('SQLiteUtils tests', () => {
 
 			const expected = 'ORDER BY "sortOrder" ASC, _rowid_ ASC';
 
-			expect(orderByClauseFromSort(sortPredicateGroup as any)).toEqual(
-				expected
-			);
+			expect(orderByClauseFromSort(sortPredicateGroup as any)).toEqual(expected);
 		});
 
 		it('should generate valid ORDER BY clause from pagination sort - multi field', () => {
@@ -388,9 +358,7 @@ describe('SQLiteUtils tests', () => {
 
 			const expected = 'ORDER BY "sortOrder" ASC, "lastName" DESC, _rowid_ ASC';
 
-			expect(orderByClauseFromSort(sortPredicateGroup as any)).toEqual(
-				expected
-			);
+			expect(orderByClauseFromSort(sortPredicateGroup as any)).toEqual(expected);
 		});
 	});
 
@@ -425,14 +393,9 @@ describe('SQLiteUtils tests', () => {
 				],
 			};
 
-			const expected = [
-				'DELETE FROM "Model" WHERE ("createdAt" > ?)',
-				['2021-06-20'],
-			];
+			const expected = ['DELETE FROM "Model" WHERE ("createdAt" > ?)', ['2021-06-20']];
 
-			expect(
-				deleteByPredicateStatement('Model', predicateGroup as any)
-			).toEqual(expected);
+			expect(deleteByPredicateStatement('Model', predicateGroup as any)).toEqual(expected);
 		});
 	});
 });

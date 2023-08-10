@@ -5,12 +5,8 @@ import { ApiAction, Category } from '@aws-amplify/core';
 
 describe('API test', () => {
 	test('configure', () => {
-		jest
-			.spyOn(RestAPIClass.prototype, 'configure')
-			.mockReturnValue({ restapi: 'configured' });
-		jest
-			.spyOn(InternalGraphQLAPIClass.prototype, 'configure')
-			.mockReturnValue({ graphqlapi: 'configured' });
+		jest.spyOn(RestAPIClass.prototype, 'configure').mockReturnValue({ restapi: 'configured' });
+		jest.spyOn(InternalGraphQLAPIClass.prototype, 'configure').mockReturnValue({ graphqlapi: 'configured' });
 		const api = new API(null);
 		expect(api.configure(null)).toStrictEqual({
 			graphqlapi: 'configured',
@@ -19,9 +15,7 @@ describe('API test', () => {
 	});
 
 	test('get', async () => {
-		const spy = jest
-			.spyOn(RestAPIClass.prototype, 'get')
-			.mockResolvedValue('getResponse');
+		const spy = jest.spyOn(RestAPIClass.prototype, 'get').mockResolvedValue('getResponse');
 		const api = new API(null);
 		expect(await api.get(null, null, null)).toBe('getResponse');
 
@@ -34,9 +28,7 @@ describe('API test', () => {
 	});
 
 	test('post', async () => {
-		const spy = jest
-			.spyOn(RestAPIClass.prototype, 'post')
-			.mockResolvedValue('postResponse');
+		const spy = jest.spyOn(RestAPIClass.prototype, 'post').mockResolvedValue('postResponse');
 		const api = new API(null);
 		expect(await api.post(null, null, null)).toBe('postResponse');
 
@@ -49,9 +41,7 @@ describe('API test', () => {
 	});
 
 	test('put', async () => {
-		const spy = jest
-			.spyOn(RestAPIClass.prototype, 'put')
-			.mockResolvedValue('putResponse');
+		const spy = jest.spyOn(RestAPIClass.prototype, 'put').mockResolvedValue('putResponse');
 		const api = new API(null);
 		expect(await api.put(null, null, null)).toBe('putResponse');
 
@@ -64,9 +54,7 @@ describe('API test', () => {
 	});
 
 	test('patch', async () => {
-		const spy = jest
-			.spyOn(RestAPIClass.prototype, 'patch')
-			.mockResolvedValue('patchResponse');
+		const spy = jest.spyOn(RestAPIClass.prototype, 'patch').mockResolvedValue('patchResponse');
 		const api = new API(null);
 		expect(await api.patch(null, null, null)).toBe('patchResponse');
 
@@ -85,9 +73,7 @@ describe('API test', () => {
 	});
 
 	test('head', async () => {
-		const spy = jest
-			.spyOn(RestAPIClass.prototype, 'head')
-			.mockResolvedValue('headResponse');
+		const spy = jest.spyOn(RestAPIClass.prototype, 'head').mockResolvedValue('headResponse');
 		const api = new API(null);
 		expect(await api.head(null, null, null)).toBe('headResponse');
 
@@ -100,9 +86,7 @@ describe('API test', () => {
 	});
 
 	test('endpoint', async () => {
-		jest
-			.spyOn(RestAPIClass.prototype, 'endpoint')
-			.mockResolvedValue('endpointResponse');
+		jest.spyOn(RestAPIClass.prototype, 'endpoint').mockResolvedValue('endpointResponse');
 		const api = new API(null);
 		expect(await api.endpoint(null)).toBe('endpointResponse');
 	});
@@ -112,15 +96,11 @@ describe('API test', () => {
 			.spyOn(InternalGraphQLAPIClass.prototype, 'getGraphqlOperationType')
 			.mockReturnValueOnce('getGraphqlOperationTypeResponse' as any);
 		const api = new API(null);
-		expect(api.getGraphqlOperationType(null)).toBe(
-			'getGraphqlOperationTypeResponse'
-		);
+		expect(api.getGraphqlOperationType(null)).toBe('getGraphqlOperationTypeResponse');
 	});
 
 	test('graphql', async () => {
-		const spy = jest
-			.spyOn(InternalGraphQLAPIClass.prototype, 'graphql')
-			.mockResolvedValue('grapqhqlResponse' as any);
+		const spy = jest.spyOn(InternalGraphQLAPIClass.prototype, 'graphql').mockResolvedValue('grapqhqlResponse' as any);
 		const api = new API(null);
 		expect(await api.graphql({ query: 'query' })).toBe('grapqhqlResponse');
 
@@ -132,15 +112,9 @@ describe('API test', () => {
 
 	describe('cancel', () => {
 		test('cancel RestAPI request', async () => {
-			jest
-				.spyOn(InternalGraphQLAPIClass.prototype, 'hasCancelToken')
-				.mockImplementation(() => false);
-			const restAPICancelSpy = jest
-				.spyOn(RestAPIClass.prototype, 'cancel')
-				.mockImplementation(() => true);
-			jest
-				.spyOn(RestAPIClass.prototype, 'hasCancelToken')
-				.mockImplementation(() => true);
+			jest.spyOn(InternalGraphQLAPIClass.prototype, 'hasCancelToken').mockImplementation(() => false);
+			const restAPICancelSpy = jest.spyOn(RestAPIClass.prototype, 'cancel').mockImplementation(() => true);
+			jest.spyOn(RestAPIClass.prototype, 'hasCancelToken').mockImplementation(() => true);
 			const api = new API(null);
 			const request = Promise.resolve();
 			expect(api.cancel(request)).toBe(true);
@@ -148,15 +122,11 @@ describe('API test', () => {
 		});
 
 		test('cancel GraphQLAPI request', async () => {
-			jest
-				.spyOn(InternalGraphQLAPIClass.prototype, 'hasCancelToken')
-				.mockImplementation(() => true);
+			jest.spyOn(InternalGraphQLAPIClass.prototype, 'hasCancelToken').mockImplementation(() => true);
 			const graphQLAPICancelSpy = jest
 				.spyOn(InternalGraphQLAPIClass.prototype, 'cancel')
 				.mockImplementation(() => true);
-			jest
-				.spyOn(RestAPIClass.prototype, 'hasCancelToken')
-				.mockImplementation(() => false);
+			jest.spyOn(RestAPIClass.prototype, 'hasCancelToken').mockImplementation(() => false);
 			const api = new API(null);
 			const request = Promise.resolve();
 			expect(api.cancel(request)).toBe(true);

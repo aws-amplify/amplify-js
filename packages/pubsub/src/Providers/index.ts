@@ -7,8 +7,4 @@ export {
 	ObserverQuery,
 } from './AWSAppSyncRealTimeProvider';
 export { AWSIoTProvider, AWSIoTProviderOptions } from './AWSIotProvider';
-export {
-	MqttProviderOptions,
-	MqttOverWSProvider,
-	mqttTopicMatch,
-} from './MqttOverWSProvider';
+export { MqttProviderOptions, MqttOverWSProvider, mqttTopicMatch } from './MqttOverWSProvider';

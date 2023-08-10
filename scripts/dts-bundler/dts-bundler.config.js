@@ -9,31 +9,9 @@ const outputConfig = {
 	noBanner: true,
 };
 
-const baseTsConfigPath = join(
-	__dirname,
-	'..',
-	'..',
-	'packages',
-	'tsconfig.base.json'
-);
-const corePackageSrcClientsPath = join(
-	__dirname,
-	'..',
-	'..',
-	'packages',
-	'core',
-	'src',
-	'AwsClients'
-);
-const storagePackageSrcClientsPath = join(
-	__dirname,
-	'..',
-	'..',
-	'packages',
-	'storage',
-	'src',
-	'AwsClients'
-);
+const baseTsConfigPath = join(__dirname, '..', '..', 'packages', 'tsconfig.base.json');
+const corePackageSrcClientsPath = join(__dirname, '..', '..', 'packages', 'core', 'src', 'AwsClients');
+const storagePackageSrcClientsPath = join(__dirname, '..', '..', 'packages', 'storage', 'src', 'AwsClients');
 
 /** @type import('dts-bundle-generator/config-schema').BundlerConfig */
 const config = {

@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Endpoint,
-	HttpRequest,
-	HttpResponse,
-	parseMetadata,
-} from '@aws-amplify/core/internals/aws-client-utils';
+import { Endpoint, HttpRequest, HttpResponse, parseMetadata } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import { MetadataBearer } from '@aws-sdk/types';
 import type { CopyObjectCommandInput } from './types';
@@ -48,10 +43,7 @@ export type CopyObjectInput = Pick<
 
 export type CopyObjectOutput = MetadataBearer;
 
-const copyObjectSerializer = async (
-	input: CopyObjectInput,
-	endpoint: Endpoint
-): Promise<HttpRequest> => {
+const copyObjectSerializer = async (input: CopyObjectInput, endpoint: Endpoint): Promise<HttpRequest> => {
 	const headers = {
 		...(await serializeObjectConfigsToHeaders(input)),
 		...assignStringVariables({
@@ -68,9 +60,7 @@ const copyObjectSerializer = async (
 	};
 };
 
-const copyObjectDeserializer = async (
-	response: HttpResponse
-): Promise<CopyObjectOutput> => {
+const copyObjectDeserializer = async (response: HttpResponse): Promise<CopyObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
 		throw error;
@@ -82,9 +72,7 @@ const copyObjectDeserializer = async (
 	}
 };
 
-export const copyObject = composeServiceApi(
-	s3TransferHandler,
-	copyObjectSerializer,
-	copyObjectDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
-);
+export const copyObject = composeServiceApi(s3TransferHandler, copyObjectSerializer, copyObjectDeserializer, {
+	...defaultConfig,
+	responseType: 'text',
+});

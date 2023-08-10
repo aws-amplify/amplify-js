@@ -24,21 +24,9 @@
 		"triple-equals": [true, "allow-null-check"],
 		"comment-format": [true, "check-space"],
 		"indent": [false],
-		"whitespace": [
-			false,
-			"check-branch",
-			"check-decl",
-			"check-operator",
-			"check-preblock"
-		],
+		"whitespace": [false, "check-branch", "check-decl", "check-operator", "check-preblock"],
 		"eofline": true,
-		"variable-name": [
-			true,
-			"check-format",
-			"allow-pascal-case",
-			"allow-snake-case",
-			"allow-leading-underscore"
-		],
+		"variable-name": [true, "check-format", "allow-pascal-case", "allow-snake-case", "allow-leading-underscore"],
 		"semicolon": [true, "always", "ignore-interfaces"]
 	},
 	"rulesDirectory": []

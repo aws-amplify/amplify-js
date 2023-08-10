@@ -16,11 +16,9 @@ const mockHubDispatch = Hub.dispatch as jest.Mock;
 
 jest.useFakeTimers();
 
-const record_spyon = jest
-	.spyOn(AWSAnalyticsProvider.prototype, 'record')
-	.mockImplementation((params, handlers) => {
-		return handlers.resolve();
-	});
+const record_spyon = jest.spyOn(AWSAnalyticsProvider.prototype, 'record').mockImplementation((params, handlers) => {
+	return handlers.resolve();
+});
 
 /**
  * CAUTION: This mock class implements a publicly available interface `AnalyticsProvider` which customers can use to
@@ -164,10 +162,7 @@ describe('Analytics test', () => {
 
 			analytics.addPluggable(customProvider);
 
-			const recordResponse = await analytics.record(
-				{ name: 'testEvent' },
-				'CustomProvider'
-			);
+			const recordResponse = await analytics.record({ name: 'testEvent' }, 'CustomProvider');
 
 			expect(customProviderRecordSpy).toBeCalled();
 			expect(recordResponse).toBe(true);
@@ -207,9 +202,7 @@ describe('Analytics test', () => {
 			const provider = new AWSAnalyticsProvider();
 			analytics.addPluggable(provider);
 
-			expect(analytics.getPluggable(provider.getProviderName())).toBeInstanceOf(
-				AWSAnalyticsProvider
-			);
+			expect(analytics.getPluggable(provider.getProviderName())).toBeInstanceOf(AWSAnalyticsProvider);
 		});
 	});
 

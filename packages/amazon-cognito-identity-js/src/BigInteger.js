@@ -425,10 +425,7 @@ function bnpSquareTo(r) {
 	while (--i >= 0) r[i] = 0;
 	for (i = 0; i < x.t - 1; ++i) {
 		var c = x.am(i, x[i], r, 2 * i, 0, 1);
-		if (
-			(r[i + x.t] += x.am(i + 1, 2 * x[i], r, 2 * i + 1, c, x.t - i - 1)) >=
-			x.DV
-		) {
+		if ((r[i + x.t] += x.am(i + 1, 2 * x[i], r, 2 * i + 1, c, x.t - i - 1)) >= x.DV) {
 			r[i + x.t] -= x.DV;
 			r[i + x.t + 1] = 1;
 		}
@@ -483,8 +480,7 @@ function bnpDivRemTo(m, q, r) {
 	while (y.t < ys) y[y.t++] = 0;
 	while (--j >= 0) {
 		// Estimate quotient digit
-		var qd =
-			r[--i] == y0 ? this.DM : Math.floor(r[i] * d1 + (r[i - 1] + e) * d2);
+		var qd = r[--i] == y0 ? this.DM : Math.floor(r[i] * d1 + (r[i - 1] + e) * d2);
 		if ((r[i] += y.am(0, qd, r, j, 0, ys)) < qd) {
 			// Try it out
 			y.dlShiftTo(j, t);
@@ -650,10 +646,7 @@ function montReduce(x) {
 	for (var i = 0; i < this.m.t; ++i) {
 		// faster way of calculating u0 = x[i]*mp mod DV
 		var j = x[i] & 0x7fff;
-		var u0 =
-			(j * this.mpl +
-				(((j * this.mph + (x[i] >> 15) * this.mpl) & this.um) << 15)) &
-			x.DM;
+		var u0 = (j * this.mpl + (((j * this.mph + (x[i] >> 15) * this.mpl) & this.um) << 15)) & x.DM;
 		// use am to combine the multiply-shift-add into one call
 		j = i + this.m.t;
 		x[j] += this.m.am(0, u0, x, i, 0, this.m.t);

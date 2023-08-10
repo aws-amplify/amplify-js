@@ -12,11 +12,7 @@ import camelcaseKeys from 'camelcase-keys';
 
 import { GeoClass } from '../src/Geo';
 import { AmazonLocationServiceProvider } from '../src/Providers/AmazonLocationServiceProvider';
-import {
-	Coordinates,
-	SearchByCoordinatesOptions,
-	SearchByTextOptions,
-} from '../src/types';
+import { Coordinates, SearchByCoordinatesOptions, SearchByTextOptions } from '../src/types';
 
 import {
 	credentials,
@@ -30,17 +26,10 @@ import {
 	batchGeofencesCamelcaseResults,
 } from './testData';
 
-import {
-	mockBatchPutGeofenceCommand,
-	mockGetGeofenceCommand,
-	mockListGeofencesCommand,
-} from './testUtils';
+import { mockBatchPutGeofenceCommand, mockGetGeofenceCommand, mockListGeofencesCommand } from './testUtils';
 
 LocationClient.prototype.send = jest.fn(async command => {
-	if (
-		command instanceof SearchPlaceIndexForTextCommand ||
-		command instanceof SearchPlaceIndexForPositionCommand
-	) {
+	if (command instanceof SearchPlaceIndexForTextCommand || command instanceof SearchPlaceIndexForPositionCommand) {
 		return {
 			Results: [
 				{
@@ -94,9 +83,7 @@ describe('Geo', () => {
 			const provider = new AmazonLocationServiceProvider();
 			geo.addPluggable(provider);
 
-			expect(geo.getPluggable(provider.getProviderName())).toBeInstanceOf(
-				AmazonLocationServiceProvider
-			);
+			expect(geo.getPluggable(provider.getProviderName())).toBeInstanceOf(AmazonLocationServiceProvider);
 		});
 
 		test('removePluggable', () => {
@@ -105,9 +92,7 @@ describe('Geo', () => {
 			geo.addPluggable(provider);
 			geo.removePluggable(provider.getProviderName());
 
-			expect(() => geo.getPluggable(provider.getProviderName())).toThrow(
-				'No plugin found in Geo for the provider'
-			);
+			expect(() => geo.getPluggable(provider.getProviderName())).toThrow('No plugin found in Geo for the provider');
 		});
 	});
 
@@ -115,9 +100,7 @@ describe('Geo', () => {
 		test('creates the proper default provider', () => {
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
-			expect(geo.getPluggable('AmazonLocationService')).toBeInstanceOf(
-				AmazonLocationServiceProvider
-			);
+			expect(geo.getPluggable('AmazonLocationService')).toBeInstanceOf(AmazonLocationServiceProvider);
 		});
 	});
 
@@ -143,12 +126,8 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
-			expect(() => geo.getAvailableMaps()).toThrow(
-				'No plugin found in Geo for the provider'
-			);
-			expect(() => geo.getDefaultMap()).toThrow(
-				'No plugin found in Geo for the provider'
-			);
+			expect(() => geo.getAvailableMaps()).toThrow('No plugin found in Geo for the provider');
+			expect(() => geo.getDefaultMap()).toThrow('No plugin found in Geo for the provider');
 		});
 
 		test('should tell you if there are no available map resources', () => {
@@ -205,8 +184,7 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 
 			const mapName = awsConfig.geo.amazon_location_service.maps.default;
-			const style =
-				awsConfig.geo.amazon_location_service.maps.items[mapName].style;
+			const style = awsConfig.geo.amazon_location_service.maps.items[mapName].style;
 			const region = awsConfig.geo.amazon_location_service.region;
 			const testMap = { mapName, style, region };
 
@@ -323,9 +301,7 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
-			await expect(geo.searchByText(testString)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
-			);
+			await expect(geo.searchByText(testString)).rejects.toThrow('No plugin found in Geo for the provider');
 		});
 	});
 
@@ -361,9 +337,7 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
-			await expect(geo.searchByPlaceId(testPlaceId)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
-			);
+			await expect(geo.searchByPlaceId(testPlaceId)).rejects.toThrow('No plugin found in Geo for the provider');
 		});
 	});
 
@@ -470,9 +444,7 @@ describe('Geo', () => {
 				searchAreaConstraints: [123, 456, 789, 321],
 			};
 
-			await expect(
-				geo.searchForSuggestions(testString, searchOptions)
-			).rejects.toThrow(
+			await expect(geo.searchForSuggestions(testString, searchOptions)).rejects.toThrow(
 				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
 			);
 		});
@@ -486,9 +458,7 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
-			await expect(geo.searchForSuggestions(testString)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
-			);
+			await expect(geo.searchForSuggestions(testString)).rejects.toThrow('No plugin found in Geo for the provider');
 		});
 	});
 
@@ -526,10 +496,7 @@ describe('Geo', () => {
 				maxResults: 40,
 				searchIndexName: 'geoJSSearchCustomExample',
 			};
-			const results = await geo.searchByCoordinates(
-				testCoordinates,
-				searchOptions
-			);
+			const results = await geo.searchByCoordinates(testCoordinates, searchOptions);
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
@@ -550,9 +517,7 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
-			await expect(geo.searchByCoordinates(testCoordinates)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
-			);
+			await expect(geo.searchByCoordinates(testCoordinates)).rejects.toThrow('No plugin found in Geo for the provider');
 		});
 	});
 
@@ -562,9 +527,7 @@ describe('Geo', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementationOnce(mockBatchPutGeofenceCommand);
+			LocationClient.prototype.send = jest.fn().mockImplementationOnce(mockBatchPutGeofenceCommand);
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
@@ -595,9 +558,7 @@ describe('Geo', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementation(mockBatchPutGeofenceCommand);
+			LocationClient.prototype.send = jest.fn().mockImplementation(mockBatchPutGeofenceCommand);
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
@@ -608,9 +569,7 @@ describe('Geo', () => {
 
 			// Expect that the API was called the right amount of times
 			const expectedNumberOfCalls = Math.floor(validGeofences.length / 10) + 1;
-			expect(LocationClient.prototype.send).toHaveBeenCalledTimes(
-				expectedNumberOfCalls
-			);
+			expect(LocationClient.prototype.send).toHaveBeenCalledTimes(expectedNumberOfCalls);
 		});
 
 		test('should fail if there is no provider', async () => {
@@ -622,9 +581,7 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
-			await expect(geo.saveGeofences(validGeofence1)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
-			);
+			await expect(geo.saveGeofences(validGeofence1)).rejects.toThrow('No plugin found in Geo for the provider');
 		});
 	});
 
@@ -634,9 +591,7 @@ describe('Geo', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementationOnce(mockGetGeofenceCommand);
+			LocationClient.prototype.send = jest.fn().mockImplementationOnce(mockGetGeofenceCommand);
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
@@ -669,9 +624,7 @@ describe('Geo', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementationOnce(mockListGeofencesCommand);
+			LocationClient.prototype.send = jest.fn().mockImplementationOnce(mockListGeofencesCommand);
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
@@ -686,9 +639,7 @@ describe('Geo', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementation(mockListGeofencesCommand);
+			LocationClient.prototype.send = jest.fn().mockImplementation(mockListGeofencesCommand);
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
@@ -702,12 +653,8 @@ describe('Geo', () => {
 			});
 
 			expect(second100Geofences.entries.length).toEqual(100);
-			expect(second100Geofences.entries[0].geofenceId).toEqual(
-				'validGeofenceId100'
-			);
-			expect(second100Geofences.entries[99].geofenceId).toEqual(
-				'validGeofenceId199'
-			);
+			expect(second100Geofences.entries[0].geofenceId).toEqual('validGeofenceId100');
+			expect(second100Geofences.entries[99].geofenceId).toEqual('validGeofenceId199');
 		});
 	});
 });

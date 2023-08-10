@@ -33,11 +33,7 @@ import {
 	ModelAttributes,
 	isPredicateGroup,
 } from '../types';
-import {
-	extractPrimaryKeyFieldNames,
-	establishRelationAndKeys,
-	IDENTIFIER_KEY_SEPARATOR,
-} from '../util';
+import { extractPrimaryKeyFieldNames, establishRelationAndKeys, IDENTIFIER_KEY_SEPARATOR } from '../util';
 import { MutationEvent } from './';
 
 const logger = new Logger('DataStore');
@@ -63,9 +59,7 @@ const dummyMetadata: ModelInstanceMetadata = {
 	_deleted: undefined!,
 };
 
-const metadataFields = <(keyof ModelInstanceMetadata)[]>(
-	Object.keys(dummyMetadata)
-);
+const metadataFields = <(keyof ModelInstanceMetadata)[]>Object.keys(dummyMetadata);
 export function getMetadataFields(): ReadonlyArray<string> {
 	return metadataFields;
 }
@@ -76,10 +70,7 @@ export function generateSelectionSet(
 ): string {
 	const scalarFields = getScalarFields(modelDefinition);
 	const nonModelFields = getNonModelFields(namespace, modelDefinition);
-	const implicitOwnerField = getImplicitOwnerField(
-		modelDefinition,
-		scalarFields
-	);
+	const implicitOwnerField = getImplicitOwnerField(modelDefinition, scalarFields);
 
 	let scalarAndMetadataFields = Object.values(scalarFields)
 		.map(({ name }) => name)
@@ -97,10 +88,7 @@ export function generateSelectionSet(
 	return result;
 }
 
-function getImplicitOwnerField(
-	modelDefinition: SchemaModel | SchemaNonModel,
-	scalarFields: ModelFields
-) {
+function getImplicitOwnerField(modelDefinition: SchemaModel | SchemaNonModel, scalarFields: ModelFields) {
 	const ownerFields = getOwnerFields(modelDefinition);
 
 	if (!scalarFields.owner && ownerFields.includes('owner')) {
@@ -109,9 +97,7 @@ function getImplicitOwnerField(
 	return [];
 }
 
-function getOwnerFields(
-	modelDefinition: SchemaModel | SchemaNonModel
-): string[] {
+function getOwnerFields(modelDefinition: SchemaModel | SchemaNonModel): string[] {
 	const ownerFields: string[] = [];
 	if (isSchemaModelWithAttributes(modelDefinition)) {
 		modelDefinition.attributes!.forEach(attr => {
@@ -126,9 +112,7 @@ function getOwnerFields(
 	return ownerFields;
 }
 
-function getScalarFields(
-	modelDefinition: SchemaModel | SchemaNonModel
-): ModelFields {
+function getScalarFields(modelDefinition: SchemaModel | SchemaNonModel): ModelFields {
 	const { fields } = modelDefinition;
 
 	const result = Object.values(fields)
@@ -149,10 +133,7 @@ function getScalarFields(
 }
 
 // Used for generating the selection set for queries and mutations
-function getConnectionFields(
-	modelDefinition: SchemaModel,
-	namespace: SchemaNamespace
-): string[] {
+function getConnectionFields(modelDefinition: SchemaModel, namespace: SchemaNamespace): string[] {
 	const result: string[] = [];
 
 	Object.values(modelDefinition.fields)
@@ -172,12 +153,9 @@ function getConnectionFields(
 							// Need to retrieve relations in order to get connected model keys
 							const [relations] = establishRelationAndKeys(namespace);
 
-							const connectedModelName =
-								modelDefinition.fields[name].type['model'];
+							const connectedModelName = modelDefinition.fields[name].type['model'];
 
-							const byPkIndex = relations[connectedModelName].indexes.find(
-								([name]) => name === 'byPk'
-							);
+							const byPkIndex = relations[connectedModelName].indexes.find(([name]) => name === 'byPk');
 							const keyFields = byPkIndex && byPkIndex[1];
 							const keyFieldSelectionSet = keyFields?.join(' ');
 
@@ -197,18 +175,13 @@ function getConnectionFields(
 	return result;
 }
 
-function getNonModelFields(
-	namespace: SchemaNamespace,
-	modelDefinition: SchemaModel | SchemaNonModel
-): string[] {
+function getNonModelFields(namespace: SchemaNamespace, modelDefinition: SchemaModel | SchemaNonModel): string[] {
 	const result: string[] = [];
 
 	Object.values(modelDefinition.fields).forEach(({ name, type }) => {
 		if (isNonModelFieldType(type)) {
 			const typeDefinition = namespace.nonModels![type.nonModel];
-			const scalarFields = Object.values(getScalarFields(typeDefinition)).map(
-				({ name }) => name
-			);
+			const scalarFields = Object.values(getScalarFields(typeDefinition)).map(({ name }) => name);
 
 			const nested: string[] = [];
 			Object.values(typeDefinition.fields).forEach(field => {
@@ -216,9 +189,7 @@ function getNonModelFields(
 
 				if (isNonModelFieldType(type)) {
 					const typeDefinition = namespace.nonModels![type.nonModel];
-					nested.push(
-						`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`
-					);
+					nested.push(`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`);
 				}
 			});
 
@@ -229,9 +200,7 @@ function getNonModelFields(
 	return result;
 }
 
-export function getAuthorizationRules(
-	modelDefinition: SchemaModel
-): AuthorizationRule[] {
+export function getAuthorizationRules(modelDefinition: SchemaModel): AuthorizationRule[] {
 	// Searching for owner authorization on attributes
 	const authConfig = ([] as ModelAttributes)
 		.concat(modelDefinition.attributes || [])
@@ -280,13 +249,11 @@ export function getAuthorizationRules(
 				.find(attr => attr && attr.type === 'model');
 
 			// find the subscriptions level. ON is default
-			const { properties: { subscriptions: { level = 'on' } = {} } = {} } =
-				modelConfig || {};
+			const { properties: { subscriptions: { level = 'on' } = {} } = {} } = modelConfig || {};
 
 			// treat subscriptions as public for owner auth with unprotected reads
 			// when `read` is omitted from `operations`
-			authRule.areSubscriptionsPublic =
-				!operations.includes('read') || level === 'public';
+			authRule.areSubscriptionsPublic = !operations.includes('read') || level === 'public';
 		}
 
 		if (isOwnerAuth) {
@@ -360,8 +327,7 @@ export function buildGraphQLOperation(
 		case 'LIST':
 			operation = `sync${pluralTypeName}`;
 			documentArgs = `($limit: Int, $nextToken: String, $lastSync: AWSTimestamp, $filter: Model${typeName}FilterInput)`;
-			operationArgs =
-				'(limit: $limit, nextToken: $nextToken, lastSync: $lastSync, filter: $filter)';
+			operationArgs = '(limit: $limit, nextToken: $nextToken, lastSync: $lastSync, filter: $filter)';
 			selectionSet = `items {
 							${selectionSet}
 						}
@@ -409,9 +375,7 @@ export function buildGraphQLOperation(
 	];
 }
 
-export function createMutationInstanceFromModelOperation<
-	T extends PersistentModel,
->(
+export function createMutationInstanceFromModelOperation<T extends PersistentModel>(
 	relationships: RelationshipType,
 	modelDefinition: SchemaModel,
 	opType: OpType,
@@ -672,9 +636,7 @@ export function countFilterCombinations(group?: PredicatesGroup<any>): number {
  * ] }
  * ```
  */
-export function repeatedFieldInGroup(
-	group?: PredicatesGroup<any>
-): string | null {
+export function repeatedFieldInGroup(group?: PredicatesGroup<any>): string | null {
 	if (!group || !Array.isArray(group.predicates)) return null;
 
 	// convert to filter in order to flatten redundant groups
@@ -706,14 +668,10 @@ export function repeatedFieldInGroup(
 		}
 
 		// field value will be single object
-		const predicateObjects = values.filter(
-			v => !Array.isArray(Object.values(v)[0])
-		);
+		const predicateObjects = values.filter(v => !Array.isArray(Object.values(v)[0]));
 
 		// group value will be an array
-		const predicateGroups = values.filter(v =>
-			Array.isArray(Object.values(v)[0])
-		);
+		const predicateGroups = values.filter(v => Array.isArray(Object.values(v)[0]));
 
 		if (key === 'and') {
 			const repeatedField = hasGroupRepeatedFields(predicateObjects);
@@ -794,10 +752,7 @@ export function generateRTFRemediation(
 	}
 }
 
-export function getUserGroupsFromToken(
-	token: { [field: string]: any },
-	rule: AuthorizationRule
-): string[] {
+export function getUserGroupsFromToken(token: { [field: string]: any }, rule: AuthorizationRule): string[] {
 	// validate token against groupClaim
 	let userGroups: string[] | string = token[rule.groupClaim] || [];
 
@@ -864,15 +819,10 @@ export async function getModelAuthModes({
 }
 
 export function getForbiddenError(error) {
-	const forbiddenErrorMessages = [
-		'Request failed with status code 401',
-		'Request failed with status code 403',
-	];
+	const forbiddenErrorMessages = ['Request failed with status code 401', 'Request failed with status code 403'];
 	let forbiddenError;
 	if (error && error.errors) {
-		forbiddenError = (error.errors as [any]).find(err =>
-			forbiddenErrorMessages.includes(err.message)
-		);
+		forbiddenError = (error.errors as [any]).find(err => forbiddenErrorMessages.includes(err.message));
 	} else if (error && error.message) {
 		forbiddenError = error;
 	}
@@ -886,11 +836,7 @@ export function getForbiddenError(error) {
 export function getClientSideAuthError(error) {
 	const clientSideAuthErrors = Object.values(GraphQLAuthError);
 	const clientSideError =
-		error &&
-		error.message &&
-		clientSideAuthErrors.find(clientError =>
-			error.message.includes(clientError)
-		);
+		error && error.message && clientSideAuthErrors.find(clientError => error.message.includes(clientError));
 	return clientSideError || null;
 }
 
@@ -899,17 +845,13 @@ export async function getTokenForCustomAuth(
 	amplifyConfig: Record<string, any> = {}
 ): Promise<string | undefined> {
 	if (authMode === GRAPHQL_AUTH_MODE.AWS_LAMBDA) {
-		const {
-			authProviders: { functionAuthProvider } = { functionAuthProvider: null },
-		} = amplifyConfig;
+		const { authProviders: { functionAuthProvider } = { functionAuthProvider: null } } = amplifyConfig;
 		if (functionAuthProvider && typeof functionAuthProvider === 'function') {
 			try {
 				const { token } = await functionAuthProvider();
 				return token;
 			} catch (error) {
-				throw new Error(
-					`Error retrieving token from \`functionAuthProvider\`: ${error}`
-				);
+				throw new Error(`Error retrieving token from \`functionAuthProvider\`: ${error}`);
 			}
 		} else {
 			// TODO: add docs link once available

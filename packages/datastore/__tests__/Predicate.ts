@@ -1,8 +1,4 @@
-import {
-	predicateFor,
-	recursivePredicateFor,
-	internals,
-} from '../src/predicates/next';
+import { predicateFor, recursivePredicateFor, internals } from '../src/predicates/next';
 import {
 	PersistentModel,
 	PersistentModelConstructor,
@@ -11,19 +7,9 @@ import {
 	SchemaModel,
 	Schema,
 } from '../src/types';
-import {
-	ModelPredicateCreator,
-	PredicateAll,
-	Predicates as V1Predicates,
-} from '../src/predicates';
-import {
-	validatePredicate as flatPredicateMatches,
-	asyncFilter,
-} from '../src/util';
-import {
-	predicateToGraphQLCondition,
-	predicateToGraphQLFilter,
-} from '../src/sync/utils';
+import { ModelPredicateCreator, PredicateAll, Predicates as V1Predicates } from '../src/predicates';
+import { validatePredicate as flatPredicateMatches, asyncFilter } from '../src/util';
+import { predicateToGraphQLCondition, predicateToGraphQLFilter } from '../src/sync/utils';
 import { schema, Author, Post, Blog, BlogOwner, Person } from './model';
 import { AsyncCollection } from '../src';
 
@@ -84,9 +70,7 @@ function getStorageFake(collections) {
 				return baseSet;
 			} else {
 				const predicates = ModelPredicateCreator.getPredicates(predicate)!;
-				return baseSet.filter(item =>
-					flatPredicateMatches(item, 'and', [predicates])
-				);
+				return baseSet.filter(item => flatPredicateMatches(item, 'and', [predicates]));
 			}
 		},
 	};
@@ -94,32 +78,18 @@ function getStorageFake(collections) {
 
 describe('Predicates', () => {
 	describe('validate arguments by throwing exceptions for', () => {
-		[
-			'eq',
-			'ne',
-			'gt',
-			'ge',
-			'lt',
-			'le',
-			'beginsWith',
-			'contains',
-			'notContains',
-		].forEach(operator => {
+		['eq', 'ne', 'gt', 'ge', 'lt', 'le', 'beginsWith', 'contains', 'notContains'].forEach(operator => {
 			describe(`\`${operator}\` when`, () => {
 				test('no argument is given', () => {
 					expect(() => {
 						recursivePredicateFor(AuthorMeta).name[operator]();
-					}).toThrow(
-						`Incorrect usage of \`${operator}()\`: Exactly 1 argument is required.`
-					);
+					}).toThrow(`Incorrect usage of \`${operator}()\`: Exactly 1 argument is required.`);
 				});
 
 				test('too many arguments are given', () => {
 					expect(() => {
 						recursivePredicateFor(AuthorMeta).name[operator]('a', 'b');
-					}).toThrow(
-						`Incorrect usage of \`${operator}()\`: Exactly 1 argument is required.`
-					);
+					}).toThrow(`Incorrect usage of \`${operator}()\`: Exactly 1 argument is required.`);
 				});
 			});
 		});
@@ -129,18 +99,14 @@ describe('Predicates', () => {
 				expect(() => {
 					// @ts-ignore
 					recursivePredicateFor(AuthorMeta).name.between();
-				}).toThrow(
-					'Incorrect usage of `between()`: Exactly 2 arguments are required.'
-				);
+				}).toThrow('Incorrect usage of `between()`: Exactly 2 arguments are required.');
 			});
 
 			test('only one bound is given', async () => {
 				expect(() => {
 					// @ts-ignore
 					recursivePredicateFor(AuthorMeta).name.between('z');
-				}).toThrow(
-					'Incorrect usage of `between()`: Exactly 2 arguments are required.'
-				);
+				}).toThrow('Incorrect usage of `between()`: Exactly 2 arguments are required.');
 			});
 
 			test('lowerbound > upperbound', async () => {
@@ -155,9 +121,7 @@ describe('Predicates', () => {
 				expect(() => {
 					// @ts-ignore
 					recursivePredicateFor(AuthorMeta).name.between('a', 'b', 'c');
-				}).toThrow(
-					'Incorrect usage of `between()`: Exactly 2 arguments are required.'
-				);
+				}).toThrow('Incorrect usage of `between()`: Exactly 2 arguments are required.');
 			});
 		});
 	});
@@ -172,35 +136,28 @@ describe('Predicates', () => {
 
 	describe('on local properties ', () => {
 		const getFlatAuthorsArrayFixture = () => {
-			return [
-				'Adam West',
-				'Bob Jones',
-				'Clarice Starling',
-				'Debbie Donut',
-				'Zelda from the Legend of Zelda',
-			].map((name, index) => {
-				return new Author({
-					name,
+			return ['Adam West', 'Bob Jones', 'Clarice Starling', 'Debbie Donut', 'Zelda from the Legend of Zelda'].map(
+				(name, index) => {
+					return new Author({
+						name,
 
-					// [true, false, true, false, true]
-					isActive: index % 2 === 0,
+						// [true, false, true, false, true]
+						isActive: index % 2 === 0,
 
-					// [0, .25, .5, .75, 1]
-					rating: index / 4,
+						// [0, .25, .5, .75, 1]
+						rating: index / 4,
 
-					// [0, 1, 2, 3, 4]
-					karma: index,
-				});
-			});
+						// [0, 1, 2, 3, 4]
+						karma: index,
+					});
+				}
+			);
 		};
 
 		[
 			{
 				name: 'filters',
-				execute: async <T>(query: any) =>
-					asyncFilter(getFlatAuthorsArrayFixture(), i =>
-						internals(query).matches(i)
-					),
+				execute: async <T>(query: any) => asyncFilter(getFlatAuthorsArrayFixture(), i => internals(query).matches(i)),
 			},
 			{
 				name: 'storage predicates',
@@ -219,11 +176,8 @@ describe('Predicates', () => {
 
 				describe('on string fields', () => {
 					test('match on eq', async () => {
-						const query =
-							recursivePredicateFor(AuthorMeta).name.eq('Adam West');
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).name.eq('Adam West');
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -235,12 +189,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on eq - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.eq('Adam West')
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.eq('Adam West'));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -252,11 +202,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on ne', async () => {
-						const query =
-							recursivePredicateFor(AuthorMeta).name.ne('Adam West');
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).name.ne('Adam West');
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -268,12 +215,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on ne - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.ne('Adam West')
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.ne('Adam West'));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -285,11 +228,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on gt', async () => {
-						const query =
-							recursivePredicateFor(AuthorMeta).name.gt('Clarice Starling');
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).name.gt('Clarice Starling');
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -301,12 +241,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on gt - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.gt('Clarice Starling')
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.gt('Clarice Starling'));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -318,11 +254,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on ge', async () => {
-						const query =
-							recursivePredicateFor(AuthorMeta).name.ge('Clarice Starling');
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).name.ge('Clarice Starling');
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -334,12 +267,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on ge - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.ge('Clarice Starling')
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.ge('Clarice Starling'));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -351,11 +280,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on lt', async () => {
-						const query =
-							recursivePredicateFor(AuthorMeta).name.lt('Clarice Starling');
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).name.lt('Clarice Starling');
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -367,12 +293,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on lt - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.lt('Clarice Starling')
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.lt('Clarice Starling'));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -384,11 +306,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on le', async () => {
-						const query =
-							recursivePredicateFor(AuthorMeta).name.le('Clarice Starling');
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).name.le('Clarice Starling');
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -400,12 +319,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on le - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.le('Clarice Starling')
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.le('Clarice Starling'));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -417,11 +332,8 @@ describe('Predicates', () => {
 					});
 
 					test('match beginsWith', async () => {
-						const query =
-							recursivePredicateFor(AuthorMeta).name.beginsWith('Debbie');
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).name.beginsWith('Debbie');
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -433,12 +345,8 @@ describe('Predicates', () => {
 					});
 
 					test('match beginsWith - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.beginsWith('Debbie')
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.beginsWith('Debbie'));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -452,13 +360,8 @@ describe('Predicates', () => {
 					test('match between an outer inclusive range', async () => {
 						// `0` is immediately before `A`
 						// `{` is immediately after `z`
-						const query = recursivePredicateFor(AuthorMeta).name.between(
-							'0',
-							'{'
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).name.between('0', '{');
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(m => m.name)).toEqual([
 							'Adam West',
@@ -472,24 +375,15 @@ describe('Predicates', () => {
 					test('match between an outer inclusive range - NEGATED', async () => {
 						// `0` is immediately before `A`
 						// `{` is immediately after `z`
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.between('0', '{')
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.between('0', '{'));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(0);
 					});
 
 					test('match between with equality at both ends', async () => {
-						const query = recursivePredicateFor(AuthorMeta).name.between(
-							'Bob Jones',
-							'Debbie Donut'
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).name.between('Bob Jones', 'Debbie Donut');
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -501,12 +395,8 @@ describe('Predicates', () => {
 					});
 
 					test('match between with equality at both ends - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.between('Bob Jones', 'Debbie Donut')
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.between('Bob Jones', 'Debbie Donut'));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -518,13 +408,8 @@ describe('Predicates', () => {
 					});
 
 					test('match between an inner range', async () => {
-						const query = recursivePredicateFor(AuthorMeta).name.between(
-							'Az',
-							'E'
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).name.between('Az', 'E');
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -536,12 +421,8 @@ describe('Predicates', () => {
 					});
 
 					test('match between an inner range - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.between('Az', 'E')
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.between('Az', 'E'));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -553,34 +434,22 @@ describe('Predicates', () => {
 					});
 
 					test('match nothing between a mismatching range', async () => {
-						const query = recursivePredicateFor(AuthorMeta).name.between(
-							'{',
-							'}'
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).name.between('{', '}');
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(0);
 					});
 
 					test('match nothing between a mismatching range - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.between('{', '}')
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.between('{', '}'));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(5);
 					});
 
 					test('match contains', async () => {
-						const query =
-							recursivePredicateFor(AuthorMeta).name.contains('Jones');
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).name.contains('Jones');
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -592,12 +461,8 @@ describe('Predicates', () => {
 					});
 
 					test('match contains - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.contains('Jones')
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.contains('Jones'));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -609,11 +474,8 @@ describe('Predicates', () => {
 					});
 
 					test('match notContains', async () => {
-						const query =
-							recursivePredicateFor(AuthorMeta).name.notContains('Jones');
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).name.notContains('Jones');
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -625,12 +487,8 @@ describe('Predicates', () => {
 					});
 
 					test('match notContains - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.notContains('Jones')
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.notContains('Jones'));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -645,9 +503,7 @@ describe('Predicates', () => {
 				describe('on boolean fields', () => {
 					test('match on eq', async () => {
 						const query = recursivePredicateFor(AuthorMeta).isActive.eq(true);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -659,12 +515,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on eq - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.eq(true)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.isActive.eq(true));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -677,9 +529,7 @@ describe('Predicates', () => {
 
 					test('match on ne', async () => {
 						const query = recursivePredicateFor(AuthorMeta).isActive.ne(true);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -691,12 +541,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on ne - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.ne(true)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.isActive.ne(true));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -709,29 +555,21 @@ describe('Predicates', () => {
 
 					test('match on gt true', async () => {
 						const query = recursivePredicateFor(AuthorMeta).isActive.gt(true);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.length).toBe(0);
 					});
 
 					test('match on gt true - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.gt(true)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.isActive.gt(true));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.length).toBe(5);
 					});
 
 					test('match on gt false', async () => {
 						const query = recursivePredicateFor(AuthorMeta).isActive.gt(false);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -743,12 +581,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on gt false - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.gt(false)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.isActive.gt(false));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -760,12 +594,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on ge true - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.ge(true)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.isActive.ge(true));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -778,29 +608,21 @@ describe('Predicates', () => {
 
 					test('match on ge false', async () => {
 						const query = recursivePredicateFor(AuthorMeta).isActive.ge(false);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.length).toBe(5);
 					});
 
 					test('match on ge false - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.ge(false)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.isActive.ge(false));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.length).toBe(0);
 					});
 
 					test('match on lt true', async () => {
 						const query = recursivePredicateFor(AuthorMeta).isActive.lt(true);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -812,12 +634,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on lt true - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.lt(true)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.isActive.lt(true));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -830,49 +648,35 @@ describe('Predicates', () => {
 
 					test('match on lt false', async () => {
 						const query = recursivePredicateFor(AuthorMeta).isActive.lt(false);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.length).toBe(0);
 					});
 
 					test('match on lt false - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.lt(false)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.isActive.lt(false));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.length).toBe(5);
 					});
 
 					test('match on le true', async () => {
 						const query = recursivePredicateFor(AuthorMeta).isActive.le(true);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.length).toBe(5);
 					});
 
 					test('match on le true - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.le(true)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.isActive.le(true));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.length).toBe(0);
 					});
 
 					test('match on le false', async () => {
 						const query = recursivePredicateFor(AuthorMeta).isActive.le(false);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -884,12 +688,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on le false - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.le(false)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.isActive.le(false));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -904,9 +704,7 @@ describe('Predicates', () => {
 				describe('on int fields', () => {
 					test('match on eq', async () => {
 						const query = recursivePredicateFor(AuthorMeta).karma.eq(3);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -918,12 +716,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on eq - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.eq(3)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.karma.eq(3));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -936,9 +730,7 @@ describe('Predicates', () => {
 
 					test('match on ne', async () => {
 						const query = recursivePredicateFor(AuthorMeta).karma.ne(3);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -950,12 +742,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on ne - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.ne(3)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.karma.ne(3));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -968,9 +756,7 @@ describe('Predicates', () => {
 
 					test('match on gt', async () => {
 						const query = recursivePredicateFor(AuthorMeta).karma.gt(3);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -982,12 +768,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on gt - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.gt(3)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.karma.gt(3));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -1000,9 +782,7 @@ describe('Predicates', () => {
 
 					test('match on ge', async () => {
 						const query = recursivePredicateFor(AuthorMeta).karma.ge(3);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -1014,12 +794,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on ge - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.ge(3)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.karma.ge(3));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -1032,9 +808,7 @@ describe('Predicates', () => {
 
 					test('match on lt', async () => {
 						const query = recursivePredicateFor(AuthorMeta).karma.lt(3);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -1046,12 +820,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on lt - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.lt(3)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.karma.lt(3));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -1064,9 +834,7 @@ describe('Predicates', () => {
 
 					test('match on le', async () => {
 						const query = recursivePredicateFor(AuthorMeta).karma.le(3);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -1078,12 +846,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on le - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.le(3)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.karma.le(3));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -1096,9 +860,7 @@ describe('Predicates', () => {
 
 					test('match on between', async () => {
 						const query = recursivePredicateFor(AuthorMeta).karma.between(1, 3);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -1110,12 +872,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on between - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.between(1, 3)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.karma.between(1, 3));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -1130,9 +888,7 @@ describe('Predicates', () => {
 				describe('on float fields', () => {
 					test('match on eq', async () => {
 						const query = recursivePredicateFor(AuthorMeta).rating.eq(0.75);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -1144,12 +900,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on eq - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.eq(0.75)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.rating.eq(0.75));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -1162,9 +914,7 @@ describe('Predicates', () => {
 
 					test('match on ne', async () => {
 						const query = recursivePredicateFor(AuthorMeta).rating.ne(0.75);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -1176,12 +926,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on ne - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.ne(0.75)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.rating.ne(0.75));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -1194,9 +940,7 @@ describe('Predicates', () => {
 
 					test('match on gt', async () => {
 						const query = recursivePredicateFor(AuthorMeta).rating.gt(0.75);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -1208,12 +952,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on gt - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.gt(0.75)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.rating.gt(0.75));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -1226,9 +966,7 @@ describe('Predicates', () => {
 
 					test('match on ge', async () => {
 						const query = recursivePredicateFor(AuthorMeta).rating.ge(0.75);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -1240,12 +978,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on ge - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.ge(0.75)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.rating.ge(0.75));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -1258,9 +992,7 @@ describe('Predicates', () => {
 
 					test('match on lt', async () => {
 						const query = recursivePredicateFor(AuthorMeta).rating.lt(0.75);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -1272,12 +1004,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on lt - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.lt(0.75)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.rating.lt(0.75));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -1290,9 +1018,7 @@ describe('Predicates', () => {
 
 					test('match on le', async () => {
 						const query = recursivePredicateFor(AuthorMeta).rating.le(0.75);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -1304,12 +1030,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on le - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.le(0.75)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.rating.le(0.75));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -1321,13 +1043,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on between', async () => {
-						const query = recursivePredicateFor(AuthorMeta).rating.between(
-							0.25,
-							0.75
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).rating.between(0.25, 0.75);
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							// 'Adam West',
@@ -1339,12 +1056,8 @@ describe('Predicates', () => {
 					});
 
 					test('match on between - NEGATED', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.between(0.25, 0.75)
-						);
-						const matches = await mechanism.execute<
-							ModelOf<ModelOf<typeof Author>>
-						>(query);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.rating.between(0.25, 0.75));
+						const matches = await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
 
 						expect(matches.map(n => n.name)).toEqual([
 							'Adam West',
@@ -1361,9 +1074,7 @@ describe('Predicates', () => {
 						expect(() =>
 							// @ts-expect-error doesn't work until TS 3.9 ... until then:
 							// @ts-ignore
-							recursivePredicateFor(AuthorMeta).not(a => [
-								a.name.contains('Bob'),
-							])
+							recursivePredicateFor(AuthorMeta).not(a => [a.name.contains('Bob')])
 						).toThrow(
 							"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`."
 						);
@@ -1374,9 +1085,7 @@ describe('Predicates', () => {
 							// @ts-expect-error doesn't work until TS 3.9 ... until then:
 							// @ts-ignore
 							recursivePredicateFor(AuthorMeta).and(a => a.name.contains('Bob'))
-						).toThrow(
-							'Invalid predicate. `and` groups must return an array of child conditions.'
-						);
+						).toThrow('Invalid predicate. `and` groups must return an array of child conditions.');
 					});
 
 					test('or group builders must return array of child conditions - recursive/relational predicates', async () => {
@@ -1384,9 +1093,7 @@ describe('Predicates', () => {
 							// @ts-expect-error doesn't work until TS 3.9 ... until then:
 							// @ts-ignore
 							recursivePredicateFor(AuthorMeta).or(a => a.name.contains('Bob'))
-						).toThrow(
-							'Invalid predicate. `or` groups must return an array of child conditions.'
-						);
+						).toThrow('Invalid predicate. `or` groups must return an array of child conditions.');
 					});
 
 					test('not group builders must return single child condition - flat predicates', async () => {
@@ -1404,9 +1111,7 @@ describe('Predicates', () => {
 							// @ts-expect-error doesn't work until TS 3.9 ... until then:
 							// @ts-ignore
 							predicateFor(AuthorMeta).and(a => a.name.contains('Bob'))
-						).toThrow(
-							'Invalid predicate. `and` groups must return an array of child conditions.'
-						);
+						).toThrow('Invalid predicate. `and` groups must return an array of child conditions.');
 					});
 
 					test('or group builders must return array of child conditions - flat predicates', async () => {
@@ -1414,9 +1119,7 @@ describe('Predicates', () => {
 							// @ts-expect-error doesn't work until TS 3.9 ... until then:
 							// @ts-ignore
 							predicateFor(AuthorMeta).or(a => a.name.contains('Bob'))
-						).toThrow(
-							'Invalid predicate. `or` groups must return an array of child conditions.'
-						);
+						).toThrow('Invalid predicate. `or` groups must return an array of child conditions.');
 					});
 				});
 
@@ -1426,9 +1129,7 @@ describe('Predicates', () => {
 							a.name.contains('Bob'),
 							a.name.contains('Jones'),
 						]);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(1);
 						expect(matches[0].name).toBe('Bob Jones');
@@ -1436,14 +1137,9 @@ describe('Predicates', () => {
 
 					test('can perform and() logic, matching an item - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(negated =>
-							negated.and(a => [
-								a.name.contains('Bob'),
-								a.name.contains('Jones'),
-							])
+							negated.and(a => [a.name.contains('Bob'), a.name.contains('Jones')])
 						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(4);
 						expect(matches.map(n => n.name)).not.toContain('Bob Jones');
@@ -1454,53 +1150,33 @@ describe('Predicates', () => {
 							a.name.contains('Adam'),
 							a.name.contains('Donut'),
 						]);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(0);
 					});
 
 					test('can perform and() logic, matching no items - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(negated =>
-							negated.and(a => [
-								a.name.contains('Adam'),
-								a.name.contains('Donut'),
-							])
+							negated.and(a => [a.name.contains('Adam'), a.name.contains('Donut')])
 						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(5);
 					});
 
 					test('can perform or() logic, matching different items', async () => {
-						const query = recursivePredicateFor(AuthorMeta).or(a => [
-							a.name.contains('Bob'),
-							a.name.contains('Donut'),
-						]);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).or(a => [a.name.contains('Bob'), a.name.contains('Donut')]);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(2);
-						expect(matches.map(m => m.name)).toEqual([
-							'Bob Jones',
-							'Debbie Donut',
-						]);
+						expect(matches.map(m => m.name)).toEqual(['Bob Jones', 'Debbie Donut']);
 					});
 
 					test('can perform or() logic, matching different items - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(negated =>
-							negated.or(a => [
-								a.name.contains('Bob'),
-								a.name.contains('Donut'),
-							])
+							negated.or(a => [a.name.contains('Bob'), a.name.contains('Donut')])
 						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(3);
 						expect(matches.map(m => m.name)).not.toContain('Bob Jones');
@@ -1508,13 +1184,8 @@ describe('Predicates', () => {
 					});
 
 					test('can perform or() logic, matching a single item', async () => {
-						const query = recursivePredicateFor(AuthorMeta).or(a => [
-							a.name.contains('Bob'),
-							a.name.contains('Jones'),
-						]);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).or(a => [a.name.contains('Bob'), a.name.contains('Jones')]);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(1);
 						expect(matches[0].name).toEqual('Bob Jones');
@@ -1522,14 +1193,9 @@ describe('Predicates', () => {
 
 					test('can perform or() logic, matching a single item - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(negated =>
-							negated.or(a => [
-								a.name.contains('Bob'),
-								a.name.contains('Jones'),
-							])
+							negated.or(a => [a.name.contains('Bob'), a.name.contains('Jones')])
 						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(4);
 						expect(matches.map(n => n.name)).not.toContain('Bob Jones');
@@ -1540,9 +1206,7 @@ describe('Predicates', () => {
 							a.name.contains('Bob'),
 							a.name.contains('Thanos'),
 						]);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(1);
 						expect(matches[0].name).toEqual('Bob Jones');
@@ -1553,27 +1217,17 @@ describe('Predicates', () => {
 							a.name.contains('Thanos'),
 							a.name.contains('Thor (God of Thunder, as it just so happens)'),
 						]);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(0);
 					});
 
 					test('can perform or() logic with nested and() logic', async () => {
 						const query = recursivePredicateFor(AuthorMeta).or(author_or => [
-							author_or.and(a => [
-								a.name.contains('Bob'),
-								a.name.contains('Jones'),
-							]),
-							author_or.and(a => [
-								a.name.contains('Debbie'),
-								a.name.contains('from the Legend of Zelda'),
-							]),
+							author_or.and(a => [a.name.contains('Bob'), a.name.contains('Jones')]),
+							author_or.and(a => [a.name.contains('Debbie'), a.name.contains('from the Legend of Zelda')]),
 						]);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(1);
 						expect(matches.map(m => m.name)).toEqual(['Bob Jones']);
@@ -1581,18 +1235,10 @@ describe('Predicates', () => {
 
 					test('can perform and() logic with nested or() logic', async () => {
 						const query = recursivePredicateFor(AuthorMeta).and(author_and => [
-							author_and.or(a => [
-								a.name.contains('Bob'),
-								a.name.contains('Donut'),
-							]),
-							author_and.or(a => [
-								a.name.contains('Debbie'),
-								a.name.contains('from the Legend of Zelda'),
-							]),
+							author_and.or(a => [a.name.contains('Bob'), a.name.contains('Donut')]),
+							author_and.or(a => [a.name.contains('Debbie'), a.name.contains('from the Legend of Zelda')]),
 						]);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(1);
 						expect(matches.map(m => m.name)).toEqual(['Debbie Donut']);
@@ -1601,31 +1247,19 @@ describe('Predicates', () => {
 					test('can perform and() logic with nested or() logic - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(c =>
 							c.and(author_and => [
-								author_and.or(a => [
-									a.name.contains('Bob'),
-									a.name.contains('Donut'),
-								]),
-								author_and.or(a => [
-									a.name.contains('Debbie'),
-									a.name.contains('from the Legend of Zelda'),
-								]),
+								author_and.or(a => [a.name.contains('Bob'), a.name.contains('Donut')]),
+								author_and.or(a => [a.name.contains('Debbie'), a.name.contains('from the Legend of Zelda')]),
 							])
 						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(4);
 						expect(matches.map(m => m.name)).not.toContain('Debbie Donut');
 					});
 
 					test('can perform simple not() logic, matching all but one item', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.eq('Bob Jones')
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.eq('Bob Jones'));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(4);
 						expect(matches.map(m => m.name)).toEqual([
@@ -1637,42 +1271,25 @@ describe('Predicates', () => {
 					});
 
 					test('can perform simple not() logic, matching no items', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.gt('0')
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).not(a => a.name.gt('0'));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(0);
 					});
 
 					test('can perform not() logic around another logical group, matching all but N items', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(author =>
-							author.or(a => [
-								a.name.eq('Bob Jones'),
-								a.name.eq('Debbie Donut'),
-								a.name.between('C', 'D'),
-							])
+							author.or(a => [a.name.eq('Bob Jones'), a.name.eq('Debbie Donut'), a.name.between('C', 'D')])
 						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(2);
-						expect(matches.map(m => m.name)).toEqual([
-							'Adam West',
-							'Zelda from the Legend of Zelda',
-						]);
+						expect(matches.map(m => m.name)).toEqual(['Adam West', 'Zelda from the Legend of Zelda']);
 					});
 
 					test('can perform 2-nots', async () => {
-						const query = recursivePredicateFor(AuthorMeta).not(a1 =>
-							a1.not(a2 => a2.name.eq('Bob Jones'))
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = recursivePredicateFor(AuthorMeta).not(a1 => a1.not(a2 => a2.name.eq('Bob Jones')));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(1);
 						expect(matches.map(m => m.name)).toEqual(['Bob Jones']);
@@ -1682,9 +1299,7 @@ describe('Predicates', () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a1 =>
 							a1.not(a2 => a2.not(a3 => a3.name.eq('Bob Jones')))
 						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(4);
 						expect(matches.map(m => m.name)).toEqual([
@@ -1699,9 +1314,7 @@ describe('Predicates', () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a1 =>
 							a1.not(a2 => a2.not(a3 => a3.not(a4 => a4.name.eq('Bob Jones'))))
 						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(1);
 						expect(matches.map(m => m.name)).toEqual(['Bob Jones']);
@@ -1716,12 +1329,8 @@ describe('Predicates', () => {
 
 					test('can fetch ALL with Predicates.ALL', async () => {
 						// Predicates.ALL is expected to return our base match-all predicate as-is.
-						const query = (V1Predicates.ALL as any)(
-							recursivePredicateFor(AuthorMeta)
-						);
-						const matches = await mechanism.execute<ModelOf<typeof Author>>(
-							query
-						);
+						const query = (V1Predicates.ALL as any)(recursivePredicateFor(AuthorMeta));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(query);
 
 						expect(matches.length).toBe(5);
 						expect(matches.map(m => m.name)).toEqual([
@@ -1739,23 +1348,20 @@ describe('Predicates', () => {
 
 	describe('handling of null and undefined', () => {
 		const getFixture = () => {
-			return ['null 01', 'defined 01', 'null 02', 'defined 02', 'null 03'].map(
-				name => {
-					return new Person({
-						firstName: `${name} first name`,
-						lastName: `${name} last name`,
-						username: name.includes('null') ? null : name,
-						age: name.includes('null') ? null : parseInt(name.split(' ')[1]),
-					});
-				}
-			);
+			return ['null 01', 'defined 01', 'null 02', 'defined 02', 'null 03'].map(name => {
+				return new Person({
+					firstName: `${name} first name`,
+					lastName: `${name} last name`,
+					username: name.includes('null') ? null : name,
+					age: name.includes('null') ? null : parseInt(name.split(' ')[1]),
+				});
+			});
 		};
 
 		[
 			{
 				name: 'filters',
-				execute: async <T>(query: any) =>
-					asyncFilter(getFixture(), i => internals(query).matches(i)),
+				execute: async <T>(query: any) => asyncFilter(getFixture(), i => internals(query).matches(i)),
 			},
 			{
 				name: 'storage predicates',
@@ -1770,63 +1376,40 @@ describe('Predicates', () => {
 		].forEach(mechanism => {
 			describe(`as ${mechanism.name}`, () => {
 				test('can select non-null values by their defined values', async () => {
-					const query =
-						recursivePredicateFor(PersonMeta).username.eq('defined 01');
-					const matches = await mechanism.execute<ModelOf<typeof Person>>(
-						query
-					);
+					const query = recursivePredicateFor(PersonMeta).username.eq('defined 01');
+					const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 
 					expect(matches.length).toBe(1);
 					expect(matches.map(n => n.username)).toEqual(['defined 01']);
 				});
 
 				test('can select non-null values by searching for != null', async () => {
-					const query = recursivePredicateFor(PersonMeta).username.ne(
-						null as any
-					);
-					const matches = await mechanism.execute<ModelOf<typeof Person>>(
-						query
-					);
+					const query = recursivePredicateFor(PersonMeta).username.ne(null as any);
+					const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 
 					expect(matches.length).toBe(2);
-					expect(matches.map(n => n.username)).toEqual([
-						'defined 01',
-						'defined 02',
-					]);
+					expect(matches.map(n => n.username)).toEqual(['defined 01', 'defined 02']);
 				});
 
 				test('can select non-null values by searching for != undefined', async () => {
-					const query =
-						recursivePredicateFor(PersonMeta).username.ne(undefined);
-					const matches = await mechanism.execute<ModelOf<typeof Person>>(
-						query
-					);
+					const query = recursivePredicateFor(PersonMeta).username.ne(undefined);
+					const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 
 					expect(matches.length).toBe(2);
-					expect(matches.map(n => n.username)).toEqual([
-						'defined 01',
-						'defined 02',
-					]);
+					expect(matches.map(n => n.username)).toEqual(['defined 01', 'defined 02']);
 				});
 
 				test('can select null values by searching for == null', async () => {
-					const query = recursivePredicateFor(PersonMeta).username.eq(
-						null as any
-					);
-					const matches = await mechanism.execute<ModelOf<typeof Person>>(
-						query
-					);
+					const query = recursivePredicateFor(PersonMeta).username.eq(null as any);
+					const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 
 					expect(matches.length).toBe(3);
 					expect(matches.map(n => n.username)).toEqual([null, null, null]);
 				});
 
 				test('can select null values by searching for == undefined', async () => {
-					const query =
-						recursivePredicateFor(PersonMeta).username.eq(undefined);
-					const matches = await mechanism.execute<ModelOf<typeof Person>>(
-						query
-					);
+					const query = recursivePredicateFor(PersonMeta).username.eq(undefined);
+					const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 
 					expect(matches.length).toBe(3);
 					expect(matches.map(n => n.username)).toEqual([null, null, null]);
@@ -1835,37 +1418,24 @@ describe('Predicates', () => {
 				describe('can query on null fields without error', () => {
 					test('eq', async () => {
 						expect.assertions(2);
-						const query =
-							recursivePredicateFor(PersonMeta).username.eq('defined 01');
-						const matches = await mechanism.execute<ModelOf<typeof Person>>(
-							query
-						);
+						const query = recursivePredicateFor(PersonMeta).username.eq('defined 01');
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 						expect(matches.length).toBe(1);
 						expect(matches.map(n => n.username)).toEqual(['defined 01']);
 					});
 
 					test('ne', async () => {
 						expect.assertions(2);
-						const query =
-							recursivePredicateFor(PersonMeta).username.ne('defined 01');
-						const matches = await mechanism.execute<ModelOf<typeof Person>>(
-							query
-						);
+						const query = recursivePredicateFor(PersonMeta).username.ne('defined 01');
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 						expect(matches.length).toBe(4);
-						expect(matches.map(n => n.username)).toEqual([
-							null,
-							null,
-							'defined 02',
-							null,
-						]);
+						expect(matches.map(n => n.username)).toEqual([null, null, 'defined 02', null]);
 					});
 
 					test('gt', async () => {
 						expect.assertions(2);
 						const query = recursivePredicateFor(PersonMeta).age.gt(1);
-						const matches = await mechanism.execute<ModelOf<typeof Person>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 						expect(matches.length).toBe(1);
 						expect(matches.map(n => n.username)).toEqual(['defined 02']);
 					});
@@ -1873,97 +1443,57 @@ describe('Predicates', () => {
 					test('ge', async () => {
 						expect.assertions(2);
 						const query = recursivePredicateFor(PersonMeta).age.ge(1);
-						const matches = await mechanism.execute<ModelOf<typeof Person>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 						expect(matches.length).toBe(2);
-						expect(matches.map(n => n.username)).toEqual([
-							'defined 01',
-							'defined 02',
-						]);
+						expect(matches.map(n => n.username)).toEqual(['defined 01', 'defined 02']);
 					});
 
 					test('lt', async () => {
 						expect.assertions(2);
 						const query = recursivePredicateFor(PersonMeta).age.lt(2);
-						const matches = await mechanism.execute<ModelOf<typeof Person>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 						expect(matches.length).toBe(4);
-						expect(matches.map(n => n.username)).toEqual([
-							null,
-							'defined 01',
-							null,
-							null,
-						]);
+						expect(matches.map(n => n.username)).toEqual([null, 'defined 01', null, null]);
 					});
 
 					test('le', async () => {
 						expect.assertions(2);
 						const query = recursivePredicateFor(PersonMeta).age.le(2);
-						const matches = await mechanism.execute<ModelOf<typeof Person>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 						expect(matches.length).toBe(5);
-						expect(matches.map(n => n.username)).toEqual([
-							null,
-							'defined 01',
-							null,
-							'defined 02',
-							null,
-						]);
+						expect(matches.map(n => n.username)).toEqual([null, 'defined 01', null, 'defined 02', null]);
 					});
 
 					test('contains', async () => {
 						expect.assertions(2);
-						const query =
-							recursivePredicateFor(PersonMeta).username.contains('defined');
-						const matches = await mechanism.execute<ModelOf<typeof Person>>(
-							query
-						);
+						const query = recursivePredicateFor(PersonMeta).username.contains('defined');
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 						expect(matches.length).toBe(2);
-						expect(matches.map(n => n.username)).toEqual([
-							'defined 01',
-							'defined 02',
-						]);
+						expect(matches.map(n => n.username)).toEqual(['defined 01', 'defined 02']);
 					});
 
 					test('notContains', async () => {
 						expect.assertions(2);
-						const query =
-							recursivePredicateFor(PersonMeta).username.notContains('defined');
-						const matches = await mechanism.execute<ModelOf<typeof Person>>(
-							query
-						);
+						const query = recursivePredicateFor(PersonMeta).username.notContains('defined');
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 						expect(matches.length).toBe(3);
 						expect(matches.map(n => n.username)).toEqual([null, null, null]);
 					});
 
 					test('beginsWith', async () => {
 						expect.assertions(2);
-						const query =
-							recursivePredicateFor(PersonMeta).username.beginsWith('defined');
-						const matches = await mechanism.execute<ModelOf<typeof Person>>(
-							query
-						);
+						const query = recursivePredicateFor(PersonMeta).username.beginsWith('defined');
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 						expect(matches.length).toBe(2);
-						expect(matches.map(n => n.username)).toEqual([
-							'defined 01',
-							'defined 02',
-						]);
+						expect(matches.map(n => n.username)).toEqual(['defined 01', 'defined 02']);
 					});
 
 					test('between', async () => {
 						expect.assertions(2);
 						const query = recursivePredicateFor(PersonMeta).age.between(1, 2);
-						const matches = await mechanism.execute<ModelOf<typeof Person>>(
-							query
-						);
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(query);
 						expect(matches.length).toBe(2);
-						expect(matches.map(n => n.username)).toEqual([
-							'defined 01',
-							'defined 02',
-						]);
+						expect(matches.map(n => n.username)).toEqual(['defined 01', 'defined 02']);
 					});
 				});
 			});
@@ -2021,8 +1551,7 @@ describe('Predicates', () => {
 			//
 			{
 				name: 'filters',
-				execute: async <T>(query: any) =>
-					asyncFilter(blogs, b => internals(query).matches(b)),
+				execute: async <T>(query: any) => asyncFilter(blogs, b => internals(query).matches(b)),
 			},
 			{
 				name: 'storage predicates',
@@ -2039,8 +1568,7 @@ describe('Predicates', () => {
 		].forEach(mechanism => {
 			describe('as ' + mechanism.name, () => {
 				test('can filter eq()', async () => {
-					const query =
-						recursivePredicateFor(BlogMeta).owner.name.eq('Adam West');
+					const query = recursivePredicateFor(BlogMeta).owner.name.eq('Adam West');
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
 					expect(matches.length).toBe(1);
@@ -2048,8 +1576,7 @@ describe('Predicates', () => {
 				});
 
 				test('can filter ne()', async () => {
-					const query =
-						recursivePredicateFor(BlogMeta).owner.name.ne('Debbie Donut');
+					const query = recursivePredicateFor(BlogMeta).owner.name.ne('Debbie Donut');
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
 					expect(matches.length).toBe(4);
@@ -2063,14 +1590,8 @@ describe('Predicates', () => {
 
 				test('can filter nested or() .. and()', async () => {
 					const query = recursivePredicateFor(BlogMeta).or(b => [
-						b.owner.and(o => [
-							o.name.contains('Bob'),
-							o.name.contains('Jones'),
-						]),
-						b.owner.and(o => [
-							o.name.contains('Debbie'),
-							o.name.contains('Starling'),
-						]),
+						b.owner.and(o => [o.name.contains('Bob'), o.name.contains('Jones')]),
+						b.owner.and(o => [o.name.contains('Debbie'), o.name.contains('Starling')]),
 					]);
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
@@ -2081,14 +1602,8 @@ describe('Predicates', () => {
 				test('can filter nested or() .. and() - NEGATED', async () => {
 					const query = recursivePredicateFor(BlogMeta).not(c =>
 						c.or(b => [
-							b.owner.and(o => [
-								o.name.contains('Bob'),
-								o.name.contains('Jones'),
-							]),
-							b.owner.and(o => [
-								o.name.contains('Debbie'),
-								o.name.contains('Starling'),
-							]),
+							b.owner.and(o => [o.name.contains('Bob'), o.name.contains('Jones')]),
+							b.owner.and(o => [o.name.contains('Debbie'), o.name.contains('Starling')]),
 						])
 					);
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
@@ -2117,10 +1632,7 @@ describe('Predicates', () => {
 				test('can filter 3 level nested, logically grouped - NEGATED', async () => {
 					const query = recursivePredicateFor(BlogMeta).not(negated =>
 						negated.or(b => [
-							b.owner.and(o => [
-								o.name.contains('Bob'),
-								o.name.contains('West'),
-							]),
+							b.owner.and(o => [o.name.contains('Bob'), o.name.contains('West')]),
 							b.owner.and(owner => [
 								owner.blog.or(innerBlog => [
 									innerBlog.name.contains('Debbie'),
@@ -2137,8 +1649,7 @@ describe('Predicates', () => {
 				});
 
 				test('can filter on child collections', async () => {
-					const query =
-						recursivePredicateFor(BlogMeta).posts.title.contains('Bob Jones');
+					const query = recursivePredicateFor(BlogMeta).posts.title.contains('Bob Jones');
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
 					expect(matches.length).toBe(1);
@@ -2146,9 +1657,7 @@ describe('Predicates', () => {
 				});
 
 				test('can filter on child collections - NEGATED', async () => {
-					const query = recursivePredicateFor(BlogMeta).not(negated =>
-						negated.posts.title.contains('Bob Jones')
-					);
+					const query = recursivePredicateFor(BlogMeta).not(negated => negated.posts.title.contains('Bob Jones'));
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
 					expect(matches.length).toBe(4);
@@ -2163,26 +1672,18 @@ describe('Predicates', () => {
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
 					expect(matches.length).toBe(2);
-					expect(matches.map(m => m.name)).toEqual([
-						"Bob Jones's Blog",
-						"Zelda from the Legend of Zelda's Blog",
-					]);
+					expect(matches.map(m => m.name)).toEqual(["Bob Jones's Blog", "Zelda from the Legend of Zelda's Blog"]);
 				});
 
 				test('can filter on child collections in or() - NEGATED', async () => {
 					const query = recursivePredicateFor(BlogMeta).not(negated =>
-						negated.or(b => [
-							b.posts.title.contains('Bob Jones'),
-							b.posts.title.contains("Zelda's Blog post"),
-						])
+						negated.or(b => [b.posts.title.contains('Bob Jones'), b.posts.title.contains("Zelda's Blog post")])
 					);
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
 					expect(matches.length).toBe(3);
 					expect(matches.map(m => m.name)).not.toContain("Bob Jones's Blog");
-					expect(matches.map(m => m.name)).not.toContain(
-						"Zelda from the Legend of Zelda's Blog"
-					);
+					expect(matches.map(m => m.name)).not.toContain("Zelda from the Legend of Zelda's Blog");
 				});
 
 				test('can filter on or() extended off child collections', async () => {
@@ -2193,26 +1694,18 @@ describe('Predicates', () => {
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
 					expect(matches.length).toBe(2);
-					expect(matches.map(m => m.name)).toEqual([
-						"Bob Jones's Blog",
-						"Zelda from the Legend of Zelda's Blog",
-					]);
+					expect(matches.map(m => m.name)).toEqual(["Bob Jones's Blog", "Zelda from the Legend of Zelda's Blog"]);
 				});
 
 				test('can filter on or() extended off child collections - NEGATED', async () => {
 					const query = recursivePredicateFor(BlogMeta).not(negated =>
-						negated.posts.or(p => [
-							p.title.contains('Bob Jones'),
-							p.title.contains("Zelda's Blog post"),
-						])
+						negated.posts.or(p => [p.title.contains('Bob Jones'), p.title.contains("Zelda's Blog post")])
 					);
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
 					expect(matches.length).toBe(3);
 					expect(matches.map(m => m.name)).not.toContain("Bob Jones's Blog");
-					expect(matches.map(m => m.name)).not.toContain(
-						"Zelda from the Legend of Zelda's Blog"
-					);
+					expect(matches.map(m => m.name)).not.toContain("Zelda from the Legend of Zelda's Blog");
 				});
 
 				test('can filter and() between parent and child collection properties', async () => {
@@ -2227,10 +1720,7 @@ describe('Predicates', () => {
 
 				test('can filter and() between parent and child collection properties - NEGATED', async () => {
 					const query = recursivePredicateFor(BlogMeta).not(negated =>
-						negated.and(b => [
-							b.name.contains('Bob Jones'),
-							b.posts.title.contains('Zelda'),
-						])
+						negated.and(b => [b.name.contains('Bob Jones'), b.posts.title.contains('Zelda')])
 					);
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
@@ -2241,13 +1731,7 @@ describe('Predicates', () => {
 	});
 
 	describe('on recursive models/properties', () => {
-		const names = [
-			'Adam West',
-			'Bob Jones',
-			'Clarice Starling',
-			'Debbie Donut',
-			'Zelda from the Legend of Zelda',
-		];
+		const names = ['Adam West', 'Bob Jones', 'Clarice Starling', 'Debbie Donut', 'Zelda from the Legend of Zelda'];
 
 		const posts = names
 			.map(name => {
@@ -2281,8 +1765,7 @@ describe('Predicates', () => {
 		[
 			{
 				name: 'filters',
-				execute: async <T>(query: any) =>
-					asyncFilter(posts, p => internals(query).matches(p)),
+				execute: async <T>(query: any) => asyncFilter(posts, p => internals(query).matches(p)),
 			},
 			{
 				name: 'storage predicates',
@@ -2296,9 +1779,7 @@ describe('Predicates', () => {
 		].forEach(mechanism => {
 			describe('as ' + mechanism.name, () => {
 				test('can filter 1 level deep', async () => {
-					const query = recursivePredicateFor(PostMeta).reference.title.eq(
-						'Bob Jones post 2 layer 1'
-					);
+					const query = recursivePredicateFor(PostMeta).reference.title.eq('Bob Jones post 2 layer 1');
 					const matches = await mechanism.execute<ModelOf<typeof Post>>(query);
 
 					expect(matches.length).toBe(1);
@@ -2306,9 +1787,7 @@ describe('Predicates', () => {
 				});
 
 				test('can filter 2 levels deep', async () => {
-					const query = recursivePredicateFor(
-						PostMeta
-					).reference.reference.title.eq('Bob Jones post 2 layer 2');
+					const query = recursivePredicateFor(PostMeta).reference.reference.title.eq('Bob Jones post 2 layer 2');
 					const matches = await mechanism.execute<ModelOf<typeof Post>>(query);
 
 					expect(matches.length).toBe(1);
@@ -2316,9 +1795,8 @@ describe('Predicates', () => {
 				});
 
 				test('can filter 3 levels deep', async () => {
-					const query = recursivePredicateFor(
-						PostMeta
-					).reference.reference.reference.title.eq('Bob Jones post 2 layer 3');
+					const query =
+						recursivePredicateFor(PostMeta).reference.reference.reference.title.eq('Bob Jones post 2 layer 3');
 					const matches = await mechanism.execute<ModelOf<typeof Post>>(query);
 
 					expect(matches.length).toBe(1);
@@ -2326,11 +1804,10 @@ describe('Predicates', () => {
 				});
 
 				test('safely returns [] on too many levels deep', async () => {
-					const query = recursivePredicateFor(
-						PostMeta
-					).reference.reference.reference.reference.reference.title.eq(
-						'Bob Jones post 2 layer 4'
-					);
+					const query =
+						recursivePredicateFor(PostMeta).reference.reference.reference.reference.reference.title.eq(
+							'Bob Jones post 2 layer 4'
+						);
 					const matches = await mechanism.execute<ModelOf<typeof Post>>(query);
 
 					expect(matches.length).toBe(0);
@@ -2338,9 +1815,7 @@ describe('Predicates', () => {
 
 				test('can filter 4 levels deep to match all', async () => {
 					const query =
-						recursivePredicateFor(
-							PostMeta
-						).reference.reference.reference.reference.title.contains('layer 4');
+						recursivePredicateFor(PostMeta).reference.reference.reference.reference.title.contains('layer 4');
 					const matches = await mechanism.execute<ModelOf<typeof Post>>(query);
 
 					expect(matches.length).toBe(20);
@@ -2488,32 +1963,20 @@ describe('Predicates', () => {
 		];
 
 		for (const [i, testCase] of ASTTransalationTestCases.entries()) {
-			test(`can create storage predicate from conditions AST ${i} : ${JSON.stringify(
-				testCase.gql
-			)}`, () => {
+			test(`can create storage predicate from conditions AST ${i} : ${JSON.stringify(testCase.gql)}`, () => {
 				const condition = testCase.gql;
-				const builder = ModelPredicateCreator.createFromAST(
-					AuthorMeta.schema,
-					condition
-				);
+				const builder = ModelPredicateCreator.createFromAST(AuthorMeta.schema, condition);
 				const predicate = ModelPredicateCreator.getPredicates(builder)!;
 
-				const regeneratedCondition = predicateToGraphQLCondition(
-					predicate,
-					AuthorMeta.schema
-				);
+				const regeneratedCondition = predicateToGraphQLCondition(predicate, AuthorMeta.schema);
 				const regeneratedFilter = predicateToGraphQLFilter(predicate);
 
 				for (const expectedMatch of testCase.matches) {
-					expect(flatPredicateMatches(expectedMatch, 'and', [predicate])).toBe(
-						true
-					);
+					expect(flatPredicateMatches(expectedMatch, 'and', [predicate])).toBe(true);
 				}
 
 				for (const expectedMismatch of testCase.mismatches) {
-					expect(
-						flatPredicateMatches(expectedMismatch, 'and', [predicate])
-					).toBe(false);
+					expect(flatPredicateMatches(expectedMismatch, 'and', [predicate])).toBe(false);
 				}
 
 				expect(regeneratedCondition).toEqual(testCase.expectedRegeneration);
@@ -2573,22 +2036,16 @@ describe('Predicates', () => {
 		];
 		for (const [i, testCase] of predicateTestCases.entries()) {
 			test(`nested predicate builder can produce storage predicate ${i}: ${testCase.predicate}`, () => {
-				const builder = internals(
-					testCase.predicate(predicateFor(AuthorMeta))
-				).toStoragePredicate();
+				const builder = internals(testCase.predicate(predicateFor(AuthorMeta))).toStoragePredicate();
 
 				const predicate = ModelPredicateCreator.getPredicates(builder)!;
 
 				for (const expectedMatch of testCase.matches) {
-					expect(flatPredicateMatches(expectedMatch, 'and', [predicate])).toBe(
-						true
-					);
+					expect(flatPredicateMatches(expectedMatch, 'and', [predicate])).toBe(true);
 				}
 
 				for (const expectedMismatch of testCase.mismatches) {
-					expect(
-						flatPredicateMatches(expectedMismatch, 'and', [predicate])
-					).toBe(false);
+					expect(flatPredicateMatches(expectedMismatch, 'and', [predicate])).toBe(false);
 				}
 			});
 		}

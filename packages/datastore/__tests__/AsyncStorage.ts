@@ -1,8 +1,5 @@
 import { NonModelTypeConstructor, PersistentModelConstructor } from '../src';
-import {
-	DataStore as DataStoreType,
-	initSchema as initSchemaType,
-} from '../src/datastore/datastore';
+import { DataStore as DataStoreType, initSchema as initSchemaType } from '../src/datastore/datastore';
 import { default as AsyncStorageAdapterType } from '../src/storage/adapter/AsyncStorageAdapter';
 import { DATASTORE, USER } from '../src/util';
 import {
@@ -31,12 +28,8 @@ let Comment: PersistentModelConstructor<InstanceType<typeof CommentType>>;
 let Nested: NonModelTypeConstructor<InstanceType<typeof NestedType>>;
 let Post: PersistentModelConstructor<InstanceType<typeof PostType>>;
 let Person: PersistentModelConstructor<InstanceType<typeof PersonType>>;
-let PostAuthorJoin: PersistentModelConstructor<
-	InstanceType<typeof PostAuthorJoinType>
->;
-let PostMetadata: NonModelTypeConstructor<
-	InstanceType<typeof PostMetadataType>
->;
+let PostAuthorJoin: PersistentModelConstructor<InstanceType<typeof PostAuthorJoinType>>;
+let PostMetadata: NonModelTypeConstructor<InstanceType<typeof PostMetadataType>>;
 
 const inmemoryMap = new Map<string, string>();
 
@@ -55,10 +48,7 @@ jest.mock('../src/storage/adapter/InMemoryStore', () => {
 			return Array.from(inmemoryMap.keys());
 		};
 		multiGet = async (keys: string[]) => {
-			return keys.reduce(
-				(res, k) => (res.push([k, inmemoryMap.get(k)!]), res),
-				[] as [string, string][]
-			);
+			return keys.reduce((res, k) => (res.push([k, inmemoryMap.get(k)!]), res), [] as [string, string][]);
 		};
 		multiRemove = async (keys: string[]) => {
 			return keys.forEach(k => inmemoryMap.delete(k));
@@ -82,10 +72,7 @@ jest.mock('../src/storage/adapter/InMemoryStore', () => {
 	};
 });
 
-jest.mock(
-	'../src/storage/adapter/getDefaultAdapter/index',
-	() => () => AsyncStorageAdapter
-);
+jest.mock('../src/storage/adapter/getDefaultAdapter/index', () => () => AsyncStorageAdapter);
 
 /**
  * Sets up the schema for the tests
@@ -104,23 +91,11 @@ function setUpSchema(beforeSetUp?: Function) {
 		beforeSetUp();
 	}
 
-	({
-		default: AsyncStorageAdapter,
-	} = require('../src/storage/adapter/AsyncStorageAdapter'));
+	({ default: AsyncStorageAdapter } = require('../src/storage/adapter/AsyncStorageAdapter'));
 
 	({ initSchema, DataStore } = require('../src/datastore/datastore'));
 
-	({
-		Author,
-		Blog,
-		BlogOwner,
-		Comment,
-		Nested,
-		Post,
-		Person,
-		PostAuthorJoin,
-		PostMetadata,
-	} = <
+	({ Author, Blog, BlogOwner, Comment, Nested, Post, Person, PostAuthorJoin, PostMetadata } = <
 		{
 			Author: typeof Author;
 			Blog: typeof Blog;
@@ -191,11 +166,7 @@ describe('AsyncStorage tests', () => {
 	test('setup function', async () => {
 		const allKeys = await AsyncStorage.getAllKeys();
 		expect(allKeys).not.toHaveLength(0); // At leaset the settings entry should be present
-		expect(allKeys[0]).toMatch(
-			new RegExp(
-				`@AmplifyDatastore::${DATASTORE}_Setting::Data::\\w{26}::\\w{26}`
-			)
-		);
+		expect(allKeys[0]).toMatch(new RegExp(`@AmplifyDatastore::${DATASTORE}_Setting::Data::\\w{26}::\\w{26}`));
 	});
 
 	test('save function 1:1 insert', async () => {
@@ -203,11 +174,7 @@ describe('AsyncStorage tests', () => {
 
 		await DataStore.save(owner);
 
-		const get1 = JSON.parse(
-			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, Blog.name, blog.id)
-			)
-		);
+		const get1 = JSON.parse(await AsyncStorage.getItem(getKeyForAsyncStorage(USER, Blog.name, blog.id)));
 
 		expect({
 			...blog,
@@ -216,21 +183,13 @@ describe('AsyncStorage tests', () => {
 
 		expect(get1['blogOwnerId']).toBe(owner.id);
 
-		const get2 = JSON.parse(
-			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, BlogOwner.name, owner.id)
-			)
-		);
+		const get2 = JSON.parse(await AsyncStorage.getItem(getKeyForAsyncStorage(USER, BlogOwner.name, owner.id)));
 
 		expect(owner).toMatchObject(get2);
 
 		await DataStore.save(blog2);
 
-		const get3 = JSON.parse(
-			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, Blog.name, blog2.id)
-			)
-		);
+		const get3 = JSON.parse(await AsyncStorage.getItem(getKeyForAsyncStorage(USER, Blog.name, blog2.id)));
 
 		expect({
 			...blog2,
@@ -253,9 +212,7 @@ describe('AsyncStorage tests', () => {
 
 		await DataStore.save(p);
 
-		const postFromDB = JSON.parse(
-			await AsyncStorage.getItem(getKeyForAsyncStorage(USER, Post.name, p.id))
-		);
+		const postFromDB = JSON.parse(await AsyncStorage.getItem(getKeyForAsyncStorage(USER, Post.name, p.id)));
 
 		expect(postFromDB.metadata).toMatchObject({
 			rating: 3,
@@ -270,11 +227,7 @@ describe('AsyncStorage tests', () => {
 		await DataStore.save(blog);
 		await DataStore.save(owner);
 
-		const get1 = JSON.parse(
-			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, Blog.name, blog.id)
-			)
-		);
+		const get1 = JSON.parse(await AsyncStorage.getItem(getKeyForAsyncStorage(USER, Blog.name, blog.id)));
 
 		expect(get1['blogOwnerId']).toBe(owner.id);
 		const updated = Blog.copyOf(blog, draft => {
@@ -282,11 +235,7 @@ describe('AsyncStorage tests', () => {
 		});
 
 		await DataStore.save(updated);
-		const get2 = JSON.parse(
-			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, Blog.name, blog.id)
-			)
-		);
+		const get2 = JSON.parse(await AsyncStorage.getItem(getKeyForAsyncStorage(USER, Blog.name, blog.id)));
 
 		expect(get2.name).toEqual(updated.name);
 	});
@@ -393,19 +342,12 @@ describe('AsyncStorage tests', () => {
 		await DataStore.save(p2);
 		await DataStore.save(p3);
 
-		const sortedPersons = await DataStore.query(
-			Person,
-			c => c.username.ne(undefined),
-			{
-				page: 0,
-				limit: 20,
-				sort: s =>
-					s
-						.firstName(SortDirection.ASCENDING)
-						.lastName(SortDirection.ASCENDING)
-						.username(SortDirection.ASCENDING),
-			}
-		);
+		const sortedPersons = await DataStore.query(Person, c => c.username.ne(undefined), {
+			page: 0,
+			limit: 20,
+			sort: s =>
+				s.firstName(SortDirection.ASCENDING).lastName(SortDirection.ASCENDING).username(SortDirection.ASCENDING),
+		});
 
 		expect(sortedPersons[0].username).toEqual('johnsnow');
 		expect(sortedPersons[1].username).toEqual('greatjohnumber');
@@ -561,9 +503,7 @@ describe('AsyncStorage tests', () => {
 
 		expect(deleted).toStrictEqual(author);
 
-		const fromDB = await AsyncStorage.getItem(
-			getKeyForAsyncStorage(USER, Author.name, author.id)
-		);
+		const fromDB = await AsyncStorage.getItem(getKeyForAsyncStorage(USER, Author.name, author.id));
 
 		expect(fromDB).toBeUndefined();
 	});
@@ -591,10 +531,7 @@ describe('AsyncStorage tests', () => {
 				};
 			});
 
-			const oldData: [
-				string,
-				string[],
-			] = require('./AsyncStorage.migration.data.json');
+			const oldData: [string, string[]] = require('./AsyncStorage.migration.data.json');
 
 			inmemoryMap.clear();
 			oldData.forEach(([k, v]) => inmemoryMap.set(k, v));
@@ -608,14 +545,9 @@ describe('AsyncStorage tests', () => {
 	});
 });
 
-function getKeyForAsyncStorage(
-	namespaceName: string,
-	modelName: string,
-	id: string
-) {
-	const collectionInMemoryIndex: Map<string, Map<string, string>> = (<any>(
-		AsyncStorageAdapter
-	)).db._collectionInMemoryIndex;
+function getKeyForAsyncStorage(namespaceName: string, modelName: string, id: string) {
+	const collectionInMemoryIndex: Map<string, Map<string, string>> = (<any>AsyncStorageAdapter).db
+		._collectionInMemoryIndex;
 	const storeName = `${namespaceName}_${modelName}`;
 	const ulid = collectionInMemoryIndex.get(storeName)!.get(id);
 

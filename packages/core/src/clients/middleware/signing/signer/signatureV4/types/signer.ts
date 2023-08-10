@@ -36,9 +36,6 @@ export interface FormattedDates {
 export interface SigningValues
 	extends Credentials,
 		FormattedDates,
-		Pick<
-			SignRequestOptions,
-			'signingRegion' | 'signingService' | 'uriEscapePath'
-		> {
+		Pick<SignRequestOptions, 'signingRegion' | 'signingService' | 'uriEscapePath'> {
 	credentialScope: string;
 }

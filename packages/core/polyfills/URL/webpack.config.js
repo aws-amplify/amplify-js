@@ -1,10 +1,7 @@
 const path = require('path');
 
 const rnUrlPolyfillPath = require.resolve('react-native-url-polyfill');
-const rnUrlPolyfillMeta = require(path.join(
-	path.dirname(rnUrlPolyfillPath),
-	'package.json'
-));
+const rnUrlPolyfillMeta = require(path.join(path.dirname(rnUrlPolyfillPath), 'package.json'));
 const rnUrlPolyfillDeps = Object.keys({
 	...rnUrlPolyfillMeta.dependencies,
 	...rnUrlPolyfillMeta.peerDependencies,

@@ -92,9 +92,7 @@ describe('PushNotification', () => {
 		pushNotification.addPluggable(mockPushNotificationProvider);
 		mockPushNotificationProvider.getCategory.mockReturnValue('Notifications');
 		mockPushNotificationProvider.getProviderName.mockReturnValue(PROVIDER_NAME);
-		mockPushNotificationProvider.getSubCategory.mockReturnValue(
-			SUBCATEGORY_NAME
-		);
+		mockPushNotificationProvider.getSubCategory.mockReturnValue(SUBCATEGORY_NAME);
 		(normalizeNativeMessage as jest.Mock).mockImplementation(str => str);
 	});
 
@@ -124,9 +122,7 @@ describe('PushNotification', () => {
 		test('cannot be removed if not found', () => {
 			pushNotification.removePluggable('InvalidProvider');
 
-			expect(loggerDebugSpy).toBeCalledWith(
-				expect.stringContaining('InvalidProvider')
-			);
+			expect(loggerDebugSpy).toBeCalledWith(expect.stringContaining('InvalidProvider'));
 		});
 
 		test('cannot be added if duplicate', () => {
@@ -138,9 +134,7 @@ describe('PushNotification', () => {
 		test('cannot be added if invalid', () => {
 			pushNotification.removePluggable(PROVIDER_NAME);
 			mockPushNotificationProvider.configure.mockClear();
-			mockPushNotificationProvider.getSubCategory.mockReturnValue(
-				'InvalidSubCategory'
-			);
+			mockPushNotificationProvider.getSubCategory.mockReturnValue('InvalidSubCategory');
 
 			expect(mockPushNotificationProvider.configure).not.toBeCalled();
 		});
@@ -165,13 +159,8 @@ describe('PushNotification', () => {
 			test('registers a headless task if able', () => {
 				pushNotification.enable();
 
-				expect(mockRegisterHeadlessTask).toBeCalledWith(
-					NativeHeadlessTaskKey,
-					expect.any(Function)
-				);
-				expectListenerForEvent(
-					NativeEvent.BACKGROUND_MESSAGE_RECEIVED
-				).notToBeAdded();
+				expect(mockRegisterHeadlessTask).toBeCalledWith(NativeHeadlessTaskKey, expect.any(Function));
+				expectListenerForEvent(NativeEvent.BACKGROUND_MESSAGE_RECEIVED).notToBeAdded();
 			});
 
 			test('calls background notification handlers when headless task is run', () => {
@@ -192,9 +181,7 @@ describe('PushNotification', () => {
 				pushNotification = new PushNotification();
 				pushNotification.enable();
 
-				expectListenerForEvent(
-					NativeEvent.BACKGROUND_MESSAGE_RECEIVED
-				).toBeAdded();
+				expectListenerForEvent(NativeEvent.BACKGROUND_MESSAGE_RECEIVED).toBeAdded();
 				expect(mockRegisterHeadlessTask).not.toBeCalled();
 				expect(notifyEventListenersAndAwaitHandlers).toBeCalledWith(
 					PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
@@ -208,9 +195,7 @@ describe('PushNotification', () => {
 				listenForEvent(NativeEvent.LAUNCH_NOTIFICATION_OPENED);
 				pushNotification.enable();
 
-				expectListenerForEvent(
-					NativeEvent.LAUNCH_NOTIFICATION_OPENED
-				).toBeAdded();
+				expectListenerForEvent(NativeEvent.LAUNCH_NOTIFICATION_OPENED).toBeAdded();
 				expect(notifyEventListeners).toBeCalledWith(
 					PushNotificationEvent.LAUNCH_NOTIFICATION_OPENED,
 					simplePushMessage
@@ -228,9 +213,7 @@ describe('PushNotification', () => {
 				pushNotification = new PushNotification();
 				pushNotification.enable();
 
-				expectListenerForEvent(
-					NativeEvent.LAUNCH_NOTIFICATION_OPENED
-				).notToBeAdded();
+				expectListenerForEvent(NativeEvent.LAUNCH_NOTIFICATION_OPENED).notToBeAdded();
 				expect(notifyEventListeners).not.toBeCalled();
 				expect(normalizeNativeMessage).not.toBeCalled();
 			});
@@ -240,13 +223,8 @@ describe('PushNotification', () => {
 			listenForEvent(NativeEvent.FOREGROUND_MESSAGE_RECEIVED);
 			pushNotification.enable();
 
-			expectListenerForEvent(
-				NativeEvent.FOREGROUND_MESSAGE_RECEIVED
-			).toBeAdded();
-			expect(notifyEventListeners).toBeCalledWith(
-				PushNotificationEvent.FOREGROUND_MESSAGE_RECEIVED,
-				simplePushMessage
-			);
+			expectListenerForEvent(NativeEvent.FOREGROUND_MESSAGE_RECEIVED).toBeAdded();
+			expect(notifyEventListeners).toBeCalledWith(PushNotificationEvent.FOREGROUND_MESSAGE_RECEIVED, simplePushMessage);
 		});
 
 		test('registers and calls notification opened listener', () => {
@@ -254,10 +232,7 @@ describe('PushNotification', () => {
 			pushNotification.enable();
 
 			expectListenerForEvent(NativeEvent.NOTIFICATION_OPENED).toBeAdded();
-			expect(notifyEventListeners).toBeCalledWith(
-				PushNotificationEvent.NOTIFICATION_OPENED,
-				simplePushMessage
-			);
+			expect(notifyEventListeners).toBeCalledWith(PushNotificationEvent.NOTIFICATION_OPENED, simplePushMessage);
 		});
 
 		test('registers and calls token received listener', () => {
@@ -269,10 +244,7 @@ describe('PushNotification', () => {
 			pushNotification.enable();
 
 			expectListenerForEvent(NativeEvent.TOKEN_RECEIVED).toBeAdded();
-			expect(notifyEventListeners).toBeCalledWith(
-				PushNotificationEvent.TOKEN_RECEIVED,
-				pushToken
-			);
+			expect(notifyEventListeners).toBeCalledWith(PushNotificationEvent.TOKEN_RECEIVED, pushToken);
 		});
 
 		test('token received should not be invoked with the same token twice', () => {
@@ -310,27 +282,20 @@ describe('PushNotification', () => {
 			});
 			pushNotification.enable();
 
-			expect(loggerErrorSpy).toBeCalledWith(
-				expect.stringContaining('Failed to register device'),
-				expect.any(Error)
-			);
+			expect(loggerErrorSpy).toBeCalledWith(expect.stringContaining('Failed to register device'), expect.any(Error));
 		});
 
 		test('only enables once', () => {
 			pushNotification.enable();
 			expect(loggerInfoSpy).not.toBeCalled();
 			pushNotification.enable();
-			expect(loggerInfoSpy).toBeCalledWith(
-				expect.stringContaining('already been enabled')
-			);
+			expect(loggerInfoSpy).toBeCalledWith(expect.stringContaining('already been enabled'));
 		});
 	});
 
 	describe('identifyUser', () => {
 		test('throws error if Push is not enabled', async () => {
-			expect(() => pushNotification.identifyUser(userId, userInfo)).toThrow(
-				notEnabledError
-			);
+			expect(() => pushNotification.identifyUser(userId, userInfo)).toThrow(notEnabledError);
 			expect(mockPushNotificationProvider.identifyUser).not.toBeCalled();
 		});
 
@@ -341,10 +306,7 @@ describe('PushNotification', () => {
 			test('identifies users with pluggables', async () => {
 				await pushNotification.identifyUser(userId, userInfo);
 
-				expect(mockPushNotificationProvider.identifyUser).toBeCalledWith(
-					userId,
-					userInfo
-				);
+				expect(mockPushNotificationProvider.identifyUser).toBeCalledWith(userId, userInfo);
 			});
 
 			test('rejects if there is a failure identifying user', async () => {
@@ -352,18 +314,14 @@ describe('PushNotification', () => {
 					throw new Error();
 				});
 
-				await expect(
-					pushNotification.identifyUser(userId, userInfo)
-				).rejects.toStrictEqual(expect.any(Error));
+				await expect(pushNotification.identifyUser(userId, userInfo)).rejects.toStrictEqual(expect.any(Error));
 			});
 		});
 	});
 
 	describe('getLaunchNotification', () => {
 		test('throws error if Push is not enabled', async () => {
-			await expect(pushNotification.getLaunchNotification()).rejects.toThrow(
-				notEnabledError
-			);
+			await expect(pushNotification.getLaunchNotification()).rejects.toThrow(notEnabledError);
 			expect(AmplifyRTNPushNotification.getLaunchNotification).not.toBeCalled();
 		});
 
@@ -376,9 +334,7 @@ describe('PushNotification', () => {
 
 	describe('getBadgeCount', () => {
 		test('throws error if Push is not enabled', async () => {
-			await expect(pushNotification.getBadgeCount()).rejects.toThrow(
-				notEnabledError
-			);
+			await expect(pushNotification.getBadgeCount()).rejects.toThrow(notEnabledError);
 			expect(AmplifyRTNPushNotification.getBadgeCount).not.toBeCalled();
 		});
 
@@ -392,9 +348,7 @@ describe('PushNotification', () => {
 	describe('setBadgeCount', () => {
 		const count = 12;
 		test('throws error if Push is not enabled', () => {
-			expect(() => pushNotification.setBadgeCount(count)).toThrow(
-				notEnabledError
-			);
+			expect(() => pushNotification.setBadgeCount(count)).toThrow(notEnabledError);
 			expect(AmplifyRTNPushNotification.setBadgeCount).not.toBeCalled();
 		});
 
@@ -407,9 +361,7 @@ describe('PushNotification', () => {
 
 	describe('getPermissionStatus', () => {
 		test('throws error if Push is not enabled', async () => {
-			await expect(pushNotification.getPermissionStatus()).rejects.toThrow(
-				notEnabledError
-			);
+			await expect(pushNotification.getPermissionStatus()).rejects.toThrow(notEnabledError);
 			expect(AmplifyRTNPushNotification.getPermissionStatus).not.toBeCalled();
 		});
 
@@ -422,9 +374,7 @@ describe('PushNotification', () => {
 
 	describe('requestPermissions', () => {
 		test('throws error if Push is not enabled', async () => {
-			await expect(pushNotification.requestPermissions()).rejects.toThrow(
-				notEnabledError
-			);
+			await expect(pushNotification.requestPermissions()).rejects.toThrow(notEnabledError);
 			expect(AmplifyRTNPushNotification.requestPermissions).not.toBeCalled();
 		});
 
@@ -432,27 +382,17 @@ describe('PushNotification', () => {
 			const permissions = { sound: false };
 			pushNotification.enable();
 			await pushNotification.requestPermissions(permissions);
-			expect(AmplifyRTNPushNotification.requestPermissions).toBeCalledWith(
-				permissions
-			);
+			expect(AmplifyRTNPushNotification.requestPermissions).toBeCalledWith(permissions);
 		});
 	});
 
 	describe('Notification listeners', () => {
 		test('throw errors if Push is not enabled', () => {
 			const handler = jest.fn();
-			expect(() =>
-				pushNotification.onNotificationReceivedInBackground(handler)
-			).toThrow(notEnabledError);
-			expect(() =>
-				pushNotification.onNotificationReceivedInForeground(handler)
-			).toThrow(notEnabledError);
-			expect(() => pushNotification.onNotificationOpened(handler)).toThrow(
-				notEnabledError
-			);
-			expect(() => pushNotification.onTokenReceived(handler)).toThrow(
-				notEnabledError
-			);
+			expect(() => pushNotification.onNotificationReceivedInBackground(handler)).toThrow(notEnabledError);
+			expect(() => pushNotification.onNotificationReceivedInForeground(handler)).toThrow(notEnabledError);
+			expect(() => pushNotification.onNotificationOpened(handler)).toThrow(notEnabledError);
+			expect(() => pushNotification.onTokenReceived(handler)).toThrow(notEnabledError);
 		});
 
 		test('can add handlers', () => {
@@ -462,22 +402,10 @@ describe('PushNotification', () => {
 			pushNotification.onNotificationReceivedInForeground(handler);
 			pushNotification.onNotificationOpened(handler);
 			pushNotification.onTokenReceived(handler);
-			expect(addEventListener).toBeCalledWith(
-				PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
-				handler
-			);
-			expect(addEventListener).toBeCalledWith(
-				PushNotificationEvent.FOREGROUND_MESSAGE_RECEIVED,
-				handler
-			);
-			expect(addEventListener).toBeCalledWith(
-				PushNotificationEvent.NOTIFICATION_OPENED,
-				handler
-			);
-			expect(addEventListener).toBeCalledWith(
-				PushNotificationEvent.TOKEN_RECEIVED,
-				handler
-			);
+			expect(addEventListener).toBeCalledWith(PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED, handler);
+			expect(addEventListener).toBeCalledWith(PushNotificationEvent.FOREGROUND_MESSAGE_RECEIVED, handler);
+			expect(addEventListener).toBeCalledWith(PushNotificationEvent.NOTIFICATION_OPENED, handler);
+			expect(addEventListener).toBeCalledWith(PushNotificationEvent.TOKEN_RECEIVED, handler);
 		});
 	});
 });

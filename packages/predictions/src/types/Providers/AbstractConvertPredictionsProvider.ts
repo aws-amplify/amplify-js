@@ -35,21 +35,15 @@ export abstract class AbstractConvertPredictionsProvider extends AbstractPredict
 		}
 	}
 
-	protected translateText(
-		translateTextInput: TranslateTextInput
-	): Promise<TranslateTextOutput> {
+	protected translateText(translateTextInput: TranslateTextInput): Promise<TranslateTextOutput> {
 		throw new Error('convertText is not implemented by this provider');
 	}
 
-	protected convertTextToSpeech(
-		textToSpeechInput: TextToSpeechInput
-	): Promise<TextToSpeechOutput> {
+	protected convertTextToSpeech(textToSpeechInput: TextToSpeechInput): Promise<TextToSpeechOutput> {
 		throw new Error('convertTextToSpeech is not implemented by this provider');
 	}
 
-	protected convertSpeechToText(
-		speechToTextInput: SpeechToTextInput
-	): Promise<SpeechToTextOutput> {
+	protected convertSpeechToText(speechToTextInput: SpeechToTextInput): Promise<SpeechToTextOutput> {
 		throw new Error('convertSpeechToText is not implemented by this provider');
 	}
 }

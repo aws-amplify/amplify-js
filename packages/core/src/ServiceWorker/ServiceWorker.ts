@@ -84,9 +84,7 @@ export class ServiceWorkerClass {
 						}
 						this._registration = registration;
 						this._setupListeners();
-						this._logger.debug(
-							`Service Worker Registration Success: ${registration}`
-						);
+						this._logger.debug(`Service Worker Registration Success: ${registration}`);
 						return resolve(registration);
 					})
 					.catch(error => {
@@ -118,9 +116,7 @@ export class ServiceWorkerClass {
 				this._registration.pushManager.getSubscription().then(subscription => {
 					if (subscription) {
 						this._subscription = subscription;
-						this._logger.debug(
-							`User is subscribed to push: ${JSON.stringify(subscription)}`
-						);
+						this._logger.debug(`User is subscribed to push: ${JSON.stringify(subscription)}`);
 						resolve(subscription);
 					} else {
 						this._logger.debug(`User is NOT subscribed to push`);
@@ -131,9 +127,7 @@ export class ServiceWorkerClass {
 							})
 							.then(subscription => {
 								this._subscription = subscription;
-								this._logger.debug(
-									`User subscribed: ${JSON.stringify(subscription)}`
-								);
+								this._logger.debug(`User subscribed: ${JSON.stringify(subscription)}`);
 								resolve(subscription);
 							})
 							.catch(error => {
@@ -153,9 +147,7 @@ export class ServiceWorkerClass {
 	 */
 	private _urlB64ToUint8Array(base64String: string) {
 		const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-		const base64 = (base64String + padding)
-			.replace(/\-/g, '+')
-			.replace(/_/g, '/');
+		const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
 
 		const rawData = window.atob(base64);
 		const outputArray = new Uint8Array(rawData.length);
@@ -176,9 +168,7 @@ export class ServiceWorkerClass {
 	 **/
 	send(message: object | string) {
 		if (this._serviceWorker) {
-			this._serviceWorker.postMessage(
-				typeof message === 'object' ? JSON.stringify(message) : message
-			);
+			this._serviceWorker.postMessage(typeof message === 'object' ? JSON.stringify(message) : message);
 		}
 	}
 

@@ -9,20 +9,10 @@ export {
 	AsyncItem,
 } from './datastore/datastore';
 
-export {
-	Predicates,
-	ModelPredicateCreator,
-	ModelSortPredicateCreator,
-} from './predicates';
+export { Predicates, ModelPredicateCreator, ModelSortPredicateCreator } from './predicates';
 export { Adapter as StorageAdapter } from './storage/adapter';
 
-import {
-	traverseModel,
-	validatePredicate,
-	USER,
-	isNonModelConstructor,
-	isModelConstructor,
-} from './util';
+import { traverseModel, validatePredicate, USER, isNonModelConstructor, isModelConstructor } from './util';
 
 export { NAMESPACES } from './util';
 

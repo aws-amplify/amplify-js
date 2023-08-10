@@ -10,17 +10,12 @@ import {
 	UserInfo,
 } from '../types';
 
-export type NotificationsSubCategory = Extract<
-	NotificationsSubCategories,
-	'InAppMessaging'
->;
+export type NotificationsSubCategory = Extract<NotificationsSubCategories, 'InAppMessaging'>;
 export type InternalNotificationsSubCategory = 'InternalInAppMessaging';
 
 export interface InAppMessagingInterface {
 	configure: (config: NotificationsConfig) => InAppMessagingConfig;
-	getModuleName: () =>
-		| NotificationsSubCategory
-		| InternalNotificationsSubCategory;
+	getModuleName: () => NotificationsSubCategory | InternalNotificationsSubCategory;
 	getPluggable: (providerName: string) => InAppMessagingProvider;
 	addPluggable: (pluggable: InAppMessagingProvider) => void;
 	removePluggable: (providerName: string) => void;
@@ -28,22 +23,11 @@ export interface InAppMessagingInterface {
 	clearMessages: () => Promise<void[]>;
 	dispatchEvent: (event: InAppMessagingEvent) => Promise<void>;
 	identifyUser: (userId: string, userInfo: UserInfo) => Promise<void[]>;
-	onMessageReceived: (
-		handler: OnMessageInteractionEventHandler
-	) => EventListener<OnMessageInteractionEventHandler>;
-	onMessageDisplayed: (
-		handler: OnMessageInteractionEventHandler
-	) => EventListener<OnMessageInteractionEventHandler>;
-	onMessageDismissed: (
-		handler: OnMessageInteractionEventHandler
-	) => EventListener<OnMessageInteractionEventHandler>;
-	onMessageActionTaken: (
-		handler: OnMessageInteractionEventHandler
-	) => EventListener<OnMessageInteractionEventHandler>;
-	notifyMessageInteraction: (
-		message: InAppMessage,
-		type: InAppMessageInteractionEvent
-	) => void;
+	onMessageReceived: (handler: OnMessageInteractionEventHandler) => EventListener<OnMessageInteractionEventHandler>;
+	onMessageDisplayed: (handler: OnMessageInteractionEventHandler) => EventListener<OnMessageInteractionEventHandler>;
+	onMessageDismissed: (handler: OnMessageInteractionEventHandler) => EventListener<OnMessageInteractionEventHandler>;
+	onMessageActionTaken: (handler: OnMessageInteractionEventHandler) => EventListener<OnMessageInteractionEventHandler>;
+	notifyMessageInteraction: (message: InAppMessage, type: InAppMessageInteractionEvent) => void;
 	setConflictHandler: (handler: InAppMessageConflictHandler) => void;
 }
 
@@ -55,10 +39,7 @@ export interface InAppMessagingProvider extends NotificationsProvider {
 	getInAppMessages(userAgentValue?: string): Promise<any>;
 
 	// filters in-app messages based on event input and provider logic
-	processInAppMessages(
-		messages: InAppMessage[],
-		event: InAppMessagingEvent
-	): Promise<InAppMessage[]>;
+	processInAppMessages(messages: InAppMessage[], event: InAppMessagingEvent): Promise<InAppMessage[]>;
 }
 
 export interface InAppMessagingConfig {
@@ -141,6 +122,4 @@ export enum InAppMessageInteractionEvent {
 	MESSAGE_ACTION_TAKEN = 'MESSAGE_ACTION_TAKEN_EVENT',
 }
 
-export type InAppMessageConflictHandler = (
-	messages: InAppMessage[]
-) => InAppMessage;
+export type InAppMessageConflictHandler = (messages: InAppMessage[]) => InAppMessage;

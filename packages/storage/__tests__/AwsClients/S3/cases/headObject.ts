@@ -4,11 +4,7 @@
 import { headObject } from '../../../../src/AwsClients/S3';
 import { toBase64 } from '../../../../src/AwsClients/S3/utils';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
-import {
-	defaultConfig,
-	DEFAULT_RESPONSE_HEADERS,
-	expectedMetadata,
-} from './shared';
+import { defaultConfig, DEFAULT_RESPONSE_HEADERS, expectedMetadata } from './shared';
 
 // API Reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadObject.html
 const headObjectHappyCase: ApiFunctionalTestCase<typeof headObject> = [
@@ -31,8 +27,7 @@ const headObjectHappyCase: ApiFunctionalTestCase<typeof headObject> = [
 		headers: expect.objectContaining({
 			'x-amz-server-side-encryption-customer-algorithm': 'sseCustomerAlgorithm',
 			'x-amz-server-side-encryption-customer-key': toBase64('SSECustomerKey'),
-			'x-amz-server-side-encryption-customer-key-md5':
-				'u2yTVQWmqQ+XbBDNNmwr4Q==',
+			'x-amz-server-side-encryption-customer-key-md5': 'u2yTVQWmqQ+XbBDNNmwr4Q==',
 		}),
 	}),
 	{

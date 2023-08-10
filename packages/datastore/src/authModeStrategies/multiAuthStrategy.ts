@@ -10,9 +10,7 @@ import {
 	AmplifyContext,
 } from '../types';
 
-function getProviderFromRule(
-	rule: ModelAttributeAuthProperty
-): ModelAttributeAuthProvider {
+function getProviderFromRule(rule: ModelAttributeAuthProperty): ModelAttributeAuthProvider {
 	// private with no provider means userPools
 	if (rule.allow === 'private' && !rule.provider) {
 		return ModelAttributeAuthProvider.USER_POOLS;
@@ -40,28 +38,17 @@ function sortAuthRulesWithPriority(rules: ModelAttributeAuthProperty[]) {
 		ModelAttributeAuthProvider.API_KEY,
 	];
 
-	return [...rules].sort(
-		(a: ModelAttributeAuthProperty, b: ModelAttributeAuthProperty) => {
-			if (a.allow === b.allow) {
-				return (
-					providerSortPriority.indexOf(getProviderFromRule(a)) -
-					providerSortPriority.indexOf(getProviderFromRule(b))
-				);
-			}
+	return [...rules].sort((a: ModelAttributeAuthProperty, b: ModelAttributeAuthProperty) => {
+		if (a.allow === b.allow) {
 			return (
-				allowSortPriority.indexOf(a.allow) - allowSortPriority.indexOf(b.allow)
+				providerSortPriority.indexOf(getProviderFromRule(a)) - providerSortPriority.indexOf(getProviderFromRule(b))
 			);
 		}
-	);
+		return allowSortPriority.indexOf(a.allow) - allowSortPriority.indexOf(b.allow);
+	});
 }
 
-function getAuthRules({
-	rules,
-	currentUser,
-}: {
-	rules: ModelAttributeAuthProperty[];
-	currentUser: unknown;
-}) {
+function getAuthRules({ rules, currentUser }: { rules: ModelAttributeAuthProperty[]; currentUser: unknown }) {
 	// Using Set to ensure uniqueness
 	const authModes = new Set<GRAPHQL_AUTH_MODE>();
 
@@ -69,10 +56,7 @@ function getAuthRules({
 		switch (rule.allow) {
 			case ModelAttributeAuthAllow.CUSTOM:
 				// custom with no provider -> function
-				if (
-					!rule.provider ||
-					rule.provider === ModelAttributeAuthProvider.FUNCTION
-				) {
+				if (!rule.provider || rule.provider === ModelAttributeAuthProvider.FUNCTION) {
 					authModes.add(GRAPHQL_AUTH_MODE.AWS_LAMBDA);
 				}
 				break;
@@ -92,10 +76,7 @@ function getAuthRules({
 				// We shouldn't attempt private if there isn't an authenticated user
 				if (currentUser) {
 					// private with no provider means userPools
-					if (
-						!rule.provider ||
-						rule.provider === ModelAttributeAuthProvider.USER_POOLS
-					) {
+					if (!rule.provider || rule.provider === ModelAttributeAuthProvider.USER_POOLS) {
 						authModes.add(GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS);
 					} else if (rule.provider === ModelAttributeAuthProvider.IAM) {
 						authModes.add(GRAPHQL_AUTH_MODE.AWS_IAM);
@@ -107,10 +88,7 @@ function getAuthRules({
 			case ModelAttributeAuthAllow.PUBLIC: {
 				if (rule.provider === ModelAttributeAuthProvider.IAM) {
 					authModes.add(GRAPHQL_AUTH_MODE.AWS_IAM);
-				} else if (
-					!rule.provider ||
-					rule.provider === ModelAttributeAuthProvider.API_KEY
-				) {
+				} else if (!rule.provider || rule.provider === ModelAttributeAuthProvider.API_KEY) {
 					// public with no provider means apiKey
 					authModes.add(GRAPHQL_AUTH_MODE.API_KEY);
 				}
@@ -135,9 +113,7 @@ function getAuthRules({
  * @param param0 The `{schema, modelName}` to inspect.
  * @returns A sorted array of auth modes to attempt.
  */
-export const multiAuthStrategy: (
-	amplifyContext: AmplifyContext
-) => AuthModeStrategy =
+export const multiAuthStrategy: (amplifyContext: AmplifyContext) => AuthModeStrategy =
 	(amplifyContext: AmplifyContext) =>
 	async ({ schema, modelName }) => {
 		amplifyContext.Auth = amplifyContext.Auth || Auth;
@@ -154,9 +130,7 @@ export const multiAuthStrategy: (
 			const authAttribute = attributes.find(attr => attr.type === 'auth');
 
 			if (authAttribute?.properties?.rules) {
-				const sortedRules = sortAuthRulesWithPriority(
-					authAttribute.properties.rules
-				);
+				const sortedRules = sortAuthRulesWithPriority(authAttribute.properties.rules);
 
 				return getAuthRules({ currentUser, rules: sortedRules });
 			}

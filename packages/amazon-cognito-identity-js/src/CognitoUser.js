@@ -97,18 +97,8 @@ export default class CognitoUser extends InternalCognitoUser {
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	completeNewPasswordChallenge(
-		newPassword,
-		requiredAttributeData,
-		callback,
-		clientMetadata
-	) {
-		super.completeNewPasswordChallenge(
-			newPassword,
-			requiredAttributeData,
-			callback,
-			clientMetadata
-		);
+	completeNewPasswordChallenge(newPassword, requiredAttributeData, callback, clientMetadata) {
+		super.completeNewPasswordChallenge(newPassword, requiredAttributeData, callback, clientMetadata);
 	}
 
 	/**
@@ -134,18 +124,8 @@ export default class CognitoUser extends InternalCognitoUser {
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	confirmRegistration(
-		confirmationCode,
-		forceAliasCreation,
-		callback,
-		clientMetadata
-	) {
-		super.confirmRegistration(
-			confirmationCode,
-			forceAliasCreation,
-			callback,
-			clientMetadata
-		);
+	confirmRegistration(confirmationCode, forceAliasCreation, callback, clientMetadata) {
+		super.confirmRegistration(confirmationCode, forceAliasCreation, callback, clientMetadata);
 	}
 
 	/**
@@ -186,12 +166,7 @@ export default class CognitoUser extends InternalCognitoUser {
 	 * @returns {void}
 	 */
 	changePassword(oldUserPassword, newUserPassword, callback, clientMetadata) {
-		super.changePassword(
-			oldUserPassword,
-			newUserPassword,
-			callback,
-			clientMetadata
-		);
+		super.changePassword(oldUserPassword, newUserPassword, callback, clientMetadata);
 	}
 
 	/**
@@ -212,11 +187,7 @@ export default class CognitoUser extends InternalCognitoUser {
 	 * @returns {void}
 	 */
 	setUserMfaPreference(smsMfaSettings, softwareTokenMfaSettings, callback) {
-		super.setUserMfaPreference(
-			smsMfaSettings,
-			softwareTokenMfaSettings,
-			callback
-		);
+		super.setUserMfaPreference(smsMfaSettings, softwareTokenMfaSettings, callback);
 	}
 
 	/**
@@ -363,12 +334,7 @@ export default class CognitoUser extends InternalCognitoUser {
 	 * @returns {void}
 	 */
 	confirmPassword(confirmationCode, newPassword, callback, clientMetadata) {
-		super.confirmPassword(
-			confirmationCode,
-			newPassword,
-			callback,
-			clientMetadata
-		);
+		super.confirmPassword(confirmationCode, newPassword, callback, clientMetadata);
 	}
 
 	/**

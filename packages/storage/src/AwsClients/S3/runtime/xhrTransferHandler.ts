@@ -43,11 +43,10 @@ export interface XhrTransferHandlerOptions {
  *
  * @internal
  */
-export const xhrTransferHandler: TransferHandler<
-	HttpRequest,
-	HttpResponse,
-	XhrTransferHandlerOptions
-> = (request, options): Promise<HttpResponse> => {
+export const xhrTransferHandler: TransferHandler<HttpRequest, HttpResponse, XhrTransferHandlerOptions> = (
+	request,
+	options
+): Promise<HttpResponse> => {
 	const { url, method, headers, body } = request;
 	const { emitter, responseType, abortSignal } = options;
 
@@ -75,12 +74,7 @@ export const xhrTransferHandler: TransferHandler<
 		}
 
 		xhr.addEventListener('error', () => {
-			const error = simulateAxiosError(
-				NETWORK_ERROR_MESSAGE,
-				NETWORK_ERROR_CODE,
-				xhr!,
-				options
-			);
+			const error = simulateAxiosError(NETWORK_ERROR_MESSAGE, NETWORK_ERROR_CODE, xhr!, options);
 			logger.error(NETWORK_ERROR_MESSAGE);
 			reject(error);
 			xhr = null; // clean up request
@@ -90,12 +84,7 @@ export const xhrTransferHandler: TransferHandler<
 		xhr.addEventListener('abort', () => {
 			// The abort event can be triggered after the error or load event. So we need to check if the xhr is null.
 			if (!xhr || abortSignal?.aborted) return;
-			const error = simulateAxiosError(
-				ABORT_ERROR_MESSAGE,
-				ABORT_ERROR_CODE,
-				xhr,
-				options
-			);
+			const error = simulateAxiosError(ABORT_ERROR_MESSAGE, ABORT_ERROR_CODE, xhr, options);
 			logger.error(ABORT_ERROR_MESSAGE);
 			reject(error);
 			xhr = null; // clean up request
@@ -111,25 +100,19 @@ export const xhrTransferHandler: TransferHandler<
 			const onloadend = () => {
 				// The load event is triggered after the error/abort/load event. So we need to check if the xhr is null.
 				if (!xhr) return;
-				const responseHeaders = convertResponseHeaders(
-					xhr.getAllResponseHeaders()
-				);
+				const responseHeaders = convertResponseHeaders(xhr.getAllResponseHeaders());
 				const responseType = xhr.responseType;
 				const responseBlob = xhr.response as Blob;
 				const responseText = responseType === 'text' ? xhr.responseText : '';
 				const bodyMixIn: ResponseBodyMixin = {
 					blob: () => Promise.resolve(responseBlob),
 					text: withMemoization(() =>
-						responseType === 'blob'
-							? readBlobAsText(responseBlob)
-							: Promise.resolve(responseText)
+						responseType === 'blob' ? readBlobAsText(responseBlob) : Promise.resolve(responseText)
 					),
 					json: () =>
 						Promise.reject(
 							// S3 does not support JSON response. So fail-fast here with nicer error message.
-							new Error(
-								'Parsing response to JSON is not implemented. Please use response.text() instead.'
-							)
+							new Error('Parsing response to JSON is not implemented. Please use response.text() instead.')
 						),
 				};
 				const response: HttpResponse = {
@@ -169,15 +152,10 @@ export const xhrTransferHandler: TransferHandler<
 				reject(canceledError);
 				xhr = null;
 			};
-			abortSignal.aborted
-				? onCancelled()
-				: abortSignal.addEventListener('abort', onCancelled);
+			abortSignal.aborted ? onCancelled() : abortSignal.addEventListener('abort', onCancelled);
 		}
 
-		if (
-			typeof ReadableStream === 'function' &&
-			body instanceof ReadableStream
-		) {
+		if (typeof ReadableStream === 'function' && body instanceof ReadableStream) {
 			// This does not matter as previous implementation uses Axios which does not support ReadableStream anyway.
 			throw new Error('ReadableStream request payload is not supported.');
 		}
@@ -211,8 +189,7 @@ const simulateAxiosCanceledError = (
 	return error;
 };
 
-export const isCancelError = (error: unknown): boolean =>
-	!!error?.['__CANCEL__'];
+export const isCancelError = (error: unknown): boolean => !!error?.['__CANCEL__'];
 /**
  * Convert xhr.getAllResponseHeaders() string to a Record<string, string>. Note that modern browser already returns
  * header names in lowercase.
@@ -222,15 +199,13 @@ const convertResponseHeaders = (xhrHeaders: string): Record<string, string> => {
 	if (!xhrHeaders) {
 		return {};
 	}
-	return xhrHeaders
-		.split('\r\n')
-		.reduce((headerMap: Record<string, string>, line: string) => {
-			const parts = line.split(': ');
-			const header = parts.shift()!;
-			const value = parts.join(': ');
-			headerMap[header.toLowerCase()] = value;
-			return headerMap;
-		}, {});
+	return xhrHeaders.split('\r\n').reduce((headerMap: Record<string, string>, line: string) => {
+		const parts = line.split(': ');
+		const header = parts.shift()!;
+		const value = parts.join(': ');
+		headerMap[header.toLowerCase()] = value;
+		return headerMap;
+	}, {});
 };
 
 const readBlobAsText = (blob: Blob) => {

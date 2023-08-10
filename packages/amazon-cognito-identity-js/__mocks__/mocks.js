@@ -1,11 +1,6 @@
 import Client from '../src/Client';
 import AuthenticationHelper from '../src/AuthenticationHelper';
-import {
-	networkError,
-	getSalt,
-	getVerifiers,
-	genHashDevices,
-} from '../__tests__/constants';
+import { networkError, getSalt, getVerifiers, genHashDevices } from '../__tests__/constants';
 
 /**
  * Mock a single network request to be either successful or fail with an optional data object
@@ -15,17 +10,13 @@ import {
  */
 export function netRequestMockSuccess(success, data = {}) {
 	if (success) {
-		jest
-			.spyOn(Client.prototype, 'request')
-			.mockImplementationOnce((...[, , callback]) => {
-				callback(null, data);
-			});
+		jest.spyOn(Client.prototype, 'request').mockImplementationOnce((...[, , callback]) => {
+			callback(null, data);
+		});
 	} else {
-		jest
-			.spyOn(Client.prototype, 'request')
-			.mockImplementationOnce((...[, , callback]) => {
-				callback(networkError, null);
-			});
+		jest.spyOn(Client.prototype, 'request').mockImplementationOnce((...[, , callback]) => {
+			callback(networkError, null);
+		});
 	}
 }
 
@@ -51,9 +42,7 @@ export function authHelperMock(fnName) {
 			};
 			break;
 	}
-	jest
-		.spyOn(AuthenticationHelper.prototype, fnName)
-		.mockImplementationOnce(implementation);
+	jest.spyOn(AuthenticationHelper.prototype, fnName).mockImplementationOnce(implementation);
 }
 
 export const callback = {

@@ -1,20 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	buildHttpRpcRequest,
-	cognitoIdentityTransferHandler,
-	defaultConfig,
-	getSharedHeaders,
-} from './base';
-import {
-	Endpoint,
-	HttpRequest,
-	HttpResponse,
-	parseJsonBody,
-	parseJsonError,
-	parseMetadata,
-} from '../../clients';
+import { buildHttpRpcRequest, cognitoIdentityTransferHandler, defaultConfig, getSharedHeaders } from './base';
+import { Endpoint, HttpRequest, HttpResponse, parseJsonBody, parseJsonError, parseMetadata } from '../../clients';
 import { composeServiceApi } from '../../clients/internal';
 import type {
 	GetCredentialsForIdentityCommandInput as GetCredentialsForIdentityInput,

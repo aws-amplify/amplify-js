@@ -12,12 +12,5 @@
  *
  * @internal
  */
-export const getCanonicalUri = (
-	pathname: string,
-	uriEscapePath = true
-): string =>
-	pathname
-		? uriEscapePath
-			? encodeURIComponent(pathname).replace(/%2F/g, '/')
-			: pathname
-		: '/';
+export const getCanonicalUri = (pathname: string, uriEscapePath = true): string =>
+	pathname ? (uriEscapePath ? encodeURIComponent(pathname).replace(/%2F/g, '/') : pathname) : '/';

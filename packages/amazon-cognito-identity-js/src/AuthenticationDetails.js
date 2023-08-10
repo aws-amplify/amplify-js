@@ -14,13 +14,7 @@ export default class AuthenticationDetails {
 	 * @param {(AttributeArg[])?} data.AuthParamaters Authentication paramaters for custom auth.
 	 */
 	constructor(data) {
-		const {
-			ValidationData,
-			Username,
-			Password,
-			AuthParameters,
-			ClientMetadata,
-		} = data || {};
+		const { ValidationData, Username, Password, AuthParameters, ClientMetadata } = data || {};
 		this.validationData = ValidationData || {};
 		this.authParameters = AuthParameters || {};
 		this.clientMetadata = ClientMetadata || {};

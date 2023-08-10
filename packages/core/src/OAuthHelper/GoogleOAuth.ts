@@ -11,8 +11,7 @@ const waitForInit = new Promise<void>((res, rej) => {
 		logger.debug('not in the browser, directly resolved');
 		return res();
 	}
-	const ga =
-		window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+	const ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
 	if (ga) {
 		logger.debug('google api already loaded');
 		return res();
@@ -44,8 +43,7 @@ export class GoogleOAuth {
 
 	private _refreshGoogleTokenImpl() {
 		let ga = null;
-		if (browserOrNode().isBrowser)
-			ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+		if (browserOrNode().isBrowser) ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
 		if (!ga) {
 			logger.debug('no gapi auth2 available');
 			return Promise.reject('no gapi auth2 available');
@@ -74,11 +72,7 @@ export class GoogleOAuth {
 									// Not using NonRetryableError so handler will be retried
 									rej('Network error reloading google auth response');
 								} else {
-									rej(
-										new NonRetryableError(
-											'Failed to reload google auth response'
-										)
-									);
+									rej(new NonRetryableError('Failed to reload google auth response'));
 								}
 							});
 					} else {

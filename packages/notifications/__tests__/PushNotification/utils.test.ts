@@ -14,10 +14,7 @@ import {
 	imageUrl,
 	pushNotificationUrl,
 } from '../../__mocks__/data';
-import {
-	normalizeNativeMessage,
-	normalizeNativePermissionStatus,
-} from '../../src/PushNotification/utils';
+import { normalizeNativeMessage, normalizeNativePermissionStatus } from '../../src/PushNotification/utils';
 import { PushNotificationPermissionStatus } from '../../src/PushNotification/types';
 
 jest.mock('@aws-amplify/core');
@@ -122,30 +119,20 @@ describe('PushNotification Utils', () => {
 
 	describe('normalizeNativePermissionStatus', () => {
 		test('normalizes android statuses', () => {
-			expect(normalizeNativePermissionStatus('ShouldRequest')).toBe(
-				PushNotificationPermissionStatus.SHOULD_REQUEST
-			);
+			expect(normalizeNativePermissionStatus('ShouldRequest')).toBe(PushNotificationPermissionStatus.SHOULD_REQUEST);
 			expect(normalizeNativePermissionStatus('ShouldExplainThenRequest')).toBe(
 				PushNotificationPermissionStatus.SHOULD_EXPLAIN_THEN_REQUEST
 			);
-			expect(normalizeNativePermissionStatus('Granted')).toBe(
-				PushNotificationPermissionStatus.GRANTED
-			);
-			expect(normalizeNativePermissionStatus('Denied')).toBe(
-				PushNotificationPermissionStatus.DENIED
-			);
+			expect(normalizeNativePermissionStatus('Granted')).toBe(PushNotificationPermissionStatus.GRANTED);
+			expect(normalizeNativePermissionStatus('Denied')).toBe(PushNotificationPermissionStatus.DENIED);
 		});
 
 		test('normalizes ios statuses', () => {
 			expect(normalizeNativePermissionStatus('NotDetermined')).toBe(
 				PushNotificationPermissionStatus.SHOULD_EXPLAIN_THEN_REQUEST
 			);
-			expect(normalizeNativePermissionStatus('Authorized')).toBe(
-				PushNotificationPermissionStatus.GRANTED
-			);
-			expect(normalizeNativePermissionStatus('Denied')).toBe(
-				PushNotificationPermissionStatus.DENIED
-			);
+			expect(normalizeNativePermissionStatus('Authorized')).toBe(PushNotificationPermissionStatus.GRANTED);
+			expect(normalizeNativePermissionStatus('Denied')).toBe(PushNotificationPermissionStatus.DENIED);
 		});
 	});
 });

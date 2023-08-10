@@ -572,9 +572,7 @@ describe('Getters for AuthHelper class', () => {
 	});
 
 	test('Constant prefix for new password challenge', () => {
-		expect(
-			instance.getNewPasswordRequiredChallengeUserAttributePrefix()
-		).toEqual('userAttributes.');
+		expect(instance.getNewPasswordRequiredChallengeUserAttributePrefix()).toEqual('userAttributes.');
 	});
 });
 
@@ -598,11 +596,9 @@ describe('getLargeAValue()', () => {
 	});
 	test('mock an error from calculate A', async () => {
 		instance.largeAValue = null;
-		jest
-			.spyOn(AuthenticationHelper.prototype, 'calculateA')
-			.mockImplementationOnce((...[, callback]) => {
-				callback(bigIntError, null);
-			});
+		jest.spyOn(AuthenticationHelper.prototype, 'calculateA').mockImplementationOnce((...[, callback]) => {
+			callback(bigIntError, null);
+		});
 
 		await promisifyCallback(instance, 'getLargeAValue').catch(e => {
 			expect(e).toEqual(bigIntError);
@@ -631,9 +627,7 @@ describe('generateRandomSmallA(), generateRandomString()', () => {
 	});
 
 	test('Generate random strings is non-deterministic', () => {
-		expect(instance.generateRandomString()).not.toEqual(
-			instance.generateRandomString()
-		);
+		expect(instance.generateRandomString()).not.toEqual(instance.generateRandomString());
 	});
 });
 
@@ -643,29 +637,17 @@ describe('generateHashDevice()', () => {
 		const username = instance.generateRandomString();
 
 		expect(instance.getVerifierDevices()).toEqual(undefined);
-		await promisifyCallback(
-			instance,
-			'generateHashDevice',
-			deviceGroupKey,
-			username
-		);
+		await promisifyCallback(instance, 'generateHashDevice', deviceGroupKey, username);
 		expect(instance.getVerifierDevices()).toEqual(instance.verifierDevices);
 	});
 	test('modPow throws an error', async () => {
 		const deviceGroupKey = instance.generateRandomString();
 		const username = instance.generateRandomString();
 
-		jest
-			.spyOn(BigInteger.prototype, 'modPow')
-			.mockImplementationOnce((...args) => {
-				args[2](bigIntError, null);
-			});
-		await promisifyCallback(
-			instance,
-			'generateHashDevice',
-			deviceGroupKey,
-			username
-		).catch(e => {
+		jest.spyOn(BigInteger.prototype, 'modPow').mockImplementationOnce((...args) => {
+			args[2](bigIntError, null);
+		});
+		await promisifyCallback(instance, 'generateHashDevice', deviceGroupKey, username).catch(e => {
 			expect(e).toEqual(bigIntError);
 		});
 	});
@@ -683,41 +665,29 @@ describe('calculateA()', () => {
 	});
 
 	test('Calculate A happy path', async () => {
-		const result = await promisifyCallback(
-			instance,
-			'calculateA',
-			instance.smallAValue
-		);
+		const result = await promisifyCallback(instance, 'calculateA', instance.smallAValue);
 		//length of the big integer
 		expect(Object.keys(result).length).toEqual(223);
 	});
 
 	test('calculateA gets an error from g.modPow', async () => {
-		jest
-			.spyOn(BigInteger.prototype, 'modPow')
-			.mockImplementationOnce((...[, , callback]) => {
-				callback(bigIntError, null);
-			});
+		jest.spyOn(BigInteger.prototype, 'modPow').mockImplementationOnce((...[, , callback]) => {
+			callback(bigIntError, null);
+		});
 
-		await promisifyCallback(instance, 'calculateA', instance.smallAValue).catch(
-			e => {
-				expect(e).toEqual(bigIntError);
-			}
-		);
+		await promisifyCallback(instance, 'calculateA', instance.smallAValue).catch(e => {
+			expect(e).toEqual(bigIntError);
+		});
 	});
 
 	test('A mod N equals BigInt 0 should throw an illegal parameter error', async () => {
-		jest
-			.spyOn(BigInteger.prototype, 'modPow')
-			.mockImplementationOnce((...[, , callback]) => {
-				callback(null, BigInteger.ZERO);
-			});
+		jest.spyOn(BigInteger.prototype, 'modPow').mockImplementationOnce((...[, , callback]) => {
+			callback(null, BigInteger.ZERO);
+		});
 
-		await promisifyCallback(instance, 'calculateA', instance.smallAValue).catch(
-			e => {
-				expect(e).toEqual(new Error('Illegal paramater. A mod N cannot be 0.'));
-			}
-		);
+		await promisifyCallback(instance, 'calculateA', instance.smallAValue).catch(e => {
+			expect(e).toEqual(new Error('Illegal paramater. A mod N cannot be 0.'));
+		});
 	});
 });
 
@@ -726,9 +696,7 @@ describe('calculateU()', () => {
 		const hexA = new BigInteger('abcd1234', 16);
 		const hexB = new BigInteger('deadbeef', 16);
 
-		const hashed = instance.hexHash(
-			instance.padHex(hexA) + instance.padHex(hexB)
-		);
+		const hashed = instance.hexHash(instance.padHex(hexA) + instance.padHex(hexB));
 		const expected = new BigInteger(hashed, 16);
 		const result = instance.calculateU(hexA, hexB);
 		expect(expected).toEqual(result);
@@ -789,54 +757,35 @@ describe('getPasswordAuthKey()', () => {
 	});
 
 	test('failing within calculateS callback', async () => {
-		jest
-			.spyOn(AuthenticationHelper.prototype, 'calculateS')
-			.mockImplementationOnce((...[, , callback]) => {
-				callback(bigIntError, null);
-			});
-		await promisifyCallback(
-			instance,
-			'getPasswordAuthenticationKey',
-			username,
-			password,
-			realServerValue,
-			salt
-		).catch(e => {
-			expect(e).toEqual(bigIntError);
+		jest.spyOn(AuthenticationHelper.prototype, 'calculateS').mockImplementationOnce((...[, , callback]) => {
+			callback(bigIntError, null);
 		});
+		await promisifyCallback(instance, 'getPasswordAuthenticationKey', username, password, realServerValue, salt).catch(
+			e => {
+				expect(e).toEqual(bigIntError);
+			}
+		);
 	});
 
 	test('Getting a bad server value', async () => {
-		await promisifyCallback(
-			instance,
-			'getPasswordAuthenticationKey',
-			username,
-			password,
-			badServerValue,
-			salt
-		).catch(e => {
-			expect(e).toEqual(new Error('B cannot be zero.'));
-		});
+		await promisifyCallback(instance, 'getPasswordAuthenticationKey', username, password, badServerValue, salt).catch(
+			e => {
+				expect(e).toEqual(new Error('B cannot be zero.'));
+			}
+		);
 	});
 
 	test('Getting a U Value of zero', async () => {
-		jest
-			.spyOn(AuthenticationHelper.prototype, 'calculateU')
-			.mockImplementationOnce(() => {
-				return BigInteger.ZERO;
-			});
+		jest.spyOn(AuthenticationHelper.prototype, 'calculateU').mockImplementationOnce(() => {
+			return BigInteger.ZERO;
+		});
 
 		const realServerValue = new BigInteger('deadbeef', 16);
-		await promisifyCallback(
-			instance,
-			'getPasswordAuthenticationKey',
-			username,
-			password,
-			realServerValue,
-			salt
-		).catch(e => {
-			expect(e).toEqual(new Error('U cannot be zero.'));
-		});
+		await promisifyCallback(instance, 'getPasswordAuthenticationKey', username, password, realServerValue, salt).catch(
+			e => {
+				expect(e).toEqual(new Error('U cannot be zero.'));
+			}
+		);
 	});
 });
 
@@ -851,47 +800,32 @@ describe('calculateS()', () => {
 	test('happy path should callback with null, and a bigInteger', async () => {
 		instance.k = new BigInteger('deadbeef', 16);
 		instance.UValue = instance.calculateU(instance.largeAValue, xValue);
-		const result = await promisifyCallback(
-			instance,
-			'calculateS',
-			xValue,
-			serverValue
-		);
+		const result = await promisifyCallback(instance, 'calculateS', xValue, serverValue);
 		//length of the big integer
 		expect(Object.keys(result).length).toEqual(113);
 	});
 
 	test('modPow throws an error ', async () => {
-		jest
-			.spyOn(BigInteger.prototype, 'modPow')
-			.mockImplementationOnce((...args) => {
-				args[2](bigIntError, null);
-			});
+		jest.spyOn(BigInteger.prototype, 'modPow').mockImplementationOnce((...args) => {
+			args[2](bigIntError, null);
+		});
 
-		await promisifyCallback(instance, 'calculateS', xValue, serverValue).catch(
-			e => {
-				expect(e).toEqual(bigIntError);
-			}
-		);
+		await promisifyCallback(instance, 'calculateS', xValue, serverValue).catch(e => {
+			expect(e).toEqual(bigIntError);
+		});
 	});
 
 	test('second modPow throws an error ', async () => {
 		// need to mock a working modPow to then fail in the second mock
-		jest
-			.spyOn(BigInteger.prototype, 'modPow')
-			.mockImplementationOnce((...args) => {
-				args[2](null, new BigInteger('deadbeef', 16));
-			});
-		jest
-			.spyOn(BigInteger.prototype, 'modPow')
-			.mockImplementationOnce((...args) => {
-				args[2](bigIntError, null);
-			});
+		jest.spyOn(BigInteger.prototype, 'modPow').mockImplementationOnce((...args) => {
+			args[2](null, new BigInteger('deadbeef', 16));
+		});
+		jest.spyOn(BigInteger.prototype, 'modPow').mockImplementationOnce((...args) => {
+			args[2](bigIntError, null);
+		});
 
-		await promisifyCallback(instance, 'calculateS', xValue, serverValue).catch(
-			e => {
-				expect(e).toEqual(bigIntError);
-			}
-		);
+		await promisifyCallback(instance, 'calculateS', xValue, serverValue).catch(e => {
+			expect(e).toEqual(bigIntError);
+		});
 	});
 });

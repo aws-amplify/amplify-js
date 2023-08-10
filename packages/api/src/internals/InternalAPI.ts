@@ -1,11 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	GraphQLOperation,
-	GraphQLOptions,
-	GraphQLResult,
-	OperationTypeNode,
-} from '@aws-amplify/api-graphql';
+import { GraphQLOperation, GraphQLOptions, GraphQLResult, OperationTypeNode } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
 import { RestAPIClass } from '@aws-amplify/api-rest';
 import { Auth } from '@aws-amplify/auth';
@@ -84,16 +79,8 @@ export class InternalAPIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	get(
-		apiName: string,
-		path: string,
-		init: { [key: string]: any }
-	): Promise<any> {
-		return this._restApi.get(
-			apiName,
-			path,
-			this.getInitWithCustomUserAgentDetails(init, ApiAction.Get)
-		);
+	get(apiName: string, path: string, init: { [key: string]: any }): Promise<any> {
+		return this._restApi.get(apiName, path, this.getInitWithCustomUserAgentDetails(init, ApiAction.Get));
 	}
 
 	/**
@@ -103,16 +90,8 @@ export class InternalAPIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	post(
-		apiName: string,
-		path: string,
-		init: { [key: string]: any }
-	): Promise<any> {
-		return this._restApi.post(
-			apiName,
-			path,
-			this.getInitWithCustomUserAgentDetails(init, ApiAction.Post)
-		);
+	post(apiName: string, path: string, init: { [key: string]: any }): Promise<any> {
+		return this._restApi.post(apiName, path, this.getInitWithCustomUserAgentDetails(init, ApiAction.Post));
 	}
 
 	/**
@@ -122,16 +101,8 @@ export class InternalAPIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	put(
-		apiName: string,
-		path: string,
-		init: { [key: string]: any }
-	): Promise<any> {
-		return this._restApi.put(
-			apiName,
-			path,
-			this.getInitWithCustomUserAgentDetails(init, ApiAction.Put)
-		);
+	put(apiName: string, path: string, init: { [key: string]: any }): Promise<any> {
+		return this._restApi.put(apiName, path, this.getInitWithCustomUserAgentDetails(init, ApiAction.Put));
 	}
 
 	/**
@@ -141,16 +112,8 @@ export class InternalAPIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	patch(
-		apiName: string,
-		path: string,
-		init: { [key: string]: any }
-	): Promise<any> {
-		return this._restApi.patch(
-			apiName,
-			path,
-			this.getInitWithCustomUserAgentDetails(init, ApiAction.Patch)
-		);
+	patch(apiName: string, path: string, init: { [key: string]: any }): Promise<any> {
+		return this._restApi.patch(apiName, path, this.getInitWithCustomUserAgentDetails(init, ApiAction.Patch));
 	}
 
 	/**
@@ -160,16 +123,8 @@ export class InternalAPIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	del(
-		apiName: string,
-		path: string,
-		init: { [key: string]: any }
-	): Promise<any> {
-		return this._restApi.del(
-			apiName,
-			path,
-			this.getInitWithCustomUserAgentDetails(init, ApiAction.Del)
-		);
+	del(apiName: string, path: string, init: { [key: string]: any }): Promise<any> {
+		return this._restApi.del(apiName, path, this.getInitWithCustomUserAgentDetails(init, ApiAction.Del));
 	}
 
 	/**
@@ -179,16 +134,8 @@ export class InternalAPIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	head(
-		apiName: string,
-		path: string,
-		init: { [key: string]: any }
-	): Promise<any> {
-		return this._restApi.head(
-			apiName,
-			path,
-			this.getInitWithCustomUserAgentDetails(init, ApiAction.Head)
-		);
+	head(apiName: string, path: string, init: { [key: string]: any }): Promise<any> {
+		return this._restApi.head(apiName, path, this.getInitWithCustomUserAgentDetails(init, ApiAction.Head));
 	}
 
 	/**
@@ -214,10 +161,7 @@ export class InternalAPIClass {
 		return false;
 	}
 
-	private getInitWithCustomUserAgentDetails(
-		init: { [key: string]: any },
-		action: ApiAction
-	) {
+	private getInitWithCustomUserAgentDetails(init: { [key: string]: any }, action: ApiAction) {
 		const customUserAgentDetails: CustomUserAgentDetails = {
 			category: Category.API,
 			action,
@@ -273,11 +217,7 @@ export class InternalAPIClass {
 			...customUserAgentDetails,
 		};
 
-		return this._graphqlApi.graphql(
-			options,
-			additionalHeaders,
-			apiUserAgentDetails
-		);
+		return this._graphqlApi.graphql(options, additionalHeaders, apiUserAgentDetails);
 	}
 }
 

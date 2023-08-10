@@ -1,8 +1,5 @@
 import { Credentials, ClientDevice } from '@aws-amplify/core';
-import {
-	putEvents,
-	updateEndpoint,
-} from '@aws-amplify/core/internals/aws-clients/pinpoint';
+import { putEvents, updateEndpoint } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import { AWSPinpointProvider as AnalyticsProvider } from '../../src/Providers/AWSPinpointProvider';
 
 const endpointConfigure = {
@@ -146,11 +143,9 @@ let resolve = null;
 let reject = null;
 
 // Example: aws-amplify/5.2.4 analytics/1 framework/0
-const expectedRecordUserAgentRegex =
-	/^aws-amplify\/[\d\.]+ analytics\/1 framework\/0/;
+const expectedRecordUserAgentRegex = /^aws-amplify\/[\d\.]+ analytics\/1 framework\/0/;
 
-const expectedUpdateEndpointUserAgentRegex =
-	/^aws-amplify\/[\d\.]+ analytics\/2 framework\/0/;
+const expectedUpdateEndpointUserAgentRegex = /^aws-amplify\/[\d\.]+ analytics\/2 framework\/0/;
 
 jest.mock('uuid', () => {
 	return { v1: () => 'uuid' };
@@ -240,11 +235,9 @@ describe('AnalyticsProvider test', () => {
 		test('record without credentials', async () => {
 			const analytics = new AnalyticsProvider();
 			analytics.configure(options);
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.reject('err');
+			});
 
 			await analytics.record('params', { resolve, reject });
 			expect(reject).toBeCalled();
@@ -255,11 +248,9 @@ describe('AnalyticsProvider test', () => {
 			const analytics = new AnalyticsProvider();
 			const { appId, ...rest } = options;
 			analytics.configure(rest);
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.resolve(credentials);
-				});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
 
 			await analytics.record('params', { resolve, reject });
 			expect(reject).toBeCalled();
@@ -270,11 +261,9 @@ describe('AnalyticsProvider test', () => {
 			const analytics = new AnalyticsProvider();
 			const { region, ...rest } = options;
 			analytics.configure(rest);
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.resolve(credentials);
-				});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
 
 			await analytics.record('params', { resolve, reject });
 			expect(reject).toBeCalled();
@@ -410,11 +399,9 @@ describe('AnalyticsProvider test', () => {
 				const analytics = new AnalyticsProvider();
 				analytics.configure(options);
 
-				const spyon = jest
-					.spyOn(navigator, 'sendBeacon')
-					.mockImplementationOnce(() => {
-						return true;
-					});
+				const spyon = jest.spyOn(navigator, 'sendBeacon').mockImplementationOnce(() => {
+					return true;
+				});
 
 				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 					return Promise.resolve(credentials);
@@ -483,9 +470,7 @@ describe('AnalyticsProvider test', () => {
 					expect.objectContaining({
 						credentials,
 						region: 'region',
-						userAgentValue: expect.stringMatching(
-							expectedUpdateEndpointUserAgentRegex
-						),
+						userAgentValue: expect.stringMatching(expectedUpdateEndpointUserAgentRegex),
 					}),
 					{
 						ApplicationId: 'appId',
@@ -528,9 +513,7 @@ describe('AnalyticsProvider test', () => {
 					expect.objectContaining({
 						credentials,
 						region: 'region',
-						userAgentValue: expect.stringMatching(
-							expectedUpdateEndpointUserAgentRegex
-						),
+						userAgentValue: expect.stringMatching(expectedUpdateEndpointUserAgentRegex),
 					}),
 					{
 						ApplicationId: 'appId',
@@ -575,9 +558,7 @@ describe('AnalyticsProvider test', () => {
 					expect.objectContaining({
 						credentials,
 						region: 'region',
-						userAgentValue: expect.stringMatching(
-							expectedUpdateEndpointUserAgentRegex
-						),
+						userAgentValue: expect.stringMatching(expectedUpdateEndpointUserAgentRegex),
 					}),
 					{
 						ApplicationId: 'appId',
@@ -642,9 +623,7 @@ describe('AnalyticsProvider test', () => {
 					expect.objectContaining({
 						credentials,
 						region: 'region',
-						userAgentValue: expect.stringMatching(
-							expectedUpdateEndpointUserAgentRegex
-						),
+						userAgentValue: expect.stringMatching(expectedUpdateEndpointUserAgentRegex),
 					}),
 					{
 						ApplicationId: 'appId',
@@ -741,9 +720,7 @@ describe('AnalyticsProvider test', () => {
 					throw mockExceededMaxError;
 				});
 
-				jest
-					.spyOn(Credentials, 'get')
-					.mockImplementationOnce(() => Promise.resolve(credentials));
+				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => Promise.resolve(credentials));
 
 				const params = { event: { name: '_update_endpoint', immediate: true } };
 

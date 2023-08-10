@@ -10,6 +10,4 @@ export const AppState = {
 };
 
 // if not in react native, just use local storage
-export const AsyncStorage = browserOrNode().isBrowser
-	? new StorageHelper().getStorage()
-	: undefined;
+export const AsyncStorage = browserOrNode().isBrowser ? new StorageHelper().getStorage() : undefined;

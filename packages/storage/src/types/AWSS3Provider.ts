@@ -11,10 +11,7 @@ import {
 	_Object,
 } from '../AwsClients/S3';
 import { StorageOptions, StorageAccessLevel } from './Storage';
-import {
-	UploadTaskCompleteEvent,
-	UploadTaskProgressEvent,
-} from '../providers/AWSS3UploadTask';
+import { UploadTaskCompleteEvent, UploadTaskProgressEvent } from '../providers/AWSS3UploadTask';
 import { UploadTask } from './Provider';
 
 type ListObjectsCommandOutputContent = _Object;
@@ -30,10 +27,7 @@ export interface FileMetadata {
 
 export type CommonStorageOptions = Omit<
 	StorageOptions,
-	| 'credentials'
-	| 'region'
-	| 'bucket'
-	| 'dangerouslyConnectToHttpEndpointForTesting'
+	'credentials' | 'region' | 'bucket' | 'dangerouslyConnectToHttpEndpointForTesting'
 >;
 
 export type S3ProviderGetConfig = CommonStorageOptions & {
@@ -62,9 +56,7 @@ export type S3ProviderGetPropertiesConfig = CommonStorageOptions & {
 	SSECustomerKeyMD5?: HeadObjectInput['SSECustomerKeyMD5'];
 };
 
-export type S3ProviderGetOuput<T> = T extends { download: true }
-	? GetObjectOutput
-	: string;
+export type S3ProviderGetOuput<T> = T extends { download: true } ? GetObjectOutput : string;
 
 type _S3ProviderPutConfig = {
 	progressCallback?: (progress: any) => any;
@@ -198,6 +190,4 @@ export type PutResult = {
 	key: string;
 };
 
-export type S3ProviderPutOutput<T> = T extends { resumable: true }
-	? UploadTask
-	: Promise<PutResult>;
+export type S3ProviderPutOutput<T> = T extends { resumable: true } ? UploadTask : Promise<PutResult>;

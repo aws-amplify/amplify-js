@@ -9,11 +9,9 @@ describe('SessionTracker test', () => {
 		test('happy case', () => {
 			tracker.mockClear();
 
-			const spyon = jest
-				.spyOn(document, 'addEventListener')
-				.mockImplementationOnce(() => {
-					return;
-				});
+			const spyon = jest.spyOn(document, 'addEventListener').mockImplementationOnce(() => {
+				return;
+			});
 
 			const sessionTracker = new SessionTracker(tracker, {
 				enable: true,
@@ -79,11 +77,9 @@ describe('SessionTracker test', () => {
 				enable: true,
 			});
 
-			const spyon = jest
-				.spyOn(document, 'removeEventListener')
-				.mockImplementationOnce(() => {
-					return;
-				});
+			const spyon = jest.spyOn(document, 'removeEventListener').mockImplementationOnce(() => {
+				return;
+			});
 			sessionTracker.configure({
 				enable: false,
 			});

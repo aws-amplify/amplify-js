@@ -23,9 +23,7 @@ describe('PubSub', () => {
 		it('should fail when configured for SSR', () => {
 			Amplify.configure({ ssr: true });
 
-			expect(() =>
-				PubSub.subscribe('topic')
-			).toThrowErrorMatchingInlineSnapshot(
+			expect(() => PubSub.subscribe('topic')).toThrowErrorMatchingInlineSnapshot(
 				`"Subscriptions are not supported for Server-Side Rendering (SSR)"`
 			);
 		});

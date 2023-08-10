@@ -26,20 +26,11 @@ export class InternalCognitoUserPool {
 	 *        flag is set to true.
 	 */
 	constructor(data, wrapRefreshSessionCallback) {
-		const {
-			UserPoolId,
-			ClientId,
-			endpoint,
-			fetchOptions,
-			AdvancedSecurityDataCollectionFlag,
-		} = data || {};
+		const { UserPoolId, ClientId, endpoint, fetchOptions, AdvancedSecurityDataCollectionFlag } = data || {};
 		if (!UserPoolId || !ClientId) {
 			throw new Error('Both UserPoolId and ClientId are required.');
 		}
-		if (
-			UserPoolId.length > USER_POOL_ID_MAX_LENGTH ||
-			!/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId)
-		) {
+		if (UserPoolId.length > USER_POOL_ID_MAX_LENGTH || !/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId)) {
 			throw new Error('Invalid UserPoolId format.');
 		}
 		const region = UserPoolId.split('_')[0];
@@ -53,8 +44,7 @@ export class InternalCognitoUserPool {
 		 * By default, AdvancedSecurityDataCollectionFlag is set to true,
 		 * if no input value is provided.
 		 */
-		this.advancedSecurityDataCollectionFlag =
-			AdvancedSecurityDataCollectionFlag !== false;
+		this.advancedSecurityDataCollectionFlag = AdvancedSecurityDataCollectionFlag !== false;
 
 		this.storage = data.Storage || new StorageHelper().getStorage();
 
@@ -101,15 +91,7 @@ export class InternalCognitoUserPool {
 	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
-	signUp(
-		username,
-		password,
-		userAttributes,
-		validationData,
-		callback,
-		clientMetadata,
-		userAgentValue
-	) {
+	signUp(username, password, userAttributes, validationData, callback, clientMetadata, userAgentValue) {
 		const jsonReq = {
 			ClientId: this.clientId,
 			Username: username,
@@ -183,17 +165,15 @@ export class InternalCognitoUserPool {
 			return undefined;
 		}
 		/* eslint-disable */
-		const amazonCognitoAdvancedSecurityDataConst =
-			AmazonCognitoAdvancedSecurityData;
+		const amazonCognitoAdvancedSecurityDataConst = AmazonCognitoAdvancedSecurityData;
 		/* eslint-enable */
 
 		if (this.advancedSecurityDataCollectionFlag) {
-			const advancedSecurityData =
-				amazonCognitoAdvancedSecurityDataConst.getData(
-					username,
-					this.userPoolId,
-					this.clientId
-				);
+			const advancedSecurityData = amazonCognitoAdvancedSecurityDataConst.getData(
+				username,
+				this.userPoolId,
+				this.clientId
+			);
 			if (advancedSecurityData) {
 				const userContextData = {
 					EncodedData: advancedSecurityData,

@@ -3,16 +3,9 @@
 
 import { EventListener } from '../common';
 import { AWSPinpointProviderConfig } from '../common/AWSPinpointProviderCommon/types';
-import {
-	NotificationsProvider,
-	NotificationsSubCategory as NotificationsSubCategories,
-	UserInfo,
-} from '../types';
+import { NotificationsProvider, NotificationsSubCategory as NotificationsSubCategories, UserInfo } from '../types';
 
-export type NotificationsSubCategory = Extract<
-	NotificationsSubCategories,
-	'PushNotification'
->;
+export type NotificationsSubCategory = Extract<NotificationsSubCategories, 'PushNotification'>;
 
 export interface PushNotificationInterface {
 	configure: (config: PushNotificationConfig) => PushNotificationConfig;
@@ -26,21 +19,15 @@ export interface PushNotificationInterface {
 	getBadgeCount: () => Promise<number>;
 	setBadgeCount: (count: number) => void;
 	getPermissionStatus: () => Promise<PushNotificationPermissionStatus>;
-	requestPermissions: (
-		permissions?: PushNotificationPermissions
-	) => Promise<boolean>;
+	requestPermissions: (permissions?: PushNotificationPermissions) => Promise<boolean>;
 	onNotificationReceivedInBackground: (
 		handler: OnPushNotificationMessageHandler
 	) => EventListener<OnPushNotificationMessageHandler>;
 	onNotificationReceivedInForeground: (
 		handler: OnPushNotificationMessageHandler
 	) => EventListener<OnPushNotificationMessageHandler>;
-	onNotificationOpened: (
-		handler: OnPushNotificationMessageHandler
-	) => EventListener<OnPushNotificationMessageHandler>;
-	onTokenReceived: (
-		handler: OnTokenReceivedHandler
-	) => EventListener<OnTokenReceivedHandler>;
+	onNotificationOpened: (handler: OnPushNotificationMessageHandler) => EventListener<OnPushNotificationMessageHandler>;
+	onTokenReceived: (handler: OnTokenReceivedHandler) => EventListener<OnTokenReceivedHandler>;
 }
 
 export interface PushNotificationProvider extends NotificationsProvider {
@@ -77,8 +64,7 @@ interface ApnsPlatformOptions {
 	subtitle?: string;
 }
 
-export interface PushNotificationPermissions
-	extends Partial<Record<string, boolean>> {
+export interface PushNotificationPermissions extends Partial<Record<string, boolean>> {
 	alert?: boolean;
 	badge?: boolean;
 	sound?: boolean;
@@ -93,9 +79,7 @@ export enum PushNotificationPermissionStatus {
 
 export type OnTokenReceivedHandler = (token: string) => any;
 
-export type OnPushNotificationMessageHandler = (
-	message: PushNotificationMessage
-) => any;
+export type OnPushNotificationMessageHandler = (message: PushNotificationMessage) => any;
 
 export const enum PushNotificationEvent {
 	BACKGROUND_MESSAGE_RECEIVED,

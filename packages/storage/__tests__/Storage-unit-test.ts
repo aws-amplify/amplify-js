@@ -4,11 +4,7 @@
 import { Credentials } from '@aws-amplify/core';
 import { AWSS3Provider as AWSStorageProvider } from '../src/providers/AWSS3Provider';
 import { Storage as StorageClass } from '../src/Storage';
-import {
-	S3ProviderListOutput,
-	Storage as StorageCategory,
-	StorageProvider,
-} from '../src';
+import { S3ProviderListOutput, Storage as StorageCategory, StorageProvider } from '../src';
 import { isCancelError } from '../src/AwsClients/S3/utils';
 import { getPrefix } from '../src/common/S3ClientUtils';
 import { AWSS3UploadTask } from '../src/providers/AWSS3UploadTask';
@@ -80,15 +76,8 @@ class TestCustomProvider implements StorageProvider {
  * implement custom providers. Exercise caution when modifying this class as additive changes to this interface can
  * break customers when not marked as optional.
  */
-class TestCustomProviderWithCopy
-	extends TestCustomProvider
-	implements StorageProvider
-{
-	copy(
-		src: { key: string },
-		dest: { key: string },
-		config?: CustomProviderConfig
-	) {
+class TestCustomProviderWithCopy extends TestCustomProvider implements StorageProvider {
+	copy(src: { key: string }, dest: { key: string }, config?: CustomProviderConfig) {
 		return Promise.resolve({ newKey: 'copy' });
 	}
 }
@@ -98,10 +87,7 @@ class TestCustomProviderWithCopy
  * implement custom providers. Exercise caution when modifying this class as additive changes to this interface can
  * break customers when not marked as optional.
  */
-class TestCustomProviderWithGetProperties
-	extends TestCustomProvider
-	implements StorageProvider
-{
+class TestCustomProviderWithGetProperties extends TestCustomProvider implements StorageProvider {
 	getProperties(key: string, options?: CustomProviderConfig) {
 		return Promise.resolve({ newKey: 'getProperties' });
 	}
@@ -112,15 +98,8 @@ class TestCustomProviderWithGetProperties
  * implement custom providers. Exercise caution when modifying this class as additive changes to this interface can
  * break customers when not marked as optional.
  */
-class TestCustomProviderWithOptionalAPI
-	extends TestCustomProvider
-	implements StorageProvider
-{
-	copy(
-		src: { key: string },
-		dest: { key: string },
-		config?: CustomProviderConfig
-	) {
+class TestCustomProviderWithOptionalAPI extends TestCustomProvider implements StorageProvider {
+	copy(src: { key: string }, dest: { key: string }, config?: CustomProviderConfig) {
 		return Promise.resolve({ newKey: 'copy' });
 	}
 
@@ -143,9 +122,7 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 
-			expect(storage.getPluggable(provider.getProviderName())).toBeInstanceOf(
-				AWSStorageProvider
-			);
+			expect(storage.getPluggable(provider.getProviderName())).toBeInstanceOf(AWSStorageProvider);
 		});
 	});
 
@@ -381,13 +358,9 @@ describe('Storage', () => {
 					});
 				});
 
-				storage.vault.put(
-					'test-key',
-					new Blob([new Uint8Array(1024 * 1024 * 6)]),
-					{
-						resumable: true,
-					}
-				);
+				storage.vault.put('test-key', new Blob([new Uint8Array(1024 * 1024 * 6)]), {
+					resumable: true,
+				});
 
 				expect(AWSS3UploadTask).toHaveBeenCalledWith(
 					expect.objectContaining({
@@ -624,9 +597,7 @@ describe('Storage', () => {
 			provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			getSpy = jest
-				.spyOn(AWSStorageProvider.prototype, 'get')
-				.mockImplementation(() => Promise.resolve('url'));
+			getSpy = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => Promise.resolve('url'));
 		});
 
 		afterEach(() => {
@@ -643,11 +614,9 @@ describe('Storage', () => {
 
 			test('get object with download', async () => {
 				const blob = { Body: new Blob(['body']) };
-				getSpy = jest
-					.spyOn(AWSStorageProvider.prototype, 'get')
-					.mockImplementation(() => {
-						return Promise.resolve(blob);
-					});
+				getSpy = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
+					return Promise.resolve(blob);
+				});
 				const getOutput = await storage.get('key', { download: true });
 				expect(getSpy).toBeCalled();
 				expect(getOutput).toBe(blob);
@@ -733,17 +702,15 @@ describe('Storage', () => {
 			provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			getPropertiesSpy = jest
-				.spyOn(AWSStorageProvider.prototype, 'getProperties')
-				.mockImplementation(() =>
-					Promise.resolve({
-						contentType: 'text/plain',
-						contentLength: 100,
-						eTag: 'etag',
-						lastModified: new Date('20 Oct 2023'),
-						metadata: { key: '' },
-					})
-				);
+			getPropertiesSpy = jest.spyOn(AWSStorageProvider.prototype, 'getProperties').mockImplementation(() =>
+				Promise.resolve({
+					contentType: 'text/plain',
+					contentLength: 100,
+					eTag: 'etag',
+					lastModified: new Date('20 Oct 2023'),
+					metadata: { key: '' },
+				})
+			);
 		});
 
 		afterEach(() => {
@@ -784,10 +751,7 @@ describe('Storage', () => {
 
 		test('get properties with custom provider should work with no generic type provided', async () => {
 			const customProvider = new TestCustomProviderWithGetProperties();
-			const customProviderGetPropertiesSpy = jest.spyOn(
-				customProvider,
-				'getProperties'
-			);
+			const customProviderGetPropertiesSpy = jest.spyOn(customProvider, 'getProperties');
 			storage.addPluggable(customProvider);
 			await storage.getProperties('key', {
 				provider: 'customProvider',
@@ -797,10 +761,7 @@ describe('Storage', () => {
 
 		test('getProperties object with custom provider', async () => {
 			const customProvider = new TestCustomProviderWithGetProperties();
-			const customProviderGetPropertiesSpy = jest.spyOn(
-				customProvider,
-				'getProperties'
-			);
+			const customProviderGetPropertiesSpy = jest.spyOn(customProvider, 'getProperties');
 			storage.addPluggable(customProvider);
 			await storage.getProperties<TestCustomProviderWithGetProperties>('key', {
 				foo: true,
@@ -812,10 +773,7 @@ describe('Storage', () => {
 
 		test('getProperties object with optionalAPI custom provider', async () => {
 			const customProvider = new TestCustomProviderWithOptionalAPI();
-			const customProviderGetPropertiesSpy = jest.spyOn(
-				customProvider,
-				'getProperties'
-			);
+			const customProviderGetPropertiesSpy = jest.spyOn(customProvider, 'getProperties');
 			storage.addPluggable(customProvider);
 			await storage.getProperties<TestCustomProviderWithOptionalAPI>('key', {
 				foo: true,
@@ -885,14 +843,12 @@ describe('Storage', () => {
 		});
 
 		test('put with resumable flag', async () => {
-			putSpy = jest
-				.spyOn(AWSStorageProvider.prototype, 'put')
-				.mockImplementation(() => ({
-					pause: jest.fn(),
-					resume: jest.fn(),
-					percent: 0,
-					isInProgress: false,
-				}));
+			putSpy = jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => ({
+				pause: jest.fn(),
+				resume: jest.fn(),
+				percent: 0,
+				isInProgress: false,
+			}));
 			const blob = new Blob(['blob']);
 			const uploadTask = storage.put('key', blob, {
 				resumable: true,
@@ -1021,9 +977,7 @@ describe('Storage', () => {
 				hasNextToken: false,
 				nextToken: undefined,
 			};
-			listSpy = jest
-				.spyOn(AWSStorageProvider.prototype, 'list')
-				.mockImplementation(() => Promise.resolve(result));
+			listSpy = jest.spyOn(AWSStorageProvider.prototype, 'list').mockImplementation(() => Promise.resolve(result));
 		});
 
 		afterEach(() => {
@@ -1147,16 +1101,15 @@ describe('Storage', () => {
 			const customProviderWithCopy = new TestCustomProviderWithCopy();
 			const customProviderCopySpy = jest.spyOn(customProviderWithCopy, 'copy');
 			storage.addPluggable(customProviderWithCopy);
-			const copyRes: { newKey: string } =
-				await storage.copy<TestCustomProviderWithCopy>(
-					{ key: 'src' },
-					{ key: 'dest' },
-					{
-						provider: 'customProvider',
-						foo: false,
-						bar: 40,
-					}
-				);
+			const copyRes: { newKey: string } = await storage.copy<TestCustomProviderWithCopy>(
+				{ key: 'src' },
+				{ key: 'dest' },
+				{
+					provider: 'customProvider',
+					foo: false,
+					bar: 40,
+				}
+			);
 			expect(customProviderCopySpy).toBeCalled();
 			expect(copyRes.newKey).toEqual('copy');
 		});
@@ -1165,16 +1118,15 @@ describe('Storage', () => {
 			const customProviderWithCopy = new TestCustomProviderWithOptionalAPI();
 			const customProviderCopySpy = jest.spyOn(customProviderWithCopy, 'copy');
 			storage.addPluggable(customProviderWithCopy);
-			const copyRes: { newKey: string } =
-				await storage.copy<TestCustomProviderWithOptionalAPI>(
-					{ key: 'src' },
-					{ key: 'dest' },
-					{
-						provider: 'customProvider',
-						foo: false,
-						bar: 40,
-					}
-				);
+			const copyRes: { newKey: string } = await storage.copy<TestCustomProviderWithOptionalAPI>(
+				{ key: 'src' },
+				{ key: 'dest' },
+				{
+					provider: 'customProvider',
+					foo: false,
+					bar: 40,
+				}
+			);
 			expect(customProviderCopySpy).toBeCalled();
 			expect(copyRes.newKey).toEqual('copy');
 		});

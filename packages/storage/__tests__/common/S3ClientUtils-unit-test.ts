@@ -1,18 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	getPrefix,
-	loadS3Config,
-	credentialsProvider,
-} from '../../src/common/S3ClientUtils';
-import {
-	ICredentials,
-	Credentials,
-	getAmplifyUserAgent,
-	StorageAction,
-	Category,
-} from '@aws-amplify/core';
+import { getPrefix, loadS3Config, credentialsProvider } from '../../src/common/S3ClientUtils';
+import { ICredentials, Credentials, getAmplifyUserAgent, StorageAction, Category } from '@aws-amplify/core';
 
 const credentials: ICredentials = {
 	accessKeyId: 'accessKeyId',
@@ -82,9 +72,7 @@ describe('S3ClientUtils tests', () => {
 
 	test('createS3Client injects credentials provider', async () => {
 		expect.assertions(3);
-		jest
-			.spyOn(Credentials, 'get')
-			.mockImplementationOnce(() => Promise.resolve(credentials));
+		jest.spyOn(Credentials, 'get').mockImplementationOnce(() => Promise.resolve(credentials));
 		const s3Config = loadS3Config({
 			region: 'us-west-2',
 			useAccelerateEndpoint: true,
@@ -106,17 +94,13 @@ describe('S3ClientUtils tests', () => {
 	});
 
 	test('credentialsProvider test', async () => {
-		jest
-			.spyOn(Credentials, 'get')
-			.mockImplementationOnce(() => Promise.resolve(credentials));
+		jest.spyOn(Credentials, 'get').mockImplementationOnce(() => Promise.resolve(credentials));
 		const credentials = await credentialsProvider();
 		expect(credentials).toStrictEqual(credentials);
 	});
 
 	test('credentialsProvider - Credentials.get error', async () => {
-		jest
-			.spyOn(Credentials, 'get')
-			.mockImplementationOnce(() => Promise.reject('err'));
+		jest.spyOn(Credentials, 'get').mockImplementationOnce(() => Promise.reject('err'));
 		const credentials = await credentialsProvider();
 		expect(credentials).toStrictEqual({ accessKeyId: '', secretAccessKey: '' });
 	});

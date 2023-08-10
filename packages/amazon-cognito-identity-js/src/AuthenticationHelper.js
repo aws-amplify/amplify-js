@@ -54,10 +54,7 @@ export default class AuthenticationHelper {
 	constructor(PoolName) {
 		this.N = new BigInteger(initN, 16);
 		this.g = new BigInteger('2', 16);
-		this.k = new BigInteger(
-			this.hexHash(`${this.padHex(this.N)}${this.padHex(this.g)}`),
-			16
-		);
+		this.k = new BigInteger(this.hexHash(`${this.padHex(this.N)}${this.padHex(this.g)}`), 16);
 
 		this.smallAValue = this.generateRandomSmallA();
 		this.getLargeAValue(() => {});
@@ -240,10 +237,7 @@ export default class AuthenticationHelper {
 	 * @private
 	 */
 	computehkdf(ikm, salt) {
-		const infoBitsBuffer = Buffer.concat([
-			this.infoBits,
-			Buffer.from(String.fromCharCode(1), 'utf8'),
-		]);
+		const infoBitsBuffer = Buffer.concat([this.infoBits, Buffer.from(String.fromCharCode(1), 'utf8')]);
 
 		const awsCryptoHash = new Sha256(salt);
 		awsCryptoHash.update(ikm);
@@ -268,13 +262,7 @@ export default class AuthenticationHelper {
 	 * @param {nodeCallback<Buffer>} callback Called with (err, hkdfValue)
 	 * @returns {void}
 	 */
-	getPasswordAuthenticationKey(
-		username,
-		password,
-		serverBValue,
-		salt,
-		callback
-	) {
+	getPasswordAuthenticationKey(username, password, serverBValue, salt, callback) {
 		if (serverBValue.mod(this.N).equals(BigInteger.ZERO)) {
 			throw new Error('B cannot be zero.');
 		}
@@ -288,10 +276,7 @@ export default class AuthenticationHelper {
 		const usernamePassword = `${this.poolName}${username}:${password}`;
 		const usernamePasswordHash = this.hash(usernamePassword);
 
-		const xValue = new BigInteger(
-			this.hexHash(this.padHex(salt) + usernamePasswordHash),
-			16
-		);
+		const xValue = new BigInteger(this.hexHash(this.padHex(salt) + usernamePasswordHash), 16);
 		this.calculateS(xValue, serverBValue, (err, sValue) => {
 			if (err) {
 				callback(err, null);
@@ -320,16 +305,12 @@ export default class AuthenticationHelper {
 			}
 
 			const intValue2 = serverBValue.subtract(this.k.multiply(gModPowXN));
-			intValue2.modPow(
-				this.smallAValue.add(this.UValue.multiply(xValue)),
-				this.N,
-				(err2, result) => {
-					if (err2) {
-						callback(err2, null);
-					}
-					callback(null, result.mod(this.N));
+			intValue2.modPow(this.smallAValue.add(this.UValue.multiply(xValue)), this.N, (err2, result) => {
+				if (err2) {
+					callback(err2, null);
 				}
-			);
+				callback(null, result.mod(this.N));
+			});
 		});
 	}
 
@@ -394,9 +375,7 @@ export default class AuthenticationHelper {
 				.join('');
 
 			/* After flipping the bits, add one to get the 2's complement representation */
-			const flippedBitsBI = new BigInteger(invertedNibbles, 16).add(
-				BigInteger.ONE
-			);
+			const flippedBitsBI = new BigInteger(invertedNibbles, 16).add(BigInteger.ONE);
 
 			hexStr = flippedBitsBI.toString(16);
 

@@ -1,24 +1,13 @@
 import { Signer } from '@aws-amplify/core';
 
-jest
-	.spyOn(Signer, 'sign')
-	.mockImplementation(
-		(request: any, access_info: any, service_info?: any) => request
-	);
+jest.spyOn(Signer, 'sign').mockImplementation((request: any, access_info: any, service_info?: any) => request);
 
 jest.mock('axios', () => {
 	return {
 		default: signed_params => {
 			return new Promise((res, rej) => {
-				const withCredentialsSuffix =
-					signed_params && signed_params.withCredentials
-						? '-withCredentials'
-						: '';
-				if (
-					signed_params &&
-					signed_params.headers &&
-					signed_params.headers.reject
-				) {
+				const withCredentialsSuffix = signed_params && signed_params.withCredentials ? '-withCredentials' : '';
+				if (signed_params && signed_params.headers && signed_params.headers.reject) {
 					rej({
 						data: 'error' + withCredentialsSuffix,
 					});
@@ -60,11 +49,9 @@ describe('RestClient test', () => {
 		cancelMock = jest.fn();
 		tokenMock = jest.fn();
 		isCancelSpy = jest.spyOn(axios, 'isCancel').mockReturnValue(true);
-		cancelTokenSpy = jest
-			.spyOn(axios.CancelToken, 'source')
-			.mockImplementation(() => {
-				return { token: tokenMock, cancel: cancelMock };
-			});
+		cancelTokenSpy = jest.spyOn(axios.CancelToken, 'source').mockImplementation(() => {
+			return { token: tokenMock, cancel: cancelMock };
+		});
 	});
 
 	describe('ajax', () => {
@@ -150,9 +137,7 @@ describe('RestClient test', () => {
 
 			const restClient = new RestClient(apiOptions);
 
-			expect(await restClient.ajax('url', 'method', { body: 'body' })).toEqual(
-				'data'
-			);
+			expect(await restClient.ajax('url', 'method', { body: 'body' })).toEqual('data');
 		});
 
 		test('ajax with formData', async () => {
@@ -171,9 +156,7 @@ describe('RestClient test', () => {
 			const formData = new FormData();
 			formData.append('key', 'contents');
 
-			expect(
-				await restClient.ajax('url', 'method', { body: formData })
-			).toEqual('contents');
+			expect(await restClient.ajax('url', 'method', { body: formData })).toEqual('contents');
 		});
 
 		test('ajax with custom responseType', async () => {
@@ -230,9 +213,7 @@ describe('RestClient test', () => {
 
 			const restClient = new RestClient(apiOptions);
 
-			expect(
-				await restClient.ajax('url', 'method', { withCredentials: true })
-			).toEqual('data-withCredentials');
+			expect(await restClient.ajax('url', 'method', { withCredentials: true })).toEqual('data-withCredentials');
 		});
 	});
 
@@ -485,18 +466,13 @@ describe('RestClient test', () => {
 		test('request exist', () => {
 			const restClient = new RestClient(apiOptions);
 			const request = Promise.resolve();
-			restClient.updateRequestToBeCancellable(
-				request,
-				restClient.getCancellableToken()
-			);
+			restClient.updateRequestToBeCancellable(request, restClient.getCancellableToken());
 			expect(restClient.cancel(request)).toBe(true);
 		});
 
 		test('happy case', () => {
 			const restClient = new RestClient(apiOptions);
-			jest
-				.spyOn(RestClient.prototype, 'ajax')
-				.mockImplementationOnce(() => Promise.resolve());
+			jest.spyOn(RestClient.prototype, 'ajax').mockImplementationOnce(() => Promise.resolve());
 
 			const cancellableToken = restClient.getCancellableToken();
 			const request = restClient.ajax('url', 'method', { cancellableToken });

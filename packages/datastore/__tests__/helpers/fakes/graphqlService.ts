@@ -1,11 +1,6 @@
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { parse } from 'graphql';
-import {
-	Schema,
-	SchemaModel,
-	isModelAttributePrimaryKey,
-	__modelMeta__,
-} from '../../../src/types';
+import { Schema, SchemaModel, isModelAttributePrimaryKey, __modelMeta__ } from '../../../src/types';
 import { validatePredicate, getTimestampFields } from '../../../src/util';
 import { ModelPredicateCreator } from '../../../src/predicates';
 import { initSchema as _initSchema } from '../../../src/datastore/datastore';
@@ -51,14 +46,8 @@ export class FakeGraphQLService {
 	public tableDefinitions = new Map<string, SchemaModel>();
 	public PKFields = new Map<string, string[]>();
 	public stopSubscriptionMessages = false;
-	public timestampFields = new Map<
-		string,
-		{ createdAt: string; updatedAt: string }
-	>();
-	public observers = new Map<
-		string,
-		ZenObservable.SubscriptionObserver<any>[]
-	>();
+	public timestampFields = new Map<string, { createdAt: string; updatedAt: string }>();
+	public observers = new Map<string, ZenObservable.SubscriptionObserver<any>[]>();
 	/**
 	 * All in-flight mutations. Used solely for observability in tests.
 	 * When dealing with concurrent mutations or increased latency,
@@ -79,10 +68,7 @@ export class FakeGraphQLService {
 	/**
 	 * Singleton middleware, basically.
 	 */
-	public intercept: (request: GraphQLRequest, next: () => any) => any = (
-		request,
-		next
-	) => next();
+	public intercept: (request: GraphQLRequest, next: () => any) => any = (request, next) => next();
 
 	/**
 	 * Artificial latencies to introduce to the imagined network boundaries.
@@ -132,9 +118,7 @@ export class FakeGraphQLService {
 		/**
 		 * "Materialized" jitter from -jitter to +jitter.
 		 */
-		const jitter = Math.floor(
-			Math.random() * this.latencies.jitter * 2 - this.latencies.jitter
-		);
+		const jitter = Math.floor(Math.random() * this.latencies.jitter * 2 - this.latencies.jitter);
 		const jitteredMs = Math.max(ms + jitter, 0);
 		return pause(jitteredMs);
 	}
@@ -145,9 +129,7 @@ export class FakeGraphQLService {
 	 * @returns singular name of model (e.g. "Todo")
 	 */
 	private findSingularName(pluralName: string): string {
-		const model = Object.values(this.schema.models).find(
-			m => m.pluralName === pluralName
-		);
+		const model = Object.values(this.schema.models).find(m => m.pluralName === pluralName);
 		if (!model) throw new Error(`No model found for plural name ${pluralName}`);
 		return model.name;
 	}
@@ -161,29 +143,21 @@ export class FakeGraphQLService {
 		const name = q.name.value;
 		const selections = q.selectionSet.selections[0];
 		const selection = selections.name.value;
-		const type = selection.match(
-			/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/
-		)[1];
+		const type = selection.match(/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/)[1];
 
 		let table;
 		// `selection` here could be `syncTodos` or `syncCompositePKChildren`
 		if (type === 'sync' || type === 'list') {
 			// e.g. `Models`
-			const pluralName = selection.match(
-				/^(create|sync|get|list)([A-Za-z]+)$/
-			)[2];
+			const pluralName = selection.match(/^(create|sync|get|list)([A-Za-z]+)$/)[2];
 			table = this.findSingularName(pluralName);
 		} else {
-			table = selection.match(
-				/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/
-			)[2];
+			table = selection.match(/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/)[2];
 		}
 
 		const items =
 			operation === 'query'
-				? selections?.selectionSet?.selections[0]?.selectionSet?.selections?.map(
-						i => i.name.value
-				  )
+				? selections?.selectionSet?.selections[0]?.selectionSet?.selections?.map(i => i.name.value)
 				: selections?.selectionSet?.selections?.map(i => i.name.value);
 
 		return { operation, name, selection, type, table, items };
@@ -197,26 +171,16 @@ export class FakeGraphQLService {
 		});
 
 		if (!condition) {
-			this.log(
-				'checking satisfiesCondition',
-				'matches all for `null` conditions'
-			);
+			this.log('checking satisfiesCondition', 'matches all for `null` conditions');
 			return true;
 		}
 
 		const modelDefinition = this.schema.models[tableName];
-		const predicate = ModelPredicateCreator.createFromAST(
-			modelDefinition,
-			condition
-		);
-		const isMatch = validatePredicate(item, 'and', [
-			ModelPredicateCreator.getPredicates(predicate)!,
-		]);
+		const predicate = ModelPredicateCreator.createFromAST(modelDefinition, condition);
+		const isMatch = validatePredicate(item, 'and', [ModelPredicateCreator.getPredicates(predicate)!]);
 
 		this.log('satisfiesCondition result', {
-			effectivePredicate: JSON.stringify(
-				ModelPredicateCreator.getPredicates(predicate)
-			),
+			effectivePredicate: JSON.stringify(ModelPredicateCreator.getPredicates(predicate)),
 			isMatch,
 		});
 
@@ -299,9 +263,7 @@ export class FakeGraphQLService {
 	}
 
 	private makeExtraFieldInputError(tableName, operation, fields) {
-		const properOperationName = `${operation[0].toUpperCase()}${operation.substring(
-			1
-		)}`;
+		const properOperationName = `${operation[0].toUpperCase()}${operation.substring(1)}`;
 		const inputName = `${properOperationName}${tableName}Input`;
 		return {
 			data: null,
@@ -345,18 +307,14 @@ export class FakeGraphQLService {
 	private ownerFields(tableName) {
 		const def = this.tableDefinitions.get(tableName)!;
 		const auth = def.attributes?.find(a => a.type === 'auth');
-		const ownerFields = auth?.properties?.rules
-			.map(rule => rule.ownerField)
-			.filter(f => f);
+		const ownerFields = auth?.properties?.rules.map(rule => rule.ownerField).filter(f => f);
 
 		return ownerFields || ['owner'];
 	}
 
 	private writeableFields(tableName) {
 		const def = this.tableDefinitions.get(tableName)!;
-		return Object.keys(def.fields).filter(
-			field => !def.fields[field]?.isReadOnly
-		);
+		return Object.keys(def.fields).filter(field => !def.fields[field]?.isReadOnly);
 	}
 
 	private identifyExtraValues(expected, actual) {
@@ -380,16 +338,9 @@ export class FakeGraphQLService {
 		switch (operation) {
 			case 'create':
 			case 'update':
-				const unexpectedFields = this.identifyExtraValues(
-					[...writeableFields, '_version'],
-					Object.keys(record)
-				);
+				const unexpectedFields = this.identifyExtraValues([...writeableFields, '_version'], Object.keys(record));
 				if (unexpectedFields.length > 0) {
-					error = this.makeExtraFieldInputError(
-						tableName,
-						operation,
-						unexpectedFields
-					);
+					error = this.makeExtraFieldInputError(tableName, operation, unexpectedFields);
 				}
 				for (const ownerField of this.ownerFields(tableName)) {
 					if (record[ownerField] === null) {
@@ -417,9 +368,7 @@ export class FakeGraphQLService {
 	}
 
 	private populatedFields(record) {
-		return Object.fromEntries(
-			Object.entries(record).filter(([key, value]) => value !== undefined)
-		);
+		return Object.fromEntries(Object.entries(record).filter(([key, value]) => value !== undefined));
 	}
 
 	private autoMerge(existing, updated) {
@@ -474,13 +423,7 @@ export class FakeGraphQLService {
 	 * maintaining the artificial latencies of all other in-flight requests. When simulating a request from
 	 * an external client, we want the response back ASAP in order to accurately test outbox merging consistently.
 	 */
-	public async notifySubscribers(
-		tableName,
-		type,
-		data,
-		selection,
-		ignoreLatency = false
-	) {
+	public async notifySubscribers(tableName, type, data, selection, ignoreLatency = false) {
 		!ignoreLatency && (await this.jitteredPause(this.latencies.subscriber));
 		const observers = this.getObservers(tableName, type);
 		const typeName = {
@@ -528,10 +471,7 @@ export class FakeGraphQLService {
 		return this.graphql(request, ignoreLatency);
 	}
 
-	public request(
-		{ query, variables, authMode, authToken },
-		ignoreLatency = false
-	) {
+	public request({ query, variables, authMode, authToken }, ignoreLatency = false) {
 		this.log('API Request', {
 			query,
 			variables: JSON.stringify(variables, null, 2),
@@ -584,9 +524,7 @@ export class FakeGraphQLService {
 				} else if (type === 'list' || type === 'sync') {
 					data = {
 						[selection]: {
-							items: [...table.values()].filter(item =>
-								this.satisfiesCondition(tableName, item, variables.filter)
-							),
+							items: [...table.values()].filter(item => this.satisfiesCondition(tableName, item, variables.filter)),
 							nextToken: null,
 							startedAt: new Date().getTime(),
 						},
@@ -674,9 +612,7 @@ export class FakeGraphQLService {
 							[selection]: null,
 						};
 						errors = [this.makeConditionalUpdateFailedError(selection)];
-					} else if (
-						!this.satisfiesCondition(tableName, existing, variables.condition)
-					) {
+					} else if (!this.satisfiesCondition(tableName, existing, variables.condition)) {
 						data = {
 							[selection]: null,
 						};

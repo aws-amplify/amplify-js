@@ -10,5 +10,4 @@
  *
  * @internal
  */
-export const getSkewCorrectedDate = (systemClockOffset: number): Date =>
-	new Date(Date.now() + systemClockOffset);
+export const getSkewCorrectedDate = (systemClockOffset: number): Date => new Date(Date.now() + systemClockOffset);

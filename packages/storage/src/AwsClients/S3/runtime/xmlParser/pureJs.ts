@@ -20,8 +20,7 @@ export const parser = {
 			parseTagValue: false,
 			trimValues: false,
 			removeNSPrefix: true,
-			tagValueProcessor: (_, val) =>
-				val.trim() === '' && val.includes('\n') ? '' : undefined,
+			tagValueProcessor: (_, val) => (val.trim() === '' && val.includes('\n') ? '' : undefined),
 		});
 		parser.addEntity('#xD', '\r');
 		parser.addEntity('#10', '\n');

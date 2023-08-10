@@ -26,48 +26,34 @@ describe('Signer.sign', () => {
 	});
 
 	test.each(
-		signingTestTable.map(
-			({ name, request, queryParams, options, expectedAuthorization }) => {
-				const updatedRequest = {
-					...getDefaultRequest(),
-					...request,
-				};
-				queryParams?.forEach(([key, value]) => {
-					updatedRequest.url?.searchParams.append(key, value);
-				});
-				const updatedOptions: SignRequestOptions = {
-					...signingOptions,
-					...options,
-				};
-				return [name, updatedRequest, updatedOptions, expectedAuthorization];
-			}
-		)
-	)(
-		'signs request with %s',
-		(
-			_,
-			{ url, ...request },
-			{ credentials, signingRegion, signingService },
-			expected
-		) => {
-			const { accessKeyId, secretAccessKey, sessionToken } = credentials;
-			const accessInfo = {
-				access_key: accessKeyId,
-				secret_key: secretAccessKey,
-				session_token: sessionToken,
+		signingTestTable.map(({ name, request, queryParams, options, expectedAuthorization }) => {
+			const updatedRequest = {
+				...getDefaultRequest(),
+				...request,
 			};
-			const serviceInfo = {
-				region: signingRegion,
-				service: signingService,
+			queryParams?.forEach(([key, value]) => {
+				updatedRequest.url?.searchParams.append(key, value);
+			});
+			const updatedOptions: SignRequestOptions = {
+				...signingOptions,
+				...options,
 			};
-			const signedRequest = Signer.sign(
-				{ ...request, url: url.toString() },
-				accessInfo,
-				serviceInfo as any
-			);
-			expect(signedRequest.headers?.Authorization).toBe(expected);
-		}
-	);
+			return [name, updatedRequest, updatedOptions, expectedAuthorization];
+		})
+	)('signs request with %s', (_, { url, ...request }, { credentials, signingRegion, signingService }, expected) => {
+		const { accessKeyId, secretAccessKey, sessionToken } = credentials;
+		const accessInfo = {
+			access_key: accessKeyId,
+			secret_key: secretAccessKey,
+			session_token: sessionToken,
+		};
+		const serviceInfo = {
+			region: signingRegion,
+			service: signingService,
+		};
+		const signedRequest = Signer.sign({ ...request, url: url.toString() }, accessInfo, serviceInfo as any);
+		expect(signedRequest.headers?.Authorization).toBe(expected);
+	});
 
 	describe('Error handling', () => {
 		const { accessKeyId, secretAccessKey, sessionToken } = credentials;
@@ -120,9 +106,7 @@ describe('Signer.sign', () => {
 			headers: { Authorization },
 		} = Signer.sign(request, accessInfo, undefined);
 		expect(Authorization).toEqual(
-			expect.stringContaining(
-				'Credential=access-key-id/20200918/us-east-1/foo/aws4_request'
-			)
+			expect.stringContaining('Credential=access-key-id/20200918/us-east-1/foo/aws4_request')
 		);
 	});
 });
@@ -133,48 +117,34 @@ describe('Signer.signUrl', () => {
 	});
 
 	test.each(
-		signingTestTable.map(
-			({ name, request, queryParams, options, expectedUrl }) => {
-				const updatedRequest = {
-					...getDefaultRequest(),
-					...request,
-				};
-				queryParams?.forEach(([key, value]) => {
-					updatedRequest.url?.searchParams.append(key, value);
-				});
-				const updatedOptions: SignRequestOptions = {
-					...signingOptions,
-					...options,
-				};
-				return [name, updatedRequest, updatedOptions, expectedUrl];
-			}
-		)
-	)(
-		'signs url with %s',
-		(
-			_,
-			{ url, ...request },
-			{ credentials, signingRegion, signingService },
-			expected
-		) => {
-			const { accessKeyId, secretAccessKey, sessionToken } = credentials;
-			const accessInfo = {
-				access_key: accessKeyId,
-				secret_key: secretAccessKey,
-				session_token: sessionToken,
+		signingTestTable.map(({ name, request, queryParams, options, expectedUrl }) => {
+			const updatedRequest = {
+				...getDefaultRequest(),
+				...request,
 			};
-			const serviceInfo = {
-				region: signingRegion,
-				service: signingService,
+			queryParams?.forEach(([key, value]) => {
+				updatedRequest.url?.searchParams.append(key, value);
+			});
+			const updatedOptions: SignRequestOptions = {
+				...signingOptions,
+				...options,
 			};
-			const signedUrl = Signer.signUrl(
-				{ ...request, url: url.toString() },
-				accessInfo,
-				serviceInfo as any
-			);
-			expect(signedUrl).toBe(expected);
-		}
-	);
+			return [name, updatedRequest, updatedOptions, expectedUrl];
+		})
+	)('signs url with %s', (_, { url, ...request }, { credentials, signingRegion, signingService }, expected) => {
+		const { accessKeyId, secretAccessKey, sessionToken } = credentials;
+		const accessInfo = {
+			access_key: accessKeyId,
+			secret_key: secretAccessKey,
+			session_token: sessionToken,
+		};
+		const serviceInfo = {
+			region: signingRegion,
+			service: signingService,
+		};
+		const signedUrl = Signer.signUrl({ ...request, url: url.toString() }, accessInfo, serviceInfo as any);
+		expect(signedUrl).toBe(expected);
+	});
 
 	test('should populate signing region and service from url', () => {
 		const request = {
@@ -188,9 +158,7 @@ describe('Signer.signUrl', () => {
 		};
 		const signedUrl = Signer.signUrl(request, accessInfo);
 		expect(signedUrl).toEqual(
-			expect.stringContaining(
-				'X-Amz-Credential=access-key-id%2F20200918%2Fus-east-1%2Ffoo%2Faws4_request'
-			)
+			expect.stringContaining('X-Amz-Credential=access-key-id%2F20200918%2Fus-east-1%2Ffoo%2Faws4_request')
 		);
 	});
 
@@ -210,9 +178,6 @@ describe('Signer.signUrl', () => {
 		};
 		const signedUrl = Signer.signUrl(request, accessInfo, serviceInfo);
 		expect(signedUrl).toEqual(expect.stringContaining('X-Amz-Security-Token'));
-		expect(getSignatureSpy).toBeCalledWith(
-			expect.anything(),
-			expect.objectContaining({ sessionToken: undefined })
-		);
+		expect(getSignatureSpy).toBeCalledWith(expect.anything(), expect.objectContaining({ sessionToken: undefined }));
 	});
 });

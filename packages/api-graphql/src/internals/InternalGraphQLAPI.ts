@@ -1,13 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	DocumentNode,
-	OperationDefinitionNode,
-	print,
-	parse,
-	GraphQLError,
-	OperationTypeNode,
-} from 'graphql';
+import { DocumentNode, OperationDefinitionNode, print, parse, GraphQLError, OperationTypeNode } from 'graphql';
 import Observable from 'zen-observable-ts';
 import {
 	Amplify,
@@ -20,22 +13,13 @@ import {
 import { InternalPubSub } from '@aws-amplify/pubsub/internals';
 import { Auth } from '@aws-amplify/auth';
 import { Cache } from '@aws-amplify/cache';
-import {
-	GraphQLAuthError,
-	GraphQLOptions,
-	GraphQLResult,
-	GraphQLOperation,
-} from '../types';
+import { GraphQLAuthError, GraphQLOptions, GraphQLResult, GraphQLOperation } from '../types';
 import { RestClient } from '@aws-amplify/api-rest';
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 const logger = new Logger('GraphQLAPI');
 
-export const graphqlOperation = (
-	query,
-	variables = {},
-	authToken?: string
-) => ({
+export const graphqlOperation = (query, variables = {}, authToken?: string) => ({
 	query,
 	variables,
 	authToken,
@@ -85,10 +69,7 @@ export class InternalGraphQLAPIClass {
 			});
 		}
 
-		if (
-			typeof opt.graphql_headers !== 'undefined' &&
-			typeof opt.graphql_headers !== 'function'
-		) {
+		if (typeof opt.graphql_headers !== 'undefined' && typeof opt.graphql_headers !== 'function') {
 			logger.warn('graphql_headers should be a function');
 			opt.graphql_headers = undefined;
 		}
@@ -117,14 +98,9 @@ export class InternalGraphQLAPIClass {
 		}
 	}
 
-	private async _headerBasedAuth(
-		defaultAuthenticationType?,
-		additionalHeaders: { [key: string]: string } = {}
-	) {
-		const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
-			this._options;
-		const authenticationType =
-			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
+	private async _headerBasedAuth(defaultAuthenticationType?, additionalHeaders: { [key: string]: string } = {}) {
+		const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } = this._options;
+		const authenticationType = defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
 		let headers = {};
 
 		switch (authenticationType) {
@@ -200,8 +176,7 @@ export class InternalGraphQLAPIClass {
 	 */
 	getGraphqlOperationType(operation: GraphQLOperation): OperationTypeNode {
 		const doc = parse(operation);
-		const definitions =
-			doc.definitions as ReadonlyArray<OperationDefinitionNode>;
+		const definitions = doc.definitions as ReadonlyArray<OperationDefinitionNode>;
 		const [{ operation: operationType }] = definitions;
 
 		return operationType;
@@ -219,16 +194,10 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
-		const query =
-			typeof paramQuery === 'string'
-				? parse(paramQuery)
-				: parse(print(paramQuery));
+		const query = typeof paramQuery === 'string' ? parse(paramQuery) : parse(print(paramQuery));
 
-		const [operationDef = {}] = query.definitions.filter(
-			def => def.kind === 'OperationDefinition'
-		);
-		const { operation: operationType } =
-			operationDef as OperationDefinitionNode;
+		const [operationDef = {}] = query.definitions.filter(def => def.kind === 'OperationDefinition');
+		const { operation: operationType } = operationDef as OperationDefinitionNode;
 
 		const headers = additionalHeaders || {};
 
@@ -252,17 +221,10 @@ export class InternalGraphQLAPIClass {
 					initParams,
 					customUserAgentDetails
 				);
-				this._api.updateRequestToBeCancellable(
-					responsePromise,
-					cancellableToken
-				);
+				this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
 				return responsePromise;
 			case 'subscription':
-				return this._graphqlSubscribe(
-					{ query, variables, authMode },
-					headers,
-					customUserAgentDetails
-				);
+				return this._graphqlSubscribe({ query, variables, authMode }, headers, customUserAgentDetails);
 			default:
 				throw new Error(`invalid operation type: ${operationType}`);
 		}
@@ -284,12 +246,9 @@ export class InternalGraphQLAPIClass {
 		} = this._options;
 
 		const headers = {
-			...(!customGraphqlEndpoint &&
-				(await this._headerBasedAuth(authMode, additionalHeaders))),
+			...(!customGraphqlEndpoint && (await this._headerBasedAuth(authMode, additionalHeaders))),
 			...(customGraphqlEndpoint &&
-				(customEndpointRegion
-					? await this._headerBasedAuth(authMode, additionalHeaders)
-					: { Authorization: null })),
+				(customEndpointRegion ? await this._headerBasedAuth(authMode, additionalHeaders) : { Authorization: null })),
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
@@ -384,12 +343,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private _graphqlSubscribe(
-		{
-			query,
-			variables,
-			authMode: defaultAuthenticationType,
-			authToken,
-		}: GraphQLOptions,
+		{ query, variables, authMode: defaultAuthenticationType, authToken }: GraphQLOptions,
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
@@ -400,8 +354,7 @@ export class InternalGraphQLAPIClass {
 			aws_appsync_apiKey: apiKey,
 			graphql_headers = () => ({}),
 		} = this._options;
-		const authenticationType =
-			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
+		const authenticationType = defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
 
 		if (InternalPubSub && typeof InternalPubSub.subscribe === 'function') {
 			return InternalPubSub.subscribe(

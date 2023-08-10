@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Storage } from '../storage/storage';
-import {
-	ModelInstanceMetadata,
-	OpType,
-	PersistentModelConstructor,
-	SchemaModel,
-} from '../types';
+import { ModelInstanceMetadata, OpType, PersistentModelConstructor, SchemaModel } from '../types';
 import { MutationEventOutbox } from './outbox';
 import { getIdentifierValue } from './utils';
 
@@ -29,11 +24,7 @@ class ModelMerger {
 		modelDefinition: SchemaModel
 	): Promise<OpType> {
 		let result: OpType;
-		const mutationsForModel = await this.outbox.getForModel(
-			storage,
-			model,
-			modelDefinition
-		);
+		const mutationsForModel = await this.outbox.getForModel(storage, model, modelDefinition);
 
 		const isDelete = model._deleted;
 

@@ -1,10 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AbstractConvertPredictionsProvider } from '../types/Providers/AbstractConvertPredictionsProvider';
-import {
-	TranslateClient,
-	TranslateTextCommand,
-} from '@aws-sdk/client-translate';
+import { TranslateClient, TranslateTextCommand } from '@aws-sdk/client-translate';
 import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
 import {
 	TranslateTextInput,
@@ -23,10 +20,7 @@ import {
 	Category,
 	PredictionsAction,
 } from '@aws-amplify/core';
-import {
-	EventStreamMarshaller,
-	MessageHeaderValue,
-} from '@aws-sdk/eventstream-marshaller';
+import { EventStreamMarshaller, MessageHeaderValue } from '@aws-sdk/eventstream-marshaller';
 import { fromUtf8, toUtf8 } from '@aws-sdk/util-utf8-node';
 import { Buffer } from 'buffer';
 
@@ -46,16 +40,10 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		return 'AmazonAIConvertPredictionsProvider';
 	}
 
-	protected async translateText(
-		input: TranslateTextInput
-	): Promise<TranslateTextOutput> {
+	protected async translateText(input: TranslateTextInput): Promise<TranslateTextOutput> {
 		logger.debug('Starting translation');
-		const {
-			translateText: {
-				defaults: { sourceLanguage = '', targetLanguage = '' } = {},
-				region = '',
-			} = {},
-		} = this._config;
+		const { translateText: { defaults: { sourceLanguage = '', targetLanguage = '' } = {}, region = '' } = {} } =
+			this._config;
 
 		if (!region) {
 			return Promise.reject('region not configured for transcription');
@@ -65,10 +53,8 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		if (!credentials) {
 			return Promise.reject('No credentials');
 		}
-		const sourceLanguageCode =
-			input.translateText.source.language || sourceLanguage;
-		const targetLanguageCode =
-			input.translateText.targetLanguage || targetLanguage;
+		const sourceLanguageCode = input.translateText.source.language || sourceLanguage;
+		const targetLanguageCode = input.translateText.targetLanguage || targetLanguage;
 		if (!sourceLanguageCode || !targetLanguageCode) {
 			return Promise.reject('Please provide both source and target language');
 		}
@@ -97,25 +83,19 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		}
 	}
 
-	protected async convertTextToSpeech(
-		input: TextToSpeechInput
-	): Promise<TextToSpeechOutput> {
+	protected async convertTextToSpeech(input: TextToSpeechInput): Promise<TextToSpeechOutput> {
 		const credentials = await Credentials.get();
 		if (!credentials) {
 			return Promise.reject('No credentials');
 		}
-		const {
-			speechGenerator: { defaults: { VoiceId = '' } = {}, region = '' } = {},
-		} = this._config;
+		const { speechGenerator: { defaults: { VoiceId = '' } = {}, region = '' } = {} } = this._config;
 
 		if (!input.textToSpeech.source) {
 			return Promise.reject('Source needs to be provided in the input');
 		}
 		const voiceId = input.textToSpeech.voiceId || VoiceId;
 		if (!region) {
-			return Promise.reject(
-				'Region was undefined. Did you enable speech generator using amplify CLI?'
-			);
+			return Promise.reject('Region was undefined. Did you enable speech generator using amplify CLI?');
 		}
 
 		if (!voiceId) {
@@ -156,28 +136,19 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		}
 	}
 
-	protected async convertSpeechToText(
-		input: SpeechToTextInput
-	): Promise<SpeechToTextOutput> {
+	protected async convertSpeechToText(input: SpeechToTextInput): Promise<SpeechToTextOutput> {
 		try {
 			logger.debug('starting transcription..');
 			const credentials = await Credentials.get();
 			if (!credentials) {
 				return Promise.reject('No credentials');
 			}
-			const {
-				transcription: {
-					defaults: { language: languageCode = '' } = {},
-					region = '',
-				} = {},
-			} = this._config;
+			const { transcription: { defaults: { language: languageCode = '' } = {}, region = '' } = {} } = this._config;
 			if (!region) {
 				return Promise.reject('region not configured for transcription');
 			}
 			if (!languageCode) {
-				return Promise.reject(
-					'languageCode not configured or provided for transcription'
-				);
+				return Promise.reject('languageCode not configured or provided for transcription');
 			}
 			const {
 				transcription: { source, language = languageCode },
@@ -206,9 +177,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 				}
 			}
 
-			return Promise.reject(
-				'Source types other than byte source are not supported.'
-			);
+			return Promise.reject('Source types other than byte source are not supported.');
 		} catch (err) {
 			return Promise.reject(err.name + ': ' + err.message);
 		}
@@ -216,36 +185,21 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 
 	public static serializeDataFromTranscribe(message) {
 		let decodedMessage = '';
-		const transcribeMessage = eventBuilder.unmarshall(
-			Buffer.from(message.data)
-		);
+		const transcribeMessage = eventBuilder.unmarshall(Buffer.from(message.data));
 		const transcribeMessageJson = JSON.parse(toUtf8(transcribeMessage.body));
 		if (transcribeMessage.headers[':message-type'].value === 'exception') {
-			logger.debug(
-				'exception',
-				JSON.stringify(transcribeMessageJson.Message, null, 2)
-			);
+			logger.debug('exception', JSON.stringify(transcribeMessageJson.Message, null, 2));
 			throw new Error(transcribeMessageJson.Message);
 		} else if (transcribeMessage.headers[':message-type'].value === 'event') {
 			if (transcribeMessageJson.Transcript.Results.length > 0) {
-				if (
-					transcribeMessageJson.Transcript.Results[0].Alternatives.length > 0
-				) {
-					if (
-						transcribeMessageJson.Transcript.Results[0].Alternatives[0]
-							.Transcript.length > 0
-					) {
-						if (
-							transcribeMessageJson.Transcript.Results[0].IsPartial === false
-						) {
-							decodedMessage =
-								transcribeMessageJson.Transcript.Results[0].Alternatives[0]
-									.Transcript + '\n';
+				if (transcribeMessageJson.Transcript.Results[0].Alternatives.length > 0) {
+					if (transcribeMessageJson.Transcript.Results[0].Alternatives[0].Transcript.length > 0) {
+						if (transcribeMessageJson.Transcript.Results[0].IsPartial === false) {
+							decodedMessage = transcribeMessageJson.Transcript.Results[0].Alternatives[0].Transcript + '\n';
 							logger.debug({ decodedMessage });
 						} else {
 							logger.debug({
-								transcript:
-									transcribeMessageJson.Transcript.Results[0].Alternatives[0],
+								transcript: transcribeMessageJson.Transcript.Results[0].Alternatives[0],
 							});
 						}
 					}
@@ -255,19 +209,12 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		return decodedMessage;
 	}
 
-	private sendDataToTranscribe({
-		connection,
-		raw,
-		languageCode,
-	}): Promise<string> {
+	private sendDataToTranscribe({ connection, raw, languageCode }): Promise<string> {
 		return new Promise((res, rej) => {
 			let fullText = '';
 			connection.onmessage = message => {
 				try {
-					const decodedMessage =
-						AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe(
-							message
-						);
+					const decodedMessage = AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe(message);
 					if (decodedMessage) {
 						fullText += decodedMessage + ' ';
 					}
@@ -309,14 +256,10 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 	private sendEncodedDataToTranscribe(connection, data, languageCode) {
 		const downsampledBuffer = this.downsampleBuffer({
 			buffer: data,
-			outputSampleRate: LANGUAGES_CODE_IN_8KHZ.includes(languageCode)
-				? 8000
-				: 16000,
+			outputSampleRate: LANGUAGES_CODE_IN_8KHZ.includes(languageCode) ? 8000 : 16000,
 		});
 		const pcmEncodedBuffer = this.pcmEncode(downsampledBuffer);
-		const audioEventMessage = this.getAudioEventMessage(
-			Buffer.from(pcmEncodedBuffer)
-		);
+		const audioEventMessage = this.getAudioEventMessage(Buffer.from(pcmEncodedBuffer));
 		const binary = eventBuilder.marshall(audioEventMessage);
 		connection.send(binary);
 	}
@@ -366,11 +309,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			const nextOffsetBuffer = Math.round((offsetResult + 1) * sampleRateRatio);
 			let accum = 0,
 				count = 0;
-			for (
-				let i = offsetBuffer;
-				i < nextOffsetBuffer && i < buffer.length;
-				i++
-			) {
+			for (let i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i++) {
 				accum += buffer[i];
 				count++;
 			}
@@ -382,17 +321,9 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		return result;
 	}
 
-	private openConnectionWithTranscribe({
-		credentials: userCredentials,
-		region,
-		languageCode,
-	}): Promise<WebSocket> {
+	private openConnectionWithTranscribe({ credentials: userCredentials, region, languageCode }): Promise<WebSocket> {
 		return new Promise(async (res, rej) => {
-			const {
-				accessKeyId: access_key,
-				secretAccessKey: secret_key,
-				sessionToken: session_token,
-			} = userCredentials;
+			const { accessKeyId: access_key, secretAccessKey: secret_key, sessionToken: session_token } = userCredentials;
 
 			const credentials = {
 				access_key,
@@ -422,18 +353,11 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			`wss://transcribestreaming.${region}.amazonaws.com:8443`,
 			'/stream-transcription-websocket?',
 			`media-encoding=pcm&`,
-			`sample-rate=${
-				LANGUAGES_CODE_IN_8KHZ.includes(languageCode) ? '8000' : '16000'
-			}&`,
+			`sample-rate=${LANGUAGES_CODE_IN_8KHZ.includes(languageCode) ? '8000' : '16000'}&`,
 			`language-code=${languageCode}`,
 		].join('');
 
-		const signedUrl = Signer.signUrl(
-			url,
-			credentials,
-			{ region, service: 'transcribe' },
-			300
-		);
+		const signedUrl = Signer.signUrl(url, credentials, { region, service: 'transcribe' }, 300);
 
 		return signedUrl;
 	}

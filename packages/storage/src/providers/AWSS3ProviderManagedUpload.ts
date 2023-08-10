@@ -13,10 +13,7 @@ import {
 	abortMultipartUpload,
 	listParts,
 } from '../AwsClients/S3';
-import {
-	SEND_DOWNLOAD_PROGRESS_EVENT,
-	SEND_UPLOAD_PROGRESS_EVENT,
-} from '../AwsClients/S3/utils';
+import { SEND_DOWNLOAD_PROGRESS_EVENT, SEND_UPLOAD_PROGRESS_EVENT } from '../AwsClients/S3/utils';
 import { EventEmitter } from 'events';
 import { calculateContentMd5 } from '../common/MD5utils';
 import {
@@ -93,21 +90,12 @@ export class AWSS3ProviderManagedUpload {
 				this.uploadId = await this.createMultiPartUpload();
 
 				// Step 3: Upload chunks in parallel as requested
-				const numberOfPartsToUpload = Math.ceil(
-					this.totalBytesToUpload / this.partSize
-				);
+				const numberOfPartsToUpload = Math.ceil(this.totalBytesToUpload / this.partSize);
 
 				const parts: Part[] = this.createParts();
-				for (
-					let start = 0;
-					start < numberOfPartsToUpload;
-					start += DEFAULT_QUEUE_SIZE
-				) {
+				for (let start = 0; start < numberOfPartsToUpload; start += DEFAULT_QUEUE_SIZE) {
 					// Upload as many as `queueSize` parts simultaneously
-					await this.uploadParts(
-						this.uploadId!,
-						parts.slice(start, start + DEFAULT_QUEUE_SIZE)
-					);
+					await this.uploadParts(this.uploadId!, parts.slice(start, start + DEFAULT_QUEUE_SIZE));
 				}
 
 				parts.map(part => {
@@ -129,10 +117,7 @@ export class AWSS3ProviderManagedUpload {
 		try {
 			const parts: Part[] = [];
 			for (let bodyStart = 0; bodyStart < this.totalBytesToUpload; ) {
-				const bodyEnd = Math.min(
-					bodyStart + this.partSize,
-					this.totalBytesToUpload
-				);
+				const bodyEnd = Math.min(bodyStart + this.partSize, this.totalBytesToUpload);
 				parts.push({
 					bodyPart: this.body.slice(bodyStart, bodyEnd),
 					partNumber: parts.length + 1,
@@ -175,14 +160,7 @@ export class AWSS3ProviderManagedUpload {
 					if (isObjectLockEnabled) {
 						this.params.ContentMD5 = await calculateContentMd5(part.bodyPart);
 					}
-					const {
-						Key,
-						Bucket,
-						SSECustomerAlgorithm,
-						SSECustomerKey,
-						SSECustomerKeyMD5,
-						ContentMD5,
-					} = this.params;
+					const { Key, Bucket, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, ContentMD5 } = this.params;
 					const res = await uploadPart(
 						{ ...this.s3Config, emitter: part.emitter },
 						{
@@ -208,9 +186,7 @@ export class AWSS3ProviderManagedUpload {
 				});
 			}
 		} catch (error) {
-			logger.error(
-				'Error happened while uploading a part. Cancelling the multipart upload'
-			);
+			logger.error('Error happened while uploading a part. Cancelling the multipart upload');
 			throw error;
 		}
 	}
@@ -266,10 +242,7 @@ export class AWSS3ProviderManagedUpload {
 
 	private setupEventListener(part: Part) {
 		part.emitter.on(SEND_UPLOAD_PROGRESS_EVENT, progress => {
-			this.progressChanged(
-				part.partNumber,
-				progress.loaded - part._lastUploadedBytes
-			);
+			this.progressChanged(part.partNumber, progress.loaded - part._lastUploadedBytes);
 			part._lastUploadedBytes = progress.loaded;
 		});
 	}
@@ -302,9 +275,7 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	private validateAndSanitizeBody(body: any): any {
-		const sanitizedBody = this.isGenericObject(body)
-			? JSON.stringify(body)
-			: body;
+		const sanitizedBody = this.isGenericObject(body) ? JSON.stringify(body) : body;
 		/* TODO: streams and files for nodejs 
 		if (
 			typeof body.path === 'string' &&
@@ -313,9 +284,7 @@ export class AWSS3ProviderManagedUpload {
 			sanitizedBody = body;
 		} */
 		if (this.byteLength(sanitizedBody) > MAX_OBJECT_SIZE) {
-			throw new Error(
-				`File size bigger than S3 Object limit of 5TB, got ${this.totalBytesToUpload} Bytes`
-			);
+			throw new Error(`File size bigger than S3 Object limit of 5TB, got ${this.totalBytesToUpload} Bytes`);
 		}
 		return sanitizedBody;
 	}

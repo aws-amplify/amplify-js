@@ -13,20 +13,14 @@ export interface Response {
 	body: unknown;
 }
 
-export interface TransferHandler<
-	Input extends Request,
-	Output extends Response,
-	TransferOptions,
-> {
+export interface TransferHandler<Input extends Request, Output extends Response, TransferOptions> {
 	(request: Input, options: TransferOptions): Promise<Output>;
 }
 
 /**
  * A slimmed down version of the AWS SDK v3 middleware handler, only handling instantiated requests
  */
-export type MiddlewareHandler<Input, Output> = (
-	request: Input
-) => Promise<Output>;
+export type MiddlewareHandler<Input, Output> = (request: Input) => Promise<Output>;
 
 /**
  * The context object to store states across the middleware chain.
@@ -46,11 +40,9 @@ type ConfiguredMiddleware<Input extends Request, Output extends Response> = (
 /**
  * A slimmed down version of the AWS SDK v3 middleware, only handling tasks after Serde.
  */
-export type Middleware<
-	Input extends Request,
-	Output extends Response,
-	MiddlewareOptions,
-> = (options: MiddlewareOptions) => ConfiguredMiddleware<Input, Output>;
+export type Middleware<Input extends Request, Output extends Response, MiddlewareOptions> = (
+	options: MiddlewareOptions
+) => ConfiguredMiddleware<Input, Output>;
 
 export interface Endpoint {
 	url: URL;

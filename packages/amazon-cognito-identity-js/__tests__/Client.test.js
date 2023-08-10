@@ -2,10 +2,7 @@ import Client from '../src/Client';
 import { promisifyCallback } from './util';
 import { region, endpoint, networkError } from './constants';
 import { netRequestMockSuccess } from '../__mocks__/mocks';
-import {
-	addAuthCategoryToCognitoUserAgent,
-	addFrameworkToCognitoUserAgent,
-} from '../src/UserAgent';
+import { addAuthCategoryToCognitoUserAgent, addFrameworkToCognitoUserAgent } from '../src/UserAgent';
 import { getUserAgent } from '../src/Platform';
 
 describe('Client unit test suite', () => {
@@ -101,10 +98,7 @@ describe('Client unit test suite', () => {
 
 			await clientWithEndpoint.promisifyRequest('', {});
 
-			expect(fetch).toHaveBeenCalledWith(
-				`https://cognito-idp.${region}.amazonaws.com/`,
-				expect.any(Object)
-			);
+			expect(fetch).toHaveBeenCalledWith(`https://cognito-idp.${region}.amazonaws.com/`, expect.any(Object));
 		});
 
 		test('uses a provided endpoint for requests', async () => {

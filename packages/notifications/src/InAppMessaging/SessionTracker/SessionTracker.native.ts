@@ -4,15 +4,10 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { AppState, AppStateStatus } from 'react-native';
 import noop from 'lodash/noop';
-import {
-	SessionState,
-	SessionStateChangeHandler,
-	SessionTrackerInterface,
-} from './types';
+import { SessionState, SessionStateChangeHandler, SessionTrackerInterface } from './types';
 
 const isActive = appState => appState === 'active';
-const isInactive = appState =>
-	appState === 'inactive' || appState === 'background';
+const isInactive = appState => appState === 'inactive' || appState === 'background';
 
 const logger = new Logger('InAppMessagingSessionTracker');
 

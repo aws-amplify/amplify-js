@@ -15,12 +15,7 @@
  * @return {boolean} The return value of `element.dispatchEvent`, which will
  *     be false if any of the event listeners called `preventDefault`.
  */
-export function dispatch(
-	element,
-	eventType,
-	evtName = 'Event',
-	init_dict = {}
-) {
+export function dispatch(element, eventType, evtName = 'Event', init_dict = {}) {
 	let event;
 	let isCustom;
 	let initDict = init_dict;
@@ -47,12 +42,7 @@ export function dispatch(
 	} catch (err) {
 		event = document.createEvent(eventName);
 		const initMethod = 'init' + (isCustom ? 'Custom' : '') + 'Event';
-		event[initMethod](
-			eventType,
-			initDict['bubbles'],
-			initDict['cancelable'],
-			initDict['detail']
-		);
+		event[initMethod](eventType, initDict['bubbles'], initDict['cancelable'], initDict['detail']);
 	}
 
 	return element.dispatchEvent(event);

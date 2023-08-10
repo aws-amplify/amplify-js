@@ -43,10 +43,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {String[]} restOfAttrs - for the backward compatability
 	 * @return - A promise resolves callback data if success
 	 */
-	public signUp(
-		params: string | SignUpParams,
-		...restOfAttrs: string[]
-	): Promise<ISignUpResult> {
+	public signUp(params: string | SignUpParams, ...restOfAttrs: string[]): Promise<ISignUpResult> {
 		return super.signUp(params, restOfAttrs);
 	}
 
@@ -57,11 +54,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {ConfirmSignUpOptions} options - other options for confirm signup
 	 * @return - A promise resolves callback data if success
 	 */
-	public confirmSignUp(
-		username: string,
-		code: string,
-		options?: ConfirmSignUpOptions
-	): Promise<any> {
+	public confirmSignUp(username: string, code: string, options?: ConfirmSignUpOptions): Promise<any> {
 		return super.confirmSignUp(username, code, options);
 	}
 
@@ -71,10 +64,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {ClientMetadata} clientMetadata - Metadata to be passed to Cognito Lambda triggers
 	 * @return - A promise resolves code delivery details if successful
 	 */
-	public resendSignUp(
-		username: string,
-		clientMetadata?: ClientMetaData
-	): Promise<any> {
+	public resendSignUp(username: string, clientMetadata?: ClientMetaData): Promise<any> {
 		return super.resendSignUp(username, clientMetadata);
 	}
 
@@ -110,10 +100,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {CognitoUser} user - the current cognito user
 	 * @param {GetPreferredMFAOpts} params - options for getting the current user preferred MFA
 	 */
-	public getPreferredMFA(
-		user: CognitoUser | any,
-		params?: GetPreferredMFAOpts
-	): Promise<string> {
+	public getPreferredMFA(user: CognitoUser | any, params?: GetPreferredMFAOpts): Promise<string> {
 		return super.getPreferredMFA(user, params);
 	}
 
@@ -165,10 +152,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {string} challengeAnswer - challenge answer
 	 * @return - A promise resolves is success
 	 */
-	public verifyTotpToken(
-		user: CognitoUser | any,
-		challengeAnswer: string
-	): Promise<CognitoUserSession> {
+	public verifyTotpToken(user: CognitoUser | any, challengeAnswer: string): Promise<CognitoUserSession> {
 		return super.verifyTotpToken(user, challengeAnswer);
 	}
 
@@ -192,12 +176,7 @@ export class AuthClass extends InternalAuthClass {
 		requiredAttributes: any = {},
 		clientMetadata?: ClientMetaData
 	): Promise<CognitoUser | any> {
-		return super.completeNewPassword(
-			user,
-			password,
-			requiredAttributes,
-			clientMetadata
-		);
+		return super.completeNewPassword(user, password, requiredAttributes, clientMetadata);
 	}
 
 	/**
@@ -210,11 +189,7 @@ export class AuthClass extends InternalAuthClass {
 		challengeResponses: string,
 		clientMetadata?: ClientMetaData
 	): Promise<CognitoUser | any> {
-		return super.sendCustomChallengeAnswer(
-			user,
-			challengeResponses,
-			clientMetadata
-		);
+		return super.sendCustomChallengeAnswer(user, challengeResponses, clientMetadata);
 	}
 
 	/**
@@ -222,10 +197,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {CognitoUser} - The currently logged in user object
 	 * @return {Promise}
 	 **/
-	public deleteUserAttributes(
-		user: CognitoUser | any,
-		attributeNames: string[]
-	) {
+	public deleteUserAttributes(user: CognitoUser | any, attributeNames: string[]) {
 		return super.deleteUserAttributes(user, attributeNames);
 	}
 
@@ -256,9 +228,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {Object} user - The CognitoUser object
 	 * @return - A promise resolves to user attributes if success
 	 */
-	public userAttributes(
-		user: CognitoUser | any
-	): Promise<CognitoUserAttribute[]> {
+	public userAttributes(user: CognitoUser | any): Promise<CognitoUserAttribute[]> {
 		return super.userAttributes(user);
 	}
 
@@ -270,9 +240,7 @@ export class AuthClass extends InternalAuthClass {
 	 * Get current authenticated user
 	 * @return - A promise resolves to current authenticated CognitoUser if success
 	 */
-	public currentUserPoolUser(
-		params?: CurrentUserOpts
-	): Promise<CognitoUser | any> {
+	public currentUserPoolUser(params?: CurrentUserOpts): Promise<CognitoUser | any> {
 		return super.currentUserPoolUser(params);
 	}
 
@@ -281,9 +249,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {CurrentUserOpts} - options for getting the current user
 	 * @return - A promise resolves to current authenticated CognitoUser if success
 	 */
-	public currentAuthenticatedUser(
-		params?: CurrentUserOpts
-	): Promise<CognitoUser | any> {
+	public currentAuthenticatedUser(params?: CurrentUserOpts): Promise<CognitoUser | any> {
 		return super.currentAuthenticatedUser(params);
 	}
 
@@ -322,11 +288,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {Object} attr - The attributes to be verified
 	 * @return - A promise resolves to callback data if success
 	 */
-	public verifyUserAttribute(
-		user: CognitoUser | any,
-		attr: string,
-		clientMetadata?: ClientMetaData
-	): Promise<void> {
+	public verifyUserAttribute(user: CognitoUser | any, attr: string, clientMetadata?: ClientMetaData): Promise<void> {
 		return super.verifyUserAttribute(user, attr, clientMetadata);
 	}
 
@@ -337,11 +299,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {String} code - The confirmation code
 	 * @return - A promise resolves to callback data if success
 	 */
-	public verifyUserAttributeSubmit(
-		user: CognitoUser | any,
-		attr: string,
-		code: string
-	): Promise<string> {
+	public verifyUserAttributeSubmit(user: CognitoUser | any, attr: string, code: string): Promise<string> {
 		return super.verifyUserAttributeSubmit(user, attr, code);
 	}
 
@@ -355,10 +313,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {String} code - The confirmation code
 	 * @return - A promise resolves to callback data if success
 	 */
-	verifyCurrentUserAttributeSubmit(
-		attr: string,
-		code: string
-	): Promise<string> {
+	verifyCurrentUserAttributeSubmit(attr: string, code: string): Promise<string> {
 		return super.verifyCurrentUserAttributeSubmit(attr, code);
 	}
 
@@ -392,10 +347,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @param {String} username - the username to change password
 	 * @return - A promise resolves if success
 	 */
-	public forgotPassword(
-		username: string,
-		clientMetadata?: ClientMetaData
-	): Promise<any> {
+	public forgotPassword(username: string, clientMetadata?: ClientMetaData): Promise<any> {
 		return super.forgotPassword(username, clientMetadata);
 	}
 
@@ -424,22 +376,15 @@ export class AuthClass extends InternalAuthClass {
 		return super.currentUserInfo();
 	}
 
-	public federatedSignIn(
-		options?: FederatedSignInOptions
-	): Promise<ICredentials>;
+	public federatedSignIn(options?: FederatedSignInOptions): Promise<ICredentials>;
 	public federatedSignIn(
 		provider: LegacyProvider,
 		response: FederatedResponse,
 		user: FederatedUser
 	): Promise<ICredentials>;
+	public federatedSignIn(options?: FederatedSignInOptionsCustom): Promise<ICredentials>;
 	public federatedSignIn(
-		options?: FederatedSignInOptionsCustom
-	): Promise<ICredentials>;
-	public federatedSignIn(
-		providerOrOptions:
-			| LegacyProvider
-			| FederatedSignInOptions
-			| FederatedSignInOptionsCustom,
+		providerOrOptions: LegacyProvider | FederatedSignInOptions | FederatedSignInOptionsCustom,
 		response?: FederatedResponse,
 		user?: FederatedUser
 	): Promise<ICredentials> {

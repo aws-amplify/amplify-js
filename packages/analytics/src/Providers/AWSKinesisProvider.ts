@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	ConsoleLogger as Logger,
-	Credentials,
-	AnalyticsAction,
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Credentials, AnalyticsAction } from '@aws-amplify/core';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 import { AnalyticsProvider } from '../types';
 import { fromUtf8 } from '@aws-sdk/util-utf8-browser';
@@ -42,8 +38,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 		}
 		const { flushSize, flushInterval } = this._config;
 		this._timer = setInterval(() => {
-			const size =
-				this._buffer.length < flushSize ? this._buffer.length : flushSize;
+			const size = this._buffer.length < flushSize ? this._buffer.length : flushSize;
 			const events = [];
 			for (let i = 0; i < size; i += 1) {
 				const params = this._buffer.shift();
@@ -131,10 +126,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 				group.push(events[i]);
 				preCred = cred;
 			} else {
-				if (
-					cred.sessionToken === preCred.sessionToken &&
-					cred.identityId === preCred.identityId
-				) {
+				if (cred.sessionToken === preCred.sessionToken && cred.identityId === preCred.identityId) {
 					logger.debug('no change for cred, put event in the same group');
 					group.push(events[i]);
 				} else {
@@ -172,22 +164,15 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 				records[streamName] = [];
 			}
 
-			const bufferData =
-				evt.data && typeof evt.data !== 'string'
-					? JSON.stringify(evt.data)
-					: evt.data;
+			const bufferData = evt.data && typeof evt.data !== 'string' ? JSON.stringify(evt.data) : evt.data;
 			const Data = fromUtf8(bufferData);
-			const PartitionKey =
-				evt.partitionKey || 'partition-' + credentials.identityId;
+			const PartitionKey = evt.partitionKey || 'partition-' + credentials.identityId;
 			const record = { Data, PartitionKey };
 			records[streamName].push(record);
 		});
 
 		Object.keys(records).map(async streamName => {
-			logger.debug(
-				'putting records to kinesis with records',
-				records[streamName]
-			);
+			logger.debug('putting records to kinesis with records', records[streamName]);
 			try {
 				const command: PutRecordsCommand = new PutRecordsCommand({
 					Records: records[streamName],

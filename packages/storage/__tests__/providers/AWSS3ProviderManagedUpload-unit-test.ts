@@ -66,9 +66,7 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 
 	describe('single part upload tests', () => {
 		beforeEach(() => {
-			(putObject as jest.Mock).mockImplementation(
-				async (_, input) => input.Key
-			);
+			(putObject as jest.Mock).mockImplementation(async (_, input) => input.Key);
 		});
 		test('upload a string as body', async () => {
 			const testParams = { ...baseParams, Body: 'A_STRING_BODY' };
@@ -76,11 +74,7 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 				...expectedBaseInputParams,
 				Body: testParams.Body,
 			};
-			const uploader = new AWSS3ProviderManagedUpload(
-				testParams,
-				testOpts,
-				new events.EventEmitter()
-			);
+			const uploader = new AWSS3ProviderManagedUpload(testParams, testOpts, new events.EventEmitter());
 			const data = await uploader.upload();
 
 			expect(data).toBe(expectedBaseInputParams.Key);
@@ -95,18 +89,11 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 				...expectedBaseInputParams,
 				Body: JSON.stringify(objectBody),
 			};
-			const uploader = new AWSS3ProviderManagedUpload(
-				testParamsWithObjectBody,
-				testOpts,
-				new events.EventEmitter()
-			);
+			const uploader = new AWSS3ProviderManagedUpload(testParamsWithObjectBody, testOpts, new events.EventEmitter());
 			const data = await uploader.upload();
 
 			expect(data).toBe(expectedBaseInputParams.Key);
-			expect(putObject).toBeCalledWith(
-				expect.anything(),
-				expectedTestParamsWithObjectBody
-			);
+			expect(putObject).toBeCalledWith(expect.anything(), expectedTestParamsWithObjectBody);
 		});
 
 		test('upload a file as body', async () => {
@@ -116,18 +103,11 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 				...expectedBaseInputParams,
 				Body: testParamsWithFileBody.Body,
 			};
-			const uploader = new AWSS3ProviderManagedUpload(
-				testParamsWithFileBody,
-				testOpts,
-				new events.EventEmitter()
-			);
+			const uploader = new AWSS3ProviderManagedUpload(testParamsWithFileBody, testOpts, new events.EventEmitter());
 			const data = await uploader.upload();
 
 			expect(data).toBe(expectedTestParamsWithFileBody.Key);
-			expect(putObject).toBeCalledWith(
-				expect.anything(),
-				expectedTestParamsWithFileBody
-			);
+			expect(putObject).toBeCalledWith(expect.anything(), expectedTestParamsWithFileBody);
 		});
 
 		test('error case: upload fails', async () => {
@@ -155,9 +135,7 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 		});
 
 		beforeEach(() => {
-			mockBodySlice.mockImplementation((start, end) =>
-				Buffer.alloc(end - start)
-			);
+			mockBodySlice.mockImplementation((start, end) => Buffer.alloc(end - start));
 		});
 
 		test('happy case: upload a body that splits in two parts', async () => {
@@ -182,11 +160,7 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 
 			const body = mockBody(defaultPartSize + 1);
 			const testParams = { ...baseParams, Body: body };
-			const uploader = new AWSS3ProviderManagedUpload(
-				testParams,
-				testOpts,
-				emitter
-			);
+			const uploader = new AWSS3ProviderManagedUpload(testParams, testOpts, emitter);
 			const data = await uploader.upload();
 
 			// Testing multi part upload functionality
@@ -222,11 +196,7 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 					SSECustomerKey: testParams.SSECustomerKey,
 				})
 			);
-			expect(mockBodySlice).toHaveBeenNthCalledWith(
-				2,
-				defaultPartSize,
-				defaultPartSize + 1
-			);
+			expect(mockBodySlice).toHaveBeenNthCalledWith(2, defaultPartSize, defaultPartSize + 1);
 
 			// Lastly complete multi part upload call
 			expect(completeMultipartUpload).toBeCalledTimes(1);
@@ -284,11 +254,7 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 			// setup params. Body size should cause the part size to double;
 			const body = mockBody(20_000 * defaultPartSize);
 			const testParams = { ...baseParams, Body: body };
-			const uploader = new AWSS3ProviderManagedUpload(
-				testParams,
-				testOpts,
-				new events.EventEmitter()
-			);
+			const uploader = new AWSS3ProviderManagedUpload(testParams, testOpts, new events.EventEmitter());
 			const data = await uploader.upload();
 
 			// Testing multi part upload functionality
@@ -303,27 +269,18 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 			const GB = 1024 * MB;
 			const body = mockBody(5 * 1024 * GB + 1); // exceeds 5TB limit.
 			const testParams = { ...baseParams, Body: body };
-			const uploader = new AWSS3ProviderManagedUpload(
-				testParams,
-				testOpts,
-				new events.EventEmitter()
-			);
+			const uploader = new AWSS3ProviderManagedUpload(testParams, testOpts, new events.EventEmitter());
 			expect.assertions(1);
 			try {
 				const data = await uploader.upload();
 				fail('expect test to fail');
 			} catch (error) {
-				expect(error.message).toEqual(
-					expect.stringContaining(
-						'File size bigger than S3 Object limit of 5TB'
-					)
-				);
+				expect(error.message).toEqual(expect.stringContaining('File size bigger than S3 Object limit of 5TB'));
 			}
 		});
 
 		test('error case: upload a body that splits in two parts but second part fails', async () => {
-			const wait = (ms: number) =>
-				new Promise(resolve => setTimeout(resolve, ms));
+			const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 			// Setup Spy for S3 service calls and introduce a service failure
 			(createMultipartUpload as jest.Mock).mockResolvedValue({
@@ -356,11 +313,7 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 				...testParams,
 				Key: 'public/' + testParams.Key,
 			};
-			const uploader = new AWSS3ProviderManagedUpload(
-				testParams,
-				testOpts,
-				emitter
-			);
+			const uploader = new AWSS3ProviderManagedUpload(testParams, testOpts, emitter);
 			// Upload should have been cancelled and error thrown
 			try {
 				await uploader.upload();
@@ -374,10 +327,7 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 			expect(listParts).toBeCalledTimes(1);
 
 			// Create multipart upload call
-			expect(createMultipartUpload).toBeCalledWith(
-				expect.anything(),
-				expectedParams
-			);
+			expect(createMultipartUpload).toBeCalledWith(expect.anything(), expectedParams);
 
 			// Upload part calls
 			const getExpectedUploadPartParams = (partNumber: number) => ({
@@ -407,11 +357,7 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 				expect.anything(),
 				expect.objectContaining(getExpectedUploadPartParams(2))
 			);
-			expect(mockBodySlice).toHaveBeenNthCalledWith(
-				2,
-				defaultPartSize,
-				defaultPartSize + 1
-			);
+			expect(mockBodySlice).toHaveBeenNthCalledWith(2, defaultPartSize, defaultPartSize + 1);
 
 			const expectedAbortAndListPartsParams = {
 				Bucket: testParams.Bucket,
@@ -419,16 +365,10 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 				UploadId: testUploadId,
 			};
 			// so we abort the multipart upload
-			expect(abortMultipartUpload).toBeCalledWith(
-				expect.anything(),
-				expectedAbortAndListPartsParams
-			);
+			expect(abortMultipartUpload).toBeCalledWith(expect.anything(), expectedAbortAndListPartsParams);
 
 			// And finally list parts call to verify
-			expect(listParts).toBeCalledWith(
-				expect.anything(),
-				expectedAbortAndListPartsParams
-			);
+			expect(listParts).toBeCalledWith(expect.anything(), expectedAbortAndListPartsParams);
 
 			// As the 'sendUploadProgress' happens when the upload is 100% complete,
 			// it won't be called, as an error is thrown before upload completion.
@@ -450,15 +390,9 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 			(abortMultipartUpload as jest.Mock).mockResolvedValue({});
 			const body = mockBody(defaultPartSize + 1);
 			const testParams = { ...baseParams, Body: body };
-			const uploader = new AWSS3ProviderManagedUpload(
-				testParams,
-				testOpts,
-				new events.EventEmitter()
-			);
+			const uploader = new AWSS3ProviderManagedUpload(testParams, testOpts, new events.EventEmitter());
 
-			await expect(uploader.upload()).rejects.toThrow(
-				'Multipart upload clean up failed.'
-			);
+			await expect(uploader.upload()).rejects.toThrow('Multipart upload clean up failed.');
 		});
 
 		test('error case: finish multipart upload failed', async () => {
@@ -468,32 +402,16 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 			(uploadPart as jest.Mock).mockImplementation(async (_, params) => ({
 				ETag: 'test_etag_' + params.PartNumber,
 			}));
-			(completeMultipartUpload as jest.Mock).mockRejectedValue(
-				new Error('Error completing multipart upload.')
-			);
+			(completeMultipartUpload as jest.Mock).mockRejectedValue(new Error('Error completing multipart upload.'));
 			const loggerSpy = jest.spyOn(Logger.prototype, '_log');
 			const body = mockBody(defaultPartSize + 1);
 			const testParams = { ...baseParams, Body: body };
-			const uploader = new AWSS3ProviderManagedUpload(
-				testParams,
-				testOpts,
-				new events.EventEmitter()
-			);
+			const uploader = new AWSS3ProviderManagedUpload(testParams, testOpts, new events.EventEmitter());
 
-			await expect(uploader.upload()).rejects.toThrow(
-				'Error completing multipart upload.'
-			);
+			await expect(uploader.upload()).rejects.toThrow('Error completing multipart upload.');
 			expect(loggerSpy).toHaveBeenNthCalledWith(1, 'DEBUG', 'testUploadId');
-			expect(loggerSpy).toHaveBeenNthCalledWith(
-				2,
-				'ERROR',
-				'Error happened while finishing the upload.'
-			);
-			expect(loggerSpy).toHaveBeenNthCalledWith(
-				3,
-				'ERROR',
-				'Error. Cancelling the multipart upload.'
-			);
+			expect(loggerSpy).toHaveBeenNthCalledWith(2, 'ERROR', 'Error happened while finishing the upload.');
+			expect(loggerSpy).toHaveBeenNthCalledWith(3, 'ERROR', 'Error. Cancelling the multipart upload.');
 		});
 	});
 });

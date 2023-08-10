@@ -52,11 +52,7 @@ export async function retry<T>(
 		while (!terminated) {
 			attempt++;
 
-			logger.debug(
-				`${
-					functionToRetry.name
-				} attempt #${attempt} with this vars: ${JSON.stringify(args)}`
-			);
+			logger.debug(`${functionToRetry.name} attempt #${attempt} with this vars: ${JSON.stringify(args)}`);
 
 			try {
 				return resolve(await functionToRetry(...args));
@@ -96,9 +92,7 @@ const MAX_DELAY_MS = 5 * 60 * 1000;
  * @private
  * Internal use of Amplify only
  */
-export function jitteredBackoff(
-	maxDelayMs: number = MAX_DELAY_MS
-): DelayFunction {
+export function jitteredBackoff(maxDelayMs: number = MAX_DELAY_MS): DelayFunction {
 	const BASE_TIME_MS = 100;
 	const JITTER_FACTOR = 100;
 
@@ -117,5 +111,4 @@ export const jitteredExponentialRetry = <T>(
 	args: any[],
 	maxDelayMs: number = MAX_DELAY_MS,
 	onTerminate?: Promise<void>
-): Promise<T> =>
-	retry(functionToRetry, args, jitteredBackoff(maxDelayMs), onTerminate);
+): Promise<T> => retry(functionToRetry, args, jitteredBackoff(maxDelayMs), onTerminate);

@@ -36,10 +36,7 @@ import {
 import camelcaseKeys from 'camelcase-keys';
 
 LocationClient.prototype.send = jest.fn(async command => {
-	if (
-		command instanceof SearchPlaceIndexForTextCommand ||
-		command instanceof SearchPlaceIndexForPositionCommand
-	) {
+	if (command instanceof SearchPlaceIndexForTextCommand || command instanceof SearchPlaceIndexForPositionCommand) {
 		return {
 			Results: [
 				{
@@ -158,8 +155,7 @@ describe('AmazonLocationServiceProvider', () => {
 			provider.configure(awsConfig.geo.amazon_location_service);
 
 			const mapName = awsConfig.geo.amazon_location_service.maps.default;
-			const style =
-				awsConfig.geo.amazon_location_service.maps.items[mapName].style;
+			const style = awsConfig.geo.amazon_location_service.maps.items[mapName].style;
 			const region = awsConfig.geo.amazon_location_service.region;
 
 			const testMap = { mapName, style, region };
@@ -206,10 +202,7 @@ describe('AmazonLocationServiceProvider', () => {
 				biasPosition: [12345, 67890],
 			};
 
-			const results = await locationProvider.searchByText(
-				testString,
-				searchOptions
-			);
+			const results = await locationProvider.searchByText(testString, searchOptions);
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
@@ -239,10 +232,7 @@ describe('AmazonLocationServiceProvider', () => {
 				searchAreaConstraints: [123, 456, 789, 321],
 			};
 
-			const resultsWithConstraints = await locationProvider.searchByText(
-				testString,
-				searchOptions
-			);
+			const resultsWithConstraints = await locationProvider.searchByText(testString, searchOptions);
 			expect(resultsWithConstraints).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
@@ -272,9 +262,7 @@ describe('AmazonLocationServiceProvider', () => {
 				searchAreaConstraints: [123, 456, 789, 321],
 			};
 
-			await expect(
-				locationProvider.searchByText(testString, searchOptions)
-			).rejects.toThrow(
+			await expect(locationProvider.searchByText(testString, searchOptions)).rejects.toThrow(
 				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
 			);
 		});
@@ -286,9 +274,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
-			await expect(locationProvider.searchByText(testString)).rejects.toThrow(
-				'No credentials'
-			);
+			await expect(locationProvider.searchByText(testString)).rejects.toThrow('No credentials');
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
@@ -298,9 +284,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
-			await expect(locationProvider.searchByText(testString)).rejects.toThrow(
-				'No credentials'
-			);
+			await expect(locationProvider.searchByText(testString)).rejects.toThrow('No credentials');
 		});
 
 		test('should fail if there are no search index resources', async () => {
@@ -364,10 +348,7 @@ describe('AmazonLocationServiceProvider', () => {
 				biasPosition: [12345, 67890],
 			};
 
-			const results = await locationProvider.searchForSuggestions(
-				testString,
-				searchOptions
-			);
+			const results = await locationProvider.searchForSuggestions(testString, searchOptions);
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
@@ -397,8 +378,7 @@ describe('AmazonLocationServiceProvider', () => {
 				searchAreaConstraints: [123, 456, 789, 321],
 			};
 
-			const resultsWithConstraints =
-				await locationProvider.searchForSuggestions(testString, searchOptions);
+			const resultsWithConstraints = await locationProvider.searchForSuggestions(testString, searchOptions);
 			expect(resultsWithConstraints).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
@@ -428,9 +408,7 @@ describe('AmazonLocationServiceProvider', () => {
 				searchAreaConstraints: [123, 456, 789, 321],
 			};
 
-			await expect(
-				locationProvider.searchForSuggestions(testString, searchOptions)
-			).rejects.toThrow(
+			await expect(locationProvider.searchForSuggestions(testString, searchOptions)).rejects.toThrow(
 				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
 			);
 		});
@@ -442,9 +420,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
-			await expect(
-				locationProvider.searchForSuggestions(testString)
-			).rejects.toThrow('No credentials');
+			await expect(locationProvider.searchForSuggestions(testString)).rejects.toThrow('No credentials');
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
@@ -454,9 +430,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
-			await expect(
-				locationProvider.searchForSuggestions(testString)
-			).rejects.toThrow('No credentials');
+			await expect(locationProvider.searchForSuggestions(testString)).rejects.toThrow('No credentials');
 		});
 
 		test('should fail if there are no search index resources', async () => {
@@ -467,9 +441,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure({});
 
-			await expect(
-				locationProvider.searchForSuggestions(testString)
-			).rejects.toThrow(
+			await expect(locationProvider.searchForSuggestions(testString)).rejects.toThrow(
 				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
 			);
 		});
@@ -507,9 +479,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
-			await expect(locationProvider.searchByPlaceId('')).rejects.toThrow(
-				'PlaceId cannot be an empty string.'
-			);
+			await expect(locationProvider.searchByPlaceId('')).rejects.toThrow('PlaceId cannot be an empty string.');
 		});
 
 		test('should fail if credentials are invalid', async () => {
@@ -519,9 +489,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
-			await expect(
-				locationProvider.searchByPlaceId(testPlaceId)
-			).rejects.toThrow('No credentials');
+			await expect(locationProvider.searchByPlaceId(testPlaceId)).rejects.toThrow('No credentials');
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
@@ -531,9 +499,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
-			await expect(
-				locationProvider.searchByPlaceId(testPlaceId)
-			).rejects.toThrow('No credentials');
+			await expect(locationProvider.searchByPlaceId(testPlaceId)).rejects.toThrow('No credentials');
 		});
 
 		test('should fail if there are no search index resources', async () => {
@@ -544,9 +510,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure({});
 
-			await expect(
-				locationProvider.searchByPlaceId(testPlaceId)
-			).rejects.toThrow(
+			await expect(locationProvider.searchByPlaceId(testPlaceId)).rejects.toThrow(
 				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
 			);
 		});
@@ -563,9 +527,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
-			const results = await locationProvider.searchByCoordinates(
-				testCoordinates
-			);
+			const results = await locationProvider.searchByCoordinates(testCoordinates);
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
@@ -588,10 +550,7 @@ describe('AmazonLocationServiceProvider', () => {
 				maxResults: 40,
 				searchIndexName: 'geoJSSearchCustomExample',
 			};
-			const results = await locationProvider.searchByCoordinates(
-				testCoordinates,
-				searchOptions
-			);
+			const results = await locationProvider.searchByCoordinates(testCoordinates, searchOptions);
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
@@ -610,9 +569,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
-			await expect(
-				locationProvider.searchByCoordinates(testCoordinates)
-			).rejects.toThrow('No credentials');
+			await expect(locationProvider.searchByCoordinates(testCoordinates)).rejects.toThrow('No credentials');
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
@@ -622,9 +579,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
-			await expect(
-				locationProvider.searchByCoordinates(testCoordinates)
-			).rejects.toThrow('No credentials');
+			await expect(locationProvider.searchByCoordinates(testCoordinates)).rejects.toThrow('No credentials');
 		});
 
 		test('should fail if there are no search index resources', async () => {
@@ -635,9 +590,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure({});
 
-			await expect(
-				locationProvider.searchByCoordinates(testCoordinates)
-			).rejects.toThrow(
+			await expect(locationProvider.searchByCoordinates(testCoordinates)).rejects.toThrow(
 				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
 			);
 		});
@@ -649,9 +602,7 @@ describe('AmazonLocationServiceProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementation(mockBatchPutGeofenceCommand);
+			LocationClient.prototype.send = jest.fn().mockImplementation(mockBatchPutGeofenceCommand);
 
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
@@ -693,9 +644,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const spyClientInput = spyonClient.mock.calls;
 
-			expect(spyClientInput.length).toEqual(
-				Math.ceil(spyProviderInput.length / 10)
-			);
+			expect(spyClientInput.length).toEqual(Math.ceil(spyProviderInput.length / 10));
 		});
 
 		test('saveGeofences properly handles errors with bad network calls', async () => {
@@ -759,16 +708,12 @@ describe('AmazonLocationServiceProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementation(mockBatchPutGeofenceCommand);
+			LocationClient.prototype.send = jest.fn().mockImplementation(mockBatchPutGeofenceCommand);
 
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
-			await expect(
-				locationProvider.saveGeofences([clockwiseGeofence])
-			).rejects.toThrow(
+			await expect(locationProvider.saveGeofences([clockwiseGeofence])).rejects.toThrow(
 				'geofenceWithClockwiseGeofence: LinearRing coordinates must be wound counterclockwise'
 			);
 		});
@@ -778,16 +723,12 @@ describe('AmazonLocationServiceProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementation(mockBatchPutGeofenceCommand);
+			LocationClient.prototype.send = jest.fn().mockImplementation(mockBatchPutGeofenceCommand);
 
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
-			await expect(locationProvider.saveGeofences([])).rejects.toThrow(
-				'Geofence input array is empty'
-			);
+			await expect(locationProvider.saveGeofences([])).rejects.toThrow('Geofence input array is empty');
 		});
 
 		test('should error if there are no geofenceCollections in config', async () => {
@@ -798,9 +739,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure({});
 
-			await expect(
-				locationProvider.saveGeofences(validGeofences)
-			).rejects.toThrow(
+			await expect(locationProvider.saveGeofences(validGeofences)).rejects.toThrow(
 				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
 			);
 		});
@@ -812,15 +751,12 @@ describe('AmazonLocationServiceProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementation(mockGetGeofenceCommand);
+			LocationClient.prototype.send = jest.fn().mockImplementation(mockGetGeofenceCommand);
 
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
-			const results: AmazonLocationServiceGeofence =
-				await locationProvider.getGeofence('geofenceId');
+			const results: AmazonLocationServiceGeofence = await locationProvider.getGeofence('geofenceId');
 
 			const expected = {
 				geofenceId: 'geofenceId',
@@ -838,9 +774,7 @@ describe('AmazonLocationServiceProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementationOnce(mockGetGeofenceCommand);
+			LocationClient.prototype.send = jest.fn().mockImplementationOnce(mockGetGeofenceCommand);
 
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
@@ -871,9 +805,7 @@ describe('AmazonLocationServiceProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementation(mockListGeofencesCommand);
+			LocationClient.prototype.send = jest.fn().mockImplementation(mockListGeofencesCommand);
 
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
@@ -888,9 +820,7 @@ describe('AmazonLocationServiceProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementation(mockListGeofencesCommand);
+			LocationClient.prototype.send = jest.fn().mockImplementation(mockListGeofencesCommand);
 
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
@@ -902,12 +832,8 @@ describe('AmazonLocationServiceProvider', () => {
 			});
 
 			expect(second100Geofences.entries.length).toEqual(100);
-			expect(second100Geofences.entries[0].geofenceId).toEqual(
-				'validGeofenceId100'
-			);
-			expect(second100Geofences.entries[99].geofenceId).toEqual(
-				'validGeofenceId199'
-			);
+			expect(second100Geofences.entries[0].geofenceId).toEqual('validGeofenceId100');
+			expect(second100Geofences.entries[99].geofenceId).toEqual('validGeofenceId199');
 		});
 
 		test('should error if there are no geofenceCollections in config', async () => {
@@ -930,9 +856,7 @@ describe('AmazonLocationServiceProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementation(mockDeleteGeofencesCommand);
+			LocationClient.prototype.send = jest.fn().mockImplementation(mockDeleteGeofencesCommand);
 
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
@@ -975,9 +899,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const spyClientInput = spyonClient.mock.calls;
 
-			expect(spyClientInput.length).toEqual(
-				Math.ceil(spyProviderInput.length / 10)
-			);
+			expect(spyClientInput.length).toEqual(Math.ceil(spyProviderInput.length / 10));
 		});
 
 		test('deleteGeofences properly handles errors with bad network calls', async () => {
@@ -988,9 +910,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
-			const input = createGeofenceInputArray(44).map(
-				({ geofenceId }) => geofenceId
-			);
+			const input = createGeofenceInputArray(44).map(({ geofenceId }) => geofenceId);
 			input[22] = 'badId';
 			const validEntries = [...input.slice(0, 20), ...input.slice(30, 44)];
 
@@ -1040,14 +960,8 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
 			await expect(
-				locationProvider.deleteGeofences([
-					'thisIsAGoodId',
-					't|-|!$ !$ N()T V@|_!D',
-					'#2 t|-|!$ !$ N()T V@|_!D',
-				])
-			).rejects.toThrow(
-				`Invalid geofence ids: t|-|!$ !$ N()T V@|_!D, #2 t|-|!$ !$ N()T V@|_!D`
-			);
+				locationProvider.deleteGeofences(['thisIsAGoodId', 't|-|!$ !$ N()T V@|_!D', '#2 t|-|!$ !$ N()T V@|_!D'])
+			).rejects.toThrow(`Invalid geofence ids: t|-|!$ !$ N()T V@|_!D, #2 t|-|!$ !$ N()T V@|_!D`);
 		});
 
 		test('should error if input array is empty', async () => {
@@ -1056,9 +970,7 @@ describe('AmazonLocationServiceProvider', () => {
 			});
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
-			await expect(locationProvider.deleteGeofences([])).rejects.toThrow(
-				`GeofenceId input array is empty`
-			);
+			await expect(locationProvider.deleteGeofences([])).rejects.toThrow(`GeofenceId input array is empty`);
 		});
 
 		test('should error if there are no geofenceCollections in config', async () => {
@@ -1071,9 +983,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const geofenceIds = validGeofences.map(({ geofenceId }) => geofenceId);
 
-			await expect(
-				locationProvider.deleteGeofences(geofenceIds)
-			).rejects.toThrow(
+			await expect(locationProvider.deleteGeofences(geofenceIds)).rejects.toThrow(
 				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
 			);
 		});

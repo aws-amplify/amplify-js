@@ -4,16 +4,10 @@
 import { completeMultipartUpload } from '../../../../src/AwsClients/S3';
 import { toBase64 } from '../../../../src/AwsClients/S3/utils';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
-import {
-	defaultConfig,
-	DEFAULT_RESPONSE_HEADERS,
-	expectedMetadata,
-} from './shared';
+import { defaultConfig, DEFAULT_RESPONSE_HEADERS, expectedMetadata } from './shared';
 
 // API reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html
-const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
-	typeof completeMultipartUpload
-> = [
+const completeMultipartUploadHappyCase: ApiFunctionalTestCase<typeof completeMultipartUpload> = [
 	'happy case',
 	'completeMultipartUpload',
 	completeMultipartUpload,
@@ -46,8 +40,7 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 		headers: expect.objectContaining({
 			'x-amz-server-side-encryption-customer-algorithm': 'SSECustomerAlgorithm',
 			'x-amz-server-side-encryption-customer-key': toBase64('SSECustomerKey'),
-			'x-amz-server-side-encryption-customer-key-md5':
-				'u2yTVQWmqQ+XbBDNNmwr4Q==',
+			'x-amz-server-side-encryption-customer-key-md5': 'u2yTVQWmqQ+XbBDNNmwr4Q==',
 			'content-type': 'application/xml',
 		}),
 		body:
@@ -83,9 +76,7 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 ];
 
 // API reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html
-const completeMultipartUploadErrorCase: ApiFunctionalTestCase<
-	typeof completeMultipartUpload
-> = [
+const completeMultipartUploadErrorCase: ApiFunctionalTestCase<typeof completeMultipartUpload> = [
 	'error case',
 	'completeMultipartUpload',
 	completeMultipartUpload,
@@ -114,9 +105,7 @@ const completeMultipartUploadErrorCase: ApiFunctionalTestCase<
 	},
 ];
 
-const completeMultipartUploadErrorWith200CodeCase: ApiFunctionalTestCase<
-	typeof completeMultipartUpload
-> = [
+const completeMultipartUploadErrorWith200CodeCase: ApiFunctionalTestCase<typeof completeMultipartUpload> = [
 	'error case',
 	'completeMultipartUpload with 200 status',
 	completeMultipartUpload,

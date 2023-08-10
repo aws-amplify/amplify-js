@@ -116,10 +116,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback.onSuccess('success');
 	};
 
-	CognitoUser.prototype.authenticateUser = (
-		authenticationDetails,
-		callback
-	) => {
+	CognitoUser.prototype.authenticateUser = (authenticationDetails, callback) => {
 		callback.onSuccess('session');
 	};
 
@@ -131,11 +128,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback(null, 'result');
 	};
 
-	CognitoUser.prototype.changePassword = (
-		oldPassword,
-		newPassword,
-		callback
-	) => {
+	CognitoUser.prototype.changePassword = (oldPassword, newPassword, callback) => {
 		callback(null, 'SUCCESS');
 	};
 
@@ -153,19 +146,11 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback.onSuccess();
 	};
 
-	CognitoUser.prototype.confirmRegistration = (
-		confirmationCode,
-		forceAliasCreation,
-		callback
-	) => {
+	CognitoUser.prototype.confirmRegistration = (confirmationCode, forceAliasCreation, callback) => {
 		callback(null, 'Success');
 	};
 
-	CognitoUser.prototype.completeNewPasswordChallenge = (
-		password,
-		requiredAttributes,
-		callback
-	) => {
+	CognitoUser.prototype.completeNewPasswordChallenge = (password, requiredAttributes, callback) => {
 		callback.onSuccess('session');
 	};
 
@@ -179,10 +164,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback.customChallenge('challengeParam');
 	};
 
-	CognitoUser.prototype.sendCustomChallengeAnswer = (
-		challengeAnswer,
-		callback
-	) => {
+	CognitoUser.prototype.sendCustomChallengeAnswer = (challengeAnswer, callback) => {
 		callback.onSuccess('session');
 	};
 
@@ -245,11 +227,7 @@ const DEFAULT_RETRY_TIMEOUT = 60000;
 
 import { AuthOptions } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
-import {
-	Credentials,
-	StorageHelper,
-	NonRetryableError,
-} from '@aws-amplify/core';
+import { Credentials, StorageHelper, NonRetryableError } from '@aws-amplify/core';
 
 const authOptions: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
@@ -283,28 +261,21 @@ describe('auth federation unit test', () => {
 					});
 				mockGAPI({ reloadAuthResponse });
 
-				const getAuthInstanceSpy = jest.spyOn(
-					(global as any).window.gapi.auth2,
-					'getAuthInstance'
-				);
+				const getAuthInstanceSpy = jest.spyOn((global as any).window.gapi.auth2, 'getAuthInstance');
 
-				const storageSpy = jest
-					.spyOn(StorageHelper.prototype, 'getStorage')
-					.mockImplementation(() => {
-						return {
-							setItem() {},
-							getItem() {
-								return JSON.stringify(expiredCreds('google'));
-							},
-							removeItem() {},
-						};
-					});
+				const storageSpy = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+					return {
+						setItem() {},
+						getItem() {
+							return JSON.stringify(expiredCreds('google'));
+						},
+						removeItem() {},
+					};
+				});
 
-				const credsSpy = jest
-					.spyOn(Credentials, <any>'_setCredentialsFromFederation')
-					.mockImplementationOnce(() => {
-						return Promise.resolve('cred');
-					});
+				const credsSpy = jest.spyOn(Credentials, <any>'_setCredentialsFromFederation').mockImplementationOnce(() => {
+					return Promise.resolve('cred');
+				});
 
 				const auth = new Auth(authOptions);
 
@@ -334,28 +305,21 @@ describe('auth federation unit test', () => {
 
 				mockFB({ getLoginStatus });
 
-				const getAuthInstanceSpy = jest.spyOn(
-					(global as any).window.FB,
-					'getLoginStatus'
-				);
+				const getAuthInstanceSpy = jest.spyOn((global as any).window.FB, 'getLoginStatus');
 
-				const spyon = jest
-					.spyOn(StorageHelper.prototype, 'getStorage')
-					.mockImplementation(() => {
-						return {
-							setItem() {},
-							getItem() {
-								return JSON.stringify(expiredCreds('facebook'));
-							},
-							removeItem() {},
-						};
-					});
+				const spyon = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+					return {
+						setItem() {},
+						getItem() {
+							return JSON.stringify(expiredCreds('facebook'));
+						},
+						removeItem() {},
+					};
+				});
 
-				const spyon2 = jest
-					.spyOn(Credentials, <any>'_setCredentialsFromFederation')
-					.mockImplementationOnce(() => {
-						return Promise.resolve('cred');
-					});
+				const spyon2 = jest.spyOn(Credentials, <any>'_setCredentialsFromFederation').mockImplementationOnce(() => {
+					return Promise.resolve('cred');
+				});
 
 				const auth = new Auth(authOptions);
 
@@ -380,26 +344,19 @@ describe('auth federation unit test', () => {
 				});
 			mockGAPI({ reloadAuthResponse });
 
-			const getAuthInstanceSpy = jest.spyOn(
-				(global as any).window.gapi.auth2,
-				'getAuthInstance'
-			);
+			const getAuthInstanceSpy = jest.spyOn((global as any).window.gapi.auth2, 'getAuthInstance');
 
-			const storageSpy = jest
-				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementation(() => {
-					return {
-						setItem() {},
-						getItem() {
-							return JSON.stringify(expiredCreds('google'));
-						},
-						removeItem() {},
-					};
-				});
+			const storageSpy = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+				return {
+					setItem() {},
+					getItem() {
+						return JSON.stringify(expiredCreds('google'));
+					},
+					removeItem() {},
+				};
+			});
 
-			const credsClearSpy = jest
-				.spyOn(Credentials, 'clear')
-				.mockImplementation();
+			const credsClearSpy = jest.spyOn(Credentials, 'clear').mockImplementation();
 
 			const auth = new Auth(authOptions);
 
@@ -428,25 +385,18 @@ describe('auth federation unit test', () => {
 
 			mockFB({ getLoginStatus });
 
-			const getAuthInstanceSpy = jest.spyOn(
-				(global as any).window.FB,
-				'getLoginStatus'
-			);
+			const getAuthInstanceSpy = jest.spyOn((global as any).window.FB, 'getLoginStatus');
 
-			const storageSpy = jest
-				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementation(() => {
-					return {
-						setItem() {},
-						getItem() {
-							return JSON.stringify(expiredCreds('facebook'));
-						},
-						removeItem() {},
-					};
-				});
-			const credsClearSpy = jest
-				.spyOn(Credentials, 'clear')
-				.mockImplementation();
+			const storageSpy = jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+				return {
+					setItem() {},
+					getItem() {
+						return JSON.stringify(expiredCreds('facebook'));
+					},
+					removeItem() {},
+				};
+			});
+			const credsClearSpy = jest.spyOn(Credentials, 'clear').mockImplementation();
 
 			const auth = new Auth(authOptions);
 

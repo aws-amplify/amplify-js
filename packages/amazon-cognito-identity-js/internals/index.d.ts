@@ -23,10 +23,7 @@ export const addAuthCategoryToCognitoUserAgent: () => void;
 export const addFrameworkToCognitoUserAgent: (content: string) => void;
 
 export class InternalCognitoUserPool {
-	constructor(
-		data: ICognitoUserPoolData,
-		wrapRefreshSessionCallback?: (target: NodeCallback.Any) => NodeCallback.Any
-	);
+	constructor(data: ICognitoUserPoolData, wrapRefreshSessionCallback?: (target: NodeCallback.Any) => NodeCallback.Any);
 
 	public getUserPoolId(): string;
 	public getUserPoolName(): string;
@@ -59,9 +56,7 @@ export class InternalCognitoUser {
 	public getCachedDeviceKeyAndPassword(): void;
 
 	public getSession(
-		callback:
-			| ((error: Error, session: null) => void)
-			| ((error: null, session: CognitoUserSession) => void),
+		callback: ((error: Error, session: null) => void) | ((error: null, session: CognitoUserSession) => void),
 		options?: GetSessionOptions,
 		userAgentValue?: string
 	): void;
@@ -164,10 +159,7 @@ export class InternalCognitoUser {
 	public sendMFACode(
 		confirmationCode: string,
 		callbacks: {
-			onSuccess: (
-				session: CognitoUserSession,
-				userConfirmationNecessary?: boolean
-			) => void;
+			onSuccess: (session: CognitoUserSession, userConfirmationNecessary?: boolean) => void;
 			onFailure: (err: any) => void;
 		},
 		mfaType?: string,
@@ -207,10 +199,7 @@ export class InternalCognitoUser {
 		},
 		userAgentValue?: string
 	): void;
-	public getUserAttributes(
-		callback: NodeCallback<Error, CognitoUserAttribute[]>,
-		userAgentValue?: string
-	): void;
+	public getUserAttributes(callback: NodeCallback<Error, CognitoUserAttribute[]>, userAgentValue?: string): void;
 	public updateAttributes(
 		attributes: (CognitoUserAttribute | ICognitoUserAttributeData)[],
 		callback: UpdateAttributesNodeCallback<Error, string, any>,
@@ -232,27 +221,11 @@ export class InternalCognitoUser {
 		clientMetadata?: ClientMetadata,
 		userAgentValue?: string
 	): void;
-	public deleteUser(
-		callback: NodeCallback<Error, string>,
-		userAgentValue?: string
-	): void;
-	public enableMFA(
-		callback: NodeCallback<Error, string>,
-		userAgentValue?: string
-	): void;
-	public disableMFA(
-		callback: NodeCallback<Error, string>,
-		userAgentValue?: string
-	): void;
-	public getMFAOptions(
-		callback: NodeCallback<Error, MFAOption[]>,
-		userAgentValue?: string
-	): void;
-	public getUserData(
-		callback: NodeCallback<Error, UserData>,
-		params?: any,
-		userAgentValue?: string
-	): void;
+	public deleteUser(callback: NodeCallback<Error, string>, userAgentValue?: string): void;
+	public enableMFA(callback: NodeCallback<Error, string>, userAgentValue?: string): void;
+	public disableMFA(callback: NodeCallback<Error, string>, userAgentValue?: string): void;
+	public getMFAOptions(callback: NodeCallback<Error, MFAOption[]>, userAgentValue?: string): void;
+	public getUserData(callback: NodeCallback<Error, UserData>, params?: any, userAgentValue?: string): void;
 	public associateSoftwareToken(
 		callbacks: {
 			associateSecretCode: (secretCode: string) => void;
@@ -280,14 +253,8 @@ export class InternalCognitoUser {
 		callbacks: {
 			onSuccess: (session: CognitoUserSession) => void;
 			onFailure: (err: any) => void;
-			mfaRequired?: (
-				challengeName: ChallengeName,
-				challengeParameters: any
-			) => void;
-			totpRequired?: (
-				challengeName: ChallengeName,
-				challengeParameters: any
-			) => void;
+			mfaRequired?: (challengeName: ChallengeName, challengeParameters: any) => void;
+			totpRequired?: (challengeName: ChallengeName, challengeParameters: any) => void;
 		},
 		userAgentValue?: string
 	): void;

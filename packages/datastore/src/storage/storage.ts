@@ -22,21 +22,14 @@ import {
 	SubscriptionMessage,
 	isTargetNameAssociation,
 } from '../types';
-import {
-	isModelConstructor,
-	STORAGE,
-	validatePredicate,
-	valuesEqual,
-	NAMESPACES,
-} from '../util';
+import { isModelConstructor, STORAGE, validatePredicate, valuesEqual, NAMESPACES } from '../util';
 import { getIdentifierValue } from '../sync/utils';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
-export type StorageSubscriptionMessage<T extends PersistentModel> =
-	InternalSubscriptionMessage<T> & {
-		mutator?: Symbol;
-	};
+export type StorageSubscriptionMessage<T extends PersistentModel> = InternalSubscriptionMessage<T> & {
+	mutator?: Symbol;
+};
 
 export type StorageFacade = Omit<Adapter, 'setUp'>;
 export type Storage = InstanceType<typeof StorageClass>;
@@ -46,9 +39,7 @@ class StorageClass implements StorageFacade {
 	private initialized: Promise<void> | undefined;
 	private readonly pushStream: {
 		observable: Observable<StorageSubscriptionMessage<PersistentModel>>;
-	} & Required<
-		ZenObservable.Observer<StorageSubscriptionMessage<PersistentModel>>
-	>;
+	} & Required<ZenObservable.Observer<StorageSubscriptionMessage<PersistentModel>>>;
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -125,10 +116,7 @@ class StorageClass implements StorageFacade {
 			let updateMutationInput;
 			// don't attempt to calc mutation input when storage.save
 			// is called by Merger, i.e., when processing an AppSync response
-			if (
-				(opType === OpType.UPDATE || opType === OpType.INSERT) &&
-				!syncResponse
-			) {
+			if ((opType === OpType.UPDATE || opType === OpType.INSERT) && !syncResponse) {
 				//
 				// TODO: LOOK!!!
 				// the `model` used here is in effect regardless of what model
@@ -141,11 +129,7 @@ class StorageClass implements StorageFacade {
 				// depends on this remaining as-is.
 				//
 
-				updateMutationInput = this.getChangedFieldsInput(
-					model,
-					savedElement,
-					patchesTuple
-				);
+				updateMutationInput = this.getChangedFieldsInput(model, savedElement, patchesTuple);
 				// // an update without changed user fields
 				// => don't create mutationEvent
 				if (updateMutationInput === null) {
@@ -163,10 +147,7 @@ class StorageClass implements StorageFacade {
 				opType,
 				element,
 				mutator,
-				condition:
-					(condition &&
-						ModelPredicateCreator.getPredicates(condition, false)) ||
-					null,
+				condition: (condition && ModelPredicateCreator.getPredicates(condition, false)) || null,
 				savedElement,
 			});
 		});
@@ -174,11 +155,7 @@ class StorageClass implements StorageFacade {
 		return result;
 	}
 
-	delete<T extends PersistentModel>(
-		model: T,
-		condition?: ModelPredicate<T>,
-		mutator?: Symbol
-	): Promise<[T[], T[]]>;
+	delete<T extends PersistentModel>(model: T, condition?: ModelPredicate<T>, mutator?: Symbol): Promise<[T[], T[]]>;
 	delete<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>,
@@ -197,19 +174,14 @@ class StorageClass implements StorageFacade {
 		let models: T[];
 		let deleted: T[] | undefined;
 
-		[models, deleted] = await this.adapter.delete(
-			modelOrModelConstructor,
-			condition
-		);
+		[models, deleted] = await this.adapter.delete(modelOrModelConstructor, condition);
 
 		const modelConstructor = isModelConstructor(modelOrModelConstructor)
 			? modelOrModelConstructor
-			: (Object.getPrototypeOf(modelOrModelConstructor || {})
-					.constructor as PersistentModelConstructor<T>);
+			: (Object.getPrototypeOf(modelOrModelConstructor || {}).constructor as PersistentModelConstructor<T>);
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
-		const modelDefinition =
-			this.schema.namespaces[namespaceName].models[modelConstructor.name];
+		const modelDefinition = this.schema.namespaces[namespaceName].models[modelConstructor.name];
 
 		const modelIds = new Set(
 			models.map(model => {
@@ -218,24 +190,18 @@ class StorageClass implements StorageFacade {
 			})
 		);
 
-		if (
-			!isModelConstructor(modelOrModelConstructor) &&
-			!Array.isArray(deleted)
-		) {
+		if (!isModelConstructor(modelOrModelConstructor) && !Array.isArray(deleted)) {
 			deleted = [deleted];
 		}
 
 		deleted.forEach(model => {
-			const modelConstructor = (Object.getPrototypeOf(model) as Object)
-				.constructor as PersistentModelConstructor<T>;
+			const modelConstructor = (Object.getPrototypeOf(model) as Object).constructor as PersistentModelConstructor<T>;
 
 			let theCondition: PredicatesGroup<any> | undefined;
 
 			if (!isModelConstructor(modelOrModelConstructor)) {
 				const modelId = getIdentifierValue(modelDefinition, model);
-				theCondition = modelIds.has(modelId)
-					? ModelPredicateCreator.getPredicates(condition!, false)
-					: undefined;
+				theCondition = modelIds.has(modelId) ? ModelPredicateCreator.getPredicates(condition!, false) : undefined;
 			}
 
 			this.pushStream.next({
@@ -281,17 +247,13 @@ class StorageClass implements StorageFacade {
 		skipOwn?: Symbol
 	): Observable<SubscriptionMessage<T>> {
 		const listenToAll = !modelConstructor;
-		const { predicates, type } =
-			(predicate && ModelPredicateCreator.getPredicates(predicate, false)) ||
-			{};
+		const { predicates, type } = (predicate && ModelPredicateCreator.getPredicates(predicate, false)) || {};
 
 		let result = this.pushStream.observable
 			.filter(({ mutator }) => {
 				return !skipOwn || mutator !== skipOwn;
 			})
-			.map(
-				({ mutator: _mutator, ...message }) => message as SubscriptionMessage<T>
-			);
+			.map(({ mutator: _mutator, ...message }) => message as SubscriptionMessage<T>);
 
 		if (!listenToAll) {
 			result = result.filter(({ model, element }) => {
@@ -362,24 +324,17 @@ class StorageClass implements StorageFacade {
 		const [patches, source] = patchesTuple!;
 		const updatedElement = {};
 		// extract array of updated fields from patches
-		const updatedFields = <string[]>(
-			patches.map(patch => patch.path && patch.path[0])
-		);
+		const updatedFields = <string[]>patches.map(patch => patch.path && patch.path[0]);
 
 		// check model def for association and replace with targetName if exists
-		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T>;
+		const modelConstructor = Object.getPrototypeOf(model).constructor as PersistentModelConstructor<T>;
 		const namespace = this.namespaceResolver(modelConstructor);
-		const { fields } =
-			this.schema.namespaces[namespace].models[modelConstructor.name];
-		const { primaryKey, compositeKeys = [] } =
-			this.schema.namespaces[namespace].keys?.[modelConstructor.name] || {};
+		const { fields } = this.schema.namespaces[namespace].models[modelConstructor.name];
+		const { primaryKey, compositeKeys = [] } = this.schema.namespaces[namespace].keys?.[modelConstructor.name] || {};
 
 		// set original values for these fields
 		updatedFields.forEach((field: string) => {
-			const targetNames: any = isTargetNameAssociation(
-				fields[field]?.association
-			);
+			const targetNames: any = isTargetNameAssociation(fields[field]?.association);
 
 			if (Array.isArray(targetNames)) {
 				// if field refers to a belongsTo relation, use the target field instead
@@ -389,17 +344,13 @@ class StorageClass implements StorageFacade {
 					if (!valuesEqual(source[targetName], originalElement[targetName])) {
 						// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
 
-						updatedElement[targetName] =
-							originalElement[targetName] === undefined
-								? null
-								: originalElement[targetName];
+						updatedElement[targetName] = originalElement[targetName] === undefined ? null : originalElement[targetName];
 
 						for (const fieldSet of compositeKeys) {
 							// include all of the fields that comprise the composite key
 							if (fieldSet.has(targetName)) {
 								for (const compositeField of fieldSet) {
-									updatedElement[compositeField] =
-										originalElement[compositeField];
+									updatedElement[compositeField] = originalElement[compositeField];
 								}
 							}
 						}
@@ -415,15 +366,13 @@ class StorageClass implements StorageFacade {
 				if (!valuesEqual(source[key], originalElement[key])) {
 					// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
 
-					updatedElement[key] =
-						originalElement[key] === undefined ? null : originalElement[key];
+					updatedElement[key] = originalElement[key] === undefined ? null : originalElement[key];
 
 					for (const fieldSet of compositeKeys) {
 						// include all of the fields that comprise the composite key
 						if (fieldSet.has(key)) {
 							for (const compositeField of fieldSet) {
-								updatedElement[compositeField] =
-									originalElement[compositeField];
+								updatedElement[compositeField] = originalElement[compositeField];
 							}
 						}
 					}
@@ -463,10 +412,7 @@ class ExclusiveStorage implements StorageFacade {
 	constructor(
 		schema: InternalSchema,
 		namespaceResolver: NamespaceResolver,
-		getModelConstructorByModelName: (
-			namsespaceName: NAMESPACES,
-			modelName: string
-		) => PersistentModelConstructor<any>,
+		getModelConstructorByModelName: (namsespaceName: NAMESPACES, modelName: string) => PersistentModelConstructor<any>,
 		modelInstanceCreator: ModelInstanceCreator,
 		adapter?: Adapter,
 		sessionId?: string
@@ -529,18 +475,14 @@ class ExclusiveStorage implements StorageFacade {
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
-		return this.runExclusive<T[]>(storage =>
-			storage.query<T>(modelConstructor, predicate, pagination)
-		);
+		return this.runExclusive<T[]>(storage => storage.query<T>(modelConstructor, predicate, pagination));
 	}
 
 	async queryOne<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		firstOrLast: QueryOne = QueryOne.FIRST
 	): Promise<T | undefined> {
-		return this.runExclusive<T | undefined>(storage =>
-			storage.queryOne<T>(modelConstructor, firstOrLast)
-		);
+		return this.runExclusive<T | undefined>(storage => storage.queryOne<T>(modelConstructor, firstOrLast));
 	}
 
 	static getNamespace() {

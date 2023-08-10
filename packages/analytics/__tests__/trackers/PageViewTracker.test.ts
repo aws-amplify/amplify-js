@@ -95,11 +95,9 @@ describe('PageViewTracker test', () => {
 			const spyon = jest.spyOn(MethodEmbed, 'add').mockImplementation(() => {
 				return;
 			});
-			const spyon2 = jest
-				.spyOn(window, 'addEventListener')
-				.mockImplementation(() => {
-					return;
-				});
+			const spyon2 = jest.spyOn(window, 'addEventListener').mockImplementation(() => {
+				return;
+			});
 			const pageViewTracer = new PageViewTracker(tracker, {
 				enable: true,
 				type: 'SPA',
@@ -135,17 +133,13 @@ describe('PageViewTracker test', () => {
 		test.skip('happy case with type default', () => {
 			tracker.mockClear();
 
-			const spyon = jest
-				.spyOn(sessionStorage, 'getItem')
-				.mockImplementation(() => {
-					return 'url1';
-				});
+			const spyon = jest.spyOn(sessionStorage, 'getItem').mockImplementation(() => {
+				return 'url1';
+			});
 
-			const spyon2 = jest
-				.spyOn(sessionStorage, 'setItem')
-				.mockImplementation(() => {
-					return;
-				});
+			const spyon2 = jest.spyOn(sessionStorage, 'setItem').mockImplementation(() => {
+				return;
+			});
 
 			const pageViewTracer = new PageViewTracker(tracker, {
 				enable: true,
@@ -201,11 +195,9 @@ describe('PageViewTracker test', () => {
 			const spyon = jest.spyOn(MethodEmbed, 'remove').mockImplementation(() => {
 				return;
 			});
-			const spyon2 = jest
-				.spyOn(window, 'removeEventListener')
-				.mockImplementation(() => {
-					return;
-				});
+			const spyon2 = jest.spyOn(window, 'removeEventListener').mockImplementation(() => {
+				return;
+			});
 			const pageViewTracer = new PageViewTracker(tracker, {
 				enable: true,
 				type: 'SPA',

@@ -17,5 +17,4 @@ export const extendedEncodeURIComponent = (uri: string): string => {
 	return encodeURIComponent(uri).replace(extendedCharacters, hexEncode);
 };
 
-const hexEncode = (c: string) =>
-	`%${c.charCodeAt(0).toString(16).toUpperCase()}`;
+const hexEncode = (c: string) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`;

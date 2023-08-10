@@ -16,12 +16,7 @@ import { getHashedData } from './dataHashHelpers';
  *
  * @internal
  */
-export const getSigningKey = (
-	secretAccessKey: string,
-	date: string,
-	region: string,
-	service: string
-): Uint8Array => {
+export const getSigningKey = (secretAccessKey: string, date: string, region: string, service: string): Uint8Array => {
 	const key = `${SIGNATURE_IDENTIFIER}${secretAccessKey}`;
 	const dateKey = getHashedData(key, date);
 	const regionKey = getHashedData(dateKey, region);

@@ -27,9 +27,4 @@ export const s3TransferHandler = composeTransferHandler<
 	HttpRequest,
 	HttpResponse,
 	typeof xhrTransferHandler
->(xhrTransferHandler, [
-	contentSha256Middleware,
-	userAgentMiddleware,
-	retryMiddleware,
-	signingMiddleware,
-]);
+>(xhrTransferHandler, [contentSha256Middleware, userAgentMiddleware, retryMiddleware, signingMiddleware]);

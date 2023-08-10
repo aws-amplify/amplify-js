@@ -44,13 +44,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 		return 'currentUser';
 	};
 
-	CognitoUserPool.prototype.signUp = (
-		username,
-		password,
-		signUpAttributeList,
-		validationData,
-		callback
-	) => {
+	CognitoUserPool.prototype.signUp = (username, password, signUpAttributeList, validationData, callback) => {
 		callback(null, 'signUpResult');
 	};
 	CognitoUserPool.prototype.storage = {
@@ -87,10 +81,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback.onSuccess('success');
 	};
 
-	CognitoUser.prototype.authenticateUser = (
-		authenticationDetails,
-		callback
-	) => {
+	CognitoUser.prototype.authenticateUser = (authenticationDetails, callback) => {
 		callback.onSuccess('session');
 	};
 
@@ -112,19 +103,11 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 
 	CognitoUser.prototype.signOut = () => {};
 
-	CognitoUser.prototype.confirmRegistration = (
-		confirmationCode,
-		forceAliasCreation,
-		callback
-	) => {
+	CognitoUser.prototype.confirmRegistration = (confirmationCode, forceAliasCreation, callback) => {
 		callback(null, 'Success');
 	};
 
-	CognitoUser.prototype.completeNewPasswordChallenge = (
-		password,
-		requiredAttributes,
-		callback
-	) => {
+	CognitoUser.prototype.completeNewPasswordChallenge = (password, requiredAttributes, callback) => {
 		callback.onSuccess('session');
 	};
 

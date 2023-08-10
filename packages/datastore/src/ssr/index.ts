@@ -1,15 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	PersistentModel,
-	PersistentModelConstructor,
-} from '@aws-amplify/datastore';
+import { PersistentModel, PersistentModelConstructor } from '@aws-amplify/datastore';
 
 // Helper for converting JSON back into DataStore models (while respecting IDs)
-export function deserializeModel<T extends PersistentModel>(
-	Model: PersistentModelConstructor<T>,
-	init: T | T[]
-) {
+export function deserializeModel<T extends PersistentModel>(Model: PersistentModelConstructor<T>, init: T | T[]) {
 	if (Array.isArray(init)) {
 		return init.map(init => deserializeModel(Model, init));
 	}
@@ -20,8 +14,6 @@ export function deserializeModel<T extends PersistentModel>(
 }
 
 // Helper for converting DataStore models to JSON
-export function serializeModel<T extends PersistentModel>(
-	model: T | T[]
-): JSON {
+export function serializeModel<T extends PersistentModel>(model: T | T[]): JSON {
 	return JSON.parse(JSON.stringify(model));
 }

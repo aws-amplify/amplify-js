@@ -4,11 +4,7 @@
 import { putObject } from '../../../../src/AwsClients/S3';
 import { toBase64 } from '../../../../src/AwsClients/S3/utils';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
-import {
-	defaultConfig,
-	DEFAULT_RESPONSE_HEADERS,
-	expectedMetadata,
-} from './shared';
+import { defaultConfig, DEFAULT_RESPONSE_HEADERS, expectedMetadata } from './shared';
 
 export const putObjectRequest = {
 	Bucket: 'bucket',

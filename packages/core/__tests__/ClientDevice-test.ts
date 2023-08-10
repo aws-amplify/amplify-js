@@ -15,11 +15,7 @@ describe('ClientDevice', () => {
 
 describe('browserType', () => {
 	test('opera', () => {
-		expect(
-			browserType(
-				'Opera/9.80 (Macintosh; Intel Mac OS X; U; en) Presto/2.2.15 Version/10.00'
-			)
-		).toStrictEqual({
+		expect(browserType('Opera/9.80 (Macintosh; Intel Mac OS X; U; en) Presto/2.2.15 Version/10.00')).toStrictEqual({
 			type: 'n',
 			version: '10.00',
 		});

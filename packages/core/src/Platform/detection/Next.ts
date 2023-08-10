@@ -11,8 +11,5 @@ export function nextWebDetect() {
 }
 
 export function nextSSRDetect() {
-	return (
-		globalExists() &&
-		(keyPrefixMatch(global, '__next') || keyPrefixMatch(global, '__NEXT'))
-	);
+	return globalExists() && (keyPrefixMatch(global, '__next') || keyPrefixMatch(global, '__NEXT'));
 }

@@ -19,9 +19,7 @@ describe('Cookie Storage Unit Tests', () => {
 		test('Samesite value is undefined', () => {
 			expect(() => {
 				new CookieStorage({ domain: cookieStorageDomain, sameSite: undefined });
-			}).toThrowError(
-				'The sameSite value of cookieStorage must be "lax", "strict" or "none"'
-			);
+			}).toThrowError('The sameSite value of cookieStorage must be "lax", "strict" or "none"');
 		});
 
 		test('Samesite value is none while secure = false', () => {
@@ -31,9 +29,7 @@ describe('Cookie Storage Unit Tests', () => {
 					secure: false,
 					sameSite: 'none',
 				});
-			}).toThrowError(
-				'sameSite = None requires the Secure attribute in latest browser versions.'
-			);
+			}).toThrowError('sameSite = None requires the Secure attribute in latest browser versions.');
 		});
 
 		test('Has an expiration value', () => {
@@ -55,9 +51,7 @@ describe('Cookie Storage Unit Tests', () => {
 			});
 
 			test('setting an item', () => {
-				expect(cookieStore.setItem('domain', 'newdomain.com')).toBe(
-					'newdomain.com'
-				);
+				expect(cookieStore.setItem('domain', 'newdomain.com')).toBe('newdomain.com');
 			});
 
 			test('Clearing cookies should remove all items within the storage', () => {

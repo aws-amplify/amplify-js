@@ -15,10 +15,7 @@ class PlatformBuilder {
 	}
 
 	get isReactNative() {
-		return (
-			this.framework === Framework.ReactNative ||
-			this.framework === Framework.Expo
-		);
+		return this.framework === Framework.ReactNative || this.framework === Framework.Expo;
 	}
 
 	observeFrameworkChanges(fcn: () => void) {
@@ -47,13 +44,9 @@ export const getAmplifyUserAgentObject = ({
 	return userAgent;
 };
 
-export const getAmplifyUserAgent = (
-	customUserAgentDetails?: CustomUserAgentDetails
-): string => {
+export const getAmplifyUserAgent = (customUserAgentDetails?: CustomUserAgentDetails): string => {
 	const userAgent = getAmplifyUserAgentObject(customUserAgentDetails);
-	const userAgentString = userAgent
-		.map(([agentKey, agentValue]) => `${agentKey}/${agentValue}`)
-		.join(' ');
+	const userAgentString = userAgent.map(([agentKey, agentValue]) => `${agentKey}/${agentValue}`).join(' ');
 
 	return userAgentString;
 };

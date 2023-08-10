@@ -76,10 +76,7 @@ describe('SessionTracker', () => {
 				SessionTracker = require(MODULE_PATH).default;
 				tracker = new SessionTracker(mockVisibilityChangeHandler);
 				tracker.start();
-				expect(mockAddEventListener).toBeCalledWith(
-					visibilityChange,
-					expect.any(Function)
-				);
+				expect(mockAddEventListener).toBeCalledWith(visibilityChange, expect.any(Function));
 				expect(mockVisibilityChangeHandler).toBeCalledWith(state);
 			});
 		};

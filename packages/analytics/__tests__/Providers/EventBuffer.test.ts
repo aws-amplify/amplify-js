@@ -50,8 +50,6 @@ describe('EventBuffer', () => {
 		const buffer = new EventBuffer(config);
 		buffer.push(EVENT_OBJECT);
 		buffer.push(EVENT_OBJECT);
-		expect(EVENT_OBJECT.handlers.reject).toBeCalledWith(
-			Error('Exceeded the size of analytics events buffer')
-		);
+		expect(EVENT_OBJECT.handlers.reject).toBeCalledWith(Error('Exceeded the size of analytics events buffer'));
 	});
 });

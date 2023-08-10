@@ -5,11 +5,4 @@ export interface Platform {
 	OS: KnownOS | 'unknown';
 }
 
-type KnownOS =
-	| 'windows'
-	| 'macos'
-	| 'unix'
-	| 'linux'
-	| 'ios'
-	| 'android'
-	| 'web';
+type KnownOS = 'windows' | 'macos' | 'unix' | 'linux' | 'ios' | 'android' | 'web';

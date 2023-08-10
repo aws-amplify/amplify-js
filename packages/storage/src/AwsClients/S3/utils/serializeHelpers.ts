@@ -26,9 +26,7 @@ interface ObjectSsecOptions {
 	SSECustomerKeyMD5?: string;
 }
 
-export const serializeObjectSsecOptionsToHeaders = async (
-	input: ObjectSsecOptions
-) => {
+export const serializeObjectSsecOptionsToHeaders = async (input: ObjectSsecOptions) => {
 	const getMd5Digest = async (content: any) => {
 		const md5Hasher = new Md5();
 		md5Hasher.update(utf8Encode(content));
@@ -36,17 +34,14 @@ export const serializeObjectSsecOptionsToHeaders = async (
 	};
 
 	return assignStringVariables({
-		'x-amz-server-side-encryption-customer-algorithm':
-			input.SSECustomerAlgorithm,
+		'x-amz-server-side-encryption-customer-algorithm': input.SSECustomerAlgorithm,
 		// base64 encoded is need
 		// see: https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html#specifying-s3-c-encryption
-		'x-amz-server-side-encryption-customer-key':
-			input.SSECustomerKey && toBase64(input.SSECustomerKey),
+		'x-amz-server-side-encryption-customer-key': input.SSECustomerKey && toBase64(input.SSECustomerKey),
 		// Calculate the md5 digest of the the SSE-C key, for compatibility with AWS SDK
 		// see: https://github.com/aws/aws-sdk-js-v3/blob/91fc83307c38cc9cbe0b3acd919557d5b5b831d6/packages/middleware-ssec/src/index.ts#L36
 		'x-amz-server-side-encryption-customer-key-md5':
-			input.SSECustomerKey &&
-			toBase64(await getMd5Digest(input.SSECustomerKey)),
+			input.SSECustomerKey && toBase64(await getMd5Digest(input.SSECustomerKey)),
 	});
 };
 
@@ -71,9 +66,7 @@ interface ObjectConfigs extends ObjectSsecOptions {
  *
  * @internal
  */
-export const serializeObjectConfigsToHeaders = async (
-	input: ObjectConfigs
-) => ({
+export const serializeObjectConfigsToHeaders = async (input: ObjectConfigs) => ({
 	...(await serializeObjectSsecOptionsToHeaders(input)),
 	...assignStringVariables({
 		'x-amz-server-side-encryption': input.ServerSideEncryption,
@@ -90,9 +83,7 @@ export const serializeObjectConfigsToHeaders = async (
 	}),
 });
 
-const serializeMetadata = (
-	metadata: Record<string, string> = {}
-): Record<string, string> =>
+const serializeMetadata = (metadata: Record<string, string> = {}): Record<string, string> =>
 	Object.keys(metadata).reduce((acc: any, suffix: string) => {
 		acc[`x-amz-meta-${suffix.toLowerCase()}`] = metadata[suffix];
 		return acc;
@@ -105,8 +96,5 @@ const serializeMetadata = (
  * @internal
  */
 export const serializePathnameObjectKey = (url: URL, key: string) => {
-	return (
-		url.pathname.replace(/\/$/, '') +
-		`/${key.split('/').map(extendedEncodeURIComponent).join('/')}`
-	);
+	return url.pathname.replace(/\/$/, '') + `/${key.split('/').map(extendedEncodeURIComponent).join('/')}`;
 };

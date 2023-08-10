@@ -8,10 +8,7 @@ export class InMemoryStore {
 	};
 
 	multiGet = async (keys: string[]) => {
-		return keys.reduce(
-			(res, k) => (res.push([k, this.db.get(k)!]), res),
-			[] as [string, string][]
-		);
+		return keys.reduce((res, k) => (res.push([k, this.db.get(k)!]), res), [] as [string, string][]);
 	};
 
 	multiRemove = async (keys: string[], callback?) => {

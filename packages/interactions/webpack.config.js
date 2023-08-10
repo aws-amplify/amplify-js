@@ -2,10 +2,7 @@ module.exports = {
 	entry: {
 		'aws-amplify-interactions.min': './lib-esm/index.js',
 	},
-	externals: [
-		'aws-sdk/clients/lexruntime',
-		{ '@aws-amplify/core': 'aws_amplify_core' },
-	],
+	externals: ['aws-sdk/clients/lexruntime', { '@aws-amplify/core': 'aws_amplify_core' }],
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',
@@ -13,8 +10,7 @@ module.exports = {
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
 		globalObject: 'this',
-		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils')
-			.devtoolModuleFilenameTemplate,
+		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils').devtoolModuleFilenameTemplate,
 	},
 	// Enable sourcemaps for debugging webpack's output.
 	devtool: 'source-map',

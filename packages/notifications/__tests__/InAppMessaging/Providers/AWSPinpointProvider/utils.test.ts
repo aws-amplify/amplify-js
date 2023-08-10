@@ -20,12 +20,7 @@ import {
 	recordAnalyticsEvent,
 } from '../../../../src/InAppMessaging/Providers/AWSPinpointProvider/utils';
 
-import {
-	inAppMessages,
-	extractedContent,
-	extractedMetadata,
-	pinpointInAppMessage,
-} from '../../../../__mocks__/data';
+import { inAppMessages, extractedContent, extractedMetadata, pinpointInAppMessage } from '../../../../__mocks__/data';
 
 jest.mock('@aws-amplify/core');
 
@@ -77,9 +72,7 @@ describe('AWSPinpoint InAppMessaging Provider Utils', () => {
 
 			recordAnalyticsEvent(AWSPinpointMessageEvent.MESSAGE_DISPLAYED, message);
 
-			expect(loggerDebugSpy).toBeCalledWith(
-				expect.stringContaining('module is not registered')
-			);
+			expect(loggerDebugSpy).toBeCalledWith(expect.stringContaining('module is not registered'));
 		});
 	});
 
@@ -112,9 +105,7 @@ describe('AWSPinpoint InAppMessaging Provider Utils', () => {
 
 		test('memoizes matches', () => {
 			const clickEvent: InAppMessagingEvent = { name: 'clicked' };
-			message!.Schedule!.EventFilter!.Dimensions!.EventType!.Values = [
-				'clicked',
-			];
+			message!.Schedule!.EventFilter!.Dimensions!.EventType!.Values = ['clicked'];
 
 			expect(matchesEventType(message, clickEvent)).toBe(true);
 
@@ -299,9 +290,7 @@ describe('AWSPinpoint InAppMessaging Provider Utils', () => {
 		expect(isBeforeEndDate(message)).toBe(false);
 
 		// Set the end date to 24 hours from now
-		message!.Schedule!.EndDate = new Date(
-			new Date().getTime() + HOUR_IN_MS * 24
-		).toISOString();
+		message!.Schedule!.EndDate = new Date(new Date().getTime() + HOUR_IN_MS * 24).toISOString();
 
 		expect(isBeforeEndDate(message)).toBe(true);
 

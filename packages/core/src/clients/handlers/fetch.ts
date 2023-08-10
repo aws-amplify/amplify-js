@@ -6,14 +6,12 @@ import { HttpRequest, HttpResponse, HttpTransferOptions } from '../types/http';
 import { TransferHandler } from '../types/core';
 import { withMemoization } from '../utils/memoization';
 
-const shouldSendBody = (method: string) =>
-	!['HEAD', 'GET', 'DELETE'].includes(method.toUpperCase());
+const shouldSendBody = (method: string) => !['HEAD', 'GET', 'DELETE'].includes(method.toUpperCase());
 
-export const fetchTransferHandler: TransferHandler<
-	HttpRequest,
-	HttpResponse,
-	HttpTransferOptions
-> = async ({ url, method, headers, body }, { abortSignal }) => {
+export const fetchTransferHandler: TransferHandler<HttpRequest, HttpResponse, HttpTransferOptions> = async (
+	{ url, method, headers, body },
+	{ abortSignal }
+) => {
 	let resp: Response;
 	try {
 		resp = await fetch(url, {

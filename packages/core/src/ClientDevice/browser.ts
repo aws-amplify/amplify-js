@@ -57,9 +57,7 @@ function browserTimezone() {
 }
 
 export function browserType(userAgent: string) {
-	const operaMatch = /.+(Opera[\s[A-Z]*|OPR[\sA-Z]*)\/([0-9\.]+).*/i.exec(
-		userAgent
-	);
+	const operaMatch = /.+(Opera[\s[A-Z]*|OPR[\sA-Z]*)\/([0-9\.]+).*/i.exec(userAgent);
 	if (operaMatch) {
 		return { type: operaMatch[1], version: operaMatch[2] };
 	}

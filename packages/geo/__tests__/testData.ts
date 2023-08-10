@@ -2,13 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import camelcaseKeys from 'camelcase-keys';
 
-import {
-	Coordinates,
-	LinearRing,
-	GeofencePolygon,
-	GeofenceInput,
-	PolygonGeometry,
-} from '../src/types';
+import { Coordinates, LinearRing, GeofencePolygon, GeofenceInput, PolygonGeometry } from '../src/types';
 
 export const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -66,35 +60,19 @@ export const testPlaceCamelCase = camelcaseKeys(TestPlacePascalCase, {
 });
 
 // Coordinates
-export const validCoordinates1: Coordinates = [
-	-123.14695358276366, 49.290090146520434,
-];
-export const validCoordinates2: Coordinates = [
-	-123.1358814239502, 49.294960279811974,
-];
-export const validCoordinates3: Coordinates = [
-	-123.15021514892577, 49.29300108863353,
-];
-export const validCoordinates4: Coordinates = [
-	-123.14909934997559, 49.29132171993048,
-];
-export const validCoordinates5: Coordinates = [
-	-123.14695358276361, 49.290090146520431,
-];
+export const validCoordinates1: Coordinates = [-123.14695358276366, 49.290090146520434];
+export const validCoordinates2: Coordinates = [-123.1358814239502, 49.294960279811974];
+export const validCoordinates3: Coordinates = [-123.15021514892577, 49.29300108863353];
+export const validCoordinates4: Coordinates = [-123.14909934997559, 49.29132171993048];
+export const validCoordinates5: Coordinates = [-123.14695358276361, 49.290090146520431];
 
 export const invalidLngCoordinates1: Coordinates = [181, 0];
 export const invalidLngCoordinates2: Coordinates = [-181, 0];
-export const invalidLngCoordinates: LinearRing = [
-	invalidLngCoordinates1,
-	invalidLngCoordinates2,
-];
+export const invalidLngCoordinates: LinearRing = [invalidLngCoordinates1, invalidLngCoordinates2];
 
 export const invalidLatCoordinates1: Coordinates = [0, -91];
 export const invalidLatCoordinates2: Coordinates = [0, 91];
-export const invalidLatCoordinates: LinearRing = [
-	invalidLatCoordinates1,
-	invalidLatCoordinates2,
-];
+export const invalidLatCoordinates: LinearRing = [invalidLatCoordinates1, invalidLatCoordinates2];
 
 export const infiniteLngCoordinate1: Coordinates = [Infinity, 0];
 export const infiniteLngCoordinate2: Coordinates = [-Infinity, 0];
@@ -130,11 +108,7 @@ export const linearRingIncomplete: LinearRing = [
 	validCoordinates3,
 	validCoordinates4,
 ];
-export const linearRingTooSmall: LinearRing = [
-	validCoordinates1,
-	validCoordinates2,
-	validCoordinates1,
-];
+export const linearRingTooSmall: LinearRing = [validCoordinates1, validCoordinates2, validCoordinates1];
 export const linearRingBadCoordinates: LinearRing = [
 	invalidLngCoordinates1,
 	invalidLatCoordinates1,
@@ -152,18 +126,11 @@ for (let i = 0; i < 1100; i++) {
 // Polygons
 export const validPolygon: GeofencePolygon = [validLinearRing];
 
-export const polygonClockwiseLinearRing: GeofencePolygon = [
-	clockwiseLinearRing,
-];
+export const polygonClockwiseLinearRing: GeofencePolygon = [clockwiseLinearRing];
 
-export const polygonTooBig: GeofencePolygon = [
-	validLinearRing,
-	validLinearRing,
-];
+export const polygonTooBig: GeofencePolygon = [validLinearRing, validLinearRing];
 
-export const polygonTooManyVertices: GeofencePolygon = [
-	linearRingTooManyVertices,
-];
+export const polygonTooManyVertices: GeofencePolygon = [linearRingTooManyVertices];
 
 // Geometry
 export const validGeometry: PolygonGeometry = {
@@ -207,12 +174,7 @@ for (let i = 0; i < 132; i++) {
 	});
 }
 
-export const geofencesWithDuplicate = [
-	validGeofence1,
-	validGeofence2,
-	validGeofence3,
-	validGeofence1,
-];
+export const geofencesWithDuplicate = [validGeofence1, validGeofence2, validGeofence3, validGeofence1];
 export const geofencesWithInvalidId = [
 	validGeofence1,
 	validGeofence2,

@@ -59,10 +59,7 @@ describe('Hub', () => {
 		expect(listener.onHubCapsule).toHaveBeenCalled();
 		expect(listener.onAuthEvent).toHaveBeenCalled();
 
-		expect(loggerSpy).toHaveBeenCalledWith(
-			'WARN',
-			'WARNING onHubCapsule is Deprecated. Please pass in a callback.'
-		);
+		expect(loggerSpy).toHaveBeenCalledWith('WARN', 'WARNING onHubCapsule is Deprecated. Please pass in a callback.');
 	});
 
 	test('Protected channel', () => {
@@ -236,10 +233,7 @@ describe('Hub', () => {
 		);
 
 		expect(listener).not.toHaveBeenCalled();
-		expect(loggerSpy).toHaveBeenCalledWith(
-			'WARN',
-			'Cannot perform pattern matching without a message key'
-		);
+		expect(loggerSpy).toHaveBeenCalledWith('WARN', 'Cannot perform pattern matching without a message key');
 	});
 
 	test('Remove listener', () => {

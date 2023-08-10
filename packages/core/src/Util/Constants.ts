@@ -8,10 +8,7 @@ const AWS_CLOUDWATCH_MAX_EVENT_SIZE = 256000;
 const AWS_CLOUDWATCH_CATEGORY = 'Logging';
 const AWS_CLOUDWATCH_PROVIDER_NAME = 'AWSCloudWatch';
 const NO_CREDS_ERROR_STRING = 'No credentials';
-const RETRY_ERROR_CODES = [
-	'ResourceNotFoundException',
-	'InvalidSequenceTokenException',
-];
+const RETRY_ERROR_CODES = ['ResourceNotFoundException', 'InvalidSequenceTokenException'];
 
 export {
 	AWS_CLOUDWATCH_BASE_BUFFER_SIZE,

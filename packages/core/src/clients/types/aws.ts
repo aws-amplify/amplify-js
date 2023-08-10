@@ -23,6 +23,4 @@ export interface ServiceClientOptions {
  * parse errors from given response. If no error code is found, return undefined.
  * This function is protocol-specific (e.g. JSON, XML, etc.)
  */
-export type ErrorParser = (
-	response?: HttpResponse
-) => Promise<(Error & MetadataBearer) | undefined>;
+export type ErrorParser = (response?: HttpResponse) => Promise<(Error & MetadataBearer) | undefined>;

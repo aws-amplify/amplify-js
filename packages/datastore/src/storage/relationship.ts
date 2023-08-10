@@ -162,10 +162,7 @@ export class ModelRelationship<T> {
 	 * key fields.
 	 */
 	private get localAssociatedWith() {
-		if (
-			this.localAssocation.connectionType === 'HAS_MANY' ||
-			this.localAssocation.connectionType === 'HAS_ONE'
-		) {
+		if (this.localAssocation.connectionType === 'HAS_MANY' || this.localAssocation.connectionType === 'HAS_ONE') {
 			// This de-arraying is theoretically unnecessary going forward.
 			return Array.isArray(this.localAssocation.associatedWith)
 				? this.localAssocation.associatedWith
@@ -187,8 +184,7 @@ export class ModelRelationship<T> {
 	private get explicitRemoteAssociation() {
 		if (this.localAssociatedWith) {
 			if (this.localAssociatedWith.length === 1) {
-				return this.remoteDefinition!.fields[this.localAssociatedWith[0]]
-					?.association;
+				return this.remoteDefinition!.fields[this.localAssociatedWith[0]]?.association;
 			} else {
 				return undefined;
 			}

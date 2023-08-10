@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	MiddlewareContext,
-	MiddlewareHandler,
-	Request,
-	Response,
-} from '../../types/core';
+import { MiddlewareContext, MiddlewareHandler, Request, Response } from '../../types/core';
 
 const DEFAULT_RETRY_ATTEMPTS = 3;
 
@@ -51,10 +46,7 @@ export const retryMiddleware = <TInput = Request, TOutput = Response>({
 	if (maxAttempts < 1) {
 		throw new Error('maxAttempts must be greater than 0');
 	}
-	return (
-		next: MiddlewareHandler<TInput, TOutput>,
-		context: MiddlewareContext
-	) =>
+	return (next: MiddlewareHandler<TInput, TOutput>, context: MiddlewareContext) =>
 		async function retryMiddleware(request: TInput) {
 			let error: Error;
 			let attemptsCount = context.attemptsCount ?? 0;
@@ -80,10 +72,7 @@ export const retryMiddleware = <TInput = Request, TOutput = Response>({
 					response = undefined;
 				}
 				// context.attemptsCount may be updated after calling next handler which may retry the request by itself.
-				attemptsCount =
-					context.attemptsCount > attemptsCount
-						? context.attemptsCount
-						: attemptsCount + 1;
+				attemptsCount = context.attemptsCount > attemptsCount ? context.attemptsCount : attemptsCount + 1;
 				context.attemptsCount = attemptsCount;
 				if (await retryDecider(response, error)) {
 					if (!abortSignal?.aborted && attemptsCount < maxAttempts) {
@@ -123,10 +112,7 @@ const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 	return sleepPromise;
 };
 
-const addOrIncrementMetadataAttempts = (
-	nextHandlerOutput: Object,
-	attempts: number
-) => {
+const addOrIncrementMetadataAttempts = (nextHandlerOutput: Object, attempts: number) => {
 	if (Object.prototype.toString.call(nextHandlerOutput) !== '[object Object]') {
 		return;
 	}

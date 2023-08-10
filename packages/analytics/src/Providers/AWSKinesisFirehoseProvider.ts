@@ -3,10 +3,7 @@
 
 import { AnalyticsAction, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { AWSKinesisProvider } from './AWSKinesisProvider';
-import {
-	PutRecordBatchCommand,
-	FirehoseClient,
-} from '@aws-sdk/client-firehose';
+import { PutRecordBatchCommand, FirehoseClient } from '@aws-sdk/client-firehose';
 import { fromUtf8 } from '@aws-sdk/util-utf8-browser';
 import { getAnalyticsUserAgent } from '../utils/UserAgent';
 
@@ -46,20 +43,14 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 				records[streamName] = [];
 			}
 
-			const bufferData =
-				data && typeof data !== 'string' ? JSON.stringify(data) : data;
+			const bufferData = data && typeof data !== 'string' ? JSON.stringify(data) : data;
 			const Data = fromUtf8(bufferData);
 			const record = { Data };
 			records[streamName].push(record);
 		});
 
 		Object.keys(records).map(streamName => {
-			logger.debug(
-				'putting records to kinesis',
-				streamName,
-				'with records',
-				records[streamName]
-			);
+			logger.debug('putting records to kinesis', streamName, 'with records', records[streamName]);
 
 			this._kinesisFirehose
 				.send(

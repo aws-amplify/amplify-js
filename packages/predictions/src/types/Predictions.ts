@@ -292,9 +292,7 @@ export interface IdentifyEntitiesOutput {
 	}[];
 }
 
-export function isIdentifyFromCollection(
-	obj: any
-): obj is IdentifyFromCollection {
+export function isIdentifyFromCollection(obj: any): obj is IdentifyFromCollection {
 	const key: keyof IdentifyFromCollection = 'collection';
 	const keyId: keyof IdentifyFromCollection = 'collectionId';
 	return obj && (obj.hasOwnProperty(key) || obj.hasOwnProperty(keyId));
@@ -345,9 +343,7 @@ export function isIdentifyLabelsInput(obj: any): obj is IdentifyLabelsInput {
 	return obj && obj.hasOwnProperty(key);
 }
 
-export function isIdentifyEntitiesInput(
-	obj: any
-): obj is IdentifyEntitiesInput {
+export function isIdentifyEntitiesInput(obj: any): obj is IdentifyEntitiesInput {
 	const key: keyof IdentifyEntitiesInput = 'entities';
 	return obj && obj.hasOwnProperty(key);
 }

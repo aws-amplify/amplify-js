@@ -33,30 +33,22 @@ export class StorageCache {
 	private checkConfig(): void {
 		// check configuration
 		if (!isInteger(this.config.capacityInBytes)) {
-			logger.error(
-				'Invalid parameter: capacityInBytes. It should be an Integer. Setting back to default.'
-			);
+			logger.error('Invalid parameter: capacityInBytes. It should be an Integer. Setting back to default.');
 			this.config.capacityInBytes = defaultConfig.capacityInBytes;
 		}
 
 		if (!isInteger(this.config.itemMaxSize)) {
-			logger.error(
-				'Invalid parameter: itemMaxSize. It should be an Integer. Setting back to default.'
-			);
+			logger.error('Invalid parameter: itemMaxSize. It should be an Integer. Setting back to default.');
 			this.config.itemMaxSize = defaultConfig.itemMaxSize;
 		}
 
 		if (!isInteger(this.config.defaultTTL)) {
-			logger.error(
-				'Invalid parameter: defaultTTL. It should be an Integer. Setting back to default.'
-			);
+			logger.error('Invalid parameter: defaultTTL. It should be an Integer. Setting back to default.');
 			this.config.defaultTTL = defaultConfig.defaultTTL;
 		}
 
 		if (!isInteger(this.config.defaultPriority)) {
-			logger.error(
-				'Invalid parameter: defaultPriority. It should be an Integer. Setting back to default.'
-			);
+			logger.error('Invalid parameter: defaultPriority. It should be an Integer. Setting back to default.');
 			this.config.defaultPriority = defaultConfig.defaultPriority;
 		}
 
@@ -68,27 +60,18 @@ export class StorageCache {
 		}
 
 		if (this.config.defaultPriority > 5 || this.config.defaultPriority < 1) {
-			logger.error(
-				'Invalid parameter: defaultPriority. It should be between 1 and 5. Setting back to default.'
-			);
+			logger.error('Invalid parameter: defaultPriority. It should be between 1 and 5. Setting back to default.');
 			this.config.defaultPriority = defaultConfig.defaultPriority;
 		}
 
-		if (
-			Number(this.config.warningThreshold) > 1 ||
-			Number(this.config.warningThreshold) < 0
-		) {
-			logger.error(
-				'Invalid parameter: warningThreshold. It should be between 0 and 1. Setting back to default.'
-			);
+		if (Number(this.config.warningThreshold) > 1 || Number(this.config.warningThreshold) < 0) {
+			logger.error('Invalid parameter: warningThreshold. It should be between 0 and 1. Setting back to default.');
 			this.config.warningThreshold = defaultConfig.warningThreshold;
 		}
 		// set 5MB limit
 		const cacheLimit: number = 5 * 1024 * 1024;
 		if (this.config.capacityInBytes > cacheLimit) {
-			logger.error(
-				'Cache Capacity should be less than 5MB. Setting back to default. Setting back to default.'
-			);
+			logger.error('Cache Capacity should be less than 5MB. Setting back to default. Setting back to default.');
 			this.config.capacityInBytes = defaultConfig.capacityInBytes;
 		}
 	}

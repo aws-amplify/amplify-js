@@ -12,8 +12,7 @@ export const toBase64TestCases = [
 	},
 	{
 		input: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
-		expected:
-			'YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXpBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWjEyMzQ1Njc4OTA=',
+		expected: 'YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXpBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWjEyMzQ1Njc4OTA=',
 	},
 	{
 		input: '!@#$%^&*()_+-={}|[]\\:";<>,.?/~`',
@@ -40,9 +39,7 @@ export const toBase64TestCases = [
 		expected: 'ICBUZVN0SW5HICA=',
 	},
 	{
-		input: new Uint8Array([
-			89, 100, 197, 233, 147, 124, 200, 199, 19, 39, 232, 147, 245, 41, 42, 13,
-		]), // MD5 deigest in hex: 5964c5e9937cc8c71327e893f5292a0d
+		input: new Uint8Array([89, 100, 197, 233, 147, 124, 200, 199, 19, 39, 232, 147, 245, 41, 42, 13]), // MD5 deigest in hex: 5964c5e9937cc8c71327e893f5292a0d
 		expected: 'WWTF6ZN8yMcTJ+iT9SkqDQ==',
 	},
 ];

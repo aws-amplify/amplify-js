@@ -23,8 +23,7 @@ module.exports = {
 		path: __dirname + '/dist',
 		libraryTarget: 'umd',
 		library: 'AmazonCognitoIdentity',
-		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils')
-			.devtoolModuleFilenameTemplate,
+		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils').devtoolModuleFilenameTemplate,
 	},
 	resolve: {
 		extensions: ['.js', '.json'],

@@ -72,18 +72,10 @@ describe(composeServiceApi.name, () => {
 		const mockDeserializer = jest.fn().mockReturnValue({
 			Result: 'from server',
 		});
-		const api = composeServiceApi(
-			mockTransferHandler,
-			mockSerializer,
-			mockDeserializer,
-			defaultConfig
-		);
+		const api = composeServiceApi(mockTransferHandler, mockSerializer, mockDeserializer, defaultConfig);
 		const output = await api({ bar: 'baz', foo: 'foo' }, 'Input');
 		expect(mockSerializer).toBeCalledTimes(1);
-		expect(mockSerializer).toBeCalledWith(
-			'Input',
-			defaultConfig.endpointResolver.mock.results[0].value
-		);
+		expect(mockSerializer).toBeCalledWith('Input', defaultConfig.endpointResolver.mock.results[0].value);
 		expect(mockDeserializer).toBeCalledTimes(1);
 		expect(mockDeserializer).toBeCalledWith(defaultResponse);
 	});

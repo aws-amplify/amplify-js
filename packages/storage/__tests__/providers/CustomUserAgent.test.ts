@@ -72,11 +72,7 @@ describe('Each Storage call should create a client with the right StorageAction'
 		provider.get = jest.fn(provider.get);
 
 		await storage.get('test');
-		expect(provider.get).toBeCalledWith(
-			'test',
-			expect.anything(),
-			getStorageUserAgentValue(StorageAction.Get)
-		);
+		expect(provider.get).toBeCalledWith('test', expect.anything(), getStorageUserAgentValue(StorageAction.Get));
 	});
 
 	test('getProperties', async () => {
@@ -101,11 +97,7 @@ describe('Each Storage call should create a client with the right StorageAction'
 		provider.get = jest.fn(provider.get);
 
 		await storage.get('test', { download: true });
-		expect(provider.get).toBeCalledWith(
-			'test',
-			expect.anything(),
-			getStorageUserAgentValue(StorageAction.Get)
-		);
+		expect(provider.get).toBeCalledWith('test', expect.anything(), getStorageUserAgentValue(StorageAction.Get));
 	});
 
 	test('uploadData', async () => {
@@ -136,21 +128,13 @@ describe('Each Storage call should create a client with the right StorageAction'
 		provider.list = jest.fn(provider.list);
 
 		await storage.list('');
-		expect(provider.list).toBeCalledWith(
-			'',
-			undefined,
-			getStorageUserAgentValue(StorageAction.List)
-		);
+		expect(provider.list).toBeCalledWith('', undefined, getStorageUserAgentValue(StorageAction.List));
 	});
 
 	test('remove', async () => {
 		provider.remove = jest.fn(provider.remove);
 
 		await storage.remove('test');
-		expect(provider.remove).toBeCalledWith(
-			'test',
-			undefined,
-			getStorageUserAgentValue(StorageAction.Remove)
-		);
+		expect(provider.remove).toBeCalledWith('test', undefined, getStorageUserAgentValue(StorageAction.Remove));
 	});
 });

@@ -11,10 +11,7 @@ const logger = winston.createLogger({
 	level: process.env.LOG_LEVEL ? process.env.LOG_LEVEL.toLowerCase() : 'info',
 	transports: [
 		new winston.transports.Console({
-			format: winston.format.combine(
-				winston.format.prettyPrint(2),
-				winston.format.colorize({ all: true })
-			),
+			format: winston.format.combine(winston.format.prettyPrint(2), winston.format.colorize({ all: true })),
 		}),
 	],
 });
@@ -27,9 +24,7 @@ const pkgRootPath = process.cwd();
 const pkgTscES5OutDir = path.join(pkgRootPath, 'lib');
 const pkgTscES6OutDir = path.join(pkgRootPath, 'lib-esm');
 const pkgSrcDir = path.join(pkgRootPath, 'src');
-const typeRoots = [rootPath, pkgRootPath].map(basePath =>
-	path.join(basePath, 'node_modules/@types')
-);
+const typeRoots = [rootPath, pkgRootPath].map(basePath => path.join(basePath, 'node_modules/@types'));
 const packageJsonPath = path.join(pkgRootPath, 'package');
 const packageInfo = require(packageJsonPath);
 const pkgRollUpInputFile = path.join(pkgTscES5OutDir, 'index.js');
@@ -94,9 +89,7 @@ function runTypeScriptWithoutWatchMode(fileNames, options) {
 	let program = ts.createProgram(fileNames, options);
 	let emitResult = program.emit();
 
-	let allDiagnostics = ts
-		.getPreEmitDiagnostics(program)
-		.concat(emitResult.diagnostics);
+	let allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
 
 	allDiagnostics.forEach(diagnostic => {
 		reportErrorDiagnostic(diagnostic);
@@ -128,20 +121,11 @@ function runTypeScriptWithWatchMode(fileNames, options) {
 
 function reportErrorDiagnostic(diagnostic) {
 	if (diagnostic.file) {
-		let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(
-			diagnostic.start
-		);
+		let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
 		let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-		logger.error(
-			`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`
-		);
+		logger.error(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
 	} else {
-		logger.error(
-			`${ts.flattenDiagnosticMessageText(
-				diagnostic.messageText,
-				formatHost.getNewLine()
-			)}`
-		);
+		logger.error(`${ts.flattenDiagnosticMessageText(diagnostic.messageText, formatHost.getNewLine())}`);
 	}
 }
 
@@ -156,10 +140,7 @@ function reportWatchStatusChanged(diagnostic, newLine, options, errorCount) {
 async function buildES5(typeScriptCompiler, watchMode) {
 	if (!tsconfigInfo.extends) throw new Error('extends flag no detected');
 
-	const extendsCompilerOptions = ts.readConfigFile(
-		tsconfigInfo.extends,
-		ts.sys.readFile
-	).config.compilerOptions;
+	const extendsCompilerOptions = ts.readConfigFile(tsconfigInfo.extends, ts.sys.readFile).config.compilerOptions;
 
 	let compilerOptions = {
 		...tsconfigInfo.compilerOptions,
@@ -198,10 +179,7 @@ async function buildES5(typeScriptCompiler, watchMode) {
 function buildES6(typeScriptCompiler, watchMode) {
 	if (!tsconfigInfo.extends) throw new Error('extends flag no detected');
 
-	const extendsCompilerOptions = ts.readConfigFile(
-		tsconfigInfo.extends,
-		ts.sys.readFile
-	).config.compilerOptions;
+	const extendsCompilerOptions = ts.readConfigFile(tsconfigInfo.extends, ts.sys.readFile).config.compilerOptions;
 
 	let compilerOptions = {
 		...tsconfigInfo.compilerOptions,
@@ -240,9 +218,7 @@ function buildES6(typeScriptCompiler, watchMode) {
 function build(type, watchMode) {
 	if (type === 'rollup') buildRollUp();
 
-	var typeScriptCompiler = watchMode
-		? runTypeScriptWithWatchMode
-		: runTypeScriptWithoutWatchMode;
+	var typeScriptCompiler = watchMode ? runTypeScriptWithWatchMode : runTypeScriptWithoutWatchMode;
 
 	if (type === 'es5') buildES5(typeScriptCompiler, watchMode);
 	if (type === 'es6') buildES6(typeScriptCompiler, watchMode);

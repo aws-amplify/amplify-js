@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	Hub,
-	parseAWSExports,
-} from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger, Hub, parseAWSExports } from '@aws-amplify/core';
 import { AWSPinpointProvider } from './Providers/AWSPinpointProvider';
 
 import {
@@ -31,12 +26,7 @@ const AMPLIFY_SYMBOL = (
 ) as Symbol;
 
 const dispatchAnalyticsEvent = (event: string, data: any, message: string) => {
-	Hub.dispatch(
-		'analytics',
-		{ event, data, message },
-		'Analytics',
-		AMPLIFY_SYMBOL
-	);
+	Hub.dispatch('analytics', { event, data, message }, 'Analytics', AMPLIFY_SYMBOL);
 };
 
 const trackers = {
@@ -87,12 +77,7 @@ export class AnalyticsClass {
 		if (!config) return this._config;
 		logger.debug('configure Analytics', config);
 		const amplifyConfig = parseAWSExports(config);
-		this._config = Object.assign(
-			{},
-			this._config,
-			amplifyConfig.Analytics,
-			config
-		);
+		this._config = Object.assign({}, this._config, amplifyConfig.Analytics, config);
 
 		if (this._config['disabled']) {
 			this._disabled = true;
@@ -106,8 +91,7 @@ export class AnalyticsClass {
 		this._pluggables.forEach(pluggable => {
 			// for backward compatibility
 			const providerConfig =
-				pluggable.getProviderName() === 'AWSPinpoint' &&
-				!this._config['AWSPinpoint']
+				pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']
 					? this._config
 					: this._config[pluggable.getProviderName()];
 
@@ -122,11 +106,7 @@ export class AnalyticsClass {
 			this.addPluggable(new AWSPinpointProvider());
 		}
 
-		dispatchAnalyticsEvent(
-			'configured',
-			null,
-			`The Analytics category has been configured successfully`
-		);
+		dispatchAnalyticsEvent('configured', null, `The Analytics category has been configured successfully`);
 		logger.debug('current configuration', this._config);
 		return this._config;
 	}
@@ -140,8 +120,7 @@ export class AnalyticsClass {
 			this._pluggables.push(pluggable);
 			// for backward compatibility
 			const providerConfig =
-				pluggable.getProviderName() === 'AWSPinpoint' &&
-				!this._config['AWSPinpoint']
+				pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']
 					? this._config
 					: this._config[pluggable.getProviderName()];
 			const config = { disabled: this._config['disabled'], ...providerConfig };
@@ -211,11 +190,7 @@ export class AnalyticsClass {
 		const event = { name: '_session.start' };
 		const params = { event, provider };
 
-		dispatchAnalyticsEvent(
-			'record',
-			event,
-			'Recording Analytics session start event'
-		);
+		dispatchAnalyticsEvent('record', event, 'Recording Analytics session start event');
 
 		return this._sendEvent(params);
 	}
@@ -229,11 +204,7 @@ export class AnalyticsClass {
 		const event = { name: '_session.stop' };
 		const params = { event, provider };
 
-		dispatchAnalyticsEvent(
-			'record',
-			event,
-			'Recording Analytics session stop event'
-		);
+		dispatchAnalyticsEvent('record', event, 'Recording Analytics session stop event');
 
 		return this._sendEvent(params);
 	}
@@ -243,10 +214,7 @@ export class AnalyticsClass {
 	 * @param event - An object with the name of the event, attributes of the event and event metrics.
 	 * @param [provider] - name of the provider.
 	 */
-	public async record(
-		event: AnalyticsEvent | PersonalizeAnalyticsEvent | KinesisAnalyticsEvent,
-		provider?: string
-	) {
+	public async record(event: AnalyticsEvent | PersonalizeAnalyticsEvent | KinesisAnalyticsEvent, provider?: string) {
 		const params = { event, provider };
 
 		dispatchAnalyticsEvent('record', params.event, 'Recording Analytics event');
@@ -254,10 +222,7 @@ export class AnalyticsClass {
 		return this._sendEvent(params);
 	}
 
-	public async updateEndpoint(
-		attrs: { [key: string]: any },
-		provider?: string
-	) {
+	public async updateEndpoint(attrs: { [key: string]: any }, provider?: string) {
 		const event = { ...attrs, name: '_update_endpoint' };
 
 		return this.record(event, provider);
@@ -291,10 +256,7 @@ export class AnalyticsClass {
 	public autoTrack(trackerType: 'pageView', opts: AutoTrackPageViewOpts);
 	public autoTrack(trackerType: 'event', opts: AutoTrackEventOpts);
 	// ensures backwards compatibility for non-pinpoint provider users
-	public autoTrack(
-		trackerType: TrackerTypes,
-		opts: { provider: string; [key: string]: any }
-	);
+	public autoTrack(trackerType: TrackerTypes, opts: { provider: string; [key: string]: any });
 	public autoTrack(trackerType: TrackerTypes, opts: { [key: string]: any }) {
 		if (!trackers[trackerType]) {
 			logger.debug('invalid tracker type');
@@ -308,10 +270,7 @@ export class AnalyticsClass {
 
 		const tracker = this._trackers[trackerType];
 		if (!tracker) {
-			this._trackers[trackerType] = new trackers[trackerType](
-				this.record,
-				opts
-			);
+			this._trackers[trackerType] = new trackers[trackerType](this.record, opts);
 		} else {
 			tracker.configure(opts);
 		}
@@ -375,10 +334,7 @@ const authEvent = payload => {
 			try {
 				return await _instance.record({ name: `_userauth.${eventName}` });
 			} catch (err) {
-				logger.debug(
-					`Failed to send the ${eventName} event automatically`,
-					err
-				);
+				logger.debug(`Failed to send the ${eventName} event automatically`, err);
 			}
 		}
 	};

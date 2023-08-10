@@ -38,11 +38,7 @@ const THROTTLING_ERROR_CODES = [
 	'TooManyRequestsException',
 ];
 
-const TIMEOUT_ERROR_CODES = [
-	'TimeoutError',
-	'RequestTimeout',
-	'RequestTimeoutException',
-];
+const TIMEOUT_ERROR_CODES = ['TimeoutError', 'RequestTimeout', 'RequestTimeoutException'];
 
 const isThrottlingError = (statusCode?: number, errorCode?: string) =>
 	statusCode === 429 || THROTTLING_ERROR_CODES.includes(errorCode);
@@ -50,5 +46,4 @@ const isThrottlingError = (statusCode?: number, errorCode?: string) =>
 const isConnectionError = (error?: Error) => error?.name === 'Network error';
 
 const isServerSideError = (statusCode?: number, errorCode?: string) =>
-	[500, 502, 503, 504].includes(statusCode) ||
-	TIMEOUT_ERROR_CODES.includes(errorCode);
+	[500, 502, 503, 504].includes(statusCode) || TIMEOUT_ERROR_CODES.includes(errorCode);

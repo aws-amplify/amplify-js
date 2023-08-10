@@ -12,9 +12,7 @@ const options: PredictionsOptions = {
 describe('Predictions test', () => {
 	describe('getModuleName tests', () => {
 		test('happy and the only case', () => {
-			expect(new PredictionsClass(options).getModuleName()).toMatch(
-				'Predictions'
-			);
+			expect(new PredictionsClass(options).getModuleName()).toMatch('Predictions');
 		});
 	});
 
@@ -72,17 +70,11 @@ describe('Predictions test', () => {
 				},
 			};
 			const convertProvider = new AWSConvertPredictionsProvider();
-			const convertSpy = jest
-				.spyOn(convertProvider, 'configure')
-				.mockImplementation(() => {});
+			const convertSpy = jest.spyOn(convertProvider, 'configure').mockImplementation(() => {});
 			const identifyProvider = new AWSIdentifyPredictionsProvider();
-			const identifySpy = jest
-				.spyOn(identifyProvider, 'configure')
-				.mockImplementation(() => {});
+			const identifySpy = jest.spyOn(identifyProvider, 'configure').mockImplementation(() => {});
 			const topLevelProvider = new AWSPredictionsProvider();
-			const topLevelSpy = jest
-				.spyOn(topLevelProvider, 'configure')
-				.mockImplementation(() => {});
+			const topLevelSpy = jest.spyOn(topLevelProvider, 'configure').mockImplementation(() => {});
 			const predictions = new PredictionsClass(options);
 			predictions.addPluggable(convertProvider);
 			predictions.addPluggable(identifyProvider);
@@ -141,17 +133,11 @@ describe('Predictions test', () => {
 		predictions.configure(configureOptions);
 
 		const convertProvider = new AWSConvertPredictionsProvider();
-		const convertSpy = jest
-			.spyOn(convertProvider, 'configure')
-			.mockImplementation(() => {});
+		const convertSpy = jest.spyOn(convertProvider, 'configure').mockImplementation(() => {});
 		const identifyProvider = new AWSIdentifyPredictionsProvider();
-		const identifySpy = jest
-			.spyOn(identifyProvider, 'configure')
-			.mockImplementation(() => {});
+		const identifySpy = jest.spyOn(identifyProvider, 'configure').mockImplementation(() => {});
 		const topLevelProvider = new AWSPredictionsProvider();
-		const topLevelSpy = jest
-			.spyOn(topLevelProvider, 'configure')
-			.mockImplementation(() => {});
+		const topLevelSpy = jest.spyOn(topLevelProvider, 'configure').mockImplementation(() => {});
 		predictions.addPluggable(convertProvider);
 		predictions.addPluggable(identifyProvider);
 		predictions.addPluggable(topLevelProvider);
@@ -173,12 +159,10 @@ describe('Predictions test', () => {
 			const identifyProvider = new AWSIdentifyPredictionsProvider();
 			predictions.addPluggable(convertProvider);
 			predictions.addPluggable(identifyProvider);
-			expect(
-				predictions.getPluggable(convertProvider.getProviderName())
-			).toBeInstanceOf(AWSConvertPredictionsProvider);
-			expect(
-				predictions.getPluggable(identifyProvider.getProviderName())
-			).toBeInstanceOf(AWSIdentifyPredictionsProvider);
+			expect(predictions.getPluggable(convertProvider.getProviderName())).toBeInstanceOf(AWSConvertPredictionsProvider);
+			expect(predictions.getPluggable(identifyProvider.getProviderName())).toBeInstanceOf(
+				AWSIdentifyPredictionsProvider
+			);
 		});
 
 		test('error case with multiple pluggables of same name', () => {
@@ -188,9 +172,7 @@ describe('Predictions test', () => {
 			try {
 				predictions.addPluggable(provider); // Convert provider provided twice
 			} catch (e) {
-				expect(e.message).toMatch(
-					'Pluggable with name AmazonAIConvertPredictionsProvider has already been added'
-				);
+				expect(e.message).toMatch('Pluggable with name AmazonAIConvertPredictionsProvider has already been added');
 			}
 		});
 	});
@@ -200,34 +182,26 @@ describe('Predictions test', () => {
 			const predictions = new PredictionsClass(options);
 			const provider = new AWSConvertPredictionsProvider();
 			predictions.addPluggable(provider);
-			expect(
-				predictions.getPluggable(provider.getProviderName())
-			).toBeInstanceOf(AWSConvertPredictionsProvider);
+			expect(predictions.getPluggable(provider.getProviderName())).toBeInstanceOf(AWSConvertPredictionsProvider);
 		});
 		test('happy case identify', () => {
 			const predictions = new PredictionsClass(options);
 			const provider = new AWSIdentifyPredictionsProvider();
 			predictions.addPluggable(provider);
-			expect(
-				predictions.getPluggable(provider.getProviderName())
-			).toBeInstanceOf(AWSIdentifyPredictionsProvider);
+			expect(predictions.getPluggable(provider.getProviderName())).toBeInstanceOf(AWSIdentifyPredictionsProvider);
 		});
 		test('happy case interpret', () => {
 			const predictions = new PredictionsClass(options);
 			const provider = new AWSInterpretPredictionsProvider();
 			predictions.addPluggable(provider);
-			expect(
-				predictions.getPluggable(provider.getProviderName())
-			).toBeInstanceOf(AWSInterpretPredictionsProvider);
+			expect(predictions.getPluggable(provider.getProviderName())).toBeInstanceOf(AWSInterpretPredictionsProvider);
 		});
 
 		test('happy case top level predictions provider', () => {
 			const predictions = new PredictionsClass(options);
 			const provider = new AWSPredictionsProvider();
 			predictions.addPluggable(provider);
-			expect(
-				predictions.getPluggable(provider.getProviderName())
-			).toBeInstanceOf(AWSPredictionsProvider);
+			expect(predictions.getPluggable(provider.getProviderName())).toBeInstanceOf(AWSPredictionsProvider);
 		});
 		test('error case no provider configured', () => {
 			const predictions = new PredictionsClass(options);
@@ -243,27 +217,21 @@ describe('Predictions test', () => {
 			const convertProvider = new AWSConvertPredictionsProvider();
 			predictions.addPluggable(convertProvider);
 			predictions.removePluggable(convertProvider.getProviderName());
-			expect(
-				predictions.getPluggable(convertProvider.getProviderName())
-			).toBeNull();
+			expect(predictions.getPluggable(convertProvider.getProviderName())).toBeNull();
 		});
 		test('happy case identify', () => {
 			const predictions = new PredictionsClass(options);
 			const identifyProvider = new AWSIdentifyPredictionsProvider();
 			predictions.addPluggable(identifyProvider);
 			predictions.removePluggable(identifyProvider.getProviderName());
-			expect(
-				predictions.getPluggable(identifyProvider.getProviderName())
-			).toBeNull();
+			expect(predictions.getPluggable(identifyProvider.getProviderName())).toBeNull();
 		});
 		test('happy case interpret', () => {
 			const predictions = new PredictionsClass(options);
 			const interpretProvider = new AWSInterpretPredictionsProvider();
 			predictions.addPluggable(interpretProvider);
 			predictions.removePluggable(interpretProvider.getProviderName());
-			expect(
-				predictions.getPluggable(interpretProvider.getProviderName())
-			).toBeNull();
+			expect(predictions.getPluggable(interpretProvider.getProviderName())).toBeNull();
 		});
 
 		test('happy case top level predictions provider', () => {
@@ -271,9 +239,7 @@ describe('Predictions test', () => {
 			const topLevelProvider = new AWSPredictionsProvider();
 			predictions.addPluggable(topLevelProvider);
 			predictions.removePluggable(topLevelProvider.getProviderName());
-			expect(
-				predictions.getPluggable(topLevelProvider.getProviderName())
-			).toBeNull();
+			expect(predictions.getPluggable(topLevelProvider.getProviderName())).toBeNull();
 		});
 	});
 
@@ -285,11 +251,9 @@ describe('Predictions test', () => {
 			const input: TranslateTextInput = {
 				translateText: { source: { text: 'sourceText' } },
 			};
-			const convertSpy = jest
-				.spyOn(provider, 'convert')
-				.mockImplementation(() => {
-					return Promise.resolve('translatedText');
-				});
+			const convertSpy = jest.spyOn(provider, 'convert').mockImplementation(() => {
+				return Promise.resolve('translatedText');
+			});
 			const data = await predictions.convert(input, options);
 			expect(data).toEqual('translatedText');
 			expect(convertSpy).toHaveBeenCalledTimes(1);
@@ -301,11 +265,9 @@ describe('Predictions test', () => {
 			const input: TranslateTextInput = {
 				translateText: { source: { text: 'sourceText' } },
 			};
-			const convertSpy = jest
-				.spyOn(provider, 'convert')
-				.mockImplementation(() => {
-					return Promise.resolve('translatedText');
-				});
+			const convertSpy = jest.spyOn(provider, 'convert').mockImplementation(() => {
+				return Promise.resolve('translatedText');
+			});
 			const data = await predictions.convert(input, options);
 			expect(data).toEqual('translatedText');
 			expect(convertSpy).toHaveBeenCalledTimes(1);
@@ -362,11 +324,9 @@ describe('Predictions test', () => {
 			const input: TranslateTextInput = {
 				translateText: { source: { text: 'sourceText' } },
 			};
-			const convertSpy = jest
-				.spyOn(provider, 'convert')
-				.mockImplementation(() => {
-					return Promise.resolve('translatedText');
-				});
+			const convertSpy = jest.spyOn(provider, 'convert').mockImplementation(() => {
+				return Promise.resolve('translatedText');
+			});
 			const data = await predictions.convert(input, {
 				providerName: 'AmazonAIConvertPredictionsProvider',
 			});
@@ -382,11 +342,9 @@ describe('Predictions test', () => {
 			const input: TranslateTextInput = {
 				translateText: { source: { text: 'sourceText' } },
 			};
-			const convertSpy = jest
-				.spyOn(convertProvider, 'convert')
-				.mockImplementation(() => {
-					return Promise.resolve('translatedText');
-				});
+			const convertSpy = jest.spyOn(convertProvider, 'convert').mockImplementation(() => {
+				return Promise.resolve('translatedText');
+			});
 			const data = await predictions.convert(input, {
 				providerName: 'AmazonAIConvertPredictionsProvider',
 			});

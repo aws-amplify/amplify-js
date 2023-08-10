@@ -1,8 +1,4 @@
-import {
-	getAmplifyUserAgentObject,
-	getAmplifyUserAgent,
-	Platform,
-} from '../src/Platform';
+import { getAmplifyUserAgentObject, getAmplifyUserAgent, Platform } from '../src/Platform';
 import { version } from '../src/Platform/version';
 import { ApiAction, Category, Framework } from '../src/Platform/types';
 import { detectFramework, clearCache } from '../src/Platform/detectFramework';
@@ -47,9 +43,7 @@ describe('Platform test', () => {
 
 	describe('getAmplifyUserAgent test', () => {
 		test('without customUserAgentDetails', () => {
-			expect(getAmplifyUserAgent()).toBe(
-				`${Platform.userAgent} framework/${Framework.WebUnknown}`
-			);
+			expect(getAmplifyUserAgent()).toBe(`${Platform.userAgent} framework/${Framework.WebUnknown}`);
 		});
 
 		test('with customUserAgentDetails', () => {

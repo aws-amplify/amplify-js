@@ -25,11 +25,7 @@ import {
 	PutLogEventsCommandInput,
 	PutLogEventsCommandOutput,
 } from '@aws-sdk/client-cloudwatch-logs';
-import {
-	AWSCloudWatchProviderOptions,
-	CloudWatchDataTracker,
-	LoggingProvider,
-} from '../types/types';
+import { AWSCloudWatchProviderOptions, CloudWatchDataTracker, LoggingProvider } from '../types/types';
 import { Credentials } from '../..';
 import { ConsoleLogger as Logger } from '../Logger';
 import { getAmplifyUserAgentObject } from '../Platform';
@@ -78,29 +74,17 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		return this._dataTracker.logEvents;
 	}
 
-	public configure(
-		config?: AWSCloudWatchProviderOptions
-	): AWSCloudWatchProviderOptions {
+	public configure(config?: AWSCloudWatchProviderOptions): AWSCloudWatchProviderOptions {
 		if (!config) return this._config || {};
 
-		const conf = Object.assign(
-			{},
-			this._config,
-			parseAWSExports(config).Logging,
-			config
-		);
+		const conf = Object.assign({}, this._config, parseAWSExports(config).Logging, config);
 		this._config = conf;
 
 		return this._config;
 	}
 
-	public async createLogGroup(
-		params: CreateLogGroupCommandInput
-	): Promise<CreateLogGroupCommandOutput> {
-		logger.debug(
-			'creating new log group in CloudWatch - ',
-			params.logGroupName
-		);
+	public async createLogGroup(params: CreateLogGroupCommandInput): Promise<CreateLogGroupCommandOutput> {
+		logger.debug('creating new log group in CloudWatch - ', params.logGroupName);
 		const cmd = new CreateLogGroupCommand(params);
 
 		try {
@@ -118,9 +102,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		}
 	}
 
-	public async getLogGroups(
-		params: DescribeLogGroupsCommandInput
-	): Promise<DescribeLogGroupsCommandOutput> {
+	public async getLogGroups(params: DescribeLogGroupsCommandInput): Promise<DescribeLogGroupsCommandOutput> {
 		logger.debug('getting list of log groups');
 
 		const cmd = new DescribeLogGroupsCommand(params);
@@ -140,13 +122,8 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		}
 	}
 
-	public async createLogStream(
-		params: CreateLogStreamCommandInput
-	): Promise<CreateLogStreamCommandOutput> {
-		logger.debug(
-			'creating new log stream in CloudWatch - ',
-			params.logStreamName
-		);
+	public async createLogStream(params: CreateLogStreamCommandInput): Promise<CreateLogStreamCommandOutput> {
+		logger.debug('creating new log stream in CloudWatch - ', params.logStreamName);
 		const cmd = new CreateLogStreamCommand(params);
 
 		try {
@@ -164,9 +141,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		}
 	}
 
-	public async getLogStreams(
-		params: DescribeLogStreamsCommandInput
-	): Promise<DescribeLogStreamsCommandOutput> {
+	public async getLogStreams(params: DescribeLogStreamsCommandInput): Promise<DescribeLogStreamsCommandOutput> {
 		logger.debug('getting list of log streams');
 		const cmd = new DescribeLogStreamsCommand(params);
 
@@ -185,9 +160,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		}
 	}
 
-	public async getLogEvents(
-		params: GetLogEventsCommandInput
-	): Promise<GetLogEventsCommandOutput> {
+	public async getLogEvents(params: GetLogEventsCommandInput): Promise<GetLogEventsCommandOutput> {
 		logger.debug('getting log events from stream - ', params.logStreamName);
 		const cmd = new GetLogEventsCommand(params);
 
@@ -211,9 +184,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		this._dataTracker.logEvents = [...this._dataTracker.logEvents, ...logs];
 	}
 
-	private async _validateLogGroupExistsAndCreate(
-		logGroupName: string
-	): Promise<LogGroup> {
+	private async _validateLogGroupExistsAndCreate(logGroupName: string): Promise<LogGroup> {
 		if (this._dataTracker.verifiedLogGroup) {
 			return this._dataTracker.verifiedLogGroup;
 		}
@@ -229,9 +200,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			});
 
 			if (!(typeof currGroups === 'string') && currGroups.logGroups) {
-				const foundGroups = currGroups.logGroups.filter(
-					group => group.logGroupName === logGroupName
-				);
+				const foundGroups = currGroups.logGroups.filter(group => group.logGroupName === logGroupName);
 				if (foundGroups.length > 0) {
 					this._dataTracker.verifiedLogGroup = foundGroups[0];
 
@@ -253,10 +222,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		}
 	}
 
-	private async _validateLogStreamExists(
-		logGroupName: string,
-		logStreamName: string
-	): Promise<LogStream> {
+	private async _validateLogStreamExists(logGroupName: string, logStreamName: string): Promise<LogStream> {
 		try {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
@@ -269,9 +235,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			});
 
 			if (currStreams.logStreams) {
-				const foundStreams = currStreams.logStreams.filter(
-					stream => stream.logStreamName === logStreamName
-				);
+				const foundStreams = currStreams.logStreams.filter(stream => stream.logStreamName === logStreamName);
 				if (foundStreams.length > 0) {
 					this._nextSequenceToken = foundStreams[0].uploadSequenceToken;
 
@@ -296,9 +260,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		}
 	}
 
-	private async _sendLogEvents(
-		params: PutLogEventsCommandInput
-	): Promise<PutLogEventsCommandOutput> {
+	private async _sendLogEvents(params: PutLogEventsCommandInput): Promise<PutLogEventsCommandOutput> {
 		try {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
@@ -358,10 +320,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 			this._nextSequenceToken = undefined;
 
-			const logStream = await this._validateLogStreamExists(
-				this._config.logGroupName,
-				this._config.logStreamName
-			);
+			const logStream = await this._validateLogStreamExists(this._config.logGroupName, this._config.logStreamName);
 
 			if (logStream) {
 				this._nextSequenceToken = logStream.uploadSequenceToken;
@@ -385,10 +344,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			 * https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_PutLogEvents.html
 			 */
 			const seqToken = await this._getNextSequenceToken();
-			const logBatch =
-				this._currentLogBatch.length === 0
-					? this._getBufferedBatchOfLogs()
-					: this._currentLogBatch;
+			const logBatch = this._currentLogBatch.length === 0 ? this._getBufferedBatchOfLogs() : this._currentLogBatch;
 
 			const putLogsPayload: PutLogEventsCommandInput = {
 				logGroupName: this._config.logGroupName,
@@ -436,8 +392,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		while (currentEventIdx < this._dataTracker.logEvents.length) {
 			const currentEvent = this._dataTracker.logEvents[currentEventIdx];
 			const eventSize = currentEvent
-				? new TextEncoder().encode(currentEvent.message).length +
-				  AWS_CLOUDWATCH_BASE_BUFFER_SIZE
+				? new TextEncoder().encode(currentEvent.message).length + AWS_CLOUDWATCH_BASE_BUFFER_SIZE
 				: 0;
 			if (eventSize > AWS_CLOUDWATCH_MAX_EVENT_SIZE) {
 				const errString = `Log entry exceeds maximum size for CloudWatch logs. Log size: ${eventSize}. Truncating log message.`;
@@ -446,23 +401,17 @@ class AWSCloudWatchProvider implements LoggingProvider {
 				currentEvent.message = currentEvent.message.substring(0, eventSize);
 			}
 
-			if (totalByteSize + eventSize > AWS_CLOUDWATCH_MAX_BATCH_EVENT_SIZE)
-				break;
+			if (totalByteSize + eventSize > AWS_CLOUDWATCH_MAX_BATCH_EVENT_SIZE) break;
 			totalByteSize += eventSize;
 			currentEventIdx++;
 		}
 
-		this._currentLogBatch = this._dataTracker.logEvents.splice(
-			0,
-			currentEventIdx
-		);
+		this._currentLogBatch = this._dataTracker.logEvents.splice(0, currentEventIdx);
 
 		return this._currentLogBatch;
 	}
 
-	private async _getNewSequenceTokenAndSubmit(
-		payload: PutLogEventsCommandInput
-	): Promise<PutLogEventsCommandOutput> {
+	private async _getNewSequenceTokenAndSubmit(payload: PutLogEventsCommandInput): Promise<PutLogEventsCommandOutput> {
 		try {
 			this._nextSequenceToken = undefined;
 			this._dataTracker.eventUploadInProgress = true;
@@ -476,9 +425,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 			return sendLogEventsRepsonse;
 		} catch (err) {
-			logger.error(
-				`error when retrying log submission with new sequence token: ${err}`
-			);
+			logger.error(`error when retrying log submission with new sequence token: ${err}`);
 			this._dataTracker.eventUploadInProgress = false;
 
 			throw err;
@@ -496,17 +443,14 @@ class AWSCloudWatchProvider implements LoggingProvider {
 					await this._safeUploadLogEvents();
 				}
 			} catch (err) {
-				logger.error(
-					`error when calling _safeUploadLogEvents in the timer interval - ${err}`
-				);
+				logger.error(`error when calling _safeUploadLogEvents in the timer interval - ${err}`);
 			}
 		}, 2000);
 	}
 
 	private _getDocUploadPermissibility(): boolean {
 		return (
-			(this._dataTracker.logEvents.length !== 0 ||
-				this._currentLogBatch.length !== 0) &&
+			(this._dataTracker.logEvents.length !== 0 || this._currentLogBatch.length !== 0) &&
 			!this._dataTracker.eventUploadInProgress
 		);
 	}

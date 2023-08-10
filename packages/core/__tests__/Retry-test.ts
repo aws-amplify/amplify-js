@@ -1,8 +1,4 @@
-import {
-	retry,
-	jitteredExponentialRetry,
-	NonRetryableError,
-} from '../src/Util/Retry';
+import { retry, jitteredExponentialRetry, NonRetryableError } from '../src/Util/Retry';
 import { BackgroundProcessManager } from '../src/Util/BackgroundProcessManager';
 
 describe('retry', () => {
@@ -29,9 +25,7 @@ describe('retry', () => {
 			throw new NonRetryableError('bwahahahahaha');
 		}
 
-		await expect(retry(throwsNonRetryableError, [], () => 1)).rejects.toThrow(
-			'bwahahahahaha'
-		);
+		await expect(retry(throwsNonRetryableError, [], () => 1)).rejects.toThrow('bwahahahahaha');
 	});
 
 	test('passes args to retried function', async () => {
@@ -86,9 +80,7 @@ describe('retry', () => {
 			return 1;
 		}
 
-		await expect(retry(alwaysFails, [], retryThreeTimes)).rejects.toThrow(
-			'not today'
-		);
+		await expect(retry(alwaysFails, [], retryThreeTimes)).rejects.toThrow('not today');
 		expect(count).toEqual(3);
 	});
 
@@ -105,9 +97,7 @@ describe('retry', () => {
 			throw new Error('Yeah, keep trying, Tom.');
 		}
 
-		manager
-			.add(() => retry(inventLightBulb, [], () => 1))
-			.then(r => (result = r));
+		manager.add(() => retry(inventLightBulb, [], () => 1)).then(r => (result = r));
 
 		await manager.close();
 
@@ -126,9 +116,7 @@ describe('retry', () => {
 			throw new Error('I will never succeed.');
 		}
 
-		manager
-			.add(async onTerminate => retry(suchAFailure, [], () => 1, onTerminate))
-			.catch(e => (error = e));
+		manager.add(async onTerminate => retry(suchAFailure, [], () => 1, onTerminate)).catch(e => (error = e));
 
 		await new Promise(resolve => setTimeout(resolve, 30));
 		const countSnapshot = count;
@@ -156,10 +144,7 @@ describe('jitteredExponentialRetry', () => {
 			}
 		}
 
-		const returnValue = await jitteredExponentialRetry(
-			succeedAfterThirdTry,
-			[]
-		);
+		const returnValue = await jitteredExponentialRetry(succeedAfterThirdTry, []);
 
 		expect(returnValue).toEqual('abc');
 		expect(count).toEqual(3);
@@ -170,9 +155,7 @@ describe('jitteredExponentialRetry', () => {
 			throw new NonRetryableError('bwahahahahaha');
 		}
 
-		await expect(
-			jitteredExponentialRetry(throwsNonRetryableError, [])
-		).rejects.toThrow('bwahahahahaha');
+		await expect(jitteredExponentialRetry(throwsNonRetryableError, [])).rejects.toThrow('bwahahahahaha');
 	});
 
 	test('passes args to retried function', async () => {
@@ -201,9 +184,7 @@ describe('jitteredExponentialRetry', () => {
 		// between 200 and 400.
 
 		manager
-			.add(async onTerminate =>
-				jitteredExponentialRetry(suchAFailure, [], undefined, onTerminate)
-			)
+			.add(async onTerminate => jitteredExponentialRetry(suchAFailure, [], undefined, onTerminate))
 			.catch(e => (error = e));
 
 		await new Promise(resolve => setTimeout(resolve, 300));

@@ -12,8 +12,4 @@ export const authenticatedHandler = composeTransferHandler<
 	[UserAgentOptions, RetryOptions<HttpResponse>, SigningOptions],
 	HttpRequest,
 	HttpResponse
->(fetchTransferHandler, [
-	userAgentMiddleware,
-	retryMiddleware,
-	signingMiddleware,
-]);
+>(fetchTransferHandler, [userAgentMiddleware, retryMiddleware, signingMiddleware]);

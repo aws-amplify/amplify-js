@@ -14,11 +14,7 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 import { USER_AGENT_HEADER } from '@aws-amplify/core';
 
 import { S3EndpointResolverOptions, defaultConfig } from './base';
-import type {
-	CompatibleHttpResponse,
-	GetObjectCommandInput,
-	GetObjectCommandOutput,
-} from './types';
+import type { CompatibleHttpResponse, GetObjectCommandInput, GetObjectCommandOutput } from './types';
 import {
 	deserializeBoolean,
 	deserializeMetadata,
@@ -49,10 +45,7 @@ export type GetObjectInput = Pick<
 
 export type GetObjectOutput = GetObjectCommandOutput;
 
-const getObjectSerializer = async (
-	input: GetObjectInput,
-	endpoint: Endpoint
-): Promise<HttpRequest> => {
+const getObjectSerializer = async (input: GetObjectInput, endpoint: Endpoint): Promise<HttpRequest> => {
 	const headers = await serializeObjectSsecOptionsToHeaders(input);
 	const query = map(input, {
 		'response-cache-control': 'ResponseCacheControl',
@@ -71,9 +64,7 @@ const getObjectSerializer = async (
 	};
 };
 
-const getObjectDeserializer = async (
-	response: CompatibleHttpResponse
-): Promise<GetObjectOutput> => {
+const getObjectDeserializer = async (response: CompatibleHttpResponse): Promise<GetObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
 		throw error;
@@ -107,20 +98,14 @@ const getObjectDeserializer = async (
 				SSECustomerAlgorithm: 'x-amz-server-side-encryption-customer-algorithm',
 				SSECustomerKeyMD5: 'x-amz-server-side-encryption-customer-key-md5',
 				SSEKMSKeyId: 'x-amz-server-side-encryption-aws-kms-key-id',
-				BucketKeyEnabled: [
-					'x-amz-server-side-encryption-bucket-key-enabled',
-					deserializeBoolean,
-				],
+				BucketKeyEnabled: ['x-amz-server-side-encryption-bucket-key-enabled', deserializeBoolean],
 				StorageClass: 'x-amz-storage-class',
 				RequestCharged: 'x-amz-request-charged',
 				ReplicationStatus: 'x-amz-replication-status',
 				PartsCount: ['x-amz-mp-parts-count', deserializeNumber],
 				TagCount: ['x-amz-tagging-count', deserializeNumber],
 				ObjectLockMode: 'x-amz-object-lock-mode',
-				ObjectLockRetainUntilDate: [
-					'x-amz-object-lock-retain-until-date',
-					deserializeTimestamp,
-				],
+				ObjectLockRetainUntilDate: ['x-amz-object-lock-retain-until-date', deserializeTimestamp],
 				ObjectLockLegalHoldStatus: 'x-amz-object-lock-legal-hold',
 			}),
 			Metadata: deserializeMetadata(response.headers),
@@ -130,12 +115,10 @@ const getObjectDeserializer = async (
 	}
 };
 
-export const getObject = composeServiceApi(
-	s3TransferHandler,
-	getObjectSerializer,
-	getObjectDeserializer,
-	{ ...defaultConfig, responseType: 'blob' }
-);
+export const getObject = composeServiceApi(s3TransferHandler, getObjectSerializer, getObjectDeserializer, {
+	...defaultConfig,
+	responseType: 'blob',
+});
 
 /**
  * Get a presigned URL for the `getObject` API.
@@ -153,14 +136,9 @@ export const getPresignedGetObjectUrl = async (
 	// It requires changes in presignUrl. Without this change, the generated url still works,
 	// but not the same as other tools like AWS SDK and CLI.
 	url.searchParams.append(CONTENT_SHA256_HEADER, EMPTY_SHA256_HASH);
-	url.searchParams.append(
-		config.userAgentHeader ?? USER_AGENT_HEADER,
-		config.userAgentValue
-	);
+	url.searchParams.append(config.userAgentHeader ?? USER_AGENT_HEADER, config.userAgentValue);
 
-	for (const [headerName, value] of Object.entries(headers).sort(
-		([key1], [key2]) => key1.localeCompare(key2)
-	)) {
+	for (const [headerName, value] of Object.entries(headers).sort(([key1], [key2]) => key1.localeCompare(key2))) {
 		url.searchParams.append(headerName, value);
 	}
 	return presignUrl(

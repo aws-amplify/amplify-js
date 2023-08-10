@@ -1,8 +1,4 @@
-import {
-	PersistentModel,
-	PersistentModelConstructor,
-	__modelMeta__,
-} from '../../../src';
+import { PersistentModel, PersistentModelConstructor, __modelMeta__ } from '../../../src';
 import { DataStore, expectType } from '../../helpers';
 
 test('Observe all', () => {

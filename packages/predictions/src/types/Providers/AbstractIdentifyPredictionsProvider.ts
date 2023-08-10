@@ -22,9 +22,7 @@ export abstract class AbstractIdentifyPredictionsProvider extends AbstractPredic
 
 	identify(
 		input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput
-	): Promise<
-		IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput
-	> {
+	): Promise<IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput> {
 		if (isIdentifyTextInput(input)) {
 			logger.debug('identifyText');
 			return this.identifyText(input);
@@ -37,21 +35,15 @@ export abstract class AbstractIdentifyPredictionsProvider extends AbstractPredic
 		}
 	}
 
-	protected identifyText(
-		input: IdentifyTextInput
-	): Promise<IdentifyTextOutput> {
+	protected identifyText(input: IdentifyTextInput): Promise<IdentifyTextOutput> {
 		throw new Error('identifyText is not implemented by this provider.');
 	}
 
-	protected identifyLabels(
-		input: IdentifyLabelsInput
-	): Promise<IdentifyLabelsOutput> {
+	protected identifyLabels(input: IdentifyLabelsInput): Promise<IdentifyLabelsOutput> {
 		throw new Error('identifyLabels is not implemented by this provider');
 	}
 
-	protected identifyEntities(
-		input: IdentifyEntitiesInput
-	): Promise<IdentifyEntitiesOutput> {
+	protected identifyEntities(input: IdentifyEntitiesInput): Promise<IdentifyEntitiesOutput> {
 		throw new Error('identifyEntities is not implemented by this provider');
 	}
 }

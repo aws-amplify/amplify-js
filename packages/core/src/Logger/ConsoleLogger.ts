@@ -50,13 +50,7 @@ export class ConsoleLogger implements Logger {
 
 	_ts() {
 		const dt = new Date();
-		return (
-			[this._padding(dt.getMinutes()), this._padding(dt.getSeconds())].join(
-				':'
-			) +
-			'.' +
-			dt.getMilliseconds()
-		);
+		return [this._padding(dt.getMinutes()), this._padding(dt.getSeconds())].join(':') + '.' + dt.getMilliseconds();
 	}
 
 	configure(config?: object) {

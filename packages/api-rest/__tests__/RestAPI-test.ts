@@ -37,11 +37,9 @@ describe('Rest API test', () => {
 	beforeEach(() => {
 		cancelMock = jest.fn();
 		tokenMock = jest.fn();
-		cancelTokenSpy = jest
-			.spyOn(axios.CancelToken, 'source')
-			.mockImplementation(() => {
-				return { token: tokenMock, cancel: cancelMock };
-			});
+		cancelTokenSpy = jest.spyOn(axios.CancelToken, 'source').mockImplementation(() => {
+			return { token: tokenMock, cancel: cancelMock };
+		});
 	});
 
 	const aws_cloud_logic_custom = [
@@ -49,8 +47,7 @@ describe('Rest API test', () => {
 			id: 'lh3s27sl16',
 			name: 'todosCRUD',
 			description: '',
-			endpoint:
-				'https://lh3s27sl16.execute-api.us-east-1.amazonaws.com/Development',
+			endpoint: 'https://lh3s27sl16.execute-api.us-east-1.amazonaws.com/Development',
 			region: 'us-east-1',
 			paths: ['/todos', '/todos/123'],
 		},
@@ -122,18 +119,14 @@ describe('Rest API test', () => {
 			const api = new API({});
 			api.configure(config);
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
-			const spyon2 = jest
-				.spyOn(RestClient.prototype, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.resolve();
-				});
+			});
+			const spyon2 = jest.spyOn(RestClient.prototype, 'get').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
 
 			await api.get('apiName', 'path', { init: 'init' });
 
@@ -167,13 +160,9 @@ describe('Rest API test', () => {
 			};
 			const api = new API({});
 			api.configure(custom_config);
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockResolvedValueOnce('cred');
+			const spyon = jest.spyOn(Credentials, 'get').mockResolvedValueOnce('cred');
 
-			const spyonRequest = jest
-				.spyOn(RestClient.prototype as any, '_request')
-				.mockResolvedValueOnce({});
+			const spyonRequest = jest.spyOn(RestClient.prototype as any, '_request').mockResolvedValueOnce({});
 			await api.get('apiName', 'path', {});
 
 			expect(spyonRequest).toBeCalledWith(
@@ -218,11 +207,9 @@ describe('Rest API test', () => {
 
 			const spyon = jest.spyOn(Credentials, 'get').mockResolvedValue(creds);
 
-			const spyonSigner = jest
-				.spyOn(Signer, 'sign')
-				.mockImplementationOnce(() => {
-					return { headers: {} };
-				});
+			const spyonSigner = jest.spyOn(Signer, 'sign').mockImplementationOnce(() => {
+				return { headers: {} };
+			});
 
 			mockAxios.mockResolvedValue(resp);
 
@@ -276,11 +263,9 @@ describe('Rest API test', () => {
 				});
 			});
 
-			const spyonSigner = jest
-				.spyOn(Signer, 'sign')
-				.mockImplementationOnce(() => {
-					return { headers: {} };
-				});
+			const spyonSigner = jest.spyOn(Signer, 'sign').mockImplementationOnce(() => {
+				return { headers: {} };
+			});
 
 			mockAxios.mockResolvedValue(resp);
 
@@ -336,11 +321,9 @@ describe('Rest API test', () => {
 				});
 			});
 
-			const spyonRequest = jest
-				.spyOn(RestClient.prototype as any, '_request')
-				.mockImplementationOnce(() => {
-					return { headers: {} };
-				});
+			const spyonRequest = jest.spyOn(RestClient.prototype as any, '_request').mockImplementationOnce(() => {
+				return { headers: {} };
+			});
 
 			mockAxios.mockResolvedValue(resp);
 
@@ -396,11 +379,9 @@ describe('Rest API test', () => {
 				});
 			});
 
-			const spyonSigner = jest
-				.spyOn(Signer, 'sign')
-				.mockImplementationOnce(() => {
-					return { headers: {} };
-				});
+			const spyonSigner = jest.spyOn(Signer, 'sign').mockImplementationOnce(() => {
+				return { headers: {} };
+			});
 
 			mockAxios.mockResolvedValue(resp);
 
@@ -431,18 +412,14 @@ describe('Rest API test', () => {
 			const api = new API({});
 			api.configure({});
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
-			const spyon2 = jest
-				.spyOn(RestClient.prototype, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.resolve();
-				});
+			});
+			const spyon2 = jest.spyOn(RestClient.prototype, 'get').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
 
 			expect.assertions(1);
 			try {
@@ -456,19 +433,15 @@ describe('Rest API test', () => {
 			const api = new API({});
 			api.configure(config);
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						rej('err no current credentials');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					rej('err no current credentials');
 				});
+			});
 
-			const spyon4 = jest
-				.spyOn(RestClient.prototype as any, '_request')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
+			const spyon4 = jest.spyOn(RestClient.prototype as any, '_request').mockImplementationOnce(() => {
+				return 'endpoint';
+			});
 
 			expect.assertions(1);
 			await api.get('apiName', 'path', { init: 'init' });
@@ -519,9 +492,7 @@ describe('Rest API test', () => {
 			expect(DateUtils.isClockSkewError(clockSkewError)).toBe(true);
 			expect(DateUtils.isClockSkewed(serverDate)).toBe(true);
 
-			jest
-				.spyOn(RestClient.prototype as any, 'endpoint')
-				.mockImplementation(() => 'endpoint');
+			jest.spyOn(RestClient.prototype as any, 'endpoint').mockImplementation(() => 'endpoint');
 
 			jest.spyOn(Credentials, 'get').mockResolvedValue('creds');
 			jest.spyOn(RestClient.prototype as any, '_sign').mockReturnValue({
@@ -550,37 +521,27 @@ describe('Rest API test', () => {
 					data: [{ name: 'Bob' }],
 				});
 
-			await expect(api.post('url', 'path', init)).resolves.toEqual([
-				{ name: 'Bob' },
-			]);
+			await expect(api.post('url', 'path', init)).resolves.toEqual([{ name: 'Bob' }]);
 
 			// With a clock skew error, the clock will get offset with the difference
-			expect(DateUtils.getClockOffset()).toBe(
-				serverDate.getTime() - requestDate.getTime()
-			);
+			expect(DateUtils.getClockOffset()).toBe(serverDate.getTime() - requestDate.getTime());
 		});
 
 		test('cancel request', async () => {
 			const api = new API({});
 			api.configure(config);
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
-			const spyon2 = jest
-				.spyOn(RestClient.prototype, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.reject('error cancelled');
-				});
-			const spyon4 = jest
-				.spyOn(RestClient.prototype, 'isCancel')
-				.mockImplementationOnce(() => {
-					return true;
-				});
+			});
+			const spyon2 = jest.spyOn(RestClient.prototype, 'get').mockImplementationOnce(() => {
+				return Promise.reject('error cancelled');
+			});
+			const spyon4 = jest.spyOn(RestClient.prototype, 'isCancel').mockImplementationOnce(() => {
+				return true;
+			});
 
 			const promiseResponse = api.get('apiName', 'path', { init: 'init' });
 			api.cancel(promiseResponse, 'testmessage');
@@ -620,18 +581,14 @@ describe('Rest API test', () => {
 				aws_cloud_logic_custom,
 			};
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
-			const spyon2 = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce(() => {
-					return Promise.resolve();
-				});
+			});
+			const spyon2 = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
 
 			api.configure(options);
 			await api.post('apiName', 'path', { init: 'init' });
@@ -651,18 +608,14 @@ describe('Rest API test', () => {
 		});
 
 		test('endpoint length 0', async () => {
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
-			const spyon2 = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce(() => {
-					return Promise.resolve();
-				});
+			});
+			const spyon2 = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
 
 			const api = new API({});
 			api.configure(config);
@@ -676,22 +629,18 @@ describe('Rest API test', () => {
 		});
 
 		test('cred not ready', async () => {
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						rej('err');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					rej('err');
 				});
+			});
 
 			const api = new API({});
 			api.configure(config);
 
-			const spyon4 = jest
-				.spyOn(RestClient.prototype as any, '_request')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
+			const spyon4 = jest.spyOn(RestClient.prototype as any, '_request').mockImplementationOnce(() => {
+				return 'endpoint';
+			});
 
 			expect.assertions(1);
 			await api.post('apiName', 'path', { init: 'init' });
@@ -704,18 +653,14 @@ describe('Rest API test', () => {
 			const api = new API({});
 			api.configure(config);
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
-			const spyon2 = jest
-				.spyOn(RestClient.prototype, 'put')
-				.mockImplementationOnce(() => {
-					return Promise.resolve();
-				});
+			});
+			const spyon2 = jest.spyOn(RestClient.prototype, 'put').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
 
 			await api.put('apiName', 'path', { init: 'init' });
 
@@ -739,18 +684,14 @@ describe('Rest API test', () => {
 				endpoints: [],
 			});
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
-			const spyon2 = jest
-				.spyOn(RestClient.prototype, 'put')
-				.mockImplementationOnce(() => {
-					return Promise.resolve();
-				});
+			});
+			const spyon2 = jest.spyOn(RestClient.prototype, 'put').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
 
 			expect.assertions(1);
 			try {
@@ -764,19 +705,15 @@ describe('Rest API test', () => {
 			const api = new API({});
 			api.configure(config);
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						rej('err');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					rej('err');
 				});
+			});
 
-			const spyon4 = jest
-				.spyOn(RestClient.prototype as any, '_request')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
+			const spyon4 = jest.spyOn(RestClient.prototype as any, '_request').mockImplementationOnce(() => {
+				return 'endpoint';
+			});
 
 			expect.assertions(1);
 			await api.put('apiName', 'path', { init: 'init' });
@@ -789,18 +726,14 @@ describe('Rest API test', () => {
 			const api = new API({});
 			api.configure(config);
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
-			const spyon2 = jest
-				.spyOn(RestClient.prototype, 'patch')
-				.mockImplementationOnce(() => {
-					return Promise.resolve();
-				});
+			});
+			const spyon2 = jest.spyOn(RestClient.prototype, 'patch').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
 
 			await api.patch('apiName', 'path', { init: 'init' });
 
@@ -824,18 +757,14 @@ describe('Rest API test', () => {
 				endpoints: [],
 			});
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
-			const spyon2 = jest
-				.spyOn(RestClient.prototype, 'patch')
-				.mockImplementationOnce(() => {
-					return Promise.resolve();
-				});
+			});
+			const spyon2 = jest.spyOn(RestClient.prototype, 'patch').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
 
 			expect.assertions(1);
 			try {
@@ -849,19 +778,15 @@ describe('Rest API test', () => {
 			const api = new API({});
 			api.configure(config);
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						rej('err');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					rej('err');
 				});
+			});
 
-			const spyon4 = jest
-				.spyOn(RestClient.prototype as any, '_request')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
+			const spyon4 = jest.spyOn(RestClient.prototype as any, '_request').mockImplementationOnce(() => {
+				return 'endpoint';
+			});
 
 			expect.assertions(1);
 			await api.patch('apiName', 'path', { init: 'init' });
@@ -874,18 +799,14 @@ describe('Rest API test', () => {
 			const api = new API({});
 			api.configure(config);
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
-			const spyon2 = jest
-				.spyOn(RestClient.prototype, 'del')
-				.mockImplementationOnce(() => {
-					return Promise.resolve();
-				});
+			});
+			const spyon2 = jest.spyOn(RestClient.prototype, 'del').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
 
 			await api.del('apiName', 'path', { init: 'init' });
 
@@ -907,18 +828,14 @@ describe('Rest API test', () => {
 			const api = new API({});
 			api.configure({});
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
-			const spyon2 = jest
-				.spyOn(RestClient.prototype, 'del')
-				.mockImplementationOnce(() => {
-					return Promise.resolve();
-				});
+			});
+			const spyon2 = jest.spyOn(RestClient.prototype, 'del').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
 
 			expect.assertions(1);
 			try {
@@ -932,19 +849,15 @@ describe('Rest API test', () => {
 			const api = new API({});
 			api.configure(config);
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						rej('err');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					rej('err');
 				});
+			});
 
-			const spyon4 = jest
-				.spyOn(RestClient.prototype as any, '_request')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
+			const spyon4 = jest.spyOn(RestClient.prototype as any, '_request').mockImplementationOnce(() => {
+				return 'endpoint';
+			});
 
 			expect.assertions(1);
 			await api.del('apiName', 'path', { init: 'init' });
@@ -957,18 +870,14 @@ describe('Rest API test', () => {
 			const api = new API({});
 			api.configure(config);
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
-			const spyon2 = jest
-				.spyOn(RestClient.prototype, 'head')
-				.mockImplementationOnce(() => {
-					return Promise.resolve();
-				});
+			});
+			const spyon2 = jest.spyOn(RestClient.prototype, 'head').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
 
 			await api.head('apiName', 'path', { init: 'init' });
 
@@ -990,18 +899,14 @@ describe('Rest API test', () => {
 			const api = new API({});
 			api.configure({});
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res('cred');
 				});
-			const spyon2 = jest
-				.spyOn(RestClient.prototype, 'head')
-				.mockImplementationOnce(() => {
-					return Promise.resolve();
-				});
+			});
+			const spyon2 = jest.spyOn(RestClient.prototype, 'head').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
 
 			expect.assertions(1);
 			try {
@@ -1015,19 +920,15 @@ describe('Rest API test', () => {
 			const api = new API({});
 			api.configure(config);
 
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						rej('err');
-					});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					rej('err');
 				});
+			});
 
-			const spyon4 = jest
-				.spyOn(RestClient.prototype as any, '_request')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
+			const spyon4 = jest.spyOn(RestClient.prototype as any, '_request').mockImplementationOnce(() => {
+				return 'endpoint';
+			});
 
 			expect.assertions(1);
 			await api.head('apiName', 'path', { init: 'init' });

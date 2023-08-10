@@ -25,9 +25,7 @@ export interface pageViewTrackOpts {
 	type?: string;
 	eventName?: string;
 	provider?: string;
-	attributes?:
-		| EventAttributes
-		| (() => EventAttributes | Promise<EventAttributes>);
+	attributes?: EventAttributes | (() => EventAttributes | Promise<EventAttributes>);
 	getUrl?: () => string;
 }
 
@@ -36,22 +34,16 @@ export interface EventTrackOpts {
 	events?: Array<string>;
 	selectorPrefix?: string;
 	provider?: string;
-	attributes?:
-		| EventAttributes
-		| (() => EventAttributes | Promise<EventAttributes>);
+	attributes?: EventAttributes | (() => EventAttributes | Promise<EventAttributes>);
 }
 
 export interface SessionTrackOpts {
 	enable: boolean;
-	attributes?:
-		| EventAttributes
-		| (() => EventAttributes | Promise<EventAttributes>);
+	attributes?: EventAttributes | (() => EventAttributes | Promise<EventAttributes>);
 	provider?: string;
 }
 
-export type AutoTrackAttributes =
-	| (() => EventAttributes | Promise<EventAttributes>)
-	| EventAttributes;
+export type AutoTrackAttributes = (() => EventAttributes | Promise<EventAttributes>) | EventAttributes;
 
 export interface AutoTrackSessionOpts {
 	enable: boolean;

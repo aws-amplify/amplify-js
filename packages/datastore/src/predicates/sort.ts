@@ -10,14 +10,9 @@ import {
 } from '../types';
 
 export class ModelSortPredicateCreator {
-	private static sortPredicateGroupsMap = new WeakMap<
-		SortPredicate<any>,
-		SortPredicatesGroup<any>
-	>();
+	private static sortPredicateGroupsMap = new WeakMap<SortPredicate<any>, SortPredicatesGroup<any>>();
 
-	private static createPredicateBuilder<T extends PersistentModel>(
-		modelDefinition: SchemaModel
-	) {
+	private static createPredicateBuilder<T extends PersistentModel>(modelDefinition: SchemaModel) {
 		const { name: modelName } = modelDefinition;
 		const fieldNames = new Set<keyof T>(Object.keys(modelDefinition.fields));
 
@@ -29,15 +24,11 @@ export class ModelSortPredicateCreator {
 					const field = propertyKey as keyof T;
 
 					if (!fieldNames.has(field)) {
-						throw new Error(
-							`Invalid field for model. field: ${field}, model: ${modelName}`
-						);
+						throw new Error(`Invalid field for model. field: ${field}, model: ${modelName}`);
 					}
 
 					const result = (sortDirection: SortDirection) => {
-						ModelSortPredicateCreator.sortPredicateGroupsMap
-							.get(receiver)
-							?.push({ field, sortDirection });
+						ModelSortPredicateCreator.sortPredicateGroupsMap.get(receiver)?.push({ field, sortDirection });
 
 						return receiver;
 					};
@@ -51,9 +42,7 @@ export class ModelSortPredicateCreator {
 		return predicate;
 	}
 
-	static isValidPredicate<T extends PersistentModel>(
-		predicate: any
-	): predicate is SortPredicate<T> {
+	static isValidPredicate<T extends PersistentModel>(predicate: any): predicate is SortPredicate<T> {
 		return ModelSortPredicateCreator.sortPredicateGroupsMap.has(predicate);
 	}
 
@@ -61,15 +50,11 @@ export class ModelSortPredicateCreator {
 		predicate: SortPredicate<T>,
 		throwOnInvalid: boolean = true
 	): SortPredicatesGroup<T> {
-		if (
-			throwOnInvalid &&
-			!ModelSortPredicateCreator.isValidPredicate(predicate)
-		) {
+		if (throwOnInvalid && !ModelSortPredicateCreator.isValidPredicate(predicate)) {
 			throw new Error('The predicate is not valid');
 		}
 
-		const predicateGroup =
-			ModelSortPredicateCreator.sortPredicateGroupsMap.get(predicate);
+		const predicateGroup = ModelSortPredicateCreator.sortPredicateGroupsMap.get(predicate);
 		if (predicateGroup) {
 			return predicateGroup;
 		} else {
@@ -86,8 +71,6 @@ export class ModelSortPredicateCreator {
 			return undefined;
 		}
 
-		return existing(
-			ModelSortPredicateCreator.createPredicateBuilder(modelDefinition)
-		);
+		return existing(ModelSortPredicateCreator.createPredicateBuilder(modelDefinition));
 	}
 }

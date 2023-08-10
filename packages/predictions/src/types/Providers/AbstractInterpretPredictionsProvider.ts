@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AbstractPredictionsProvider } from './AbstractPredictionsProvider';
-import {
-	InterpretTextInput,
-	InterpretTextOutput,
-	isInterpretTextInput,
-} from '../Predictions';
+import { InterpretTextInput, InterpretTextOutput, isInterpretTextInput } from '../Predictions';
 
 export abstract class AbstractInterpretPredictionsProvider extends AbstractPredictionsProvider {
 	getCategory(): string {
@@ -18,9 +14,7 @@ export abstract class AbstractInterpretPredictionsProvider extends AbstractPredi
 		}
 	}
 
-	protected interpretText(
-		input: InterpretTextInput
-	): Promise<InterpretTextOutput> {
+	protected interpretText(input: InterpretTextInput): Promise<InterpretTextOutput> {
 		throw new Error('interpretText is not implement by this provider');
 	}
 }

@@ -20,11 +20,9 @@ describe('EventTracer test', () => {
 				enable: true,
 			});
 
-			const spyon = jest
-				.spyOn(eventTracker, 'configure')
-				.mockImplementationOnce(() => {
-					return;
-				});
+			const spyon = jest.spyOn(eventTracker, 'configure').mockImplementationOnce(() => {
+				return;
+			});
 
 			expect(spyon).not.toBeCalled();
 
@@ -33,11 +31,9 @@ describe('EventTracer test', () => {
 		});
 
 		test('in the web env', () => {
-			const spyon = jest
-				.spyOn(EventTracker.prototype, 'configure')
-				.mockImplementationOnce(() => {
-					return;
-				});
+			const spyon = jest.spyOn(EventTracker.prototype, 'configure').mockImplementationOnce(() => {
+				return;
+			});
 
 			const eventTracker = new EventTracker(tracker, {
 				enable: true,

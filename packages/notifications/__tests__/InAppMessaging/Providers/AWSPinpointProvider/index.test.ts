@@ -6,10 +6,7 @@ import { getInAppMessages } from '@aws-amplify/core/internals/aws-clients/pinpoi
 import cloneDeep from 'lodash/cloneDeep';
 
 import { addEventListener } from '../../../../src/common/eventListeners';
-import {
-	InAppMessage,
-	InAppMessageInteractionEvent,
-} from '../../../../src/InAppMessaging';
+import { InAppMessage, InAppMessageInteractionEvent } from '../../../../src/InAppMessaging';
 import { AWSPinpointProvider } from '../../../../src/InAppMessaging/Providers';
 import {
 	isBeforeEndDate,
@@ -32,15 +29,12 @@ jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('../../../../src/common/eventListeners');
 jest.mock('../../../../src/InAppMessaging/Providers/AWSPinpointProvider/utils');
-jest.mock(
-	'../../../../src/InAppMessaging/SessionTracker/SessionTracker',
-	() => ({
-		__esModule: true,
-		default: jest.fn(() => ({
-			start: jest.fn(),
-		})),
-	})
-);
+jest.mock('../../../../src/InAppMessaging/SessionTracker/SessionTracker', () => ({
+	__esModule: true,
+	default: jest.fn(() => ({
+		start: jest.fn(),
+	})),
+}));
 
 const getStorageSpy = jest.spyOn(StorageHelper.prototype, 'getStorage');
 const credentialsGetSpy = jest.spyOn(Credentials, 'get');
@@ -126,19 +120,13 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 			mockMatchesEventType.mockReturnValueOnce(false);
 			mockMatchesAttributes.mockReturnValueOnce(false);
 			mockMatchesMetrics.mockReturnValueOnce(false);
-			const [result] = await provider.processInAppMessages(
-				messages,
-				simpleInAppMessagingEvent
-			);
+			const [result] = await provider.processInAppMessages(messages, simpleInAppMessagingEvent);
 
 			expect(result.id).toBe('uuid-4');
 		});
 
 		test('filters in-app messages from Pinpoint by criteria', async () => {
-			const [result] = await provider.processInAppMessages(
-				messages,
-				simpleInAppMessagingEvent
-			);
+			const [result] = await provider.processInAppMessages(messages, simpleInAppMessagingEvent);
 
 			expect(result.id).toBe('uuid-3');
 		});
@@ -172,21 +160,11 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 			message.SessionCap = 1;
 
 			expect(getStorageSpy).toBeCalled();
-			expect(
-				await provider.processInAppMessages(
-					[message],
-					simpleInAppMessagingEvent
-				)
-			).toHaveLength(1);
+			expect(await provider.processInAppMessages([message], simpleInAppMessagingEvent)).toHaveLength(1);
 
 			notify(displayedMessage);
 
-			expect(
-				await provider.processInAppMessages(
-					[message],
-					simpleInAppMessagingEvent
-				)
-			).toHaveLength(0);
+			expect(await provider.processInAppMessages([message], simpleInAppMessagingEvent)).toHaveLength(0);
 		});
 
 		test('messages stop being processed if daily cap is met', async () => {
@@ -194,21 +172,11 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 			message.DailyCap = 1;
 
 			expect(getStorageSpy).toBeCalled();
-			expect(
-				await provider.processInAppMessages(
-					[message],
-					simpleInAppMessagingEvent
-				)
-			).toHaveLength(1);
+			expect(await provider.processInAppMessages([message], simpleInAppMessagingEvent)).toHaveLength(1);
 
 			notify(displayedMessage);
 
-			expect(
-				await provider.processInAppMessages(
-					[message],
-					simpleInAppMessagingEvent
-				)
-			).toHaveLength(0);
+			expect(await provider.processInAppMessages([message], simpleInAppMessagingEvent)).toHaveLength(0);
 		});
 
 		test('messages stop being processed if total cap is met', async () => {
@@ -216,21 +184,11 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 			message.TotalCap = 1;
 
 			expect(getStorageSpy).toBeCalled();
-			expect(
-				await provider.processInAppMessages(
-					[message],
-					simpleInAppMessagingEvent
-				)
-			).toHaveLength(1);
+			expect(await provider.processInAppMessages([message], simpleInAppMessagingEvent)).toHaveLength(1);
 
 			notify(displayedMessage);
 
-			expect(
-				await provider.processInAppMessages(
-					[message],
-					simpleInAppMessagingEvent
-				)
-			).toHaveLength(0);
+			expect(await provider.processInAppMessages([message], simpleInAppMessagingEvent)).toHaveLength(0);
 		});
 
 		test('session caps are tracked per message', async () => {
@@ -244,21 +202,15 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 			const messages = [firstMessage, secondMessage];
 
 			expect(getStorageSpy).toBeCalled();
-			expect(
-				await provider.processInAppMessages(messages, simpleInAppMessagingEvent)
-			).toHaveLength(2);
+			expect(await provider.processInAppMessages(messages, simpleInAppMessagingEvent)).toHaveLength(2);
 
 			notify(displayedMessage);
 
-			expect(
-				await provider.processInAppMessages(messages, simpleInAppMessagingEvent)
-			).toHaveLength(1);
+			expect(await provider.processInAppMessages(messages, simpleInAppMessagingEvent)).toHaveLength(1);
 
 			notify({ ...displayedMessage, id: 'uuid-2' });
 
-			expect(
-				await provider.processInAppMessages(messages, simpleInAppMessagingEvent)
-			).toHaveLength(0);
+			expect(await provider.processInAppMessages(messages, simpleInAppMessagingEvent)).toHaveLength(0);
 		});
 
 		test('daily caps are tracked across messages', async () => {
@@ -272,15 +224,11 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 			const messages = [firstMessage, secondMessage];
 
 			expect(getStorageSpy).toBeCalled();
-			expect(
-				await provider.processInAppMessages(messages, simpleInAppMessagingEvent)
-			).toHaveLength(2);
+			expect(await provider.processInAppMessages(messages, simpleInAppMessagingEvent)).toHaveLength(2);
 
 			notify(displayedMessage);
 
-			expect(
-				await provider.processInAppMessages(messages, simpleInAppMessagingEvent)
-			).toHaveLength(0);
+			expect(await provider.processInAppMessages(messages, simpleInAppMessagingEvent)).toHaveLength(0);
 		});
 	});
 });

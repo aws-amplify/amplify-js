@@ -52,10 +52,7 @@ export default function getRandomValues(array) {
 		}
 	}
 
-	base64Decode(
-		getRandomBase64(array.byteLength),
-		new Uint8Array(array.buffer, array.byteOffset, array.byteLength)
-	);
+	base64Decode(getRandomBase64(array.byteLength), new Uint8Array(array.buffer, array.byteOffset, array.byteLength));
 
 	return array;
 }

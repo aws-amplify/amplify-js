@@ -20,15 +20,7 @@ import { getStringToSign } from './getStringToSign';
  */
 export const getSignature = (
 	request: HttpRequest,
-	{
-		credentialScope,
-		longDate,
-		secretAccessKey,
-		shortDate,
-		signingRegion,
-		signingService,
-		uriEscapePath,
-	}: SigningValues
+	{ credentialScope, longDate, secretAccessKey, shortDate, signingRegion, signingService, uriEscapePath }: SigningValues
 ): string => {
 	// step 1: create a canonical request
 	const canonicalRequest = getCanonicalRequest(request, uriEscapePath);
@@ -37,11 +29,7 @@ export const getSignature = (
 	const hashedRequest = getHashedDataAsHex(null, canonicalRequest);
 
 	// step 3: create a string to sign
-	const stringToSign = getStringToSign(
-		longDate,
-		credentialScope,
-		hashedRequest
-	);
+	const stringToSign = getStringToSign(longDate, credentialScope, hashedRequest);
 
 	// step 4: calculate the signature
 	const signature = getHashedDataAsHex(

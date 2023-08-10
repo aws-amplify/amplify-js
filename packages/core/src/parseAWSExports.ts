@@ -27,8 +27,7 @@ export const parseAWSExports = (config): AmplifyConfig => {
 			identityPoolId: config['aws_cognito_identity_pool_id'],
 			identityPoolRegion: config['aws_cognito_region'],
 			mandatorySignIn: config['aws_mandatory_sign_in'] === 'enable',
-			signUpVerificationMethod:
-				config['aws_cognito_sign_up_verification_method'] || 'code',
+			signUpVerificationMethod: config['aws_cognito_sign_up_verification_method'] || 'code',
 		};
 	}
 
@@ -40,9 +39,7 @@ export const parseAWSExports = (config): AmplifyConfig => {
 				bucket: config['aws_user_files_s3_bucket'],
 				region: config['aws_user_files_s3_bucket_region'],
 				dangerouslyConnectToHttpEndpointForTesting:
-					config[
-						'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing'
-					],
+					config['aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing'],
 			},
 		};
 	} else {
@@ -67,18 +64,10 @@ export const parseAWSExports = (config): AmplifyConfig => {
 		}
 	}
 
-	amplifyConfig.Analytics = Object.assign(
-		{},
-		amplifyConfig.Analytics,
-		config.Analytics
-	);
+	amplifyConfig.Analytics = Object.assign({}, amplifyConfig.Analytics, config.Analytics);
 	amplifyConfig.Auth = Object.assign({}, amplifyConfig.Auth, config.Auth);
 	amplifyConfig.Storage = Object.assign({}, storageConfig);
-	amplifyConfig.Logging = Object.assign(
-		{},
-		amplifyConfig.Logging,
-		config.Logging
-	);
+	amplifyConfig.Logging = Object.assign({}, amplifyConfig.Logging, config.Logging);
 	logger.debug('parse config', config, 'to amplifyconfig', amplifyConfig);
 	return amplifyConfig;
 };

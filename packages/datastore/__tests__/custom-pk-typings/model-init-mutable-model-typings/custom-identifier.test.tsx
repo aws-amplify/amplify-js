@@ -1,30 +1,16 @@
 // TODO: Look at ts-expect-error once we move to TypeScript 3.9 or above
 import { ModelInit, __modelMeta__ } from '../../../src';
-import {
-	expectType,
-	CustomIdentifierCustomRO,
-	CustomIdentifierDefaultRO,
-} from '../../helpers';
+import { expectType, CustomIdentifierCustomRO, CustomIdentifierDefaultRO } from '../../helpers';
 
 describe('Custom Identifier', () => {
 	test(`CustomIdentifierDefaultRO`, async () => {
-		expectType<
-			ModelInit<
-				CustomIdentifierDefaultRO,
-				CustomIdentifierDefaultRO[typeof __modelMeta__]
-			>
-		>({
+		expectType<ModelInit<CustomIdentifierDefaultRO, CustomIdentifierDefaultRO[typeof __modelMeta__]>>({
 			myId: '',
 			name: '',
 			description: '',
 		});
 
-		expectType<
-			ModelInit<
-				CustomIdentifierDefaultRO,
-				CustomIdentifierDefaultRO[typeof __modelMeta__]
-			>
-		>({
+		expectType<ModelInit<CustomIdentifierDefaultRO, CustomIdentifierDefaultRO[typeof __modelMeta__]>>({
 			myId: '',
 			name: '',
 			description: '',
@@ -56,23 +42,13 @@ describe('Custom Identifier', () => {
 	});
 
 	test(`CustomIdentifierCustomRO`, async () => {
-		expectType<
-			ModelInit<
-				CustomIdentifierCustomRO,
-				CustomIdentifierCustomRO[typeof __modelMeta__]
-			>
-		>({
+		expectType<ModelInit<CustomIdentifierCustomRO, CustomIdentifierCustomRO[typeof __modelMeta__]>>({
 			myId: '',
 			name: '',
 			description: '',
 		});
 
-		expectType<
-			ModelInit<
-				CustomIdentifierCustomRO,
-				CustomIdentifierCustomRO[typeof __modelMeta__]
-			>
-		>({
+		expectType<ModelInit<CustomIdentifierCustomRO, CustomIdentifierCustomRO[typeof __modelMeta__]>>({
 			myId: '',
 			name: '',
 			description: '',

@@ -27,14 +27,10 @@ describe('React native storage helper unit tests', () => {
 		const StorageHelper = require('../src/StorageHelper-rn.js').default;
 		const storageHelper = new StorageHelper();
 		test('setting an item', () => {
-			expect(
-				storageHelper.getStorage().setItem('testKey', 'testValue')
-			).toEqual('testValue');
+			expect(storageHelper.getStorage().setItem('testKey', 'testValue')).toEqual('testValue');
 		});
 		test('getting an item', () => {
-			expect(storageHelper.getStorage().getItem('testKey')).toEqual(
-				'testValue'
-			);
+			expect(storageHelper.getStorage().getItem('testKey')).toEqual('testValue');
 		});
 		test('removing an item', () => {
 			expect(storageHelper.getStorage().removeItem('testKey')).toEqual(true);

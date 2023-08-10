@@ -12,9 +12,7 @@
  *
  * @internal
  */
-export const getCanonicalQueryString = (
-	searchParams: URLSearchParams
-): string =>
+export const getCanonicalQueryString = (searchParams: URLSearchParams): string =>
 	Array.from(searchParams)
 		.sort(([keyA, valA], [keyB, valB]) => {
 			if (keyA === keyB) {
@@ -25,8 +23,6 @@ export const getCanonicalQueryString = (
 		.map(([key, val]) => `${escapeUri(key)}=${escapeUri(val)}`)
 		.join('&');
 
-const escapeUri = (uri: string): string =>
-	encodeURIComponent(uri).replace(/[!'()*]/g, hexEncode);
+const escapeUri = (uri: string): string => encodeURIComponent(uri).replace(/[!'()*]/g, hexEncode);
 
-const hexEncode = (c: string) =>
-	`%${c.charCodeAt(0).toString(16).toUpperCase()}`;
+const hexEncode = (c: string) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`;

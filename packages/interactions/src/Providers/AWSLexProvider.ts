@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AbstractInteractionsProvider } from './InteractionsProvider';
-import {
-	InteractionsOptions,
-	AWSLexProviderOptions,
-	InteractionsResponse,
-	InteractionsMessage,
-} from '../types';
+import { InteractionsOptions, AWSLexProviderOptions, InteractionsResponse, InteractionsMessage } from '../types';
 import {
 	LexRuntimeServiceClient,
 	PostTextCommand,
@@ -16,23 +11,16 @@ import {
 	PostContentCommandInput,
 	PostContentCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
-import {
-	ConsoleLogger as Logger,
-	Credentials,
-	getAmplifyUserAgentObject,
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Credentials, getAmplifyUserAgentObject } from '@aws-amplify/core';
 import { convert } from './AWSLexProviderHelper/utils';
 
 const logger = new Logger('AWSLexProvider');
 
-interface PostContentCommandOutputFormatted
-	extends Omit<PostContentCommandOutput, 'audioStream'> {
+interface PostContentCommandOutputFormatted extends Omit<PostContentCommandOutput, 'audioStream'> {
 	audioStream?: Uint8Array;
 }
 
-type AWSLexProviderSendResponse =
-	| PostTextCommandOutput
-	| PostContentCommandOutputFormatted;
+type AWSLexProviderSendResponse = PostTextCommandOutput | PostContentCommandOutputFormatted;
 
 export class AWSLexProvider extends AbstractInteractionsProvider {
 	private lexRuntimeServiceClient: LexRuntimeServiceClient;
@@ -70,46 +58,28 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 	reportBotStatus(data: AWSLexProviderSendResponse, botname: string) {
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', data.dialogState);
-		if (
-			data.dialogState === 'ReadyForFulfillment' ||
-			data.dialogState === 'Fulfilled'
-		) {
+		if (data.dialogState === 'ReadyForFulfillment' || data.dialogState === 'Fulfilled') {
 			if (typeof this._botsCompleteCallback[botname] === 'function') {
 				setTimeout(() => this._botsCompleteCallback[botname](null, data), 0);
 			}
 
-			if (
-				this._config &&
-				typeof this._config[botname].onComplete === 'function'
-			) {
+			if (this._config && typeof this._config[botname].onComplete === 'function') {
 				setTimeout(() => this._config[botname].onComplete(null, data), 0);
 			}
 		}
 
 		if (data.dialogState === 'Failed') {
 			if (typeof this._botsCompleteCallback[botname] === 'function') {
-				setTimeout(
-					() => this._botsCompleteCallback[botname]('Bot conversation failed'),
-					0
-				);
+				setTimeout(() => this._botsCompleteCallback[botname]('Bot conversation failed'), 0);
 			}
 
-			if (
-				this._config &&
-				typeof this._config[botname].onComplete === 'function'
-			) {
-				setTimeout(
-					() => this._config[botname].onComplete('Bot conversation failed'),
-					0
-				);
+			if (this._config && typeof this._config[botname].onComplete === 'function') {
+				setTimeout(() => this._config[botname].onComplete('Bot conversation failed'), 0);
 			}
 		}
 	}
 
-	async sendMessage(
-		botname: string,
-		message: string | InteractionsMessage
-	): Promise<InteractionsResponse> {
+	async sendMessage(botname: string, message: string | InteractionsMessage): Promise<InteractionsResponse> {
 		// check if bot exists
 		if (!this._config[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');
@@ -157,8 +127,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				if (typeof content !== 'object') {
 					return Promise.reject('invalid content type');
 				}
-				const inputStream =
-					content instanceof Uint8Array ? content : await convert(content);
+				const inputStream = content instanceof Uint8Array ? content : await convert(content);
 
 				params = {
 					botAlias: this._config[botname].alias,
@@ -169,8 +138,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 					inputStream,
 				};
 			} else {
-				if (typeof content !== 'string')
-					return Promise.reject('invalid content type');
+				if (typeof content !== 'string') return Promise.reject('invalid content type');
 
 				params = {
 					botAlias: this._config[botname].alias,
@@ -184,13 +152,9 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			logger.debug('postContent to lex', message);
 			try {
 				const postContentCommand = new PostContentCommand(params);
-				const data = await this.lexRuntimeServiceClient.send(
-					postContentCommand
-				);
+				const data = await this.lexRuntimeServiceClient.send(postContentCommand);
 
-				const audioArray = data.audioStream
-					? await convert(data.audioStream)
-					: undefined;
+				const audioArray = data.audioStream ? await convert(data.audioStream) : undefined;
 
 				const response = { ...data, ...{ audioStream: audioArray } };
 

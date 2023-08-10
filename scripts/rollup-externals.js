@@ -34,21 +34,11 @@ const cache_externals = ['@aws-amplify/core'];
 
 const storage_externals = ['@aws-amplify/core', 'aws-sdk/clients/s3'];
 
-const interactions_externals = [
-	'aws-sdk/clients/lexruntime',
-	'@aws-amplify/core',
-	'handlebars',
-];
+const interactions_externals = ['aws-sdk/clients/lexruntime', '@aws-amplify/core', 'handlebars'];
 
 const xr_externals = ['@aws-amplify/core'];
 
-const pubsub_externals = [
-	'@aws-amplify/core',
-	'@types/zen-observable',
-	'uuid',
-	'zen-observable',
-	'paho-mqtt',
-];
+const pubsub_externals = ['@aws-amplify/core', '@types/zen-observable', 'uuid', 'zen-observable', 'paho-mqtt'];
 
 const amplify_externals = [
 	'@aws-amplify/analytics',

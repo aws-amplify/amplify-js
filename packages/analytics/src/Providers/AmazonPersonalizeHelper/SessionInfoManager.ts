@@ -70,9 +70,7 @@ export class SessionInfoManager {
 			this.storeValue(PERSONALIZE_CACHE_USERID, userId);
 			this.storeValue(PERSONALIZE_CACHE_SESSIONID, newSessionId);
 			sessionInfo.sessionId = newSessionId;
-		} else if (
-			this._isRequireUpdateSessionInfo(userId, existUserId, existSessionId)
-		) {
+		} else if (this._isRequireUpdateSessionInfo(userId, existUserId, existSessionId)) {
 			this.storeValue(PERSONALIZE_CACHE_USERID, userId);
 		}
 		sessionInfo.userId = userId;
@@ -85,9 +83,7 @@ export class SessionInfoManager {
 	): boolean {
 		// anonymouse => sign in : hasSession && s_userId == null && curr_userId !=null
 		const isNoCachedSession: boolean = isEmpty(cachedSessionSessionId);
-		return (
-			!isNoCachedSession && isEmpty(cachedSessionUserId) && !isEmpty(userId)
-		);
+		return !isNoCachedSession && isEmpty(cachedSessionUserId) && !isEmpty(userId);
 	}
 
 	public retrieveSessionInfo(trackingId: string): SessionInfo {
@@ -103,20 +99,13 @@ export class SessionInfoManager {
 		return sessionInfo;
 	}
 
-	private _isRequireNewSession(
-		userId: string,
-		cachedSessionUserId: string,
-		cachedSessionSessionId: string
-	): boolean {
+	private _isRequireNewSession(userId: string, cachedSessionUserId: string, cachedSessionSessionId: string): boolean {
 		// new session => 1. no cached session info 2. signOut: s_userId !=null && curr_userId ==null
 		// 3. switch account: s_userId !=null && curr_userId !=null && s_userId != curr_userId
 		const isNoCachedSession: boolean = isEmpty(cachedSessionSessionId);
-		const isSignoutCase: boolean =
-			isEmpty(userId) && !isEmpty(cachedSessionUserId);
+		const isSignoutCase: boolean = isEmpty(userId) && !isEmpty(cachedSessionUserId);
 		const isSwitchUserCase: boolean =
-			!isEmpty(userId) &&
-			!isEmpty(cachedSessionUserId) &&
-			!isEqual(userId, cachedSessionUserId);
+			!isEmpty(userId) && !isEmpty(cachedSessionUserId) && !isEqual(userId, cachedSessionUserId);
 		return isNoCachedSession || isSignoutCase || isSwitchUserCase;
 	}
 }

@@ -42,15 +42,10 @@ export class SessionTracker {
 
 	private async _trackFunc(nextAppState) {
 		const customAttrs =
-			typeof this._config.attributes === 'function'
-				? await this._config.attributes()
-				: this._config.attributes;
+			typeof this._config.attributes === 'function' ? await this._config.attributes() : this._config.attributes;
 		const attributes = Object.assign({}, customAttrs);
 
-		if (
-			this._currentState.match(/inactive|background/) &&
-			nextAppState === 'active'
-		) {
+		if (this._currentState.match(/inactive|background/) && nextAppState === 'active') {
 			logger.debug('App has come to the foreground, recording start session');
 			this._tracker(
 				{
@@ -63,13 +58,8 @@ export class SessionTracker {
 				logger.debug('record session start event failed.', e);
 			});
 		}
-		if (
-			this._currentState.match(/active/) &&
-			nextAppState.match(/inactive|background/)
-		) {
-			logger.debug(
-				'App has come to inactive/background, recording stop session'
-			);
+		if (this._currentState.match(/active/) && nextAppState.match(/inactive|background/)) {
+			logger.debug('App has come to inactive/background, recording stop session');
 			this._tracker(
 				{
 					name: '_session.stop',
@@ -95,9 +85,7 @@ export class SessionTracker {
 		}
 
 		const customAttrs =
-			typeof this._config.attributes === 'function'
-				? await this._config.attributes()
-				: this._config.attributes;
+			typeof this._config.attributes === 'function' ? await this._config.attributes() : this._config.attributes;
 		const attributes = Object.assign({}, customAttrs);
 
 		this._tracker(

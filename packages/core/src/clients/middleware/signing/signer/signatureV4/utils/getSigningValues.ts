@@ -26,11 +26,7 @@ export const getSigningValues = ({
 	// get formatted dates for signing
 	const { longDate, shortDate } = getFormattedDates(signingDate);
 	// copy header and set signing properties
-	const credentialScope = getCredentialScope(
-		shortDate,
-		signingRegion,
-		signingService
-	);
+	const credentialScope = getCredentialScope(shortDate, signingRegion, signingService);
 	return {
 		accessKeyId,
 		credentialScope,

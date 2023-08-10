@@ -1,18 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ULID } from 'ulid';
-import {
-	ModelInstanceMetadata,
-	OpType,
-	PaginationInput,
-	PersistentModel,
-	QueryOne,
-} from '../../types';
-import {
-	DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR,
-	indexNameFromKeys,
-	monotonicUlidFactory,
-} from '../../util';
+import { ModelInstanceMetadata, OpType, PaginationInput, PersistentModel, QueryOne } from '../../types';
+import { DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR, indexNameFromKeys, monotonicUlidFactory } from '../../util';
 import { createInMemoryStore } from './InMemoryStore';
 
 const DB_NAME = '@AmplifyDatastore';
@@ -101,17 +91,10 @@ class AsyncStorageDatabase {
 		}
 	}
 
-	async save<T extends PersistentModel>(
-		item: T,
-		storeName: string,
-		keys: string[],
-		keyValuesPath: string
-	) {
+	async save<T extends PersistentModel>(item: T, storeName: string, keys: string[], keyValuesPath: string) {
 		const idxName = indexNameFromKeys(keys);
 
-		const ulid =
-			this.getCollectionIndex(storeName)?.get(idxName) ||
-			this.getMonotonicFactory(storeName)();
+		const ulid = this.getCollectionIndex(storeName)?.get(idxName) || this.getMonotonicFactory(storeName)();
 
 		// Retrieve db key for item
 		const itemKey = this.getKeyForItem(storeName, keyValuesPath, ulid);
@@ -150,15 +133,10 @@ class AsyncStorageDatabase {
 
 			// If id is in the store, retrieve, otherwise generate new ULID
 			const ulid =
-				collection.get(keyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR)) ||
-				this.getMonotonicFactory(storeName)();
+				collection.get(keyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR)) || this.getMonotonicFactory(storeName)();
 
 			// Generate the "longer key" for the item
-			const key = this.getKeyForItem(
-				storeName,
-				keyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR),
-				ulid
-			);
+			const key = this.getKeyForItem(storeName, keyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR), ulid);
 
 			allItemsKeys.push(key);
 			itemsMap[key] = { ulid, model: <T>(<unknown>item) };
@@ -170,9 +148,7 @@ class AsyncStorageDatabase {
 			}
 		}
 
-		const existingRecordsMap: [string, string][] = await this.storage.multiGet(
-			allItemsKeys
-		);
+		const existingRecordsMap: [string, string][] = await this.storage.multiGet(allItemsKeys);
 		const existingRecordsKeys = existingRecordsMap
 			.filter(([, v]) => !!v)
 			.reduce((set, [k]) => set.add(k), new Set<string>());
@@ -212,18 +188,13 @@ class AsyncStorageDatabase {
 				return;
 			}
 
-			const entriesToSet = Array.from(keysToSave).map(key => [
-				key,
-				JSON.stringify(itemsMap[key].model),
-			]);
+			const entriesToSet = Array.from(keysToSave).map(key => [key, JSON.stringify(itemsMap[key].model)]);
 
 			keysToSave.forEach(key => {
 				const { model, ulid } = itemsMap[key];
 
 				// Retrieve values from model, use as key for collection index
-				const keyValues: string = keys
-					.map(field => model[field])
-					.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
+				const keyValues: string = keys.map(field => model[field]).join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
 
 				collection.set(keyValues, ulid);
 			});
@@ -241,20 +212,14 @@ class AsyncStorageDatabase {
 			if (keysToDelete.has(key) && existingRecordsKeys.has(key)) {
 				result.push([itemsMap[key].model, OpType.DELETE]);
 			} else if (keysToSave.has(key)) {
-				result.push([
-					itemsMap[key].model,
-					existingRecordsKeys.has(key) ? OpType.UPDATE : OpType.INSERT,
-				]);
+				result.push([itemsMap[key].model, existingRecordsKeys.has(key) ? OpType.UPDATE : OpType.INSERT]);
 			}
 		}
 
 		return result;
 	}
 
-	async get<T extends PersistentModel>(
-		keyValuePath: string,
-		storeName: string
-	): Promise<T> {
+	async get<T extends PersistentModel>(keyValuePath: string, storeName: string): Promise<T> {
 		const ulid = this.getCollectionIndex(storeName)!.get(keyValuePath)!;
 		const itemKey = this.getKeyForItem(storeName, keyValuePath, ulid);
 		const recordAsString = await this.storage.getItem(itemKey);
@@ -290,10 +255,7 @@ class AsyncStorageDatabase {
 	 * This function gets all the records stored in async storage for a particular storeName
 	 * It then loads all the records for that filtered set of keys using multiGet()
 	 */
-	async getAll<T extends PersistentModel>(
-		storeName: string,
-		pagination?: PaginationInput<T>
-	): Promise<T[]> {
+	async getAll<T extends PersistentModel>(storeName: string, pagination?: PaginationInput<T>): Promise<T[]> {
 		const collection = this.getCollectionIndex(storeName)!;
 
 		const { page = 0, limit = 0 } = pagination || {};
@@ -317,9 +279,7 @@ class AsyncStorageDatabase {
 		}
 
 		const storeRecordStrings = await this.storage.multiGet(keysForStore);
-		const records = storeRecordStrings
-			.filter(([, value]) => value)
-			.map(([, value]) => JSON.parse(value));
+		const records = storeRecordStrings.filter(([, value]) => value).map(([, value]) => JSON.parse(value));
 
 		return records;
 	}

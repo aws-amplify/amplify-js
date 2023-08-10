@@ -13,11 +13,7 @@ import {
 } from '@aws-amplify/core';
 import flatten from 'lodash/flatten';
 
-import {
-	addEventListener,
-	EventListener,
-	notifyEventListeners,
-} from '../common';
+import { addEventListener, EventListener, notifyEventListeners } from '../common';
 import { NotificationsConfig, UserInfo } from '../types';
 import { AWSPinpointProvider } from '../InAppMessaging/Providers';
 import {
@@ -54,9 +50,7 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 	 * Configure InAppMessaging
 	 * @param {Object} config - InAppMessaging configuration object
 	 */
-	configure({
-		Notifications: notificationsConfig,
-	}: NotificationsConfig = {}): InAppMessagingConfig {
+	configure({ Notifications: notificationsConfig }: NotificationsConfig = {}): InAppMessagingConfig {
 		const { listenForAnalyticsEvents = true, ...config }: InAppMessagingConfig =
 			notificationsConfig?.InAppMessaging || {};
 
@@ -93,10 +87,7 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 	 * @param {string} providerName - the name of the plugin to get
 	 */
 	getPluggable = (providerName: string): InAppMessagingProvider => {
-		const pluggable =
-			this.pluggables.find(
-				pluggable => pluggable.getProviderName() === providerName
-			) ?? null;
+		const pluggable = this.pluggables.find(pluggable => pluggable.getProviderName() === providerName) ?? null;
 
 		if (!pluggable) {
 			logger.debug(`No plugin found with name ${providerName}`);
@@ -110,15 +101,9 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 	 * @param {InAppMessagingProvider} pluggable - an instance of the plugin
 	 */
 	addPluggable = (pluggable: InAppMessagingProvider): void => {
-		if (
-			pluggable &&
-			pluggable.getCategory() === 'Notifications' &&
-			pluggable.getSubCategory() === 'InAppMessaging'
-		) {
+		if (pluggable && pluggable.getCategory() === 'Notifications' && pluggable.getSubCategory() === 'InAppMessaging') {
 			if (this.getPluggable(pluggable.getProviderName())) {
-				throw new Error(
-					`Pluggable ${pluggable.getProviderName()} has already been added.`
-				);
+				throw new Error(`Pluggable ${pluggable.getProviderName()} has already been added.`);
 			}
 			this.pluggables.push(pluggable);
 			pluggable.configure(this.config[pluggable.getProviderName()]);
@@ -130,9 +115,7 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 	 * @param {string} providerName - the name of the plugin to remove
 	 */
 	removePluggable = (providerName: string): void => {
-		const index = this.pluggables.findIndex(
-			pluggable => pluggable.getProviderName() === providerName
-		);
+		const index = this.pluggables.findIndex(pluggable => pluggable.getProviderName() === providerName);
 		if (index === -1) {
 			logger.debug(`No plugin found with name ${providerName}`);
 		} else {
@@ -145,17 +128,12 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 	 * @param {CustomUserAgentDetails} customUserAgentDetails optional parameter to send user agent details
 	 * @returns - Array of available map resources
 	 */
-	public syncMessages(
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<void[]> {
+	public syncMessages(customUserAgentDetails?: CustomUserAgentDetails): Promise<void[]> {
 		return Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				try {
 					const messages = await pluggable.getInAppMessages(
-						getUserAgentValue(
-							InAppMessagingAction.SyncMessages,
-							customUserAgentDetails
-						)
+						getUserAgentValue(InAppMessagingAction.SyncMessages, customUserAgentDetails)
 					);
 					const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
 					await this.setMessages(key, messages);
@@ -188,10 +166,7 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 		const flattenedMessages = flatten(messages);
 
 		if (flattenedMessages.length) {
-			notifyEventListeners(
-				InAppMessageInteractionEvent.MESSAGE_RECEIVED,
-				this.conflictHandler(flattenedMessages)
-			);
+			notifyEventListeners(InAppMessageInteractionEvent.MESSAGE_RECEIVED, this.conflictHandler(flattenedMessages));
 		}
 	}
 
@@ -206,10 +181,7 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 					await pluggable.identifyUser(
 						userId,
 						userInfo,
-						getUserAgentValue(
-							InAppMessagingAction.IdentifyUser,
-							customUserAgentDetails
-						)
+						getUserAgentValue(InAppMessagingAction.IdentifyUser, customUserAgentDetails)
 					);
 				} catch (err) {
 					logger.error('Failed to identify user', err);
@@ -219,33 +191,19 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 		);
 	}
 
-	onMessageReceived = (
-		handler: OnMessageInteractionEventHandler
-	): EventListener<OnMessageInteractionEventHandler> =>
+	onMessageReceived = (handler: OnMessageInteractionEventHandler): EventListener<OnMessageInteractionEventHandler> =>
 		addEventListener(InAppMessageInteractionEvent.MESSAGE_RECEIVED, handler);
 
-	onMessageDisplayed = (
-		handler: OnMessageInteractionEventHandler
-	): EventListener<OnMessageInteractionEventHandler> =>
+	onMessageDisplayed = (handler: OnMessageInteractionEventHandler): EventListener<OnMessageInteractionEventHandler> =>
 		addEventListener(InAppMessageInteractionEvent.MESSAGE_DISPLAYED, handler);
 
-	onMessageDismissed = (
-		handler: OnMessageInteractionEventHandler
-	): EventListener<OnMessageInteractionEventHandler> =>
+	onMessageDismissed = (handler: OnMessageInteractionEventHandler): EventListener<OnMessageInteractionEventHandler> =>
 		addEventListener(InAppMessageInteractionEvent.MESSAGE_DISMISSED, handler);
 
-	onMessageActionTaken = (
-		handler: OnMessageInteractionEventHandler
-	): EventListener<OnMessageInteractionEventHandler> =>
-		addEventListener(
-			InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN,
-			handler
-		);
+	onMessageActionTaken = (handler: OnMessageInteractionEventHandler): EventListener<OnMessageInteractionEventHandler> =>
+		addEventListener(InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN, handler);
 
-	notifyMessageInteraction = (
-		message: InAppMessage,
-		type: InAppMessageInteractionEvent
-	): void => {
+	notifyMessageInteraction = (message: InAppMessage, type: InAppMessageInteractionEvent): void => {
 		notifyEventListeners(type, message);
 	};
 
@@ -291,10 +249,7 @@ export class InternalInAppMessagingClass implements InAppMessagingInterface {
 		}
 	};
 
-	private setMessages = async (
-		key: string,
-		messages: InAppMessage[]
-	): Promise<void> => {
+	private setMessages = async (key: string, messages: InAppMessage[]): Promise<void> => {
 		if (!messages) {
 			return;
 		}

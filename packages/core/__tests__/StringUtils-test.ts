@@ -20,8 +20,6 @@ describe('StringUtils', () => {
 		const urlSafeState = urlSafeEncode(complexCustomState);
 		const encodedState = encodeURIComponent(urlSafeState);
 
-		expect(urlSafeDecode(decodeURIComponent(encodedState))).toEqual(
-			complexCustomState
-		);
+		expect(urlSafeDecode(decodeURIComponent(encodedState))).toEqual(complexCustomState);
 	});
 });

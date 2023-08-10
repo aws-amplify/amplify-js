@@ -2,14 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import booleanClockwise from '@turf/boolean-clockwise';
 
-import {
-	Longitude,
-	Latitude,
-	GeofenceId,
-	GeofenceInput,
-	GeofencePolygon,
-	LinearRing,
-} from './types';
+import { Longitude, Latitude, GeofenceId, GeofenceInput, GeofencePolygon, LinearRing } from './types';
 
 export function validateCoordinates(lng: Longitude, lat: Latitude): void {
 	if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
@@ -18,9 +11,7 @@ export function validateCoordinates(lng: Longitude, lat: Latitude): void {
 	if (lat < -90 || 90 < lat) {
 		throw new Error('Latitude must be between -90 and 90 degrees inclusive.');
 	} else if (lng < -180 || 180 < lng) {
-		throw new Error(
-			'Longitude must be between -180 and 180 degrees inclusive.'
-		);
+		throw new Error('Longitude must be between -180 and 180 degrees inclusive.');
 	}
 }
 
@@ -35,16 +26,11 @@ export function validateGeofenceId(geofenceId: GeofenceId): void {
 	}
 }
 
-export function validateLinearRing(
-	linearRing: LinearRing,
-	geofenceId?: GeofenceId
-): void {
+export function validateLinearRing(linearRing: LinearRing, geofenceId?: GeofenceId): void {
 	const errorPrefix = geofenceId ? `${geofenceId}: ` : '';
 	// Validate LinearRing size, must be at least 4 points
 	if (linearRing.length < 4) {
-		throw new Error(
-			`${errorPrefix}LinearRing must contain 4 or more coordinates.`
-		);
+		throw new Error(`${errorPrefix}LinearRing must contain 4 or more coordinates.`);
 	}
 
 	// Validate all coordinates are valid, error with which ones are bad
@@ -69,32 +55,21 @@ export function validateLinearRing(
 	const [lngB, latB] = linearRing[linearRing.length - 1];
 
 	if (lngA !== lngB || latA !== latB) {
-		throw new Error(
-			`${errorPrefix}LinearRing's first and last coordinates are not the same`
-		);
+		throw new Error(`${errorPrefix}LinearRing's first and last coordinates are not the same`);
 	}
 
 	if (booleanClockwise(linearRing)) {
-		throw new Error(
-			`${errorPrefix}LinearRing coordinates must be wound counterclockwise`
-		);
+		throw new Error(`${errorPrefix}LinearRing coordinates must be wound counterclockwise`);
 	}
 }
 
-export function validatePolygon(
-	polygon: GeofencePolygon,
-	geofenceId?: GeofenceId
-): void {
+export function validatePolygon(polygon: GeofencePolygon, geofenceId?: GeofenceId): void {
 	const errorPrefix = geofenceId ? `${geofenceId}: ` : '';
 	if (!Array.isArray(polygon)) {
-		throw new Error(
-			`${errorPrefix}Polygon is of incorrect structure. It should be an array of LinearRings`
-		);
+		throw new Error(`${errorPrefix}Polygon is of incorrect structure. It should be an array of LinearRings`);
 	}
 	if (polygon.length < 1) {
-		throw new Error(
-			`${errorPrefix}Polygon must have a single LinearRing array.`
-		);
+		throw new Error(`${errorPrefix}Polygon must have a single LinearRing array.`);
 	}
 
 	if (polygon.length > 1) {
@@ -102,14 +77,9 @@ export function validatePolygon(
 			`${errorPrefix}Polygon must have a single LinearRing array. Note: We do not currently support polygons with holes, multipolygons, polygons that are wound clockwise, or that cross the antimeridian.`
 		);
 	}
-	const verticesCount = polygon.reduce(
-		(prev, linearRing) => prev + linearRing.length,
-		0
-	);
+	const verticesCount = polygon.reduce((prev, linearRing) => prev + linearRing.length, 0);
 	if (verticesCount > 1000) {
-		throw new Error(
-			`${errorPrefix}Polygon has more than the maximum 1000 vertices.`
-		);
+		throw new Error(`${errorPrefix}Polygon has more than the maximum 1000 vertices.`);
 	}
 	polygon.forEach(linearRing => {
 		validateLinearRing(linearRing, geofenceId);
@@ -152,14 +122,8 @@ export function validateGeofencesInput(geofences: GeofenceInput[]) {
 		try {
 			validatePolygon(polygon, geofenceId);
 		} catch (error) {
-			if (
-				error.message.includes(
-					'Polygon has more than the maximum 1000 vertices.'
-				)
-			) {
-				throw new Error(
-					`Geofence '${geofenceId}' has more than the maximum of 1000 vertices`
-				);
+			if (error.message.includes('Polygon has more than the maximum 1000 vertices.')) {
+				throw new Error(`Geofence '${geofenceId}' has more than the maximum of 1000 vertices`);
 			}
 		}
 

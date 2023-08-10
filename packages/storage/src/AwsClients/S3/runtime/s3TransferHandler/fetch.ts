@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	HttpRequest,
-	HttpResponse,
-	authenticatedHandler,
-} from '@aws-amplify/core/internals/aws-client-utils';
+import { HttpRequest, HttpResponse, authenticatedHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import type { s3TransferHandler as s3BrowserTransferhandler } from './xhr';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import { contentSha256Middleware } from '../contentSha256middleware';
@@ -16,8 +12,8 @@ import { contentSha256Middleware } from '../contentSha256middleware';
  *
  * @internal
  */
-export const s3TransferHandler: typeof s3BrowserTransferhandler =
-	composeTransferHandler<[{}], HttpRequest, HttpResponse>(
-		authenticatedHandler,
-		[contentSha256Middleware]
-	);
+export const s3TransferHandler: typeof s3BrowserTransferhandler = composeTransferHandler<
+	[{}],
+	HttpRequest,
+	HttpResponse
+>(authenticatedHandler, [contentSha256Middleware]);

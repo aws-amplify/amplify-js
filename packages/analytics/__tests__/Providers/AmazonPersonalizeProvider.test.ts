@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Credentials } from '@aws-amplify/core';
 import { AmazonPersonalizeProvider } from '../../src/Providers/AmazonPersonalizeProvider';
-import {
-	PersonalizeEventsClient,
-	PutEventsCommand,
-} from '@aws-sdk/client-personalize-events';
+import { PersonalizeEventsClient, PutEventsCommand } from '@aws-sdk/client-personalize-events';
 
 const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -59,11 +56,9 @@ describe('Personalize provider test', () => {
 		test('record without credentials', async () => {
 			const analytics = new AmazonPersonalizeProvider();
 			analytics.configure({ trackingId: TRACKING_ID });
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.reject('err');
+			});
 
 			expect(await analytics.record('params')).toBe(false);
 			expect(spyon).toHaveBeenCalledTimes(1);
@@ -73,11 +68,9 @@ describe('Personalize provider test', () => {
 		test('record happy case with identify event', async () => {
 			const analytics = new AmazonPersonalizeProvider();
 			analytics.configure({ trackingId: TRACKING_ID });
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.resolve(credentials);
-				});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
 
 			await analytics.record({
 				event: {
@@ -95,11 +88,9 @@ describe('Personalize provider test', () => {
 		test('record happy case with Click event', async () => {
 			const analytics = new AmazonPersonalizeProvider();
 			analytics.configure({ trackingId: TRACKING_ID });
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.resolve(credentials);
-				});
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
 
 			await analytics.record({
 				event: {

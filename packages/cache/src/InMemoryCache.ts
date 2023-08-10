@@ -29,9 +29,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	 * @param config - the configuration of the cache
 	 */
 	constructor(config?: CacheConfig) {
-		const cacheConfig = config
-			? Object.assign({}, defaultConfig, config)
-			: defaultConfig;
+		const cacheConfig = config ? Object.assign({}, defaultConfig, config) : defaultConfig;
 		super(cacheConfig);
 		logger.debug('now we start!');
 		this.cacheList = [];
@@ -92,9 +90,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 		// delete the key from the list
 		this.cacheList[listIdx].removeItem(prefixedKey);
 		// decrease the current size of the cache
-		this._decreaseCurSizeInBytes(
-			JSON.parse(CacheObject.getItem(prefixedKey)).byteSize
-		);
+		this._decreaseCurSizeInBytes(JSON.parse(CacheObject.getItem(prefixedKey)).byteSize);
 		// finally remove the item from memory
 		CacheObject.removeItem(prefixedKey);
 	}
@@ -107,11 +103,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	 * @param itemSizeInBytes - the byte size of the item
 	 * @param listIdx - indicates which cache list the key belongs to
 	 */
-	private _setItem(
-		prefixedKey: string,
-		item: CacheItem,
-		listIdx: number
-	): void {
+	private _setItem(prefixedKey: string, item: CacheItem, listIdx: number): void {
 		// insert the key into the list
 		this.cacheList[listIdx].insertItem(prefixedKey);
 		// increase the current size of the cache
@@ -165,17 +157,10 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	 * @throws if the item is too big which exceeds the limit of single item size
 	 * @throws if the key is invalid
 	 */
-	public setItem(
-		key: string,
-		value: object | string | number | boolean,
-		options?: CacheItemOptions
-	): void {
+	public setItem(key: string, value: object | string | number | boolean, options?: CacheItemOptions): void {
 		const prefixedKey: string = this.config.keyPrefix + key;
 		// invalid keys
-		if (
-			prefixedKey === this.config.keyPrefix ||
-			prefixedKey === this.cacheCurSizeKey
-		) {
+		if (prefixedKey === this.config.keyPrefix || prefixedKey === this.cacheCurSizeKey) {
 			logger.warn(`Invalid key: should not be empty or 'CurSize'`);
 			return;
 		}
@@ -186,34 +171,20 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 		}
 
 		const cacheItemOptions: CacheItemOptions = {
-			priority:
-				options && options.priority !== undefined
-					? options.priority
-					: this.config.defaultPriority,
-			expires:
-				options && options.expires !== undefined
-					? options.expires
-					: this.config.defaultTTL + getCurrTime(),
+			priority: options && options.priority !== undefined ? options.priority : this.config.defaultPriority,
+			expires: options && options.expires !== undefined ? options.expires : this.config.defaultTTL + getCurrTime(),
 		};
 
 		if (cacheItemOptions.priority < 1 || cacheItemOptions.priority > 5) {
-			logger.warn(
-				`Invalid parameter: priority due to out or range. It should be within 1 and 5.`
-			);
+			logger.warn(`Invalid parameter: priority due to out or range. It should be within 1 and 5.`);
 			return;
 		}
 
-		const item: CacheItem = this.fillCacheItem(
-			prefixedKey,
-			value,
-			cacheItemOptions
-		);
+		const item: CacheItem = this.fillCacheItem(prefixedKey, value, cacheItemOptions);
 
 		// check wether this item is too big;
 		if (item.byteSize > this.config.itemMaxSize) {
-			logger.warn(
-				`Item with key: ${key} you are trying to put into is too big!`
-			);
+			logger.warn(`Item with key: ${key} you are trying to put into is too big!`);
 			return;
 		}
 
@@ -254,10 +225,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 		let ret: string | null = null;
 		const prefixedKey: string = this.config.keyPrefix + key;
 
-		if (
-			prefixedKey === this.config.keyPrefix ||
-			prefixedKey === this.cacheCurSizeKey
-		) {
+		if (prefixedKey === this.config.keyPrefix || prefixedKey === this.cacheCurSizeKey) {
 			logger.warn(`Invalid key: should not be empty or 'CurSize'`);
 			return null;
 		}

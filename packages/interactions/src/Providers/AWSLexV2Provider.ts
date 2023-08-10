@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AbstractInteractionsProvider } from './InteractionsProvider';
-import {
-	InteractionsOptions,
-	AWSLexV2ProviderOptions,
-	InteractionsResponse,
-	InteractionsMessage,
-} from '../types';
+import { InteractionsOptions, AWSLexV2ProviderOptions, InteractionsResponse, InteractionsMessage } from '../types';
 import {
 	LexRuntimeV2Client,
 	RecognizeTextCommand,
@@ -16,11 +11,7 @@ import {
 	RecognizeUtteranceCommandInput,
 	RecognizeUtteranceCommandOutput,
 } from '@aws-sdk/client-lex-runtime-v2';
-import {
-	ConsoleLogger as Logger,
-	Credentials,
-	getAmplifyUserAgentObject,
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Credentials, getAmplifyUserAgentObject } from '@aws-amplify/core';
 import { convert } from './AWSLexProviderHelper/utils';
 import { unGzipBase64AsJson } from './AWSLexProviderHelper/commonUtils';
 
@@ -29,11 +20,7 @@ const logger = new Logger('AWSLexV2Provider');
 interface RecognizeUtteranceCommandOutputFormatted
 	extends Omit<
 		RecognizeUtteranceCommandOutput,
-		| 'messages'
-		| 'interpretations'
-		| 'sessionState'
-		| 'requestAttributes'
-		| 'audioStream'
+		'messages' | 'interpretations' | 'sessionState' | 'requestAttributes' | 'audioStream'
 	> {
 	messages?: RecognizeTextCommandOutput['messages'];
 	sessionState?: RecognizeTextCommandOutput['sessionState'];
@@ -42,9 +29,7 @@ interface RecognizeUtteranceCommandOutputFormatted
 	audioStream?: Uint8Array;
 }
 
-type AWSLexV2ProviderSendResponse =
-	| RecognizeTextCommandOutput
-	| RecognizeUtteranceCommandOutputFormatted;
+type AWSLexV2ProviderSendResponse = RecognizeTextCommandOutput | RecognizeUtteranceCommandOutputFormatted;
 
 type lexV2BaseReqParams = {
 	botId: string;
@@ -79,17 +64,8 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 	 * @param {AWSLexV2ProviderOptions} config - Configuration of the Interactions
 	 * @return {AWSLexV2ProviderOptions} - Current configuration
 	 */
-	public configure(
-		config: AWSLexV2ProviderOptions = {}
-	): AWSLexV2ProviderOptions {
-		const propertiesToTest = [
-			'name',
-			'botId',
-			'aliasId',
-			'localeId',
-			'providerName',
-			'region',
-		];
+	public configure(config: AWSLexV2ProviderOptions = {}): AWSLexV2ProviderOptions {
+		const propertiesToTest = ['name', 'botId', 'aliasId', 'localeId', 'providerName', 'region'];
 
 		Object.keys(config).forEach(botKey => {
 			const botConfig = config[botKey];
@@ -109,10 +85,7 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 	 * @param {string | InteractionsMessage} message - message to send to the bot
 	 * @return {Promise<InteractionsResponse>} A promise resolves to the response from the bot
 	 */
-	public async sendMessage(
-		botname: string,
-		message: string | InteractionsMessage
-	): Promise<InteractionsResponse> {
+	public async sendMessage(botname: string, message: string | InteractionsMessage): Promise<InteractionsResponse> {
 		// check if bot exists
 		if (!this._config[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');
@@ -143,17 +116,9 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 		};
 
 		if (typeof message === 'string') {
-			response = await this._handleRecognizeTextCommand(
-				botname,
-				message,
-				reqBaseParams
-			);
+			response = await this._handleRecognizeTextCommand(botname, message, reqBaseParams);
 		} else {
-			response = await this._handleRecognizeUtteranceCommand(
-				botname,
-				message,
-				reqBaseParams
-			);
+			response = await this._handleRecognizeUtteranceCommand(botname, message, reqBaseParams);
 		}
 		return response;
 	}
@@ -164,10 +129,7 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 	 * @param {string} botname - Bot name to attach the onComplete callback
 	 * @param {(err: Error | null, confirmation: InteractionsResponse) => void} callback - called when Intent Fulfilled
 	 */
-	public onComplete(
-		botname: string,
-		callback: (err: Error | null, confirmation: InteractionsResponse) => void
-	) {
+	public onComplete(botname: string, callback: (err: Error | null, confirmation: InteractionsResponse) => void) {
 		// does bot exist
 		if (!this._config[botname]) {
 			throw new Error('Bot ' + botname + ' does not exist');
@@ -179,28 +141,20 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 	 * @private
 	 * call onComplete callback for a bot if configured
 	 */
-	private _reportBotStatus(
-		data: AWSLexV2ProviderSendResponse,
-		botname: string
-	) {
+	private _reportBotStatus(data: AWSLexV2ProviderSendResponse, botname: string) {
 		const sessionState = data?.sessionState;
 
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', sessionState?.intent?.state);
 
-		const isConfigOnCompleteAttached =
-			typeof this._config?.[botname].onComplete === 'function';
+		const isConfigOnCompleteAttached = typeof this._config?.[botname].onComplete === 'function';
 
-		const isApiOnCompleteAttached =
-			typeof this._botsCompleteCallback?.[botname] === 'function';
+		const isApiOnCompleteAttached = typeof this._botsCompleteCallback?.[botname] === 'function';
 
 		// no onComplete callbacks added
 		if (!isConfigOnCompleteAttached && !isApiOnCompleteAttached) return;
 
-		if (
-			sessionState?.intent?.state === 'ReadyForFulfillment' ||
-			sessionState?.intent?.state === 'Fulfilled'
-		) {
+		if (sessionState?.intent?.state === 'ReadyForFulfillment' || sessionState?.intent?.state === 'Fulfilled') {
 			if (isApiOnCompleteAttached) {
 				setTimeout(() => this._botsCompleteCallback?.[botname](null, data), 0);
 			}
@@ -237,9 +191,7 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 			interpretations: await unGzipBase64AsJson(data.interpretations),
 			requestAttributes: await unGzipBase64AsJson(data.requestAttributes),
 			inputTranscript: await unGzipBase64AsJson(data.inputTranscript),
-			audioStream: data.audioStream
-				? await convert(data.audioStream)
-				: undefined,
+			audioStream: data.audioStream ? await convert(data.audioStream) : undefined,
 		};
 		return response;
 	}
@@ -248,11 +200,7 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 	 * handle client's `RecognizeTextCommand`
 	 * used for sending simple text message
 	 */
-	private async _handleRecognizeTextCommand(
-		botname: string,
-		data: string,
-		baseParams: lexV2BaseReqParams
-	) {
+	private async _handleRecognizeTextCommand(botname: string, data: string, baseParams: lexV2BaseReqParams) {
 		logger.debug('postText to lex2', data);
 
 		const params: RecognizeTextCommandInput = {
@@ -262,9 +210,7 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 
 		try {
 			const recognizeTextCommand = new RecognizeTextCommand(params);
-			const data = await this._lexRuntimeServiceV2Client.send(
-				recognizeTextCommand
-			);
+			const data = await this._lexRuntimeServiceV2Client.send(recognizeTextCommand);
 
 			this._reportBotStatus(data, botname);
 			return data;
@@ -296,8 +242,7 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 				return Promise.reject('invalid content type');
 			}
 
-			const inputStream =
-				content instanceof Uint8Array ? content : await convert(content);
+			const inputStream = content instanceof Uint8Array ? content : await convert(content);
 
 			params = {
 				...baseParams,
@@ -306,8 +251,7 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 			};
 		} else {
 			// text input
-			if (typeof content !== 'string')
-				return Promise.reject('invalid content type');
+			if (typeof content !== 'string') return Promise.reject('invalid content type');
 
 			params = {
 				...baseParams,
@@ -319,9 +263,7 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 		// make API call to lex
 		try {
 			const recognizeUtteranceCommand = new RecognizeUtteranceCommand(params);
-			const data = await this._lexRuntimeServiceV2Client.send(
-				recognizeUtteranceCommand
-			);
+			const data = await this._lexRuntimeServiceV2Client.send(recognizeUtteranceCommand);
 
 			const response = await this._formatUtteranceCommandOutput(data);
 			this._reportBotStatus(response, botname);

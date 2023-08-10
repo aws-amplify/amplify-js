@@ -3,17 +3,8 @@
  */
 
 import { fetchTransferHandler } from '../../../src/clients/handlers/fetch';
-import {
-	getId,
-	GetIdInput,
-	GetIdOutput,
-} from '../../../src/AwsClients/CognitoIdentity';
-import {
-	cognitoIdentityHandlerOptions,
-	mockIdentityId,
-	mockJsonResponse,
-	mockRequestId,
-} from '../testUtils/data';
+import { getId, GetIdInput, GetIdOutput } from '../../../src/AwsClients/CognitoIdentity';
+import { cognitoIdentityHandlerOptions, mockIdentityId, mockJsonResponse, mockRequestId } from '../testUtils/data';
 
 jest.mock('../../../src/clients/handlers/fetch');
 
@@ -58,15 +49,10 @@ describe('CognitoIdentity - getId', () => {
 				httpStatusCode: 200,
 			}),
 		};
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(succeedResponse)
-		);
+		(fetchTransferHandler as jest.Mock).mockResolvedValue(mockJsonResponse(succeedResponse));
 		const response = await getId(cognitoIdentityHandlerOptions, params);
 		expect(response).toEqual(expectedOutput);
-		expect(fetchTransferHandler).toBeCalledWith(
-			expectedRequest,
-			expect.anything()
-		);
+		expect(fetchTransferHandler).toBeCalledWith(expectedRequest, expect.anything());
 	});
 
 	test('error case', async () => {
@@ -85,9 +71,7 @@ describe('CognitoIdentity - getId', () => {
 			name: 'NotAuthorizedException',
 			message: failureResponse.body.message,
 		};
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(failureResponse)
-		);
+		(fetchTransferHandler as jest.Mock).mockResolvedValue(mockJsonResponse(failureResponse));
 		expect.assertions(1);
 		try {
 			await getId(cognitoIdentityHandlerOptions, params);

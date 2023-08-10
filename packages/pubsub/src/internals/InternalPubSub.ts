@@ -37,9 +37,7 @@ export class InternalPubSubClass {
 	 */
 	private get awsAppSyncRealTimeProvider() {
 		if (!this._awsAppSyncRealTimeProvider) {
-			this._awsAppSyncRealTimeProvider = new AWSAppSyncRealTimeProvider(
-				this._options
-			);
+			this._awsAppSyncRealTimeProvider = new AWSAppSyncRealTimeProvider(this._options);
 		}
 		return this._awsAppSyncRealTimeProvider;
 	}
@@ -67,9 +65,7 @@ export class InternalPubSubClass {
 	 * @return {Object} - The current configuration
 	 */
 	configure(options: PubSubOptions) {
-		const opt: Record<string, unknown> = options
-			? options.PubSub || options
-			: {};
+		const opt: Record<string, unknown> = options ? options.PubSub || options : {};
 		logger.debug('configure PubSub', { opt });
 
 		this._options = Object.assign({}, this._options, opt);
@@ -98,9 +94,7 @@ export class InternalPubSubClass {
 	 * @param providerName - the name of the plugin
 	 */
 	removePluggable(providerName: string): void {
-		this._pluggables = this._pluggables.filter(
-			pluggable => pluggable.getProviderName() !== providerName
-		);
+		this._pluggables = this._pluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
 	}
 
 	private getProviderByName(providerName: string | symbol) {
@@ -108,9 +102,7 @@ export class InternalPubSubClass {
 			return this.awsAppSyncRealTimeProvider;
 		}
 
-		return this._pluggables.find(
-			pluggable => pluggable.getProviderName() === providerName
-		);
+		return this._pluggables.find(pluggable => pluggable.getProviderName() === providerName);
 	}
 
 	private getProviders(options: ProviderOptions = {}) {
@@ -127,16 +119,8 @@ export class InternalPubSubClass {
 		return [provider];
 	}
 
-	async publish(
-		topics: string[] | string,
-		msg: PubSubContent,
-		options?: ProviderOptions
-	) {
-		return Promise.all(
-			this.getProviders(options).map(provider =>
-				provider.publish(topics, msg, options)
-			)
-		);
+	async publish(topics: string[] | string, msg: PubSubContent, options?: ProviderOptions) {
+		return Promise.all(this.getProviders(options).map(provider => provider.publish(topics, msg, options)));
 	}
 
 	subscribe(
@@ -145,9 +129,7 @@ export class InternalPubSubClass {
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<PubSubObservable> {
 		if (isNode && this._options && this._options.ssr) {
-			throw new Error(
-				'Subscriptions are not supported for Server-Side Rendering (SSR)'
-			);
+			throw new Error('Subscriptions are not supported for Server-Side Rendering (SSR)');
 		}
 
 		logger.debug('subscribe options', options);
@@ -175,8 +157,7 @@ export class InternalPubSubClass {
 				})
 			);
 
-			return () =>
-				subscriptions.forEach(subscription => subscription.unsubscribe());
+			return () => subscriptions.forEach(subscription => subscription.unsubscribe());
 		});
 	}
 }

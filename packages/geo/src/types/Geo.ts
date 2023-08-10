@@ -51,21 +51,17 @@ export interface SearchByTextOptionsBase {
 }
 
 // SearchByText options with a bias position
-export interface SearchByTextOptionsWithBiasPosition
-	extends SearchByTextOptionsBase {
+export interface SearchByTextOptionsWithBiasPosition extends SearchByTextOptionsBase {
 	biasPosition?: Coordinates;
 }
 
 // SearchByText options with search area constraints (such as a bounding box)
-export interface SearchByTextOptionsWithSearchAreaConstraints
-	extends SearchByTextOptionsBase {
+export interface SearchByTextOptionsWithSearchAreaConstraints extends SearchByTextOptionsBase {
 	searchAreaConstraints?: BoundingBox;
 }
 
 // Union type for searchByText options
-export type SearchByTextOptions =
-	| SearchByTextOptionsWithBiasPosition
-	| SearchByTextOptionsWithSearchAreaConstraints;
+export type SearchByTextOptions = SearchByTextOptionsWithBiasPosition | SearchByTextOptionsWithSearchAreaConstraints;
 
 // Options object for searchByCoordinates
 export type SearchByCoordinatesOptions = {

@@ -5,21 +5,11 @@ import { v4 as uuid } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
-import {
-	ConnectionState,
-	PubSubContentObserver,
-	PubSubContent,
-} from '../types/PubSub';
+import { ConnectionState, PubSubContentObserver, PubSubContent } from '../types/PubSub';
 import { ProviderOptions } from '../types/Provider';
 import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
-import {
-	ConnectionStateMonitor,
-	CONNECTION_CHANGE,
-} from '../utils/ConnectionStateMonitor';
-import {
-	ReconnectEvent,
-	ReconnectionMonitor,
-} from '../utils/ReconnectionMonitor';
+import { ConnectionStateMonitor, CONNECTION_CHANGE } from '../utils/ConnectionStateMonitor';
+import { ReconnectEvent, ReconnectionMonitor } from '../utils/ReconnectionMonitor';
 import { AMPLIFY_SYMBOL, CONNECTION_STATE_CHANGE } from './constants';
 
 const logger = new Logger('MqttOverWSProvider');
@@ -45,14 +35,9 @@ export interface MqttProviderOptions extends ProviderOptions {
 }
 
 interface PahoClient {
-	onMessageArrived: (params: {
-		destinationName: string;
-		payloadString: string;
-	}) => void;
+	onMessageArrived: (params: { destinationName: string; payloadString: string }) => void;
 	onConnectionLost: (params: { errorCode: number }) => void;
-	connect: (params: {
-		[k: string]: string | number | boolean | (() => void);
-	}) => void;
+	connect: (params: { [k: string]: string | number | boolean | (() => void) }) => void;
 	disconnect: () => void;
 	isConnected: () => boolean;
 	subscribe: (topic: string) => void;
@@ -63,10 +48,7 @@ interface PahoClient {
 class ClientsQueue {
 	private promises: Map<string, Promise<PahoClient | undefined>> = new Map();
 
-	async get(
-		clientId: string,
-		clientFactory?: (input: string) => Promise<PahoClient | undefined>
-	) {
+	async get(clientId: string, clientFactory?: (input: string) => Promise<PahoClient | undefined>) {
 		const cachedPromise = this.promises.get(clientId);
 		if (cachedPromise) return cachedPromise;
 
@@ -89,11 +71,7 @@ class ClientsQueue {
 	}
 }
 
-const dispatchPubSubEvent = (
-	event: string,
-	data: Record<string, unknown>,
-	message: string
-) => {
+const dispatchPubSubEvent = (event: string, data: Record<string, unknown>, message: string) => {
 	Hub.dispatch('pubsub', { event, data, message }, 'PubSub', AMPLIFY_SYMBOL);
 };
 
@@ -109,28 +87,26 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		super({ ...options, clientId: options.clientId || uuid() });
 
 		// Monitor the connection health state and pass changes along to Hub
-		this.connectionStateMonitor.connectionStateObservable.subscribe(
-			connectionStateChange => {
-				dispatchPubSubEvent(
-					CONNECTION_STATE_CHANGE,
-					{
-						provider: this,
-						connectionState: connectionStateChange,
-					},
-					`Connection state is ${connectionStateChange}`
-				);
+		this.connectionStateMonitor.connectionStateObservable.subscribe(connectionStateChange => {
+			dispatchPubSubEvent(
+				CONNECTION_STATE_CHANGE,
+				{
+					provider: this,
+					connectionState: connectionStateChange,
+				},
+				`Connection state is ${connectionStateChange}`
+			);
 
-				this.connectionState = connectionStateChange;
+			this.connectionState = connectionStateChange;
 
-				// Trigger reconnection when the connection is disrupted
-				if (connectionStateChange === ConnectionState.ConnectionDisrupted) {
-					this.reconnectionMonitor.record(ReconnectEvent.START_RECONNECT);
-				} else if (connectionStateChange !== ConnectionState.Connecting) {
-					// Trigger connected to halt reconnection attempts
-					this.reconnectionMonitor.record(ReconnectEvent.HALT_RECONNECT);
-				}
+			// Trigger reconnection when the connection is disrupted
+			if (connectionStateChange === ConnectionState.ConnectionDisrupted) {
+				this.reconnectionMonitor.record(ReconnectEvent.START_RECONNECT);
+			} else if (connectionStateChange !== ConnectionState.Connecting) {
+				// Trigger connected to halt reconnection attempts
+				this.reconnectionMonitor.record(ReconnectEvent.HALT_RECONNECT);
 			}
-		);
+		});
 	}
 
 	protected get clientId() {
@@ -146,23 +122,14 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 	}
 
 	protected get isSSLEnabled() {
-		return !this.options[
-			'aws_appsync_dangerously_connect_to_http_endpoint_for_testing'
-		];
+		return !this.options['aws_appsync_dangerously_connect_to_http_endpoint_for_testing'];
 	}
 
 	getProviderName() {
 		return 'MqttOverWSProvider';
 	}
 
-	public onDisconnect({
-		clientId,
-		errorCode,
-		...args
-	}: {
-		clientId?: string;
-		errorCode?: number;
-	}) {
+	public onDisconnect({ clientId, errorCode, ...args }: { clientId?: string; errorCode?: number }) {
 		if (errorCode !== 0) {
 			logger.warn(clientId, JSON.stringify({ errorCode, ...args }, null, 2));
 
@@ -177,10 +144,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		}
 	}
 
-	public async newClient({
-		url,
-		clientId,
-	}: MqttProviderOptions): Promise<PahoClient> {
+	public async newClient({ url, clientId }: MqttProviderOptions): Promise<PahoClient> {
 		logger.debug('Creating new MQTT client', clientId);
 
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
@@ -196,12 +160,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		}) => {
 			this._onMessage(topic, msg);
 		};
-		client.onConnectionLost = ({
-			errorCode,
-			...args
-		}: {
-			errorCode: number;
-		}) => {
+		client.onConnectionLost = ({ errorCode, ...args }: { errorCode: number }) => {
 			this.onDisconnect({ clientId, errorCode, ...args });
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 		};
@@ -220,31 +179,21 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		});
 
 		if (connected) {
-			this.connectionStateMonitor.record(
-				CONNECTION_CHANGE.CONNECTION_ESTABLISHED
-			);
+			this.connectionStateMonitor.record(CONNECTION_CHANGE.CONNECTION_ESTABLISHED);
 		}
 
 		return client;
 	}
 
-	protected async connect(
-		clientId: string,
-		options: MqttProviderOptions = {}
-	): Promise<PahoClient | undefined> {
+	protected async connect(clientId: string, options: MqttProviderOptions = {}): Promise<PahoClient | undefined> {
 		return await this.clientsQueue.get(clientId, async clientId => {
 			const client = await this.newClient({ ...options, clientId });
 
 			if (client) {
 				// Once connected, subscribe to all topics registered observers
-				this._topicObservers.forEach(
-					(
-						_value: Set<ZenObservable.SubscriptionObserver<any>>,
-						key: string
-					) => {
-						client.subscribe(key);
-					}
-				);
+				this._topicObservers.forEach((_value: Set<ZenObservable.SubscriptionObserver<any>>, key: string) => {
+					client.subscribe(key);
+				});
 			}
 			return client;
 		});
@@ -270,25 +219,17 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 			logger.debug('Publishing to topic(s)', targetTopics.join(','), message);
 			targetTopics.forEach(topic => client.send(topic, message));
 		} else {
-			logger.debug(
-				'Publishing to topic(s) failed',
-				targetTopics.join(','),
-				message
-			);
+			logger.debug('Publishing to topic(s) failed', targetTopics.join(','), message);
 		}
 	}
 
-	protected _topicObservers: Map<string, Set<PubSubContentObserver>> =
-		new Map();
+	protected _topicObservers: Map<string, Set<PubSubContentObserver>> = new Map();
 
-	protected _clientIdObservers: Map<string, Set<PubSubContentObserver>> =
-		new Map();
+	protected _clientIdObservers: Map<string, Set<PubSubContentObserver>> = new Map();
 
 	private _onMessage(topic: string, msg: string) {
 		try {
-			const matchedTopicObservers: Set<
-				ZenObservable.SubscriptionObserver<any>
-			>[] = [];
+			const matchedTopicObservers: Set<ZenObservable.SubscriptionObserver<any>>[] = [];
 			this._topicObservers.forEach((observerForTopic, observerTopic) => {
 				if (mqttTopicMatch(observerTopic, topic)) {
 					matchedTopicObservers.push(observerForTopic);
@@ -309,10 +250,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		}
 	}
 
-	subscribe(
-		topics: string[] | string,
-		options: MqttProviderOptions = {}
-	): Observable<PubSubContent> {
+	subscribe(topics: string[] | string, options: MqttProviderOptions = {}): Observable<PubSubContent> {
 		const targetTopics = ([] as string[]).concat(topics);
 		logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 		let reconnectSubscription: ZenObservable.Subscription;
@@ -379,16 +317,13 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 					// No more observers per client => client not needed anymore
 					if (this._clientIdObservers.get(clientId)?.size === 0) {
 						this.disconnect(clientId);
-						this.connectionStateMonitor.record(
-							CONNECTION_CHANGE.CLOSING_CONNECTION
-						);
+						this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSING_CONNECTION);
 						this._clientIdObservers.delete(clientId);
 					}
 
 					targetTopics.forEach(topic => {
 						const observersForTopic =
-							this._topicObservers.get(topic) ||
-							(new Set() as Set<ZenObservable.SubscriptionObserver<any>>);
+							this._topicObservers.get(topic) || (new Set() as Set<ZenObservable.SubscriptionObserver<any>>);
 
 						observersForTopic.delete(observer);
 

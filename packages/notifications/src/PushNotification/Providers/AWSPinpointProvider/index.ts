@@ -12,16 +12,9 @@ import {
 	NotificationsSubCategory,
 } from '../../types';
 import { AWSPinpointMessageEvent } from './types';
-import {
-	dispatchPushNotificationEvent,
-	getAnalyticsEvent,
-	logger,
-} from './utils';
+import { dispatchPushNotificationEvent, getAnalyticsEvent, logger } from './utils';
 
-export default class AWSPinpointProvider
-	extends AWSPinpointProviderCommon
-	implements PushNotificationProvider
-{
+export default class AWSPinpointProvider extends AWSPinpointProviderCommon implements PushNotificationProvider {
 	static subCategory: NotificationsSubCategory = 'PushNotification';
 
 	private configured = false;
@@ -46,38 +39,22 @@ export default class AWSPinpointProvider
 		// some configuration steps should not be re-run even if provider is re-configured for some reason
 		if (!this.configured) {
 			// wire up default Pinpoint message event handling
-			addEventListener(
-				PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
-				message =>
-					this.recordMessageEvent(
-						message,
-						AWSPinpointMessageEvent.BACKGROUND_MESSAGE_RECEIVED
-					)
+			addEventListener(PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED, message =>
+				this.recordMessageEvent(message, AWSPinpointMessageEvent.BACKGROUND_MESSAGE_RECEIVED)
 			);
-			addEventListener(
-				PushNotificationEvent.FOREGROUND_MESSAGE_RECEIVED,
-				message =>
-					this.recordMessageEvent(
-						message,
-						AWSPinpointMessageEvent.FOREGROUND_MESSAGE_RECEIVED
-					)
+			addEventListener(PushNotificationEvent.FOREGROUND_MESSAGE_RECEIVED, message =>
+				this.recordMessageEvent(message, AWSPinpointMessageEvent.FOREGROUND_MESSAGE_RECEIVED)
 			);
 			const launchNotificationOpenedListener = addEventListener(
 				PushNotificationEvent.LAUNCH_NOTIFICATION_OPENED,
 				message => {
-					this.recordMessageEvent(
-						message,
-						AWSPinpointMessageEvent.NOTIFICATION_OPENED
-					);
+					this.recordMessageEvent(message, AWSPinpointMessageEvent.NOTIFICATION_OPENED);
 					// once we are done with it we can remove the listener
 					launchNotificationOpenedListener?.remove();
 				}
 			);
 			addEventListener(PushNotificationEvent.NOTIFICATION_OPENED, message => {
-				this.recordMessageEvent(
-					message,
-					AWSPinpointMessageEvent.NOTIFICATION_OPENED
-				);
+				this.recordMessageEvent(message, AWSPinpointMessageEvent.NOTIFICATION_OPENED);
 				// if we are in this state, we no longer need the listener as the app was launched via some other means
 				launchNotificationOpenedListener?.remove();
 			});

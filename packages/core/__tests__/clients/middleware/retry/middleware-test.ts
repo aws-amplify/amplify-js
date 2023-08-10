@@ -3,10 +3,7 @@
 
 import { HttpResponse, MiddlewareHandler } from '../../../../src/clients/types';
 import { composeTransferHandler } from '../../../../src/clients/internal/composeTransferHandler';
-import {
-	retryMiddleware,
-	RetryOptions,
-} from '../../../../src/clients/middleware/retry';
+import { retryMiddleware, RetryOptions } from '../../../../src/clients/middleware/retry';
 
 jest.spyOn(global, 'setTimeout');
 jest.spyOn(global, 'clearTimeout');
@@ -68,9 +65,7 @@ describe(`${retryMiddleware.name} middleware`, () => {
 	test('should call retry decider on whether response is retryable', async () => {
 		const nextHandler = jest.fn().mockResolvedValue(defaultResponse);
 		const retryableHandler = getRetryableHandler(nextHandler);
-		const retryDecider = jest
-			.fn()
-			.mockImplementation(response => response.body !== 'foo'); // retry if response is not foo
+		const retryDecider = jest.fn().mockImplementation(response => response.body !== 'foo'); // retry if response is not foo
 		const resp = await retryableHandler(defaultRequest, {
 			...defaultRetryOptions,
 			retryDecider,
@@ -82,15 +77,9 @@ describe(`${retryMiddleware.name} middleware`, () => {
 	});
 
 	test('should call retry decider on whether error is retryable', async () => {
-		const nextHandler = jest
-			.fn()
-			.mockRejectedValue(new Error('UnretryableError'));
+		const nextHandler = jest.fn().mockRejectedValue(new Error('UnretryableError'));
 		const retryableHandler = getRetryableHandler(nextHandler);
-		const retryDecider = jest
-			.fn()
-			.mockImplementation(
-				(resp, error) => error.message !== 'UnretryableError'
-			);
+		const retryDecider = jest.fn().mockImplementation((resp, error) => error.message !== 'UnretryableError');
 		try {
 			const resp = await retryableHandler(defaultRequest, {
 				...defaultRetryOptions,
@@ -116,9 +105,7 @@ describe(`${retryMiddleware.name} middleware`, () => {
 				maxAttempts: 6,
 				computeDelay,
 			});
-			expect(res).toEqual(
-				expect.objectContaining({ $metadata: { attempts: 6 } })
-			);
+			expect(res).toEqual(expect.objectContaining({ $metadata: { attempts: 6 } }));
 			expect(nextHandler).toBeCalledTimes(6);
 			expect(computeDelay).toBeCalledTimes(5); // no interval after last attempt
 		} catch (error) {
@@ -181,22 +168,21 @@ describe(`${retryMiddleware.name} middleware`, () => {
 			.fn()
 			.mockRejectedValueOnce(new Error('MiddlewareRetryableError'))
 			.mockResolvedValue(void 0);
-		const betweenRetryMiddleware =
-			() => (next: any, context: any) => async (args: any) => {
-				await betweenRetryFunction(args, context);
-				return next(args);
-			};
+		const betweenRetryMiddleware = () => (next: any, context: any) => async (args: any) => {
+			await betweenRetryFunction(args, context);
+			return next(args);
+		};
 
-		const doubleRetryableHandler = composeTransferHandler<
-			[RetryOptions, {}, RetryOptions]
-		>(coreHandler, [retryMiddleware, betweenRetryMiddleware, retryMiddleware]);
+		const doubleRetryableHandler = composeTransferHandler<[RetryOptions, {}, RetryOptions]>(coreHandler, [
+			retryMiddleware,
+			betweenRetryMiddleware,
+			retryMiddleware,
+		]);
 
-		const retryDecider = jest
-			.fn()
-			.mockImplementation((response, error: Error) => {
-				if (error && error.message.endsWith('RetryableError')) return true;
-				return false;
-			});
+		const retryDecider = jest.fn().mockImplementation((response, error: Error) => {
+			if (error && error.message.endsWith('RetryableError')) return true;
+			return false;
+		});
 		const computeDelay = jest.fn().mockReturnValue(0);
 		const response = await doubleRetryableHandler(defaultRequest, {
 			...defaultRetryOptions,

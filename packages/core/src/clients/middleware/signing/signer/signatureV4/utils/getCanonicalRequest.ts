@@ -24,10 +24,7 @@ import { getSignedHeaders } from './getSignedHeaders';
  *
  * @internal
  */
-export const getCanonicalRequest = (
-	{ body, headers, method, url }: HttpRequest,
-	uriEscapePath = true
-): string =>
+export const getCanonicalRequest = ({ body, headers, method, url }: HttpRequest, uriEscapePath = true): string =>
 	[
 		method,
 		getCanonicalUri(url.pathname, uriEscapePath),

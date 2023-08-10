@@ -35,10 +35,7 @@ export class GeoClass extends InternalGeoClass {
 	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
 	 * @returns {Promise<Place[]>} - Promise resolves to a list of Places that match search parameters
 	 */
-	public async searchByText(
-		text: string,
-		options?: SearchByTextOptions
-	): Promise<Place[]> {
+	public async searchByText(text: string, options?: SearchByTextOptions): Promise<Place[]> {
 		return super.searchByText(text, options);
 	}
 
@@ -48,10 +45,7 @@ export class GeoClass extends InternalGeoClass {
 	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
 	 * @returns {Promise<SearchForSuggestionsResults>} - Resolves to an array of search suggestion strings
 	 */
-	public async searchForSuggestions(
-		text: string,
-		options?: SearchByTextOptions
-	) {
+	public async searchForSuggestions(text: string, options?: SearchByTextOptions) {
 		return super.searchForSuggestions(text, options);
 	}
 
@@ -61,10 +55,7 @@ export class GeoClass extends InternalGeoClass {
 	 * @param  {searchByPlaceIdOptions} options? - Optional parameters to the search
 	 * @returns {Promise<Place>} - Resolves to a place with the given placeId
 	 */
-	public async searchByPlaceId(
-		placeId: string,
-		options?: searchByPlaceIdOptions
-	) {
+	public async searchByPlaceId(placeId: string, options?: searchByPlaceIdOptions) {
 		return super.searchByPlaceId(placeId, options);
 	}
 
@@ -74,10 +65,7 @@ export class GeoClass extends InternalGeoClass {
 	 * @param options - Options parameters for the search
 	 * @returns {Promise<Place>} - Promise that resolves to a place matching search coordinates
 	 */
-	public async searchByCoordinates(
-		coordinates: Coordinates,
-		options?: SearchByCoordinatesOptions
-	): Promise<Place> {
+	public async searchByCoordinates(coordinates: Coordinates, options?: SearchByCoordinatesOptions): Promise<Place> {
 		return super.searchByCoordinates(coordinates, options);
 	}
 
@@ -102,10 +90,7 @@ export class GeoClass extends InternalGeoClass {
 	 * @param options?: GeofenceOptions - Optional parameters for getting a geofence
 	 * @returns Promise<Geofence> - Promise that resolves to a geofence object
 	 */
-	public async getGeofence(
-		geofenceId: GeofenceId,
-		options?: GeofenceOptions
-	): Promise<Geofence> {
+	public async getGeofence(geofenceId: GeofenceId, options?: GeofenceOptions): Promise<Geofence> {
 		return super.getGeofence(geofenceId, options);
 	}
 
@@ -116,9 +101,7 @@ export class GeoClass extends InternalGeoClass {
 	 *   entries: list of geofences - 100 geofences are listed per page
 	 *   nextToken: token for next page of geofences
 	 */
-	public async listGeofences(
-		options?: ListGeofenceOptions
-	): Promise<ListGeofenceResults> {
+	public async listGeofences(options?: ListGeofenceOptions): Promise<ListGeofenceResults> {
 		return super.listGeofences(options);
 	}
 

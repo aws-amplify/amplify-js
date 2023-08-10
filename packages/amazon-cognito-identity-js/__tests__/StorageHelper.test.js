@@ -37,9 +37,7 @@ describe('StorageHelper unit test', () => {
 
 		test('Setting items in the MemoryStorage implementation', () => {
 			const storageHelper = new StorageHelper();
-			expect(storageHelper.getStorage().setItem('testKey', 'testValue')).toBe(
-				'testValue'
-			);
+			expect(storageHelper.getStorage().setItem('testKey', 'testValue')).toBe('testValue');
 		});
 
 		test('Getting items in the MemoryStorage implementation happy path', () => {

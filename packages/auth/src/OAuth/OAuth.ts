@@ -6,11 +6,7 @@ import { launchUri } from './urlOpener';
 import * as oAuthStorage from './oauthStorage';
 import { Buffer } from 'buffer';
 
-import {
-	OAuthOpts,
-	isCognitoHostedOpts,
-	CognitoHostedUIIdentityProvider,
-} from '../types/Auth';
+import { OAuthOpts, isCognitoHostedOpts, CognitoHostedUIIdentityProvider } from '../types/Auth';
 
 import {
 	AuthAction,
@@ -56,15 +52,12 @@ export default class OAuth {
 		this._config = config;
 		this._cognitoClientId = cognitoClientId;
 
-		if (!this.isValidScopes(scopes))
-			throw Error('scopes must be a String Array');
+		if (!this.isValidScopes(scopes)) throw Error('scopes must be a String Array');
 		this._scopes = scopes;
 	}
 
 	private isValidScopes(scopes: string[]) {
-		return (
-			Array.isArray(scopes) && scopes.every(scope => typeof scope === 'string')
-		);
+		return Array.isArray(scopes) && scopes.every(scope => typeof scope === 'string');
 	}
 
 	public oauthSignIn(
@@ -72,9 +65,7 @@ export default class OAuth {
 		domain: string,
 		redirectSignIn: string,
 		clientId: string,
-		provider:
-			| CognitoHostedUIIdentityProvider
-			| string = CognitoHostedUIIdentityProvider.Cognito,
+		provider: CognitoHostedUIIdentityProvider | string = CognitoHostedUIIdentityProvider.Cognito,
 		customState?: string
 	) {
 		const generatedState = this._generateState(32);
@@ -85,9 +76,7 @@ export default class OAuth {
 		characters % or = which on further encoding becomes unsafe. '=' create issue 
 		for parsing query params. 
 		Refer: https://github.com/aws-amplify/amplify-js/issues/5218 */
-		const state = customState
-			? `${generatedState}-${urlSafeEncode(customState)}`
-			: generatedState;
+		const state = customState ? `${generatedState}-${urlSafeEncode(customState)}` : generatedState;
 
 		oAuthStorage.setState(state);
 
@@ -126,29 +115,19 @@ export default class OAuth {
 			.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), { code: undefined });
 
 		const currentUrlPathname = parse(currentUrl).pathname || '/';
-		const redirectSignInPathname =
-			parse(this._config.redirectSignIn).pathname || '/';
+		const redirectSignInPathname = parse(this._config.redirectSignIn).pathname || '/';
 
 		if (!code || currentUrlPathname !== redirectSignInPathname) {
 			return;
 		}
 
-		const oAuthTokenEndpoint =
-			'https://' + this._config.domain + '/oauth2/token';
+		const oAuthTokenEndpoint = 'https://' + this._config.domain + '/oauth2/token';
 
-		dispatchAuthEvent(
-			'codeFlow',
-			{},
-			`Retrieving tokens from ${oAuthTokenEndpoint}`
-		);
+		dispatchAuthEvent('codeFlow', {}, `Retrieving tokens from ${oAuthTokenEndpoint}`);
 
-		const client_id = isCognitoHostedOpts(this._config)
-			? this._cognitoClientId
-			: this._config.clientID;
+		const client_id = isCognitoHostedOpts(this._config) ? this._cognitoClientId : this._config.clientID;
 
-		const redirect_uri = isCognitoHostedOpts(this._config)
-			? this._config.redirectSignIn
-			: this._config.redirectUri;
+		const redirect_uri = isCognitoHostedOpts(this._config) ? this._config.redirectSignIn : this._config.redirectUri;
 
 		const code_verifier = oAuthStorage.getPKCE();
 
@@ -160,10 +139,7 @@ export default class OAuth {
 			...(code_verifier ? { code_verifier } : {}),
 		};
 
-		logger.debug(
-			`Calling token endpoint: ${oAuthTokenEndpoint} with`,
-			oAuthTokenBody
-		);
+		logger.debug(`Calling token endpoint: ${oAuthTokenEndpoint} with`, oAuthTokenBody);
 
 		const body = Object.entries(oAuthTokenBody)
 			.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
@@ -240,9 +216,7 @@ export default class OAuth {
 
 			const state: string = this._validateState(urlParams);
 
-			logger.debug(
-				`Starting ${this._config.responseType} flow with ${currentUrl}`
-			);
+			logger.debug(`Starting ${this._config.responseType} flow with ${currentUrl}`);
 			if (this._config.responseType === 'code') {
 				return { ...(await this._handleCodeFlow(currentUrl)), state };
 			} else {
@@ -272,13 +246,9 @@ export default class OAuth {
 	public async signOut() {
 		let oAuthLogoutEndpoint = 'https://' + this._config.domain + '/logout?';
 
-		const client_id = isCognitoHostedOpts(this._config)
-			? this._cognitoClientId
-			: this._config.oauth.clientID;
+		const client_id = isCognitoHostedOpts(this._config) ? this._cognitoClientId : this._config.oauth.clientID;
 
-		const signout_uri = isCognitoHostedOpts(this._config)
-			? this._config.redirectSignOut
-			: this._config.returnTo;
+		const signout_uri = isCognitoHostedOpts(this._config) ? this._config.redirectSignOut : this._config.returnTo;
 
 		oAuthLogoutEndpoint += Object.entries({
 			client_id,
@@ -287,11 +257,7 @@ export default class OAuth {
 			.map(([k, v]) => `${k}=${v}`)
 			.join('&');
 
-		dispatchAuthEvent(
-			'oAuthSignOut',
-			{ oAuth: 'signOut' },
-			`Signing out from ${oAuthLogoutEndpoint}`
-		);
+		dispatchAuthEvent('oAuthSignOut', { oAuth: 'signOut' }, `Signing out from ${oAuthLogoutEndpoint}`);
 		logger.debug(`Signing out from ${oAuthLogoutEndpoint}`);
 
 		return this._urlOpener(oAuthLogoutEndpoint, signout_uri);
@@ -300,10 +266,8 @@ export default class OAuth {
 	private _generateState(length: number) {
 		let result = '';
 		let i = length;
-		const chars =
-			'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		for (; i > 0; --i)
-			result += chars[Math.round(Math.random() * (chars.length - 1))];
+		const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		for (; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
 		return result;
 	}
 
@@ -323,8 +287,7 @@ export default class OAuth {
 	}
 
 	private _generateRandom(size: number) {
-		const CHARSET =
-			'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+		const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
 		const buffer = new Uint8Array(size);
 		if (typeof window !== 'undefined' && !!window.crypto) {
 			window.crypto.getRandomValues(buffer);
@@ -337,8 +300,7 @@ export default class OAuth {
 	}
 
 	private _bufferToString(buffer: Uint8Array) {
-		const CHARSET =
-			'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 		const state = [];
 		for (let i = 0; i < buffer.byteLength; i += 1) {
 			const index = buffer[i] % CHARSET.length;
