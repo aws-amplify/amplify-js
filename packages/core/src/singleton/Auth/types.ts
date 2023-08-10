@@ -111,6 +111,7 @@ type GetCredentialsUnauthenticatedUser = {
 	authenticated: false;
 	forceRefresh?: boolean;
 	authConfig: AuthConfig;
+	tokens?: never;
 };
 
 export type AWSCredentialsAndIdentityId = {
