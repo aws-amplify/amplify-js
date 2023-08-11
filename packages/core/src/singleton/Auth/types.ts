@@ -39,6 +39,11 @@ export type LibraryAuthOptions = {
 	credentialsProvider?: AWSCredentialsAndIdentityIdProvider;
 };
 
+export type Identity = {
+	id: string;
+	type: 'guest' | 'primary';
+};
+
 export interface AWSCredentialsAndIdentityIdProvider {
 	getCredentialsAndIdentityId: (
 		getCredentialsOptions: GetCredentialsOptions
@@ -68,11 +73,12 @@ export type AuthConfig =
 	| UserPoolConfig
 	| UserPoolConfigAndIdentityPoolConfig;
 
-type IdentityPoolConfig = {
+export type IdentityPoolConfig = {
 	identityPoolId: string;
 	userPoolWebClientId?: never;
 	userPoolId?: never;
 	clientMetadata?: never;
+	isMandatorySignInEnabled?: never;
 };
 
 export type UserPoolConfig = {
@@ -82,14 +88,15 @@ export type UserPoolConfig = {
 	clientMetadata?: Record<string, string>;
 };
 
-type UserPoolConfigAndIdentityPoolConfig = {
+export type UserPoolConfigAndIdentityPoolConfig = {
 	userPoolWebClientId: string;
 	userPoolId: string;
 	identityPoolId: string;
 	clientMetadata?: Record<string, string>;
+	isMandatorySignInEnabled?: boolean;
 };
 
-type GetCredentialsOptions =
+export type GetCredentialsOptions =
 	| GetCredentialsAuthenticatedUser
 	| GetCredentialsUnauthenticatedUser;
 
@@ -104,6 +111,7 @@ type GetCredentialsUnauthenticatedUser = {
 	authenticated: false;
 	forceRefresh?: boolean;
 	authConfig: AuthConfig;
+	tokens?: never;
 };
 
 export type AWSCredentialsAndIdentityId = {

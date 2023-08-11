@@ -1,6 +1,12 @@
 import { Buffer } from 'buffer';
 import { asserts } from '../../../Util/errors/AssertError';
-import { AuthConfig, JWT, UserPoolConfig } from '../types';
+import {
+	AuthConfig,
+	IdentityPoolConfig,
+	JWT,
+	UserPoolConfig,
+	UserPoolConfigAndIdentityPoolConfig,
+} from '../types';
 
 export function assertTokenProviderConfig(
 	authConfig?: AuthConfig
@@ -14,12 +20,27 @@ export function assertTokenProviderConfig(
 	});
 }
 
-export function assertCredentialsProviderConfig(authConfig: AuthConfig) {
+export function assertIdentityPooIdConfig(
+	authConfig: AuthConfig
+): asserts authConfig is IdentityPoolConfig {
 	const validConfig = !!authConfig?.identityPoolId;
 	return asserts(validConfig, {
-		name: 'AuthCredentialConfigException',
-		message: 'Auth Credentials provider not configured',
-		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
+		name: 'AuthIdentityPoolIdException',
+		message: 'Auth IdentityPoolId not configured',
+		recoverySuggestion:
+			'Make sure to call Amplify.configure in your app with a valid IdentityPoolId',
+	});
+}
+
+export function assertUserPoolAndIdentityPooConfig(
+	authConfig: AuthConfig
+): asserts authConfig is UserPoolConfigAndIdentityPoolConfig {
+	const validConfig = !!authConfig?.identityPoolId && !!authConfig?.userPoolId;
+	return asserts(validConfig, {
+		name: 'AuthUserPoolAndIdentityPoolException',
+		message: 'Auth UserPool and IdentityPool not configured',
+		recoverySuggestion:
+			'Make sure to call Amplify.configure in your app with UserPoolId and IdentityPoolId',
 	});
 }
 

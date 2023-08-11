@@ -32,6 +32,29 @@
 		"./lib/index": "./lib-esm/index.js",
 		"./lib-esm/trackers": "./lib-esm/trackers/reactnative.js"
 	},
+	"typesVersions": {
+    ">=3.8": {
+      "*": [
+        "./lib-esm/index.d.ts"
+      ],
+      "pinpoint": [
+        "./lib-esm/Providers/pinpoint/index.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./lib-esm/index.d.ts",
+      "import": "./lib-esm/index.js",
+      "require": "./lib/index.js"
+    },
+    "./pinpoint": {
+      "types": "./lib-esm/Providers/pinpoint/index.d.ts",
+      "import": "./lib-esm/Providers/pinpoint/index.js",
+      "require": "./lib/Providers/pinpoint/index.js"
+    },
+    "./package.json": "./package.json"
+  },
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aws-amplify/amplify-js.git"
@@ -45,13 +68,14 @@
 	"files": [
 		"lib",
 		"lib-esm",
-		"src"
+		"src",
+		"**/package.json"
 	],
 	"dependencies": {
-		"@aws-sdk/client-firehose": "3.6.1",
-		"@aws-sdk/client-kinesis": "3.6.1",
-		"@aws-sdk/client-personalize-events": "3.6.1",
-		"@aws-sdk/util-utf8-browser": "3.6.1",
+		"@aws-sdk/client-firehose": "3.388.0",
+		"@aws-sdk/client-kinesis": "3.388.0",
+		"@aws-sdk/client-personalize-events": "3.388.0",
+		"@aws-sdk/util-utf8-browser": "3.259.0",
 		"lodash": "^4.17.20",
 		"tslib": "^2.5.0",
 		"uuid": "^3.2.1"
@@ -61,7 +85,7 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
-		"@aws-sdk/types": "3.6.1"
+		"@aws-sdk/types": "3.387.0"
 	},
 	"size-limit": [
 		{
