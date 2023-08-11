@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - feat/example-integ-test-branch/main
+      - troubleshoot-vanilla-basic-crud-flakiness
 
 jobs:
   e2e:
