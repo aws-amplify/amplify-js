@@ -4848,9 +4848,13 @@ describe('auth unit test', () => {
 				expect.any(Function),
 				getAuthUserAgentValue(AuthAction.SetPreferredMFA)
 			);
-			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
-				bypassCache: true,
-			});
+			expect(getUserDataSpy).toHaveBeenCalledWith(
+				expect.any(Function),
+				{
+					bypassCache: true,
+				},
+				getAuthUserAgentValue(AuthAction.SetPreferredMFA)
+			);
 			// once at the beginning, once after calling setUserMfaPreference
 			expect(getUserDataSpy).toHaveBeenCalledTimes(2);
 			expect(res).toStrictEqual('success');
@@ -4878,9 +4882,13 @@ describe('auth unit test', () => {
 			await expect(
 				auth.setPreferredMFA(user, 'SOFTWARE_TOKEN_MFA')
 			).rejects.toThrow('Access Token has been revoked');
-			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
-				bypassCache: true,
-			});
+			expect(getUserDataSpy).toHaveBeenCalledWith(
+				expect.any(Function),
+				{
+					bypassCache: true,
+				},
+				getAuthUserAgentValue(AuthAction.SetPreferredMFA)
+			);
 			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
 			expect(credentialsClearSpy).toHaveBeenCalledTimes(1);
 			expect(hubSpy).toHaveBeenCalledWith(
