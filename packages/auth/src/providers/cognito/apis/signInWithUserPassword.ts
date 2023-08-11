@@ -14,7 +14,6 @@ import {
 	ChallengeParameters,
 } from '../utils/clients/types/models';
 import {
-	cacheCognitoTokens,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
@@ -26,6 +25,7 @@ import {
 	cleanActiveSignInState,
 	setActiveSignInState,
 } from '../utils/signInStore';
+import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 
 /**
  * Signs a user in using USER_PASSWORD_AUTH AuthFlowType

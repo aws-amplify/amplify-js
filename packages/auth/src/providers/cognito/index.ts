@@ -13,3 +13,4 @@ export { fetchMFAPreference } from './apis/fetchMFAPreference';
 export { verifyTOTPSetup } from './apis/verifyTOTPSetup';
 export { updatePassword } from './apis/updatePassword';
 export { setUpTOTP } from './apis/setUpTOTP';
+export { CognitoUserPoolsTokenProvider } from './tokenProvider';
