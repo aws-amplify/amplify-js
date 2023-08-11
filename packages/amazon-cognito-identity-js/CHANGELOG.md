@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 6.3.2 (2023-08-10)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
 ## [6.3.1](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.3.0...amazon-cognito-identity-js@6.3.1) (2023-06-21)
 
 ### Bug Fixes
