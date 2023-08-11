@@ -2273,7 +2273,9 @@ export class InternalAuthClass {
 		}
 	}
 
-	public currentCredentials(): Promise<ICredentials> {
+	public currentCredentials(
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<ICredentials> {
 		logger.debug('getting current credentials');
 		return this.Credentials.get();
 	}

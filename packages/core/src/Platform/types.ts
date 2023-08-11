@@ -87,10 +87,11 @@ export enum AuthAction {
 	VerifiedContact = '31',
 	UserSession = '32',
 	CurrentUserCredentials = '33',
-	CurrentUserInfo = '34',
-	RememberDevice = '35',
-	ForgetDevice = '36',
-	FetchDevices = '37',
+	CurrentCredentials = '34',
+	CurrentUserInfo = '35',
+	RememberDevice = '36',
+	ForgetDevice = '37',
+	FetchDevices = '38',
 }
 export enum DataStoreAction {
 	Subscribe = '1',
