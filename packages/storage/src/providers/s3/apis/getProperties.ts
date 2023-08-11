@@ -13,14 +13,13 @@ import {
 } from '../utils';
 
 /**
- * Get Properties of the object
+ * Gets the properties of a file. The properties include S3 system metadata and
+ * the user metadata that was provided when uploading the file.
  *
- * @param {StorageOperationRequest} The request object
- * @return {Promise<S3GetPropertiesResult>} Properties of the object
- * @throws service: {@link GetPropertiesException}
- * - S3 Service errors thrown while getting properties
- * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
- *
+ * @param {StorageOperationRequest} req The request to make an API call.
+ * @returns {Promise<S3GetPropertiesResult>} A promise that resolves the properties.
+ * @throws A {@link GetPropertiesException} when the underlying S3 service returned error.
+ * @throws A {@link StorageValidationErrorCode} when API call parameters are invalid.
  */
 export const getProperties = async function (
 	req: StorageOperationRequest<StorageOptions>
@@ -33,12 +32,12 @@ export const getProperties = async function (
 	} = req;
 	let targetIdentityId;
 	if (req?.options?.accessLevel === 'protected') {
-		targetIdentityId = identityId ?? req.options?.targetIdentityId;
+		targetIdentityId = req.options?.targetIdentityId ?? identityId;
 	}
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 	const finalKey = getKeyWithPrefix(
 		accessLevel ?? defaultAccessLevel,
-		targetIdentityId ?? identityId,
+		targetIdentityId,
 		key
 	);
 

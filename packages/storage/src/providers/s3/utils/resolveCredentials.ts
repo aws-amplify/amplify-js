@@ -12,6 +12,7 @@ export async function resolveCredentials() {
 		!!credentials,
 		StorageValidationErrorCode.NoCredentials
 	);
+	assertValidationError(!!identityId, StorageValidationErrorCode.NoIdentityId);
 	return {
 		identityId,
 		credentials,
