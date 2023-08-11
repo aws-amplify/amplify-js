@@ -1,21 +1,37 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { ICredentials } from '@aws-amplify/core';
+import { headObject } from '../../../src/AwsClients/S3';
 import { getProperties } from '../../../src/providers/s3';
+import { StorageOptions } from '../../../src/types/Storage';
+import { resolveCredentials } from '../../../src/providers/s3/utils';
 
 jest.mock('../../../src/AwsClients/S3');
-const headObject = jest.fn();
+const mockHeadObject = headObject as jest.Mock;
+const credentials: ICredentials = {
+	accessKeyId: 'accessKeyId',
+	sessionToken: 'sessionToken',
+	secretAccessKey: 'secretAccessKey',
+	identityId: 'identityId',
+	authenticated: true,
+};
+const options: StorageOptions = {
+	bucket: 'bucket',
+	region: 'region',
+	credentials,
+	level: 'public',
+};
+
 describe('getProperties happy path case', () => {
 	test.skip('getProperties return result', async () => {
-		headObject.mockImplementation(() => {
-			return {
-				Key: 'key',
-				ContentLength: '100',
-				ContentType: 'text/plain',
-				ETag: 'etag',
-				LastModified: 'last-modified',
-				VersionId: 'version-id',
-			};
+		mockHeadObject.mockReturnValueOnce({
+			ContentLength: '100',
+			ContentType: 'text/plain',
+			ETag: 'etag',
+			LastModified: 'last-modified',
+			Metadata: { key: 'value' },
+			VersionId: 'version-id',
 		});
 		expect(await getProperties({ key: 'key' })).toEqual({
 			key: 'key',
@@ -31,17 +47,16 @@ describe('getProperties happy path case', () => {
 describe('getProperties error path case', () => {
 	test.skip('getProperties should return a not found error', async () => {
 		// TODO test credentials
-		headObject.mockImplementation(() =>
+		mockHeadObject.mockRejectedValueOnce(
 			Object.assign(new Error(), {
 				$metadata: { httpStatusCode: 404 },
 				name: 'NotFound',
 			})
 		);
 		try {
-			await getProperties({ key: 'invalid_key' });
+			await getProperties({ key: 'keyed' });
 		} catch (error) {
-			console.log('Error testing', error);
-			expect(error.$metadata?.httpStatusCode).toBe(404);
+			expect(error.$metadata.httpStatusCode).toBe(404);
 		}
 	});
 });
