@@ -1,0 +1,7 @@
+{
+  "name": "@aws-amplify/analytics/pinpoint",
+  "main": "../lib/Providers/pinpoint/index.js",
+  "browser": "../lib-esm/Providers/pinpoint/index.js",
+  "module": "../lib-esm/Providers/pinpoint/index.js",
+  "typings": "../lib-esm/Providers/pinpoint/index.d.ts"
+}

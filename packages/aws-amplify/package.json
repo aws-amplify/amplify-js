@@ -27,6 +27,16 @@
       "import": "./lib-esm/auth/cognito/index.js",
       "require": "./lib/auth/cognito/index.js"
     },
+    "./analytics": {
+      "types": "./lib-esm/analytics/index.d.ts",
+      "import": "./lib-esm/analytics/index.js",
+      "require": "./lib/analytics/index.js"
+    },
+    "./analytics/pinpoint": {
+      "types": "./lib-esm/analytics/pinpoint/index.d.ts",
+      "import": "./lib-esm/analytics/pinpoint/index.js",
+      "require": "./lib/analytics/pinpoint/index.js"
+    },
     "./package.json": "./package.json"
   },
   "typesVersions": {
@@ -42,6 +52,12 @@
       ],
       "auth/cognito": [
         "./lib-esm/auth/cognito/index.d.ts"
+      ],
+      "analytics": [
+        "./lib-esm/analytics/index.d.ts"
+      ],
+      "analytics/pinpoint": [
+        "./lib-esm/analytics/pinpoint/index.d.ts"
       ]
     }
   },
