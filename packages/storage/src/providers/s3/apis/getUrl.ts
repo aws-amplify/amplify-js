@@ -10,7 +10,11 @@ import {
 import { getProperties } from './getProperties';
 import { StorageDownloadDataRequest } from '../../../types/params';
 import { GetPropertiesException } from '../types/errors';
-import { getStorageConfig, getFinalKey } from '../utils/apiHelper';
+import {
+	resolveStorageConfig,
+	getKeyWithPrefix,
+	resolveCredentials,
+} from '../utils';
 
 const DEFAULT_PRESIGN_EXPIRATION = 900;
 
