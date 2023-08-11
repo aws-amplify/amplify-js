@@ -32,6 +32,29 @@
 		"./lib/index": "./lib-esm/index.js",
 		"./lib-esm/trackers": "./lib-esm/trackers/reactnative.js"
 	},
+	"typesVersions": {
+    ">=3.8": {
+      "*": [
+        "./lib-esm/index.d.ts"
+      ],
+      "pinpoint": [
+        "./lib-esm/Providers/pinpoint/index.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./lib-esm/index.d.ts",
+      "import": "./lib-esm/index.js",
+      "require": "./lib/index.js"
+    },
+    "./pinpoint": {
+      "types": "./lib-esm/Providers/pinpoint/index.d.ts",
+      "import": "./lib-esm/Providers/pinpoint/index.js",
+      "require": "./lib/Providers/pinpoint/index.js"
+    },
+    "./package.json": "./package.json"
+  },
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aws-amplify/amplify-js.git"
@@ -45,7 +68,8 @@
 	"files": [
 		"lib",
 		"lib-esm",
-		"src"
+		"src",
+		"**/package.json"
 	],
 	"dependencies": {
 		"@aws-sdk/client-firehose": "3.388.0",
