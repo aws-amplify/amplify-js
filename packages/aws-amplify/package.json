@@ -18,14 +18,14 @@
       "require": "./lib/utils/index.js"
     },
     "./auth": {
-      "types": "./lib-esm/categories/auth/index.d.ts",
-      "import": "./lib-esm/categories/auth/index.js",
-      "require": "./lib/categories/auth/index.js"
+      "types": "./lib-esm/auth/index.d.ts",
+      "import": "./lib-esm/auth/index.js",
+      "require": "./lib/auth/index.js"
     },
     "./auth/cognito": {
-      "types": "./lib-esm/categories/auth/cognito/index.d.ts",
-      "import": "./lib-esm/categories/auth/cognito/index.js",
-      "require": "./lib/categories/auth/cognito/index.js"
+      "types": "./lib-esm/auth/cognito/index.d.ts",
+      "import": "./lib-esm/auth/cognito/index.js",
+      "require": "./lib/auth/cognito/index.js"
     },
     "./package.json": "./package.json"
   },
@@ -38,10 +38,10 @@
         "./lib-esm/utils/index.d.ts"
       ],
       "auth": [
-        "./lib-esm/categories/auth/index.d.ts"
+        "./lib-esm/auth/index.d.ts"
       ],
       "auth/cognito": [
-        "./lib-esm/categories/auth/cognito/index.d.ts"
+        "./lib-esm/auth/cognito/index.d.ts"
       ]
     }
   },
