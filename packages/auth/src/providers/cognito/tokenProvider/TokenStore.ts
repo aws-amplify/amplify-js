@@ -7,7 +7,7 @@ import {
 } from '@aws-amplify/core';
 import {
 	AuthKeys,
-	AuthStorageKeys,
+	AuthTokenStorageKeys,
 	AuthTokenStore,
 	CognitoAuthTokens,
 } from './types';
@@ -130,7 +130,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 }
 
 const createKeysForAuthStorage = (provider: string, identifier: string) => {
-	return getAuthStorageKeys(AuthStorageKeys)(
+	return getAuthStorageKeys(AuthTokenStorageKeys)(
 		`com.amplify.${provider}`,
 		identifier
 	);

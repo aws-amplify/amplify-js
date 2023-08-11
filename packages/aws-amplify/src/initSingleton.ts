@@ -1,13 +1,20 @@
-import { AmplifyV6 } from '@aws-amplify/core';
-import { LibraryOptions, ResourcesConfig } from '@aws-amplify/core';
-import { CognitoUserPoolsTokenProvider } from './auth';
-import { LocalStorage } from '@aws-amplify/core'; // TODO(v6): use Platform storage supported
+import {
+	LibraryOptions,
+	ResourcesConfig,
+	AmplifyV6,
+	LocalStorage,
+} from '@aws-amplify/core';
+import {
+	CognitoUserPoolsTokenProvider,
+	cognitoCredentialsProvider,
+} from './auth';
 
 export const DefaultAmplifyV6 = {
 	configure(resourceConfig: ResourcesConfig, libraryOptions?: LibraryOptions) {
-		let defaultLibraryOptions: LibraryOptions = {
+		const defaultLibraryOptions: LibraryOptions = {
 			Auth: {
 				tokenProvider: CognitoUserPoolsTokenProvider,
+				credentialsProvider: cognitoCredentialsProvider,
 			},
 		};
 
