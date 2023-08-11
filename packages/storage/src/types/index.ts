@@ -16,7 +16,7 @@ export {
 	StorageUploadFileParameter, // TODO: open question - should we export this?
 } from './params';
 export {
-	StorageListOutputItem, // TODO is this correct ?
+	StorageItem,
 	StorageListResult,
 	StorageDownloadDataResult,
 	StorageGetUrlResult,

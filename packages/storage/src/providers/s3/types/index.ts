@@ -8,4 +8,5 @@ export {
 	S3GetUrlResult,
 	S3UploadDataResult,
 	S3UploadFileResult,
+	S3ListOutputItem,
 } from './results';

@@ -5,18 +5,19 @@ import {
 	StorageDownloadDataResult,
 	StorageGetUrlResult,
 	StorageUploadResult,
-	StorageListOutputItem,
+	StorageItem,
+	StorageListResult,
 } from '../../../types';
 
-type S3ObjectInformation = {
+type S3Item = {
 	/**
 	 * Creation date of the object.
 	 */
-	lastModified?: Date;
+	lastModifiedzz?: Date;
 	/**
 	 * Size of the body in bytes.
 	 */
-	contentLength?: number;
+	size?: number;
 	/**
 	 * An entity tag (ETag) is an opaque identifier assigned by a web server to a specific version of a resource found at
 	 * a URL.
@@ -29,15 +30,9 @@ type S3ObjectInformation = {
 	metadata?: Record<string, string>;
 };
 
-// type S3ListResult = {
-// 	results: S3ListOutputItem[];
-// 	nextToken?: string;
-// };
+export type S3DownloadDataResult = StorageDownloadDataResult & S3Item;
 
-export type S3DownloadDataResult = StorageDownloadDataResult &
-	S3ObjectInformation;
-
-export type S3DownloadFileResult = S3ObjectInformation;
+export type S3DownloadFileResult = S3Item;
 
 export type S3GetUrlResult = StorageGetUrlResult;
 
@@ -45,4 +40,6 @@ export type S3UploadDataResult = StorageUploadResult;
 
 export type S3UploadFileResult = StorageUploadResult;
 
-export type S3ListOutputItem = StorageListOutputItem & S3ObjectInformation;
+export type S3ListOutputItem = Omit<StorageListResult, 'items'> & {
+	items: Array<StorageItem & S3Item>;
+};

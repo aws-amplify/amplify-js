@@ -3,12 +3,8 @@
 
 import { AmplifyV6 } from '@aws-amplify/core';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
-import {
-	StorageListRequest,
-	StorageListOptions,
-	StorageListResult,
-	StorageListOutputItem,
-} from '../../../types';
+import { StorageListRequest, StorageListOptions } from '../../../types';
+import { S3ListOutputItem } from '../types';
 import { ListObjectsV2Input, listObjectsV2 } from '../../../AwsClients/S3';
 import { assertValidationError } from '../../../errors/assertValidationErrors';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
@@ -23,12 +19,12 @@ const MAX_PAGE_SIZE = 1000;
  * @param {StorageListRequest<StorageListOptions>} req - The request object
  * @return {Promise<StorageListResult>} - Promise resolves to list of keys and metadata for all objects in path
  * additionally the result will include a nextToken if there are more items to retrieve
- * @throws service: {@link GetPropertiesException} - S3 service errors thrown while getting properties
+ * @throws service: {@link ListException} - S3 service errors thrown while getting properties
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
  */
 export const list = async (
 	req: StorageListRequest<StorageListOptions>
-): Promise<StorageListResult> => {
+): Promise<S3ListOutputItem> => {
 	const { awsCredsIdentityId, awsCreds, defaultAccessLevel, bucket, region } =
 		await getStorageConfig();
 	const {
@@ -41,7 +37,7 @@ export const list = async (
 			listAll,
 		},
 	} = req;
-	const finalPath = getFinalKey(accessLevel, awsCredsIdentityId, path);
+	const finalPath = getKeyWithPrefix(accessLevel, awsCredsIdentityId, path);
 	const listOptions = {
 		accessLevel,
 		targetIdentityId: awsCredsIdentityId,
@@ -65,19 +61,19 @@ export const list = async (
 const _listAll = async (
 	listOptions,
 	listParams: ListObjectsV2Input
-): Promise<StorageListResult> => {
+): Promise<S3ListOutputItem> => {
 	let listResult: StorageListOutputItem[];
 	do {
-		const { results: pageResults, nextToken: pageNextToken } = await _list(
+		const { items: pageResults, nextToken: pageNextToken } = await _list(
 			listOptions,
 			listParams
 		);
-		listResult = [...listResult, ...pageResults];
+		listResult.push(...pageResults);
 		listParams.ContinuationToken = pageNextToken;
 	} while (listParams.ContinuationToken);
 
 	return {
-		results: listResult,
+		items: listResult,
 		nextToken: null,
 	};
 };
@@ -85,24 +81,21 @@ const _listAll = async (
 const _list = async (
 	listOptions,
 	listParams: ListObjectsV2Input
-): Promise<StorageListResult> => {
+): Promise<S3ListOutputItem> => {
 	if (listParams.MaxKeys > MAX_PAGE_SIZE) {
 		listParams.MaxKeys = MAX_PAGE_SIZE;
 		logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
 	}
 
 	const response = await listObjectsV2(listOptions, listParams);
-	const listResult = response.Contents.map(item => {
-		return {
-			key: item.Key.substring(listParams.Prefix.length),
-			eTag: item.ETag,
-			lastModified: item.LastModified,
-			size: item.Size,
-		};
-	});
-
+	const listResult = response.Contents.map(item => ({
+		key: item.Key.substring(listParams.Prefix.length),
+		eTag: item.ETag,
+		lastModified: item.LastModified,
+		size: item.Size,
+	}));
 	return {
-		results: listResult,
+		items: listResult,
 		nextToken: response.NextContinuationToken,
 	};
 };
