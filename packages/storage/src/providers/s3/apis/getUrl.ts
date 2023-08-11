@@ -50,8 +50,9 @@ export const getUrl = async function (
 		signingRegion: region,
 		region,
 	};
-	let result: S3GetUrlResult;
-	result.url = await getPresignedGetObjectUrl(getUrlOptions, getUrlParams);
+	const result: S3GetUrlResult = {
+	  url: await getPresignedGetObjectUrl(getUrlOptions, getUrlParams);
+	}
 	const urlExpiration = new Date(
 		options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION
 	);
