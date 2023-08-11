@@ -47,7 +47,8 @@
 	"files": [
 		"lib",
 		"lib-esm",
-		"src"
+		"src",
+		"internals"
 	],
 	"dependencies": {
 		"@aws-amplify/rtn-push-notification": "1.2.0",
@@ -70,13 +71,13 @@
 			"name": "Notifications (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Notifications }",
-			"limit": "29.9 kB"
+			"limit": "30.5 kB"
 		},
 		{
 			"name": "Notifications (with Analytics)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Notifications, Analytics }",
-			"limit": "29.902 kB"
+			"limit": "30.5 kB"
 		}
 	]
 }
