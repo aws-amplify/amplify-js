@@ -50,6 +50,8 @@ export const remove = async (
 		Key: finalKey,
 	};
 
-	const response = await deleteObject(removeOptions, removeParams);
-	return response;
+	await deleteObject(removeOptions, removeParams);
+	return {
+		key,
+	};
 };
