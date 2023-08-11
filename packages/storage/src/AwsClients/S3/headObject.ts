@@ -21,7 +21,7 @@ import {
 	s3TransferHandler,
 	serializePathnameObjectKey,
 } from './utils';
-import { assertServiceError } from '../../errors/utils/assertServiceError';
+
 import { StorageError } from '../../errors/StorageError';
 
 export type HeadObjectInput = Pick<
@@ -52,7 +52,6 @@ const headObjectSerializer = async (
 	url.pathname = serializePathnameObjectKey(url, input.Key!);
 	return {
 		method: 'HEAD',
-		// TODO need to check with BR for headers
 		headers: {},
 		url,
 	};

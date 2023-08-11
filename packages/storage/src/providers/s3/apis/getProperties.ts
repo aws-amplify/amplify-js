@@ -28,9 +28,9 @@ export const getProperties = async function (
 		key,
 		options: { accessLevel },
 	} = req;
-	let targetIdentityId = identityId;
+	let targetIdentityId;
 	if (req?.options?.accessLevel === 'protected') {
-		targetIdentityId = req.options?.targetIdentityId;
+		targetIdentityId = identityId ?? req.options?.targetIdentityId;
 	}
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 	const finalKey = getKeyWithPrefix(
