@@ -59,6 +59,7 @@
 		"internals"
 	],
 	"dependencies": {
+		"@aws-amplify/types-package-alpha": "0.0.0",
 		"@aws-amplify/api-graphql": "3.4.6",
 		"@aws-amplify/api-rest": "3.5.0",
 		"tslib": "^2.6.1"
