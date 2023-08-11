@@ -63,8 +63,12 @@ const headObjectDeserializer = async (
 ): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
-		StorageError.fromXmlError(error);
-		assertServiceError(error);
+		const storageError = StorageError.fromServiceError(error);
+		if (response.statusCode === 404) {
+			storageError['recoverySuggestion'] =
+				'Please add the Object with this key to the bucket as the key is not found';
+		}
+		assertServiceError(storageError);
 	} else {
 		const contents = {
 			...map(response.headers, {
