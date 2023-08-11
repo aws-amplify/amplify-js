@@ -7,6 +7,7 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { GetPropertiesException, S3GetPropertiesResult } from '../types';
 import { resolveStorageConfig, getKeyWithPrefix } from '../utils';
+import { resolveCredentials } from '../utils/resolveCredentials';
 
 /**
  * Get Properties of the object
@@ -21,9 +22,8 @@ import { resolveStorageConfig, getKeyWithPrefix } from '../utils';
 export const getProperties = async function (
 	req: StorageOperationRequest<StorageOptions>
 ): Promise<S3GetPropertiesResult> {
-	const { identityId, credentials, defaultAccessLevel, bucket, region } =
-		await resolveStorageConfig();
-
+	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
+	const { identityId, credentials } = await resolveCredentials();
 	const {
 		key,
 		options: { accessLevel },
