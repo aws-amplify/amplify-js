@@ -998,29 +998,37 @@ export class InternalAuthClass {
 		return ret;
 	}
 
-	private _getUserData(user, params, userAgentValue: string) {
+	private _getUserData(
+		user: InternalCognitoUser,
+		params,
+		userAgentValue: string
+	) {
 		return new Promise((res, rej) => {
-			user.getUserData(async (err, data) => {
-				if (err) {
-					logger.debug('getting user data failed', err);
-					if (this.isSessionInvalid(err)) {
-						try {
-							await this.cleanUpInvalidSession(user, userAgentValue);
-						} catch (cleanUpError) {
-							rej(
-								new Error(
-									`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
-								)
-							);
-							return;
+			user.getUserData(
+				async (err, data) => {
+					if (err) {
+						logger.debug('getting user data failed', err);
+						if (this.isSessionInvalid(err)) {
+							try {
+								await this.cleanUpInvalidSession(user, userAgentValue);
+							} catch (cleanUpError) {
+								rej(
+									new Error(
+										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+									)
+								);
+								return;
+							}
 						}
+						rej(err);
+						return;
+					} else {
+						res(data);
 					}
-					rej(err);
-					return;
-				} else {
-					res(data);
-				}
-			}, params);
+				},
+				params,
+				userAgentValue
+			);
 		});
 	}
 
