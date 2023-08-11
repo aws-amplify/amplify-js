@@ -1,6 +1,10 @@
-import { AmplifyError, ErrorParams } from '@aws-amplify/core';
+import { AmplifyError, ErrorParams, ServiceError } from '@aws-amplify/core';
 
 export class StorageError extends AmplifyError {
+	static fromXmlError(error: Error): ServiceError {
+		throw new StorageError({ name: error.name, message: error.message });
+	}
+
 	constructor(params: ErrorParams) {
 		super(params);
 

@@ -22,6 +22,7 @@ import {
 	serializePathnameObjectKey,
 } from './utils';
 import { assertServiceError } from '../../errors/utils/assertServiceError';
+import { StorageError } from '../../errors/StorageError';
 
 export type HeadObjectInput = Pick<
 	HeadObjectCommandInput,
@@ -62,6 +63,7 @@ const headObjectDeserializer = async (
 ): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
+		StorageError.fromXmlError(error);
 		assertServiceError(error);
 	} else {
 		const contents = {
