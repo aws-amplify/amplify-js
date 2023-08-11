@@ -11,9 +11,13 @@ import {
 
 type S3Item = {
 	/**
+	 * Key of the object
+	 */
+	key?: string;
+	/**
 	 * Creation date of the object.
 	 */
-	lastModifiedzz?: Date;
+	lastModified?: Date;
 	/**
 	 * Size of the body in bytes.
 	 */
@@ -40,6 +44,7 @@ export type S3UploadDataResult = StorageUploadResult;
 
 export type S3UploadFileResult = StorageUploadResult;
 
-export type S3ListOutputItem = Omit<StorageListResult, 'items'> & {
-	items: Array<StorageItem & S3Item>;
+export type S3ListOutputItem = {
+	items: S3Item[];
+	nextToken?: string;
 };

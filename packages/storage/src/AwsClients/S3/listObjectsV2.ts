@@ -7,7 +7,7 @@ import {
 	HttpResponse,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { assertServiceError } from '../../errors/utils/assertServiceError';
+import { StorageError } from '../../errors/StorageError';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import type {
 	ListObjectsV2CommandInput,
@@ -63,7 +63,7 @@ const listObjectsV2Deserializer = async (
 ): Promise<ListObjectsV2Output> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
-		assertServiceError(error);
+		throw StorageError.formServiceError(error, response.statusCode);
 	} else {
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {

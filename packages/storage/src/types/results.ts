@@ -20,11 +20,11 @@ export type StorageUploadResult = {
 	key: string;
 };
 
-export type StorageItem = {
-	key?: string;
-};
+// export type StorageItem = {
+// 	key?: string;
+// };
 
-export type StorageListResult = {
-	items: StorageItem[];
-	nextToken?: string;
-};
+// export type StorageListResult = {
+// 	items: StorageItem[];
+// 	nextToken?: string;
+// };
