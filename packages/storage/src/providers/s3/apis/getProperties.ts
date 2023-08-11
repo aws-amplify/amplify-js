@@ -28,7 +28,7 @@ export const getProperties = async function (
 		key,
 		options: { accessLevel },
 	} = req;
-	let targetIdentityId;
+	let targetIdentityId = identityId;
 	if (req?.options?.accessLevel === 'protected') {
 		targetIdentityId = req.options?.targetIdentityId;
 	}
@@ -39,8 +39,8 @@ export const getProperties = async function (
 		key
 	);
 	const headObjectOptions = {
-		accessLevel,
-		targetIdentityId: identityId,
+		accessLevel: accessLevel,
+		targetIdentityId: targetIdentityId,
 		region,
 		credentials,
 	};
