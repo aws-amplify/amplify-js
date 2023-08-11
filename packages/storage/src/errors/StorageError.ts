@@ -6,7 +6,7 @@ export class StorageError extends AmplifyError {
 			name: error.name,
 			message: error.message,
 		});
-		if (statusCode == 404) {
+		if (statusCode === 404) {
 			storageError.recoverySuggestion =
 				'Please add the object with this key to the bucket as the key is not found';
 		}

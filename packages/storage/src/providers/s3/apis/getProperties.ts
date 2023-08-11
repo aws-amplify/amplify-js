@@ -41,17 +41,17 @@ export const getProperties = async function (
 		targetIdentityId ?? identityId,
 		key
 	);
-	const headObjectOptions = {
-		accessLevel: accessLevel,
-		targetIdentityId: targetIdentityId,
-		region,
-		credentials,
-	};
-	const headObjectParams: HeadObjectInput = {
-		Bucket: bucket,
-		Key: finalKey,
-	};
-	const response = await headObject(headObjectOptions, headObjectParams);
+
+	const response = await headObject(
+		{
+			region,
+			credentials,
+		},
+		{
+			Bucket: bucket,
+			Key: finalKey,
+		}
+	);
 	return {
 		key: finalKey,
 		contentType: response.ContentType,
