@@ -55,7 +55,7 @@ export const getProperties = async function (
 	return {
 		key: finalKey,
 		contentType: response.ContentType,
-		contentLength: response.ContentLength,
+		size: response.ContentLength,
 		eTag: response.ETag,
 		lastModified: response.LastModified,
 		metadata: response.Metadata,

@@ -19,7 +19,7 @@ type S3Item = {
 	/**
 	 * Size of the body in bytes.
 	 */
-	contentLength?: number;
+	size?: number;
 	/**
 	 * A standard MIME type describing the format of the object data.
 	 */

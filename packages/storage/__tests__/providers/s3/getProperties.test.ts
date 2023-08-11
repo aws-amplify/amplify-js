@@ -35,7 +35,7 @@ describe('getProperties happy path case', () => {
 		});
 		expect(await getProperties({ key: 'key' })).toEqual({
 			key: 'key',
-			contentLength: '100',
+			size: '100',
 			contentType: 'text/plain',
 			eTag: 'etag',
 			lastModified: 'last-modified',
