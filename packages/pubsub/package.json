@@ -50,8 +50,8 @@
     "@aws-amplify/auth": "6.0.0",
     "graphql": "15.8.0",
     "tslib": "^2.5.0",
-    "url": "0.11.0",
-    "uuid": "^3.2.1",
+    "url": "^0.11.1",
+    "uuid": "^9.0.0",
     "zen-observable-ts": "0.8.19"
   },
   "peerDependencies": {

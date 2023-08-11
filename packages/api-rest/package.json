@@ -49,7 +49,7 @@
   "dependencies": {
     "axios": "0.26.0",
     "tslib": "^2.5.0",
-    "url": "0.11.0"
+    "url": "^0.11.1"
   },
   "peerDependencies": {
     "@aws-amplify/core": "^6.0.0"
