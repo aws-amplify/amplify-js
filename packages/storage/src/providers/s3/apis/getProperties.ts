@@ -6,8 +6,11 @@ import { StorageOptions, StorageOperationRequest } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { GetPropertiesException, S3GetPropertiesResult } from '../types';
-import { resolveStorageConfig, getKeyWithPrefix } from '../utils';
-import { resolveCredentials } from '../utils/resolveCredentials';
+import {
+	resolveStorageConfig,
+	getKeyWithPrefix,
+	resolveCredentials,
+} from '../utils';
 
 /**
  * Get Properties of the object
