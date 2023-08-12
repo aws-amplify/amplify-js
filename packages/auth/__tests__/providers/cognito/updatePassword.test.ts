@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {  AmplifyV6 } from '@aws-amplify/core';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { updatePassword } from '../../../src/providers/cognito';
 import { ChangePasswordException } from '../../../src/providers/cognito/types/errors';
 import * as changePasswordClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { ChangePasswordCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { ChangePasswordCommandOutput } 
+from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { AmplifyV6 as Amplify } from 'aws-amplify';
 import { decodeJWT } from '@aws-amplify/core';
 import * as authUtils from '../../../src';
@@ -88,12 +88,6 @@ describe('updatePassword API error path cases:', () => {
 	test('updatePassword API should throw a validation AuthError when newPassword is empty', async () => {
 		expect.assertions(2);
 		try {
-			AmplifyV6.configure({
-				Auth: {
-					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-					userPoolId: 'us-west-2_zzzzz',
-				},
-			});
 			await updatePassword({ oldPassword, newPassword: '' });
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);

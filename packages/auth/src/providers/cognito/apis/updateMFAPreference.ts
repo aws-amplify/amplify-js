@@ -1,11 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyV6,
-	assertTokenProviderConfig,
-} from '@aws-amplify/core';
-import {fetchAuthSession} from '../../../'
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { fetchAuthSession } from '../../../';
 import { UpdateMFAPreferenceRequest } from '../types';
 import { SetUserMFAPreferenceException } from '../types/errors';
 import { MFAPreference } from '../types/models';

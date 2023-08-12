@@ -5,7 +5,7 @@ import {
 	AmplifyV6 as Amplify,
 	assertTokenProviderConfig,
 } from '@aws-amplify/core';
-import {fetchAuthSession} from '../../../'
+import { fetchAuthSession } from '../../../';
 import { AuthError } from '../../../errors/AuthError';
 import { TOTPSetupDetails } from '../../../types/models';
 import {
@@ -21,9 +21,9 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
  *
  * @throws -{@link AssociateSoftwareTokenException}
  * Thrown if a service occurs while setting up TOTP.
- * 
+ *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
- * 
+ *
  * @returns TOTPSetupDetails
  *
  **/

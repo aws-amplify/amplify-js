@@ -7,11 +7,8 @@ import { VerifyTOTPSetupRequest } from '../../../types/requests';
 import { CogntioVerifyTOTPSetupOptions } from '../types/options';
 import { verifySoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { VerifySoftwareTokenException } from '../types/errors';
-import {
-	AmplifyV6,
-	assertTokenProviderConfig,
-} from '@aws-amplify/core';
-import {fetchAuthSession} from '../../../'
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**

@@ -12,13 +12,13 @@ import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cogn
 const authConfig = {
 	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 	userPoolId: 'us-west-2_zzzzz',
-}
+};
 
 const authConfigWithMetadata = {
 	...authAPITestParams.configWithClientMetadata,
 	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 	userPoolId: 'us-west-2_zzzzz',
-}
+};
 
 describe('confirmSignIn API happy path cases', () => {
 	let handleChallengeNameSpy;
@@ -98,7 +98,6 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn tests MFA_SETUP challengeName`, async () => {
-
 		Amplify.configure({
 			Auth: authConfig,
 		});
