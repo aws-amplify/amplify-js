@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { AmplifyV6 as Amplify } from '@aws-amplify/core';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { signIn } from '../../../src/providers/cognito/apis/signIn';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
@@ -9,12 +9,16 @@ import { AuthSignInStep } from '../../../src/types';
 import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 
-AmplifyV6.configure({
-	Auth: {
-		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-		userPoolId: 'us-west-2_zzzzz',
-	},
-});
+const authConfig = {
+	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+	userPoolId: 'us-west-2_zzzzz',
+}
+
+const authConfigWithMetadata = {
+	...authAPITestParams.configWithClientMetadata,
+	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+	userPoolId: 'us-west-2_zzzzz',
+}
 
 describe('confirmSignIn API happy path cases', () => {
 	let handleChallengeNameSpy;
@@ -46,6 +50,10 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn test SMS_MFA ChallengeName.`, async () => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
+
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -90,6 +98,10 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn tests MFA_SETUP challengeName`, async () => {
+
+		Amplify.configure({
+			Auth: authConfig,
+		});
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -127,6 +139,10 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn tests SELECT_MFA_TYPE challengeName `, async () => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
+
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -187,6 +203,9 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test('handleChallengeName should be called with clientMetadata from request', async () => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
 		const activeSignInSession = '1234234232';
 		const activeChallengeName = 'SMS_MFA';
 		const handleUserSRPAuthFlowSpy = jest
@@ -216,6 +235,7 @@ describe('confirmSignIn API happy path cases', () => {
 			activeChallengeName,
 			activeSignInSession,
 			challengeResponse,
+			authConfig,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			authAPITestParams.configWithClientMetadata
 		);
@@ -223,6 +243,9 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test('handleChallengeName should be called with clientMetadata from config', async () => {
+		Amplify.configure({
+			Auth: authConfigWithMetadata,
+		});
 		const activeSignInSession = '1234234232';
 		const activeChallengeName = 'SMS_MFA';
 		const handleUserSRPAuthFlowSpy = jest
@@ -240,13 +263,6 @@ describe('confirmSignIn API happy path cases', () => {
 			);
 		await signIn({ username, password });
 
-		AmplifyV6.configure({
-			Auth: {
-				...authAPITestParams.configWithClientMetadata,
-				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				userPoolId: 'us-west-2_zzzzz',
-			},
-		});
 		const challengeResponse = '123456';
 		await confirmSignIn({
 			challengeResponse,
@@ -256,6 +272,7 @@ describe('confirmSignIn API happy path cases', () => {
 			activeChallengeName,
 			activeSignInSession,
 			challengeResponse,
+			authConfigWithMetadata,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			undefined
 		);

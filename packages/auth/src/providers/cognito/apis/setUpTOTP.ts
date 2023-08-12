@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	AmplifyV6,
+	AmplifyV6 as Amplify,
 	assertTokenProviderConfig,
-	fetchAuthSession,
 } from '@aws-amplify/core';
+import {fetchAuthSession} from '../../../'
 import { AuthError } from '../../../errors/AuthError';
 import { TOTPSetupDetails } from '../../../types/models';
 import {
@@ -28,14 +28,14 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
  *
  **/
 export async function setUpTOTP(): Promise<TOTPSetupDetails> {
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
-	const username = tokens.idToken.payload['cognito:username'] ?? '';
+	const username = tokens.idToken?.payload['cognito:username'] ?? '';
 	const { SecretCode } = await associateSoftwareToken(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
-			AccessToken: JSON.stringify(tokens.accessToken),
+			AccessToken: tokens.accessToken.toString(),
 		}
 	);
 

@@ -8,8 +8,8 @@ import { getUser } from '../utils/clients/CognitoIdentityProvider';
 import {
 	AmplifyV6,
 	assertTokenProviderConfig,
-	fetchAuthSession,
 } from '@aws-amplify/core';
+import {fetchAuthSession} from '../../../'
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**
@@ -23,11 +23,11 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 export async function fetchMFAPreference(): Promise<FetchMFAPreferenceResult> {
 	const authConfig = AmplifyV6.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
-	const tokens = await fetchAuthSession({ forceRefresh: false });
+	const {tokens} = await fetchAuthSession({ forceRefresh: false });
 	const { PreferredMfaSetting, UserMFASettingList } = await getUser(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
-			AccessToken: JSON.stringify(tokens.tokens.accessToken),
+			AccessToken: tokens.accessToken.toString(),
 		}
 	);
 

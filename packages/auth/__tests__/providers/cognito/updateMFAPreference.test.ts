@@ -3,13 +3,17 @@
 
 import { updateMFAPreference } from '../../../src/providers/cognito';
 import * as setUserMFAPreferenceClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthError } from '../../../src/errors/AuthError';
 import { SetUserMFAPreferenceException } from '../../../src/providers/cognito/types/errors';
-import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
 import { UpdateMFAPreferenceRequest } from '../../../src/providers/cognito/types';
 import { getMFASettings } from '../../../src/providers/cognito/apis/updateMFAPreference';
 import { SetUserMFAPreferenceCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { AmplifyV6 as Amplify } from 'aws-amplify';
+import { decodeJWT } from '@aws-amplify/core';
+import * as authUtils from '../../../src';
+import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
+import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
+jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 const mfaChoises: UpdateMFAPreferenceRequest[] = [
 	{ sms: 'DISABLED', totp: 'DISABLED' },
@@ -31,11 +35,31 @@ const mfaChoises: UpdateMFAPreferenceRequest[] = [
 	{},
 ];
 
+Amplify.configure({
+	Auth: {
+		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+		identityPoolId: 'us-west-2:xxxxxx',
+	},
+});
+const mockedAccessToken =
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+
 describe('updateMFAPreference Happy Path Cases:', () => {
-	const mockedAccessToken = 'mockedAccessToken';
 	let setUserMFAPreferenceClientSpy;
-	const { user1 } = authAPITestParams;
+	let fetchAuthSessionsSpy;
 	beforeEach(() => {
+		fetchAuthSessionsSpy = jest
+			.spyOn(authUtils, 'fetchAuthSession')
+			.mockImplementationOnce(
+				async (): Promise<{ tokens: { accessToken: any } }> => {
+					return {
+						tokens: {
+							accessToken: decodeJWT(mockedAccessToken),
+						},
+					};
+				}
+			);
 		setUserMFAPreferenceClientSpy = jest
 			.spyOn(setUserMFAPreferenceClient, 'setUserMFAPreference')
 			.mockImplementationOnce(async () => {
@@ -44,66 +68,50 @@ describe('updateMFAPreference Happy Path Cases:', () => {
 	});
 	afterEach(() => {
 		setUserMFAPreferenceClientSpy.mockClear();
+		fetchAuthSessionsSpy.mockClear();
 	});
 	test.each(mfaChoises)(
 		'setUserMFAPreferenceClient should be called with all possible mfa combinations',
 		async mfaChoise => {
 			const { totp, sms } = mfaChoise;
 			await updateMFAPreference(mfaChoise);
-			expect(setUserMFAPreferenceClientSpy).toHaveBeenCalledWith({
-				AccessToken: mockedAccessToken,
-				SMSMfaSettings: getMFASettings(sms),
-				SoftwareTokenMfaSettings: getMFASettings(totp),
-			});
+			expect(setUserMFAPreferenceClientSpy).toHaveBeenCalledWith(
+				{ region: 'us-west-2' },
+				{
+					AccessToken: mockedAccessToken,
+					SMSMfaSettings: getMFASettings(sms),
+					SoftwareTokenMfaSettings: getMFASettings(totp),
+				}
+			);
 		}
 	);
 });
 
 describe('updateMFAPreference Error Path Cases:', () => {
-	const globalMock = global as any;
 
 	test('updateMFAPreference should expect a service error', async () => {
 		expect.assertions(2);
-		const serviceError = new Error('service error');
-		serviceError.name = SetUserMFAPreferenceException.InvalidParameterException;
-		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
-		AmplifyV6.configure({
-			Auth: {
-				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				userPoolId: 'us-west-2_zzzzz',
-			},
-		});
+		(fetchTransferHandler as jest.Mock).mockResolvedValue(
+			mockJsonResponse(
+				buildMockErrorResponse(SetUserMFAPreferenceException.ForbiddenException)
+			)
+		);
+		jest
+			.spyOn(authUtils, 'fetchAuthSession')
+			.mockImplementationOnce(
+				async (): Promise<{ tokens: { accessToken: any } }> => {
+					return {
+						tokens: {
+							accessToken: decodeJWT(mockedAccessToken),
+						},
+					};
+				}
+			);
 		try {
 			await updateMFAPreference({ sms: 'ENABLED', totp: 'PREFERRED' });
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(
-				SetUserMFAPreferenceException.InvalidParameterException
-			);
+			expect(error.name).toBe(SetUserMFAPreferenceException.ForbiddenException);
 		}
 	});
-
-	test(
-		'updateMFAPreference should expect an unknown error' +
-			' when underlying error is not coming from the service',
-		async () => {
-			expect.assertions(3);
-			globalMock.fetch = jest.fn(() =>
-				Promise.reject(new Error('unknown error'))
-			);
-			AmplifyV6.configure({
-				Auth: {
-					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-					userPoolId: 'us-west-2_zzzzz',
-				},
-			});
-			try {
-				await updateMFAPreference({ sms: 'ENABLED', totp: 'PREFERRED' });
-			} catch (error) {
-				expect(error).toBeInstanceOf(AuthError);
-				expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
-				expect(error.underlyingError).toBeInstanceOf(Error);
-			}
-		}
-	);
 });

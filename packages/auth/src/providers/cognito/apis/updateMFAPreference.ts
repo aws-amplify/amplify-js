@@ -4,8 +4,8 @@
 import {
 	AmplifyV6,
 	assertTokenProviderConfig,
-	fetchAuthSession,
 } from '@aws-amplify/core';
+import {fetchAuthSession} from '../../../'
 import { UpdateMFAPreferenceRequest } from '../types';
 import { SetUserMFAPreferenceException } from '../types/errors';
 import { MFAPreference } from '../types/models';
@@ -33,7 +33,7 @@ export async function updateMFAPreference(
 	await setUserMFAPreference(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
-			AccessToken: JSON.stringify(tokens.accessToken),
+			AccessToken: tokens.accessToken.toString(),
 			SMSMfaSettings: getMFASettings(sms),
 			SoftwareTokenMfaSettings: getMFASettings(totp),
 		}

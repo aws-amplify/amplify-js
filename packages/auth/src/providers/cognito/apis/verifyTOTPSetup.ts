@@ -10,8 +10,8 @@ import { VerifySoftwareTokenException } from '../types/errors';
 import {
 	AmplifyV6,
 	assertTokenProviderConfig,
-	fetchAuthSession,
 } from '@aws-amplify/core';
+import {fetchAuthSession} from '../../../'
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**
@@ -42,7 +42,7 @@ export async function verifyTOTPSetup(
 	await verifySoftwareToken(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
-			AccessToken: JSON.stringify(tokens.accessToken),
+			AccessToken: tokens.accessToken.toString(),
 			UserCode: code,
 			FriendlyDeviceName: options?.serviceOptions?.friendlyDeviceName,
 		}

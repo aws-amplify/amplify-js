@@ -1,15 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { AmplifyV6 as Amplify } from 'aws-amplify';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { confirmResetPassword } from '../../../src/providers/cognito';
 import { ConfirmForgotPasswordException } from '../../../src/providers/cognito/types/errors';
 import * as confirmResetPasswordClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
+import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
+import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
+jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
-AmplifyV6.configure({
+Amplify.configure({
 	Auth: {
 		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 		userPoolId: 'us-west-2_zzzzz',
@@ -61,11 +64,11 @@ describe('ConfirmResetPassword API happy path cases', () => {
 	});
 
 	test('ConfirmResetPassword API input should contain clientMetadata from config', async () => {
-		AmplifyV6.configure({
+		Amplify.configure({
 			Auth: {
 				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 				userPoolId: 'us-west-2_zzzzz',
-				clientMetadata:{foo:'bar'}
+				clientMetadata: { foo: 'bar' },
 			},
 		});
 		await confirmResetPassword(authAPITestParams.confirmResetPasswordRequest);
@@ -79,7 +82,6 @@ describe('ConfirmResetPassword API happy path cases', () => {
 });
 
 describe('ConfirmResetPassword API error path cases', () => {
-	const globalMock = global as any;
 	test('ConfirmResetPassword API should throw a validation AuthError when username is empty', async () => {
 		expect.assertions(2);
 		try {
@@ -129,17 +131,14 @@ describe('ConfirmResetPassword API error path cases', () => {
 	});
 
 	test('ConfirmResetPassword API should raise service error', async () => {
-		jest
-			.spyOn(confirmResetPasswordClient, 'confirmForgotPassword')
-			.mockImplementationOnce(async () => {
-				throw new AuthError({
-					name: ConfirmForgotPasswordException.InvalidParameterException,
-					message: 'confirm forgot execption',
-				});
-			});
-
 		expect.assertions(2);
-
+		(fetchTransferHandler as jest.Mock).mockResolvedValue(
+			mockJsonResponse(
+				buildMockErrorResponse(
+					ConfirmForgotPasswordException.InvalidParameterException
+				)
+			)
+		);
 		try {
 			await confirmResetPassword(authAPITestParams.confirmResetPasswordRequest);
 		} catch (error) {

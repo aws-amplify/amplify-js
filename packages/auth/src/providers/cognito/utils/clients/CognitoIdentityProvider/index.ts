@@ -96,13 +96,14 @@ const buildUserPoolDeserializer = <Output>(): ((
 	response: HttpResponse
 ) => Promise<Output>) => {
 	return async (response: HttpResponse): Promise<Output> => {
+	
 		if (response.statusCode >= 300) {
 			const error = await parseJsonError(response);
 			assertServiceError(error);
 			throw new AuthError({ name: error.name, message: error.message });
 		} else {
 			const body = await parseJsonBody(response);
-			return body
+			return body;
 		}
 	};
 };

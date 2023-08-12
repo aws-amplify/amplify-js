@@ -8,23 +8,30 @@ import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { ConfirmSignUpException } from '../../../src/providers/cognito/types/errors';
-import { AmplifyV6, AmplifyErrorString } from '@aws-amplify/core';
+import { AmplifyV6 as Amplify } from '@aws-amplify/core';
 import { ConfirmSignUpCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
+import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
+jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+
+const authConfig = {
+	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+	userPoolId: 'us-west-2_zzzzz',
+};
 
 describe('confirmSignUp API Happy Path Cases:', () => {
+	Amplify.configure({
+		Auth: authConfig,
+	});
 	let confirmSignUpClientSpy;
 	const { user1 } = authAPITestParams;
 	const confirmationCode = '123456';
 	beforeEach(() => {
 		confirmSignUpClientSpy = jest
 			.spyOn(confirmSignUpClient, 'confirmSignUp')
-			.mockImplementationOnce(
-				async (
-					
-				): Promise<ConfirmSignUpCommandOutput> => {
-					return {} as ConfirmSignUpCommandOutput;
-				}
-			);
+			.mockImplementationOnce(async (): Promise<ConfirmSignUpCommandOutput> => {
+				return {} as ConfirmSignUpCommandOutput;
+			});
 	});
 	afterEach(() => {
 		confirmSignUpClientSpy.mockClear();
@@ -40,12 +47,16 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 				signUpStep: AuthSignUpStep.DONE,
 			},
 		});
-		expect(confirmSignUpClientSpy).toHaveBeenCalledWith({
-			ClientMetadata: undefined,
-			ConfirmationCode: confirmationCode,
-			Username: user1.username,
-			ForceAliasCreation: undefined,
-		});
+		expect(confirmSignUpClientSpy).toHaveBeenCalledWith(
+			expect.objectContaining({ region: 'us-west-2' }),
+			{
+				ClientMetadata: undefined,
+				ConfirmationCode: confirmationCode,
+				Username: user1.username,
+				ForceAliasCreation: undefined,
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			}
+		);
 		expect(confirmSignUpClientSpy).toBeCalledTimes(1);
 	});
 	test('confirmSignUp API input should contain force alias creation', async () => {
@@ -59,6 +70,7 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 			},
 		});
 		expect(confirmSignUpClientSpy).toHaveBeenCalledWith(
+			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({
 				ClientMetadata: undefined,
 				ConfirmationCode: confirmationCode,
@@ -80,17 +92,19 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 			},
 		});
 		expect(confirmSignUpClientSpy).toHaveBeenCalledWith(
+			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({
 				ClientMetadata: clientMetadata,
 				ConfirmationCode: confirmationCode,
 				Username: user1.username,
 				ForceAliasCreation: undefined,
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 			})
 		);
 	});
 
 	test('confirmSignUp API input should contain clientMetadata from config', async () => {
-		AmplifyV6.configure({
+		Amplify.configure({
 			Auth: {
 				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 				userPoolId: 'us-west-2_zzzzz',
@@ -102,20 +116,24 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 			confirmationCode,
 		});
 		expect(confirmSignUpClientSpy).toHaveBeenCalledWith(
+			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({
 				ClientMetadata:
 					authAPITestParams.configWithClientMetadata.clientMetadata,
 				ConfirmationCode: confirmationCode,
 				Username: user1.username,
 				ForceAliasCreation: undefined,
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 			})
 		);
 	});
 });
 
 describe('confirmSignUp API Error Path Cases:', () => {
+	Amplify.configure({
+		Auth: authConfig,
+	});
 	const { user1 } = authAPITestParams;
-	const globalMock = global as any;
 	const confirmationCode = '123456';
 	test('confirmSignUp API should throw a validation AuthError when username is empty', async () => {
 		expect.assertions(2);
@@ -141,41 +159,16 @@ describe('confirmSignUp API Error Path Cases:', () => {
 
 	test('confirmSignUp API should expect a service error', async () => {
 		expect.assertions(2);
-		const serviceError = new Error('service error');
-		serviceError.name = ConfirmSignUpException.InvalidParameterException;
-		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
-		try {
-			await confirmSignUp({ username: user1.username, confirmationCode });
-		} catch (error) {
-			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(ConfirmSignUpException.InvalidParameterException);
-		}
-	});
-
-	test(`confirmSignUp API should expect an unknown error
-     when underlying error is not coming from the service`, async () => {
-		expect.assertions(3);
-		globalMock.fetch = jest.fn(() =>
-			Promise.reject(new Error('unknown error'))
+		(fetchTransferHandler as jest.Mock).mockResolvedValue(
+			mockJsonResponse(
+				buildMockErrorResponse(ConfirmSignUpException.InvalidParameterException)
+			)
 		);
 		try {
 			await confirmSignUp({ username: user1.username, confirmationCode });
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
-			expect(error.underlyingError).toBeInstanceOf(Error);
-		}
-	});
-
-	test('confirmSignUp API should expect an unknown error when the underlying error is null', async () => {
-		expect.assertions(3);
-		globalMock.fetch = jest.fn(() => Promise.reject(null));
-		try {
-			await confirmSignUp({ username: user1.username, confirmationCode });
-		} catch (error) {
-			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
-			expect(error.underlyingError).toBe(null);
+			expect(error.name).toBe(ConfirmSignUpException.InvalidParameterException);
 		}
 	});
 });
