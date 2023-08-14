@@ -8,16 +8,16 @@ import {
 	StorageUploadResult,
 } from '../../../types';
 
-type S3Item = {
+export interface S3Item extends StorageItem {
 	/**
 	 * VersionId used to reference a specific version of the object.
 	 */
-	versionId?: String;
+	versionId?: string;
 	/**
 	 * A standard MIME type describing the format of the object data.
 	 */
-	contentType?: String;
-};
+	contentType?: string;
+}
 
 export type S3DownloadDataResult = StorageDownloadDataResult<S3Item>;
 
