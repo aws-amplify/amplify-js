@@ -56,17 +56,16 @@ export const getUrl = async function (
 		region,
 		signingService: S3_SERVICE_NAME,
 	};
-	const result: S3GetUrlResult = {
-		url: null,
-		expiresAt: new Date(DEFAULT_PRESIGN_EXPIRATION),
-	};
-	result.url = await getPresignedGetObjectUrl(getUrlOptions, getUrlParams);
-	const urlExpiration = new Date(
+
+	let urlExpiration = new Date(
 		options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION
 	);
 	const awsCredExpiration = credentials?.expiration;
 	// expiresAt is the minimum of credential expiration and url expiration
-	result.expiresAt =
+	urlExpiration =
 		urlExpiration < awsCredExpiration ? urlExpiration : awsCredExpiration;
-	return result;
+	return {
+		url: await getPresignedGetObjectUrl(getUrlOptions, getUrlParams),
+		expiresAt: urlExpiration,
+	};
 };
