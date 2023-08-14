@@ -44,7 +44,3 @@ export type StorageGetUrlResult = {
 export type StorageUploadResult = {
 	key: string;
 };
-
-export type StorageGetPropertiesResult = {
-	contentType?: string;
-};
