@@ -29,9 +29,18 @@ export class I18n {
 	 * 
 	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
-	constructor() {
-		const i18nConfig = AmplifyV6.getConfig().I18n;
-		this._lang = i18nConfig?.language;
+	constructor() {}
+
+	/**
+	 * Sets the default language from the configuration when required.
+	 * 
+	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
+	 */
+	setDefaultLanguage() {
+		if (!this._lang) {
+			const i18nConfig = AmplifyV6.getConfig().I18n;
+			this._lang = i18nConfig?.language;
+		}
 
 		// Default to window language if not set in config
 		if (
@@ -66,6 +75,8 @@ export class I18n {
 	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	get(key, defVal = undefined) {
+		this.setDefaultLanguage();
+
 		if (!this._lang) {
 			return typeof defVal !== 'undefined' ? defVal : key;
 		}
