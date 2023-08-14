@@ -18,9 +18,7 @@ import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { SignUpException } from '../types/errors';
-import {
-	AttributeType,
-} from '../utils/clients/CognitoIdentityProvider/types';
+import { AttributeType } from '../utils/clients/CognitoIdentityProvider/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**
@@ -94,7 +92,8 @@ export async function signUp(
 						? (CodeDeliveryDetails.DeliveryMedium as DeliveryMedium)
 						: undefined,
 					destination: CodeDeliveryDetails.Destination,
-					attributeName: CodeDeliveryDetails.AttributeName,
+					attributeName:
+						CodeDeliveryDetails.AttributeName as CognitoUserAttributeKey,
 				},
 			},
 			userId: UserSub,
