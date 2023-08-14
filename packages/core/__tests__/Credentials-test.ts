@@ -83,7 +83,7 @@ describe('Credentials test', () => {
 				attr: 'attr',
 			};
 
-			Hub.listen('core', ({ channel, payload, source }) => {
+			Hub.listen('core').subscribe(({ channel, payload, source }) => {
 				if (
 					channel === 'core' &&
 					payload?.event === 'credentials_configured' &&
