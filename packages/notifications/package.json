@@ -52,7 +52,7 @@
 	"dependencies": {
 		"@aws-amplify/rtn-push-notification": "1.2.0",
 		"lodash": "^4.17.21",
-		"uuid": "^3.2.1"
+		"uuid": "^9.0.0"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.0.0"
