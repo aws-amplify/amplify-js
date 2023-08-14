@@ -31,7 +31,7 @@ export type StorageItem = {
 // TODO: replace with ResponsePayloadMixin from core
 type Payload = Pick<Body, 'blob' | 'json' | 'text'>;
 
-export type StorageDownloadDataResult<T = {}> = T & {
+export type StorageDownloadDataResult<T extends StorageItem> = T & {
 	body: Payload;
 };
 
