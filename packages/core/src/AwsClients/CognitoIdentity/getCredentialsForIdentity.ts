@@ -56,9 +56,9 @@ const deserializeCredentials = ({
 	Expiration,
 }: Credentials = {}): Credentials => {
 	return {
-		AccessKeyId: AccessKeyId,
-		SecretKey: SecretKey,
-		SessionToken: SessionToken,
+		AccessKeyId,
+		SecretKey,
+		SessionToken,
 		Expiration: Expiration && new Date((Expiration as any) * 1000),
 	};
 };
