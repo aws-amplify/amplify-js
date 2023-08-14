@@ -18,4 +18,5 @@ export {
 	StorageDownloadDataResult,
 	StorageGetUrlResult,
 	StorageUploadResult,
+	StorageItem,
 } from './results';

@@ -1,7 +1,7 @@
 import { AmplifyError, ErrorParams, ServiceError } from '@aws-amplify/core';
 
 export class StorageError extends AmplifyError {
-	static formServiceError(error: Error, statusCode: number): ServiceError {
+	static fromServiceError(error: Error, statusCode: number): ServiceError {
 		const storageError = new StorageError({
 			name: error.name,
 			message: error.message,

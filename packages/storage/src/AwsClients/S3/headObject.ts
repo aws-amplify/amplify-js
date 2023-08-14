@@ -4,6 +4,7 @@
 import {
 	Endpoint,
 	HttpRequest,
+	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import { defaultConfig } from './base';
@@ -50,7 +51,7 @@ const headObjectSerializer = async (
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
 	const url = new URL(endpoint.url.toString());
-	url.pathname = serializePathnameObjectKey(url, input.Key!);
+	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'HEAD',
 		headers: {},
@@ -63,7 +64,7 @@ const headObjectDeserializer = async (
 ): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
-		throw StorageError.formServiceError(error, response.statusCode);
+		throw StorageError.fromServiceError(error, response.statusCode);
 	} else {
 		const contents = {
 			...map(response.headers, {
@@ -76,6 +77,7 @@ const headObjectDeserializer = async (
 			Metadata: deserializeMetadata(response.headers),
 		};
 		return {
+			$metadata: parseMetadata(response),
 			...contents,
 		};
 	}
