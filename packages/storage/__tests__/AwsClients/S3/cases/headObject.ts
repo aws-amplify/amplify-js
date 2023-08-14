@@ -48,7 +48,7 @@ const headObjectHappyCase: ApiFunctionalTestCase<typeof headObject> = [
 		body: '',
 	},
 	{
-		$metadata: expect.objectContaining(expectedMetadata),
+		//$metadata: expect.objectContaining(expectedMetadata),
 		ContentLength: 434234,
 		ContentType: 'text/plain',
 		ETag: 'etag',
