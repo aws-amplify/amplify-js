@@ -4,9 +4,8 @@
 import { AuthError } from '../../../../../errors/AuthError';
 
 export function getRegion(userPoolId?: string): string {
-	const userPoolIdSplit: string[] = userPoolId?.split('_');
-	const region = userPoolIdSplit[0];
-	if (!region || typeof region !== 'string' || region.length <= 1)
+	const region = userPoolId?.split('_')[0];
+	if (userPoolId?.indexOf('_') < 0 || region || typeof region !== 'string')
 		throw new AuthError({
 			name: 'InvalidUserPoolId',
 			message: 'Invalid user pool id provided.',
