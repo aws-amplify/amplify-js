@@ -443,7 +443,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 
 		for (let i = 0; i < this.getStorage().length; i += 1) {
 			const key = this.getStorage().key(i);
-			if (key && key.indexOf(this.config.keyPrefix) === 0) {
+			if (key?.indexOf(this.config.keyPrefix) === 0) {
 				keysToRemove.push(key);
 			}
 		}
