@@ -2,34 +2,15 @@ import { Buffer } from 'buffer';
 import { asserts } from '../../../Util/errors/AssertError';
 import {
 	AuthConfig,
-	AuthTokenStore,
-	JWT
+	IdentityPoolConfig,
+	JWT,
+	UserPoolConfig,
+	UserPoolConfigAndIdentityPoolConfig,
 } from '../types';
-import { KeyValueStorageInterface } from '../../../types';
-
-export function assertsKeyValueStorage(
-	keyValueStorage?: KeyValueStorageInterface
-): asserts keyValueStorage {
-	return asserts(!(keyValueStorage === undefined), {
-		name: 'AuthClientConfigException',
-		message: 'The storage mechanisms was not set in the client configuration',
-	});
-}
-
-export function assertsTokenStore(
-	tokenStore?: AuthTokenStore
-): asserts tokenStore {
-	return asserts(!(tokenStore === undefined), {
-		name: 'AuthTokenStoreException',
-		message: 'Token store is not configured',
-	});
-}
 
 export function assertTokenProviderConfig(
 	authConfig?: AuthConfig
-): asserts authConfig is { userPoolId: string; userPoolWebClientId: string } {
-	tokenProvider: 'cognito';
-
+): asserts authConfig is UserPoolConfig {
 	const validConfig =
 		!!authConfig?.userPoolId && !!authConfig?.userPoolWebClientId;
 	return asserts(validConfig, {
@@ -39,12 +20,27 @@ export function assertTokenProviderConfig(
 	});
 }
 
-export function assertCredentialsProviderConfig(authConfig: AuthConfig) {
+export function assertIdentityPooIdConfig(
+	authConfig: AuthConfig
+): asserts authConfig is IdentityPoolConfig {
 	const validConfig = !!authConfig?.identityPoolId;
 	return asserts(validConfig, {
-		name: 'AuthCredentialConfigException',
-		message: 'Auth Credentials provider not configured',
-		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
+		name: 'AuthIdentityPoolIdException',
+		message: 'Auth IdentityPoolId not configured',
+		recoverySuggestion:
+			'Make sure to call Amplify.configure in your app with a valid IdentityPoolId',
+	});
+}
+
+export function assertUserPoolAndIdentityPooConfig(
+	authConfig: AuthConfig
+): asserts authConfig is UserPoolConfigAndIdentityPoolConfig {
+	const validConfig = !!authConfig?.identityPoolId && !!authConfig?.userPoolId;
+	return asserts(validConfig, {
+		name: 'AuthUserPoolAndIdentityPoolException',
+		message: 'Auth UserPool and IdentityPool not configured',
+		recoverySuggestion:
+			'Make sure to call Amplify.configure in your app with UserPoolId and IdentityPoolId',
 	});
 }
 

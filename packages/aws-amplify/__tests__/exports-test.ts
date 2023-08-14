@@ -9,9 +9,6 @@ describe('aws-amplify', () => {
 			  "withSSRContext",
 			  "Analytics",
 			  "AWSPinpointProvider",
-			  "AWSKinesisProvider",
-			  "AWSKinesisFirehoseProvider",
-			  "AmazonPersonalizeProvider",
 			  "Auth",
 			  "Storage",
 			  "StorageClass",
@@ -22,6 +19,7 @@ describe('aws-amplify', () => {
 			  "I18n",
 			  "ServiceWorker",
 			  "AWSCloudWatchProvider",
+			  "AmplifyV6",
 			]
 		`);
 		});

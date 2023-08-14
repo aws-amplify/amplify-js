@@ -1,8 +1,8 @@
 import { AuthClass } from './Auth';
 import { Hub } from '../Hub';
-import { MemoryKeyValueStorage } from '../StorageHelper';
 import { LibraryOptions, ResourcesConfig } from './types';
 import { AmplifyError } from '../Errors';
+import { FetchAuthSessionOptions } from './Auth/types';
 
 // TODO(v6): add default AuthTokenStore for each platform
 
@@ -22,14 +22,15 @@ class AmplifyClass {
 		// TODO(v6): add default providers for getting started
 		this.libraryOptions = {
 			Auth: {
-				keyValueStorage: MemoryKeyValueStorage, // Initialize automatically Depending on platform,
-				tokenRefresher: () => {
-					throw new AmplifyError({
-						message: 'No tokenRefresher not provided',
-						name: 'MissingTokenRefresher',
-						recoverySuggestion:
-							'Make sure to call Amplify.configure in your app with a tokenRefresher',
-					});
+				tokenProvider: {
+					getTokens: () => {
+						throw new AmplifyError({
+							message: 'No tokenProvider provided',
+							name: 'MissingTokenProvider',
+							recoverySuggestion:
+								'Make sure to call Amplify.configure in your app with a tokenProvider',
+						});
+					},
 				},
 			},
 		};
@@ -87,6 +88,17 @@ class AmplifyClass {
  * `Amplify` is responsible for orchestrating cross-category communication within the library.
  */
 export const AmplifyV6 = new AmplifyClass();
+
+/**
+ * Returns current session tokens and credentials
+ *
+ * @param options{FetchAuthSessionOptions} - Options for fetching session.
+ *
+ * @returns Returns a promise that will resolve with fresh authentication tokens.
+ */
+export const fetchAuthSession = (options: FetchAuthSessionOptions) => {
+	return AmplifyV6.Auth.fetchAuthSession(options);
+};
 
 // TODO(v6): validate until which level this will nested, during Amplify.configure API review.
 function mergeResourceConfig(

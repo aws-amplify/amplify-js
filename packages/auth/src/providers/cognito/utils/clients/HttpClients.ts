@@ -79,6 +79,7 @@ export type ClientOperations =
 
 export class UserPoolHttpClient {
 	private _endpoint: string;
+
 	private _headers = {
 		'Content-Type': 'application/x-amz-json-1.1',
 		'X-Amz-User-Agent': USER_AGENT,

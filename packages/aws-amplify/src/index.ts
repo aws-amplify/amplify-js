@@ -12,9 +12,9 @@ export {
 	Analytics,
 	AnalyticsProvider,
 	AWSPinpointProvider,
-	AWSKinesisProvider,
-	AWSKinesisFirehoseProvider,
-	AmazonPersonalizeProvider,
+// AWSKinesisProvider,
+// AWSKinesisFirehoseProvider,
+// AmazonPersonalizeProvider,
 } from '@aws-amplify/analytics';
 export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
@@ -27,6 +27,8 @@ export {
 	ServiceWorker,
 	AWSCloudWatchProvider,
 } from '@aws-amplify/core';
+
+export { DefaultAmplifyV6 as AmplifyV6 } from './initSingleton';
 
 // TODO(v6): Re-enable these exports when available
 /*
