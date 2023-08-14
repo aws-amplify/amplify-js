@@ -321,6 +321,7 @@ tests:
     sample_name: [v2/custom-pk-unconnected-models]
     spec: custom-pk-unconnected-models
     browser: *extended_browser_list
+    timeout_minutes: 60
   # - test_name: integ_react_datastore_custom_pk_unconnected_models_webkit
   #   desc: 'DataStore - Custom Primary Key (Connected Models)'
   #   framework: react
@@ -335,6 +336,7 @@ tests:
     sample_name: [v2/custom-pk-has-one]
     spec: custom-pk-has-one
     browser: *minimal_browser_list
+    timeout_minutes: 60
   - test_name: integ_react_datastore_custom_pk_has_many_many_to_many
     desc: 'DataStore - Custom Primary Key (Has Many / Many to Many)'
     framework: react
@@ -342,6 +344,7 @@ tests:
     sample_name: [v2/custom-pk-has-many-many-to-many]
     spec: custom-pk-has-many-many-to-many
     browser: *minimal_browser_list
+    timeout_minutes: 60
   - test_name: integ_react_datastore_background_process_manager
     desc: 'DataStore - Background Process Manager'
     framework: react
