@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "5.9.0",
+  "version": "5.9.1",
   "description": "Storage category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -47,7 +47,7 @@
     "internals"
   ],
   "dependencies": {
-    "@aws-amplify/core": "5.8.0",
+    "@aws-amplify/core": "5.8.1",
     "@aws-sdk/md5-js": "3.6.1",
     "@aws-sdk/types": "3.6.1",
     "buffer": "4.9.2",
@@ -60,7 +60,7 @@
       "name": "Storage (top-level class)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, Storage }",
-      "limit": "38.95 kB"
+      "limit": "39.29 kB"
     }
   ],
   "jest": {
