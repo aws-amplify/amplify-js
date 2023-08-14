@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyV6 } from '@aws-amplify/core';
-import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
 import { StorageListRequest, StorageListOptions } from '../../../types';
-import { S3ListOutputItem } from '../types';
+import { S3ListOutputItem, S3ListResult, storageException } from '../types';
 import { ListObjectsV2Input, listObjectsV2 } from '../../../AwsClients/S3';
-import { assertValidationError } from '../../../errors/assertValidationErrors';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
@@ -19,30 +17,31 @@ const MAX_PAGE_SIZE = 1000;
  * @param {StorageListRequest<StorageListOptions>} req - The request object
  * @return {Promise<StorageListResult>} - Promise resolves to list of keys and metadata for all objects in path
  * additionally the result will include a nextToken if there are more items to retrieve
- * @throws service: {@link ListException} - S3 service errors thrown while getting properties
+ * @throws service: {@link storageException} - S3 service errors thrown while getting properties
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
  */
 export const list = async (
 	req: StorageListRequest<StorageListOptions>
-): Promise<S3ListOutputItem> => {
-	const { awsCredsIdentityId, awsCreds, defaultAccessLevel, bucket, region } =
-		await getStorageConfig();
+): Promise<S3ListResult> => {
+	const { identityId, credentials } = await resolveCredentials();
+	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
 	const {
 		path,
-		options: {
-			accessLevel = defaultAccessLevel,
-			targetIdentityId = awsCredsIdentityId,
-			pageSize,
-			nextToken,
-			listAll,
-		},
+		options: { accessLevel = defaultAccessLevel, pageSize, nextToken, listAll },
 	} = req;
-	const finalPath = getKeyWithPrefix(accessLevel, awsCredsIdentityId, path);
+
+	let targetIdentityId;
+	if (req?.options?.accessLevel === 'protected') {
+		targetIdentityId = req.options?.targetIdentityId ?? identityId;
+	}
+
+	const finalPath = getKeyWithPrefix(accessLevel, targetIdentityId, path);
+
 	const listOptions = {
 		accessLevel,
 		targetIdentityId: awsCredsIdentityId,
 		region,
-		credentials: awsCreds,
+		credentials,
 	};
 	const listParams: ListObjectsV2Input = {
 		Bucket: bucket,
@@ -61,8 +60,8 @@ export const list = async (
 const _listAll = async (
 	listOptions,
 	listParams: ListObjectsV2Input
-): Promise<S3ListOutputItem> => {
-	let listResult: StorageListOutputItem[];
+): Promise<S3ListResult> => {
+	let listResult: S3ListOutputItem[];
 	do {
 		const { items: pageResults, nextToken: pageNextToken } = await _list(
 			listOptions,
@@ -81,7 +80,7 @@ const _listAll = async (
 const _list = async (
 	listOptions,
 	listParams: ListObjectsV2Input
-): Promise<S3ListOutputItem> => {
+): Promise<S3ListResult> => {
 	if (listParams.MaxKeys > MAX_PAGE_SIZE) {
 		listParams.MaxKeys = MAX_PAGE_SIZE;
 		logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
