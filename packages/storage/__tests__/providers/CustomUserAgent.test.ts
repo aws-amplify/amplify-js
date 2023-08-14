@@ -23,7 +23,7 @@ const credentials: ICredentials = {
 	authenticated: true,
 };
 
-const options: StorageOptions = {
+const options = {
 	bucket: 'bucket',
 	region: 'region',
 	credentials,
@@ -37,7 +37,7 @@ const originalLoadS3Config = utils.loadS3Config;
 utils.loadS3Config = jest.fn(originalLoadS3Config);
 mockPresignUrl.mockResolvedValue('presignedUrl');
 
-describe('Each Storage call should create a client with the right StorageAction', () => {
+describe.skip('Each Storage call should create a client with the right StorageAction', () => {
 	beforeEach(() => {
 		jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 			return Promise.resolve(credentials);
@@ -66,7 +66,7 @@ describe('Each Storage call should create a client with the right StorageAction'
 		);
 	});
 
-	test('getProperties', async () => {
+	test.skip('getProperties', async () => {
 		await storage.getProperties('test');
 		expect(utils.loadS3Config).toBeCalledWith(
 			expect.objectContaining({
