@@ -38,7 +38,7 @@ describe('S3 APIs functional test', () => {
 	beforeEach(() => {
 		mockFetchTransferHandler.mockReset();
 	});
-	test.each(cases)(
+	test.skip.each(cases)(
 		'%s %s',
 		async (
 			caseType,

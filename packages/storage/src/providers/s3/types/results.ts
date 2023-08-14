@@ -4,37 +4,29 @@
 import {
 	StorageDownloadDataResult,
 	StorageGetUrlResult,
+	StorageItem,
 	StorageUploadResult,
 } from '../../../types';
 
-type S3ObjectInformation = {
+export interface S3Item extends StorageItem {
 	/**
-	 * Creation date of the object.
+	 * VersionId used to reference a specific version of the object.
 	 */
-	lastModified?: Date;
+	versionId?: string;
 	/**
-	 * Size of the body in bytes.
+	 * A standard MIME type describing the format of the object data.
 	 */
-	contentLength?: number;
-	/**
-	 * An entity tag (ETag) is an opaque identifier assigned by a web server to a specific version of a resource found at
-	 * a URL.
-	 */
-	eTag?: string;
-	/**
-	 * The user-defined metadata for the object uploaded to S3.
-	 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html#UserMetadata
-	 */
-	metadata?: Record<string, string>;
-};
+	contentType?: string;
+}
 
-export type S3DownloadDataResult = StorageDownloadDataResult &
-	S3ObjectInformation;
+export type S3DownloadDataResult = StorageDownloadDataResult<S3Item>;
 
-export type S3DownloadFileResult = S3ObjectInformation;
+export type S3DownloadFileResult = S3Item;
 
 export type S3GetUrlResult = StorageGetUrlResult;
 
 export type S3UploadDataResult = StorageUploadResult;
 
 export type S3UploadFileResult = StorageUploadResult;
+
+export type S3GetPropertiesResult = S3Item;
