@@ -1,7 +1,7 @@
 {
 	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
-		"importHelpers": false,
+		"importHelpers": true,
 		"types": ["jest", "node"]
 	},
 	"include": ["src"]
