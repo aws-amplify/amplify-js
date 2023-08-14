@@ -5,7 +5,6 @@ import { ICredentials } from '@aws-amplify/core';
 import { headObject } from '../../../src/AwsClients/S3';
 import { getProperties } from '../../../src/providers/s3';
 import { StorageOptions } from '../../../src/types/Storage';
-import { resolveCredentials } from '../../../src/providers/s3/utils';
 
 jest.mock('../../../src/AwsClients/S3');
 const mockHeadObject = headObject as jest.Mock;
@@ -24,6 +23,7 @@ const options: StorageOptions = {
 };
 
 describe('getProperties happy path case', () => {
+	// TODO[kvramya7] need to finish unit test with credentials
 	test.skip('getProperties return result', async () => {
 		mockHeadObject.mockReturnValueOnce({
 			ContentLength: '100',
@@ -46,7 +46,7 @@ describe('getProperties happy path case', () => {
 
 describe('getProperties error path case', () => {
 	test.skip('getProperties should return a not found error', async () => {
-		// TODO test credentials
+		// TODO[kvramya7] need to finish unit test with credentials
 		mockHeadObject.mockRejectedValueOnce(
 			Object.assign(new Error(), {
 				$metadata: { httpStatusCode: 404 },

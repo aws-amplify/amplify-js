@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { HeadObjectInput, headObject } from '../../../AwsClients/S3';
+import { headObject } from '../../../AwsClients/S3';
 import { StorageOptions, StorageOperationRequest } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';

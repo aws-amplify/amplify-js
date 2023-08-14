@@ -42,6 +42,7 @@ export type HeadObjectOutput = Pick<
 	| 'LastModified'
 	| 'Metadata'
 	| 'VersionId'
+	| '$metadata'
 >;
 
 const headObjectSerializer = async (
