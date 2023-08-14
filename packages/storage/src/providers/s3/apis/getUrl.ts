@@ -10,7 +10,7 @@ import {
 	getPresignedGetObjectUrl,
 } from '../../../AwsClients/S3';
 import { getProperties } from './getProperties';
-import { GetPropertiesException } from '../types/errors';
+import { S3Exception } from '../types/errors';
 import {
 	getKeyWithPrefix,
 	resolveCredentials,
@@ -24,8 +24,9 @@ const DEFAULT_PRESIGN_EXPIRATION = 900;
  *
  * @param {StorageDownloadDataRequest<S3GetUrlOptions>} The request object
  * @return {Promise<S3GetUrlResult>} url of the object
- * @throws service: {@link GetPropertiesException} - thrown when checking for existence of the object
- * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown either username or key are not defined.
+ * @throws service: {@link S3Exception} - thrown when checking for existence of the object
+ * @throws validation: {@link StorageValidationErrorCode } - Validation errors
+ * thrown either username or key are not defined.
  *
  * TODO: add config errors
  *
@@ -55,8 +56,10 @@ export const getUrl = async function (
 		region,
 		signingService: S3_SERVICE_NAME,
 	};
-	let result: S3GetUrlResult;
-
+	const result: S3GetUrlResult = {
+		url: null,
+		expiresAt: new Date(DEFAULT_PRESIGN_EXPIRATION),
+	};
 	result.url = new URL(
 		await getPresignedGetObjectUrl(getUrlOptions, getUrlParams)
 	);
