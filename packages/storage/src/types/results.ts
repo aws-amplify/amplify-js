@@ -3,7 +3,7 @@
 
 import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
 
-export type StorageItem<T = {}> = T & {
+export type StorageItem = {
 	/**
 	 * Key of the object
 	 */
