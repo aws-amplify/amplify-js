@@ -60,9 +60,7 @@ export const getUrl = async function (
 		url: null,
 		expiresAt: new Date(DEFAULT_PRESIGN_EXPIRATION),
 	};
-	result.url = new URL(
-		await getPresignedGetObjectUrl(getUrlOptions, getUrlParams)
-	);
+	result.url = await getPresignedGetObjectUrl(getUrlOptions, getUrlParams);
 	const urlExpiration = new Date(
 		options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION
 	);

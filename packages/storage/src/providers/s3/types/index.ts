@@ -10,4 +10,4 @@ export {
 	S3UploadFileResult,
 	S3GetPropertiesResult,
 } from './results';
-export { GetPropertiesException } from './errors';
+export { S3Exception } from './errors';
