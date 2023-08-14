@@ -1,20 +1,13 @@
-import { Buffer } from 'buffer'; // TODO(v6): this needs to be a platform operation
-import { Credentials } from '@aws-sdk/types';
 import { Observable, Observer } from 'rxjs';
 
-import { DefaultAuthTokensOrchestrator } from './TokenOrchestrator';
-import { DefaultTokenStore } from './TokenStore';
 import {
+	AWSCredentialsAndIdentityId,
 	AuthConfig,
 	AuthSession,
-	AuthTokenOrchestrator,
-	AuthTokenStore,
 	AuthTokens,
 	FetchAuthSessionOptions,
-	JWT,
 	LibraryAuthOptions,
 } from './types';
-import { asserts } from '../../Util/errors/AssertError';
 
 export function isTokenExpired({
 	expiresAt,
@@ -27,38 +20,12 @@ export function isTokenExpired({
 	return currentTime + clockDrift > expiresAt;
 }
 
-export function decodeJWT(token: string): JWT {
-	const tokenSplitted = token.split('.');
-	if (tokenSplitted.length !== 3) {
-		throw new Error('Invalid token');
-	}
-
-	const payloadString = tokenSplitted[1];
-	const payload = JSON.parse(
-		Buffer.from(payloadString, 'base64').toString('utf8')
-	);
-
-	try {
-		return {
-			toString: () => token,
-			payload,
-		};
-	} catch (err) {
-		throw new Error('Invalid token payload');
-	}
-}
-
-export class Auth {
-	private authTokenStore: AuthTokenStore;
-	private tokenOrchestrator: AuthTokenOrchestrator;
+export class AuthClass {
 	private authSessionObservers: Set<Observer<AuthSession>>;
 	private authConfig: AuthConfig;
 	private authOptions: LibraryAuthOptions;
 
 	constructor() {
-		this.authTokenStore = new DefaultTokenStore();
-		this.tokenOrchestrator = new DefaultAuthTokensOrchestrator();
-		this.tokenOrchestrator.setAuthTokenStore(this.authTokenStore);
 		this.authSessionObservers = new Set();
 	}
 
@@ -78,65 +45,43 @@ export class Auth {
 	): void {
 		this.authConfig = authResourcesConfig;
 		this.authOptions = authOptions;
-
-		this.authTokenStore.setKeyValueStorage(this.authOptions.keyValueStorage);
-		this.authTokenStore.setAuthConfig(this.authConfig);
-
-		this.tokenOrchestrator.setTokenRefresher(this.authOptions.tokenRefresher);
-		this.tokenOrchestrator.setAuthConfig(this.authConfig);
 	}
 
-	/**
-	 * Returns current session tokens and credentials
-	 *
-	 * @internal
-	 *
-	 * @param options - Options for fetching session.
-	 *
-	 * @returns Returns a promise that will resolve with fresh authentication tokens.
-	 */
 	async fetchAuthSession(
-		options?: FetchAuthSessionOptions
+		options: FetchAuthSessionOptions = {}
 	): Promise<AuthSession> {
 		let tokens: AuthTokens;
-		let awsCreds: Credentials;
-		let awsCredsIdentityId: string;
+		let credentialsAndIdentityId: AWSCredentialsAndIdentityId;
 
-		try {
-			tokens = await this.tokenOrchestrator.getTokens({ options });
-		} catch (error) {
-			// TODO(v6): validate error depending on conditions it can proceed or throw
-		}
-
-		try {
-			if (this.authOptions.identityIdProvider) {
-				awsCredsIdentityId = await this.authOptions.identityIdProvider({
-					tokens,
-					authConfig: this.authConfig,
-				});
-			}
-		} catch (err) {
-			// TODO(v6): validate error depending on conditions it can proceed or throw
-		}
-
-		try {
-			if (this.authOptions.credentialsProvider) {
-				awsCreds = await this.authOptions.credentialsProvider.getCredentials({
-					authConfig: this.authConfig,
-					identityId: awsCredsIdentityId,
-					tokens,
-					options,
-				});
-			}
-		} catch (err) {
-			// TODO(v6): validate error depending on conditions it can proceed or throw
+		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if not available
+		tokens = await this.authOptions.tokenProvider?.getTokens(options);
+		if (tokens) {
+			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
+			credentialsAndIdentityId =
+				await this.authOptions.credentialsProvider?.getCredentialsAndIdentityId(
+					{
+						authConfig: this.authConfig,
+						tokens,
+						authenticated: true,
+						forceRefresh: options.forceRefresh,
+					}
+				);
+		} else {
+			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
+			credentialsAndIdentityId =
+				await this.authOptions.credentialsProvider?.getCredentialsAndIdentityId(
+					{
+						authConfig: this.authConfig,
+						authenticated: false,
+						forceRefresh: options.forceRefresh,
+					}
+				);
 		}
 
 		return {
-			isSignedIn: tokens !== undefined,
 			tokens,
-			awsCreds,
-			awsCredsIdentityId,
+			credentials: credentialsAndIdentityId?.credentials,
+			identityId: credentialsAndIdentityId?.identityId,
 		};
 	}
 
@@ -154,65 +99,4 @@ export class Auth {
 			};
 		});
 	}
-
-	/**
-	 * @internal
-	 *
-	 * Internal use of Amplify only, Persist Auth Tokens
-	 *
-	 * @param tokens AuthTokens
-	 *
-	 * @returns Promise<void>
-	 */
-	async setTokens(tokens: AuthTokens): Promise<void> {
-		await this.tokenOrchestrator.setTokens({ tokens });
-
-		// Notify observers (await is required to work with jest)
-		for await (const observer of this.authSessionObservers) {
-			// TODO(v6): Add load the identityId and credentials part
-			observer.next({
-				isSignedIn: true,
-				tokens,
-			});
-		}
-		return;
-	}
-
-	/**
-	 * @internal
-	 *
-	 * Clear tokens persisted on the client
-	 *
-	 * @return Promise<void>
-	 */
-	async clearTokens(): Promise<void> {
-		await this.tokenOrchestrator.clearTokens();
-
-		// Notify observers
-		for await (const observer of this.authSessionObservers) {
-			observer.next({
-				isSignedIn: false,
-			});
-		}
-		return;
-	}
-}
-
-export function assertTokenProviderConfig(authConfig: AuthConfig) {
-	const validConfig =
-		!!authConfig?.userPoolId && !!authConfig?.userPoolWebClientId;
-	return asserts(validConfig, {
-		name: 'AuthTokenConfigException',
-		message: 'Auth Token Provider not configured',
-		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
-	});
-}
-
-export function assertCredentialsProviderConfig(authConfig: AuthConfig) {
-	const validConfig = !!authConfig?.identityPoolId;
-	return asserts(validConfig, {
-		name: 'AuthCredentialConfigException',
-		message: 'Auth Credentials provider not configured',
-		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
-	});
 }

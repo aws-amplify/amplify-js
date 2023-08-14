@@ -53,7 +53,7 @@ export type ConfirmSignInWithTOTPCode = {
 
 export type ContinueSignInWithMFASelection = {
 	signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_MFA_SELECTION;
-	allowedMFATypes: AllowedMFATypes;
+	allowedMFATypes?: AllowedMFATypes;
 };
 
 export type ConfirmSignInWithCustomChallenge = {

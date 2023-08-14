@@ -6,6 +6,7 @@ import { authAPITestParams } from './testUtils/authApiTestParams';
 import { signIn } from '../../../src/providers/cognito/apis/signIn';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInStore } from '../../../src/providers/cognito/utils/signInStore';
+import { AmplifyV6 } from '@aws-amplify/core';
 
 describe('local sign-in state management tests', () => {
 	const session = '1234234232';
@@ -26,6 +27,12 @@ describe('local sign-in state management tests', () => {
 					},
 				})
 			);
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		await signIn({
 			username,
 			password,
@@ -50,9 +57,15 @@ describe('local sign-in state management tests', () => {
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
 					authAPITestParams.RespondToAuthChallengeCommandOutput
 			);
+		AmplifyV6.configure({
+			Auth: {
+				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				userPoolId: 'us-west-2_zzzzz',
+			},
+		});
 		await signIn({
 			username,
-			password
+			password,
 		});
 
 		const localSignInState = signInStore.getState();

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
@@ -28,6 +28,7 @@ import {
 	cleanActiveSignInState,
 	setActiveSignInState,
 } from '../utils/signInStore';
+import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 
 /**
  * Signs a user in using a custom authentication flow with SRP
@@ -46,7 +47,8 @@ export async function signInWithCustomSRPAuth(
 ): Promise<AuthSignInResult> {
 	const { username, password, options } = signInRequest;
 	const metadata =
-		options?.serviceOptions?.clientMetadata || Amplify.config.clientMetadata;
+		options?.serviceOptions?.clientMetadata ||
+		AmplifyV6.getConfig().Auth?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -71,7 +73,7 @@ export async function signInWithCustomSRPAuth(
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
-			// TODO(israx): cache tokens
+			await cacheCognitoTokens(AuthenticationResult);
 			cleanActiveSignInState();
 			return {
 				isSignedIn: true,
@@ -79,7 +81,6 @@ export async function signInWithCustomSRPAuth(
 			};
 		}
 
-		// TODO(israx): set AmplifyUserSession via singleton
 		return getSignInResult({
 			challengeName: ChallengeName as ChallengeName,
 			challengeParameters: ChallengeParameters as ChallengeParameters,

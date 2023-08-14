@@ -1,19 +1,23 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { Amplify, Cache } from '@aws-amplify/core';
+/*
+This file maps top-level exports from `aws-amplify`.
+*/
+export { Amplify } from '@aws-amplify/core';
+export { withSSRContext } from './ssr/withSSRContext';
+
+// TODO(v6): Refactor these into category-specific exports as they come online
 export {
 	Analytics,
 	AnalyticsProvider,
 	AWSPinpointProvider,
-	AWSKinesisProvider,
-	AWSKinesisFirehoseProvider,
-	AmazonPersonalizeProvider,
+// AWSKinesisProvider,
+// AWSKinesisFirehoseProvider,
+// AmazonPersonalizeProvider,
 } from '@aws-amplify/analytics';
 export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
-export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
-export { PubSub } from '@aws-amplify/pubsub';
 export {
 	ConsoleLogger as Logger,
 	Hub,
@@ -23,10 +27,13 @@ export {
 	ServiceWorker,
 	AWSCloudWatchProvider,
 } from '@aws-amplify/core';
-export { withSSRContext } from './withSSRContext';
+
+export { DefaultAmplifyV6 as AmplifyV6 } from './initSingleton';
 
 // TODO(v6): Re-enable these exports when available
 /*
+export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
+export { PubSub } from '@aws-amplify/pubsub';
 export {
 	AuthModeStrategyType,
 	DataStore,

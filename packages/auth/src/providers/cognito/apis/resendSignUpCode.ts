@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
 import type { ResendConfirmationCodeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import {
 	AuthCodeDeliveryDetails,
@@ -13,7 +13,10 @@ import {
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { resendSignUpConfirmationCodeClient } from '../utils/clients/ResendSignUpCodeClient';
-import { CognitoResendSignUpCodeOptions, CognitoUserAttributeKey } from '../types';
+import {
+	CognitoResendSignUpCodeOptions,
+	CognitoUserAttributeKey,
+} from '../types';
 
 /**
  * Resend the confirmation code while signing up
@@ -34,13 +37,13 @@ export async function resendSignUpCode(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
 	);
-	const config = Amplify.config;
+	const authConfig = AmplifyV6.getConfig().Auth;
 	const { CodeDeliveryDetails }: ResendConfirmationCodeCommandOutput =
 		await resendSignUpConfirmationCodeClient({
 			Username: username,
 			ClientMetadata:
 				resendRequest.options?.serviceOptions?.clientMetadata ??
-				config.clientMetadata,
+				authConfig?.clientMetadata,
 		});
 	const { DeliveryMedium, AttributeName, Destination } = {
 		...CodeDeliveryDetails,

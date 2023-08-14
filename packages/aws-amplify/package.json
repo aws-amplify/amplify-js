@@ -5,24 +5,77 @@
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
-  "react-native": {
-    "./lib/index": "./lib-esm/index.js"
+  "react-native": "./lib-esm/index.js",
+  "exports": {
+    ".": {
+      "types": "./lib-esm/index.d.ts",
+      "import": "./lib-esm/index.js",
+      "require": "./lib/index.js"
+    },
+    "./utils": {
+      "types": "./lib-esm/utils/index.d.ts",
+      "import": "./lib-esm/utils/index.js",
+      "require": "./lib/utils/index.js"
+    },
+    "./auth": {
+      "types": "./lib-esm/auth/index.d.ts",
+      "import": "./lib-esm/auth/index.js",
+      "require": "./lib/auth/index.js"
+    },
+    "./auth/cognito": {
+      "types": "./lib-esm/auth/cognito/index.d.ts",
+      "import": "./lib-esm/auth/cognito/index.js",
+      "require": "./lib/auth/cognito/index.js"
+    },
+    "./analytics": {
+      "types": "./lib-esm/analytics/index.d.ts",
+      "import": "./lib-esm/analytics/index.js",
+      "require": "./lib/analytics/index.js"
+    },
+    "./analytics/pinpoint": {
+      "types": "./lib-esm/analytics/pinpoint/index.d.ts",
+      "import": "./lib-esm/analytics/pinpoint/index.js",
+      "require": "./lib/analytics/pinpoint/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    ">=3.8": {
+      "*": [
+        "./lib-esm/index.d.ts"
+      ],
+      "utils": [
+        "./lib-esm/utils/index.d.ts"
+      ],
+      "auth": [
+        "./lib-esm/auth/index.d.ts"
+      ],
+      "auth/cognito": [
+        "./lib-esm/auth/cognito/index.d.ts"
+      ],
+      "analytics": [
+        "./lib-esm/analytics/index.d.ts"
+      ],
+      "analytics/pinpoint": [
+        "./lib-esm/analytics/pinpoint/index.d.ts"
+      ]
+    }
   },
   "sideEffects": false,
   "scripts": {
-    "test": "npm run lint && jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
+    "test": "npm run lint && jest -w 1 --coverage",
     "build-with-test": "npm run clean && npm test && tsc && webpack -p",
-    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-    "build:esm": "node ./build es6",
-    "build:cjs:watch": "node ./build es5 --watch",
-    "build:esm:watch": "node ./build es6 --watch",
+    "build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
+    "build:esm": "rimraf lib-esm && tsc -m es6 --outDir lib-esm",
+    "build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
+    "build:esm:watch": "rimraf lib-esm && tsc -m es6 --outDir lib-esm --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
     "generate-docs-local": "typedoc --out docs src",
     "generate-docs-root": "typedoc --out ../../docs src",
-    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 93.26"
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 93.26"
   },
   "repository": {
     "type": "git",
@@ -31,46 +84,39 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/aws/aws-amplify/issues"
+    "url": "https://github.com/aws-amplify/amplify-js/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
   "files": [
     "lib",
     "lib-esm",
-    "src"
+    "src",
+    "**/package.json"
   ],
   "dependencies": {
     "@aws-amplify/analytics": "7.0.0",
-    "@aws-amplify/api": "6.0.0",
     "@aws-amplify/auth": "6.0.0",
     "@aws-amplify/core": "6.0.0",
-    "@aws-amplify/pubsub": "6.0.0",
     "@aws-amplify/storage": "6.0.0",
     "tslib": "^2.5.0"
+  },
+  "devDependencies": {
+    "typescript": "5.0.2"
   },
   "jest": {
     "globals": {
       "ts-jest": {
         "diagnostics": false,
         "tsConfig": {
-          "lib": [
-            "es5",
-            "es2015",
-            "dom",
-            "esnext.asynciterable",
-            "es2017.object"
-          ],
-          "allowJs": true
+          "allowJs": true,
+          "noEmitOnError": false
         }
       }
     },
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
     },
-    "preset": "ts-jest",
-    "testMatch": [
-      "**/__tests__/**/*-test.[jt]s?(x)"
-    ],
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -89,7 +135,7 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/",
+      "node_modules",
       "dist",
       "lib",
       "lib-esm"

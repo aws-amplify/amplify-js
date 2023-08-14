@@ -4,7 +4,7 @@
 import { Amplify } from './Amplify';
 import { Platform } from './Platform';
 
-export { Amplify } from './Amplify';
+export { Amplify };
 export { AmplifyClass } from './Amplify';
 export { ClientDevice } from './ClientDevice';
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
@@ -42,8 +42,16 @@ export {
 	ErrorParams,
 	AmplifyErrorMap,
 	ServiceError,
+	KeyValueStorageInterface,
 } from './types';
-export { StorageHelper, MemoryStorage } from './StorageHelper';
+export {
+	StorageHelper,
+	MemoryStorage,
+	LocalStorage,
+	CookieStorage,
+	SessionStorage,
+	MemoryKeyValueStorage,
+} from './StorageHelper';
 export { UniversalStorage } from './UniversalStorage';
 export {
 	Platform,
@@ -100,12 +108,44 @@ export {
 
 // Cache exports
 import { BrowserStorageCache } from './Cache/BrowserStorageCache';
+export { asserts } from './Util/errors/AssertError';
+export { isTokenExpired } from './singleton/Auth';
 export { InMemoryCache } from './Cache/InMemoryCache';
 export { CacheConfig } from './Cache/types';
 export { ICache } from './Cache/types';
 export { BrowserStorageCache };
+export {
+	decodeJWT,
+	assertTokenProviderConfig,
+	assertIdentityPooIdConfig,
+} from './singleton/Auth/utils';
+export {
+	TokenProvider,
+	AuthTokens,
+	FetchAuthSessionOptions,
+	AWSCredentialsAndIdentityIdProvider,
+	AWSCredentialsAndIdentityId,
+	Identity,
+} from './singleton/Auth/types';
+export {
+	AuthConfig,
+	UserPoolConfig,
+	UserPoolConfigAndIdentityPoolConfig,
+	StorageAccessLevel,
+	StorageConfig,
+	GetCredentialsOptions,
+} from './singleton/types';
 
-export { Amplify as AmplifyV6 } from './singleton';
+// AWSClients exports
+export {
+	getCredentialsForIdentity,
+	getId,
+	GetCredentialsForIdentityInput,
+	GetCredentialsForIdentityOutput,
+} from './AwsClients/CognitoIdentity';
+
+export { AmplifyV6, fetchAuthSession } from './singleton';
+export { LibraryOptions, ResourcesConfig } from './singleton/types';
 
 // Standard `Cache` export to maintain interoperability with React Native
 export { BrowserStorageCache as Cache };

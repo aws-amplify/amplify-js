@@ -6,19 +6,12 @@ describe('aws-amplify', () => {
 			expect(Object.keys(exported)).toMatchInlineSnapshot(`
 			Array [
 			  "Amplify",
-			  "Cache",
+			  "withSSRContext",
 			  "Analytics",
 			  "AWSPinpointProvider",
-			  "AWSKinesisProvider",
-			  "AWSKinesisFirehoseProvider",
-			  "AmazonPersonalizeProvider",
 			  "Auth",
 			  "Storage",
 			  "StorageClass",
-			  "API",
-			  "APIClass",
-			  "graphqlOperation",
-			  "PubSub",
 			  "Logger",
 			  "Hub",
 			  "ClientDevice",
@@ -26,7 +19,7 @@ describe('aws-amplify', () => {
 			  "I18n",
 			  "ServiceWorker",
 			  "AWSCloudWatchProvider",
-			  "withSSRContext",
+			  "AmplifyV6",
 			]
 		`);
 		});

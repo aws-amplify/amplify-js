@@ -6,7 +6,7 @@ import type {
 	ResendConfirmationCodeCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { UserPoolHttpClient } from './HttpClients';
-import { UserPoolClient } from './UserPoolClient';
+import { AmplifyV6 } from '@aws-amplify/core';
 
 export type ResendConfirmationCodeClientInput = Pick<
 	ResendConfirmationCodeCommandInput,
@@ -16,13 +16,14 @@ export type ResendConfirmationCodeClientInput = Pick<
 export async function resendSignUpConfirmationCodeClient(
 	params: ResendConfirmationCodeClientInput
 ): Promise<ResendConfirmationCodeCommandOutput> {
-	const client = new UserPoolHttpClient(UserPoolClient.region);
+	const authConfig = AmplifyV6.getConfig().Auth;
+	const client = new UserPoolHttpClient(authConfig);
 	const result: ResendConfirmationCodeCommandOutput =
 		await client.send<ResendConfirmationCodeCommandOutput>(
 			'ResendConfirmationCode',
 			{
 				...params,
-				ClientId: UserPoolClient.clientId,
+				ClientId: authConfig?.userPoolWebClientId,
 			}
 		);
 	return result;

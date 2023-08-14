@@ -20,11 +20,17 @@ import type {
 	VerifySoftwareTokenCommandOutput,
 	AssociateSoftwareTokenCommandInput,
 	AssociateSoftwareTokenCommandOutput,
+	SetUserMFAPreferenceCommandInput,
+	SetUserMFAPreferenceCommandOutput,
+	GetUserCommandInput,
+	GetUserCommandOutput,
 	ChangePasswordCommandInput,
 	ChangePasswordCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../../errors/AuthError';
 import { assertServiceError } from '../../../../errors/utils/assertServiceError';
+import { AuthConfig } from '@aws-amplify/core';
+import { isTypeUserPoolConfig } from '../types';
 
 // TODO: Update the user-agent value
 const USER_AGENT = 'amplify test';
@@ -39,6 +45,8 @@ export type ClientInputs =
 	| ConfirmSignUpCommandInput
 	| VerifySoftwareTokenCommandInput
 	| AssociateSoftwareTokenCommandInput
+	| SetUserMFAPreferenceCommandInput
+	| GetUserCommandInput
 	| ChangePasswordCommandInput;
 
 export type ClientOutputs =
@@ -51,6 +59,8 @@ export type ClientOutputs =
 	| ConfirmSignUpCommandOutput
 	| VerifySoftwareTokenCommandOutput
 	| AssociateSoftwareTokenCommandOutput
+	| SetUserMFAPreferenceCommandOutput
+	| GetUserCommandOutput
 	| ChangePasswordCommandOutput;
 
 export type ClientOperations =
@@ -63,18 +73,26 @@ export type ClientOperations =
 	| 'ResendConfirmationCode'
 	| 'VerifySoftwareToken'
 	| 'AssociateSoftwareToken'
+	| 'SetUserMFAPreference'
+	| 'GetUser'
 	| 'ChangePassword';
 
 export class UserPoolHttpClient {
 	private _endpoint: string;
+
 	private _headers = {
 		'Content-Type': 'application/x-amz-json-1.1',
 		'X-Amz-User-Agent': USER_AGENT,
 		'Cache-Control': 'no-store',
 	};
 
-	constructor(region: string) {
-		this._endpoint = `https://cognito-idp.${region}.amazonaws.com/`;
+	constructor(authConfig?: AuthConfig) {
+		if (authConfig && isTypeUserPoolConfig(authConfig)) {
+			const region = authConfig.userPoolId.split('_')[0];
+			this._endpoint = `https://cognito-idp.${region}.amazonaws.com/`;
+		} else {
+			throw new Error('error'); // TODO: update error
+		}
 	}
 
 	async send<T extends ClientOutputs>(

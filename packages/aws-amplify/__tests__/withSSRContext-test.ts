@@ -1,6 +1,6 @@
 import { Amplify, UniversalStorage } from '@aws-amplify/core';
 
-import { withSSRContext } from '../src/withSSRContext';
+import { withSSRContext } from '../src/ssr/withSSRContext';
 
 describe('withSSRContext', () => {
 	it('should not require context (for client-side requests)', () => {
@@ -28,6 +28,8 @@ describe('withSSRContext', () => {
 		);
 	});
 
+	// TODO(v6): Refactor with new SSR utilities
+	/*
 	describe('API', () => {
 		it('should be a different instance than Amplify.Auth', () => {
 			expect(withSSRContext().API).not.toBe(Amplify.API);
@@ -48,6 +50,7 @@ describe('withSSRContext', () => {
 			);
 		});
 	});
+	*/
 
 	describe('Auth', () => {
 		it('should be a different instance than Amplify.Auth', () => {
