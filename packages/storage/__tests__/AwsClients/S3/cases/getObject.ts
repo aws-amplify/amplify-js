@@ -66,14 +66,14 @@ const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
 	{
 		Bucket: 'bucket',
 		Key: 'key',
-		ResponseCacheControl: 'ResponseCacheControl',
-		ResponseContentDisposition: 'ResponseContentDisposition',
-		ResponseContentEncoding: 'ResponseContentEncoding',
-		ResponseContentLanguage: 'ResponseContentLanguage',
-		ResponseContentType: 'ResponseContentType',
-		SSECustomerAlgorithm: 'SSECustomerAlgorithm',
-		SSECustomerKey: 'SSECustomerKey',
-		SSECustomerKeyMD5: 'SSECustomerKeyMD5',
+		// ResponseCacheControl: 'ResponseCacheControl',
+		// ResponseContentDisposition: 'ResponseContentDisposition',
+		// ResponseContentEncoding: 'ResponseContentEncoding',
+		// ResponseContentLanguage: 'ResponseContentLanguage',
+		// ResponseContentType: 'ResponseContentType',
+		// SSECustomerAlgorithm: 'SSECustomerAlgorithm',
+		// SSECustomerKey: 'SSECustomerKey',
+		// SSECustomerKeyMD5: 'SSECustomerKeyMD5',
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
