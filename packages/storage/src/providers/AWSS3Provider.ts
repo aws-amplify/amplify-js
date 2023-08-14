@@ -372,16 +372,8 @@ export class AWSS3Provider implements StorageProvider {
 		const opt = Object.assign({}, this._config, config);
 		const {
 			download,
-			// cacheControl,
-			// contentDisposition,
-			// contentEncoding,
-			// contentLanguage,
-			// contentType,
 			expires,
 			track,
-			// SSECustomerAlgorithm,
-			// SSECustomerKey,
-			// SSECustomerKeyMD5,
 			progressCallback,
 			validateObjectExistence = false,
 		} = opt;
@@ -399,23 +391,6 @@ export class AWSS3Provider implements StorageProvider {
 			Bucket: bucket,
 			Key: final_key,
 		};
-		// See: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
-		// if (cacheControl) params.ResponseCacheControl = cacheControl;
-		// if (contentDisposition)
-		// 	params.ResponseContentDisposition = contentDisposition;
-		// if (contentEncoding) params.ResponseContentEncoding = contentEncoding;
-		// if (contentLanguage) params.ResponseContentLanguage = contentLanguage;
-		// if (contentType) params.ResponseContentType = contentType;
-		// if (SSECustomerAlgorithm) {
-		// 	params.SSECustomerAlgorithm = SSECustomerAlgorithm;
-		// }
-		// if (SSECustomerKey) {
-		// 	params.SSECustomerKey = SSECustomerKey;
-		// }
-		// if (SSECustomerKeyMD5) {
-		// 	params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
-		// }
-
 		if (download === true) {
 			try {
 				if (progressCallback) {
