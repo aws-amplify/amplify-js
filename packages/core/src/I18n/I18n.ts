@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { I18nOptions } from './types';
 import { ConsoleLogger as Logger } from '../Logger';
+import { AmplifyV6 } from '../singleton';
 
 const logger = new Logger('I18n');
 
@@ -12,11 +12,6 @@ const logger = new Logger('I18n');
  * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
  */
 export class I18n {
-	/**
-	 * @private
-	 */
-	_options: I18nOptions = null;
-
 	/**
 	 * @private
 	 */
@@ -34,10 +29,11 @@ export class I18n {
 	 * 
 	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
-	constructor(options: I18nOptions) {
-		this._options = Object.assign({}, options);
-		this._lang = this._options.language;
+	constructor() {
+		const i18nConfig = AmplifyV6.getConfig().I18n;
+		this._lang = i18nConfig?.language;
 
+		// Default to window language if not set in config
 		if (
 			!this._lang &&
 			typeof window !== 'undefined' &&

@@ -4,11 +4,9 @@
 import { I18n as I18nClass } from './I18n';
 
 import { ConsoleLogger as Logger } from '../Logger';
-import { Amplify } from '../Amplify';
 
 const logger = new Logger('I18n');
 
-let _config = null;
 let _i18n = null;
 
 /**
@@ -17,27 +15,6 @@ let _i18n = null;
  * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
  */
 export class I18n {
-	/**
-	 * @static
-	 * @method
-	 * Configure I18n part
-	 * @param {Object} config - Configuration of the I18n
-	 * 
-	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
-	 */
-	static configure(config) {
-		logger.debug('configure I18n');
-		if (!config) {
-			return _config;
-		}
-
-		_config = Object.assign({}, _config, config.I18n || config);
-
-		I18n.createInstance();
-
-		return _config;
-	}
-
 	static getModuleName() {
 		return 'I18n';
 	}
@@ -54,7 +31,7 @@ export class I18n {
 		if (_i18n) {
 			return;
 		}
-		_i18n = new I18nClass(_config);
+		_i18n = new I18nClass();
 	}
 
 	/**
@@ -118,11 +95,12 @@ export class I18n {
 
 	public static checkConfig() {
 		if (!_i18n) {
-			_i18n = new I18nClass(_config);
+			I18n.createInstance();
 		}
 
 		return true;
 	}
 }
 
-Amplify.register(I18n);
+// Create an instance of I18n in the static class
+I18n.createInstance();
