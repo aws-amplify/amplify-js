@@ -43,15 +43,15 @@ export type S3ProviderGetConfig = CommonStorageOptions & {
 	provider?: 'AWSS3';
 	identityId?: string;
 	progressCallback?: (progress: any) => any;
-	cacheControl?: GetObjectInput['ResponseCacheControl'];
-	contentDisposition?: GetObjectInput['ResponseContentDisposition'];
-	contentEncoding?: GetObjectInput['ResponseContentEncoding'];
-	contentLanguage?: GetObjectInput['ResponseContentLanguage'];
-	contentType?: GetObjectInput['ResponseContentType'];
-	SSECustomerAlgorithm?: GetObjectInput['SSECustomerAlgorithm'];
-	SSECustomerKey?: GetObjectInput['SSECustomerKey'];
-	// TODO(AllanZhengYP): remove in V6.
-	SSECustomerKeyMD5?: GetObjectInput['SSECustomerKeyMD5'];
+	// cacheControl?: GetObjectInput['ResponseCacheControl'];
+	// contentDisposition?: GetObjectInput['ResponseContentDisposition'];
+	// contentEncoding?: GetObjectInput['ResponseContentEncoding'];
+	// contentLanguage?: GetObjectInput['ResponseContentLanguage'];
+	// contentType?: GetObjectInput['ResponseContentType'];
+	// SSECustomerAlgorithm?: GetObjectInput['SSECustomerAlgorithm'];
+	// SSECustomerKey?: GetObjectInput['SSECustomerKey'];
+	// // TODO(AllanZhengYP): remove in V6.
+	// SSECustomerKeyMD5?: GetObjectInput['SSECustomerKeyMD5'];
 	validateObjectExistence?: boolean;
 };
 

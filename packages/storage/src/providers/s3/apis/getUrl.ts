@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { S3GetUrlOptions, S3GetUrlResult } from '../types';
-import { assertValidationError } from '../../../errors/assertValidationErrors';
+
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import {
 	GetObjectInput,
@@ -15,6 +15,7 @@ import {
 	getKeyWithPrefix,
 	resolveCredentials,
 } from '../utils';
+import { assertValidationError } from '../../../errors/utils/assertValidationError';
 
 const DEFAULT_PRESIGN_EXPIRATION = 900;
 
@@ -34,33 +35,36 @@ export const getUrl = async function (
 	req: StorageDownloadDataRequest<S3GetUrlOptions>
 ): Promise<S3GetUrlResult> {
 	const options = req?.options;
-	const { awsCredsIdentityId, awsCreds, defaultAccessLevel, bucket, region } =
-		await getStorageConfig();
+	const { credentials, identityId } = await resolveCredentials();
+	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
 	const { key, options: { accessLevel = defaultAccessLevel } = {} } = req;
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 	if (options?.validateObjectExistence) {
-		await getProperties(key);
+		await getProperties({ key });
 	}
-	const finalKey = getFinalKey(accessLevel, awsCredsIdentityId, key);
+	const finalKey = getKeyWithPrefix(accessLevel, identityId, key);
 	const getUrlParams: GetObjectInput = {
 		Bucket: bucket,
 		Key: finalKey,
 	};
 	const getUrlOptions = {
 		accessLevel,
-		targetIdentityId: awsCredsIdentityId,
+		credentials,
 		expiration: options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION,
-		credentials: awsCreds,
 		signingRegion: region,
 		region,
+		signingService: 's3',
 	};
-	const result: S3GetUrlResult = {
-	  url: await getPresignedGetObjectUrl(getUrlOptions, getUrlParams);
-	}
+	let result: S3GetUrlResult;
+
+	result.url = new URL(
+		await getPresignedGetObjectUrl(getUrlOptions, getUrlParams)
+	);
+
 	const urlExpiration = new Date(
 		options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION
 	);
-	const awsCredExpiration = awsCreds?.expiration;
+	const awsCredExpiration = credentials?.expiration;
 	// expiresAt is the minimum of credential expiration and url expiration
 	result.expiresAt =
 		urlExpiration < awsCredExpiration ? urlExpiration : awsCredExpiration;
