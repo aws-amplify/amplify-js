@@ -8,7 +8,7 @@ import {
 	Hub,
 	browserOrNode,
 	BackgroundProcessManager,
-	Cache
+	Cache,
 } from '@aws-amplify/core';
 import {
 	Draft,
@@ -2429,7 +2429,7 @@ class DataStore {
 					Hub.remove('datastore', hubCallback);
 				}
 			};
-			Hub.listen('datastore', hubCallback);
+			Hub.listen('datastore').subscribe(hubCallback);
 
 			return this.runningProcesses.addCleaner(async () => {
 				if (handle) {

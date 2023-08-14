@@ -1096,7 +1096,7 @@ export class SyncEngine {
 	 * retrieve the missed data.
 	 */
 	private startDisruptionListener() {
-		return Hub.listen('api', (data: any) => {
+		return Hub.listen('api').subscribe((data: any) => {
 			if (
 				data.source === 'PubSub' &&
 				data.payload.event === PUBSUB_CONNECTION_STATE_CHANGE

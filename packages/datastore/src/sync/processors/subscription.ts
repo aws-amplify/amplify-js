@@ -11,7 +11,7 @@ import {
 	Hub,
 	HubCapsule,
 	BackgroundProcessManager,
-	Cache
+	Cache,
 } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -666,7 +666,7 @@ class SubscriptionProcessor {
 														this,
 														res
 													);
-													Hub.listen('api', boundFunction);
+													Hub.listen('api').subscribe(boundFunction);
 												});
 												Hub.remove('api', boundFunction);
 											})()

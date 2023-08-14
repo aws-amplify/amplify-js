@@ -66,7 +66,7 @@ export default class InAppMessaging implements InAppMessagingInterface {
 		}
 
 		if (listenForAnalyticsEvents && !this.listeningForAnalyticEvents) {
-			Hub.listen('analytics', this.analyticsListener);
+			Hub.listen('analytics').subscribe(this.analyticsListener);
 			this.listeningForAnalyticEvents = true;
 		}
 

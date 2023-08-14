@@ -122,7 +122,7 @@ export class AuthClass {
 		this.currentCredentials = this.currentCredentials.bind(this);
 		this.currentUserCredentials = this.currentUserCredentials.bind(this);
 
-		Hub.listen('auth', ({ payload }) => {
+		Hub.listen('auth').subscribe(({ payload }) => {
 			const { event } = payload;
 			switch (event) {
 				case 'verify':
@@ -465,7 +465,7 @@ export class AuthClass {
 				this.signInAfterUserConfirmed(authDetails, listenEvent);
 			}
 		};
-		Hub.listen('auth', listenEvent);
+		Hub.listen('auth').subscribe(listenEvent);
 	}
 
 	private handleLinkAutoSignIn(authDetails: AuthenticationDetails) {
@@ -1675,7 +1675,7 @@ export class AuthClass {
 								res(undefined);
 							}, OAUTH_FLOW_MS_TIMEOUT);
 
-							Hub.listen('auth', hostedUISignCallback);
+							Hub.listen('auth').subscribe(hostedUISignCallback);
 
 							function hostedUISignCallback({ payload }) {
 								const { event } = payload;

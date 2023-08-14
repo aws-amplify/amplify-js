@@ -1,5 +1,6 @@
 import { Hub } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
+import { Subscription } from 'rxjs';
 import { ConnectionState as CS, CONNECTION_STATE_CHANGE } from '../src';
 import * as constants from '../src/Providers/constants';
 
@@ -12,7 +13,7 @@ export function delay(timeout) {
 }
 
 export class HubConnectionListener {
-	teardownHubListener: () => void;
+	teardownHubListener: Subscription;
 	observedConnectionStates: CS[] = [];
 	currentConnectionState: CS;
 
@@ -21,7 +22,7 @@ export class HubConnectionListener {
 	constructor(channel: string) {
 		let closeResolver: (value: PromiseLike<any>) => void;
 
-		this.teardownHubListener = Hub.listen(channel, (data: any) => {
+		this.teardownHubListener = Hub.listen(channel).subscribe((data: any) => {
 			const { payload } = data;
 			if (payload.event === CONNECTION_STATE_CHANGE) {
 				const connectionState = payload.data.connectionState as CS;

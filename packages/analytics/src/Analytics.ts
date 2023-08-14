@@ -70,10 +70,10 @@ export class AnalyticsClass {
 		_instance = this;
 
 		this.record = this.record.bind(this);
-		Hub.listen('auth', listener);
-		Hub.listen('storage', listener);
-		Hub.listen('analytics', listener);
-		Hub.listen('core', listener);
+		Hub.listen('auth').subscribe(listener);
+		Hub.listen('storage').subscribe(listener);
+		Hub.listen('analytics').subscribe(listener);
+		Hub.listen('core').subscribe(listener);
 	}
 
 	public getModuleName() {
