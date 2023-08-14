@@ -14,15 +14,16 @@ export const INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER = hasSymbol
 
 export const USER_AGENT_HEADER = 'x-amz-user-agent';
 
-export const SERVICE_WORKER_EXCEPTION = 'ServiceWorkerException';
+// Error exception code constants
+export const AUTH_CONFING_EXCEPTION = 'AuthConfigException';
 
 export const AWS_CLOUD_WATCH_PROVIDER_OPTIONS_EXCEPTION =
 	'AWSCloudWatchProviderOptionsException';
 
 export const CACHE_LIST_EXCEPTION = 'CacheListException';
 
-export const STORAGE_CACHE_EXCEPTION = 'StorageCacheException';
-
 export const I18N_EXCEPTION = 'I18NException';
 
-export const AUTH_CONFING_EXCEPTION = 'AuthConfigException';
+export const SERVICE_WORKER_EXCEPTION = 'ServiceWorkerException';
+
+export const STORAGE_CACHE_EXCEPTION = 'StorageCacheException';

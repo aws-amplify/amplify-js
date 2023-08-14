@@ -359,11 +359,11 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		 *   ...the log stream does exist but has no logs written to it yet
 		 */
 		try {
-			asserts(!(this._config.logGroupName === undefined), {
+			asserts(this._config.logGroupName !== undefined, {
 				name: AWS_CLOUD_WATCH_PROVIDER_OPTIONS_EXCEPTION,
 				message: ' log group name is undefined',
 			});
-			asserts(!(this._config.logStreamName === undefined), {
+			asserts(this._config.logStreamName !== undefined, {
 				name: AWS_CLOUD_WATCH_PROVIDER_OPTIONS_EXCEPTION,
 				message: ' log stream name is undefined',
 			});

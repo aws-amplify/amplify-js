@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import Observable from 'zen-observable-ts';
 import { ConsoleLogger as Logger } from '../Logger';
+import type NetInfo from '@react-native-community/netinfo';
 
 const logger = new Logger('Reachability', 'DEBUG');
 
@@ -10,7 +11,7 @@ type NetworkStatus = {
 };
 
 export default class ReachabilityNavigator implements Reachability {
-	networkMonitor(netInfo?: any): Observable<NetworkStatus> {
+	networkMonitor(netInfo?: typeof NetInfo): Observable<NetworkStatus> {
 		/**
 		 * Here netinfo refers to @react-native-community/netinfo
 		 * This is needed in React Native to enable network detection
@@ -27,7 +28,7 @@ export default class ReachabilityNavigator implements Reachability {
 			logger.log('subscribing to reachability in React Native');
 
 			const unsubscribe = netInfo.addEventListener(
-				({ isInternetReachable }: { isInternetReachable: boolean }) => {
+				({ isInternetReachable }) => {
 					// `isInternetReachable` can sometimes be `null` initially, so we want
 					// to make sure it is a boolean first before sending it to the observer.
 					if (typeof isInternetReachable === 'boolean') {
@@ -46,5 +47,5 @@ export default class ReachabilityNavigator implements Reachability {
 }
 
 interface Reachability {
-	networkMonitor(netInfo?: any): Observable<NetworkStatus>;
+	networkMonitor(netInfo?: typeof NetInfo): Observable<NetworkStatus>;
 }

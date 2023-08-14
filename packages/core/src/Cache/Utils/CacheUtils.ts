@@ -70,7 +70,7 @@ function _isInteger(value?: number): boolean {
 /**
  * provide an object as the in-memory cache
  */
-let store: { [key: string]: string } = {};
+let store: Record<string, string> = {};
 export class CacheObject {
 	static clear(): void {
 		store = {};

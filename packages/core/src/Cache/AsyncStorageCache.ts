@@ -256,7 +256,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 * @param {String} key - the key of the item
 	 * @param {Object} value - the value of the item
 	 * @param {Object} [options] - optional, the specified meta-data
-	 * @return {Prmoise}
+	 * @return {Promise}
 	 */
 	async setItem(key: string, value: any, options: Record<string, any>) {
 		logger.debug(

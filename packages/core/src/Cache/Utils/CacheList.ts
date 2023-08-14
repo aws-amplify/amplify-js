@@ -77,7 +77,7 @@ export default class CacheList {
 		});
 		asserts(node.nextNode !== null, {
 			name: CACHE_LIST_EXCEPTION,
-			message: 'previous node is null',
+			message: 'nextNode node is null',
 		});
 		node.prevNode.nextNode = node.nextNode;
 		node.nextNode.prevNode = node.prevNode;
