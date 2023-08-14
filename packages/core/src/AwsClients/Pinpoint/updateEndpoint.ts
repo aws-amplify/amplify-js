@@ -19,15 +19,15 @@ import type {
 export type { UpdateEndpointInput, UpdateEndpointOutput };
 
 const updateEndpointSerializer = (
-	{ ApplicationId, EndpointId, EndpointRequest }: UpdateEndpointInput,
+	{ ApplicationId = '', EndpointId = '', EndpointRequest }: UpdateEndpointInput,
 	endpoint: Endpoint
 ): HttpRequest => {
 	const headers = getSharedHeaders();
 	const url = new URL(endpoint.url);
 	url.pathname = `v1/apps/${extendedEncodeURIComponent(
-		ApplicationId ?? ''
-	)}/endpoints/${extendedEncodeURIComponent(EndpointId ?? '')}`;
-	const body = JSON.stringify(EndpointRequest ?? {});
+		ApplicationId
+	)}/endpoints/${extendedEncodeURIComponent(EndpointId)}`;
+	const body = JSON.stringify(EndpointRequest);
 	return { method: 'PUT', headers, url, body };
 };
 

@@ -49,12 +49,19 @@ const getCredentialsForIdentityDeserializer = async (
 	}
 };
 
-const deserializeCredentials = (output: Credentials = {}): Credentials => ({
-	AccessKeyId: output.AccessKeyId,
-	SecretKey: output.SecretKey,
-	SessionToken: output.SessionToken,
-	Expiration: new Date((output.Expiration as any) * 1000),
-});
+const deserializeCredentials = ({
+	AccessKeyId,
+	SecretKey,
+	SessionToken,
+	Expiration,
+}: Credentials = {}): Credentials => {
+	return {
+		AccessKeyId: AccessKeyId,
+		SecretKey: SecretKey,
+		SessionToken: SessionToken,
+		Expiration: Expiration && new Date((Expiration as any) * 1000),
+	};
+};
 
 /**
  * @internal

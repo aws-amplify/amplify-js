@@ -19,14 +19,14 @@ import type {
 export type { GetInAppMessagesInput, GetInAppMessagesOutput };
 
 const getInAppMessagesSerializer = (
-	{ ApplicationId, EndpointId }: GetInAppMessagesInput,
+	{ ApplicationId = '', EndpointId = '' }: GetInAppMessagesInput,
 	endpoint: Endpoint
 ): HttpRequest => {
 	const headers = getSharedHeaders();
 	const url = new URL(endpoint.url);
 	url.pathname = `v1/apps/${extendedEncodeURIComponent(
-		ApplicationId ?? ''
-	)}/endpoints/${extendedEncodeURIComponent(EndpointId ?? '')}/inappmessages`;
+		ApplicationId
+	)}/endpoints/${extendedEncodeURIComponent(EndpointId)}/inappmessages`;
 	return { method: 'GET', headers, url };
 };
 

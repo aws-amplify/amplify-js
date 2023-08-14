@@ -8,9 +8,9 @@ import {
 } from '../../clients/middleware/retry';
 import { parseJsonError } from '../../clients/serde/json';
 import type {
+	DefaultConfigOptions,
 	EndpointResolverOptions,
 	Headers,
-	ServiceClientOptions,
 } from '../../clients/types';
 import { getAmplifyUserAgent } from '../../Platform';
 
@@ -29,7 +29,7 @@ const endpointResolver = ({ region }: EndpointResolverOptions) => ({
 /**
  * @internal
  */
-export const defaultConfig: Record<string, unknown> = {
+export const defaultConfig: DefaultConfigOptions = {
 	service: SERVICE_NAME,
 	endpointResolver,
 	retryDecider: getRetryDecider(parseJsonError),

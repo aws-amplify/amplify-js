@@ -8,6 +8,8 @@ import {
 	FetchAuthSessionOptions,
 	LibraryAuthOptions,
 } from './types';
+import { asserts } from '../../Util/errors/AssertError';
+import { AUTH_CONFING_EXCEPTION } from '../../constants';
 
 export function isTokenExpired({
 	expiresAt,
@@ -22,8 +24,8 @@ export function isTokenExpired({
 
 export class AuthClass {
 	private authSessionObservers: Set<Observer<AuthSession>>;
-	private authConfig: AuthConfig;
-	private authOptions: LibraryAuthOptions;
+	private authConfig?: AuthConfig;
+	private authOptions?: LibraryAuthOptions;
 
 	constructor() {
 		this.authSessionObservers = new Set();
@@ -50,15 +52,22 @@ export class AuthClass {
 	async fetchAuthSession(
 		options: FetchAuthSessionOptions = {}
 	): Promise<AuthSession> {
-		let tokens: AuthTokens;
-		let credentialsAndIdentityId: AWSCredentialsAndIdentityId;
+		let tokens: AuthTokens | undefined;
+		let credentialsAndIdentityId: AWSCredentialsAndIdentityId | undefined;
 
 		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if not available
-		tokens = await this.authOptions.tokenProvider?.getTokens(options);
+		tokens =
+			(await this.authOptions?.tokenProvider?.getTokens(options)) ?? undefined;
+		asserts(!!this.authConfig, {
+			name: AUTH_CONFING_EXCEPTION,
+			message: 'AuthConfig is required',
+			recoverySuggestion:
+				'call Amplify.configure in your app with a valid AuthConfig',
+		});
 		if (tokens) {
 			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
 			credentialsAndIdentityId =
-				await this.authOptions.credentialsProvider?.getCredentialsAndIdentityId(
+				await this.authOptions?.credentialsProvider?.getCredentialsAndIdentityId(
 					{
 						authConfig: this.authConfig,
 						tokens,
@@ -69,7 +78,7 @@ export class AuthClass {
 		} else {
 			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
 			credentialsAndIdentityId =
-				await this.authOptions.credentialsProvider?.getCredentialsAndIdentityId(
+				await this.authOptions?.credentialsProvider?.getCredentialsAndIdentityId(
 					{
 						authConfig: this.authConfig,
 						authenticated: false,

@@ -80,7 +80,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 			name: STORAGE_CACHE_EXCEPTION,
 			message: 'item from storage is null',
 		});
-		const item: CacheItem = JSON.parse(text ?? '');
+		const item: CacheItem = JSON.parse(text);
 		if (getCurrTime() >= item.expires) {
 			return true;
 		}
@@ -136,7 +136,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	 * @return true if cache is full
 	 */
 	private _isCacheFull(itemSize: number): boolean {
-		return this.curSizeInBytes + itemSize > (this.config.capacityInBytes ?? 0);
+		return this.curSizeInBytes + itemSize > this.config.capacityInBytes;
 	}
 
 	/**
@@ -193,7 +193,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 			return;
 		}
 
-		const cacheItemOptions: CacheItemOptions = {
+		const cacheItemOptions = {
 			priority:
 				options && options.priority !== undefined
 					? options.priority
@@ -201,13 +201,10 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 			expires:
 				options && options.expires !== undefined
 					? options.expires
-					: (this.config.defaultTTL ?? 0) + getCurrTime(),
+					: this.config.defaultTTL + getCurrTime(),
 		};
 
-		if (
-			(cacheItemOptions.priority ?? 0) < 1 ||
-			(cacheItemOptions.priority ?? 0) > 5
-		) {
+		if (cacheItemOptions.priority < 1 || cacheItemOptions.priority > 5) {
 			logger.warn(
 				`Invalid parameter: priority due to out or range. It should be within 1 and 5.`
 			);
@@ -221,7 +218,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 		);
 
 		// check wether this item is too big;
-		if (item.byteSize > (this.config.itemMaxSize ?? 0)) {
+		if (item.byteSize > this.config.itemMaxSize) {
 			logger.warn(
 				`Item with key: ${key} you are trying to put into is too big!`
 			);
@@ -331,7 +328,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 		const keys: string[] = [];
 		for (let i = 0; i < this.maxPriority; i += 1) {
 			for (const key of this.cacheList[i].getKeys()) {
-				keys.push(key.substring((this.config.keyPrefix ?? '').length));
+				keys.push(key.substring(this.config.keyPrefix.length));
 			}
 		}
 

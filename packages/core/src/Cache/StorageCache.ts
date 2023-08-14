@@ -60,14 +60,14 @@ export class StorageCache {
 			this.config.defaultPriority = defaultConfig.defaultPriority;
 		}
 
-		if ((this.config.itemMaxSize ?? 0) > (this.config.capacityInBytes ?? 0)) {
+		if (this.config.itemMaxSize > this.config.capacityInBytes) {
 			logger.error(
 				'Invalid parameter: itemMaxSize. It should be smaller than capacityInBytes. Setting back to default.'
 			);
 			this.config.itemMaxSize = defaultConfig.itemMaxSize;
 		}
 
-		const defaultPriority = this.config.defaultPriority ?? 0;
+		const defaultPriority = this.config.defaultPriority;
 		if (defaultPriority > 5 || defaultPriority < 1) {
 			logger.error(
 				'Invalid parameter: defaultPriority. It should be between 1 and 5. Setting back to default.'

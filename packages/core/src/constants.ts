@@ -24,3 +24,5 @@ export const CACHE_LIST_EXCEPTION = 'CacheListException';
 export const STORAGE_CACHE_EXCEPTION = 'StorageCacheException';
 
 export const I18N_EXCEPTION = 'I18NException';
+
+export const AUTH_CONFING_EXCEPTION = 'AuthConfigException';

@@ -151,10 +151,9 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	 */
 	private _sizeToPop(itemSize: number): number {
 		const spaceItemNeed =
-			this.getCacheCurSize() + itemSize - (this.config.capacityInBytes ?? 0);
+			this.getCacheCurSize() + itemSize - this.config.capacityInBytes;
 		const cacheThresholdSpace =
-			(1 - (this.config.warningThreshold ?? 0)) *
-			(this.config.capacityInBytes ?? 0);
+			(1 - this.config.warningThreshold) * this.config.capacityInBytes;
 		return spaceItemNeed > cacheThresholdSpace
 			? spaceItemNeed
 			: cacheThresholdSpace;
@@ -169,9 +168,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	 * @return true if cache is full
 	 */
 	private _isCacheFull(itemSize: number): boolean {
-		return (
-			itemSize + this.getCacheCurSize() > (this.config.capacityInBytes ?? 0)
-		);
+		return itemSize + this.getCacheCurSize() > this.config.capacityInBytes;
 	}
 
 	/**
@@ -197,7 +194,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 		for (let i = 0; i < keyInCache.length; i += 1) {
 			const key: string = keyInCache[i];
 			if (
-				key.indexOf(this.config.keyPrefix ?? '') === 0 &&
+				key.indexOf(this.config.keyPrefix) === 0 &&
 				key !== this.cacheCurSizeKey
 			) {
 				if (this._isExpired(key)) {
@@ -294,7 +291,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 			return;
 		}
 
-		const cacheItemOptions: CacheItemOptions = {
+		const cacheItemOptions = {
 			priority:
 				options && options.priority !== undefined
 					? options.priority
@@ -302,13 +299,10 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 			expires:
 				options && options.expires !== undefined
 					? options.expires
-					: (this.config.defaultTTL ?? 0) + getCurrTime(),
+					: this.config.defaultTTL + getCurrTime(),
 		};
 
-		if (
-			(cacheItemOptions.priority ?? 0) < 1 ||
-			(cacheItemOptions.priority ?? 0) > 5
-		) {
+		if (cacheItemOptions.priority < 1 || cacheItemOptions.priority > 5) {
 			logger.warn(
 				`Invalid parameter: priority due to out or range. It should be within 1 and 5.`
 			);
@@ -322,7 +316,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 		);
 
 		// check wether this item is too big;
-		if (item.byteSize > (this.config.itemMaxSize ?? 0)) {
+		if (item.byteSize > this.config.itemMaxSize) {
 			logger.warn(
 				`Item with key: ${key} you are trying to put into is too big!`
 			);
@@ -449,7 +443,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 
 		for (let i = 0; i < this.getStorage().length; i += 1) {
 			const key = this.getStorage().key(i);
-			if (key && key.indexOf(this.config.keyPrefix ?? '') === 0) {
+			if (key && key.indexOf(this.config.keyPrefix) === 0) {
 				keysToRemove.push(key);
 			}
 		}

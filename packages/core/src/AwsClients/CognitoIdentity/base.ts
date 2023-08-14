@@ -19,6 +19,7 @@ import {
 } from '../../clients/middleware/retry';
 import { getAmplifyUserAgent } from '../../Platform';
 import { observeFrameworkChanges } from '../../Platform/detectFramework';
+import { DefaultConfigOptions } from '../../clients/types';
 
 /**
  * The service name used to sign requests if the API requires authentication.
@@ -58,7 +59,7 @@ export const cognitoIdentityTransferHandler = composeTransferHandler<
 /**
  * @internal
  */
-export const defaultConfig: Record<string, unknown> = {
+export const defaultConfig: DefaultConfigOptions = {
 	service: SERVICE_NAME,
 	endpointResolver,
 	retryDecider: getRetryDecider(parseJsonError),
