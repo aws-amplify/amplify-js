@@ -9,6 +9,7 @@ import { MFAPreference } from '../types/models';
 import { setUserMFAPreference } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { CognitoMFASettings } from '../utils/clients/CognitoIdentityProvider/types';
+import { assertAuthTokens } from '../utils/types';
 
 /**
  * Updates the MFA preference of the user.
@@ -27,6 +28,7 @@ export async function updateMFAPreference(
 	const authConfig = AmplifyV6.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	assertAuthTokens(tokens);
 	await setUserMFAPreference(
 		{ region: getRegion(authConfig.userPoolId) },
 		{

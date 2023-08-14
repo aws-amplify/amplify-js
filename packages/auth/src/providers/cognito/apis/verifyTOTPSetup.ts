@@ -10,6 +10,7 @@ import { VerifySoftwareTokenException } from '../types/errors';
 import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { assertAuthTokens } from '../utils/types';
 
 /**
  * Verifies an OTP code retrieved from an associated authentication app.
@@ -36,6 +37,7 @@ export async function verifyTOTPSetup(
 		AuthValidationErrorCode.EmptyVerifyTOTPSetupCode
 	);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	assertAuthTokens(tokens);
 	await verifySoftwareToken(
 		{ region: getRegion(authConfig.userPoolId) },
 		{

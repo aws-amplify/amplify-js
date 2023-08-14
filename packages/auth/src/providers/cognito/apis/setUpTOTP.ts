@@ -15,6 +15,7 @@ import {
 import { getTOTPSetupDetails } from '../utils/signInHelpers';
 import { associateSoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { assertAuthTokens } from '../utils/types';
 
 /**
  * Sets up TOTP for the user.
@@ -31,6 +32,7 @@ export async function setUpTOTP(): Promise<TOTPSetupDetails> {
 	const authConfig = Amplify.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	assertAuthTokens(tokens);
 	const username = tokens.idToken?.payload['cognito:username'] ?? '';
 	const { SecretCode } = await associateSoftwareToken(
 		{ region: getRegion(authConfig.userPoolId) },

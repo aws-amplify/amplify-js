@@ -29,7 +29,7 @@ export type CognitoUserAttributeKey =
 /**
  * Cognito custom attribute type
  */
-// TODO: replace by `custom:${string}` once categories that use auth have upgraded TS
+// TODO(V6): replace by `custom:${string}` once categories that use auth have upgraded TS
 export type CustomAttribute = string&{};
 
 /**

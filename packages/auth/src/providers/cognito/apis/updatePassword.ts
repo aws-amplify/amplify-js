@@ -9,6 +9,7 @@ import { ChangePasswordException } from '../../cognito/types/errors';
 import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { assertAuthTokens } from '../utils/types';
 
 /**
  * Updates user's password while authenticated.
@@ -37,6 +38,7 @@ export async function updatePassword(
 		AuthValidationErrorCode.EmptyUpdatePassword
 	);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	assertAuthTokens(tokens);
 	await changePassword(
 		{ region: getRegion(authConfig.userPoolId) },
 		{

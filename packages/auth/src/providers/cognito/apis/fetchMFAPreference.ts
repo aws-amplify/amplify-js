@@ -8,6 +8,7 @@ import { getUser } from '../utils/clients/CognitoIdentityProvider';
 import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { assertAuthTokens } from '../utils/types';
 
 /**
  * Fetches the preferred MFA setting and enabled MFA settings for the user.
@@ -21,6 +22,7 @@ export async function fetchMFAPreference(): Promise<FetchMFAPreferenceResult> {
 	const authConfig = AmplifyV6.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	assertAuthTokens(tokens);
 	const { PreferredMfaSetting, UserMFASettingList } = await getUser(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
