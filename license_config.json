@@ -8,6 +8,7 @@
 		"**/*.d.ts",
 		"**/*.html",
 		"**/*.jar",
+		"**/jest.setup.js",
 		"**/*.json",
 		"**/*.md",
 		"**/*.plist",
@@ -31,6 +32,7 @@
 		"**/node_modules",
 		"**/pushnotification",
 		"**/polyfills/URL/*.js",
+		"**/BigInteger.ts",
 		"**/vendor",
 		"**/__tests__",
 		"**/__mocks__"
