@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
+import { StorageDownloadDataRequest } from '../../../types';
 import { S3GetUrlOptions, S3GetUrlResult } from '../types';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import {
@@ -8,7 +10,6 @@ import {
 	getPresignedGetObjectUrl,
 } from '../../../AwsClients/S3';
 import { getProperties } from './getProperties';
-import { StorageDownloadDataRequest } from '../../../types/params';
 import { GetPropertiesException } from '../types/errors';
 import {
 	getKeyWithPrefix,
@@ -59,7 +60,6 @@ export const getUrl = async function (
 	result.url = new URL(
 		await getPresignedGetObjectUrl(getUrlOptions, getUrlParams)
 	);
-
 	const urlExpiration = new Date(
 		options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION
 	);
