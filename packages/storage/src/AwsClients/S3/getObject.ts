@@ -27,7 +27,6 @@ import {
 	map,
 	parseXmlError,
 	s3TransferHandler,
-	serializeObjectSsecOptionsToHeaders,
 	serializePathnameObjectKey,
 	CONTENT_SHA256_HEADER,
 } from './utils';
@@ -40,7 +39,6 @@ const getObjectSerializer = async (
 	input: GetObjectInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	// const headers = await serializeObjectSsecOptionsToHeaders(input);
 	const query = map(input, {
 		'response-cache-control': 'ResponseCacheControl',
 		'response-content-disposition': 'ResponseContentDisposition',
