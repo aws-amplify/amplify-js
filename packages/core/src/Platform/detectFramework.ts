@@ -25,8 +25,7 @@ export const detectFramework = (): Framework => {
 			// So we don't need to notify the observers again so the observer
 			// can be removed after the final notice.
 			while (frameworkChangeObservers.length) {
-				const callback = frameworkChangeObservers.pop();
-				if (callback) callback();
+				frameworkChangeObservers.pop()?.();
 			}
 		} else {
 			// The first run of detectFramework:
