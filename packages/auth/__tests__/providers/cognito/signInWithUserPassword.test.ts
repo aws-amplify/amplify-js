@@ -109,6 +109,11 @@ describe('signIn API error path cases:', () => {
 			await signIn({
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,
+				options: {
+					serviceOptions: {
+						authFlowType: 'USER_PASSWORD_AUTH',
+					},
+				},
 			});
 		} catch (error) {
 			expect(fetch).toBeCalled();
@@ -127,6 +132,11 @@ describe('signIn API error path cases:', () => {
 			await signIn({
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,
+				options: {
+					serviceOptions: {
+						authFlowType: 'USER_PASSWORD_AUTH',
+					},
+				},
 			});
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
@@ -142,6 +152,11 @@ describe('signIn API error path cases:', () => {
 			await signIn({
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,
+				options: {
+					serviceOptions: {
+						authFlowType: 'USER_PASSWORD_AUTH',
+					},
+				},
 			});
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);

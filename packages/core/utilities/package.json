@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/core/utilities",
+	"types": "../lib-esm/utilities/index.d.ts",
+	"main": "../lib/utilities/index.js",
+	"module": "../lib-esm/utilities/index.js",
+	"react-native": "../lib-esm/utilities/index.js",
+	"sideEffects": false
+}

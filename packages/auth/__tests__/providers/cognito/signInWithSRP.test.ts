@@ -10,13 +10,15 @@ import { signIn } from '../../../src/providers/cognito/apis/signIn';
 import { signInWithSRP } from '../../../src/providers/cognito/apis/signInWithSRP';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
-
+import { cryptoSecureRandomInt } from '@aws-amplify/core/utilities';
 AmplifyV6.configure({
 	Auth: {
 		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 		userPoolId: 'us-west-2_zzzzz',
 	},
 });
+
+jest.mock('@aws-amplify/core/utilities');
 
 describe('signIn API happy path cases', () => {
 	let handleUserSRPAuthflowSpy;
