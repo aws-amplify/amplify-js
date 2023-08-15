@@ -1,4 +1,4 @@
-import { getUrl } from '../../../src/providers/s3/apis';
+import { getProperties, getUrl } from '../../../src/providers/s3/apis';
 jest.mock('../../../src/AwsClients/S3');
 const headObject = jest.fn();
 
@@ -17,6 +17,7 @@ describe('getUrl happy path case', () => {
 			};
 		});
 		getPresignedGetObjectUrl.mockReturnValueOnce({ url: new URL('url') });
+		expect(getPresignedGetObjectUrl).toBeCalledTimes(1);
 		const result = await getUrl({ key: 'key' });
 		expect(result.url).toEqual({
 			url: new URL('url'),
@@ -39,6 +40,7 @@ describe('getUrl error path case', () => {
 				options: { validateObjectExistence: true },
 			});
 		} catch (error) {
+			expect(getProperties).toBeCalledTimes(1);
 			console.log('Error testing', error);
 			expect(error.$metadata?.httpStatusCode).toBe(404);
 		}
