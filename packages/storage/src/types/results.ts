@@ -41,9 +41,9 @@ export type StorageGetUrlResult = {
 	 */
 	url: URL;
 	/**
-	 * expiresAt is the time(milliseconds) in which generated URL expires.
+	 * expiresAt is date in which generated URL expires.
 	 */
-	expiresAt: number;
+	expiresAt: Date;
 };
 
 export type StorageUploadResult = {
