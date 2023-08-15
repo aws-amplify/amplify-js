@@ -13,7 +13,7 @@ export type StorageOperationParameter<Options extends StorageOptions> = {
 	options?: Options;
 };
 
-export type StorageListRequest<Options extends StorageOptions> = {
+export type StorageListRequest<Options extends StorageListOptions> = {
 	path?: string;
 	options?: Options;
 };

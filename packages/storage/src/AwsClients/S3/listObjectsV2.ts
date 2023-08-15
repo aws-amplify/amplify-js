@@ -63,7 +63,7 @@ const listObjectsV2Deserializer = async (
 ): Promise<ListObjectsV2Output> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
-		throw StorageError.formServiceError(error, response.statusCode);
+		throw StorageError.fromServiceError(error, response.statusCode);
 	} else {
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {

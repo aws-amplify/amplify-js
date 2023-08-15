@@ -1,15 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { AmplifyV6, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { StorageListRequest, StorageListOptions } from '../../../types';
 import { S3ListOutputItem, S3ListResult, storageException } from '../types';
 import { ListObjectsV2Input, listObjectsV2 } from '../../../AwsClients/S3';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 // TODO are we using Logger in V6
-const logger = new Logger('AWSS3Provider');
 const MAX_PAGE_SIZE = 1000;
 
 /**
@@ -36,20 +34,16 @@ export const list = async (
 	}
 
 	const finalPath = getKeyWithPrefix(accessLevel, targetIdentityId, path);
-
 	const listOptions = {
-		accessLevel,
-		targetIdentityId: awsCredsIdentityId,
 		region,
 		credentials,
 	};
 	const listParams: ListObjectsV2Input = {
 		Bucket: bucket,
 		Prefix: finalPath,
-		MaxKeys: pageSize ?? MAX_PAGE_SIZE,
+		MaxKeys: pageSize,
 		ContinuationToken: nextToken,
 	};
-
 	const listResult = listAll
 		? await _listAll(listOptions, listParams)
 		: await _list(listOptions, listParams);
@@ -61,15 +55,25 @@ const _listAll = async (
 	listOptions,
 	listParams: ListObjectsV2Input
 ): Promise<S3ListResult> => {
-	let listResult: S3ListOutputItem[];
+	// TODO replace with V6 logger
+	// if (listParams.MaxKeys || listParams.ContinuationToken) {
+	// 	logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
+	// }
+
+	const listResult: S3ListOutputItem[] = [];
+	let continuationToken = listParams.ContinuationToken;
 	do {
 		const { items: pageResults, nextToken: pageNextToken } = await _list(
 			listOptions,
-			listParams
+			{
+				...listParams,
+				ContinuationToken: continuationToken,
+				MaxKeys: MAX_PAGE_SIZE,
+			}
 		);
 		listResult.push(...pageResults);
-		listParams.ContinuationToken = pageNextToken;
-	} while (listParams.ContinuationToken);
+		continuationToken = pageNextToken;
+	} while (continuationToken);
 
 	return {
 		items: listResult,
@@ -81,14 +85,16 @@ const _list = async (
 	listOptions,
 	listParams: ListObjectsV2Input
 ): Promise<S3ListResult> => {
-	if (listParams.MaxKeys > MAX_PAGE_SIZE) {
-		listParams.MaxKeys = MAX_PAGE_SIZE;
-		logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
+	const listParamsClone = { ...listParams };
+	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
+		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
+		// TODO replace with V6 logger
+		// logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
 	}
 
-	const response = await listObjectsV2(listOptions, listParams);
+	const response = await listObjectsV2(listOptions, listParamsClone);
 	const listResult = response.Contents.map(item => ({
-		key: item.Key.substring(listParams.Prefix.length),
+		key: item.Key.substring(listParamsClone.Prefix.length),
 		eTag: item.ETag,
 		lastModified: item.LastModified,
 		size: item.Size,
