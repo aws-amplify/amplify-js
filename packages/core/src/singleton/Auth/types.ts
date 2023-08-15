@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/safe-json-parse.ts
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/jwt-model.ts
 

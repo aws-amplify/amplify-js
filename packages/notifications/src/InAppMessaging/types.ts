@@ -4,6 +4,7 @@
 import { EventListener } from '../common';
 import { AWSPinpointProviderConfig } from '../common/AWSPinpointProviderCommon/types';
 import {
+	NotificationsConfig,
 	NotificationsProvider,
 	NotificationsSubCategory as NotificationsSubCategories,
 	UserInfo,
@@ -13,10 +14,13 @@ export type NotificationsSubCategory = Extract<
 	NotificationsSubCategories,
 	'InAppMessaging'
 >;
+export type InternalNotificationsSubCategory = 'InternalInAppMessaging';
 
 export interface InAppMessagingInterface {
-	configure: (config: InAppMessagingConfig) => InAppMessagingConfig;
-	getModuleName: () => NotificationsSubCategory;
+	configure: (config: NotificationsConfig) => InAppMessagingConfig;
+	getModuleName: () =>
+		| NotificationsSubCategory
+		| InternalNotificationsSubCategory;
 	getPluggable: (providerName: string) => InAppMessagingProvider;
 	addPluggable: (pluggable: InAppMessagingProvider) => void;
 	removePluggable: (providerName: string) => void;
@@ -48,7 +52,7 @@ export interface InAppMessagingProvider extends NotificationsProvider {
 	getSubCategory(): NotificationsSubCategory;
 
 	// get in-app messages from provider
-	getInAppMessages(): Promise<any>;
+	getInAppMessages(userAgentValue?: string): Promise<any>;
 
 	// filters in-app messages based on event input and provider logic
 	processInAppMessages(

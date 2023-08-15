@@ -1,0 +1,38 @@
+name: Push - release for feature preid
+
+concurrency:
+  # group name unique for push to push-preid-release
+  group: push-release-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      # Change this to your branch name where "example-preid" corresponds to the preid you want your changes released on
+      - feat/example-preid-branch/main
+
+jobs:
+  e2e:
+    secrets: inherit
+    uses: ./.github/workflows/callable-release-verification.yml
+  parse-preid:
+    name: Parse preid from branch
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: ${{ github.ref_name }}
+    steps:
+      - id: output_preid
+        run: echo "preid=$(echo $BRANCH |  tr -cd '[:alnum:]_\-/.' | cut -d \/ -f 2)" >> $GITHUB_OUTPUT
+    outputs:
+      preid: ${{ steps.output_preid.outputs.preid }}
+
+  preid-release:
+    needs:
+      - e2e
+      - parse-preid
+    secrets: inherit
+    uses: ./.github/workflows/callable-npm-publish-preid.yml
+    # The preid should be detected from the branch name recommending feat/{PREID}/whatever as branch naming pattern
+    #   if your branch doesn't follow this pattern, you can override it here for your branch.
+    with:
+      preid: ${{ needs.parse-preid.outputs.preid }}
