@@ -1,5 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+//
+
+// TODO(ashwinkumar6) this uses V5 Credentials, update to V6
+import { Credentials } from '@aws-sdk/types';
+
+export type StorageConfig = {
+	region?: string;
+	credentials?: Credentials;
+};
 
 export type StorageOptions =
 	| { accessLevel?: 'guest' | 'private'; isObjectLockEnabled?: boolean }

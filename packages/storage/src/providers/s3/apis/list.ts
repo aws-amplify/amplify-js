@@ -4,6 +4,7 @@
 import { AmplifyV6 } from '@aws-amplify/core';
 import { ListObjectsV2Input, listObjectsV2 } from '../../../AwsClients/S3';
 import {
+	StorageConfig,
 	StorageListRequest,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
@@ -63,31 +64,26 @@ export const list: S3ListApi = async (
 			? req.options?.targetIdentityId ?? identityId
 			: undefined;
 
-	const pageSize =
-		req?.options?.listAll === true ? undefined : req.options?.pageSize;
-
-	const nextToken =
-		req?.options?.listAll === true ? undefined : req.options?.nextToken;
-
 	const finalPath = getKeyWithPrefix(accessLevel, targetIdentityId, path);
-	const listOptions = {
+	const listConfig: StorageConfig = {
 		region,
 		credentials,
 	};
 	const listParams: ListObjectsV2Input = {
 		Bucket: bucket,
 		Prefix: finalPath,
-		MaxKeys: pageSize,
-		ContinuationToken: nextToken,
+		MaxKeys: req?.options?.listAll === true ? undefined : req.options?.pageSize,
+		ContinuationToken:
+			req?.options?.listAll === true ? undefined : req.options?.nextToken,
 	};
 	const listResult = listAll
-		? await _listAll(listOptions, listParams)
-		: await _list(listOptions, listParams);
+		? await _listAll(listConfig, listParams)
+		: await _list(listConfig, listParams);
 	return listResult;
 };
 
 const _listAll = async (
-	listOptions,
+	listConfig: StorageConfig,
 	listParams: ListObjectsV2Input
 ): Promise<S3ListAllResult> => {
 	// TODO(ashwinkumar6) V6-logger: pageSize and nextToken aren't required when listing all items
@@ -95,7 +91,7 @@ const _listAll = async (
 	let continuationToken = listParams.ContinuationToken;
 	do {
 		const { items: pageResults, nextToken: pageNextToken } = await _list(
-			listOptions,
+			listConfig,
 			{
 				...listParams,
 				ContinuationToken: continuationToken,
@@ -112,7 +108,7 @@ const _listAll = async (
 };
 
 const _list = async (
-	listOptions,
+	listConfig: StorageConfig,
 	listParams: ListObjectsV2Input
 ): Promise<S3ListPaginateResult> => {
 	const listParamsClone = { ...listParams };
@@ -121,7 +117,7 @@ const _list = async (
 		// TODO(ashwinkumar6) V6-logger: defaulting pageSize to ${MAX_PAGE_SIZE}.
 	}
 
-	const response = await listObjectsV2(listOptions, listParamsClone);
+	const response = await listObjectsV2(listConfig, listParamsClone);
 	const listResult = response.Contents.map(item => ({
 		key: item.Key.substring(listParamsClone.Prefix.length),
 		eTag: item.ETag,
