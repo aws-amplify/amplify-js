@@ -4,3 +4,4 @@ export {
 } from '../UserAgent';
 
 export { InternalCognitoUser } from './InternalCognitoUser';
+export { InternalCognitoUserPool } from './InternalCognitoUserPool';
