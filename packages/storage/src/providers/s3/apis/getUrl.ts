@@ -61,11 +61,11 @@ export const getUrl = async function (
 		options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION
 	);
 	const awsCredExpiration = credentials?.expiration;
-	// expiresAt is the minimum of credential expiration and url expiration
+	// expiresIn is the minimum of credential expiration and url expiration
 	urlExpiration =
 		urlExpiration < awsCredExpiration ? urlExpiration : awsCredExpiration;
 	return {
 		url: await getPresignedGetObjectUrl(getUrlOptions, getUrlParams),
-		expiresAt: urlExpiration,
+		expiresIn: urlExpiration,
 	};
 };
