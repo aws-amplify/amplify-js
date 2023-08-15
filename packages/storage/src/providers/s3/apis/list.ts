@@ -23,7 +23,7 @@ import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 const MAX_PAGE_SIZE = 1000;
 
-export const list: {
+type S3ListApi = {
 	/**
 	 * List all bucket objects
 	 * @param {StorageListRequest<StorageListAllOptions>} req - The request object
@@ -43,7 +43,10 @@ export const list: {
 	(
 		req: StorageListRequest<StorageListPaginateOptions>
 	): Promise<S3ListPaginateResult>;
-} = async (
+};
+
+// TODO(ashwinkumar6) add unit test for list API
+export const list: S3ListApi = async (
 	req:
 		| StorageListRequest<StorageListAllOptions>
 		| StorageListRequest<StorageListPaginateOptions>
@@ -55,16 +58,16 @@ export const list: {
 		options: { accessLevel = defaultAccessLevel, listAll },
 	} = req;
 
-	let targetIdentityId;
-	if (req?.options?.accessLevel === 'protected') {
-		targetIdentityId = req.options?.targetIdentityId ?? identityId;
-	}
+	const targetIdentityId =
+		req?.options?.accessLevel === 'protected'
+			? req.options?.targetIdentityId ?? identityId
+			: undefined;
 
-	let pageSize, nextToken;
-	if (req?.options?.listAll === false) {
-		pageSize = req?.options?.pageSize;
-		nextToken = req?.options?.nextToken;
-	}
+	const pageSize =
+		req?.options?.listAll === true ? undefined : req.options?.pageSize;
+
+	const nextToken =
+		req?.options?.listAll === true ? undefined : req.options?.nextToken;
 
 	const finalPath = getKeyWithPrefix(accessLevel, targetIdentityId, path);
 	const listOptions = {
@@ -87,11 +90,7 @@ const _listAll = async (
 	listOptions,
 	listParams: ListObjectsV2Input
 ): Promise<S3ListAllResult> => {
-	// TODO(ashwinkumar6) replace with V6 logger
-	// if (listParams.MaxKeys || listParams.ContinuationToken) {
-	// 	logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
-	// }
-
+	// TODO(ashwinkumar6) V6-logger: pageSize and nextToken aren't required when listing all items
 	const listResult: S3ListOutputItem[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
@@ -119,8 +118,7 @@ const _list = async (
 	const listParamsClone = { ...listParams };
 	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
-		// TODO(ashwinkumar6) replace with V6 logger
-		// logger.warn(`defaulting pageSize to ${MAX_PAGE_SIZE}.`);
+		// TODO(ashwinkumar6) V6-logger: defaulting pageSize to ${MAX_PAGE_SIZE}.
 	}
 
 	const response = await listObjectsV2(listOptions, listParamsClone);
