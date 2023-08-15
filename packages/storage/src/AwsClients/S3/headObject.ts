@@ -20,9 +20,10 @@ import {
 	map,
 	parseXmlError,
 	s3TransferHandler,
-	serializeObjectSsecOptionsToHeaders,
 	serializePathnameObjectKey,
 } from './utils';
+
+import { StorageError } from '../../errors/StorageError';
 
 export type HeadObjectInput = Pick<
 	HeadObjectCommandInput,
@@ -36,25 +37,24 @@ export type HeadObjectInput = Pick<
 
 export type HeadObjectOutput = Pick<
 	HeadObjectCommandOutput,
-	| '$metadata'
 	| 'ContentLength'
 	| 'ContentType'
 	| 'ETag'
 	| 'LastModified'
 	| 'Metadata'
 	| 'VersionId'
+	| '$metadata'
 >;
 
 const headObjectSerializer = async (
 	input: HeadObjectInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	const headers = await serializeObjectSsecOptionsToHeaders(input);
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'HEAD',
-		headers,
+		headers: {},
 		url,
 	};
 };
@@ -64,7 +64,7 @@ const headObjectDeserializer = async (
 ): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
-		throw error;
+		throw StorageError.fromServiceError(error, response.statusCode);
 	} else {
 		const contents = {
 			...map(response.headers, {

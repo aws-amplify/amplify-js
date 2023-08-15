@@ -8,6 +8,7 @@ import {
 	Hub,
 	parseAWSExports,
 	StorageAction,
+	AmplifyV6,
 } from '@aws-amplify/core';
 import {
 	copyObject,
@@ -128,7 +129,8 @@ export class AWSS3Provider implements StorageProvider {
 		if (!config) return this._config;
 		const amplifyConfig = parseAWSExports(config);
 		this._config = Object.assign({}, this._config, amplifyConfig.Storage);
-		if (!this._config.bucket) {
+		const { bucket } = AmplifyV6.getConfig()?.Storage ?? {};
+		if (!bucket) {
 			logger.debug('Do not have bucket yet');
 		}
 		return this._config;
@@ -365,9 +367,9 @@ export class AWSS3Provider implements StorageProvider {
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
 		}
+		const { bucket } = AmplifyV6.getConfig()?.Storage ?? {};
 		const opt = Object.assign({}, this._config, config);
 		const {
-			bucket,
 			download,
 			cacheControl,
 			contentDisposition,
@@ -524,7 +526,6 @@ export class AWSS3Provider implements StorageProvider {
 		}
 		const opt = Object.assign({}, this._config, config);
 		const {
-			bucket,
 			track = false,
 			SSECustomerAlgorithm,
 			SSECustomerKey,
@@ -533,8 +534,11 @@ export class AWSS3Provider implements StorageProvider {
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		logger.debug(`getProperties ${key} from ${final_key}`);
-
-		const s3Config = loadS3Config({ ...opt, userAgentValue });
+		const { bucket } = AmplifyV6.getConfig()?.Storage ?? {};
+		const s3Config = loadS3Config({
+			...opt,
+			storageAction: StorageAction.GetProperties,
+		});
 		const params: HeadObjectInput = {
 			Bucket: bucket,
 			Key: final_key,
@@ -886,12 +890,10 @@ export class AWSS3Provider implements StorageProvider {
 
 	private async _ensureCredentials(): Promise<boolean> {
 		try {
-			const credentials = await Credentials.get();
+			const { credentials } = await AmplifyV6.Auth.fetchAuthSession();
 			if (!credentials) return false;
-			const cred = Credentials.shear(credentials);
-			logger.debug('set credentials for storage', cred);
-			this._config.credentials = cred;
-
+			logger.debug('set credentials for storage', credentials);
+			// this._config.credentials = credentials;
 			return true;
 		} catch (error) {
 			logger.warn('ensure credentials error', error);
