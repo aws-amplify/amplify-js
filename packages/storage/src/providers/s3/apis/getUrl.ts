@@ -63,7 +63,7 @@ export const getUrl = async function (
 		urlExpiration > MAX_URL_EXPIRATION,
 		StorageValidationErrorCode.UrlExpirationMaxLimitExceed
 	);
-	const awsCredExpiration = credentials?.expiration;
+	const awsCredExpiration = new Date(credentials?.expiration).getTime();
 	// expiresAt is the minimum of credential expiration and url expiration
 	urlExpiration =
 		urlExpiration < awsCredExpiration ? urlExpiration : awsCredExpiration;

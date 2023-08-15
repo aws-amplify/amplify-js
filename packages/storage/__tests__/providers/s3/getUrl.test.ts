@@ -42,7 +42,6 @@ describe('getUrl error path case', () => {
 			});
 		} catch (error) {
 			expect(getProperties).toBeCalledTimes(1);
-			console.log('Error testing', error);
 			expect(error.$metadata?.httpStatusCode).toBe(404);
 		}
 	});
