@@ -377,6 +377,7 @@ class SubscriptionProcessor {
 											this.amplifyConfig.aws_appsync_authenticationType,
 										modelName: modelDefinition.name,
 										schema: this.schema,
+										customUserAgentDetails,
 									});
 
 									// subscriptions are created only based on the READ auth mode(s)
