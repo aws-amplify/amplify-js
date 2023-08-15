@@ -78,7 +78,7 @@
 		"@aws-sdk/util-utf8-browser": "3.259.0",
 		"lodash": "^4.17.20",
 		"tslib": "^2.5.0",
-		"uuid": "^3.2.1"
+		"uuid": "^9.0.0"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.0.0"
