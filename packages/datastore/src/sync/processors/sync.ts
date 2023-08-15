@@ -43,6 +43,11 @@ const opResultDefaults = {
 
 const logger = new Logger('DataStore');
 
+const customUserAgentDetails: CustomUserAgentDetails = {
+	category: Category.DataStore,
+	action: DataStoreAction.GraphQl,
+};
+
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();
 
@@ -118,6 +123,7 @@ class SyncProcessor {
 			defaultAuthMode: this.amplifyConfig.aws_appsync_authenticationType,
 			modelName: modelDefinition.name,
 			schema: this.schema,
+			customUserAgentDetails,
 		});
 
 		// sync only needs the READ auth mode(s)
@@ -218,11 +224,6 @@ class SyncProcessor {
 						authMode,
 						this.amplifyConfig
 					);
-
-					const customUserAgentDetails: CustomUserAgentDetails = {
-						category: Category.DataStore,
-						action: DataStoreAction.GraphQl,
-					};
 
 					return await this.amplifyContext.InternalAPI.graphql(
 						{
