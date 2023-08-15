@@ -14,15 +14,21 @@ export type StorageOperationRequest<Options extends StorageOptions> = {
 	options?: Options;
 };
 
-export type StorageListRequest<Options extends StorageListOptions> = {
+export type StorageListRequest<
+	Options extends StorageListAllOptions | StorageListPaginateOptions
+> = {
 	path?: string;
 	options?: Options;
 };
 
-export type StorageListOptions = StorageOptions & {
+export type StorageListAllOptions = StorageOptions & {
+	listAll: true;
+};
+
+export type StorageListPaginateOptions = StorageOptions & {
+	listAll?: false;
 	pageSize?: number;
 	nextToken?: string;
-	listAll?: boolean;
 };
 
 export type StorageDownloadDataRequest<Options extends StorageOptions> =

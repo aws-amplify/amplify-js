@@ -34,6 +34,8 @@ export type S3GetPropertiesResult = S3Item;
 
 export type S3ListOutputItem = S3Item;
 
-export type S3ListResult = StorageListResult<S3Item> & {
+export type S3ListAllResult = StorageListResult<S3Item>;
+
+export type S3ListPaginateResult = StorageListResult<S3Item> & {
 	nextToken?: string;
 };

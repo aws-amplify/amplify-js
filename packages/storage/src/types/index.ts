@@ -8,7 +8,8 @@ export * from './AWSS3Provider';
 export { DownloadTask, TransferProgressEvent } from './common';
 export {
 	StorageListRequest,
-	StorageListOptions,
+	StorageListAllOptions,
+	StorageListPaginateOptions,
 	StorageOperationRequest,
 	StorageDownloadDataRequest,
 	StorageDownloadFileParameter,

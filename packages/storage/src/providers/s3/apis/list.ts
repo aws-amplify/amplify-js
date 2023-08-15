@@ -1,35 +1,69 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
 import { ListObjectsV2Input, listObjectsV2 } from '../../../AwsClients/S3';
-import { StorageListRequest, StorageListOptions } from '../../../types';
-import { S3ListOutputItem, S3ListResult, StorageException } from '../types';
+import {
+	StorageListRequest,
+	StorageListAllOptions,
+	StorageListPaginateOptions,
+} from '../../../types';
+import {
+	S3ListOutputItem,
+	StorageException,
+	S3ListAllResult,
+	S3ListPaginateResult,
+} from '../types';
+import {
+	resolveStorageConfig,
+	getKeyWithPrefix,
+	resolveCredentials,
+} from '../utils';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 const MAX_PAGE_SIZE = 1000;
 
-/**
- * List bucket objects
- * @param {StorageListRequest<StorageListOptions>} req - The request object
- * @return {Promise<StorageListResult>} - Promise resolves to list of keys and metadata for all objects in path
- * additionally the result will include a nextToken if there are more items to retrieve
- * @throws service: {@link StorageException} - S3 service errors thrown while getting properties
- * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
- */
-export const list = async (
-	req: StorageListRequest<StorageListOptions>
-): Promise<S3ListResult> => {
+export const list: {
+	/**
+	 * List all bucket objects
+	 * @param {StorageListRequest<StorageListAllOptions>} req - The request object
+	 * @return {Promise<S3ListAllResult>} - Promise resolves to list of keys and metadata for all objects in path
+	 * @throws service: {@link StorageException} - S3 service errors thrown while getting properties
+	 * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
+	 */
+	(req: StorageListRequest<StorageListAllOptions>): Promise<S3ListAllResult>;
+	/**
+	 * List bucket objects with pagination
+	 * @param {StorageListRequest<StorageListPaginateOptions>} req - The request object
+	 * @return {Promise<S3ListPaginateResult>} - Promise resolves to list of keys and metadata for all objects in path
+	 * additionally the result will include a nextToken if there are more items to retrieve
+	 * @throws service: {@link StorageException} - S3 service errors thrown while getting properties
+	 * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
+	 */
+	(
+		req: StorageListRequest<StorageListPaginateOptions>
+	): Promise<S3ListPaginateResult>;
+} = async (
+	req:
+		| StorageListRequest<StorageListAllOptions>
+		| StorageListRequest<StorageListPaginateOptions>
+): Promise<S3ListAllResult | S3ListPaginateResult> => {
 	const { identityId, credentials } = await resolveCredentials();
 	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
 	const {
 		path,
-		options: { accessLevel = defaultAccessLevel, pageSize, nextToken, listAll },
+		options: { accessLevel = defaultAccessLevel, listAll },
 	} = req;
 
 	let targetIdentityId;
 	if (req?.options?.accessLevel === 'protected') {
 		targetIdentityId = req.options?.targetIdentityId ?? identityId;
+	}
+
+	let pageSize, nextToken;
+	if (req?.options?.listAll === false) {
+		pageSize = req?.options?.pageSize;
+		nextToken = req?.options?.nextToken;
 	}
 
 	const finalPath = getKeyWithPrefix(accessLevel, targetIdentityId, path);
@@ -46,14 +80,13 @@ export const list = async (
 	const listResult = listAll
 		? await _listAll(listOptions, listParams)
 		: await _list(listOptions, listParams);
-
 	return listResult;
 };
 
 const _listAll = async (
 	listOptions,
 	listParams: ListObjectsV2Input
-): Promise<S3ListResult> => {
+): Promise<S3ListAllResult> => {
 	// TODO(ashwinkumar6) replace with V6 logger
 	// if (listParams.MaxKeys || listParams.ContinuationToken) {
 	// 	logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
@@ -76,14 +109,13 @@ const _listAll = async (
 
 	return {
 		items: listResult,
-		nextToken: null,
 	};
 };
 
 const _list = async (
 	listOptions,
 	listParams: ListObjectsV2Input
-): Promise<S3ListResult> => {
+): Promise<S3ListPaginateResult> => {
 	const listParamsClone = { ...listParams };
 	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;

@@ -9,7 +9,8 @@ export {
 	S3UploadDataResult,
 	S3UploadFileResult,
 	S3ListOutputItem,
-	S3ListResult,
+	S3ListAllResult,
+	S3ListPaginateResult,
 	S3GetPropertiesResult,
 } from './results';
 export { StorageException } from './errors';
