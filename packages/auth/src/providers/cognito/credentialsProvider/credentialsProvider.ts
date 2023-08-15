@@ -133,6 +133,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 				...res,
 				isAuthenticatedCreds: false,
 			};
+
 			return res;
 		} else {
 			throw new AuthError({
