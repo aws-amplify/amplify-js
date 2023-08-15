@@ -177,7 +177,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 */
 	async _findValidKeys() {
 		const keys: string[] = [];
-		let keyInCache: string[] = [];
+		let keyInCache: Readonly<string[]> = [];
 
 		keyInCache = await AsyncStorage.getAllKeys();
 

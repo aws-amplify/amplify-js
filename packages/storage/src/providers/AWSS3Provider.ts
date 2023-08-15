@@ -234,12 +234,14 @@ export class AWSS3Provider implements StorageProvider {
 	 * @param {S3CopySource} src - Key and optionally access level and identityId of the source object.
 	 * @param {S3CopyDestination} dest - Key and optionally access level of the destination object.
 	 * @param {S3ProviderCopyConfig} [config] - Optional configuration for s3 commands.
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @return {Promise<S3ProviderCopyOutput>} The key of the copied object.
 	 */
 	public async copy(
 		src: S3CopySource,
 		dest: S3CopyDestination,
-		config?: S3ProviderCopyConfig
+		config?: S3ProviderCopyConfig,
+		userAgentValue?: string
 	): Promise<S3ProviderCopyOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
@@ -313,13 +315,7 @@ export class AWSS3Provider implements StorageProvider {
 		if (acl) params.ACL = acl;
 
 		try {
-			await copyObject(
-				loadS3Config({
-					...opt,
-					storageAction: StorageAction.Copy,
-				}),
-				params
-			);
+			await copyObject(loadS3Config({ ...opt, userAgentValue }), params);
 			dispatchStorageEvent(
 				track,
 				'copy',
@@ -353,16 +349,19 @@ export class AWSS3Provider implements StorageProvider {
 	 *
 	 * @param {string} key - key of the object
 	 * @param {S3ProviderGetConfig} [config] - Optional configuration for the underlying S3 command
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @return {Promise<string | GetObjectOutput>} - A promise resolves to Amazon S3 presigned URL or the
 	 * GetObjectCommandOutput if download is set to true on success
 	 */
 	public async get<T extends S3ProviderGetConfig & StorageOptions>(
 		key: string,
-		config?: T
+		config?: T,
+		userAgentValue?: string
 	): Promise<S3ProviderGetOuput<T>>;
 	public async get(
 		key: string,
-		config?: S3ProviderGetConfig
+		config?: S3ProviderGetConfig,
+		userAgentValue?: string
 	): Promise<string | GetObjectOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
@@ -391,7 +390,7 @@ export class AWSS3Provider implements StorageProvider {
 		const s3Config = loadS3Config({
 			...opt,
 			emitter,
-			storageAction: StorageAction.Get,
+			userAgentValue,
 		});
 		logger.debug('get ' + key + ' from ' + final_key);
 
@@ -512,12 +511,14 @@ export class AWSS3Provider implements StorageProvider {
 	 *
 	 * @param {string} key - key of the object
 	 * @param {S3ProviderGetPropertiesConfig} [config] - Optional configuration for the underlying S3 command
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @return {Promise<S3ProviderGetPropertiesOutput>} - A promise resolves to contentType,
 	 * contentLength, eTag, lastModified, metadata
 	 */
 	public async getProperties(
 		key: string,
-		config?: S3ProviderGetPropertiesConfig
+		config?: S3ProviderGetPropertiesConfig,
+		userAgentValue?: string
 	): Promise<S3ProviderGetPropertiesOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
@@ -534,10 +535,7 @@ export class AWSS3Provider implements StorageProvider {
 		const final_key = prefix + key;
 		logger.debug(`getProperties ${key} from ${final_key}`);
 		const { bucket } = AmplifyV6.getConfig()?.Storage ?? {};
-		const s3Config = loadS3Config({
-			...opt,
-			storageAction: StorageAction.GetProperties,
-		});
+		const s3Config = loadS3Config({ ...opt, userAgentValue });
 		const params: HeadObjectInput = {
 			Bucket: bucket,
 			Key: final_key,
@@ -592,13 +590,15 @@ export class AWSS3Provider implements StorageProvider {
 	 * @param key - key of the object
 	 * @param object - File to be put in Amazon S3 bucket
 	 * @param [config] - Optional configuration for the underlying S3 command
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @return an instance of AWSS3UploadTask or a promise that resolves to an object with the new object's key on
 	 * success.
 	 */
 	public put<T extends S3ProviderPutConfig>(
 		key: string,
 		object: PutObjectInput['Body'],
-		config?: T
+		config?: T,
+		userAgentValue?: string
 	): S3ProviderPutOutput<T> {
 		const opt = Object.assign({}, this._config, config);
 		const { bucket, track, progressCallback, level, resumable } = opt;
@@ -662,17 +662,18 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		const emitter = new events.EventEmitter();
-		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
+		const uploader = new AWSS3ProviderManagedUpload(
+			params,
+			{ ...opt, userAgentValue },
+			emitter
+		);
 
 		if (acl) {
 			params.ACL = acl;
 		}
 
 		if (resumable === true) {
-			const s3Config = loadS3Config({
-				...opt,
-				storageAction: StorageAction.Put,
-			});
+			const s3Config = loadS3Config({ ...opt, userAgentValue });
 			const addTaskInput: AddTaskInput = {
 				bucket,
 				key,
@@ -731,11 +732,13 @@ export class AWSS3Provider implements StorageProvider {
 	 * Remove the object for specified key
 	 * @param {string} key - key of the object
 	 * @param {S3ProviderRemoveConfig} [config] - Optional configuration for the underlying S3 command
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @return {Promise<S3ProviderRemoveOutput>} - Promise resolves upon successful removal of the object
 	 */
 	public async remove(
 		key: string,
-		config?: S3ProviderRemoveConfig
+		config?: S3ProviderRemoveConfig,
+		userAgentValue?: string
 	): Promise<S3ProviderRemoveOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
@@ -753,10 +756,7 @@ export class AWSS3Provider implements StorageProvider {
 			Key: final_key,
 		};
 
-		const s3Config = loadS3Config({
-			...opt,
-			storageAction: StorageAction.Remove,
-		});
+		const s3Config = loadS3Config({ ...opt, userAgentValue });
 		try {
 			const response = await deleteObject(s3Config, params);
 			dispatchStorageEvent(
@@ -781,17 +781,15 @@ export class AWSS3Provider implements StorageProvider {
 	private async _list(
 		params: ListObjectsV2Input,
 		opt: S3ClientOptions,
-		prefix: string
+		prefix: string,
+		userAgentValue?: string
 	): Promise<S3ProviderListOutput> {
 		const list: S3ProviderListOutput = {
 			results: [],
 			hasNextToken: false,
 		};
 		const response = await listObjectsV2(
-			loadS3Config({
-				...opt,
-				storageAction: StorageAction.List,
-			}),
+			loadS3Config({ ...opt, userAgentValue }),
 			{ ...params }
 		);
 		if (response && response.Contents) {
@@ -813,12 +811,14 @@ export class AWSS3Provider implements StorageProvider {
 	 * List bucket objects relative to the level and prefix specified
 	 * @param {string} path - the path that contains objects
 	 * @param {S3ProviderListConfig} [config] - Optional configuration for the underlying S3 command
+	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @return {Promise<S3ProviderListOutput>} - Promise resolves to list of keys, eTags, lastModified
 	 * and file size for all objects in path
 	 */
 	public async list(
 		path: string,
-		config?: S3ProviderListConfig
+		config?: S3ProviderListConfig,
+		userAgentValue?: string
 	): Promise<S3ProviderListOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
@@ -845,7 +845,7 @@ export class AWSS3Provider implements StorageProvider {
 			params.ContinuationToken = nextToken;
 			if (pageSize === 'ALL') {
 				do {
-					listResult = await this._list(params, opt, prefix);
+					listResult = await this._list(params, opt, prefix, userAgentValue);
 					list.results.push(...listResult.results);
 					if (listResult.nextToken)
 						params.ContinuationToken = listResult.nextToken;
@@ -858,7 +858,7 @@ export class AWSS3Provider implements StorageProvider {
 				)
 					params.MaxKeys = pageSize;
 				else logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
-				listResult = await this._list(params, opt, prefix);
+				listResult = await this._list(params, opt, prefix, userAgentValue);
 				list.results.push(...listResult.results);
 				list.hasNextToken = listResult.hasNextToken;
 				list.nextToken = null ?? listResult.nextToken;
