@@ -535,10 +535,7 @@ export class AWSS3Provider implements StorageProvider {
 		const final_key = prefix + key;
 		logger.debug(`getProperties ${key} from ${final_key}`);
 		const { bucket } = AmplifyV6.getConfig()?.Storage ?? {};
-		const s3Config = loadS3Config({
-			...opt,
-			storageAction: StorageAction.GetProperties,
-		});
+		const s3Config = loadS3Config({ ...opt, userAgentValue });
 		const params: HeadObjectInput = {
 			Bucket: bucket,
 			Key: final_key,
