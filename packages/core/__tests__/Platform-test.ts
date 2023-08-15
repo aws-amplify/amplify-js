@@ -9,7 +9,18 @@ import { detectFramework, clearCache } from '../src/Platform/detectFramework';
 import * as detection from '../src/Platform/detection';
 
 describe('Platform test', () => {
-	beforeEach(() => clearCache());
+	beforeAll(() => {
+		jest.useFakeTimers();
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
+
+	beforeEach(() => {
+		clearCache();
+	});
+
 	describe('isReactNative test', () => {
 		test('happy case', () => {
 			expect(Platform.isReactNative).toBe(false);
@@ -70,8 +81,6 @@ describe('Platform test', () => {
 
 	describe('detectFramework', () => {
 		test('retries detection after 10ms', () => {
-			jest.useFakeTimers();
-
 			jest.spyOn(detection, 'detect');
 
 			detectFramework();
@@ -79,5 +88,35 @@ describe('Platform test', () => {
 			detectFramework();
 			expect(detection.detect).toHaveBeenCalledTimes(2);
 		});
+	});
+});
+
+describe('detectFramework observers', () => {
+	let module;
+
+	beforeAll(() => {
+		jest.resetModules();
+		module = require('../src/Platform/detectFramework');
+		jest.useFakeTimers();
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
+
+	test('it notifies and cleans up the observers and rejects new observer after detection completes', () => {
+		const mockObserver = jest.fn();
+		module.observeFrameworkChanges(mockObserver);
+		expect(module.frameworkChangeObservers.length).toBe(1);
+
+		module.detectFramework();
+		expect(mockObserver).toHaveBeenCalledTimes(1);
+		jest.runOnlyPendingTimers();
+		module.detectFramework();
+		expect(mockObserver).toHaveBeenCalledTimes(2);
+		expect(module.frameworkChangeObservers.length).toBe(0);
+
+		module.observeFrameworkChanges(mockObserver);
+		expect(module.frameworkChangeObservers.length).toBe(0);
 	});
 });

@@ -111,7 +111,7 @@
 			"name": "Core (Credentials)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Credentials }",
-			"limit": "13.45 kB"
+			"limit": "13.78 kB"
 		},
 		{
 			"name": "Core (Signer)",

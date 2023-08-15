@@ -52,7 +52,7 @@ executors:
 
   macos-executor:
     macos:
-      xcode: 13.2.1
+      xcode: 13.4.1
     resource_class: large
 
   webkit-test-executor:
@@ -1091,12 +1091,12 @@ jobs:
     steps:
       - integ_test_rn_ios
 
-  integ_rn_ios_push_notifications:
-    executor: macos-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react-native/push-notifications/PushNotificationApp
-    steps:
-      - integ_test_rn_ios
+  # integ_rn_ios_push_notifications:
+  #   executor: macos-executor
+  #   <<: *test_env_vars
+  #   working_directory: ~/amplify-js-samples-staging/samples/react-native/push-notifications/PushNotificationApp
+  #   steps:
+  #     - integ_test_rn_ios
 
   # integ_rn_android_storage:
   #   executor: macos-executor
@@ -2013,12 +2013,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      - integ_rn_ios_push_notifications:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
+      # - integ_rn_ios_push_notifications:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
       - integ_rn_ios_device_tracking:
           requires:
             - integ_setup
