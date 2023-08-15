@@ -5,7 +5,7 @@ import { headObject } from '../../../AwsClients/S3';
 import { StorageOptions, StorageOperationRequest } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { GetPropertiesException, S3GetPropertiesResult } from '../types';
+import { S3Exception, S3GetPropertiesResult } from '../types';
 import {
 	resolveStorageConfig,
 	getKeyWithPrefix,
