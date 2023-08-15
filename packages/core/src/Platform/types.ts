@@ -96,6 +96,7 @@ export enum AuthAction {
 export enum DataStoreAction {
 	Subscribe = '1',
 	GraphQl = '2',
+	Configure = '3',
 }
 export enum GeoAction {
 	SearchByText = '1',

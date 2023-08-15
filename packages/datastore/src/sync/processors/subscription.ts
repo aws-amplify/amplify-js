@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Auth } from '@aws-amplify/auth';
+import { InternalAuth } from '@aws-amplify/auth/internals';
 import { Cache } from '@aws-amplify/cache';
 import {
 	Category,
@@ -86,7 +86,7 @@ class SubscriptionProcessor {
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
 		private readonly amplifyContext: AmplifyContext = {
-			Auth,
+			InternalAuth,
 			InternalAPI,
 			Cache,
 		}
@@ -297,11 +297,18 @@ class SubscriptionProcessor {
 			let cognitoTokenPayload: { [field: string]: any },
 				oidcTokenPayload: { [field: string]: any };
 			let userCredentials = USER_CREDENTIALS.none;
+
+			const customUserAgentDetails: CustomUserAgentDetails = {
+				category: Category.DataStore,
+				action: DataStoreAction.Subscribe,
+			};
 			this.runningProcesses.add(async () => {
 				try {
 					// retrieving current AWS Credentials
 					const credentials =
-						await this.amplifyContext.Auth.currentCredentials();
+						await this.amplifyContext.InternalAuth.currentCredentials(
+							customUserAgentDetails
+						);
 					userCredentials = credentials.authenticated
 						? USER_CREDENTIALS.auth
 						: USER_CREDENTIALS.unauth;
@@ -311,7 +318,9 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
-					const session = await this.amplifyContext.Auth.currentSession();
+					const session = await this.amplifyContext.InternalAuth.currentSession(
+						customUserAgentDetails
+					);
 					cognitoTokenPayload = session.getIdToken().decodePayload();
 				} catch (err) {
 					// best effort to get jwt from Cognito
@@ -335,7 +344,10 @@ class SubscriptionProcessor {
 						token = federatedInfo.token;
 					} else {
 						const currentUser =
-							await this.amplifyContext.Auth.currentAuthenticatedUser();
+							await this.amplifyContext.InternalAuth.currentAuthenticatedUser(
+								undefined,
+								customUserAgentDetails
+							);
 						if (currentUser) {
 							token = currentUser.token;
 						}
@@ -430,11 +442,6 @@ class SubscriptionProcessor {
 										);
 
 										const variables = {};
-
-										const customUserAgentDetails: CustomUserAgentDetails = {
-											category: Category.DataStore,
-											action: DataStoreAction.Subscribe,
-										};
 
 										if (addFilter && predicatesGroup) {
 											variables['filter'] =
