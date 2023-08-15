@@ -9,23 +9,27 @@ export enum StorageValidationErrorCode {
 	NoKey = 'NoKey',
 	NoBucket = 'NoBucket',
 	NoRegion = 'NoRegion',
+	UrlExpirationMaxLimitExceed = 'UrlExpirationMaxLimitExceed',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	[StorageValidationErrorCode.NoCredentials]: {
-		message: 'Credentials should not be empty',
+		message: 'Credentials should not be empty.',
 	},
 	[StorageValidationErrorCode.NoIdentityId]: {
 		message:
-			'Missing identity ID when accessing objects in protected or private access level',
+			'Missing identity ID when accessing objects in protected or private access level.',
 	},
 	[StorageValidationErrorCode.NoKey]: {
-		message: 'Missing key in getProperties api call',
+		message: 'Missing key in getProperties api call.',
 	},
 	[StorageValidationErrorCode.NoBucket]: {
-		message: 'Missing bucket name while accessing object',
+		message: 'Missing bucket name while accessing object.',
 	},
 	[StorageValidationErrorCode.NoRegion]: {
-		message: 'Missing region while accessing object',
+		message: 'Missing region while accessing object.',
+	},
+	[StorageValidationErrorCode.UrlExpirationMaxLimitExceed]: {
+		message: 'Url Expiration can not be greater than 7 Days.',
 	},
 };
