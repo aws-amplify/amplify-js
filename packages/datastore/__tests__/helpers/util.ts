@@ -402,7 +402,7 @@ export async function waitForEmptyOutbox(verbose = false) {
 				resolve();
 			}
 		};
-		Hub.listen('datastore', hubCallback);
+		Hub.listen('datastore').subscribe(hubCallback);
 	});
 }
 
@@ -423,7 +423,7 @@ export async function waitForDataStoreReady(verbose = false) {
 				resolve();
 			}
 		};
-		Hub.listen('datastore', hubCallback);
+		Hub.listen('datastore').subscribe(hubCallback);
 	});
 }
 
@@ -444,7 +444,7 @@ export async function waitForSyncQueriesReady(verbose = false) {
 				resolve();
 			}
 		};
-		Hub.listen('datastore', hubCallback);
+		Hub.listen('datastore').subscribe(hubCallback);
 	});
 }
 

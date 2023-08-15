@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import cryptoSecureRandomInt from './cryptoSecureRandomInt';
+import { cryptoSecureRandomInt } from '@aws-amplify/core/polyfill';
 
 /**
  * Hex encoding strategy.

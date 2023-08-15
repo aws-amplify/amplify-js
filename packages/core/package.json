@@ -41,7 +41,13 @@
 		"./lib-esm/ClientDevice": "./lib-esm/ClientDevice/reactnative.js",
 		"./lib-esm/RNComponents": "./lib-esm/RNComponents/reactnative.js",
 		"./lib-esm/StorageHelper": "./lib-esm/StorageHelper/reactnative.js",
-		"./lib-esm/Cache": "./lib-esm/Cache/reactnative.js"
+		"./lib-esm/Cache": "./lib-esm/Cache/reactnative.js",
+		"./lib/polyfill/index": "./lib/polyfill/index-react-native.js",
+		"./lib-esm/polyfill/index": "./lib-esm/polyfill/index-react-native.js"
+	},
+	"browser": {
+		"./lib/polyfill/index": "./lib/polyfill/index-browser.js",
+		"./lib-esm/polyfill/index": "./lib-esm/polyfill/index-browser.js"
 	},
 	"repository": {
 		"type": "git",
@@ -59,7 +65,8 @@
 		"src",
 		"typings.d.ts",
 		"internals",
-		"polyfills"
+		"polyfills",
+		"polyfill"
 	],
 	"dependencies": {
 		"@aws-crypto/sha256-js": "1.2.2",

@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/core/polyfill",
+	"types": "../../../lib-esm/polyfill/index.d.ts",
+	"main": "../../../lib/polyfill/index.js",
+	"module": "../../../lib-esm/polyfill/index.js",
+	"react-native": "../../../lib-esm/polyfill/index.js",
+	"sideEffects": false
+}
