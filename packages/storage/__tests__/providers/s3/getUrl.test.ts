@@ -27,6 +27,7 @@ describe('getUrl happy path case', () => {
 
 describe('getUrl error path case', () => {
 	test.skip('Should return not found error when the object is not found', async () => {
+	  expect.assertions(2)
 		// TODO[kvramya] test credentials
 		headObject.mockImplementation(() =>
 			Object.assign(new Error(), {
