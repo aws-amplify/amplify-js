@@ -25,7 +25,7 @@ const MAX_PAGE_SIZE = 1000;
 
 type S3ListApi = {
 	/**
-	 * List all bucket objects
+	 * Lists all bucket objects.
 	 * @param {StorageListRequest<StorageListAllOptions>} req - The request object
 	 * @return {Promise<S3ListAllResult>} - Promise resolves to list of keys and metadata for all objects in path
 	 * @throws service: {@link S3Exception} - S3 service errors thrown while getting properties
