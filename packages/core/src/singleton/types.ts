@@ -14,10 +14,13 @@ import {
 	StorageAccessLevel,
 	StorageConfig,
 } from './Storage/types';
+import {
+	AnalyticsConfig
+} from './Analytics/types';
 
 export type ResourcesConfig = {
 	API?: {};
-	Analytics?: {};
+	Analytics?: AnalyticsConfig;
 	Auth?: AuthConfig;
 	DataStore?: {};
 	Interactions?: {};
