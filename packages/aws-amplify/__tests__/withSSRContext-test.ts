@@ -71,12 +71,13 @@ describe('withSSRContext', () => {
 		});
 
 		it('should use Amplify components from the ssr context', () => {
-			const { Auth, DataStore, InternalAPI } = withSSRContext();
+			const { Auth, DataStore, InternalAPI, InternalAuth } = withSSRContext();
 
 			expect(DataStore.Auth).toBe(Auth);
 			expect(DataStore.Auth).not.toBe(Amplify.Auth);
 
 			expect(DataStore.InternalAPI).toBe(InternalAPI);
+			expect(DataStore.InternalAuth).toBe(InternalAuth);
 		});
 	});
 
