@@ -65,10 +65,10 @@ describe('Guest Credentials', () => {
 		});
 		afterEach(() => {
 			cognitoCredentialsProvider.clearCredentials();
+			credentialsForidentityIdSpy?.mockReset();
 		});
 		afterAll(() => {
 			configSpy?.mockReset();
-			credentialsForidentityIdSpy?.mockReset();
 		});
 		test('Should call identityIdClient with no logins to obtain guest creds', async () => {
 			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({
@@ -146,10 +146,10 @@ describe('Primary Credentials', () => {
 		});
 		afterEach(() => {
 			cognitoCredentialsProvider.clearCredentials();
+			credentialsForidentityIdSpy?.mockReset();
 		});
 		afterAll(() => {
 			configSpy?.mockReset();
-			credentialsForidentityIdSpy?.mockReset();
 		});
 		test('Should call identityIdClient with the logins map to obtain primary creds', async () => {
 			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({

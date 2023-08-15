@@ -12,6 +12,7 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 import { defaultConfig } from './base';
 import type { UploadPartCommandInput, UploadPartCommandOutput } from './types';
 import {
+	assignStringVariables,
 	map,
 	parseXmlError,
 	s3TransferHandler,
@@ -28,6 +29,7 @@ export type UploadPartInput = Pick<
 	| 'UploadId'
 	| 'Bucket'
 	| 'Key'
+	| 'ContentMD5'
 	| 'SSECustomerAlgorithm'
 	| 'SSECustomerKey'
 	// TODO(AllanZhengYP): remove in V6.
@@ -43,7 +45,10 @@ const uploadPartSerializer = async (
 	input: UploadPartInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	const headers = await serializeObjectSsecOptionsToHeaders(input);
+	const headers = {
+		...(await serializeObjectSsecOptionsToHeaders(input)),
+		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
+	};
 	headers['content-type'] = 'application/octet-stream';
 	const url = new URL(endpoint.url.toString());
 	url.pathname = serializePathnameObjectKey(url, input.Key);

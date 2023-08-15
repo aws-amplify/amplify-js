@@ -6,6 +6,7 @@ import {
 	Hub,
 	HubCallback,
 	HubCapsule,
+	InAppMessagingAction,
 	StorageHelper,
 } from '@aws-amplify/core';
 
@@ -13,6 +14,7 @@ import {
 	closestExpiryMessage,
 	customHandledMessage,
 	inAppMessages,
+	notificationsConfig,
 	simpleInAppMessages,
 	simpleInAppMessagingEvent,
 	subcategoryConfig,
@@ -27,6 +29,7 @@ import {
 import InAppMessaging, {
 	InAppMessageInteractionEvent,
 } from '../../src/InAppMessaging';
+import { getUserAgentValue } from '../../src/internals/utils';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../src/common/eventListeners');
@@ -114,7 +117,9 @@ describe('InAppMessaging', () => {
 		});
 
 		test('attaches a storage helper to the config', () => {
-			const config = inAppMessaging.configure(subcategoryConfig);
+			const config = inAppMessaging.configure({
+				Notifications: notificationsConfig,
+			});
 
 			expect(config).toStrictEqual({
 				...subcategoryConfig,
@@ -151,7 +156,12 @@ describe('InAppMessaging', () => {
 		});
 
 		test('does not listen to analytics events if `listenForAnalyticsEvents` is false', () => {
-			inAppMessaging.configure({ listenForAnalyticsEvents: false });
+			const config = {
+				Notifications: {
+					InAppMessaging: { listenForAnalyticsEvents: false },
+				},
+			};
+			inAppMessaging.configure(config);
 
 			expect(hubSpy).not.toBeCalled();
 		});
@@ -284,9 +294,14 @@ describe('InAppMessaging', () => {
 		test('identifies users with pluggables', async () => {
 			await inAppMessaging.identifyUser(userId, userInfo);
 
+			const userAgentValue = getUserAgentValue(
+				InAppMessagingAction.IdentifyUser
+			);
+
 			expect(mockInAppMessagingProvider.identifyUser).toBeCalledWith(
 				userId,
-				userInfo
+				userInfo,
+				userAgentValue
 			);
 		});
 
