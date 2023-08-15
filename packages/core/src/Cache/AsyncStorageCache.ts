@@ -482,5 +482,3 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 
 const instance: ICache = new AsyncStorageCache();
 export { AsyncStorage, instance as Cache };
-
-Amplify.register(instance);
