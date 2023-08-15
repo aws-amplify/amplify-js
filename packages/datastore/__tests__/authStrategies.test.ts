@@ -1,4 +1,8 @@
-import { Category, DataStoreAction } from '@aws-amplify/core';
+import {
+	Category,
+	CustomUserAgentDetails,
+	DataStoreAction,
+} from '@aws-amplify/core';
 import {
 	InternalSchema,
 	ModelAttributeAuthAllow,
@@ -456,6 +460,10 @@ async function testMultiAuthStrategy({
 	const multiAuthStrategy = multiAuthStrategyWrapper({});
 
 	const schema = getAuthSchema(authRules);
+	const customUserAgentDetails: CustomUserAgentDetails = {
+		category: Category.DataStore,
+		action: DataStoreAction.GraphQl,
+	};
 
 	const authModes = await multiAuthStrategy({
 		schema,
@@ -464,13 +472,11 @@ async function testMultiAuthStrategy({
 		// but it still technically a required attribute in TS, since customers
 		// won't actually be calling the function directly in their app.
 		operation: ModelOperation.READ,
+		customUserAgentDetails,
 	});
 
 	expect(authModes).toEqual(result);
-	expect(currentUserSpy).toBeCalledWith(undefined, {
-		category: Category.DataStore,
-		action: DataStoreAction.Configure,
-	});
+	expect(currentUserSpy).toBeCalledWith(undefined, customUserAgentDetails);
 	jest.resetModules();
 	jest.resetAllMocks();
 }

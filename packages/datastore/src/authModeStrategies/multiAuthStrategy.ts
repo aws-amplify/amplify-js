@@ -140,13 +140,13 @@ export const multiAuthStrategy: (
 	amplifyContext: AmplifyContext
 ) => AuthModeStrategy =
 	(amplifyContext: AmplifyContext) =>
-	async ({ schema, modelName }) => {
+	async ({ schema, modelName, customUserAgentDetails }) => {
 		amplifyContext.InternalAuth = amplifyContext.InternalAuth || InternalAuth;
 		let currentUser;
 		try {
 			currentUser = await amplifyContext.InternalAuth.currentAuthenticatedUser(
 				undefined,
-				{ category: Category.DataStore, action: DataStoreAction.Configure }
+				customUserAgentDetails
 			);
 		} catch (e) {
 			// No current user
