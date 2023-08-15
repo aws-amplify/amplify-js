@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthResetPasswordStep, AuthSignInStep, AuthSignUpStep } from './enums';
+import {
+	AuthResetPasswordStep,
+	AuthSignInStep,
+	AuthSignUpStep,
+	AuthUpdateAttributeStep,
+} from './enums';
 
 /**
  * Additional data that may be returned from Auth APIs.
@@ -143,3 +148,19 @@ export type AuthNextSignUpStep<UserAttributeKey extends AuthUserAttributeKey> =
 		additionalInfo?: AdditionalInfo;
 		codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
 	};
+
+export type ConfirmAttributeWithCodeAttributeStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = {
+	updateAttributeStep: AuthUpdateAttributeStep.CONFIRM_ATTRIBUTE_WITH_CODE;
+	additionalInfo: AdditionalInfo;
+	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
+};
+
+export type DoneAttributeStep = {
+	updateAttributeStep: AuthUpdateAttributeStep.DONE;
+};
+
+export type AuthNextUpdateAttributeStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = ConfirmAttributeWithCodeAttributeStep<UserAttributeKey> | DoneAttributeStep;
