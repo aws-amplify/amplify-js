@@ -2,12 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyV6, ConsoleLogger as Logger } from '@aws-amplify/core';
-import { StorageListRequest, StorageListOptions } from '../../../types';
-import { S3ListOutputItem, S3ListResult, storageException } from '../types';
 import { ListObjectsV2Input, listObjectsV2 } from '../../../AwsClients/S3';
+import { StorageListRequest, StorageListOptions } from '../../../types';
+import { S3ListOutputItem, S3ListResult, StorageException } from '../types';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
-// TODO are we using Logger in V6
 const MAX_PAGE_SIZE = 1000;
 
 /**
@@ -15,7 +14,7 @@ const MAX_PAGE_SIZE = 1000;
  * @param {StorageListRequest<StorageListOptions>} req - The request object
  * @return {Promise<StorageListResult>} - Promise resolves to list of keys and metadata for all objects in path
  * additionally the result will include a nextToken if there are more items to retrieve
- * @throws service: {@link storageException} - S3 service errors thrown while getting properties
+ * @throws service: {@link StorageException} - S3 service errors thrown while getting properties
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
  */
 export const list = async (
@@ -55,7 +54,7 @@ const _listAll = async (
 	listOptions,
 	listParams: ListObjectsV2Input
 ): Promise<S3ListResult> => {
-	// TODO replace with V6 logger
+	// TODO(ashwinkumar6) replace with V6 logger
 	// if (listParams.MaxKeys || listParams.ContinuationToken) {
 	// 	logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
 	// }
@@ -88,8 +87,8 @@ const _list = async (
 	const listParamsClone = { ...listParams };
 	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
-		// TODO replace with V6 logger
-		// logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
+		// TODO(ashwinkumar6) replace with V6 logger
+		// logger.warn(`defaulting pageSize to ${MAX_PAGE_SIZE}.`);
 	}
 
 	const response = await listObjectsV2(listOptions, listParamsClone);
