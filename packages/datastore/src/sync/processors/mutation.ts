@@ -56,6 +56,11 @@ type MutationProcessorEvent = {
 	hasMore: boolean;
 };
 
+const customUserAgentDetails: CustomUserAgentDetails = {
+	category: Category.DataStore,
+	action: DataStoreAction.GraphQl,
+};
+
 class MutationProcessor {
 	/**
 	 * The observer that receives messages when mutations are successfully completed
@@ -197,6 +202,7 @@ class MutationProcessor {
 								this.amplifyConfig.aws_appsync_authenticationType,
 							modelName: model,
 							schema: this.schema,
+							customUserAgentDetails,
 						});
 
 						const operationAuthModes = modelAuthModes[operation.toUpperCase()];
@@ -350,11 +356,6 @@ class MutationProcessor {
 				let attempt = 0;
 
 				const opType = this.opTypeFromTransformerOperation(operation);
-
-				const customUserAgentDetails: CustomUserAgentDetails = {
-					category: Category.DataStore,
-					action: DataStoreAction.GraphQl,
-				};
 
 				do {
 					try {
