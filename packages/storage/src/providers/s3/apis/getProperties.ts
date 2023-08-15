@@ -27,14 +27,16 @@ export const getProperties = async function (
 	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
 	const { identityId, credentials } = await resolveCredentials();
 	const { key, options = {} } = req;
-	const { accessLevel } = options;
+	const { accessLevel = defaultAccessLevel } = options;
 
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 	// TODO[AllanZhengYP]: refactor this to reduce duplication
 	const finalKey = getKeyWithPrefix({
-		accessLevel: accessLevel ?? defaultAccessLevel,
+		accessLevel,
 		targetIdentityId:
-			accessLevel === 'protected' ? options.targetIdentityId : identityId,
+			options.accessLevel === 'protected'
+				? options.targetIdentityId
+				: identityId,
 		key,
 	});
 

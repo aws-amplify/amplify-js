@@ -11,7 +11,9 @@ import { isClockSkewError } from './isClockSkewError';
 export const getRetryDecider =
 	(errorParser: ErrorParser) =>
 	async (response?: HttpResponse, error?: unknown): Promise<boolean> => {
-		const errorCode = (error ?? (await errorParser(response)) ?? {})['name'];
+		const parsedError =
+			(error as Error) ?? (await errorParser(response)) ?? undefined;
+		const errorCode = parsedError?.['code'];
 		const statusCode = response?.statusCode;
 		return (
 			isConnectionError(error) ||
