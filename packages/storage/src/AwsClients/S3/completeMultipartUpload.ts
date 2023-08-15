@@ -22,6 +22,7 @@ import {
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	serializeObjectSsecOptionsToHeaders,
+	assertS3RequiredParameters,
 } from './utils';
 
 const INVALID_PARAMETER_ERROR_MSG =
@@ -51,8 +52,11 @@ const completeMultipartUploadSerializer = async (
 	const headers = await serializeObjectSsecOptionsToHeaders(input);
 	headers['content-type'] = 'application/xml';
 	const url = new URL(endpoint.url.toString());
+	assertS3RequiredParameters(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	assertS3RequiredParameters(!!input.UploadId, 'UploadId');
 	url.search = new URLSearchParams({ uploadId: input.UploadId }).toString();
+	assertS3RequiredParameters(!!input.MultipartUpload, 'MultipartUpload');
 	return {
 		method: 'POST',
 		headers,
@@ -94,7 +98,7 @@ const parseXmlBodyOrThrow = async (response: HttpResponse): Promise<any> => {
 			...response,
 			statusCode: 500, // To workaround the >=300 status code check common to other APIs.
 		});
-		error.$metadata.httpStatusCode = response.statusCode;
+		error!.$metadata.httpStatusCode = response.statusCode;
 		throw error;
 	}
 	return parsed;
@@ -124,9 +128,12 @@ const completeMultipartUploadDeserializer = async (
 // This indicates internal server error after the response has been sent to the client.
 // Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html#API_CompleteMultipartUpload_Example_4
 const retryWhenErrorWith200StatusCode = async (
-	response: HttpResponse,
-	error?: Error
+	response?: HttpResponse,
+	error?: unknown
 ): Promise<boolean> => {
+	if (!response) {
+		return false;
+	}
 	if (response.statusCode === 200) {
 		if (!response.body) {
 			return true;

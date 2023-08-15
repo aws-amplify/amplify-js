@@ -10,8 +10,8 @@ import { isClockSkewError } from './isClockSkewError';
  */
 export const getRetryDecider =
 	(errorParser: ErrorParser) =>
-	async (response?: HttpResponse, error?: Error): Promise<boolean> => {
-		const { name: errorCode } = error ?? (await errorParser(response)) ?? {};
+	async (response?: HttpResponse, error?: unknown): Promise<boolean> => {
+		const errorCode = (error ?? (await errorParser(response)) ?? {})['name'];
 		const statusCode = response?.statusCode;
 		return (
 			isConnectionError(error) ||
@@ -47,7 +47,8 @@ const TIMEOUT_ERROR_CODES = [
 const isThrottlingError = (statusCode?: number, errorCode?: string) =>
 	statusCode === 429 || THROTTLING_ERROR_CODES.includes(errorCode);
 
-const isConnectionError = (error?: Error) => error?.name === 'Network error';
+const isConnectionError = (error?: unknown) =>
+	error?.['name'] === 'Network error';
 
 const isServerSideError = (statusCode?: number, errorCode?: string) =>
 	[500, 502, 503, 504].includes(statusCode) ||

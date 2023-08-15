@@ -13,6 +13,7 @@ import type { AbortMultipartUploadCommandInput } from './types';
 
 import { defaultConfig } from './base';
 import {
+	assertS3RequiredParameters,
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
@@ -30,7 +31,9 @@ const abortMultipartUploadSerializer = (
 	endpoint: Endpoint
 ): HttpRequest => {
 	const url = new URL(endpoint.url.toString());
+	assertS3RequiredParameters(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	assertS3RequiredParameters(!!input.UploadId, 'UploadId');
 	url.search = new URLSearchParams({
 		uploadId: input.UploadId,
 	}).toString();

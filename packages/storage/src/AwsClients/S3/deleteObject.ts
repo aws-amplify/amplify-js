@@ -15,6 +15,7 @@ import type {
 
 import { defaultConfig } from './base';
 import {
+	assertS3RequiredParameters,
 	deserializeBoolean,
 	map,
 	parseXmlError,
@@ -34,6 +35,7 @@ const deleteObjectSerializer = (
 	endpoint: Endpoint
 ): HttpRequest => {
 	const url = new URL(endpoint.url.toString());
+	assertS3RequiredParameters(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'DELETE',

@@ -12,6 +12,7 @@ import { MetadataBearer } from '@aws-sdk/types';
 import type { CopyObjectCommandInput } from './types';
 import { defaultConfig } from './base';
 import {
+	assertS3RequiredParameters,
 	assignStringVariables,
 	parseXmlBody,
 	parseXmlError,
@@ -60,6 +61,7 @@ const copyObjectSerializer = async (
 		}),
 	};
 	const url = new URL(endpoint.url.toString());
+	assertS3RequiredParameters(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'PUT',

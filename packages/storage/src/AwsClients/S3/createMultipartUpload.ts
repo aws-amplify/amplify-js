@@ -16,6 +16,7 @@ import type { PutObjectInput } from './putObject';
 
 import { defaultConfig } from './base';
 import {
+	assertS3RequiredParameters,
 	map,
 	parseXmlBody,
 	parseXmlError,
@@ -40,6 +41,7 @@ const createMultipartUploadSerializer = async (
 ): Promise<HttpRequest> => {
 	const headers = await serializeObjectConfigsToHeaders(input);
 	const url = new URL(endpoint.url.toString());
+	assertS3RequiredParameters(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	url.search = 'uploads';
 	return {
