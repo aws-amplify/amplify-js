@@ -1,3 +1,4 @@
+import { InternalCognitoUser, InternalCognitoUserPool } from './internals';
 declare module 'amazon-cognito-identity-js' {
 	//import * as AWS from "aws-sdk";
 
@@ -89,19 +90,7 @@ declare module 'amazon-cognito-identity-js' {
 		| 'SMS_MFA'
 		| 'SOFTWARE_TOKEN_MFA';
 
-	export class CognitoUser {
-		constructor(data: ICognitoUserData);
-
-		challengeName?: ChallengeName;
-
-		public setSignInUserSession(signInUserSession: CognitoUserSession): void;
-		public getSignInUserSession(): CognitoUserSession | null;
-		public getUsername(): string;
-
-		public getAuthenticationFlowType(): string;
-		public setAuthenticationFlowType(authenticationFlowType: string): string;
-		public getCachedDeviceKeyAndPassword(): void;
-
+	export class CognitoUser extends InternalCognitoUser {
 		public getSession(
 			callback:
 				| ((error: Error, session: null) => void)
@@ -331,18 +320,7 @@ declare module 'amazon-cognito-identity-js' {
 		AdvancedSecurityDataCollectionFlag?: boolean;
 	}
 
-	export class CognitoUserPool {
-		constructor(
-			data: ICognitoUserPoolData,
-			wrapRefreshSessionCallback?: (
-				target: NodeCallback.Any
-			) => NodeCallback.Any
-		);
-
-		public getUserPoolId(): string;
-		public getUserPoolName(): string;
-		public getClientId(): string;
-
+	export class CognitoUserPool extends InternalCognitoUserPool {
 		public signUp(
 			username: string,
 			password: string,
@@ -351,8 +329,6 @@ declare module 'amazon-cognito-identity-js' {
 			callback: NodeCallback<Error, ISignUpResult>,
 			clientMetadata?: ClientMetadata
 		): void;
-
-		public getCurrentUser(): CognitoUser | null;
 	}
 
 	export interface ICognitoUserSessionData {
