@@ -150,13 +150,11 @@ export const getPresignedGetObjectUrl = async (
 	)) {
 		url.searchParams.append(headerName, value);
 	}
-	return new URL(
-		presignUrl(
-			{ method, url, body: null },
-			{
-				...defaultConfig,
-				...config,
-			}
-		).toString()
+	return presignUrl(
+		{ method, url, body: null },
+		{
+			...defaultConfig,
+			...config,
+		}
 	);
 };
