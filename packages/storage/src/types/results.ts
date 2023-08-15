@@ -45,6 +45,6 @@ export type StorageUploadResult = {
 	key: string;
 };
 
-export type StorageListResult = {
-	items: StorageItem[];
+export type StorageListResult<Item extends StorageItem> = {
+	items: Item[];
 };
