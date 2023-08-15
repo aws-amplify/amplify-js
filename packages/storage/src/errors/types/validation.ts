@@ -9,6 +9,7 @@ export enum StorageValidationErrorCode {
 	NoKey = 'NoKey',
 	NoBucket = 'NoBucket',
 	NoRegion = 'NoRegion',
+	UrlExpirationMaxLimitExceed = 'UrlExpirationMaxLimitExceed',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
@@ -27,5 +28,8 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	},
 	[StorageValidationErrorCode.NoRegion]: {
 		message: 'Missing region while accessing object.',
+	},
+	[StorageValidationErrorCode.UrlExpirationMaxLimitExceed]: {
+		message: 'Url Expiration can not be greater than 7 Days.',
 	},
 };

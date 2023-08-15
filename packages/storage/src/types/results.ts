@@ -37,7 +37,7 @@ export type StorageDownloadDataResult<T extends StorageItem> = T & {
 
 export type StorageGetUrlResult = {
 	url: URL;
-	expiresIn: Date;
+	expiresAt: number;
 };
 
 export type StorageUploadResult = {

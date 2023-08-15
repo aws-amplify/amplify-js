@@ -18,6 +18,7 @@ import {
 } from '../utils';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 const DEFAULT_PRESIGN_EXPIRATION = 900;
+const MAX_URL_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
 
 /**
  * Get Presigned url of the object
@@ -57,15 +58,17 @@ export const getUrl = async function (
 		signingService: S3_SERVICE_NAME,
 	};
 
-	let urlExpiration = new Date(
-		options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION
+	let urlExpiration = options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION;
+	assertValidationError(
+		urlExpiration > MAX_URL_EXPIRATION,
+		StorageValidationErrorCode.UrlExpirationMaxLimitExceed
 	);
 	const awsCredExpiration = credentials?.expiration;
-	// expiresIn is the minimum of credential expiration and url expiration
+	// expiresAt is the minimum of credential expiration and url expiration
 	urlExpiration =
 		urlExpiration < awsCredExpiration ? urlExpiration : awsCredExpiration;
 	return {
 		url: await getPresignedGetObjectUrl(getUrlOptions, getUrlParams),
-		expiresIn: urlExpiration,
+		expiresAt: Date.now() + urlExpiration,
 	};
 };
