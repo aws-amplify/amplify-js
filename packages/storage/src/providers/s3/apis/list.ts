@@ -10,7 +10,7 @@ import {
 } from '../../../types';
 import {
 	S3ListOutputItem,
-	StorageException,
+	S3Exception,
 	S3ListAllResult,
 	S3ListPaginateResult,
 } from '../types';
@@ -28,7 +28,7 @@ type S3ListApi = {
 	 * List all bucket objects
 	 * @param {StorageListRequest<StorageListAllOptions>} req - The request object
 	 * @return {Promise<S3ListAllResult>} - Promise resolves to list of keys and metadata for all objects in path
-	 * @throws service: {@link StorageException} - S3 service errors thrown while getting properties
+	 * @throws service: {@link S3Exception} - S3 service errors thrown while getting properties
 	 * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
 	 */
 	(req: StorageListRequest<StorageListAllOptions>): Promise<S3ListAllResult>;
@@ -37,7 +37,7 @@ type S3ListApi = {
 	 * @param {StorageListRequest<StorageListPaginateOptions>} req - The request object
 	 * @return {Promise<S3ListPaginateResult>} - Promise resolves to list of keys and metadata for all objects in path
 	 * additionally the result will include a nextToken if there are more items to retrieve
-	 * @throws service: {@link StorageException} - S3 service errors thrown while getting properties
+	 * @throws service: {@link S3Exception} - S3 service errors thrown while getting properties
 	 * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
 	 */
 	(

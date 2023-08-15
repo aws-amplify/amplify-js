@@ -5,7 +5,7 @@ import { headObject } from '../../../AwsClients/S3';
 import { StorageOptions, StorageOperationRequest } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { StorageException, S3GetPropertiesResult } from '../types';
+import { S3Exception, S3GetPropertiesResult } from '../types';
 import {
 	resolveStorageConfig,
 	getKeyWithPrefix,
@@ -18,7 +18,7 @@ import {
  *
  * @param {StorageOperationRequest} req The request to make an API call.
  * @returns {Promise<S3GetPropertiesResult>} A promise that resolves the properties.
- * @throws A {@link StorageException} when the underlying S3 service returned error.
+ * @throws A {@link S3Exception} when the underlying S3 service returned error.
  * @throws A {@link StorageValidationErrorCode} when API call parameters are invalid.
  */
 export const getProperties = async function (

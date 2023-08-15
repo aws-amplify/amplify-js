@@ -13,4 +13,4 @@ export {
 	S3ListPaginateResult,
 	S3GetPropertiesResult,
 } from './results';
-export { StorageException } from './errors';
+export { S3Exception } from './errors';
