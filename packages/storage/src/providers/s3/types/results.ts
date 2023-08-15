@@ -4,26 +4,25 @@
 import {
 	StorageDownloadDataResult,
 	StorageGetUrlResult,
-	StorageUploadResult,
 	StorageItem,
+	StorageUploadResult,
 	StorageListResult,
 } from '../../../types';
 
-type S3Item = {
+export interface S3Item extends StorageItem {
 	/**
 	 * VersionId used to reference a specific version of the object.
 	 */
-	versionId?: String;
+	versionId?: string;
 	/**
 	 * A standard MIME type describing the format of the object data.
 	 */
-	contentType?: String;
-};
+	contentType?: string;
+}
 
-export type S3DownloadDataResult = StorageDownloadDataResult &
-	StorageItem<S3Item>;
+export type S3DownloadDataResult = StorageDownloadDataResult<S3Item>;
 
-export type S3DownloadFileResult = StorageItem<S3Item>;
+export type S3DownloadFileResult = S3Item;
 
 export type S3GetUrlResult = StorageGetUrlResult;
 
@@ -31,7 +30,9 @@ export type S3UploadDataResult = StorageUploadResult;
 
 export type S3UploadFileResult = StorageUploadResult;
 
-export type S3ListOutputItem = StorageItem<S3Item>;
+export type S3GetPropertiesResult = S3Item;
+
+export type S3ListOutputItem = S3Item;
 
 export type S3ListResult = StorageListResult & {
 	items: S3ListOutputItem[];

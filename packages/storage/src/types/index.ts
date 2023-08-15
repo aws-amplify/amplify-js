@@ -9,10 +9,11 @@ export { DownloadTask, TransferProgressEvent } from './common';
 export {
 	StorageListRequest,
 	StorageListOptions,
-	StorageOperationParameter,
-	StorageDownloadDataParameter,
+	StorageOperationRequest,
+	StorageDownloadDataRequest,
 	StorageDownloadFileParameter,
 	StorageUploadDataParameter,
+	StorageOptions,
 	StorageUploadFileParameter, // TODO: open question - should we export this?
 } from './params';
 export {

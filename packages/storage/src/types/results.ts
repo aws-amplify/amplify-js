@@ -3,7 +3,7 @@
 
 import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
 
-export type StorageItem<T = {}> = T & {
+export type StorageItem = {
 	/**
 	 * Key of the object
 	 */
@@ -31,7 +31,7 @@ export type StorageItem<T = {}> = T & {
 // TODO: replace with ResponsePayloadMixin from core
 type Payload = Pick<Body, 'blob' | 'json' | 'text'>;
 
-export type StorageDownloadDataResult = {
+export type StorageDownloadDataResult<T extends StorageItem> = T & {
 	body: Payload;
 };
 
@@ -47,5 +47,4 @@ export type StorageUploadResult = {
 
 export type StorageListResult = {
 	items: StorageItem[];
-	nextToken?: string;
 };

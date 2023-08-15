@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { S3TransferOptions, S3GetUrlOptions, S3UploadOptions } from './options';
-export { storageException } from './errors';
 export {
 	S3DownloadDataResult,
 	S3DownloadFileResult,
@@ -11,4 +10,6 @@ export {
 	S3UploadFileResult,
 	S3ListOutputItem,
 	S3ListResult,
+	S3GetPropertiesResult,
 } from './results';
+export { StorageException } from './errors';
