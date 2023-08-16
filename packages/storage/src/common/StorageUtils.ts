@@ -22,14 +22,17 @@ export const byteLength = (x: unknown) => {
 };
 
 export const dispatchStorageEvent = (
-	track: boolean,
+	track: boolean | undefined,
 	event: string,
 	attrs: any,
 	metrics: any,
 	message: string
 ): void => {
 	if (track) {
-		const data = { attrs };
+		const data: {
+			attrs: any;
+			metrics?: any;
+		} = { attrs };
 		if (metrics) {
 			data['metrics'] = metrics;
 		}
