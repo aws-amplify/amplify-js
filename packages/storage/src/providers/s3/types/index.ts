@@ -8,4 +8,6 @@ export {
 	S3GetUrlResult,
 	S3UploadDataResult,
 	S3UploadFileResult,
+	S3GetPropertiesResult,
 } from './results';
+export { S3Exception } from './errors';

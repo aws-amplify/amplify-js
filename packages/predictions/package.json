@@ -56,7 +56,7 @@
 		"@aws-sdk/util-utf8-node": "3.6.1",
 		"buffer": "4.9.2",
 		"tslib": "^2.5.0",
-		"uuid": "^3.2.1"
+		"uuid": "^9.0.0"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.0.0"
@@ -69,25 +69,25 @@
 			"name": "Predictions (all providers)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Predictions, AmazonAIPredictionsProvider }",
-			"limit": "133.5 kB"
+			"limit": "103.87 kB"
 		},
 		{
 			"name": "Predictions (Convert provider)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Predictions, AmazonAIConvertPredictionsProvider }",
-			"limit": "60.5 kB"
+			"limit": "58.32 kB"
 		},
 		{
 			"name": "Predictions (Identify provider)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Predictions, AmazonAIIdentifyPredictionsProvider }",
-			"limit": "106 kB"
+			"limit": "73.9 kB"
 		},
 		{
 			"name": "Predictions (Interpret provider)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Predictions, AmazonAIInterpretPredictionsProvider }",
-			"limit": "45 kB"
+			"limit": "43.77 kB"
 		}
 	],
 	"jest": {

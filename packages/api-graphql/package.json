@@ -53,7 +53,7 @@
     "@aws-amplify/pubsub": "6.0.0",
     "graphql": "15.8.0",
     "tslib": "^2.5.0",
-    "uuid": "^3.2.1",
+    "uuid": "^9.0.0",
     "zen-observable-ts": "0.8.19"
   },
   "peerDependencies": {
@@ -68,7 +68,7 @@
       "name": "API (GraphQL client)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, GraphQLAPI }",
-      "limit": "88.35 kB"
+      "limit": "90.35 kB"
     }
   ],
   "jest": {

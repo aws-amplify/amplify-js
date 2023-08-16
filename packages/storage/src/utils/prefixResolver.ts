@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StorageAccessLevel } from '@aws-amplify/core';
-import { assertValidationError } from '../errors/assertValidationErrors';
+import { assertValidationError } from '../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../errors/types/validation';
 
 type PrefixResolverOptions = {

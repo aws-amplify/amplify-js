@@ -76,10 +76,10 @@
 		"js-cookie": "^2.2.1"
 	},
 	"devDependencies": {
-		"@react-native-async-storage/async-storage": "1.15.17",
+		"@react-native-async-storage/async-storage": "^1.17.12",
 		"find": "^0.2.7",
 		"genversion": "^2.2.0",
-		"react-native": "^0.64.1",
+		"react-native": "^0.68.7",
 		"typescript": "5.0.2"
 	},
 	"size-limit": [
@@ -111,7 +111,7 @@
 			"name": "Core (Credentials)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Credentials }",
-			"limit": "13.45 kB"
+			"limit": "13.78 kB"
 		},
 		{
 			"name": "Core (Signer)",

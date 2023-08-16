@@ -34,7 +34,7 @@ describe('serializeGetObjectRequest', () => {
 				Key: 'key',
 			}
 		);
-		const actualUrl = new URL(actual);
+		const actualUrl = actual;
 		expect(actualUrl.hostname).toEqual(
 			`bucket.s3.${defaultConfig.region}.amazonaws.com`
 		);

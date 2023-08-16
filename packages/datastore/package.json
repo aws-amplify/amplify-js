@@ -52,10 +52,11 @@
 		"@aws-amplify/auth": "6.0.0",
 		"@aws-amplify/pubsub": "6.0.0",
 		"amazon-cognito-identity-js": "6.4.0",
+		"buffer": "4.9.2",
 		"idb": "5.0.6",
 		"immer": "9.0.6",
-		"ulid": "2.3.0",
-		"uuid": "3.4.0",
+		"ulid": "^2.3.0",
+		"uuid": "^9.0.0",
 		"zen-observable-ts": "0.8.19",
 		"zen-push": "0.2.1"
 	},
@@ -65,7 +66,7 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
 		"@react-native-community/netinfo": "4.7.0",
-		"@types/uuid": "3.4.6",
+		"@types/uuid": "^9.0.0",
 		"@types/uuid-validate": "^0.0.1",
 		"dexie": "3.2.2",
 		"dexie-export-import": "1.0.3",
@@ -76,7 +77,7 @@
 			"name": "DataStore (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, DataStore }",
-			"limit": "137 kB"
+			"limit": "139.12 kB"
 		}
 	],
 	"jest": {

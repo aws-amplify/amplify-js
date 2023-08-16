@@ -16,3 +16,6 @@ export {
 	AmazonPersonalizeProvider,
 } from './Providers';
 */
+
+// Default provider types
+export * from './Providers/pinpoint';
