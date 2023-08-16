@@ -130,6 +130,8 @@ export class StorageCache {
 	/**
 	 * Returns an appropriate configuration for the Cache instance. Will apply any custom configuration for this
 	 * instance on top of the global configuration. Default configuration will be applied in all cases.
+	 * 
+	 * @internal
 	 */
 	protected get cacheConfig(): CacheConfig {
 		const globalCacheConfig = AmplifyV6.getConfig().Cache || {};
