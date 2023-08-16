@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AuthConfig, UserPoolConfig } from '@aws-amplify/core';
+
+import { AuthConfig, AuthTokens, UserPoolConfig } from '@aws-amplify/core';
+import { AuthError } from '../../../errors/AuthError';
 
 export function isTypeUserPoolConfig(
 	authConfig?: AuthConfig
@@ -10,4 +12,15 @@ export function isTypeUserPoolConfig(
 	}
 
 	return false;
+}
+
+export function assertAuthTokens(
+	tokens?: AuthTokens
+): asserts tokens is AuthTokens {
+	if (!tokens || !tokens.accessToken) {
+		throw new AuthError({
+			name: 'Invalid Auth Tokens',
+			message: 'No Auth Tokens were found',
+		});
+	}
 }

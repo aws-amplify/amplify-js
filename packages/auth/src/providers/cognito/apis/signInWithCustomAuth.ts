@@ -9,18 +9,12 @@ import {
 	AuthSignInStep,
 } from '../../../types';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
-
-import {
-	ChallengeName,
-	ChallengeParameters,
-} from '../utils/clients/types/models';
 import {
 	handleCustomAuthFlowWithoutSRP,
 	getSignInResult,
 	getSignInResultFromError,
 } from '../utils/signInHelpers';
-
-import { AmplifyV6 } from '@aws-amplify/core';
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import { InitiateAuthException } from '../types/errors';
 import { CognitoSignInOptions } from '../types';
 import {
@@ -28,6 +22,10 @@ import {
 	setActiveSignInState,
 } from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+import {
+	ChallengeName,
+	ChallengeParameters,
+} from '../utils/clients/CognitoIdentityProvider/types';
 
 /**
  * Signs a user in using a custom authentication flow without password
@@ -38,12 +36,13 @@ import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithCustomAuth(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
 	const { username, password, options } = signInRequest;
 	const metadata =
 		options?.serviceOptions?.clientMetadata || authConfig?.clientMetadata;
@@ -62,7 +61,7 @@ export async function signInWithCustomAuth(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleCustomAuthFlowWithoutSRP(username, metadata);
+		} = await handleCustomAuthFlowWithoutSRP(username, metadata, authConfig);
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
