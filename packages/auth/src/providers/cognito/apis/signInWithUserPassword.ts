@@ -12,13 +12,13 @@ import {
 import {
 	ChallengeName,
 	ChallengeParameters,
-} from '../utils/clients/types/models';
+} from '../utils/clients/CognitoIdentityProvider/types';
 import {
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
 } from '../utils/signInHelpers';
-import { AmplifyV6 } from '@aws-amplify/core';
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import { InitiateAuthException } from '../types/errors';
 import { CognitoSignInOptions } from '../types';
 import {
@@ -36,14 +36,16 @@ import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithUserPassword(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { username, password, options } = signInRequest;
-	const clientMetadata = AmplifyV6.getConfig().Auth?.clientMetadata;
-	const metadata = options?.serviceOptions?.clientMetadata || clientMetadata;
+	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
+	const metadata =
+		options?.serviceOptions?.clientMetadata || authConfig.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -59,7 +61,12 @@ export async function signInWithUserPassword(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleUserPasswordAuthFlow(username, password, metadata);
+		} = await handleUserPasswordAuthFlow(
+			username,
+			password,
+			metadata,
+			authConfig
+		);
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({

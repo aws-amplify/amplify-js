@@ -29,8 +29,8 @@ export type CognitoUserAttributeKey =
 /**
  * Cognito custom attribute type
  */
-// TODO: change to custom:${string} when TS version is upgraded
-export type CustomAttribute = string & {};
+// TODO(V6): replace by `custom:${string}` once categories that use auth have upgraded TS
+export type CustomAttribute = string&{};
 
 /**
  * One or more name-value pairs containing the validation data in the request to register a user.
