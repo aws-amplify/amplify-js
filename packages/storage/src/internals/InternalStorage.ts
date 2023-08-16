@@ -28,6 +28,7 @@ import {
 	StorageGetPropertiesConfig,
 	StorageGetPropertiesOutput,
 } from '../types';
+import { ConfigType } from '../types/Provider';
 import { PutObjectInput } from '../AwsClients/S3';
 import { isCancelError } from '../AwsClients/S3/utils';
 import { AWSS3UploadTask } from '../providers/AWSS3UploadTask';
@@ -44,7 +45,7 @@ export class InternalStorageClass {
 	/**
 	 * @private
 	 */
-	private _config;
+	private _config: ConfigType;
 	private _pluggables: StorageProvider[];
 
 	/**
@@ -120,13 +121,13 @@ export class InternalStorageClass {
 	 * @param {Object} config - Configuration object for storage
 	 * @return {Object} - Current configuration
 	 */
-	configure(config?) {
+	configure(config?: ConfigType) {
 		logger.debug('configure Storage');
 		if (!config) return this._config;
 
 		const amplifyConfig = parseAWSExports(config);
 
-		const storageConfig = amplifyConfig.Storage ?? {};
+		const storageConfig: ConfigType = amplifyConfig.Storage ?? {};
 
 		const defaultProviderConfigKeys = [
 			'bucket',
@@ -198,9 +199,9 @@ export class InternalStorageClass {
 
 	private isUploadTask(x: unknown): x is UploadTask {
 		return (
-			typeof x !== 'undefined' &&
-			typeof x['pause'] === 'function' &&
-			typeof x['resume'] === 'function'
+			x !== undefined &&
+			typeof (x as Record<string, any>)['pause'] === 'function' &&
+			typeof (x as Record<string, any>)['resume'] === 'function'
 		);
 	}
 

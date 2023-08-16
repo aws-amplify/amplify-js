@@ -1192,7 +1192,7 @@ describe('Storage', () => {
 	});
 
 	describe('cancel test', () => {
-		let mockIsCancelError = isCancelError as jest.Mock;
+		let mockIsCancelError = isCancelError as any as jest.Mock;
 		let originalAbortController = window.AbortController;
 		let signalAborted = false;
 		let abortError;

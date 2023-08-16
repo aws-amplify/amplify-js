@@ -36,7 +36,7 @@ export class Storage extends InternalStorageClass {
 	/**
 	 * @public
 	 */
-	public vault: Storage;
+	public declare vault: Storage;
 
 	public getModuleName() {
 		return 'Storage';
@@ -161,7 +161,7 @@ export class Storage extends InternalStorageClass {
 /**
  * Configure & register Storage singleton instance.
  */
-let _instance: Storage = null;
+let _instance: Storage | null = null;
 const getInstance = () => {
 	if (_instance) {
 		return _instance;
@@ -185,7 +185,8 @@ const getInstance = () => {
 			}
 		});
 		loggerStorageInstance.debug('storage vault configure called');
-		_instance.vault.configure(vaultConfig);
+		_instance!.vault.configure(vaultConfig);
+		return vaultConfig;
 	};
 	return _instance;
 };
