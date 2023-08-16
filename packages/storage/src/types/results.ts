@@ -36,9 +36,14 @@ export type StorageDownloadDataResult<T extends StorageItem> = T & {
 };
 
 export type StorageGetUrlResult = {
+	/**
+	 * presigned URL of the given object.
+	 */
 	url: URL;
+	/**
+	 * expiresAt is date in which generated URL expires.
+	 */
 	expiresAt: Date;
-	headers?: Headers;
 };
 
 export type StorageUploadResult = {
