@@ -657,17 +657,9 @@ describe('Storage', () => {
 			test('get object with all available config', async () => {
 				await storage.get('key', {
 					download: false,
-					contentType: 'text/plain',
-					contentDisposition: 'contentDisposition',
-					contentLanguage: 'contentLanguage',
-					contentEncoding: 'contentEncoding',
-					cacheControl: 'cacheControl',
 					identityId: 'identityId',
 					expires: 100,
 					progressCallback: () => {},
-					SSECustomerAlgorithm: 'aes256',
-					SSECustomerKey: 'key',
-					SSECustomerKeyMD5: 'md5',
 					customPrefix: {
 						public: 'public',
 						protected: 'protected',
