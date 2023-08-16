@@ -41,6 +41,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		const forceRefresh = getCredentialsOptions.forceRefresh;
 		// TODO(V6): Listen to changes to AuthTokens and update the credentials
 		const identityId = await cognitoIdentityIdProvider({ tokens, authConfig });
+
 		if (!identityId) {
 			throw new AuthError({
 				name: 'IdentityIdConfigException',
@@ -48,7 +49,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 				recoverySuggestion: 'Make sure to pass a valid identityId.',
 			});
 		}
-		console.log('identityId: ', identityId);
 
 		if (forceRefresh) {
 			this.clearCredentials();
