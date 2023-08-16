@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { RespondToAuthChallengeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { signIn } from '../../../src/providers/cognito/apis/signIn';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInStore } from '../../../src/providers/cognito/utils/signInStore';
 import { AmplifyV6 } from '@aws-amplify/core';
+import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 
 describe('local sign-in state management tests', () => {
 	const session = '1234234232';

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import {
 	AuthSignUpResult,
 	AuthSignUpStep,
@@ -12,7 +12,8 @@ import { CustomAttribute, CognitoConfirmSignUpOptions } from '../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { ConfirmSignUpException } from '../types/errors';
-import { confirmSignUpClient } from '../utils/clients/ConfirmSignUpClient';
+import { confirmSignUp as confirmSignUpClient } from '../utils/clients/CognitoIdentityProvider';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**
  * Confirms a new user account.
@@ -23,7 +24,7 @@ import { confirmSignUpClient } from '../utils/clients/ConfirmSignUpClient';
  * @throws -{@link AuthValidationErrorCode }
  * Thrown due to an empty confirmation code
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  *
  * @returns AuthSignUpResult
  */
@@ -33,7 +34,9 @@ export async function confirmSignUp(
 	const { username, confirmationCode, options } = confirmSignUpRequest;
 
 	const authConfig = AmplifyV6.getConfig().Auth;
-
+	assertTokenProviderConfig(authConfig);
+	const clientMetadata =
+		options?.serviceOptions?.clientMetadata ?? authConfig.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptyConfirmSignUpUsername
@@ -43,14 +46,17 @@ export async function confirmSignUp(
 		AuthValidationErrorCode.EmptyConfirmSignUpCode
 	);
 
-	await confirmSignUpClient({
-		Username: username,
-		ConfirmationCode: confirmationCode,
-		ClientMetadata:
-			options?.serviceOptions?.clientMetadata ?? authConfig?.clientMetadata,
-		ForceAliasCreation: options?.serviceOptions?.forceAliasCreation,
-		// TODO: handle UserContextData
-	});
+	await confirmSignUpClient(
+		{ region: getRegion(authConfig.userPoolId) },
+		{
+			Username: username,
+			ConfirmationCode: confirmationCode,
+			ClientMetadata: clientMetadata,
+			ForceAliasCreation: options?.serviceOptions?.forceAliasCreation,
+			ClientId: authConfig.userPoolWebClientId,
+			// TODO: handle UserContextData
+		}
+	);
 
 	return {
 		isSignUpComplete: true,

@@ -1,26 +1,33 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
-import { AmplifyErrorString, AmplifyV6 } from '@aws-amplify/core';
-import { ForgotPasswordCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { resetPassword } from '../../../src/providers/cognito';
 import { ForgotPasswordException } from '../../../src/providers/cognito/types/errors';
-import * as resetPasswordClient from '../../../src/providers/cognito/utils/clients/ResetPasswordClient';
+import * as resetPasswordClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
+import { ForgotPasswordCommandOutput }
+ from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { AmplifyV6 as Amplify } from 'aws-amplify';
+import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
+import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
+jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
+Amplify.configure({
+	Auth: {
+		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
+});
 describe('ResetPassword API happy path cases', () => {
 	let resetPasswordSpy;
 
 	beforeEach(() => {
 		resetPasswordSpy = jest
-			.spyOn(resetPasswordClient, 'resetPasswordClient')
-			.mockImplementationOnce(
-				async (params: resetPasswordClient.ResetPasswordClientInput) => {
-					return authAPITestParams.resetPasswordHttpCallResult as ForgotPasswordCommandOutput;
-				}
-			);
+			.spyOn(resetPasswordClient, 'forgotPassword')
+			.mockImplementationOnce(async () => {
+				return authAPITestParams.resetPasswordHttpCallResult as ForgotPasswordCommandOutput;
+			});
 	});
 
 	afterEach(() => {
@@ -33,18 +40,26 @@ describe('ResetPassword API happy path cases', () => {
 	});
 
 	test('ResetPassword API input should contain clientMetadata from request', async () => {
-		await resetPassword(
-			authAPITestParams.resetPasswordRequestWithClientMetadata
-		);
+		await resetPassword({
+			username: 'username',
+			options: {
+				serviceOptions: {
+					clientMetadata: { foo: 'foo' },
+				},
+			},
+		});
 		expect(resetPasswordSpy).toHaveBeenCalledWith(
-			expect.objectContaining(
-				authAPITestParams.forgotPasswordCommandWithClientMetadata
-			)
+			expect.objectContaining({ region: 'us-west-2' }),
+			expect.objectContaining({
+				Username: 'username',
+				ClientMetadata: { foo: 'foo' },
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			})
 		);
 	});
 
 	test('ResetPassword API input should contain clientMetadata from config', async () => {
-		AmplifyV6.configure({
+		Amplify.configure({
 			Auth: {
 				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 				userPoolId: 'us-west-2_zzzzz',
@@ -53,16 +68,17 @@ describe('ResetPassword API happy path cases', () => {
 		});
 		await resetPassword({ username: 'username' });
 		expect(resetPasswordSpy).toHaveBeenCalledWith(
-			expect.objectContaining(
-				authAPITestParams.forgotPasswordCommandWithClientMetadata
-			)
+			expect.objectContaining({ region: 'us-west-2' }),
+			expect.objectContaining({
+				Username: 'username',
+				ClientMetadata: { foo: 'bar' },
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			})
 		);
 	});
 });
 
 describe('ResetPassword API error path cases:', () => {
-	const globalMock = global as any;
-
 	test('ResetPassword API should throw a validation AuthError when username is empty', async () => {
 		expect.assertions(2);
 		try {
@@ -76,54 +92,21 @@ describe('ResetPassword API error path cases:', () => {
 	});
 
 	test('ResetPassword API should raise service error', async () => {
-		expect.assertions(3);
-		const serviceError = new Error('service error');
-		serviceError.name = ForgotPasswordException.InvalidParameterException;
-		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
+		expect.assertions(2);
+		(fetchTransferHandler as jest.Mock).mockResolvedValue(
+			mockJsonResponse(
+				buildMockErrorResponse(
+					ForgotPasswordException.InvalidParameterException
+				)
+			)
+		);
 		try {
 			await resetPassword(authAPITestParams.resetPasswordRequest);
 		} catch (error) {
-			expect(fetch).toBeCalled();
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
 				ForgotPasswordException.InvalidParameterException
 			);
-		}
-	});
-
-	test(
-		'ResetPassword API should raise an unknown error when underlying error is' +
-			+'not coming from the service',
-		async () => {
-			expect.assertions(3);
-			globalMock.fetch = jest.fn(() =>
-				Promise.reject(new Error('unknown error'))
-			);
-			try {
-				await resetPassword(authAPITestParams.resetPasswordRequest);
-			} catch (error) {
-				expect(error).toBeInstanceOf(AuthError);
-				expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
-				expect(error.underlyingError).toBeInstanceOf(Error);
-			}
-		}
-	);
-
-	test('ResetPassword API should raise an unknown error when the underlying error is null', async () => {
-		expect.assertions(3);
-		globalMock.fetch = jest.fn(() => Promise.reject(null));
-		try {
-			AmplifyV6.configure({
-				Auth: {
-					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-					userPoolId: 'us-west-2_zzzzz',
-				},
-			});
-			await resetPassword(authAPITestParams.resetPasswordRequest);
-		} catch (error) {
-			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
-			expect(error.underlyingError).toBe(null);
 		}
 	});
 });
