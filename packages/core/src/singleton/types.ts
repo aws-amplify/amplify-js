@@ -14,11 +14,15 @@ import {
 	StorageAccessLevel,
 	StorageConfig,
 } from './Storage/types';
+import {
+	CacheConfig
+} from '../Cache/types';
 
 export type ResourcesConfig = {
 	API?: {};
 	Analytics?: {};
 	Auth?: AuthConfig;
+	Cache?: CacheConfig;
 	DataStore?: {};
 	Interactions?: {};
 	Notifications?: {};

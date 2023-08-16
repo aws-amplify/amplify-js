@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getCurrTime, getByteLength, defaultConfig, isInteger } from './Utils';
-
+import { AmplifyV6 } from '../singleton';
 import { CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '../Logger';
 
@@ -13,83 +13,65 @@ const logger = new Logger('StorageCache');
  *
  */
 export class StorageCache {
-	protected cacheCurSizeKey: string;
-	protected config: CacheConfig;
+	private instanceConfig: CacheConfig;
 
 	/**
 	 * Initialize the cache
-	 * @param config - the configuration of the cache
+	 * 
+	 * @param config - Custom configuration for this instance.
 	 */
-	constructor(config: CacheConfig) {
-		this.config = Object.assign({}, config);
-		this.cacheCurSizeKey = this.config.keyPrefix + 'CurSize';
-		this.checkConfig();
+	constructor(config?: CacheConfig) {
+		if (config) {
+			// A configuration was specified for this specific instance
+			this.instanceConfig = config;
+		}
+
+		this.sanitizeConfig();
 	}
 
 	public getModuleName() {
 		return 'Cache';
 	}
 
-	private checkConfig(): void {
-		// check configuration
-		if (!isInteger(this.config.capacityInBytes)) {
-			logger.error(
-				'Invalid parameter: capacityInBytes. It should be an Integer. Setting back to default.'
-			);
-			this.config.capacityInBytes = defaultConfig.capacityInBytes;
-		}
+	private sanitizeConfig(): void {
+		const tempInstanceConfig = this.instanceConfig || {};
 
-		if (!isInteger(this.config.itemMaxSize)) {
-			logger.error(
-				'Invalid parameter: itemMaxSize. It should be an Integer. Setting back to default.'
-			);
-			this.config.itemMaxSize = defaultConfig.itemMaxSize;
-		}
-
-		if (!isInteger(this.config.defaultTTL)) {
-			logger.error(
-				'Invalid parameter: defaultTTL. It should be an Integer. Setting back to default.'
-			);
-			this.config.defaultTTL = defaultConfig.defaultTTL;
-		}
-
-		if (!isInteger(this.config.defaultPriority)) {
-			logger.error(
-				'Invalid parameter: defaultPriority. It should be an Integer. Setting back to default.'
-			);
-			this.config.defaultPriority = defaultConfig.defaultPriority;
-		}
-
-		if (this.config.itemMaxSize > this.config.capacityInBytes) {
+		if (this.cacheConfig.itemMaxSize > this.cacheConfig.capacityInBytes) {
 			logger.error(
 				'Invalid parameter: itemMaxSize. It should be smaller than capacityInBytes. Setting back to default.'
 			);
-			this.config.itemMaxSize = defaultConfig.itemMaxSize;
+			tempInstanceConfig.itemMaxSize = defaultConfig.itemMaxSize;
 		}
 
-		if (this.config.defaultPriority > 5 || this.config.defaultPriority < 1) {
+		if (this.cacheConfig.defaultPriority > 5 || this.cacheConfig.defaultPriority < 1) {
 			logger.error(
 				'Invalid parameter: defaultPriority. It should be between 1 and 5. Setting back to default.'
 			);
-			this.config.defaultPriority = defaultConfig.defaultPriority;
+			tempInstanceConfig.defaultPriority = defaultConfig.defaultPriority;
 		}
 
 		if (
-			Number(this.config.warningThreshold) > 1 ||
-			Number(this.config.warningThreshold) < 0
+			Number(this.cacheConfig.warningThreshold) > 1 ||
+			Number(this.cacheConfig.warningThreshold) < 0
 		) {
 			logger.error(
 				'Invalid parameter: warningThreshold. It should be between 0 and 1. Setting back to default.'
 			);
-			this.config.warningThreshold = defaultConfig.warningThreshold;
+			tempInstanceConfig.warningThreshold = defaultConfig.warningThreshold;
 		}
-		// set 5MB limit
+
+		// Set 5MB limit
 		const cacheLimit: number = 5 * 1024 * 1024;
-		if (this.config.capacityInBytes > cacheLimit) {
+		if (this.cacheConfig.capacityInBytes > cacheLimit) {
 			logger.error(
 				'Cache Capacity should be less than 5MB. Setting back to default. Setting back to default.'
 			);
-			this.config.capacityInBytes = defaultConfig.capacityInBytes;
+			tempInstanceConfig.capacityInBytes = defaultConfig.capacityInBytes;
+		}
+
+		// Apply sanitized values to the instance config
+		if (Object.keys(tempInstanceConfig).length > 0) {
+			this.instanceConfig = tempInstanceConfig;
 		}
 	}
 
@@ -124,21 +106,37 @@ export class StorageCache {
 	}
 
 	/**
-	 * set cache with customized configuration
-	 * @param config - customized configuration
+	 * Set custom configuration for the cache instance.
+	 * 
+	 * @param config - customized configuration (without keyPrefix, which can't be changed)
 	 *
 	 * @return - the current configuration
 	 */
-	public configure(config?: CacheConfig): CacheConfig {
-		if (!config) {
-			return this.config;
-		}
-		if (config.keyPrefix) {
-			logger.warn(`Don't try to configure keyPrefix!`);
+	public configure(config?: Omit<CacheConfig, 'keyPrefix'>): CacheConfig {
+		if (config) {
+			if ((config as CacheConfig).keyPrefix) {
+				logger.warn('keyPrefix can not be re-configured on an existing Cache instance.');
+			}
+
+			this.instanceConfig = this.instanceConfig ? Object.assign({}, this.instanceConfig, config) : config;
 		}
 
-		this.config = Object.assign({}, this.config, config, config.Cache);
-		this.checkConfig();
-		return this.config;
+		this.sanitizeConfig();
+
+		return this.cacheConfig;
+	}
+
+	/**
+	 * Returns an appropriate configuration for the Cache instance. Will defer to the instance configuration if
+	 * available, otherwise will return the global configuration. Applies the default configuration values in all 
+	 * cases.
+	 */
+	protected get cacheConfig(): CacheConfig {
+		if (this.instanceConfig) {
+			return Object.assign({}, defaultConfig, this.instanceConfig);
+		} else {
+			const globalCacheConfig = AmplifyV6.getConfig().Cache || {};
+			return Object.assign({}, defaultConfig, globalCacheConfig);
+		}
 	}
 }
