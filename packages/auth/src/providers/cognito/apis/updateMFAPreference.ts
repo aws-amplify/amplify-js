@@ -1,11 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { fetchAuthSession } from '../../../';
 import { UpdateMFAPreferenceRequest } from '../types';
 import { SetUserMFAPreferenceException } from '../types/errors';
 import { MFAPreference } from '../types/models';
-import { setUserMFAPreferenceClient } from '../utils/clients/SetUserMFAPreferenceClient';
-import { CognitoMFASettings } from '../utils/clients/types/models';
+import { setUserMFAPreference } from '../utils/clients/CognitoIdentityProvider';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { CognitoMFASettings } from '../utils/clients/CognitoIdentityProvider/types';
+import { assertAuthTokens } from '../utils/types';
 
 /**
  * Updates the MFA preference of the user.
@@ -15,19 +19,24 @@ import { CognitoMFASettings } from '../utils/clients/types/models';
  * @throws -{@link SetUserMFAPreferenceException } - Service error thrown when the MFA preference cannot be updated.
  *
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function updateMFAPreference(
 	updateMFAPreferenceRequest: UpdateMFAPreferenceRequest
 ): Promise<void> {
 	const { sms, totp } = updateMFAPreferenceRequest;
-
-	const mockedAccessToken = 'mockedAccessToken';
-	await setUserMFAPreferenceClient({
-		AccessToken: mockedAccessToken,
-		SMSMfaSettings: getMFASettings(sms),
-		SoftwareTokenMfaSettings: getMFASettings(totp),
-	});
+	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
+	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	assertAuthTokens(tokens);
+	await setUserMFAPreference(
+		{ region: getRegion(authConfig.userPoolId) },
+		{
+			AccessToken: tokens.accessToken.toString(),
+			SMSMfaSettings: getMFASettings(sms),
+			SoftwareTokenMfaSettings: getMFASettings(totp),
+		}
+	);
 }
 
 export function getMFASettings(

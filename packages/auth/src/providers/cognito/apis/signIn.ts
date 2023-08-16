@@ -21,7 +21,7 @@ import { CognitoSignInOptions } from '../types';
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signIn(
 	signInRequest: SignInRequest<CognitoSignInOptions>

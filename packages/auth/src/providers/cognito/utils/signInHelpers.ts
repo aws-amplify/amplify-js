@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import {
-	InitiateAuthCommandOutput,
-	RespondToAuthChallengeCommandOutput,
-} from '@aws-sdk/client-cognito-identity-provider';
+	AmplifyV6,
+	AuthConfig,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core';
 import {
 	getLargeAValue,
 	getNowString,
@@ -14,19 +14,7 @@ import {
 } from './srp/helpers';
 import AuthenticationHelper from './srp/AuthenticationHelper';
 import BigInteger from './srp/BigInteger';
-import {
-	InitiateAuthClientInput,
-	initiateAuthClient,
-} from './clients/InitiateAuthClient';
-import {
-	RespondToAuthChallengeClientInput,
-	respondToAuthChallengeClient,
-} from './clients/RespondToAuthChallengeClient';
-import {
-	ChallengeName,
-	ChallengeParameters,
-	CognitoMFAType,
-} from './clients/types/models';
+
 import { ClientMetadata, CognitoConfirmSignInOptions } from '../types';
 import {
 	AdditionalInfo,
@@ -41,14 +29,29 @@ import {
 	MFAType,
 	TOTPSetupDetails,
 } from '../../../types/models';
-import { verifySoftwareTokenClient } from './clients/VerifySoftwareTokenClient';
-import { associateSoftwareTokenClient } from './clients/AssociateSoftwareTokenClient';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { signInStore } from './signInStore';
+import {
+	initiateAuth,
+	respondToAuthChallenge,
+	verifySoftwareToken,
+	associateSoftwareToken,
+} from './clients/CognitoIdentityProvider';
+import {
+	ChallengeName,
+	ChallengeParameters,
+	CognitoMFAType,
+	InitiateAuthCommandInput,
+	InitiateAuthCommandOutput,
+	RespondToAuthChallengeCommandInput,
+	RespondToAuthChallengeCommandOutput,
+} from './clients/CognitoIdentityProvider/types';
+import { getRegion } from './clients/CognitoIdentityProvider/utils';
 
 const USER_ATTRIBUTES = 'userAttributes.';
+
 type HandleAuthChallengeRequest = {
 	challengeResponse: string;
 	username: string;
@@ -56,21 +59,26 @@ type HandleAuthChallengeRequest = {
 	session?: string;
 	deviceName?: string;
 	requiredAttributes?: AuthUserAttribute;
+	config: AuthConfig;
 };
+
 export async function handleCustomChallenge({
 	challengeResponse,
 	clientMetadata,
 	session,
 	username,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
+	const { userPoolId, userPoolWebClientId } = AmplifyV6.getConfig().Auth;
 	const challengeResponses = { USERNAME: username, ANSWER: challengeResponse };
-	const jsonReq: RespondToAuthChallengeClientInput = {
+	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'CUSTOM_CHALLENGE',
 		ChallengeResponses: challengeResponses,
 		Session: session,
 		ClientMetadata: clientMetadata,
+		ClientId: userPoolWebClientId,
 	};
-	return respondToAuthChallengeClient(jsonReq);
+
+	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
 
 export async function handleMFASetupChallenge({
@@ -79,29 +87,35 @@ export async function handleMFASetupChallenge({
 	clientMetadata,
 	session,
 	deviceName,
+	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
+	const { userPoolId, userPoolWebClientId } = config;
 	const challengeResponses = {
 		USERNAME: username,
 	};
 
-	const { Session } = await verifySoftwareTokenClient({
-		UserCode: challengeResponse,
-		Session: session,
-		FriendlyDeviceName: deviceName,
-	});
+	const { Session } = await verifySoftwareToken(
+		{ region: getRegion(userPoolId) },
+		{
+			UserCode: challengeResponse,
+			Session: session,
+			FriendlyDeviceName: deviceName,
+		}
+	);
 
 	signInStore.dispatch({
 		type: 'SET_SIGN_IN_SESSION',
 		value: Session,
 	});
 
-	const jsonReq: RespondToAuthChallengeClientInput = {
+	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'MFA_SETUP',
 		ChallengeResponses: challengeResponses,
 		Session,
 		ClientMetadata: clientMetadata,
+		ClientId: userPoolWebClientId,
 	};
-	return respondToAuthChallengeClient(jsonReq);
+	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
 
 export async function handleSelectMFATypeChallenge({
@@ -109,7 +123,9 @@ export async function handleSelectMFATypeChallenge({
 	username,
 	clientMetadata,
 	session,
+	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
+	const { userPoolId, userPoolWebClientId } = config;
 	assertValidationError(
 		challengeResponse === 'TOTP' || challengeResponse === 'SMS',
 		AuthValidationErrorCode.IncorrectMFAMethod
@@ -120,14 +136,15 @@ export async function handleSelectMFATypeChallenge({
 		ANSWER: mapMfaType(challengeResponse),
 	};
 
-	const jsonReq: RespondToAuthChallengeClientInput = {
+	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'SELECT_MFA_TYPE',
 		ChallengeResponses: challengeResponses,
 		Session: session,
 		ClientMetadata: clientMetadata,
+		ClientId: userPoolWebClientId,
 	};
 
-	return respondToAuthChallengeClient(jsonReq);
+	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
 
 export async function handleSMSMFAChallenge({
@@ -135,37 +152,43 @@ export async function handleSMSMFAChallenge({
 	clientMetadata,
 	session,
 	username,
+	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
+	const { userPoolId, userPoolWebClientId } = config;
 	const challengeResponses = {
 		USERNAME: username,
 		SMS_MFA_CODE: challengeResponse,
 	};
-	const jsonReq: RespondToAuthChallengeClientInput = {
+	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'SMS_MFA',
 		ChallengeResponses: challengeResponses,
 		Session: session,
 		ClientMetadata: clientMetadata,
+		ClientId: userPoolWebClientId,
 	};
 
-	return respondToAuthChallengeClient(jsonReq);
+	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
 export async function handleSoftwareTokenMFAChallenge({
 	challengeResponse,
 	clientMetadata,
 	session,
 	username,
+	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
+	const { userPoolId, userPoolWebClientId } = config;
 	const challengeResponses = {
 		USERNAME: username,
 		SOFTWARE_TOKEN_MFA_CODE: challengeResponse,
 	};
-	const jsonReq: RespondToAuthChallengeClientInput = {
+	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'SOFTWARE_TOKEN_MFA',
 		ChallengeResponses: challengeResponses,
 		Session: session,
 		ClientMetadata: clientMetadata,
+		ClientId: userPoolWebClientId,
 	};
-	return respondToAuthChallengeClient(jsonReq);
+	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
 export async function handleCompleteNewPasswordChallenge({
 	challengeResponse,
@@ -173,62 +196,66 @@ export async function handleCompleteNewPasswordChallenge({
 	session,
 	username,
 	requiredAttributes,
+	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
+	const { userPoolId, userPoolWebClientId } = config;
 	const challengeResponses = {
 		...createAttributes(requiredAttributes),
 		NEW_PASSWORD: challengeResponse,
 		USERNAME: username,
 	};
 
-	const jsonReq: RespondToAuthChallengeClientInput = {
+	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'NEW_PASSWORD_REQUIRED',
 		ChallengeResponses: challengeResponses,
 		ClientMetadata: clientMetadata,
 		Session: session,
+		ClientId: userPoolWebClientId,
 	};
 
-	return respondToAuthChallengeClient(jsonReq);
+	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
 
 export async function handleUserPasswordAuthFlow(
 	username: string,
 	password: string,
-	clientMetadata: ClientMetadata | undefined
+	clientMetadata: ClientMetadata | undefined,
+	{ userPoolId, userPoolWebClientId }: AuthConfig
 ): Promise<InitiateAuthCommandOutput> {
-	const jsonReq: InitiateAuthClientInput = {
+	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'USER_PASSWORD_AUTH',
 		AuthParameters: {
 			USERNAME: username,
 			PASSWORD: password,
 		},
 		ClientMetadata: clientMetadata,
+		ClientId: userPoolWebClientId,
 	};
 
-	return await initiateAuthClient(jsonReq);
+	return initiateAuth({ region: getRegion(userPoolId) }, jsonReq);
 }
 
 export async function handleUserSRPAuthFlow(
 	username: string,
 	password: string,
-	clientMetadata: ClientMetadata | undefined
+	clientMetadata: ClientMetadata | undefined,
+	config: AuthConfig
 ): Promise<RespondToAuthChallengeCommandOutput> {
-	const authConfig = AmplifyV6.getConfig().Auth;
-	assertTokenProviderConfig(authConfig);
-
-	const userPoolId = authConfig.userPoolId;
-	const userPoolName = userPoolId.split('_')[1] || '';
+	const { userPoolId, userPoolWebClientId } = config;
+	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = new AuthenticationHelper(userPoolName);
 
-	const jsonReq: InitiateAuthClientInput = {
+	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'USER_SRP_AUTH',
 		AuthParameters: {
 			USERNAME: username,
 			SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
 		},
 		ClientMetadata: clientMetadata,
+		ClientId: userPoolWebClientId,
 	};
 
-	const resp = await initiateAuthClient(jsonReq);
+	const resp = await initiateAuth({ region: getRegion(userPoolId) }, jsonReq);
 	const { ChallengeParameters: challengeParameters, Session: session } = resp;
 
 	return handlePasswordVerifierChallenge(
@@ -237,37 +264,39 @@ export async function handleUserSRPAuthFlow(
 		clientMetadata,
 		session,
 		authenticationHelper,
-		userPoolName
+		config
 	);
 }
 
 export async function handleCustomAuthFlowWithoutSRP(
 	username: string,
-	clientMetadata: ClientMetadata | undefined
+	clientMetadata: ClientMetadata | undefined,
+	{ userPoolId, userPoolWebClientId }: AuthConfig
 ): Promise<InitiateAuthCommandOutput> {
-	const jsonReq: InitiateAuthClientInput = {
+	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'CUSTOM_AUTH',
 		AuthParameters: {
 			USERNAME: username,
 		},
 		ClientMetadata: clientMetadata,
+		ClientId: userPoolWebClientId,
 	};
 
-	return initiateAuthClient(jsonReq);
+	return initiateAuth({ region: getRegion(userPoolId) }, jsonReq);
 }
 
 export async function handleCustomSRPAuthFlow(
 	username: string,
 	password: string,
-	clientMetadata: ClientMetadata | undefined
+	clientMetadata: ClientMetadata | undefined,
+	config: AuthConfig
 ) {
-	const authConfig = AmplifyV6.getConfig().Auth;
-	assertTokenProviderConfig(authConfig);
+	const { userPoolId, userPoolWebClientId } = config;
+	assertTokenProviderConfig(config);
 
-	const userPoolId = authConfig.userPoolId;
-	const userPoolName = userPoolId.split('_')[1] || '';
+	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = new AuthenticationHelper(userPoolName);
-	const jsonReq: InitiateAuthClientInput = {
+	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'CUSTOM_AUTH',
 		AuthParameters: {
 			USERNAME: username,
@@ -275,10 +304,11 @@ export async function handleCustomSRPAuthFlow(
 			CHALLENGE_NAME: 'SRP_A',
 		},
 		ClientMetadata: clientMetadata,
+		ClientId: userPoolWebClientId,
 	};
 
 	const { ChallengeParameters: challengeParameters, Session: session } =
-		await initiateAuthClient(jsonReq);
+		await initiateAuth({ region: getRegion(userPoolId) }, jsonReq);
 
 	return handlePasswordVerifierChallenge(
 		password,
@@ -286,7 +316,7 @@ export async function handleCustomSRPAuthFlow(
 		clientMetadata,
 		session,
 		authenticationHelper,
-		userPoolName
+		config
 	);
 }
 
@@ -296,8 +326,9 @@ export async function handlePasswordVerifierChallenge(
 	clientMetadata: ClientMetadata | undefined,
 	session: string | undefined,
 	authenticationHelper: AuthenticationHelper,
-	userPoolName: string
+	{ userPoolId, userPoolWebClientId }: AuthConfig
 ): Promise<RespondToAuthChallengeCommandOutput> {
+	const userPoolName = userPoolId?.split('_')[1] || '';
 	const serverBValue = new BigInteger(challengeParameters?.SRP_B, 16);
 	const salt = new BigInteger(challengeParameters?.SALT, 16);
 	const username = challengeParameters?.USER_ID_FOR_SRP;
@@ -324,14 +355,18 @@ export async function handlePasswordVerifierChallenge(
 		}),
 	} as { [key: string]: string };
 
-	const jsonReqResponseChallenge: RespondToAuthChallengeClientInput = {
+	const jsonReqResponseChallenge: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'PASSWORD_VERIFIER',
 		ChallengeResponses: challengeResponses,
 		ClientMetadata: clientMetadata,
 		Session: session,
+		ClientId: userPoolWebClientId,
 	};
 
-	return respondToAuthChallengeClient(jsonReqResponseChallenge);
+	return respondToAuthChallenge(
+		{ region: getRegion(userPoolId) },
+		jsonReqResponseChallenge
+	);
 }
 
 export async function getSignInResult(params: {
@@ -339,7 +374,7 @@ export async function getSignInResult(params: {
 	challengeParameters: ChallengeParameters;
 }): Promise<AuthSignInResult> {
 	const { challengeName, challengeParameters } = params;
-
+	const { userPoolId } = AmplifyV6.getConfig().Auth;
 	switch (challengeName) {
 		case 'CUSTOM_CHALLENGE':
 			return {
@@ -359,10 +394,12 @@ export async function getSignInResult(params: {
 						parseMFATypes(challengeParameters.MFAS_CAN_SETUP)
 					)}`,
 				});
-			const { Session, SecretCode: secretCode } =
-				await associateSoftwareTokenClient({
+			const { Session, SecretCode: secretCode } = await associateSoftwareToken(
+				{ region: getRegion(userPoolId) },
+				{
 					Session: signInSession,
-				});
+				}
+			);
 			signInStore.dispatch({
 				type: 'SET_SIGN_IN_SESSION',
 				value: Session,
@@ -491,6 +528,7 @@ export async function handleChallengeName(
 	challengeName: ChallengeName,
 	session: string,
 	challengeResponse: string,
+	config: AuthConfig,
 	clientMetadata?: ClientMetadata,
 	options?: CognitoConfirmSignInOptions
 ): Promise<RespondToAuthChallengeCommandOutput> {
@@ -504,6 +542,7 @@ export async function handleChallengeName(
 				clientMetadata,
 				session,
 				username,
+				config,
 			});
 		case 'SELECT_MFA_TYPE':
 			return handleSelectMFATypeChallenge({
@@ -511,6 +550,7 @@ export async function handleChallengeName(
 				clientMetadata,
 				session,
 				username,
+				config,
 			});
 		case 'MFA_SETUP':
 			return handleMFASetupChallenge({
@@ -519,6 +559,7 @@ export async function handleChallengeName(
 				session,
 				username,
 				deviceName,
+				config,
 			});
 		case 'NEW_PASSWORD_REQUIRED':
 			return handleCompleteNewPasswordChallenge({
@@ -527,6 +568,7 @@ export async function handleChallengeName(
 				session,
 				username,
 				requiredAttributes: userAttributes,
+				config,
 			});
 		case 'CUSTOM_CHALLENGE':
 			return handleCustomChallenge({
@@ -534,6 +576,7 @@ export async function handleChallengeName(
 				clientMetadata,
 				session,
 				username,
+				config,
 			});
 		case 'SOFTWARE_TOKEN_MFA':
 			return handleSoftwareTokenMFAChallenge({
@@ -541,6 +584,7 @@ export async function handleChallengeName(
 				clientMetadata,
 				session,
 				username,
+				config,
 			});
 	}
 	// TODO: remove this error message for production apps
