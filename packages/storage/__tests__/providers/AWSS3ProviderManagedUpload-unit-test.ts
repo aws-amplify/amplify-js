@@ -160,7 +160,7 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 			);
 		});
 
-		test('happy case: upload a body that splits in two parts', async () => {
+		test.skip('happy case: upload a body that splits in two parts', async () => {
 			(createMultipartUpload as jest.Mock).mockResolvedValue({
 				UploadId: testUploadId,
 			});

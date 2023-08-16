@@ -10,20 +10,46 @@ export enum TransferTaskState {
 }
 
 export type TransferProgressEvent = {
-	target?: TransferTask<any>;
-	// Transferred data in bytes
-	transferred: number;
-	// Total data in bytes
-	total?: number;
+	transferredBytes: number;
+	totalBytes?: number;
 };
 
-export type UploadTask<Result> = PromiseLike<Result> & {
-	cancel: (reason?: any) => void;
+export type TransferTask<Result> = {
+	/**
+	 * Cancel an ongoing transfer(upload/download) task. This will reject the `result` promise with an `AbortError` by
+	 * default.
+	 *
+	 * @param {Error} [abortErrorOverwrite] - Optional error to overwrite the default `AbortError` thrown when the task is
+	 * 	canceled.
+	 */
+	cancel: (abortErrorOverwrite?: Error) => void;
+
+	/**
+	 * Pause an ongoing transfer(upload/download) task. This method does not support the following scenarios:
+	 * * Downloading data or file from given key.
+	 */
 	pause: () => void;
+
+	/**
+	 * Resume a paused transfer(upload/download) task. This method does not support the following scenarios:
+	 * * Downloading data or file from given key.
+	 */
 	resume: () => void;
-	state: TransferTaskState;
+
+	/**
+	 * Current state of the transfer task.
+	 */
+	readonly state: TransferTaskState;
+
+	/**
+	 * Promise that resolves when the transfer task is completed. The promise will be rejected if the task is canceled.
+	 */
+	result: Promise<Result>;
 };
 
-export type DownloadTask<Result> = Omit<UploadTask<Result>, 'pause' | 'resume'>;
+export type DownloadTask<Result> = Omit<
+	TransferTask<Result>,
+	'pause' | 'resume'
+>;
 
-export type TransferTask<Result> = DownloadTask<Result> | UploadTask<Result>;
+export type UploadTask<Result> = TransferTask<Result>;
