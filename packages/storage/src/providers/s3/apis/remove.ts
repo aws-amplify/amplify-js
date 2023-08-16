@@ -1,56 +1,59 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { S3Exception } from '../types';
 import {
 	StorageOperationRequest,
 	StorageRemoveOptions,
 	StorageRemoveResult,
 } from '../../../types';
 import {
-	deleteObject,
-	DeleteObjectInput,
-	DeleteObjectCommandOutput,
-} from '../../../AwsClients/S3';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+	resolveStorageConfig,
+	getKeyWithPrefix,
+	resolveCredentials,
+} from '../utils';
+import { deleteObject, DeleteObjectInput } from '../../../AwsClients/S3';
+import { StorageValidationErrorCode } from '../../../errors/types/validation';
+import { assertValidationError } from '../../../errors/utils/assertValidationError';
 
-// TODO are we using Logger in V6
-const logger = new Logger('AWSS3Provider');
+// TODO(ashwinkumar6) add unit test for remove API
 
 /**
- * List bucket objects
- * @param {StorageOperationRequest<StorageRemoveOptions>} req - The request object
- * @return {Promise<S3ProviderRemoveOutput>} - Promise resolves to list of keys and metadata for all objects in path
- * additionally the result will include a nextToken if there are more items to retrieve
- * @throws service: {@link RemoveException} - S3 service errors thrown while getting properties
+ * Remove the object for specified key
+ * @param {StorageOperationRequest<StorageRemoveOptions>} req - key of the object
+ * @return {Promise<StorageRemoveResult>} - Promise resolves upon successful removal of the object
+ * @throws service: {@link S3Exception} - S3 service errors thrown while getting properties
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
  */
 export const remove = async (
 	req: StorageOperationRequest<StorageRemoveOptions>
 ): Promise<StorageRemoveResult> => {
-	const { awsCredsIdentityId, awsCreds, defaultAccessLevel, bucket, region } =
-		await getStorageConfig();
-	const {
-		key,
-		options: {
-			accessLevel = defaultAccessLevel,
-			targetIdentityId = awsCredsIdentityId,
-		},
-	} = req;
-	const finalKey = getKeyWithPrefix(accessLevel, awsCredsIdentityId, key);
-	logger.debug('remove ' + key + ' from ' + finalKey);
-	const removeOptions = {
-		accessLevel,
-		targetIdentityId: awsCredsIdentityId,
-		region,
-		credentials: awsCreds,
-	};
-	const removeParams: DeleteObjectInput = {
-		Bucket: bucket,
-		Key: finalKey,
-	};
+	const { identityId, credentials } = await resolveCredentials();
+	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
+	const { key, options = {} } = req;
+	const { accessLevel = defaultAccessLevel } = options;
 
-	await deleteObject(removeOptions, removeParams);
+	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
+	const finalKey = getKeyWithPrefix({
+		accessLevel,
+		targetIdentityId:
+			options.accessLevel === 'protected'
+				? options.targetIdentityId
+				: identityId,
+		key,
+	});
+
+	// TODO(ashwinkumar6) V6-logger: debug `remove ${key} from ${finalKey}`
+	await deleteObject(
+		{
+			region,
+			credentials,
+		},
+		{
+			Bucket: bucket,
+			Key: finalKey,
+		}
+	);
 	return {
 		key,
 	};
