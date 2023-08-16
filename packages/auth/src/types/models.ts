@@ -86,7 +86,7 @@ export type ResetPasswordStep = {
 	signInStep: AuthSignInStep.RESET_PASSWORD;
 };
 
-export type DoneStep = {
+export type DoneSignInStep = {
 	signInStep: AuthSignInStep.DONE;
 };
 
@@ -99,7 +99,7 @@ export type AuthNextSignInStep<UserAttributeKey extends AuthUserAttributeKey> =
 	| ContinueSignInWithTOTPSetup
 	| ConfirmSignUpStep
 	| ResetPasswordStep
-	| DoneStep;
+	| DoneSignInStep;
 
 export type AuthStandardAttributeKey =
 	| 'address'
@@ -137,8 +137,6 @@ export type AuthUserAttribute<
  */
 export type AuthUserAttributeKey = AuthStandardAttributeKey | AnyAttribute;
 
-export type GetAttributeKey<T> = T extends string ? T : string;
-
 /**
  * Data encapsulating the next step in the Sign Up process
  */
@@ -153,7 +151,7 @@ export type ConfirmAttributeWithCodeAttributeStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	updateAttributeStep: AuthUpdateAttributeStep.CONFIRM_ATTRIBUTE_WITH_CODE;
-	additionalInfo: AdditionalInfo;
+	additionalInfo?: AdditionalInfo;
 	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
 };
 
