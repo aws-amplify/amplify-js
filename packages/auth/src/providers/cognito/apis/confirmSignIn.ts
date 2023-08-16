@@ -12,10 +12,7 @@ import {
 	ConfirmSignInRequest,
 } from '../../../types';
 import { CognitoConfirmSignInOptions } from '../types';
-import {
-	ChallengeName,
-	ChallengeParameters,
-} from '../utils/clients/types/models';
+
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
@@ -31,8 +28,12 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
-import { AmplifyV6 } from '@aws-amplify/core';
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+import {
+	ChallengeName,
+	ChallengeParameters,
+} from '../utils/clients/CognitoIdentityProvider/types';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -51,7 +52,7 @@ import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
  * @throws  -{@link AuthValidationErrorCode }:
  * Thrown when `challengeResponse` is not defined.
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  *
  * @returns AuthSignInResult
  *
@@ -63,6 +64,8 @@ export async function confirmSignIn(
 	const { username, challengeName, signInSession } = signInStore.getState();
 
 	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
+
 	const clientMetaData =
 		options?.serviceOptions?.clientMetadata || authConfig?.clientMetadata;
 
@@ -99,6 +102,7 @@ export async function confirmSignIn(
 			challengeName as ChallengeName,
 			signInSession,
 			challengeResponse,
+			authConfig,
 			clientMetaData,
 			options?.serviceOptions
 		);

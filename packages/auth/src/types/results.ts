@@ -26,6 +26,7 @@ export type AuthSignUpResult<
 > = {
 	isSignUpComplete: boolean;
 	nextStep: AuthNextSignUpStep<UserAttributeKey>;
+	userId?: string;
 };
 
 /**
