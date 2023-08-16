@@ -48,7 +48,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 				recoverySuggestion: 'Make sure to pass a valid identityId.',
 			});
 		}
-		console.log('identityId: ', identityId);
 
 		if (forceRefresh) {
 			this.clearCredentials();
@@ -99,7 +98,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		const region = authConfig.identityPoolId.split(':')[0];
 
-		// TODO(V6): When unauth role is diabled and crdentials are absent, we need to return null not throw an error
+		// TODO(V6): When unauth role is disabled and crdentials are absent, we need to return null not throw an error
 		const clientResult = await getCredentialsForIdentity(
 			{ region },
 			{
@@ -271,7 +270,7 @@ export function formLoginsMap(idToken: string, oidcProvider: string) {
 	if (oidcProvider === 'COGNITO') {
 		domainName = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
 	} else {
-		// TODO: Support custom OIDC providers
+		// TODO(V6): Support custom OIDC providers
 		throw new AuthError({
 			name: 'AuthConfigException',
 			message: 'OIDC provider not supported',

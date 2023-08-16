@@ -22,7 +22,6 @@ const logger = new Logger('CognitoIdentityIdProvider');
  * @throws internal: {@link AuthError }
  *  - Auth errors that may arise from misconfiguration.
  *
- * TODO(V6): convert the Auth errors to config errors
  */
 export async function cognitoIdentityIdProvider({
 	tokens,
