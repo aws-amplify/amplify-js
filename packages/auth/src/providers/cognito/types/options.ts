@@ -34,6 +34,14 @@ export type CognitoSignInOptions = {
 };
 
 /**
+ * Options specific to a Cognito Sign In With Web UI request.
+ */
+export type CognitoSignInWithWebUIOptions = {
+	customState?: string;
+	clientMetadata?: ClientMetadata;
+};
+
+/**
  * Options specific to a Cognito Sign Up request.
  */
 export type CognitoSignUpOptions = {
