@@ -6,8 +6,8 @@
 import { Credentials } from '@aws-sdk/types';
 
 export type StorageConfig = {
-	region?: string;
-	credentials?: Credentials;
+	region: string;
+	credentials: Credentials;
 };
 
 export type StorageOptions =

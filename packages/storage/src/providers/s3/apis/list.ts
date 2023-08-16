@@ -1,8 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
-import { ListObjectsV2Input, listObjectsV2 } from '../../../AwsClients/S3';
+import {
+	ListObjectsV2Input,
+	ListObjectsV2Output,
+	listObjectsV2,
+} from '../../../AwsClients/S3';
 import {
 	StorageConfig,
 	StorageListRequest,
@@ -54,10 +57,8 @@ export const list: S3ListApi = async (
 ): Promise<S3ListAllResult | S3ListPaginateResult> => {
 	const { identityId, credentials } = await resolveCredentials();
 	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
-	const {
-		path,
-		options: { accessLevel = defaultAccessLevel, listAll },
-	} = req;
+	const { path = '', options = {} } = req;
+	const { accessLevel = defaultAccessLevel, listAll } = options;
 
 	const targetIdentityId =
 		req?.options?.accessLevel === 'protected'
@@ -65,11 +66,11 @@ export const list: S3ListApi = async (
 			: undefined;
 
 	const finalPath = getKeyWithPrefix(accessLevel, targetIdentityId, path);
-	const listConfig: StorageConfig = {
+	const listConfig = {
 		region,
 		credentials,
 	};
-	const listParams: ListObjectsV2Input = {
+	const listParams = {
 		Bucket: bucket,
 		Prefix: finalPath,
 		MaxKeys: req?.options?.listAll === true ? undefined : req.options?.pageSize,
@@ -117,9 +118,12 @@ const _list = async (
 		// TODO(ashwinkumar6) V6-logger: defaulting pageSize to ${MAX_PAGE_SIZE}.
 	}
 
-	const response = await listObjectsV2(listConfig, listParamsClone);
-	const listResult = response.Contents.map(item => ({
-		key: item.Key.substring(listParamsClone.Prefix.length),
+	const response: ListObjectsV2Output = await listObjectsV2(
+		listConfig,
+		listParamsClone
+	);
+	const listResult = response!.Contents!.map(item => ({
+		key: item.Key!.substring(listParamsClone.Prefix!.length),
 		eTag: item.ETag,
 		lastModified: item.LastModified,
 		size: item.Size,
