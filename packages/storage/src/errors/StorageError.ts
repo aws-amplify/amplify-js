@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { AmplifyError, ErrorParams, ServiceError } from '@aws-amplify/core';
 
 export class StorageError extends AmplifyError {

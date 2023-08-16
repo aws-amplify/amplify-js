@@ -1,0 +1,49 @@
+name: PR Validation
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}-${{ github.event.sender.login }} # This is to make the group name unique for a PR.
+  cancel-in-progress: true
+
+on: pull_request
+
+permissions: read-all
+
+jobs:
+  prebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
+        with:
+          path: amplify-js
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+        with:
+          is-prebuild: true
+  unit-tests:
+    needs:
+      - prebuild
+    uses: ./.github/workflows/callable-unit-tests.yml
+  bundle-size-tests:
+    needs: prebuild
+    uses: ./.github/workflows/callable-bundle-size-tests.yml
+  license-test:
+    needs: prebuild
+    uses: ./.github/workflows/callable-test-license.yml
+  github-actions-test:
+    needs: prebuild
+    uses: ./.github/workflows/callable-test-github-actions.yml
+  all-unit-tests-pass:
+    name: Unit and Bundle tests have passed
+    needs:
+      - unit-tests
+      # - bundle-size-tests
+      - license-test
+      - github-actions-test
+    runs-on: ubuntu-latest
+    # This is a bit of a hack - Branch protections depend upon selected
+    #   workflows that run on hardware, not parents of many callable workflows.
+    #   Adding this so that unit and bundle checks can be a single protection line.
+    steps:
+      - name: All tests passed
+        run: echo "All tests passed"
