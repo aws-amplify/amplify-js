@@ -186,7 +186,7 @@ export const xhrTransferHandler: TransferHandler<
 	});
 };
 
-// TODO: V6 remove this
+// TODO[AllanZhengYP]: V6 remove this
 const simulateAxiosError = (
 	message: string,
 	code: string,
@@ -207,11 +207,13 @@ const simulateAxiosCanceledError = (
 ) => {
 	const error = simulateAxiosError(message, code, request, config);
 	error.name = 'CanceledError';
+	// @ts-expect-error. mock axios error
 	error['__CANCEL__'] = true;
 	return error;
 };
 
-export const isCancelError = (error: unknown): boolean =>
+export const isCancelError = (error: unknown): error is Error =>
+	// @ts-expect-error. mock axios error
 	!!error?.['__CANCEL__'];
 /**
  * Convert xhr.getAllResponseHeaders() string to a Record<string, string>. Note that modern browser already returns

@@ -34,7 +34,7 @@ const parseXmlNode = (node: Node): any => {
 			return node.childNodes[0]?.nodeValue!;
 		}
 
-		const nodeValue = {};
+		const nodeValue: Record<string, any> = {};
 		// convert attributes
 		for (let i = 0; i < node.attributes.length; i++) {
 			const attr = node.attributes[i];

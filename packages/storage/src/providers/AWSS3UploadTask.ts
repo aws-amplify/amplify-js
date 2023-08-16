@@ -50,7 +50,7 @@ export interface AWSS3UploadTaskParams {
 	level: StorageAccessLevel;
 	params: PutObjectInput;
 	prefixPromise: Promise<string>;
-	emitter?: events.EventEmitter;
+	emitter: events.EventEmitter;
 }
 
 export interface InProgressRequest {
@@ -84,7 +84,7 @@ export interface FileMetadata {
 }
 
 function comparePartNumber(a: CompletedPart, b: CompletedPart) {
-	return a.PartNumber - b.PartNumber;
+	return a.PartNumber! - b.PartNumber!;
 }
 
 export class AWSS3UploadTask implements UploadTask {
@@ -103,7 +103,7 @@ export class AWSS3UploadTask implements UploadTask {
 	private queued: UploadPartInput[] = [];
 	private bytesUploaded: number = 0;
 	private totalBytes: number = 0;
-	private uploadId: string;
+	private uploadId: string | undefined = undefined;
 
 	public state: AWSS3UploadTaskState = AWSS3UploadTaskState.INIT;
 
@@ -185,7 +185,7 @@ export class AWSS3UploadTask implements UploadTask {
 
 	private async _findCachedUploadParts(): Promise<{
 		parts: Part[];
-		uploadId: string;
+		uploadId: string | null;
 	}> {
 		const uploadRequests = await this._listCachedUploadTasks();
 
@@ -317,8 +317,8 @@ export class AWSS3UploadTask implements UploadTask {
 				}
 			);
 			await this._onPartUploadCompletion({
-				eTag: res.ETag,
-				partNumber: input.PartNumber,
+				eTag: res.ETag!,
+				partNumber: input.PartNumber!,
 				chunk: input.Body,
 			});
 		} catch (err) {
@@ -331,7 +331,10 @@ export class AWSS3UploadTask implements UploadTask {
 			}
 			// xhr transfer handlers' cancel will also throw an error, however we don't need to emit an event in that case as it's an
 			// expected behavior
-			if (!isCancelError(err) && err.message !== CANCELED_ERROR_MESSAGE) {
+			if (
+				!isCancelError(err) &&
+				(err as any).message !== CANCELED_ERROR_MESSAGE
+			) {
 				this._emitEvent(TaskEvents.ERROR, err);
 				this.pause();
 			}
@@ -343,9 +346,9 @@ export class AWSS3UploadTask implements UploadTask {
 			const abortController = new AbortController();
 			const nextPart = this.queued.shift();
 			this.inProgress.push({
-				uploadPartInput: nextPart,
+				uploadPartInput: nextPart!,
 				s3Request: this._makeUploadPartRequest(
-					nextPart,
+					nextPart!,
 					abortController.signal
 				),
 				abortController,
@@ -363,8 +366,8 @@ export class AWSS3UploadTask implements UploadTask {
 		let valid: boolean;
 		try {
 			const obj = await this._listSingleFile({
-				key: this.params.Key,
-				bucket: this.params.Bucket,
+				key: this.params.Key!,
+				bucket: this.params.Bucket!,
 			});
 			valid = Boolean(obj && obj.Size === this.file.size);
 		} catch (e) {
@@ -407,7 +410,10 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private _initCachedUploadParts(cachedParts: Part[]) {
-		this.bytesUploaded += cachedParts.reduce((acc, part) => acc + part.Size, 0);
+		this.bytesUploaded += cachedParts.reduce(
+			(acc, part) => acc + part.Size!,
+			0
+		);
 		// Find the set of part numbers that have already been uploaded
 		const uploadedPartNumSet = new Set(
 			cachedParts.map(part => part.PartNumber)
@@ -431,10 +437,10 @@ export class AWSS3UploadTask implements UploadTask {
 			Key: (await this.prefixPromise) + this.params.Key,
 		});
 		this._cache({
-			uploadId: res.UploadId,
+			uploadId: res.UploadId!,
 			lastTouched: Date.now(),
-			bucket: this.params.Bucket,
-			key: this.params.Key,
+			bucket: this.params.Bucket!,
+			key: this.params.Key!,
 			fileName: this.file instanceof File ? this.file.name : '',
 		});
 		return res.UploadId;
@@ -446,7 +452,7 @@ export class AWSS3UploadTask implements UploadTask {
 		try {
 			if (await this._isCached()) {
 				const { parts, uploadId } = await this._findCachedUploadParts();
-				this.uploadId = uploadId;
+				this.uploadId = uploadId!;
 				this.queued = this._createParts();
 				this._initCachedUploadParts(parts);
 				if (this._isDone()) {

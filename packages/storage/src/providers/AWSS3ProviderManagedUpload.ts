@@ -29,6 +29,7 @@ import {
 	getPrefix,
 	credentialsProvider,
 } from '../common/S3ClientUtils';
+import { ConfigType } from '..';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
 
@@ -42,9 +43,9 @@ export declare interface Part {
 
 export class AWSS3ProviderManagedUpload {
 	// Data for current upload
-	private body;
+	private body?: any;
 	private params: PutObjectInput;
-	private opts = null;
+	private opts: ConfigType;
 	private completedParts: CompletedPart[] = [];
 	private s3Config: S3ResolvedConfig;
 	private uploadId: string | undefined;
@@ -53,9 +54,9 @@ export class AWSS3ProviderManagedUpload {
 	// Progress reporting
 	private bytesUploaded = 0;
 	private totalBytesToUpload = 0;
-	private emitter: EventEmitter | null = null;
+	private emitter: EventEmitter;
 
-	constructor(params: PutObjectInput, opts, emitter: EventEmitter) {
+	constructor(params: PutObjectInput, opts: ConfigType, emitter: EventEmitter) {
 		this.params = params;
 		this.opts = {
 			isObjectLockEnabled: false,
@@ -84,7 +85,7 @@ export class AWSS3ProviderManagedUpload {
 				this.params.Body = this.body;
 				return putObject(this.s3Config, {
 					...this.params,
-					Key: await this.getObjectKeyWithPrefix(this.params.Key),
+					Key: await this.getObjectKeyWithPrefix(this.params.Key!),
 				});
 			} else {
 				// Step 1: Determine appropriate part size.
@@ -134,7 +135,7 @@ export class AWSS3ProviderManagedUpload {
 					this.totalBytesToUpload
 				);
 				parts.push({
-					bodyPart: this.body.slice(bodyStart, bodyEnd),
+					bodyPart: this.body!.slice(bodyStart, bodyEnd),
 					partNumber: parts.length + 1,
 					emitter: new EventEmitter(),
 					_lastUploadedBytes: 0,
@@ -152,7 +153,7 @@ export class AWSS3ProviderManagedUpload {
 		try {
 			const response = await createMultipartUpload(this.s3Config, {
 				...this.params,
-				Key: await this.getObjectKeyWithPrefix(this.params.Key),
+				Key: await this.getObjectKeyWithPrefix(this.params.Key!),
 			});
 			logger.debug(response.UploadId);
 			return response.UploadId;
@@ -189,7 +190,7 @@ export class AWSS3ProviderManagedUpload {
 							PartNumber: part.partNumber,
 							Body: part.bodyPart,
 							UploadId: uploadId,
-							Key: await this.getObjectKeyWithPrefix(this.params.Key),
+							Key: await this.getObjectKeyWithPrefix(this.params.Key!),
 							Bucket,
 							SSECustomerAlgorithm,
 							SSECustomerKey,
@@ -218,7 +219,7 @@ export class AWSS3ProviderManagedUpload {
 	private async finishMultiPartUpload(uploadId: string) {
 		const input: CompleteMultipartUploadInput = {
 			Bucket: this.params.Bucket,
-			Key: await this.getObjectKeyWithPrefix(this.params.Key),
+			Key: await this.getObjectKeyWithPrefix(this.params.Key!),
 			UploadId: uploadId,
 			MultipartUpload: { Parts: this.completedParts },
 		};
@@ -245,7 +246,7 @@ export class AWSS3ProviderManagedUpload {
 
 		const input = {
 			Bucket: this.params.Bucket,
-			Key: await this.getObjectKeyWithPrefix(this.params.Key),
+			Key: await this.getObjectKeyWithPrefix(this.params.Key!),
 			UploadId: uploadId,
 		};
 
