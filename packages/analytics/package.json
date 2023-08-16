@@ -33,28 +33,28 @@
 		"./lib-esm/trackers": "./lib-esm/trackers/reactnative.js"
 	},
 	"typesVersions": {
-    ">=3.8": {
-      "*": [
-        "./lib-esm/index.d.ts"
-      ],
-      "pinpoint": [
-        "./lib-esm/Providers/pinpoint/index.d.ts"
-      ]
-    }
-  },
-  "exports": {
-    ".": {
-      "types": "./lib-esm/index.d.ts",
-      "import": "./lib-esm/index.js",
-      "require": "./lib/index.js"
-    },
-    "./pinpoint": {
-      "types": "./lib-esm/Providers/pinpoint/index.d.ts",
-      "import": "./lib-esm/Providers/pinpoint/index.js",
-      "require": "./lib/Providers/pinpoint/index.js"
-    },
-    "./package.json": "./package.json"
-  },
+		">=3.8": {
+			"*": [
+				"./lib-esm/index.d.ts"
+			],
+			"pinpoint": [
+				"./lib-esm/Providers/pinpoint/index.d.ts"
+			]
+		}
+	},
+	"exports": {
+		".": {
+			"types": "./lib-esm/index.d.ts",
+			"import": "./lib-esm/index.js",
+			"require": "./lib/index.js"
+		},
+		"./pinpoint": {
+			"types": "./lib-esm/Providers/pinpoint/index.d.ts",
+			"import": "./lib-esm/Providers/pinpoint/index.js",
+			"require": "./lib/Providers/pinpoint/index.js"
+		},
+		"./package.json": "./package.json"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aws-amplify/amplify-js.git"
@@ -102,45 +102,45 @@
 			"limit": "60.82 kB"
 		}
 	],
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false,
-        "tsConfig": {
-          "allowJs": true,
-          "noEmitOnError": false
-        }
-      }
-    },
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json",
-      "jsx"
-    ],
-    "testEnvironment": "jsdom",
-    "testURL": "http://localhost/",
-    "coverageThreshold": {
-      "global": {
-        "branches": 0,
-        "functions": 0,
-        "lines": 0,
-        "statements": 0
-      }
-    },
-    "coveragePathIgnorePatterns": [
-      "node_modules",
-      "dist",
-      "lib",
-      "lib-esm"
-    ],
-    "setupFiles": [
-      "<rootDir>/src/setupTests.ts"
-    ]
-  }
+	"jest": {
+		"globals": {
+			"ts-jest": {
+				"diagnostics": false,
+				"tsConfig": {
+					"allowJs": true,
+					"noEmitOnError": false
+				}
+			}
+		},
+		"transform": {
+			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+		},
+		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"json",
+			"jsx"
+		],
+		"testEnvironment": "jsdom",
+		"testURL": "http://localhost/",
+		"coverageThreshold": {
+			"global": {
+				"branches": 0,
+				"functions": 0,
+				"lines": 0,
+				"statements": 0
+			}
+		},
+		"coveragePathIgnorePatterns": [
+			"node_modules",
+			"dist",
+			"lib",
+			"lib-esm"
+		],
+		"setupFiles": [
+			"<rootDir>/src/setupTests.ts"
+		]
+	}
 }
