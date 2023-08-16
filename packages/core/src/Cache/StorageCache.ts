@@ -13,6 +13,7 @@ const logger = new Logger('StorageCache');
  *
  */
 export class StorageCache {
+	// Contains any fields that have been customized for this Cache instance (i.e. without default values)
 	private instanceConfig: CacheConfig;
 
 	/**
@@ -127,15 +128,15 @@ export class StorageCache {
 	}
 
 	/**
-	 * Returns an appropriate configuration for the Cache instance. Will defer to the instance configuration if
-	 * available, otherwise will return the global configuration. Applies the default configuration values in all 
-	 * cases.
+	 * Returns an appropriate configuration for the Cache instance. Will apply any custom configuration for this
+	 * instance on top of the global configuration. Default configuration will be applied in all cases.
 	 */
 	protected get cacheConfig(): CacheConfig {
+		const globalCacheConfig = AmplifyV6.getConfig().Cache || {};
+
 		if (this.instanceConfig) {
-			return Object.assign({}, defaultConfig, this.instanceConfig);
+			return Object.assign({}, defaultConfig, globalCacheConfig, this.instanceConfig);
 		} else {
-			const globalCacheConfig = AmplifyV6.getConfig().Cache || {};
 			return Object.assign({}, defaultConfig, globalCacheConfig);
 		}
 	}
