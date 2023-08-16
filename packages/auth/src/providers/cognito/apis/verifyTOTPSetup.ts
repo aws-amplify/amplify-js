@@ -5,8 +5,12 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { VerifyTOTPSetupRequest } from '../../../types/requests';
 import { CogntioVerifyTOTPSetupOptions } from '../types/options';
-import { verifySoftwareTokenClient } from '../utils/clients/VerifySoftwareTokenClient';
+import { verifySoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { VerifySoftwareTokenException } from '../types/errors';
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { fetchAuthSession } from '../../../';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { assertAuthTokens } from '../utils/types';
 
 /**
  * Verifies an OTP code retrieved from an associated authentication app.
@@ -19,23 +23,27 @@ import { VerifySoftwareTokenException } from '../types/errors';
  * @throws  -{@link AuthValidationErrorCode }:
  * Thrown when `code` is not defined.
  *
- * TODO: add config errors
- *
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function verifyTOTPSetup(
 	verifyTOTPSetupRequest: VerifyTOTPSetupRequest<CogntioVerifyTOTPSetupOptions>
 ): Promise<void> {
 	// TODO: remove mocked when auth token provider is implemented.
-	const accessToken = 'mockAccessToken';
+	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
 	const { code, options } = verifyTOTPSetupRequest;
 	assertValidationError(
 		!!code,
 		AuthValidationErrorCode.EmptyVerifyTOTPSetupCode
 	);
-
-	await verifySoftwareTokenClient({
-		AccessToken: accessToken,
-		UserCode: code,
-		FriendlyDeviceName: options?.serviceOptions?.friendlyDeviceName,
-	});
+	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	assertAuthTokens(tokens);
+	await verifySoftwareToken(
+		{ region: getRegion(authConfig.userPoolId) },
+		{
+			AccessToken: tokens.accessToken.toString(),
+			UserCode: code,
+			FriendlyDeviceName: options?.serviceOptions?.friendlyDeviceName,
+		}
+	);
 }

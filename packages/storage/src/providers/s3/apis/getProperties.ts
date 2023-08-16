@@ -26,20 +26,19 @@ export const getProperties = async function (
 ): Promise<S3GetPropertiesResult> {
 	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
 	const { identityId, credentials } = await resolveCredentials();
-	const {
-		key,
-		options: { accessLevel },
-	} = req;
-	let targetIdentityId;
-	if (req?.options?.accessLevel === 'protected') {
-		targetIdentityId = req.options?.targetIdentityId ?? identityId;
-	}
+	const { key, options = {} } = req;
+	const { accessLevel = defaultAccessLevel } = options;
+
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
-	const finalKey = getKeyWithPrefix(
-		accessLevel ?? defaultAccessLevel,
-		targetIdentityId,
-		key
-	);
+	// TODO[AllanZhengYP]: refactor this to reduce duplication
+	const finalKey = getKeyWithPrefix({
+		accessLevel,
+		targetIdentityId:
+			options.accessLevel === 'protected'
+				? options.targetIdentityId
+				: identityId,
+		key,
+	});
 
 	const response = await headObject(
 		{

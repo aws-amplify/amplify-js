@@ -1,22 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
-import type { ResendConfirmationCodeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import {
 	AuthCodeDeliveryDetails,
 	AuthStandardAttributeKey,
 	DeliveryMedium,
 	ResendSignUpCodeRequest,
 } from '../../../types';
-// import { CognitoResendSignUpCodeOptions, CognitoUserAttributeKey } from '..';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { resendSignUpConfirmationCodeClient } from '../utils/clients/ResendSignUpCodeClient';
 import {
 	CognitoResendSignUpCodeOptions,
 	CognitoUserAttributeKey,
 } from '../types';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { resendConfirmationCode } from '../utils/clients/CognitoIdentityProvider';
 
 /**
  * Resend the confirmation code while signing up
@@ -26,9 +25,8 @@ import {
  * @throws service: {@link ResendConfirmationException } - Cognito service errors thrown when resending the code.
  * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username are not defined.
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-
 export async function resendSignUpCode(
 	resendRequest: ResendSignUpCodeRequest<CognitoResendSignUpCodeOptions>
 ): Promise<AuthCodeDeliveryDetails<CognitoUserAttributeKey>> {
@@ -38,13 +36,18 @@ export async function resendSignUpCode(
 		AuthValidationErrorCode.EmptySignUpUsername
 	);
 	const authConfig = AmplifyV6.getConfig().Auth;
-	const { CodeDeliveryDetails }: ResendConfirmationCodeCommandOutput =
-		await resendSignUpConfirmationCodeClient({
+	assertTokenProviderConfig(authConfig);
+	const clientMetadata =
+		resendRequest.options?.serviceOptions?.clientMetadata ??
+		authConfig.clientMetadata;
+	const { CodeDeliveryDetails } = await resendConfirmationCode(
+		{ region: getRegion(authConfig.userPoolId) },
+		{
 			Username: username,
-			ClientMetadata:
-				resendRequest.options?.serviceOptions?.clientMetadata ??
-				authConfig?.clientMetadata,
-		});
+			ClientMetadata: clientMetadata,
+			ClientId: authConfig.userPoolWebClientId,
+		}
+	);
 	const { DeliveryMedium, AttributeName, Destination } = {
 		...CodeDeliveryDetails,
 	};
