@@ -10,6 +10,7 @@ import {
 	AuthUserAttribute,
 	UpdateUserAttributesRequest,
 	UpdateUserAttributesResult,
+	DeliveryMedium 
 } from '../../../types';
 import {
 	CognitoUpdateUserAttributesOptions,
@@ -21,7 +22,6 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { toAttributeType } from '../utils/apiHelpers';
 import { CodeDeliveryDetailsType } from '../utils/clients/CognitoIdentityProvider/types';
 import { AuthUpdateAttributeStep } from '../../../types/enums';
-import { DeliveryMedium } from '../../../types';
 import { UpdateUserAttributesException } from '../types/errors';
 
 /**
