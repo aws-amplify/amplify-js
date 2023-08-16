@@ -1,14 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
-import {
-	ChallengeName,
-	ChallengeParameters,
-} from '../utils/clients/types/models';
 import {
 	handleCustomSRPAuthFlow,
 	getSignInResult,
@@ -29,6 +25,10 @@ import {
 	setActiveSignInState,
 } from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+import {
+	ChallengeName,
+	ChallengeParameters,
+} from '../utils/clients/CognitoIdentityProvider/types';
 
 /**
  * Signs a user in using a custom authentication flow with SRP
@@ -40,15 +40,16 @@ import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithCustomSRPAuth(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { username, password, options } = signInRequest;
+	const authConfig = AmplifyV6.getConfig().Auth;
+	assertTokenProviderConfig(authConfig);
 	const metadata =
-		options?.serviceOptions?.clientMetadata ||
-		AmplifyV6.getConfig().Auth?.clientMetadata;
+		options?.serviceOptions?.clientMetadata || authConfig.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -64,7 +65,7 @@ export async function signInWithCustomSRPAuth(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleCustomSRPAuthFlow(username, password, metadata);
+		} = await handleCustomSRPAuthFlow(username, password, metadata, authConfig);
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({

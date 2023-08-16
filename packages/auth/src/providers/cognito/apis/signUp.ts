@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
-import type {
-	AttributeType,
-	SignUpCommandOutput,
-} from '@aws-sdk/client-cognito-identity-provider';
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import {
 	AuthSignUpResult,
 	AuthSignUpStep,
@@ -18,10 +14,12 @@ import {
 	CustomAttribute,
 	CognitoUserAttributeKey,
 } from '../types';
-import { signUpClient } from '../utils/clients/SignUpClient';
+import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { SignUpException } from '../types/errors';
+import { AttributeType } from '../utils/clients/CognitoIdentityProvider/types';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 /**
  * Creates a user
@@ -33,13 +31,17 @@ import { SignUpException } from '../types/errors';
  *  are not defined.
  *
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signUp(
 	signUpRequest: SignUpRequest<CognitoUserAttributeKey, CognitoSignUpOptions>
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
 	const { username, password, options } = signUpRequest;
-
+	const authConfig = AmplifyV6.getConfig().Auth;
+	const clientMetadata =
+		signUpRequest.options?.serviceOptions?.clientMetadata ??
+		authConfig.clientMetadata;
+	assertTokenProviderConfig(authConfig);
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
@@ -59,20 +61,19 @@ export async function signUp(
 		attributes = toAttributeType(options?.userAttributes);
 	}
 
-	const res: SignUpCommandOutput = await signUpClient({
-		Username: username,
-		Password: password,
-		UserAttributes: attributes,
-		ClientMetadata:
-			signUpRequest.options?.serviceOptions?.clientMetadata ??
-			AmplifyV6.getConfig().Auth?.clientMetadata,
-		ValidationData: validationData,
-	});
+	const res = await signUpClient(
+		{ region: getRegion(authConfig.userPoolId) },
+		{
+			Username: username,
+			Password: password,
+			UserAttributes: attributes,
+			ClientMetadata: clientMetadata,
+			ValidationData: validationData,
+			ClientId: authConfig.userPoolWebClientId,
+		}
+	);
 
-	const { UserConfirmed, CodeDeliveryDetails } = res;
-	const { DeliveryMedium, Destination, AttributeName } = {
-		...CodeDeliveryDetails,
-	};
+	const { UserConfirmed, CodeDeliveryDetails, UserSub } = res;
 
 	if (UserConfirmed) {
 		return {
@@ -87,15 +88,15 @@ export async function signUp(
 			nextStep: {
 				signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
 				codeDeliveryDetails: {
-					deliveryMedium: DeliveryMedium
-						? (DeliveryMedium as DeliveryMedium)
+					deliveryMedium: CodeDeliveryDetails.DeliveryMedium
+						? (CodeDeliveryDetails.DeliveryMedium as DeliveryMedium)
 						: undefined,
-					destination: Destination ? (Destination as string) : undefined,
-					attributeName: AttributeName
-						? (AttributeName as AuthStandardAttributeKey)
-						: undefined,
+					destination: CodeDeliveryDetails.Destination,
+					attributeName:
+						CodeDeliveryDetails.AttributeName as CognitoUserAttributeKey,
 				},
 			},
+			userId: UserSub,
 		};
 	}
 }

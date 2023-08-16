@@ -1,0 +1,10 @@
+on:
+  # Tests scheduled at 4pm(UTC) / 9am(PDT) everyday
+  # default supported timezone is UTC
+  schedule:
+    - cron: '0 16 * * *'
+
+jobs:
+  canaries:
+    secrets: inherit
+    uses: ./.github/workflows/callable-canary-e2e.yml

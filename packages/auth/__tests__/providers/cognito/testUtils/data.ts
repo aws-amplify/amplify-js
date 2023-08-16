@@ -6,6 +6,13 @@ import { HttpResponse } from '@aws-amplify/core/src/clients/types';
 // Common
 const region = 'us-east-1';
 
+export const MOCK_REQUEST_ID = 'requestId';
+export const MOCK_EXTENDED_REQUEST_ID = 'requestId2';
+export const DEFAULT_RESPONSE_HEADERS = {
+	'x-amz-id-2': MOCK_EXTENDED_REQUEST_ID,
+	'x-amz-request-id': MOCK_REQUEST_ID,
+};
+
 export const mockJsonResponse = ({
 	status,
 	headers,
@@ -47,3 +54,28 @@ export const mockFailureResponse = {
 		message: `Forbidden`,
 	},
 };
+
+export function buildMockErrorResponse(errorName: string): {
+	status: 403;
+	headers: {
+		'x-amzn-requestid': string;
+		'x-amzn-errortype': string;
+	};
+	body: {
+		__type: string;
+		message: string;
+	};
+} {
+	return {
+		status: 403,
+		headers: {
+			'x-amzn-requestid': mockRequestId,
+			'x-amzn-errortype': errorName,
+		},
+		body: {
+			__type: errorName,
+			message: 'Error message',
+		},
+	};
+}
+
