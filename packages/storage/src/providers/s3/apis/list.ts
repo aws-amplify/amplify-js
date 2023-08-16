@@ -65,7 +65,16 @@ export const list: S3ListApi = async (
 			? req.options?.targetIdentityId ?? identityId
 			: undefined;
 
-	const finalPath = getKeyWithPrefix(accessLevel, targetIdentityId, path);
+	// TODO(ashwinkumar6) V6-logger: check if this can be refactored
+	const finalPath = getKeyWithPrefix({
+		accessLevel,
+		targetIdentityId:
+			options.accessLevel === 'protected'
+				? options.targetIdentityId
+				: identityId,
+		key: path,
+	});
+
 	const listConfig = {
 		region,
 		credentials,
