@@ -45,6 +45,13 @@ export type SignInRequest<
 	options?: { serviceOptions?: ServiceOptions };
 };
 
+export type AuthProvider = 'Google' | 'Facebook' | 'Amazon' | 'Apple';
+
+export type SignInWithRedirectRequest = {
+	provider?: AuthProvider | { custom: string };
+	customState?: string;
+};
+
 /**
  * The parameters for constructing a Sign Up request.
  *
