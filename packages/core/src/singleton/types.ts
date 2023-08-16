@@ -17,6 +17,7 @@ import {
 import {
 	CacheConfig
 } from '../Cache/types';
+import { I18nOptions } from '../I18n/types';
 
 export type ResourcesConfig = {
 	API?: {};
@@ -24,6 +25,7 @@ export type ResourcesConfig = {
 	Auth?: AuthConfig;
 	Cache?: CacheConfig;
 	DataStore?: {};
+	I18n?: I18nOptions;
 	Interactions?: {};
 	Notifications?: {};
 	Predictions?: {};

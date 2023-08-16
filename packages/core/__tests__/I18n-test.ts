@@ -3,7 +3,7 @@ import { I18n } from '../src/I18n/I18n';
 describe('I18n test', () => {
 	describe('setLanguage', () => {
 		test('happy case', () => {
-			const i18n = new I18n(null);
+			const i18n = new I18n();
 
 			i18n.setLanguage('en');
 		});
@@ -11,7 +11,7 @@ describe('I18n test', () => {
 
 	describe('get test', () => {
 		test('no language', () => {
-			const i18n = new I18n(null);
+			const i18n = new I18n();
 
 			i18n._lang = null;
 			expect(i18n.get('key')).toBe('key');
@@ -19,7 +19,7 @@ describe('I18n test', () => {
 		});
 
 		test('has language', () => {
-			const i18n = new I18n(null);
+			const i18n = new I18n();
 
 			i18n._lang = 'en';
 			const spyon = jest
@@ -32,7 +32,7 @@ describe('I18n test', () => {
 		});
 
 		test('has language 2', () => {
-			const i18n = new I18n(null);
+			const i18n = new I18n();
 
 			i18n._lang = 'en-val';
 			const spyon = jest
@@ -48,7 +48,7 @@ describe('I18n test', () => {
 		});
 
 		test('has language 2', () => {
-			const i18n = new I18n(null);
+			const i18n = new I18n();
 
 			i18n._lang = 'other';
 			const spyon = jest
@@ -63,13 +63,13 @@ describe('I18n test', () => {
 
 	describe('getByLangurage test', () => {
 		test('happy case', () => {
-			const i18n = new I18n(null);
+			const i18n = new I18n();
 
 			expect(i18n.getByLanguage('key', undefined)).toBeNull();
 		});
 
 		test('has dict', () => {
-			const i18n = new I18n(null);
+			const i18n = new I18n();
 			i18n._dict = {
 				en: {
 					key: 'val',
@@ -80,7 +80,7 @@ describe('I18n test', () => {
 		});
 
 		test('no dict', () => {
-			const i18n = new I18n(null);
+			const i18n = new I18n();
 			i18n._dict = {};
 
 			expect(i18n.getByLanguage('key', 'en', 'val')).toBe('val');
@@ -89,7 +89,7 @@ describe('I18n test', () => {
 
 	describe('putVocabulariesForLanguage test', () => {
 		test('happy case', () => {
-			const i18n = new I18n(null);
+			const i18n = new I18n();
 
 			i18n.putVocabulariesForLanguage('cn', {
 				hello: '你好',
@@ -102,7 +102,7 @@ describe('I18n test', () => {
 		});
 
 		test('multi-call putVocabulariesForLanguage results in correct get result', () => {
-			const i18n = new I18n(null);
+			const i18n = new I18n();
 
 			i18n.putVocabulariesForLanguage('cn', {
 				hello: '你好',
