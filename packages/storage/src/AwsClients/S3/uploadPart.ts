@@ -12,7 +12,7 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 import { defaultConfig } from './base';
 import type { UploadPartCommandInput, UploadPartCommandOutput } from './types';
 import {
-	assertS3RequiredParameters,
+	validateS3RequiredParameter,
 	assignStringVariables,
 	map,
 	parseXmlError,
@@ -52,10 +52,10 @@ const uploadPartSerializer = async (
 	};
 	headers['content-type'] = 'application/octet-stream';
 	const url = new URL(endpoint.url.toString());
-	assertS3RequiredParameters(!!input.Key, 'Key');
+	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
-	assertS3RequiredParameters(!!input.PartNumber, 'PartNumber');
-	assertS3RequiredParameters(!!input.UploadId, 'UploadId');
+	validateS3RequiredParameter(!!input.PartNumber, 'PartNumber');
+	validateS3RequiredParameter(!!input.UploadId, 'UploadId');
 	url.search = new URLSearchParams({
 		partNumber: input.PartNumber + '',
 		uploadId: input.UploadId,

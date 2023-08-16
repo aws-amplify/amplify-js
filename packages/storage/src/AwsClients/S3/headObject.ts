@@ -15,7 +15,7 @@ import type {
 	HeadObjectCommandOutput,
 } from './types';
 import {
-	assertS3RequiredParameters,
+	validateS3RequiredParameter,
 	deserializeMetadata,
 	deserializeNumber,
 	deserializeTimestamp,
@@ -53,7 +53,7 @@ const headObjectSerializer = async (
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
 	const url = new URL(endpoint.url.toString());
-	assertS3RequiredParameters(!!input.Key, 'Key');
+	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'HEAD',

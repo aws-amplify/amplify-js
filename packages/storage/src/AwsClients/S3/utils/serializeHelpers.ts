@@ -113,7 +113,7 @@ export const serializePathnameObjectKey = (url: URL, key: string) => {
 	);
 };
 
-export function assertS3RequiredParameters(
+export function validateS3RequiredParameter(
 	assertion: boolean,
 	paramName: string
 ): asserts assertion {

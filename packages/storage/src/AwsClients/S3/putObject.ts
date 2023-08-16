@@ -12,7 +12,7 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 import { defaultConfig } from './base';
 import type { PutObjectCommandInput, PutObjectCommandOutput } from './types';
 import {
-	assertS3RequiredParameters,
+	validateS3RequiredParameter,
 	assignStringVariables,
 	map,
 	parseXmlError,
@@ -66,7 +66,7 @@ const putObjectSerializer = async (
 		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
 	};
 	const url = new URL(endpoint.url.toString());
-	assertS3RequiredParameters(!!input.Key, 'Key');
+	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'PUT',

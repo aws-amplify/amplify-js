@@ -22,7 +22,7 @@ import {
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	serializeObjectSsecOptionsToHeaders,
-	assertS3RequiredParameters,
+	validateS3RequiredParameter,
 } from './utils';
 
 const INVALID_PARAMETER_ERROR_MSG =
@@ -52,11 +52,11 @@ const completeMultipartUploadSerializer = async (
 	const headers = await serializeObjectSsecOptionsToHeaders(input);
 	headers['content-type'] = 'application/xml';
 	const url = new URL(endpoint.url.toString());
-	assertS3RequiredParameters(!!input.Key, 'Key');
+	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
-	assertS3RequiredParameters(!!input.UploadId, 'UploadId');
+	validateS3RequiredParameter(!!input.UploadId, 'UploadId');
 	url.search = new URLSearchParams({ uploadId: input.UploadId }).toString();
-	assertS3RequiredParameters(!!input.MultipartUpload, 'MultipartUpload');
+	validateS3RequiredParameter(!!input.MultipartUpload, 'MultipartUpload');
 	return {
 		method: 'POST',
 		headers,

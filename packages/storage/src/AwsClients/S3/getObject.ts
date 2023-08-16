@@ -30,7 +30,7 @@ import {
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	CONTENT_SHA256_HEADER,
-	assertS3RequiredParameters,
+	validateS3RequiredParameter,
 } from './utils';
 
 export type GetObjectInput = Pick<GetObjectCommandInput, 'Bucket' | 'Key'>;
@@ -49,7 +49,7 @@ const getObjectSerializer = async (
 		'response-content-type': 'ResponseContentType',
 	});
 	const url = new URL(endpoint.url.toString());
-	assertS3RequiredParameters(!!input.Key, 'Key');
+	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	url.search = new URLSearchParams(query).toString();
 	return {

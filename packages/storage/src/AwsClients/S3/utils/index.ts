@@ -23,6 +23,6 @@ export {
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
 	serializeObjectSsecOptionsToHeaders,
-	assertS3RequiredParameters,
+	validateS3RequiredParameter,
 } from './serializeHelpers';
 export { toBase64, utf8Encode } from '../runtime';
