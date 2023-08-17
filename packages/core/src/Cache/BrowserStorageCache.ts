@@ -92,7 +92,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 		const text: string | null = this.getStorage().getItem(key);
 		asserts(text !== null, {
 			name: STORAGE_CACHE_EXCEPTION,
-			message: 'item from storage is null',
+			message: `Item not found in the storage by the key: ${key}.`,
 		});
 		const item: CacheItem = JSON.parse(text);
 		if (getCurrTime() >= item.expires) {
@@ -112,9 +112,9 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 		const item = this.getStorage().getItem(prefixedKey);
 		asserts(item !== null, {
 			name: STORAGE_CACHE_EXCEPTION,
-			message: 'item from storage is null',
+			message: `Item not found in the storage by the key: ${prefixedKey}.`,
 		});
-		const itemSize: number = size ? size : JSON.parse(item).byteSize;
+		const itemSize: number = size ?? JSON.parse(item).byteSize;
 		this._decreaseCurSizeInBytes(itemSize);
 		// remove the cache item
 		this.getStorage().removeItem(prefixedKey);

@@ -64,9 +64,9 @@ class MemoryStorage {
 				AsyncStorage.getAllKeys((errKeys, keys) => {
 					if (errKeys) rej(errKeys);
 
-					const memoryKeys = keys
-						? keys.filter(key => key.startsWith(MEMORY_KEY_PREFIX))
-						: [];
+					const memoryKeys =
+						keys?.filter(key => key.startsWith(MEMORY_KEY_PREFIX)) ?? [];
+
 					AsyncStorage.multiGet(memoryKeys, (err, stores) => {
 						if (err) rej(err);
 						stores &&
@@ -158,9 +158,9 @@ class AsyncStorageClass implements KeyValueStorageInterface {
 			this.syncPromise = new Promise<void>((res, rej) => {
 				AsyncStorage.getAllKeys((errKeys, keys) => {
 					if (errKeys) rej(errKeys);
-					const memoryKeys = keys
-						? keys.filter(key => key.startsWith(MEMORY_KEY_PREFIX))
-						: [];
+					const memoryKeys =
+						keys?.filter(key => key.startsWith(MEMORY_KEY_PREFIX)) ?? [];
+
 					AsyncStorage.multiGet(memoryKeys, (err, stores) => {
 						if (err) rej(err);
 						stores &&

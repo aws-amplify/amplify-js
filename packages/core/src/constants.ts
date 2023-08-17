@@ -27,3 +27,5 @@ export const I18N_EXCEPTION = 'I18NException';
 export const SERVICE_WORKER_EXCEPTION = 'ServiceWorkerException';
 
 export const STORAGE_CACHE_EXCEPTION = 'StorageCacheException';
+
+export const APPLICATION_ID_EXCEPTION = 'ApplicationIdException'

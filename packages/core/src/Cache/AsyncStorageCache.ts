@@ -82,7 +82,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 		const text = await AsyncStorage.getItem(key);
 		asserts(text !== null, {
 			name: STORAGE_CACHE_EXCEPTION,
-			message: 'item from storage is null',
+			message: `Item not found in the storage by the key: ${key}.`,
 		});
 		const item = JSON.parse(text);
 		if (getCurrTime() >= item.expires) {
@@ -101,9 +101,9 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 		const config = await AsyncStorage.getItem(prefixedKey);
 		asserts(!!config, {
 			name: STORAGE_CACHE_EXCEPTION,
-			message: 'item from storage is null',
+			message: `Item not found in the storage by the key: ${prefixedKey}.`,
 		});
-		const itemSize = size ? size : JSON.parse(config).byteSize;
+		const itemSize = size ?? JSON.parse(config).byteSize;
 		// first try to update the current size of the cache
 		await this._decreaseCurSizeInBytes(itemSize);
 
@@ -165,7 +165,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	async _isCacheFull(itemSize: number) {
 		return (
 			itemSize + (await this.getCacheCurSize()) >
-			(this.config.capacityInBytes ?? 0)
+			(this.config.capacityInBytes)
 		);
 	}
 
