@@ -19,7 +19,7 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 // TODO(ashwinkumar6) add unit test for remove API
 
 /**
- * Remove the object for specified key
+ * Remove the object that is specified by the `req`.
  * @param {StorageOperationRequest<StorageRemoveOptions>} req - The request object
  * @return {Promise<StorageRemoveResult>} - Promise resolves upon successful removal of the object
  * @throws service: {@link S3Exception} - S3 service errors thrown while getting properties
