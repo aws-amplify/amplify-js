@@ -121,7 +121,7 @@ describe('StorageCache', () => {
 				defaultTTL: 3000000,
 				itemMaxSize: 1000,
 				keyPrefix: 'aws-amplify#$#',
-				storage: undefined,
+				storage: expect.any(Storage),
 				warningThreshold: 0.8,
 			});
 		});
@@ -130,9 +130,9 @@ describe('StorageCache', () => {
 			const spyon = jest.spyOn(Logger.prototype, 'warn');
 			const storage: StorageCache = new StorageCache(config);
 
-			const customizedConfig: CacheConfig = {
+			const customizedConfig = {
 				keyPrefix: 'abcc',
-			};
+			} as Omit<CacheConfig, 'keyPrefix'>;
 			const new_config = storage.configure(customizedConfig);
 
 			expect(spyon).toBeCalled();
