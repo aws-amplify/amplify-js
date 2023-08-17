@@ -60,11 +60,6 @@ export const list: S3ListApi = async (
 	const { path = '', options = {} } = req;
 	const { accessLevel = defaultAccessLevel, listAll } = options;
 
-	const targetIdentityId =
-		req?.options?.accessLevel === 'protected'
-			? req.options?.targetIdentityId ?? identityId
-			: undefined;
-
 	// TODO(ashwinkumar6) V6-logger: check if this can be refactored
 	const finalPath = getKeyWithPrefix({
 		accessLevel,
@@ -82,9 +77,8 @@ export const list: S3ListApi = async (
 	const listParams = {
 		Bucket: bucket,
 		Prefix: finalPath,
-		MaxKeys: req?.options?.listAll === true ? undefined : req.options?.pageSize,
-		ContinuationToken:
-			req?.options?.listAll === true ? undefined : req.options?.nextToken,
+		MaxKeys: options?.listAll ? undefined : options?.pageSize,
+		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 	};
 	const listResult = listAll
 		? await _listAll(listConfig, listParams)
