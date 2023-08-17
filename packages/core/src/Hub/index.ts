@@ -107,7 +107,7 @@ export class HubClass {
 		source = '',
 		ampSymbol?: Symbol
 	): void {
-		if (this.protectedChannels.indexOf(channel as string) > -1) {
+    if (typeof channel === 'string' && this.protectedChannels.indexOf(channel) > -1) {
 			const hasAccess = ampSymbol === AMPLIFY_SYMBOL;
 
 			if (!hasAccess) {
