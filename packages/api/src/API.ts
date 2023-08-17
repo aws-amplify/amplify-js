@@ -11,11 +11,19 @@ import { graphql as v6graphql } from '@aws-amplify/api-graphql/internals';
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
 import { InternalAPIClass } from './internals/InternalAPI';
+import {
+	initializeModel,
+	generateGraphQLDocument,
+	buildGraphQLVariables,
+	graphQLOperationsInfo,
+	ModelOperation,
+} from './APIClient';
 import type { ModelTypes } from '@aws-amplify/types-package-alpha';
-import { List } from 'lodash';
 
-// TODO: extract
-type ListArgs = { fields?: string[] };
+/*
+	await post.comments()
+		=> await graphql()
+*/
 
 const logger = new Logger('API');
 /**
@@ -66,6 +74,8 @@ export class APIClass extends InternalAPIClass {
 			models: {},
 		};
 
+		// TODO: refactor this to use separate methods for each CRUDL.
+		// Doesn't make sense to gen the methods dynamically given the different args and return values
 		for (const model of Object.values(modelIntrospection.models)) {
 			const { name } = model as any;
 
@@ -77,8 +87,15 @@ export class APIClass extends InternalAPIClass {
 
 					if (operation === 'LIST') {
 						client.models[name][operationPrefix] = async (args?: any) => {
-							const query = generateGraphQLDocument(model, 'LIST', args);
-							const variables = buildGraphQLVariables(model, 'LIST', undefined);
+							const query = generateGraphQLDocument(
+								modelIntrospection.models,
+								name,
+								'LIST',
+								args
+							);
+							const variables = buildGraphQLVariables(model, 'LIST', args);
+
+							console.log('API list', query, variables);
 
 							const res = (await this.graphql({
 								query,
@@ -90,7 +107,21 @@ export class APIClass extends InternalAPIClass {
 								const [key] = Object.keys(res.data);
 
 								if (res.data[key].items) {
-									return res.data[key].items;
+									const flattenedResult = res.data[key].items;
+
+									// don't init if custom selection set
+									if (args?.selectionSet) {
+										return flattenedResult;
+									} else {
+										const initialized = initializeModel(
+											client,
+											name,
+											flattenedResult,
+											modelIntrospection
+										);
+
+										return initialized;
+									}
 								}
 
 								return res.data[key];
@@ -99,9 +130,18 @@ export class APIClass extends InternalAPIClass {
 							return res as any;
 						};
 					} else {
-						client.models[name][operationPrefix] = async (arg?: any) => {
-							const query = generateGraphQLDocument(model, operation);
+						client.models[name][operationPrefix] = async (
+							arg?: any,
+							options?: any
+						) => {
+							const query = generateGraphQLDocument(
+								modelIntrospection.models,
+								name,
+								operation
+							);
 							const variables = buildGraphQLVariables(model, operation, arg);
+
+							console.log(`API ${operationPrefix}`, query, variables);
 
 							const res = (await this.graphql({
 								query,
@@ -111,7 +151,16 @@ export class APIClass extends InternalAPIClass {
 							// flatten response
 							if (res.data !== undefined) {
 								const [key] = Object.keys(res.data);
-								return res.data[key];
+
+								// TODO: refactor to avoid destructuring here
+								const [initialized] = initializeModel(
+									client,
+									name,
+									[res.data[key]],
+									modelIntrospection
+								);
+
+								return initialized;
 							}
 
 							return res;
@@ -123,183 +172,6 @@ export class APIClass extends InternalAPIClass {
 
 		return client as V6Client<T>;
 	}
-}
-
-const graphQLOperationsInfo = {
-	CREATE: { operationPrefix: 'create' as const, usePlural: false },
-	READ: { operationPrefix: 'get' as const, usePlural: false },
-	UPDATE: { operationPrefix: 'update' as const, usePlural: false },
-	DELETE: { operationPrefix: 'delete' as const, usePlural: false },
-	LIST: { operationPrefix: 'list' as const, usePlural: true },
-};
-type ModelOperation = keyof typeof graphQLOperationsInfo;
-type OperationPrefix =
-	(typeof graphQLOperationsInfo)[ModelOperation]['operationPrefix'];
-
-const graphQLDocumentsCache = new Map<string, Map<ModelOperation, string>>();
-
-function filterSelectionSet(field, selectionSet?: string[]) {
-	if (!selectionSet || !Array.isArray(selectionSet)) {
-		return true;
-	}
-
-	if (selectionSet.includes(field)) {
-		return true;
-	}
-
-	return false;
-}
-
-function generateGraphQLDocument(
-	modelDefinition: any,
-	modelOperation: ModelOperation,
-	listArgs?: ListArgs
-): string {
-	const {
-		name,
-		pluralName,
-		fields,
-		primaryKeyInfo: {
-			isCustomPrimaryKey,
-			primaryKeyFieldName,
-			sortKeyFieldNames,
-		},
-	} = modelDefinition;
-	const { operationPrefix, usePlural } = graphQLOperationsInfo[modelOperation];
-
-	const { fields: selectionSet } = listArgs || {};
-
-	const fromCache = graphQLDocumentsCache.get(name)?.get(modelOperation);
-
-	if (fromCache !== undefined) {
-		return fromCache;
-	}
-
-	if (!graphQLDocumentsCache.has(name)) {
-		graphQLDocumentsCache.set(name, new Map());
-	}
-
-	const graphQLFieldName = `${operationPrefix}${usePlural ? pluralName : name}`;
-	let graphQLOperationType: 'mutation' | 'query' | undefined;
-	let graphQLSelectionSet: string | undefined;
-	let graphQLArguments: Record<string, any> | undefined;
-
-	const selectionSetFields = Object.values<any>(fields)
-		.map(({ type, name }) => typeof type === 'string' && name) // Only scalars for now
-		.filter(Boolean)
-		.filter(field => filterSelectionSet(field, selectionSet))
-		.join(' ');
-
-	switch (modelOperation) {
-		case 'CREATE':
-		case 'UPDATE':
-		case 'DELETE':
-			graphQLArguments ??
-				(graphQLArguments = {
-					input: `${
-						operationPrefix.charAt(0).toLocaleUpperCase() +
-						operationPrefix.slice(1)
-					}${name}Input!`,
-				});
-			graphQLOperationType ?? (graphQLOperationType = 'mutation');
-		case 'READ':
-			graphQLArguments ??
-				(graphQLArguments = isCustomPrimaryKey
-					? [primaryKeyFieldName, ...sortKeyFieldNames].reduce(
-							(acc, fieldName) => {
-								acc[fieldName] = fields[fieldName].type;
-
-								return acc;
-							},
-							{}
-					  )
-					: {
-							[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}!`,
-					  });
-			graphQLSelectionSet ?? (graphQLSelectionSet = selectionSetFields);
-		case 'LIST':
-			graphQLOperationType ?? (graphQLOperationType = 'query');
-			graphQLSelectionSet ??
-				(graphQLSelectionSet = `items { ${selectionSetFields} }`);
-	}
-
-	const graphQLDocument = `${graphQLOperationType}${
-		graphQLArguments
-			? `(${Object.entries(graphQLArguments).map(
-					([fieldName, type]) => `\$${fieldName}: ${type}`
-			  )})`
-			: ''
-	} { ${graphQLFieldName}${
-		graphQLArguments
-			? `(${Object.keys(graphQLArguments).map(
-					fieldName => `${fieldName}: \$${fieldName}`
-			  )})`
-			: ''
-	} { ${graphQLSelectionSet} } }`;
-
-	graphQLDocumentsCache.get(name)?.set(modelOperation, graphQLDocument);
-
-	return graphQLDocument;
-}
-
-function buildGraphQLVariables(
-	modelDefinition: any,
-	operation: ModelOperation,
-	arg: any
-): object {
-	const {
-		fields,
-		primaryKeyInfo: {
-			isCustomPrimaryKey,
-			primaryKeyFieldName,
-			sortKeyFieldNames,
-		},
-	} = modelDefinition;
-
-	let variables = {};
-
-	switch (operation) {
-		case 'CREATE':
-			variables = { input: arg };
-			break;
-		case 'UPDATE':
-			// readonly fields are not  updated
-			variables = {
-				input: Object.fromEntries(
-					Object.entries(arg).filter(([fieldName]) => {
-						const { isReadOnly } = fields[fieldName];
-
-						return !isReadOnly;
-					})
-				),
-			};
-			break;
-		case 'READ':
-		case 'DELETE':
-			// only identifiers are sent
-			variables = isCustomPrimaryKey
-				? [primaryKeyFieldName, ...sortKeyFieldNames].reduce(
-						(acc, fieldName) => {
-							acc[fieldName] = arg[fieldName];
-
-							return acc;
-						},
-						{}
-				  )
-				: { [primaryKeyFieldName]: arg[primaryKeyFieldName] };
-
-			if (operation === 'DELETE') {
-				variables = { input: variables };
-			}
-			break;
-		case 'LIST':
-			break;
-		default:
-			const exhaustiveCheck: never = operation;
-			throw new Error(`Unhandled operation case: ${exhaustiveCheck}`);
-	}
-
-	return variables;
 }
 
 type FilteredKeys<T> = {

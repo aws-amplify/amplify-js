@@ -6,27 +6,17 @@ export declare const __modelMeta__: unique symbol;
 export type ExtractModelMeta<T extends Record<any, any>> =
 	T[typeof __modelMeta__];
 
-type Prettify<T> = T extends object
-	? {
-			[P in keyof T]: Prettify<T[P]>;
-	  }
+type Prettify<T> = T extends () => {}
+	? () => ReturnType<T>
+	: T extends object
+	? { [P in keyof T]: Prettify<T[P]> }
 	: T;
 
-// tslint gets confused by template literal types
-// tslint:disable:semicolon
-type FlattenKeys<
-	T extends Record<string, unknown> = {},
-	Key = keyof T
-> = Key extends string
-	? T[Key] extends Record<string, unknown>
-		? `${Key}.${FlattenKeys<T[Key]>}` | `${Key}.*`
-		: `${Key}`
-	: never;
-
 type Model = Record<string, any>;
+
 type Joined<
 	M extends Model,
-	Paths extends Array<FlattenKeys<M>>
+	Paths extends Array<FlattenKeys<FlatSchema<M>>>
 > = Paths extends never[]
 	? M
 	: Prettify<
@@ -35,10 +25,13 @@ type Joined<
 					? A
 					: never]: k extends `${infer A}.${infer B}`
 					? B extends `${string}.${string}`
-						? Joined<M[A], B extends FlattenKeys<M[A]> ? [B] : never>
+						? Joined<
+								M[A],
+								B extends FlattenKeys<FlatSchema<M[A]>> ? [B] : never
+						  >
 						: B extends `*`
-						? M[A]
-						: Pick<M[A], B>
+						? FlatSchema<M[A], false>
+						: Pick<FlatSchema<M[A], false>, B>
 					: never;
 			} & {
 				[k in Paths[number] as k extends `${string}.${string}`
@@ -51,26 +44,69 @@ type ModelIdentifier<Model extends Record<any, any>> = Prettify<
 	Record<Model['identifier'] & string, string>
 >;
 
+// All required fields and relational fields
+type MutationInput<
+	Fields,
+	Model extends Record<any, any>,
+	Relationships = Model['relationships']
+> = {
+	[Prop in keyof Fields as Fields[Prop] extends () => {}
+		? never
+		: Prop]: Fields[Prop];
+} & {
+	[RelatedModel in keyof Relationships]: Relationships[RelatedModel];
+};
+
+type ArrElementOrElement<ArrType> =
+	ArrType extends readonly (infer ElementType)[] ? ElementType : ArrType;
+
+type FlatSchema<T, FlattenArray = true> = T extends () => {}
+	? FlattenArray extends true
+		? ArrElementOrElement<Awaited<ReturnType<T>>>
+		: Awaited<ReturnType<T>>
+	: T extends object
+	? { [P in keyof T]: FlatSchema<T[P]> }
+	: T;
+
+type FlattenKeys<
+	T extends Record<string, unknown> = {},
+	Key = keyof T
+> = Key extends string
+	? T[Key] extends Record<string, unknown>
+		? `${Key}.${FlattenKeys<T[Key]>}` | `${Key}.*`
+		: `${Key}`
+	: never;
+
 export type ModelTypes<
 	T extends Record<any, any>,
-	ModelMeta extends Record<any, any> = ExtractModelMeta<T>
+	ModelMeta extends Record<any, any> = ExtractModelMeta<T>,
+	Flat extends Record<any, any> = FlatSchema<T>
 > = {
 	[K in keyof T]: K extends string
 		? T[K] extends Record<string, unknown>
 			? {
-					create: (model: T[K]) => Promise<T[K]>;
+					create: (
+						model: Prettify<MutationInput<T[K], ModelMeta[K]>>
+					) => Promise<T[K]>;
 					update: (
 						model: Prettify<
-							{
-								id: string;
-							} & Partial<T[K]>
+							ModelIdentifier<ModelMeta[K]> &
+								Partial<MutationInput<T[K], ModelMeta[K]>>
 						>
 					) => Promise<T[K]>;
 					delete: (identifier: ModelIdentifier<ModelMeta[K]>) => Promise<T[K]>;
-					get: (identifier: ModelIdentifier<ModelMeta[K]>) => Promise<T[K]>;
-					list<SS extends FlattenKeys<T[K]>[]>(obj?: {
-						fields?: SS;
+					get<SS extends FlattenKeys<Flat[K]>[] = never[]>(
+						identifier: ModelIdentifier<ModelMeta[K]>,
+						options?: { selectionSet?: SS }
+					): Promise<T[K]>;
+					list<SS extends FlattenKeys<Flat[K]>[] = never[]>(options?: {
+						// TODO: strongly type filter
+						filter?: {};
+						selectionSet?: SS;
 					}): Promise<Array<Joined<T[K], SS>>>;
+
+					// using this to debug types (surfacing them to the app code for inspection) - not callable at runtime
+					_debug(): Joined<T[K], never>;
 			  }
 			: never
 		: never;
