@@ -36,7 +36,7 @@ export interface ICredentials {
 export type DelayFunction = (
 	attempt: number,
 	args?: any[],
-	error?: Error
+	error?: unknown
 ) => number | false;
 
 export interface LoggingProvider {
