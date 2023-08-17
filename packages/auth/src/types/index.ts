@@ -15,9 +15,9 @@ export {
 	AuthStandardAttributeKey,
 	AuthUserAttributeKey,
 	AuthUserAttribute,
-	GetAttributeKey,
 	AuthNextResetPasswordStep,
 	AuthNextSignInStep,
+	AuthNextUpdateAttributeStep,
 	MFAType,
 	AllowedMFATypes,
 } from './models';
@@ -32,10 +32,14 @@ export {
 	SignInRequest,
 	ConfirmSignUpRequest,
 	ConfirmSignInRequest,
+	UpdatePasswordRequest,
+	UpdateUserAttributesRequest,
 } from './requests';
 
 export {
 	AuthSignUpResult,
 	AuthSignInResult,
 	ResetPasswordResult,
+	UpdateUserAttributeResult,
+	UpdateUserAttributesResult,
 } from './results';

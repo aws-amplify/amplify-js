@@ -6,6 +6,7 @@ import {
 	AuthNextSignInStep,
 	AuthNextSignUpStep,
 	AuthNextResetPasswordStep,
+	AuthNextUpdateAttributeStep,
 } from './models';
 
 /**
@@ -37,4 +38,23 @@ export type ResetPasswordResult<
 > = {
 	isPasswordReset: boolean;
 	nextStep: AuthNextResetPasswordStep<UserAttributeKey>;
+};
+
+/**
+ * The Result of a Update User Attribute request.
+ */
+export type UpdateUserAttributeResult<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = {
+	isUpdated: boolean;
+	nextStep: AuthNextUpdateAttributeStep<UserAttributeKey>;
+};
+
+/**
+ * The Result of a Update User Attributes request.
+ */
+export type UpdateUserAttributesResult<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = {
+	[authKey in UserAttributeKey]: UpdateUserAttributeResult<UserAttributeKey>;
 };
