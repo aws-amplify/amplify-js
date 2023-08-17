@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-// TODO(ashwinkumar6) this uses V5 Credentials, update to V6
+// TODO(ashwinkumar6) this uses V5 Credentials, update to V6.
 import { Credentials } from '@aws-sdk/types';
 
 export type StorageConfig = {
