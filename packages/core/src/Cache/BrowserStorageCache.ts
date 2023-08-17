@@ -22,6 +22,11 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	constructor(config?: CacheConfig) {
 		super(config);
 
+		asserts(!!this.cacheConfig.storage, {
+			name: STORAGE_CACHE_EXCEPTION,
+			message: 'Storage is not defined in the cache config',
+		});
+		this.cacheConfig.storage = this.cacheConfig.storage;
 		this.getItem = this.getItem.bind(this);
 		this.setItem = this.setItem.bind(this);
 		this.removeItem = this.removeItem.bind(this);
