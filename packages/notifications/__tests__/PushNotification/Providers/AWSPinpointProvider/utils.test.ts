@@ -1,13 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger, Hub } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 import { AWSPinpointMessageEvent } from '../../../../src/PushNotification/Providers/AWSPinpointProvider/types';
-import {
-	dispatchPushNotificationEvent,
-	getAnalyticsEvent,
-} from '../../../../src/PushNotification/Providers/AWSPinpointProvider/utils';
+import { getAnalyticsEvent } from '../../../../src/PushNotification/Providers/AWSPinpointProvider/utils';
 
 import {
 	androidCampaignData,
@@ -25,21 +22,6 @@ const loggerDebugSpy = jest.spyOn(ConsoleLogger.prototype, 'debug');
 describe('AWSPinpoint PushNotification Provider Utils', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-	});
-
-	test('dispatchPushNotificationEvent dispatches Hub event', () => {
-		const event = 'foo';
-		const data = { bar: 'baz' };
-		const message = 'qux';
-
-		dispatchPushNotificationEvent(event, data, message);
-
-		expect(Hub.dispatch).toBeCalledWith(
-			'pushNotification',
-			{ event, data, message },
-			'PushNotification',
-			expect.anything() // expect.any(Symbol) is fixed in a later Jest version
-		);
 	});
 
 	describe('getAnalyticsEvent', () => {

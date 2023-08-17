@@ -2,14 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
-import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger } from '@aws-amplify/core';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { InAppMessagingEvent } from '../../../../src/InAppMessaging';
 import { AWSPinpointMessageEvent } from '../../../../src/InAppMessaging/Providers/AWSPinpointProvider/types';
 import {
 	clearMemo,
-	dispatchInAppMessagingEvent,
 	extractContent,
 	extractMetadata,
 	getStartOfDay,
@@ -36,21 +35,6 @@ const loggerDebugSpy = jest.spyOn(ConsoleLogger.prototype, 'debug');
 describe('AWSPinpoint InAppMessaging Provider Utils', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-	});
-
-	test('dispatchInAppMessagingEvent dispatches Hub event', () => {
-		const event = 'foo';
-		const data = { bar: 'baz' };
-		const message = 'qux';
-
-		dispatchInAppMessagingEvent(event, data, message);
-
-		expect(Hub.dispatch).toBeCalledWith(
-			'inAppMessaging',
-			{ event, data, message },
-			'InAppMessaging',
-			expect.anything() // expect.any(Symbol) is fixed in a later Jest version
-		);
 	});
 
 	describe('recordAnalyticsEvent', () => {
