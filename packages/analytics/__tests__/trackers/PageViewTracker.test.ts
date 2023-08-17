@@ -9,7 +9,7 @@ class SessionStorageMock {
 	private store;
 	private maxSize;
 	private curSize;
-	private length;
+	public length;
 
 	constructor() {
 		this.store = {};
@@ -87,7 +87,11 @@ class SessionStorageMock {
 	}
 }
 
-window.sessionStorage = new SessionStorageMock();
+if (window) {
+	try {
+		window.sessionStorage = new SessionStorageMock();
+	} catch (err) {}
+}
 
 describe('PageViewTracker test', () => {
 	describe('constructor test', () => {
