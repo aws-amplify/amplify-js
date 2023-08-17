@@ -11,6 +11,7 @@ import {
 	HubPayload,
 	IListener,
 	IPattern,
+	PayloadFromCallback,
 } from './types';
 
 export const AMPLIFY_SYMBOL = (
@@ -103,7 +104,9 @@ export class HubClass {
 		Channel extends ChannelMap['channel'] = ChannelMap['channel']
 	>(
 		channel: Channel,
-		payload: HubPayload<EventData>,
+		payload: PayloadFromCallback<
+			GetHubCallBack<Channel, ChannelMap['eventData']>
+		>,
 		source = '',
 		ampSymbol?: Symbol
 	): void {

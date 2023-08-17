@@ -72,6 +72,12 @@ export type GetHubCallBack<
 	? AmplifyHubCallbackMap<Channel>[Channel]
 	: HubCallback<Channel, EventDataMap>;
 
+export type PayloadFromCallback<T> = T extends (
+	arg: infer A extends Record<string, any>
+) => void
+	? A['payload']
+	: never;
+
 export type AnyChannel = string & {};
 
 export type AmplifyChannelMap<
