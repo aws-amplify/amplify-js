@@ -4,12 +4,6 @@
 import { NotificationsHubEventData } from './AnalyticsTypes';
 import { AuthHubEventData } from './AuthTypes';
 
-export const AMPLIFY_SYMBOL = (
-	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
-		? Symbol.for('amplify_default')
-		: '@@amplify_default'
-) as Symbol;
-
 export interface IListener<
 	Channel extends string | RegExp = string | RegExp,
 	EventData extends AmplifyEventDataMap = AmplifyEventDataMap

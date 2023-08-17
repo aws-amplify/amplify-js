@@ -3,7 +3,6 @@
 
 import { ConsoleLogger as Logger } from '../Logger';
 import {
-	AMPLIFY_SYMBOL,
 	AmplifyChannelMap,
 	AmplifyEventDataMap,
 	GetHubCallBack,
@@ -13,6 +12,12 @@ import {
 	IListener,
 	IPattern,
 } from './types';
+
+export const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const logger = new Logger('Hub');
 
