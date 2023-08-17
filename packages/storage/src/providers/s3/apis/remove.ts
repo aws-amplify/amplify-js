@@ -20,7 +20,7 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 
 /**
  * Remove the object for specified key
- * @param {StorageOperationRequest<StorageRemoveOptions>} req - key of the object
+ * @param {StorageOperationRequest<StorageRemoveOptions>} req - The request object
  * @return {Promise<StorageRemoveResult>} - Promise resolves upon successful removal of the object
  * @throws service: {@link S3Exception} - S3 service errors thrown while getting properties
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
