@@ -34,6 +34,7 @@ export const remove = async (
 	const { accessLevel = defaultAccessLevel } = options;
 
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
+	// TODO(ashwinkumar6) can we refactor getKeyWithPrefix to avoid duplication
 	const finalKey = getKeyWithPrefix({
 		accessLevel,
 		targetIdentityId:
