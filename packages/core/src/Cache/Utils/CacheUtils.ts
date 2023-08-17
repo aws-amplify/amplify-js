@@ -88,3 +88,5 @@ export class CacheObject {
 		delete store[key];
 	}
 }
+
+export const getCurrSizeKey = (keyPrefix: string) => keyPrefix + 'CurSize';
