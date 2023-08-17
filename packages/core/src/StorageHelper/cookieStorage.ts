@@ -34,7 +34,7 @@ export class CookieStorage implements KeyValueStorageInterface {
 		} else {
 			this.secure = true;
 		}
-		if (Object.prototype.hasOwnProperty.call(data, 'sameSite')) {
+		if (data.hasOwnProperty('sameSite')) {
 			if (data.sameSite && !['strict', 'lax', 'none'].includes(data.sameSite)) {
 				throw new Error(
 					'The sameSite value of cookieStorage must be "lax", "strict" or "none".'
