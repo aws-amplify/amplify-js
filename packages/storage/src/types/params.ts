@@ -64,3 +64,5 @@ export type StorageUploadFileParameter<Options extends StorageOptions> =
 	StorageOperationRequest<Options> & {
 		data: File;
 	};
+
+export type StorageRemoveOptions = StorageOptions;
