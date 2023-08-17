@@ -4,18 +4,18 @@
 import { AuthHubEventData } from './AuthTypes';
 
 export interface IListener<
-	Channel extends string | RegExp = string | RegExp,
+	Channel extends String | RegExp = String | RegExp,
 	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 > {
 	name: string;
 	callback: HubCallback<Channel, EventData>;
 }
 export interface IPattern<
-	Channel extends string | RegExp,
+	Channel extends String | RegExp,
 	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 > {
 	pattern: RegExp;
-	callback: HubCallback<Channel, EventData>;
+	callback(capsule: HubCapsule<Channel, EventData>): void;
 }
 
 export type AmplifyChannel =
@@ -32,17 +32,17 @@ export type AmplifyChannel =
 export type AmplifyEventDataMap = { event: string; data?: unknown };
 
 export type HubCapsule<
-	Channel extends string | RegExp = string | RegExp,
-	EventDataMap extends AmplifyEventDataMap = AmplifyEventDataMap
+	Channel extends String | RegExp = String | RegExp,
+	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 > = {
 	channel: Channel;
-	payload: HubPayload<EventDataMap>;
+	payload: HubPayload<EventData>;
 	source: string;
 	patternInfo?: string[];
 };
 
 export type HubCallback<
-	Channel extends string | RegExp = string | RegExp,
+	Channel extends String | RegExp,
 	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 > = (capsule: HubCapsule<Channel, EventData>) => void;
 

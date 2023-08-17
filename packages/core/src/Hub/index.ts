@@ -8,7 +8,6 @@ import {
 	GetHubCallBack,
 	HubCallback,
 	HubCapsule,
-	HubPayload,
 	IListener,
 	IPattern,
 	PayloadFromCallback,
@@ -22,10 +21,13 @@ export const AMPLIFY_SYMBOL = (
 
 const logger = new Logger('Hub');
 
-export class HubClass {
+export class HubClass<
+	Channel extends string | RegExp = string | RegExp,
+	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
+> {
 	name: string;
-	private listeners: IListener[] = [];
-	private patterns: IPattern<any>[] = [];
+	private patterns: IPattern<Channel, EventData>[];
+	private listeners: IListener<Channel, EventData>[];
 
 	protectedChannels = [
 		'core',
@@ -53,40 +55,25 @@ export class HubClass {
 		Channel extends string | RegExp,
 		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 	>(channel: Channel, listener: HubCallback<string | RegExp, EventData>) {
-		{
-			if (channel instanceof RegExp) {
-				const pattern = this.patterns.find(
-					({ pattern }) => pattern.source === channel.source
-				);
-				if (!pattern) {
-					logger.warn(`No listeners for ${channel}`);
-					return;
-				}
-				this.patterns = [...this.patterns.filter(x => x !== pattern)];
-			} else {
-				const holder = this.listeners[channel as string];
-				if (!holder) {
-					logger.warn(`No listeners for ${channel}`);
-					return;
-				}
-				this.listeners[channel as string] = [
-					...holder.filter(({ callback }) => callback !== listener),
-				];
-				this.listeners[channel as string] = [
-					...holder.filter(({ callback }) => callback !== listener),
-				];
+		if (channel instanceof RegExp) {
+			const pattern = this.patterns.find(
+				({ pattern }) => pattern.source === channel.source
+			);
+			if (!pattern) {
+				logger.warn(`No listeners for ${channel}`);
+				return;
 			}
+			this.patterns = [...this.patterns.filter(x => x !== pattern)];
+		} else if (channel instanceof String) {
+			const holder = this.listeners[channel as string];
+			if (!holder) {
+				logger.warn(`No listeners for ${channel}`);
+				return;
+			}
+			this.listeners[channel as string] = [
+				...holder.filter(({ callback }) => callback !== listener),
+			];
 		}
-	}
-
-	/**
-	 * @deprecated Instead of calling Hub.remove, call the result of Hub.listen.
-	 */
-	remove<
-		Channel extends string | RegExp,
-		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
-	>(channel: Channel, listener: HubCallback<string | RegExp, EventData>) {
-		this._remove(channel, listener);
 	}
 
 	/**
@@ -110,7 +97,10 @@ export class HubClass {
 		source = '',
 		ampSymbol?: Symbol
 	): void {
-    if (typeof channel === 'string' && this.protectedChannels.indexOf(channel) > -1) {
+		if (
+			typeof channel === 'string' &&
+			this.protectedChannels.indexOf(channel) > -1
+		) {
 			const hasAccess = ampSymbol === AMPLIFY_SYMBOL;
 
 			if (!hasAccess) {
@@ -148,10 +138,10 @@ export class HubClass {
 		Channel extends ChannelMap['channel'] = ChannelMap['channel']
 	>(
 		channel: Channel,
-		callback: GetHubCallBack<Channel, ChannelMap['eventData']>,
+		callback: HubCallback<Channel, ChannelMap['eventData']>,
 		listenerName?: string
 	): () => void {
-		let cb: GetHubCallBack<Channel, ChannelMap['eventData']>;
+		let cb: HubCallback<Channel, ChannelMap['eventData']>;
 
 		if (typeof callback !== 'function') {
 			throw new Error('No callback supplied to Hub');
@@ -184,9 +174,9 @@ export class HubClass {
 	}
 
 	private _toListeners<
-		Channel extends string | RegExp,
-		EventDataMap extends AmplifyEventDataMap
-	>(capsule: HubCapsule<Channel, EventDataMap>) {
+		Channel extends String | RegExp,
+		EventData extends AmplifyEventDataMap
+	>(capsule: HubCapsule<Channel, EventData>) {
 		const { channel, payload } = capsule;
 		const holder = this.listeners[channel as string];
 
@@ -213,7 +203,7 @@ export class HubClass {
 				const match = payloadStr.match(pattern.pattern);
 				if (match) {
 					const [, ...groups] = match;
-					const dispatchingCapsule: HubCapsule<Channel, EventDataMap> = {
+					const dispatchingCapsule: HubCapsule<Channel, EventData> = {
 						...capsule,
 						patternInfo: groups,
 					};
