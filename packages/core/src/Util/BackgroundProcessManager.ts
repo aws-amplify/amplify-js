@@ -85,10 +85,19 @@ export class BackgroundProcessManager {
 	 * @param job The inner job manager to await.
 	 * @param description Optional description to help identify pending jobs.
 	 */
-	add(job: BackgroundProcessManager, description?: string);
+	add<T>(job: BackgroundProcessManager, description?: string): Promise<T>;
 
-	add(jobOrDescription?, optionalDescription?) {
-		let job;
+	add<T>(
+		jobOrDescription?:
+			| string
+			| BackgroundProcessManager
+			| ((...args: any) => Promise<T>),
+		optionalDescription?: string
+	) {
+		let job:
+			| BackgroundProcessManager
+			| ((...args: any) => Promise<T>)
+			| undefined;
 		let description: string;
 
 		if (typeof jobOrDescription === 'string') {
@@ -96,7 +105,7 @@ export class BackgroundProcessManager {
 			description = jobOrDescription;
 		} else {
 			job = jobOrDescription;
-			description = optionalDescription;
+			description = optionalDescription!;
 		}
 
 		const error = this.closedFailure(description);
@@ -149,12 +158,15 @@ export class BackgroundProcessManager {
 		job: (onTerminate: Promise<void>) => Promise<T>,
 		description?: string
 	): Promise<T>;
-	private addFunction(job, description) {
+	private addFunction<T>(
+		job: (() => Promise<T>) | ((onTerminate: Promise<void>) => Promise<T>),
+		description?: string
+	) {
 		// the function we call when we want to try to terminate this job.
 		let terminate;
 
 		// the promise the job can opt into listening to for termination.
-		const onTerminate = new Promise(resolve => {
+		const onTerminate = new Promise<void>(resolve => {
 			terminate = resolve;
 		});
 
@@ -164,7 +176,11 @@ export class BackgroundProcessManager {
 		// depending on what the job gives back, register the result
 		// so we can monitor for completion.
 		if (typeof jobResult?.then === 'function') {
-			this.registerPromise(jobResult, terminate, description);
+			this.registerPromise(
+				jobResult,
+				terminate as unknown as () => void,
+				description
+			);
 		}
 
 		// At the end of the day, or you know, method call, it doesn't matter
@@ -208,7 +224,11 @@ export class BackgroundProcessManager {
 			terminate = resolveTerminate;
 		});
 
-		this.registerPromise(promise, terminate, description);
+		this.registerPromise(
+			promise,
+			terminate as unknown as () => void,
+			description
+		);
 
 		return {
 			resolve,
@@ -355,7 +375,9 @@ export class BackgroundProcessManager {
 					// reasonable to expect the termination call to fail. Hence,
 					// not logging as an error.
 					console.warn(
-						`Failed to send termination signal to job. Error: ${error.message}`,
+						`Failed to send termination signal to job. Error: ${
+							(error as Error).message
+						}`,
 						job
 					);
 				}
@@ -449,3 +471,5 @@ type JobEntry = {
 	 */
 	description?: string;
 };
+
+const process = new BackgroundProcessManager();

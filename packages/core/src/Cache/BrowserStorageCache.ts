@@ -5,6 +5,8 @@ import { ConsoleLogger as Logger } from '../Logger';
 import { defaultConfig, getCurrTime } from './Utils';
 import { StorageCache } from './StorageCache';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
+import { asserts } from '../Util/errors/AssertError';
+import { STORAGE_CACHE_EXCEPTION } from '../constants';
 import { getCurrSizeKey } from './Utils/CacheUtils';
 
 const logger = new Logger('Cache');
@@ -19,12 +21,23 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	 */
 	constructor(config?: CacheConfig) {
 		super(config);
-		
+
+		asserts(!!this.cacheConfig.storage, {
+			name: STORAGE_CACHE_EXCEPTION,
+			message: 'Storage is not defined in the cache config',
+		});
+		this.cacheConfig.storage = this.cacheConfig.storage;
 		this.getItem = this.getItem.bind(this);
 		this.setItem = this.setItem.bind(this);
 		this.removeItem = this.removeItem.bind(this);
 	}
-
+	private getStorage(): Storage {
+		asserts(!!this.cacheConfig.storage, {
+			name: STORAGE_CACHE_EXCEPTION,
+			message: 'Storage is not defined in the cache config',
+		});
+		return this.cacheConfig.storage;
+	}
 	/**
 	 * decrease current size of the cache
 	 *
@@ -33,7 +46,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	 */
 	private _decreaseCurSizeInBytes(amount: number): void {
 		const curSize: number = this.getCacheCurSize();
-		this.cacheConfig.storage.setItem(
+		this.getStorage().setItem(
 			getCurrSizeKey(this.cacheConfig.keyPrefix),
 			(curSize - amount).toString()
 		);
@@ -47,7 +60,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	 */
 	private _increaseCurSizeInBytes(amount: number): void {
 		const curSize: number = this.getCacheCurSize();
-		this.cacheConfig.storage.setItem(
+		this.getStorage().setItem(
 			getCurrSizeKey(this.cacheConfig.keyPrefix),
 			(curSize + amount).toString()
 		);
@@ -64,7 +77,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	 */
 	private _refreshItem(item: CacheItem, prefixedKey: string): CacheItem {
 		item.visitedTime = getCurrTime();
-		this.cacheConfig.storage.setItem(prefixedKey, JSON.stringify(item));
+		this.getStorage().setItem(prefixedKey, JSON.stringify(item));
 		return item;
 	}
 
@@ -77,7 +90,11 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	 * @return true if the item is expired.
 	 */
 	private _isExpired(key: string): boolean {
-		const text: string | null = this.cacheConfig.storage.getItem(key);
+		const text: string | null = this.getStorage().getItem(key);
+		asserts(text !== null, {
+			name: STORAGE_CACHE_EXCEPTION,
+			message: `Item not found in the storage by the key: ${key}.`,
+		});
 		const item: CacheItem = JSON.parse(text);
 		if (getCurrTime() >= item.expires) {
 			return true;
@@ -93,12 +110,15 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	 * @param size - optional, the byte size of the item
 	 */
 	private _removeItem(prefixedKey: string, size?: number): void {
-		const itemSize: number = size
-			? size
-			: JSON.parse(this.cacheConfig.storage.getItem(prefixedKey)).byteSize;
+		const item = this.getStorage().getItem(prefixedKey);
+		asserts(item !== null, {
+			name: STORAGE_CACHE_EXCEPTION,
+			message: `Item not found in the storage by the key: ${prefixedKey}.`,
+		});
+		const itemSize: number = size ?? JSON.parse(item).byteSize;
 		this._decreaseCurSizeInBytes(itemSize);
 		// remove the cache item
-		this.cacheConfig.storage.removeItem(prefixedKey);
+		this.getStorage().removeItem(prefixedKey);
 	}
 
 	/**
@@ -114,7 +134,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 		this._increaseCurSizeInBytes(item.byteSize);
 
 		try {
-			this.cacheConfig.storage.setItem(prefixedKey, JSON.stringify(item));
+			this.getStorage().setItem(prefixedKey, JSON.stringify(item));
 		} catch (setItemErr) {
 			// if failed, we need to rollback the cache size
 			this._decreaseCurSizeInBytes(item.byteSize);
@@ -134,7 +154,8 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 		const spaceItemNeed =
 			this.getCacheCurSize() + itemSize - this.cacheConfig.capacityInBytes;
 		const cacheThresholdSpace =
-			(1 - this.cacheConfig.warningThreshold) * this.cacheConfig.capacityInBytes;
+			(1 - this.cacheConfig.warningThreshold) *
+			this.cacheConfig.capacityInBytes;
 		return spaceItemNeed > cacheThresholdSpace
 			? spaceItemNeed
 			: cacheThresholdSpace;
@@ -164,8 +185,11 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 		const keys: string[] = [];
 		const keyInCache: string[] = [];
 		// get all keys in Storage
-		for (let i = 0; i < this.cacheConfig.storage.length; i += 1) {
-			keyInCache.push(this.cacheConfig.storage.key(i));
+		for (let i = 0; i < this.getStorage().length; i += 1) {
+			const key = this.getStorage().key(i);
+			if (key) {
+				keyInCache.push(key);
+			}
 		}
 
 		// find those items which belong to our cache and also clean those expired items
@@ -199,7 +223,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 		let remainedSize: number = sizeToPop;
 		// get the items from Storage
 		for (let i = 0; i < keys.length; i += 1) {
-			const val: string | null = this.cacheConfig.storage.getItem(keys[i]);
+			const val: string | null = this.getStorage().getItem(keys[i]);
 			if (val != null) {
 				const item: CacheItem = JSON.parse(val);
 				items.push(item);
@@ -269,7 +293,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 			return;
 		}
 
-		const cacheItemOptions: CacheItemOptions = {
+		const cacheItemOptions = {
 			priority:
 				options && options.priority !== undefined
 					? options.priority
@@ -303,7 +327,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 
 		try {
 			// first look into the storage, if it exists, delete it.
-			const val: string | null = this.cacheConfig.storage.getItem(prefixedKey);
+			const val: string | null = this.getStorage().getItem(prefixedKey);
 			if (val) {
 				this._removeItem(prefixedKey, JSON.parse(val).byteSize);
 			}
@@ -355,7 +379,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 		}
 
 		try {
-			ret = this.cacheConfig.storage.getItem(prefixedKey);
+			ret = this.getStorage().getItem(prefixedKey);
 			if (ret != null) {
 				if (this._isExpired(prefixedKey)) {
 					// if expired, remove that item and return null
@@ -401,7 +425,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 		}
 
 		try {
-			const val: string | null = this.cacheConfig.storage.getItem(prefixedKey);
+			const val: string | null = this.getStorage().getItem(prefixedKey);
 			if (val) {
 				this._removeItem(prefixedKey, JSON.parse(val).byteSize);
 			}
@@ -419,16 +443,16 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 		logger.log(`Clear Cache`);
 		const keysToRemove: string[] = [];
 
-		for (let i = 0; i < this.cacheConfig.storage.length; i += 1) {
-			const key = this.cacheConfig.storage.key(i);
-			if (key.indexOf(this.cacheConfig.keyPrefix) === 0) {
+		for (let i = 0; i < this.getStorage().length; i += 1) {
+			const key = this.getStorage().key(i);
+			if (key?.indexOf(this.cacheConfig.keyPrefix) === 0) {
 				keysToRemove.push(key);
 			}
 		}
 
 		try {
 			for (let i = 0; i < keysToRemove.length; i += 1) {
-				this.cacheConfig.storage.removeItem(keysToRemove[i]);
+				this.getStorage().removeItem(keysToRemove[i]);
 			}
 		} catch (e) {
 			logger.warn(`clear failed! ${e}`);
@@ -442,9 +466,10 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	 */
 	public getAllKeys(): string[] {
 		const keys: string[] = [];
-		for (let i = 0; i < this.cacheConfig.storage.length; i += 1) {
-			const key = this.cacheConfig.storage.key(i);
+		for (let i = 0; i < this.getStorage().length; i += 1) {
+			const key = this.getStorage().key(i);
 			if (
+				key &&
 				key.indexOf(this.cacheConfig.keyPrefix) === 0 &&
 				key !== getCurrSizeKey(this.cacheConfig.keyPrefix)
 			) {
@@ -460,9 +485,14 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	 * @return - current size of the cache
 	 */
 	public getCacheCurSize(): number {
-		let ret: string | null = this.cacheConfig.storage.getItem(getCurrSizeKey(this.cacheConfig.keyPrefix));
+		let ret: string | null = this.getStorage().getItem(
+			getCurrSizeKey(this.cacheConfig.keyPrefix)
+		);
 		if (!ret) {
-			this.cacheConfig.storage.setItem(getCurrSizeKey(this.cacheConfig.keyPrefix), '0');
+			this.getStorage().setItem(
+				getCurrSizeKey(this.cacheConfig.keyPrefix),
+				'0'
+			);
 			ret = '0';
 		}
 		return Number(ret);

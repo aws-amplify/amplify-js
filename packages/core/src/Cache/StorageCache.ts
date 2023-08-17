@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getCurrTime, getByteLength, defaultConfig, isInteger } from './Utils';
+import { getCurrTime, getByteLength, defaultConfig } from './Utils';
 import { AmplifyV6 } from '../singleton';
 import { CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '../Logger';
@@ -14,11 +14,11 @@ const logger = new Logger('StorageCache');
  */
 export class StorageCache {
 	// Contains any fields that have been customized for this Cache instance (i.e. without default values)
-	private instanceConfig: CacheConfig;
+	private instanceConfig?: CacheConfig;
 
 	/**
 	 * Initialize the cache
-	 * 
+	 *
 	 * @param config - Custom configuration for this instance.
 	 */
 	constructor(config?: CacheConfig) {
@@ -35,7 +35,7 @@ export class StorageCache {
 	}
 
 	private sanitizeConfig(): void {
-		const tempInstanceConfig = this.instanceConfig || {};
+		const tempInstanceConfig = this.instanceConfig || ({} as CacheConfig);
 
 		if (this.cacheConfig.itemMaxSize > this.cacheConfig.capacityInBytes) {
 			logger.error(
@@ -44,7 +44,10 @@ export class StorageCache {
 			tempInstanceConfig.itemMaxSize = defaultConfig.itemMaxSize;
 		}
 
-		if (this.cacheConfig.defaultPriority > 5 || this.cacheConfig.defaultPriority < 1) {
+		if (
+			this.cacheConfig.defaultPriority > 5 ||
+			this.cacheConfig.defaultPriority < 1
+		) {
 			logger.error(
 				'Invalid parameter: defaultPriority. It should be between 1 and 5. Setting back to default.'
 			);
@@ -93,8 +96,8 @@ export class StorageCache {
 			data: value,
 			timestamp: getCurrTime(),
 			visitedTime: getCurrTime(),
-			priority: options.priority,
-			expires: options.expires,
+			priority: options.priority ?? 0,
+			expires: options.expires ?? 0,
 			type: typeof value,
 			byteSize: 0,
 		};
@@ -108,7 +111,7 @@ export class StorageCache {
 
 	/**
 	 * Set custom configuration for the cache instance.
-	 * 
+	 *
 	 * @param config - customized configuration (without keyPrefix, which can't be changed)
 	 *
 	 * @return - the current configuration
@@ -116,10 +119,14 @@ export class StorageCache {
 	public configure(config?: Omit<CacheConfig, 'keyPrefix'>): CacheConfig {
 		if (config) {
 			if ((config as CacheConfig).keyPrefix) {
-				logger.warn('keyPrefix can not be re-configured on an existing Cache instance.');
+				logger.warn(
+					'keyPrefix can not be re-configured on an existing Cache instance.'
+				);
 			}
 
-			this.instanceConfig = this.instanceConfig ? Object.assign({}, this.instanceConfig, config) : config;
+			this.instanceConfig = this.instanceConfig
+				? Object.assign({}, this.instanceConfig, config)
+				: (config as CacheConfig);
 		}
 
 		this.sanitizeConfig();
@@ -130,14 +137,19 @@ export class StorageCache {
 	/**
 	 * Returns an appropriate configuration for the Cache instance. Will apply any custom configuration for this
 	 * instance on top of the global configuration. Default configuration will be applied in all cases.
-	 * 
+	 *
 	 * @internal
 	 */
 	protected get cacheConfig(): CacheConfig {
 		const globalCacheConfig = AmplifyV6.getConfig().Cache || {};
 
 		if (this.instanceConfig) {
-			return Object.assign({}, defaultConfig, globalCacheConfig, this.instanceConfig);
+			return Object.assign(
+				{},
+				defaultConfig,
+				globalCacheConfig,
+				this.instanceConfig
+			);
 		} else {
 			return Object.assign({}, defaultConfig, globalCacheConfig);
 		}

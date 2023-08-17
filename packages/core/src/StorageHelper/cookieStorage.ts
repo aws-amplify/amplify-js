@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+// @ts-ignore
 import * as Cookies from 'js-cookie';
 import {
 	CookieStorageData,
@@ -8,11 +9,11 @@ import {
 } from '../types';
 
 export class CookieStorage implements KeyValueStorageInterface {
-	domain: string;
+	domain?: string;
 	path: string;
-	expires: number; // days;
-	secure: boolean;
-	sameSite: SameSite;
+	expires?: number; // days;
+	secure?: boolean;
+	sameSite?: SameSite;
 
 	constructor(data: CookieStorageData = {}) {
 		if (data.domain) {
@@ -33,8 +34,11 @@ export class CookieStorage implements KeyValueStorageInterface {
 		} else {
 			this.secure = true;
 		}
-		if (Object.prototype.hasOwnProperty.call(data, 'sameSite')) {
-			if (!['strict', 'lax', 'none'].includes(data.sameSite)) {
+		if (data.hasOwnProperty('sameSite')) {
+			if (
+				!data.sameSite ||
+				!['strict', 'lax', 'none'].includes(data.sameSite)
+			) {
 				throw new Error(
 					'The sameSite value of cookieStorage must be "lax", "strict" or "none".'
 				);
@@ -45,8 +49,6 @@ export class CookieStorage implements KeyValueStorageInterface {
 				);
 			}
 			this.sameSite = data.sameSite;
-		} else {
-			this.sameSite = null;
 		}
 	}
 
