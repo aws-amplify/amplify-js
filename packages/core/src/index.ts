@@ -32,7 +32,6 @@ export {
 } from './JS';
 export { Signer } from './Signer';
 export { parseAWSExports } from './parseAWSExports';
-export { AWSCloudWatchProvider } from './Providers';
 export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export { AppState, AsyncStorage, Linking } from './RNComponents';
 export { Credentials, CredentialsClass } from './Credentials';
@@ -84,11 +83,6 @@ export const Constants = {
 };
 
 export {
-	AWS_CLOUDWATCH_BASE_BUFFER_SIZE,
-	AWS_CLOUDWATCH_CATEGORY,
-	AWS_CLOUDWATCH_MAX_BATCH_EVENT_SIZE,
-	AWS_CLOUDWATCH_MAX_EVENT_SIZE,
-	AWS_CLOUDWATCH_PROVIDER_NAME,
 	BackgroundManagerNotOpenError,
 	BackgroundProcessManager,
 	BackgroundProcessManagerState,

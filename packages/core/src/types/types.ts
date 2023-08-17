@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InputLogEvent, LogGroup } from '@aws-sdk/client-cloudwatch-logs';
-import { Credentials } from '@aws-sdk/types';
+import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
 
 export interface AmplifyConfig {
 	Analytics?: object;
@@ -51,20 +50,6 @@ export interface LoggingProvider {
 
 	// take logs and push to provider
 	pushLogs(logs: InputLogEvent[]): void;
-}
-
-export interface AWSCloudWatchProviderOptions {
-	logGroupName?: string;
-	logStreamName?: string;
-	region?: string;
-	credentials?: Credentials;
-	endpoint?: string;
-}
-
-export interface CloudWatchDataTracker {
-	eventUploadInProgress: boolean;
-	logEvents: InputLogEvent[];
-	verifiedLogGroup?: LogGroup;
 }
 
 export type ErrorParams = {
