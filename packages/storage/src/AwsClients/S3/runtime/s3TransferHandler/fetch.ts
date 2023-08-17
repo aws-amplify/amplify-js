@@ -17,7 +17,9 @@ import { contentSha256Middleware } from '../contentSha256middleware';
  * @internal
  */
 export const s3TransferHandler: typeof s3BrowserTransferhandler =
-	composeTransferHandler<[{}], HttpRequest, HttpResponse>(
-		authenticatedHandler,
-		[contentSha256Middleware]
-	);
+	composeTransferHandler<
+		[{}],
+		HttpRequest,
+		HttpResponse,
+		typeof authenticatedHandler
+	>(authenticatedHandler, [contentSha256Middleware]);

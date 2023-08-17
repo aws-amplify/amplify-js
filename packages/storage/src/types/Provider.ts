@@ -20,7 +20,7 @@ export interface StorageProvider {
 	copy?(
 		src: StorageCopySource,
 		dest: StorageCopyDestination,
-		config?,
+		config?: any,
 		userAgentValue?: string
 	): Promise<any>;
 
@@ -28,28 +28,32 @@ export interface StorageProvider {
 	configure(config: object): object;
 
 	// get object/pre-signed url from storage
-	get(key: string, options?, userAgentValue?: string): Promise<string | Object>;
+	get(
+		key: string,
+		options?: any,
+		userAgentValue?: string
+	): Promise<string | Object>;
 
 	// get properties of object
 	getProperties?(
 		key: string,
-		options?,
+		options?: any,
 		userAgentValue?: string
 	): Promise<Object>;
 
 	// upload storage object
 	put(
 		key: string,
-		object,
-		options?,
+		object: any,
+		options?: any,
 		userAgentValue?: string
 	): Promise<Object> | UploadTask;
 
 	// remove object
-	remove(key: string, options?, userAgentValue?: string): Promise<any>;
+	remove(key: string, options?: any, userAgentValue?: string): Promise<any>;
 
 	// list objects for the path
-	list(path, options?, userAgentValue?: string): Promise<any>;
+	list(path: any, options?: any, userAgentValue?: string): Promise<any>;
 
 	// return 'Storage';
 	getCategory(): string;
@@ -70,7 +74,7 @@ export interface StorageProviderWithCopy extends StorageProvider {
 	copy(
 		src: StorageCopySource,
 		dest: StorageCopyDestination,
-		config?,
+		config?: any,
 		userAgentValue?: string
 	): Promise<any>;
 }
@@ -78,7 +82,7 @@ export interface StorageProviderWithCopy extends StorageProvider {
 export interface StorageProviderWithGetProperties extends StorageProvider {
 	getProperties(
 		key: string,
-		options?,
+		options?: any,
 		userAgentValue?: string
 	): Promise<Object>;
 }
@@ -101,3 +105,12 @@ export type StorageProviderApiOptionsIndexMap = {
 	list: 1;
 	getProperties: 1;
 };
+
+/**
+ * Permissive type for provider configuration before v6 provider class is deprecated.
+ *
+ * TODO[AllanZhengYP]: remove this in v6
+ *
+ * @internal
+ */
+export type ConfigType = Record<string, any>;

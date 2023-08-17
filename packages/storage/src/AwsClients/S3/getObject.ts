@@ -9,6 +9,7 @@ import {
 	UserAgentOptions,
 	PresignUrlOptions,
 	EMPTY_SHA256_HASH,
+	HttpResponse,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import { USER_AGENT_HEADER } from '@aws-amplify/core';
@@ -29,6 +30,7 @@ import {
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	CONTENT_SHA256_HEADER,
+	validateS3RequiredParameter,
 } from './utils';
 
 export type GetObjectInput = Pick<GetObjectCommandInput, 'Bucket' | 'Key'>;
@@ -47,6 +49,7 @@ const getObjectSerializer = async (
 		'response-content-type': 'ResponseContentType',
 	});
 	const url = new URL(endpoint.url.toString());
+	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	url.search = new URLSearchParams(query).toString();
 	return {
@@ -57,7 +60,7 @@ const getObjectSerializer = async (
 };
 
 const getObjectDeserializer = async (
-	response: CompatibleHttpResponse
+	response: HttpResponse
 ): Promise<GetObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
@@ -110,7 +113,9 @@ const getObjectDeserializer = async (
 			}),
 			Metadata: deserializeMetadata(response.headers),
 			$metadata: parseMetadata(response),
-			Body: response.body,
+			// @ts-expect-error The body is a CompatibleHttpResponse type because the lower-level handler is XHR instead of
+			// fetch, which represents payload in Blob instread of ReadableStream.
+			Body: response.body as CompatibleHttpResponse,
 		};
 	}
 };
@@ -138,10 +143,12 @@ export const getPresignedGetObjectUrl = async (
 	// It requires changes in presignUrl. Without this change, the generated url still works,
 	// but not the same as other tools like AWS SDK and CLI.
 	url.searchParams.append(CONTENT_SHA256_HEADER, EMPTY_SHA256_HASH);
-	url.searchParams.append(
-		config.userAgentHeader ?? USER_AGENT_HEADER,
-		config.userAgentValue
-	);
+	if (config.userAgentValue) {
+		url.searchParams.append(
+			config.userAgentHeader ?? USER_AGENT_HEADER,
+			config.userAgentValue
+		);
+	}
 
 	for (const [headerName, value] of Object.entries(headers).sort(
 		([key1], [key2]) => key1.localeCompare(key2)
@@ -149,7 +156,7 @@ export const getPresignedGetObjectUrl = async (
 		url.searchParams.append(headerName, value);
 	}
 	return presignUrl(
-		{ method, url, body: null },
+		{ method, url, body: undefined },
 		{
 			...defaultConfig,
 			...config,
