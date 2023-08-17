@@ -114,6 +114,9 @@ export { InMemoryCache } from './Cache/InMemoryCache';
 export { CacheConfig } from './Cache/types';
 export { ICache } from './Cache/types';
 export { BrowserStorageCache };
+export { BrowserStorageCache as Cache }; // Maintain interoperability with React Native
+
+// Singleton exports
 export {
 	decodeJWT,
 	assertTokenProviderConfig,
@@ -146,9 +149,6 @@ export {
 
 export { AmplifyV6, fetchAuthSession } from './singleton';
 export { LibraryOptions, ResourcesConfig } from './singleton/types';
-
-// Standard `Cache` export to maintain interoperability with React Native
-export { BrowserStorageCache as Cache };
 
 /**
  * @deprecated use named import
