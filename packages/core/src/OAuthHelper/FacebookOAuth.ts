@@ -42,7 +42,7 @@ export class FacebookOAuth {
 	}
 
 	private _refreshFacebookTokenImpl() {
-		let fb = null;
+		let fb: any = null;
 		if (browserOrNode().isBrowser) fb = window['FB'];
 		if (!fb) {
 			const errorMessage = 'no fb sdk available';
@@ -52,7 +52,7 @@ export class FacebookOAuth {
 
 		return new Promise((res, rej) => {
 			fb.getLoginStatus(
-				fbResponse => {
+				(fbResponse: any) => {
 					if (!fbResponse || !fbResponse.authResponse) {
 						const errorMessage =
 							'no response from facebook when refreshing the jwt token';

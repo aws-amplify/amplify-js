@@ -61,7 +61,7 @@ class AmplifyClass {
 			libraryOptions
 		);
 
-		this.Auth.configure(this.resourcesConfig.Auth, this.libraryOptions.Auth);
+		this.Auth.configure(this.resourcesConfig.Auth!, this.libraryOptions.Auth);
 
 		Hub.dispatch(
 			'core',
@@ -107,16 +107,16 @@ function mergeResourceConfig(
 	existingConfig: ResourcesConfig,
 	newConfig: ResourcesConfig
 ): ResourcesConfig {
-	const resultConfig: ResourcesConfig = {};
+	const resultConfig: Record<string, any> = {};
 
 	for (const category of Object.keys(existingConfig)) {
-		resultConfig[category] = existingConfig[category];
+		resultConfig[category] = existingConfig[category as keyof ResourcesConfig];
 	}
 
 	for (const category of Object.keys(newConfig)) {
 		resultConfig[category] = {
 			...resultConfig[category],
-			...newConfig[category],
+			...newConfig[category as keyof ResourcesConfig],
 		};
 	}
 
@@ -127,16 +127,16 @@ function mergeLibraryOptions(
 	existingConfig: LibraryOptions,
 	newConfig: LibraryOptions
 ): LibraryOptions {
-	const resultConfig: LibraryOptions = {};
+	const resultConfig: Record<string, any> = {};
 
 	for (const category of Object.keys(existingConfig)) {
-		resultConfig[category] = existingConfig[category];
+		resultConfig[category] = existingConfig[category as keyof LibraryOptions];
 	}
 
 	for (const category of Object.keys(newConfig)) {
 		resultConfig[category] = {
 			...resultConfig[category],
-			...newConfig[category],
+			...newConfig[category as keyof LibraryOptions],
 		};
 	}
 

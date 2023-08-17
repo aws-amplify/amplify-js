@@ -11,7 +11,7 @@ class MemoryKeyValueStorageClass implements KeyValueStorageInterface {
 		return;
 	}
 
-	async getItem(key: string): Promise<string> {
+	async getItem(key: string): Promise<string | null> {
 		return this.myStorage[key];
 	}
 

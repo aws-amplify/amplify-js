@@ -3,6 +3,7 @@
 
 import { ConsoleLogger as Logger } from '../Logger';
 import { AmplifyV6 } from '../singleton';
+import { I18nOptions } from './types';
 
 const logger = new Logger('I18n');
 
@@ -15,12 +16,17 @@ export class I18n {
 	/**
 	 * @private
 	 */
-	_lang = null;
+	_options: I18nOptions | null = null;
 
 	/**
 	 * @private
 	 */
-	_dict = {};
+	_lang?: string | null = null;
+
+	/**
+	 * @private
+	 */
+	_dict: Record<string, any> = {};
 
 	/**
 	 * @constructor
@@ -74,9 +80,7 @@ export class I18n {
 	 * 
 	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
-	get(key, defVal = undefined) {
-		this.setDefaultLanguage();
-
+	get(key: string, defVal: string | undefined = undefined) {
 		if (!this._lang) {
 			return typeof defVal !== 'undefined' ? defVal : key;
 		}
@@ -106,7 +110,7 @@ export class I18n {
 	 * 
 	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
-	getByLanguage(key, language, defVal = null) {
+	getByLanguage(key: string, language: string, defVal: string | null = null) {
 		if (!language) {
 			return defVal;
 		}
@@ -127,7 +131,10 @@ export class I18n {
 	 * 
 	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
-	putVocabulariesForLanguage(language, vocabularies) {
+	putVocabulariesForLanguage(
+		language: string,
+		vocabularies: Record<string, any>
+	) {
 		let lang_dict = this._dict[language];
 		if (!lang_dict) {
 			lang_dict = this._dict[language] = {};
@@ -143,7 +150,7 @@ export class I18n {
 	 * 
 	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
-	putVocabularies(vocabularies) {
+	putVocabularies(vocabularies: Record<string, any>) {
 		Object.keys(vocabularies).map(key => {
 			this.putVocabulariesForLanguage(key, vocabularies[key]);
 		});

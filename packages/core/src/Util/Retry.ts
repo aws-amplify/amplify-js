@@ -37,7 +37,7 @@ export async function retry<T>(
 		let wakeUp: any = () => {}; // will be replaced with a resolver()
 
 		// used after the loop if terminated while waiting for a timer.
-		let lastError: Error;
+		let lastError: unknown;
 
 		onTerminate &&
 			onTerminate.then(() => {
@@ -61,6 +61,7 @@ export async function retry<T>(
 			try {
 				return resolve(await functionToRetry(...args));
 			} catch (err) {
+				
 				lastError = err;
 				logger.debug(`error on ${functionToRetry.name}`, err);
 

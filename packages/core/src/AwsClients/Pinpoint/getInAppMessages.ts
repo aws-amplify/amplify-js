@@ -19,7 +19,7 @@ import type {
 export type { GetInAppMessagesInput, GetInAppMessagesOutput };
 
 const getInAppMessagesSerializer = (
-	{ ApplicationId, EndpointId }: GetInAppMessagesInput,
+	{ ApplicationId = '', EndpointId = '' }: GetInAppMessagesInput,
 	endpoint: Endpoint
 ): HttpRequest => {
 	const headers = getSharedHeaders();
