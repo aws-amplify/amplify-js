@@ -6,6 +6,12 @@ import { LibraryOptions, ResourcesConfig } from './types';
 import { AmplifyError } from '../Errors';
 import { FetchAuthSessionOptions } from './Auth/types';
 
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
+
 // TODO(v6): add default AuthTokenStore for each platform
 
 class AmplifyClass {
@@ -69,7 +75,8 @@ class AmplifyClass {
 				event: 'configure',
 				data: resourcesConfig,
 			},
-			'Configure'
+			'Configure',
+			AMPLIFY_SYMBOL
 		);
 	}
 
