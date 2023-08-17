@@ -12,7 +12,9 @@ export const getRetryDecider =
 	(errorParser: ErrorParser) =>
 	async (response?: HttpResponse, error?: unknown): Promise<boolean> => {
 		const parsedError =
-			(error as Error) ?? (await errorParser(response)) ?? undefined;
+			(error as Error & { code: string }) ??
+			(await errorParser(response)) ??
+			undefined;
 		const errorCode = parsedError?.['code'];
 		const statusCode = response?.statusCode;
 		return (
@@ -51,7 +53,7 @@ const isThrottlingError = (statusCode?: number, errorCode?: string) =>
 	(!!errorCode && THROTTLING_ERROR_CODES.includes(errorCode));
 
 const isConnectionError = (error?: unknown) =>
-	error?.['name'] === 'Network error';
+	(error as Error)?.['name'] === 'Network error';
 
 const isServerSideError = (statusCode?: number, errorCode?: string) =>
 	(!!statusCode && [500, 502, 503, 504].includes(statusCode)) ||
