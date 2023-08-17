@@ -1,10 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger } from '@aws-amplify/core';
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import isEmpty from 'lodash/isEmpty';
-import { AMPLIFY_SYMBOL } from '../../../common';
 import {
 	InAppMessage,
 	InAppMessageAction,
@@ -23,19 +22,6 @@ let eventAttributesMemo = {};
 let eventMetricsMemo = {};
 
 export const logger = new ConsoleLogger('InAppMessaging.AWSPinpointProvider');
-
-export const dispatchInAppMessagingEvent = (
-	event: string,
-	data: any,
-	message?: string
-) => {
-	Hub.dispatch(
-		'inAppMessaging',
-		{ event, data, message },
-		'InAppMessaging',
-		AMPLIFY_SYMBOL
-	);
-};
 
 export const recordAnalyticsEvent = (
 	event: AWSPinpointMessageEvent,
