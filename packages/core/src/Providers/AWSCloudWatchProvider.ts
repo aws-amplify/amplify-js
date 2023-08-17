@@ -531,7 +531,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 function assertsAWSClouldWatchOptions(
 	options?: AWSCloudWatchProviderOptions
 ): asserts options {
-	return asserts(!(options === undefined), {
+	return asserts(options !== undefined, {
 		name: AWS_CLOUD_WATCH_PROVIDER_OPTIONS_EXCEPTION,
 		message: 'AWSCloudWatchProviderOptions cannot be undefined',
 	});

@@ -53,7 +53,7 @@ export class ServiceWorkerClass {
 	 * Get the currently active service worker
 	 */
 	get serviceWorker(): ServiceWorker {
-		asserts(!(this._serviceWorker === undefined), {
+		asserts(this._serviceWorker !== undefined, {
 			name: SERVICE_WORKER_EXCEPTION,
 			message: 'Service Worker instance is undefined',
 		});
@@ -130,16 +130,18 @@ export class ServiceWorkerClass {
 	 *  - reject(Error)
 	 */
 	enablePush(publicKey: string) {
-		asserts(!(this._registration === undefined), {
+		asserts(this._registration !== undefined, {
 			name: SERVICE_WORKER_EXCEPTION,
 			message: 'Service Worker registration is undefined',
 		});
 		this._publicKey = publicKey;
 		return new Promise((resolve, reject) => {
 			if (browserOrNode().isBrowser) {
-				// using bang operator as compiler is not picking up the assertion function
-				// defined above
-				this._registration!.pushManager.getSubscription().then(subscription => {
+				asserts(this._registration !== undefined, {
+					name: SERVICE_WORKER_EXCEPTION,
+					message: 'Service Worker registration is undefined',
+				});
+				this._registration.pushManager.getSubscription().then(subscription => {
 					if (subscription) {
 						this._subscription = subscription;
 						this._logger.debug(
