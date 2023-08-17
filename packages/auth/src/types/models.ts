@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthResetPasswordStep, AuthSignInStep, AuthSignUpStep } from './enums';
+import {
+	AuthResetPasswordStep,
+	AuthSignInStep,
+	AuthSignUpStep,
+	AuthUpdateAttributeStep,
+} from './enums';
 
 /**
  * Additional data that may be returned from Auth APIs.
@@ -81,7 +86,7 @@ export type ResetPasswordStep = {
 	signInStep: AuthSignInStep.RESET_PASSWORD;
 };
 
-export type DoneStep = {
+export type DoneSignInStep = {
 	signInStep: AuthSignInStep.DONE;
 };
 
@@ -94,7 +99,7 @@ export type AuthNextSignInStep<UserAttributeKey extends AuthUserAttributeKey> =
 	| ContinueSignInWithTOTPSetup
 	| ConfirmSignUpStep
 	| ResetPasswordStep
-	| DoneStep;
+	| DoneSignInStep;
 
 export type AuthStandardAttributeKey =
 	| 'address'
@@ -132,8 +137,6 @@ export type AuthUserAttribute<
  */
 export type AuthUserAttributeKey = AuthStandardAttributeKey | AnyAttribute;
 
-export type GetAttributeKey<T> = T extends string ? T : string;
-
 /**
  * Data encapsulating the next step in the Sign Up process
  */
@@ -143,3 +146,18 @@ export type AuthNextSignUpStep<UserAttributeKey extends AuthUserAttributeKey> =
 		additionalInfo?: AdditionalInfo;
 		codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
 	};
+
+export type ConfirmAttributeWithCodeAttributeStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = {
+	updateAttributeStep: AuthUpdateAttributeStep.CONFIRM_ATTRIBUTE_WITH_CODE;
+	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
+};
+
+export type DoneAttributeStep = {
+	updateAttributeStep: AuthUpdateAttributeStep.DONE;
+};
+
+export type AuthNextUpdateAttributeStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = ConfirmAttributeWithCodeAttributeStep<UserAttributeKey> | DoneAttributeStep;
