@@ -87,8 +87,3 @@ export type AmplifyChannelMap<
 	channel: Channel | RegExp;
 	eventData: EventDataMap;
 };
-
-export type LegacyCallback<
-	Channel extends string | RegExp = string | RegExp,
-	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
-> = { onHubCapsule: HubCallback<Channel, EventData> };

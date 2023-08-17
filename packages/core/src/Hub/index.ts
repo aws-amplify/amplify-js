@@ -12,19 +12,9 @@ import {
 	HubPayload,
 	IListener,
 	IPattern,
-	LegacyCallback,
 } from './types';
 
 const logger = new Logger('Hub');
-
-function isLegacyCallback<
-	Channel extends string | RegExp = string | RegExp,
-	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
->(callback: any): callback is LegacyCallback<Channel, EventData> {
-	return (
-		(<LegacyCallback<Channel, EventData>>callback).onHubCapsule !== undefined
-	);
-}
 
 export class HubClass {
 	name: string;
@@ -154,13 +144,8 @@ export class HubClass {
 		listenerName?: string
 	): () => void {
 		let cb: GetHubCallBack<Channel, ChannelMap['eventData']>;
-		// Check for legacy onHubCapsule callback for backwards compatibility
-		if (isLegacyCallback(callback)) {
-			logger.warn(
-				`WARNING onHubCapsule is Deprecated. Please pass in a callback.`
-			);
-			cb = callback.onHubCapsule.bind(callback);
-		} else if (typeof callback !== 'function') {
+
+		if (typeof callback !== 'function') {
 			throw new Error('No callback supplied to Hub');
 		} else {
 			cb = callback;
