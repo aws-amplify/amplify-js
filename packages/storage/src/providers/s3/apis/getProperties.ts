@@ -18,7 +18,7 @@ import {
  *
  * @param {StorageOperationRequest} req The request to make an API call.
  * @returns {Promise<S3GetPropertiesResult>} A promise that resolves the properties.
- * @throws A {@link GetPropertiesException} when the underlying S3 service returned error.
+ * @throws A {@link S3Exception} when the underlying S3 service returned error.
  * @throws A {@link StorageValidationErrorCode} when API call parameters are invalid.
  */
 export const getProperties = async function (
