@@ -25,6 +25,7 @@ export {
 	AWSCredentialsAndIdentityIdProvider,
 	AWSCredentialsAndIdentityId,
 	Identity,
+	OAuthConfig,
 } from './singleton/Auth/types';
 export {
 	AuthConfig,
