@@ -14,7 +14,8 @@ export {
 	AmplifyError,
 	AmplifyErrorString,
 } from './Errors';
-export { Hub, HubCapsule, HubCallback, HubPayload } from './Hub';
+export { Hub } from './Hub';
+export { HubCapsule, HubCallback, HubPayload } from './Hub/types';
 export { I18n } from './I18n';
 export {
 	browserOrNode,
