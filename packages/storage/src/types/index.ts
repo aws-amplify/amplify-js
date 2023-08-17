@@ -17,6 +17,7 @@ export {
 	StorageUploadDataParameter,
 	StorageOptions,
 	StorageUploadFileParameter, // TODO: open question - should we export this?
+	StorageRemoveOptions,
 } from './params';
 export {
 	StorageItem,
@@ -24,4 +25,5 @@ export {
 	StorageDownloadDataResult,
 	StorageGetUrlResult,
 	StorageUploadResult,
+	StorageRemoveResult,
 } from './results';

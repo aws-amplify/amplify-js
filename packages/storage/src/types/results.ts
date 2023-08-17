@@ -50,6 +50,10 @@ export type StorageUploadResult = {
 	key: string;
 };
 
+export type StorageRemoveResult = {
+	key: string;
+};
+
 export type StorageListResult<Item extends StorageItem> = {
 	items: Item[];
 };
