@@ -246,7 +246,7 @@ describe('Session tests', () => {
 
 		const session = await Amplify.Auth.fetchAuthSession();
 
-		expect(session.tokens).toEqual(null);
+		expect(session.tokens).toBeUndefined();
 
 		expect(session.identityId).toBe('identityIdValue');
 

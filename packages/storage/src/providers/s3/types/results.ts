@@ -6,6 +6,7 @@ import {
 	StorageGetUrlResult,
 	StorageItem,
 	StorageUploadResult,
+	StorageListResult,
 } from '../../../types';
 
 export interface S3Item extends StorageItem {
@@ -30,3 +31,11 @@ export type S3UploadDataResult = StorageUploadResult;
 export type S3UploadFileResult = StorageUploadResult;
 
 export type S3GetPropertiesResult = S3Item;
+
+export type S3ListOutputItem = S3Item;
+
+export type S3ListAllResult = StorageListResult<S3Item>;
+
+export type S3ListPaginateResult = StorageListResult<S3Item> & {
+	nextToken?: string;
+};

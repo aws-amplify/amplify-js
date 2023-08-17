@@ -38,7 +38,7 @@ export const signingMiddleware = ({
 	service,
 	uriEscapePath = true,
 }: SigningOptions) => {
-	let currentSystemClockOffset;
+	let currentSystemClockOffset: number;
 	return (next: MiddlewareHandler<HttpRequest, HttpResponse>) =>
 		async function signingMiddleware(request: HttpRequest) {
 			currentSystemClockOffset = currentSystemClockOffset ?? 0;

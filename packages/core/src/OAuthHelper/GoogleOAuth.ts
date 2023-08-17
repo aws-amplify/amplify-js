@@ -43,7 +43,7 @@ export class GoogleOAuth {
 	}
 
 	private _refreshGoogleTokenImpl() {
-		let ga = null;
+		let ga: any = null;
 		if (browserOrNode().isBrowser)
 			ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
 		if (!ga) {
@@ -53,7 +53,7 @@ export class GoogleOAuth {
 
 		return new Promise((res, rej) => {
 			ga.getAuthInstance()
-				.then(googleAuth => {
+				.then((googleAuth: any) => {
 					if (!googleAuth) {
 						logger.debug('google Auth undefined');
 						rej(new NonRetryableError('google Auth undefined'));
@@ -65,12 +65,15 @@ export class GoogleOAuth {
 						logger.debug('refreshing the google access token');
 						googleUser
 							.reloadAuthResponse()
-							.then(authResponse => {
+							.then((authResponse: any) => {
 								const { id_token, expires_at } = authResponse;
 								res({ token: id_token, expires_at });
 							})
-							.catch(err => {
-								if (err && err.error === 'network_error') {
+							.catch((err: unknown) => {
+								if (
+									err &&
+									(err as { error: string }).error === 'network_error'
+								) {
 									// Not using NonRetryableError so handler will be retried
 									rej('Network error reloading google auth response');
 								} else {
@@ -85,7 +88,7 @@ export class GoogleOAuth {
 						rej(new NonRetryableError('User is not signed in with Google'));
 					}
 				})
-				.catch(err => {
+				.catch((err: unknown) => {
 					logger.debug('Failed to refresh google token', err);
 					rej(new NonRetryableError('Failed to refresh google token'));
 				});

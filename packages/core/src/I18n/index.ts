@@ -4,10 +4,14 @@
 import { I18n as I18nClass } from './I18n';
 
 import { ConsoleLogger as Logger } from '../Logger';
+import { I18nOptions } from './types';
+import { asserts } from '../Util/errors/AssertError';
+import { I18N_EXCEPTION } from '../constants';
 
 const logger = new Logger('I18n');
 
-let _i18n = null;
+let _config: I18nOptions = { language: null };
+let _i18n: I18nClass | null = null;
 
 /**
  * Export I18n APIs
@@ -15,6 +19,25 @@ let _i18n = null;
  * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
  */
 export class I18n {
+	/**
+	 * @static
+	 * @method
+	 * Configure I18n part
+	 * @param {Object} config - Configuration of the I18n
+	 */
+	static configure(config: Record<string, any>) {
+		logger.debug('configure I18n');
+		if (!config) {
+			return _config;
+		}
+
+		_config = Object.assign({}, _config, config.I18n || config);
+
+		I18n.createInstance();
+
+		return _config;
+	}
+
 	static getModuleName() {
 		return 'I18n';
 	}
@@ -41,9 +64,12 @@ export class I18n {
 	 * 
 	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
-	static setLanguage(lang) {
+	static setLanguage(lang: string) {
 		I18n.checkConfig();
-
+		asserts(!!_i18n, {
+			name: I18N_EXCEPTION,
+			message: 'I18N is not configured',
+		});
 		return _i18n.setLanguage(lang);
 	}
 
@@ -55,10 +81,14 @@ export class I18n {
 	 * 
 	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
-	static get(key, defVal?) {
+	static get(key: string, defVal?: string) {
 		if (!I18n.checkConfig()) {
 			return typeof defVal === 'undefined' ? key : defVal;
 		}
+		asserts(!!_i18n, {
+			name: I18N_EXCEPTION,
+			message: 'I18N is not configured',
+		});
 
 		return _i18n.get(key, defVal);
 	}
@@ -72,8 +102,15 @@ export class I18n {
 	 * 
 	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
-	static putVocabulariesForLanguage(language, vocabularies) {
+	static putVocabulariesForLanguage(
+		language: string,
+		vocabularies: Record<string, string>
+	) {
 		I18n.checkConfig();
+		asserts(!!_i18n, {
+			name: I18N_EXCEPTION,
+			message: 'I18N is not configured',
+		});
 
 		return _i18n.putVocabulariesForLanguage(language, vocabularies);
 	}
@@ -87,8 +124,12 @@ export class I18n {
 	 * 
 	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
-	static putVocabularies(vocabularies) {
+	static putVocabularies(vocabularies: Record<string, string>) {
 		I18n.checkConfig();
+		asserts(!!_i18n, {
+			name: I18N_EXCEPTION,
+			message: 'I18N is not configured',
+		});
 
 		return _i18n.putVocabularies(vocabularies);
 	}

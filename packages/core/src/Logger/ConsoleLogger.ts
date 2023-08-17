@@ -6,7 +6,7 @@ import { LoggingProvider } from '../types';
 import { AWS_CLOUDWATCH_CATEGORY } from '../Util/Constants';
 import { Logger } from './logger-interface';
 
-const LOG_LEVELS = {
+const LOG_LEVELS: Record<string, number> = {
 	VERBOSE: 1,
 	DEBUG: 2,
 	INFO: 3,
@@ -30,7 +30,7 @@ export class ConsoleLogger implements Logger {
 	name: string;
 	level: LOG_TYPE | string;
 	private _pluggables: LoggingProvider[];
-	private _config: object;
+	private _config?: object;
 
 	/**
 	 * @constructor
@@ -44,7 +44,7 @@ export class ConsoleLogger implements Logger {
 
 	static LOG_LEVEL = null;
 
-	_padding(n) {
+	_padding(n: number) {
 		return n < 10 ? '0' + n : '' + n;
 	}
 
@@ -74,7 +74,7 @@ export class ConsoleLogger implements Logger {
 	 * @param {LOG_TYPE|string} type - log type, default INFO
 	 * @param {string|object} msg - Logging message or object
 	 */
-	_log(type: LOG_TYPE | string, ...msg) {
+	_log(type: LOG_TYPE | string, ...msg: any) {
 		let logger_level_name = this.level;
 		if (ConsoleLogger.LOG_LEVEL) {
 			logger_level_name = ConsoleLogger.LOG_LEVEL;
@@ -130,7 +130,7 @@ export class ConsoleLogger implements Logger {
 	 * @memeberof Logger
 	 * @param {string|object} msg - Logging message or object
 	 */
-	log(...msg) {
+	log(...msg: any) {
 		this._log(LOG_TYPE.INFO, ...msg);
 	}
 
@@ -140,7 +140,7 @@ export class ConsoleLogger implements Logger {
 	 * @memeberof Logger
 	 * @param {string|object} msg - Logging message or object
 	 */
-	info(...msg) {
+	info(...msg: any) {
 		this._log(LOG_TYPE.INFO, ...msg);
 	}
 
@@ -150,7 +150,7 @@ export class ConsoleLogger implements Logger {
 	 * @memeberof Logger
 	 * @param {string|object} msg - Logging message or object
 	 */
-	warn(...msg) {
+	warn(...msg: any) {
 		this._log(LOG_TYPE.WARN, ...msg);
 	}
 
@@ -160,7 +160,7 @@ export class ConsoleLogger implements Logger {
 	 * @memeberof Logger
 	 * @param {string|object} msg - Logging message or object
 	 */
-	error(...msg) {
+	error(...msg: any) {
 		this._log(LOG_TYPE.ERROR, ...msg);
 	}
 
@@ -170,7 +170,7 @@ export class ConsoleLogger implements Logger {
 	 * @memeberof Logger
 	 * @param {string|object} msg - Logging message or object
 	 */
-	debug(...msg) {
+	debug(...msg: any) {
 		this._log(LOG_TYPE.DEBUG, ...msg);
 	}
 
@@ -180,7 +180,7 @@ export class ConsoleLogger implements Logger {
 	 * @memeberof Logger
 	 * @param {string|object} msg - Logging message or object
 	 */
-	verbose(...msg) {
+	verbose(...msg: any) {
 		this._log(LOG_TYPE.VERBOSE, ...msg);
 	}
 

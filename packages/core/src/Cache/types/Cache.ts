@@ -35,22 +35,22 @@ export interface ICache {
  */
 export interface CacheConfig {
 	/** Prepend to key to avoid conflicts */
-	keyPrefix?: string;
+	keyPrefix: string;
 
 	/** Cache capacity, in bytes */
-	capacityInBytes?: number;
+	capacityInBytes: number;
 
 	/** Max size of one item */
-	itemMaxSize?: number;
+	itemMaxSize: number;
 
 	/** Time to live, in milliseconds */
-	defaultTTL?: number;
+	defaultTTL: number;
 
 	/** Warn when over threshold percentage of capacity, maximum 1 */
-	warningThreshold?: number;
+	warningThreshold: number;
 
 	/** default priority number put on cached items */
-	defaultPriority?: number;
+	defaultPriority: number;
 
 	storage?: Storage;
 
