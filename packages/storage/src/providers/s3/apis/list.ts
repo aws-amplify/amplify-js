@@ -86,10 +86,9 @@ export const list: S3ListApi = async (
 		ContinuationToken:
 			req?.options?.listAll === true ? undefined : req.options?.nextToken,
 	};
-	const listResult = listAll
+	  return listAll
 		? await _listAll(listConfig, listParams)
 		: await _list(listConfig, listParams);
-	return listResult;
 };
 
 const _listAll = async (
