@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { asserts } from '../../Util/errors/AssertError';
+import { CACHE_LIST_EXCEPTION } from '../../constants';
+
 class DoubleLinkedNode {
 	key: string;
 	prevNode: DoubleLinkedNode | null;
@@ -27,7 +30,7 @@ class DoubleLinkedNode {
 export default class CacheList {
 	private head: DoubleLinkedNode;
 	private tail: DoubleLinkedNode;
-	private hashtable: object;
+	private hashtable: Record<string, any>;
 	private length: number;
 
 	/**
@@ -49,10 +52,14 @@ export default class CacheList {
 	 * @param node
 	 */
 	private insertNodeToHead(node: DoubleLinkedNode) {
-		const tmp: DoubleLinkedNode = this.head.nextNode;
+		const tmp: DoubleLinkedNode | null = this.head.nextNode;
 		this.head.nextNode = node;
 		node.nextNode = tmp;
 		node.prevNode = this.head;
+		asserts(tmp !== null, {
+			name: CACHE_LIST_EXCEPTION,
+			message: 'previous node is null',
+		});
 		tmp.prevNode = node;
 
 		this.length = this.length + 1;
@@ -64,6 +71,14 @@ export default class CacheList {
 	 * @param node
 	 */
 	private removeNode(node: DoubleLinkedNode): void {
+		asserts(node.prevNode !== null, {
+			name: CACHE_LIST_EXCEPTION,
+			message: 'previous node is null',
+		});
+		asserts(node.nextNode !== null, {
+			name: CACHE_LIST_EXCEPTION,
+			message: 'nextNode node is null',
+		});
 		node.prevNode.nextNode = node.nextNode;
 		node.nextNode.prevNode = node.prevNode;
 
@@ -106,6 +121,10 @@ export default class CacheList {
 	 * @return the LAST Recently Visited key
 	 */
 	public getLastItem(): string {
+		asserts(this.tail.prevNode !== null, {
+			name: CACHE_LIST_EXCEPTION,
+			message: 'previous node is null',
+		});
 		return this.tail.prevNode.key;
 	}
 

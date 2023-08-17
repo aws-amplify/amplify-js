@@ -53,7 +53,7 @@ export function getCurrTime(): number {
 /**
  * check if passed value is an integer
  */
-export function isInteger(value): boolean {
+export function isInteger(value?: number): boolean {
 	if (Number.isInteger) {
 		return Number.isInteger(value);
 	}
@@ -61,7 +61,7 @@ export function isInteger(value): boolean {
 	return _isInteger(value);
 }
 
-function _isInteger(value): boolean {
+function _isInteger(value?: number): boolean {
 	return (
 		typeof value === 'number' && isFinite(value) && Math.floor(value) === value
 	);
@@ -70,7 +70,7 @@ function _isInteger(value): boolean {
 /**
  * provide an object as the in-memory cache
  */
-let store = {};
+let store: Record<string, string> = {};
 export class CacheObject {
 	static clear(): void {
 		store = {};

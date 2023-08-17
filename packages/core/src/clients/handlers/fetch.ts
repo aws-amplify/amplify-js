@@ -32,8 +32,8 @@ export const fetchTransferHandler: TransferHandler<
 		throw e;
 	}
 
-	const responseHeaders = {};
-	resp.headers?.forEach((value, key) => {
+	const responseHeaders: Record<string, string> = {};
+	resp.headers?.forEach((value: string, key: string) => {
 		responseHeaders[key.toLowerCase()] = value;
 	});
 	const httpResponse = {

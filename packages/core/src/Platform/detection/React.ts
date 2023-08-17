@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { documentExists, processExists, windowExists } from './helpers';
+import { documentExists, processExists } from './helpers';
 
 // Tested with react 18.2 - built using Vite
 
 export function reactWebDetect() {
-	const elementKeyPrefixedWithReact = key => {
+	const elementKeyPrefixedWithReact = (key: string) => {
 		return key.startsWith('_react') || key.startsWith('__react');
 	};
-	const elementIsReactEnabled = element => {
+	const elementIsReactEnabled = (element: Element) => {
 		return Object.keys(element).find(elementKeyPrefixedWithReact);
 	};
 	const allElementsWithId = () => Array.from(document.querySelectorAll('[id]'));
@@ -24,3 +24,5 @@ export function reactSSRDetect() {
 		!!Object.keys(process.env).find(key => key.includes('react'))
 	);
 }
+
+// use the some

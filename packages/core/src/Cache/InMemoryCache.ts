@@ -6,6 +6,8 @@ import { CacheList, defaultConfig, getCurrTime, CacheObject } from './Utils';
 import { StorageCache } from './StorageCache';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '../Logger';
+import { asserts } from '../Util/errors/AssertError';
+import { STORAGE_CACHE_EXCEPTION } from '../constants';
 import { getCurrSizeKey } from './Utils/CacheUtils';
 
 const logger = new Logger('InMemoryCache');
@@ -16,13 +18,11 @@ const logger = new Logger('InMemoryCache');
  * @member cacheList - list of keys in the cache with LRU
  * @member curSizeInBytes - current size of the cache
  * @member maxPriority - max of the priority
- * @member cacheSizeLimit - the limit of cache size
  */
 export class InMemoryCacheClass extends StorageCache implements ICache {
 	private cacheList: CacheList[];
 	private curSizeInBytes: number;
 	private maxPriority: number;
-	private cacheSizeLimit: number;
 
 	/**
 	 * initialize the cache
@@ -31,7 +31,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	 */
 	constructor(config?: CacheConfig) {
 		super(config);
-		
+
 		this.cacheList = [];
 		this.curSizeInBytes = 0;
 		this.maxPriority = 5;
@@ -73,6 +73,11 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	 */
 	private _isExpired(key: string): boolean {
 		const text: string | null = CacheObject.getItem(key);
+
+		asserts(text !== null, {
+			name: STORAGE_CACHE_EXCEPTION,
+			message: 'item from storage is null',
+		});
 		const item: CacheItem = JSON.parse(text);
 		if (getCurrTime() >= item.expires) {
 			return true;
@@ -90,9 +95,12 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 		// delete the key from the list
 		this.cacheList[listIdx].removeItem(prefixedKey);
 		// decrease the current size of the cache
-		this._decreaseCurSizeInBytes(
-			JSON.parse(CacheObject.getItem(prefixedKey)).byteSize
-		);
+		const item = CacheObject.getItem(prefixedKey);
+		asserts(item !== null, {
+			name: STORAGE_CACHE_EXCEPTION,
+			message: 'item from storage is null',
+		});
+		this._decreaseCurSizeInBytes(JSON.parse(item).byteSize);
 		// finally remove the item from memory
 		CacheObject.removeItem(prefixedKey);
 	}
@@ -183,7 +191,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 			return;
 		}
 
-		const cacheItemOptions: CacheItemOptions = {
+		const cacheItemOptions = {
 			priority:
 				options && options.priority !== undefined
 					? options.priority
@@ -268,7 +276,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 				this._removeItem(prefixedKey, presentKeyPrio - 1);
 			} else {
 				// if not expired, great, return the value and refresh it
-				ret = CacheObject.getItem(prefixedKey);
+				ret = CacheObject.getItem(prefixedKey) ?? '';
 				const item: CacheItem = JSON.parse(ret);
 				this.cacheList[item.priority - 1].refresh(prefixedKey);
 				return item.data;
