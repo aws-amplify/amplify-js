@@ -20,51 +20,6 @@ describe('Hub', () => {
 		expect(listener).toHaveBeenCalled();
 	});
 
-	test('Legacy config', () => {
-		class MyClass {
-			constructor() {
-				Hub.listen('auth', this, 'MyListener');
-			}
-
-			// Default handler for listening events
-			onHubCapsule = jest.fn(function (capsule) {
-				const { channel, payload } = capsule;
-				if (channel === 'auth') {
-					this.onAuthEvent(payload);
-				}
-			});
-
-			onAuthEvent = jest.fn(function (payload) {
-				// ... your implementation
-			});
-		}
-
-		const listener = new MyClass();
-
-		const loggerSpy = jest.spyOn(Logger.prototype, '_log');
-
-		Hub.listen('auth', listener);
-
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'signOut',
-				data: 'the user has been signed out',
-				message: 'User singout has taken place',
-			},
-			'Auth',
-			Symbol.for('amplify_default')
-		);
-
-		expect(listener.onHubCapsule).toHaveBeenCalled();
-		expect(listener.onAuthEvent).toHaveBeenCalled();
-
-		expect(loggerSpy).toHaveBeenCalledWith(
-			'WARN',
-			'WARNING onHubCapsule is Deprecated. Please pass in a callback.'
-		);
-	});
-
 	test('Protected channel', () => {
 		const listener = jest.fn(() => {});
 		const loggerSpy = jest.spyOn(Logger.prototype, '_log');
