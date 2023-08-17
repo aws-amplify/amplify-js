@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { prefixResolver } from './prefixResolver';
-export { createTransferTask } from './transferTask';
+export { createDownloadTask } from './transferTask';

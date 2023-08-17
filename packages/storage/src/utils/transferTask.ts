@@ -1,27 +1,23 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { TransferTask, TransferTaskState } from '../types/common';
+import { DownloadTask, TransferTaskState } from '../types/common';
 
-type CreateTransferTaskOptions<Result> = {
+type CreateDownloadTaskOptions<Result> = {
 	job: () => Promise<Result>;
 	onCancel: (abortErrorOverwrite?: Error) => void;
-	onPause: () => void;
-	onResume: () => void;
 	abortController?: AbortController;
 };
 
-export const createTransferTask = <Result>({
+export const createDownloadTask = <Result>({
 	job,
 	onCancel,
 	abortController,
-	onPause,
-	onResume,
-}: CreateTransferTaskOptions<Result>): TransferTask<Result> => {
+}: CreateDownloadTaskOptions<Result>): DownloadTask<Result> => {
 	const state = TransferTaskState.IN_PROGRESS;
-	const transferTask = {
+	const downloadTask = {
 		cancel: (abortErrorOverwrite?: Error) => {
-			const { state } = transferTask;
+			const { state } = downloadTask;
 			if (
 				state === TransferTaskState.CANCELED ||
 				state === TransferTaskState.ERROR ||
@@ -29,24 +25,8 @@ export const createTransferTask = <Result>({
 			) {
 				return;
 			}
+			downloadTask.state = TransferTaskState.CANCELED;
 			onCancel(abortErrorOverwrite);
-			transferTask.state = TransferTaskState.CANCELED;
-		},
-		pause: () => {
-			const { state } = transferTask;
-			if (state !== TransferTaskState.IN_PROGRESS) {
-				return;
-			}
-			onPause();
-			transferTask.state = TransferTaskState.PAUSED;
-		},
-		resume: () => {
-			const { state } = transferTask;
-			if (state !== TransferTaskState.PAUSED) {
-				return;
-			}
-			onResume();
-			transferTask.state = TransferTaskState.IN_PROGRESS;
 		},
 		state,
 	};
@@ -54,19 +34,19 @@ export const createTransferTask = <Result>({
 	const wrappedJobPromise = (async () => {
 		try {
 			const result = await job();
-			transferTask.state = TransferTaskState.SUCCESS;
+			downloadTask.state = TransferTaskState.SUCCESS;
 			return result;
 		} catch (e) {
 			if (abortController?.signal.aborted) {
-				transferTask.state = TransferTaskState.CANCELED;
+				downloadTask.state = TransferTaskState.CANCELED;
 				throw abortController.signal.reason ?? e;
 			}
-			transferTask.state = TransferTaskState.ERROR;
+			downloadTask.state = TransferTaskState.ERROR;
 			throw e;
 		}
 	})();
 
-	return Object.assign(transferTask, {
+	return Object.assign(downloadTask, {
 		result: wrappedJobPromise,
-	}) as TransferTask<Result>;
+	});
 };

@@ -10,7 +10,7 @@ import {
 } from '../utils';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { createTransferTask } from '../../../utils/transferTask';
+import { createDownloadTask } from '../../../utils/transferTask';
 import { getObject } from '../../../AwsClients/S3/getObject';
 import { validateS3RequiredParameter } from '../../../AwsClients/S3/utils';
 
@@ -31,14 +31,12 @@ export const downloadData = (
 ): DownloadTask<S3DownloadDataResult> => {
 	const abortController = new AbortController();
 
-	const downloadTask = createTransferTask({
+	const downloadTask = createDownloadTask({
 		job: downloadDataJob(downloadDataRequest, abortController.signal),
 		onCancel: (abortErrorOverwrite?: Error) => {
 			abortController.abort(abortErrorOverwrite);
 		},
 		abortController,
-		onPause: () => {}, // TODO: create no-op function
-		onResume: () => {}, // TODO: create no-op function
 	});
 	return downloadTask;
 };
