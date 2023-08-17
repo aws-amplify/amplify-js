@@ -49,8 +49,8 @@ const deleteObjectDeserializer = async (
 	response: HttpResponse
 ): Promise<DeleteObjectOutput> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		// @ts-expect-error error is always set when statusCode >= 300
+		// error is always set when statusCode >= 300
+		const error = <Error>await parseXmlError(response);
 		throw StorageError.fromServiceError(error, response.statusCode);
 	} else {
 		const content = map(response.headers, {
