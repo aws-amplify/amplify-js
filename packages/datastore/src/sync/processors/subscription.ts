@@ -5,16 +5,14 @@ import { InternalAPI } from '@aws-amplify/api/internals';
 import { InternalAuth } from '@aws-amplify/auth/internals';
 import { Cache } from '@aws-amplify/cache';
 import {
-	Category,
 	ConsoleLogger as Logger,
-	CustomUserAgentDetails,
-	DataStoreAction,
 	Hub,
 	HubCapsule,
 	BackgroundProcessManager,
 } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
+import { userAgentDetailsSubscribe as customUserAgentDetails } from '../constants';
 import {
 	InternalSchema,
 	PersistentModel,
@@ -298,10 +296,6 @@ class SubscriptionProcessor {
 				oidcTokenPayload: { [field: string]: any };
 			let userCredentials = USER_CREDENTIALS.none;
 
-			const customUserAgentDetails: CustomUserAgentDetails = {
-				category: Category.DataStore,
-				action: DataStoreAction.Subscribe,
-			};
 			this.runningProcesses.add(async () => {
 				try {
 					// retrieving current AWS Credentials

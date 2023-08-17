@@ -3,6 +3,7 @@
 import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import Observable from 'zen-observable-ts';
+import { userAgentDetailsGraphQL as customUserAgentDetails } from '../constants';
 import {
 	InternalSchema,
 	ModelInstanceMetadata,
@@ -25,10 +26,7 @@ import {
 } from '../utils';
 import {
 	jitteredExponentialRetry,
-	Category,
 	ConsoleLogger as Logger,
-	CustomUserAgentDetails,
-	DataStoreAction,
 	Hub,
 	NonRetryableError,
 	BackgroundProcessManager,
@@ -42,11 +40,6 @@ const opResultDefaults = {
 };
 
 const logger = new Logger('DataStore');
-
-const customUserAgentDetails: CustomUserAgentDetails = {
-	category: Category.DataStore,
-	action: DataStoreAction.GraphQl,
-};
 
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();

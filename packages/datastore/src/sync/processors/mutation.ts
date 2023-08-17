@@ -3,10 +3,7 @@
 import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import {
-	Category,
 	ConsoleLogger as Logger,
-	CustomUserAgentDetails,
-	DataStoreAction,
 	jitteredBackoff,
 	NonRetryableError,
 	retry,
@@ -14,6 +11,7 @@ import {
 } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { MutationEvent } from '../';
+import { userAgentDetailsGraphQL as customUserAgentDetails } from '../constants';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ExclusiveStorage as Storage } from '../../storage/storage';
 import {
@@ -54,11 +52,6 @@ type MutationProcessorEvent = {
 	modelDefinition: SchemaModel;
 	model: PersistentModel;
 	hasMore: boolean;
-};
-
-const customUserAgentDetails: CustomUserAgentDetails = {
-	category: Category.DataStore,
-	action: DataStoreAction.GraphQl,
 };
 
 class MutationProcessor {
