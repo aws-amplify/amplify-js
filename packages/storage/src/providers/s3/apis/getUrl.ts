@@ -36,7 +36,7 @@ const MAX_URL_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
 export const getUrl = async function (
 	req: StorageDownloadDataRequest<S3GetUrlOptions>
 ): Promise<S3GetUrlResult> {
-	const options = req?.options;
+	const options = req?.options ?? {};
 	const { credentials, identityId } = await resolveCredentials();
 	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
 	const { key, options: { accessLevel = defaultAccessLevel } = {} } = req;
@@ -44,7 +44,16 @@ export const getUrl = async function (
 	if (options?.validateObjectExistence) {
 		await getProperties({ key });
 	}
-	const finalKey = getKeyWithPrefix(accessLevel, identityId, key);
+
+	// TODO[AllanZhengYP]: refactor this to reduce duplication
+	const finalKey = getKeyWithPrefix({
+		accessLevel,
+		targetIdentityId:
+			options.accessLevel === 'protected'
+				? options.targetIdentityId
+				: identityId,
+		key,
+	});
 	const getUrlParams: GetObjectInput = {
 		Bucket: bucket,
 		Key: finalKey,
@@ -65,10 +74,11 @@ export const getUrl = async function (
 	);
 	const awsCredExpiration = credentials?.expiration;
 	// expiresAt is the minimum of credential expiration and url expiration
-	urlExpiration =
-		urlExpiration < awsCredExpiration.getTime()
+	urlExpiration = awsCredExpiration
+		? urlExpiration < awsCredExpiration.getTime()
 			? urlExpiration
-			: awsCredExpiration.getTime();
+			: awsCredExpiration.getTime()
+		: urlExpiration;
 	return {
 		url: await getPresignedGetObjectUrl(getUrlOptions, getUrlParams),
 		expiresAt: new Date(Date.now() + urlExpiration),

@@ -8,6 +8,7 @@ import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '../Logger';
 import { asserts } from '../Util/errors/AssertError';
 import { STORAGE_CACHE_EXCEPTION } from '../constants';
+import { getCurrSizeKey } from './Utils/CacheUtils';
 
 const logger = new Logger('InMemoryCache');
 
@@ -29,11 +30,8 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	 * @param config - the configuration of the cache
 	 */
 	constructor(config?: CacheConfig) {
-		const cacheConfig = config
-			? Object.assign({}, defaultConfig, config)
-			: defaultConfig;
-		super(cacheConfig);
-		logger.debug('now we start!');
+		super(config);
+
 		this.cacheList = [];
 		this.curSizeInBytes = 0;
 		this.maxPriority = 5;
@@ -136,7 +134,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	 * @return true if cache is full
 	 */
 	private _isCacheFull(itemSize: number): boolean {
-		return this.curSizeInBytes + itemSize > this.config.capacityInBytes;
+		return this.curSizeInBytes + itemSize > this.cacheConfig.capacityInBytes;
 	}
 
 	/**
@@ -145,7 +143,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	 * @param key
 	 */
 	private containsKey(key: string): number {
-		const prefixedKey: string = this.config.keyPrefix + key;
+		const prefixedKey: string = this.cacheConfig.keyPrefix + key;
 		for (let i = 0; i < this.maxPriority; i += 1) {
 			if (this.cacheList[i].containsKey(prefixedKey)) {
 				return i + 1;
@@ -178,11 +176,11 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 		value: object | string | number | boolean,
 		options?: CacheItemOptions
 	): void {
-		const prefixedKey: string = this.config.keyPrefix + key;
+		const prefixedKey: string = this.cacheConfig.keyPrefix + key;
 		// invalid keys
 		if (
-			prefixedKey === this.config.keyPrefix ||
-			prefixedKey === this.cacheCurSizeKey
+			prefixedKey === this.cacheConfig.keyPrefix ||
+			prefixedKey === getCurrSizeKey(this.cacheConfig.keyPrefix)
 		) {
 			logger.warn(`Invalid key: should not be empty or 'CurSize'`);
 			return;
@@ -197,11 +195,11 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 			priority:
 				options && options.priority !== undefined
 					? options.priority
-					: this.config.defaultPriority,
+					: this.cacheConfig.defaultPriority,
 			expires:
 				options && options.expires !== undefined
 					? options.expires
-					: this.config.defaultTTL + getCurrTime(),
+					: this.cacheConfig.defaultTTL + getCurrTime(),
 		};
 
 		if (cacheItemOptions.priority < 1 || cacheItemOptions.priority > 5) {
@@ -218,7 +216,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 		);
 
 		// check wether this item is too big;
-		if (item.byteSize > this.config.itemMaxSize) {
+		if (item.byteSize > this.cacheConfig.itemMaxSize) {
 			logger.warn(
 				`Item with key: ${key} you are trying to put into is too big!`
 			);
@@ -260,11 +258,11 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	 */
 	public getItem(key: string, options?: CacheItemOptions): any {
 		let ret: string | null = null;
-		const prefixedKey: string = this.config.keyPrefix + key;
+		const prefixedKey: string = this.cacheConfig.keyPrefix + key;
 
 		if (
-			prefixedKey === this.config.keyPrefix ||
-			prefixedKey === this.cacheCurSizeKey
+			prefixedKey === this.cacheConfig.keyPrefix ||
+			prefixedKey === getCurrSizeKey(this.cacheConfig.keyPrefix)
 		) {
 			logger.warn(`Invalid key: should not be empty or 'CurSize'`);
 			return null;
@@ -301,7 +299,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	 * @param key - the key of the item
 	 */
 	public removeItem(key: string): void {
-		const prefixedKey: string = this.config.keyPrefix + key;
+		const prefixedKey: string = this.cacheConfig.keyPrefix + key;
 
 		// check if the key is in the cache
 		const presentKeyPrio: number = this.containsKey(key);
@@ -328,7 +326,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 		const keys: string[] = [];
 		for (let i = 0; i < this.maxPriority; i += 1) {
 			for (const key of this.cacheList[i].getKeys()) {
-				keys.push(key.substring(this.config.keyPrefix.length));
+				keys.push(key.substring(this.cacheConfig.keyPrefix.length));
 			}
 		}
 

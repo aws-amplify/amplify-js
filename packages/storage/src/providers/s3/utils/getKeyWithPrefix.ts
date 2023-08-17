@@ -4,11 +4,17 @@
 import { AmplifyV6, StorageAccessLevel } from '@aws-amplify/core';
 import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
 
-export function getKeyWithPrefix(
-	accessLevel: StorageAccessLevel,
-	targetIdentityId: string,
-	key: string
-) {
+type GetKeyWithPrefixOptions = {
+	accessLevel: StorageAccessLevel;
+	targetIdentityId?: string;
+	key: string;
+};
+
+export function getKeyWithPrefix({
+	accessLevel,
+	targetIdentityId,
+	key,
+}: GetKeyWithPrefixOptions) {
 	const { prefixResolver = defaultPrefixResolver } =
 		AmplifyV6.libraryOptions?.Storage ?? {};
 	return (

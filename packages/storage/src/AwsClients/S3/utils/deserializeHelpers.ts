@@ -4,14 +4,14 @@
 import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
 
 type PropertyNameWithStringValue = string;
-type PropertyNameWithSubsequentDeserializer<T> = [string, (any) => T];
+type PropertyNameWithSubsequentDeserializer<T> = [string, (arg: any) => T];
 type Instruction<T> =
 	| PropertyNameWithStringValue
 	| PropertyNameWithSubsequentDeserializer<T>;
 
 type InferInstructionResultType<T extends Instruction<any>> =
 	| (T extends PropertyNameWithSubsequentDeserializer<infer R> ? R : string)
-	| undefined;
+	| never;
 
 /**
  * Maps an object to a new object using the provided instructions.
@@ -70,9 +70,8 @@ export const map = <Instructions extends { [key: string]: Instruction<any> }>(
  *
  * @internal
  */
-export const deserializeNumber = (value?: string): number => {
-	return value ? Number(value) : undefined;
-};
+export const deserializeNumber = (value?: string): number | undefined =>
+	value ? Number(value) : undefined;
 
 /**
  * Deserializes a string to a boolean. Returns undefined if input is undefined. Returns true if input is 'true',
@@ -111,7 +110,7 @@ export const emptyArrayGuard = <T extends Array<any>>(
 	deserializer: (value: any[]) => T
 ): T => {
 	if (value === '') {
-		return [] as T;
+		return [] as any as T;
 	}
 	const valueArray = (Array.isArray(value) ? value : [value]).filter(
 		e => e != null
