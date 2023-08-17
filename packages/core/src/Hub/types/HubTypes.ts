@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { NotificationsHubEventData } from './AnalyticsTypes';
 import { AuthHubEventData } from './AuthTypes';
 
 export interface IListener<
@@ -62,7 +61,7 @@ export type AmplifyHubCallbackMap<Channel extends AmplifyChannel> = {
 	interactions: HubCallback<Channel>;
 	pubsub: HubCallback<Channel>;
 	datastore: HubCallback<Channel>;
-	notifications: HubCallback<Channel, NotificationsHubEventData>;
+	notifications: HubCallback<Channel>;
 };
 
 export type GetHubCallBack<
