@@ -1,11 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
-import type { ForgotPasswordCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
+import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { resetPasswordClient } from '../utils/clients/ResetPasswordClient';
 import {
 	AuthResetPasswordStep,
 	AuthStandardAttributeKey,
@@ -14,7 +12,23 @@ import {
 	ResetPasswordResult,
 } from '../../../types';
 import { CognitoResetPasswordOptions, CustomAttribute } from '../types';
+import { forgotPassword } from '../utils/clients/CognitoIdentityProvider';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { ForgotPasswordException } from '../../cognito/types/errors';
 
+/**
+ * Resets a user's password.
+ *
+ * @param resetPasswordRequest - The ResetPasswordRequest object.
+ * @throws -{@link ForgotPasswordException }
+ * Thrown due to an invalid confirmation code or password.
+ * @throws -{@link AuthValidationErrorCode }
+ * Thrown due to an empty username.
+ *
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ *
+ * @returns ResetPasswordResult
+ **/
 export async function resetPassword(
 	resetPasswordRequest: ResetPasswordRequest<CognitoResetPasswordOptions>
 ): Promise<ResetPasswordResult<AuthStandardAttributeKey | CustomAttribute>> {
@@ -24,12 +38,18 @@ export async function resetPassword(
 		AuthValidationErrorCode.EmptyResetPasswordUsername
 	);
 	const authConfig = AmplifyV6.getConfig().Auth;
-	const res: ForgotPasswordCommandOutput = await resetPasswordClient({
-		Username: username,
-		ClientMetadata:
-			resetPasswordRequest.options?.serviceOptions?.clientMetadata ??
-			authConfig?.clientMetadata,
-	});
+	assertTokenProviderConfig(authConfig);
+	const clientMetadata =
+		resetPasswordRequest.options?.serviceOptions?.clientMetadata ??
+		authConfig.clientMetadata;
+	const res = await forgotPassword(
+		{ region: getRegion(authConfig.userPoolId) },
+		{
+			Username: username,
+			ClientMetadata: clientMetadata,
+			ClientId: authConfig.userPoolWebClientId,
+		}
+	);
 	const codeDeliveryDetails = res.CodeDeliveryDetails;
 	return {
 		isPasswordReset: false,

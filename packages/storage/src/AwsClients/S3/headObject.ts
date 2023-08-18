@@ -4,6 +4,7 @@
 import {
 	Endpoint,
 	HttpRequest,
+	HttpResponse,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
@@ -14,6 +15,7 @@ import type {
 	HeadObjectCommandOutput,
 } from './types';
 import {
+	validateS3RequiredParameter,
 	deserializeMetadata,
 	deserializeNumber,
 	deserializeTimestamp,
@@ -51,6 +53,7 @@ const headObjectSerializer = async (
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
 	const url = new URL(endpoint.url.toString());
+	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'HEAD',
@@ -60,10 +63,11 @@ const headObjectSerializer = async (
 };
 
 const headObjectDeserializer = async (
-	response: CompatibleHttpResponse
+	response: HttpResponse
 ): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseXmlError(response);
+		// @ts-expect-error error is always set when statusCode >= 300
 		throw StorageError.fromServiceError(error, response.statusCode);
 	} else {
 		const contents = {

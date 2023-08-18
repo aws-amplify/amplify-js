@@ -77,7 +77,7 @@ export const getSharedHeaders = (operation: string): Headers => ({
 export const buildHttpRpcRequest = (
 	{ url }: Endpoint,
 	headers: Headers,
-	body: any
+	body: string
 ): HttpRequest => ({
 	headers,
 	url,

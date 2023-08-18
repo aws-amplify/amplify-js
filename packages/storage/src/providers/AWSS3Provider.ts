@@ -7,7 +7,6 @@ import {
 	StorageHelper,
 	Hub,
 	parseAWSExports,
-	StorageAction,
 	AmplifyV6,
 } from '@aws-amplify/core';
 import {
@@ -53,6 +52,7 @@ import {
 	S3ProviderGetPropertiesConfig,
 	S3ProviderGetPropertiesOutput,
 } from '../types';
+import { ConfigType } from '../types/Provider';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
 import {
@@ -77,7 +77,7 @@ interface AddTaskInput {
 	emitter: events.EventEmitter;
 	key: string;
 	s3Config: S3ResolvedConfig;
-	params?: PutObjectInput;
+	params: PutObjectInput;
 }
 
 /**
@@ -124,7 +124,7 @@ export class AWSS3Provider implements StorageProvider {
 	 * @param {Object} config - Configuration of the Storage
 	 * @return {Object} - Current configuration
 	 */
-	public configure(config?): object {
+	public configure(config?: ConfigType): object {
 		logger.debug('configure Storage', config);
 		if (!config) return this._config;
 		const amplifyConfig = parseAWSExports(config);
@@ -372,7 +372,7 @@ export class AWSS3Provider implements StorageProvider {
 		const {
 			download,
 			expires,
-			track,
+			track = false,
 			progressCallback,
 			validateObjectExistence = false,
 		} = opt;
@@ -411,7 +411,9 @@ export class AWSS3Provider implements StorageProvider {
 					'download',
 					{ method: 'get', result: 'success' },
 					{
-						fileSize: Number(response.Body['size'] || response.Body['length']),
+						fileSize: Number(
+							response.Body?.['size'] ?? (response.Body as any)?.['length']
+						),
 					},
 					`Download success for ${key}`
 				);
@@ -425,7 +427,7 @@ export class AWSS3Provider implements StorageProvider {
 						result: 'failed',
 					},
 					null,
-					`Download failed with ${error.message}`
+					`Download failed with ${(error as any)?.message}`
 				);
 				throw error;
 			}
@@ -434,7 +436,7 @@ export class AWSS3Provider implements StorageProvider {
 			try {
 				await headObject(s3Config, params);
 			} catch (error) {
-				if (error.$metadata?.httpStatusCode === 404) {
+				if ((error as any)?.$metadata?.httpStatusCode === 404) {
 					dispatchStorageEvent(
 						track,
 						'getSignedUrl',
@@ -529,11 +531,11 @@ export class AWSS3Provider implements StorageProvider {
 		try {
 			const response = await headObject(s3Config, params);
 			const getPropertiesResponse: S3ProviderGetPropertiesOutput = {
-				contentLength: response.ContentLength,
-				contentType: response.ContentType,
-				eTag: response.ETag,
-				lastModified: response.LastModified,
-				metadata: response.Metadata,
+				contentLength: response.ContentLength!,
+				contentType: response.ContentType!,
+				eTag: response.ETag!,
+				lastModified: response.LastModified!,
+				metadata: response.Metadata!,
 			};
 			dispatchStorageEvent(
 				track,
@@ -544,7 +546,7 @@ export class AWSS3Provider implements StorageProvider {
 			);
 			return getPropertiesResponse;
 		} catch (error) {
-			if (error.$metadata?.httpStatusCode === 404) {
+			if ((error as any)?.$metadata?.httpStatusCode === 404) {
 				dispatchStorageEvent(
 					track,
 					'getProperties',
@@ -576,7 +578,7 @@ export class AWSS3Provider implements StorageProvider {
 		userAgentValue?: string
 	): S3ProviderPutOutput<T> {
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, track, progressCallback, level, resumable } = opt;
+		const { bucket, track = false, progressCallback, level, resumable } = opt;
 		const {
 			contentType,
 			contentDisposition,
@@ -650,12 +652,12 @@ export class AWSS3Provider implements StorageProvider {
 		if (resumable === true) {
 			const s3Config = loadS3Config({ ...opt, userAgentValue });
 			const addTaskInput: AddTaskInput = {
-				bucket,
+				bucket: bucket!,
 				key,
 				s3Config,
 				file: object as Blob,
 				emitter,
-				accessLevel: level,
+				accessLevel: level!,
 				params,
 			};
 			// explicitly asserting the type here as Typescript could not infer that resumable is of type true
@@ -720,7 +722,7 @@ export class AWSS3Provider implements StorageProvider {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
 		}
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, track } = opt;
+		const { bucket, track = false } = opt;
 
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
@@ -770,14 +772,14 @@ export class AWSS3Provider implements StorageProvider {
 		if (response && response.Contents) {
 			list.results = response.Contents.map(item => {
 				return {
-					key: item.Key.substr(prefix.length),
+					key: item.Key!.substr(prefix.length),
 					eTag: item.ETag,
 					lastModified: item.LastModified,
 					size: item.Size,
 				};
 			});
 			list.nextToken = response.NextContinuationToken;
-			list.hasNextToken = response.IsTruncated;
+			list.hasNextToken = response.IsTruncated!;
 		}
 		return list;
 	}
@@ -854,7 +856,7 @@ export class AWSS3Provider implements StorageProvider {
 				'list',
 				{ method: 'list', result: 'failed' },
 				null,
-				`Listing items failed: ${error.message}`
+				`Listing items failed: ${(error as any)?.message}`
 			);
 			throw error;
 		}

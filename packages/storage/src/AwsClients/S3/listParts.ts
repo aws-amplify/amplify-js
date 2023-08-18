@@ -23,6 +23,7 @@ import {
 	s3TransferHandler,
 	deserializeNumber,
 	serializePathnameObjectKey,
+	validateS3RequiredParameter,
 } from './utils';
 
 export type ListPartsInput = Pick<
@@ -47,7 +48,9 @@ const listPartsSerializer = async (
 ): Promise<HttpRequest> => {
 	const headers = await serializeObjectSsecOptionsToHeaders(input);
 	const url = new URL(endpoint.url.toString());
+	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	validateS3RequiredParameter(!!input.UploadId, 'UploadId');
 	url.search = new URLSearchParams({
 		uploadId: input.UploadId,
 	}).toString();

@@ -28,7 +28,6 @@ import {
 } from './types';
 import {
 	clearMemo,
-	dispatchInAppMessagingEvent,
 	extractContent,
 	extractMetadata,
 	getStartOfDay,
@@ -107,7 +106,6 @@ export default class AWSPinpointProvider
 		}
 
 		this.configured = true;
-		dispatchInAppMessagingEvent('pinpointProvider_configured', null);
 		return this.config;
 	};
 
@@ -134,7 +132,6 @@ export default class AWSPinpointProvider
 			);
 			const { InAppMessageCampaigns: messages } =
 				response.InAppMessagesResponse;
-			dispatchInAppMessagingEvent('getInAppMessages', messages);
 			return messages;
 		} catch (err) {
 			this.logger.error('Error getting in-app messages', err);

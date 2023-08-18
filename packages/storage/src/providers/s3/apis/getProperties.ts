@@ -18,7 +18,7 @@ import {
  *
  * @param {StorageOperationRequest} req The request to make an API call.
  * @returns {Promise<S3GetPropertiesResult>} A promise that resolves the properties.
- * @throws A {@link GetPropertiesException} when the underlying S3 service returned error.
+ * @throws A {@link S3Exception} when the underlying S3 service returned error.
  * @throws A {@link StorageValidationErrorCode} when API call parameters are invalid.
  */
 export const getProperties = async function (
@@ -26,20 +26,19 @@ export const getProperties = async function (
 ): Promise<S3GetPropertiesResult> {
 	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
 	const { identityId, credentials } = await resolveCredentials();
-	const {
-		key,
-		options: { accessLevel },
-	} = req;
-	let targetIdentityId;
-	if (req?.options?.accessLevel === 'protected') {
-		targetIdentityId = req.options?.targetIdentityId ?? identityId;
-	}
+	const { key, options = {} } = req;
+	const { accessLevel = defaultAccessLevel } = options;
+
 	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
-	const finalKey = getKeyWithPrefix(
-		accessLevel ?? defaultAccessLevel,
-		targetIdentityId,
-		key
-	);
+	// TODO[AllanZhengYP]: refactor this to reduce duplication
+	const finalKey = getKeyWithPrefix({
+		accessLevel,
+		targetIdentityId:
+			options.accessLevel === 'protected'
+				? options.targetIdentityId
+				: identityId,
+		key,
+	});
 
 	const response = await headObject(
 		{
