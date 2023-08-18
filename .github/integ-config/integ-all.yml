@@ -370,6 +370,9 @@ tests:
     category: datastore
     sample_name: [related-models]
     spec: related-models
+    # TODO update to `extended_browser_list` when removing CPK samples.
+    # Using minimal list now to prevent unnecessary test runs before CPK
+    # samples are disabled.
     browser: *minimal_browser_list
     timeout_minutes: 45
     retry_count: 10

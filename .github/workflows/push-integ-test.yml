@@ -9,8 +9,6 @@ on:
   push:
     branches:
       - feat/example-integ-test-branch/main
-      # TODO: remove before merging PR - added for test run prior to merge
-      - cpk-related-models
 
 jobs:
   e2e:
