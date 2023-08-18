@@ -48,7 +48,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 				recoverySuggestion: 'Make sure to pass a valid identityId.',
 			});
 		}
-		console.log('identityId: ', identityId);
 
 		if (forceRefresh) {
 			this.clearCredentials();

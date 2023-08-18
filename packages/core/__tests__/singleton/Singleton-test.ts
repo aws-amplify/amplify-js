@@ -56,7 +56,7 @@ describe('Amplify config test', () => {
 
 describe('Session tests', () => {
 	test('fetch empty session', async () => {
-		expect.assertions(1);
+		expect.assertions(2);
 		const config: ArgumentTypes<typeof Amplify.configure>[0] = {
 			Auth: {
 				userPoolId: 'us-east-1:aaaaaaa',
@@ -67,9 +67,10 @@ describe('Session tests', () => {
 
 		Amplify.configure(config);
 
-		const action = async () => await Amplify.Auth.fetchAuthSession();
+		const session = await Amplify.Auth.fetchAuthSession();
 
-		expect(action()).rejects.toThrow('No tokenProvider provided');
+		expect(session.tokens).toBe(undefined);
+		expect(session.credentials).toBe(undefined);
 	});
 
 	test('fetch user after no credentials', async () => {

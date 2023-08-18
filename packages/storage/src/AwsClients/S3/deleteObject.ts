@@ -8,6 +8,7 @@ import {
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
+import { StorageError } from '../../errors/StorageError';
 import type {
 	DeleteObjectCommandInput,
 	DeleteObjectCommandOutput,
@@ -48,8 +49,9 @@ const deleteObjectDeserializer = async (
 	response: HttpResponse
 ): Promise<DeleteObjectOutput> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		throw error;
+		// error is always set when statusCode >= 300
+		const error = <Error>await parseXmlError(response);
+		throw StorageError.fromServiceError(error, response.statusCode);
 	} else {
 		const content = map(response.headers, {
 			DeleteMarker: ['x-amz-delete-marker', deserializeBoolean],
