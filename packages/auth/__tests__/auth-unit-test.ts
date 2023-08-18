@@ -110,7 +110,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 });
 
 jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
-	const CognitoUser = function () {
+	const CognitoUser = function fn() {
 		// mock private member
 		this.signInUserSession = null;
 	};
@@ -255,7 +255,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	CognitoUser.prototype.listDevices = (limit, paginationToken, callback) => {
 		callback.onSuccess('success');
 	};
-	CognitoUser.prototype.getSignInUserSession = function () {
+	CognitoUser.prototype.getSignInUserSession = function fn() {
 		return this.signInUserSession;
 	};
 
@@ -1880,7 +1880,7 @@ describe('auth unit test', () => {
 			const concurrency = 10;
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'getSession')
-				.mockImplementationOnce(function (callback: any) {
+				.mockImplementationOnce(function fn(callback: any) {
 					this.signInUserSession = session;
 					callback(null, session);
 				});
