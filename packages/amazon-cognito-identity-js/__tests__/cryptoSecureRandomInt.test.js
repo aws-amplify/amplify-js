@@ -44,14 +44,16 @@ describe('cryptoSecureRandomInt test', () => {
 			crypto: null,
 		}));
 
-		jest.doMock('crypto', () => ({
-			randomBytes: () => ({
+		const randomBytesMock = jest
+			.spyOn(crypto, 'randomBytes')
+			.mockImplementationOnce(() => ({
 				readInt32LE: jest.fn().mockReturnValueOnce(54321),
-			})
-		}));
+			}));
 
 		const cryptoSecureRandomInt = require('../src/utils/cryptoSecureRandomInt')
 			.default;
 		expect(cryptoSecureRandomInt()).toBe(54321);
+
+		randomBytesMock.mockRestore();
 	});
 });
