@@ -37,11 +37,12 @@ export { AppState, AsyncStorage, Linking } from './RNComponents';
 export { Credentials, CredentialsClass } from './Credentials';
 export { ServiceWorker } from './ServiceWorker';
 export {
-	ICredentials,
-	ErrorParams,
 	AmplifyErrorMap,
-	ServiceError,
+	ErrorParams,
+	ICredentials,
 	KeyValueStorageInterface,
+	ServiceError,
+	UserProfile,
 } from './types';
 export {
 	StorageHelper,

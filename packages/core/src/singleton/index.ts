@@ -85,7 +85,7 @@ export const AmplifyV6 = new AmplifyClass();
  *
  * @returns Returns a promise that will resolve with fresh authentication tokens.
  */
-export const fetchAuthSession = (options: FetchAuthSessionOptions) => {
+export const fetchAuthSession = (options?: FetchAuthSessionOptions) => {
 	return AmplifyV6.Auth.fetchAuthSession(options);
 };
 

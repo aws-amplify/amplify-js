@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ErrorParams } from './types/types';
+import { ErrorParams } from './types';
 
 export function missingConfig(name: string) {
 	return new Error('Missing config value of ' + name);
