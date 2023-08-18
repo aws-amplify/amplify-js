@@ -9,7 +9,6 @@ describe('aws-amplify', () => {
 			  "withSSRContext",
 			  "Analytics",
 			  "AWSPinpointProvider",
-			  "Auth",
 			  "Storage",
 			  "StorageClass",
 			  "Logger",
