@@ -12,11 +12,10 @@ export type StorageConfig = {
 };
 
 export type StorageOptions =
-	| { accessLevel?: 'guest' | 'private'; isObjectLockEnabled?: boolean }
+	| { accessLevel?: 'guest' | 'private' }
 	| {
 			accessLevel: 'protected';
 			targetIdentityId: string;
-			isObjectLockEnabled?: boolean;
 	  };
 
 export type StorageOperationRequest<Options extends StorageOptions> = {
