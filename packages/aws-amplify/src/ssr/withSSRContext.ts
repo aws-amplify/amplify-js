@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 // import { API } from '@aws-amplify/api';
-import { Auth } from '@aws-amplify/auth';
+// import { Auth } from '@aws-amplify/auth';
 import { AmplifyClass, Credentials, UniversalStorage } from '@aws-amplify/core';
 // TODO(v6): Refactor with v6 SSR changes
 // import { DataStore } from '@aws-amplify/datastore';
@@ -11,13 +11,15 @@ import { Amplify } from '../index';
 
 const requiredModules = [
 	// API cannot function without Auth
-	Auth,
+	// Auth,
 	// Auth cannot function without Credentials
 	Credentials,
 ];
 
 // These modules have been tested with SSR
-const defaultModules = [Auth /* API, DataStore */];
+const defaultModules = [
+	/* Auth, API, DataStore */
+];
 
 type Context = {
 	req?: any;

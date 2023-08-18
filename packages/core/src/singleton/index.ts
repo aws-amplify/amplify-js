@@ -22,20 +22,7 @@ class AmplifyClass {
 		this.Auth = new AuthClass();
 
 		// TODO(v6): add default providers for getting started
-		this.libraryOptions = {
-			Auth: {
-				tokenProvider: {
-					getTokens: () => {
-						throw new AmplifyError({
-							message: 'No tokenProvider provided',
-							name: 'MissingTokenProvider',
-							recoverySuggestion:
-								'Make sure to call Amplify.configure in your app with a tokenProvider',
-						});
-					},
-				},
-			},
-		};
+		this.libraryOptions = {};
 	}
 
 	/**

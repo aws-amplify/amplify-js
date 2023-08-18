@@ -2,36 +2,36 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // TODO: remove Auth and AuthClass imports/exports
-import { Auth } from './Auth';
+// import { Auth } from './Auth';
 // tslint:disable-next-line no-duplicate-imports
-import type { AuthClass } from './Auth';
+// import type { AuthClass } from './Auth';
 import {
 	CognitoHostedUIIdentityProvider,
 	SignUpParams,
 	GRAPHQL_AUTH_MODE,
 } from './types/Auth';
-import {
-	CognitoUser,
-	CookieStorage,
-	appendToCognitoUserAgent,
-} from 'amazon-cognito-identity-js';
+// import {
+// 	CognitoUser,
+// 	CookieStorage,
+// 	appendToCognitoUserAgent,
+// } from 'amazon-cognito-identity-js';
 import { AuthErrorStrings } from './common/AuthErrorStrings';
 
 /**
  * @deprecated use named import
  */
-export default Auth;
+// export default Auth;
 export {
-	Auth,
-	CognitoUser,
-	CookieStorage,
+	// Auth,
+	// CognitoUser,
+	// CookieStorage,
 	CognitoHostedUIIdentityProvider,
 	SignUpParams,
-	appendToCognitoUserAgent,
+	// appendToCognitoUserAgent,
 	AuthErrorStrings,
 	GRAPHQL_AUTH_MODE,
 };
-export type { AuthClass };
+// export type { AuthClass };
 
 // Provider specific types
 export * from './providers/cognito';
