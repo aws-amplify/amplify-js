@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - feat/example-integ-test-branch/main
+      - cpk-related-models
 
 jobs:
   e2e:
