@@ -54,7 +54,7 @@ export class HubClass<
 	private _remove<
 		Channel extends string | RegExp,
 		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
-	>(channel: Channel, listener: HubCallback<string | RegExp, EventData>) {
+	>(channel: Channel, listener: HubCallback<Channel, EventData>) {
 		if (channel instanceof RegExp) {
 			const pattern = this.patterns.find(
 				({ pattern }) => pattern.source === channel.source
@@ -64,7 +64,7 @@ export class HubClass<
 				return;
 			}
 			this.patterns = [...this.patterns.filter(x => x !== pattern)];
-		} else if (channel instanceof String) {
+		} else {
 			const holder = this.listeners[channel as string];
 			if (!holder) {
 				logger.warn(`No listeners for ${channel}`);
@@ -88,13 +88,13 @@ export class HubClass<
 	dispatch<
 		EventData extends AmplifyEventDataMap,
 		ChannelMap extends AmplifyChannelMap,
-		Channel extends ChannelMap['channel'] = ChannelMap['channel']
+		Channel extends ChannelMap['channelType'] = ChannelMap['channelType']
 	>(
 		channel: Channel,
 		payload: PayloadFromCallback<
 			GetHubCallBack<Channel, ChannelMap['eventData']>
 		>,
-		source = '',
+		source?: string,
 		ampSymbol?: Symbol
 	): void {
 		if (
@@ -134,14 +134,14 @@ export class HubClass<
 	 *
 	 */
 	listen<
-		ChannelMap extends AmplifyChannelMap,
-		Channel extends ChannelMap['channel'] = ChannelMap['channel']
+		ChannelMap extends AmplifyChannelMap = AmplifyChannelMap,
+		Channel extends ChannelMap['channelType'] = ChannelMap['channelType']
 	>(
 		channel: Channel,
 		callback: HubCallback<Channel, ChannelMap['eventData']>,
 		listenerName?: string
 	): () => void {
-		let cb: HubCallback<Channel, ChannelMap['eventData']>;
+		let cb;
 
 		if (typeof callback !== 'function') {
 			throw new Error('No callback supplied to Hub');
@@ -174,23 +174,32 @@ export class HubClass<
 	}
 
 	private _toListeners<
-		Channel extends String | RegExp,
-		EventData extends AmplifyEventDataMap
+		Channel extends RegExp | string,
+		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 	>(capsule: HubCapsule<Channel, EventData>) {
 		const { channel, payload } = capsule;
-		const holder = this.listeners[channel as string];
-
-		if (holder) {
-			holder.forEach(listener => {
-				logger.debug(`Dispatching to ${channel} with `, payload);
-				try {
-					listener.callback(capsule);
-				} catch (e) {
-					logger.error(e);
-				}
-			});
+		if (channel instanceof RegExp) {
+			const pattern = this.patterns.find(
+				({ pattern }) => pattern.source === channel.source
+			);
+			if (!pattern) {
+				logger.warn(`No listeners for ${channel}`);
+				return;
+			}
+			this.patterns = [...this.patterns.filter(x => x !== pattern)];
+		} else {
+			const holder = this.listeners[channel as string];
+			if (holder) {
+				holder.forEach(listener => {
+					logger.debug(`Dispatching to ${channel} with `, payload);
+					try {
+						listener.callback(capsule);
+					} catch (e) {
+						logger.error(e);
+					}
+				});
+			}
 		}
-
 		if (this.patterns.length > 0) {
 			if (!payload.message) {
 				logger.warn(`Cannot perform pattern matching without a message key`);
@@ -203,7 +212,7 @@ export class HubClass<
 				const match = payloadStr.match(pattern.pattern);
 				if (match) {
 					const [, ...groups] = match;
-					const dispatchingCapsule: HubCapsule<Channel, EventData> = {
+					const dispatchingCapsule = {
 						...capsule,
 						patternInfo: groups,
 					};
