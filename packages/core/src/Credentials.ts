@@ -10,6 +10,7 @@ import { Amplify } from './Amplify';
 import { getId, getCredentialsForIdentity } from './AwsClients/CognitoIdentity';
 import { parseAWSExports } from './parseAWSExports';
 import { Hub } from './Hub';
+import { CustomUserAgentDetails } from './Platform/types';
 
 const logger = new Logger('Credentials');
 
@@ -42,8 +43,8 @@ export class CredentialsClass {
 	private _identityId;
 	private _nextCredentialsRefresh: number;
 
-	// Allow `Auth` to be injected for SSR, but Auth isn't a required dependency for Credentials
-	Auth = undefined;
+	// Allow `InternalAuth` to be injected for SSR, but InternalAuth isn't a required dependency for Credentials
+	InternalAuth = undefined;
 
 	constructor(config) {
 		this.configure(config);
@@ -93,9 +94,9 @@ export class CredentialsClass {
 		return this._config;
 	}
 
-	public get() {
+	public get(customUserAgentDetails?: CustomUserAgentDetails) {
 		logger.debug('getting credentials');
-		return this._pickupCredentials();
+		return this._pickupCredentials(customUserAgentDetails);
 	}
 
 	// currently we only store the guest identity in local storage
@@ -103,18 +104,20 @@ export class CredentialsClass {
 		return `${COGNITO_IDENTITY_KEY_PREFIX}${identityPoolId}`;
 	}
 
-	private _pickupCredentials() {
+	private _pickupCredentials(customUserAgentDetails?: CustomUserAgentDetails) {
 		logger.debug('picking up credentials');
 		if (!this._gettingCredPromise || !this._gettingCredPromise.isPending()) {
 			logger.debug('getting new cred promise');
-			this._gettingCredPromise = makeQuerablePromise(this._keepAlive());
+			this._gettingCredPromise = makeQuerablePromise(
+				this._keepAlive(customUserAgentDetails)
+			);
 		} else {
 			logger.debug('getting old cred promise');
 		}
 		return this._gettingCredPromise;
 	}
 
-	private async _keepAlive() {
+	private async _keepAlive(customUserAgentDetails?: CustomUserAgentDetails) {
 		logger.debug('checking if credentials exists and not expired');
 		const cred = this._credentials;
 		if (cred && !this._isExpired(cred) && !this._isPastTTL()) {
@@ -125,10 +128,13 @@ export class CredentialsClass {
 		logger.debug('need to get a new credential or refresh the existing one');
 
 		// Some use-cases don't require Auth for signing in, but use Credentials for guest users (e.g. Analytics)
-		// Prefer locally scoped `Auth`, but fallback to registered `Amplify.Auth` global otherwise.
-		const { Auth = Amplify.Auth } = this;
+		// Prefer locally scoped `InternalAuth`, but fallback to registered `Amplify.InternalAuth` global otherwise.
+		const { InternalAuth = (Amplify as any).InternalAuth } = this;
 
-		if (!Auth || typeof Auth.currentUserCredentials !== 'function') {
+		if (
+			!InternalAuth ||
+			typeof InternalAuth.currentUserCredentials !== 'function'
+		) {
 			// If Auth module is not imported, do a best effort to get guest credentials
 			return this._setCredentialsForGuest();
 		}
@@ -136,8 +142,13 @@ export class CredentialsClass {
 		if (!this._isExpired(cred) && this._isPastTTL()) {
 			logger.debug('ttl has passed but token is not yet expired');
 			try {
-				const user = await Auth.currentUserPoolUser();
-				const session = await Auth.currentSession();
+				const user = await InternalAuth.currentUserPoolUser(
+					undefined,
+					customUserAgentDetails
+				);
+				const session = await InternalAuth.currentSession(
+					customUserAgentDetails
+				);
 				const refreshToken = session.refreshToken;
 				const refreshRequest = new Promise((res, rej) => {
 					user.refreshSession(refreshToken, (err, data) => {
@@ -150,7 +161,7 @@ export class CredentialsClass {
 				logger.debug('Error attempting to refreshing the session', err);
 			}
 		}
-		return Auth.currentUserCredentials();
+		return InternalAuth.currentUserCredentials(customUserAgentDetails);
 	}
 
 	public refreshFederatedToken(federatedInfo) {

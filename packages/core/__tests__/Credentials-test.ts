@@ -5,6 +5,7 @@ import {
 	getId,
 } from '../src/AwsClients/CognitoIdentity';
 import { Hub } from '../src/Hub';
+import { CustomUserAgentDetails } from '../src/Platform/types';
 
 jest.mock('../src/AwsClients/CognitoIdentity');
 
@@ -23,15 +24,18 @@ const storageClass = {
 
 const authClass = {
 	getModuleName() {
-		return 'Auth';
+		return 'InternalAuth';
 	},
-	currentUserCredentials() {
+	currentUserCredentials(customUserAgentDetails?: CustomUserAgentDetails) {
 		return Promise.resolve('cred');
 	},
-	currentSession() {
+	currentSession(customUserAgentDetails?: CustomUserAgentDetails) {
 		return session;
 	},
-	currentUserPoolUser() {
+	currentUserPoolUser(
+		params?: any,
+		customUserAgentDetails?: CustomUserAgentDetails
+	) {
 		return user;
 	},
 	configure(config: any) {
@@ -51,28 +55,34 @@ const cacheClass = {
 	},
 };
 
+const userAgentDetails: CustomUserAgentDetails = {
+	additionalInfo: [['test', '1']],
+};
+
 describe('Credentials test', () => {
-	describe('.Auth', () => {
+	describe('.InternalAuth', () => {
 		it('should be undefined by default', async () => {
 			const credentials = new Credentials(null);
 
-			expect(credentials.Auth).toBeUndefined();
+			expect(credentials.InternalAuth).toBeUndefined();
 
 			expect(credentials.get()).rejects.toMatchInlineSnapshot(
 				`"No Cognito Identity pool provided for unauthenticated access"`
 			);
 		});
 
-		it('should be Amplify.Auth if configured through Amplify', () => {
+		it('should be Amplify.InternalAuth if configured through Amplify', () => {
 			const credentials = new Credentials(null);
+			const authSpy = jest.spyOn(authClass, 'currentUserCredentials');
 
 			Amplify.register(authClass);
 			Amplify.register(credentials);
 
 			Amplify.configure({});
 
-			expect(credentials.Auth).toBe(authClass);
-			expect(credentials.get()).resolves.toBe('cred');
+			expect(credentials.InternalAuth).toBe(authClass);
+			expect(credentials.get(userAgentDetails)).resolves.toBe('cred');
+			expect(authSpy).toBeCalledWith(userAgentDetails);
 		});
 	});
 
@@ -249,9 +259,10 @@ describe('Credentials test', () => {
 			const mockCurrentTime = timestamp + 45 * 60 * 1000; // before TTL expiration
 			dateSpy.mockImplementation(() => mockCurrentTime); // mock current time
 
-			await credentials.get();
+			await credentials.get(userAgentDetails);
 			expect(manualRefreshSpy).not.toHaveBeenCalled();
 			expect(userCredentialsSpy).toHaveBeenCalledTimes(1);
+			expect(userCredentialsSpy).toBeCalledWith(userAgentDetails);
 		});
 
 		test('session refreshes between TTL and expiration', async () => {
