@@ -3,6 +3,7 @@
 import { API } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import { Auth } from '@aws-amplify/auth';
+import { InternalAuth } from '@aws-amplify/auth/internals';
 import { AmplifyClass, Credentials, UniversalStorage } from '@aws-amplify/core';
 import { DataStore } from '@aws-amplify/datastore';
 
@@ -28,6 +29,7 @@ export function withSSRContext(context: Context = {}) {
 	const { modules = defaultModules, req } = context;
 	if (modules.includes(DataStore)) {
 		modules.push(InternalAPI);
+		modules.push(InternalAuth);
 	}
 	const previousConfig = Amplify.configure();
 	const amplify = new AmplifyClass();
