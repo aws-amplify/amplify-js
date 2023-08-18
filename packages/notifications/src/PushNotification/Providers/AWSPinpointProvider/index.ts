@@ -12,11 +12,7 @@ import {
 	NotificationsSubCategory,
 } from '../../types';
 import { AWSPinpointMessageEvent } from './types';
-import {
-	dispatchPushNotificationEvent,
-	getAnalyticsEvent,
-	logger,
-} from './utils';
+import { getAnalyticsEvent, logger } from './utils';
 
 export default class AWSPinpointProvider
 	extends AWSPinpointProviderCommon
@@ -84,7 +80,6 @@ export default class AWSPinpointProvider
 		}
 
 		this.configured = true;
-		dispatchPushNotificationEvent('pinpointProvider_configured', null);
 		return this.config;
 	};
 

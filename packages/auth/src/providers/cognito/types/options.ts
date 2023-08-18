@@ -67,3 +67,10 @@ export type CognitoConfirmSignInOptions<
 export type CogntioVerifyTOTPSetupOptions = {
 	friendlyDeviceName?: string;
 };
+
+/**
+ * Options specific to a Cognito Update User Attributes request.
+ */
+export type CognitoUpdateUserAttributesOptions = {
+	clientMetadata?: ClientMetadata;
+};
