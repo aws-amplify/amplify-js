@@ -25,7 +25,11 @@ export class DefaultTokenStore implements AuthTokenStore {
 
 	async loadTokens(): Promise<CognitoAuthTokens | null> {
 		const authConfig = AmplifyV6.getConfig().Auth;
-		assertTokenProviderConfig(authConfig);
+		try {
+			assertTokenProviderConfig(authConfig);
+		} catch (err) {
+			return null;
+		}
 
 		// TODO(v6): migration logic should be here
 		// Reading V5 tokens old format
