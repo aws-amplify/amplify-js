@@ -13,11 +13,7 @@ import {
 } from '../types/Auth';
 
 import {
-	AuthAction,
-	Category,
 	ConsoleLogger as Logger,
-	CustomUserAgentDetails,
-	getAmplifyUserAgent,
 	Hub,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
@@ -31,8 +27,8 @@ const AMPLIFY_SYMBOL = (
 		: '@@amplify_default'
 ) as Symbol;
 
-const dispatchAuthEvent = (event: string, data: any, message: string) => {
-	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
+const dispatchAuthEvent = payload => {
+	Hub.dispatch('auth', payload, 'Auth', AMPLIFY_SYMBOL);
 };
 
 const logger = new Logger('OAuth');
@@ -136,11 +132,11 @@ export default class OAuth {
 		const oAuthTokenEndpoint =
 			'https://' + this._config.domain + '/oauth2/token';
 
-		dispatchAuthEvent(
-			'codeFlow',
-			{},
-			`Retrieving tokens from ${oAuthTokenEndpoint}`
-		);
+		dispatchAuthEvent({
+			event: 'codeFlow',
+			data: {},
+			Message: `Retrieving tokens from ${oAuthTokenEndpoint}`,
+		});
 
 		const client_id = isCognitoHostedOpts(this._config)
 			? this._cognitoClientId
@@ -202,7 +198,11 @@ export default class OAuth {
 				access_token: undefined,
 			});
 
-		dispatchAuthEvent('implicitFlow', {}, `Got tokens from ${currentUrl}`);
+		dispatchAuthEvent({
+			event: 'implicitFlow',
+			data: {},
+			message: `Got tokens from ${currentUrl}`,
+		});
 		logger.debug(`Retrieving implicit tokens from ${currentUrl} with`);
 
 		return {
@@ -288,11 +288,11 @@ export default class OAuth {
 			.map(([k, v]) => `${k}=${v}`)
 			.join('&');
 
-		dispatchAuthEvent(
-			'oAuthSignOut',
-			{ oAuth: 'signOut' },
-			`Signing out from ${oAuthLogoutEndpoint}`
-		);
+		dispatchAuthEvent({
+			event: 'oAuthSignOut',
+			data: { oAuth: 'signOut' },
+			message: `Signing out from ${oAuthLogoutEndpoint}`,
+		});
 		logger.debug(`Signing out from ${oAuthLogoutEndpoint}`);
 
 		return this._urlOpener(oAuthLogoutEndpoint, signout_uri);
