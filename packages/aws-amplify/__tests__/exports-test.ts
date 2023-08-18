@@ -18,7 +18,6 @@ describe('aws-amplify', () => {
 			  "Signer",
 			  "I18n",
 			  "ServiceWorker",
-			  "AWSCloudWatchProvider",
 			  "AmplifyV6",
 			]
 		`);

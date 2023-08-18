@@ -25,7 +25,6 @@ export {
 	Signer,
 	I18n,
 	ServiceWorker,
-	AWSCloudWatchProvider,
 } from '@aws-amplify/core';
 
 export { DefaultAmplifyV6 as AmplifyV6 } from './initSingleton';

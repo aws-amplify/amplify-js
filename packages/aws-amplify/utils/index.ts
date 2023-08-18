@@ -5,7 +5,6 @@
 This file maps exports from `aws-amplify/utils`.
 */
 export {
-	AWSCloudWatchProvider,
 	Cache,
 	ClientDevice,
 	Hub,
