@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
-import { LoggingProvider } from '../types';
+import { LoggingProvider, InputLogEvent } from '../types';
 import { AWS_CLOUDWATCH_CATEGORY } from '../Util/Constants';
 import { Logger } from './logger-interface';
 

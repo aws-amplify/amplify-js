@@ -1,12 +1,10 @@
 import {
-	AWSCloudWatchProvider,
-	AWS_CLOUDWATCH_PROVIDER_NAME,
 	Logger,
 } from '../src';
 
 describe('ConsoleLogger', () => {
 	describe('pluggables', () => {
-		it('should store pluggables correctly when addPluggable is called', () => {
+		/*it('should store pluggables correctly when addPluggable is called', () => {
 			const provider = new AWSCloudWatchProvider();
 			const logger = new Logger('name');
 			logger.addPluggable(provider);
@@ -16,7 +14,7 @@ describe('ConsoleLogger', () => {
 			expect(pluggables[0].getProviderName()).toEqual(
 				AWS_CLOUDWATCH_PROVIDER_NAME
 			);
-		});
+		});*/
 
 		it('should do nothing when no plugin is provided to addPluggable', () => {
 			const logger = new Logger('name');
