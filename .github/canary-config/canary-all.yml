@@ -96,7 +96,7 @@ tests:
     framework: react
     category: datastore
     sample_name: [v2/related-models]
-    spec: related-models
+    spec: cpk-related-models
     browser: *minimal_browser_list
     timeout_minutes: 45
     retry_count: 10

@@ -1398,7 +1398,7 @@ jobs:
           framework: react
           category: datastore
           sample_name: related-models
-          spec: related-models
+          spec: cpk-related-models
           browser: << parameters.browser >>
 
   integ_react_iot_reconnect:
