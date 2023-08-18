@@ -8,7 +8,7 @@ import {
 } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
 import { RestAPIClass } from '@aws-amplify/api-rest';
-import { Auth } from '@aws-amplify/auth';
+import { InternalAuth } from '@aws-amplify/auth/internals';
 import { Cache } from '@aws-amplify/cache';
 import {
 	Amplify,
@@ -37,7 +37,7 @@ export class InternalAPIClass {
 	private _restApi: RestAPIClass;
 	private _graphqlApi: InternalGraphQLAPIClass;
 
-	Auth = Auth;
+	InternalAuth = InternalAuth;
 	Cache = Cache;
 	Credentials = Credentials;
 
@@ -67,7 +67,7 @@ export class InternalAPIClass {
 		// Share Amplify instance with client for SSR
 		this._restApi.Credentials = this.Credentials;
 
-		this._graphqlApi.Auth = this.Auth;
+		this._graphqlApi.InternalAuth = this.InternalAuth;
 		this._graphqlApi.Cache = this.Cache;
 		this._graphqlApi.Credentials = this.Credentials;
 
