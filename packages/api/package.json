@@ -49,7 +49,7 @@
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
 		"@types/zen-observable": "^0.8.0",
-		"typescript": "^5.1.6"
+		"typescript": "5.1.6"
 	},
 	"files": [
 		"lib",
@@ -59,9 +59,9 @@
 		"internals"
 	],
 	"dependencies": {
+		"@aws-amplify/types-package-alpha": "0.0.0",
 		"@aws-amplify/api-graphql": "3.4.6",
 		"@aws-amplify/api-rest": "3.5.0",
-		"@aws-amplify/types-package-alpha": "*",
 		"tslib": "^2.6.1"
 	},
 	"size-limit": [
@@ -69,7 +69,7 @@
 			"name": "API (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, API }",
-			"limit": "92 kB"
+			"limit": "93.82 kB"
 		}
 	],
 	"jest": {
