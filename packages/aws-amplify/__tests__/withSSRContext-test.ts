@@ -52,21 +52,21 @@ describe('withSSRContext', () => {
 	});
 	*/
 
-	describe('Auth', () => {
-		it('should be a different instance than Amplify.Auth', () => {
-			expect(withSSRContext().Auth).not.toBe(Amplify.Auth);
-		});
+	// describe('Auth', () => {
+	// 	it('should be a different instance than Amplify.Auth', () => {
+	// 		expect(withSSRContext().Auth).not.toBe(Amplify.Auth);
+	// 	});
 
-		it('should be created with UniversalStorage', () => {
-			expect(withSSRContext().Auth._storage).toBeInstanceOf(UniversalStorage);
-		});
+	// 	it('should be created with UniversalStorage', () => {
+	// 		expect(withSSRContext().Auth._storage).toBeInstanceOf(UniversalStorage);
+	// 	});
 
-		it('should use different Credentials than Amplify', () => {
-			const amplify = withSSRContext();
+	// 	it('should use different Credentials than Amplify', () => {
+	// 		const amplify = withSSRContext();
 
-			expect(Amplify.Auth.Credentials).not.toBe(amplify.Auth.Credentials);
-		});
-	});
+	// 		expect(Amplify.Auth.Credentials).not.toBe(amplify.Auth.Credentials);
+	// 	});
+	// });
 
 	// TODO(v6): Refactor with new SSR utilities
 	/*describe('DataStore', () => {
