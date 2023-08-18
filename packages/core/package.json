@@ -79,7 +79,8 @@
 		"find": "^0.2.7",
 		"genversion": "^2.2.0",
 		"react-native": "^0.68.7",
-		"typescript": "5.0.2"
+		"typescript": "5.0.2",
+		"@react-native-community/netinfo": "4.7.0"
 	},
 	"size-limit": [
 		{

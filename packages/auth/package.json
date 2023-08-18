@@ -68,7 +68,6 @@
 		"**/package.json"
 	],
 	"dependencies": {
-		"amazon-cognito-identity-js": "6.4.0",
 		"buffer": "4.9.2",
 		"tslib": "^2.5.0",
 		"url": "0.11.0",
