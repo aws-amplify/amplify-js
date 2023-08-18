@@ -4,16 +4,23 @@
 import { AmplifyV6, fetchAuthSession } from '@aws-amplify/core';
 import { listDevices } from '../utils/clients/CognitoIdentityProvider';
 import { AuthError } from '../../../errors/AuthError';
+import {
+	DeviceType,
+	ListDevicesCommandInput,
+} from '../utils/clients/CognitoIdentityProvider/types';
+import { AuthDevice } from '../../../types';
+
+// Cognito Documentation for max device
+// tslint:disable-next-line:max-line-length
+// https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
+const MAX_DEVICES = 60;
 
 /**
- * Signs a user in
+ * Fetch devices associated with an authenticated user
  *
- * @param signInRequest - The SignInRequest object
- * @returns AuthSignInResult
- * @throws service:
- * @throws validation:
+ * @returns AuthDevice[]
+ * @throws validation: {@link AuthError}
  *
- * TODO: add config errors
  */
 export async function fetchDevices(): Promise<AuthDevice[]> {
 	const session = await fetchAuthSession({});
@@ -25,8 +32,7 @@ export async function fetchDevices(): Promise<AuthDevice[]> {
 				'Make sure to log the user in before listing the devices associated with that user',
 		});
 	}
-	console.log('session: ', session);
-	const requestParams = {
+	const requestParams: ListDevicesCommandInput = {
 		AccessToken: session.tokens.accessToken.toString(),
 		Limit: MAX_DEVICES,
 	};
@@ -36,7 +42,7 @@ export async function fetchDevices(): Promise<AuthDevice[]> {
 	if (!userPoolId) {
 		throw new AuthError({
 			name: 'AuthConfigException',
-			message: 'Cannot get credentials without an userPoolId',
+			message: 'Cannot list devices without an userPoolId',
 			recoverySuggestion:
 				'Make sure a valid userPoolId is given in the config.',
 		});
@@ -44,20 +50,17 @@ export async function fetchDevices(): Promise<AuthDevice[]> {
 
 	const region = userPoolId.split('_')[0];
 	const res = await listDevices({ region }, requestParams);
-	console.log('list devices res: ', res);
-	return [
-		{
-			deviceId: '',
-		},
-	];
+	const devices: DeviceType[] = res.Devices ?? [];
+
+	return devices.map(device => {
+		const deviceInfo: AuthDevice = {
+			deviceId: device.DeviceKey,
+		};
+		const deviceName = device.DeviceAttributes.find(
+			({ Name }) => Name === 'device_name'
+		);
+
+		if (deviceName) deviceInfo.deviceName = deviceName.Value;
+		return deviceInfo;
+	});
 }
-
-type AuthDevice = {
-	deviceId: string;
-	deviceName?: string;
-};
-
-// Cognito Documentation for max device
-// tslint:disable-next-line:max-line-length
-// https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
-const MAX_DEVICES = 60;
