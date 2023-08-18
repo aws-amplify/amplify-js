@@ -12,7 +12,7 @@ export function resolveStorageConfig() {
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
 	const { defaultAccessLevel = DEFAULT_ACCESS_LEVEL } =
-		AmplifyV6.libraryOptions?.Storage ?? {};
+		AmplifyV6.libraryOptions?.Storage?.AWSS3 ?? {};
 	return {
 		defaultAccessLevel,
 		bucket,

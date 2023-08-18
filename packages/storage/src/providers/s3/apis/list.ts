@@ -7,7 +7,6 @@ import {
 	listObjectsV2,
 } from '../../../AwsClients/S3';
 import {
-	StorageConfig,
 	StorageListRequest,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
@@ -24,6 +23,7 @@ import {
 	resolveCredentials,
 } from '../utils';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
+import { ResolvedS3Config } from '../types/options';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -76,7 +76,7 @@ export const list: S3ListApi = async (
 	};
 	const listParams = {
 		Bucket: bucket,
-		Prefix: finalPath,
+		// Prefix: finalPath,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 	};
@@ -86,7 +86,7 @@ export const list: S3ListApi = async (
 };
 
 const _listAll = async (
-	listConfig: StorageConfig,
+	listConfig: ResolvedS3Config,
 	listParams: ListObjectsV2Input
 ): Promise<S3ListAllResult> => {
 	// TODO(ashwinkumar6) V6-logger: pageSize and nextToken aren't required when listing all items
@@ -111,7 +111,7 @@ const _listAll = async (
 };
 
 const _list = async (
-	listConfig: StorageConfig,
+	listConfig: ResolvedS3Config,
 	listParams: ListObjectsV2Input
 ): Promise<S3ListPaginateResult> => {
 	const listParamsClone = { ...listParams };

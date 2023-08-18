@@ -1,18 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StorageDownloadDataRequest, DownloadTask } from '../../../types';
 import { S3TransferOptions, S3DownloadDataResult } from '../types';
-import {
-	getKeyWithPrefix,
-	resolveCredentials,
-	resolveStorageConfig,
-} from '../utils';
-import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { createDownloadTask } from '../../../utils/transferTask';
+import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { getObject } from '../../../AwsClients/S3';
-import { validateS3RequiredParameter } from '../../../AwsClients/S3/utils';
+import { StorageValidationErrorCode } from '../../../errors/types/validation';
+import { StorageDownloadDataRequest, DownloadTask } from '../../../types';
+import { createDownloadTask } from '../../../utils/transferTask';
 
 /**
  * Download S3 object data to memory
@@ -43,32 +37,18 @@ export const downloadData = (
 
 const downloadDataJob =
 	(
-		downloadDataRequest: StorageDownloadDataRequest<S3TransferOptions>,
+		{
+			options: downloadDataOptions,
+			key,
+		}: StorageDownloadDataRequest<S3TransferOptions>,
 		abortSignal: AbortSignal
 	) =>
 	async () => {
-		// TODO[AllanZhengYP]: refactor this to reduce duplication
-		const options = downloadDataRequest?.options ?? {};
-		const { credentials, identityId } = await resolveCredentials();
-		const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
-		const {
-			key,
-			options: {
-				accessLevel = defaultAccessLevel,
-				onProgress,
-				useAccelerateEndpoint,
-			} = {},
-		} = downloadDataRequest;
-		assertValidationError(!!key, StorageValidationErrorCode.NoKey);
-
-		const finalKey = getKeyWithPrefix({
-			accessLevel,
-			targetIdentityId:
-				options.accessLevel === 'protected'
-					? options.targetIdentityId
-					: identityId,
-			key,
-		});
+		const { bucket, keyPrefix, s3Config } = await resolveS3ConfigAndInput(
+			downloadDataOptions
+		);
+		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths
+		const finalKey = keyPrefix + key;
 
 		const {
 			Body: body,
@@ -80,20 +60,19 @@ const downloadDataJob =
 			ContentType: contentType,
 		} = await getObject(
 			{
-				credentials,
-				region,
+				...s3Config,
 				abortSignal,
-				onDownloadProgress: onProgress,
-				useAccelerateEndpoint,
+				onDownloadProgress: downloadDataOptions?.onProgress,
 			},
 			{
 				Bucket: bucket,
 				Key: finalKey,
 			}
 		);
-		validateS3RequiredParameter(!!body, 'Body');
 		return {
-			body,
+			// Casting with ! as body always exists for getObject API.
+			// TODO: remove this when we have better typing for getObject API
+			body: body!,
 			lastModified,
 			size,
 			contentType,

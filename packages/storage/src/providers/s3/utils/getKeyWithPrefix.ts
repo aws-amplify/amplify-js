@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyV6, StorageAccessLevel } from '@aws-amplify/core';
-import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixResolver';
+import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
 
 type GetKeyWithPrefixOptions = {
 	accessLevel: StorageAccessLevel;
@@ -16,7 +16,7 @@ export const getKeyWithPrefix = ({
 	key,
 }: GetKeyWithPrefixOptions) => {
 	const { prefixResolver = defaultPrefixResolver } =
-		AmplifyV6.libraryOptions?.Storage ?? {};
+		AmplifyV6.libraryOptions?.Storage?.AWSS3 ?? {};
 	return (
 		prefixResolver({
 			accessLevel,
