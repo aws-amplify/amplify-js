@@ -16,7 +16,6 @@ describe('aws-amplify', () => {
 			  "ClientDevice",
 			  "Signer",
 			  "I18n",
-			  "ServiceWorker",
 			  "AmplifyV6",
 			]
 		`);
