@@ -1,5 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+//
+
+// TODO(ashwinkumar6) this uses V5 Credentials, update to V6.
+import { Credentials } from '@aws-sdk/types';
+
+export type StorageConfig = {
+	region: string;
+	credentials: Credentials;
+};
 
 export type StorageOptions =
 	| { accessLevel?: 'guest' | 'private'; isObjectLockEnabled?: boolean }
@@ -12,6 +21,23 @@ export type StorageOptions =
 export type StorageOperationRequest<Options extends StorageOptions> = {
 	key: string;
 	options?: Options;
+};
+
+export type StorageListRequest<
+	Options extends StorageListAllOptions | StorageListPaginateOptions
+> = {
+	path?: string;
+	options?: Options;
+};
+
+export type StorageListAllOptions = StorageOptions & {
+	listAll: true;
+};
+
+export type StorageListPaginateOptions = StorageOptions & {
+	listAll?: false;
+	pageSize?: number;
+	nextToken?: string;
 };
 
 export type StorageDownloadDataRequest<Options extends StorageOptions> =
@@ -38,3 +64,5 @@ export type StorageUploadFileParameter<Options extends StorageOptions> =
 	StorageOperationRequest<Options> & {
 		data: File;
 	};
+
+export type StorageRemoveOptions = StorageOptions;

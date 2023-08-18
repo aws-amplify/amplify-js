@@ -28,7 +28,6 @@ import { assertAuthTokens } from '../utils/types';
 export async function verifyTOTPSetup(
 	verifyTOTPSetupRequest: VerifyTOTPSetupRequest<CogntioVerifyTOTPSetupOptions>
 ): Promise<void> {
-	// TODO: remove mocked when auth token provider is implemented.
 	const authConfig = AmplifyV6.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
 	const { code, options } = verifyTOTPSetupRequest;

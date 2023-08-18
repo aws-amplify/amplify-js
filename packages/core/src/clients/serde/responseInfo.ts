@@ -18,5 +18,6 @@ export const parseMetadata = (response: HttpResponse): ResponseMetadata => {
 	};
 };
 
+type IsResponse = { $metadata: any };
 const isMetadataBearer = (response: unknown): response is MetadataBearer =>
-	typeof response?.['$metadata'] === 'object';
+	typeof (response as IsResponse)?.$metadata === 'object';
