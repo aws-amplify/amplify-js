@@ -17,9 +17,6 @@ export const USER_AGENT_HEADER = 'x-amz-user-agent';
 // Error exception code constants
 export const AUTH_CONFING_EXCEPTION = 'AuthConfigException';
 
-export const AWS_CLOUD_WATCH_PROVIDER_OPTIONS_EXCEPTION =
-	'AWSCloudWatchProviderOptionsException';
-
 export const CACHE_LIST_EXCEPTION = 'CacheListException';
 
 export const I18N_EXCEPTION = 'I18NException';
