@@ -16,8 +16,8 @@ export {
 	missingConfig,
 	AmplifyError,
 	AmplifyErrorString,
-} from './Errors';
-export { Hub, HubCapsule, HubCallback, HubPayload } from './Hub';
+} from './Util/Errors';
+export { Hub, HubCapsule, HubCallback, HubPayload } from './Hub/Hub';
 export { I18n } from './I18n';
 export {
 	browserOrNode,
@@ -32,7 +32,7 @@ export {
 	sortByField,
 	transferKeyToLowerCase,
 	transferKeyToUpperCase,
-} from './JS';
+} from './Util/JS';
 export { Signer } from './Signer';
 export { parseAWSExports } from './parseAWSExports';
 export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
@@ -79,7 +79,7 @@ export {
 export {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 	USER_AGENT_HEADER,
-} from './constants';
+} from './Util/Constants';
 
 export const Constants = {
 	userAgent: Platform.userAgent,
