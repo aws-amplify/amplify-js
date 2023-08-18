@@ -11,7 +11,7 @@ import {
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { createDownloadTask } from '../../../utils/transferTask';
-import { getObject } from '../../../AwsClients/S3/getObject';
+import { getObject } from '../../../AwsClients/S3';
 import { validateS3RequiredParameter } from '../../../AwsClients/S3/utils';
 
 /**
