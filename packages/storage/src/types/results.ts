@@ -57,3 +57,7 @@ export type StorageRemoveResult = {
 export type StorageListResult<Item extends StorageItem> = {
 	items: Item[];
 };
+
+export type StorageCopyResult = Required<
+	Pick<StorageItem, 'key' | 'eTag' | 'lastModified'>
+>;

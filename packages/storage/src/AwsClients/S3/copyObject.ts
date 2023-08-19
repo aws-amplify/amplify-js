@@ -8,8 +8,8 @@ import {
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import { MetadataBearer } from '@aws-sdk/types';
-import type { CopyObjectCommandInput } from './types';
+import { StorageError } from '../../errors/StorageError';
+import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
 import { defaultConfig } from './base';
 import {
 	validateS3RequiredParameter,
@@ -19,6 +19,8 @@ import {
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
+	map,
+	deserializeTimestamp,
 } from './utils';
 import type { S3ProviderCopyConfig } from '../../types/AWSS3Provider';
 
@@ -32,22 +34,14 @@ export type CopyObjectInput = Pick<
 	| 'Key'
 	| 'MetadataDirective'
 	| 'CacheControl'
-	| 'ContentType'
-	| 'ContentDisposition'
-	| 'ContentLanguage'
 	| 'Expires'
-	| 'ACL'
-	| 'ServerSideEncryption'
-	| 'SSECustomerAlgorithm'
-	| 'SSECustomerKey'
 	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
 	| 'SSEKMSKeyId'
 	| 'Tagging'
 	| 'Metadata'
 >;
 
-export type CopyObjectOutput = MetadataBearer;
+export type CopyObjectOutput = CopyObjectCommandOutput;
 
 const copyObjectSerializer = async (
 	input: CopyObjectInput,
@@ -74,12 +68,20 @@ const copyObjectDeserializer = async (
 	response: HttpResponse
 ): Promise<CopyObjectOutput> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		throw error;
+		// error is always set when statusCode >= 300
+		const error = (await parseXmlError(response)) as Error;
+		throw StorageError.fromServiceError(error, response.statusCode);
 	} else {
-		await parseXmlBody(response);
+		const parsed = await parseXmlBody(response);
+		const contents = {
+			...map(parsed, {
+				ETag: 'etag',
+				LastModified: ['last-modified', deserializeTimestamp],
+			}),
+		};
 		return {
 			$metadata: parseMetadata(response),
+			...contents,
 		};
 	}
 };
