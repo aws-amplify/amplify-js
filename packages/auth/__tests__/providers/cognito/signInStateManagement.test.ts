@@ -7,6 +7,8 @@ import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpe
 import { signInStore } from '../../../src/providers/cognito/utils/signInStore';
 import { AmplifyV6 } from '@aws-amplify/core';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { cognitoCredentialsProvider } from '../../../src/providers/cognito/credentialsProvider';
+import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 
 describe('local sign-in state management tests', () => {
 	const session = '1234234232';
@@ -27,11 +29,14 @@ describe('local sign-in state management tests', () => {
 					},
 				})
 			);
+		const authConfig = {
+			userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+		};
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		AmplifyV6.configure({
-			Auth: {
-				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				userPoolId: 'us-west-2_zzzzz',
-			},
+			Auth: authConfig,
 		});
 		await signIn({
 			username,
@@ -57,11 +62,14 @@ describe('local sign-in state management tests', () => {
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
 					authAPITestParams.RespondToAuthChallengeCommandOutput
 			);
+		const authConfig = {
+			userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+		};
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		AmplifyV6.configure({
-			Auth: {
-				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				userPoolId: 'us-west-2_zzzzz',
-			},
+			Auth: authConfig,
 		});
 		await signIn({
 			username,

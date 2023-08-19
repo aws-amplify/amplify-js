@@ -8,6 +8,8 @@ import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpe
 import { AuthSignInStep } from '../../../src/types';
 import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { cognitoCredentialsProvider } from '../../../src/providers/cognito/credentialsProvider';
+import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 
 const authConfig = {
 	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
@@ -50,6 +52,8 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn test SMS_MFA ChallengeName.`, async () => {
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		Amplify.configure({
 			Auth: authConfig,
 		});
@@ -98,6 +102,8 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn tests MFA_SETUP challengeName`, async () => {
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		Amplify.configure({
 			Auth: authConfig,
 		});
@@ -138,6 +144,8 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn tests SELECT_MFA_TYPE challengeName `, async () => {
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		Amplify.configure({
 			Auth: authConfig,
 		});
@@ -202,6 +210,8 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test('handleChallengeName should be called with clientMetadata from request', async () => {
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		Amplify.configure({
 			Auth: authConfig,
 		});
@@ -242,6 +252,8 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test('handleChallengeName should be called with clientMetadata from config', async () => {
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfigWithMetadata);
+		cognitoCredentialsProvider.setAuthConfig(authConfigWithMetadata);
 		Amplify.configure({
 			Auth: authConfigWithMetadata,
 		});

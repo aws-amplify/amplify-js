@@ -4,12 +4,12 @@
 import { cognitoIdentityIdProvider } from './IdentityIdProvider';
 import {
 	AuthTokens,
-	AmplifyV6,
 	AWSCredentialsAndIdentityIdProvider,
 	AWSCredentialsAndIdentityId,
 	UserPoolConfigAndIdentityPoolConfig,
 	getCredentialsForIdentity,
 	GetCredentialsOptions,
+	AuthConfig,
 } from '@aws-amplify/core';
 import { Logger } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../errors/AuthError';
@@ -25,12 +25,19 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		this._identityIdStore = identityIdStore;
 	}
 
+	private _authConfig: AuthConfig;
+
 	private _identityIdStore: IdentityIdStore;
 
 	private _credentialsAndIdentityId?: AWSCredentialsAndIdentityId & {
 		isAuthenticatedCreds: boolean;
 	};
 	private _nextCredentialsRefresh: number;
+
+	setAuthConfig(authConfig: AuthConfig) {
+		this._authConfig = authConfig;
+	}
+
 	// TODO(V6): export clear crecentials to singleton
 	async clearCredentials(): Promise<void> {
 		logger.debug('Clearing out credentials');
@@ -175,7 +182,11 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		// TODO(V6): oidcProvider should come from config, TBD
 		const logins = authTokens.idToken
-			? formLoginsMap(authTokens.idToken.toString(), 'COGNITO')
+			? formLoginsMap(
+					authTokens.idToken.toString(),
+					'COGNITO',
+					this._authConfig
+			  )
 			: {};
 		const identityPoolId = authConfig.identityPoolId;
 		if (!identityPoolId) {
@@ -256,9 +267,12 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	}
 }
 
-export function formLoginsMap(idToken: string, oidcProvider: string) {
-	const authConfig = AmplifyV6.getConfig().Auth;
-	const userPoolId = authConfig?.userPoolId;
+export function formLoginsMap(
+	idToken: string,
+	oidcProvider: string,
+	authConfig: AuthConfig
+) {
+	const userPoolId = authConfig.userPoolId;
 	const res = {};
 	if (!userPoolId) {
 		logger.debug('userPoolId is not found in the config');

@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	AmplifyV6,
 	AuthTokens,
 	FetchAuthSessionOptions,
+	AuthConfig,
 } from '@aws-amplify/core';
 import { isTokenExpired } from '@aws-amplify/core/internals/utils';
 import {
@@ -14,10 +14,15 @@ import {
 } from './types';
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
+	private authConfig: AuthConfig;
+
 	tokenStore: AuthTokenStore;
 	tokenRefresher: TokenRefresher;
 	waitForInflightOAuth: () => Promise<void> = async () => {};
 
+	setAuthConfig(authConfig: AuthConfig) {
+		this.authConfig = authConfig;
+	}
 	setTokenRefresher(tokenRefresher: TokenRefresher) {
 		this.tokenRefresher = tokenRefresher;
 	}
@@ -72,11 +77,9 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		tokens: CognitoAuthTokens;
 	}): Promise<CognitoAuthTokens | null> {
 		try {
-			const authConfig = AmplifyV6.getConfig().Auth;
-
 			const newTokens = await this.tokenRefresher({
 				tokens,
-				authConfig,
+				authConfig: this.authConfig,
 			});
 
 			this.setTokens({ tokens: newTokens });
