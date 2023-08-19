@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { S3Exception, S3CopyRequest, S3CopyResult } from '../types';
+import { S3Exception, S3CopyResult } from '../types';
+import { StorageCopyRequest, StorageCopyItem } from '../../../types';
 import {
 	resolveStorageConfig,
 	getKeyWithPrefix,
@@ -17,12 +18,14 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
  * different level or identityId (if source object's level is 'protected').
  *
  * @async
- * @param {S3CopyRequest} req - key of the object
+ * @param {StorageCopyRequest} req - key of the object
  * @return {Promise<S3CopyResult>} The key of the copied object.
  * @throws service: {@link S3Exception} - S3 service errors thrown while getting properties
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
  */
-export const copy = async (req: S3CopyRequest): Promise<S3CopyResult> => {
+export const copy = async (
+	req: StorageCopyRequest<StorageCopyItem>
+): Promise<S3CopyResult> => {
 	const { identityId: defaultIdentityId, credentials } =
 		await resolveCredentials();
 	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
@@ -54,7 +57,7 @@ export const copy = async (req: S3CopyRequest): Promise<S3CopyResult> => {
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
 	// TODO(ashwinkumar6) V6-logger: debug `copying ${finalSrcKey} to ${finalDestKey}`
-	const response = await copyObject(
+	const response: CopyObjectOutput = await copyObject(
 		{
 			region,
 			credentials,
