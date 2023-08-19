@@ -24,7 +24,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		isAuthenticatedCreds: boolean;
 	};
 	private _nextCredentialsRefresh: number;
-	// TODO(V6): find what needs to happen to locally stored identityId
 	// TODO(V6): export clear crecentials to singleton
 	async clearCredentials(): Promise<void> {
 		logger.debug('Clearing out credentials');
@@ -69,7 +68,8 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			}
 			return await this.getGuestCredentials(identityId, authConfig);
 		} else {
-			return await this.credsForOIDCTokens(authConfig, tokens, identityId);
+			// Tokens will always be present if getCredentialsOptions.authenticated is true as dictated by the type
+			return await this.credsForOIDCTokens(authConfig, tokens!, identityId);
 		}
 	}
 
@@ -119,6 +119,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					sessionToken: clientResult.Credentials.SessionToken,
 					expiration: clientResult.Credentials.Expiration,
 				},
+				identityId: identityId,
 			};
 			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
@@ -197,6 +198,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					// TODO(V6): Fixed expiration now + 50 mins
 					expiration: clientResult.Credentials.Expiration,
 				},
+				identityId: identityId,
 			};
 			// Store the credentials in-memory along with the expiration
 			this._credentialsAndIdentityId = {

@@ -99,7 +99,7 @@ export class DefaultIdentityIdStore {
 		} else {
 			this._primaryIdentityId = identity.id;
 			// Clear locally stored guest id
-			this.keyValueStorage.clear();
+			this.keyValueStorage.removeItem(authKeys.identityId);
 		}
 	}
 

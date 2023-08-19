@@ -41,6 +41,7 @@ export async function cognitoIdentityIdProvider({
 			const logins = tokens.idToken
 				? formLoginsMap(tokens.idToken.toString(), 'COGNITO')
 				: {};
+			// TODO(V6): reuse previous guest idenityId if present
 			const generatedIdentityId = await generateIdentityId(logins, authConfig);
 
 			if (identityId && identityId.id === generatedIdentityId) {

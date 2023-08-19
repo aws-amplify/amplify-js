@@ -4,7 +4,7 @@ import {
 	AuthTokens,
 	KeyValueStorageInterface,
 	MemoryKeyValueStorage,
-	FetchAuthSessionOptions
+	FetchAuthSessionOptions,
 } from '@aws-amplify/core';
 import { DefaultTokenStore } from './TokenStore';
 import { TokenOrchestrator } from './TokenOrchestrator';
