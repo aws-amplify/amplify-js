@@ -10,7 +10,7 @@ import {
 	AuthUserAttribute,
 	UpdateUserAttributesRequest,
 	UpdateUserAttributesResult,
-	DeliveryMedium 
+	DeliveryMedium,
 } from '../../../types';
 import {
 	CognitoUpdateUserAttributesOptions,
@@ -58,17 +58,17 @@ export const updateUserAttributes = async (
 	);
 
 	return {
-		...getUpdatedAttributes(userAttributes),
-		...getUnupdatedAttributes(CodeDeliveryDetailsList),
+		...getConfirmedAttributes(userAttributes),
+		...getUnConfirmedAttributes(CodeDeliveryDetailsList),
 	};
 };
 
-function getUpdatedAttributes(
+function getConfirmedAttributes(
 	attributes: AuthUserAttribute
 ): UpdateUserAttributesResult {
-	const updatedAttributes = {} as UpdateUserAttributesResult;
+	const confirmedAttributes = {} as UpdateUserAttributesResult;
 	Object.keys(attributes)?.forEach(key => {
-		updatedAttributes[key] = {
+		confirmedAttributes[key] = {
 			isUpdated: true,
 			nextStep: {
 				updateAttributeStep: AuthUpdateAttributeStep.DONE,
@@ -76,16 +76,16 @@ function getUpdatedAttributes(
 		};
 	});
 
-	return updatedAttributes;
+	return confirmedAttributes;
 }
 
-function getUnupdatedAttributes(
+function getUnConfirmedAttributes(
 	codeDeliveryDetailsList?: CodeDeliveryDetailsType[]
 ): UpdateUserAttributesResult {
-	const unUpdatedAttributes = {} as UpdateUserAttributesResult;
+	const unConfirmedAttributes = {} as UpdateUserAttributesResult;
 	codeDeliveryDetailsList?.forEach(codeDeliveryDetails => {
 		const { AttributeName, DeliveryMedium, Destination } = codeDeliveryDetails;
-		unUpdatedAttributes[AttributeName] = {
+		unConfirmedAttributes[AttributeName] = {
 			isUpdated: false,
 			nextStep: {
 				updateAttributeStep:
@@ -98,5 +98,5 @@ function getUnupdatedAttributes(
 			},
 		};
 	});
-	return unUpdatedAttributes;
+	return unConfirmedAttributes;
 }
