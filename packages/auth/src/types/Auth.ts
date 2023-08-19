@@ -215,11 +215,6 @@ export interface IAuthDevice {
 	name: string;
 }
 
-// TODO(V6): Decide which type to keep, this or the IAuthDevice
-export type AuthDevice = {
-	deviceId: string;
-	deviceName?: string;
-};
 export interface AutoSignInOptions {
 	enabled: boolean;
 	clientMetaData?: ClientMetaData;

@@ -8,7 +8,7 @@ import {
 	DeviceType,
 	ListDevicesCommandInput,
 } from '../utils/clients/CognitoIdentityProvider/types';
-import { AuthDevice } from '../../../types';
+import { AWSAuthDevice } from '../../../types/models';
 
 // Cognito Documentation for max device
 // tslint:disable-next-line:max-line-length
@@ -22,7 +22,7 @@ const MAX_DEVICES = 60;
  * @throws validation: {@link AuthError}
  *
  */
-export async function fetchDevices(): Promise<AuthDevice[]> {
+export async function fetchDevices(): Promise<AWSAuthDevice[]> {
 	const session = await fetchAuthSession({});
 	if (!session.tokens) {
 		throw new AuthError({
@@ -53,14 +53,21 @@ export async function fetchDevices(): Promise<AuthDevice[]> {
 	const devices: DeviceType[] = res.Devices ?? [];
 
 	return devices.map(device => {
-		const deviceInfo: AuthDevice = {
-			deviceId: device.DeviceKey,
-		};
-		const deviceName = device.DeviceAttributes.find(
-			({ Name }) => Name === 'device_name'
-		);
+		if (device.DeviceKey && device.DeviceAttributes) {
+			const deviceInfo: AWSAuthDevice = {
+				deviceId: device.DeviceKey,
+			};
+			const deviceName = device.DeviceAttributes.find(
+				({ Name }) => Name === 'device_name'
+			);
 
-		if (deviceName) deviceInfo.deviceName = deviceName.Value;
-		return deviceInfo;
+			if (deviceName) deviceInfo.deviceName = deviceName.Value;
+			return deviceInfo;
+		} else {
+			throw new AuthError({
+				name: 'ListDevicesException',
+				message: `DeviceKey or DeviceAttributes was undefined`,
+			});
+		}
 	});
 }

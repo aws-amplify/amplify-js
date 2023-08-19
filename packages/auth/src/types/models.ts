@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { CognitoUserAttributeKey } from '../providers/cognito/types';
 import {
 	AuthResetPasswordStep,
 	AuthSignInStep,
@@ -161,3 +162,16 @@ export type DoneAttributeStep = {
 export type AuthNextUpdateAttributeStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = ConfirmAttributeWithCodeAttributeStep<UserAttributeKey> | DoneAttributeStep;
+
+// TODO(V6): Decide which type to keep, this or the IAuthDevice
+export type AuthDevice = {
+	deviceId: string;
+	deviceName: string;
+};
+
+export interface AWSAuthDevice extends AuthDevice {
+	attributes: AuthUserAttribute<CognitoUserAttributeKey>[];
+	createDate?: Date;
+	lastAuthenticatedDate?: Date;
+	lastModifiedDate?: Date;
+}
