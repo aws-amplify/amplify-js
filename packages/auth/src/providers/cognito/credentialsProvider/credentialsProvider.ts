@@ -119,7 +119,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					sessionToken: clientResult.Credentials.SessionToken,
 					expiration: clientResult.Credentials.Expiration,
 				},
-				identityId: identityId,
+				identityId,
 			};
 			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
@@ -198,7 +198,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					// TODO(V6): Fixed expiration now + 50 mins
 					expiration: clientResult.Credentials.Expiration,
 				},
-				identityId: identityId,
+				identityId,
 			};
 			// Store the credentials in-memory along with the expiration
 			this._credentialsAndIdentityId = {
