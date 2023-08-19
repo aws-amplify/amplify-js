@@ -5,6 +5,7 @@ import {
 	ResourcesConfig,
 	AmplifyV6,
 	LocalStorage,
+	CookieStorage,
 } from '@aws-amplify/core';
 import {
 	CognitoUserPoolsTokenProvider,
@@ -27,7 +28,13 @@ export const DefaultAmplifyV6 = {
 		if (libraryOptions !== undefined) {
 			updatedLibraryOptions = libraryOptions;
 		} else {
-			CognitoUserPoolsTokenProvider.setKeyValueStorage(LocalStorage);
+			CognitoUserPoolsTokenProvider.setKeyValueStorage(
+				resourceConfig.ssr
+					? new CookieStorage({
+							sameSite: 'strict',
+					  })
+					: LocalStorage
+			);
 			updatedLibraryOptions = defaultLibraryOptions;
 		}
 

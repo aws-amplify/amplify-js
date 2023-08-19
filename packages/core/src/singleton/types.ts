@@ -14,9 +14,7 @@ import {
 	StorageAccessLevel,
 	StorageConfig,
 } from './Storage/types';
-import {
-	CacheConfig
-} from '../Cache/types';
+import { CacheConfig } from '../Cache/types';
 import { I18nOptions } from '../I18n/types';
 
 export type ResourcesConfig = {
@@ -30,6 +28,7 @@ export type ResourcesConfig = {
 	Notifications?: {};
 	Predictions?: {};
 	Storage?: StorageConfig;
+	ssr?: boolean;
 };
 
 export type LibraryOptions = {
