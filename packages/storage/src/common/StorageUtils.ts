@@ -1,12 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
+	Hub
+} from '@aws-amplify/core';
+import {
 	Category,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
-	Hub,
-	StorageAction,
-} from '@aws-amplify/core';
+	StorageAction
+} from '@aws-amplify/core/internals/library-utils';
 import { AMPLIFY_SYMBOL } from './StorageConstants';
 
 export const byteLength = (x: unknown) => {

@@ -2,16 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	ConsoleLogger as Logger,
-	ClientDevice,
 	Credentials,
 	Signer,
 	Hub,
+	Cache
+} from '@aws-amplify/core';
+import {
+	ConsoleLogger as Logger,
+	ClientDevice,
 	transferKeyToLowerCase,
 	transferKeyToUpperCase,
 	AnalyticsAction,
-	Cache,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/library-utils';
 import {
 	putEvents,
 	PutEventsInput,

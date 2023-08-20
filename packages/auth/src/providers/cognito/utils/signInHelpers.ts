@@ -3,9 +3,11 @@
 
 import {
 	AmplifyV6,
-	AuthConfig,
-	assertTokenProviderConfig,
+	AuthConfig
 } from '@aws-amplify/core';
+import {
+	assertTokenProviderConfig
+} from '@aws-amplify/core/internals/library-utils';
 import {
 	getLargeAValue,
 	getNowString,

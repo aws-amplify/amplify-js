@@ -5,10 +5,8 @@
 
 import {
 	ConsoleLogger as Logger,
-	Hub,
-	Constants,
 	browserOrNode,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/library-utils';
 import { SessionTrackOpts } from '../types';
 
 const logger = new Logger('SessionTracker');

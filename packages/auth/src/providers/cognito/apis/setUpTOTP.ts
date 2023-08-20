@@ -1,10 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyV6 as Amplify,
-	assertTokenProviderConfig,
-} from '@aws-amplify/core';
+import { AmplifyV6 as Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/library-utils';
 import { fetchAuthSession } from '../../../';
 import { AuthError } from '../../../errors/AuthError';
 import { TOTPSetupDetails } from '../../../types/models';

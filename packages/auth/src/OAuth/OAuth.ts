@@ -13,15 +13,17 @@ import {
 } from '../types/Auth';
 
 import {
+	Hub
+} from '@aws-amplify/core'
+import {
 	AuthAction,
 	Category,
 	ConsoleLogger as Logger,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
-	Hub,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/library-utils';
 
 import { Sha256 } from '@aws-crypto/sha256-js';
 

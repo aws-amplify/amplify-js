@@ -6,7 +6,8 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { UpdatePasswordRequest } from '../../../types/requests';
 import { changePassword } from '../utils/clients/CognitoIdentityProvider';
 import { ChangePasswordException } from '../../cognito/types/errors';
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/library-utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';

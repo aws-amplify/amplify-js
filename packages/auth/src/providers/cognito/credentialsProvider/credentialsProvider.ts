@@ -3,7 +3,6 @@
 
 import { cognitoIdentityIdProvider, setIdentityId } from './IdentityIdProvider';
 import {
-	Logger,
 	AuthTokens,
 	AmplifyV6,
 	AWSCredentialsAndIdentityIdProvider,
@@ -12,6 +11,9 @@ import {
 	getCredentialsForIdentity,
 	GetCredentialsOptions,
 } from '@aws-amplify/core';
+import {
+	Logger
+} from '@aws-amplify/core/internals/library-utils'
 import { AuthError } from '../../../errors/AuthError';
 
 const logger = new Logger('CognitoCredentialsProvider');

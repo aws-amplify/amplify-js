@@ -28,7 +28,8 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/library-utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,

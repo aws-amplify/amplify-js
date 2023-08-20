@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify,  } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/library-utils';
 import { AWSS3Provider } from './providers';
 import {
 	StorageCopySource,

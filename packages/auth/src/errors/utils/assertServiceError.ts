@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthError } from '../AuthError';
-import { AmplifyErrorString, ServiceError } from '@aws-amplify/core';
+import { AmplifyErrorString, ServiceError } from '@aws-amplify/core/internals/library-utils';
 
 export function assertServiceError(
 	error: unknown
