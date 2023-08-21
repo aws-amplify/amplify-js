@@ -62,7 +62,7 @@ describe('confirm user attribute API happy path cases', () => {
 		const confirmationCode = '123456';
 		await confirmUserAttribute({
 			userAttributeKey: 'email',
-			confirmationCode: confirmationCode,
+			confirmationCode,
 		});
 
 		expect(confirmUserAttributeSpy).toHaveBeenCalledWith(
@@ -83,7 +83,7 @@ describe('confirmUserAttribute API error path cases:', () => {
 			const confirmationCode = '';
 			await confirmUserAttribute({
 				userAttributeKey: 'email',
-				confirmationCode: confirmationCode,
+				confirmationCode,
 			});
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
@@ -116,7 +116,7 @@ describe('confirmUserAttribute API error path cases:', () => {
 			const confirmationCode = '123456';
 			await confirmUserAttribute({
 				userAttributeKey: 'email',
-				confirmationCode: confirmationCode,
+				confirmationCode,
 			});
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
