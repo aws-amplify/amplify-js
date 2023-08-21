@@ -1,4 +1,4 @@
-import { decodeJWT } from '@aws-amplify/core/internals/library-utils';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { mockJsonResponse, mockRequestId } from './testUtils/data';
 import { CognitoUserPoolTokenRefresher } from '../../../src/providers/cognito/apis/tokenRefresher';

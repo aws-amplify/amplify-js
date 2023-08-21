@@ -13,7 +13,7 @@ import {
 	transferKeyToLowerCase,
 	transferKeyToUpperCase,
 	AnalyticsAction,
-} from '@aws-amplify/core/internals/library-utils';
+} from '@aws-amplify/core/internals/utils';
 import {
 	putEvents,
 	PutEventsInput,

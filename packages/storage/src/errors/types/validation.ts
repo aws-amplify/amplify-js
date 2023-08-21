@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyErrorMap } from '@aws-amplify/core/internals/library-utils';
+import { AmplifyErrorMap } from '@aws-amplify/core/internals/utils';
 
 export enum StorageValidationErrorCode {
 	NoCredentials = 'NoCredentials',

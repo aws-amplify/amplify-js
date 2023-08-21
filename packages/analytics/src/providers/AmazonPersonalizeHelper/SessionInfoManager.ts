@@ -8,7 +8,7 @@ import { Cache } from '@aws-amplify/core';
 import {
 	ConsoleLogger as Logger,
 	browserOrNode
-} from '@aws-amplify/core/internals/library-utils';
+} from '@aws-amplify/core/internals/utils';
 
 const PERSONALIZE_CACHE = '_awsct';
 const PERSONALIZE_CACHE_USERID = '_awsct_uid';

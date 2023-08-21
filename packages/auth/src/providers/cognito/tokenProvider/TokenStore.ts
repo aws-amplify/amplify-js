@@ -8,7 +8,7 @@ import {
 	assertTokenProviderConfig,
 	asserts,
 	decodeJWT,
-} from '@aws-amplify/core/internals/library-utils';
+} from '@aws-amplify/core/internals/utils';
 import {
 	AuthKeys,
 	AuthTokenStorageKeys,

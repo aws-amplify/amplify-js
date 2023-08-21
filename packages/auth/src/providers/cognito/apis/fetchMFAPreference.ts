@@ -6,7 +6,7 @@ import { getMFAType, getMFATypes } from '../utils/signInHelpers';
 import { GetUserException } from '../types/errors';
 import { getUser } from '../utils/clients/CognitoIdentityProvider';
 import { AmplifyV6 } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/library-utils';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';

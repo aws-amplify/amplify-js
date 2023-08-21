@@ -8,7 +8,7 @@ import {
 } from '@aws-amplify/core';
 import { 
 	ConsoleLogger as Logger,
-} from '@aws-amplify/core/internals/library-utils';
+} from '@aws-amplify/core/internals/utils';
 import { AWSPinpointProvider } from './providers/AWSPinpointProvider';
 
 import {

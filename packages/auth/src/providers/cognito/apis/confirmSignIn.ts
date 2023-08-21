@@ -29,7 +29,7 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { AmplifyV6 } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/library-utils';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,

@@ -1,5 +1,5 @@
 {
-	"name": "@aws-amplify/core/internals/library-utils",
+	"name": "@aws-amplify/core/internals/utils",
 	"types": "../../lib-esm/libraryUtils.d.ts",
 	"main": "../../lib/libraryUtils.js",
 	"module": "../../lib-esm/libraryUtils.js",

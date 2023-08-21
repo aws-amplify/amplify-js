@@ -4,7 +4,7 @@
 import {
 	AmplifyV6 as Amplify
 } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/library-utils';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import {
 	AuthUserAttribute,

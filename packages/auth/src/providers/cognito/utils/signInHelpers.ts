@@ -7,7 +7,7 @@ import {
 } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig
-} from '@aws-amplify/core/internals/library-utils';
+} from '@aws-amplify/core/internals/utils';
 import {
 	getLargeAValue,
 	getNowString,

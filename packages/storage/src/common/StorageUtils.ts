@@ -8,7 +8,7 @@ import {
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
 	StorageAction
-} from '@aws-amplify/core/internals/library-utils';
+} from '@aws-amplify/core/internals/utils';
 import { AMPLIFY_SYMBOL } from './StorageConstants';
 
 export const byteLength = (x: unknown) => {

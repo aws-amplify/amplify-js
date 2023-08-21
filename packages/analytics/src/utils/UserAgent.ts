@@ -5,7 +5,7 @@ import {
 	Category,
 	getAmplifyUserAgentObject,
 	getAmplifyUserAgent,
-} from '@aws-amplify/core/internals/library-utils';
+} from '@aws-amplify/core/internals/utils';
 import { UserAgent } from '@aws-sdk/types';
 
 export function getAnalyticsUserAgent(action: AnalyticsAction): UserAgent {

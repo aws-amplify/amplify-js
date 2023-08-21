@@ -13,7 +13,7 @@ import {
 	RespondToAuthChallengeException,
 } from '../types/errors';
 import { AmplifyV6 } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/library-utils';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import {
 	getSignInResult,
 	getSignInResultFromError,

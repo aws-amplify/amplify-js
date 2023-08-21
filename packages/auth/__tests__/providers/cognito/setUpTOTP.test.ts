@@ -6,7 +6,7 @@ import * as associateSoftwareTokenClient from '../../../src/providers/cognito/ut
 import { setUpTOTP } from '../../../src/providers/cognito';
 import { AssociateSoftwareTokenCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { AmplifyV6 as Amplify } from 'aws-amplify';
-import { decodeJWT } from '@aws-amplify/core/internals/library-utils';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import * as authUtils from '../../../src';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';

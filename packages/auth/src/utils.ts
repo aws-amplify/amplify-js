@@ -6,7 +6,7 @@ import {
 	Category,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
-} from '@aws-amplify/core/internals/library-utils';
+} from '@aws-amplify/core/internals/utils';
 
 export function getAuthUserAgentValue(
 	action: AuthAction,

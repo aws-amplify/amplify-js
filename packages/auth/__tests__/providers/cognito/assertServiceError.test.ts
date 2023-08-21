@@ -1,4 +1,4 @@
-import { AmplifyErrorString } from '@aws-amplify/core/internals/library-utils';
+import { AmplifyErrorString } from '@aws-amplify/core/internals/utils';
 import { assertServiceError } from '../../../src/errors/utils/assertServiceError';
 import { AuthError } from '../../../src/errors/AuthError';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';

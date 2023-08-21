@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /*
-This file maps top-level exports from `@aws-amplify/core/internals/library-utils`. These are intended to be internal
+This file maps top-level exports from `@aws-amplify/core/internals/utils`. These are intended to be internal
 utils for use throughout the library.
 */
 // JS utilities

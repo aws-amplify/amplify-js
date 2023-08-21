@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify,  } from '@aws-amplify/core';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/library-utils';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import { AWSS3Provider } from './providers';
 import {
 	StorageCopySource,

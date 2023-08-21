@@ -8,7 +8,7 @@ import {
 	ResponseBodyMixin,
 	withMemoization,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/library-utils';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import type { EventEmitter } from 'events';
 import {
 	SEND_DOWNLOAD_PROGRESS_EVENT,

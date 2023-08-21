@@ -9,7 +9,7 @@ import {
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 	StorageAction,
-} from '@aws-amplify/core/internals/library-utils';
+} from '@aws-amplify/core/internals/utils';
 import { AWSS3Provider } from '../providers';
 import {
 	StorageCopySource,

@@ -1,5 +1,5 @@
 import { Credentials } from '@aws-amplify/core';
-import { ClientDevice } from '@aws-amplify/core/internals/library-utils';
+import { ClientDevice } from '@aws-amplify/core/internals/utils';
 import {
 	putEvents,
 	updateEndpoint,

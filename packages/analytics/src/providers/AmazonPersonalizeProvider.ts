@@ -8,7 +8,7 @@ import {
 	ConsoleLogger as Logger,
 	browserOrNode,
 	AnalyticsAction,
-} from '@aws-amplify/core/internals/library-utils';
+} from '@aws-amplify/core/internals/utils';
 import {
 	PersonalizeEventsClient,
 	PutEventsCommand,

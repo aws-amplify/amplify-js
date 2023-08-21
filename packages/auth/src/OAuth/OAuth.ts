@@ -17,7 +17,7 @@ import {
 	ConsoleLogger as Logger,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
-} from '@aws-amplify/core/internals/library-utils';
+} from '@aws-amplify/core/internals/utils';
 
 import { Sha256 } from '@aws-crypto/sha256-js';
 

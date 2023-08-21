@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials, ICredentials } from '@aws-amplify/core';
-import { StorageAction } from '@aws-amplify/core/internals/library-utils';
+import { StorageAction } from '@aws-amplify/core/internals/utils';
 import * as utils from '../../src/common/S3ClientUtils';
 import { AWSS3Provider as StorageProvider } from '../../src/providers/AWSS3Provider';
 import { headObject, getObject } from '../../src/AwsClients/S3';

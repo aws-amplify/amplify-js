@@ -8,7 +8,7 @@ import { verifyTOTPSetup } from '../../../src/providers/cognito';
 import * as verifySoftwareTokenClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { VerifySoftwareTokenCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { AmplifyV6 as Amplify } from 'aws-amplify';
-import { decodeJWT } from '@aws-amplify/core/internals/library-utils';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import * as authUtils from '../../../src';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';

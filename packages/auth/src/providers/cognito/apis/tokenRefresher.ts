@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { CognitoAuthTokens, TokenRefresher } from '../tokenProvider/types';
 import { AuthConfig } from '@aws-amplify/core';
-import { decodeJWT } from '@aws-amplify/core/internals/library-utils';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { initiateAuth } from '../utils/clients/CognitoIdentityProvider';
 
 export const CognitoUserPoolTokenRefresher: TokenRefresher = async ({

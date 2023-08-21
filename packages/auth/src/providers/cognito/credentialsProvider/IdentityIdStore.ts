@@ -6,7 +6,7 @@ import {
 	Identity,
 	KeyValueStorageInterface
 } from '@aws-amplify/core';
-import { assertIdentityPooIdConfig } from '@aws-amplify/core/internals/library-utils';
+import { assertIdentityPooIdConfig } from '@aws-amplify/core/internals/utils';
 import { IdentityIdStorageKeys } from './types';
 import { AuthError } from '../../../errors/AuthError';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';

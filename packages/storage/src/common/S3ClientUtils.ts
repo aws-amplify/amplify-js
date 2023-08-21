@@ -9,7 +9,7 @@ import {
 	Logger,
 	StorageAction,
 	getAmplifyUserAgent
-} from '@aws-amplify/core/internals/library-utils';
+} from '@aws-amplify/core/internals/utils';
 import type { Credentials as AwsCredentials } from '@aws-sdk/types';
 import type { EventEmitter } from 'events';
 
