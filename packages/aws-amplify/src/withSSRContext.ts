@@ -30,6 +30,7 @@ export function withSSRContext(context: Context = {}) {
 	if (modules.includes(DataStore)) {
 		modules.push(InternalAPI);
 	}
+
 	const previousConfig = Amplify.configure();
 	const amplify = new AmplifyClass();
 	const storage = new UniversalStorage({ req });
