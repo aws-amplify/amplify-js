@@ -3,6 +3,7 @@
 import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import Observable from 'zen-observable-ts';
+import { userAgentDetailsGraphQL as customUserAgentDetails } from '../constants';
 import {
 	InternalSchema,
 	ModelInstanceMetadata,
@@ -25,10 +26,7 @@ import {
 } from '../utils';
 import {
 	jitteredExponentialRetry,
-	Category,
 	ConsoleLogger as Logger,
-	CustomUserAgentDetails,
-	DataStoreAction,
 	Hub,
 	NonRetryableError,
 	BackgroundProcessManager,
@@ -118,6 +116,7 @@ class SyncProcessor {
 			defaultAuthMode: this.amplifyConfig.aws_appsync_authenticationType,
 			modelName: modelDefinition.name,
 			schema: this.schema,
+			customUserAgentDetails,
 		});
 
 		// sync only needs the READ auth mode(s)
@@ -218,11 +217,6 @@ class SyncProcessor {
 						authMode,
 						this.amplifyConfig
 					);
-
-					const customUserAgentDetails: CustomUserAgentDetails = {
-						category: Category.DataStore,
-						action: DataStoreAction.GraphQl,
-					};
 
 					return await this.amplifyContext.InternalAPI.graphql(
 						{

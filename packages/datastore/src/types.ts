@@ -16,10 +16,11 @@ import {
 } from './util';
 import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
-import { Auth } from '@aws-amplify/auth';
+import { InternalAuth } from '@aws-amplify/auth/internals';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import { Cache } from '@aws-amplify/cache';
 import { Adapter } from './storage/adapter';
+import { CustomUserAgentDetails } from '@aws-amplify/core';
 
 export type Scalar<T> = T extends Array<infer InnerType> ? InnerType : T;
 
@@ -971,6 +972,7 @@ export type AuthModeStrategyParams = {
 	schema: InternalSchema;
 	modelName: string;
 	operation: ModelOperation;
+	customUserAgentDetails?: CustomUserAgentDetails;
 };
 
 export type AuthModeStrategy = (
@@ -1102,7 +1104,7 @@ export enum LimitTimerRaceResolvedValues {
 //#endregion
 
 export type AmplifyContext = {
-	Auth: typeof Auth;
+	InternalAuth: typeof InternalAuth;
 	InternalAPI: typeof InternalAPI;
 	Cache: typeof Cache;
 };
