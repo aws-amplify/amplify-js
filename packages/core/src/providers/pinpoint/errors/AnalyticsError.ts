@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyError, ErrorParams } from '@aws-amplify/core';
+import { AmplifyError } from '../../../Errors';
+import { ErrorParams } from '../../../types/types';
 
 export class AnalyticsError extends AmplifyError {
 	constructor(params: ErrorParams) {

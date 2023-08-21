@@ -1,8 +1,11 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import {
 	validationErrorMap,
-} from '../types/errors';
+	AnalyticsValidationErrorCode
+} from '../types';
 import { AnalyticsError } from '../AnalyticsError';
-import { AnalyticsValidationErrorCode } from '../types/errors';
 
 export function assertValidationError(
 	assertion: boolean,

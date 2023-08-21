@@ -1,9 +1,12 @@
-import { AmplifyErrorMap } from '@aws-amplify/core';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { AmplifyErrorMap } from '../../../../types';
 
 export enum AnalyticsValidationErrorCode {
 	InvalidAnalyticsConfiguration = 'InvalidAnalyticsConfiguration',
 	NoCredentials = 'NoCredentials'
-};
+}
 
 export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> = {
 	[AnalyticsValidationErrorCode.NoCredentials]: {
