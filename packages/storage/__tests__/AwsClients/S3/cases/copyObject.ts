@@ -52,8 +52,8 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 		headers: DEFAULT_RESPONSE_HEADERS,
 		body:
 			'<CopyObjectResult>' +
-			'<ETag>string</ETag>' +
-			'<LastModified>timestamp</LastModified>' +
+			'<ETag>599bab3ed2c697f1d26842727561fd94</ETag>' +
+			'<LastModified>2013-09-17T18:07:53.000Z</LastModified>' +
 			'<ChecksumCRC32>string</ChecksumCRC32>' +
 			'<ChecksumCRC32C>string</ChecksumCRC32C>' +
 			'<ChecksumSHA1>string</ChecksumSHA1>' +
@@ -62,6 +62,8 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 	},
 	{
 		$metadata: expect.objectContaining(expectedMetadata),
+		ETag: '599bab3ed2c697f1d26842727561fd94',
+		LastModified: new Date('2013-09-17T18:07:53.000Z'),
 	},
 ];
 
