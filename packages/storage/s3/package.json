@@ -1,0 +1,7 @@
+{
+	"name": "@aws-amplify/storage/s3",
+	"main": "../lib/providers/s3/index.js",
+	"browser": "../lib-esm/providers/s3/index.js",
+	"module": "../lib-esm/providers/s3/index.js",
+	"typings": "../lib-esm/providers/s3/index.d.ts"
+}

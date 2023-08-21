@@ -4,5 +4,16 @@
 import { Storage, StorageInstance } from './Storage';
 
 export { Storage as StorageClass, StorageInstance as Storage };
-export { AWSS3Provider } from './providers';
+export {
+	AWSS3Provider,
+	uploadData,
+	uploadFile,
+	downloadData,
+	downloadFile,
+	remove,
+	list,
+	getProperties,
+	copy,
+	getUrl,
+} from './providers';
 export * from './types';
