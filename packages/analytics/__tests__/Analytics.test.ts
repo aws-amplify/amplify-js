@@ -6,7 +6,8 @@ jest.mock('../src/vendor/dom-utils', () => {
 	};
 });
 
-import { ClientDevice, parseAWSExports, Hub } from '@aws-amplify/core';
+import { parseAWSExports, Hub } from '@aws-amplify/core';
+import { ClientDevice } from '@aws-amplify/core/internals/library-utils';
 import { AnalyticsClass as Analytics } from '../src/Analytics';
 import { AnalyticsProvider, PromiseHandlers } from '../src/types';
 import { AWSPinpointProvider as AWSAnalyticsProvider } from '../src/providers/AWSPinpointProvider';

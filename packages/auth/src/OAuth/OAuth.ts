@@ -12,15 +12,9 @@ import {
 	CognitoHostedUIIdentityProvider,
 } from '../types/Auth';
 
+import { Hub } from '@aws-amplify/core';
 import {
-	Hub
-} from '@aws-amplify/core'
-import {
-	AuthAction,
-	Category,
 	ConsoleLogger as Logger,
-	CustomUserAgentDetails,
-	getAmplifyUserAgent,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
 } from '@aws-amplify/core/internals/library-utils';

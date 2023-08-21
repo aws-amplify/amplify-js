@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Credentials, ICredentials, StorageAction } from '@aws-amplify/core';
+import { Credentials, ICredentials } from '@aws-amplify/core';
+import { StorageAction } from '@aws-amplify/core/internals/library-utils';
 import * as utils from '../../src/common/S3ClientUtils';
 import { AWSS3Provider as StorageProvider } from '../../src/providers/AWSS3Provider';
-import { StorageOptions } from '../../src';
 import { headObject, getObject } from '../../src/AwsClients/S3';
 import { presignUrl } from '@aws-amplify/core/internals/aws-client-utils';
 import { InternalStorageClass } from '../../src/internals/InternalStorage';

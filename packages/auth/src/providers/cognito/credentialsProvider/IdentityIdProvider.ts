@@ -7,9 +7,7 @@ import {
 	Identity,
 	getId,
 } from '@aws-amplify/core';
-import {
-	Logger
-} from '@aws-amplify/core/internals/library-utils'
+import { Logger } from '@aws-amplify/core/internals/library-utils';
 import { formLoginsMap } from './credentialsProvider';
 import { AuthError } from '../../../errors/AuthError';
 import { defaultIdentityIdStore } from '.';

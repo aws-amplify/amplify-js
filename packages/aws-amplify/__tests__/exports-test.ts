@@ -6,17 +6,12 @@ describe('aws-amplify', () => {
 			expect(Object.keys(exported)).toMatchInlineSnapshot(`
 			Array [
 			  "Amplify",
+			  "AmplifyV6",
 			  "withSSRContext",
 			  "Analytics",
 			  "AWSPinpointProvider",
 			  "Storage",
 			  "StorageClass",
-			  "Logger",
-			  "Hub",
-			  "ClientDevice",
-			  "Signer",
-			  "I18n",
-			  "AmplifyV6",
 			]
 		`);
 		});

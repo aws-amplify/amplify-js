@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
+import { Hub, Credentials, ICredentials } from '@aws-amplify/core';
+import { Logger } from '@aws-amplify/core/internals/library-utils';
 import {
 	listObjectsV2,
 	createMultipartUpload,

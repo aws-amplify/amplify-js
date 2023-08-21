@@ -1,4 +1,4 @@
-import { missingConfig, invalidParameter } from '../src/Errors';
+import { missingConfig, invalidParameter } from '../src/Util/Errors';
 
 describe('Error', () => {
 	test('Missing Config', () => {
