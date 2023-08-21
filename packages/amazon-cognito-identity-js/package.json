@@ -1,5 +1,6 @@
 {
   "name": "amazon-cognito-identity-js",
+  "private": true,
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
   "version": "6.4.0",
   "author": {
