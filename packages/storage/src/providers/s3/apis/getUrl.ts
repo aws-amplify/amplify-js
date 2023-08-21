@@ -68,17 +68,17 @@ export const getUrl = async function (
 	};
 
 	let urlExpiration = options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION;
+	const awsCredExpiration = credentials?.expiration;
+	// expiresAt is the minimum of credential expiration and url expiration
+	if (awsCredExpiration)
+		urlExpiration =
+			awsCredExpiration.getTime() < urlExpiration
+				? urlExpiration
+				: awsCredExpiration.getTime();
 	assertValidationError(
 		urlExpiration > MAX_URL_EXPIRATION,
 		StorageValidationErrorCode.UrlExpirationMaxLimitExceed
 	);
-	const awsCredExpiration = credentials?.expiration;
-	// expiresAt is the minimum of credential expiration and url expiration
-	urlExpiration = awsCredExpiration
-		? urlExpiration < awsCredExpiration.getTime()
-			? urlExpiration
-			: awsCredExpiration.getTime()
-		: urlExpiration;
 	return {
 		url: await getPresignedGetObjectUrl(getUrlOptions, getUrlParams),
 		expiresAt: new Date(Date.now() + urlExpiration),
