@@ -17,6 +17,7 @@ export {
 	// AmazonPersonalizeProvider,
 } from '@aws-amplify/analytics';
 // export { Auth } from '@aws-amplify/auth';
+// TODO(v6): (ashwinkumar6) cleanup V5 legacy storage exports
 export { Storage, StorageClass } from '@aws-amplify/storage';
 export {
 	ConsoleLogger as Logger,
