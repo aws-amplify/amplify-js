@@ -17,12 +17,18 @@ import {
 import {
 	AnalyticsConfig
 } from './Analytics/types';
+import {
+	CacheConfig
+} from '../Cache/types';
+import { I18nOptions } from '../I18n/types';
 
 export type ResourcesConfig = {
 	API?: {};
 	Analytics?: AnalyticsConfig;
 	Auth?: AuthConfig;
+	Cache?: CacheConfig;
 	DataStore?: {};
+	I18n?: I18nOptions;
 	Interactions?: {};
 	Notifications?: {};
 	Predictions?: {};

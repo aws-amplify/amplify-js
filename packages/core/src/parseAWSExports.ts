@@ -5,7 +5,7 @@ import { ConsoleLogger as Logger } from './Logger';
 
 const logger = new Logger('Parser');
 
-export const parseAWSExports = (config): AmplifyConfig => {
+export const parseAWSExports = (config:Record<string,any>): AmplifyConfig => {
 	const amplifyConfig: AmplifyConfig = {};
 	// Analytics
 	if (config['aws_mobile_analytics_app_id']) {

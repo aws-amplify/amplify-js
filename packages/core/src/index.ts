@@ -32,7 +32,6 @@ export {
 } from './JS';
 export { Signer } from './Signer';
 export { parseAWSExports } from './parseAWSExports';
-export { AWSCloudWatchProvider } from './Providers';
 export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export { AppState, AsyncStorage, Linking } from './RNComponents';
 export { Credentials, CredentialsClass } from './Credentials';
@@ -84,11 +83,7 @@ export const Constants = {
 };
 
 export {
-	AWS_CLOUDWATCH_BASE_BUFFER_SIZE,
 	AWS_CLOUDWATCH_CATEGORY,
-	AWS_CLOUDWATCH_MAX_BATCH_EVENT_SIZE,
-	AWS_CLOUDWATCH_MAX_EVENT_SIZE,
-	AWS_CLOUDWATCH_PROVIDER_NAME,
 	BackgroundManagerNotOpenError,
 	BackgroundProcessManager,
 	BackgroundProcessManagerState,
@@ -114,6 +109,9 @@ export { InMemoryCache } from './Cache/InMemoryCache';
 export { CacheConfig } from './Cache/types';
 export { ICache } from './Cache/types';
 export { BrowserStorageCache };
+export { BrowserStorageCache as Cache }; // Maintain interoperability with React Native
+
+// Singleton exports
 export {
 	decodeJWT,
 	assertTokenProviderConfig,
@@ -146,9 +144,6 @@ export {
 
 export { AmplifyV6, fetchAuthSession } from './singleton';
 export { LibraryOptions, ResourcesConfig } from './singleton/types';
-
-// Standard `Cache` export to maintain interoperability with React Native
-export { BrowserStorageCache as Cache };
 
 /**
  * @deprecated use named import

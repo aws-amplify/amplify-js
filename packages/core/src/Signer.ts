@@ -49,7 +49,21 @@ export class Signer {
     *
     * @returns {object} Signed HTTP request
     */
-	static sign(request, accessInfo, serviceInfo) {
+	static sign(
+		request: {
+			headers: any;
+			body?: BodyInit;
+			data?: any;
+			url: string;
+			method: string;
+		},
+		accessInfo: {
+			access_key: string;
+			secret_key: string;
+			session_token: string;
+		},
+		serviceInfo: { service: string; region: string }
+	) {
 		request.headers = request.headers || {};
 
 		if (request.body && !request.data) {
@@ -61,7 +75,7 @@ export class Signer {
 		const requestToSign = {
 			...request,
 			body: request.data,
-			url: new URL(request.url as string),
+			url: new URL(request.url),
 		};
 
 		const options = getOptions(requestToSign, accessInfo, serviceInfo);
@@ -130,7 +144,12 @@ export class Signer {
 	}
 }
 
-const getOptions = (request, accessInfo, serviceInfo, expiration?) => {
+const getOptions = (
+	request: { url: URL } & Record<string, any>,
+	accessInfo: { access_key: string; secret_key: string; session_token: string },
+	serviceInfo: { service: string; region: string },
+	expiration?: number
+) => {
 	const { access_key, secret_key, session_token } = accessInfo ?? {};
 	const { region: urlRegion, service: urlService } = parseServiceInfo(
 		request.url

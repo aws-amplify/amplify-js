@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Md5 } from '@aws-sdk/md5-js';
 import { extendedEncodeURIComponent } from '@aws-amplify/core/internals/aws-client-utils';
+import { AmplifyErrorString } from '@aws-amplify/core';
 import { toBase64, utf8Encode } from '../utils';
+import { StorageError } from '../../../errors/StorageError';
 
 /**
  * @internal
@@ -10,7 +12,7 @@ import { toBase64, utf8Encode } from '../utils';
 export const assignStringVariables = (
 	values: Record<string, { toString: () => string } | undefined>
 ): Record<string, string> => {
-	const queryParams = {};
+	const queryParams: Record<string, string> = {};
 	for (const [key, value] of Object.entries(values)) {
 		if (value != null) {
 			queryParams[key] = value.toString();
@@ -110,3 +112,20 @@ export const serializePathnameObjectKey = (url: URL, key: string) => {
 		`/${key.split('/').map(extendedEncodeURIComponent).join('/')}`
 	);
 };
+
+export function validateS3RequiredParameter(
+	assertion: boolean,
+	paramName: string
+): asserts assertion {
+	if (!assertion) {
+		throw new StorageError({
+			name: AmplifyErrorString.UNKNOWN,
+			message: 'An unknown error has ocurred.',
+			underlyingError: new TypeError(
+				`Expected a non-null value for S3 parameter ${paramName}`
+			),
+			recoverySuggestion:
+				'This is likely to be a bug. Please reach out to library authors.',
+		});
+	}
+}

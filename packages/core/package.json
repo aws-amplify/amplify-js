@@ -34,7 +34,7 @@
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"prepublishOnly": "npm run build",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 76.41"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 92.36"
 	},
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js",
@@ -63,7 +63,6 @@
 	],
 	"dependencies": {
 		"@aws-crypto/sha256-js": "1.2.2",
-		"@aws-sdk/client-cloudwatch-logs": "3.6.1",
 		"@aws-sdk/types": "3.6.1",
 		"@aws-sdk/util-hex-encoding": "3.6.1",
 		"@types/node-fetch": "2.6.4",
@@ -80,7 +79,8 @@
 		"find": "^0.2.7",
 		"genversion": "^2.2.0",
 		"react-native": "^0.68.7",
-		"typescript": "5.0.2"
+		"typescript": "5.0.2",
+		"@react-native-community/netinfo": "4.7.0"
 	},
 	"size-limit": [
 		{

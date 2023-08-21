@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthUserAttributeKey } from './models';
+import { AuthUserAttribute, AuthUserAttributeKey } from './models';
 import { AuthServiceOptions, AuthSignUpOptions } from './options';
 
 export type ConfirmResetPasswordRequest<
@@ -99,7 +99,7 @@ export type VerifyTOTPSetupRequest<
 > = {
 	code: string;
 	options?: { serviceOptions?: ServiceOptions };
- };
+};
 
 /**
  * Constructs a `updatePassword` request.
@@ -110,4 +110,17 @@ export type VerifyTOTPSetupRequest<
 export type UpdatePasswordRequest = {
 	oldPassword: string;
 	newPassword: string;
+};
+
+/**
+ * Constructs a `updateUserAttributes` request.
+ * @param userAttributes - the user attributes to be updated
+ * @param options - optional parameters for the Update User Attributes process such as the service options.
+ */
+export type UpdateUserAttributesRequest<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+> = {
+	userAttributes: AuthUserAttribute<UserAttributeKey>;
+	options?: { serviceOptions?: ServiceOptions };
 };

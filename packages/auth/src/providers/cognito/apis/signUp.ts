@@ -20,6 +20,7 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { SignUpException } from '../types/errors';
 import { AttributeType } from '../utils/clients/CognitoIdentityProvider/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { toAttributeType } from '../utils/apiHelpers';
 
 /**
  * Creates a user
@@ -99,13 +100,4 @@ export async function signUp(
 			userId: UserSub,
 		};
 	}
-}
-
-function toAttributeType<T extends Record<string, string | undefined>>(
-	data: T
-): AttributeType[] {
-	return Object.entries(data).map(([key, value]) => ({
-		Name: key,
-		Value: value,
-	}));
 }

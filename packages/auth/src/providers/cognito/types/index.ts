@@ -16,6 +16,8 @@ export {
 	CognitoResendSignUpCodeOptions,
 	CognitoConfirmSignUpOptions,
 	CognitoConfirmSignInOptions,
+	CognitoUpdateUserAttributesOptions,
+	CogntioVerifyTOTPSetupOptions
 } from './options';
 
 export { UpdateMFAPreferenceRequest } from './requests';

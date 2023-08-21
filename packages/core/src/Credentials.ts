@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ConsoleLogger as Logger } from './Logger';
@@ -35,11 +36,12 @@ export class CredentialsClass {
 	private _config;
 	private _credentials;
 	private _credentials_source;
-	private _gettingCredPromise = null;
+	private _gettingCredPromise: any = null;
 	private _refreshHandlers = {};
 	private _storage;
 	private _storageSync;
 	private _identityId;
+	// @ts-ignore
 	private _nextCredentialsRefresh: number;
 
 	// Allow `Auth` to be injected for SSR, but Auth isn't a required dependency for Credentials
@@ -126,7 +128,7 @@ export class CredentialsClass {
 
 		// Some use-cases don't require Auth for signing in, but use Credentials for guest users (e.g. Analytics)
 		// Prefer locally scoped `Auth`, but fallback to registered `Amplify.Auth` global otherwise.
-		const { Auth = Amplify.Auth } = this;
+		const { Auth = Amplify.Auth } = this as any;
 
 		if (!Auth || typeof Auth.currentUserCredentials !== 'function') {
 			// If Auth module is not imported, do a best effort to get guest credentials
@@ -296,10 +298,10 @@ export class CredentialsClass {
 			});
 			return {
 				identityId: this._identityId,
-				accessKeyId: Credentials.AccessKeyId,
-				secretAccessKey: Credentials.SecretKey,
-				sessionToken: Credentials.SessionToken,
-				expiration: Credentials.Expiration,
+				accessKeyId: Credentials!.AccessKeyId,
+				secretAccessKey: Credentials!.SecretKey,
+				sessionToken: Credentials!.SessionToken,
+				expiration: Credentials!.Expiration,
 			};
 		};
 		let credentials = guestCredentialsProvider().catch(async err => {
@@ -334,10 +336,10 @@ export class CredentialsClass {
 
 						return {
 							identityId: IdentityId,
-							accessKeyId: Credentials.AccessKeyId,
-							secretAccessKey: Credentials.SecretKey,
-							sessionToken: Credentials.SessionToken,
-							expiration: Credentials.Expiration,
+							accessKeyId: Credentials!.AccessKeyId,
+							secretAccessKey: Credentials!.SecretKey,
+							sessionToken: Credentials!.SessionToken,
+							expiration: Credentials!.Expiration,
 						};
 					};
 
@@ -399,10 +401,10 @@ export class CredentialsClass {
 			});
 			return {
 				identityId: identity_id,
-				accessKeyId: Credentials.AccessKeyId,
-				secretAccessKey: Credentials.SecretKey,
-				sessionToken: Credentials.SessionToken,
-				expiration: Credentials.Expiration,
+				accessKeyId: Credentials!.AccessKeyId,
+				secretAccessKey: Credentials!.SecretKey,
+				sessionToken: Credentials!.SessionToken,
+				expiration: Credentials!.Expiration,
 			};
 		};
 
@@ -460,10 +462,10 @@ export class CredentialsClass {
 				// single source of truth for the primary identity associated with the logins
 				// only if a guest identity is used for a first-time user, that guest identity will become its primary identity
 				IdentityId: primaryIdentityId,
-			} = await getCredentialsForIdentity(cognitoConfig, {
+			} = (await getCredentialsForIdentity(cognitoConfig, {
 				IdentityId: guestIdentityId || generatedOrRetrievedIdentityId,
 				Logins: logins,
-			});
+			})) as { Credentials: any; IdentityId: string };
 
 			this._identityId = primaryIdentityId;
 			if (guestIdentityId) {
@@ -576,7 +578,7 @@ export class CredentialsClass {
 	}
 
 	/* operations on local stored guest identity */
-	private async _getGuestIdentityId(): Promise<string> {
+	private async _getGuestIdentityId(): Promise<string | undefined> {
 		const { identityPoolId } = this._config;
 		try {
 			await this._storageSync;

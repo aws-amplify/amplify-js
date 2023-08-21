@@ -12,11 +12,11 @@ export {
 	Analytics,
 	AnalyticsProvider,
 	AWSPinpointProvider,
-// AWSKinesisProvider,
-// AWSKinesisFirehoseProvider,
-// AmazonPersonalizeProvider,
+	// AWSKinesisProvider,
+	// AWSKinesisFirehoseProvider,
+	// AmazonPersonalizeProvider,
 } from '@aws-amplify/analytics';
-export { Auth } from '@aws-amplify/auth';
+// export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
 export {
 	ConsoleLogger as Logger,
@@ -25,7 +25,6 @@ export {
 	Signer,
 	I18n,
 	ServiceWorker,
-	AWSCloudWatchProvider,
 } from '@aws-amplify/core';
 
 export { DefaultAmplifyV6 as AmplifyV6 } from './initSingleton';
