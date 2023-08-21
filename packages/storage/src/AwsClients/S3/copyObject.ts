@@ -49,7 +49,13 @@ export type CopyObjectInput = Pick<
 	| 'Metadata'
 >;
 
-export type CopyObjectOutput = CopyObjectCommandOutput;
+export type CopyObjectOutput = {
+	ETag: NonNullable<CopyObjectCommandOutput['CopyObjectResult']>['ETag'];
+	LastModified: NonNullable<
+		CopyObjectCommandOutput['CopyObjectResult']
+	>['LastModified'];
+	$metadata: CopyObjectCommandOutput['$metadata'];
+};
 
 const copyObjectSerializer = async (
 	input: CopyObjectInput,
@@ -83,8 +89,8 @@ const copyObjectDeserializer = async (
 		const parsed = await parseXmlBody(response);
 		const contents = {
 			...map(parsed, {
-				ETag: 'etag',
-				LastModified: ['last-modified', deserializeTimestamp],
+				ETag: 'ETag',
+				LastModified: ['LastModified', deserializeTimestamp],
 			}),
 		};
 		return {

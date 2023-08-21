@@ -18,10 +18,10 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
  * different level or identityId (if source object's level is 'protected').
  *
  * @async
- * @param {StorageCopyRequest} req - key of the object
- * @return {Promise<S3CopyResult>} The key of the copied object.
- * @throws service: {@link S3Exception} - S3 service errors thrown while getting properties
- * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
+ * @param {StorageCopyRequest} req - The request object.
+ * @return {Promise<S3CopyResult>} Promise resolves upon successful copy of the object.
+ * @throws service: {@link S3Exception} - S3 service errors is thrown while performing copy operation.
+ * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown.
  */
 export const copy = async (
 	req: StorageCopyRequest<StorageCopyItem>
@@ -43,11 +43,13 @@ export const copy = async (
 	assertValidationError(!!sourceKey, StorageValidationErrorCode.NoKey);
 	assertValidationError(!!destinationKey, StorageValidationErrorCode.NoKey);
 
-	const sourceFinalKey = getKeyWithPrefix({
-		accessLevel: sourceAccessLevel,
-		targetIdentityId: defaultIdentityId,
-		key: sourceKey,
-	});
+	const sourceFinalKey =
+		`${bucket}/` +
+		getKeyWithPrefix({
+			accessLevel: sourceAccessLevel,
+			targetIdentityId: defaultIdentityId,
+			key: sourceKey,
+		});
 
 	const destinationFinalKey = getKeyWithPrefix({
 		accessLevel: destinationAccessLevel,
@@ -70,10 +72,11 @@ export const copy = async (
 			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
 		}
 	);
+	console.log('response:', response);
 
 	return {
 		key: destinationKey,
-		eTag: response!.CopyObjectResult!.ETag!,
-		lastModified: response!.CopyObjectResult!.LastModified!,
+		eTag: response.ETag!,
+		lastModified: response.LastModified!,
 	};
 };
