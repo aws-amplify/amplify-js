@@ -260,17 +260,14 @@ export class InternalAuthClass {
 			// Prevents _handleAuthResponse from being called multiple times in Expo
 			// See https://github.com/aws-amplify/amplify-js/issues/4388
 			const usedResponseUrls = {};
-			// Only register urlListener once
-			if (this.getModuleName() === 'InternalAuth') {
-				urlListener(({ url }) => {
-					if (usedResponseUrls[url]) {
-						return;
-					}
+			urlListener(({ url }) => {
+				if (usedResponseUrls[url]) {
+					return;
+				}
 
-					usedResponseUrls[url] = true;
-					this._handleAuthResponse(url);
-				});
-			}
+				usedResponseUrls[url] = true;
+				this._handleAuthResponse(url);
+			});
 		}
 
 		dispatchAuthEvent(
