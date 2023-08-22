@@ -11,10 +11,8 @@ import { DataStore } from '@aws-amplify/datastore';
 import { Amplify } from './index';
 
 const requiredModules = [
-	// Credentials cannot function without Auth
+	// API cannot function without Auth
 	Auth,
-	// API cannot function without InternalAuth
-	InternalAuth,
 	// Auth cannot function without Credentials
 	Credentials,
 ];
@@ -31,8 +29,8 @@ export function withSSRContext(context: Context = {}) {
 	const { modules = defaultModules, req } = context;
 	if (modules.includes(DataStore)) {
 		modules.push(InternalAPI);
+		modules.push(InternalAuth);
 	}
-
 	const previousConfig = Amplify.configure();
 	const amplify = new AmplifyClass();
 	const storage = new UniversalStorage({ req });
