@@ -61,13 +61,13 @@ export const getUrl = async function (
 	const getUrlOptions = {
 		accessLevel,
 		credentials,
-		expiration: options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION,
+		expiration: options?.expiresIn ?? DEFAULT_PRESIGN_EXPIRATION,
 		signingRegion: region,
 		region,
 		signingService: S3_SERVICE_NAME,
 	};
 
-	let urlExpiration = options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION;
+	let urlExpiration = options?.expiresIn ?? DEFAULT_PRESIGN_EXPIRATION;
 	const awsCredExpiration = credentials?.expiration;
 	// expiresAt is the minimum of credential expiration and url expiration
 	if (awsCredExpiration)
