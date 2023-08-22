@@ -261,7 +261,7 @@ export class InternalAuthClass {
 			// See https://github.com/aws-amplify/amplify-js/issues/4388
 			const usedResponseUrls = {};
 			// Only register urlListener once
-			if (this.getModuleName() === 'InternalAuth') {
+			if (this.getModuleName() === 'Auth') {
 				urlListener(({ url }) => {
 					if (usedResponseUrls[url]) {
 						return;

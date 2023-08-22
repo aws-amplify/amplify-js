@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Auth } from '@aws-amplify/auth';
+import { InternalAuth } from '@aws-amplify/auth/internals';
 import { Cache } from '@aws-amplify/cache';
 import {
 	Amplify,
@@ -1383,7 +1383,7 @@ enum DataStoreState {
 // https://github.com/aws-amplify/amplify-js/pull/10477/files#r1007363485
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
-	private Auth = Auth;
+	private InternalAuth = InternalAuth;
 	private InternalAPI = InternalAPI;
 	private Cache = Cache;
 
@@ -1414,7 +1414,7 @@ class DataStore {
 	private storageAdapter!: Adapter;
 	// object that gets passed to descendent classes. Allows us to pass these down by reference
 	private amplifyContext: AmplifyContext = {
-		Auth: this.Auth,
+		InternalAuth: this.InternalAuth,
 		InternalAPI: this.InternalAPI,
 		Cache: this.Cache,
 	};
@@ -2440,7 +2440,7 @@ class DataStore {
 	};
 
 	configure = (config: DataStoreConfig = {}) => {
-		this.amplifyContext.Auth = this.Auth;
+		this.amplifyContext.InternalAuth = this.InternalAuth;
 		this.amplifyContext.InternalAPI = this.InternalAPI;
 		this.amplifyContext.Cache = this.Cache;
 
