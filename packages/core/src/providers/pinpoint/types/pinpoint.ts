@@ -23,6 +23,25 @@ export type PinpointUserProfile = UserProfile & {
 	optOut?: 'ALL' | 'NONE';
 };
 
+export type PinpointSession = {
+	Id: string;
+	StartTimestamp: string;
+}
+
+export type PinpointEventAttributes = {
+	[key: string]: string;
+}
+
+export type PinpointEventMetrics = {
+	[key: string]: number;
+}
+
+export type PinpointAnalyticsEvent = {
+	name: string;
+	attributes?: PinpointEventAttributes;
+	metrics?: PinpointEventMetrics;
+}
+
 export type PinpointUpdateEndpointParameters = {
 	appId: string;
 	category: SupportedCategory;
@@ -34,3 +53,8 @@ export type PinpointUpdateEndpointParameters = {
 	userProfile?: PinpointUserProfile;
 	userAgentValue?: string;
 };
+
+export type PinpointRecordParameters = {
+	event: PinpointAnalyticsEvent;
+	sendImmediately: boolean;
+} & Omit<PinpointUpdateEndpointParameters, "channelType" | "userProfile">;

@@ -15,5 +15,10 @@ export {
 } from './providers';
 */
 
+<<<<<<< HEAD
 // Default provider types
 export * from './providers/pinpoint';
+=======
+// Default provider APIs
+export * from './apis';
+>>>>>>> 9de34e64e (Initial `record` implementation.)

@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ICredentials } from '@aws-amplify/core';
+import { PinpointAnalyticsEvent } from '@aws-amplify/core/internals/providers/pinpoint';
+
 /**
  * Analytics instance options
  */
@@ -76,12 +78,7 @@ export interface AutoTrackEventOpts {
 	attributes?: AutoTrackAttributes;
 }
 
-export interface AnalyticsEvent {
-	name: string;
-	attributes?: EventAttributes;
-	metrics?: EventMetrics;
-	immediate?: boolean;
-}
+export type AnalyticsEvent = PinpointAnalyticsEvent;
 
 export { PersonalizeAnalyticsEvent } from './providers/AmazonPersonalizeProvider';
 export { KinesisAnalyticsEvent } from './providers/AWSKinesisProvider';
