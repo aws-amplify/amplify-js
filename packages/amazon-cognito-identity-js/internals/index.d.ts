@@ -1,49 +1,23 @@
 import {
-	AuthenticationDetails,
-	ChallengeName,
-	ClientMetadata,
-	CognitoRefreshToken,
-	CognitoUser,
-	CognitoUserAttribute,
-	CognitoUserSession,
-	GetSessionOptions,
-	IAuthenticationCallback,
-	ICognitoUserAttributeData,
-	ICognitoUserData,
-	ICognitoUserPoolData,
-	IMfaSettings,
-	ISignUpResult,
-	MFAOption,
 	NodeCallback,
 	UpdateAttributesNodeCallback,
+	ClientMetadata,
+	IAuthenticationCallback,
+	IMfaSettings,
+	AuthenticationDetails,
+	ICognitoUserData,
+	GetSessionOptions,
+	ChallengeName,
+	CognitoUserSession,
+	CognitoRefreshToken,
+	CognitoUserAttribute,
+	ICognitoUserAttributeData,
+	MFAOption,
 	UserData,
 } from 'amazon-cognito-identity-js';
 
 export const addAuthCategoryToCognitoUserAgent: () => void;
 export const addFrameworkToCognitoUserAgent: (content: string) => void;
-
-export class InternalCognitoUserPool {
-	constructor(
-		data: ICognitoUserPoolData,
-		wrapRefreshSessionCallback?: (target: NodeCallback.Any) => NodeCallback.Any
-	);
-
-	public getUserPoolId(): string;
-	public getUserPoolName(): string;
-	public getClientId(): string;
-
-	public signUp(
-		username: string,
-		password: string,
-		userAttributes: CognitoUserAttribute[],
-		validationData: CognitoUserAttribute[],
-		callback: NodeCallback<Error, ISignUpResult>,
-		clientMetadata?: ClientMetadata,
-		userAgentValue?: string
-	): void;
-
-	public getCurrentUser(): CognitoUser | null;
-}
 
 export class InternalCognitoUser {
 	constructor(data: ICognitoUserData);
