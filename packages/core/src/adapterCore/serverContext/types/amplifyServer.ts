@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClass } from '../../../singleton';
+import { LibraryOptions, ResourcesConfig } from '../../../singleton/types';
 
 export namespace AmplifyServer {
 	export type ContextToken = {
@@ -15,4 +16,14 @@ export namespace AmplifyServer {
 	export type Context = {
 		amplify: AmplifyClass;
 	};
+
+	export interface RunOperationWithContext {
+		<Result>(
+			amplifyConfig: ResourcesConfig,
+			libraryOptions: LibraryOptions,
+			operation: (
+				contextSpec: AmplifyServer.ContextSpec
+			) => Result | void | Promise<Result | void>
+		): Promise<Result | void>;
+	}
 }
