@@ -10,7 +10,7 @@ type GetKeyWithPrefixOptions = {
 	key: string;
 };
 
-export function getKeyWithPrefix({
+export const getKeyWithPrefix = function ({
 	accessLevel,
 	targetIdentityId,
 	key,
@@ -23,4 +23,4 @@ export function getKeyWithPrefix({
 			targetIdentityId,
 		}) + key
 	);
-}
+};

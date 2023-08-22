@@ -4,5 +4,11 @@
 import { getKeyWithPrefix } from './getKeyWithPrefix';
 import { resolveStorageConfig } from './resolveStorageConfig';
 import { resolveCredentials } from './resolveCredentials';
+import { getUrlDurationInSeconds } from './getUrlDurationInSeconds';
 
-export { getKeyWithPrefix, resolveStorageConfig, resolveCredentials };
+export {
+	getKeyWithPrefix,
+	resolveStorageConfig,
+	resolveCredentials,
+	getUrlDurationInSeconds,
+};
