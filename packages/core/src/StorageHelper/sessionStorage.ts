@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { PlatformNotSupportedError } from '../Errors';
+import { PlatformNotSupportedError } from '../Util/Errors';
 import { KeyValueStorageInterface } from '../types';
 
 class SessionStorageClass implements KeyValueStorageInterface {

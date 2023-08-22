@@ -5,43 +5,15 @@
 This file maps top-level exports from `aws-amplify`.
 */
 export { Amplify } from '@aws-amplify/core';
+export { DefaultAmplifyV6 as AmplifyV6 } from './initSingleton';
+
+// TODO(v6): Remove legacy SSR utility when new utilities available
 export { withSSRContext } from './ssr/withSSRContext';
 
-// TODO(v6): Refactor these into category-specific exports as they come online
+// TODO(v6): Remove these category exports as categories come on-line
 export {
 	Analytics,
 	AnalyticsProvider,
 	AWSPinpointProvider,
-	// AWSKinesisProvider,
-	// AWSKinesisFirehoseProvider,
-	// AmazonPersonalizeProvider,
 } from '@aws-amplify/analytics';
-// export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
-export {
-	ConsoleLogger as Logger,
-	Hub,
-	ClientDevice,
-	Signer,
-	I18n,
-	ServiceWorker,
-} from '@aws-amplify/core';
-
-export { DefaultAmplifyV6 as AmplifyV6 } from './initSingleton';
-
-// TODO(v6): Re-enable these exports when available
-/*
-export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
-export { PubSub } from '@aws-amplify/pubsub';
-export {
-	AuthModeStrategyType,
-	DataStore,
-	Predicates,
-	SortDirection,
-	syncExpression,
-} from '@aws-amplify/datastore';
-export { Interactions } from '@aws-amplify/interactions';
-export { Notifications } from '@aws-amplify/notifications';
-export { Predictions } from '@aws-amplify/predictions';
-export { Geo } from '@aws-amplify/geo';
-*/

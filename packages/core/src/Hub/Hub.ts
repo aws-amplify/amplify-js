@@ -2,7 +2,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger as Logger } from './Logger';
+import { ConsoleLogger as Logger } from '../Logger';
 
 const logger = new Logger('Hub');
 

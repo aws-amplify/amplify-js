@@ -11,7 +11,7 @@ import {
 	parseMetadata,
 } from '../../clients/serde';
 import { Endpoint, HttpRequest, HttpResponse } from '../../clients/types';
-import { APPLICATION_ID_EXCEPTION } from '../../constants';
+import { APPLICATION_ID_EXCEPTION } from '../../Util/Constants';
 import { defaultConfig, getSharedHeaders } from './base';
 import type {
 	PutEventsCommandInput as PutEventsInput,

@@ -18,7 +18,7 @@ import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { Auth } from '@aws-amplify/auth';
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Cache } from '@aws-amplify/core';
+import { Cache } from '@aws-amplify/core/internals/utils';
 import { Adapter } from './storage/adapter';
 
 export type Scalar<T> = T extends Array<infer InnerType> ? InnerType : T;

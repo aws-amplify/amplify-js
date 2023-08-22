@@ -1,4 +1,5 @@
-import { Hub, Logger } from '../src';
+import { Hub } from '../src';
+import { Logger } from '../src/libraryUtils';
 
 describe('Hub', () => {
 	test('happy case', () => {

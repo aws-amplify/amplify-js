@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	ConsoleLogger as Logger,
 	Credentials,
-	AnalyticsAction,
 } from '@aws-amplify/core';
+import {
+	ConsoleLogger as Logger,
+	AnalyticsAction,
+} from '@aws-amplify/core/internals/utils';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 import { AnalyticsProvider } from '../types';
 import { fromUtf8 } from '@aws-sdk/util-utf8-browser';

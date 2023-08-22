@@ -7,7 +7,7 @@ import { StorageCache } from './StorageCache';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '../Logger';
 import { asserts } from '../Util/errors/AssertError';
-import { STORAGE_CACHE_EXCEPTION } from '../constants';
+import { STORAGE_CACHE_EXCEPTION } from '../Util/Constants';
 import { getCurrSizeKey } from './Utils/CacheUtils';
 
 const logger = new Logger('InMemoryCache');
