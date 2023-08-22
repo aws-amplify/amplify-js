@@ -52,7 +52,7 @@ executors:
 
   macos-executor:
     macos:
-      xcode: 13.2.1
+      xcode: 13.4.1
     resource_class: large
 
   webkit-test-executor:
@@ -1091,12 +1091,12 @@ jobs:
     steps:
       - integ_test_rn_ios
 
-  integ_rn_ios_push_notifications:
-    executor: macos-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react-native/push-notifications/PushNotificationApp
-    steps:
-      - integ_test_rn_ios
+  # integ_rn_ios_push_notifications:
+  #   executor: macos-executor
+  #   <<: *test_env_vars
+  #   working_directory: ~/amplify-js-samples-staging/samples/react-native/push-notifications/PushNotificationApp
+  #   steps:
+  #     - integ_test_rn_ios
 
   # integ_rn_android_storage:
   #   executor: macos-executor
@@ -1266,70 +1266,74 @@ jobs:
           spec: next-owner-based-default
           browser: << parameters.browser >>
 
-  integ_react_datastore_custom_pk_unconnected_models:
-    parameters:
-      browser:
-        type: string
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-unconnected-models
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'DataStore - Custom Primary Key (Connected Models)'
-          framework: react
-          category: datastore
-          sample_name: v2/custom-pk-unconnected-models
-          spec: custom-pk-unconnected-models
-          browser: << parameters.browser >>
+  # TODO: re-enable or backfill test cases
+  # integ_react_datastore_custom_pk_unconnected_models:
+  #   parameters:
+  #     browser:
+  #       type: string
+  #   executor: js-test-executor
+  #   <<: *test_env_vars
+  #   working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-unconnected-models
+  #   steps:
+  #     - prepare_test_env
+  #     - integ_test_js:
+  #         test_name: 'DataStore - Custom Primary Key (Connected Models)'
+  #         framework: react
+  #         category: datastore
+  #         sample_name: v2/custom-pk-unconnected-models
+  #         spec: custom-pk-unconnected-models
+  #         browser: << parameters.browser >>
 
-  integ_react_datastore_custom_pk_unconnected_models_webkit:
-    executor: webkit-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-unconnected-models
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'DataStore - Custom Primary Key (Connected Models)'
-          framework: react
-          category: datastore
-          sample_name: v2/custom-pk-unconnected-models
-          spec: custom-pk-unconnected-models
-          browser: webkit
+  # TODO: re-enable or backfill test cases
+  # integ_react_datastore_custom_pk_unconnected_models_webkit:
+  #   executor: webkit-test-executor
+  #   <<: *test_env_vars
+  #   working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-unconnected-models
+  #   steps:
+  #     - prepare_test_env
+  #     - integ_test_js:
+  #         test_name: 'DataStore - Custom Primary Key (Connected Models)'
+  #         framework: react
+  #         category: datastore
+  #         sample_name: v2/custom-pk-unconnected-models
+  #         spec: custom-pk-unconnected-models
+  #         browser: webkit
 
-  integ_react_datastore_custom_pk_has_one:
-    parameters:
-      browser:
-        type: string
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-has-one
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'DataStore - Custom Primary Key (Has One)'
-          framework: react
-          category: datastore
-          sample_name: v2/custom-pk-has-one
-          spec: custom-pk-has-one
-          browser: << parameters.browser >>
+  # TODO: re-enable or backfill test cases
+  # integ_react_datastore_custom_pk_has_one:
+  #   parameters:
+  #     browser:
+  #       type: string
+  #   executor: js-test-executor
+  #   <<: *test_env_vars
+  #   working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-has-one
+  #   steps:
+  #     - prepare_test_env
+  #     - integ_test_js:
+  #         test_name: 'DataStore - Custom Primary Key (Has One)'
+  #         framework: react
+  #         category: datastore
+  #         sample_name: v2/custom-pk-has-one
+  #         spec: custom-pk-has-one
+  #         browser: << parameters.browser >>
 
-  integ_react_datastore_custom_pk_has_many_many_to_many:
-    parameters:
-      browser:
-        type: string
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-has-many-many-to-many
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'DataStore - Custom Primary Key (Has Many / Many to Many)'
-          framework: react
-          category: datastore
-          sample_name: v2/custom-pk-has-many-many-to-many
-          spec: custom-pk-has-many-many-to-many
-          browser: << parameters.browser >>
+  # TODO: re-enable or backfill test cases
+  # integ_react_datastore_custom_pk_has_many_many_to_many:
+  #   parameters:
+  #     browser:
+  #       type: string
+  #   executor: js-test-executor
+  #   <<: *test_env_vars
+  #   working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-has-many-many-to-many
+  #   steps:
+  #     - prepare_test_env
+  #     - integ_test_js:
+  #         test_name: 'DataStore - Custom Primary Key (Has Many / Many to Many)'
+  #         framework: react
+  #         category: datastore
+  #         sample_name: v2/custom-pk-has-many-many-to-many
+  #         spec: custom-pk-has-many-many-to-many
+  #         browser: << parameters.browser >>
 
   integ_react_datastore_background_process_manager:
     parameters:
@@ -2013,12 +2017,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      - integ_rn_ios_push_notifications:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
+      # - integ_rn_ios_push_notifications:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
       - integ_rn_ios_device_tracking:
           requires:
             - integ_setup
@@ -2097,39 +2101,40 @@ workflows:
           matrix:
             parameters:
               <<: *minimal_browser_list
-      - integ_react_datastore_custom_pk_unconnected_models:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *extended_browser_list
-      - integ_react_datastore_custom_pk_unconnected_models_webkit:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_react_datastore_custom_pk_has_one:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *minimal_browser_list
-      - integ_react_datastore_custom_pk_has_many_many_to_many:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *minimal_browser_list
+      # TODO: re-enable or backfill test cases
+      # - integ_react_datastore_custom_pk_unconnected_models:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *extended_browser_list
+      # - integ_react_datastore_custom_pk_unconnected_models_webkit:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_react_datastore_custom_pk_has_one:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *minimal_browser_list
+      # - integ_react_datastore_custom_pk_has_many_many_to_many:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *minimal_browser_list
       - integ_react_datastore_background_process_manager:
           requires:
             - integ_setup

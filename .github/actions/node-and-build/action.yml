@@ -25,7 +25,7 @@ runs:
           **/esm/
           **/cjs/
           **/packages/core/src/Platform/version.ts
-        key: ${{ runner.os }}-build-artifacts-${{ hashFiles('./amplify-js/yarn.lock') }}
+        key: ${{ runner.os }}-build-artifacts-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-build-artifacts-
       env:
