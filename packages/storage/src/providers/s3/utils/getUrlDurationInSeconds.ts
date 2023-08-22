@@ -5,7 +5,7 @@ export const getUrlDurationInSeconds = function (
 	awsCredExpiration: Date,
 	urlExpiration: number
 ): number {
-	return awsCredExpiration.getTime() / 1000 < urlExpiration
+	return Math.floor(awsCredExpiration.getTime() / 1000) < urlExpiration
 		? urlExpiration
-		: awsCredExpiration.getTime() / 1000;
+		: Math.floor(awsCredExpiration.getTime() / 1000);
 };
