@@ -24,7 +24,7 @@ describe('Pinpoint Provider Util: cacheEndpointId', () => {
 		setItemSpy.mockClear();
 	});
 
-	test('writes an endpoint id to cache', async () => {
+	it('writes an endpoint id to cache', async () => {
 		await cacheEndpointId(appId, category, endpointId);
 		expect(mockGetCacheKey).toBeCalledWith(appId, category);
 		expect(setItemSpy).toBeCalledWith(

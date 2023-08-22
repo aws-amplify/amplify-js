@@ -58,7 +58,7 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 		mockGetEndpointId.mockReturnValue(endpointId);
 	});
 
-	test('calls the service API with a baseline input', async () => {
+	it('calls the service API with a baseline input', async () => {
 		await updateEndpoint({ appId, category, credentials, region });
 		expect(mockClientUpdateEndpoint).toBeCalledWith(
 			{ credentials, region },
@@ -66,7 +66,7 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 		);
 	});
 
-	test('calls the service API with user info inside input', async () => {
+	it('calls the service API with user info inside input', async () => {
 		const address = 'address';
 		const channelType = 'IN_APP';
 		const location = {
@@ -112,7 +112,7 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 		);
 	});
 
-	test('merges demographics', async () => {
+	it('merges demographics', async () => {
 		const partialDemographic = { ...demographic } as any;
 		delete partialDemographic.make;
 		delete partialDemographic.model;
@@ -137,7 +137,7 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 		);
 	});
 
-	test('creates an endpoint if one is not already cached', async () => {
+	it('creates an endpoint if one is not already cached', async () => {
 		mockGetEndpointId.mockReturnValue(undefined);
 		mockUuid.mockReturnValueOnce(createdEndpointId);
 		await updateEndpoint({ appId, category, credentials, region });
@@ -152,7 +152,7 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 		);
 	});
 
-	test('does not cache endpoint if previously cached', async () => {
+	it('does not cache endpoint if previously cached', async () => {
 		await updateEndpoint({ appId, category, credentials, region });
 		expect(mockCacheEndpointId).not.toBeCalled();
 	});

@@ -24,14 +24,14 @@ describe('Pinpoint Provider Util: getEndpointId', () => {
 		getItemSpy.mockReset();
 	});
 
-	test('returns a cached endpoint id', async () => {
+	it('returns a cached endpoint id', async () => {
 		getItemSpy.mockResolvedValue(endpointId);
 		expect(await getEndpointId(appId, category)).toBe(endpointId);
 		expect(mockGetCacheKey).toBeCalledWith(appId, category);
 		expect(getItemSpy).toBeCalledWith(cacheKey);
 	});
 
-	test('returns undefined if endpoint id not found in cache', async () => {
+	it('returns undefined if endpoint id not found in cache', async () => {
 		getItemSpy.mockResolvedValue(null);
 		expect(await getEndpointId(appId, category)).toBe(undefined);
 	});

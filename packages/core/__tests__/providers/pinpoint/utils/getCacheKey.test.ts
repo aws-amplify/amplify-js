@@ -5,7 +5,7 @@ import { getCacheKey } from '../../../../src/providers/pinpoint/utils';
 import { appId, category } from '../testUtils/data';
 
 describe('Pinpoint Provider Util: getCacheKey', () => {
-	test('returns a cache key', async () => {
+	it('returns a cache key', async () => {
 		expect(getCacheKey(appId, category)).toBe('Analytics:pinpoint:app-id');
 	});
 });
