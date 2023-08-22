@@ -1,4 +1,3 @@
-import { InternalCognitoUser } from './internals';
 declare module 'amazon-cognito-identity-js' {
 	//import * as AWS from "aws-sdk";
 
@@ -90,7 +89,19 @@ declare module 'amazon-cognito-identity-js' {
 		| 'SMS_MFA'
 		| 'SOFTWARE_TOKEN_MFA';
 
-	export class CognitoUser extends InternalCognitoUser {
+	export class CognitoUser {
+		constructor(data: ICognitoUserData);
+
+		challengeName?: ChallengeName;
+
+		public setSignInUserSession(signInUserSession: CognitoUserSession): void;
+		public getSignInUserSession(): CognitoUserSession | null;
+		public getUsername(): string;
+
+		public getAuthenticationFlowType(): string;
+		public setAuthenticationFlowType(authenticationFlowType: string): string;
+		public getCachedDeviceKeyAndPassword(): void;
+
 		public getSession(
 			callback:
 				| ((error: Error, session: null) => void)

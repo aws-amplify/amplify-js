@@ -1407,38 +1407,38 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-		test('currentUserPoolUser fails but hub event still dispatches', async () => {
-			const auth = new Auth(authOptions);
-			const spyon = jest
-				.spyOn(CognitoUser.prototype, 'sendMFACode')
-				.mockImplementationOnce((code, callback) => {
-					callback.onSuccess(session);
-				});
+        test('currentUserPoolUser fails but hub event still dispatches', async () => {
+            const auth = new Auth(authOptions);
+            const spyon = jest
+                .spyOn(CognitoUser.prototype, 'sendMFACode')
+                .mockImplementationOnce((code, callback) => {
+                    callback.onSuccess(session);
+                });
 
-			const spyon2 = jest
-				.spyOn(auth, 'currentUserPoolUser')
-				.mockImplementationOnce(() => {
-					return Promise.reject('Could not get current user.');
-				});
-			const hubSpy = jest.spyOn(Hub, 'dispatch');
-			const user = new CognitoUser({
-				Username: 'username',
-				Pool: userPool,
-			});
-			const result = await auth.confirmSignIn(user, 'code', null);
-			expect(result).toEqual(user);
-			expect(hubSpy).toHaveBeenCalledWith(
-				'auth',
-				{
-					data: user,
-					event: 'signIn',
-					message: 'A user username has been signed in',
-				},
-				'Auth',
-				Symbol.for('amplify_default')
-			);
-			spyon.mockClear();
-		});
+            const spyon2 = jest
+                .spyOn(auth, 'currentUserPoolUser')
+                .mockImplementationOnce(() => {
+                    return Promise.reject('Could not get current user.');
+                });
+            const hubSpy = jest.spyOn(Hub, 'dispatch');
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool,
+            });
+            const result = await auth.confirmSignIn(user, 'code', null);
+            expect(result).toEqual(user);
+            expect(hubSpy).toHaveBeenCalledWith(
+                'auth',
+                {
+                    data: user,
+                    event: 'signIn',
+                    message: 'A user username has been signed in',
+                },
+                'Auth',
+                Symbol.for('amplify_default')
+            );
+            spyon.mockClear();
+        });
 
 		test('onFailure', async () => {
 			const spyon = jest
@@ -3058,13 +3058,12 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-		test('error hub event', async done => {
+		test('error hub event', async (done) => {
 			expect.assertions(3);
-			const spyon = jest
-				.spyOn(CognitoUser.prototype, 'updateAttributes')
+			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
 				.mockImplementationOnce((attrs, callback: any) => {
 					callback(new Error('Error'), null, null);
-				});
+			});
 
 			const auth = new Auth(authOptions);
 
@@ -3098,20 +3097,19 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-		test('happy case code delivery details hub event', async done => {
+		test('happy case code delivery details hub event', async (done) => {
 			expect.assertions(2);
-
+			
 			const codeDeliverDetailsResult: any = {
-				CodeDeliveryDetailsList: [
-					{
-						AttributeName: 'email',
-						DeliveryMedium: 'EMAIL',
-						Destination: 'e***@e***',
-					},
-				],
+				'CodeDeliveryDetailsList': [ 
+				   { 
+					  'AttributeName': 'email',
+					  'DeliveryMedium': 'EMAIL',
+					  'Destination': 'e***@e***'
+				   }
+				]
 			};
-			const spyon = jest
-				.spyOn(CognitoUser.prototype, 'updateAttributes')
+			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
 				.mockImplementationOnce((attrs, callback: any) => {
 					callback(null, 'SUCCESS', codeDeliverDetailsResult);
 				});
@@ -3128,20 +3126,20 @@ describe('auth unit test', () => {
 				sub: 'sub',
 			};
 			const payloadData = {
-				email: {
+				'email': {
 					isUpdated: false,
 					codeDeliveryDetails: {
 						AttributeName: 'email',
 						DeliveryMedium: 'EMAIL',
-						Destination: 'e***@e***',
-					},
+						Destination: 'e***@e***'
+					}
 				},
-				phone_number: {
-					isUpdated: true,
+				'phone_number': {
+					isUpdated: true
 				},
-				sub: {
-					isUpdated: true,
-				},
+				'sub': {
+					isUpdated: true
+				}
 			};
 			const listenToHub = Hub.listen('auth', ({ payload }) => {
 				const { event } = payload;
