@@ -195,7 +195,6 @@ import {
 	CognitoAccessToken,
 } from 'amazon-cognito-identity-js';
 import { Hub } from '@aws-amplify/core';
-import { InternalAuthClass } from '../src/internals/InternalAuth';
 
 const authOptions: any = {
 	Auth: {
@@ -430,7 +429,7 @@ describe('auth unit test', () => {
 
 			const spyon = jest.spyOn(CognitoUser.prototype, 'setUserMfaPreference');
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype, 'getPreferredMFA')
+				.spyOn(Auth.prototype, 'getPreferredMFA')
 				.mockImplementationOnce(() => {
 					return Promise.resolve('SMS_MFA');
 				});
@@ -455,7 +454,7 @@ describe('auth unit test', () => {
 					callback(new Error('err'), null);
 				});
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype, 'getPreferredMFA')
+				.spyOn(Auth.prototype, 'getPreferredMFA')
 				.mockImplementationOnce(() => {
 					return Promise.resolve('SMS_MFA');
 				});
