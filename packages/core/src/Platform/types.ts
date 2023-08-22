@@ -94,14 +94,7 @@ export enum DataStoreAction {
 	GraphQl = '2',
 }
 export enum GeoAction {
-	SearchByText = '1',
-	SearchForSuggestions = '2',
-	SearchByPlaceId = '3',
-	SearchByCoordinates = '4',
-	SaveGeofences = '5',
-	GetGeofence = '6',
-	ListGeofences = '7',
-	DeleteGeofences = '8',
+	None = '0',
 }
 export enum InAppMessagingAction {
 	None = '0',

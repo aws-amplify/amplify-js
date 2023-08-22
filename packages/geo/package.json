@@ -43,8 +43,7 @@
 	"files": [
 		"lib",
 		"lib-esm",
-		"src",
-		"internals"
+		"src"
 	],
 	"dependencies": {
 		"@aws-amplify/core": "5.8.3",
