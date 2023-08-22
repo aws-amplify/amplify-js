@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Logger } from '@aws-amplify/core';
+import { Logger } from '@aws-amplify/core/internals/utils';
 import * as events from 'events';
 import { AWSS3ProviderManagedUpload } from '../../src/providers/AWSS3ProviderManagedUpload';
 import {

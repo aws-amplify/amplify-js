@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	AmplifyV6,
-	isTokenExpired,
 	AuthTokens,
 	FetchAuthSessionOptions,
 } from '@aws-amplify/core';
+import {
+	isTokenExpired,
+} from '@aws-amplify/core/internals/utils';
 import {
 	AuthTokenOrchestrator,
 	AuthTokenStore,

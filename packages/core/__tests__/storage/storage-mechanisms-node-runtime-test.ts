@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { AmplifyError, AmplifyErrorString } from '../../src/Errors';
+import { AmplifyError, AmplifyErrorString } from '../../src/Util/Errors';
 import { SessionStorage, LocalStorage } from '../../src/StorageHelper';
 
 const key = 'k';

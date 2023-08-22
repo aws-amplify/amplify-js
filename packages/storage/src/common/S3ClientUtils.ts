@@ -1,13 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	Category,
 	Credentials,
-	ICredentials,
+	ICredentials
+} from '@aws-amplify/core';
+import {
+	Category,
 	Logger,
 	StorageAction,
-	getAmplifyUserAgent,
-} from '@aws-amplify/core';
+	getAmplifyUserAgent
+} from '@aws-amplify/core/internals/utils';
 import type { Credentials as AwsCredentials } from '@aws-sdk/types';
 import type { EventEmitter } from 'events';
 

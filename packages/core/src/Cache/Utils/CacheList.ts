@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { asserts } from '../../Util/errors/AssertError';
-import { CACHE_LIST_EXCEPTION } from '../../constants';
+import { CACHE_LIST_EXCEPTION } from '../../Util/Constants';
 
 class DoubleLinkedNode {
 	key: string;

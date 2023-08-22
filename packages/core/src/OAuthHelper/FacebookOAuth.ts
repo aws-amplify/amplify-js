@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ConsoleLogger as Logger } from '../Logger';
-import { browserOrNode } from '../JS';
+import { browserOrNode } from '../Util/JS';
 import { NonRetryableError } from '../Util';
 
 const logger = new Logger('CognitoCredentials');
