@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
+import { Logger, Credentials, ICredentials } from '@aws-amplify/core';
 import {
 	listObjectsV2,
 	createMultipartUpload,
@@ -30,7 +30,6 @@ jest.mock('events', function () {
 
 jest.mock('../../src/AwsClients/S3');
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
-
 
 const mockRemoveAllListeners = jest.fn();
 const mockEventEmitter = {
@@ -239,7 +238,6 @@ describe.skip('StorageProvider test', () => {
 				return Promise.resolve(credentials);
 			});
 			mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
-			const hubDispathSpy = jest.spyOn(Hub, 'dispatch');
 
 			expect(await storage.get('key', { downloaded: false, track: true })).toBe(
 				'url'
@@ -252,18 +250,6 @@ describe.skip('StorageProvider test', () => {
 					Key: 'public/key',
 					Bucket: options.bucket,
 				})
-			);
-			expect(hubDispathSpy).toBeCalledWith(
-				'storage',
-				{
-					event: 'getSignedUrl',
-					data: {
-						attrs: { method: 'get', result: 'success' },
-					},
-					message: 'Signed URL: url',
-				},
-				'Storage',
-				Symbol.for('amplify_default')
 			);
 		});
 
@@ -669,8 +655,6 @@ describe.skip('StorageProvider test', () => {
 					res({});
 				});
 			});
-
-			const hubDispathSpy = jest.spyOn(Hub, 'dispatch');
 			expect(await storage.put('key', 'object', { track: true })).toEqual({
 				key: 'key',
 			});
@@ -680,21 +664,6 @@ describe.skip('StorageProvider test', () => {
 				ContentType: 'binary/octet-stream',
 				Body: 'object',
 			});
-			expect(hubDispathSpy).toBeCalledWith(
-				'storage',
-				{
-					event: 'upload',
-					data: {
-						attrs: {
-							method: 'put',
-							result: 'success',
-						},
-					},
-					message: 'Upload success for key',
-				},
-				'Storage',
-				Symbol.for('amplify_default')
-			);
 		});
 
 		test('put object failed', async () => {
@@ -928,24 +897,11 @@ describe.skip('StorageProvider test', () => {
 			});
 
 			mockDeleteObject.mockResolvedValueOnce('data');
-			const hubDispathSpy = jest.spyOn(Hub, 'dispatch');
 			expect(await storage.remove('key', { track: true })).toBe('data');
 			expect(deleteObject).toBeCalledWith(expect.anything(), {
 				Bucket: 'bucket',
 				Key: 'public/key',
 			});
-			expect(hubDispathSpy).toBeCalledWith(
-				'storage',
-				{
-					event: 'delete',
-					data: {
-						attrs: { method: 'remove', result: 'success' },
-					},
-					message: 'Deleted key successfully',
-				},
-				'Storage',
-				Symbol.for('amplify_default')
-			);
 		});
 
 		test('remove object failed', async () => {
@@ -1254,25 +1210,8 @@ describe.skip('StorageProvider test', () => {
 
 		test('copy object with track', async () => {
 			mockCopyObject.mockResolvedValueOnce('data');
-			const hubDispathSpy = jest.spyOn(Hub, 'dispatch');
-
 			await storage.copy({ key: 'src' }, { key: 'dest' }, { track: true });
 			expect(copyObject).toBeCalledTimes(1);
-			expect(hubDispathSpy).toBeCalledWith(
-				'storage',
-				{
-					event: 'copy',
-					data: {
-						attrs: {
-							method: 'copy',
-							result: 'success',
-						},
-					},
-					message: 'Copy success from src to dest',
-				},
-				'Storage',
-				Symbol.for('amplify_default')
-			);
 		});
 
 		test('copy object with level and identityId specified', async () => {

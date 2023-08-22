@@ -5,7 +5,6 @@ import {
 	Credentials,
 	ICredentials,
 	StorageHelper,
-	Hub,
 	parseAWSExports,
 	AmplifyV6,
 } from '@aws-amplify/core';
