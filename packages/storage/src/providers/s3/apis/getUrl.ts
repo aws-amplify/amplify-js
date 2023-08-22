@@ -70,7 +70,8 @@ export const getUrl = async function (
 
 	let urlExpiration = options?.expiresIn ?? DEFAULT_PRESIGN_EXPIRATION;
 	const awsCredExpiration = credentials?.expiration;
-	urlExpiration = getUrlDurationInSeconds(awsCredExpiration, urlExpiration);
+	if (awsCredExpiration)
+		urlExpiration = getUrlDurationInSeconds(awsCredExpiration, urlExpiration);
 	assertValidationError(
 		urlExpiration > MAX_URL_EXPIRATION,
 		StorageValidationErrorCode.UrlExpirationMaxLimitExceed
