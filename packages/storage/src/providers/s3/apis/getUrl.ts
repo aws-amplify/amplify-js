@@ -17,7 +17,6 @@ import {
 	resolveStorageConfig,
 } from '../utils';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { getUrlDurationInSeconds } from '../utils';
 const DEFAULT_PRESIGN_EXPIRATION = 900;
 const MAX_URL_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
 
@@ -70,10 +69,23 @@ export const getUrl = async function (
 
 	let urlExpiration = options?.expiresIn ?? DEFAULT_PRESIGN_EXPIRATION;
 	const awsCredExpiration = credentials?.expiration;
+	console.log('awscredentials', awsCredExpiration);
 	if (awsCredExpiration)
-		urlExpiration = getUrlDurationInSeconds(awsCredExpiration, urlExpiration);
+		console.log('awscredentials ', awsCredExpiration?.getTime() - Date.now());
+	console.log('urlExpiration', urlExpiration);
+
+	if (awsCredExpiration) {
+		const awsCredExpirationInSec = Math.floor(
+			(awsCredExpiration?.getTime() - Date.now()) / 1000
+		);
+		urlExpiration =
+			awsCredExpirationInSec < urlExpiration
+				? awsCredExpirationInSec
+				: urlExpiration;
+	}
+	console.log('urlExpiration  Time After Util', urlExpiration);
 	assertValidationError(
-		urlExpiration > MAX_URL_EXPIRATION,
+		urlExpiration < MAX_URL_EXPIRATION,
 		StorageValidationErrorCode.UrlExpirationMaxLimitExceed
 	);
 	// expiresAt is the minimum of credential expiration and url expiration
