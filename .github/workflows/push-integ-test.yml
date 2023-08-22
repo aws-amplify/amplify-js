@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - feat/example-integ-test-branch/main
+      - feat/rollback-user-agent/main
 
 jobs:
   e2e:
