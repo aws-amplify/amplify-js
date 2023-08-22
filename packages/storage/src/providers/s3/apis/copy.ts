@@ -72,7 +72,6 @@ export const copy = async (
 			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
 		}
 	);
-	console.log('response:', response);
 
 	return {
 		key: destinationKey,
