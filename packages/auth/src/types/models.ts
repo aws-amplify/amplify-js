@@ -170,7 +170,7 @@ export type AuthDevice = {
 };
 
 export interface AWSAuthDevice extends AuthDevice {
-	attributes: AuthUserAttribute<CognitoUserAttributeKey>[];
+	attributes: Record<string, string>;
 	createDate?: Date;
 	lastAuthenticatedDate?: Date;
 	lastModifiedDate?: Date;

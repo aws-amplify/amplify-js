@@ -40,6 +40,10 @@ export const deviceManagementAPIConstants = {
 	},
 	ListDevicesAPIResultHappy: [
 		{
+			attributes: {
+				device_name: 'test-name',
+				'test-device-name-1': 'test-value',
+			},
 			deviceId: 'test-device-key',
 			deviceName: 'test-name',
 		},

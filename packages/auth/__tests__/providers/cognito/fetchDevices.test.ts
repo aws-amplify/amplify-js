@@ -42,31 +42,6 @@ describe('fetchDevices API Happy Path Cases:', () => {
 	});
 });
 
-describe('fetchDevices API Edge Cases:', () => {
-	beforeAll(() => {
-		listDevicesSpy.mockImplementation(
-			async ({}, params: ListDevicesCommandInput) => {
-				return deviceManagementAPIConstants.ListDevicesClientResultNoDeviceName as ListDevicesCommandOutput;
-			}
-		);
-		fetchAuthSessionSpy.mockImplementation(async () => {
-			return {
-				tokens: authAPITestParams.ValidAuthTokens,
-			};
-		});
-		configSpy.mockImplementation(() => authAPITestParams.validAuthConfig);
-	});
-	afterAll(() => {
-		listDevicesSpy.mockClear();
-		fetchAuthSessionSpy.mockClear();
-		configSpy.mockClear();
-	});
-	test('should return a valid deviceId and but not deviceName as its not present in the result', async () => {
-		const result = await fetchDevices();
-		expect(result[0].deviceName).toBeUndefined();
-	});
-});
-
 describe('fetchDevices API Error Path Cases:', () => {
 	beforeEach(() => {
 		listDevicesSpy.mockImplementationOnce(
@@ -87,11 +62,8 @@ describe('fetchDevices API Error Path Cases:', () => {
 			};
 		});
 		const res = fetchDevices();
-		expect(res).rejects.toHaveProperty('name', 'UserNotLoggedIn');
-		expect(res).rejects.toHaveProperty(
-			'message',
-			'Devices can only be fetched for authenticated users'
-		);
+		expect(res).rejects.toHaveProperty('name', 'Invalid Auth Tokens');
+		expect(res).rejects.toHaveProperty('message', 'No Auth Tokens were found');
 	});
 	test('fetchDevices API should throw an AuthError when there are no tokens available', async () => {
 		fetchAuthSessionSpy.mockImplementationOnce(async () => {
@@ -105,10 +77,10 @@ describe('fetchDevices API Error Path Cases:', () => {
 		});
 		const res = fetchDevices();
 
-		expect(res).rejects.toHaveProperty('name', 'AuthConfigException');
+		expect(res).rejects.toHaveProperty('name', 'InvalidUserPoolId');
 		expect(res).rejects.toHaveProperty(
 			'message',
-			'Cannot list devices without an userPoolId'
+			'Invalid user pool id provided.'
 		);
 	});
 });

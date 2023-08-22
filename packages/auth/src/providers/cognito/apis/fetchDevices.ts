@@ -9,6 +9,8 @@ import {
 	ListDevicesCommandInput,
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { AWSAuthDevice } from '../../../types/models';
+import { assertAuthTokens } from '../utils/types';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 
 // Cognito Documentation for max device
 // tslint:disable-next-line:max-line-length
@@ -24,44 +26,42 @@ const MAX_DEVICES = 60;
  */
 export async function fetchDevices(): Promise<AWSAuthDevice[]> {
 	const session = await fetchAuthSession({});
-	if (!session.tokens) {
-		throw new AuthError({
-			name: 'UserNotLoggedIn',
-			message: 'Devices can only be fetched for authenticated users',
-			recoverySuggestion:
-				'Make sure to log the user in before listing the devices associated with that user',
-		});
-	}
+	assertAuthTokens(session.tokens);
+
 	const requestParams: ListDevicesCommandInput = {
 		AccessToken: session.tokens.accessToken.toString(),
 		Limit: MAX_DEVICES,
 	};
 
 	const authConfig = AmplifyV6.getConfig().Auth;
-	const userPoolId = authConfig?.userPoolId;
-	if (!userPoolId) {
-		throw new AuthError({
-			name: 'AuthConfigException',
-			message: 'Cannot list devices without an userPoolId',
-			recoverySuggestion:
-				'Make sure a valid userPoolId is given in the config.',
-		});
-	}
+	const region = getRegion(authConfig?.userPoolId);
 
-	const region = userPoolId.split('_')[0];
 	const res = await listDevices({ region }, requestParams);
 	const devices: DeviceType[] = res.Devices ?? [];
 
 	return devices.map(device => {
 		if (device.DeviceKey && device.DeviceAttributes) {
+			let deviceName: string | undefined;
 			const deviceInfo: AWSAuthDevice = {
 				deviceId: device.DeviceKey,
+				deviceName: '',
+				attributes: device.DeviceAttributes.reduce((attrs, { Name, Value }) => {
+					if (!!Name && !!Value) {
+						if (Name === 'device_name') deviceName = Value;
+						attrs[Name] = Value;
+					}
+					return attrs;
+				}, {}),
 			};
-			const deviceName = device.DeviceAttributes.find(
-				({ Name }) => Name === 'device_name'
-			);
-
-			if (deviceName) deviceInfo.deviceName = deviceName.Value;
+			if (!!deviceName) {
+				deviceInfo.deviceName = deviceName;
+			}
+			if (device.DeviceCreateDate)
+				deviceInfo.createDate = device.DeviceCreateDate;
+			if (device.DeviceLastAuthenticatedDate)
+				deviceInfo.lastAuthenticatedDate = device.DeviceLastAuthenticatedDate;
+			if (device.DeviceLastModifiedDate)
+				deviceInfo.lastModifiedDate = device.DeviceLastModifiedDate;
 			return deviceInfo;
 		} else {
 			throw new AuthError({
