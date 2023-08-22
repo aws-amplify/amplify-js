@@ -17,7 +17,7 @@ import {
 	resolveStorageConfig,
 } from '../utils';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { getUrlDurationInSeconds } from '../utils/getUrlDurationInSeconds';
+import { getUrlDurationInSeconds } from '../utils';
 const DEFAULT_PRESIGN_EXPIRATION = 900;
 const MAX_URL_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
 
