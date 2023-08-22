@@ -112,7 +112,9 @@
     "lib",
     "lib-esm",
     "src",
-    "**/package.json"
+    "analytics",
+    "auth",
+    "internals"
   ],
   "dependencies": {
     "@aws-amplify/analytics": "7.0.0",
