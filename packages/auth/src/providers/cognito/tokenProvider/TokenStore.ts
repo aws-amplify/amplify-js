@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	AmplifyV6,
-	KeyValueStorageInterface,
+	KeyValueStorageInterface
+} from '@aws-amplify/core';
+import {
 	assertTokenProviderConfig,
 	asserts,
 	decodeJWT,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/utils';
 import {
 	AuthKeys,
 	AuthTokenStorageKeys,

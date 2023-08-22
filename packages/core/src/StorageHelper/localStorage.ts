@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { KeyValueStorageInterface } from "../types";
-import { PlatformNotSupportedError } from '../Errors';
+import { PlatformNotSupportedError } from '../Util/Errors';
 
 class LocalStorageClass implements KeyValueStorageInterface {
 	storage?: Storage;

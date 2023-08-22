@@ -3,11 +3,13 @@
 
 import {
 	Amplify,
+	parseAWSExports
+} from '@aws-amplify/core';
+import {
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
-	parseAWSExports,
 	StorageAction,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/utils';
 import { AWSS3Provider } from '../providers';
 import {
 	StorageCopySource,

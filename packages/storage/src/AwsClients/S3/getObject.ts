@@ -12,7 +12,7 @@ import {
 	HttpResponse,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import { USER_AGENT_HEADER } from '@aws-amplify/core';
+import { USER_AGENT_HEADER } from '@aws-amplify/core/internals/utils';
 
 import { S3EndpointResolverOptions, defaultConfig } from './base';
 import type {

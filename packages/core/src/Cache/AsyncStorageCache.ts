@@ -6,7 +6,7 @@ import { ConsoleLogger as Logger } from '../Logger';
 import { StorageCache } from './StorageCache';
 import { defaultConfig, getCurrTime } from './Utils';
 import { CacheConfig, CacheItem, CacheItemOptions, ICache } from './types';
-import { STORAGE_CACHE_EXCEPTION } from '../constants';
+import { STORAGE_CACHE_EXCEPTION } from '../Util/Constants';
 import { asserts } from '../Util/errors/AssertError';
 import { getCurrSizeKey } from './Utils/CacheUtils';
 

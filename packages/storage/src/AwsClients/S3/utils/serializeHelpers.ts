@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Md5 } from '@aws-sdk/md5-js';
 import { extendedEncodeURIComponent } from '@aws-amplify/core/internals/aws-client-utils';
-import { AmplifyErrorString } from '@aws-amplify/core';
+import { AmplifyErrorString } from '@aws-amplify/core/internals/utils';
 import { toBase64, utf8Encode } from '../utils';
 import { StorageError } from '../../../errors/StorageError';
 
