@@ -8,10 +8,6 @@ import {
 	CognitoAccessToken,
 	CognitoUserAttribute,
 } from 'amazon-cognito-identity-js';
-import {
-	InternalCognitoUserPool,
-	InternalCognitoUser,
-} from 'amazon-cognito-identity-js/internals';
 
 import { AuthOptions } from '../src/types';
 import { InternalAuthClass } from '../src/internals/InternalAuth';
@@ -27,7 +23,7 @@ const authOptions: AuthOptions = {
 describe('User-Attribute-validation', () => {
 	it('Check-non-verified-attributes', async () => {
 		const spyonAuthUserAttributes = jest
-			.spyOn(InternalAuthClass.prototype as any, '_userAttributes')
+			.spyOn(InternalAuthClass.prototype, 'userAttributes')
 			.mockImplementation((user: CognitoUser) => {
 				const emailAttribute = new CognitoUserAttribute({
 					Name: 'email',
@@ -79,10 +75,10 @@ describe('User-Attribute-validation', () => {
 		const auth = new Auth(authOptions);
 
 		const spyUserPoolCurrentUser = jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementation(() => {
 				return new CognitoUser({
-					Pool: new InternalCognitoUserPool({
+					Pool: new CognitoUserPool({
 						UserPoolId: authOptions.userPoolId,
 						ClientId: authOptions.userPoolWebClientId,
 					}),
@@ -91,7 +87,7 @@ describe('User-Attribute-validation', () => {
 			});
 
 		const spyUserGetSession = jest
-			.spyOn(InternalCognitoUser.prototype, 'getSession')
+			.spyOn(CognitoUser.prototype, 'getSession')
 			.mockImplementation((callback: any) => {
 				const session = new CognitoUserSession({
 					AccessToken: new CognitoAccessToken({ AccessToken: 'accesstoken' }),
@@ -107,7 +103,7 @@ describe('User-Attribute-validation', () => {
 			});
 
 		const spyGetUserData = jest
-			.spyOn(InternalCognitoUser.prototype, 'getUserData')
+			.spyOn(CognitoUser.prototype, 'getUserData')
 			.mockImplementation(callback => {
 				const emailAttribute = {
 					Name: 'email',

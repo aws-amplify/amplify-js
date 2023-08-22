@@ -1378,7 +1378,7 @@ export class InternalCognitoUser {
 		const userData = this.getUserDataFromCache();
 
 		if (!userData) {
-			this.fetchUserData(userAgentValue)
+			this.fetchUserData()
 				.then(data => {
 					callback(null, data);
 				})
@@ -1387,7 +1387,7 @@ export class InternalCognitoUser {
 		}
 
 		if (this.isFetchUserDataAndTokenRequired(params)) {
-			this.fetchUserData(userAgentValue)
+			this.fetchUserData()
 				.then(data => {
 					return this.refreshSessionIfPossible(params, userAgentValue).then(
 						() => data
@@ -1436,10 +1436,10 @@ export class InternalCognitoUser {
 	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 */
 	fetchUserData(userAgentValue) {
-		return this.createGetUserRequest(userAgentValue).then(data => {
+		return this.createGetUserRequest().then(data => {
 			this.cacheUserData(data);
 			return data;
-		});
+		}, userAgentValue);
 	}
 
 	/**

@@ -5,7 +5,6 @@
 
 import Client from '../Client';
 import CognitoUser from '../CognitoUser';
-import { InternalCognitoUser } from '../internals';
 import StorageHelper from '../StorageHelper';
 
 const USER_POOL_ID_MAX_LENGTH = 55;
@@ -131,7 +130,7 @@ export class InternalCognitoUserPool {
 			};
 
 			const returnData = {
-				user: new InternalCognitoUser(cognitoUser),
+				user: new CognitoUser(cognitoUser),
 				userConfirmed: data.UserConfirmed,
 				userSub: data.UserSub,
 				codeDeliveryDetails: data.CodeDeliveryDetails,
@@ -157,7 +156,7 @@ export class InternalCognitoUserPool {
 				Storage: this.storage,
 			};
 
-			return new InternalCognitoUser(cognitoUser);
+			return new CognitoUser(cognitoUser);
 		}
 
 		return null;

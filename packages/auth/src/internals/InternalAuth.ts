@@ -25,11 +25,9 @@ import {
 
 import {
 	Amplify,
-	AuthAction,
 	ConsoleLogger as Logger,
 	Credentials,
 	CustomUserAgentDetails,
-	getAmplifyUserAgent,
 	Hub,
 	StorageHelper,
 	ICredentials,
@@ -42,6 +40,7 @@ import {
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
+	CognitoUserPool,
 	AuthenticationDetails,
 	ICognitoUserPoolData,
 	ICognitoUserData,
@@ -61,8 +60,6 @@ import {
 import {
 	addAuthCategoryToCognitoUserAgent,
 	addFrameworkToCognitoUserAgent,
-	InternalCognitoUser,
-	InternalCognitoUserPool,
 } from 'amazon-cognito-identity-js/internals';
 
 import { parse } from 'url';
@@ -75,7 +72,6 @@ import {
 	CognitoHostedUIIdentityProvider,
 	IAuthDevice,
 } from '../types/Auth';
-import { getAuthUserAgentDetails, getAuthUserAgentValue } from '../utils';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -105,7 +101,7 @@ const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
  */
 export class InternalAuthClass {
 	private _config: AuthOptions;
-	private userPool: InternalCognitoUserPool = null;
+	private userPool: CognitoUserPool = null;
 	private user: any = null;
 	private _oAuthHandler: OAuth;
 	private _storage;
@@ -209,7 +205,7 @@ export class InternalAuthClass {
 			};
 			userPoolData.Storage = this._storage;
 
-			this.userPool = new InternalCognitoUserPool(
+			this.userPool = new CognitoUserPool(
 				userPoolData,
 				this.wrapRefreshSessionCallback
 			);
@@ -412,10 +408,6 @@ export class InternalAuthClass {
 		logger.debug('signUp validation data:', validationData);
 
 		return new Promise((resolve, reject) => {
-			const userAgentDetails = getAuthUserAgentDetails(
-				AuthAction.SignUp,
-				customUserAgentDetails
-			);
 			this.userPool.signUp(
 				username,
 				password,
@@ -441,15 +433,13 @@ export class InternalAuthClass {
 								password,
 								autoSignInValidationData,
 								autoSignInClientMetaData,
-								data,
-								userAgentDetails
+								data
 							);
 						}
 						resolve(data);
 					}
 				},
-				clientMetadata,
-				getAmplifyUserAgent(userAgentDetails)
+				clientMetadata
 			);
 		});
 	}
@@ -459,8 +449,7 @@ export class InternalAuthClass {
 		password: string,
 		validationData: {},
 		clientMetadata: any,
-		data: any,
-		customUserAgentDetails: CustomUserAgentDetails
+		data: any
 	) {
 		this.autoSignInInitiated = true;
 		const authDetails = new AuthenticationDetails({
@@ -470,34 +459,24 @@ export class InternalAuthClass {
 			ClientMetadata: clientMetadata,
 		});
 		if (data.userConfirmed) {
-			this.signInAfterUserConfirmed(authDetails, customUserAgentDetails);
+			this.signInAfterUserConfirmed(authDetails);
 		} else if (this._config.signUpVerificationMethod === 'link') {
-			this.handleLinkAutoSignIn(authDetails, customUserAgentDetails);
+			this.handleLinkAutoSignIn(authDetails);
 		} else {
-			this.handleCodeAutoSignIn(authDetails, customUserAgentDetails);
+			this.handleCodeAutoSignIn(authDetails);
 		}
 	}
 
-	private handleCodeAutoSignIn(
-		authDetails: AuthenticationDetails,
-		customUserAgentDetails: CustomUserAgentDetails
-	) {
+	private handleCodeAutoSignIn(authDetails: AuthenticationDetails) {
 		const listenEvent = ({ payload }) => {
 			if (payload.event === 'confirmSignUp') {
-				this.signInAfterUserConfirmed(
-					authDetails,
-					customUserAgentDetails,
-					listenEvent
-				);
+				this.signInAfterUserConfirmed(authDetails, listenEvent);
 			}
 		};
 		Hub.listen('auth', listenEvent);
 	}
 
-	private handleLinkAutoSignIn(
-		authDetails: AuthenticationDetails,
-		customUserAgentDetails: CustomUserAgentDetails
-	) {
+	private handleLinkAutoSignIn(authDetails: AuthenticationDetails) {
 		this._storage.setItem('amplify-polling-started', 'true');
 		const start = Date.now();
 		const autoSignInPollingIntervalId = setInterval(() => {
@@ -512,8 +491,7 @@ export class InternalAuthClass {
 			} else {
 				this.signInAfterUserConfirmed(
 					authDetails,
-					customUserAgentDetails,
-					undefined,
+					null,
 					autoSignInPollingIntervalId
 				);
 			}
@@ -522,7 +500,6 @@ export class InternalAuthClass {
 
 	private async signInAfterUserConfirmed(
 		authDetails: AuthenticationDetails,
-		customUserAgentDetails: CustomUserAgentDetails,
 		listenEvent?: HubCallback,
 		autoSignInPollingIntervalId?: ReturnType<typeof setInterval>
 	) {
@@ -550,10 +527,8 @@ export class InternalAuthClass {
 					error => {
 						logger.error(error);
 						this._storage.removeItem('amplify-auto-sign-in');
-					},
-					customUserAgentDetails
-				),
-				getAmplifyUserAgent(customUserAgentDetails)
+					}
+				)
 			);
 		} catch (error) {
 			logger.error(error);
@@ -621,8 +596,7 @@ export class InternalAuthClass {
 						resolve(data);
 					}
 				},
-				clientMetadata,
-				getAuthUserAgentValue(AuthAction.ConfirmSignUp, customUserAgentDetails)
+				clientMetadata
 			);
 		});
 	}
@@ -653,17 +627,13 @@ export class InternalAuthClass {
 
 		const user = this.createCognitoUser(username);
 		return new Promise((resolve, reject) => {
-			user.resendConfirmationCode(
-				(err, data) => {
-					if (err) {
-						reject(err);
-					} else {
-						resolve(data);
-					}
-				},
-				clientMetadata,
-				getAuthUserAgentValue(AuthAction.ResendSignUp, customUserAgentDetails)
-			);
+			user.resendConfirmationCode((err, data) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(data);
+				}
+			}, clientMetadata);
 		});
 	}
 
@@ -713,29 +683,24 @@ export class InternalAuthClass {
 			ValidationData: validationData,
 			ClientMetadata: clientMetadata,
 		});
-		const userAgentDetails = getAuthUserAgentDetails(
-			AuthAction.SignIn,
-			customUserAgentDetails
-		);
 		if (password) {
-			return this.signInWithPassword(authDetails, userAgentDetails);
+			return this.signInWithPassword(authDetails);
 		} else {
-			return this.signInWithoutPassword(authDetails, userAgentDetails);
+			return this.signInWithoutPassword(authDetails);
 		}
 	}
 
 	/**
 	 * Return an object with the authentication callbacks
-	 * @param {InternalCognitoUser} user - the cognito user object
+	 * @param {CognitoUser} user - the cognito user object
 	 * @param {} resolve - function called when resolving the current step
 	 * @param {} reject - function called when rejecting the current step
 	 * @return - an object with the callback methods for user authentication
 	 */
 	private authCallbacks(
-		user: InternalCognitoUser,
-		resolve: (value?: InternalCognitoUser | any) => void,
-		reject: (value?: any) => void,
-		customUserAgentDetails: CustomUserAgentDetails
+		user: CognitoUser,
+		resolve: (value?: CognitoUser | any) => void,
+		reject: (value?: any) => void
 	): IAuthenticationCallback {
 		const that = this;
 		return {
@@ -753,10 +718,7 @@ export class InternalAuthClass {
 					try {
 						// In order to get user attributes and MFA methods
 						// We need to trigger currentUserPoolUser again
-						const currentUser = await this._currentUserPoolUser(
-							undefined,
-							customUserAgentDetails
-						);
+						const currentUser = await this.currentUserPoolUser();
 						that.user = currentUser;
 						dispatchAuthEvent(
 							'signIn',
@@ -825,13 +787,11 @@ export class InternalAuthClass {
 	 * Sign in with a password
 	 * @private
 	 * @param {AuthenticationDetails} authDetails - the user sign in data
-	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves the CognitoUser object if success or mfa required
 	 */
 	private signInWithPassword(
-		authDetails: AuthenticationDetails,
-		customUserAgentDetails: CustomUserAgentDetails
-	): Promise<InternalCognitoUser | any> {
+		authDetails: AuthenticationDetails
+	): Promise<CognitoUser | any> {
 		if (this.pendingSignIn) {
 			throw new Error('Pending sign-in attempt already in progress');
 		}
@@ -850,10 +810,8 @@ export class InternalAuthClass {
 					error => {
 						this.pendingSignIn = null;
 						reject(error);
-					},
-					customUserAgentDetails
-				),
-				getAmplifyUserAgent(customUserAgentDetails)
+					}
+				)
 			);
 		});
 
@@ -864,22 +822,16 @@ export class InternalAuthClass {
 	 * Sign in without a password
 	 * @private
 	 * @param {AuthenticationDetails} authDetails - the user sign in data
-	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
-	 * @return - A promise resolves the InternalCognitoUser object if success or mfa required
+	 * @return - A promise resolves the CognitoUser object if success or mfa required
 	 */
 	private signInWithoutPassword(
-		authDetails: AuthenticationDetails,
-		customUserAgentDetails: CustomUserAgentDetails
-	): Promise<InternalCognitoUser | any> {
+		authDetails: AuthenticationDetails
+	): Promise<CognitoUser | any> {
 		const user = this.createCognitoUser(authDetails.getUsername());
 		user.setAuthenticationFlowType('CUSTOM_AUTH');
 
 		return new Promise((resolve, reject) => {
-			user.initiateAuth(
-				authDetails,
-				this.authCallbacks(user, resolve, reject, customUserAgentDetails),
-				getAmplifyUserAgent(customUserAgentDetails)
-			);
+			user.initiateAuth(authDetails, this.authCallbacks(user, resolve, reject));
 		});
 	}
 
@@ -896,10 +848,8 @@ export class InternalAuthClass {
 		user: CognitoUser | any,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<MFAOption[]> {
-		const internalUser: InternalCognitoUser | any = user;
-
 		return new Promise((res, rej) => {
-			internalUser.getMFAOptions((err, mfaOptions) => {
+			user.getMFAOptions((err, mfaOptions) => {
 				if (err) {
 					logger.debug('get MFA Options failed', err);
 					rej(err);
@@ -908,7 +858,7 @@ export class InternalAuthClass {
 				logger.debug('get MFA options success', mfaOptions);
 				res(mfaOptions);
 				return;
-			}, getAuthUserAgentValue(AuthAction.GetMFAOptions, customUserAgentDetails));
+			});
 		});
 	}
 
@@ -923,23 +873,18 @@ export class InternalAuthClass {
 		params?: GetPreferredMFAOpts,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
-		const internalUser: InternalCognitoUser | any = user;
 		const that = this;
 		return new Promise((res, rej) => {
 			const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
 			const bypassCache = params ? params.bypassCache : false;
-			const userAgentValue = getAuthUserAgentValue(
-				AuthAction.GetPreferredMFA,
-				customUserAgentDetails
-			);
-			internalUser.getUserData(
+			user.getUserData(
 				async (err, data) => {
 					if (err) {
 						logger.debug('getting preferred mfa failed', err);
 						if (this.isSessionInvalid(err)) {
 							try {
-								await this.cleanUpInvalidSession(user, userAgentValue);
+								await this.cleanUpInvalidSession(user);
 							} catch (cleanUpError) {
 								rej(
 									new Error(
@@ -962,8 +907,7 @@ export class InternalAuthClass {
 						return;
 					}
 				},
-				{ bypassCache, clientMetadata },
-				userAgentValue
+				{ bypassCache, clientMetadata }
 			);
 		});
 	}
@@ -998,37 +942,29 @@ export class InternalAuthClass {
 		return ret;
 	}
 
-	private _getUserData(
-		user: InternalCognitoUser,
-		params,
-		userAgentValue: string
-	) {
+	private _getUserData(user, params) {
 		return new Promise((res, rej) => {
-			user.getUserData(
-				async (err, data) => {
-					if (err) {
-						logger.debug('getting user data failed', err);
-						if (this.isSessionInvalid(err)) {
-							try {
-								await this.cleanUpInvalidSession(user, userAgentValue);
-							} catch (cleanUpError) {
-								rej(
-									new Error(
-										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
-									)
-								);
-								return;
-							}
+			user.getUserData(async (err, data) => {
+				if (err) {
+					logger.debug('getting user data failed', err);
+					if (this.isSessionInvalid(err)) {
+						try {
+							await this.cleanUpInvalidSession(user);
+						} catch (cleanUpError) {
+							rej(
+								new Error(
+									`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+								)
+							);
+							return;
 						}
-						rej(err);
-						return;
-					} else {
-						res(data);
 					}
-				},
-				params,
-				userAgentValue
-			);
+					rej(err);
+					return;
+				} else {
+					res(data);
+				}
+			}, params);
 		});
 	}
 
@@ -1044,21 +980,12 @@ export class InternalAuthClass {
 		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA',
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
-		const internalUser: InternalCognitoUser | any = user;
-		const userAgentValue = getAuthUserAgentValue(
-			AuthAction.SetPreferredMFA,
-			customUserAgentDetails
-		);
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
-		const userData = await this._getUserData(
-			user,
-			{
-				bypassCache: true,
-				clientMetadata,
-			},
-			userAgentValue
-		);
+		const userData = await this._getUserData(user, {
+			bypassCache: true,
+			clientMetadata,
+		});
 		let smsMfaSettings = null;
 		let totpMfaSettings = null;
 
@@ -1121,7 +1048,7 @@ export class InternalAuthClass {
 
 		const that = this;
 		return new Promise<string>((res, rej) => {
-			internalUser.setUserMfaPreference(
+			user.setUserMfaPreference(
 				smsMfaSettings,
 				totpMfaSettings,
 				(err, result) => {
@@ -1132,13 +1059,13 @@ export class InternalAuthClass {
 					logger.debug('Set user mfa success', result);
 					logger.debug('Caching the latest user data into local');
 					// cache the latest result into user data
-					internalUser.getUserData(
+					user.getUserData(
 						async (err, data) => {
 							if (err) {
 								logger.debug('getting user data failed', err);
 								if (this.isSessionInvalid(err)) {
 									try {
-										await this.cleanUpInvalidSession(user, userAgentValue);
+										await this.cleanUpInvalidSession(user);
 									} catch (cleanUpError) {
 										rej(
 											new Error(
@@ -1156,11 +1083,9 @@ export class InternalAuthClass {
 						{
 							bypassCache: true,
 							clientMetadata,
-						},
-						userAgentValue
+						}
 					);
-				},
-				userAgentValue
+				}
 			);
 		});
 	}
@@ -1176,10 +1101,8 @@ export class InternalAuthClass {
 		user: CognitoUser,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
-		const internalUser = user as InternalCognitoUser;
-
 		return new Promise((res, rej) => {
-			internalUser.disableMFA((err, data) => {
+			user.disableMFA((err, data) => {
 				if (err) {
 					logger.debug('disable mfa failed', err);
 					rej(err);
@@ -1188,7 +1111,7 @@ export class InternalAuthClass {
 				logger.debug('disable mfa succeed', data);
 				res(data);
 				return;
-			}, getAuthUserAgentValue(AuthAction.DisableSMS, customUserAgentDetails));
+			});
 		});
 	}
 
@@ -1203,10 +1126,8 @@ export class InternalAuthClass {
 		user: CognitoUser,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
-		const internalUser = user as InternalCognitoUser;
-
 		return new Promise((res, rej) => {
-			internalUser.enableMFA((err, data) => {
+			user.enableMFA((err, data) => {
 				if (err) {
 					logger.debug('enable mfa failed', err);
 					rej(err);
@@ -1215,7 +1136,7 @@ export class InternalAuthClass {
 				logger.debug('enable mfa succeed', data);
 				res(data);
 				return;
-			}, getAuthUserAgentValue(AuthAction.EnableSMS, customUserAgentDetails));
+			});
 		});
 	}
 
@@ -1229,24 +1150,19 @@ export class InternalAuthClass {
 		user: CognitoUser | any,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
-		const internalUser: InternalCognitoUser | any = user;
-
 		return new Promise((res, rej) => {
-			internalUser.associateSoftwareToken(
-				{
-					onFailure: err => {
-						logger.debug('associateSoftwareToken failed', err);
-						rej(err);
-						return;
-					},
-					associateSecretCode: secretCode => {
-						logger.debug('associateSoftwareToken success', secretCode);
-						res(secretCode);
-						return;
-					},
+			user.associateSoftwareToken({
+				onFailure: err => {
+					logger.debug('associateSoftwareToken failed', err);
+					rej(err);
+					return;
 				},
-				getAuthUserAgentValue(AuthAction.SetupTOTP, customUserAgentDetails)
-			);
+				associateSecretCode: secretCode => {
+					logger.debug('associateSoftwareToken success', secretCode);
+					res(secretCode);
+					return;
+				},
+			});
 		});
 	}
 
@@ -1263,50 +1179,38 @@ export class InternalAuthClass {
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUserSession> {
 		logger.debug('verification totp token', user, challengeAnswer);
-		const internalUser: InternalCognitoUser | any = user;
 
 		let signInUserSession;
-		if (
-			internalUser &&
-			typeof internalUser.getSignInUserSession === 'function'
-		) {
-			signInUserSession = (user as InternalCognitoUser).getSignInUserSession();
+		if (user && typeof user.getSignInUserSession === 'function') {
+			signInUserSession = (user as CognitoUser).getSignInUserSession();
 		}
 		const isLoggedIn = signInUserSession?.isValid();
 
 		return new Promise((res, rej) => {
-			internalUser.verifySoftwareToken(
-				challengeAnswer,
-				'My TOTP device',
-				{
-					onFailure: err => {
-						logger.debug('verifyTotpToken failed', err);
-						rej(err);
-						return;
-					},
-					onSuccess: data => {
-						if (!isLoggedIn) {
-							dispatchAuthEvent(
-								'signIn',
-								internalUser,
-								`A user ${internalUser.getUsername()} has been signed in`
-							);
-						}
-						dispatchAuthEvent(
-							'verify',
-							internalUser,
-							`A user ${internalUser.getUsername()} has been verified`
-						);
-						logger.debug('verifyTotpToken success', data);
-						res(data);
-						return;
-					},
+			user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
+				onFailure: err => {
+					logger.debug('verifyTotpToken failed', err);
+					rej(err);
+					return;
 				},
-				getAuthUserAgentValue(
-					AuthAction.VerifyTotpToken,
-					customUserAgentDetails
-				)
-			);
+				onSuccess: data => {
+					if (!isLoggedIn) {
+						dispatchAuthEvent(
+							'signIn',
+							user,
+							`A user ${user.getUsername()} has been signed in`
+						);
+					}
+					dispatchAuthEvent(
+						'verify',
+						user,
+						`A user ${user.getUsername()} has been verified`
+					);
+					logger.debug('verifyTotpToken success', data);
+					res(data);
+					return;
+				},
+			});
 		});
 	}
 
@@ -1325,19 +1229,13 @@ export class InternalAuthClass {
 		clientMetadata: ClientMetaData = this._config.clientMetadata,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUser | any> {
-		const internalUser: InternalCognitoUser | any = user;
-
 		if (!code) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyCode);
 		}
 
 		const that = this;
-		const userAgentDetails = getAuthUserAgentDetails(
-			AuthAction.ConfirmSignIn,
-			customUserAgentDetails
-		);
 		return new Promise((resolve, reject) => {
-			internalUser.sendMFACode(
+			user.sendMFACode(
 				code,
 				{
 					onSuccess: async session => {
@@ -1349,24 +1247,19 @@ export class InternalAuthClass {
 						} catch (e) {
 							logger.debug('cannot get cognito credentials', e);
 						} finally {
-							that.user = internalUser;
+							that.user = user;
 							try {
-								const currentUser = await this._currentUserPoolUser(
-									undefined,
-									userAgentDetails
-								);
-								Object.assign(internalUser, {
-									attributes: currentUser.attributes,
-								});
+								const currentUser = await this.currentUserPoolUser();
+								user.attributes = currentUser.attributes;
 							} catch (e) {
 								logger.debug('cannot get updated Cognito User', e);
 							}
 							dispatchAuthEvent(
 								'signIn',
-								internalUser,
-								`A user ${internalUser.getUsername()} has been signed in`
+								user,
+								`A user ${user.getUsername()} has been signed in`
 							);
-							resolve(internalUser);
+							resolve(user);
 						}
 					},
 					onFailure: err => {
@@ -1375,8 +1268,7 @@ export class InternalAuthClass {
 					},
 				},
 				mfaType,
-				clientMetadata,
-				getAmplifyUserAgent(userAgentDetails)
+				clientMetadata
 			);
 		});
 	}
@@ -1388,15 +1280,13 @@ export class InternalAuthClass {
 		clientMetadata: ClientMetaData = this._config.clientMetadata,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUser | any> {
-		const internalUser: InternalCognitoUser | any = user;
-
 		if (!password) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyPassword);
 		}
 
 		const that = this;
 		return new Promise((resolve, reject) => {
-			internalUser.completeNewPasswordChallenge(
+			user.completeNewPasswordChallenge(
 				password,
 				requiredAttributes,
 				{
@@ -1409,13 +1299,13 @@ export class InternalAuthClass {
 						} catch (e) {
 							logger.debug('cannot get cognito credentials', e);
 						} finally {
-							that.user = internalUser;
+							that.user = user;
 							dispatchAuthEvent(
 								'signIn',
-								internalUser,
-								`A user ${internalUser.getUsername()} has been signed in`
+								user,
+								`A user ${user.getUsername()} has been signed in`
 							);
-							resolve(internalUser);
+							resolve(user);
 						}
 					},
 					onFailure: err => {
@@ -1429,28 +1319,24 @@ export class InternalAuthClass {
 					},
 					mfaRequired: (challengeName, challengeParam) => {
 						logger.debug('signIn MFA required');
-						internalUser['challengeName'] = challengeName;
-						internalUser['challengeParam'] = challengeParam;
-						resolve(internalUser);
+						user['challengeName'] = challengeName;
+						user['challengeParam'] = challengeParam;
+						resolve(user);
 					},
 					mfaSetup: (challengeName, challengeParam) => {
 						logger.debug('signIn mfa setup', challengeName);
-						internalUser['challengeName'] = challengeName;
-						internalUser['challengeParam'] = challengeParam;
-						resolve(internalUser);
+						user['challengeName'] = challengeName;
+						user['challengeParam'] = challengeParam;
+						resolve(user);
 					},
 					totpRequired: (challengeName, challengeParam) => {
 						logger.debug('signIn mfa setup', challengeName);
-						internalUser['challengeName'] = challengeName;
-						internalUser['challengeParam'] = challengeParam;
-						resolve(internalUser);
+						user['challengeName'] = challengeName;
+						user['challengeParam'] = challengeParam;
+						resolve(user);
 					},
 				},
-				clientMetadata,
-				getAuthUserAgentValue(
-					AuthAction.CompleteNewPassword,
-					customUserAgentDetails
-				)
+				clientMetadata
 			);
 		});
 	}
@@ -1461,7 +1347,6 @@ export class InternalAuthClass {
 	 * @param {String} challengeResponses - The confirmation code
 	 * @param {ClientMetaData} clientMetadata - optional client metadata defaults to config
 	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
-	 *
 	 */
 	public sendCustomChallengeAnswer(
 		user: CognitoUser | any,
@@ -1469,8 +1354,6 @@ export class InternalAuthClass {
 		clientMetadata: ClientMetaData = this._config.clientMetadata,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUser | any> {
-		const internalUser: InternalCognitoUser | any = user;
-
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
@@ -1479,16 +1362,11 @@ export class InternalAuthClass {
 		}
 
 		const that = this;
-		const userAgentDetails = getAuthUserAgentDetails(
-			AuthAction.SendCustomChallengeAnswer,
-			customUserAgentDetails
-		);
 		return new Promise((resolve, reject) => {
-			internalUser.sendCustomChallengeAnswer(
+			user.sendCustomChallengeAnswer(
 				challengeResponses,
-				this.authCallbacks(internalUser, resolve, reject, userAgentDetails),
-				clientMetadata,
-				getAmplifyUserAgent(userAgentDetails)
+				this.authCallbacks(user, resolve, reject),
+				clientMetadata
 			);
 		});
 	}
@@ -1505,25 +1383,16 @@ export class InternalAuthClass {
 		attributeNames: string[],
 		customUserAgentDetails?: CustomUserAgentDetails
 	) {
-		const internalUser: InternalCognitoUser | any = user;
 		const that = this;
-		const userAgentValue = getAuthUserAgentValue(
-			AuthAction.DeleteUserAttributes,
-			customUserAgentDetails
-		);
 		return new Promise((resolve, reject) => {
-			that._userSession(userAgentValue, internalUser).then(session => {
-				internalUser.deleteAttributes(
-					attributeNames,
-					(err, result) => {
-						if (err) {
-							return reject(err);
-						} else {
-							return resolve(result);
-						}
-					},
-					userAgentValue
-				);
+			that.userSession(user).then(session => {
+				user.deleteAttributes(attributeNames, (err, result) => {
+					if (err) {
+						return reject(err);
+					} else {
+						return resolve(result);
+					}
+				});
 			});
 		});
 	}
@@ -1550,26 +1419,18 @@ export class InternalAuthClass {
 
 		return new Promise(async (res, rej) => {
 			if (this.userPool) {
-				const internalUser =
-					this.userPool.getCurrentUser() as InternalCognitoUser;
+				const user = this.userPool.getCurrentUser();
 
-				if (!internalUser) {
+				if (!user) {
 					logger.debug('Failed to get user from user pool');
 					return rej(new Error('No current user.'));
 				} else {
-					const userAgentValue = getAuthUserAgentValue(
-						AuthAction.DeleteUser,
-						customUserAgentDetails
-					);
-					internalUser.getSession(async (err, session) => {
+					user.getSession(async (err, session) => {
 						if (err) {
 							logger.debug('Failed to get the user session', err);
 							if (this.isSessionInvalid(err)) {
 								try {
-									await this.cleanUpInvalidSession(
-										internalUser,
-										userAgentValue
-									);
+									await this.cleanUpInvalidSession(user);
 								} catch (cleanUpError) {
 									rej(
 										new Error(
@@ -1581,40 +1442,36 @@ export class InternalAuthClass {
 							}
 							return rej(err);
 						} else {
-							internalUser.deleteUser(
-								(err, result: string) => {
-									if (err) {
-										rej(err);
+							user.deleteUser((err, result: string) => {
+								if (err) {
+									rej(err);
+								} else {
+									dispatchAuthEvent(
+										'userDeleted',
+										result,
+										'The authenticated user has been deleted.'
+									);
+									user.signOut();
+									this.user = null;
+									try {
+										this.cleanCachedItems(); // clean aws credentials
+									} catch (e) {
+										// TODO: change to rejects in refactor
+										logger.debug('failed to clear cached items');
+									}
+
+									if (isSignedInHostedUI) {
+										this.oAuthSignOutRedirect(res, rej);
 									} else {
 										dispatchAuthEvent(
-											'userDeleted',
-											result,
-											'The authenticated user has been deleted.'
+											'signOut',
+											this.user,
+											`A user has been signed out`
 										);
-										internalUser.signOut(undefined, userAgentValue);
-										this.user = null;
-										try {
-											this.cleanCachedItems(); // clean aws credentials
-										} catch (e) {
-											// TODO: change to rejects in refactor
-											logger.debug('failed to clear cached items');
-										}
-
-										if (isSignedInHostedUI) {
-											this.oAuthSignOutRedirect(res, rej);
-										} else {
-											dispatchAuthEvent(
-												'signOut',
-												this.user,
-												`A user has been signed out`
-											);
-											res(result);
-										}
+										res(result);
 									}
-								},
-								undefined,
-								userAgentValue
-							);
+								}
+							});
 						}
 					});
 				}
@@ -1639,15 +1496,10 @@ export class InternalAuthClass {
 		clientMetadata: ClientMetaData = this._config.clientMetadata,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
-		const internalUser: InternalCognitoUser | any = user;
 		const attributeList: ICognitoUserAttributeData[] = [];
 		const that = this;
-		const userAgentValue = getAuthUserAgentValue(
-			AuthAction.UpdateUserAttributes,
-			customUserAgentDetails
-		);
 		return new Promise((resolve, reject) => {
-			that._userSession(userAgentValue, internalUser).then(session => {
+			that.userSession(user).then(session => {
 				for (const key in attributes) {
 					if (key !== 'sub' && key.indexOf('_verified') < 0) {
 						const attr: ICognitoUserAttributeData = {
@@ -1657,7 +1509,7 @@ export class InternalAuthClass {
 						attributeList.push(attr);
 					}
 				}
-				internalUser.updateAttributes(
+				user.updateAttributes(
 					attributeList,
 					(err, result, details) => {
 						if (err) {
@@ -1680,8 +1532,7 @@ export class InternalAuthClass {
 							return resolve(result);
 						}
 					},
-					clientMetadata,
-					userAgentValue
+					clientMetadata
 				);
 			});
 		});
@@ -1717,27 +1568,15 @@ export class InternalAuthClass {
 		user: CognitoUser | any,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUserAttribute[]> {
-		return this._userAttributes(user, customUserAgentDetails);
-	}
-
-	private _userAttributes(
-		user: CognitoUser | any,
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<CognitoUserAttribute[]> {
-		const internalUser: InternalCognitoUser | any = user;
-		const userAgentValue = getAuthUserAgentValue(
-			AuthAction.UserAttributes,
-			customUserAgentDetails
-		);
 		return new Promise((resolve, reject) => {
-			this._userSession(userAgentValue, internalUser).then(session => {
-				internalUser.getUserAttributes((err, attributes) => {
+			this.userSession(user).then(session => {
+				user.getUserAttributes((err, attributes) => {
 					if (err) {
 						reject(err);
 					} else {
 						resolve(attributes);
 					}
-				}, userAgentValue);
+				});
 			});
 		});
 	}
@@ -1747,13 +1586,7 @@ export class InternalAuthClass {
 		customUserAgentDetails?: CustomUserAgentDetails
 	) {
 		const that = this;
-		return this._userAttributes(
-			user,
-			getAuthUserAgentDetails(
-				AuthAction.VerifiedContact,
-				customUserAgentDetails
-			)
-		).then(attributes => {
+		return this.userAttributes(user).then(attributes => {
 			const attrs = that.attributesToObject(attributes);
 			const unverified = {};
 			const verified = {};
@@ -1854,11 +1687,8 @@ export class InternalAuthClass {
 		);
 	}
 
-	private async cleanUpInvalidSession(
-		internalUser: InternalCognitoUser,
-		userAgentValue: string
-	) {
-		internalUser.signOut(undefined, userAgentValue);
+	private async cleanUpInvalidSession(user: CognitoUser) {
+		user.signOut();
 		this.user = null;
 		try {
 			await this.cleanCachedItems(); // clean aws credentials
@@ -1881,13 +1711,6 @@ export class InternalAuthClass {
 	 * @return - A promise resolves to current authenticated CognitoUser if success
 	 */
 	public currentUserPoolUser(
-		params?: CurrentUserOpts,
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<CognitoUser | any> {
-		return this._currentUserPoolUser(params, customUserAgentDetails);
-	}
-
-	private _currentUserPoolUser(
 		params?: CurrentUserOpts,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUser | any> {
@@ -1930,10 +1753,9 @@ export class InternalAuthClass {
 						});
 					}
 
-					const internalUser =
-						this.userPool.getCurrentUser() as InternalCognitoUser;
+					const user = this.userPool.getCurrentUser();
 
-					if (!internalUser) {
+					if (!user) {
 						logger.debug('Failed to get user from user pool');
 						rej('No current user');
 						return;
@@ -1941,14 +1763,7 @@ export class InternalAuthClass {
 
 					// refresh the session if the session expired.
 					try {
-						const userAgentValue = getAuthUserAgentValue(
-							AuthAction.CurrentUserPoolUser,
-							customUserAgentDetails
-						);
-						const session = await this._userSession(
-							userAgentValue,
-							internalUser
-						);
+						const session = await this._userSession(user);
 
 						// get user data from Cognito
 						const bypassCache = params ? params.bypassCache : false;
@@ -1962,16 +1777,13 @@ export class InternalAuthClass {
 						// validate the token's scope first before calling this function
 						const { scope = '' } = session.getAccessToken().decodePayload();
 						if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
-							internalUser.getUserData(
+							user.getUserData(
 								async (err, data) => {
 									if (err) {
 										logger.debug('getting user data failed', err);
 										if (this.isSessionInvalid(err)) {
 											try {
-												await this.cleanUpInvalidSession(
-													internalUser,
-													userAgentValue
-												);
+												await this.cleanUpInvalidSession(user);
 											} catch (cleanUpError) {
 												rej(
 													new Error(
@@ -1982,12 +1794,12 @@ export class InternalAuthClass {
 											}
 											rej(err);
 										} else {
-											res(internalUser);
+											res(user);
 										}
 										return;
 									}
 									const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
-									const attributeList: CognitoUserAttribute[] = [];
+									const attributeList = [];
 
 									for (let i = 0; i < data.UserAttributes.length; i++) {
 										const attribute = {
@@ -1999,18 +1811,17 @@ export class InternalAuthClass {
 									}
 
 									const attributes = this.attributesToObject(attributeList);
-									Object.assign(internalUser, { attributes, preferredMFA });
-									return res(internalUser);
+									Object.assign(user, { attributes, preferredMFA });
+									return res(user);
 								},
-								{ bypassCache, clientMetadata },
-								userAgentValue
+								{ bypassCache, clientMetadata }
 							);
 						} else {
 							logger.debug(
 								`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
 									`is not in the scopes of the access token`
 							);
-							return res(internalUser);
+							return res(user);
 						}
 					} catch (err) {
 						rej(err);
@@ -2033,14 +1844,7 @@ export class InternalAuthClass {
 	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves to current authenticated CognitoUser if success
 	 */
-	public currentAuthenticatedUser(
-		params?: CurrentUserOpts,
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<CognitoUser | any> {
-		return this._currentAuthenticatedUser(params, customUserAgentDetails);
-	}
-
-	private async _currentAuthenticatedUser(
+	public async currentAuthenticatedUser(
 		params?: CurrentUserOpts,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUser | any> {
@@ -2075,13 +1879,7 @@ export class InternalAuthClass {
 			logger.debug('get current authenticated userpool user');
 			let user = null;
 			try {
-				user = await this._currentUserPoolUser(
-					params,
-					getAuthUserAgentDetails(
-						AuthAction.CurrentAuthenticatedUser,
-						customUserAgentDetails
-					)
-				);
+				user = await this.currentUserPoolUser(params);
 			} catch (e) {
 				if (e === 'No userPool') {
 					logger.error(
@@ -2105,17 +1903,7 @@ export class InternalAuthClass {
 	public currentSession(
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUserSession> {
-		return this._currentSession(customUserAgentDetails);
-	}
-
-	private _currentSession(
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<CognitoUserSession> {
 		const that = this;
-		const userAgentDetails = getAuthUserAgentDetails(
-			AuthAction.CurrentSession,
-			customUserAgentDetails
-		);
 		logger.debug('Getting current session');
 		// Purposely not calling the reject method here because we don't need a console error
 		if (!this.userPool) {
@@ -2124,10 +1912,10 @@ export class InternalAuthClass {
 
 		return new Promise((res, rej) => {
 			that
-				._currentUserPoolUser(undefined, userAgentDetails)
+				.currentUserPoolUser()
 				.then(user => {
 					that
-						._userSession(getAmplifyUserAgent(userAgentDetails), user)
+						.userSession(user)
 						.then(session => {
 							res(session);
 							return;
@@ -2146,11 +1934,8 @@ export class InternalAuthClass {
 		});
 	}
 
-	private async _userSession(
-		userAgentValue: string,
-		internalUser?: InternalCognitoUser
-	): Promise<CognitoUserSession> {
-		if (!internalUser) {
+	private async _userSession(user?: CognitoUser): Promise<CognitoUserSession> {
+		if (!user) {
 			logger.debug('the user is null');
 			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
 		}
@@ -2160,19 +1945,13 @@ export class InternalAuthClass {
 		if (this.inflightSessionPromiseCounter === 0) {
 			this.inflightSessionPromise = new Promise<CognitoUserSession>(
 				(res, rej) => {
-					internalUser.getSession(
+					user.getSession(
 						async (err, session) => {
 							if (err) {
-								logger.debug(
-									'Failed to get the session from user',
-									internalUser
-								);
+								logger.debug('Failed to get the session from user', user);
 								if (this.isSessionInvalid(err)) {
 									try {
-										await this.cleanUpInvalidSession(
-											internalUser,
-											userAgentValue
-										);
+										await this.cleanUpInvalidSession(user);
 									} catch (cleanUpError) {
 										rej(
 											new Error(
@@ -2190,8 +1969,7 @@ export class InternalAuthClass {
 								return;
 							}
 						},
-						{ clientMetadata },
-						userAgentValue
+						{ clientMetadata }
 					);
 				}
 			);
@@ -2202,7 +1980,7 @@ export class InternalAuthClass {
 			const userSession = await this.inflightSessionPromise;
 			// Set private member. Avoid user.setSignInUserSession() to prevent excessive localstorage refresh.
 			// @ts-ignore
-			internalUser.signInUserSession = userSession;
+			user.signInUserSession = userSession;
 			return userSession!;
 		} finally {
 			this.inflightSessionPromiseCounter--;
@@ -2219,10 +1997,7 @@ export class InternalAuthClass {
 		user,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<CognitoUserSession> {
-		return this._userSession(
-			getAuthUserAgentValue(AuthAction.UserSession, customUserAgentDetails),
-			user
-		);
+		return this._userSession(user);
 	}
 
 	/**
@@ -2256,12 +2031,7 @@ export class InternalAuthClass {
 			// refresh the jwt token here if necessary
 			return this.Credentials.refreshFederatedToken(federatedInfo);
 		} else {
-			return this._currentSession(
-				getAuthUserAgentDetails(
-					AuthAction.CurrentUserCredentials,
-					customUserAgentDetails
-				)
-			)
+			return this.currentSession()
 				.then(session => {
 					logger.debug('getting session success', session);
 					return this.Credentials.set(session, 'session');
@@ -2284,8 +2054,6 @@ export class InternalAuthClass {
 	 * Initiate an attribute confirmation request
 	 * @param {Object} user - The CognitoUser
 	 * @param {Object} attr - The attributes to be verified
-	 * @param {ClientMetaData} clientMetadata - optional client metadata, defaults to config
-	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @return - A promise resolves to callback data if success
 	 */
 	public verifyUserAttribute(
@@ -2294,24 +2062,8 @@ export class InternalAuthClass {
 		clientMetadata: ClientMetaData = this._config.clientMetadata,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<void> {
-		return this._verifyUserAttribute(
-			user,
-			attr,
-			clientMetadata,
-			customUserAgentDetails
-		);
-	}
-
-	private _verifyUserAttribute(
-		user: CognitoUser | any,
-		attr: string,
-		clientMetadata: ClientMetaData = this._config.clientMetadata,
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<void> {
-		const internalUser: InternalCognitoUser | any = user;
-
 		return new Promise((resolve, reject) => {
-			internalUser.getAttributeVerificationCode(
+			user.getAttributeVerificationCode(
 				attr,
 				{
 					onSuccess(success) {
@@ -2321,11 +2073,7 @@ export class InternalAuthClass {
 						return reject(err);
 					},
 				},
-				clientMetadata,
-				getAuthUserAgentValue(
-					AuthAction.VerifyUserAttribute,
-					customUserAgentDetails
-				)
+				clientMetadata
 			);
 		});
 	}
@@ -2344,44 +2092,21 @@ export class InternalAuthClass {
 		code: string,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
-		return this._verifyUserAttributeSubmit(
-			user,
-			attr,
-			code,
-			customUserAgentDetails
-		);
-	}
-
-	private _verifyUserAttributeSubmit(
-		user: CognitoUser | any,
-		attr: string,
-		code: string,
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<string> {
 		if (!code) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyCode);
 		}
-		const internalUser: InternalCognitoUser | any = user;
 
 		return new Promise((resolve, reject) => {
-			internalUser.verifyAttribute(
-				attr,
-				code,
-				{
-					onSuccess(data) {
-						resolve(data);
-						return;
-					},
-					onFailure(err) {
-						reject(err);
-						return;
-					},
+			user.verifyAttribute(attr, code, {
+				onSuccess(data) {
+					resolve(data);
+					return;
 				},
-				getAuthUserAgentValue(
-					AuthAction.VerifyUserAttributeSubmit,
-					customUserAgentDetails
-				)
-			);
+				onFailure(err) {
+					reject(err);
+					return;
+				},
+			});
 		});
 	}
 
@@ -2389,16 +2114,10 @@ export class InternalAuthClass {
 		attr: string,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<void> {
-		const userAgentDetails = getAuthUserAgentDetails(
-			AuthAction.VerifyCurrentUserAttribute,
-			customUserAgentDetails
-		);
 		const that = this;
 		return that
-			._currentUserPoolUser(undefined, userAgentDetails)
-			.then(user =>
-				that._verifyUserAttribute(user, attr, undefined, userAgentDetails)
-			);
+			.currentUserPoolUser()
+			.then(user => that.verifyUserAttribute(user, attr));
 	}
 
 	/**
@@ -2413,22 +2132,15 @@ export class InternalAuthClass {
 		code: string,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string> {
-		const userAgentDetails = getAuthUserAgentDetails(
-			AuthAction.VerifyCurrentUserAttributeSubmit,
-			customUserAgentDetails
-		);
 		const that = this;
 		return that
-			._currentUserPoolUser(undefined, userAgentDetails)
-			.then(user =>
-				that._verifyUserAttributeSubmit(user, attr, code, userAgentDetails)
-			);
+			.currentUserPoolUser()
+			.then(user => that.verifyUserAttributeSubmit(user, attr, code));
 	}
 
 	private async cognitoIdentitySignOut(
 		opts: SignOutOpts,
-		internalUser: InternalCognitoUser | any,
-		userAgentValue: string
+		user: CognitoUser | any
 	) {
 		try {
 			await this._storageSync;
@@ -2443,21 +2155,18 @@ export class InternalAuthClass {
 
 		return new Promise((res, rej) => {
 			if (opts && opts.global) {
-				logger.debug('user global sign out', internalUser);
+				logger.debug('user global sign out', user);
 				// in order to use global signout
 				// we must validate the user as an authenticated user by using getSession
 				const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
-				internalUser.getSession(
+				user.getSession(
 					async (err, result) => {
 						if (err) {
 							logger.debug('failed to get the user session', err);
 							if (this.isSessionInvalid(err)) {
 								try {
-									await this.cleanUpInvalidSession(
-										internalUser,
-										userAgentValue
-									);
+									await this.cleanUpInvalidSession(user);
 								} catch (cleanUpError) {
 									rej(
 										new Error(
@@ -2469,36 +2178,32 @@ export class InternalAuthClass {
 							}
 							return rej(err);
 						}
-						internalUser.globalSignOut(
-							{
-								onSuccess: data => {
-									logger.debug('global sign out success');
-									if (isSignedInHostedUI) {
-										this.oAuthSignOutRedirect(res, rej);
-									} else {
-										return res();
-									}
-								},
-								onFailure: err => {
-									logger.debug('global sign out failed', err);
-									return rej(err);
-								},
+						user.globalSignOut({
+							onSuccess: data => {
+								logger.debug('global sign out success');
+								if (isSignedInHostedUI) {
+									this.oAuthSignOutRedirect(res, rej);
+								} else {
+									return res();
+								}
 							},
-							userAgentValue
-						);
+							onFailure: err => {
+								logger.debug('global sign out failed', err);
+								return rej(err);
+							},
+						});
 					},
-					{ clientMetadata },
-					userAgentValue
+					{ clientMetadata }
 				);
 			} else {
-				logger.debug('user sign out', internalUser);
-				internalUser.signOut(() => {
+				logger.debug('user sign out', user);
+				user.signOut(() => {
 					if (isSignedInHostedUI) {
 						this.oAuthSignOutRedirect(res, rej);
 					} else {
 						return res();
 					}
-				}, userAgentValue);
+				});
 			}
 		});
 	}
@@ -2545,14 +2250,9 @@ export class InternalAuthClass {
 		}
 
 		if (this.userPool) {
-			const internalUser =
-				this.userPool.getCurrentUser() as InternalCognitoUser;
-			if (internalUser) {
-				await this.cognitoIdentitySignOut(
-					opts,
-					internalUser,
-					getAuthUserAgentValue(AuthAction.SignOut, customUserAgentDetails)
-				);
+			const user = this.userPool.getCurrentUser();
+			if (user) {
+				await this.cognitoIdentitySignOut(opts, user);
 			} else {
 				logger.debug('no current Cognito user');
 			}
@@ -2591,15 +2291,9 @@ export class InternalAuthClass {
 		clientMetadata: ClientMetaData = this._config.clientMetadata,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<'SUCCESS'> {
-		const internalUser: InternalCognitoUser | any = user;
-		const userAgentValue = getAuthUserAgentValue(
-			AuthAction.ChangePassword,
-			customUserAgentDetails
-		);
-
 		return new Promise((resolve, reject) => {
-			this._userSession(userAgentValue, internalUser).then(session => {
-				internalUser.changePassword(
+			this.userSession(user).then(session => {
+				user.changePassword(
 					oldPassword,
 					newPassword,
 					(err, data) => {
@@ -2610,8 +2304,7 @@ export class InternalAuthClass {
 							return resolve(data);
 						}
 					},
-					clientMetadata,
-					userAgentValue
+					clientMetadata
 				);
 			});
 		});
@@ -2636,9 +2329,9 @@ export class InternalAuthClass {
 			return this.rejectAuthError(AuthErrorTypes.EmptyUsername);
 		}
 
-		const internalUser = this.createCognitoUser(username);
+		const user = this.createCognitoUser(username);
 		return new Promise((resolve, reject) => {
-			internalUser.forgotPassword(
+			user.forgotPassword(
 				{
 					onSuccess: () => {
 						resolve();
@@ -2657,15 +2350,14 @@ export class InternalAuthClass {
 					inputVerificationCode: data => {
 						dispatchAuthEvent(
 							'forgotPassword',
-							internalUser,
+							user,
 							`${username} has initiated forgot password flow`
 						);
 						resolve(data);
 						return;
 					},
 				},
-				clientMetadata,
-				getAuthUserAgentValue(AuthAction.ForgotPassword, customUserAgentDetails)
+				clientMetadata
 			);
 		});
 	}
@@ -2699,16 +2391,16 @@ export class InternalAuthClass {
 			return this.rejectAuthError(AuthErrorTypes.EmptyPassword);
 		}
 
-		const internalUser = this.createCognitoUser(username);
+		const user = this.createCognitoUser(username);
 		return new Promise((resolve, reject) => {
-			internalUser.confirmPassword(
+			user.confirmPassword(
 				code,
 				password,
 				{
 					onSuccess: success => {
 						dispatchAuthEvent(
 							'forgotPasswordSubmit',
-							internalUser,
+							user,
 							`${username} forgotPasswordSubmit successful`
 						);
 						resolve(success);
@@ -2724,11 +2416,7 @@ export class InternalAuthClass {
 						return;
 					},
 				},
-				clientMetadata,
-				getAuthUserAgentValue(
-					AuthAction.ForgotPasswordSubmit,
-					customUserAgentDetails
-				)
+				clientMetadata
 			);
 		});
 	}
@@ -2743,25 +2431,17 @@ export class InternalAuthClass {
 		customUserAgentDetails?: CustomUserAgentDetails
 	) {
 		const source = this.Credentials.getCredSource();
-		const userAgentDetails = getAuthUserAgentDetails(
-			AuthAction.CurrentUserInfo,
-			customUserAgentDetails
-		);
 
 		if (!source || source === 'aws' || source === 'userPool') {
-			const internalUser: InternalCognitoUser = await this._currentUserPoolUser(
-				undefined,
-				userAgentDetails
-			).catch(err => logger.error(err));
-			if (!internalUser) {
+			const user = await this.currentUserPoolUser().catch(err =>
+				logger.error(err)
+			);
+			if (!user) {
 				return null;
 			}
 
 			try {
-				const attributes = await this._userAttributes(
-					internalUser,
-					userAgentDetails
-				);
+				const attributes = await this.userAttributes(user);
 				const userAttrs: object = this.attributesToObject(attributes);
 				let credentials = null;
 				try {
@@ -2775,7 +2455,7 @@ export class InternalAuthClass {
 
 				const info = {
 					id: credentials ? credentials.identityId : undefined,
-					username: internalUser.getUsername(),
+					username: user.getUsername(),
 					attributes: userAttrs,
 				};
 				return info;
@@ -2841,14 +2521,6 @@ export class InternalAuthClass {
 					? this._config.oauth.redirectSignIn
 					: this._config.oauth.redirectUri;
 
-				this._storage.setItem(
-					'aws-amplify-federatedUserAgent',
-					getAuthUserAgentValue(
-						AuthAction.FederatedSignIn,
-						customUserAgentDetails
-					)
-				);
-
 				this._oAuthHandler.oauthSignIn(
 					this._config.oauth.responseType,
 					this._config.oauth.domain,
@@ -2878,7 +2550,7 @@ export class InternalAuthClass {
 				{ provider, token, identity_id, user, expires_at },
 				'federation'
 			);
-			const currentUser = await this._currentAuthenticatedUser();
+			const currentUser = await this.currentAuthenticatedUser();
 			dispatchAuthEvent(
 				'signIn',
 				currentUser,
@@ -2929,15 +2601,9 @@ export class InternalAuthClass {
 
 			if (hasCodeOrError || hasTokenOrError) {
 				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
-				const userAgentValue =
-					this._storage.getItem('aws-amplify-federatedUserAgent') || undefined;
-				this._storage.removeItem('aws-amplify-federatedUserAgent');
 				try {
 					const { accessToken, idToken, refreshToken, state } =
-						await this._oAuthHandler.handleAuthResponse(
-							currentUrl,
-							userAgentValue
-						);
+						await this._oAuthHandler.handleAuthResponse(currentUrl);
 					const session = new CognitoUserSession({
 						IdToken: new CognitoIdToken({ IdToken: idToken }),
 						RefreshToken: new CognitoRefreshToken({
@@ -3079,7 +2745,7 @@ export class InternalAuthClass {
 		);
 	}
 
-	private createCognitoUser(username: string): InternalCognitoUser {
+	private createCognitoUser(username: string): CognitoUser {
 		const userData: ICognitoUserData = {
 			Username: username,
 			Pool: this.userPool,
@@ -3088,11 +2754,11 @@ export class InternalAuthClass {
 
 		const { authenticationFlowType } = this._config;
 
-		const internalUser = new InternalCognitoUser(userData);
+		const user = new CognitoUser(userData);
 		if (authenticationFlowType) {
-			internalUser.setAuthenticationFlowType(authenticationFlowType);
+			user.setAuthenticationFlowType(authenticationFlowType);
 		}
-		return internalUser;
+		return user;
 	}
 
 	private _isValidAuthStorage(obj) {
@@ -3127,105 +2793,78 @@ export class InternalAuthClass {
 	public async rememberDevice(
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<string | AuthError> {
-		let internalUser: InternalCognitoUser | any;
-		const userAgentDetails = getAuthUserAgentDetails(
-			AuthAction.RememberDevice,
-			customUserAgentDetails
-		);
+		let currUser;
 
 		try {
-			internalUser = await this._currentUserPoolUser(
-				undefined,
-				userAgentDetails
-			);
+			currUser = await this.currentUserPoolUser();
 		} catch (error) {
 			logger.debug('The user is not authenticated by the error', error);
 			return Promise.reject('The user is not authenticated');
 		}
 
-		internalUser.getCachedDeviceKeyAndPassword();
+		currUser.getCachedDeviceKeyAndPassword();
 		return new Promise((res, rej) => {
-			internalUser.setDeviceStatusRemembered(
-				{
-					onSuccess: data => {
-						res(data);
-					},
-					onFailure: err => {
-						if (err.code === 'InvalidParameterException') {
-							rej(new AuthError(AuthErrorTypes.DeviceConfig));
-						} else if (err.code === 'NetworkError') {
-							rej(new AuthError(AuthErrorTypes.NetworkError));
-						} else {
-							rej(err);
-						}
-					},
+			currUser.setDeviceStatusRemembered({
+				onSuccess: data => {
+					res(data);
 				},
-				getAmplifyUserAgent(userAgentDetails)
-			);
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
+				},
+			});
 		});
 	}
 
 	public async forgetDevice(
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<void> {
-		let internalUser: InternalCognitoUser | any;
-		const userAgentDetails = getAuthUserAgentDetails(
-			AuthAction.ForgetDevice,
-			customUserAgentDetails
-		);
+		let currUser;
 
 		try {
-			internalUser = await this._currentUserPoolUser(
-				undefined,
-				userAgentDetails
-			);
+			currUser = await this.currentUserPoolUser();
 		} catch (error) {
 			logger.debug('The user is not authenticated by the error', error);
 			return Promise.reject('The user is not authenticated');
 		}
 
-		internalUser.getCachedDeviceKeyAndPassword();
+		currUser.getCachedDeviceKeyAndPassword();
 		return new Promise((res, rej) => {
-			internalUser.forgetDevice(
-				{
-					onSuccess: data => {
-						res(data);
-					},
-					onFailure: err => {
-						if (err.code === 'InvalidParameterException') {
-							rej(new AuthError(AuthErrorTypes.DeviceConfig));
-						} else if (err.code === 'NetworkError') {
-							rej(new AuthError(AuthErrorTypes.NetworkError));
-						} else {
-							rej(err);
-						}
-					},
+			currUser.forgetDevice({
+				onSuccess: data => {
+					res(data);
 				},
-				getAmplifyUserAgent(userAgentDetails)
-			);
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
+				},
+			});
 		});
 	}
 
 	public async fetchDevices(
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<IAuthDevice[]> {
-		let internalUser: InternalCognitoUser | any;
-		const userAgentDetails = getAuthUserAgentDetails(
-			AuthAction.FetchDevices,
-			customUserAgentDetails
-		);
+		let currUser;
 
 		try {
-			internalUser = await this._currentUserPoolUser(
-				undefined,
-				userAgentDetails
-			);
+			currUser = await this.currentUserPoolUser();
 		} catch (error) {
 			logger.debug('The user is not authenticated by the error', error);
 			throw new Error('The user is not authenticated');
 		}
 
-		internalUser.getCachedDeviceKeyAndPassword();
+		currUser.getCachedDeviceKeyAndPassword();
 		return new Promise((res, rej) => {
 			const cb = {
 				onSuccess(data) {
@@ -3253,12 +2892,7 @@ export class InternalAuthClass {
 					}
 				},
 			};
-			internalUser.listDevices(
-				MAX_DEVICES,
-				null,
-				cb,
-				getAmplifyUserAgent(userAgentDetails)
-			);
+			currUser.listDevices(MAX_DEVICES, null, cb);
 		});
 	}
 }
