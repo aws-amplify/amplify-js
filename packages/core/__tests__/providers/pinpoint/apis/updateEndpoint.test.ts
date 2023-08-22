@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { v4 } from 'uuid';
-import { ClientDevice } from '../../../../src';
+import { ClientDevice } from '../../../../src/ClientDevice';
 import { updateEndpoint as clientUpdateEndpoint } from '../../../../src/AwsClients/Pinpoint';
 import {
 	cacheEndpointId,
