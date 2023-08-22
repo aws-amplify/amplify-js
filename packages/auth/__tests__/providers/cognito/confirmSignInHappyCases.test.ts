@@ -26,7 +26,10 @@ describe('confirmSignIn API happy path cases', () => {
 	let handleChallengeNameSpy;
 	const username = authAPITestParams.user1.username;
 	const password = authAPITestParams.user1.password;
+
 	beforeEach(async () => {
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		handleChallengeNameSpy = jest
 			.spyOn(signInHelpers, 'handleChallengeName')
 			.mockImplementation(
@@ -52,8 +55,6 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn test SMS_MFA ChallengeName.`, async () => {
-		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		Amplify.configure({
 			Auth: authConfig,
 		});
@@ -102,8 +103,6 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn tests MFA_SETUP challengeName`, async () => {
-		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		Amplify.configure({
 			Auth: authConfig,
 		});
@@ -144,8 +143,6 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test(`confirmSignIn tests SELECT_MFA_TYPE challengeName `, async () => {
-		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		Amplify.configure({
 			Auth: authConfig,
 		});
@@ -210,8 +207,6 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test('handleChallengeName should be called with clientMetadata from request', async () => {
-		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		Amplify.configure({
 			Auth: authConfig,
 		});

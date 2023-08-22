@@ -15,6 +15,16 @@ describe('local sign-in state management tests', () => {
 	const challengeName = 'SMS_MFA';
 	const username = authAPITestParams.user1.username;
 	const password = authAPITestParams.user1.password;
+	const authConfig = {
+		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	};
+
+	beforeEach(() => {
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		cognitoCredentialsProvider.setAuthConfig(authConfig);
+	});
+
 	test('local state management should return state after signIn returns a ChallengeName', async () => {
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
@@ -29,12 +39,7 @@ describe('local sign-in state management tests', () => {
 					},
 				})
 			);
-		const authConfig = {
-			userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			userPoolId: 'us-west-2_zzzzz',
-		};
-		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-		cognitoCredentialsProvider.setAuthConfig(authConfig);
+
 		AmplifyV6.configure({
 			Auth: authConfig,
 		});
@@ -62,12 +67,7 @@ describe('local sign-in state management tests', () => {
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
 					authAPITestParams.RespondToAuthChallengeCommandOutput
 			);
-		const authConfig = {
-			userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			userPoolId: 'us-west-2_zzzzz',
-		};
-		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-		cognitoCredentialsProvider.setAuthConfig(authConfig);
+
 		AmplifyV6.configure({
 			Auth: authConfig,
 		});

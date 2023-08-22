@@ -49,6 +49,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	): Promise<AWSCredentialsAndIdentityId> {
 		const isAuthenticated = getCredentialsOptions.authenticated;
 		const tokens = getCredentialsOptions.tokens;
+		// TODO: refactor use the this._authConfig
 		const authConfig =
 			getCredentialsOptions.authConfig as UserPoolConfigAndIdentityPoolConfig;
 		const forceRefresh = getCredentialsOptions.forceRefresh;
