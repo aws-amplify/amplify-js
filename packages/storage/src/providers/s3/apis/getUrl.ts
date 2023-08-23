@@ -73,10 +73,7 @@ export const getUrl = async function (
 		const awsCredExpirationInSec = Math.floor(
 			(awsCredExpiration.getTime() - Date.now()) / 1000
 		);
-		urlExpirationInSec =
-			awsCredExpirationInSec < urlExpirationInSec
-				? awsCredExpirationInSec
-				: urlExpirationInSec;
+		urlExpirationInSec = Math.min(awsCredExpirationInSec, urlExpirationInSec);
 	}
 
 	assertValidationError(
