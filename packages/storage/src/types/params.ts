@@ -68,12 +68,16 @@ export type StorageUploadFileParameter<Options extends StorageOptions> =
 
 export type StorageRemoveOptions = StorageOptions;
 
-export type CopyRequest<CopyItem extends StorageCopyItem> = {
-	source: CopyItem;
-	destination: CopyItem;
-};
+export type S3CopySource = {
+	key: string;
+} & StorageOptions;
 
-export type StorageCopyItem = {
+export type S3CopyDestination = {
 	key: string;
 	accessLevel?: StorageAccessLevel;
+};
+
+export type CopyRequest = {
+	source: S3CopySource;
+	destination: S3CopyDestination;
 };

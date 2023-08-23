@@ -18,15 +18,13 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
  * different level or identityId (if source object's level is 'protected').
  *
  * @async
- * @param {CopyRequest<S3CopyItem>} copyRequest - The request object.
+ * @param {CopyRequest} copyRequest - The request object.
  * @return {Promise<S3CopyResult>} Promise resolves upon successful copy of the object.
  * @throws service: {@link S3Exception} - Thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Thrown when
  * source or destination key are not defined.
  */
-export const copy = async (
-	copyRequest: CopyRequest<S3CopyItem>
-): Promise<S3CopyResult> => {
+export const copy = async (copyRequest: CopyRequest): Promise<S3CopyResult> => {
 	const { identityId: defaultIdentityId, credentials } =
 		await resolveCredentials();
 	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
@@ -46,7 +44,10 @@ export const copy = async (
 
 	const sourceFinalKey = `${bucket}/${getKeyWithPrefix({
 		accessLevel: sourceAccessLevel,
-		targetIdentityId: defaultIdentityId,
+		targetIdentityId:
+			copyRequest.source.accessLevel === 'protected'
+				? copyRequest.source.targetIdentityId
+				: defaultIdentityId,
 		key: sourceKey,
 	})}`;
 
