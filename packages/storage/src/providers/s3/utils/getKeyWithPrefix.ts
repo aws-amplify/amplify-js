@@ -10,11 +10,11 @@ type GetKeyWithPrefixOptions = {
 	key: string;
 };
 
-export const getKeyWithPrefix = function ({
+export const getKeyWithPrefix = ({
 	accessLevel,
 	targetIdentityId,
 	key,
-}: GetKeyWithPrefixOptions) {
+}: GetKeyWithPrefixOptions) => {
 	const { prefixResolver = defaultPrefixResolver } =
 		AmplifyV6.libraryOptions?.Storage ?? {};
 	return (

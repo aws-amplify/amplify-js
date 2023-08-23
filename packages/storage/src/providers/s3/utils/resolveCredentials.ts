@@ -5,7 +5,7 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { fetchAuthSession } from '@aws-amplify/core';
 
-export const resolveCredentials = async function () {
+export const resolveCredentials = async () => {
 	const { identityId, credentials } = await fetchAuthSession({
 		forceRefresh: false,
 	});
