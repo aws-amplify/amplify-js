@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { AmplifyV6, fetchAuthSession } from '@aws-amplify/core';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
+import { StorageError } from '../../../errors/StorageError';
 import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
 import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
 import { S3Options } from '../types';
@@ -17,7 +18,12 @@ type ResolvedS3ConfigAndInput = {
 };
 
 /**
- * resolve the common input options for S3 API handlers from Amplify library options.
+ * resolve the common input options for S3 API handlers from Amplify configuration and library options.
+ *
+ * @param {S3Options} s3Options The input options for S3 provider.
+ * @returns {Promise<ResolvedS3ConfigAndInput>} The resolved common input options for S3 API handlers.
+ * @throws A {@link StorageError} with `error.name` from {@link StorageValidationErrorCode} indicating invalid
+ *   configurations or Amplify library options.
  *
  * TODO: add config errors
  *
@@ -27,7 +33,9 @@ export const resolveS3ConfigAndInput = async (
 	s3Options?: S3Options
 ): Promise<ResolvedS3ConfigAndInput> => {
 	// identityId is always cached in memory if forceRefresh is not set. So we can safely make calls here.
-	const { credentials, identityId } = await AmplifyV6.Auth.fetchAuthSession();
+	const { credentials, identityId } = await fetchAuthSession({
+		forceRefresh: false,
+	});
 	assertValidationError(
 		!!credentials,
 		StorageValidationErrorCode.NoCredentials

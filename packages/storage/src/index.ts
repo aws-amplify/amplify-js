@@ -7,9 +7,7 @@ export { AWSS3Provider } from './providers/AWSS3Provider';
 export { Storage as StorageClass, StorageInstance as Storage };
 export {
 	uploadData,
-	uploadFile,
 	downloadData,
-	downloadFile,
 	remove,
 	list,
 	getProperties,

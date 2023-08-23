@@ -71,7 +71,7 @@ const downloadDataJob =
 		);
 		return {
 			// Casting with ! as body always exists for getObject API.
-			// TODO: remove this when we have better typing for getObject API
+			// TODO[AllanZhengYP]: remove casting when we have better typing for getObject API
 			body: body!,
 			lastModified,
 			size,

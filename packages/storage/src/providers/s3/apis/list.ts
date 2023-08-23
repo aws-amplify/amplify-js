@@ -22,8 +22,8 @@ import {
 	getKeyWithPrefix,
 	resolveCredentials,
 } from '../utils';
-import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { ResolvedS3Config } from '../types/options';
+import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -76,7 +76,7 @@ export const list: S3ListApi = async (
 	};
 	const listParams = {
 		Bucket: bucket,
-		// Prefix: finalPath,
+		Prefix: finalPath,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 	};
