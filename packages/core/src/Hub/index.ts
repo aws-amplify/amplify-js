@@ -3,14 +3,13 @@
 
 import { ConsoleLogger as Logger } from '../Logger';
 import {
+	AmplifyChannel,
 	AmplifyChannelMap,
 	AmplifyEventDataMap,
-	GetHubCallBack,
 	HubCallback,
 	HubCapsule,
+	HubPayload,
 	IListener,
-	IPattern,
-	PayloadFromCallback,
 } from './types';
 
 export const AMPLIFY_SYMBOL = (
@@ -22,12 +21,11 @@ export const AMPLIFY_SYMBOL = (
 const logger = new Logger('Hub');
 
 export class HubClass<
-	Channel extends string | RegExp = string | RegExp,
+	Channel extends string = string,
 	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 > {
 	name: string;
-	private patterns: IPattern<Channel, EventData>[];
-	private listeners: IListener<Channel, EventData>[];
+	private listeners: IListener<Channel, EventData>[] = [];
 
 	protectedChannels = [
 		'core',
@@ -52,28 +50,17 @@ export class HubClass<
 	 * This private method is for internal use only. Instead of calling Hub.remove, call the result of Hub.listen.
 	 */
 	private _remove<
-		Channel extends string | RegExp,
+		Channel extends string,
 		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 	>(channel: Channel, listener: HubCallback<Channel, EventData>) {
-		if (channel instanceof RegExp) {
-			const pattern = this.patterns.find(
-				({ pattern }) => pattern.source === channel.source
-			);
-			if (!pattern) {
-				logger.warn(`No listeners for ${channel}`);
-				return;
-			}
-			this.patterns = [...this.patterns.filter(x => x !== pattern)];
-		} else {
-			const holder = this.listeners[channel as string];
-			if (!holder) {
-				logger.warn(`No listeners for ${channel}`);
-				return;
-			}
-			this.listeners[channel as string] = [
-				...holder.filter(({ callback }) => callback !== listener),
-			];
+		const holder = this.listeners[channel as string];
+		if (!holder) {
+			logger.warn(`No listeners for ${channel}`);
+			return;
 		}
+		this.listeners[channel as string] = [
+			...holder.filter(({ callback }) => callback !== listener),
+		];
 	}
 
 	/**
@@ -85,15 +72,23 @@ export class HubClass<
 	 * @param ampSymbol - Symbol used to determine if the event is dispatched internally on a protected channel
 	 *
 	 */
-	dispatch<
-		EventData extends AmplifyEventDataMap,
-		ChannelMap extends AmplifyChannelMap,
-		Channel extends ChannelMap['channelType'] = ChannelMap['channelType']
-	>(
+	dispatch<Channel extends AmplifyChannel>(
 		channel: Channel,
-		payload: PayloadFromCallback<
-			GetHubCallBack<Channel, ChannelMap['eventData']>
-		>,
+		payload: HubPayload<AmplifyEventData[Channel]>,
+		source?: string,
+		ampSymbol?: Symbol
+	): void;
+
+	dispatch(
+		channel: string & {},
+		payload: HubPayload,
+		source?: string,
+		ampSymbol?: Symbol
+	): void;
+
+	dispatch<Channel extends AmplifyChannel>(
+		channel: Channel | (string & {}),
+		payload: HubPayload<AmplifyEventData[Channel]> | HubPayload,
 		source?: string,
 		ampSymbol?: Symbol
 	): void {
@@ -148,25 +143,17 @@ export class HubClass<
 		} else {
 			cb = callback;
 		}
+		let holder = this.listeners[channel as string];
 
-		if (channel instanceof RegExp) {
-			this.patterns.push({
-				pattern: channel,
-				callback: cb,
-			});
-		} else {
-			let holder = this.listeners[channel as string];
-
-			if (!holder) {
-				holder = [];
-				this.listeners[channel as string] = holder;
-			}
-
-			holder.push({
-				name: listenerName,
-				callback: cb,
-			});
+		if (!holder) {
+			holder = [];
+			this.listeners[channel as string] = holder;
 		}
+
+		holder.push({
+			name: listenerName,
+			callback: cb,
+		});
 
 		return () => {
 			this._remove(channel, cb);
@@ -178,49 +165,14 @@ export class HubClass<
 		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 	>(capsule: HubCapsule<Channel, EventData>) {
 		const { channel, payload } = capsule;
-		if (channel instanceof RegExp) {
-			const pattern = this.patterns.find(
-				({ pattern }) => pattern.source === channel.source
-			);
-			if (!pattern) {
-				logger.warn(`No listeners for ${channel}`);
-				return;
-			}
-			this.patterns = [...this.patterns.filter(x => x !== pattern)];
-		} else {
-			const holder = this.listeners[channel as string];
-			if (holder) {
-				holder.forEach(listener => {
-					logger.debug(`Dispatching to ${channel} with `, payload);
-					try {
-						listener.callback(capsule);
-					} catch (e) {
-						logger.error(e);
-					}
-				});
-			}
-		}
-		if (this.patterns.length > 0) {
-			if (!payload.message) {
-				logger.warn(`Cannot perform pattern matching without a message key`);
-				return;
-			}
-
-			const payloadStr = payload.message;
-
-			this.patterns.forEach(pattern => {
-				const match = payloadStr.match(pattern.pattern);
-				if (match) {
-					const [, ...groups] = match;
-					const dispatchingCapsule = {
-						...capsule,
-						patternInfo: groups,
-					};
-					try {
-						pattern.callback(dispatchingCapsule);
-					} catch (e) {
-						logger.error(e);
-					}
+		const holder = this.listeners[channel as string];
+		if (holder) {
+			holder.forEach(listener => {
+				logger.debug(`Dispatching to ${channel} with `, payload);
+				try {
+					listener.callback(capsule);
+				} catch (e) {
+					logger.error(e);
 				}
 			});
 		}

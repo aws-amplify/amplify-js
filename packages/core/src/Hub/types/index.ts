@@ -3,4 +3,3 @@
 
 export * from './HubTypes';
 export * from './AuthTypes';
-export * from './StorageTypes';

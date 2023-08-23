@@ -1,10 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AuthClass } from './Auth';
-import { Hub } from '../Hub/Hub';
 import { LibraryOptions, ResourcesConfig } from './types';
-import { AmplifyError } from '../Util/Errors';
 import { FetchAuthSessionOptions } from './Auth/types';
+import { Hub } from '../Hub';
 
 // TODO(v6): add default AuthTokenStore for each platform
 
