@@ -1,4 +1,5 @@
 import { record as pinpointRecord } from '@aws-amplify/core/internals/providers/pinpoint';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import { record } from '../../../../src/providers/pinpoint';
 import { PinpointRecordParameters } from '../../../../src/providers/pinpoint/types/parameters';
 import {
@@ -23,6 +24,7 @@ describe('Pinpoint API: record', () => {
 	const mockPinpointRecord = pinpointRecord as jest.Mock;
 	const mockResolveConfig = resolveConfig as jest.Mock;
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
+	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
 
 	beforeEach(() => {
 		mockPinpointRecord.mockReset();
@@ -37,11 +39,9 @@ describe('Pinpoint API: record', () => {
 	});
 
 	it('invokes the core record implementation', async () => {
-		const mockParams = {
+		record({
 			event,
-		};
-
-		record(mockParams);
+		});
 
 		expect(mockResolveCredentials).toBeCalledTimes(1);
 		expect(mockResolveConfig).toBeCalledTimes(1);
@@ -58,6 +58,19 @@ describe('Pinpoint API: record', () => {
 			region,
 			userAgentValue: expect.any(String),
 		});
+	});
+
+	it('logs an error when credentials can not be fetched', async () => {
+		mockResolveCredentials.mockRejectedValue(new Error('Mock Error'));
+
+		record({
+			event,
+		});
+
+		await new Promise(process.nextTick);
+
+		expect(mockPinpointRecord).toBeCalledTimes(0);
+		expect(loggerWarnSpy).toBeCalledWith(expect.any(String), expect.any(Error));
 	});
 
 	it('throws a validation error when no event is provided', () => {
