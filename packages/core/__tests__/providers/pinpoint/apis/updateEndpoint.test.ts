@@ -82,19 +82,19 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 		};
 		const optOut = 'ALL';
 		await updateEndpoint({
+			address,
 			appId,
 			category,
 			channelType,
 			credentials,
+			optOut,
 			region,
 			userId,
 			userProfile: {
 				...userProfile,
-				address,
 				demographic,
 				location,
 				metrics,
-				optOut,
 			},
 		});
 		expect(mockClientUpdateEndpoint).toBeCalledWith(
