@@ -15,7 +15,6 @@ describe('Category API: record', () => {
 	it('defers to the Pinpoint record implementation', async () => {
 		const mockParams = {
 			event,
-			sendImmediately: false,
 		};
 
 		await record(mockParams);
