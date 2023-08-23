@@ -8,7 +8,7 @@ import {
 	parseAWSExports,
 	StorageAction,
 } from '@aws-amplify/core';
-import { AWSS3Provider } from '../providers';
+import { AWSS3Provider } from '../providers/AWSS3Provider';
 import {
 	StorageCopySource,
 	StorageCopyDestination,

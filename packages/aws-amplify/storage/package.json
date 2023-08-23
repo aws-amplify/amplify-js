@@ -4,5 +4,4 @@
 	"browser": "../lib-esm/storage/index.js",
 	"module": "../lib-esm/storage/index.js",
 	"typings": "../lib-esm/storage/index.d.ts"
-  }
-  
+}
