@@ -20,6 +20,7 @@ export {
 	AuthNextUpdateAttributeStep,
 	MFAType,
 	AllowedMFATypes,
+	AuthUser
 } from './models';
 
 export { AuthServiceOptions, AuthSignUpOptions } from './options';
@@ -34,6 +35,7 @@ export {
 	ConfirmSignInRequest,
 	UpdatePasswordRequest,
 	UpdateUserAttributesRequest,
+	GetCurrentUserRequest
 } from './requests';
 
 export {
