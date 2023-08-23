@@ -162,7 +162,7 @@ export class HubClass {
 			| HubCallback<string, EventData>;
 
 		if (typeof callback !== 'function') {
-			new AmplifyError({
+			throw new AmplifyError({
 				name: NO_HUBCALLBACK_PROVIDED_EXCEPTION,
 				message: 'Service Worker not available',
 			});
