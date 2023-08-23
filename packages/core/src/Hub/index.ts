@@ -4,12 +4,14 @@
 import { ConsoleLogger as Logger } from '../Logger';
 import {
 	AmplifyChannel,
-	AmplifyChannelMap,
+	AmplifyEventData,
 	AmplifyEventDataMap,
+	EventDataMap,
 	HubCallback,
 	HubCapsule,
 	HubPayload,
 	IListener,
+	StopListenerCallback,
 } from './types';
 
 export const AMPLIFY_SYMBOL = (
@@ -21,11 +23,10 @@ export const AMPLIFY_SYMBOL = (
 const logger = new Logger('Hub');
 
 export class HubClass<
-	Channel extends string = string,
 	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 > {
 	name: string;
-	private listeners: IListener<Channel, EventData>[] = [];
+	private listeners: IListener[] = [];
 
 	protectedChannels = [
 		'core',
@@ -49,18 +50,18 @@ export class HubClass<
 	 * @remarks
 	 * This private method is for internal use only. Instead of calling Hub.remove, call the result of Hub.listen.
 	 */
-	private _remove<
-		Channel extends string,
-		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
-	>(channel: Channel, listener: HubCallback<Channel, EventData>) {
-		const holder = this.listeners[channel as string];
+	private _remove<Channel extends AmplifyChannel | string>(
+		channel: Channel,
+		listener: HubCallback<string, EventData>
+	) {
+		const holder = this.listeners[channel as unknown as number];
 		if (!holder) {
 			logger.warn(`No listeners for ${channel}`);
 			return;
 		}
-		this.listeners[channel as string] = [
-			...holder.filter(({ callback }) => callback !== listener),
-		];
+		this.listeners[channel as any] = [
+			...holder.filter(callback => callback !== (listener as any)),
+		] as unknown as IListener<string>;
 	}
 
 	/**
@@ -87,8 +88,8 @@ export class HubClass<
 	): void;
 
 	dispatch<Channel extends AmplifyChannel>(
-		channel: Channel | (string & {}),
-		payload: HubPayload<AmplifyEventData[Channel]> | HubPayload,
+		channel: Channel | string,
+		payload: HubPayload<AmplifyEventData[Channel]> | HubPayload<EventData>,
 		source?: string,
 		ampSymbol?: Symbol
 	): void {
@@ -105,7 +106,7 @@ export class HubClass<
 			}
 		}
 
-		const capsule: HubCapsule<Channel, EventData> = {
+		const capsule: HubCapsule<Channel | string, EventData> = {
 			channel,
 			payload: { ...payload },
 			source,
@@ -128,44 +129,60 @@ export class HubClass<
 	 * @returns A function which can be called to cancel the listener.
 	 *
 	 */
+	listen<Channel extends AmplifyChannel>(
+		channel: Channel,
+		callback: HubCallback<Channel, AmplifyEventData[Channel]>,
+		listenerName?: string
+	): StopListenerCallback;
+
+	listen<EventData extends EventDataMap>(
+		channel: string,
+		callback: HubCallback<string, EventData>,
+		listenerName?: string
+	): StopListenerCallback;
+
 	listen<
-		ChannelMap extends AmplifyChannelMap = AmplifyChannelMap,
-		Channel extends ChannelMap['channelType'] = ChannelMap['channelType']
+		Channel extends AmplifyChannel | string,
+		EventData extends EventDataMap
 	>(
 		channel: Channel,
-		callback: HubCallback<Channel, ChannelMap['eventData']>,
+		callback:
+			| HubCallback<Channel, AmplifyEventData[Channel]>
+			| HubCallback<string, EventData>,
 		listenerName?: string
-	): () => void {
-		let cb;
+	): StopListenerCallback {
+		let cb:
+			| HubCallback<Channel, AmplifyEventData[Channel]>
+			| HubCallback<string, EventData>;
 
 		if (typeof callback !== 'function') {
 			throw new Error('No callback supplied to Hub');
 		} else {
 			cb = callback;
 		}
-		let holder = this.listeners[channel as string];
+		let holder = this.listeners[channel as unknown as number];
 
 		if (!holder) {
 			holder = [];
-			this.listeners[channel as string] = holder;
+			this.listeners[channel as unknown as number] =
+				holder as unknown as IListener<string>;
 		}
 
-		holder.push({
+		(holder as any).push({
 			name: listenerName,
 			callback: cb,
 		});
 
 		return () => {
-			this._remove(channel, cb);
+			this._remove(channel, cb as any);
 		};
 	}
 
-	private _toListeners<
-		Channel extends RegExp | string,
-		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
-	>(capsule: HubCapsule<Channel, EventData>) {
+	private _toListeners<Channel extends string>(
+		capsule: HubCapsule<Channel, EventData>
+	) {
 		const { channel, payload } = capsule;
-		const holder = this.listeners[channel as string];
+		const holder = this.listeners[channel as unknown as number];
 		if (holder) {
 			holder.forEach(listener => {
 				logger.debug(`Dispatching to ${channel} with `, payload);
