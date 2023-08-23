@@ -32,7 +32,7 @@ export type S3GetUrlOptions = S3Options & {
 	 * Number of seconds till the URL expires.
 	 * @default 900 (15 minutes)
 	 */
-	expiration?: number;
+	expiresIn?: number;
 };
 
 export type S3UploadOptions = S3TransferOptions & {

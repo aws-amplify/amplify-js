@@ -11,9 +11,4 @@ export { DefaultAmplifyV6 as AmplifyV6 } from './initSingleton';
 export { withSSRContext } from './ssr/withSSRContext';
 
 // TODO(v6): Remove these category exports as categories come on-line
-export {
-	Analytics,
-	AnalyticsProvider,
-	AWSPinpointProvider,
-} from '@aws-amplify/analytics';
 export { Storage, StorageClass } from '@aws-amplify/storage';
