@@ -1,8 +1,0 @@
-{
-	"name": "@aws-amplify/api-graphql/internals",
-	"types": "../lib-esm/internals/index.d.ts",
-	"main": "../lib/internals/index.js",
-	"module": "../lib-esm/internals/index.js",
-	"react-native": "../lib-esm/internals/index.js",
-	"sideEffects": false
-}

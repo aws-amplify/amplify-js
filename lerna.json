@@ -6,7 +6,10 @@
 		"packages/auth",
 		"packages/analytics",
 		"packages/storage",
-		"packages/aws-amplify"
+		"packages/aws-amplify",
+		"packages/api",
+		"packages/amplify-v6-types-package",
+		"packages/api-graphql"
 	],
 	"exact": true,
 	"version": "independent",
