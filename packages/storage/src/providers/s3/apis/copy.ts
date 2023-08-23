@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { S3Exception, S3CopyResult } from '../types';
-import { copyRequest, StorageCopyItem } from '../../../types';
+import { S3Exception, S3CopyResult, S3CopyItem } from '../types';
+import { CopyRequest, StorageCopyItem } from '../../../types';
 import {
 	resolveStorageConfig,
 	getKeyWithPrefix,
@@ -18,13 +18,13 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
  * different level or identityId (if source object's level is 'protected').
  *
  * @async
- * @param {copyRequest} req - The request object.
+ * @param {CopyRequest<S3CopyItem>} copyRequest - The request object.
  * @return {Promise<S3CopyResult>} Promise resolves upon successful copy of the object.
  * @throws service: {@link S3Exception} - S3 service errors is thrown while performing copy operation.
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown.
  */
 export const copy = async (
-	req: copyRequest<StorageCopyItem>
+	copyRequest: CopyRequest<S3CopyItem>
 ): Promise<S3CopyResult> => {
 	const { identityId: defaultIdentityId, credentials } =
 		await resolveCredentials();
@@ -38,19 +38,16 @@ export const copy = async (
 			key: destinationKey,
 			accessLevel: destinationAccessLevel = defaultAccessLevel,
 		},
-	} = req;
+	} = copyRequest;
 
 	assertValidationError(!!sourceKey, StorageValidationErrorCode.NoKey);
 	assertValidationError(!!destinationKey, StorageValidationErrorCode.NoKey);
 
-	const sourceFinalKey =
-		`${bucket}/${
-			getKeyWithPrefix({
-				accessLevel: sourceAccessLevel,
-				targetIdentityId: defaultIdentityId,
-				key: sourceKey,
-			})
-		}`;
+	const sourceFinalKey = `${bucket}/${getKeyWithPrefix({
+		accessLevel: sourceAccessLevel,
+		targetIdentityId: defaultIdentityId,
+		key: sourceKey,
+	})}`;
 
 	const destinationFinalKey = getKeyWithPrefix({
 		accessLevel: destinationAccessLevel,

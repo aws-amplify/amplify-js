@@ -52,6 +52,8 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 		headers: DEFAULT_RESPONSE_HEADERS,
 		body:
 			'<CopyObjectResult>' +
+			'<ETag>string</ETag>' +
+			'<LastModified>timestamp</LastModified>' +
 			'<ChecksumCRC32>string</ChecksumCRC32>' +
 			'<ChecksumCRC32C>string</ChecksumCRC32C>' +
 			'<ChecksumSHA1>string</ChecksumSHA1>' +

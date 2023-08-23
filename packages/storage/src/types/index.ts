@@ -18,7 +18,7 @@ export {
 	StorageOptions,
 	StorageUploadFileParameter, // TODO: open question - should we export this?
 	StorageRemoveOptions,
-	copyRequest,
+	CopyRequest,
 	StorageCopyItem,
 } from './params';
 export {

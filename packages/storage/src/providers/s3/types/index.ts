@@ -13,5 +13,6 @@ export {
 	S3ListPaginateResult,
 	S3GetPropertiesResult,
 	S3CopyResult,
+	S3CopyItem,
 } from './results';
 export { S3Exception } from './errors';

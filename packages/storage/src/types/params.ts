@@ -68,7 +68,7 @@ export type StorageUploadFileParameter<Options extends StorageOptions> =
 
 export type StorageRemoveOptions = StorageOptions;
 
-export type copyRequest<CopyItem extends StorageCopyItem> = {
+export type CopyRequest<CopyItem extends StorageCopyItem> = {
 	source: CopyItem;
 	destination: CopyItem;
 };
