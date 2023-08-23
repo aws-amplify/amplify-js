@@ -28,18 +28,10 @@ export type PinpointSession = {
 	StartTimestamp: string;
 };
 
-export type PinpointEventAttributes = {
-	[key: string]: string;
-};
-
-export type PinpointEventMetrics = {
-	[key: string]: number;
-};
-
 export type PinpointAnalyticsEvent = {
 	name: string;
-	attributes?: PinpointEventAttributes;
-	metrics?: PinpointEventMetrics;
+	attributes?: Record<string, string>;
+	metrics?: Record<string, string>;
 };
 
 export type PinpointUpdateEndpointParameters = {
