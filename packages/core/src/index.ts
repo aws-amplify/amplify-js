@@ -8,9 +8,7 @@ This file maps top-level exports from `@aws-amplify/core`. These are intended to
 export { Amplify } from './Amplify';
 export { AmplifyClass } from './Amplify';
 export { Credentials, CredentialsClass } from './Credentials';
-export {
-	ICredentials
-} from './types';
+export { ICredentials } from './types';
 export { Signer } from './Signer';
 export { parseAWSExports } from './parseAWSExports';
 
@@ -30,9 +28,10 @@ export {
 	StorageAccessLevel,
 	StorageConfig,
 	GetCredentialsOptions,
+	ResourcesConfig,
+	LibraryOptions,
 } from './singleton/types';
 export { AmplifyV6, fetchAuthSession } from './singleton';
-export { LibraryOptions, ResourcesConfig } from './singleton/types';
 
 // AWSClients exports
 export {
@@ -51,9 +50,7 @@ export {
 	SessionStorage,
 	MemoryKeyValueStorage,
 } from './StorageHelper';
-export { 
-	KeyValueStorageInterface
-} from './types';
+export { KeyValueStorageInterface } from './types';
 export { UniversalStorage } from './UniversalStorage';
 
 // Cache exports
