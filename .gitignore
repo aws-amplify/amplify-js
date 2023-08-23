@@ -9,16 +9,18 @@ packages/**/dist/
 packages/**/es/
 packages/**/esm/
 packages/**/cjs/
-.DS_Store
+**/.DS_Store
 .vscode
 .idea
 *.log
 .npm/
 packages/**/cypress/videos/
-yarn.lock
 package-lock.json
 packages/*/.watchmanconfig
 dual-publish-tmp
+
+### Version file - core build artifact
+packages/core/src/Platform/version.ts
 
 ### Gradle ###
 .gradle/

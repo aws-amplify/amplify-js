@@ -3,6 +3,8 @@ import { PersistentModel, PersistentModelConstructor } from '../../src';
 import { initSchema as _initSchema } from '../../src/datastore/datastore';
 import * as schemas from './schemas';
 import { getDataStore } from './datastoreFactory';
+import { FakeGraphQLService } from './fakes';
+import { jitteredExponentialRetry } from '@aws-amplify/core';
 
 /**
  * Convenience function to wait for a number of ms.
@@ -388,7 +390,7 @@ export async function expectIsolation(
  * @param verbose Whether to log hub events until empty
  */
 export async function waitForEmptyOutbox(verbose = false) {
-	return new Promise(resolve => {
+	return new Promise<void>(resolve => {
 		const { Hub } = require('@aws-amplify/core');
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
@@ -412,7 +414,7 @@ export async function waitForEmptyOutbox(verbose = false) {
  * @param verbose Whether to log hub events until empty
  */
 export async function waitForDataStoreReady(verbose = false) {
-	return new Promise(resolve => {
+	return new Promise<void>(resolve => {
 		const { Hub } = require('@aws-amplify/core');
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
@@ -433,7 +435,7 @@ export async function waitForDataStoreReady(verbose = false) {
  * @param verbose Whether to log hub events until empty
  */
 export async function waitForSyncQueriesReady(verbose = false) {
-	return new Promise(resolve => {
+	return new Promise<void>(resolve => {
 		const { Hub } = require('@aws-amplify/core');
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
@@ -444,4 +446,85 @@ export async function waitForSyncQueriesReady(verbose = false) {
 		};
 		Hub.listen('datastore', hubCallback);
 	});
+}
+
+/**
+ * Used for monitoring the fake GraphQL service. Will validate if it has
+ * received and finished processing all updates / sent all subscription
+ * messages for a specific model.
+ * @param fakeService - the fake GraphQL service
+ * @param expectedNumberOfUpdates - the number of updates we expect to have been received for the model
+ * @param externalNumberOfUpdates - the number of external updates we expect to receive
+ * @param modelName - the name of the model we are updating
+ */
+type GraphQLServiceSettledParams = {
+	graphqlService: any;
+	expectedNumberOfUpdates: number;
+	externalNumberOfUpdates: number;
+	modelName: string;
+};
+
+export async function graphqlServiceSettled({
+	graphqlService,
+	expectedNumberOfUpdates,
+	externalNumberOfUpdates,
+	modelName,
+}: GraphQLServiceSettledParams) {
+	/**
+	 * Note: Even though we've marked running mutations / subscriptions as complete
+	 * in the service, it still takes a moment to receive the updates.
+	 * This pause avoids unnecessary retries.
+	 */
+	await pause(1);
+
+	/**
+	 * Due to the addition of artificial latencies, the service may not be
+	 * done, so we retry:
+	 */
+	await jitteredExponentialRetry(
+		() => {
+			// The test should fail if we haven't ended the simulated disruption:
+			const subscriptionMessagesNotStopped =
+				!graphqlService.stopSubscriptionMessages;
+
+			// Ensure the service has received all the requests:
+			const allUpdatesSent =
+				graphqlService.requests.filter(
+					({ operation, type, tableName }) =>
+						operation === 'mutation' &&
+						type === 'update' &&
+						tableName === modelName
+				).length ===
+				expectedNumberOfUpdates + externalNumberOfUpdates;
+
+			// Ensure all mutations are complete:
+			const allRunningMutationsComplete =
+				graphqlService.runningMutations.size === 0;
+
+			// Ensure we've notified subscribers:
+			const allSubscriptionsSent =
+				graphqlService.subscriptionMessagesSent.filter(
+					([observerMessageName, message]) => {
+						return observerMessageName === `onUpdate${modelName}`;
+					}
+				).length ===
+				expectedNumberOfUpdates + externalNumberOfUpdates;
+
+			if (
+				allUpdatesSent &&
+				allRunningMutationsComplete &&
+				allSubscriptionsSent &&
+				subscriptionMessagesNotStopped
+			) {
+				return true;
+			} else {
+				throw new Error(
+					'Fake GraphQL Service did not receive and/or process all updates and/or subscriptions'
+				);
+			}
+		},
+		[null],
+		undefined,
+		undefined
+	);
 }

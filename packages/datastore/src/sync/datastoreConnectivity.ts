@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { ReachabilityMonitor } from './datastoreReachability';

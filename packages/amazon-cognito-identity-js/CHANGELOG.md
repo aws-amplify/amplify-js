@@ -3,63 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [6.2.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.1.2...amazon-cognito-identity-js@6.2.0) (2023-03-23)
+## 6.3.4 (2023-08-22)
 
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+## 6.3.3 (2023-08-17)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+## 6.3.2 (2023-08-10)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+## [6.3.1](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.3.0...amazon-cognito-identity-js@6.3.1) (2023-06-21)
+
+### Bug Fixes
+
+- Update getAmplifyUserAgent to retain original interface ([#11535](https://github.com/aws-amplify/amplify-js/issues/11535)) ([dc84cc8](https://github.com/aws-amplify/amplify-js/commit/dc84cc8bfa7811b5f4f8ac2f7e5ea1b5edc54fe1))
+
+# [6.3.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.2.0...amazon-cognito-identity-js@6.3.0) (2023-06-20)
+
+### Bug Fixes
+
+- Broken test ([#11521](https://github.com/aws-amplify/amplify-js/issues/11521)) ([d815c7b](https://github.com/aws-amplify/amplify-js/commit/d815c7b22f9ef5eba65f07b1d2e94a8e70516989))
+- PR comments ([#11520](https://github.com/aws-amplify/amplify-js/issues/11520)) ([1ca73b1](https://github.com/aws-amplify/amplify-js/commit/1ca73b1431d4bb737890ac95004f10c3e572ba8b))
 
 ### Features
 
-* **cognito:** make cookiestorage constructor parameter optional ([9b8e759](https://github.com/aws-amplify/amplify-js/commit/9b8e75973762ce498269de0162a3e70038238f0f))
-* **cognito:** remove required domain param when create CookieStorage ([c985454](https://github.com/aws-amplify/amplify-js/commit/c985454b0af9f2205941ab95d6ec8c42748ab63d))
+- user agent enhancements - auth reduction ([#11465](https://github.com/aws-amplify/amplify-js/issues/11465)) ([f73abd2](https://github.com/aws-amplify/amplify-js/commit/f73abd2f3c9a377a4d14832c68ea2880a1372020))
+- user agent enhancements - part1 cognito ([#11324](https://github.com/aws-amplify/amplify-js/issues/11324)) ([4f541d2](https://github.com/aws-amplify/amplify-js/commit/4f541d28cb586cb66acd22b90f87fd515fd9cb4e))
 
+# [6.2.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.1.2...amazon-cognito-identity-js@6.2.0) (2023-03-23)
 
+### Features
 
-
+- **cognito:** make cookiestorage constructor parameter optional ([9b8e759](https://github.com/aws-amplify/amplify-js/commit/9b8e75973762ce498269de0162a3e70038238f0f))
+- **cognito:** remove required domain param when create CookieStorage ([c985454](https://github.com/aws-amplify/amplify-js/commit/c985454b0af9f2205941ab95d6ec8c42748ab63d))
 
 ## [6.1.2](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.1.1...amazon-cognito-identity-js@6.1.2) (2022-12-27)
 
-
 ### Bug Fixes
 
-* **amazon-cognito-identity-js:** sets no-store header for cognito user pools ([#10804](https://github.com/aws-amplify/amplify-js/issues/10804)) ([b9ec192](https://github.com/aws-amplify/amplify-js/commit/b9ec1926c8ba3d2d0b2289a9b84090fb5d724ad9))
-
-
-
-
+- **amazon-cognito-identity-js:** sets no-store header for cognito user pools ([#10804](https://github.com/aws-amplify/amplify-js/issues/10804)) ([b9ec192](https://github.com/aws-amplify/amplify-js/commit/b9ec1926c8ba3d2d0b2289a9b84090fb5d724ad9))
 
 ## [6.1.1](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.1.0...amazon-cognito-identity-js@6.1.1) (2022-12-16)
 
-
 ### Bug Fixes
 
-* **amazon-cognito-identity-js:** specify the correct userAgent/deviceName when remembering devices (React Native) ([#10724](https://github.com/aws-amplify/amplify-js/issues/10724)) ([01a5b84](https://github.com/aws-amplify/amplify-js/commit/01a5b84ea010f7fb66c4e19e73301cce82fc7370))
-
-
-
-
+- **amazon-cognito-identity-js:** specify the correct userAgent/deviceName when remembering devices (React Native) ([#10724](https://github.com/aws-amplify/amplify-js/issues/10724)) ([01a5b84](https://github.com/aws-amplify/amplify-js/commit/01a5b84ea010f7fb66c4e19e73301cce82fc7370))
 
 # [6.1.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.0.1...amazon-cognito-identity-js@6.1.0) (2022-12-15)
 
-
 ### Bug Fixes
 
-* **core:** add cache-control header to cognito identity client ([#10753](https://github.com/aws-amplify/amplify-js/issues/10753)) ([dfbabaf](https://github.com/aws-amplify/amplify-js/commit/dfbabaf54dda902f1f77c4501e78f49e6a9397af))
-
+- **core:** add cache-control header to cognito identity client ([#10753](https://github.com/aws-amplify/amplify-js/issues/10753)) ([dfbabaf](https://github.com/aws-amplify/amplify-js/commit/dfbabaf54dda902f1f77c4501e78f49e6a9397af))
 
 ### Features
 
-* **auth,cognito-identity-js:** returning code delivery details as part of callback for updateAttributes, adds hub event to Auth.updateUserAttributes ([#10731](https://github.com/aws-amplify/amplify-js/issues/10731)) ([fc4940b](https://github.com/aws-amplify/amplify-js/commit/fc4940bc17e0deeb9e9ca2a00bed101e8ff7d3df))
-
-
-
-
+- **auth,cognito-identity-js:** returning code delivery details as part of callback for updateAttributes, adds hub event to Auth.updateUserAttributes ([#10731](https://github.com/aws-amplify/amplify-js/issues/10731)) ([fc4940b](https://github.com/aws-amplify/amplify-js/commit/fc4940bc17e0deeb9e9ca2a00bed101e8ff7d3df))
 
 ## [6.0.1](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.0.0...amazon-cognito-identity-js@6.0.1) (2022-11-11)
 
 **Note:** Version bump only for package amazon-cognito-identity-js
-
-
-
-
 
 # [6.0.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.12...amazon-cognito-identity-js@6.0.0) (2022-11-09)
 

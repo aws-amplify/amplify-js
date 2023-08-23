@@ -7,10 +7,7 @@ import {
 	__modelMeta__,
 } from '../../../src/types';
 import { validatePredicate, getTimestampFields } from '../../../src/util';
-import {
-	ModelPredicateCreator,
-	isPredicatesAll,
-} from '../../../src/predicates';
+import { ModelPredicateCreator } from '../../../src/predicates';
 import { initSchema as _initSchema } from '../../../src/datastore/datastore';
 import { pause } from '../util';
 
@@ -22,7 +19,28 @@ type GraphQLRequest = {
 };
 
 /**
- * Statefully pretends to be AppSync, with minimal built-in asertions with
+ * Artificial latencies to introduce to the imagined network boundaries.
+ * @property request: The time it takes a request will take to reach the cloud.
+ * @property response: After request processing, the time it takes for the client to receive a response.
+ * @property subscriber: After request processing, the time it takes for each relevant subscriber to receive an event.
+ * @property jitter: The max amount to randomly to +/- from each latency.
+ */
+type FakeLatencies = {
+	request: number;
+	response: number;
+	subscriber: number;
+	jitter: number;
+};
+
+const defaultLatencies: FakeLatencies = {
+	request: 15,
+	response: 15,
+	subscriber: 15,
+	jitter: 5,
+};
+
+/**
+ * Statefully pretends to be AppSync, with minimal built-in assertions with
  * error callbacks and settings to help simulate various conditions.
  */
 export class FakeGraphQLService {
@@ -41,6 +59,22 @@ export class FakeGraphQLService {
 		string,
 		ZenObservable.SubscriptionObserver<any>[]
 	>();
+	/**
+	 * All in-flight mutations. Used solely for observability in tests.
+	 * When dealing with concurrent mutations or increased latency,
+	 * we should always first verify that there are no in-flight
+	 * mutations prior to making final test assertions.
+	 */
+	public runningMutations = new Map<string, string>();
+
+	/**
+	 * Number of subscription messages sent. Used solely for observability
+	 * in tests. When dealing with concurrent mutations or increased latency,
+	 * we should always first verify that the number of subscription messages
+	 * sent for a given model is what we expect prior to making final test
+	 * assertions.
+	 */
+	public subscriptionMessagesSent = [] as any[];
 
 	/**
 	 * Singleton middleware, basically.
@@ -53,29 +87,7 @@ export class FakeGraphQLService {
 	/**
 	 * Artificial latencies to introduce to the imagined network boundaries.
 	 */
-	public latencies = {
-		/**
-		 * The time it takes a request will take to reach the cloud.
-		 */
-		request: 15,
-
-		/**
-		 * After request processing, the time it takes for the client to
-		 * receive a response.
-		 */
-		response: 15,
-
-		/**
-		 * After request processing, the time it takes for each relevant
-		 * subscriber to receive an event.
-		 */
-		subscriber: 15,
-
-		/**
-		 * The max amount to randomly to +/- from each latency.
-		 */
-		jitter: 5,
-	};
+	public latencies: FakeLatencies = defaultLatencies;
 
 	constructor(public schema: Schema) {
 		for (const model of Object.values(schema.models)) {
@@ -99,6 +111,23 @@ export class FakeGraphQLService {
 		}
 	}
 
+	/**
+	 * NOTE: don't forget to reset these values at the end of your test!
+	 * @param latencies new values for fake latencies
+	 * @returns updated values for fake latencies
+	 */
+	public setLatencies(latencies: Partial<FakeLatencies>): FakeLatencies {
+		return (this.latencies = { ...this.latencies, ...latencies });
+	}
+
+	/**
+	 * Helpful for debugging tests that update latencies
+	 * @returns current values for fake latencies
+	 */
+	public getLatencies(): FakeLatencies {
+		return this.latencies;
+	}
+
 	private async jitteredPause(ms) {
 		/**
 		 * "Materialized" jitter from -jitter to +jitter.
@@ -109,6 +138,7 @@ export class FakeGraphQLService {
 		const jitteredMs = Math.max(ms + jitter, 0);
 		return pause(jitteredMs);
 	}
+
 	/**
 	 * Given the plural name of a model, find the singular name
 	 * @param pluralName plural name of model (e.g. "Todos")
@@ -214,7 +244,7 @@ export class FakeGraphQLService {
 		return JSON.stringify(values);
 	}
 
-	private makeConditionalUpateFailedError(selection) {
+	private makeConditionalUpdateFailedError(selection) {
 		// Reponse taken from AppSync console trying to create already existing model.
 		return {
 			path: [selection],
@@ -410,7 +440,7 @@ export class FakeGraphQLService {
 				_lastChangedAt: new Date().getTime(),
 			};
 		}
-		this.log('automerge', { existing, updated, merged });
+		this.log('auto-merge', { existing, updated, merged });
 		return merged;
 	}
 
@@ -438,11 +468,20 @@ export class FakeGraphQLService {
 	 *
 	 * @param tableName The table name subscribers are looking at.
 	 * @param type The operation type. (Create, Update, Delete).
-	 * @param data The data to sendout.
+	 * @param data The data to send out.
 	 * @param selection The function/selection name, like "onCreateTodo".
+	 * @param ignoreLatency Used for exact control of the timing of the request / response, while still
+	 * maintaining the artificial latencies of all other in-flight requests. When simulating a request from
+	 * an external client, we want the response back ASAP in order to accurately test outbox merging consistently.
 	 */
-	public async notifySubscribers(tableName, type, data, selection) {
-		await this.jitteredPause(this.latencies.subscriber);
+	public async notifySubscribers(
+		tableName,
+		type,
+		data,
+		selection,
+		ignoreLatency = false
+	) {
+		!ignoreLatency && (await this.jitteredPause(this.latencies.subscriber));
 		const observers = this.getObservers(tableName, type);
 		const typeName = {
 			create: 'Create',
@@ -463,16 +502,36 @@ export class FakeGraphQLService {
 					observerMessageName,
 					message,
 				});
+				this.subscriptionMessagesSent.push([observerMessageName, message]);
 				observer.next(message);
 			}
 		});
 	}
 
-	public graphql(request: GraphQLRequest) {
-		return this.intercept(request, () => this.request(request));
+	public graphql(request: GraphQLRequest, ignoreLatency: boolean = false) {
+		return this.intercept(request, () => this.request(request, ignoreLatency));
 	}
 
-	public request({ query, variables, authMode, authToken }) {
+	/**
+	 * For making direct calls to the service without DataStore (e.g. simulating requests from external clients).
+	 * Wrapping `this.graphql` offers a quick and easy way to quickly debug tests that makes external calls
+	 * without having to filter out all calls to `this.graphql`.
+	 * @param request the GraphQL request
+	 * @param ignoreLatency Used for exact control of the timing of the request / response, while still
+	 * maintaining the artificial latencies of all other in-flight requests. When simulating a request from
+	 * an external client, we want the response back ASAP in order to accurately test outbox merging consistently.
+	 */
+	public externalGraphql(request: GraphQLRequest, ignoreLatency = false) {
+		this.log('External request', {
+			request,
+		});
+		return this.graphql(request, ignoreLatency);
+	}
+
+	public request(
+		{ query, variables, authMode, authToken },
+		ignoreLatency = false
+	) {
 		this.log('API Request', {
 			query,
 			variables: JSON.stringify(variables, null, 2),
@@ -516,7 +575,7 @@ export class FakeGraphQLService {
 		}
 
 		return new Promise(async resolve => {
-			await this.jitteredPause(this.latencies.request);
+			!ignoreLatency && (await this.jitteredPause(this.latencies.request));
 
 			if (operation === 'query') {
 				if (type === 'get') {
@@ -534,8 +593,11 @@ export class FakeGraphQLService {
 					};
 				}
 			} else if (operation === 'mutation') {
+				this.runningMutations.set(variables.input.id, type);
+
 				const record = variables.input;
-				const timestampFields = this.timestampFields.get(tableName);
+				// TODO: update test expected values and re-enable (currently unused)
+				// const timestampFields = this.timestampFields.get(tableName);
 
 				if (type === 'create') {
 					const existing = table.get(this.getPK(tableName, record));
@@ -550,7 +612,7 @@ export class FakeGraphQLService {
 						data = {
 							[selection]: null,
 						};
-						errors = [this.makeConditionalUpateFailedError(selection)];
+						errors = [this.makeConditionalUpdateFailedError(selection)];
 					} else {
 						data = {
 							[selection]: {
@@ -611,14 +673,14 @@ export class FakeGraphQLService {
 						data = {
 							[selection]: null,
 						};
-						errors = [this.makeConditionalUpateFailedError(selection)];
+						errors = [this.makeConditionalUpdateFailedError(selection)];
 					} else if (
 						!this.satisfiesCondition(tableName, existing, variables.condition)
 					) {
 						data = {
 							[selection]: null,
 						};
-						errors = [this.makeConditionalUpateFailedError(selection)];
+						errors = [this.makeConditionalUpdateFailedError(selection)];
 					} else {
 						data = {
 							[selection]: {
@@ -636,7 +698,10 @@ export class FakeGraphQLService {
 					}
 				}
 
-				await this.jitteredPause(this.latencies.response);
+				this.notifySubscribers(tableName, type, data, selection, ignoreLatency);
+
+				!ignoreLatency && (await this.jitteredPause(this.latencies.response));
+
 				this.log('API Response', { data, errors });
 				resolve({
 					data,
@@ -645,7 +710,11 @@ export class FakeGraphQLService {
 				});
 			}
 
-			await this.jitteredPause(this.latencies.response);
+			!ignoreLatency && (await this.jitteredPause(this.latencies.response));
+
+			// Mutation is complete, remove from in-flight mutations
+			this.runningMutations.delete(variables?.input?.id);
+
 			this.log('API Response', { data, errors });
 			resolve({
 				data,

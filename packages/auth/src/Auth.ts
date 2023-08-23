@@ -30,6 +30,7 @@ import {
 	Hub,
 	StorageHelper,
 	ICredentials,
+	Platform,
 	browserOrNode,
 	parseAWSExports,
 	UniversalStorage,
@@ -55,6 +56,10 @@ import {
 	NodeCallback,
 	CodeDeliveryDetails,
 } from 'amazon-cognito-identity-js';
+import {
+	addAuthCategoryToCognitoUserAgent,
+	addFrameworkToCognitoUserAgent,
+} from 'amazon-cognito-identity-js/internals';
 
 import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
@@ -130,6 +135,12 @@ export class AuthClass {
 					this._storage.setItem('amplify-signin-with-hostedUI', 'true');
 					break;
 			}
+		});
+
+		addAuthCategoryToCognitoUserAgent();
+		addFrameworkToCognitoUserAgent(Platform.framework);
+		Platform.observeFrameworkChanges(() => {
+			addFrameworkToCognitoUserAgent(Platform.framework);
 		});
 	}
 
@@ -1650,6 +1661,15 @@ export class AuthClass {
 		);
 	}
 
+	private isPasswordResetRequiredError(
+		err: any
+	): err is { message: 'Password reset required for the user' } {
+		return (
+			this.isErrorWithMessage(err) &&
+			err.message === 'Password reset required for the user'
+		);
+	}
+
 	private isSignedInHostedUI() {
 		return (
 			this._oAuthHandler &&
@@ -1663,7 +1683,8 @@ export class AuthClass {
 			this.isUserDoesNotExistError(err) ||
 			this.isTokenRevokedError(err) ||
 			this.isRefreshTokenRevokedError(err) ||
-			this.isRefreshTokenExpiredError(err)
+			this.isRefreshTokenExpiredError(err) ||
+			this.isPasswordResetRequiredError(err)
 		);
 	}
 

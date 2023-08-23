@@ -3,6 +3,95 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.6.3 (2023-08-22)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## 1.6.2 (2023-08-17)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## 1.6.1 (2023-08-10)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+# [1.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.5.0...@aws-amplify/notifications@1.6.0) (2023-07-31)
+
+### Features
+
+- custom user agent Geo changes for UI handoff ([#11632](https://github.com/aws-amplify/amplify-js/issues/11632)) ([01bfa8f](https://github.com/aws-amplify/amplify-js/commit/01bfa8f692737bd14422f7dc2eae11ed00c19048))
+- custom user agent InAppMessaging changes for UI handoff ([#11639](https://github.com/aws-amplify/amplify-js/issues/11639)) ([4d389da](https://github.com/aws-amplify/amplify-js/commit/4d389da22c9f39d5a5d7cd6df9116327a9d6a04e))
+
+# [1.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.4.0...@aws-amplify/notifications@1.5.0) (2023-07-20)
+
+### Features
+
+- custom user agent core changes for UI handoff ([#11602](https://github.com/aws-amplify/amplify-js/issues/11602)) ([7365c34](https://github.com/aws-amplify/amplify-js/commit/7365c34b28015af199dbfdb3713cc26e096d1213))
+
+# [1.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.3.2...@aws-amplify/notifications@1.4.0) (2023-07-13)
+
+### Bug Fixes
+
+- **storage:** custom client base64 encoded SSE-C headers ([#11567](https://github.com/aws-amplify/amplify-js/issues/11567)) ([ee19046](https://github.com/aws-amplify/amplify-js/commit/ee190460c01250b693c163f83be412abf3acc234))
+
+### Features
+
+- **s3:** omit double encoding of path for S3 when signing ([#11538](https://github.com/aws-amplify/amplify-js/issues/11538)) ([d46d2d1](https://github.com/aws-amplify/amplify-js/commit/d46d2d1d4263e3b8bcfc03af473d7445af12e5b7))
+
+## [1.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.3.1...@aws-amplify/notifications@1.3.2) (2023-06-28)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [1.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.3.0...@aws-amplify/notifications@1.3.1) (2023-06-21)
+
+### Bug Fixes
+
+- Update getAmplifyUserAgent to retain original interface ([#11535](https://github.com/aws-amplify/amplify-js/issues/11535)) ([dc84cc8](https://github.com/aws-amplify/amplify-js/commit/dc84cc8bfa7811b5f4f8ac2f7e5ea1b5edc54fe1))
+
+# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.2.0...@aws-amplify/notifications@1.3.0) (2023-06-20)
+
+### Bug Fixes
+
+- Add upkeep to platform/framework caches ([#11505](https://github.com/aws-amplify/amplify-js/issues/11505)) ([03aa356](https://github.com/aws-amplify/amplify-js/commit/03aa3560e921f08717594bdf679b62501bc6de77))
+- **storage:** Add getProperties user agent action ([#11501](https://github.com/aws-amplify/amplify-js/issues/11501)) ([019b5b1](https://github.com/aws-amplify/amplify-js/commit/019b5b1115bebc92f2c44bbf285d1d916cb08492))
+
+### Features
+
+- **core:** API detection for 8 framework targets ([#11384](https://github.com/aws-amplify/amplify-js/issues/11384)) ([388f207](https://github.com/aws-amplify/amplify-js/commit/388f2074db0640f2d22aa7cd1a44d8eb8f2301d2))
+
+# [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.7...@aws-amplify/notifications@1.2.0) (2023-06-05)
+
+### Bug Fixes
+
+- address feedbacks ([2d6eecf](https://github.com/aws-amplify/amplify-js/commit/2d6eecfa4763a6cfb6aeaabedd49a530c6420dcd))
+
+### Features
+
+- **clients:** cognito identity client ([#11213](https://github.com/aws-amplify/amplify-js/issues/11213)) ([67e4017](https://github.com/aws-amplify/amplify-js/commit/67e40171385f02d0c9448fdc3e036d63e009ea34))
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+- **clients:** vendor TS types from pinpoint and cognito-identity clients ([#11393](https://github.com/aws-amplify/amplify-js/issues/11393)) ([9a8569a](https://github.com/aws-amplify/amplify-js/commit/9a8569ab98480ad96b53a7104366640c66343aa2))
+
+## [1.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.6...@aws-amplify/notifications@1.1.7) (2023-05-27)
+
+### Bug Fixes
+
+- **core:** bundle react-native-url-polyfill to unblock jest test failure ([#11422](https://github.com/aws-amplify/amplify-js/issues/11422)) ([8137ee7](https://github.com/aws-amplify/amplify-js/commit/8137ee79ef2121ceaa6dfa1d9ce675370b38e26b))
+- **notifications:** Add babel plugins to devDependencies ([#11414](https://github.com/aws-amplify/amplify-js/issues/11414)) ([a009ce8](https://github.com/aws-amplify/amplify-js/commit/a009ce8afe52ca1f2e070cf40b8eb581132b6fdd))
+
+## [1.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.5...@aws-amplify/notifications@1.1.6) (2023-05-12)
+
+### Bug Fixes
+
+- **core:** add URL polyfill for signer in react native ([#11362](https://github.com/aws-amplify/amplify-js/issues/11362)) ([720ac60](https://github.com/aws-amplify/amplify-js/commit/720ac606dede7d243f3d5ce08395fc6387a6f35d))
+
+## [1.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.4...@aws-amplify/notifications@1.1.5) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.3...@aws-amplify/notifications@1.1.4) (2023-04-27)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
 ## [1.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.2...@aws-amplify/notifications@1.1.3) (2023-04-20)
 
 **Note:** Version bump only for package @aws-amplify/notifications

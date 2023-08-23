@@ -3,6 +3,103 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 4.7.3 (2023-08-22)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## 4.7.2 (2023-08-17)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## 4.7.1 (2023-08-10)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+# [4.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.6.5...@aws-amplify/datastore@4.7.0) (2023-07-31)
+
+### Features
+
+- custom user agent Geo changes for UI handoff ([#11632](https://github.com/aws-amplify/amplify-js/issues/11632)) ([01bfa8f](https://github.com/aws-amplify/amplify-js/commit/01bfa8f692737bd14422f7dc2eae11ed00c19048))
+
+## [4.6.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.6.4...@aws-amplify/datastore@4.6.5) (2023-07-20)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [4.6.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.6.3...@aws-amplify/datastore@4.6.4) (2023-07-13)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [4.6.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.6.2...@aws-amplify/datastore@4.6.3) (2023-06-28)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [4.6.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.6.1...@aws-amplify/datastore@4.6.2) (2023-06-27)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [4.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.6.0...@aws-amplify/datastore@4.6.1) (2023-06-21)
+
+### Bug Fixes
+
+- Update getAmplifyUserAgent to retain original interface ([#11535](https://github.com/aws-amplify/amplify-js/issues/11535)) ([dc84cc8](https://github.com/aws-amplify/amplify-js/commit/dc84cc8bfa7811b5f4f8ac2f7e5ea1b5edc54fe1))
+
+# [4.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.5.1...@aws-amplify/datastore@4.6.0) (2023-06-20)
+
+### Bug Fixes
+
+- DataStore action names ([82abd24](https://github.com/aws-amplify/amplify-js/commit/82abd2496327d373ccbbf3642a9cddb0e121b6bb))
+
+### Features
+
+- user agent enhancements - cross-category api>api-graphql>pubsub ([#11368](https://github.com/aws-amplify/amplify-js/issues/11368)) ([a88dda2](https://github.com/aws-amplify/amplify-js/commit/a88dda202919aa1d4dc2af48f33c3533d8626261))
+- user agent enhancements: part1 core ([#11121](https://github.com/aws-amplify/amplify-js/issues/11121)) ([66d1fb5](https://github.com/aws-amplify/amplify-js/commit/66d1fb5a7c3d82621ce9a8c1e880fe81573387ba))
+
+## [4.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.5.0...@aws-amplify/datastore@4.5.1) (2023-06-14)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+# [4.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.4.1...@aws-amplify/datastore@4.5.0) (2023-06-05)
+
+### Bug Fixes
+
+- address feedbacks ([2d6eecf](https://github.com/aws-amplify/amplify-js/commit/2d6eecfa4763a6cfb6aeaabedd49a530c6420dcd))
+
+### Features
+
+- **clients:** cognito identity client ([#11213](https://github.com/aws-amplify/amplify-js/issues/11213)) ([67e4017](https://github.com/aws-amplify/amplify-js/commit/67e40171385f02d0c9448fdc3e036d63e009ea34))
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+
+## [4.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.4.0...@aws-amplify/datastore@4.4.1) (2023-05-27)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+# [4.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.3.0...@aws-amplify/datastore@4.4.0) (2023-05-25)
+
+### Features
+
+- **data:** DataStore unit tests for rapid consecutive multi-client mutations; test refactors ([#11335](https://github.com/aws-amplify/amplify-js/issues/11335)) ([87d686f](https://github.com/aws-amplify/amplify-js/commit/87d686f39bd3506176553841277fa8ff82fa060a))
+
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.2.1...@aws-amplify/datastore@4.3.0) (2023-05-12)
+
+### Features
+
+- **data:** refactor single-client consecutive update unit tests; fake GraphQL service updates ([#11349](https://github.com/aws-amplify/amplify-js/issues/11349)) ([1b3a4bb](https://github.com/aws-amplify/amplify-js/commit/1b3a4bb9739e2db6e08e73d95c2233a092c6edc3))
+
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.2.0...@aws-amplify/datastore@4.2.1) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.11...@aws-amplify/datastore@4.2.0) (2023-04-27)
+
+### Bug Fixes
+
+- **datastore:** add missing errorHandler errors for sync and mutation unauth responses ([#11290](https://github.com/aws-amplify/amplify-js/issues/11290)) ([0197e92](https://github.com/aws-amplify/amplify-js/commit/0197e92888f9aeb142aefb23c31c8831a296ce51))
+- **data:** sync processor fixes ([#11262](https://github.com/aws-amplify/amplify-js/issues/11262)) ([43d494b](https://github.com/aws-amplify/amplify-js/commit/43d494bba021c7cf2578bee7a9ce77a92516f3c6))
+
+### Features
+
+- **data:** add simulated cloud latency to fake GraphQL service; sync processor updates ([#11286](https://github.com/aws-amplify/amplify-js/issues/11286)) ([3af9672](https://github.com/aws-amplify/amplify-js/commit/3af9672bfcb08a40b7b0488ff40ee5580ac4b261))
+
 ## [4.1.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.10...@aws-amplify/datastore@4.1.11) (2023-04-20)
 
 **Note:** Version bump only for package @aws-amplify/datastore
