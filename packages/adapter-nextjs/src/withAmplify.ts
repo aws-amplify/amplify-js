@@ -19,7 +19,7 @@ export const withAmplify = (
 	amplifyConfig: ResourcesConfig
 ) => {
 	nextConfig.env = {
-		...(nextConfig.env ?? {}),
+		...nextConfig.env,
 		// TODO(Hui): follow up the validation of the amplifyConfig.
 		amplifyConfig: JSON.stringify(amplifyConfig),
 	};

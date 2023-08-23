@@ -61,12 +61,12 @@ export namespace NextServer {
 		nextServerContext: Context | null;
 		operation: (
 			contextSpec: AmplifyServer.ContextSpec
-		) => OperationResult | void | Promise<OperationResult | void>;
+		) => OperationResult | Promise<OperationResult>;
 	}
 
 	export interface RunOperationWithContext {
 		<OperationResult>(
 			input: RunWithContextInput<OperationResult>
-		): Promise<OperationResult | void>;
+		): Promise<OperationResult>;
 	}
 }
