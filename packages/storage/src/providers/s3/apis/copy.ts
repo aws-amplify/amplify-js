@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { S3Exception, S3CopyResult, S3CopyItem } from '../types';
+import { S3Exception, S3CopyResult } from '../types';
 import { CopyRequest } from '../../../types';
 import {
 	resolveStorageConfig,

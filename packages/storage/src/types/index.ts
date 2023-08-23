@@ -18,8 +18,8 @@ export {
 	StorageOptions,
 	StorageUploadFileParameter, // TODO: open question - should we export this?
 	StorageRemoveOptions,
-	S3CopySource,
-	S3CopyDestination,
+	StorageCopySource,
+	StorageCopyDestination,
 	CopyRequest,
 } from './params';
 export {
