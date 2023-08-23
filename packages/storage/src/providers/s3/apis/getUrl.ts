@@ -73,7 +73,7 @@ export const getUrl = async function (
 	if (awsCredExpiration)
 		if (awsCredExpiration) {
 			const awsCredExpirationInSec = Math.floor(
-				(awsCredExpiration?.getTime() - Date.now()) / 1000
+				(awsCredExpiration.getTime() - Date.now()) / 1000
 			);
 			urlExpirationInMS =
 				awsCredExpirationInSec < urlExpirationInMS
