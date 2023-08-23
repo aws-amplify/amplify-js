@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { S3Exception, S3CopyResult, S3CopyItem } from '../types';
-import { CopyRequest, StorageCopyItem } from '../../../types';
+import { CopyRequest } from '../../../types';
 import {
 	resolveStorageConfig,
 	getKeyWithPrefix,
@@ -20,8 +20,9 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
  * @async
  * @param {CopyRequest<S3CopyItem>} copyRequest - The request object.
  * @return {Promise<S3CopyResult>} Promise resolves upon successful copy of the object.
- * @throws service: {@link S3Exception} - S3 service errors is thrown while performing copy operation.
- * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown.
+ * @throws service: {@link S3Exception} - Thrown when checking for existence of the object
+ * @throws validation: {@link StorageValidationErrorCode } - Thrown when
+ * source or destination key are not defined.
  */
 export const copy = async (
 	copyRequest: CopyRequest<S3CopyItem>
