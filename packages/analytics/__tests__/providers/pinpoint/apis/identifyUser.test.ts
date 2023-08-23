@@ -3,7 +3,7 @@
 
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
 import { identifyUser } from '../../../../src/providers/pinpoint/apis';
-import { PinpointIdentifyUserParameters } from '../../../../src/providers/pinpoint/types';
+import { IdentifyUserParameters } from '../../../../src/types';
 import {
 	resolveConfig,
 	resolveCredentials,
@@ -42,13 +42,12 @@ describe('Analytics Pinpoint Provider API: identifyUser', () => {
 	});
 
 	it('passes through parameter along with Analytics boilerplate to core Pinpoint identifyUser API', async () => {
-		const params: PinpointIdentifyUserParameters = {
+		const params: IdentifyUserParameters = {
 			userId: 'user-id',
 			userProfile: {
 				attributes: {
 					hobbies: ['biking', 'climbing'],
 				},
-				optOut: 'ALL',
 			},
 		};
 		await identifyUser(params);

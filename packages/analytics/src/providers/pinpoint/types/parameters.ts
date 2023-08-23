@@ -1,8 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { PinpointUserProfile } from '@aws-amplify/core/internals/providers/pinpoint';
-import { IdentifyUserParameters } from '../../../types';
+import { UserProfile } from '@aws-amplify/core';
 
-export type PinpointIdentifyUserParameters =
-	IdentifyUserParameters<PinpointUserProfile>;
+export type IdentifyUserParameters = {
+	/**
+	 * A User ID associated to the current device.
+	 */
+	userId: string;
+
+	/**
+	 * Additional information about the user and their device.
+	 */
+	userProfile: UserProfile;
+};
