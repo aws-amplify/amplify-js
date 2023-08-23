@@ -17,3 +17,5 @@ export {
 	getUrl,
 } from './providers/s3';
 export * from './types';
+
+export { isCancelError } from './AwsClients/S3/runtime';
