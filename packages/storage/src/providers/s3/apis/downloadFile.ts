@@ -5,6 +5,6 @@ import { StorageDownloadFileParameter, DownloadTask } from '../../../types';
 import { S3TransferOptions, S3DownloadFileResult } from '../types';
 
 // TODO: pending implementation
-export declare const downloadFile: (
+export const downloadFile = async (
 	params: StorageDownloadFileParameter<S3TransferOptions>
-) => DownloadTask<S3DownloadFileResult>;
+): Promise<any> => {};
