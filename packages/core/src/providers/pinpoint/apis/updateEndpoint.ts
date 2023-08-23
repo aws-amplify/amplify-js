@@ -14,11 +14,13 @@ import { cacheEndpointId, getEndpointId } from '../utils';
  * @internal
  */
 export const updateEndpoint = async ({
+	address,
 	appId,
 	category,
 	channelType,
 	credentials,
 	identityId,
+	optOut,
 	region,
 	userId,
 	userProfile,
@@ -27,8 +29,7 @@ export const updateEndpoint = async ({
 	const endpointId = await getEndpointId(appId, category);
 	// only generate a new endpoint id if one was not found in cache
 	const createdEndpointId = !endpointId ? uuidv4() : undefined;
-	const { address, attributes, demographic, location, metrics, optOut } =
-		userProfile ?? {};
+	const { attributes, demographic, location, metrics } = userProfile ?? {};
 	const clientInfo = ClientDevice.clientInfo();
 	const mergedDemographic = {
 		appVersion: clientInfo.appVersion,

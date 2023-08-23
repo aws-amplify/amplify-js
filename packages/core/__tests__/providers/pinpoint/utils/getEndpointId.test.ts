@@ -33,6 +33,6 @@ describe('Pinpoint Provider Util: getEndpointId', () => {
 
 	it('returns undefined if endpoint id not found in cache', async () => {
 		getItemSpy.mockResolvedValue(null);
-		expect(await getEndpointId(appId, category)).toBe(undefined);
+		expect(await getEndpointId(appId, category)).toBeUndefined();
 	});
 });

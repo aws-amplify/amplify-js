@@ -8,7 +8,7 @@ import {
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import { EventBuffer, EventObject, EventMap } from '../types';
 import { isAppInForeground } from '../utils/AppUtils';
-import { getAnalyticsUserAgentString } from '../utils/UserAgent';
+import { getAnalyticsUserAgentString } from '../utils/userAgent';
 
 const logger = new Logger('EventsBuffer');
 const RETRYABLE_CODES = [429, 500];
