@@ -18,12 +18,12 @@ export type PinpointProviderConfig = {
 	};
 };
 
-export type PinpointUserProfile = UserProfile & {
+export type PinpointServiceOptions = {
 	address?: string;
 	optOut?: 'ALL' | 'NONE';
 };
 
-export type PinpointUpdateEndpointParameters = {
+export type PinpointUpdateEndpointParameters = PinpointServiceOptions & {
 	appId: string;
 	category: SupportedCategory;
 	channelType?: SupportedChannelType;
@@ -31,6 +31,6 @@ export type PinpointUpdateEndpointParameters = {
 	identityId?: AuthSession['identityId'];
 	region: string;
 	userId?: string;
-	userProfile?: PinpointUserProfile;
+	userProfile?: UserProfile;
 	userAgentValue?: string;
 };
