@@ -17,7 +17,7 @@ import { InitiateAuthException } from '../types/errors';
  *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  *
- * @returns UpdateUserAttributesResult
+ * @returns AuthUser
  */
 export const getCurrentUser = async (
 	getCurrentUserRequest?: GetCurrentUserRequest
