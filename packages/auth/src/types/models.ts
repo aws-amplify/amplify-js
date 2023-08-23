@@ -169,6 +169,9 @@ export type AuthDevice = {
 	deviceName: string;
 };
 
+/**
+ * Holds the device specific information aong with it's id and name.
+ */
 export interface AWSAuthDevice extends AuthDevice {
 	attributes: Record<string, string>;
 	createDate?: Date;

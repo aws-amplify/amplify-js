@@ -20,9 +20,13 @@ const MAX_DEVICES = 60;
 /**
  * Fetch devices associated with an authenticated user
  *
- * @returns AuthDevice[]
- * @throws validation: {@link AuthError}
+ * @returns {AWSAuthDevice[]}
+ * @throws validation: {@link InvalidAuthTokens}
+ * @throws validation: {@link ListDevicesException}
  *
+ * @throws {@link PasswordResetRequiredException}
+ *
+ * @throws {@link NotAuthorizedException}
  */
 export async function fetchDevices(): Promise<AWSAuthDevice[]> {
 	const session = await fetchAuthSession({});

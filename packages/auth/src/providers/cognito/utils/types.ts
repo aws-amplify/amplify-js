@@ -19,7 +19,7 @@ export function assertAuthTokens(
 ): asserts tokens is AuthTokens {
 	if (!tokens || !tokens.accessToken) {
 		throw new AuthError({
-			name: 'Invalid Auth Tokens',
+			name: 'InvalidAuthTokens',
 			message: 'No Auth Tokens were found',
 		});
 	}
