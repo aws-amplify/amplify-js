@@ -124,3 +124,14 @@ export type UpdateUserAttributesRequest<
 	userAttributes: AuthUserAttribute<UserAttributeKey>;
 	options?: { serviceOptions?: ServiceOptions };
 };
+
+/**
+ * Constructs a `verifyUserAttribute` request.
+ *
+ * @param userAttributeKey - the user attribute key to be verified
+ * @param confirmationCode - the user attribute verification code sent to email or cellphone
+ *
+ */
+export type ConfirmUserAttributeRequest<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = { userAttributeKey: UserAttributeKey; confirmationCode: string };

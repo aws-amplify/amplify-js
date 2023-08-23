@@ -2,17 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	AmplifyV6,
-	isTokenExpired,
 	AuthTokens,
 	FetchAuthSessionOptions,
 } from '@aws-amplify/core';
+import {
+	isTokenExpired,
+} from '@aws-amplify/core/internals/utils';
 import {
 	AuthTokenOrchestrator,
 	AuthTokenStore,
 	CognitoAuthTokens,
 	TokenRefresher,
 } from './types';
-import { tokenOrchestrator } from '.';
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	tokenStore: AuthTokenStore;
@@ -76,7 +77,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				authConfig,
 			});
 
-			tokenOrchestrator.setTokens({ tokens: newTokens });
+			this.setTokens({ tokens: newTokens });
 			return newTokens;
 		} catch (err) {
 			return this.handleErrors(err);
@@ -86,7 +87,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private handleErrors(err: Error) {
 		if (err.message !== 'Network error') {
 			// TODO(v6): Check errors on client
-			tokenOrchestrator.clearTokens();
+			this.clearTokens();
 		}
 		if (err.name.startsWith('NotAuthorizedException')) {
 			return null;

@@ -1,30 +1,52 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ICredentials } from '@aws-amplify/core';
 import { headObject } from '../../../src/AwsClients/S3';
 import { getProperties } from '../../../src/providers/s3';
-import { StorageOptions } from '../../../src/types/Storage';
+import { Credentials } from '@aws-sdk/types';
+import { AmplifyV6, fetchAuthSession } from '@aws-amplify/core';
 
 jest.mock('../../../src/AwsClients/S3');
 const mockHeadObject = headObject as jest.Mock;
-const credentials: ICredentials = {
+
+jest.mock('@aws-amplify/core', () => {
+	const core = jest.requireActual('@aws-amplify/core');
+	return {
+		...core,
+		fetchAuthSession: jest.fn(),
+		AmplifyV6: {
+			...core.AmplifyV6,
+			getConfig: jest.fn(),
+		},
+	};
+});
+
+const bucket = 'bucket';
+const region = 'region';
+const credentials: Credentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
-	identityId: 'identityId',
-	authenticated: true,
 };
-const options: StorageOptions = {
-	bucket: 'bucket',
-	region: 'region',
-	credentials,
-	level: 'public',
-};
+const targetIdentityId = 'targetIdentityId';
 
-describe('getProperties happy path case', () => {
-	// TODO[kvramya7] need to finish unit test with credentials
-	test.skip('getProperties return result', async () => {
+describe('getProperties test', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
+	(fetchAuthSession as jest.Mock).mockResolvedValue({
+		credentials,
+		identityId: targetIdentityId,
+	});
+	(AmplifyV6.getConfig as jest.Mock).mockReturnValue({
+		Storage: {
+			bucket,
+			region,
+		},
+	});
+	it('getProperties happy path case with private check', async () => {
+		expect.assertions(3);
 		mockHeadObject.mockReturnValueOnce({
 			ContentLength: '100',
 			ContentType: 'text/plain',
@@ -33,20 +55,38 @@ describe('getProperties happy path case', () => {
 			Metadata: { key: 'value' },
 			VersionId: 'version-id',
 		});
-		expect(await getProperties({ key: 'key' })).toEqual({
+		const metadata = { key: 'value' };
+		expect(
+			await getProperties({
+				key: 'key',
+				options: {
+					targetIdentityId: 'targetIdentityId',
+					accessLevel: 'protected',
+				},
+			})
+		).toEqual({
 			key: 'key',
 			size: '100',
 			contentType: 'text/plain',
 			eTag: 'etag',
+			metadata,
 			lastModified: 'last-modified',
 			versionId: 'version-id',
 		});
+		expect(headObject).toBeCalledTimes(1);
+		expect(headObject).toHaveBeenCalledWith(
+			{
+				credentials,
+				region: 'region',
+			},
+			{
+				Bucket: 'bucket',
+				Key: 'protected/targetIdentityId/key',
+			}
+		);
 	});
-});
 
-describe('getProperties error path case', () => {
-	test.skip('getProperties should return a not found error', async () => {
-		// TODO[kvramya7] need to finish unit test with credentials
+	it('getProperties should return a not found error', async () => {
 		mockHeadObject.mockRejectedValueOnce(
 			Object.assign(new Error(), {
 				$metadata: { httpStatusCode: 404 },
@@ -56,6 +96,18 @@ describe('getProperties error path case', () => {
 		try {
 			await getProperties({ key: 'keyed' });
 		} catch (error) {
+			expect.assertions(3);
+			expect(headObject).toBeCalledTimes(1);
+			expect(headObject).toHaveBeenCalledWith(
+				{
+					credentials,
+					region: 'region',
+				},
+				{
+					Bucket: 'bucket',
+					Key: 'public/keyed',
+				}
+			);
 			expect(error.$metadata.httpStatusCode).toBe(404);
 		}
 	});

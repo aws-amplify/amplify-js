@@ -2,7 +2,7 @@
  * Copyright (c) 2017, Philip Walton <philip@philipwalton.com>
  */
 
-import { browserOrNode } from '@aws-amplify/core';
+import { browserOrNode } from '@aws-amplify/core/internals/utils';
 
 const proto =
 	browserOrNode().isBrowser && window['Element']

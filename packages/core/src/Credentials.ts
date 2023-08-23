@@ -3,14 +3,14 @@
 // SPDX-License-Identifier: Apache-2.0
 import { ConsoleLogger as Logger } from './Logger';
 import { StorageHelper } from './StorageHelper';
-import { makeQuerablePromise } from './JS';
+import { makeQuerablePromise } from './Util/JS';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { jitteredExponentialRetry } from './Util';
 import { ICredentials } from './types';
 import { Amplify } from './Amplify';
 import { getId, getCredentialsForIdentity } from './AwsClients/CognitoIdentity';
 import { parseAWSExports } from './parseAWSExports';
-import { Hub } from './Hub';
+import { Hub } from './Hub/Hub';
 
 const logger = new Logger('Credentials');
 

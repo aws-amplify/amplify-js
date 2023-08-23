@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyErrorMap } from '@aws-amplify/core';
+import { AmplifyErrorMap } from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../errors/types/validation';
 
 export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
@@ -49,11 +49,14 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 		message: 'Incorrect MFA method was chosen. It should be either SMS or TOTP',
 		recoverySuggestion: 'Try to pass TOTP or SMS as the challengeResponse',
 	},
-	[AuthValidationErrorCode.EmptyVerifyTOTPSetupCode]:{
+	[AuthValidationErrorCode.EmptyVerifyTOTPSetupCode]: {
 		message: 'code is required to verifyTotpSetup',
 	},
 	[AuthValidationErrorCode.EmptyUpdatePassword]: {
 		message: 'oldPassword and newPassword are required to changePassword',
+	},
+	[AuthValidationErrorCode.EmptyConfirmUserAttributeCode]: {
+		message: 'confirmation code is required to confirmUserAttribute',
 	},
 };
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2017, Philip Walton <philip@philipwalton.com>
  */
 
-import { browserOrNode } from '@aws-amplify/core';
+import { browserOrNode } from '@aws-amplify/core/internals/utils';
 
 const HTTP_PORT = '80';
 const HTTPS_PORT = '443';

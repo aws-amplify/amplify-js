@@ -17,6 +17,7 @@ import {
 	resolveStorageConfig,
 } from '../utils';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
+
 const DEFAULT_PRESIGN_EXPIRATION = 900;
 const MAX_URL_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
 
@@ -32,7 +33,6 @@ const MAX_URL_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
  * TODO: add config errors
  *
  */
-
 export const getUrl = async function (
 	req: StorageDownloadDataRequest<S3GetUrlOptions>
 ): Promise<S3GetUrlResult> {
@@ -58,29 +58,30 @@ export const getUrl = async function (
 		Bucket: bucket,
 		Key: finalKey,
 	};
+	let urlExpirationInSec = options?.expiresIn ?? DEFAULT_PRESIGN_EXPIRATION;
 	const getUrlOptions = {
 		accessLevel,
 		credentials,
-		expiration: options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION,
+		expiration: urlExpirationInSec,
 		signingRegion: region,
 		region,
 		signingService: S3_SERVICE_NAME,
 	};
+	const awsCredExpiration = credentials?.expiration;
+	if (awsCredExpiration) {
+		const awsCredExpirationInSec = Math.floor(
+			(awsCredExpiration.getTime() - Date.now()) / 1000
+		);
+		urlExpirationInSec = Math.min(awsCredExpirationInSec, urlExpirationInSec);
+	}
 
-	let urlExpiration = options?.expiration ?? DEFAULT_PRESIGN_EXPIRATION;
 	assertValidationError(
-		urlExpiration > MAX_URL_EXPIRATION,
+		urlExpirationInSec < MAX_URL_EXPIRATION,
 		StorageValidationErrorCode.UrlExpirationMaxLimitExceed
 	);
-	const awsCredExpiration = credentials?.expiration;
 	// expiresAt is the minimum of credential expiration and url expiration
-	urlExpiration = awsCredExpiration
-		? urlExpiration < awsCredExpiration.getTime()
-			? urlExpiration
-			: awsCredExpiration.getTime()
-		: urlExpiration;
 	return {
 		url: await getPresignedGetObjectUrl(getUrlOptions, getUrlParams),
-		expiresAt: new Date(Date.now() + urlExpiration),
+		expiresAt: new Date(Date.now() + urlExpirationInSec * 1000),
 	};
 };

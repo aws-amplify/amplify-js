@@ -1,9 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { cognitoIdentityIdProvider, setIdentityId } from './IdentityIdProvider';
+import { cognitoIdentityIdProvider } from './IdentityIdProvider';
 import {
-	Logger,
 	AuthTokens,
 	AmplifyV6,
 	AWSCredentialsAndIdentityIdProvider,
@@ -12,7 +11,9 @@ import {
 	getCredentialsForIdentity,
 	GetCredentialsOptions,
 } from '@aws-amplify/core';
+import { Logger } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../errors/AuthError';
+import { IdentityIdStore } from './types';
 
 const logger = new Logger('CognitoCredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
@@ -20,6 +21,12 @@ const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if 
 export class CognitoAWSCredentialsAndIdentityIdProvider
 	implements AWSCredentialsAndIdentityIdProvider
 {
+	constructor(identityIdStore: IdentityIdStore) {
+		this._identityIdStore = identityIdStore;
+	}
+
+	private _identityIdStore: IdentityIdStore;
+
 	private _credentialsAndIdentityId?: AWSCredentialsAndIdentityId & {
 		isAuthenticatedCreds: boolean;
 	};
@@ -39,7 +46,11 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			getCredentialsOptions.authConfig as UserPoolConfigAndIdentityPoolConfig;
 		const forceRefresh = getCredentialsOptions.forceRefresh;
 		// TODO(V6): Listen to changes to AuthTokens and update the credentials
-		const identityId = await cognitoIdentityIdProvider({ tokens, authConfig });
+		const identityId = await cognitoIdentityIdProvider({
+			tokens,
+			authConfig,
+			identityIdStore: this._identityIdStore,
+		});
 		if (!identityId) {
 			throw new AuthError({
 				name: 'IdentityIdConfigException',
@@ -124,7 +135,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
 				res.identityId = identityIdRes;
-				setIdentityId({
+				this._identityIdStore.storeIdentityId({
 					id: identityIdRes,
 					type: 'guest',
 				});
@@ -208,7 +219,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
 				res.identityId = identityIdRes;
-				setIdentityId({
+				this._identityIdStore.storeIdentityId({
 					id: identityIdRes,
 					type: 'primary',
 				});

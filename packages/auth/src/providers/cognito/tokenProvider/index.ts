@@ -28,4 +28,10 @@ export const CognitoUserPoolsTokenProvider: CognitoUserPoolTokenProviderType = {
 	},
 };
 
-export { tokenOrchestrator };
+export {
+	tokenOrchestrator,
+	CognitoUserPoolTokenProviderType,
+	TokenOrchestrator,
+	DefaultTokenStore,
+	CognitoUserPoolTokenRefresher,
+};

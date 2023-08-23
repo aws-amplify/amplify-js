@@ -14,6 +14,8 @@ import { LocalStorage } from '@aws-amplify/core/lib';
  *
  */
 export const cognitoCredentialsProvider =
-	new CognitoAWSCredentialsAndIdentityIdProvider();
+	new CognitoAWSCredentialsAndIdentityIdProvider(
+		new DefaultIdentityIdStore(LocalStorage)
+	);
 
-export const defaultIdentityIdStore = new DefaultIdentityIdStore(LocalStorage);
+export { CognitoAWSCredentialsAndIdentityIdProvider, DefaultIdentityIdStore };

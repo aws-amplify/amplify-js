@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // TODO: pending implementation
-export declare const copy: (params: any) => Promise<any>;
+export const copy = async (params: any): Promise<any> => {};

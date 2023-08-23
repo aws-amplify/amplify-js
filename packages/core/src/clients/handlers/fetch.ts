@@ -9,6 +9,7 @@ import { withMemoization } from '../utils/memoization';
 const shouldSendBody = (method: string) =>
 	!['HEAD', 'GET', 'DELETE'].includes(method.toUpperCase());
 
+// TODO[AllanZhengYP]: we need to provide isCanceledError utility
 export const fetchTransferHandler: TransferHandler<
 	HttpRequest,
 	HttpResponse,

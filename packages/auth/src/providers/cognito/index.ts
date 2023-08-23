@@ -14,5 +14,16 @@ export { verifyTOTPSetup } from './apis/verifyTOTPSetup';
 export { updatePassword } from './apis/updatePassword';
 export { setUpTOTP } from './apis/setUpTOTP';
 export { updateUserAttributes } from './apis/updateUserAttributes';
-export { cognitoCredentialsProvider } from './credentialsProvider';
-export { CognitoUserPoolsTokenProvider } from './tokenProvider';
+export { confirmUserAttribute } from './apis/confirmUserAttribute';
+export {
+	cognitoCredentialsProvider,
+	CognitoAWSCredentialsAndIdentityIdProvider,
+	DefaultIdentityIdStore,
+} from './credentialsProvider';
+export {
+	CognitoUserPoolsTokenProvider,
+	CognitoUserPoolTokenProviderType,
+	TokenOrchestrator,
+	DefaultTokenStore,
+	CognitoUserPoolTokenRefresher,
+} from './tokenProvider';
