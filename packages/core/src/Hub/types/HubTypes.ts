@@ -4,18 +4,11 @@
 import { AuthHubEventData } from './AuthTypes';
 
 export interface IListener<
-	Channel extends string | RegExp,
+	Channel extends string,
 	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 > {
 	name: string;
 	callback: HubCallback<Channel, EventData>;
-}
-export interface IPattern<
-	Channel extends string | RegExp,
-	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
-> {
-	pattern: RegExp;
-	callback;
 }
 
 export type AmplifyChannel =
@@ -32,7 +25,7 @@ export type AmplifyChannel =
 export type AmplifyEventDataMap = { event: string; data?: unknown };
 
 export type HubCapsule<
-	Channel extends string | RegExp,
+	Channel extends string,
 	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 > = {
 	channel: Channel;
@@ -42,7 +35,7 @@ export type HubCapsule<
 };
 
 export type HubCallback<
-	Channel extends string | RegExp,
+	Channel extends string,
 	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 > = (capsule: HubCapsule<Channel, EventData>) => void;
 
@@ -65,7 +58,7 @@ export type AmplifyHubCallbackMap<Channel extends AmplifyChannel> = {
 };
 
 export type GetHubCallBack<
-	Channel extends string | RegExp,
+	Channel extends string,
 	EventDataMap extends AmplifyEventDataMap = AmplifyEventDataMap
 > = Channel extends AmplifyChannel
 	? AmplifyHubCallbackMap<Channel>[Channel]
@@ -85,6 +78,6 @@ export type AmplifyChannelMap<
 		| AnyChannel,
 	EventDataMap extends AmplifyEventDataMap = AmplifyEventDataMap
 > = {
-	channelType: AmplifyChannelType | RegExp;
+	channelType: AmplifyChannelType;
 	eventData: EventDataMap;
 };
