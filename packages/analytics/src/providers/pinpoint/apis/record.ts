@@ -3,7 +3,11 @@
 
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
 import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
-import { AnalyticsError } from '../../../errors';
+import {
+	AnalyticsError,
+	AnalyticsValidationErrorCode,
+	assertValidationError,
+} from '../../../errors';
 import { getAnalyticsUserAgentString } from '../../../utils/UserAgent';
 import { PinpointRecordParameters } from '../types/parameters';
 import { resolveConfig, resolveCredentials } from '../utils';
@@ -23,6 +27,9 @@ export const record = async ({
 }: PinpointRecordParameters): Promise<void> => {
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
+
+	assertValidationError(!!event, AnalyticsValidationErrorCode.NoEvent);
+	assertValidationError(!!event.name, AnalyticsValidationErrorCode.NoEventName);
 
 	recordCore({
 		appId,

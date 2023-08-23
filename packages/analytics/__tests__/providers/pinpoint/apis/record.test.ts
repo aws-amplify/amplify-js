@@ -4,8 +4,9 @@ import {
 	resolveConfig,
 	resolveCredentials,
 } from '../../../../src/providers/pinpoint/utils';
+import { AnalyticsValidationErrorCode } from '../../../../src/errors';
+import { RecordParameters } from '../../../../src/types';
 import {
-	authSession,
 	appId,
 	identityId,
 	region,
@@ -72,5 +73,31 @@ describe('Pinpoint API: record', () => {
 			sendImmediately: true,
 			userAgentValue: expect.any(String),
 		});
+	});
+
+	it('throws a validation error when no event is provided', async () => {
+		const mockParams = {} as RecordParameters;
+
+		try {
+			await record(mockParams);
+		} catch (e) {
+			expect(e.name).toEqual(AnalyticsValidationErrorCode.NoEvent);
+		}
+
+		expect.assertions(1);
+	});
+
+	it('throws a validation error when event does not specify a name', async () => {
+		const mockParams = {
+			event: {},
+		};
+
+		try {
+			await record(mockParams);
+		} catch (e) {
+			expect(e.name).toEqual(AnalyticsValidationErrorCode.NoEventName);
+		}
+
+		expect.assertions(1);
 	});
 });
