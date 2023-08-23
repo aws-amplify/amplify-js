@@ -33,7 +33,6 @@ const MAX_URL_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
  * TODO: add config errors
  *
  */
-
 export const getUrl = async function (
 	req: StorageDownloadDataRequest<S3GetUrlOptions>
 ): Promise<S3GetUrlResult> {

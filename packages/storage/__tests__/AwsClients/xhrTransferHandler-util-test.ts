@@ -1,17 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { xhrTransferHandler } from '../../src/AwsClients/S3/runtime/xhrTransferHandler';
 import {
-	SEND_UPLOAD_PROGRESS_EVENT,
-	SEND_DOWNLOAD_PROGRESS_EVENT,
-} from '../../src/AwsClients/S3/utils';
+	xhrTransferHandler,
+	isCancelError,
+} from '../../src/AwsClients/S3/runtime/xhrTransferHandler';
 import {
 	spyOnXhr,
 	mockXhrResponse,
 	triggerNetWorkError,
 	triggerServerSideAbort,
 	mockXhrReadyState,
+	mockProgressEvents,
 } from './testUtils/mocks';
 
 const defaultRequest = {
@@ -196,7 +196,7 @@ describe('xhrTransferHandler', () => {
 		await expect(requestPromise).rejects.toThrow(
 			expect.objectContaining({
 				message: 'Network Error',
-				code: 'ECONNABORTED',
+				name: 'ECONNABORTED',
 			})
 		);
 	});
@@ -210,7 +210,7 @@ describe('xhrTransferHandler', () => {
 		await expect(requestPromise).rejects.toThrow(
 			expect.objectContaining({
 				message: 'Network Error',
-				code: 'ECONNABORTED',
+				name: 'ECONNABORTED',
 			})
 		);
 		// Should be no-op if the xhr is already cleared
@@ -218,22 +218,39 @@ describe('xhrTransferHandler', () => {
 		expect(mockXhr.getAllResponseHeaders).not.toHaveBeenCalled();
 	});
 
-	it('should add progress event listener to xhr.upload and xhr(download) when emitter is supplied', async () => {
+	it('should add progress event listener to xhr.upload and xhr(download) when onDownloadProgress/onUploadProgress is supplied', async () => {
 		const mockXhr = spyOnXhr();
-		const emitter = {
-			emit: jest.fn(),
-		} as any;
+		const onDownloadProgress = jest.fn();
+		const onUploadProgress = jest.fn();
 		const requestPromise = xhrTransferHandler(defaultRequest, {
 			responseType: 'text',
-			emitter,
+			onDownloadProgress,
+			onUploadProgress,
 		});
 		mockXhrResponse(mockXhr, mock200Response);
-		await requestPromise;
-		expect(emitter.emit).toHaveBeenCalledWith(SEND_UPLOAD_PROGRESS_EVENT, {
-			name: 'MockUploadEvent',
+		const uploadProgressEvent = {
+			loaded: 111,
+			total: 111,
+			lengthComputable: true,
+		};
+		const downloadProgressEvent = {
+			loaded: 222,
+			total: 222,
+			lengthComputable: true,
+		};
+		mockProgressEvents({
+			mockXhr,
+			uploadEvents: [uploadProgressEvent],
+			downloadEvents: [downloadProgressEvent],
 		});
-		expect(emitter.emit).toHaveBeenCalledWith(SEND_DOWNLOAD_PROGRESS_EVENT, {
-			name: 'MockDownloadEvent',
+		await requestPromise;
+		expect(onDownloadProgress).toBeCalledWith({
+			transferredBytes: downloadProgressEvent.loaded,
+			totalBytes: downloadProgressEvent.total,
+		});
+		expect(onUploadProgress).toBeCalledWith({
+			transferredBytes: uploadProgressEvent.loaded,
+			totalBytes: uploadProgressEvent.total,
 		});
 	});
 
@@ -246,7 +263,7 @@ describe('xhrTransferHandler', () => {
 		await expect(requestPromise).rejects.toThrow(
 			expect.objectContaining({
 				message: 'Request aborted',
-				code: 'ERR_ABORTED',
+				name: 'ERR_ABORTED',
 			})
 		);
 	});
@@ -260,7 +277,7 @@ describe('xhrTransferHandler', () => {
 		await expect(requestPromise).rejects.toThrow(
 			expect.objectContaining({
 				message: 'Request aborted',
-				code: 'ERR_ABORTED',
+				name: 'ERR_ABORTED',
 			})
 		);
 		// Should be no-op if the xhr is already cleared
@@ -349,6 +366,7 @@ describe('xhrTransferHandler', () => {
 	});
 
 	it('should immediately reject with canceled error when signal is already aborted', async () => {
+		expect.assertions(3);
 		const mockXhr = spyOnXhr();
 		const abortController = new AbortController();
 		abortController.abort();
@@ -356,17 +374,22 @@ describe('xhrTransferHandler', () => {
 			responseType: 'text',
 			abortSignal: abortController.signal,
 		});
-		await expect(requestPromise).rejects.toThrow(
+		try {
+			await requestPromise;
+			fail('requestPromise should reject');
+		} catch (e) {
+			expect(isCancelError(e)).toBe(true);
 			expect.objectContaining({
 				message: 'canceled',
-				code: 'ERR_CANCELED',
-			})
-		);
+				name: 'ERR_CANCELED',
+			});
+		}
 		expect(mockXhr.abort).toBeCalledTimes(1);
 		expect(mockXhr.send).not.toBeCalled();
 	});
 
 	it('should reject with canceled error when signal is aborted', async () => {
+		expect.assertions(3);
 		const mockXhr = spyOnXhr();
 		const abortController = new AbortController();
 		const requestPromise = xhrTransferHandler(defaultRequest, {
@@ -374,12 +397,16 @@ describe('xhrTransferHandler', () => {
 			abortSignal: abortController.signal,
 		});
 		abortController.abort();
-		await expect(requestPromise).rejects.toThrow(
+		try {
+			await requestPromise;
+			fail('requestPromise should reject');
+		} catch (e) {
+			expect(isCancelError(e)).toBe(true);
 			expect.objectContaining({
 				message: 'canceled',
-				code: 'ERR_CANCELED',
-			})
-		);
+				name: 'ERR_CANCELED',
+			});
+		}
 		expect(mockXhr.abort).toBeCalledTimes(1);
 		expect(mockXhr.send).toBeCalledTimes(1);
 	});
