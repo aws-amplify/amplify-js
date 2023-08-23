@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getAmplifyUserAgent } from '@aws-amplify/core';
+import { getAmplifyUserAgent } from '@aws-amplify/core/internals/utils';
 import {
 	getDnsSuffix,
 	jitteredBackoff,

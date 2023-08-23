@@ -14,7 +14,7 @@ import {
 	getRetryDecider,
 	jitteredBackoff,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { getAmplifyUserAgent } from '@aws-amplify/core';
+import { getAmplifyUserAgent } from '@aws-amplify/core/internals/utils';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 /**

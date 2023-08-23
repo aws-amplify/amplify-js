@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import Cookies, { CookieSetOptions } from 'universal-cookie';
-import { browserOrNode } from '../JS';
+import { browserOrNode } from '../Util/JS';
 
 type Store = Record<string, string>;
 

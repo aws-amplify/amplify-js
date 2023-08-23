@@ -9,9 +9,6 @@ import {
 import {
 	ICredentials,
 	Credentials,
-	getAmplifyUserAgent,
-	StorageAction,
-	Category,
 } from '@aws-amplify/core';
 
 const credentials: ICredentials = {

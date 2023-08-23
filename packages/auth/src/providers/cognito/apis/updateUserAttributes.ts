@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	AmplifyV6 as Amplify,
-	assertTokenProviderConfig,
+	AmplifyV6 as Amplify
 } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import {
 	AuthUserAttribute,

@@ -3,10 +3,12 @@
 
 import {
 	Amplify,
-	ConsoleLogger as Logger,
 	Hub,
 	parseAWSExports,
 } from '@aws-amplify/core';
+import { 
+	ConsoleLogger as Logger,
+} from '@aws-amplify/core/internals/utils';
 import { AWSPinpointProvider } from './providers/AWSPinpointProvider';
 
 import {

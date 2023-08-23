@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
+import { Hub, Credentials, ICredentials } from '@aws-amplify/core';
+import { Logger } from '@aws-amplify/core/internals/utils';
 import {
 	listObjectsV2,
 	createMultipartUpload,
@@ -30,11 +31,6 @@ jest.mock('events', function () {
 
 jest.mock('../../src/AwsClients/S3');
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
-
-/**
- * NOTE - These test cases use Hub.dispatch but they should
- * actually be using dispatchStorageEvent from Storage
- */
 
 const mockRemoveAllListeners = jest.fn();
 const mockEventEmitter = {
@@ -243,7 +239,6 @@ describe.skip('StorageProvider test', () => {
 				return Promise.resolve(credentials);
 			});
 			mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
-			const hubDispathSpy = jest.spyOn(Hub, 'dispatch');
 
 			expect(await storage.get('key', { downloaded: false, track: true })).toBe(
 				'url'
@@ -256,18 +251,6 @@ describe.skip('StorageProvider test', () => {
 					Key: 'public/key',
 					Bucket: options.bucket,
 				})
-			);
-			expect(hubDispathSpy).toBeCalledWith(
-				'storage',
-				{
-					event: 'getSignedUrl',
-					data: {
-						attrs: { method: 'get', result: 'success' },
-					},
-					message: 'Signed URL: url',
-				},
-				'Storage',
-				Symbol.for('amplify_default')
 			);
 		});
 
@@ -558,21 +541,12 @@ describe.skip('StorageProvider test', () => {
 				storage = new StorageProvider();
 				storage.configure(options_with_validateObjectExistence);
 				mockGetPresignedGetObjectUrl.mockReturnValueOnce('url');
-				const dispatchSpy = jest.spyOn(StorageUtils, 'dispatchStorageEvent');
 				expect(
 					await storage.get('key', {
 						validateObjectExistence: true,
 						track: true,
 					})
 				).toBe('url');
-				expect(dispatchSpy).toHaveBeenCalledTimes(1);
-				expect(dispatchSpy).toBeCalledWith(
-					true,
-					'getSignedUrl',
-					{ method: 'get', result: 'success' },
-					null,
-					'Signed URL: url'
-				);
 				expect(mockGetPresignedGetObjectUrl).toBeCalledWith(
 					expect.objectContaining({
 						region: options.region,
@@ -586,7 +560,6 @@ describe.skip('StorageProvider test', () => {
 
 			test('get non-existing object with validateObjectExistence option', async () => {
 				expect.assertions(2);
-				const dispatchSpy = jest.spyOn(StorageUtils, 'dispatchStorageEvent');
 				mockHeadObject.mockRejectedValueOnce(
 					Object.assign(new Error(), {
 						$metadata: { httpStatusCode: 404 },
@@ -600,13 +573,6 @@ describe.skip('StorageProvider test', () => {
 					});
 				} catch (error) {
 					expect(error.$metadata.httpStatusCode).toBe(404);
-					expect(dispatchSpy).toBeCalledWith(
-						true,
-						'getSignedUrl',
-						{ method: 'get', result: 'failed' },
-						null,
-						'key not found'
-					);
 				}
 			});
 		});
@@ -621,7 +587,6 @@ describe.skip('StorageProvider test', () => {
 
 		test('getProperties successfully', async () => {
 			expect.assertions(4);
-			const dispatchSpy = jest.spyOn(StorageUtils, 'dispatchStorageEvent');
 			const metadata = { key: 'value' };
 			mockHeadObject.mockReturnValueOnce({
 				ContentLength: '100',
@@ -637,14 +602,6 @@ describe.skip('StorageProvider test', () => {
 				lastModified: 'lastmodified',
 				metadata,
 			});
-			expect(dispatchSpy).toHaveBeenCalledTimes(1);
-			expect(dispatchSpy).toBeCalledWith(
-				false,
-				'getProperties',
-				{ method: 'getProperties', result: 'success' },
-				null,
-				'getProperties successful for key'
-			);
 			expect(headObject).toBeCalledWith(expect.anything(), {
 				Bucket: 'bucket',
 				Key: 'public/key',
@@ -653,7 +610,6 @@ describe.skip('StorageProvider test', () => {
 
 		test('get properties of non-existing object', async () => {
 			expect.assertions(2);
-			const dispatchSpy = jest.spyOn(StorageUtils, 'dispatchStorageEvent');
 			mockHeadObject.mockRejectedValueOnce(
 				Object.assign(new Error(), {
 					$metadata: { httpStatusCode: 404 },
@@ -664,13 +620,6 @@ describe.skip('StorageProvider test', () => {
 				await storage.getProperties('invalid_key');
 			} catch (error) {
 				expect(error.$metadata.httpStatusCode).toBe(404);
-				expect(dispatchSpy).toBeCalledWith(
-					false,
-					'getProperties',
-					{ method: 'getProperties', result: 'failed' },
-					null,
-					'invalid_key not found'
-				);
 			}
 		});
 	});
@@ -707,8 +656,6 @@ describe.skip('StorageProvider test', () => {
 					res({});
 				});
 			});
-
-			const hubDispathSpy = jest.spyOn(Hub, 'dispatch');
 			expect(await storage.put('key', 'object', { track: true })).toEqual({
 				key: 'key',
 			});
@@ -718,21 +665,6 @@ describe.skip('StorageProvider test', () => {
 				ContentType: 'binary/octet-stream',
 				Body: 'object',
 			});
-			expect(hubDispathSpy).toBeCalledWith(
-				'storage',
-				{
-					event: 'upload',
-					data: {
-						attrs: {
-							method: 'put',
-							result: 'success',
-						},
-					},
-					message: 'Upload success for key',
-				},
-				'Storage',
-				Symbol.for('amplify_default')
-			);
 		});
 
 		test('put object failed', async () => {
@@ -966,24 +898,11 @@ describe.skip('StorageProvider test', () => {
 			});
 
 			mockDeleteObject.mockResolvedValueOnce('data');
-			const hubDispathSpy = jest.spyOn(Hub, 'dispatch');
 			expect(await storage.remove('key', { track: true })).toBe('data');
 			expect(deleteObject).toBeCalledWith(expect.anything(), {
 				Bucket: 'bucket',
 				Key: 'public/key',
 			});
-			expect(hubDispathSpy).toBeCalledWith(
-				'storage',
-				{
-					event: 'delete',
-					data: {
-						attrs: { method: 'remove', result: 'success' },
-					},
-					message: 'Deleted key successfully',
-				},
-				'Storage',
-				Symbol.for('amplify_default')
-			);
 		});
 
 		test('remove object failed', async () => {
@@ -1292,25 +1211,8 @@ describe.skip('StorageProvider test', () => {
 
 		test('copy object with track', async () => {
 			mockCopyObject.mockResolvedValueOnce('data');
-			const hubDispathSpy = jest.spyOn(Hub, 'dispatch');
-
 			await storage.copy({ key: 'src' }, { key: 'dest' }, { track: true });
 			expect(copyObject).toBeCalledTimes(1);
-			expect(hubDispathSpy).toBeCalledWith(
-				'storage',
-				{
-					event: 'copy',
-					data: {
-						attrs: {
-							method: 'copy',
-							result: 'success',
-						},
-					},
-					message: 'Copy success from src to dest',
-				},
-				'Storage',
-				Symbol.for('amplify_default')
-			);
 		});
 
 		test('copy object with level and identityId specified', async () => {
