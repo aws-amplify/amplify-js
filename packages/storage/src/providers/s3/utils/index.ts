@@ -4,5 +4,4 @@
 import { getKeyWithPrefix } from './getKeyWithPrefix';
 import { resolveStorageConfig } from './resolveStorageConfig';
 import { resolveCredentials } from './resolveCredentials';
-
 export { getKeyWithPrefix, resolveStorageConfig, resolveCredentials };
