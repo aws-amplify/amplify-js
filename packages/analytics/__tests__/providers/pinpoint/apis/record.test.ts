@@ -58,7 +58,7 @@ describe('Pinpoint API: record', () => {
 		});
 	});
 
-	it('defaults to immediately sending events', async () => {
+	it('defaults to buffering events', async () => {
 		const mockParams = { event };
 
 		await record(mockParams);
@@ -70,7 +70,7 @@ describe('Pinpoint API: record', () => {
 			event,
 			identityId,
 			region,
-			sendImmediately: true,
+			sendImmediately: false,
 			userAgentValue: expect.any(String),
 		});
 	});

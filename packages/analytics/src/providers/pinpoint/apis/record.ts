@@ -23,7 +23,7 @@ import { resolveConfig, resolveCredentials } from '../utils';
  */
 export const record = async ({
 	event,
-	sendImmediately = true,
+	sendImmediately = false,
 }: PinpointRecordParameters): Promise<void> => {
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
