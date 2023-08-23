@@ -3,22 +3,12 @@
 
 import { v4 as uuid } from 'uuid';
 import { PinpointRecordParameters, PinpointSession } from '../types';
-import { 
-	putEvents,
-	PutEventsInput
-} from '../../../AwsClients/Pinpoint';
-import {
-	hasEndpointId
-} from '../utils/hasEndpointId';
-import {
-	getEndpointId
-} from '../utils/getEndpointId';
-import {
-	updateEndpoint
-} from './updateEndpoint';
+import { putEvents, PutEventsInput } from '../../../AwsClients/Pinpoint';
+import { getEndpointId } from '../utils/getEndpointId';
+import { updateEndpoint } from './updateEndpoint';
 
 // TODO(v6) Refactor when we add support for session tracking & `autoTrack`
-let session: PinpointSession; 
+let session: PinpointSession;
 
 /**
  * @internal
@@ -31,7 +21,7 @@ export const record = async ({
 	identityId,
 	region,
 	sendImmediately,
-	userAgentValue
+	userAgentValue,
 }: PinpointRecordParameters): Promise<void> => {
 	const timestampISOString = new Date().toISOString();
 	const eventId = uuid();
@@ -42,27 +32,16 @@ export const record = async ({
 
 	// Generate endpoint if required
 	if (!endpointId) {
-		console.log('+ Does not have endpoint ID', {
-			appId,
-			category,
-			credentials,
-			identityId,
-			region,
-			userAgentValue
-		});
-
 		await updateEndpoint({
 			appId,
 			category,
 			credentials,
 			identityId,
 			region,
-			userAgentValue
-		})
+			userAgentValue,
+		});
 
 		endpointId = await getEndpointId(appId, category);
-
-		console.log('+ Fetched endpoint ID', endpointId);
 	}
 
 	if (!endpointId) {
@@ -75,7 +54,7 @@ export const record = async ({
 
 		session = {
 			Id: sessionId,
-			StartTimestamp: timestampISOString
+			StartTimestamp: timestampISOString,
 		};
 	}
 
@@ -98,7 +77,7 @@ export const record = async ({
 						},
 					},
 				},
-			}
+			},
 		};
 
 		await putEvents({ credentials, region, userAgentValue }, input);

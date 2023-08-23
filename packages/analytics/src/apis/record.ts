@@ -11,6 +11,8 @@ import { record as pinpointRecord } from '../providers/pinpoint';
  *
  * @throws An {@link RecordException} when the underlying service returns an error.
  * @throws An {@link AnalyticsValidationErrorCode} when API call parameters are invalid.
+ *
+ * @returns A promise that will resolve when the request is complete.
  */
 export const record = async (params: RecordParameters): Promise<void> =>
 	pinpointRecord(params);

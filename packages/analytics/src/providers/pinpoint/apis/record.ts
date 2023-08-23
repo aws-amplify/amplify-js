@@ -15,7 +15,7 @@ import { resolveConfig, resolveCredentials } from '../utils';
  * @throws -{@link AnalyticsError }
  * Thrown when an error occurs sending the event.
  *
- * @returns Returns a promise that will resolve with the results of operation.
+ * @returns Returns a promise that will resolve when the request is complete.
  */
 export const record = async ({
 	event,
