@@ -19,8 +19,6 @@ import {
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
-	map,
-	deserializeTimestamp,
 } from './utils';
 import type { S3ProviderCopyConfig } from '../../types/AWSS3Provider';
 
@@ -49,13 +47,7 @@ export type CopyObjectInput = Pick<
 	| 'Metadata'
 >;
 
-export type CopyObjectOutput = {
-	ETag: NonNullable<CopyObjectCommandOutput['CopyObjectResult']>['ETag'];
-	LastModified: NonNullable<
-		CopyObjectCommandOutput['CopyObjectResult']
-	>['LastModified'];
-	$metadata: CopyObjectCommandOutput['$metadata'];
-};
+export type CopyObjectOutput = CopyObjectCommandOutput;
 
 const copyObjectSerializer = async (
 	input: CopyObjectInput,
@@ -86,16 +78,9 @@ const copyObjectDeserializer = async (
 		const error = (await parseXmlError(response)) as Error;
 		throw StorageError.fromServiceError(error, response.statusCode);
 	} else {
-		const parsed = await parseXmlBody(response);
-		const contents = {
-			...map(parsed, {
-				ETag: 'ETag',
-				LastModified: ['LastModified', deserializeTimestamp],
-			}),
-		};
+		await parseXmlBody(response);
 		return {
 			$metadata: parseMetadata(response),
-			...contents,
 		};
 	}
 };

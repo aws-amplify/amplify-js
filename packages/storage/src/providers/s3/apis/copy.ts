@@ -75,7 +75,5 @@ export const copy = async (
 
 	return {
 		key: destinationKey,
-		eTag: response.ETag!,
-		lastModified: response.LastModified!,
 	};
 };

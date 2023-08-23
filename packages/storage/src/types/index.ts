@@ -28,5 +28,4 @@ export {
 	StorageGetUrlResult,
 	StorageUploadResult,
 	StorageRemoveResult,
-	StorageCopyResult,
 } from './results';
