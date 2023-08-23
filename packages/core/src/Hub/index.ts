@@ -7,7 +7,6 @@ import { AmplifyError } from '../Util/Errors';
 import {
 	AmplifyChannel,
 	AmplifyEventData,
-	AmplifyEventDataMap,
 	EventDataMap,
 	HubCallback,
 	HubCapsule,
@@ -51,17 +50,17 @@ export class HubClass {
 	 * This private method is for internal use only. Instead of calling Hub.remove, call the result of Hub.listen.
 	 */
 	private _remove<
-		Channel extends AmplifyChannel | string,
-		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
-	>(channel: Channel, listener: HubCallback<string, EventData>) {
+		Channel extends AmplifyChannel | string = string,
+		EventData extends EventDataMap = EventDataMap
+	>(channel: Channel, listener: HubCallback<Channel, EventData>) {
 		const holder = this.listeners[channel as unknown as number];
 		if (!holder) {
 			logger.warn(`No listeners for ${channel}`);
 			return;
 		}
-		this.listeners[channel as any] = [
-			...holder.filter(callback => callback !== (listener as any)),
-		] as unknown as IListener<string>;
+		this.listeners[channel as unknown as number] = [
+			...holder.filter(({ callback }) => callback !== listener),
+		];
 	}
 
 	/**
@@ -81,15 +80,15 @@ export class HubClass {
 	): void;
 
 	dispatch(
-		channel: string & {},
+		channel: string,
 		payload: HubPayload,
 		source?: string,
 		ampSymbol?: Symbol
 	): void;
 
 	dispatch<
-		Channel extends AmplifyChannel,
-		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
+		Channel extends AmplifyChannel | string,
+		EventData extends EventDataMap = EventDataMap
 	>(
 		channel: Channel | string,
 		payload: HubPayload<AmplifyEventData[Channel]> | HubPayload<EventData>,
@@ -134,7 +133,7 @@ export class HubClass {
 	 */
 	listen<
 		Channel extends AmplifyChannel,
-		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
+		EventData extends EventDataMap = EventDataMap
 	>(
 		channel: Channel,
 		callback: HubCallback<Channel, AmplifyEventData[Channel]>,
@@ -148,49 +147,43 @@ export class HubClass {
 	): StopListenerCallback;
 
 	listen<
-		Channel extends AmplifyChannel | string,
-		EventData extends EventDataMap
+		Channel extends AmplifyChannel | string = string,
+		EventData extends EventDataMap = EventDataMap
 	>(
 		channel: Channel,
-		callback:
-			| HubCallback<Channel, AmplifyEventData[Channel]>
-			| HubCallback<string, EventData>,
-		listenerName?: string
+		callback: HubCallback<Channel, EventData>,
+		listenerName: string = 'noname'
 	): StopListenerCallback {
-		let cb:
-			| HubCallback<Channel, AmplifyEventData[Channel]>
-			| HubCallback<string, EventData>;
-
+		let cb: HubCallback<string, EventDataMap>;
 		if (typeof callback !== 'function') {
 			throw new AmplifyError({
 				name: NO_HUBCALLBACK_PROVIDED_EXCEPTION,
 				message: 'Service Worker not available',
 			});
 		} else {
-			cb = callback;
+			// Needs to be casted as a more generic type
+			cb = callback as HubCallback<string, EventDataMap>;
 		}
 		let holder = this.listeners[channel as unknown as number];
 
 		if (!holder) {
 			holder = [];
-			this.listeners[channel as unknown as number] =
-				holder as unknown as IListener<string>;
+			this.listeners[channel as unknown as number] = holder;
 		}
 
-		(holder as any).push({
+		holder.push({
 			name: listenerName,
 			callback: cb,
 		});
 
 		return () => {
-			this._remove(channel, cb as any);
+			this._remove(channel, cb);
 		};
 	}
 
-	private _toListeners<
-		Channel extends string,
-		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
-	>(capsule: HubCapsule<Channel, EventData>) {
+	private _toListeners<Channel extends AmplifyChannel | string>(
+		capsule: HubCapsule<Channel, EventDataMap | AmplifyEventData[Channel]>
+	) {
 		const { channel, payload } = capsule;
 		const holder = this.listeners[channel as unknown as number];
 		if (holder) {

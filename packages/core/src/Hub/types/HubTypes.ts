@@ -1,11 +1,11 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
-
 import { AuthHubEventData } from './AuthTypes';
 
-export type IListener<Channel extends string = string> = {
+export type IListener<
+	Channel extends string = AmplifyChannel | string,
+	EventData extends EventDataMap = EventDataMap
+> = {
 	name: string;
-	callback: HubCallback<Channel>;
+	callback: HubCallback<Channel, EventData>;
 }[];
 
 export type EventDataMap = { event: string; data?: unknown };
@@ -14,12 +14,9 @@ export type AmplifyEventData = {
 	auth: AuthHubEventData;
 	[key: string]: EventDataMap;
 };
-
-// TODO[kvramya] add more channels if we support more channels.
 export type AmplifyChannel = 'auth';
 
 export type StopListenerCallback = () => void;
-export type AmplifyEventDataMap = { event: string; data?: unknown };
 
 export type HubCapsule<
 	Channel extends string,
@@ -32,26 +29,15 @@ export type HubCapsule<
 };
 
 export type HubCallback<
-	Channel extends string,
+	Channel extends string = string,
 	EventData extends EventDataMap = EventDataMap
 > = (capsule: HubCapsule<Channel, EventData>) => void;
 
-export type HubPayload<
-	EventDataMap extends AmplifyEventDataMap = AmplifyEventDataMap
-> = EventDataMap & {
-	message?: string;
-};
+export type HubPayload<EventData extends EventDataMap = EventDataMap> =
+	EventData & {
+		message?: string;
+	};
 
 export type AmplifyHubCallbackMap<Channel extends AmplifyChannel> = {
 	auth: HubCallback<Channel>;
-};
-
-export type AnyChannel = string;
-
-export type AmplifyChannelMap<
-	AmplifyChannelType extends AmplifyChannel | AnyChannel =
-		| AmplifyChannel
-		| AnyChannel
-> = {
-	channelType: AmplifyChannelType;
 };
