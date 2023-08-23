@@ -6,7 +6,7 @@ import { SupportedCategory } from '../types';
 import { getCacheKey } from './getCacheKey';
 
 /**
- * Returns an endpoint id from cache or `null` if not found.
+ * Returns an endpoint id from cache or `undefined` if not found.
  *
  * @internal
  */
