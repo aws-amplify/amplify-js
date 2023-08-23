@@ -493,7 +493,7 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 	}
 
-	async _cancel(userAgentValue?: string): Promise<boolean> {
+	async _cancel(): Promise<boolean> {
 		if (this.state === AWSS3UploadTaskState.CANCELLED) {
 			logger.warn('This task has already been cancelled');
 			return false;
@@ -506,13 +506,8 @@ export class AWSS3UploadTask implements UploadTask {
 			this.completedParts = [];
 			this.bytesUploaded = 0;
 			this.state = AWSS3UploadTaskState.CANCELLED;
-
-			const config = {
-				...this.s3Config,
-				userAgentValue,
-			};
 			try {
-				await abortMultipartUpload(config, {
+				await abortMultipartUpload(this.s3Config, {
 					Bucket: this.params.Bucket,
 					Key: (await this.prefixPromise) + this.params.Key,
 					UploadId: this.uploadId,

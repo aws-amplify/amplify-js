@@ -43,8 +43,7 @@
   "files": [
     "lib",
     "lib-esm",
-    "src",
-    "internals"
+    "src"
   ],
   "dependencies": {
     "@aws-amplify/core": "5.8.3",
@@ -60,7 +59,7 @@
       "name": "Storage (top-level class)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, Storage }",
-      "limit": "39.29 kB"
+      "limit": "38.96 kB"
     }
   ],
   "jest": {

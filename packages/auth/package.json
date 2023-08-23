@@ -43,8 +43,7 @@
   "files": [
     "lib",
     "lib-esm",
-    "src",
-    "internals"
+    "src"
   ],
   "dependencies": {
     "@aws-amplify/core": "5.8.3",
@@ -61,7 +60,7 @@
       "name": "Auth (top-level class)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, Auth }",
-      "limit": "57.19 kB"
+      "limit": "55.1 kB"
     }
   ],
   "jest": {

@@ -54,15 +54,15 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserSession', () => {
 	return CognitoUserSession;
 });
 
-jest.mock('amazon-cognito-identity-js/internals', () => {
-	const InternalCognitoUserPool = () => {};
+jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
+	const CognitoUserPool = () => {};
 
-	InternalCognitoUserPool.prototype.InternalCognitoUserPool = options => {
-		InternalCognitoUserPool.prototype.options = options;
-		return InternalCognitoUserPool;
+	CognitoUserPool.prototype.CognitoUserPool = options => {
+		CognitoUserPool.prototype.options = options;
+		return CognitoUserPool;
 	};
 
-	InternalCognitoUserPool.prototype.getCurrentUser = () => {
+	CognitoUserPool.prototype.getCurrentUser = () => {
 		return {
 			username: 'username',
 			getSession: callback => {
@@ -78,7 +78,7 @@ jest.mock('amazon-cognito-identity-js/internals', () => {
 		};
 	};
 
-	InternalCognitoUserPool.prototype.signUp = (
+	CognitoUserPool.prototype.signUp = (
 		username,
 		password,
 		signUpAttributeList,
@@ -89,48 +89,49 @@ jest.mock('amazon-cognito-identity-js/internals', () => {
 		callback(null, 'signUpResult');
 	};
 
-	const InternalCognitoUser = () => {};
+	return CognitoUserPool;
+});
 
-	InternalCognitoUser.prototype.InternalCognitoUser = options => {
-		InternalCognitoUser.prototype.options = options;
-		return InternalCognitoUser;
+jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
+	const CognitoUser = () => {};
+
+	CognitoUser.prototype.CognitoUser = options => {
+		CognitoUser.prototype.options = options;
+		return CognitoUser;
 	};
 
-	InternalCognitoUser.prototype.getSession = callback => {
+	CognitoUser.prototype.getSession = callback => {
 		callback(null, 'session');
 	};
 
-	InternalCognitoUser.prototype.getUserAttributes = callback => {
+	CognitoUser.prototype.getUserAttributes = callback => {
 		callback(null, 'attributes');
 	};
 
-	InternalCognitoUser.prototype.getAttributeVerificationCode = (
-		attr,
-		callback
-	) => {
+	CognitoUser.prototype.getAttributeVerificationCode = (attr, callback) => {
 		callback.onSuccess('success');
 	};
 
-	InternalCognitoUser.prototype.verifyAttribute = (attr, code, callback) => {
+	CognitoUser.prototype.verifyAttribute = (attr, code, callback) => {
 		callback.onSuccess('success');
 	};
 
-	InternalCognitoUser.prototype.authenticateUser = (
+	CognitoUser.prototype.authenticateUser = (
 		authenticationDetails,
 		callback
 	) => {
 		callback.onSuccess('session');
 	};
 
-	InternalCognitoUser.prototype.sendMFACode = (code, callback) => {
+	CognitoUser.prototype.sendMFACode = (code, callback) => {
 		callback.onSuccess('session');
 	};
 
-	InternalCognitoUser.prototype.resendConfirmationCode = callback => {
+	CognitoUser.prototype.resendConfirmationCode = callback => {
 		callback(null, 'result');
 	};
 
-	InternalCognitoUser.prototype.changePassword = (
+	CognitoUser.prototype.changePassword = (
 		oldPassword,
 		newPassword,
 		callback
@@ -138,25 +139,21 @@ jest.mock('amazon-cognito-identity-js/internals', () => {
 		callback(null, 'SUCCESS');
 	};
 
-	InternalCognitoUser.prototype.forgotPassword = callback => {
+	CognitoUser.prototype.forgotPassword = callback => {
 		callback.onSuccess();
 	};
 
-	InternalCognitoUser.prototype.confirmPassword = (
-		code,
-		password,
-		callback
-	) => {
+	CognitoUser.prototype.confirmPassword = (code, password, callback) => {
 		callback.onSuccess();
 	};
 
-	InternalCognitoUser.prototype.signOut = () => {};
+	CognitoUser.prototype.signOut = () => {};
 
-	InternalCognitoUser.prototype.globalSignOut = callback => {
+	CognitoUser.prototype.globalSignOut = callback => {
 		callback.onSuccess();
 	};
 
-	InternalCognitoUser.prototype.confirmRegistration = (
+	CognitoUser.prototype.confirmRegistration = (
 		confirmationCode,
 		forceAliasCreation,
 		callback
@@ -164,7 +161,7 @@ jest.mock('amazon-cognito-identity-js/internals', () => {
 		callback(null, 'Success');
 	};
 
-	InternalCognitoUser.prototype.completeNewPasswordChallenge = (
+	CognitoUser.prototype.completeNewPasswordChallenge = (
 		password,
 		requiredAttributes,
 		callback
@@ -172,46 +169,36 @@ jest.mock('amazon-cognito-identity-js/internals', () => {
 		callback.onSuccess('session');
 	};
 
-	InternalCognitoUser.prototype.updateAttributes = (
-		attributeList,
-		callback
-	) => {
+	CognitoUser.prototype.updateAttributes = (attributeList, callback) => {
 		callback(null, 'SUCCESS');
 	};
 
-	InternalCognitoUser.prototype.setAuthenticationFlowType = type => {};
+	CognitoUser.prototype.setAuthenticationFlowType = type => {};
 
-	InternalCognitoUser.prototype.initiateAuth = (
-		authenticationDetails,
-		callback
-	) => {
+	CognitoUser.prototype.initiateAuth = (authenticationDetails, callback) => {
 		callback.customChallenge('challengeParam');
 	};
 
-	InternalCognitoUser.prototype.sendCustomChallengeAnswer = (
+	CognitoUser.prototype.sendCustomChallengeAnswer = (
 		challengeAnswer,
 		callback
 	) => {
 		callback.onSuccess('session');
 	};
 
-	InternalCognitoUser.prototype.refreshSession = (refreshToken, callback) => {
+	CognitoUser.prototype.refreshSession = (refreshToken, callback) => {
 		callback(null, 'session');
 	};
 
-	InternalCognitoUser.prototype.getUsername = () => {
+	CognitoUser.prototype.getUsername = () => {
 		return 'username';
 	};
 
-	InternalCognitoUser.prototype.getUserData = callback => {
+	CognitoUser.prototype.getUserData = callback => {
 		callback(null, 'data');
 	};
 
-	return {
-		...jest.requireActual('amazon-cognito-identity-js/internals'),
-		InternalCognitoUser,
-		InternalCognitoUserPool,
-	};
+	return CognitoUser;
 });
 
 function mockGAPI({ reloadAuthResponse }: { reloadAuthResponse: Function }) {
