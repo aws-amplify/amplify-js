@@ -26,21 +26,21 @@ export type PinpointUserProfile = UserProfile & {
 export type PinpointSession = {
 	Id: string;
 	StartTimestamp: string;
-}
+};
 
 export type PinpointEventAttributes = {
 	[key: string]: string;
-}
+};
 
 export type PinpointEventMetrics = {
 	[key: string]: number;
-}
+};
 
 export type PinpointAnalyticsEvent = {
 	name: string;
 	attributes?: PinpointEventAttributes;
 	metrics?: PinpointEventMetrics;
-}
+};
 
 export type PinpointUpdateEndpointParameters = {
 	appId: string;
@@ -56,5 +56,8 @@ export type PinpointUpdateEndpointParameters = {
 
 export type PinpointRecordParameters = {
 	event: PinpointAnalyticsEvent;
-	sendImmediately: boolean;
-} & Omit<PinpointUpdateEndpointParameters, "channelType" | "userProfile">;
+	sendImmediately?: boolean;
+} & Omit<
+	PinpointUpdateEndpointParameters,
+	'channelType' | 'userId' | 'userProfile'
+>;

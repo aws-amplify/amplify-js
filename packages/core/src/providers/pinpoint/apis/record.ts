@@ -4,7 +4,7 @@
 import { v4 as uuid } from 'uuid';
 import { PinpointRecordParameters, PinpointSession } from '../types';
 import { putEvents, PutEventsInput } from '../../../AwsClients/Pinpoint';
-import { getEndpointId } from '../utils/getEndpointId';
+import { getEndpointId } from '../utils';
 import { updateEndpoint } from './updateEndpoint';
 
 // TODO(v6) Refactor when we add support for session tracking & `autoTrack`
@@ -20,7 +20,7 @@ export const record = async ({
 	event,
 	identityId,
 	region,
-	sendImmediately,
+	sendImmediately = true,
 	userAgentValue,
 }: PinpointRecordParameters): Promise<void> => {
 	const timestampISOString = new Date().toISOString();
