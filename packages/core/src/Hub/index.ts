@@ -22,9 +22,7 @@ export const AMPLIFY_SYMBOL = (
 
 const logger = new Logger('Hub');
 
-export class HubClass<
-	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
-> {
+export class HubClass {
 	name: string;
 	private listeners: IListener[] = [];
 
@@ -50,10 +48,10 @@ export class HubClass<
 	 * @remarks
 	 * This private method is for internal use only. Instead of calling Hub.remove, call the result of Hub.listen.
 	 */
-	private _remove<Channel extends AmplifyChannel | string>(
-		channel: Channel,
-		listener: HubCallback<string, EventData>
-	) {
+	private _remove<
+		Channel extends AmplifyChannel | string,
+		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
+	>(channel: Channel, listener: HubCallback<string, EventData>) {
 		const holder = this.listeners[channel as unknown as number];
 		if (!holder) {
 			logger.warn(`No listeners for ${channel}`);
@@ -87,7 +85,10 @@ export class HubClass<
 		ampSymbol?: Symbol
 	): void;
 
-	dispatch<Channel extends AmplifyChannel>(
+	dispatch<
+		Channel extends AmplifyChannel,
+		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
+	>(
 		channel: Channel | string,
 		payload: HubPayload<AmplifyEventData[Channel]> | HubPayload<EventData>,
 		source?: string,
@@ -129,7 +130,10 @@ export class HubClass<
 	 * @returns A function which can be called to cancel the listener.
 	 *
 	 */
-	listen<Channel extends AmplifyChannel>(
+	listen<
+		Channel extends AmplifyChannel,
+		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
+	>(
 		channel: Channel,
 		callback: HubCallback<Channel, AmplifyEventData[Channel]>,
 		listenerName?: string
@@ -178,9 +182,10 @@ export class HubClass<
 		};
 	}
 
-	private _toListeners<Channel extends string>(
-		capsule: HubCapsule<Channel, EventData>
-	) {
+	private _toListeners<
+		Channel extends string,
+		EventData extends AmplifyEventDataMap = AmplifyEventDataMap
+	>(capsule: HubCapsule<Channel, EventData>) {
 		const { channel, payload } = capsule;
 		const holder = this.listeners[channel as unknown as number];
 		if (holder) {
