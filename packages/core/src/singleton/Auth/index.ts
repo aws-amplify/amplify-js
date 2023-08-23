@@ -11,7 +11,7 @@ import {
 	LibraryAuthOptions,
 } from './types';
 import { asserts } from '../../Util/errors/AssertError';
-import { AUTH_CONFING_EXCEPTION } from '../../constants';
+import { AUTH_CONFING_EXCEPTION } from '../../Util/Constants';
 
 export function isTokenExpired({
 	expiresAt,

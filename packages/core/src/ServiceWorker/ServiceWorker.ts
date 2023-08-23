@@ -13,11 +13,11 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger } from '../Logger';
-import { browserOrNode } from '../JS';
+import { browserOrNode } from '../Util/JS';
 import { Amplify } from '../Amplify';
 import { asserts } from '../Util/errors/AssertError';
-import { AmplifyError } from '../Errors';
-import { SERVICE_WORKER_EXCEPTION } from '../constants';
+import { AmplifyError } from '../Util/Errors';
+import { SERVICE_WORKER_EXCEPTION } from '../Util/Constants';
 /**
  * Provides a means to registering a service worker in the browser
  * and communicating with it via postMessage events.
