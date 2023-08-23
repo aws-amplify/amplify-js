@@ -59,37 +59,33 @@ export const getUrl = async function (
 		Bucket: bucket,
 		Key: finalKey,
 	};
+	let urlExpirationInSec = options?.expiresIn ?? DEFAULT_PRESIGN_EXPIRATION;
 	const getUrlOptions = {
 		accessLevel,
 		credentials,
-		expiration: options?.expiresIn ?? DEFAULT_PRESIGN_EXPIRATION,
+		expiration: urlExpirationInSec,
 		signingRegion: region,
 		region,
 		signingService: S3_SERVICE_NAME,
 	};
-
-	let urlExpirationInMS = options?.expiresIn ?? DEFAULT_PRESIGN_EXPIRATION;
 	const awsCredExpiration = credentials?.expiration;
-	if (awsCredExpiration)
-		if (awsCredExpiration) {
-			const awsCredExpirationInSec = Math.floor(
-				(awsCredExpiration.getTime() - Date.now()) / 1000
-			);
-			urlExpirationInMS =
-				awsCredExpirationInSec < urlExpirationInMS
-					? awsCredExpirationInSec
-					: urlExpirationInMS;
-		}
+	if (awsCredExpiration) {
+		const awsCredExpirationInSec = Math.floor(
+			(awsCredExpiration.getTime() - Date.now()) / 1000
+		);
+		urlExpirationInSec =
+			awsCredExpirationInSec < urlExpirationInSec
+				? awsCredExpirationInSec
+				: urlExpirationInSec;
+	}
 
 	assertValidationError(
-		urlExpirationInMS < MAX_URL_EXPIRATION,
+		urlExpirationInSec < MAX_URL_EXPIRATION,
 		StorageValidationErrorCode.UrlExpirationMaxLimitExceed
 	);
-	// convert URL into Seconds
-	const urlInSec = urlExpirationInMS * 1000;
 	// expiresAt is the minimum of credential expiration and url expiration
 	return {
 		url: await getPresignedGetObjectUrl(getUrlOptions, getUrlParams),
-		expiresAt: new Date(Date.now() + urlInSec),
+		expiresAt: new Date(Date.now() + urlExpirationInSec * 1000),
 	};
 };
