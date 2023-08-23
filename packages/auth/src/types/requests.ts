@@ -124,3 +124,16 @@ export type UpdateUserAttributesRequest<
 	userAttributes: AuthUserAttribute<UserAttributeKey>;
 	options?: { serviceOptions?: ServiceOptions };
 };
+
+/**
+ * Constructs a `resendUserAttributeConfirmationCode` request.
+ * @param userAttributeKey - the user attribute key
+ * @param options - optional parameters for the Resend Attribute Code process such as the service options.
+ */
+export type ResendUserAttributeConfirmationCodeRequest<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+> = {
+	userAttributeKey: UserAttributeKey;
+	options?: { serviceOptions?: ServiceOptions };
+};

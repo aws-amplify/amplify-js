@@ -74,3 +74,10 @@ export type CogntioVerifyTOTPSetupOptions = {
 export type CognitoUpdateUserAttributesOptions = {
 	clientMetadata?: ClientMetadata;
 };
+
+/**
+ * Options specific to a Cognito Update User Attributes request.
+ */
+export type CognitoResendUserAttributeConfirmationCodeOptions = {
+	clientMetadata?: ClientMetadata;
+};

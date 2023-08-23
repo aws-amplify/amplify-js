@@ -1,16 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyV6 as Amplify
-} from '@aws-amplify/core';
+import { AmplifyV6 as Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import {
 	AuthUserAttribute,
 	UpdateUserAttributesRequest,
 	UpdateUserAttributesResult,
-	DeliveryMedium 
+	DeliveryMedium,
 } from '../../../types';
 import {
 	CognitoUpdateUserAttributesOptions,

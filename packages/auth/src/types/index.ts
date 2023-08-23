@@ -34,6 +34,7 @@ export {
 	ConfirmSignInRequest,
 	UpdatePasswordRequest,
 	UpdateUserAttributesRequest,
+	ResendUserAttributeConfirmationCodeRequest,
 } from './requests';
 
 export {
