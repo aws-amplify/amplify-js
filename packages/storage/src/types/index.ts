@@ -13,13 +13,13 @@ export {
 	StorageOperationRequest,
 	StorageDownloadDataRequest,
 	StorageDownloadFileParameter,
-	StorageUploadDataParameter,
+	StorageUploadDataRequest,
 	StorageOptions,
-	StorageUploadFileParameter, // TODO: open question - should we export this?
 	StorageRemoveOptions,
 	StorageCopySource,
 	StorageCopyDestination,
 	CopyRequest,
+	UploadSource,
 } from './params';
 export {
 	StorageItem,
