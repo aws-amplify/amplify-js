@@ -30,6 +30,29 @@
     "lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
     "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
   },
+  "typesVersions": {
+    ">=3.8": {
+      "*": [
+        "./lib-esm/index.d.ts"
+      ],
+      "s3": [
+        "./lib-esm/Providers/s3/index.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./lib-esm/index.d.ts",
+      "import": "./lib-esm/index.js",
+      "require": "./lib/index.js"
+    },
+    "./s3": {
+      "types": "./lib-esm/providers/s3/index.d.ts",
+      "import": "./lib-esm/providers/s3/index.js",
+      "require": "./lib/providers/s3/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-js.git"

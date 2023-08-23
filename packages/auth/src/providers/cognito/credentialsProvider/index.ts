@@ -14,8 +14,8 @@ import { CognitoAWSCredentialsAndIdentityIdProvider } from './credentialsProvide
  *
  */
 export const cognitoCredentialsProvider =
-	new CognitoAWSCredentialsAndIdentityIdProvider();
+	new CognitoAWSCredentialsAndIdentityIdProvider(
+		new DefaultIdentityIdStore(MemoryKeyValueStorage)
+	);
 
-export const defaultIdentityIdStore = new DefaultIdentityIdStore(
-	MemoryKeyValueStorage
-);
+export { CognitoAWSCredentialsAndIdentityIdProvider, DefaultIdentityIdStore };
