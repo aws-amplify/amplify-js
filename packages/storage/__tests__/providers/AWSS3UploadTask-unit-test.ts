@@ -18,7 +18,7 @@ import {
 } from '../../src/AwsClients/S3';
 import { StorageAccessLevel, FileMetadata } from '../../src/types';
 import { UPLOADS_STORAGE_KEY } from '../../src/common/StorageConstants';
-import { StorageAction } from '@aws-amplify/core';
+import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 jest.mock('../../src/AwsClients/S3');
 

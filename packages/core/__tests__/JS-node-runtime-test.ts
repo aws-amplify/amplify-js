@@ -6,7 +6,7 @@
  * Since this is allowed per test file and not per test or describe, we have
  * two tests, one for node and other for browser
  */
-import { browserOrNode } from '../src/JS';
+import { browserOrNode } from '../src/Util/JS';
 
 describe('JS build test', () => {
 	test('when its node ', () => {

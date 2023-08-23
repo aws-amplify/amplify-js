@@ -13,7 +13,7 @@ const mockCookies = jest.fn().mockImplementation(function () {
 jest.mock('universal-cookie', () => ({
 	default: mockCookies,
 }));
-jest.mock('../src/JS', () => ({
+jest.mock('../src/Util/JS', () => ({
 	browserOrNode: jest.fn().mockReturnValue({
 		isBrowser: true,
 		isNode: false,

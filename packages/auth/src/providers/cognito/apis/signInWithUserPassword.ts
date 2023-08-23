@@ -18,7 +18,8 @@ import {
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
 } from '../utils/signInHelpers';
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
 import { CognitoSignInOptions } from '../types';
 import {
