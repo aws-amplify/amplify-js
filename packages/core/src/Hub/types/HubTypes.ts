@@ -3,14 +3,17 @@
 
 import { AuthHubEventData } from './AuthTypes';
 
-export interface IListener<
-	Channel extends string = string,
-	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
-> {
+export type IListener<Channel extends string = string> = {
 	name: string;
-	callback: HubCallback<Channel, EventData>;
-}
+	callback: HubCallback<Channel>;
+}[];
 
+export type EventDataMap = { event: string; data?: unknown };
+
+export type AmplifyEventData = {
+	auth: AuthHubEventData;
+	[key: string]: EventDataMap;
+};
 export type AmplifyChannel =
 	| 'auth'
 	| 'storage'
@@ -22,21 +25,22 @@ export type AmplifyChannel =
 	| 'datastore'
 	| 'notifications';
 
+export type StopListenerCallback = () => void;
 export type AmplifyEventDataMap = { event: string; data?: unknown };
 
 export type HubCapsule<
 	Channel extends string,
-	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
+	EventData extends EventDataMap
 > = {
 	channel: Channel;
-	payload: HubPayload<EventData>;
-	source: string;
+	payload: HubPayload<AmplifyEventData[Channel]> | HubPayload<EventData>;
+	source?: string;
 	patternInfo?: string[];
 };
 
 export type HubCallback<
 	Channel extends string,
-	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
+	EventData extends EventDataMap = EventDataMap
 > = (capsule: HubCapsule<Channel, EventData>) => void;
 
 export type HubPayload<
@@ -46,23 +50,8 @@ export type HubPayload<
 };
 
 export type AmplifyHubCallbackMap<Channel extends AmplifyChannel> = {
-	auth: HubCallback<Channel, AuthHubEventData>;
-	storage: HubCallback<Channel>;
-	core: HubCallback<Channel>;
-	analytics: HubCallback<Channel>;
-	api: HubCallback<Channel>;
-	interactions: HubCallback<Channel>;
-	pubsub: HubCallback<Channel>;
-	datastore: HubCallback<Channel>;
-	notifications: HubCallback<Channel>;
+	auth: HubCallback<Channel>;
 };
-
-export type GetHubCallBack<
-	Channel extends string,
-	EventDataMap extends AmplifyEventDataMap = AmplifyEventDataMap
-> = Channel extends AmplifyChannel
-	? AmplifyHubCallbackMap<Channel>[Channel]
-	: HubCallback<Channel, EventDataMap>;
 
 export type AnyChannel = string;
 
