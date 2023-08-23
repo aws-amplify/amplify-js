@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger as Logger } from '../Logger';
+import { NO_HUBCALLBACK_PROVIDED_EXCEPTION } from '../Util/Constants';
+import { AmplifyError } from '../Util/Errors';
 import {
 	AmplifyChannel,
 	AmplifyEventData,
@@ -160,7 +162,10 @@ export class HubClass {
 			| HubCallback<string, EventData>;
 
 		if (typeof callback !== 'function') {
-			throw new Error('No callback supplied to Hub');
+			new AmplifyError({
+				name: NO_HUBCALLBACK_PROVIDED_EXCEPTION,
+				message: 'Service Worker not available',
+			});
 		} else {
 			cb = callback;
 		}
