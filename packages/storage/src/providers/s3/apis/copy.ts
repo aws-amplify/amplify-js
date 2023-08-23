@@ -44,12 +44,13 @@ export const copy = async (
 	assertValidationError(!!destinationKey, StorageValidationErrorCode.NoKey);
 
 	const sourceFinalKey =
-		`${bucket}/` +
-		getKeyWithPrefix({
-			accessLevel: sourceAccessLevel,
-			targetIdentityId: defaultIdentityId,
-			key: sourceKey,
-		});
+		`${bucket}/${
+			getKeyWithPrefix({
+				accessLevel: sourceAccessLevel,
+				targetIdentityId: defaultIdentityId,
+				key: sourceKey,
+			})
+		}`;
 
 	const destinationFinalKey = getKeyWithPrefix({
 		accessLevel: destinationAccessLevel,
