@@ -4,14 +4,14 @@
 import {
 	AuthConfig,
 	Identity,
-	KeyValueStorageInterface
+	KeyValueStorageInterface,
 } from '@aws-amplify/core';
 import { assertIdentityPooIdConfig } from '@aws-amplify/core/internals/utils';
-import { IdentityIdStorageKeys } from './types';
+import { IdentityIdStorageKeys, IdentityIdStore } from './types';
 import { AuthError } from '../../../errors/AuthError';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
 
-export class DefaultIdentityIdStore {
+export class DefaultIdentityIdStore implements IdentityIdStore {
 	keyValueStorage: KeyValueStorageInterface;
 	authConfig: AuthConfig;
 

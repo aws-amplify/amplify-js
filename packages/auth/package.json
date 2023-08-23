@@ -65,7 +65,7 @@
 		"lib",
 		"lib-esm",
 		"src",
-		"**/package.json"
+		"internals"
 	],
 	"dependencies": {
 		"buffer": "4.9.2",
