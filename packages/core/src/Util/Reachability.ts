@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import Observable, { ZenObservable } from 'zen-observable-ts';
-import { browserOrNode, isWebWorker } from '../JS';
+import { browserOrNode, isWebWorker } from './JS';
 
 type NetworkStatus = {
 	online: boolean;
