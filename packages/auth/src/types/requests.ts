@@ -124,3 +124,9 @@ export type UpdateUserAttributesRequest<
 	userAttributes: AuthUserAttribute<UserAttributeKey>;
 	options?: { serviceOptions?: ServiceOptions };
 };
+
+/**
+ * Constructs a `GetCurrentUser` request.
+ * @param recache - whether to recache the user
+ */
+export type GetCurrentUserRequest = { recache: boolean };
