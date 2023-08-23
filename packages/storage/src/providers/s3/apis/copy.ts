@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { S3Exception, S3CopyResult } from '../types';
-import { StorageCopyRequest, StorageCopyItem } from '../../../types';
+import { copyRequest, StorageCopyItem } from '../../../types';
 import {
 	resolveStorageConfig,
 	getKeyWithPrefix,
@@ -18,13 +18,13 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
  * different level or identityId (if source object's level is 'protected').
  *
  * @async
- * @param {StorageCopyRequest} req - The request object.
+ * @param {copyRequest} req - The request object.
  * @return {Promise<S3CopyResult>} Promise resolves upon successful copy of the object.
  * @throws service: {@link S3Exception} - S3 service errors is thrown while performing copy operation.
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown.
  */
 export const copy = async (
-	req: StorageCopyRequest<StorageCopyItem>
+	req: copyRequest<StorageCopyItem>
 ): Promise<S3CopyResult> => {
 	const { identityId: defaultIdentityId, credentials } =
 		await resolveCredentials();
@@ -68,7 +68,6 @@ export const copy = async (
 			Bucket: bucket,
 			CopySource: sourceFinalKey,
 			Key: destinationFinalKey,
-			CacheControl: 'no-store',
 			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
 		}
 	);
