@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AnalyticsError } from './AnalyticsError';
-import { AmplifyErrorString, ServiceError } from '@aws-amplify/core';
+import {
+	AmplifyErrorString,
+	ServiceError,
+} from '@aws-amplify/core/internals/utils';
 
 /**
  * @internal
