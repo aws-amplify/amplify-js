@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export * from './apis';
-export { PinpoinServiceOptions } from './types';
+export { PinpointServiceOptions } from './types';

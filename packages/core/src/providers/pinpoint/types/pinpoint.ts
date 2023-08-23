@@ -18,12 +18,12 @@ export type PinpointProviderConfig = {
 	};
 };
 
-export type PinpoinServiceOptions = {
+export type PinpointServiceOptions = {
 	address?: string;
 	optOut?: 'ALL' | 'NONE';
 };
 
-export type PinpointUpdateEndpointParameters = PinpoinServiceOptions & {
+export type PinpointUpdateEndpointParameters = PinpointServiceOptions & {
 	appId: string;
 	category: SupportedCategory;
 	channelType?: SupportedChannelType;
