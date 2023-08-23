@@ -35,7 +35,7 @@ describe('Pinpoint Provider API: record', () => {
 		mockGetEndpointId.mockReturnValue(endpointId);
 	});
 
-	it('calls the service API if an existing endpoint is available', async () => {
+	it('uses an existing enpoint if available', async () => {
 		await record({
 			appId,
 			category,
@@ -45,11 +45,9 @@ describe('Pinpoint Provider API: record', () => {
 			region,
 		});
 
-		expect(mockClientPutEvents).toBeCalledWith(
-			{ credentials, region },
-			getExpectedPutEventsInput({})
-		);
 		expect(mockUpdateEndpoint).toBeCalledTimes(0);
+
+		// TODO(v6) Test that event was sent to the buffer
 	});
 
 	it("prepares an endpoint if one hasn't been setup", async () => {
@@ -72,13 +70,9 @@ describe('Pinpoint Provider API: record', () => {
 			identityId,
 			region,
 		});
-		expect(mockClientPutEvents).toBeCalledWith(
-			{ credentials, region },
-			getExpectedPutEventsInput({})
-		);
 	});
 
-	it('does not invoke the service API if buffering events', async () => {
+	it('does not invoke the service API directly', async () => {
 		await record({
 			appId,
 			category,
@@ -86,12 +80,9 @@ describe('Pinpoint Provider API: record', () => {
 			event,
 			identityId,
 			region,
-			sendImmediately: false,
 		});
 
 		expect(mockClientPutEvents).toBeCalledTimes(0);
-
-		// TODO(v6) Test that event was sent to the buffer
 	});
 
 	it('reuses an existing session if it exists', async () => {
@@ -118,13 +109,7 @@ describe('Pinpoint Provider API: record', () => {
 			region,
 		});
 
-		expect(mockClientPutEvents).toBeCalledWith(
-			{ credentials, region },
-			getExpectedPutEventsInput({
-				eventId: newUuid,
-				sessionId: expectedSessionId,
-			})
-		);
+		// TODO(v6) Test that event was sent to the buffer
 	});
 
 	it('throws an error if it is unable to determine the endpoint ID', async () => {

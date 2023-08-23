@@ -12,12 +12,12 @@ describe('Category API: record', () => {
 		mockPinpointRecord.mockResolvedValue(undefined);
 	});
 
-	it('defers to the Pinpoint record implementation', async () => {
+	it('defers to the Pinpoint record implementation', () => {
 		const mockParams = {
 			event,
 		};
 
-		await record(mockParams);
+		record(mockParams);
 
 		expect(mockPinpointRecord).toBeCalledTimes(1);
 		expect(mockPinpointRecord).toBeCalledWith(mockParams);

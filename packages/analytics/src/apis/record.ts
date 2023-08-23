@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AnalyticsEvent, RecordParameters } from '../types';
+import { RecordParameters } from '../types';
 import { record as pinpointRecord } from '../providers/pinpoint';
 
 /**
@@ -13,6 +13,5 @@ import { record as pinpointRecord } from '../providers/pinpoint';
  *
  * @returns A promise that will resolve when the request is complete.
  */
-export const record = async (
-	params: RecordParameters<AnalyticsEvent>
-): Promise<void> => pinpointRecord(params);
+export const record = (params: RecordParameters): void =>
+	pinpointRecord(params);

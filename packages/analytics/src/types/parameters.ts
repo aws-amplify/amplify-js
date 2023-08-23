@@ -1,7 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export type RecordParameters<EventType> = {
+import { AnalyticsEvent } from './Analytics';
+
+export type RecordParameters<EventType = AnalyticsEvent> = {
 	/**
 	 * An event to send to the default Analytics provider.
 	 */

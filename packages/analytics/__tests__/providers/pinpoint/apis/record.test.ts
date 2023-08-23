@@ -1,5 +1,6 @@
 import { record as pinpointRecord } from '@aws-amplify/core/internals/providers/pinpoint';
 import { record } from '../../../../src/providers/pinpoint';
+import { PinpointRecordParameters } from '../../../../src/providers/pinpoint/types/parameters';
 import {
 	resolveConfig,
 	resolveCredentials,
@@ -38,13 +39,15 @@ describe('Pinpoint API: record', () => {
 	it('invokes the core record implementation', async () => {
 		const mockParams = {
 			event,
-			sendImmediately: false,
 		};
 
-		await record(mockParams);
+		record(mockParams);
 
 		expect(mockResolveCredentials).toBeCalledTimes(1);
 		expect(mockResolveConfig).toBeCalledTimes(1);
+
+		await new Promise(process.nextTick);
+
 		expect(mockPinpointRecord).toBeCalledTimes(1);
 		expect(mockPinpointRecord).toBeCalledWith({
 			appId,
@@ -53,33 +56,15 @@ describe('Pinpoint API: record', () => {
 			event,
 			identityId,
 			region,
-			sendImmediately: mockParams.sendImmediately,
 			userAgentValue: expect.any(String),
 		});
 	});
 
-	it('defaults to buffering events', async () => {
-		const mockParams = { event };
-
-		await record(mockParams);
-
-		expect(mockPinpointRecord).toBeCalledWith({
-			appId,
-			category: 'Analytics',
-			credentials,
-			event,
-			identityId,
-			region,
-			sendImmediately: false,
-			userAgentValue: expect.any(String),
-		});
-	});
-
-	it('throws a validation error when no event is provided', async () => {
+	it('throws a validation error when no event is provided', () => {
 		const mockParams = {} as RecordParameters;
 
 		try {
-			await record(mockParams);
+			record(mockParams);
 		} catch (e) {
 			expect(e.name).toEqual(AnalyticsValidationErrorCode.NoEvent);
 		}
@@ -87,13 +72,13 @@ describe('Pinpoint API: record', () => {
 		expect.assertions(1);
 	});
 
-	it('throws a validation error when event does not specify a name', async () => {
+	it('throws a validation error when event does not specify a name', () => {
 		const mockParams = {
 			event: {},
 		};
 
 		try {
-			await record(mockParams);
+			record(mockParams as PinpointRecordParameters);
 		} catch (e) {
 			expect(e.name).toEqual(AnalyticsValidationErrorCode.NoEventName);
 		}
