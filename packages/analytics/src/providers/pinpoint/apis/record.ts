@@ -11,7 +11,7 @@ import { resolveConfig, resolveCredentials } from '../utils';
 /**
  * Sends an event to Pinpoint.
  *
- * @param params - An AnalyticsEvent to send.
+ * @param {RecordParameters} params Parameters used to construct the request.
  *
  * @throws An {@link AnalyticsError} when an error occurs invoking the API.
  *
