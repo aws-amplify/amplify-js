@@ -14,16 +14,9 @@ export type AmplifyEventData = {
 	auth: AuthHubEventData;
 	[key: string]: EventDataMap;
 };
-export type AmplifyChannel =
-	| 'auth'
-	| 'storage'
-	| 'core'
-	| 'api'
-	| 'analytics'
-	| 'interactions'
-	| 'pubsub'
-	| 'datastore'
-	| 'notifications';
+
+// TODO[kvramya] add more channels if we support more channels.
+export type AmplifyChannel = 'auth';
 
 export type StopListenerCallback = () => void;
 export type AmplifyEventDataMap = { event: string; data?: unknown };
@@ -58,9 +51,7 @@ export type AnyChannel = string;
 export type AmplifyChannelMap<
 	AmplifyChannelType extends AmplifyChannel | AnyChannel =
 		| AmplifyChannel
-		| AnyChannel,
-	EventDataMap extends AmplifyEventDataMap = AmplifyEventDataMap
+		| AnyChannel
 > = {
 	channelType: AmplifyChannelType;
-	eventData: EventDataMap;
 };
