@@ -1,16 +1,13 @@
 import { AuthClass as Auth } from '../src/Auth';
 
 import {
+	CognitoUserPool,
 	CognitoUser,
 	CognitoUserSession,
 	CognitoIdToken,
 	CognitoAccessToken,
+	CognitoUserAttribute,
 } from 'amazon-cognito-identity-js';
-
-import {
-	InternalCognitoUser,
-	InternalCognitoUserPool,
-} from 'amazon-cognito-identity-js/internals';
 
 import { AuthOptions } from '../src/types';
 
@@ -35,7 +32,7 @@ describe('Refresh token', () => {
 		expect.assertions(1);
 
 		const getSessionSpy = jest
-			.spyOn(InternalCognitoUser.prototype, 'getSession')
+			.spyOn(CognitoUser.prototype, 'getSession')
 			.mockImplementation(
 				// @ts-ignore
 				(
@@ -54,10 +51,10 @@ describe('Refresh token', () => {
 			);
 
 		jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementation(() => {
 				return new CognitoUser({
-					Pool: new InternalCognitoUserPool({
+					Pool: new CognitoUserPool({
 						ClientId: authOptions.userPoolWebClientId,
 						UserPoolId: authOptions.userPoolId,
 					}),
@@ -74,7 +71,7 @@ describe('Refresh token', () => {
 		expect.assertions(2);
 
 		const getSessionSpy = jest
-			.spyOn(InternalCognitoUser.prototype, 'getSession')
+			.spyOn(CognitoUser.prototype, 'getSession')
 			.mockImplementation(
 				// @ts-ignore
 				(
@@ -93,10 +90,10 @@ describe('Refresh token', () => {
 			);
 
 		jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementation(() => {
 				return new CognitoUser({
-					Pool: new InternalCognitoUserPool({
+					Pool: new CognitoUserPool({
 						ClientId: authOptions.userPoolWebClientId,
 						UserPoolId: authOptions.userPoolId,
 					}),
@@ -114,7 +111,7 @@ describe('Refresh token', () => {
 
 		expect.assertions(2);
 
-		jest.spyOn(InternalCognitoUser.prototype, 'getSession').mockImplementation(
+		jest.spyOn(CognitoUser.prototype, 'getSession').mockImplementation(
 			// @ts-ignore
 			(
 				callback: (error: Error, session: CognitoUserSession) => void,
@@ -132,16 +129,16 @@ describe('Refresh token', () => {
 		);
 
 		jest
-			.spyOn(InternalCognitoUser.prototype, 'globalSignOut')
+			.spyOn(CognitoUser.prototype, 'globalSignOut')
 			.mockImplementation(({ onSuccess, onFailure }) => {
 				onSuccess('');
 			});
 
 		jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementation(() => {
 				return new CognitoUser({
-					Pool: new InternalCognitoUserPool({
+					Pool: new CognitoUserPool({
 						ClientId: authOptions.userPoolWebClientId,
 						UserPoolId: authOptions.userPoolId,
 					}),
@@ -160,7 +157,7 @@ describe('Refresh token', () => {
 
 		expect.assertions(1);
 
-		jest.spyOn(InternalCognitoUser.prototype, 'getSession').mockImplementation(
+		jest.spyOn(CognitoUser.prototype, 'getSession').mockImplementation(
 			// @ts-ignore
 			(
 				callback: (error: Error, session: CognitoUserSession) => void,
@@ -178,7 +175,7 @@ describe('Refresh token', () => {
 		);
 
 		jest
-			.spyOn(InternalCognitoUser.prototype, 'getUserData')
+			.spyOn(CognitoUser.prototype, 'getUserData')
 			.mockImplementation((callback, params) => {
 				expect(params.clientMetadata).toEqual(clientMetadata);
 
@@ -192,10 +189,10 @@ describe('Refresh token', () => {
 			});
 
 		jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementation(() => {
 				return new CognitoUser({
-					Pool: new InternalCognitoUserPool({
+					Pool: new CognitoUserPool({
 						ClientId: authOptions.userPoolWebClientId,
 						UserPoolId: authOptions.userPoolId,
 					}),
@@ -212,7 +209,7 @@ describe('Refresh token', () => {
 
 		expect.assertions(2);
 
-		jest.spyOn(InternalCognitoUser.prototype, 'getSession').mockImplementation(
+		jest.spyOn(CognitoUser.prototype, 'getSession').mockImplementation(
 			// @ts-ignore
 			(
 				callback: (error: Error, session: CognitoUserSession) => void,
@@ -230,7 +227,7 @@ describe('Refresh token', () => {
 		);
 
 		jest
-			.spyOn(InternalCognitoUser.prototype, 'getUserData')
+			.spyOn(CognitoUser.prototype, 'getUserData')
 			.mockImplementation((callback, params) => {
 				expect(params.clientMetadata).toEqual(clientMetadata);
 
@@ -244,10 +241,10 @@ describe('Refresh token', () => {
 			});
 
 		jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementation(() => {
 				return new CognitoUser({
-					Pool: new InternalCognitoUserPool({
+					Pool: new CognitoUserPool({
 						ClientId: authOptions.userPoolWebClientId,
 						UserPoolId: authOptions.userPoolId,
 					}),
@@ -266,7 +263,7 @@ describe('Refresh token', () => {
 
 		expect.assertions(3);
 
-		jest.spyOn(InternalCognitoUser.prototype, 'getSession').mockImplementation(
+		jest.spyOn(CognitoUser.prototype, 'getSession').mockImplementation(
 			// @ts-ignore
 			(
 				callback: (error: Error, session: CognitoUserSession) => void,
@@ -284,7 +281,7 @@ describe('Refresh token', () => {
 		);
 
 		jest
-			.spyOn(InternalCognitoUser.prototype, 'getUserData')
+			.spyOn(CognitoUser.prototype, 'getUserData')
 			.mockImplementation((callback, params) => {
 				expect(params.clientMetadata).toEqual(clientMetadata);
 
@@ -298,10 +295,10 @@ describe('Refresh token', () => {
 			});
 
 		jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementation(() => {
 				return new CognitoUser({
-					Pool: new InternalCognitoUserPool({
+					Pool: new CognitoUserPool({
 						ClientId: authOptions.userPoolWebClientId,
 						UserPoolId: authOptions.userPoolId,
 					}),
@@ -310,7 +307,7 @@ describe('Refresh token', () => {
 			});
 
 		jest
-			.spyOn(InternalCognitoUser.prototype, 'setUserMfaPreference')
+			.spyOn(CognitoUser.prototype, 'setUserMfaPreference')
 			.mockImplementation(
 				(smsMfaSettings, softwareTokenMfaSettings, callback) => {
 					callback();
