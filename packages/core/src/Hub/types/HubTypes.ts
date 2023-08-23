@@ -4,7 +4,7 @@
 import { AuthHubEventData } from './AuthTypes';
 
 export interface IListener<
-	Channel extends string,
+	Channel extends string = string,
 	EventData extends AmplifyEventDataMap = AmplifyEventDataMap
 > {
 	name: string;
@@ -63,12 +63,6 @@ export type GetHubCallBack<
 > = Channel extends AmplifyChannel
 	? AmplifyHubCallbackMap<Channel>[Channel]
 	: HubCallback<Channel, EventDataMap>;
-
-export type PayloadFromCallback<T> = T extends (
-	arg: infer A extends Record<string, any>
-) => void
-	? A['payload']
-	: never;
 
 export type AnyChannel = string;
 
