@@ -9,39 +9,13 @@ export { Amplify } from './Amplify';
 export { AmplifyClass } from './Amplify';
 export { ClientDevice } from './ClientDevice';
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
-export {
-	invalidParameter,
-	missingConfig,
-	AmplifyError,
-	AmplifyErrorString,
-} from './Errors';
 export { Hub } from './Hub';
 export { HubCapsule, HubCallback, HubPayload } from './Hub/types';
-export { I18n } from './I18n';
-export {
-	browserOrNode,
-	filenameToContentType,
-	generateRandomString,
-	isEmpty,
-	isStrictObject,
-	isTextFile,
-	isWebWorker,
-	makeQuerablePromise,
-	objectLessAttributes,
-	sortByField,
-	transferKeyToLowerCase,
-	transferKeyToUpperCase,
-} from './JS';
-export { Signer } from './Signer';
-export { parseAWSExports } from './parseAWSExports';
 export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export { AppState, AsyncStorage, Linking } from './RNComponents';
 export { Credentials, CredentialsClass } from './Credentials';
-export {
-	ICredentials
-} from './types';
+export { ICredentials } from './types';
 export { Signer } from './Signer';
-export { parseAWSExports } from './parseAWSExports';
 
 // Singleton exports
 export {
@@ -80,9 +54,7 @@ export {
 	SessionStorage,
 	MemoryKeyValueStorage,
 } from './StorageHelper';
-export { 
-	KeyValueStorageInterface
-} from './types';
+export { KeyValueStorageInterface } from './types';
 export { UniversalStorage } from './UniversalStorage';
 
 // Cache exports
@@ -91,7 +63,6 @@ export { InMemoryCache } from './Cache/InMemoryCache';
 export { CacheConfig } from './Cache/types';
 export { BrowserStorageCache };
 export { BrowserStorageCache as Cache }; // Maintain interoperability with React Native
-
 
 // Internationalization utilities
 export { I18n } from './I18n';
