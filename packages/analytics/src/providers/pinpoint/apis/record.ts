@@ -3,6 +3,7 @@
 
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
 import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
+import { AnalyticsError } from '../../../errors';
 import { getAnalyticsUserAgentString } from '../../../utils/UserAgent';
 import { PinpointRecordParameters } from '../types/parameters';
 import { resolveConfig, resolveCredentials } from '../utils';
@@ -12,8 +13,7 @@ import { resolveConfig, resolveCredentials } from '../utils';
  *
  * @param params - An AnalyticsEvent to send.
  *
- * @throws -{@link AnalyticsError }
- * Thrown when an error occurs sending the event.
+ * @throws An {@link AnalyticsError} when an error occurs invoking the API.
  *
  * @returns Returns a promise that will resolve when the request is complete.
  */

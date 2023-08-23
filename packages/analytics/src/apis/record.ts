@@ -7,10 +7,9 @@ import { record as pinpointRecord } from '../providers/pinpoint';
 /**
  * Sends an event to the default analytics provider.
  *
- * @param {RecordParameters} params parameters used to construct requests sent to service.
+ * @param {RecordParameters} params Parameters used to construct the request.
  *
- * @throws An {@link RecordException} when the underlying service returns an error.
- * @throws An {@link AnalyticsValidationErrorCode} when API call parameters are invalid.
+ * @throws An {@link AnalyticsError} when an error occurs invoking the API.
  *
  * @returns A promise that will resolve when the request is complete.
  */
