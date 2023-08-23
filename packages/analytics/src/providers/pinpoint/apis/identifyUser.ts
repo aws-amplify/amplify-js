@@ -14,7 +14,7 @@ import { resolveConfig, resolveCredentials } from '../utils';
 /**
  * Identifies the current user with Pinpoint.
  *
- * @param {PinpointIdentifyUserParameters} params parameters used to construct requests sent to pinpoint service's
+ * @param {PinpointIdentifyUserParameters} params parameters used to construct requests sent to Pinpoint's
  * UpdateEndpoint API.
  *
  * @throws An {@link UpdateEndpointException} when the underlying Pinpoint service returns an error.

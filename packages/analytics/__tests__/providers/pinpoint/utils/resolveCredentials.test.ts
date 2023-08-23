@@ -22,12 +22,12 @@ describe('Analytics Pinpoint Provider Util: resolveCredentials', () => {
 		mockFetchAuthSession.mockReset();
 	});
 
-	test('resolves required credentials', async () => {
+	it('resolves required credentials', async () => {
 		mockFetchAuthSession.mockResolvedValue(credentials);
 		expect(await resolveCredentials()).toStrictEqual(credentials);
 	});
 
-	test('throws if credentials are missing', async () => {
+	it('throws if credentials are missing', async () => {
 		mockFetchAuthSession.mockReturnValue({
 			...credentials,
 			credentials: undefined,

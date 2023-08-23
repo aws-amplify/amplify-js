@@ -41,7 +41,7 @@ describe('Analytics Pinpoint Provider API: identifyUser', () => {
 		mockUpdateEndpoint.mockClear();
 	});
 
-	test('passes through parameter along with Analytics boilerplate to core Pinpoint identifyUser API', async () => {
+	it('passes through parameter along with Analytics boilerplate to core Pinpoint identifyUser API', async () => {
 		const params: PinpointIdentifyUserParameters = {
 			userId: 'user-id',
 			userProfile: {
