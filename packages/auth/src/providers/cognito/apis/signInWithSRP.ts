@@ -12,7 +12,8 @@ import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import {
 	getSignInResult,
 	getSignInResultFromError,

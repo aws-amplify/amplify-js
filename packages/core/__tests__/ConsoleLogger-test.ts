@@ -1,6 +1,6 @@
 import {
 	Logger,
-} from '../src';
+} from '../src/libraryUtils';
 
 describe('ConsoleLogger', () => {
 	describe('pluggables', () => {
