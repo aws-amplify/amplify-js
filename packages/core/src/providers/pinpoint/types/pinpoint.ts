@@ -35,7 +35,7 @@ export type PinpointAnalyticsEvent = {
 };
 
 // Common type that is required for operations that may trigger an endpoint update
-type PinpointCommonEndpointOptions = {
+type PinpointCommonParameters = {
 	appId: string;
 	category: SupportedCategory;
 	credentials: AuthSession['credentials'];
