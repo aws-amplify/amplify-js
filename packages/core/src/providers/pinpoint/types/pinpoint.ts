@@ -52,5 +52,4 @@ export type PinpointUpdateEndpointParameters = PinpointCommonEndpointOptions & P
 
 export type PinpointRecordParameters = PinpointCommonEndpointOptions & {
 	event: PinpointAnalyticsEvent;
-	sendImmediately?: boolean;
 };
