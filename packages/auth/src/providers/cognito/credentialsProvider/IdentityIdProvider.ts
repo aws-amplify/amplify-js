@@ -22,7 +22,6 @@ const logger = new Logger('CognitoIdentityIdProvider');
  * @throws internal: {@link AuthError }
  *  - Auth errors that may arise from misconfiguration.
  *
- * TODO(V6): convert the Auth errors to config errors
  */
 export async function cognitoIdentityIdProvider({
 	tokens,
@@ -44,6 +43,7 @@ export async function cognitoIdentityIdProvider({
 			const logins = tokens.idToken
 				? formLoginsMap(tokens.idToken.toString(), 'COGNITO')
 				: {};
+			// TODO(V6): reuse previous guest idenityId if present
 			const generatedIdentityId = await generateIdentityId(logins, authConfig);
 
 			if (identityId && identityId.id === generatedIdentityId) {
