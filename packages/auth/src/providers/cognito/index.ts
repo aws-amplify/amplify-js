@@ -14,6 +14,7 @@ export { verifyTOTPSetup } from './apis/verifyTOTPSetup';
 export { updatePassword } from './apis/updatePassword';
 export { setUpTOTP } from './apis/setUpTOTP';
 export { updateUserAttributes } from './apis/updateUserAttributes';
+export { getCurrentUser } from './apis/getCurrentUser';
 export { confirmUserAttribute } from './apis/confirmUserAttribute';
 export { signInWithRedirect } from './apis/signInWithRedirect';
 export { fetchUserAttributes } from './apis/fetchUserAttributes';
