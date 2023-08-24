@@ -23,19 +23,38 @@ import {
 	MFAOption,
 	CognitoUserSession,
 	CognitoUserAttribute,
+	NodeCallback,
 } from 'amazon-cognito-identity-js';
 
 import { AuthError } from './Errors';
 import { IAuthDevice } from './types/Auth';
-import { InternalAuthClass } from './internals/InternalAuth';
+import { InternalAuth, InternalAuthClass } from './internals/InternalAuth';
 
 /**
  * Provide authentication steps
  */
-export class AuthClass extends InternalAuthClass {
+export class AuthClass {
+	private InternalAuth: InternalAuthClass;
+
+	/**
+	 * Initialize Auth with AWS configurations
+	 * @param {Object} config - Configuration of the Auth
+	 */
+	constructor(InteralAuthInstance: InternalAuthClass) {
+		this.InternalAuth = InteralAuthInstance;
+	}
+
 	public getModuleName() {
 		return 'Auth';
 	}
+
+	configure(config?) {
+		return this.InternalAuth.configure(config);
+	}
+
+	wrapRefreshSessionCallback = (callback: NodeCallback.Any) => {
+		return this.InternalAuth.wrapRefreshSessionCallback(callback);
+	};
 
 	/**
 	 * Sign up with username, password and other attributes like phone, email
@@ -47,7 +66,7 @@ export class AuthClass extends InternalAuthClass {
 		params: string | SignUpParams,
 		...restOfAttrs: string[]
 	): Promise<ISignUpResult> {
-		return super.signUp(params, restOfAttrs);
+		return this.InternalAuth.signUp(params, restOfAttrs);
 	}
 
 	/**
@@ -62,7 +81,7 @@ export class AuthClass extends InternalAuthClass {
 		code: string,
 		options?: ConfirmSignUpOptions
 	): Promise<any> {
-		return super.confirmSignUp(username, code, options);
+		return this.InternalAuth.confirmSignUp(username, code, options);
 	}
 
 	/**
@@ -75,7 +94,7 @@ export class AuthClass extends InternalAuthClass {
 		username: string,
 		clientMetadata?: ClientMetaData
 	): Promise<any> {
-		return super.resendSignUp(username, clientMetadata);
+		return this.InternalAuth.resendSignUp(username, clientMetadata);
 	}
 
 	/**
@@ -90,7 +109,7 @@ export class AuthClass extends InternalAuthClass {
 		pw?: string,
 		clientMetadata?: ClientMetaData
 	): Promise<CognitoUser | any> {
-		return super.signIn(usernameOrSignInOpts, pw, clientMetadata);
+		return this.InternalAuth.signIn(usernameOrSignInOpts, pw, clientMetadata);
 	}
 
 	/**
@@ -102,7 +121,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @return - A promise resolves the current preferred mfa option if success
 	 */
 	public getMFAOptions(user: CognitoUser | any): Promise<MFAOption[]> {
-		return super.getMFAOptions(user);
+		return this.InternalAuth.getMFAOptions(user);
 	}
 
 	/**
@@ -114,7 +133,7 @@ export class AuthClass extends InternalAuthClass {
 		user: CognitoUser | any,
 		params?: GetPreferredMFAOpts
 	): Promise<string> {
-		return super.getPreferredMFA(user, params);
+		return this.InternalAuth.getPreferredMFA(user, params);
 	}
 
 	/**
@@ -127,7 +146,7 @@ export class AuthClass extends InternalAuthClass {
 		user: CognitoUser | any,
 		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
 	): Promise<string> {
-		return super.setPreferredMFA(user, mfaMethod);
+		return this.InternalAuth.setPreferredMFA(user, mfaMethod);
 	}
 
 	/**
@@ -137,7 +156,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @return - A promise resolves is success
 	 */
 	public disableSMS(user: CognitoUser): Promise<string> {
-		return super.disableSMS(user);
+		return this.InternalAuth.disableSMS(user);
 	}
 
 	/**
@@ -147,7 +166,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @return - A promise resolves is success
 	 */
 	public enableSMS(user: CognitoUser): Promise<string> {
-		return super.enableSMS(user);
+		return this.InternalAuth.enableSMS(user);
 	}
 
 	/**
@@ -156,7 +175,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @return - A promise resolves with the secret code if success
 	 */
 	public setupTOTP(user: CognitoUser | any): Promise<string> {
-		return super.setupTOTP(user);
+		return this.InternalAuth.setupTOTP(user);
 	}
 
 	/**
@@ -169,7 +188,7 @@ export class AuthClass extends InternalAuthClass {
 		user: CognitoUser | any,
 		challengeAnswer: string
 	): Promise<CognitoUserSession> {
-		return super.verifyTotpToken(user, challengeAnswer);
+		return this.InternalAuth.verifyTotpToken(user, challengeAnswer);
 	}
 
 	/**
@@ -183,7 +202,7 @@ export class AuthClass extends InternalAuthClass {
 		mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | null,
 		clientMetadata?: ClientMetaData
 	): Promise<CognitoUser | any> {
-		return super.confirmSignIn(user, code, mfaType, clientMetadata);
+		return this.InternalAuth.confirmSignIn(user, code, mfaType, clientMetadata);
 	}
 
 	public completeNewPassword(
@@ -192,7 +211,7 @@ export class AuthClass extends InternalAuthClass {
 		requiredAttributes: any = {},
 		clientMetadata?: ClientMetaData
 	): Promise<CognitoUser | any> {
-		return super.completeNewPassword(
+		return this.InternalAuth.completeNewPassword(
 			user,
 			password,
 			requiredAttributes,
@@ -210,7 +229,7 @@ export class AuthClass extends InternalAuthClass {
 		challengeResponses: string,
 		clientMetadata?: ClientMetaData
 	): Promise<CognitoUser | any> {
-		return super.sendCustomChallengeAnswer(
+		return this.InternalAuth.sendCustomChallengeAnswer(
 			user,
 			challengeResponses,
 			clientMetadata
@@ -226,7 +245,7 @@ export class AuthClass extends InternalAuthClass {
 		user: CognitoUser | any,
 		attributeNames: string[]
 	) {
-		return super.deleteUserAttributes(user, attributeNames);
+		return this.InternalAuth.deleteUserAttributes(user, attributeNames);
 	}
 
 	/**
@@ -235,7 +254,7 @@ export class AuthClass extends InternalAuthClass {
 	 **/
 	// TODO: Check return type void
 	public deleteUser(): Promise<string | void> {
-		return super.deleteUser();
+		return this.InternalAuth.deleteUser();
 	}
 
 	/**
@@ -248,7 +267,11 @@ export class AuthClass extends InternalAuthClass {
 		attributes: object,
 		clientMetadata?: ClientMetaData
 	): Promise<string> {
-		return super.updateUserAttributes(user, attributes, clientMetadata);
+		return this.InternalAuth.updateUserAttributes(
+			user,
+			attributes,
+			clientMetadata
+		);
 	}
 
 	/**
@@ -259,11 +282,11 @@ export class AuthClass extends InternalAuthClass {
 	public userAttributes(
 		user: CognitoUser | any
 	): Promise<CognitoUserAttribute[]> {
-		return super.userAttributes(user);
+		return this.InternalAuth.userAttributes(user);
 	}
 
 	public verifiedContact(user: CognitoUser | any) {
-		return super.verifiedContact(user);
+		return this.InternalAuth.verifiedContact(user);
 	}
 
 	/**
@@ -273,7 +296,7 @@ export class AuthClass extends InternalAuthClass {
 	public currentUserPoolUser(
 		params?: CurrentUserOpts
 	): Promise<CognitoUser | any> {
-		return super.currentUserPoolUser(params);
+		return this.InternalAuth.currentUserPoolUser(params);
 	}
 
 	/**
@@ -284,7 +307,7 @@ export class AuthClass extends InternalAuthClass {
 	public currentAuthenticatedUser(
 		params?: CurrentUserOpts
 	): Promise<CognitoUser | any> {
-		return super.currentAuthenticatedUser(params);
+		return this.InternalAuth.currentAuthenticatedUser(params);
 	}
 
 	/**
@@ -292,7 +315,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @return - A promise resolves to session object if success
 	 */
 	public currentSession(): Promise<CognitoUserSession> {
-		return super.currentSession();
+		return this.InternalAuth.currentSession();
 	}
 
 	/**
@@ -301,7 +324,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @return - A promise resolves to the session
 	 */
 	public userSession(user): Promise<CognitoUserSession> {
-		return super.userSession(user);
+		return this.InternalAuth.userSession(user);
 	}
 
 	/**
@@ -309,11 +332,11 @@ export class AuthClass extends InternalAuthClass {
 	 * @return - A promise resolves to be current user's credentials
 	 */
 	public currentUserCredentials(): Promise<ICredentials> {
-		return super.currentUserCredentials();
+		return this.InternalAuth.currentUserCredentials();
 	}
 
 	public currentCredentials(): Promise<ICredentials> {
-		return super.currentCredentials();
+		return this.InternalAuth.currentCredentials();
 	}
 
 	/**
@@ -327,7 +350,7 @@ export class AuthClass extends InternalAuthClass {
 		attr: string,
 		clientMetadata?: ClientMetaData
 	): Promise<void> {
-		return super.verifyUserAttribute(user, attr, clientMetadata);
+		return this.InternalAuth.verifyUserAttribute(user, attr, clientMetadata);
 	}
 
 	/**
@@ -342,11 +365,11 @@ export class AuthClass extends InternalAuthClass {
 		attr: string,
 		code: string
 	): Promise<string> {
-		return super.verifyUserAttributeSubmit(user, attr, code);
+		return this.InternalAuth.verifyUserAttributeSubmit(user, attr, code);
 	}
 
 	public verifyCurrentUserAttribute(attr: string): Promise<void> {
-		return super.verifyCurrentUserAttribute(attr);
+		return this.InternalAuth.verifyCurrentUserAttribute(attr);
 	}
 
 	/**
@@ -359,7 +382,7 @@ export class AuthClass extends InternalAuthClass {
 		attr: string,
 		code: string
 	): Promise<string> {
-		return super.verifyCurrentUserAttributeSubmit(attr, code);
+		return this.InternalAuth.verifyCurrentUserAttributeSubmit(attr, code);
 	}
 
 	/**
@@ -368,7 +391,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @return - A promise resolved if success
 	 */
 	public signOut(opts?: SignOutOpts): Promise<any> {
-		return super.signOut(opts);
+		return this.InternalAuth.signOut(opts);
 	}
 
 	/**
@@ -384,7 +407,12 @@ export class AuthClass extends InternalAuthClass {
 		newPassword: string,
 		clientMetadata?: ClientMetaData
 	): Promise<'SUCCESS'> {
-		return super.changePassword(user, oldPassword, newPassword, clientMetadata);
+		return this.InternalAuth.changePassword(
+			user,
+			oldPassword,
+			newPassword,
+			clientMetadata
+		);
 	}
 
 	/**
@@ -396,7 +424,7 @@ export class AuthClass extends InternalAuthClass {
 		username: string,
 		clientMetadata?: ClientMetaData
 	): Promise<any> {
-		return super.forgotPassword(username, clientMetadata);
+		return this.InternalAuth.forgotPassword(username, clientMetadata);
 	}
 
 	/**
@@ -412,7 +440,12 @@ export class AuthClass extends InternalAuthClass {
 		password: string,
 		clientMetadata?: ClientMetaData
 	): Promise<string> {
-		return super.forgotPasswordSubmit(username, code, password, clientMetadata);
+		return this.InternalAuth.forgotPasswordSubmit(
+			username,
+			code,
+			password,
+			clientMetadata
+		);
 	}
 
 	/**
@@ -421,7 +454,7 @@ export class AuthClass extends InternalAuthClass {
 	 * @return {Object }- current User's information
 	 */
 	public currentUserInfo() {
-		return super.currentUserInfo();
+		return this.InternalAuth.currentUserInfo();
 	}
 
 	public federatedSignIn(
@@ -443,7 +476,7 @@ export class AuthClass extends InternalAuthClass {
 		response?: FederatedResponse,
 		user?: FederatedUser
 	): Promise<ICredentials> {
-		return super.federatedSignIn(providerOrOptions, response, user);
+		return this.InternalAuth.federatedSignIn(providerOrOptions, response, user);
 	}
 
 	/**
@@ -452,21 +485,21 @@ export class AuthClass extends InternalAuthClass {
 	 * @return {Object} - Credentials
 	 */
 	public essentialCredentials(credentials): ICredentials {
-		return super.essentialCredentials(credentials);
+		return this.InternalAuth.essentialCredentials(credentials);
 	}
 
 	public rememberDevice(): Promise<string | AuthError> {
-		return super.rememberDevice();
+		return this.InternalAuth.rememberDevice();
 	}
 
 	public forgetDevice(): Promise<void> {
-		return super.forgetDevice();
+		return this.InternalAuth.forgetDevice();
 	}
 
 	public fetchDevices(): Promise<IAuthDevice[]> {
-		return super.fetchDevices();
+		return this.InternalAuth.fetchDevices();
 	}
 }
 
-export const Auth = new AuthClass(null);
+export const Auth = new AuthClass(InternalAuth);
 Amplify.register(Auth);
