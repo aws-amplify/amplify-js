@@ -4,7 +4,7 @@ import {
 	getCredentialsForIdentity,
 	getId,
 } from '../src/AwsClients/CognitoIdentity';
-import { Hub } from '../src/Hub/Hub.ts';
+import { Hub } from '../src/Hub';
 
 jest.mock('../src/AwsClients/CognitoIdentity');
 
