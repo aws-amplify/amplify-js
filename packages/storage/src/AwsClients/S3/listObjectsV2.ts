@@ -62,8 +62,8 @@ const listObjectsV2Deserializer = async (
 	response: HttpResponse
 ): Promise<ListObjectsV2Output> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		// @ts-expect-error error is always set when statusCode >= 300
+		// error is always set when statusCode >= 300
+		const error = (await parseXmlError(response)) as Error;
 		throw StorageError.fromServiceError(error, response.statusCode);
 	} else {
 		const parsed = await parseXmlBody(response);

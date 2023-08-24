@@ -80,7 +80,7 @@ export const list: S3ListApi = async (
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 	};
-	  return listAll
+	return listAll
 		? await _listAll(listConfig, listParams)
 		: await _list(listConfig, listParams);
 };
