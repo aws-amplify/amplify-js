@@ -44,7 +44,7 @@ type PinpointCommonParameters = {
 	userAgentValue?: string;
 };
 
-export type PinpointUpdateEndpointParameters = PinpointCommonEndpointOptions & PinpointServiceOptions & {
+export type PinpointUpdateEndpointParameters = PinpointCommonParameters & PinpointServiceOptions & {
 	channelType?: SupportedChannelType;
 	userId?: string;
 	userProfile?: UserProfile;
