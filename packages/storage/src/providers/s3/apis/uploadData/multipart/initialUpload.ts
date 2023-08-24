@@ -5,10 +5,10 @@ import {
 	cacheMultipartUpload,
 	findCachedUploadParts,
 	getUploadsCacheKey,
-} from './uploadCache';
-import { createMultipartUpload, Part } from '../../../../AwsClients/S3';
-import { ResolvedS3Config } from '../../types/options';
-import { UploadSource } from '../../../../types';
+} from '../uploadCache';
+import { createMultipartUpload, Part } from '../../../../../AwsClients/S3';
+import { ResolvedS3Config } from '../../../types/options';
+import { UploadSource } from '../../../../../types';
 import { StorageAccessLevel } from '@aws-amplify/core';
 
 export type LoadOrCreateMultipartUploadOptions = {

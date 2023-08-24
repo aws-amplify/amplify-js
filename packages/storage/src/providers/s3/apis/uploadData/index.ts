@@ -9,7 +9,7 @@ import { StorageValidationErrorCode } from '../../../../errors/types/validation'
 import { DEFAULT_PART_SIZE, MAX_OBJECT_SIZE } from '../../utils/constants';
 import { byteLength } from './byteLength';
 import { putObjectJob } from './putObjectJob';
-import { getMultipartUploadHandlers } from './multipartUploadHandler';
+import { getMultipartUploadHandlers } from './multipart';
 
 /**
  * Upload data to specified S3 object. By default, it uses single PUT operation to upload if the data is less than 5MB.

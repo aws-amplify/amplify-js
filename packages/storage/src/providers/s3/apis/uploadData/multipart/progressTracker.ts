@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { TransferProgressEvent } from '../../../../types';
+import { TransferProgressEvent } from '../../../../../types';
 
 type ConcurrentUploadsProgressTrackerOptions = {
 	totalLength?: number;

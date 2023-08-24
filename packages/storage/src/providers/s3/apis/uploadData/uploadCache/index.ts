@@ -1,12 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { MemoryKeyValueStorage, StorageAccessLevel } from '@aws-amplify/core';
+import {
+	KeyValueStorageInterface,
+	StorageAccessLevel,
+} from '@aws-amplify/core';
 
-import { UPLOADS_STORAGE_KEY } from '../../utils/constants';
-import { FileMetadata } from '../../../..';
-import { listParts, Part } from '../../../../AwsClients/S3';
-import { ResolvedS3Config } from '../../types/options';
+import { getKvStorage } from './kvStorage';
+import { UPLOADS_STORAGE_KEY } from '../../../utils/constants';
+import { FileMetadata } from '../../../../..';
+import { listParts, Part } from '../../../../../AwsClients/S3';
+import { ResolvedS3Config } from '../../../types/options';
 
 export type FindCachedUploadPartsOptions = {
 	cacheKey: string;
@@ -24,17 +28,16 @@ export const findCachedUploadParts = async ({
 	parts: Part[];
 	uploadId: string;
 } | null> => {
-	const cachedUploads = await listCachedUploadTasks();
+	const kvStorage = await getKvStorage();
+	const cachedUploads = await listCachedUploadTasks(kvStorage);
 	if (Object.keys(cachedUploads).length === 0 || !cachedUploads[cacheKey]) {
 		return null;
 	}
 
 	const cachedUpload = cachedUploads[cacheKey];
 	cachedUpload.lastTouched = Date.now();
-	await getStorageImplementation().setItem(
-		UPLOADS_STORAGE_KEY,
-		JSON.stringify(cachedUploads)
-	);
+
+	await kvStorage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(cachedUploads));
 
 	const { Parts = [] } = await listParts(s3Config, {
 		Bucket: bucket,
@@ -48,13 +51,10 @@ export const findCachedUploadParts = async ({
 	};
 };
 
-const listCachedUploadTasks = async (): Promise<Record<string, FileMetadata>> =>
-	JSON.parse(
-		(await getStorageImplementation().getItem(UPLOADS_STORAGE_KEY)) ?? '{}'
-	);
-
-// TODO[AllanZhengYP]: support LocalStorage and AsyncStorage based on the platform.
-const getStorageImplementation = () => MemoryKeyValueStorage;
+const listCachedUploadTasks = async (
+	kvStorage: KeyValueStorageInterface
+): Promise<Record<string, FileMetadata>> =>
+	JSON.parse((await kvStorage.getItem(UPLOADS_STORAGE_KEY)) ?? '{}');
 
 export type UploadsCacheKeyOptions = {
 	size: number;
@@ -87,19 +87,15 @@ export const cacheMultipartUpload = async (
 	cacheKey: string,
 	fileMetadata: FileMetadata
 ): Promise<void> => {
-	const cachedUploads = await listCachedUploadTasks();
+	const kvStorage = await getKvStorage();
+	const cachedUploads = await listCachedUploadTasks(kvStorage);
 	cachedUploads[cacheKey] = fileMetadata;
-	await getStorageImplementation().setItem(
-		UPLOADS_STORAGE_KEY,
-		JSON.stringify(cachedUploads)
-	);
+	await kvStorage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(cachedUploads));
 };
 
 export const removeCachedUpload = async (cacheKey: string): Promise<void> => {
-	const cachedUploads = await listCachedUploadTasks();
+	const kvStorage = await getKvStorage();
+	const cachedUploads = await listCachedUploadTasks(kvStorage);
 	delete cachedUploads[cacheKey];
-	await getStorageImplementation().setItem(
-		UPLOADS_STORAGE_KEY,
-		JSON.stringify(cachedUploads)
-	);
+	await kvStorage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(cachedUploads));
 };

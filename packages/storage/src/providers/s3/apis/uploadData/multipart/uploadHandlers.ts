@@ -2,20 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getDataChunker } from './getDataChunker';
-import { S3UploadOptions } from '../../types';
-import { resolveS3ConfigAndInput } from '../../utils';
+import { S3UploadOptions } from '../../../types';
+import { resolveS3ConfigAndInput } from '../../../utils';
 import {
 	abortMultipartUpload,
 	completeMultipartUpload,
 	Part,
-} from '../../../../AwsClients/S3';
-import { StorageUploadDataRequest } from '../../../../types';
-import { S3Item } from '../../types/results';
-import { DEFAULT_QUEUE_SIZE } from '../../utils/constants';
-import { loadOrCreateMultipartUpload } from './initiateMultipartUpload';
-import { ResolvedS3Config } from '../../types/options';
+} from '../../../../../AwsClients/S3';
+import { StorageUploadDataRequest } from '../../../../../types';
+import { S3Item } from '../../../types/results';
+import { DEFAULT_QUEUE_SIZE } from '../../../utils/constants';
+import { loadOrCreateMultipartUpload } from './initialUpload';
+import { ResolvedS3Config } from '../../../types/options';
 import { getConcurrentUploadsProgressTracker } from './progressTracker';
-import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
+import { getUploadsCacheKey, removeCachedUpload } from '../uploadCache';
 import { uploadPartExecutor } from './uploadPartExecutor';
 
 // Create closure hiding the multipart upload implementation details.

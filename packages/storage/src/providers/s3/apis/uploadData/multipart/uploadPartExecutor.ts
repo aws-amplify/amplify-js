@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PartToUpload } from './getDataChunker';
-import { uploadPart } from '../../../../AwsClients/S3';
-import { TransferProgressEvent } from '../../../../types';
-import { ResolvedS3Config } from '../../types/options';
-import { partByteLength } from './byteLength';
+import { uploadPart } from '../../../../../AwsClients/S3';
+import { TransferProgressEvent } from '../../../../../types';
+import { ResolvedS3Config } from '../../../types/options';
+import { partByteLength } from './partByteLength';
 
 type UploadPartExecutorOptions = {
 	dataChunkerGenerator: Generator<PartToUpload, void, undefined>;

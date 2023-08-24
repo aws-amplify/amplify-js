@@ -28,7 +28,3 @@ export const byteLength = (input?: any): number | undefined => {
 	// TODO: support Node.js stream size
 	return undefined;
 };
-
-type PartData = ArrayBuffer | string | Blob;
-export const partByteLength = (partData: PartData): number =>
-	byteLength(partData)!;
