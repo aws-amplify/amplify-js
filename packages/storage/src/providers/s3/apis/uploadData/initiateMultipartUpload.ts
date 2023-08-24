@@ -5,7 +5,7 @@ import {
 	cacheMultipartUpload,
 	findCachedUploadParts,
 	getUploadsCacheKey,
-} from './cache';
+} from './uploadCache';
 import { createMultipartUpload, Part } from '../../../../AwsClients/S3';
 import { ResolvedS3Config } from '../../types/options';
 import { UploadSource } from '../../../../types';
