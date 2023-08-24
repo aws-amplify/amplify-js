@@ -10,3 +10,4 @@ export {
 	copy,
 	getUrl,
 } from './apis';
+export { isCancelError } from '#internals/AwsClients/S3/runtime';
