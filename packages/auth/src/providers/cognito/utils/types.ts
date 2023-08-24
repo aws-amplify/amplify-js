@@ -24,3 +24,24 @@ export function assertAuthTokens(
 		});
 	}
 }
+
+export const OAuthStorageKeys = {
+	inflightOAuth: 'inflightOAuth',
+	oauthSignIn: 'oAuthSignIn',
+	oauthPKCE: 'oauthPKCE',
+	oauthState: 'oauthState',
+};
+
+export interface OAuthStore {
+	setAuthConfig(authConfigParam: AuthConfig): void;
+	loadOAuthInFlight(): Promise<boolean>;
+	storeOAuthInFlight(inflight: boolean): Promise<void>;
+	loadOAuthSignIn(): Promise<boolean>;
+	storeOAuthSignIn(oauthSignIn: boolean): Promise<void>;
+	loadOAuthState(): Promise<string>;
+	storeOAuthState(state: string): Promise<void>;
+	loadPKCE(): Promise<string>;
+	storePKCE(pkce: string): Promise<void>;
+	clearOAuthInflightData(): Promise<void>;
+	clearOAuthData(): Promise<void>;
+}
