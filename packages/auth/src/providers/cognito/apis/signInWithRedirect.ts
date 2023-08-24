@@ -2,14 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyV6, Hub, LocalStorage, OAuthConfig } from '@aws-amplify/core';
-import { SignInWithRedirectRequest } from '../../../types/requests';
-
 import {
 	AmplifyError,
 	assertOAuthConfig,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
 } from '@aws-amplify/core/internals/utils';
+import { SignInWithRedirectRequest } from '../../../types/requests';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { CognitoUserPoolsTokenProvider } from '../tokenProvider';
 import {
