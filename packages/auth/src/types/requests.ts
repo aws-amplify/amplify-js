@@ -135,3 +135,9 @@ export type UpdateUserAttributesRequest<
 export type ConfirmUserAttributeRequest<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = { userAttributeKey: UserAttributeKey; confirmationCode: string };
+
+/**
+ * Constructs a `FetchUserAttributes` request.
+ * @param recache - whether to recache the user
+ */
+export type FetchUserAttributesRequest = { recache: boolean };
