@@ -7,7 +7,7 @@ import {
 	identityId,
 	region,
 } from '../testUtils/data';
-import { getEventBuffer } from '../../../../src/providers/pinpoint/utils/bufferManager';
+import { getEventBuffer } from '../../../../src/providers/pinpoint/utils/getEventBuffer';
 import { PinpointEventBuffer } from '../../../../src/providers/pinpoint/utils/PinpointEventBuffer';
 
 jest.mock('../../../../src/providers/pinpoint/utils/getCacheKey');

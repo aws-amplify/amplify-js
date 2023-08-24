@@ -13,13 +13,13 @@ import {
 	event,
 	uuid,
 } from '../testUtils/data';
-import { getEventBuffer } from '../../../../src/providers/pinpoint/utils/bufferManager';
+import { getEventBuffer } from '../../../../src/providers/pinpoint/utils/getEventBuffer';
 
 jest.mock('uuid');
 jest.mock('../../../../src/AwsClients/Pinpoint');
 jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('../../../../src/providers/pinpoint/apis/updateEndpoint');
-jest.mock('../../../../src/providers/pinpoint/utils/bufferManager');
+jest.mock('../../../../src/providers/pinpoint/utils/getEventBuffer');
 
 describe('Pinpoint Provider API: record', () => {
 	const mockGetEventBuffer = getEventBuffer as jest.Mock;

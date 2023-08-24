@@ -11,7 +11,7 @@ import {
 	RESEND_LIMIT,
 } from '../utils/PinpointEventBuffer';
 import { updateEndpoint } from './updateEndpoint';
-import { getEventBuffer } from '../utils/bufferManager';
+import { getEventBuffer } from '../utils/getEventBuffer';
 
 // TODO(v6) Refactor when we add support for session tracking & `autoTrack`
 let session: PinpointSession;
