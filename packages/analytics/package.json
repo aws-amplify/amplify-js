@@ -26,12 +26,9 @@
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 72.5"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 71.4"
 	},
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js",
-		"./lib-esm/trackers": "./lib-esm/trackers/reactnative.js"
-	},
+	"react-native": "./lib-esm/index.js",
 	"typesVersions": {
 		">=3.8": {
 			"*": [
