@@ -8,8 +8,8 @@ import {
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import { MetadataBearer } from '@aws-sdk/types';
-import type { CopyObjectCommandInput } from './types';
+import { StorageError } from '../../errors/StorageError';
+import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
 import { defaultConfig } from './base';
 import {
 	validateS3RequiredParameter,
@@ -47,7 +47,7 @@ export type CopyObjectInput = Pick<
 	| 'Metadata'
 >;
 
-export type CopyObjectOutput = MetadataBearer;
+export type CopyObjectOutput = CopyObjectCommandOutput;
 
 const copyObjectSerializer = async (
 	input: CopyObjectInput,
@@ -74,8 +74,9 @@ const copyObjectDeserializer = async (
 	response: HttpResponse
 ): Promise<CopyObjectOutput> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		throw error;
+		// error is always set when statusCode >= 300
+		const error = (await parseXmlError(response)) as Error;
+		throw StorageError.fromServiceError(error, response.statusCode);
 	} else {
 		await parseXmlBody(response);
 		return {
