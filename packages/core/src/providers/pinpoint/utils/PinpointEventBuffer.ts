@@ -1,35 +1,40 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
+import { v4 as uuid } from 'uuid';
 import { ConsoleLogger as Logger } from '../../../Logger';
 import {
 	putEvents,
 	PutEventsInput,
 	PutEventsOutput,
-} from '@aws-amplify/core/internals/aws-clients/pinpoint';
-import { EventBuffer, EventObject, EventMap } from '../types';
-import { isAppInForeground } from '../utils/AppUtils';
-import { getAnalyticsUserAgentString } from '../utils/userAgent';
+} from '../../../AwsClients/Pinpoint';
+import { 
+	EventBufferConfig,
+	BufferedEvent,
+	BufferedEventMap,
+	EventBuffer
+} from '../types/buffer';
+import { AuthSession } from '../../../singleton/Auth/types';
+import { isAppInForeground } from '../../../RNComponents/isAppInForeground';
 
-const logger = new Logger('EventsBuffer');
+const logger = new Logger('PinpointEventBuffer');
 const RETRYABLE_CODES = [429, 500];
 const ACCEPTED_CODES = [202];
 
-type EventsBufferConfig = {
-	bufferSize: number;
-	flushSize: number;
-	flushInterval: number;
-	resendLimit: number;
-};
+// Default buffer configuration
+export const BUFFER_SIZE = 1000;
+export const FLUSH_SIZE = 100;
+export const FLUSH_INTERVAL = 5 * 1000; // 5s
+export const RESEND_LIMIT = 5;
 
-export default class EventsBuffer {
-	private _config;
-	private _interval;
+export class PinpointEventBuffer {
+	private _config: EventBufferConfig;
+	private _interval: ReturnType<typeof setInterval> | undefined = undefined;
 	private _buffer: EventBuffer;
 	private _pause = false;
 	private _flush = false;
 
-	constructor(config: EventsBufferConfig) {
-		logger.debug('Instantiating buffer with config:', config);
+	constructor(config: EventBufferConfig) {
 		this._buffer = [];
 		this._config = config;
 
@@ -38,18 +43,20 @@ export default class EventsBuffer {
 		this._startLoop();
 	}
 
-	public push(event: EventObject) {
-		// if the buffer is currently at the configured limit, pushing would exceed it
+	public push(event: BufferedEvent) {
+		const eventId = event.eventId || uuid();
+		const resentLimit = event.resendLimit || this._config.resendLimit;
+
+		event.eventId = eventId;
+		event.resendLimit = resentLimit;
+
 		if (this._buffer.length >= this._config.bufferSize) {
-			logger.debug('Exceeded analytics events buffer size');
-			return event.handlers.reject(
-				new Error('Exceeded the size of analytics events buffer')
-			);
+			logger.debug('Exceeded Pinpoint event buffer limits, event dropped.', { eventId });
+
+			return;
 		}
 
-		const { eventId } = event.params.event;
-		const bufferElement = { [eventId]: event };
-		this._buffer.push(bufferElement);
+		this._buffer.push({ [eventId]: event });
 	}
 
 	public pause() {
@@ -62,6 +69,10 @@ export default class EventsBuffer {
 
 	public flush() {
 		this._flush = true;
+	}
+
+	public identityHasChanged(identityId: AuthSession['identityId']) {
+		return this._config.identityId !== identityId;
 	}
 
 	private _startLoop() {
@@ -77,14 +88,10 @@ export default class EventsBuffer {
 	private _sendBatch() {
 		const bufferLength = this._buffer.length;
 
-		if (this._flush && !bufferLength) {
+		if (this._flush && !bufferLength && this._interval) {
 			clearInterval(this._interval);
 		}
 
-		// Do not send the batch of events if
-		// the Buffer is paused or is empty or the App is not in the foreground
-		// Apps should be in the foreground since
-		// the OS may restrict access to the network in the background
 		if (this._pause || !bufferLength || !isAppInForeground()) {
 			return;
 		}
@@ -98,16 +105,16 @@ export default class EventsBuffer {
 	}
 
 	private async _putEvents(buffer: EventBuffer) {
-		const eventMap: EventMap = this._bufferToMap(buffer);
+		const eventMap: BufferedEventMap = this._bufferToMap(buffer);
 		const batchEventParams = this._generateBatchEventParams(eventMap);
 
 		try {
-			const { credentials, region } = this._config;
+			const { credentials, region, userAgentValue } = this._config;
 			const data: PutEventsOutput = await putEvents(
 				{
 					credentials,
 					region,
-					userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
+					userAgentValue,
 				},
 				batchEventParams
 			);
@@ -117,23 +124,21 @@ export default class EventsBuffer {
 		}
 	}
 
-	private _generateBatchEventParams(eventMap: EventMap): PutEventsInput {
+	private _generateBatchEventParams(eventMap: BufferedEventMap): PutEventsInput {
 		const batchEventParams = {
 			ApplicationId: '',
 			EventsRequest: {
 				BatchItem: {},
 			},
-		};
+		} as PutEventsInput;
 
 		Object.values(eventMap).forEach(item => {
-			const { params } = item;
-			const { event, timestamp, config } = params;
-			const { name, attributes, metrics, eventId, session } = event;
-			const { appId, endpointId } = config;
+			const { event, timestamp, endpointId, eventId, session } = item;
+			const { name, attributes, metrics } = event;
 
-			const batchItem = batchEventParams.EventsRequest.BatchItem;
+			const batchItem = batchEventParams.EventsRequest?.BatchItem || {};
 
-			batchEventParams.ApplicationId = batchEventParams.ApplicationId || appId;
+			batchEventParams.ApplicationId = batchEventParams.ApplicationId || this._config.appId;
 
 			if (!batchItem[endpointId]) {
 				batchItem[endpointId] = {
@@ -142,7 +147,7 @@ export default class EventsBuffer {
 				};
 			}
 
-			batchItem[endpointId].Events[eventId] = {
+			batchItem[endpointId].Events![eventId!] = {
 				EventType: name,
 				Timestamp: new Date(timestamp).toISOString(),
 				Attributes: attributes,
@@ -154,8 +159,8 @@ export default class EventsBuffer {
 		return batchEventParams;
 	}
 
-	private _handlePutEventsFailure(err, eventMap: EventMap) {
-		logger.debug('_putEvents Failed: ', err);
+	private _handlePutEventsFailure(err: any, eventMap: BufferedEventMap) {
+		logger.debug('putEvents call to Pinpoint failed.', err);
 		const statusCode = err.$metadata && err.$metadata.httpStatusCode;
 
 		if (RETRYABLE_CODES.includes(statusCode)) {
@@ -167,10 +172,10 @@ export default class EventsBuffer {
 
 	private _processPutEventsSuccessResponse(
 		data: PutEventsOutput,
-		eventMap: EventMap
+		eventMap: BufferedEventMap
 	) {
 		const { Results = {} } = data.EventsResponse ?? {};
-		const retryableEvents: EventObject[] = [];
+		const retryableEvents: BufferedEvent[] = [];
 
 		Object.entries(Results).forEach(([endpointId, endpointValues]) => {
 			const responses = endpointValues.EventsItemResponse ?? {};
@@ -197,7 +202,6 @@ export default class EventsBuffer {
 				};
 
 				if (StatusCode && ACCEPTED_CODES.includes(StatusCode)) {
-					eventObject.handlers.resolve(response);
 					return;
 				}
 
@@ -206,12 +210,13 @@ export default class EventsBuffer {
 					return;
 				}
 
-				const { name } = eventObject.params.event;
+				const { name } = eventObject.event;
 
-				logger.error(
-					`event ${eventId} : ${name} failed with error: ${Message}`
-				);
-				return eventObject.handlers.reject(response);
+				logger.warn('Pinpoint event failed to send.', {
+					eventId,
+					name,
+					message: Message
+				});
 			});
 		});
 
@@ -220,25 +225,28 @@ export default class EventsBuffer {
 		}
 	}
 
-	private _retry(retryableEvents: EventObject[]) {
+	private _retry(retryableEvents: BufferedEvent[]) {
 		// retryable events that haven't reached the resendLimit
 		const eligibleEvents: EventBuffer = [];
 
-		retryableEvents.forEach((event: EventObject) => {
-			const { params } = event;
-			const { eventId, name } = params.event;
+		retryableEvents.forEach((event: BufferedEvent) => {
+			const { eventId } = event;
+			const { name } = event.event;
 
-			if (params.resendLimit-- > 0) {
-				logger.debug(
-					`resending event ${eventId} : ${name} with ${params.resendLimit} retry attempts remaining`
-				);
-				eligibleEvents.push({ [eventId]: event });
+			if (event!.resendLimit!-- > 0) {
+				logger.debug('Resending event.', {
+					eventId,
+					name,
+					remainingAttempts: event.resendLimit
+				});
+				eligibleEvents.push({ [eventId!]: event });
 				return;
 			}
 
-			logger.debug(
-				`no retry attempts remaining for event ${eventId} : ${name}`
-			);
+			logger.debug('No retry attempts remaining for event.', {
+				eventId,
+				name
+			});
 		});
 
 		// add the events to the front of the buffer
@@ -246,7 +254,6 @@ export default class EventsBuffer {
 	}
 
 	// convert buffer to map, i.e. { eventId1: { params, handler }, eventId2: { params, handlers } }
-	// this allows us to easily access the handlers after receiving a batch response
 	private _bufferToMap(buffer: EventBuffer) {
 		return buffer.reduce((acc, curVal) => {
 			const [[key, value]] = Object.entries(curVal);

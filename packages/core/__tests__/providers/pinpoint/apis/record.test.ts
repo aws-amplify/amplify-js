@@ -13,17 +13,20 @@ import {
 	event,
 	uuid,
 } from '../testUtils/data';
-import { getExpectedPutEventsInput } from './testUtils/getExpectedPutEventsInput';
+import { getEventBuffer } from '../../../../src/providers/pinpoint/utils/bufferManager';
 
 jest.mock('uuid');
 jest.mock('../../../../src/AwsClients/Pinpoint');
 jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('../../../../src/providers/pinpoint/apis/updateEndpoint');
+jest.mock('../../../../src/providers/pinpoint/utils/bufferManager');
 
 describe('Pinpoint Provider API: record', () => {
+	const mockGetEventBuffer = getEventBuffer as jest.Mock;
 	const mockClientPutEvents = clientPutEvents as jest.Mock;
 	const mockGetEndpointId = getEndpointId as jest.Mock;
 	const mockUpdateEndpoint = updateEndpoint as jest.Mock;
+	const mockBufferPush = jest.fn();
 	const mockUuid = v4 as jest.Mock;
 
 	beforeEach(() => {
@@ -33,6 +36,11 @@ describe('Pinpoint Provider API: record', () => {
 		mockUpdateEndpoint.mockResolvedValue(undefined);
 		mockGetEndpointId.mockReset();
 		mockGetEndpointId.mockReturnValue(endpointId);
+		mockGetEventBuffer.mockReset();
+		mockBufferPush.mockReset();
+		mockGetEventBuffer.mockReturnValue({
+			push: mockBufferPush,
+		})
 	});
 
 	it('uses an existing enpoint if available', async () => {
@@ -46,8 +54,14 @@ describe('Pinpoint Provider API: record', () => {
 		});
 
 		expect(mockUpdateEndpoint).toBeCalledTimes(0);
-
-		// TODO(v6) Test that event was sent to the buffer
+		expect(mockBufferPush).toBeCalledWith(
+			expect.objectContaining({
+				endpointId,
+				event,
+				session: expect.any(Object),
+				timestamp: expect.any(String)
+			}
+		));
 	});
 
 	it("prepares an endpoint if one hasn't been setup", async () => {
@@ -109,7 +123,14 @@ describe('Pinpoint Provider API: record', () => {
 			region,
 		});
 
-		// TODO(v6) Test that event was sent to the buffer
+		expect(mockBufferPush).toBeCalledWith(
+			expect.objectContaining({
+				endpointId,
+				event,
+				session: expect.any(Object),
+				timestamp: expect.any(String)
+			}
+		));
 	});
 
 	it('throws an error if it is unable to determine the endpoint ID', async () => {

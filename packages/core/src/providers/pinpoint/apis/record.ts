@@ -4,7 +4,14 @@
 import { v4 as uuid } from 'uuid';
 import { PinpointRecordParameters, PinpointSession } from '../types';
 import { getEndpointId } from '../utils';
+import { 
+	BUFFER_SIZE,
+	FLUSH_INTERVAL,
+	FLUSH_SIZE,
+	RESEND_LIMIT,
+} from '../utils/PinpointEventBuffer';
 import { updateEndpoint } from './updateEndpoint';
+import { getEventBuffer } from '../utils/bufferManager';
 
 // TODO(v6) Refactor when we add support for session tracking & `autoTrack`
 let session: PinpointSession;
@@ -16,6 +23,7 @@ export const record = async ({
 	appId,
 	category,
 	credentials,
+	event,
 	identityId,
 	region,
 	userAgentValue,
@@ -23,7 +31,18 @@ export const record = async ({
 	const timestampISOString = new Date().toISOString();
 	let endpointId = await getEndpointId(appId, category);
 
-	// TODO Prepare event buffer if required
+	// Prepare event buffer if required
+	const buffer = getEventBuffer({
+		appId,
+		bufferSize: BUFFER_SIZE,
+		credentials,
+		flushInterval: FLUSH_INTERVAL,
+		flushSize: FLUSH_SIZE,
+		identityId,
+		region,
+		resendLimit: RESEND_LIMIT,
+		userAgentValue
+	});
 
 	// Generate endpoint if required
 	if (!endpointId) {
@@ -53,5 +72,11 @@ export const record = async ({
 		};
 	}
 
-	// TODO(v6) Append the event to the Pinpoint event buffer
+	// Push event to buffer
+	buffer.push({
+		endpointId,
+		event,
+		session,
+		timestamp: timestampISOString
+	});
 };
