@@ -11,9 +11,8 @@ const logger = new Logger('AuthError');
 
 export class AuthError extends Error {
 	public log: string;
-	constructor(type: AuthErrorTypes, customMessage?: string) {
-		const { log } = authErrorMessages[type];
-		const message = customMessage || authErrorMessages[type].message;
+	constructor(type: AuthErrorTypes) {
+		const { message, log } = authErrorMessages[type];
 		super(message);
 
 		// Hack for making the custom error class work when transpiled to es5

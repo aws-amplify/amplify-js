@@ -18,8 +18,10 @@ import {
 } from '../utils/signInWithRedirectHelpers';
 import { cognitoHostedUIIdentityProviderMap } from '../types/models';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
-import { AuthError } from '../../../Errors';
+import { AuthError } from '../../../errors/AuthError';
 import { AuthErrorTypes } from '../../../types';
+import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
+import { authErrorMessages } from '../../../Errors';
 
 const SELF = '_self';
 
@@ -125,9 +127,7 @@ async function handleCodeFlow({
 	try {
 		await validateStateFromURL(url);
 	} catch (err) {
-		resolveInflight();
-
-		resolveInflight = () => {};
+		invokeAndClearPromise();
 		// clear temp values
 		await store.clearOAuthInflightData();
 		return;
@@ -183,13 +183,15 @@ async function handleCodeFlow({
 	).json();
 
 	if (error) {
-		resolveInflight();
-		resolveInflight = () => {};
+		invokeAndClearPromise();
 
-		throw new AuthError(AuthErrorTypes.OAuthSignInError, error);
+		throw new AuthError({
+			message: error,
+			name: AuthErrorCodes.OAuthSignInError,
+			recoverySuggestion: authErrorMessages.oauthSignInError.log,
+		});
 	}
 
-	// clear temp values
 	store.clearOAuthInflightData();
 
 	await cacheCognitoTokens({
@@ -200,15 +202,9 @@ async function handleCodeFlow({
 		ExpiresIn: expires_in,
 	});
 
-	// clear history
+	clearHistory(redirectUri);
 
-	if (window && typeof window.history !== 'undefined') {
-		window.history.replaceState({}, null, redirectUri);
-	}
-	// this communicates Token orchestrator de flow was completed
-	resolveInflight();
-
-	resolveInflight = () => {};
+	invokeAndClearPromise();
 	return;
 }
 
@@ -241,12 +237,8 @@ async function handleImplicitFlow({
 		await validateState(state);
 	} catch (error) {
 		store.clearOAuthInflightData();
-
-		resolveInflight();
-
-		resolveInflight = () => {};
+		invokeAndClearPromise();
 		return;
-	} finally {
 	}
 
 	await cacheCognitoTokens({
@@ -257,15 +249,9 @@ async function handleImplicitFlow({
 		ExpiresIn: expires_in,
 	});
 
-	// clear history
+	clearHistory(redirectUri);
 
-	if (window && typeof window.history !== 'undefined') {
-		window.history.replaceState({}, null, redirectUri);
-	}
-
-	resolveInflight();
-
-	resolveInflight = () => {};
+	invokeAndClearPromise();
 }
 
 async function handleAuthResponse({
@@ -289,7 +275,12 @@ async function handleAuthResponse({
 		const error_description = urlParams.searchParams.get('error_description');
 
 		if (error) {
-			throw new AuthError(AuthErrorTypes.OAuthSignInError, error_description);
+			throw new AuthError({
+				message: AuthErrorTypes.OAuthSignInError,
+				underlyingError: error_description,
+				name: AuthErrorCodes.OAuthSignInError,
+				recoverySuggestion: authErrorMessages.oauthSignInError.log,
+			});
 		}
 
 		if (responseType === 'code') {
@@ -373,16 +364,25 @@ function urlListener() {
 urlListener();
 
 // This has a reference for listeners that requires to be notified, TokenOrchestrator use this for load tokens
-let resolveInflight = () => {};
+let resolveInflightPromise = () => {};
 
+const invokeAndClearPromise = () => {
+	resolveInflightPromise();
+	resolveInflightPromise = () => {};
+};
 CognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
 	() =>
 		new Promise(async (res, _rej) => {
 			if (!(await store.loadOAuthInFlight())) {
 				res();
 			} else {
-				resolveInflight = res;
+				resolveInflightPromise = res;
 			}
 			return;
 		})
 );
+function clearHistory(redirectUri: string) {
+	if (window && typeof window.history !== 'undefined') {
+		window.history.replaceState({}, null, redirectUri);
+	}
+}
