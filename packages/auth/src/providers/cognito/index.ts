@@ -15,6 +15,7 @@ export { updatePassword } from './apis/updatePassword';
 export { setUpTOTP } from './apis/setUpTOTP';
 export { updateUserAttributes } from './apis/updateUserAttributes';
 export { confirmUserAttribute } from './apis/confirmUserAttribute';
+export { fetchUserAttributes } from './apis/fetchUserAttributes';
 export {
 	cognitoCredentialsProvider,
 	CognitoAWSCredentialsAndIdentityIdProvider,
