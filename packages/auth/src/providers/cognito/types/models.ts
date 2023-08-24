@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthStandardAttributeKey } from '../../../types';
+import { AuthProvider } from '../../../types/requests';
 
 /**
  * Cognito supported AuthFlowTypes that may be passed as part of the Sign In request.
@@ -11,6 +12,14 @@ export type AuthFlowType =
 	| 'CUSTOM_WITH_SRP'
 	| 'CUSTOM_WITHOUT_SRP'
 	| 'USER_PASSWORD_AUTH';
+
+export const cognitoHostedUIIdentityProviderMap: Record<AuthProvider, string> =
+	{
+		Google: 'Google',
+		Facebook: 'Facebook',
+		Amazon: 'LoginWithAmazon',
+		Apple: 'SignInWithApple',
+	};
 
 /**
  * Arbitrary key/value pairs that may be passed as part of certain Cognito requests
@@ -30,7 +39,7 @@ export type CognitoUserAttributeKey =
  * Cognito custom attribute type
  */
 // TODO(V6): replace by `custom:${string}` once categories that use auth have upgraded TS
-export type CustomAttribute = string&{};
+export type CustomAttribute = string & {};
 
 /**
  * One or more name-value pairs containing the validation data in the request to register a user.
