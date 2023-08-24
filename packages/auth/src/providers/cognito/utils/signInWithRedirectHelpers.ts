@@ -50,8 +50,8 @@ export function generateChallenge(code: string): string {
 	return b64Frombtoa;
 }
 
-export function base64URL(string): string {
-	return string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+export function base64URL(stringUrl: string): string {
+	return stringUrl.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 }
 
 function bytesToBase64(bytes: Uint8Array) {
