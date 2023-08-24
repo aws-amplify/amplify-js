@@ -7,7 +7,6 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
 import {
-	AnalyticsError,
 	AnalyticsValidationErrorCode,
 	assertValidationError,
 } from '../../../errors';
@@ -24,7 +23,7 @@ const logger = new Logger('Analytics');
  *
  * @throws An {@link AnalyticsValidationErrorCode} when there is an error in the parameters or configuration.
  *
- * @returns Returns a promise that will resolve when the request is complete.
+ * @returns A promise that will resolve when the request is complete.
  */
 export const record = ({ event }: RecordParameters): void => {
 	const { appId, region } = resolveConfig();

@@ -5,6 +5,7 @@ import { v4 as uuid } from 'uuid';
 import { PinpointRecordParameters, PinpointSession } from '../types';
 import { getEndpointId } from '../utils';
 import { updateEndpoint } from './updateEndpoint';
+import { AmplifyError } from '../../../libraryUtils';
 
 // TODO(v6) Refactor when we add support for session tracking & `autoTrack`
 let session: PinpointSession;
@@ -40,7 +41,10 @@ export const record = async ({
 	}
 
 	if (!endpointId) {
-		throw new Error('Endpoint was not created.');
+		throw new AmplifyError({
+			name: 'ENDPOINT_NOT_CREATED',
+			message: 'Endpoint was not created.'
+		});
 	}
 
 	// Generate session if required

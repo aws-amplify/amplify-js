@@ -31,7 +31,7 @@ export type PinpointSession = {
 export type PinpointAnalyticsEvent = {
 	name: string;
 	attributes?: Record<string, string>;
-	metrics?: Record<string, string>;
+	metrics?: Record<string, number>;
 };
 
 export type PinpointUpdateEndpointParameters = PinpointServiceOptions & {
