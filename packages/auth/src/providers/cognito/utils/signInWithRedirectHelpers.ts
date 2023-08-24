@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { Sha256 } from '@aws-crypto/sha256-js';
 
 export function bufferToString(buffer: Uint8Array) {
@@ -12,7 +15,6 @@ export function bufferToString(buffer: Uint8Array) {
 }
 
 export function generateRandom(size: number) {
-	``;
 	const CHARSET =
 		'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
 	const buffer = new Uint8Array(size);
