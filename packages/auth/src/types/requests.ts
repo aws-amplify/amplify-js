@@ -5,7 +5,7 @@ import { AuthUserAttribute, AuthUserAttributeKey } from './models';
 import { AuthServiceOptions, AuthSignUpOptions } from './options';
 
 export type ConfirmResetPasswordRequest<
-	ServiceOptions extends AuthServiceOptions
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
 	username: string;
 	newPassword: string;
@@ -28,7 +28,9 @@ export type ResendSignUpCodeRequest<
 	options?: { serviceOptions?: ServiceOptions };
 };
 
-export type ResetPasswordRequest<ServiceOptions extends AuthServiceOptions> = {
+export type ResetPasswordRequest<
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+> = {
 	username: string;
 	options?: {
 		serviceOptions?: ServiceOptions;
