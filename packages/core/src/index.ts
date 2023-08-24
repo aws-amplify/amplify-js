@@ -15,7 +15,6 @@ export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export { AppState, AsyncStorage, Linking } from './RNComponents';
 export { Credentials, CredentialsClass } from './Credentials';
 export { ICredentials } from './types';
-export { Signer } from './Signer';
 
 // Singleton exports
 export {
