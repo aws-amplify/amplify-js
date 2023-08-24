@@ -44,8 +44,8 @@ type S3ListApi = {
 	/**
 	 * Lists bucket objects with pagination.
 	 * @param {StorageListRequest<StorageListPaginateOptions>} req - The request object
-	 * @return {Promise<S3ListPaginateResult>} - Promise resolves to list of keys and metadata for all objects in path
-	 * additionally the result will include a nextToken if there are more items to retrieve
+	 * @return {Promise<S3ListPaginateResult>} - Promise resolves to list of keys and metadata with pageSize defaulting to 1000.
+	 * Additionally the result will include a nextToken if there are more items to retrieve
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
@@ -63,7 +63,7 @@ export const list: S3ListApi = async (
 	const { identityId, credentials } = await resolveCredentials();
 	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
 	const { path = '', options = {} } = req ?? {};
-	const { accessLevel = defaultAccessLevel, listAll } = options;
+	const { accessLevel = defaultAccessLevel, listAll = false } = options;
 
 	// TODO(ashwinkumar6) V6-logger: check if this can be refactored
 	const prefix = getKeyWithPrefix({
@@ -72,7 +72,6 @@ export const list: S3ListApi = async (
 			options.accessLevel === 'protected'
 				? options.targetIdentityId
 				: identityId,
-		key: '',
 	});
 	const finalPath = prefix + path;
 	const listConfig = {
