@@ -42,7 +42,7 @@ export function assertOAuthConfig(
 
 	return asserts(validOAuthConfig, {
 		name: 'OAuthNotConfigureException',
-		message: 'oauth param not provided',
+		message: 'oauth param not configured',
 		recoverySuggestion:
 			'Make sure to call Amplify.configure with oauth parameter in your app',
 	});
