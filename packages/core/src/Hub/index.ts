@@ -25,7 +25,7 @@ const logger = new Logger('Hub');
 
 export class HubClass {
 	name: string;
-	private listeners: IListener[] = [];
+	private listeners = new Map<string, IListener>();
 
 	protectedChannels = [
 		'core',
@@ -43,7 +43,6 @@ export class HubClass {
 		this.name = name;
 	}
 
-	// TODO[kvramya] need to update mapping of channel to remove type assertion.
 	/**
 	 * Used internally to remove a Hub listener.
 	 *
@@ -54,16 +53,14 @@ export class HubClass {
 		Channel extends AmplifyChannel | string = string,
 		EventData extends EventDataMap = EventDataMap
 	>(channel: Channel, listener: HubCallback<Channel, EventData>) {
-		// TODO[kvramya] need to update mapping of channel to remove type assertion.
-		const holder = this.listeners[channel as unknown as number];
+		const holder = this.listeners.get(channel);
 		if (!holder) {
 			logger.warn(`No listeners for ${channel}`);
 			return;
 		}
-		// TODO[kvramya] need to update mapping of channel to remove type assertion.
-		this.listeners[channel as unknown as number] = [
+		this.listeners.set(channel, [
 			...holder.filter(({ callback }) => callback !== listener),
-		];
+		]);
 	}
 
 	/**
@@ -167,20 +164,17 @@ export class HubClass {
 			// Needs to be casted as a more generic type
 			cb = callback as HubCallback<string, EventDataMap>;
 		}
-		// TODO[kvramya] need to update mapping of channel to remove type assertion.
-		let holder = this.listeners[channel as unknown as number];
+		let holder = this.listeners.get(channel);
 
 		if (!holder) {
 			holder = [];
-			// TODO[kvramya] need to update mapping of channel to remove type assertion.
-			this.listeners[channel as unknown as number] = holder;
+			this.listeners.set(channel, holder);
 		}
 
 		holder.push({
 			name: listenerName,
 			callback: cb,
 		});
-
 		return () => {
 			this._remove(channel, cb);
 		};
@@ -190,8 +184,7 @@ export class HubClass {
 		capsule: HubCapsule<Channel, EventDataMap | AmplifyEventData[Channel]>
 	) {
 		const { channel, payload } = capsule;
-		// TODO[kvramya] need to update mapping of channel to remove type assertion.
-		const holder = this.listeners[channel as unknown as number];
+		const holder = this.listeners.get(channel);
 		if (holder) {
 			holder.forEach(listener => {
 				logger.debug(`Dispatching to ${channel} with `, payload);
