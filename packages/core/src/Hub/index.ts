@@ -185,7 +185,7 @@ export class HubClass {
 		capsule: HubCapsule<Channel, EventDataMap | AmplifyEventData[Channel]>
 	) {
 		const { channel, payload } = capsule;
-		const holder = this.listeners[channel as unknown as number];
+		const holder = this.listeners[channel];
 		if (holder) {
 			holder.forEach(listener => {
 				logger.debug(`Dispatching to ${channel} with `, payload);
