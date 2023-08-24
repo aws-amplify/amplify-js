@@ -2,6 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { UserProfile } from '@aws-amplify/core';
+import { PinpointAnalyticsEvent } from '@aws-amplify/core/internals/providers/pinpoint';
+
+export type RecordParameters = {
+	/**
+	 * An event to send to the default Analytics provider.
+	 */
+	event: PinpointAnalyticsEvent;
+};
 
 export type IdentifyUserParameters = {
 	/**

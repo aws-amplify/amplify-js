@@ -16,6 +16,15 @@ export const clientDemographic = {
 	platform: 'platform',
 };
 export const endpointId = 'endpoint-id';
+export const event = {
+	name: 'event',
+	attributes: {
+		property: 'property-value',
+	},
+	metrics: {
+		metric: 5,
+	},
+};
 export const identityId = 'identity-id';
 export const region = 'region';
 export const userId = 'user-id';

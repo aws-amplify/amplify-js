@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ICredentials } from '@aws-amplify/core';
+
 /**
  * Analytics instance options
  */
@@ -74,13 +75,6 @@ export interface AutoTrackEventOpts {
 	selectorPrefix?: string;
 	provider?: string;
 	attributes?: AutoTrackAttributes;
-}
-
-export interface AnalyticsEvent {
-	name: string;
-	attributes?: EventAttributes;
-	metrics?: EventMetrics;
-	immediate?: boolean;
 }
 
 export { PersonalizeAnalyticsEvent } from './providers/AmazonPersonalizeProvider';

@@ -23,14 +23,33 @@ export type PinpointServiceOptions = {
 	optOut?: 'ALL' | 'NONE';
 };
 
-export type PinpointUpdateEndpointParameters = PinpointServiceOptions & {
+export type PinpointSession = {
+	Id: string;
+	StartTimestamp: string;
+};
+
+export type PinpointAnalyticsEvent = {
+	name: string;
+	attributes?: Record<string, string>;
+	metrics?: Record<string, number>;
+};
+
+// Common type that is required for operations that may trigger an endpoint update
+type PinpointCommonParameters = {
 	appId: string;
 	category: SupportedCategory;
-	channelType?: SupportedChannelType;
 	credentials: AuthSession['credentials'];
 	identityId?: AuthSession['identityId'];
 	region: string;
+	userAgentValue?: string;
+};
+
+export type PinpointUpdateEndpointParameters = PinpointCommonParameters & PinpointServiceOptions & {
+	channelType?: SupportedChannelType;
 	userId?: string;
 	userProfile?: UserProfile;
-	userAgentValue?: string;
+};
+
+export type PinpointRecordParameters = PinpointCommonParameters & {
+	event: PinpointAnalyticsEvent;
 };
