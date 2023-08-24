@@ -5,6 +5,7 @@ import { AmplifyV6, Hub, LocalStorage, OAuthConfig } from '@aws-amplify/core';
 import { SignInWithRedirectRequest } from '../../../types/requests';
 
 import {
+	AmplifyError,
 	assertOAuthConfig,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
@@ -18,6 +19,8 @@ import {
 } from '../utils/signInWithRedirectHelpers';
 import { cognitoHostedUIIdentityProviderMap } from '../types/models';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
+import { AuthError } from '../../../Errors';
+import { AuthErrorTypes } from '../../../types';
 
 const SELF = '_self';
 
@@ -78,7 +81,6 @@ function oauthSignIn({
 		? `${generatedState}-${urlSafeEncode(customState)}`
 		: generatedState;
 
-	// TODO(v6): use default storage adapter
 	store.storeOAuthInFlight(true);
 	store.storeOAuthState(state);
 
@@ -185,13 +187,12 @@ async function handleCodeFlow({
 
 	if (error) {
 		resolveInflight();
-
 		resolveInflight = () => {};
-		throw new Error(error);
+
+		throw new AuthError(AuthErrorTypes.OAuthSignInError, error);
 	}
 
 	// clear temp values
-	// TODO(v6): use default storage adapter
 	store.clearOAuthInflightData();
 
 	await cacheCognitoTokens({
@@ -291,7 +292,7 @@ async function handleAuthResponse({
 		const error_description = urlParams.searchParams.get('error_description');
 
 		if (error) {
-			throw new Error(error_description);
+			throw new AuthError(AuthErrorTypes.OAuthSignInError, error_description);
 		}
 
 		if (responseType === 'code') {
@@ -324,12 +325,15 @@ async function validateStateFromURL(urlParams: URL): Promise<string> {
 }
 
 async function validateState(state: string) {
-	// TODO(v6): use correct storage adapter and key
 	const savedState = await store.loadOAuthState();
 
 	// This is because savedState only exists if the flow was initiated by Amplify
 	if (savedState && savedState !== state) {
-		throw new Error('Invalid state in OAuth flow');
+		throw new AmplifyError({
+			name: '',
+			message: '',
+			recoverySuggestion: '',
+		});
 	}
 }
 

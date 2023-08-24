@@ -1,7 +1,10 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { AuthConfig, KeyValueStorageInterface } from '@aws-amplify/core';
 import { OAuthStorageKeys, OAuthStore } from './types';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
-import { assertTokenProviderConfig } from '@aws-amplify/core/lib-esm/libraryUtils';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 
 export class DefaultOAuthStore implements OAuthStore {
 	keyValueStorage: KeyValueStorageInterface;
