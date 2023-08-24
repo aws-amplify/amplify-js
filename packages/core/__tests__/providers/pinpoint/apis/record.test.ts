@@ -22,11 +22,11 @@ jest.mock('../../../../src/providers/pinpoint/apis/updateEndpoint');
 jest.mock('../../../../src/providers/pinpoint/utils/getEventBuffer');
 
 describe('Pinpoint Provider API: record', () => {
-  const mockGetEventBuffer = getEventBuffer as jest.Mock;
+	const mockGetEventBuffer = getEventBuffer as jest.Mock;
 	const mockClientPutEvents = clientPutEvents as jest.Mock;
 	const mockGetEndpointId = getEndpointId as jest.Mock;
 	const mockUpdateEndpoint = updateEndpoint as jest.Mock;
-  const mockBufferPush = jest.fn();
+	const mockBufferPush = jest.fn();
 	const mockUuid = v4 as jest.Mock;
 
 	beforeEach(() => {

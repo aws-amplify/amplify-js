@@ -65,9 +65,9 @@ describe('Pinpoint API: record', () => {
 		record({
 			event,
 		});
-
+		
 		await new Promise(process.nextTick);
-    
+
 		expect(mockPinpointRecord).not.toBeCalled();
 		expect(loggerWarnSpy).toBeCalledWith(expect.any(String), expect.any(Error));
 	});
