@@ -18,11 +18,11 @@ export type EventBufferConfig = {
 
 export type BufferedEvent = {
 	endpointId: string;
-	eventId?: string;
+	eventId: string;
 	event: PinpointAnalyticsEvent;
 	session: PinpointSession;
 	timestamp: string;
-	resendLimit?: number;
+	resendLimit: number;
 };
 
 export type BufferedEventMap = {

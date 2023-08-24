@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { v4 as uuid } from 'uuid';
 import { ConsoleLogger as Logger } from '../../../Logger';
 import {
+	EventsBatch,
 	putEvents,
 	PutEventsInput,
 	PutEventsOutput,
@@ -20,12 +20,6 @@ import { isAppInForeground } from '../../../RNComponents/isAppInForeground';
 const logger = new Logger('PinpointEventBuffer');
 const RETRYABLE_CODES = [429, 500];
 const ACCEPTED_CODES = [202];
-
-// Default buffer configuration
-export const BUFFER_SIZE = 1000;
-export const FLUSH_SIZE = 100;
-export const FLUSH_INTERVAL = 5 * 1000; // 5s
-export const RESEND_LIMIT = 5;
 
 export class PinpointEventBuffer {
 	private _config: EventBufferConfig;
@@ -44,19 +38,13 @@ export class PinpointEventBuffer {
 	}
 
 	public push(event: BufferedEvent) {
-		const eventId = event.eventId || uuid();
-		const resentLimit = event.resendLimit || this._config.resendLimit;
-
-		event.eventId = eventId;
-		event.resendLimit = resentLimit;
-
 		if (this._buffer.length >= this._config.bufferSize) {
-			logger.debug('Exceeded Pinpoint event buffer limits, event dropped.', { eventId });
+			logger.debug('Exceeded Pinpoint event buffer limits, event dropped.', { eventId: event.eventId });
 
 			return;
 		}
 
-		this._buffer.push({ [eventId]: event });
+		this._buffer.push({ [event.eventId]: event });
 	}
 
 	public pause() {
@@ -125,38 +113,35 @@ export class PinpointEventBuffer {
 	}
 
 	private _generateBatchEventParams(eventMap: BufferedEventMap): PutEventsInput {
-		const batchEventParams = {
-			ApplicationId: '',
-			EventsRequest: {
-				BatchItem: {},
-			},
-		} as PutEventsInput;
+		const batchItem: Record<string, EventsBatch> = {};
 
 		Object.values(eventMap).forEach(item => {
 			const { event, timestamp, endpointId, eventId, session } = item;
 			const { name, attributes, metrics } = event;
-
-			const batchItem = batchEventParams.EventsRequest?.BatchItem || {};
-
-			batchEventParams.ApplicationId = batchEventParams.ApplicationId || this._config.appId;
-
-			if (!batchItem[endpointId]) {
-				batchItem[endpointId] = {
-					Endpoint: {},
-					Events: {},
-				};
-			}
-
-			batchItem[endpointId].Events![eventId!] = {
-				EventType: name,
-				Timestamp: new Date(timestamp).toISOString(),
-				Attributes: attributes,
-				Metrics: metrics,
-				Session: session,
+	
+			batchItem[endpointId] = {
+				Endpoint: {
+					...batchItem[endpointId]?.Endpoint
+				},
+				Events: {
+					...batchItem[endpointId]?.Events,
+					[eventId]: {
+						EventType: name,
+						Timestamp: new Date(timestamp).toISOString(),
+						Attributes: attributes,
+						Metrics: metrics,
+						Session: session,
+					}
+				},
 			};
 		});
-
-		return batchEventParams;
+	
+		return {
+			ApplicationId: this._config.appId,
+			EventsRequest: {
+				BatchItem: batchItem,
+			},
+		};
 	}
 
 	private _handlePutEventsFailure(err: any, eventMap: BufferedEventMap) {
@@ -253,7 +238,6 @@ export class PinpointEventBuffer {
 		this._buffer.unshift(...eligibleEvents);
 	}
 
-	// convert buffer to map, i.e. { eventId1: { params, handler }, eventId2: { params, handlers } }
 	private _bufferToMap(buffer: EventBuffer) {
 		return buffer.reduce((acc, curVal) => {
 			const [[key, value]] = Object.entries(curVal);

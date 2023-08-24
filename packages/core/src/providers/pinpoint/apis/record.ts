@@ -9,7 +9,7 @@ import {
 	FLUSH_INTERVAL,
 	FLUSH_SIZE,
 	RESEND_LIMIT,
-} from '../utils/PinpointEventBuffer';
+} from '../utils/constants';
 import { updateEndpoint } from './updateEndpoint';
 import { getEventBuffer } from '../utils/getEventBuffer';
 import { AmplifyError } from '../../../libraryUtils';
@@ -30,6 +30,7 @@ export const record = async ({
 	userAgentValue,
 }: PinpointRecordParameters): Promise<void> => {
 	const timestampISOString = new Date().toISOString();
+	const eventId = uuid();
 	let endpointId = await getEndpointId(appId, category);
   
 	// Prepare event buffer if required
@@ -79,9 +80,11 @@ export const record = async ({
   
 	// Push event to buffer
 	buffer.push({
+		eventId,
 		endpointId,
 		event,
 		session,
-		timestamp: timestampISOString
+		timestamp: timestampISOString,
+		resendLimit: RESEND_LIMIT
 	});
 };
