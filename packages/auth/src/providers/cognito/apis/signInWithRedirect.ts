@@ -2,13 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyV6, Hub, OAuthConfig } from '@aws-amplify/core';
-import {
-	AuthProvider,
-	SignInWithRedirectRequest,
-} from '../../../types/requests';
-import { Sha256 } from '@aws-crypto/sha256-js';
-// TODO(v6): replace this by using TextEncoder/TextDecoder/atob/btoa
-import { Buffer } from 'buffer';
+import { SignInWithRedirectRequest } from '../../../types/requests';
+
 import {
 	assertOAuthConfig,
 	urlSafeEncode,
@@ -16,6 +11,12 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { CognitoUserPoolsTokenProvider } from '../tokenProvider';
+import {
+	generateChallenge,
+	generateRandom,
+	generateState,
+} from '../utils/signInWithRedirectHelpers';
+import { cognitoHostedUIIdentityProviderMap } from '../types/models';
 
 const SELF = '_self';
 
@@ -53,13 +54,6 @@ export function signInWithRedirect(
 	});
 }
 
-const cognitoHostedUIIdentityProviderMap: Record<AuthProvider, string> = {
-	Google: 'Google',
-	Facebook: 'Facebook',
-	Amazon: 'LoginWithAmazon',
-	Apple: 'SignInWithApple',
-};
-
 function oauthSignIn({
 	oauthConfig,
 	provider,
@@ -71,7 +65,7 @@ function oauthSignIn({
 	clientId: string;
 	customState?: string;
 }) {
-	const generatedState = _generateState(32);
+	const generatedState = generateState(32);
 
 	/* encodeURIComponent is not URL safe, use urlSafeEncode instead. Cognito 
 	single-encodes/decodes url on first sign in and double-encodes/decodes url
@@ -86,10 +80,10 @@ function oauthSignIn({
 	// TODO(v6): use default storage adapter
 	window.localStorage.setItem('com.amplify.cognito.state', state);
 	window.localStorage.setItem('com.amplify.cognito.inflightOAuth', 'true');
-	const pkce_key = _generateRandom(128);
+	const pkce_key = generateRandom(128);
 	window.localStorage.setItem('com.amplify.cognito.pkce', pkce_key);
 
-	const code_challenge = _generateChallenge(pkce_key);
+	const code_challenge = generateChallenge(pkce_key);
 	const code_challenge_method = 'S256';
 
 	const scopesString = oauthConfig.scopes.join(' ');
@@ -109,57 +103,6 @@ function oauthSignIn({
 
 	const URL = `https://${oauthConfig.domain}/oauth2/authorize?${queryString}`;
 	window.open(URL, SELF);
-}
-
-function _generateState(length: number) {
-	let result = '';
-	let i = length;
-	const chars =
-		'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	for (; i > 0; --i)
-		result += chars[Math.round(Math.random() * (chars.length - 1))];
-	return result;
-}
-
-function _generateChallenge(code: string) {
-	const awsCryptoHash = new Sha256();
-	awsCryptoHash.update(code);
-
-	const resultFromAWSCrypto = awsCryptoHash.digestSync();
-	const b64 = Buffer.from(resultFromAWSCrypto).toString('base64');
-	const base64URLFromAWSCrypto = _base64URL(b64);
-
-	return base64URLFromAWSCrypto;
-}
-
-function _base64URL(string) {
-	return string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-}
-
-function _generateRandom(size: number) {
-	``;
-	const CHARSET =
-		'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-	const buffer = new Uint8Array(size);
-	if (typeof window !== 'undefined' && !!window.crypto) {
-		window.crypto.getRandomValues(buffer);
-	} else {
-		for (let i = 0; i < size; i += 1) {
-			buffer[i] = (Math.random() * CHARSET.length) | 0;
-		}
-	}
-	return _bufferToString(buffer);
-}
-
-function _bufferToString(buffer: Uint8Array) {
-	const CHARSET =
-		'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	const state = [];
-	for (let i = 0; i < buffer.byteLength; i += 1) {
-		const index = buffer[i] % CHARSET.length;
-		state.push(CHARSET[index]);
-	}
-	return state.join('');
 }
 
 async function handleCodeFlow({
