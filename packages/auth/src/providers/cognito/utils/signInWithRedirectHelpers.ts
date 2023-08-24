@@ -31,11 +31,12 @@ export function generateRandom(size: number) {
 
 export function generateState(length: number): string {
 	let result = '';
-	let i = length;
+
 	const chars =
 		'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	for (; i > 0; --i)
+	for (let i = length; i > 0; --i)
 		result += chars[Math.round(Math.random() * (chars.length - 1))];
+
 	return result;
 }
 
