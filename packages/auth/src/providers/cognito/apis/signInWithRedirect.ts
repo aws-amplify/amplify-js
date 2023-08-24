@@ -28,7 +28,6 @@ const SELF = '_self';
  * Signs in a user by an OAuth flow, it redirects the App to an Identity Provider
  *
  * @param signInRedirectRequest - The SignInRedirectRequest object, if empty it will redirect to Cognito HostedUI
- * @returns void - This is operation expects to redirect the App.
  *  are not defined.
  *
  * TODO: add config errors
