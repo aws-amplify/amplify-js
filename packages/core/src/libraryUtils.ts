@@ -26,6 +26,7 @@ export {
 	decodeJWT,
 	assertTokenProviderConfig,
 	assertIdentityPooIdConfig,
+	assertOAuthConfig,
 } from './singleton/Auth/utils';
 export { isTokenExpired } from './singleton/Auth';
 
@@ -91,11 +92,7 @@ export {
 } from './Util/Errors';
 export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export { AppState, AsyncStorage, Linking } from './RNComponents';
-export {
-	ErrorParams,
-	AmplifyErrorMap,
-	ServiceError
-} from './types';
+export { ErrorParams, AmplifyErrorMap, ServiceError } from './types';
 export {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 	USER_AGENT_HEADER,
