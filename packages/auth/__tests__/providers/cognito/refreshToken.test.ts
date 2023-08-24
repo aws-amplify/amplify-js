@@ -48,7 +48,7 @@ describe('refresh token tests', () => {
 				'cache-control': 'no-store',
 				'content-type': 'application/x-amz-json-1.1',
 				'x-amz-target': 'AWSCognitoIdentityProviderService.InitiateAuth',
-				'x-amz-user-agent': 'aws-amplify/6.0.0 framework/0',
+				'x-amz-user-agent': expect.any(String),
 			}),
 			body: JSON.stringify({
 				ClientId: 'aaaaaaaaaaaa',

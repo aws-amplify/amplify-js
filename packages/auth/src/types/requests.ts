@@ -130,3 +130,14 @@ export type UpdateUserAttributesRequest<
  * @param recache - whether to recache the user
  */
 export type GetCurrentUserRequest = { recache: boolean };
+
+/*
+ * Constructs a `verifyUserAttribute` request.
+ *
+ * @param userAttributeKey - the user attribute key to be verified
+ * @param confirmationCode - the user attribute verification code sent to email or cellphone
+ *
+ */
+export type ConfirmUserAttributeRequest<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = { userAttributeKey: UserAttributeKey; confirmationCode: string };
