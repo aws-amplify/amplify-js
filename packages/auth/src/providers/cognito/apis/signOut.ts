@@ -3,10 +3,17 @@ import { SignOutRequest } from '../../../types/requests';
 import { AuthSignOutResult } from '../../../types/results';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { tokenOrchestrator } from '../tokenProvider';
-import { assertOAuthConfig } from '@aws-amplify/core/internals/utils';
-import { revokeToken } from '../utils/clients/CognitoIdentityProvider';
+import {
+	assertOAuthConfig,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
+import {
+	globalSignOut,
+	revokeToken,
+} from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { JWT } from '@aws-amplify/core/lib-esm/singleton/Auth/types';
+import { AuthError } from '../../../errors/AuthError';
 const SELF = '_self';
 
 /**
@@ -21,7 +28,7 @@ export async function signOut(
 	signOutRequest?: SignOutRequest
 ): Promise<AuthSignOutResult> {
 	if (signOutRequest?.global) {
-		return globalSignOut();
+		return globalSignOutHandler();
 	} else {
 		return clientSignOut();
 	}
@@ -30,27 +37,67 @@ export async function signOut(
 async function clientSignOut() {
 	const authConfig = AmplifyV6.getConfig().Auth;
 
-	const { refreshToken, accessToken } =
-		await tokenOrchestrator.tokenStore.loadTokens();
-	if (isSessionRevocable(accessToken)) {
-		await revokeTokens({
-			region: getRegion(authConfig.userPoolId),
-			clientId: authConfig.userPoolWebClientId,
-			token: refreshToken,
+	try {
+		const { refreshToken, accessToken } =
+			await tokenOrchestrator.tokenStore.loadTokens();
+		if (isSessionRevocable(accessToken)) {
+			await revokeTokens({
+				region: getRegion(authConfig.userPoolId),
+				clientId: authConfig.userPoolWebClientId,
+				token: refreshToken,
+			});
+		}
+
+		await handleOAuthSignOut(authConfig);
+		const oauthStore = new DefaultOAuthStore(LocalStorage);
+		oauthStore.setAuthConfig(authConfig);
+		if (authConfig.oauth && oauthStore.loadOAuthSignIn()) {
+			oAuthSignOutRedirect(authConfig);
+		}
+	} catch (err) {
+		throw new AuthError({
+			message: 'SignOut error',
+			name: 'SignOutError',
+			underlyingError: err,
 		});
-	}
-
-	tokenOrchestrator.clearTokens();
-
-	await handleOAuthSignOut(authConfig);
-	const oauthStore = new DefaultOAuthStore(LocalStorage);
-	oauthStore.setAuthConfig(authConfig);
-	if (authConfig.oauth && oauthStore.loadOAuthSignIn()) {
-		oAuthSignOutRedirect(authConfig);
+	} finally {
+		tokenOrchestrator.clearTokens();
 	}
 }
 
-async function globalSignOut() {}
+async function globalSignOutHandler() {
+	const authConfig = AmplifyV6.getConfig().Auth;
+
+	try {
+		assertTokenProviderConfig(authConfig);
+		const { accessToken } = await tokenOrchestrator.tokenStore.loadTokens();
+		await globalSignOut(
+			{
+				region: getRegion(authConfig.userPoolId),
+			},
+			{
+				AccessToken: accessToken.toString(),
+			}
+		);
+
+		tokenOrchestrator.clearTokens();
+
+		await handleOAuthSignOut(authConfig);
+		const oauthStore = new DefaultOAuthStore(LocalStorage);
+		oauthStore.setAuthConfig(authConfig);
+		if (authConfig.oauth && oauthStore.loadOAuthSignIn()) {
+			oAuthSignOutRedirect(authConfig);
+		}
+	} catch (err) {
+		throw new AuthError({
+			message: 'SignOut error',
+			name: 'SignOutError',
+			underlyingError: err,
+		});
+	} finally {
+		tokenOrchestrator.clearTokens();
+	}
+}
 
 function handleOAuthSignOut(authConfig: AuthConfig) {
 	try {
