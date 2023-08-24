@@ -26,7 +26,7 @@ export type HubCapsule<
 	EventData extends EventDataMap
 > = {
 	channel: Channel;
-	payload: HubPayload<AmplifyEventData[Channel]> | HubPayload<EventData>;
+	payload: HubPayload<EventData>;
 	source?: string;
 	patternInfo?: string[];
 };

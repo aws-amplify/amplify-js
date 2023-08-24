@@ -94,7 +94,7 @@ export class HubClass {
 		EventData extends EventDataMap = EventDataMap
 	>(
 		channel: Channel | string,
-		payload: HubPayload<AmplifyEventData[Channel]> | HubPayload<EventData>,
+		payload: HubPayload<EventData>,
 		source?: string,
 		ampSymbol?: Symbol
 	): void {
