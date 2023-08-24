@@ -126,6 +126,12 @@ export type UpdateUserAttributesRequest<
 };
 
 /**
+ * Constructs a `GetCurrentUser` request.
+ * @param recache - whether to recache the user
+ */
+export type GetCurrentUserRequest = { recache: boolean };
+
+/*
  * Constructs a `verifyUserAttribute` request.
  *
  * @param userAttributeKey - the user attribute key to be verified

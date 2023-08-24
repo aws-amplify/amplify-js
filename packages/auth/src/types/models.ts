@@ -161,3 +161,11 @@ export type DoneAttributeStep = {
 export type AuthNextUpdateAttributeStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = ConfirmAttributeWithCodeAttributeStep<UserAttributeKey> | DoneAttributeStep;
+
+/**
+ * The AuthUser object contains username and userId from the idToken.
+ */
+export type AuthUser = {
+	username: string;
+	userId: string;
+};
