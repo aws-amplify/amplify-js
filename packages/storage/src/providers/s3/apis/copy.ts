@@ -39,8 +39,11 @@ export const copy = async (copyRequest: CopyRequest): Promise<S3CopyResult> => {
 		},
 	} = copyRequest;
 
-	assertValidationError(!!sourceKey, StorageValidationErrorCode.NoKey);
-	assertValidationError(!!destinationKey, StorageValidationErrorCode.NoKey);
+	assertValidationError(!!sourceKey, StorageValidationErrorCode.NoSourceKey);
+	assertValidationError(
+		!!destinationKey,
+		StorageValidationErrorCode.NoDestinationKey
+	);
 
 	const sourceFinalKey = `${bucket}/${getKeyWithPrefix({
 		accessLevel: sourceAccessLevel,
