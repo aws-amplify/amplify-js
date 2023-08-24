@@ -11,8 +11,9 @@ const logger = new Logger('AuthError');
 
 export class AuthError extends Error {
 	public log: string;
-	constructor(type: AuthErrorTypes) {
-		const { message, log } = authErrorMessages[type];
+	constructor(type: AuthErrorTypes, customMessage?: string) {
+		const { log } = authErrorMessages[type];
+		const message = customMessage || authErrorMessages[type].message;
 		super(message);
 
 		// Hack for making the custom error class work when transpiled to es5
@@ -41,6 +42,10 @@ export class NoUserPoolError extends AuthError {
 }
 
 export const authErrorMessages: AuthErrorMessages = {
+	oauthSignInError: {
+		message: AuthErrorStrings.OAUTH_ERROR,
+		log: `Make sure Hosted UI has been configured correctly`,
+	},
 	noConfig: {
 		message: AuthErrorStrings.DEFAULT_MSG,
 		log: `
