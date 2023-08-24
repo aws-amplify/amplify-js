@@ -4,4 +4,3 @@
 export * from './Analytics';
 export * from './Provider';
 export * from './providers';
-export * from './parameters';

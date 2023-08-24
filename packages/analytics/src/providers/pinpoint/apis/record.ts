@@ -12,7 +12,7 @@ import {
 	assertValidationError,
 } from '../../../errors';
 import { getAnalyticsUserAgentString } from '../../../utils/userAgent';
-import { PinpointRecordParameters } from '../types/parameters';
+import { RecordParameters } from '../types/parameters';
 import { resolveConfig, resolveCredentials } from '../utils';
 
 const logger = new Logger('Analytics');
@@ -26,7 +26,7 @@ const logger = new Logger('Analytics');
  *
  * @returns Returns a promise that will resolve when the request is complete.
  */
-export const record = ({ event }: PinpointRecordParameters): void => {
+export const record = ({ event }: RecordParameters): void => {
 	const { appId, region } = resolveConfig();
 
 	assertValidationError(!!event, AnalyticsValidationErrorCode.NoEvent);

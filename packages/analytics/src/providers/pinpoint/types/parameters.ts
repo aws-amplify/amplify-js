@@ -3,9 +3,13 @@
 
 import { UserProfile } from '@aws-amplify/core';
 import { PinpointAnalyticsEvent } from '@aws-amplify/core/internals/providers/pinpoint';
-import { RecordParameters } from '../../../types';
 
-export type PinpointRecordParameters = RecordParameters<PinpointAnalyticsEvent>;
+export type RecordParameters = {
+	/**
+	 * An event to send to the default Analytics provider.
+	 */
+	event: PinpointAnalyticsEvent;
+};
 
 export type IdentifyUserParameters = {
 	/**
