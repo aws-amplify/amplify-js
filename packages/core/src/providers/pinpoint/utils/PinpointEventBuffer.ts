@@ -214,17 +214,17 @@ export class PinpointEventBuffer {
 		// retryable events that haven't reached the resendLimit
 		const eligibleEvents: EventBuffer = [];
 
-		retryableEvents.forEach((event: BufferedEvent) => {
-			const { eventId } = event;
-			const { name } = event.event;
+		retryableEvents.forEach((bufferedEvent: BufferedEvent) => {
+			const { eventId } = bufferedEvent;
+			const { name } = bufferedEvent.event;
 
-			if (event!.resendLimit!-- > 0) {
+			if (bufferedEvent!.resendLimit!-- > 0) {
 				logger.debug('Resending event.', {
 					eventId,
 					name,
-					remainingAttempts: event.resendLimit
+					remainingAttempts: bufferedEvent.resendLimit
 				});
-				eligibleEvents.push({ [eventId!]: event });
+				eligibleEvents.push({ [eventId!]: bufferedEvent });
 				return;
 			}
 
