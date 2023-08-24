@@ -18,7 +18,7 @@ export function generateRandom(size: number) {
 	const CHARSET =
 		'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
 	const buffer = new Uint8Array(size);
-	if (typeof window !== 'undefined' && !!window.crypto) {
+	if (!!window?.crypto) {
 		window.crypto.getRandomValues(buffer);
 	} else {
 		for (let i = 0; i < size; i += 1) {
