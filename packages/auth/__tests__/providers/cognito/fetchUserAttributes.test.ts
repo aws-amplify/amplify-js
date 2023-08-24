@@ -10,7 +10,7 @@ import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 import { AmplifyV6 as Amplify } from 'aws-amplify';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import * as authUtils from '../../../src';
-import { fetchUserAttributes } from '../../../src';
+import { fetchUserAttributes } from '../../../src/providers/cognito/apis/fetchUserAttributes';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 Amplify.configure({
