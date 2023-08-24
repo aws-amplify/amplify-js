@@ -11,7 +11,7 @@ import { ResolvedS3Config } from '../../types/options';
 import { UploadSource } from '../../../../types';
 import { StorageAccessLevel } from '@aws-amplify/core';
 
-export type InitMultipartUploadOptions = {
+export type LoadOrCreateMultipartUploadOptions = {
 	s3Config: ResolvedS3Config;
 	data: UploadSource;
 	bucket: string;
@@ -26,12 +26,12 @@ export type InitMultipartUploadOptions = {
 	abortSignal?: AbortSignal;
 };
 
-type InitMultipartUploadResult = {
+type LoadOrCreateMultipartUploadResult = {
 	uploadId: string;
 	cachedParts: Part[];
 };
 
-export const initMultipartUpload = async ({
+export const loadOrCreateMultipartUpload = async ({
 	s3Config,
 	data,
 	totalLength,
@@ -44,24 +44,26 @@ export const initMultipartUpload = async ({
 	contentEncoding,
 	metadata,
 	abortSignal,
-}: InitMultipartUploadOptions): Promise<InitMultipartUploadResult> => {
+}: LoadOrCreateMultipartUploadOptions): Promise<LoadOrCreateMultipartUploadResult> => {
 	const resolvedContentType =
 		contentType ?? (data instanceof File ? data.type : 'binary/octet-stream');
 	const finalKey = keyPrefix + key;
 
-	let cachedUpload: {
-		parts: Part[];
-		uploadId: string;
-		uploadCacheKey: string;
-	} | null;
+	let cachedUpload:
+		| {
+				parts: Part[];
+				uploadId: string;
+				uploadCacheKey: string;
+		  }
+		| undefined;
 	if (totalLength === undefined) {
 		// Cannot determine total length of the data source, so we cannot safely cache the upload
 		// TODO: logger message
-		cachedUpload = null;
+		cachedUpload = undefined;
 	} else {
 		const uploadCacheKey = getUploadsCacheKey({
 			size: totalLength,
-			contentType: resolvedContentType,
+			contentType,
 			file: data instanceof File ? data : undefined,
 			bucket,
 			accessLevel,
@@ -75,7 +77,7 @@ export const initMultipartUpload = async ({
 		});
 		cachedUpload = cachedUploadParts
 			? { ...cachedUploadParts, uploadCacheKey }
-			: null;
+			: undefined;
 	}
 
 	if (cachedUpload) {
@@ -108,7 +110,7 @@ export const initMultipartUpload = async ({
 		}
 		const uploadCacheKey = getUploadsCacheKey({
 			size: totalLength,
-			contentType: resolvedContentType,
+			contentType,
 			file: data instanceof File ? data : undefined,
 			bucket,
 			accessLevel,

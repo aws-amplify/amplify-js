@@ -1,27 +1,30 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { DEFAULT_PART_SIZE } from '../../utils/constants';
 import { UploadSource } from '../../../../types';
 import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../../errors/types/validation';
 import { StorageError } from '../../../../errors/StorageError';
+import { calculatePartSize } from './calculatePartSize';
 
-export const getDataChunker = (data: UploadSource) => {
+export const getDataChunker = (data: UploadSource, totalSize?: number) => {
+	const partSize = calculatePartSize(totalSize);
+
 	if (data instanceof Blob) {
-		return getBlobDataChunker(data);
+		return getBlobDataChunker(data, partSize);
 	} else if (isArrayBufferView(data)) {
 		return getArrayBufferViewChunker(
 			data.buffer,
 			data.byteOffset,
-			data.byteLength
+			data.byteLength,
+			partSize
 		);
 	} else if (data instanceof ArrayBuffer) {
-		return getArrayBufferViewChunker(data, 0, data.byteLength);
+		return getArrayBufferViewChunker(data, 0, data.byteLength, partSize);
 	} else if (typeof data === 'string') {
-		return getStringDataChunker(data);
+		return getStringDataChunker(data, partSize);
 	} else {
 		throw new StorageError({
 			name: StorageValidationErrorCode.InvalidUploadSource,
@@ -40,11 +43,12 @@ export type PartToUpload = {
 };
 
 const getBlobDataChunker = function* (
-	blob: Blob
+	blob: Blob,
+	partSize: number
 ): Generator<PartToUpload, void, undefined> {
 	let partNumber = 1;
 	let startByte = 0;
-	let endByte = Math.min(DEFAULT_PART_SIZE, blob.size);
+	let endByte = Math.min(partSize, blob.size);
 
 	while (endByte < blob.size) {
 		yield {
@@ -53,7 +57,7 @@ const getBlobDataChunker = function* (
 		};
 		partNumber += 1;
 		startByte = endByte;
-		endByte = startByte + DEFAULT_PART_SIZE;
+		endByte = startByte + partSize;
 	}
 
 	yield {
@@ -66,11 +70,12 @@ const getBlobDataChunker = function* (
 const getArrayBufferViewChunker = function* (
 	buffer: ArrayBuffer,
 	byteOffset: number,
-	byteLength: number
+	byteLength: number,
+	partSize: number
 ): Generator<PartToUpload, void, undefined> {
 	let partNumber = 1;
 	let startByte = byteOffset;
-	let endByte = byteOffset + Math.min(DEFAULT_PART_SIZE, byteLength);
+	let endByte = byteOffset + Math.min(partSize, byteLength);
 
 	while (endByte < byteLength + byteOffset) {
 		yield {
@@ -79,7 +84,7 @@ const getArrayBufferViewChunker = function* (
 		};
 		partNumber += 1;
 		startByte = endByte;
-		endByte = startByte + DEFAULT_PART_SIZE;
+		endByte = startByte + partSize;
 	}
 
 	yield {
@@ -90,11 +95,12 @@ const getArrayBufferViewChunker = function* (
 };
 
 const getStringDataChunker = function* (
-	str: string
+	str: string,
+	partSize: number
 ): Generator<PartToUpload, void, undefined> {
 	let partNumber = 1;
 	let startByte = 0;
-	let endByte = Math.min(DEFAULT_PART_SIZE, str.length);
+	let endByte = Math.min(partSize, str.length);
 
 	while (endByte < str.length) {
 		yield {
@@ -103,7 +109,7 @@ const getStringDataChunker = function* (
 		};
 		partNumber += 1;
 		startByte = endByte;
-		endByte = startByte + DEFAULT_PART_SIZE;
+		endByte = startByte + partSize;
 	}
 
 	yield {

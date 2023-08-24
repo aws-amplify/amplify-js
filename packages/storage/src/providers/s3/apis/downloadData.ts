@@ -30,7 +30,6 @@ export const downloadData = (
 		onCancel: (abortErrorOverwrite?: Error) => {
 			abortController.abort(abortErrorOverwrite);
 		},
-		abortController,
 	});
 	return downloadTask;
 };

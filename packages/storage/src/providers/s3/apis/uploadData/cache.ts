@@ -58,7 +58,7 @@ const getStorageImplementation = () => MemoryKeyValueStorage;
 
 export type UploadsCacheKeyOptions = {
 	size: number;
-	contentType: string;
+	contentType?: string;
 	bucket: string;
 	accessLevel: StorageAccessLevel;
 	key: string;
@@ -72,8 +72,10 @@ export const getUploadsCacheKey = ({
 	accessLevel,
 	key,
 }: UploadsCacheKeyOptions) => {
+	const resolvedContentType =
+		contentType ?? (file ? file.type : 'binary/octet-stream');
 	const levelStr = accessLevel === 'guest' ? 'public' : accessLevel;
-	const baseId = `${size}_${contentType}_${bucket}_${levelStr}_${key}`;
+	const baseId = `${size}_${resolvedContentType}_${bucket}_${levelStr}_${key}`;
 	if (file) {
 		return `${file.name}_${file.lastModified}_${baseId}`;
 	} else {
@@ -87,6 +89,15 @@ export const cacheMultipartUpload = async (
 ): Promise<void> => {
 	const cachedUploads = await listCachedUploadTasks();
 	cachedUploads[cacheKey] = fileMetadata;
+	await getStorageImplementation().setItem(
+		UPLOADS_STORAGE_KEY,
+		JSON.stringify(cachedUploads)
+	);
+};
+
+export const removeCachedUpload = async (cacheKey: string): Promise<void> => {
+	const cachedUploads = await listCachedUploadTasks();
+	delete cachedUploads[cacheKey];
 	await getStorageImplementation().setItem(
 		UPLOADS_STORAGE_KEY,
 		JSON.stringify(cachedUploads)

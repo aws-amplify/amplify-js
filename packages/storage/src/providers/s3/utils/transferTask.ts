@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { isCancelError } from '../../../AwsClients/S3/runtime';
 import {
 	DownloadTask,
 	TransferTaskState,
@@ -10,7 +11,6 @@ import {
 type CreateCancellableTaskOptions<Result> = {
 	job: () => Promise<Result>;
 	onCancel: (abortErrorOverwrite?: Error) => void;
-	abortController?: AbortController;
 };
 
 type CancellableTask<Result> = DownloadTask<Result>;
@@ -18,11 +18,12 @@ type CancellableTask<Result> = DownloadTask<Result>;
 const createCancellableTask = <Result>({
 	job,
 	onCancel,
-	abortController,
 }: CreateCancellableTaskOptions<Result>): CancellableTask<Result> => {
 	const state = TransferTaskState.IN_PROGRESS;
+	let abortErrorOverwriteRecord: Error | undefined = undefined;
 	const downloadTask = {
 		cancel: (abortErrorOverwrite?: Error) => {
+			abortErrorOverwriteRecord = abortErrorOverwrite;
 			const { state } = downloadTask;
 			if (
 				state === TransferTaskState.CANCELED ||
@@ -43,9 +44,9 @@ const createCancellableTask = <Result>({
 			downloadTask.state = TransferTaskState.SUCCESS;
 			return result;
 		} catch (e) {
-			if (abortController?.signal.aborted) {
+			if (isCancelError(e)) {
 				downloadTask.state = TransferTaskState.CANCELED;
-				throw abortController.signal.reason ?? e;
+				throw abortErrorOverwriteRecord ?? e;
 			}
 			downloadTask.state = TransferTaskState.ERROR;
 			throw e;
@@ -62,7 +63,6 @@ export const createDownloadTask = createCancellableTask;
 type CreateUploadTaskOptions<Result> = {
 	job: () => Promise<Result>;
 	onCancel: (abortErrorOverwrite?: Error) => void;
-	abortController?: AbortController;
 	onResume?: () => void;
 	onPause?: () => void;
 	isMultipartUpload?: boolean;
@@ -71,7 +71,6 @@ type CreateUploadTaskOptions<Result> = {
 export const createUploadTask = <Result>({
 	job,
 	onCancel,
-	abortController,
 	onResume,
 	onPause,
 	isMultipartUpload,
@@ -79,7 +78,6 @@ export const createUploadTask = <Result>({
 	const cancellableTask = createCancellableTask<Result>({
 		job,
 		onCancel,
-		abortController,
 	});
 
 	const uploadTask = {
