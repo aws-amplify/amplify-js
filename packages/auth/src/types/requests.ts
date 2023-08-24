@@ -45,7 +45,11 @@ export type SignInRequest<
 	options?: { serviceOptions?: ServiceOptions };
 };
 
-export type AuthProvider =   'Amazon' | 'Apple'  | 'Facebook' | 'Google';
+export type SignOutRequest = {
+	global: boolean;
+};
+
+export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
 
 export type SignInWithRedirectRequest = {
 	provider?: AuthProvider | { custom: string };
