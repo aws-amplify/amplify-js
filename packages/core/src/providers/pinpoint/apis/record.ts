@@ -26,7 +26,8 @@ export const record = async ({
 
 	// TODO Prepare event buffer if required
 
-	// Generate endpoint if required
+	// Prepare a Pinpoint endpoint via updateEndpoint if one does not already exist, which will generate and cache an
+	// endpoint ID between calls
 	if (!endpointId) {
 		await updateEndpoint({
 			appId,

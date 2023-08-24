@@ -45,7 +45,7 @@ describe('Pinpoint Provider API: record', () => {
 			region,
 		});
 
-		expect(mockUpdateEndpoint).toBeCalledTimes(0);
+		expect(mockUpdateEndpoint).not.toBeCalled();
 
 		// TODO(v6) Test that event was sent to the buffer
 	});
@@ -81,7 +81,7 @@ describe('Pinpoint Provider API: record', () => {
 			region,
 		});
 
-		expect(mockClientPutEvents).toBeCalledTimes(0);
+		expect(mockClientPutEvents).not.toBeCalled();
 	});
 
 	it.skip('reuses an existing session if it exists', async () => {

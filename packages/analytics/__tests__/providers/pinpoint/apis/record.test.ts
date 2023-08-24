@@ -1,7 +1,6 @@
 import { record as pinpointRecord } from '@aws-amplify/core/internals/providers/pinpoint';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import { record } from '../../../../src/providers/pinpoint';
-import { PinpointRecordParameters } from '../../../../src/providers/pinpoint/types/parameters';
 import {
 	resolveConfig,
 	resolveCredentials,
@@ -69,7 +68,7 @@ describe('Pinpoint API: record', () => {
 
 		await new Promise(process.nextTick);
 
-		expect(mockPinpointRecord).toBeCalledTimes(0);
+		expect(mockPinpointRecord).not.toBeCalled();
 		expect(loggerWarnSpy).toBeCalledWith(expect.any(String), expect.any(Error));
 	});
 
@@ -91,7 +90,7 @@ describe('Pinpoint API: record', () => {
 		};
 
 		try {
-			record(mockParams as PinpointRecordParameters);
+			record(mockParams as RecordParameters);
 		} catch (e) {
 			expect(e.name).toEqual(AnalyticsValidationErrorCode.NoEventName);
 		}

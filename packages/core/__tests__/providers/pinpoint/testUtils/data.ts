@@ -18,7 +18,7 @@ export const clientDemographic = {
 export const endpointId = 'endpoint-id';
 export const event = {
 	name: 'event',
-	properties: {
+	attributes: {
 		property: 'property-value',
 	},
 	metrics: {
