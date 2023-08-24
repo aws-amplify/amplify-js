@@ -8,10 +8,9 @@ import {
 	USER_AGENT_HEADER,
 } from '@aws-amplify/core';
 import {
-	SignInWithWebUIRequest as SignInWithOAuthRequest,
-	isSignInWithWebUIOAuthProvider,
+	AuthProvider,
+	SignInWithRedirectRequest,
 } from '../../../types/requests';
-import { CognitoSignInWithWebUIOptions as CognitoSignInWithOAuthOptions } from '../types/options';
 import { assertOAuthConfig } from '@aws-amplify/core/lib-esm/singleton/Auth/utils';
 import { Sha256 } from '@aws-crypto/sha256-js';
 import { OAuthConfig } from '@aws-amplify/core';
@@ -30,28 +29,35 @@ const SELF = '_self';
  *
  * TODO: add config errors
  */
-export function signInWithOAuth(
-	signInWithOAuthRequest: SignInWithOAuthRequest<CognitoSignInWithOAuthOptions>
+export function signInWithRedirect(
+	signInWithRedirectRequest?: SignInWithRedirectRequest
 ): void {
 	const authConfig = AmplifyV6.getConfig().Auth;
 	assertOAuthConfig(authConfig);
 
-	if (isSignInWithWebUIOAuthProvider(signInWithOAuthRequest)) {
-		oauthSignIn({
-			oauthConfig: authConfig.oauth,
-			provider: signInWithOAuthRequest.provider,
-			clientId: authConfig.userPoolWebClientId,
-			customState: signInWithOAuthRequest.options?.serviceOptions?.customState,
-		});
-	} else {
-		oauthSignIn({
-			oauthConfig: authConfig.oauth,
-			provider: signInWithOAuthRequest.customProvider,
-			clientId: authConfig.userPoolWebClientId,
-			customState: signInWithOAuthRequest.options?.serviceOptions?.customState,
-		});
+	let provider = 'COGNITO'; // Default
+
+	if (typeof signInWithRedirectRequest?.provider === 'string') {
+		provider =
+			cognitoHostedUIIdentityProviderMap[signInWithRedirectRequest.provider];
+	} else if (signInWithRedirectRequest.provider?.custom) {
+		provider = signInWithRedirectRequest.provider.custom;
 	}
+
+	oauthSignIn({
+		oauthConfig: authConfig.oauth,
+		clientId: authConfig.userPoolWebClientId,
+		provider,
+		customState: signInWithRedirectRequest?.customState,
+	});
 }
+
+const cognitoHostedUIIdentityProviderMap: Record<AuthProvider, string> = {
+	Google: 'Google',
+	Facebook: 'Facebook',
+	Amazon: 'LoginWithAmazon',
+	Apple: 'SignInWithApple',
+};
 
 function oauthSignIn({
 	oauthConfig,
