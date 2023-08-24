@@ -19,8 +19,6 @@ import { toAuthUserAttribute } from '../utils/apiHelpers';
  *
  * @throws - {@link GetUserException} - Cognito service errors thrown when the service is not able to get the user.
  *
- * @throws - {@link InitiateAuthException} - Thrown when the service fails to refresh the tokens.
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export const fetchUserAttributes = async (): Promise<
