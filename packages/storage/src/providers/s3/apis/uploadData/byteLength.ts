@@ -14,7 +14,7 @@ export const byteLength = (input?: any): number | undefined => {
 			const code = input.charCodeAt(i);
 			if (code > 0x7f && code <= 0x7ff) len++;
 			else if (code > 0x7ff && code <= 0xffff) len += 2;
-			if (code >= 0xdc00 && code <= 0xdfff) i--; //trail surrogate
+			if (code >= 0xdc00 && code <= 0xdfff) i--; // trail surrogate
 		}
 
 		return len;

@@ -154,6 +154,9 @@
       "json",
       "jsx"
     ],
+		"moduleNameMapper": {
+			"^#internals/(.*)$": "<rootDir>/src/$1"
+		},
     "testEnvironment": "jsdom",
     "testURL": "http://localhost/",
     "coverageThreshold": {

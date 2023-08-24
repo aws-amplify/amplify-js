@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { TransferTaskState } from '../../src/types/common';
-import { createDownloadTask } from '../../src/utils/transferTask';
+import { createDownloadTask } from '../../src/providers/s3/utils';
 
 describe('createDownloadTask', () => {
 	it('should create a download task', async () => {

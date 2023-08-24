@@ -5,10 +5,10 @@ import { Credentials } from '@aws-sdk/types';
 import { AmplifyV6, fetchAuthSession } from '@aws-amplify/core';
 import { getObject } from '../../../src/AwsClients/S3';
 import { downloadData } from '../../../src/providers/s3';
-import { createDownloadTask } from '../../../src/utils/transferTask';
+import { createDownloadTask } from '../../../src/providers/s3/utils';
 
 jest.mock('../../../src/AwsClients/S3');
-jest.mock('../../../src/utils/transferTask');
+jest.mock('../../../src/providers/s3/utils');
 jest.mock('@aws-amplify/core', () => {
 	const core = jest.requireActual('@aws-amplify/core');
 	return {
