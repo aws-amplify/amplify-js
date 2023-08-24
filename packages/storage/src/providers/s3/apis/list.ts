@@ -133,7 +133,7 @@ const _list = async ({
 		listParamsClone
 	);
 
-	if (!response || !response.Contents) {
+	if (!response?.Contents) {
 		return {
 			items: [],
 		};
