@@ -123,7 +123,7 @@ export class InternalAuthClass {
 	 * Initialize Auth with AWS configurations
 	 * @param {Object} config - Configuration of the Auth
 	 */
-	constructor(config: AuthOptions) {
+	constructor(config?: AuthOptions) {
 		this.configure(config);
 		this.currentCredentials = this.currentCredentials.bind(this);
 		this.currentUserCredentials = this.currentUserCredentials.bind(this);
@@ -3266,5 +3266,4 @@ export class InternalAuthClass {
 	}
 }
 
-export const InternalAuth = new InternalAuthClass(null);
-Amplify.register(InternalAuth);
+export const InternalAuth = new InternalAuthClass();
