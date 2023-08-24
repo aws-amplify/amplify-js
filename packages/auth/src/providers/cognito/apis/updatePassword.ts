@@ -17,7 +17,7 @@ import { assertAuthTokens } from '../utils/types';
  *
  * @param updatePasswordRequest - The updatePasswordRequest object.
  *
- * @throws - {@link ChangePasswordException} - Cognito service errors thrown when updatinga password.
+ * @throws - {@link ChangePasswordException} - Cognito service errors thrown when updating a password.
  *
  * @throws - {@link AuthValidationErrorCode} - Validation errors thrown when oldPassword or newPassword are empty.
  *
