@@ -6,7 +6,7 @@ import { CookieSerializeOptions } from 'cookie';
 export namespace CookieStorage {
 	export type SetCookieOptions = Pick<
 		CookieSerializeOptions,
-		'expires' | 'maxAge' | 'httpOnly' | 'domain' | 'sameSite'
+		'domain' | 'expires' | 'httpOnly' | 'maxAge' | 'sameSite' | 'secure'
 	>;
 
 	export type Cookie = {

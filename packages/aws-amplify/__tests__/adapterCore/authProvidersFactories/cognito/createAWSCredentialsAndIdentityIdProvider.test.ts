@@ -2,10 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	CognitoAWSCredentialsAndIdentityIdProvider,
+	DefaultIdentityIdStore,
+} from '@aws-amplify/auth/cognito';
+import {
 	AWSCredentialsAndIdentityIdProvider,
+	AuthConfig,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
 import { createAWSCredentialsAndIdentityIdProvider } from '../../../../src/adapterCore';
+
+jest.mock('@aws-amplify/auth/cognito');
+
+const MockCognitoAWSCredentialsAndIdentityIdProvider =
+	CognitoAWSCredentialsAndIdentityIdProvider as jest.Mock;
+const MockDefaultIdentityIdStore = DefaultIdentityIdStore as jest.Mock;
 
 const mockKeyValueStorage: KeyValueStorageInterface = {
 	setItem: jest.fn(),
@@ -13,13 +24,31 @@ const mockKeyValueStorage: KeyValueStorageInterface = {
 	removeItem: jest.fn(),
 	clear: jest.fn(),
 };
+const mockAuthConfig: AuthConfig = {
+	identityPoolId: '123',
+	userPoolId: 'abc',
+	userPoolWebClientId: 'def',
+};
 
 describe('createAWSCredentialsAndIdentityIdProvider', () => {
-	let credentialsProvider: AWSCredentialsAndIdentityIdProvider;
-
 	it('should create a credentials provider', () => {
-		credentialsProvider =
-			createAWSCredentialsAndIdentityIdProvider(mockKeyValueStorage);
-		expect(credentialsProvider).toBeDefined();
+		const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
+			mockAuthConfig,
+			mockKeyValueStorage
+		);
+
+		expect(MockDefaultIdentityIdStore).toHaveBeenCalledWith(
+			mockKeyValueStorage
+		);
+		expect(
+			MockCognitoAWSCredentialsAndIdentityIdProvider
+		).toHaveBeenCalledTimes(1);
+		const mockCredentialsProviderInstance =
+			MockCognitoAWSCredentialsAndIdentityIdProvider.mock.instances[0];
+		expect(mockCredentialsProviderInstance.setAuthConfig).toHaveBeenCalledWith(
+			mockAuthConfig
+		);
+
+		expect(credentialsProvider).toEqual(mockCredentialsProviderInstance);
 	});
 });

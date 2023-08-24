@@ -12,6 +12,8 @@ import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cogn
 import { AmplifyV6 as Amplify } from 'aws-amplify';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
+import { cognitoCredentialsProvider } from '../../../src/providers/cognito/credentialsProvider';
+import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 const authConfig = {
@@ -23,6 +25,8 @@ const authConfigWithClientmetadata = {
 	userPoolId: 'us-west-2_zzzzz',
 	...authAPITestParams.configWithClientMetadata,
 };
+cognitoCredentialsProvider.setAuthConfig(authConfig);
+CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 Amplify.configure({
 	Auth: authConfig,
 });
@@ -77,6 +81,13 @@ describe('signIn API happy path cases', () => {
 	test('handleUserPasswordAuthFlow should be called with clientMetada from config', async () => {
 		const username = authAPITestParams.user1.username;
 		const password = authAPITestParams.user1.password;
+		const authConfig = {
+			...authAPITestParams.configWithClientMetadata,
+			userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+		};
+		cognitoCredentialsProvider.setAuthConfig(authConfig);
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 		Amplify.configure({
 			Auth: {
 				...authAPITestParams.configWithClientMetadata,
@@ -98,7 +109,6 @@ describe('signIn API happy path cases', () => {
 });
 
 describe('signIn API error path cases:', () => {
-
 	test('signIn API should throw a validation AuthError when username is empty', async () => {
 		expect.assertions(2);
 		try {
@@ -126,5 +136,4 @@ describe('signIn API error path cases:', () => {
 			expect(error.name).toBe(InitiateAuthException.InvalidParameterException);
 		}
 	});
-
 });

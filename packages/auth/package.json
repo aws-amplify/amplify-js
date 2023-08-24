@@ -51,6 +51,16 @@
 			"import": "./lib-esm/providers/cognito/index.js",
 			"require": "./lib/providers/cognito/index.js"
 		},
+		"./server": {
+			"types": "./lib-esm/server.d.ts",
+			"import": "./lib-esm/server.js",
+			"require": "./lib/server.js"
+		},
+		"./internals": {
+			"types": "./lib-esm/lib-esm/internals/index.d.ts",
+			"import": "./lib-esm/internals/index.js",
+			"require": "./lib/internals/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"repository": {
