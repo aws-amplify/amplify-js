@@ -24,7 +24,7 @@ import { AuthErrorTypes } from '../../../types';
 const SELF = '_self';
 
 /**
- * Signs in a user by an OAuth flow, it redirects the App to an Identity Provider
+ * Signs in a user with OAuth. Redirects the application to an Identity Provider.
  *
  * @param signInRedirectRequest - The SignInRedirectRequest object, if empty it will redirect to Cognito HostedUI
  *  are not defined.
