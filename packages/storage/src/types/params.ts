@@ -4,6 +4,7 @@
 
 // TODO(ashwinkumar6) this uses V5 Credentials, update to V6.
 import { Credentials } from '@aws-sdk/types';
+import { StorageAccessLevel } from '@aws-amplify/core';
 
 export type StorageConfig = {
 	region: string;
@@ -66,3 +67,17 @@ export type StorageUploadFileParameter<Options extends StorageOptions> =
 	};
 
 export type StorageRemoveOptions = StorageOptions;
+
+export type StorageCopySource = {
+	key: string;
+} & StorageOptions;
+
+export type StorageCopyDestination = {
+	key: string;
+	accessLevel?: StorageAccessLevel;
+};
+
+export type CopyRequest = {
+	source: StorageCopySource;
+	destination: StorageCopyDestination;
+};
