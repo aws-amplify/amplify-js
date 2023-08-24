@@ -32,7 +32,7 @@ export type AuthCodeDeliveryDetails<
 };
 
 export type AuthNextResetPasswordStep<
-	UserAttributeKey extends AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	resetPasswordStep: AuthResetPasswordStep;
 	additionalInfo?: AdditionalInfo;
@@ -67,7 +67,7 @@ export type ConfirmSignInWithCustomChallenge = {
 };
 
 export type ConfirmSignInWithNewPasswordRequired<
-	UserAttributeKey extends AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED;
 	missingAttributes?: UserAttributeKey[];
@@ -90,7 +90,9 @@ export type DoneSignInStep = {
 	signInStep: AuthSignInStep.DONE;
 };
 
-export type AuthNextSignInStep<UserAttributeKey extends AuthUserAttributeKey> =
+export type AuthNextSignInStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> =
 	| ConfirmSignInWithCustomChallenge
 	| ContinueSignInWithMFASelection
 	| ConfirmSignInWithNewPasswordRequired<UserAttributeKey>
