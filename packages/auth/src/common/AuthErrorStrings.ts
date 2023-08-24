@@ -77,9 +77,10 @@ export enum AuthErrorStrings {
 	NETWORK_ERROR = 'Network Error',
 	DEVICE_CONFIG = 'Device tracking has not been configured in this User Pool',
 	AUTOSIGNIN_ERROR = 'Please use your credentials to sign in',
-	OAUTH_ERROR = 'Couldn\'t finish OAuth flow, check your User Pool HostedUI settings',
+	OAUTH_ERROR = "Couldn't finish OAuth flow, check your User Pool HostedUI settings",
 }
 
 export enum AuthErrorCodes {
 	SignInException = 'SignInException',
+	OAuthSignInError = 'OAuthSignInException',
 }
