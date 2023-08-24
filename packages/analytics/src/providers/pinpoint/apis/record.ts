@@ -11,7 +11,7 @@ import {
 	AnalyticsValidationErrorCode,
 	assertValidationError,
 } from '../../../errors';
-import { getAnalyticsUserAgentString } from '../../../utils/UserAgent';
+import { getAnalyticsUserAgentString } from '../../../utils/userAgent';
 import { PinpointRecordParameters } from '../types/parameters';
 import { resolveConfig, resolveCredentials } from '../utils';
 
