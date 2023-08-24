@@ -1,5 +1,5 @@
-describe('signInWithRedirect tests', () => {
+describe('', () => {
 	it('should pass correct arguments to oauth', () => {
-		expect(true).toBe(true);
+		// ADD tests
 	});
 });
