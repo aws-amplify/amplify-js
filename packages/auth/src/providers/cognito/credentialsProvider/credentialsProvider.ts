@@ -31,7 +31,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		isAuthenticatedCreds: boolean;
 	};
 	private _nextCredentialsRefresh: number;
-	// TODO(V6): find what needs to happen to locally stored identityId
 	// TODO(V6): export clear crecentials to singleton
 	async clearCredentials(): Promise<void> {
 		logger.debug('Clearing out credentials');
@@ -80,7 +79,8 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			}
 			return await this.getGuestCredentials(identityId, authConfig);
 		} else {
-			return await this.credsForOIDCTokens(authConfig, tokens, identityId);
+			// Tokens will always be present if getCredentialsOptions.authenticated is true as dictated by the type
+			return await this.credsForOIDCTokens(authConfig, tokens!, identityId);
 		}
 	}
 
@@ -109,7 +109,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		const region = authConfig.identityPoolId.split(':')[0];
 
-		// TODO(V6): When unauth role is diabled and crdentials are absent, we need to return null not throw an error
+		// TODO(V6): When unauth role is disabled and crdentials are absent, we need to return null not throw an error
 		const clientResult = await getCredentialsForIdentity(
 			{ region },
 			{
@@ -130,6 +130,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					sessionToken: clientResult.Credentials.SessionToken,
 					expiration: clientResult.Credentials.Expiration,
 				},
+				identityId,
 			};
 			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
@@ -208,6 +209,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					// TODO(V6): Fixed expiration now + 50 mins
 					expiration: clientResult.Credentials.Expiration,
 				},
+				identityId,
 			};
 			// Store the credentials in-memory along with the expiration
 			this._credentialsAndIdentityId = {
@@ -281,7 +283,7 @@ export function formLoginsMap(idToken: string, oidcProvider: string) {
 	if (oidcProvider === 'COGNITO') {
 		domainName = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
 	} else {
-		// TODO: Support custom OIDC providers
+		// TODO(V6): Support custom OIDC providers
 		throw new AuthError({
 			name: 'AuthConfigException',
 			message: 'OIDC provider not supported',

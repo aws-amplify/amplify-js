@@ -138,7 +138,7 @@ type GetCredentialsAuthenticatedUser = {
 	authenticated: true;
 	forceRefresh?: boolean;
 	authConfig: AuthConfig;
-	tokens?: AuthTokens;
+	tokens: AuthTokens;
 };
 
 type GetCredentialsUnauthenticatedUser = {
