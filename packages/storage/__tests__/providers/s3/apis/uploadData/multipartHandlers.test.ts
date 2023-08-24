@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { Amplify, LocalStorage } from '@aws-amplify/core';
+import { Amplify, localStorage } from '@aws-amplify/core';
 import {
 	createMultipartUpload,
 	uploadPart,
@@ -17,34 +17,11 @@ import {
 	StorageValidationErrorCode,
 } from '../../../../../src/errors/types/validation';
 import { UPLOADS_STORAGE_KEY } from '../../../../../src/providers/s3/utils/constants';
-import { getKvStorage } from '../../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage';
 import { byteLength } from '../../../../../src/providers/s3/apis/uploadData/byteLength';
 import { CanceledError } from '../../../../../src/errors/CanceledError';
 
+jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/providers/s3/utils/client');
-
-jest.mock('@aws-amplify/core', () => ({
-	Amplify: {
-		getConfig: jest.fn(),
-		libraryOptions: {},
-		Auth: {
-			fetchAuthSession: jest.fn(),
-		},
-	},
-}));
-jest.mock(
-	'../../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage',
-	() => {
-		const mockGetItem = jest.fn();
-		const mockSetItem = jest.fn();
-		return {
-			getKvStorage: async () => ({
-				getItem: mockGetItem,
-				setItem: mockSetItem,
-			}),
-		};
-	}
-);
 
 const credentials: Credentials = {
 	accessKeyId: 'accessKeyId',
@@ -226,7 +203,7 @@ describe('getMultipartUploadHandlers', () => {
 			);
 		});
 
-		it('should upload a body that exceeds the sie of default part size and parts count', async () => {
+		it('should upload a body that exceeds the size of default part size and parts count', async () => {
 			let buffer: ArrayBuffer;
 			const file = {
 				__proto__: File.prototype,
@@ -329,11 +306,8 @@ describe('getMultipartUploadHandlers', () => {
 	});
 
 	describe('upload caching', () => {
-		let mockLocalStorage: jest.Mocked<typeof LocalStorage>;
-		beforeEach(async () => {
-			mockLocalStorage = (await getKvStorage()) as jest.Mocked<
-				typeof LocalStorage
-			>;
+		const mockLocalStorage = localStorage as jest.Mocked<typeof localStorage>;
+		beforeEach(() => {
 			mockLocalStorage.getItem.mockReset();
 			mockLocalStorage.setItem.mockReset();
 		});
@@ -591,9 +565,7 @@ describe('getMultipartUploadHandlers', () => {
 		it('should send progress for cached upload parts', async () => {
 			mockMultipartUploadSuccess();
 
-			const mockLocalStorage = (await getKvStorage()) as jest.Mocked<
-				typeof LocalStorage
-			>;
+			const mockLocalStorage = localStorage as jest.Mocked<typeof localStorage>;
 			mockLocalStorage.getItem.mockResolvedValue(
 				JSON.stringify({
 					[defaultCacheKey]: {

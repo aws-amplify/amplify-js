@@ -4,7 +4,7 @@ import {
 	AuthTokens,
 	KeyValueStorageInterface,
 	FetchAuthSessionOptions,
-	LocalStorage,
+	localStorage,
 	AuthConfig,
 } from '@aws-amplify/core';
 import { DefaultTokenStore } from './TokenStore';
@@ -19,7 +19,7 @@ class CognitoUserPoolsTokenProviderClass
 	tokenOrchestrator: TokenOrchestrator;
 	constructor() {
 		this.authTokenStore = new DefaultTokenStore();
-		this.authTokenStore.setKeyValueStorage(LocalStorage);
+		this.authTokenStore.setKeyValueStorage(localStorage);
 		this.tokenOrchestrator = new TokenOrchestrator();
 		this.tokenOrchestrator.setAuthTokenStore(this.authTokenStore);
 		this.tokenOrchestrator.setTokenRefresher(CognitoUserPoolTokenRefresher);

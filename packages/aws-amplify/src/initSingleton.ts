@@ -4,7 +4,7 @@ import {
 	LibraryOptions,
 	ResourcesConfig,
 	Amplify,
-	LocalStorage,
+	localStorage,
 	CookieStorage,
 } from '@aws-amplify/core';
 import {
@@ -28,8 +28,8 @@ export const DefaultAmplify = {
 				resourceConfig.ssr
 					? new CookieStorage({
 							sameSite: 'strict',
-					})
-					: LocalStorage
+					  })
+					: localStorage
 			);
 
 			Amplify.configure(resourceConfig, defaultLibraryOptions);

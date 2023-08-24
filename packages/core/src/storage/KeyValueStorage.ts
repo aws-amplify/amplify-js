@@ -1,18 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { KeyValueStorageInterface } from "../types";
 import { PlatformNotSupportedError } from '../Util/Errors';
+import { KeyValueStorageInterface } from '../types';
 
-class LocalStorageClass implements KeyValueStorageInterface {
+/**
+ * @internal
+ */
+export class KeyValueStorage implements KeyValueStorageInterface {
 	storage?: Storage;
 
-	constructor() {
-		if (typeof window !== undefined) {
-			try {
-				this.storage = window?.localStorage;
-			} catch (error) {}
-		}
+	constructor(storage: Storage) {
+		this.storage = storage;
 	}
 
 	/**
@@ -21,7 +20,7 @@ class LocalStorageClass implements KeyValueStorageInterface {
 	 * @param {object} value - the value
 	 * @returns {string} value that was set
 	 */
-	async setItem(key: string, value: string): Promise<void> {
+	async setItem(key: string, value: string) {
 		if (!this.storage) throw PlatformNotSupportedError;
 		this.storage.setItem(key, value);
 	}
@@ -32,7 +31,7 @@ class LocalStorageClass implements KeyValueStorageInterface {
 	 * This is used to clear the storage
 	 * @returns {string} the data item
 	 */
-	async getItem(key: string): Promise<string | null> {
+	async getItem(key: string) {
 		if (!this.storage) throw PlatformNotSupportedError;
 		return this.storage.getItem(key);
 	}
@@ -42,7 +41,7 @@ class LocalStorageClass implements KeyValueStorageInterface {
 	 * @param {string} key - the key being set
 	 * @returns {string} value - value that was deleted
 	 */
-	async removeItem(key: string): Promise<void> {
+	async removeItem(key: string) {
 		if (!this.storage) throw PlatformNotSupportedError;
 		this.storage.removeItem(key);
 	}
@@ -51,10 +50,8 @@ class LocalStorageClass implements KeyValueStorageInterface {
 	 * This is used to clear the storage
 	 * @returns {string} nothing
 	 */
-	async clear(): Promise<void> {
+	async clear() {
 		if (!this.storage) throw PlatformNotSupportedError;
 		this.storage.clear();
 	}
 }
-
-export const LocalStorage = new LocalStorageClass();

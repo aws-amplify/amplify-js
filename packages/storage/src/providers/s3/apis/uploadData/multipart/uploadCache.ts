@@ -4,12 +4,12 @@
 import {
 	KeyValueStorageInterface,
 	StorageAccessLevel,
+	localStorage,
 } from '@aws-amplify/core';
 
-import { getKvStorage } from './kvStorage';
-import { UPLOADS_STORAGE_KEY } from '../../../../utils/constants';
-import { ResolvedS3Config } from '../../../../types/options';
-import { Part, listParts } from '../../../../utils/client';
+import { UPLOADS_STORAGE_KEY } from '../../../utils/constants';
+import { ResolvedS3Config } from '../../../types/options';
+import { Part, listParts } from '../../../utils/client';
 
 const ONE_HOUR = 1000 * 60 * 60;
 
@@ -33,8 +33,7 @@ export const findCachedUploadParts = async ({
 	parts: Part[];
 	uploadId: string;
 } | null> => {
-	const kvStorage = await getKvStorage();
-	const cachedUploads = await listCachedUploadTasks(kvStorage);
+	const cachedUploads = await listCachedUploadTasks(localStorage);
 	if (
 		!cachedUploads[cacheKey] ||
 		cachedUploads[cacheKey].lastTouched < Date.now() - ONE_HOUR // Uploads are cached for 1 hour
@@ -45,7 +44,10 @@ export const findCachedUploadParts = async ({
 	const cachedUpload = cachedUploads[cacheKey];
 	cachedUpload.lastTouched = Date.now();
 
-	await kvStorage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(cachedUploads));
+	await localStorage.setItem(
+		UPLOADS_STORAGE_KEY,
+		JSON.stringify(cachedUploads)
+	);
 
 	try {
 		const { Parts = [] } = await listParts(s3Config, {
@@ -121,18 +123,22 @@ export const cacheMultipartUpload = async (
 	cacheKey: string,
 	fileMetadata: Omit<FileMetadata, 'lastTouched'>
 ): Promise<void> => {
-	const kvStorage = await getKvStorage();
-	const cachedUploads = await listCachedUploadTasks(kvStorage);
+	const cachedUploads = await listCachedUploadTasks(localStorage);
 	cachedUploads[cacheKey] = {
 		...fileMetadata,
 		lastTouched: Date.now(),
 	};
-	await kvStorage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(cachedUploads));
+	await localStorage.setItem(
+		UPLOADS_STORAGE_KEY,
+		JSON.stringify(cachedUploads)
+	);
 };
 
 export const removeCachedUpload = async (cacheKey: string): Promise<void> => {
-	const kvStorage = await getKvStorage();
-	const cachedUploads = await listCachedUploadTasks(kvStorage);
+	const cachedUploads = await listCachedUploadTasks(localStorage);
 	delete cachedUploads[cacheKey];
-	await kvStorage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(cachedUploads));
+	await localStorage.setItem(
+		UPLOADS_STORAGE_KEY,
+		JSON.stringify(cachedUploads)
+	);
 };
