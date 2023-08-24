@@ -23,7 +23,7 @@ export namespace AmplifyServer {
 			libraryOptions: LibraryOptions,
 			operation: (
 				contextSpec: AmplifyServer.ContextSpec
-			) => Result | void | Promise<Result | void>
-		): Promise<Result | void>;
+			) => Result | Promise<Result>
+		): Promise<Result>;
 	}
 }

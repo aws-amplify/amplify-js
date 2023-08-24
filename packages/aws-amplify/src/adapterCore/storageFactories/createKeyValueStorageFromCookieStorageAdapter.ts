@@ -4,6 +4,12 @@
 import { KeyValueStorageInterface } from '@aws-amplify/core';
 import { CookieStorage } from '@aws-amplify/core/internals/adapter-core';
 
+export const defaultSetCookieOptions: CookieStorage.SetCookieOptions = {
+	sameSite: 'strict',
+	secure: true,
+};
+const ONE_YEAR_IN_MS = 365 * 24 * 60 * 60 * 1000;
+
 /**
  * Creates a Key Value storage interface using the `cookieStorageAdapter` as the
  * underlying storage.
@@ -16,9 +22,9 @@ export const createKeyValueStorageFromCookieStorageAdapter = (
 	return {
 		setItem(key, value) {
 			// TODO(HuiSF): follow up the default CookieSerializeOptions values
-			const originalCookie = cookieStorageAdapter.get(key) ?? {};
 			cookieStorageAdapter.set(key, value, {
-				...extractSerializeOptions(originalCookie),
+				...defaultSetCookieOptions,
+				expires: new Date(Date.now() + ONE_YEAR_IN_MS),
 			});
 			return Promise.resolve();
 		},
@@ -36,13 +42,3 @@ export const createKeyValueStorageFromCookieStorageAdapter = (
 		},
 	};
 };
-
-const extractSerializeOptions = (
-	cookie: Partial<CookieStorage.Cookie>
-): CookieStorage.SetCookieOptions => ({
-	domain: cookie.domain,
-	expires: cookie.expires,
-	httpOnly: cookie.httpOnly,
-	maxAge: cookie.maxAge,
-	sameSite: cookie.sameSite,
-});
