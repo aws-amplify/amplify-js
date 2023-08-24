@@ -8,7 +8,9 @@
 	"react-native": "./lib-esm/index.js",
 	"sideEffects": [
 		"./lib/Auth.js",
-		"./lib-esm/Auth.js"
+		"./lib-esm/Auth.js",
+    "./lib/providers/cognito/apis/signInWithOAuth.js",
+    "./lib-esm/providers/cognito/apis/signInWithOAuth.js"
 	],
 	"publishConfig": {
 		"access": "public"
@@ -68,7 +70,6 @@
 		"internals"
 	],
 	"dependencies": {
-		"buffer": "4.9.2",
 		"tslib": "^2.5.0",
 		"url": "0.11.0",
 		"typescript": "5.0.2"

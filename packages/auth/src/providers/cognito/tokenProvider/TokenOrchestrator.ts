@@ -5,9 +5,7 @@ import {
 	AuthTokens,
 	FetchAuthSessionOptions,
 } from '@aws-amplify/core';
-import {
-	isTokenExpired,
-} from '@aws-amplify/core/internals/utils';
+import { isTokenExpired } from '@aws-amplify/core/internals/utils';
 import {
 	AuthTokenOrchestrator,
 	AuthTokenStore,
@@ -18,6 +16,7 @@ import {
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	tokenStore: AuthTokenStore;
 	tokenRefresher: TokenRefresher;
+	waitForInflightOAuth: () => Promise<void> = async () => {};
 
 	setTokenRefresher(tokenRefresher: TokenRefresher) {
 		this.tokenRefresher = tokenRefresher;
@@ -25,13 +24,16 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	setAuthTokenStore(tokenStore: AuthTokenStore) {
 		this.tokenStore = tokenStore;
 	}
+	setWaitForInflightOAuth(waitForInflightOAuth: () => Promise<void>) {
+		this.waitForInflightOAuth = waitForInflightOAuth;
+	}
 
 	async getTokens(
 		options?: FetchAuthSessionOptions
 	): Promise<AuthTokens | null> {
 		let tokens: CognitoAuthTokens;
 
-		// TODO(v6): add wait for inflight OAuth in case there is one
+		await this.waitForInflightOAuth();
 		tokens = await this.tokenStore.loadTokens();
 
 		if (tokens === null) {

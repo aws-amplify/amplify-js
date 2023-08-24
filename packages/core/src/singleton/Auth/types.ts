@@ -3,8 +3,6 @@
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/safe-json-parse.ts
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/jwt-model.ts
 
-import { Credentials } from '@aws-sdk/types';
-
 interface JwtPayloadStandardFields {
 	exp?: number; // expires: https://tools.ietf.org/html/rfc7519#section-4.1.4
 	iss?: string; // issuer: https://tools.ietf.org/html/rfc7519#section-4.1.1
@@ -70,10 +68,19 @@ export type AuthTokens = {
 	accessToken: JWT;
 };
 
-export type AuthConfig =
+export type AuthConfig = StrictUnion<
 	| IdentityPoolConfig
 	| UserPoolConfig
-	| UserPoolConfigAndIdentityPoolConfig;
+	| UserPoolConfigWithOAuth
+	| UserPoolConfigAndIdentityPoolConfig
+	| UserPoolConfigAndIdentityPoolConfigWithOAuth
+>;
+
+type UnionKeys<T> = T extends T ? keyof T : never;
+type StrictUnionHelper<T, TAll> = T extends any
+	? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>>
+	: never;
+type StrictUnion<T> = StrictUnionHelper<T, T>;
 
 export type IdentityPoolConfig = {
 	identityPoolId: string;
@@ -90,12 +97,37 @@ export type UserPoolConfig = {
 	clientMetadata?: Record<string, string>;
 };
 
+export type UserPoolConfigWithOAuth = {
+	userPoolWebClientId: string;
+	userPoolId: string;
+	identityPoolId?: never;
+	clientMetadata?: Record<string, string>;
+	oauth: OAuthConfig;
+};
+
+export type OAuthConfig = {
+	domain: string;
+	scopes: Array<string>;
+	redirectSignIn: string;
+	redirectSignOut: string;
+	responseType: string;
+};
+
 export type UserPoolConfigAndIdentityPoolConfig = {
 	userPoolWebClientId: string;
 	userPoolId: string;
 	identityPoolId: string;
 	clientMetadata?: Record<string, string>;
 	isMandatorySignInEnabled?: boolean;
+};
+
+export type UserPoolConfigAndIdentityPoolConfigWithOAuth = {
+	userPoolWebClientId: string;
+	userPoolId: string;
+	identityPoolId: string;
+	clientMetadata?: Record<string, string>;
+	isMandatorySignInEnabled?: boolean;
+	oauth: OAuthConfig;
 };
 
 export type GetCredentialsOptions =
