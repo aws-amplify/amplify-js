@@ -3,7 +3,6 @@
 
 import { AmplifyV6 } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
-import { FetchUserAttributesRequest } from '../../../types/requests';
 import { getUser } from '../utils/clients/CognitoIdentityProvider';
 import {
 	GetUserException,
@@ -18,24 +17,22 @@ import { toAuthUserAttribute } from '../utils/apiHelpers';
 /**
  * Fetches the current user attributes while authenticated.
  *
- * @param fetchUserAttributesRequest - The fetchUserAttributesRequest object.
- *
  * @throws - {@link GetUserException} - Cognito service errors thrown when the service is not able to get the user.
  *
  * @throws - {@link InitiateAuthException} - Thrown when the service fails to refresh the tokens.
  *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export const fetchUserAttributes = async (
-	fetchUserAttributesRequest?: FetchUserAttributesRequest
-): Promise<AuthUserAttribute<CognitoUserAttributeKey>> => {
+export const fetchUserAttributes = async (): Promise<
+	AuthUserAttribute<CognitoUserAttributeKey>
+> => {
 	const authConfig = AmplifyV6.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({
-		forceRefresh: fetchUserAttributesRequest?.recache ?? false,
+		forceRefresh: false,
 	});
 	assertAuthTokens(tokens);
-    
+
 	const { UserAttributes } = await getUser(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
