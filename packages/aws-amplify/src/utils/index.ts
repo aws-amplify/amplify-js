@@ -7,6 +7,5 @@ This file maps exports from `aws-amplify/utils`.
 export {
 	Cache,
 	Hub,
-	I18n,
-	Signer,
+	I18n
 } from '@aws-amplify/core';

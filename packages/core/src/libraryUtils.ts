@@ -28,6 +28,7 @@ export {
 	assertIdentityPooIdConfig,
 } from './singleton/Auth/utils';
 export { isTokenExpired } from './singleton/Auth';
+export { Signer } from './Signer';
 
 // Logging utilities
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
