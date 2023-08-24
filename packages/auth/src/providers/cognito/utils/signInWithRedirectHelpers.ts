@@ -1,8 +1,6 @@
 import { Sha256 } from '@aws-crypto/sha256-js';
-// TODO(v6): replace this by using TextEncoder/TextDecoder/atob/btoa
-import { Buffer } from 'buffer';
 
-function bufferToString(buffer: Uint8Array) {
+export function bufferToString(buffer: Uint8Array) {
 	const CHARSET =
 		'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	const state = [];
@@ -25,10 +23,11 @@ export function generateRandom(size: number) {
 			buffer[i] = (Math.random() * CHARSET.length) | 0;
 		}
 	}
+
 	return bufferToString(buffer);
 }
 
-export function generateState(length: number) {
+export function generateState(length: number): string {
 	let result = '';
 	let i = length;
 	const chars =
@@ -38,17 +37,22 @@ export function generateState(length: number) {
 	return result;
 }
 
-export function generateChallenge(code: string) {
+export function generateChallenge(code: string): string {
 	const awsCryptoHash = new Sha256();
 	awsCryptoHash.update(code);
 
 	const resultFromAWSCrypto = awsCryptoHash.digestSync();
-	const b64 = Buffer.from(resultFromAWSCrypto).toString('base64');
-	const base64URLFromAWSCrypto = base64URL(b64);
 
-	return base64URLFromAWSCrypto;
+	const b64Frombtoa = base64URL(bytesToBase64(resultFromAWSCrypto));
+
+	return b64Frombtoa;
 }
 
-function base64URL(string) {
+export function base64URL(string): string {
 	return string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+}
+
+function bytesToBase64(bytes: Uint8Array) {
+	const binString = Array.from(bytes, x => String.fromCodePoint(x)).join('');
+	return btoa(binString);
 }

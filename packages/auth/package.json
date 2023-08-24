@@ -70,7 +70,6 @@
     "**/package.json"
   ],
   "dependencies": {
-    "buffer": "4.9.2",
     "tslib": "^2.5.0",
     "url": "0.11.0",
     "typescript": "5.0.2"
