@@ -10,5 +10,6 @@ export {
 	copy,
 	getUrl,
 } from './providers/s3';
-export { isCancelError } from './AwsClients/S3/runtime';
 export * from './types';
+
+export { isCancelError } from '#internals/AwsClients/S3/runtime';

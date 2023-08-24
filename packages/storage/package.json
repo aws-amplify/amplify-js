@@ -40,6 +40,23 @@
       ]
     }
   },
+	"imports": {
+		"#internals/AwsClients/S3/runtime": {
+			"browser": {
+				"import": "./lib-esm/AwsClients/S3/runtime/index.browser.js",
+				"require": "./lib/AwsClients/S3/runtime/index.browser.js"
+			},
+			"node": {
+				"import": "./lib-esm/AwsClients/S3/runtime/index.js",
+				"require": "./lib/AwsClients/S3/runtime/index.js"
+			},
+			"default": {
+				"import": "./lib-esm/AwsClients/S3/runtime/index.browser.js",
+				"require": "./lib-esm/AwsClients/S3/runtime/index.js",
+				"types": "./lib-esm/AwsClients/S3/runtime/index.d.ts"
+			}
+		}
+	},
   "exports": {
     ".": {
       "types": "./lib-esm/index.d.ts",
