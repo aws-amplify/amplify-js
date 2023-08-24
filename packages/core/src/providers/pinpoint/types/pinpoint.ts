@@ -50,6 +50,6 @@ export type PinpointUpdateEndpointParameters = PinpointCommonParameters & Pinpoi
 	userProfile?: UserProfile;
 };
 
-export type PinpointRecordParameters = PinpointCommonEndpointOptions & {
+export type PinpointRecordParameters = PinpointCommonParameters & {
 	event: PinpointAnalyticsEvent;
 };
