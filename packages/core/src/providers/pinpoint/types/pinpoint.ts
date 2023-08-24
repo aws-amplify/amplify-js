@@ -34,22 +34,22 @@ export type PinpointAnalyticsEvent = {
 	metrics?: Record<string, number>;
 };
 
-export type PinpointUpdateEndpointParameters = PinpointServiceOptions & {
+// Common type that is required for operations that may trigger an endpoint update
+type PinpointCommonParameters = {
 	appId: string;
 	category: SupportedCategory;
-	channelType?: SupportedChannelType;
 	credentials: AuthSession['credentials'];
 	identityId?: AuthSession['identityId'];
 	region: string;
-	userId?: string;
-	userProfile?: UserProfile;
 	userAgentValue?: string;
 };
 
-export type PinpointRecordParameters = {
+export type PinpointUpdateEndpointParameters = PinpointCommonParameters & PinpointServiceOptions & {
+	channelType?: SupportedChannelType;
+	userId?: string;
+	userProfile?: UserProfile;
+};
+
+export type PinpointRecordParameters = PinpointCommonParameters & {
 	event: PinpointAnalyticsEvent;
-	sendImmediately?: boolean;
-} & Omit<
-	PinpointUpdateEndpointParameters,
-	'channelType' | 'userId' | 'userProfile'
->;
+};

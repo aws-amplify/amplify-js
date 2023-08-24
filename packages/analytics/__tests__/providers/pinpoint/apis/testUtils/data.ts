@@ -6,7 +6,7 @@ export const identityId = 'identity-id';
 
 export const event = {
 	name: 'event',
-	properties: {
+	attributes: {
 		property: 'property-value',
 	},
 	metrics: {
