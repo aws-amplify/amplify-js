@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 5.0.44 (2023-08-23)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
 ## 5.0.43 (2023-08-22)
 
 **Note:** Version bump only for package @aws-amplify/pushnotification

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { GraphQLAuthError } from '@aws-amplify/api';
-import { CustomUserAgentDetails, Logger } from '@aws-amplify/core';
+import { Logger } from '@aws-amplify/core';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
@@ -819,13 +819,11 @@ export async function getModelAuthModes({
 	defaultAuthMode,
 	modelName,
 	schema,
-	customUserAgentDetails,
 }: {
 	authModeStrategy: AuthModeStrategy;
 	defaultAuthMode: GRAPHQL_AUTH_MODE;
 	modelName: string;
 	schema: InternalSchema;
-	customUserAgentDetails?: CustomUserAgentDetails;
 }): Promise<{
 	[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
 }> {
@@ -847,7 +845,6 @@ export async function getModelAuthModes({
 					schema,
 					modelName,
 					operation,
-					customUserAgentDetails,
 				});
 
 				if (typeof authModes === 'string') {
