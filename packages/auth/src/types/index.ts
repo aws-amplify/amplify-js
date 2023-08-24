@@ -4,7 +4,12 @@
 // TODO: Remove "./Auth" export
 export * from './Auth';
 
-export { AuthSignUpStep, AuthResetPasswordStep, AuthSignInStep } from './enums';
+export {
+	AuthSignUpStep,
+	AuthResetPasswordStep,
+	AuthSignInStep,
+	AuthUpdateAttributeStep,
+} from './enums';
 
 export {
 	AdditionalInfo,
@@ -20,7 +25,8 @@ export {
 	AuthNextUpdateAttributeStep,
 	MFAType,
 	AllowedMFATypes,
-	AuthUser
+	AuthUser,
+	TOTPSetupDetails,
 } from './models';
 
 export { AuthServiceOptions, AuthSignUpOptions } from './options';
@@ -36,7 +42,8 @@ export {
 	UpdatePasswordRequest,
 	UpdateUserAttributesRequest,
 	GetCurrentUserRequest,
-	ConfirmUserAttributeRequest
+	ConfirmUserAttributeRequest,
+	VerifyTOTPSetupRequest,
 } from './requests';
 
 export {
