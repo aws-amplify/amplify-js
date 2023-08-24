@@ -43,6 +43,7 @@ export class HubClass {
 		this.name = name;
 	}
 
+	// TODO[kvramya] need to update mapping of channel to remove type assertion.
 	/**
 	 * Used internally to remove a Hub listener.
 	 *
@@ -53,11 +54,13 @@ export class HubClass {
 		Channel extends AmplifyChannel | string = string,
 		EventData extends EventDataMap = EventDataMap
 	>(channel: Channel, listener: HubCallback<Channel, EventData>) {
+		// TODO[kvramya] need to update mapping of channel to remove type assertion.
 		const holder = this.listeners[channel as unknown as number];
 		if (!holder) {
 			logger.warn(`No listeners for ${channel}`);
 			return;
 		}
+		// TODO[kvramya] need to update mapping of channel to remove type assertion.
 		this.listeners[channel as unknown as number] = [
 			...holder.filter(({ callback }) => callback !== listener),
 		];
@@ -164,10 +167,12 @@ export class HubClass {
 			// Needs to be casted as a more generic type
 			cb = callback as HubCallback<string, EventDataMap>;
 		}
+		// TODO[kvramya] need to update mapping of channel to remove type assertion.
 		let holder = this.listeners[channel as unknown as number];
 
 		if (!holder) {
 			holder = [];
+			// TODO[kvramya] need to update mapping of channel to remove type assertion.
 			this.listeners[channel as unknown as number] = holder;
 		}
 
@@ -185,6 +190,7 @@ export class HubClass {
 		capsule: HubCapsule<Channel, EventDataMap | AmplifyEventData[Channel]>
 	) {
 		const { channel, payload } = capsule;
+		// TODO[kvramya] need to update mapping of channel to remove type assertion.
 		const holder = this.listeners[channel as unknown as number];
 		if (holder) {
 			holder.forEach(listener => {
