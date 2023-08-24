@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { MemoryKeyValueStorage } from '@aws-amplify/core';
 import { DefaultIdentityIdStore } from './IdentityIdStore';
 import { CognitoAWSCredentialsAndIdentityIdProvider } from './credentialsProvider';
+import { LocalStorage } from '@aws-amplify/core';
 
 /**
  * Cognito specific implmentation of the CredentialsProvider interface
@@ -15,7 +15,7 @@ import { CognitoAWSCredentialsAndIdentityIdProvider } from './credentialsProvide
  */
 export const cognitoCredentialsProvider =
 	new CognitoAWSCredentialsAndIdentityIdProvider(
-		new DefaultIdentityIdStore(MemoryKeyValueStorage)
+		new DefaultIdentityIdStore(LocalStorage)
 	);
 
 export { CognitoAWSCredentialsAndIdentityIdProvider, DefaultIdentityIdStore };
