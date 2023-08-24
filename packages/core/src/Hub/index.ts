@@ -25,7 +25,7 @@ const logger = new Logger('Hub');
 
 export class HubClass {
 	name: string;
-	private listeners: { [key: string]: IListener } = {};
+	private listeners = new Map<string, IListener>();
 
 	protectedChannels = [
 		'core',
@@ -53,14 +53,14 @@ export class HubClass {
 		Channel extends AmplifyChannel | string = string,
 		EventData extends EventDataMap = EventDataMap
 	>(channel: Channel, listener: HubCallback<Channel, EventData>) {
-		const holder = this.listeners[channel];
+		const holder = this.listeners.get(channel);
 		if (!holder) {
 			logger.warn(`No listeners for ${channel}`);
 			return;
 		}
-		this.listeners[channel] = [
+		this.listeners.set(channel, [
 			...holder.filter(({ callback }) => callback !== listener),
-		];
+		]);
 	}
 
 	/**
@@ -164,18 +164,17 @@ export class HubClass {
 			// Needs to be casted as a more generic type
 			cb = callback as HubCallback<string, EventDataMap>;
 		}
-		let holder = this.listeners[channel];
+		let holder = this.listeners.get(channel);
 
 		if (!holder) {
 			holder = [];
-			this.listeners[channel] = holder;
+			this.listeners.set(channel, holder);
 		}
 
 		holder.push({
 			name: listenerName,
 			callback: cb,
 		});
-
 		return () => {
 			this._remove(channel, cb);
 		};
@@ -185,7 +184,7 @@ export class HubClass {
 		capsule: HubCapsule<Channel, EventDataMap | AmplifyEventData[Channel]>
 	) {
 		const { channel, payload } = capsule;
-		const holder = this.listeners[channel];
+		const holder = this.listeners.get(channel);
 		if (holder) {
 			holder.forEach(listener => {
 				logger.debug(`Dispatching to ${channel} with `, payload);
