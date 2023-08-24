@@ -12,6 +12,7 @@ import {
 } from '../utils/PinpointEventBuffer';
 import { updateEndpoint } from './updateEndpoint';
 import { getEventBuffer } from '../utils/getEventBuffer';
+import { AmplifyError } from '../../../libraryUtils';
 
 // TODO(v6) Refactor when we add support for session tracking & `autoTrack`
 let session: PinpointSession;
@@ -30,7 +31,7 @@ export const record = async ({
 }: PinpointRecordParameters): Promise<void> => {
 	const timestampISOString = new Date().toISOString();
 	let endpointId = await getEndpointId(appId, category);
-
+  
 	// Prepare event buffer if required
 	const buffer = getEventBuffer({
 		appId,
@@ -44,7 +45,8 @@ export const record = async ({
 		userAgentValue
 	});
 
-	// Generate endpoint if required
+	// Prepare a Pinpoint endpoint via updateEndpoint if one does not already exist, which will generate and cache an
+	// endpoint ID between calls
 	if (!endpointId) {
 		await updateEndpoint({
 			appId,
@@ -59,7 +61,10 @@ export const record = async ({
 	}
 
 	if (!endpointId) {
-		throw new Error('Endpoint was not created.');
+		throw new AmplifyError({
+			name: 'ENDPOINT_NOT_CREATED',
+			message: 'Endpoint was not created.'
+		});
 	}
 
 	// Generate session if required
@@ -71,7 +76,7 @@ export const record = async ({
 			StartTimestamp: timestampISOString,
 		};
 	}
-
+  
 	// Push event to buffer
 	buffer.push({
 		endpointId,

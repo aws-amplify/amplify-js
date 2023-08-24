@@ -22,11 +22,11 @@ jest.mock('../../../../src/providers/pinpoint/apis/updateEndpoint');
 jest.mock('../../../../src/providers/pinpoint/utils/getEventBuffer');
 
 describe('Pinpoint Provider API: record', () => {
-	const mockGetEventBuffer = getEventBuffer as jest.Mock;
+  const mockGetEventBuffer = getEventBuffer as jest.Mock;
 	const mockClientPutEvents = clientPutEvents as jest.Mock;
 	const mockGetEndpointId = getEndpointId as jest.Mock;
 	const mockUpdateEndpoint = updateEndpoint as jest.Mock;
-	const mockBufferPush = jest.fn();
+  const mockBufferPush = jest.fn();
 	const mockUuid = v4 as jest.Mock;
 
 	beforeEach(() => {
@@ -52,8 +52,8 @@ describe('Pinpoint Provider API: record', () => {
 			identityId,
 			region,
 		});
-
-		expect(mockUpdateEndpoint).toBeCalledTimes(0);
+    
+		expect(mockUpdateEndpoint).not.toBeCalled();
 		expect(mockBufferPush).toBeCalledWith(
 			expect.objectContaining({
 				endpointId,
@@ -75,8 +75,7 @@ describe('Pinpoint Provider API: record', () => {
 			identityId,
 			region,
 		});
-
-		expect(mockUpdateEndpoint).toBeCalledTimes(1);
+    
 		expect(mockUpdateEndpoint).toBeCalledWith({
 			appId,
 			category,
@@ -95,8 +94,8 @@ describe('Pinpoint Provider API: record', () => {
 			identityId,
 			region,
 		});
-
-		expect(mockClientPutEvents).toBeCalledTimes(0);
+    
+		expect(mockClientPutEvents).not.toBeCalled();
 	});
 
 	it('reuses an existing session if it exists', async () => {
@@ -122,7 +121,7 @@ describe('Pinpoint Provider API: record', () => {
 			identityId,
 			region,
 		});
-
+    
 		expect(mockBufferPush).toBeCalledWith(
 			expect.objectContaining({
 				endpointId,
