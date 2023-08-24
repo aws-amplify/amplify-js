@@ -27,7 +27,7 @@ import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 const MAX_PAGE_SIZE = 1000;
 
-type listRequestArgs = {
+type ListRequestArgs = {
 	listConfig: StorageConfig;
 	listParams: ListObjectsV2Input;
 	prefix: string;
@@ -94,7 +94,7 @@ const _listAll = async ({
 	listConfig,
 	listParams,
 	prefix,
-}: listRequestArgs): Promise<S3ListAllResult> => {
+}: ListRequestArgs): Promise<S3ListAllResult> => {
 	// TODO(ashwinkumar6) V6-logger: pageSize and nextToken aren't required when listing all items
 	const listResult: S3ListOutputItem[] = [];
 	let continuationToken = listParams.ContinuationToken;
@@ -121,7 +121,7 @@ const _list = async ({
 	listConfig,
 	listParams,
 	prefix,
-}: listRequestArgs): Promise<S3ListPaginateResult> => {
+}: ListRequestArgs): Promise<S3ListPaginateResult> => {
 	const listParamsClone = { ...listParams };
 	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
