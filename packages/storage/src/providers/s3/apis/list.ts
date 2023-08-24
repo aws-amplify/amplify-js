@@ -62,7 +62,7 @@ export const list: S3ListApi = async (
 ): Promise<S3ListAllResult | S3ListPaginateResult> => {
 	const { identityId, credentials } = await resolveCredentials();
 	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
-	const { path = '', options = {} } = req || {};
+	const { path = '', options = {} } = req ?? {};
 	const { accessLevel = defaultAccessLevel, listAll } = options;
 
 	// TODO(ashwinkumar6) V6-logger: check if this can be refactored
