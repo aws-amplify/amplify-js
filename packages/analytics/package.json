@@ -69,7 +69,7 @@
 		"lib",
 		"lib-esm",
 		"src",
-		"**/package.json"
+		"pinpoint"
 	],
 	"dependencies": {
 		"lodash": "^4.17.20",

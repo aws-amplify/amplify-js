@@ -47,6 +47,11 @@
       "import": "./lib-esm/storage/s3/index.js",
       "require": "./lib/storage/s3/index.js"
     },
+    "./internals/adapter-core": {
+      "types": "./lib-esm/adapterCore/index.d.ts",
+      "import": "./lib-esm/adapterCore/index.js",
+      "require": "./lib/adapterCore/index.js"
+    },
     "./package.json": "./package.json"
   },
   "typesVersions": {
@@ -107,7 +112,9 @@
     "lib",
     "lib-esm",
     "src",
-    "**/package.json"
+    "analytics",
+    "auth",
+    "internals"
   ],
   "dependencies": {
     "@aws-amplify/analytics": "7.0.0",

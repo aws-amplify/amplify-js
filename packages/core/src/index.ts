@@ -33,9 +33,10 @@ export {
 	StorageAccessLevel,
 	StorageConfig,
 	GetCredentialsOptions,
+	ResourcesConfig,
+	LibraryOptions,
 } from './singleton/types';
 export { AmplifyV6, fetchAuthSession } from './singleton';
-export { LibraryOptions, ResourcesConfig } from './singleton/types';
 
 // AWSClients exports
 export {

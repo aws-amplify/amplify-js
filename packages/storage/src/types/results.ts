@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
+import { ResponseBodyMixin } from '@aws-amplify/core/internals/aws-client-utils';
 
 export type StorageItem = {
 	/**
@@ -28,11 +28,8 @@ export type StorageItem = {
 	metadata?: Record<string, string>;
 };
 
-// TODO: replace with ResponsePayloadMixin from core
-type Payload = Pick<Body, 'blob' | 'json' | 'text'>;
-
 export type StorageDownloadDataResult<T extends StorageItem> = T & {
-	body: Payload;
+	body: ResponseBodyMixin;
 };
 
 export type StorageGetUrlResult = {
