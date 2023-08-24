@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6, Hub } from '@aws-amplify/core';
+import { AmplifyV6, Hub, OAuthConfig } from '@aws-amplify/core';
 import {
 	AuthProvider,
 	SignInWithRedirectRequest,
 } from '../../../types/requests';
 import { Sha256 } from '@aws-crypto/sha256-js';
-import { OAuthConfig } from '@aws-amplify/core';
+// TODO(v6): replace this by using TextEncoder/TextDecoder/atob/btoa
 import { Buffer } from 'buffer';
 import {
 	assertOAuthConfig,
