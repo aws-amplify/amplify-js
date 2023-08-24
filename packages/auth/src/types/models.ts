@@ -140,12 +140,13 @@ export type AuthUserAttributeKey = AuthStandardAttributeKey | AnyAttribute;
 /**
  * Data encapsulating the next step in the Sign Up process
  */
-export type AuthNextSignUpStep<UserAttributeKey extends AuthUserAttributeKey> =
-	{
-		signUpStep?: AuthSignUpStep;
-		additionalInfo?: AdditionalInfo;
-		codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
-	};
+export type AuthNextSignUpStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = {
+	signUpStep?: AuthSignUpStep;
+	additionalInfo?: AdditionalInfo;
+	codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
+};
 
 export type ConfirmAttributeWithCodeAttributeStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
