@@ -17,6 +17,7 @@ export { updateUserAttributes } from './apis/updateUserAttributes';
 export { getCurrentUser } from './apis/getCurrentUser';
 export { confirmUserAttribute } from './apis/confirmUserAttribute';
 export { fetchUserAttributes } from './apis/fetchUserAttributes';
+export { signInWithRedirect } from './apis/signInWithRedirect';
 export {
 	cognitoCredentialsProvider,
 	CognitoAWSCredentialsAndIdentityIdProvider,

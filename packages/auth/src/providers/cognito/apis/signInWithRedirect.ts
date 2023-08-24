@@ -1,20 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyV6,
-	Hub,
-	urlSafeEncode,
-	USER_AGENT_HEADER,
-} from '@aws-amplify/core';
+import { AmplifyV6, Hub } from '@aws-amplify/core';
 import {
 	AuthProvider,
 	SignInWithRedirectRequest,
 } from '../../../types/requests';
-import { assertOAuthConfig } from '@aws-amplify/core/lib-esm/singleton/Auth/utils';
 import { Sha256 } from '@aws-crypto/sha256-js';
 import { OAuthConfig } from '@aws-amplify/core';
 import { Buffer } from 'buffer';
+import {
+	assertOAuthConfig,
+	urlSafeEncode,
+	USER_AGENT_HEADER,
+} from '@aws-amplify/core/internals/utils';
+import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+import { CognitoUserPoolsTokenProvider } from '../tokenProvider';
 
 const SELF = '_self';
 
@@ -40,7 +41,7 @@ export function signInWithRedirect(
 	if (typeof signInWithRedirectRequest?.provider === 'string') {
 		provider =
 			cognitoHostedUIIdentityProviderMap[signInWithRedirectRequest.provider];
-	} else if (signInWithRedirectRequest.provider?.custom) {
+	} else if (signInWithRedirectRequest?.provider?.custom) {
 		provider = signInWithRedirectRequest.provider.custom;
 	}
 
@@ -82,8 +83,9 @@ function oauthSignIn({
 		? `${generatedState}-${urlSafeEncode(customState)}`
 		: generatedState;
 
+	// TODO(v6): use default storage adapter
 	window.localStorage.setItem('com.amplify.cognito.state', state);
-
+	window.localStorage.setItem('com.amplify.cognito.inflightOAuth', 'true');
 	const pkce_key = _generateRandom(128);
 	window.localStorage.setItem('com.amplify.cognito.pkce', pkce_key);
 
@@ -176,6 +178,18 @@ async function handleCodeFlow({
 	/* Convert URL into an object with parameters as keys
 { redirect_uri: 'http://localhost:3000/', response_type: 'code', ...} */
 	const url = new URL(currentUrl);
+	try {
+		_validateStateFromURL(url);
+	} catch (err) {
+		resolveInflight();
+
+		resolveInflight = () => {};
+		// clear temp values
+		window.localStorage.removeItem('com.amplify.cognito.pkce');
+		window.localStorage.removeItem('com.amplify.cognito.state');
+		window.localStorage.removeItem('com.amplify.cognito.inflightOAuth');
+		return;
+	}
 	const code = url.searchParams.get('code');
 
 	const currentUrlPathname = url.pathname || '/';
@@ -187,6 +201,7 @@ async function handleCodeFlow({
 
 	const oAuthTokenEndpoint = 'https://' + domain + '/oauth2/token';
 
+	// TODO(v6): check hub events
 	// dispatchAuthEvent(
 	// 	'codeFlow',
 	// 	{},
@@ -203,16 +218,18 @@ async function handleCodeFlow({
 		...(code_verifier ? { code_verifier } : {}),
 	};
 
-	// logger.debug(
-	// 	`Calling token endpoint: ${oAuthTokenEndpoint} with`,
-	// 	oAuthTokenBody
-	// );
-
 	const body = Object.entries(oAuthTokenBody)
 		.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
 		.join('&');
 
-	const { access_token, refresh_token, id_token, error } = await (
+	const {
+		access_token,
+		refresh_token,
+		id_token,
+		error,
+		token_type,
+		expires_in,
+	} = await (
 		(await fetch(oAuthTokenEndpoint, {
 			method: 'POST',
 			headers: {
@@ -224,35 +241,96 @@ async function handleCodeFlow({
 	).json();
 
 	if (error) {
+		resolveInflight();
+
+		resolveInflight = () => {};
 		throw new Error(error);
 	}
 
-	return {
-		accessToken: access_token,
-		refreshToken: refresh_token,
-		idToken: id_token,
-	};
+	// clear temp values
+	// TODO(v6): use default storage adapter
+	window.localStorage.removeItem('com.amplify.cognito.pkce');
+	window.localStorage.removeItem('com.amplify.cognito.state');
+	window.localStorage.removeItem('com.amplify.cognito.inflightOAuth');
+
+	await cacheCognitoTokens({
+		AccessToken: access_token,
+		IdToken: id_token,
+		RefreshToken: refresh_token,
+		TokenType: token_type,
+		ExpiresIn: expires_in,
+	});
+
+	// clear history
+
+	if (window && typeof window.history !== 'undefined') {
+		window.history.replaceState({}, null, redirectUri);
+	}
+	// this communicates Token orchestrator de flow was completed
+	resolveInflight();
+
+	resolveInflight = () => {};
+	return;
 }
 
-// async function _handleImplicitFlow(currentUrl: string) {
-// 	// hash is `null` if `#` doesn't exist on URL
-// 	const { id_token, access_token } = (new URL(currentUrl).hash || '#')
-// 		.substr(1) // Remove # from returned code
-// 		.split('&')
-// 		.map(pairings => pairings.split('='))
-// 		.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), {
-// 			id_token: undefined,
-// 			access_token: undefined,
-// 		});
+async function handleImplicitFlow({
+	currentUrl,
+	redirectUri,
+}: {
+	currentUrl: string;
+	redirectUri: string;
+}) {
+	// hash is `null` if `#` doesn't exist on URL
 
-// 	// dispatchAuthEvent('implicitFlow', {}, `Got tokens from ${currentUrl}`);
+	const url = new URL(currentUrl);
 
-// 	return {
-// 		accessToken: access_token,
-// 		idToken: id_token,
-// 		refreshToken: null,
-// 	};
-// }
+	const { id_token, access_token, state, token_type, expires_in } = (
+		url.hash || '#'
+	)
+		.substr(1) // Remove # from returned code
+		.split('&')
+		.map(pairings => pairings.split('='))
+		.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), {
+			id_token: undefined,
+			access_token: undefined,
+			state: undefined,
+			token_type: undefined,
+			expires_in: undefined,
+		});
+
+	try {
+		_validateState(state);
+	} catch (error) {
+		// clear temp values
+		window.localStorage.removeItem('com.amplify.cognito.pkce');
+		window.localStorage.removeItem('com.amplify.cognito.state');
+		window.localStorage.removeItem('com.amplify.cognito.inflightOAuth');
+
+		resolveInflight();
+
+		resolveInflight = () => {};
+		return;
+	} finally {
+	}
+
+	await cacheCognitoTokens({
+		AccessToken: access_token,
+		IdToken: id_token,
+		RefreshToken: undefined,
+		TokenType: token_type,
+		ExpiresIn: expires_in,
+	});
+
+	// clear history
+
+	if (window && typeof window.history !== 'undefined') {
+		window.history.replaceState({}, null, redirectUri);
+	}
+
+	resolveInflight();
+
+	resolveInflight = () => {};
+}
 
 async function handleAuthResponse({
 	currentUrl,
@@ -278,53 +356,70 @@ async function handleAuthResponse({
 			throw new Error(error_description);
 		}
 
-		const state: string = _validateState(urlParams);
-
-		// logger.debug(
-		// 	`Starting ${this._config.responseType} flow with ${currentUrl}`
-		// );
 		if (responseType === 'code') {
-			return {
-				...(await handleCodeFlow({
-					currentUrl,
-					userAgentValue,
-					clientId,
-					redirectUri,
-					domain,
-				})),
-				state,
-			};
+			return await handleCodeFlow({
+				currentUrl,
+				userAgentValue,
+				clientId,
+				redirectUri,
+				domain,
+			});
 		} else {
-			// return { ...(await this._handleImplicitFlow(currentUrl)), state };
+			return await handleImplicitFlow({
+				currentUrl,
+				redirectUri,
+			});
 		}
 	} catch (e) {
-		// logger.debug(`Error handling auth response.`, e);
 		throw e;
 	}
 }
 
-function _validateState(urlParams: URL): string {
+function _validateStateFromURL(urlParams: URL): string {
 	if (!urlParams) {
 		return;
 	}
-
-	const savedState = window.localStorage.getItem('com.amplify.cognito.state');
 	const returnedState = urlParams.searchParams.get('state');
 
-	// This is because savedState only exists if the flow was initiated by Amplify
-	if (savedState && savedState !== returnedState) {
-		throw new Error('Invalid state in OAuth flow');
-	}
+	_validateState(returnedState);
 	return returnedState;
 }
+
+function _validateState(state: string) {
+	// TODO(v6): use correct storage adapter and key
+	const savedState = window.localStorage.getItem('com.amplify.cognito.state');
+
+	// This is because savedState only exists if the flow was initiated by Amplify
+	if (savedState && savedState !== state) {
+		throw new Error('Invalid state in OAuth flow');
+	}
+}
+
+let inflightOAuth = '';
 
 function urlListener() {
 	// Listen configure to parse for this
 	Hub.listen('core', capsule => {
 		if (capsule.payload.event === 'configure') {
 			const authConfig = AmplifyV6.getConfig().Auth;
+			// TODO(v6): use correct storage adapter and key
+			// TODO(v6): use this also with metadata for token provider
+			inflightOAuth = window.localStorage.getItem(
+				'com.amplify.cognito.inflightOAuth'
+			);
+			// check if there is an inflight oauth flow
+			if (!inflightOAuth) {
+				// not OAuth in flight
+				return;
+			}
 			try {
 				assertOAuthConfig(authConfig);
+			} catch (err) {
+				// TODO(v6): this should warn you have signInWithRedirect but is not configured
+				return;
+			}
+
+			try {
 				const url = window.location.href;
 
 				handleAuthResponse({
@@ -342,3 +437,18 @@ function urlListener() {
 }
 
 urlListener();
+
+// This has a reference for listeners that requires to be notified, TokenOrchestrator use this for load tokens
+let resolveInflight = () => {};
+
+CognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
+	() =>
+		new Promise((res, _rej) => {
+			if (!inflightOAuth) {
+				res();
+			} else {
+				resolveInflight = res;
+			}
+			return;
+		})
+);
