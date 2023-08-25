@@ -1,6 +1,6 @@
 const path = require('path');
 
-/*const rnUrlPolyfillPath = require.resolve('react-native-url-polyfill');
+const rnUrlPolyfillPath = require.resolve('react-native-url-polyfill');
 const rnUrlPolyfillMeta = require(path.join(
 	path.dirname(rnUrlPolyfillPath),
 	'package.json'
@@ -11,7 +11,7 @@ const rnUrlPolyfillDeps = Object.keys({
 });
 const rnUrlPolyfillDepsRegex = rnUrlPolyfillDeps.map(
 	name => new RegExp(`^${name}\/?`) // match name with optional trailing slash
-);*/
+);
 
 module.exports = {
 	name: 'index',
@@ -38,6 +38,6 @@ module.exports = {
 	resolve: {
 		extensions: ['.tsx', '.ts', '.jsx', '.js'],
 	},
-//	externals: rnUrlPolyfillDepsRegex,
+	externals: rnUrlPolyfillDepsRegex,
 	mode: 'production',
 };
