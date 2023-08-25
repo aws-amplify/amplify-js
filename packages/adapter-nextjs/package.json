@@ -21,8 +21,8 @@
     "typescript": "5.1.6"
   },
   "publishConfig": {
-		"access": "public"
-	},
+    "access": "public"
+  },
   "bugs": {
     "url": "https://github.com/aws/aws-amplify/issues"
   },
