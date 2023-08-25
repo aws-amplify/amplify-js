@@ -97,6 +97,7 @@ describe('downloadData', () => {
 		const versionId = 'versionId';
 		const contentType = 'contentType';
 		const body = 'body';
+		const key = 'key';
 		(getObject as jest.Mock).mockResolvedValueOnce({
 			Body: body,
 			LastModified: lastModified,
@@ -106,11 +107,12 @@ describe('downloadData', () => {
 			VersionId: versionId,
 			ContentType: contentType,
 		});
-		downloadData({ key: 'key' });
+		downloadData({ key });
 		const job = mockCreateDownloadTask.mock.calls[0][0].job;
 		const result = await job();
 		expect(getObject).toBeCalledTimes(1);
 		expect(result).toEqual({
+			key,
 			body,
 			lastModified,
 			size: contentLength,
