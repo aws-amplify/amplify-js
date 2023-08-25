@@ -11,7 +11,6 @@ import {
 	getPresignedGetObjectUrl,
 } from '../../../../AwsClients/S3';
 import { getProperties } from './getProperties';
-import { S3Exception } from '../../types/errors';
 import {
 	getKeyWithPrefix,
 	resolveCredentials,
