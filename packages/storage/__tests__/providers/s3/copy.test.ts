@@ -15,10 +15,6 @@ jest.mock('@aws-amplify/core', () => {
 		AmplifyV6: {
 			...core.AmplifyV6,
 			getConfig: jest.fn(),
-			Auth: {
-				...core.AmplifyV6.Auth,
-				fetchAuthSession: jest.fn(),
-			},
 		},
 	};
 });
