@@ -9,6 +9,3 @@ export { DefaultAmplifyV6 as AmplifyV6 } from './initSingleton';
 
 // TODO(v6): Remove legacy SSR utility when new utilities available
 export { withSSRContext } from './ssr/withSSRContext';
-
-// TODO(v6): Remove these category exports as categories come on-line
-export { Storage, StorageClass } from '@aws-amplify/storage';
