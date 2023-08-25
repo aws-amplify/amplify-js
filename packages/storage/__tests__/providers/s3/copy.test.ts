@@ -136,7 +136,7 @@ describe('copy API', () => {
 				await interAccessLevelTest('private', 'protected'));
 		});
 
-		describe('Copy from protected to other access levels', () => {
+		describe('Copy from protected to all access levels', () => {
 			it('Should copy protected -> guest', async () =>
 				await interAccessLevelTest('protected', 'guest'));
 			it('Should copy protected -> private', async () =>
