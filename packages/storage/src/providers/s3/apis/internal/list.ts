@@ -7,7 +7,6 @@ import {
 	listObjectsV2,
 } from '../../../../AwsClients/S3';
 import {
-	StorageConfig,
 	StorageListRequest,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
@@ -23,13 +22,13 @@ import {
 	getKeyWithPrefix,
 	resolveCredentials,
 } from '../../utils';
-import { StorageValidationErrorCode } from '../../../../errors/types/validation';
+import { ResolvedS3Config } from '../../types/options';
 import { AmplifyClassV6 } from '@aws-amplify/core';
 
 const MAX_PAGE_SIZE = 1000;
 
 type ListRequestArgs = {
-	listConfig: StorageConfig;
+	listConfig: ResolvedS3Config;
 	listParams: ListObjectsV2Input;
 	prefix: string;
 };

@@ -1,9 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
-import { AuthUser, GetCurrentUserRequest } from '../../../types';
-import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentUser';
+import {
+	AmplifyServer,
+	getAmplifyServerContext,
+} from '@aws-amplify/core/internals/adapter-core';
+import { AuthUser, GetCurrentUserRequest } from '../../../../types';
+import { getCurrentUser as getCurrentUserInternal } from '../internal/getCurrentUser';
 
 /**
  * Gets the current user from the idToken.
@@ -17,7 +20,11 @@ import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentU
  * @returns AuthUser
  */
 export const getCurrentUser = async (
+	contextSpec: AmplifyServer.ContextSpec,
 	getCurrentUserRequest?: GetCurrentUserRequest
 ): Promise<AuthUser> => {
-	return getCurrentUserInternal(AmplifyV6, getCurrentUserRequest);
+	return getCurrentUserInternal(
+		getAmplifyServerContext(contextSpec).amplify,
+		getCurrentUserRequest
+	);
 };

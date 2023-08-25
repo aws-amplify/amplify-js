@@ -5,15 +5,15 @@ import { StorageAccessLevel } from '@aws-amplify/core';
 import { assertValidationError } from '../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../errors/types/validation';
 
-type PrefixResolverOptions = {
+type ResolvePrefixOptions = {
 	accessLevel: StorageAccessLevel;
 	targetIdentityId?: string;
 };
 
-export const prefixResolver = ({
+export const resolvePrefix = ({
 	accessLevel,
 	targetIdentityId,
-}: PrefixResolverOptions) => {
+}: ResolvePrefixOptions) => {
 	if (accessLevel === 'private') {
 		assertValidationError(
 			!!targetIdentityId,
