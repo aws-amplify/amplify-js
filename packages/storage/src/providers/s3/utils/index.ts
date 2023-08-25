@@ -6,3 +6,4 @@ export { resolveS3ConfigAndInput } from './resolveS3ConfigAndInput';
 export { resolveStorageConfig } from './resolveStorageConfig';
 export { resolveCredentials } from './resolveCredentials';
 export { createDownloadTask, createUploadTask } from './transferTask';
+export { calculateContentMd5 } from './md5';

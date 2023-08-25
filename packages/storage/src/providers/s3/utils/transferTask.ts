@@ -81,7 +81,7 @@ export const createUploadTask = <Result>({
 	});
 
 	const uploadTask = Object.assign(cancellableTask, {
-		pause: function () {
+		pause: () => {
 			const { state } = uploadTask;
 			if (!isMultipartUpload || state !== TransferTaskState.IN_PROGRESS) {
 				return;

@@ -4,12 +4,18 @@
 import { Credentials } from '@aws-sdk/types';
 import { AmplifyV6, fetchAuthSession } from '@aws-amplify/core';
 import { putObject } from '../../../../src/AwsClients/S3';
-import { calculateContentMd5 } from '../../../../src/common/MD5utils';
+import { calculateContentMd5 } from '../../../../src/providers/s3/utils';
 
 import { putObjectJob } from '../../../../src/providers/s3/apis/uploadData/putObjectJob';
 
 jest.mock('../../../../src/AwsClients/S3');
-jest.mock('../../../../src/common/MD5utils');
+jest.mock('../../../../src/providers/s3/utils', () => {
+	const utils = jest.requireActual('../../../../src/providers/s3/utils');
+	return {
+		...utils,
+		calculateContentMd5: jest.fn(),
+	};
+});
 jest.mock('@aws-amplify/core', () => {
 	const core = jest.requireActual('@aws-amplify/core');
 	return {

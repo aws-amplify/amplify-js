@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { S3UploadOptions } from '../../types';
-import { resolveS3ConfigAndInput } from '../../utils';
+import { calculateContentMd5, resolveS3ConfigAndInput } from '../../utils';
 import { putObject } from '../../../../AwsClients/S3';
 import { StorageUploadDataRequest } from '../../../../types';
-import { calculateContentMd5 } from '../../../../common/MD5utils'; // TODO[AllanZhengYP]: move to utils
 import { S3Item } from '../../types/results';
 
 export const putObjectJob =

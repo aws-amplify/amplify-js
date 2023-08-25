@@ -6,7 +6,7 @@ import { uploadPart } from '../../../../../AwsClients/S3';
 import { TransferProgressEvent } from '../../../../../types';
 import { ResolvedS3Config } from '../../../types/options';
 import { partByteLength } from './partByteLength';
-import { calculateContentMd5 } from '../../../../../common/MD5utils';
+import { calculateContentMd5 } from '../../../utils';
 
 type UploadPartExecutorOptions = {
 	dataChunkerGenerator: Generator<PartToUpload, void, undefined>;
