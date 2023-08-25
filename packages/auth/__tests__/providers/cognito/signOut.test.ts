@@ -1,4 +1,4 @@
-import { AmplifyV6 as Amplify } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { signOut } from '../../../src/providers/cognito';
 import * as TokenProvider from '../../../src/providers/cognito/tokenProvider';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';

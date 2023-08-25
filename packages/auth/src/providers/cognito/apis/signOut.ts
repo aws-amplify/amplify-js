@@ -1,5 +1,5 @@
 import {
-	AmplifyV6,
+	Amplify,
 	AuthConfig,
 	LocalStorage,
 	clearCredentials,
@@ -31,7 +31,7 @@ const SELF = '_self';
 export async function signOut(
 	signOutRequest?: SignOutRequest
 ): Promise<AuthSignOutResult> {
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth;
 
 	if (signOutRequest?.global) {
 		return globalSignOut(authConfig);
