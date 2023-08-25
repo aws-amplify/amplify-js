@@ -16,15 +16,10 @@ import {
 	ConsoleLogger as Logger,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
+	AMPLIFY_SYMBOL,
 } from '@aws-amplify/core/internals/utils';
 
 import { Sha256 } from '@aws-crypto/sha256-js';
-
-const AMPLIFY_SYMBOL = (
-	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
-		? Symbol.for('amplify_default')
-		: '@@amplify_default'
-) as Symbol;
 
 const dispatchAuthEvent = payload => {
 	Hub.dispatch('auth', payload, 'Auth', AMPLIFY_SYMBOL);
