@@ -16,8 +16,6 @@ import { deleteObject, DeleteObjectInput } from '../../../AwsClients/S3';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 
-// TODO(ashwinkumar6) add unit test for remove API
-
 /**
  * Remove the object that is specified by the `req`.
  * @param {StorageOperationRequest<StorageRemoveOptions>} req - The request object
