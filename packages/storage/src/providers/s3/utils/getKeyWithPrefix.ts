@@ -7,12 +7,12 @@ import { prefixResolver as defaultPrefixResolver } from '../../../utils/prefixRe
 type GetKeyWithPrefixOptions = {
 	accessLevel: StorageAccessLevel;
 	targetIdentityId?: string;
-	key: string;
+	key?: string;
 };
 
 export const getKeyWithPrefix = (
 	amplify: AmplifyClassV6,
-	{ accessLevel, targetIdentityId, key }: GetKeyWithPrefixOptions
+	{ accessLevel, targetIdentityId, key = '' }: GetKeyWithPrefixOptions
 ) => {
 	const { prefixResolver = defaultPrefixResolver } =
 		amplify.libraryOptions?.Storage ?? {};
