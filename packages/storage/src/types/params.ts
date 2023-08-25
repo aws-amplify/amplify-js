@@ -48,13 +48,7 @@ export type StorageDownloadFileParameter<Options extends StorageOptions> =
 /**
  * The data payload type for upload operation.
  */
-export type UploadSource =
-	| Blob
-	| BufferSource
-	| FormData
-	| URLSearchParams
-	| string
-	| File;
+export type UploadSource = Blob | BufferSource | string | File;
 
 export type StorageUploadDataRequest<Options extends StorageOptions> =
 	StorageOperationRequest<Options> & {

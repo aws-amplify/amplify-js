@@ -7,16 +7,22 @@ import { resolveS3ConfigAndInput } from '../../../utils';
 import {
 	abortMultipartUpload,
 	completeMultipartUpload,
+	headObject,
 	Part,
 } from '../../../../../AwsClients/S3';
 import { StorageUploadDataRequest } from '../../../../../types';
 import { S3Item } from '../../../types/results';
-import { DEFAULT_QUEUE_SIZE } from '../../../utils/constants';
+import {
+	DEFAULT_ACCESS_LEVEL,
+	DEFAULT_QUEUE_SIZE,
+} from '../../../utils/constants';
 import { loadOrCreateMultipartUpload } from './initialUpload';
 import { ResolvedS3Config } from '../../../types/options';
 import { getConcurrentUploadsProgressTracker } from './progressTracker';
-import { getUploadsCacheKey, removeCachedUpload } from '../uploadCache';
+import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
 import { uploadPartExecutor } from './uploadPartExecutor';
+import { StorageError } from '../../../../../errors/StorageError';
+import { AmplifyV6, StorageAccessLevel } from '@aws-amplify/core';
 
 // Create closure hiding the multipart upload implementation details.
 export const getMultipartUploadHandlers = (
@@ -60,7 +66,7 @@ export const getMultipartUploadHandlers = (
 		if (!inProgressUpload) {
 			const { uploadId, cachedParts } = await loadOrCreateMultipartUpload({
 				s3Config,
-				accessLevel: accessLevel!, // TODO: resolve accessLevel
+				accessLevel: resolveAccessLevel(accessLevel),
 				bucket,
 				keyPrefix,
 				key,
@@ -95,7 +101,7 @@ export const getMultipartUploadHandlers = (
 					removeCachedUpload(
 						getUploadsCacheKey({
 							file: data instanceof File ? data : undefined,
-							accessLevel: uploadDataOptions?.accessLevel!, // TODO: resolve accessLevel
+							accessLevel: resolveAccessLevel(uploadDataOptions?.accessLevel),
 							contentType: uploadDataOptions?.contentType,
 							bucket: bucket!,
 							size: totalLength,
@@ -140,6 +146,7 @@ export const getMultipartUploadHandlers = (
 					uploadId: inProgressUpload.uploadId,
 					onPartUploadCompletion,
 					onProgress: concurrentUploadsProgressTracker.getOnProgressListener(),
+					isObjectLockEnabled: resolvedS3Options.isObjectLockEnabled,
 				})
 			);
 		}
@@ -163,8 +170,24 @@ export const getMultipartUploadHandlers = (
 			}
 		);
 
+		if (totalLength) {
+			const { ContentLength: uploadedObjectLength } = await headObject(
+				s3Config,
+				{
+					Bucket: bucket,
+					Key: finalKey,
+				}
+			);
+			if (uploadedObjectLength && uploadedObjectLength !== totalLength) {
+				throw new StorageError({
+					name: 'Error',
+					message: `Upload failed. Expected object size ${totalLength}, but got ${uploadedObjectLength}.`,
+				});
+			}
+		}
+
 		return {
-			key: finalKey,
+			key,
 			eTag,
 			contentType,
 			metadata,
@@ -209,3 +232,8 @@ export const getMultipartUploadHandlers = (
 		onCancel,
 	};
 };
+
+const resolveAccessLevel = (accessLevel?: StorageAccessLevel) =>
+	accessLevel ??
+	AmplifyV6.libraryOptions.Storage?.AWSS3?.defaultAccessLevel ??
+	DEFAULT_ACCESS_LEVEL;

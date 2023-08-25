@@ -48,13 +48,13 @@ export const putObjectJob =
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
 				ContentMD5: isObjectLockEnabled
-					? await calculateContentMd5(data as any) // TODO[AllanZhengYP]: calculate md5 for ArrayBuffer
+					? await calculateContentMd5(data)
 					: undefined,
 			}
 		);
 
 		return {
-			key: finalKey,
+			key,
 			eTag,
 			versionId,
 			contentType,

@@ -7,10 +7,10 @@ import {
 } from '@aws-amplify/core';
 
 import { getKvStorage } from './kvStorage';
-import { UPLOADS_STORAGE_KEY } from '../../../utils/constants';
-import { FileMetadata } from '../../../../..';
-import { listParts, Part } from '../../../../../AwsClients/S3';
-import { ResolvedS3Config } from '../../../types/options';
+import { UPLOADS_STORAGE_KEY } from '../../../../utils/constants';
+import { FileMetadata } from '../../../../../..';
+import { listParts, Part } from '../../../../../../AwsClients/S3';
+import { ResolvedS3Config } from '../../../../types/options';
 
 export type FindCachedUploadPartsOptions = {
 	cacheKey: string;

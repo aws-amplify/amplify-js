@@ -6,6 +6,7 @@ import { uploadPart } from '../../../../../AwsClients/S3';
 import { TransferProgressEvent } from '../../../../../types';
 import { ResolvedS3Config } from '../../../types/options';
 import { partByteLength } from './partByteLength';
+import { calculateContentMd5 } from '../../../../../common/MD5utils';
 
 type UploadPartExecutorOptions = {
 	dataChunkerGenerator: Generator<PartToUpload, void, undefined>;
@@ -15,6 +16,7 @@ type UploadPartExecutorOptions = {
 	bucket: string;
 	finalKey: string;
 	uploadId: string;
+	isObjectLockEnabled?: boolean;
 	onPartUploadCompletion: (partNumber: number, eTag: string) => void;
 	onProgress?: (event: TransferProgressEvent) => void;
 };
@@ -29,6 +31,7 @@ export const uploadPartExecutor = async ({
 	uploadId,
 	onPartUploadCompletion,
 	onProgress,
+	isObjectLockEnabled,
 }: UploadPartExecutorOptions) => {
 	let transferredBytes = 0;
 	for (const chunkToUpload of dataChunkerGenerator) {
@@ -60,7 +63,9 @@ export const uploadPartExecutor = async ({
 					// TODO: The Body type of S3 UploadPart API from AWS SDK does not correctly reflects the supported data types.
 					Body: data as any,
 					PartNumber: partNumber,
-					// TODO: Support object lock for multipart upload.
+					ContentMD5: isObjectLockEnabled
+						? await calculateContentMd5(data)
+						: undefined,
 				}
 			);
 			// eTag will always be set even the S3 model interface marks it as optional.

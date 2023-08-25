@@ -1,15 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { StorageAccessLevel } from '@aws-amplify/core';
+
 import {
 	cacheMultipartUpload,
 	findCachedUploadParts,
 	getUploadsCacheKey,
-} from '../uploadCache';
+} from './uploadCache';
 import { createMultipartUpload, Part } from '../../../../../AwsClients/S3';
 import { ResolvedS3Config } from '../../../types/options';
 import { UploadSource } from '../../../../../types';
-import { StorageAccessLevel } from '@aws-amplify/core';
 
 export type LoadOrCreateMultipartUploadOptions = {
 	s3Config: ResolvedS3Config;

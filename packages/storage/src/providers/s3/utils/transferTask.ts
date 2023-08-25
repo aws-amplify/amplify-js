@@ -21,10 +21,10 @@ const createCancellableTask = <Result>({
 }: CreateCancellableTaskOptions<Result>): CancellableTask<Result> => {
 	const state = TransferTaskState.IN_PROGRESS;
 	let abortErrorOverwriteRecord: Error | undefined = undefined;
-	const downloadTask = {
+	const cancelableTask = {
 		cancel: (abortErrorOverwrite?: Error) => {
 			abortErrorOverwriteRecord = abortErrorOverwrite;
-			const { state } = downloadTask;
+			const { state } = cancelableTask;
 			if (
 				state === TransferTaskState.CANCELED ||
 				state === TransferTaskState.ERROR ||
@@ -32,7 +32,7 @@ const createCancellableTask = <Result>({
 			) {
 				return;
 			}
-			downloadTask.state = TransferTaskState.CANCELED;
+			cancelableTask.state = TransferTaskState.CANCELED;
 			onCancel(abortErrorOverwrite);
 		},
 		state,
@@ -41,19 +41,19 @@ const createCancellableTask = <Result>({
 	const wrappedJobPromise = (async () => {
 		try {
 			const result = await job();
-			downloadTask.state = TransferTaskState.SUCCESS;
+			cancelableTask.state = TransferTaskState.SUCCESS;
 			return result;
 		} catch (e) {
 			if (isCancelError(e)) {
-				downloadTask.state = TransferTaskState.CANCELED;
+				cancelableTask.state = TransferTaskState.CANCELED;
 				throw abortErrorOverwriteRecord ?? e;
 			}
-			downloadTask.state = TransferTaskState.ERROR;
+			cancelableTask.state = TransferTaskState.ERROR;
 			throw e;
 		}
 	})();
 
-	return Object.assign(downloadTask, {
+	return Object.assign(cancelableTask, {
 		result: wrappedJobPromise,
 	});
 };
@@ -80,13 +80,13 @@ export const createUploadTask = <Result>({
 		onCancel,
 	});
 
-	const uploadTask = {
-		...cancellableTask,
-		pause: () => {
+	const uploadTask = Object.assign(cancellableTask, {
+		pause: function () {
 			const { state } = uploadTask;
 			if (!isMultipartUpload || state !== TransferTaskState.IN_PROGRESS) {
 				return;
 			}
+			// @ts-ignore
 			uploadTask.state = TransferTaskState.PAUSED;
 			onPause?.();
 		},
@@ -95,9 +95,11 @@ export const createUploadTask = <Result>({
 			if (!isMultipartUpload || state !== TransferTaskState.PAUSED) {
 				return;
 			}
+			// @ts-ignore
 			uploadTask.state = TransferTaskState.IN_PROGRESS;
 			onResume?.();
 		},
-	};
+	});
+
 	return uploadTask;
 };
