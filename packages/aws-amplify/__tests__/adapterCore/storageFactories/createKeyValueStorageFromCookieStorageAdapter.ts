@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { createKeyValueStorageFromCookieStorageAdapter } from '../../../src/adapterCore';
+import { defaultSetCookieOptions } from '../../../src/adapterCore/storageFactories/createKeyValueStorageFromCookieStorageAdapter';
 
 const mockCookiesStorageAdapter = {
 	getAll: jest.fn(),
@@ -32,30 +33,24 @@ describe('keyValueStorage', () => {
 				expect(mockCookiesStorageAdapter.set).toBeCalledWith(
 					testKey,
 					testValue,
-					{}
+					{
+						...defaultSetCookieOptions,
+						expires: expect.any(Date),
+					}
 				);
 			});
 
 			it('should set item with options', async () => {
 				const testKey = 'testKey';
 				const testValue = 'testValue';
-				const testOptions = {
-					domain: 'testDomain',
-					expires: new Date(),
-					httpOnly: true,
-					maxAge: 100,
-					sameSite: 'strict',
-				};
-				mockCookiesStorageAdapter.get.mockReturnValueOnce({
-					name: testKey,
-					value: testValue,
-					...testOptions,
-				});
 				keyValueStorage.setItem(testKey, testValue);
 				expect(mockCookiesStorageAdapter.set).toBeCalledWith(
 					testKey,
 					testValue,
-					testOptions
+					{
+						...defaultSetCookieOptions,
+						expires: expect.any(Date),
+					}
 				);
 			});
 
@@ -71,8 +66,7 @@ describe('keyValueStorage', () => {
 			});
 
 			it('should get null if item not found', async () => {
-				const testKey = 'testKey';
-				const testValue = 'testValue';
+				const testKey = 'nonExisting';
 				const value = await keyValueStorage.getItem(testKey);
 				expect(value).toBeNull();
 			});

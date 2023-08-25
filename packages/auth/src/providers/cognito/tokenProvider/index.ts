@@ -5,6 +5,7 @@ import {
 	KeyValueStorageInterface,
 	FetchAuthSessionOptions,
 	LocalStorage,
+	AuthConfig,
 } from '@aws-amplify/core';
 import { DefaultTokenStore } from './TokenStore';
 import { TokenOrchestrator } from './TokenOrchestrator';
@@ -34,6 +35,10 @@ class CognitoUserPoolsTokenProviderClass
 	}
 	setWaitForInflightOAuth(waitForInflightOAuth: () => Promise<void>): void {
 		this.tokenOrchestrator.setWaitForInflightOAuth(waitForInflightOAuth);
+	}
+	setAuthConfig(authConfig: AuthConfig) {
+		this.authTokenStore.setAuthConfig(authConfig);
+		this.tokenOrchestrator.setAuthConfig(authConfig);
 	}
 }
 

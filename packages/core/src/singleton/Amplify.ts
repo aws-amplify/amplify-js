@@ -87,12 +87,14 @@ function mergeResourceConfig(
 		resultConfig[category] = existingConfig[category as keyof ResourcesConfig];
 	}
 
-	for (const category of Object.keys(newConfig)) {
-		resultConfig[category] = {
-			...resultConfig[category],
-			...newConfig[category as keyof ResourcesConfig],
+	for (const key of Object.keys(newConfig).filter(key => key !== 'ssr')) {
+		resultConfig[key] = {
+			...resultConfig[key],
+			...newConfig[key as Exclude<keyof ResourcesConfig, 'ssr'>],
 		};
 	}
+
+	resultConfig.ssr = newConfig.ssr;
 
 	return resultConfig;
 }
