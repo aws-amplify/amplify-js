@@ -7,19 +7,24 @@ import {
 } from '@aws-amplify/auth/cognito';
 import {
 	AWSCredentialsAndIdentityIdProvider,
+	AuthConfig,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
 
 /**
  * Creates a instance of {@link CognitoAWSCredentialsAndIdentityIdProvider} using
  * the provided `keyValueStorage`.
+ * @param authConfig The Auth config that the credentials provider needs to function.
  * @param keyValueStorage An object that implements the {@link KeyValueStorageInterface}.
  * @returns An instance of {@link CognitoAWSCredentialsAndIdentityIdProvider}.
  */
 export const createAWSCredentialsAndIdentityIdProvider = (
+	authConfig: AuthConfig,
 	keyValueStorage: KeyValueStorageInterface
 ): AWSCredentialsAndIdentityIdProvider => {
-	return new CognitoAWSCredentialsAndIdentityIdProvider(
+	const credentialsProvider = new CognitoAWSCredentialsAndIdentityIdProvider(
 		new DefaultIdentityIdStore(keyValueStorage)
 	);
+	credentialsProvider.setAuthConfig(authConfig);
+	return credentialsProvider;
 };

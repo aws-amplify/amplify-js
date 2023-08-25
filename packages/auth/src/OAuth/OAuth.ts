@@ -4,7 +4,6 @@
 import { parse } from 'url'; // Used for OAuth parsing of Cognito Hosted UI
 import { launchUri } from './urlOpener';
 import * as oAuthStorage from './oauthStorage';
-import { Buffer } from 'buffer';
 
 import {
 	OAuthOpts,

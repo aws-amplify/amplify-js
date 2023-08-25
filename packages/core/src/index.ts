@@ -24,6 +24,7 @@ export {
 	AWSCredentialsAndIdentityIdProvider,
 	AWSCredentialsAndIdentityId,
 	Identity,
+	OAuthConfig,
 } from './singleton/Auth/types';
 export {
 	AuthConfig,
@@ -35,7 +36,11 @@ export {
 	ResourcesConfig,
 	LibraryOptions,
 } from './singleton/types';
-export { AmplifyV6, fetchAuthSession } from './singleton';
+export {
+	AmplifyV6,
+	fetchAuthSession,
+	AmplifyClass as AmplifyClassV6,
+} from './singleton';
 
 // AWSClients exports
 export {
@@ -44,6 +49,9 @@ export {
 	GetCredentialsForIdentityInput,
 	GetCredentialsForIdentityOutput,
 } from './AwsClients/CognitoIdentity';
+
+// Amplify-wide constructs
+export { UserProfile } from './types';
 
 // Storage helpers
 export {
