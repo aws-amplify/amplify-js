@@ -227,7 +227,7 @@
       "name": "[Auth] getCurrentUser (Cognito)",
       "path": "./lib-esm/auth/index.js",
       "import": "{ getCurrentUser }",
-      "limit": "12.65 kB"
+      "limit": "12.68 kB"
     },
     {
       "name": "[Auth] confirmUserAttribute (Cognito)",
