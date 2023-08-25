@@ -7,7 +7,7 @@ import { AuthSignInStep } from '../../../src/types';
 import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn';
 import { RespondToAuthChallengeException } from '../../../src/providers/cognito/types/errors';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');

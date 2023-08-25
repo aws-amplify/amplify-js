@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6, Hub, LocalStorage, OAuthConfig } from '@aws-amplify/core';
+import { Amplify, Hub, LocalStorage, OAuthConfig } from '@aws-amplify/core';
 import {
 	AmplifyError,
 	assertOAuthConfig,
@@ -35,7 +35,7 @@ const SELF = '_self';
 export function signInWithRedirect(
 	signInWithRedirectRequest?: SignInWithRedirectRequest
 ): void {
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth;
 	assertOAuthConfig(authConfig);
 
 	let provider = 'COGNITO'; // Default
@@ -330,7 +330,7 @@ function urlListener() {
 	// TODO(v6): what happens if configure gets called multiple times during code exchange
 	Hub.listen('core', async capsule => {
 		if (capsule.payload.event === 'configure') {
-			const authConfig = AmplifyV6.getConfig().Auth;
+			const authConfig = Amplify.getConfig().Auth;
 			store.setAuthConfig(authConfig);
 
 			// No OAuth inflight doesnt need to parse the url
