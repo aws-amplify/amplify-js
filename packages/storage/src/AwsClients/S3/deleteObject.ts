@@ -50,7 +50,7 @@ const deleteObjectDeserializer = async (
 ): Promise<DeleteObjectOutput> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
-		const error = <Error>await parseXmlError(response);
+		const error = (await parseXmlError(response)) as Error;
 		throw StorageError.fromServiceError(error, response.statusCode);
 	} else {
 		const content = map(response.headers, {

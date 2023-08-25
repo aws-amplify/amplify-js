@@ -6,6 +6,7 @@ export {
 	ValidationData,
 	AuthFlowType,
 	CognitoUserAttributeKey,
+	MFAPreference,
 } from './models';
 
 export {
@@ -17,7 +18,7 @@ export {
 	CognitoConfirmSignUpOptions,
 	CognitoConfirmSignInOptions,
 	CognitoUpdateUserAttributesOptions,
-	CogntioVerifyTOTPSetupOptions
+	CogntioVerifyTOTPSetupOptions,
 } from './options';
 
 export { UpdateMFAPreferenceRequest } from './requests';

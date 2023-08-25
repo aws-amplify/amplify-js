@@ -46,6 +46,7 @@ export interface AuthTokenOrchestrator {
 
 export interface CognitoUserPoolTokenProviderType extends TokenProvider {
 	setKeyValueStorage: (keyValueStorage: KeyValueStorageInterface) => void;
+	setAuthConfig: (authConfig: AuthConfig) => void;
 }
 
 export type CognitoAuthTokens = AuthTokens & {

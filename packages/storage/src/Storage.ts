@@ -1,12 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify,  } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
-import { AWSS3Provider } from './providers';
+import { AWSS3Provider } from './providers/AWSS3Provider';
 import {
-	StorageCopySource,
-	StorageCopyDestination,
 	StorageGetConfig,
 	StorageProvider,
 	StoragePutConfig,
@@ -23,6 +21,7 @@ import {
 	StorageGetPropertiesConfig,
 	StorageGetPropertiesOutput,
 } from './types';
+import { StorageCopySource, StorageCopyDestination } from './types/Storage';
 import { PutObjectInput } from './AwsClients/S3';
 import { InternalStorageClass } from './internals/InternalStorage';
 

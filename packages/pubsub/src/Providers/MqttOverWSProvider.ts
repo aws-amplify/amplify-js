@@ -89,12 +89,8 @@ class ClientsQueue {
 	}
 }
 
-const dispatchPubSubEvent = (
-	event: string,
-	data: Record<string, unknown>,
-	message: string
-) => {
-	Hub.dispatch('pubsub', { event, data, message }, 'PubSub', AMPLIFY_SYMBOL);
+const dispatchPubSubEvent = payload => {
+	Hub.dispatch('pubsub', payload, 'PubSub', AMPLIFY_SYMBOL);
 };
 
 const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
@@ -111,14 +107,14 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		// Monitor the connection health state and pass changes along to Hub
 		this.connectionStateMonitor.connectionStateObservable.subscribe(
 			connectionStateChange => {
-				dispatchPubSubEvent(
-					CONNECTION_STATE_CHANGE,
-					{
+				dispatchPubSubEvent({
+					event: CONNECTION_STATE_CHANGE,
+					data: {
 						provider: this,
 						connectionState: connectionStateChange,
 					},
-					`Connection state is ${connectionStateChange}`
-				);
+					message: `Connection state is ${connectionStateChange}`,
+				});
 
 				this.connectionState = connectionStateChange;
 

@@ -11,5 +11,6 @@ export {
 } from './constants';
 export { s3TransferHandler } from './s3TransferHandler/fetch';
 export { parser } from './xmlParser/pureJs';
+// TODO[AllanZhengYP]: support isCancelError in Node.js with node-fetch
 export { isCancelError } from './xhrTransferHandler';
 export { toBase64, utf8Encode } from './index.native';

@@ -7,10 +7,14 @@ This file maps top-level exports from `@aws-amplify/core`. These are intended to
 // TODO(v6) Swap out entirely with the new Singleton
 export { Amplify } from './Amplify';
 export { AmplifyClass } from './Amplify';
+export { ClientDevice } from './ClientDevice';
+export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
+export { Hub } from './Hub';
+export { HubCapsule, HubCallback, HubPayload } from './Hub/types';
+export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
+export { AppState, AsyncStorage, Linking } from './RNComponents';
 export { Credentials, CredentialsClass } from './Credentials';
 export { ICredentials } from './types';
-export { Signer } from './Signer';
-export { parseAWSExports } from './parseAWSExports';
 
 // Singleton exports
 export {
@@ -20,6 +24,7 @@ export {
 	AWSCredentialsAndIdentityIdProvider,
 	AWSCredentialsAndIdentityId,
 	Identity,
+	OAuthConfig,
 } from './singleton/Auth/types';
 export {
 	AuthConfig,
@@ -28,10 +33,15 @@ export {
 	ResourcesConfig,
 	StorageAccessLevel,
 	StorageConfig,
-	UserPoolConfig,
-	UserPoolConfigAndIdentityPoolConfig,
+	GetCredentialsOptions,
+	ResourcesConfig,
+	LibraryOptions,
 } from './singleton/types';
-export { AmplifyV6, fetchAuthSession } from './singleton';
+export {
+	AmplifyV6,
+	fetchAuthSession,
+	AmplifyClass as AmplifyClassV6,
+} from './singleton';
 
 // AWSClients exports
 export {
@@ -63,8 +73,7 @@ export { CacheConfig } from './Cache/types';
 export { BrowserStorageCache };
 export { BrowserStorageCache as Cache }; // Maintain interoperability with React Native
 
-// Hub exports
-export { Hub, HubCapsule, HubCallback, HubPayload } from './Hub/Hub';
-
 // Internationalization utilities
 export { I18n } from './I18n';
+
+export { parseAWSExports } from './parseAWSExports';

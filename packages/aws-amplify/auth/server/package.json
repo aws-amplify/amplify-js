@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/auth/server",
+	"main": "../../lib/auth/server.js",
+	"browser": "../../lib-esm/auth/server.js",
+	"module": "../../lib-esm/auth/server.js",
+	"typings": "../../lib-esm/auth/server.d.ts"
+}

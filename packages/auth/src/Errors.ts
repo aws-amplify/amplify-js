@@ -41,6 +41,10 @@ export class NoUserPoolError extends AuthError {
 }
 
 export const authErrorMessages: AuthErrorMessages = {
+	oauthSignInError: {
+		message: AuthErrorStrings.OAUTH_ERROR,
+		log: 'Make sure Cognito Hosted UI has been configured correctly',
+	},
 	noConfig: {
 		message: AuthErrorStrings.DEFAULT_MSG,
 		log: `

@@ -27,6 +27,11 @@
       "import": "./lib-esm/auth/cognito/index.js",
       "require": "./lib/auth/cognito/index.js"
     },
+    "./auth/server": {
+      "types": "./lib-esm/auth/server.d.ts",
+      "import": "./lib-esm/auth/server.js",
+      "require": "./lib/auth/server.js"
+    },
     "./analytics": {
       "types": "./lib-esm/analytics/index.d.ts",
       "import": "./lib-esm/analytics/index.js",
@@ -36,6 +41,21 @@
       "types": "./lib-esm/analytics/pinpoint/index.d.ts",
       "import": "./lib-esm/analytics/pinpoint/index.js",
       "require": "./lib/analytics/pinpoint/index.js"
+    },
+    "./storage": {
+      "types": "./lib-esm/storage/index.d.ts",
+      "import": "./lib-esm/storage/index.js",
+      "require": "./lib/storage/index.js"
+    },
+    "./storage/s3": {
+      "types": "./lib-esm/storage/s3/index.d.ts",
+      "import": "./lib-esm/storage/s3/index.js",
+      "require": "./lib/storage/s3/index.js"
+    },
+    "./internals/adapter-core": {
+      "types": "./lib-esm/adapterCore/index.d.ts",
+      "import": "./lib-esm/adapterCore/index.js",
+      "require": "./lib/adapterCore/index.js"
     },
     "./package.json": "./package.json"
   },
@@ -58,6 +78,12 @@
       ],
       "analytics/pinpoint": [
         "./lib-esm/analytics/pinpoint/index.d.ts"
+      ],
+      "storage": [
+        "./lib-esm/storage/index.d.ts"
+      ],
+      "storage/s3": [
+        "./lib-esm/storage/s3/index.d.ts"
       ]
     }
   },
@@ -91,7 +117,9 @@
     "lib",
     "lib-esm",
     "src",
-    "**/package.json"
+    "analytics",
+    "auth",
+    "internals"
   ],
   "dependencies": {
     "@aws-amplify/analytics": "7.0.0",

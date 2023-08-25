@@ -185,7 +185,9 @@ export class AWSS3ProviderManagedUpload {
 						ContentMD5,
 					} = this.params;
 					const res = await uploadPart(
-						{ ...this.s3Config, emitter: part.emitter },
+						{
+							...this.s3Config,
+						},
 						{
 							PartNumber: part.partNumber,
 							Body: part.bodyPart,
