@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { S3Exception, S3CopyResult } from '../types';
 import { CopyRequest } from '../../../types';
 import {
@@ -27,9 +27,9 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
  */
 export const copy = async (copyRequest: CopyRequest): Promise<S3CopyResult> => {
 	const { identityId: defaultIdentityId, credentials } =
-		await resolveCredentials(AmplifyV6);
+		await resolveCredentials(Amplify);
 	const { defaultAccessLevel, bucket, region } =
-		resolveStorageConfig(AmplifyV6);
+		resolveStorageConfig(Amplify);
 	const {
 		source: {
 			key: sourceKey,
@@ -47,7 +47,7 @@ export const copy = async (copyRequest: CopyRequest): Promise<S3CopyResult> => {
 		StorageValidationErrorCode.NoDestinationKey
 	);
 
-	const sourceFinalKey = `${bucket}/${getKeyWithPrefix(AmplifyV6, {
+	const sourceFinalKey = `${bucket}/${getKeyWithPrefix(Amplify, {
 		accessLevel: sourceAccessLevel,
 		targetIdentityId:
 			copyRequest.source.accessLevel === 'protected'
@@ -56,7 +56,7 @@ export const copy = async (copyRequest: CopyRequest): Promise<S3CopyResult> => {
 		key: sourceKey,
 	})}`;
 
-	const destinationFinalKey = getKeyWithPrefix(AmplifyV6, {
+	const destinationFinalKey = getKeyWithPrefix(Amplify, {
 		accessLevel: destinationAccessLevel,
 		targetIdentityId: defaultIdentityId,
 		key: destinationKey,
