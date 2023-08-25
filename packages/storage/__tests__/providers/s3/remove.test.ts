@@ -53,7 +53,7 @@ describe('remove API', () => {
 	});
 	describe('Happy Path Cases:', () => {
 		beforeEach(() => {
-			mockHeadObject.mockImplementation(() => {
+			mockDeleteObject.mockImplementation(() => {
 				return {
 					Metadata: { key: 'value' },
 				};
