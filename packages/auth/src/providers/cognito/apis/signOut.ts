@@ -1,4 +1,9 @@
-import { AmplifyV6, AuthConfig, LocalStorage } from '@aws-amplify/core';
+import {
+	AmplifyV6,
+	AuthConfig,
+	LocalStorage,
+	clearCredentials,
+} from '@aws-amplify/core';
 import { SignOutRequest } from '../../../types/requests';
 import { AuthSignOutResult } from '../../../types/results';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
@@ -13,7 +18,6 @@ import {
 	revokeToken,
 } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { AuthError } from '../../../errors/AuthError';
 const SELF = '_self';
 
 /**
@@ -61,6 +65,7 @@ async function clientSignOut(authConfig: AuthConfig) {
 		// TODO(v6): add logger message
 	} finally {
 		tokenOrchestrator.clearTokens();
+		await clearCredentials();
 	}
 }
 
@@ -84,10 +89,11 @@ async function globalSignOut(authConfig: AuthConfig) {
 		// TODO(v6): add logger
 	} finally {
 		tokenOrchestrator.clearTokens();
+		await clearCredentials();
 	}
 }
 
-function handleOAuthSignOut(authConfig: AuthConfig) {
+async function handleOAuthSignOut(authConfig: AuthConfig) {
 	try {
 		assertOAuthConfig(authConfig);
 	} catch (err) {
@@ -97,7 +103,10 @@ function handleOAuthSignOut(authConfig: AuthConfig) {
 
 	const oauthStore = new DefaultOAuthStore(LocalStorage);
 	oauthStore.setAuthConfig(authConfig);
-	if (oauthStore.loadOAuthSignIn()) {
+	const isOAuthSignIn = await oauthStore.loadOAuthSignIn();
+	oauthStore.clearOAuthData();
+
+	if (isOAuthSignIn) {
 		oAuthSignOutRedirect(authConfig);
 	}
 }

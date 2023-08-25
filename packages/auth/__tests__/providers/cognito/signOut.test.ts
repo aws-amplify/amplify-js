@@ -4,6 +4,7 @@ import * as TokenProvider from '../../../src/providers/cognito/tokenProvider';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { DefaultOAuthStore } from '../../../src/providers/cognito/utils/signInWithRedirectStore';
 
 const mockedAccessToken =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJvcmlnaW5fanRpIjoiYXNjIn0.4X9nPnldRthcZwi9b0y3rvNn1jvzHnkgJjeEmzmq5VQ';
@@ -106,7 +107,7 @@ describe('signOut tests no oauth request fail', () => {
 	let tokenOrchestratorSpy;
 	let globalSignOutSpy;
 	let revokeTokenSpy;
-
+	let clearCredentialsSpy;
 	beforeAll(() => {
 		jest.resetAllMocks();
 	});
@@ -127,9 +128,19 @@ describe('signOut tests no oauth request fail', () => {
 			{
 				Auth: {
 					tokenProvider: TokenProvider.CognitoUserPoolsTokenProvider,
+					credentialsProvider: {
+						clearCredentials() {
+							clearCredentialsSpy();
+						},
+						getCredentialsAndIdentityId(getCredentialsOptions) {
+							throw new Error('not implemented');
+						},
+					},
 				},
 			}
 		);
+
+		clearCredentialsSpy = jest.fn(() => {});
 
 		revokeTokenSpy = jest
 			.spyOn(clients, 'revokeToken')
@@ -154,7 +165,6 @@ describe('signOut tests no oauth request fail', () => {
 		globalSignOutSpy = jest
 			.spyOn(clients, 'globalSignOut')
 			.mockImplementation(async () => {
-				console.log('calling spy');
 				throw new Error('fail!!!');
 			});
 	});
@@ -179,6 +189,7 @@ describe('signOut tests no oauth request fail', () => {
 		expect(globalSignOutSpy).not.toHaveBeenCalled();
 		expect(tokenOrchestratorSpy).toBeCalled();
 		expect(tokenStoreSpy).toBeCalled();
+		expect(clearCredentialsSpy).toBeCalled();
 	});
 
 	test('global sign out no oauth', async () => {
@@ -208,6 +219,9 @@ describe('signOut tests with oauth', () => {
 	let globalSignOutSpy;
 	let revokeTokenSpy;
 	let windowOpenSpy;
+	let clearCredentialsSpy;
+	let oauthStoreSpy;
+
 	beforeEach(() => {
 		Amplify.configure(
 			{
@@ -227,9 +241,22 @@ describe('signOut tests with oauth', () => {
 			{
 				Auth: {
 					tokenProvider: TokenProvider.CognitoUserPoolsTokenProvider,
+					credentialsProvider: {
+						clearCredentials() {
+							clearCredentialsSpy();
+						},
+						getCredentialsAndIdentityId(getCredentialsOptions) {
+							throw new Error('not implemented');
+						},
+					},
 				},
 			}
 		);
+		oauthStoreSpy = jest
+			.spyOn(DefaultOAuthStore.prototype, 'loadOAuthSignIn')
+			.mockImplementation(async () => {
+				return true;
+			});
 
 		windowOpenSpy = jest.spyOn(window, 'open').mockImplementation();
 
@@ -248,6 +275,8 @@ describe('signOut tests with oauth', () => {
 					clockDrift: 0,
 				};
 			});
+
+		clearCredentialsSpy = jest.fn(() => {});
 
 		tokenOrchestratorSpy = jest
 			.spyOn(TokenProvider.tokenOrchestrator, 'clearTokens')
@@ -280,6 +309,7 @@ describe('signOut tests with oauth', () => {
 			'https://https://amazonaws.com/logout?client_id=111111-aaaaa-42d8-891d-ee81a1549398&logout_uri=http%3A%2F%2Flocalhost%3A3000%2F',
 			'_self'
 		);
+		expect(clearCredentialsSpy).toBeCalled();
 	});
 
 	test('global sign out with oauth', async () => {
@@ -300,5 +330,6 @@ describe('signOut tests with oauth', () => {
 			'https://https://amazonaws.com/logout?client_id=111111-aaaaa-42d8-891d-ee81a1549398&logout_uri=http%3A%2F%2Flocalhost%3A3000%2F',
 			'_self'
 		);
+		expect(clearCredentialsSpy).toBeCalled();
 	});
 });

@@ -1,7 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Observable, Observer } from 'rxjs';
-
 import {
 	AWSCredentialsAndIdentityId,
 	AuthConfig,
@@ -25,13 +23,10 @@ export function isTokenExpired({
 }
 
 export class AuthClass {
-	private authSessionObservers: Set<Observer<AuthSession>>;
 	private authConfig?: AuthConfig;
 	private authOptions?: LibraryAuthOptions;
 
-	constructor() {
-		this.authSessionObservers = new Set();
-	}
+	constructor() {}
 
 	/**
 	 * Configure Auth category
@@ -98,18 +93,9 @@ export class AuthClass {
 		};
 	}
 
-	/**
-	 * Obtain an Observable that notifies on session changes
-	 *
-	 * @returns Observable<AmplifyUserSession>
-	 */
-	listenSessionChanges(): Observable<AuthSession> {
-		return new Observable(observer => {
-			this.authSessionObservers.add(observer);
-
-			return () => {
-				this.authSessionObservers.delete(observer);
-			};
-		});
+	async clearCredentials(): Promise<void> {
+		if (this.authOptions?.credentialsProvider) {
+			return await this.authOptions.credentialsProvider.clearCredentials();
+		}
 	}
 }
