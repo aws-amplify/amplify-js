@@ -104,6 +104,7 @@ function oauthSignIn({
 		.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
 		.join('&');
 
+	// TODO(v6): use URL object instead
 	const URL = `https://${oauthConfig.domain}/oauth2/authorize?${queryString}`;
 	window.open(URL, SELF);
 }
