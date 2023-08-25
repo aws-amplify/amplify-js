@@ -75,7 +75,7 @@ export class AmplifyClass {
  * @remarks
  * `Amplify` is responsible for orchestrating cross-category communication within the library.
  */
-export const AmplifyV6 = new AmplifyClass();
+export const Amplify = new AmplifyClass();
 
 // TODO(v6): validate until which level this will nested, during Amplify.configure API review.
 function mergeResourceConfig(

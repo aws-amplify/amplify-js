@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6, fetchAuthSession } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { StorageError } from '../../../errors/StorageError';
@@ -43,7 +43,7 @@ export const resolveS3ConfigAndInput = async (
 	assertValidationError(!!identityId, StorageValidationErrorCode.NoIdentityId);
 
 	const { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
-		AmplifyV6.getConfig()?.Storage ?? {};
+	Amplify.getConfig()?.Storage ?? {};
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
 
@@ -51,7 +51,7 @@ export const resolveS3ConfigAndInput = async (
 		defaultAccessLevel,
 		prefixResolver = defaultPrefixResolver,
 		isObjectLockEnabled,
-	} = AmplifyV6.libraryOptions?.Storage?.AWSS3 ?? {};
+	} = Amplify.libraryOptions?.Storage?.AWSS3 ?? {};
 
 	const keyPrefix = await prefixResolver({
 		accessLevel:

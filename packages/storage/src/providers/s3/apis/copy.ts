@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { CopyRequest } from '../../../types';
 import { S3CopyResult } from '../types';
 import { copy as copyInternal } from './internal/copy';
@@ -18,5 +18,5 @@ import { copy as copyInternal } from './internal/copy';
  * source or destination key are not defined.
  */
 export const copy = async (copyRequest: CopyRequest): Promise<S3CopyResult> => {
-	return copyInternal(AmplifyV6, copyRequest);
+	return copyInternal(Amplify, copyRequest);
 };

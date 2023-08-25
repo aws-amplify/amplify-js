@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { StorageOperationRequest, StorageOptions } from '../../..';
 import { S3GetPropertiesResult } from '../types';
 import { getProperties as getPropertiesInternal } from './internal/getProperties';
@@ -18,5 +18,5 @@ import { getProperties as getPropertiesInternal } from './internal/getProperties
 export const getProperties = (
 	req: StorageOperationRequest<StorageOptions>
 ): Promise<S3GetPropertiesResult> => {
-	return getPropertiesInternal(AmplifyV6, req);
+	return getPropertiesInternal(Amplify, req);
 };

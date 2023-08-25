@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { AuthUser, GetCurrentUserRequest } from '../../../types';
 import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentUser';
 
@@ -19,5 +19,5 @@ import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentU
 export const getCurrentUser = async (
 	getCurrentUserRequest?: GetCurrentUserRequest
 ): Promise<AuthUser> => {
-	return getCurrentUserInternal(AmplifyV6, getCurrentUserRequest);
+	return getCurrentUserInternal(Amplify, getCurrentUserRequest);
 };
