@@ -31,7 +31,7 @@ export const putObjectJob =
 		const {
 			contentDisposition,
 			contentEncoding,
-			contentType,
+			contentType = 'binary/octet-stream',
 			metadata,
 			onProgress,
 		} = uploadDataOptions ?? {};

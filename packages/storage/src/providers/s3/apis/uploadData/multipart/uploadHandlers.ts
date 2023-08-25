@@ -62,7 +62,7 @@ export const getMultipartUploadHandlers = (
 		const {
 			contentDisposition,
 			contentEncoding,
-			contentType,
+			contentType = 'binary/octet-stream',
 			metadata,
 			accessLevel,
 			onProgress,

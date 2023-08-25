@@ -52,8 +52,6 @@ export const loadOrCreateMultipartUpload = async ({
 	metadata,
 	abortSignal,
 }: LoadOrCreateMultipartUploadOptions): Promise<LoadOrCreateMultipartUploadResult> => {
-	const resolvedContentType =
-		contentType ?? (data instanceof File ? data.type : 'binary/octet-stream');
 	const finalKey = keyPrefix + key;
 
 	let cachedUpload:
@@ -101,7 +99,7 @@ export const loadOrCreateMultipartUpload = async ({
 			{
 				Bucket: bucket,
 				Key: finalKey,
-				ContentType: resolvedContentType,
+				ContentType: contentType,
 				ContentDisposition: contentDisposition,
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,

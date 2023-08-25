@@ -34,12 +34,12 @@ export const uploadPartExecutor = async ({
 	isObjectLockEnabled,
 }: UploadPartExecutorOptions) => {
 	let transferredBytes = 0;
-	for (const chunkToUpload of dataChunkerGenerator) {
+	for (const { data, partNumber } of dataChunkerGenerator) {
 		if (abortSignal.aborted) {
 			// TODO: debug message: upload executor aborted
 			break;
 		}
-		const { data, partNumber } = chunkToUpload;
+
 		const partSize = partByteLength(data);
 		if (completedPartNumberSet.has(partNumber)) {
 			// TODO: debug message: part already uploaded
