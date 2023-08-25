@@ -1,10 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+// TODO(ashwinkumar6) this uses V5 Credentials, update to V6.
+import { Credentials } from '@aws-sdk/types';
+
 import { TransferProgressEvent } from '../../../types';
 import { StorageOptions } from '../../../types/params';
 
-type S3Options = StorageOptions & {
+/**
+ * Request options type for S3 Storage operations.
+ */
+export type S3Options = StorageOptions & {
 	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false
@@ -13,7 +19,7 @@ type S3Options = StorageOptions & {
 };
 
 /**
- * Parameter options type for S3 downloadData, downloadFile, uploadData, uploadFile APIs.
+ * Request options type for S3 downloadData, uploadData APIs.
  */
 export type S3TransferOptions = S3Options & {
 	/**
@@ -56,4 +62,17 @@ export type S3UploadOptions = S3TransferOptions & {
 	 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html#UserMetadata
 	 */
 	metadata?: Record<string, string>;
+};
+
+/**
+ * Internal only type for S3 API handlers' config parameter.
+ *
+ * @internal
+ */
+export type ResolvedS3Config = {
+	region: string;
+	credentials: Credentials;
+	customEndpoint?: string;
+	forcePathStyle?: boolean;
+	useAccelerateEndpoint?: boolean;
 };

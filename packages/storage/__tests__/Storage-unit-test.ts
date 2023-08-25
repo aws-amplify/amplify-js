@@ -4,13 +4,8 @@
 import { Credentials } from '@aws-amplify/core';
 import { AWSS3Provider as AWSStorageProvider } from '../src/providers/AWSS3Provider';
 import { Storage as StorageClass } from '../src/Storage';
-import {
-	S3ProviderListOutput,
-	StorageProvider,
-} from '../src';
-import {
-	StorageInstance as StorageCategory
-} from '../src/Storage'
+import { S3ProviderListOutput, StorageProvider } from '../src';
+import { StorageInstance as StorageCategory } from '../src/Storage';
 import { isCancelError } from '../src/AwsClients/S3/utils';
 import { getPrefix } from '../src/common/S3ClientUtils';
 import { AWSS3UploadTask } from '../src/providers/AWSS3UploadTask';

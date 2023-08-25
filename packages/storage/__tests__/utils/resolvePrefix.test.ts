@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { prefixResolver } from '../../src/utils/prefixResolver';
+import { resolvePrefix } from '../../src/utils/resolvePrefix';
 import {
 	validationErrorMap,
 	StorageValidationErrorCode,
 } from '../../src/errors/types/validation';
 
-describe('prefixResolver', () => {
+describe('resolvePrefix', () => {
 	it('should return the correct prefix for private access level', async () => {
-		const prefix = await prefixResolver({
+		const prefix = await resolvePrefix({
 			accessLevel: 'private',
 			targetIdentityId: 'identityId',
 		});
@@ -17,7 +17,7 @@ describe('prefixResolver', () => {
 	});
 
 	it('should return the correct prefix for protected access level', async () => {
-		const prefix = await prefixResolver({
+		const prefix = await resolvePrefix({
 			accessLevel: 'protected',
 			targetIdentityId: 'identityId',
 		});
@@ -25,7 +25,7 @@ describe('prefixResolver', () => {
 	});
 
 	it('should return the correct prefix for public access level', async () => {
-		const prefix = await prefixResolver({
+		const prefix = await resolvePrefix({
 			accessLevel: 'guest',
 		});
 		expect(prefix).toBe('public/');
@@ -33,7 +33,7 @@ describe('prefixResolver', () => {
 
 	it('should throw an error for private access level without targetIdentityId', async () => {
 		try {
-			await prefixResolver({
+			await resolvePrefix({
 				accessLevel: 'private',
 			});
 		} catch (error) {
@@ -45,7 +45,7 @@ describe('prefixResolver', () => {
 
 	it('should throw an error for protected access level without targetIdentityId', async () => {
 		try {
-			await prefixResolver({
+			await resolvePrefix({
 				accessLevel: 'protected',
 			});
 		} catch (error) {
