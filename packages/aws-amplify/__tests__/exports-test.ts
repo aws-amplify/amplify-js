@@ -8,8 +8,6 @@ describe('aws-amplify', () => {
 			  "Amplify",
 			  "AmplifyV6",
 			  "withSSRContext",
-			  "Storage",
-			  "StorageClass",
 			]
 		`);
 		});
