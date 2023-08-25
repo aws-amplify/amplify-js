@@ -22,7 +22,7 @@ jest.mock('@aws-amplify/core', () => {
 		},
 	};
 });
-const mockHeadObject = deleteObject as jest.Mock;
+const mockDeleteObject = deleteObject as jest.Mock;
 const key = 'key';
 const bucket = 'bucket';
 const region = 'region';
