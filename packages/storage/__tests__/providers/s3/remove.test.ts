@@ -117,7 +117,7 @@ describe('remove API', () => {
 			jest.clearAllMocks();
 		});
 		it('Should return a not found error', async () => {
-			mockHeadObject.mockRejectedValueOnce(
+			mockDeleteObject.mockRejectedValueOnce(
 				Object.assign(new Error(), {
 					$metadata: { httpStatusCode: 404 },
 					name: 'NotFound',
