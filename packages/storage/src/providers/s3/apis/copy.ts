@@ -9,11 +9,10 @@ import {
 	getKeyWithPrefix,
 	resolveCredentials,
 } from '../utils';
-import { copyObject, CopyObjectOutput } from '../../../AwsClients/S3';
+import { copyObject } from '../../../AwsClients/S3';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 
-// TODO(ashwinkumar6) add unit test for copy API
 /**
  * Copy an object from a source object to a new object within the same bucket. Can optionally copy files across
  * different level or identityId (if source object's level is 'protected').
@@ -64,7 +63,7 @@ export const copy = async (copyRequest: CopyRequest): Promise<S3CopyResult> => {
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
 	// TODO(ashwinkumar6) V6-logger: debug `copying ${finalSrcKey} to ${finalDestKey}`
-	const response: CopyObjectOutput = await copyObject(
+	await copyObject(
 		{
 			region,
 			credentials,
