@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AuthConfig,
-	AuthTokens,
-	Identity,
-	getId,
-} from '@aws-amplify/core';
+import { AuthConfig, AuthTokens, Identity, getId } from '@aws-amplify/core';
 import { Logger } from '@aws-amplify/core/internals/utils';
 import { formLoginsMap } from './credentialsProvider';
 import { AuthError } from '../../../errors/AuthError';
@@ -41,7 +36,7 @@ export async function cognitoIdentityIdProvider({
 			return identityId.id;
 		} else {
 			const logins = tokens.idToken
-				? formLoginsMap(tokens.idToken.toString(), 'COGNITO')
+				? formLoginsMap(tokens.idToken.toString(), 'COGNITO', authConfig)
 				: {};
 			// TODO(V6): reuse previous guest idenityId if present
 			const generatedIdentityId = await generateIdentityId(logins, authConfig);

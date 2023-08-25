@@ -8,3 +8,4 @@ export {
 	AmplifyServer,
 	CookieStorage,
 } from './serverContext';
+export { AmplifyServerContextError } from './error';

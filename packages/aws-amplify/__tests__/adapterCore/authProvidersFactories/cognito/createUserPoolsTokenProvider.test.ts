@@ -7,7 +7,7 @@ import {
 	CognitoUserPoolTokenRefresher,
 } from '@aws-amplify/auth/cognito';
 
-import { KeyValueStorageInterface } from '@aws-amplify/core';
+import { AuthConfig, KeyValueStorageInterface } from '@aws-amplify/core';
 import { createUserPoolsTokenProvider } from '../../../../src/adapterCore';
 
 jest.mock('@aws-amplify/auth/cognito');
@@ -17,6 +17,11 @@ const mockKeyValueStorage: KeyValueStorageInterface = {
 	getItem: jest.fn(),
 	removeItem: jest.fn(),
 	clear: jest.fn(),
+};
+const mockAuthConfig: AuthConfig = {
+	identityPoolId: '123',
+	userPoolId: 'abc',
+	userPoolWebClientId: 'def',
 };
 const MockDefaultTokenStore = DefaultTokenStore as jest.Mock;
 const MockTokenOrchestrator = TokenOrchestrator as jest.Mock;
@@ -29,10 +34,16 @@ describe('createUserPoolsTokenProvider', () => {
 	});
 
 	it('should create a token provider with underlying dependencies', () => {
-		const tokenProvider = createUserPoolsTokenProvider(mockKeyValueStorage);
+		const tokenProvider = createUserPoolsTokenProvider(
+			mockAuthConfig,
+			mockKeyValueStorage
+		);
 
 		expect(MockDefaultTokenStore).toHaveBeenCalledTimes(1);
 		const mockTokenStoreInstance = MockDefaultTokenStore.mock.instances[0];
+		expect(mockTokenStoreInstance.setAuthConfig).toHaveBeenCalledWith(
+			mockAuthConfig
+		);
 		expect(mockTokenStoreInstance.setKeyValueStorage).toHaveBeenCalledWith(
 			mockKeyValueStorage
 		);
@@ -40,6 +51,9 @@ describe('createUserPoolsTokenProvider', () => {
 		expect(MockTokenOrchestrator).toHaveBeenCalledTimes(1);
 		const mockTokenOrchestratorInstance =
 			MockTokenOrchestrator.mock.instances[0];
+		expect(mockTokenOrchestratorInstance.setAuthConfig).toHaveBeenCalledWith(
+			mockAuthConfig
+		);
 		expect(
 			mockTokenOrchestratorInstance.setAuthTokenStore
 		).toHaveBeenCalledWith(mockTokenStoreInstance);
@@ -51,7 +65,10 @@ describe('createUserPoolsTokenProvider', () => {
 	});
 
 	it('should call TokenOrchestrator.getTokens method with the default forceRefresh value', async () => {
-		const tokenProvider = createUserPoolsTokenProvider(mockKeyValueStorage);
+		const tokenProvider = createUserPoolsTokenProvider(
+			mockAuthConfig,
+			mockKeyValueStorage
+		);
 		const mockTokenOrchestratorInstance =
 			MockTokenOrchestrator.mock.instances[0];
 
@@ -63,7 +80,10 @@ describe('createUserPoolsTokenProvider', () => {
 	});
 
 	it('should call TokenOrchestrator.getTokens method with the specified forceRefresh value', async () => {
-		const tokenProvider = createUserPoolsTokenProvider(mockKeyValueStorage);
+		const tokenProvider = createUserPoolsTokenProvider(
+			mockAuthConfig,
+			mockKeyValueStorage
+		);
 		const mockTokenOrchestratorInstance =
 			MockTokenOrchestrator.mock.instances[0];
 

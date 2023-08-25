@@ -9,7 +9,6 @@ import {
 	StorageProvider,
 	StorageProviderApi,
 	StorageProviderApiOptionsIndexMap,
-	AWSS3Provider,
 	StorageProviderWithCopy,
 	S3ProviderGetOuput,
 	S3ProviderRemoveOutput,
@@ -19,6 +18,7 @@ import {
 	S3ProviderGetPropertiesOutput,
 	StorageProviderWithGetProperties,
 } from '../';
+import { AWSS3Provider } from '../providers/AWSS3Provider';
 
 type Tail<T extends any[]> = ((...t: T) => void) extends (
 	h: any,

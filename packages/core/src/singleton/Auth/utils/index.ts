@@ -8,17 +8,43 @@ import {
 	JWT,
 	UserPoolConfig,
 	UserPoolConfigAndIdentityPoolConfig,
+	UserPoolConfigAndIdentityPoolConfigWithOAuth,
+	UserPoolConfigWithOAuth,
 } from '../types';
 
 export function assertTokenProviderConfig(
 	authConfig?: AuthConfig
-): asserts authConfig is UserPoolConfig {
+): asserts authConfig is
+	| UserPoolConfigAndIdentityPoolConfigWithOAuth
+	| UserPoolConfigWithOAuth
+	| UserPoolConfigAndIdentityPoolConfig
+	| UserPoolConfig {
 	const validConfig =
 		!!authConfig?.userPoolId && !!authConfig?.userPoolWebClientId;
 	return asserts(validConfig, {
 		name: 'AuthTokenConfigException',
 		message: 'Auth Token Provider not configured',
 		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
+	});
+}
+
+export function assertOAuthConfig(
+	authConfig?: AuthConfig
+): asserts authConfig is
+	| UserPoolConfigAndIdentityPoolConfigWithOAuth
+	| UserPoolConfigWithOAuth {
+	assertTokenProviderConfig(authConfig);
+	const validOAuthConfig =
+		!!authConfig.oauth?.domain &&
+		!!authConfig.oauth?.redirectSignOut &&
+		!!authConfig.oauth?.redirectSignIn &&
+		!!authConfig.oauth?.responseType;
+
+	return asserts(validOAuthConfig, {
+		name: 'OAuthNotConfigureException',
+		message: 'oauth param not configured',
+		recoverySuggestion:
+			'Make sure to call Amplify.configure with oauth parameter in your app',
 	});
 }
 

@@ -8,6 +8,8 @@ import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpe
 import { AuthSignInStep } from '../../../src/types';
 import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { cognitoCredentialsProvider } from '../../../src/providers/cognito/credentialsProvider';
+import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 
 const authConfig = {
 	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
@@ -24,7 +26,10 @@ describe('confirmSignIn API happy path cases', () => {
 	let handleChallengeNameSpy;
 	const username = authAPITestParams.user1.username;
 	const password = authAPITestParams.user1.password;
+
 	beforeEach(async () => {
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		handleChallengeNameSpy = jest
 			.spyOn(signInHelpers, 'handleChallengeName')
 			.mockImplementation(
@@ -242,6 +247,8 @@ describe('confirmSignIn API happy path cases', () => {
 	});
 
 	test('handleChallengeName should be called with clientMetadata from config', async () => {
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfigWithMetadata);
+		cognitoCredentialsProvider.setAuthConfig(authConfigWithMetadata);
 		Amplify.configure({
 			Auth: authConfigWithMetadata,
 		});
