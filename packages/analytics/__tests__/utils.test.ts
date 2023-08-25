@@ -1,17 +1,6 @@
-import { isAppInForeground } from '../src/utils/AppUtils';
 import { MethodEmbed } from '../src/utils/MethodEmbed';
 
-jest.mock('../src/utils/AppUtils.native', () => {
-	return {
-		isAppInForeground: jest.fn(),
-	};
-});
-
 describe('Utils', () => {
-	test('inAppInForeground', () => {
-		expect(isAppInForeground()).toBe(true);
-	});
-
 	test('MethodEmbed', () => {
 		const set = new Set();
 		const methodEmbed = new MethodEmbed(set, 'add');

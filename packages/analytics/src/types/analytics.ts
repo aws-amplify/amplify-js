@@ -76,6 +76,3 @@ export interface AutoTrackEventOpts {
 	provider?: string;
 	attributes?: AutoTrackAttributes;
 }
-
-export { PersonalizeAnalyticsEvent } from './providers/AmazonPersonalizeProvider';
-export { KinesisAnalyticsEvent } from './providers/AWSKinesisProvider';
