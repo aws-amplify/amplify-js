@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Buffer } from 'buffer';
 import { asserts } from '../../../Util/errors/AssertError';
 import {
 	AuthConfig,
@@ -78,10 +77,10 @@ export function decodeJWT(token: string): JWT {
 		throw new Error('Invalid token');
 	}
 
-	const payloadString = tokenSplitted[1];
-	const payload = JSON.parse(
-		Buffer.from(payloadString, 'base64').toString('utf8')
-	);
+	const payloadStringb64 = tokenSplitted[1];
+	const payloadArrayBuffer = base64ToBytes(payloadStringb64);
+	const decodeString = new TextDecoder().decode(payloadArrayBuffer);
+	const payload = JSON.parse(decodeString);
 
 	try {
 		return {
@@ -91,4 +90,9 @@ export function decodeJWT(token: string): JWT {
 	} catch (err) {
 		throw new Error('Invalid token payload');
 	}
+}
+
+function base64ToBytes(base64: string): Uint8Array {
+	const binString = atob(base64);
+	return Uint8Array.from(binString, m => m.codePointAt(0) || 0);
 }
