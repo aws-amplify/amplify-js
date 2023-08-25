@@ -79,6 +79,9 @@
 		"internals"
 	],
 	"dependencies": {
+		"@aws-sdk/client-cognito-identity": "3.54.0",
+		"@aws-sdk/client-cognito-identity-provider": "3.54.0",
+		"@aws-sdk/util-base64-browser": "3.52.0",
 		"tslib": "^2.5.0",
 		"url": "0.11.0",
 		"typescript": "5.0.2"
@@ -88,8 +91,6 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
-		"@aws-sdk/client-cognito-identity": "3.54.0",
-		"@aws-sdk/client-cognito-identity-provider": "3.54.0",
 		"@jest/test-sequencer": "^24.9.0"
 	},
 	"jest": {
