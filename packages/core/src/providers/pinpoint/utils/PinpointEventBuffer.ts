@@ -8,11 +8,11 @@ import {
 	PutEventsInput,
 	PutEventsOutput,
 } from '../../../AwsClients/Pinpoint';
-import {
+import { 
 	EventBufferConfig,
 	BufferedEvent,
 	BufferedEventMap,
-	EventBuffer,
+	EventBuffer
 } from '../types/buffer';
 import { AuthSession } from '../../../singleton/Auth/types';
 import { isAppInForeground } from '../../../RNComponents/isAppInForeground';
@@ -39,9 +39,7 @@ export class PinpointEventBuffer {
 
 	public push(event: BufferedEvent) {
 		if (this._buffer.length >= this._config.bufferSize) {
-			logger.debug('Exceeded Pinpoint event buffer limits, event dropped.', {
-				eventId: event.eventId,
-			});
+			logger.debug('Exceeded Pinpoint event buffer limits, event dropped.', { eventId: event.eventId });
 
 			return;
 		}
@@ -114,18 +112,16 @@ export class PinpointEventBuffer {
 		}
 	}
 
-	private _generateBatchEventParams(
-		eventMap: BufferedEventMap
-	): PutEventsInput {
+	private _generateBatchEventParams(eventMap: BufferedEventMap): PutEventsInput {
 		const batchItem: Record<string, EventsBatch> = {};
 
 		Object.values(eventMap).forEach(item => {
 			const { event, timestamp, endpointId, eventId, session } = item;
 			const { name, attributes, metrics } = event;
-
+	
 			batchItem[endpointId] = {
 				Endpoint: {
-					...batchItem[endpointId]?.Endpoint,
+					...batchItem[endpointId]?.Endpoint
 				},
 				Events: {
 					...batchItem[endpointId]?.Events,
@@ -135,11 +131,11 @@ export class PinpointEventBuffer {
 						Attributes: attributes,
 						Metrics: metrics,
 						Session: session,
-					},
+					}
 				},
 			};
 		});
-
+	
 		return {
 			ApplicationId: this._config.appId,
 			EventsRequest: {
@@ -204,7 +200,7 @@ export class PinpointEventBuffer {
 				logger.warn('Pinpoint event failed to send.', {
 					eventId,
 					name,
-					message: Message,
+					message: Message
 				});
 			});
 		});
@@ -226,7 +222,7 @@ export class PinpointEventBuffer {
 				logger.debug('Resending event.', {
 					eventId,
 					name,
-					remainingAttempts: bufferedEvent.resendLimit,
+					remainingAttempts: bufferedEvent.resendLimit
 				});
 				eligibleEvents.push({ [eventId!]: bufferedEvent });
 				return;
@@ -234,7 +230,7 @@ export class PinpointEventBuffer {
 
 			logger.debug('No retry attempts remaining for event.', {
 				eventId,
-				name,
+				name
 			});
 		});
 

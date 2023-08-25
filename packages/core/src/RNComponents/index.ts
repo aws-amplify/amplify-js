@@ -7,7 +7,7 @@ import { StorageHelper } from '../StorageHelper';
 export const Linking = {};
 export const AppState = {
 	addEventListener: (action: any, handler: any) => undefined,
-	currentState: 'active',
+	currentState: 'active'
 };
 
 // if not in react native, just use local storage
