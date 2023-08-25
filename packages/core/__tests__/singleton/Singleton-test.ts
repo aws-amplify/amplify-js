@@ -1,4 +1,4 @@
-import { AmplifyV6 as Amplify } from '../../src/singleton';
+import { Amplify } from '../../src/singleton';
 import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { AWSCredentialsAndIdentityId } from '../../src/singleton/Auth/types';

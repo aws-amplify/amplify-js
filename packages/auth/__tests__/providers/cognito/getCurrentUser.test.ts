@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 as Amplify } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import { decodeJWT, fetchAuthSession } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../src/errors/AuthError';
 import { getCurrentUser } from '../../../src/providers/cognito';

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import {
 	AuthSignUpResult,
@@ -39,7 +39,7 @@ export async function signUp(
 	signUpRequest: SignUpRequest<CognitoUserAttributeKey, CognitoSignUpOptions>
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
 	const { username, password, options } = signUpRequest;
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth;
 	const clientMetadata =
 		signUpRequest.options?.serviceOptions?.clientMetadata ??
 		authConfig.clientMetadata;

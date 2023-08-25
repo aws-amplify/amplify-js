@@ -10,19 +10,13 @@ import { ICredentials } from './types';
 import { Amplify } from './Amplify';
 import { getId, getCredentialsForIdentity } from './AwsClients/CognitoIdentity';
 import { parseAWSExports } from './parseAWSExports';
-import { Hub } from './Hub';
+import { Hub, AMPLIFY_SYMBOL } from './Hub';
 
 const logger = new Logger('Credentials');
 
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
 
 const COGNITO_IDENTITY_KEY_PREFIX = 'CognitoIdentityId-';
-
-const AMPLIFY_SYMBOL = (
-	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
-		? Symbol.for('amplify_default')
-		: '@@amplify_default'
-) as Symbol;
 
 const dispatchCredentialsEvent = (
 	event: string,

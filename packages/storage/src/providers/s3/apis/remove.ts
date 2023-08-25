@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import {
 	StorageOperationRequest,
 	StorageRemoveOptions,
@@ -19,5 +19,5 @@ import { remove as removeInternal } from './internal/remove';
 export const remove = (
 	req: StorageOperationRequest<StorageRemoveOptions>
 ): Promise<StorageRemoveResult> => {
-	return removeInternal(AmplifyV6, req);
+	return removeInternal(Amplify, req);
 };

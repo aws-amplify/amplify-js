@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import {
 	StorageListAllOptions,
 	StorageListPaginateOptions,
@@ -35,5 +35,5 @@ type S3ListApi = {
 export const list: S3ListApi = (
 	req
 ): Promise<S3ListAllResult | S3ListPaginateResult> => {
-	return listInternal(AmplifyV6, req ?? {});
+	return listInternal(Amplify, req ?? {});
 };

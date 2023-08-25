@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { AmplifyV6, fetchAuthSession } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { getObject } from '../../../src/AwsClients/S3';
 import { downloadData } from '../../../src/providers/s3';
 import { createDownloadTask } from '../../../src/utils/transferTask';
@@ -13,8 +13,8 @@ jest.mock('@aws-amplify/core', () => {
 	const core = jest.requireActual('@aws-amplify/core');
 	return {
 		...core,
-		AmplifyV6: {
-			...core.AmplifyV6,
+		Amplify: {
+			...core.Amplify,
 			getConfig: jest.fn(),
 		},
 		fetchAuthSession: jest.fn(),
@@ -37,7 +37,7 @@ describe('downloadData', () => {
 			credentials,
 			identityId,
 		});
-		(AmplifyV6.getConfig as jest.Mock).mockReturnValue({
+		(Amplify.getConfig as jest.Mock).mockReturnValue({
 			Storage: {
 				bucket: 'bucket',
 				region: 'region',

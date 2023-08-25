@@ -13,7 +13,6 @@ import {
 } from '../../../../types';
 import {
 	S3ListOutputItem,
-	S3Exception,
 	S3ListAllResult,
 	S3ListPaginateResult,
 } from '../../types';

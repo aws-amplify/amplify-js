@@ -4,9 +4,7 @@
 /*
 This file maps top-level exports from `@aws-amplify/core`. These are intended to be potentially customer-facing exports.
 */
-// TODO(v6) Swap out entirely with the new Singleton
-export { Amplify } from './Amplify';
-export { AmplifyClass } from './Amplify';
+// TODO Remove these
 export { ClientDevice } from './ClientDevice';
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 export { Hub } from './Hub';
@@ -37,7 +35,7 @@ export {
 	LibraryOptions,
 } from './singleton/types';
 export {
-	AmplifyV6,
+	Amplify,
 	fetchAuthSession,
 	AmplifyClass as AmplifyClassV6,
 } from './singleton';
