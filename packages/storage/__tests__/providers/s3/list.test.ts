@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { listObjectsV2 } from '../../../src/AwsClients/S3';
 import { list } from '../../../src/providers/s3/apis';
 
@@ -12,11 +12,11 @@ jest.mock('@aws-amplify/core', () => {
 	return {
 		...core,
 		fetchAuthSession: jest.fn(),
-		AmplifyV6: {
-			...core.AmplifyV6,
+		Amplify: {
+			...core.Amplify,
 			getConfig: jest.fn(),
 			Auth: {
-				...core.AmplifyV6.Auth,
+				...core.Amplify.Auth,
 				fetchAuthSession: jest.fn(),
 			},
 		},
@@ -81,11 +81,11 @@ const mockListObjectsV2ApiWithPages = pages => {
 // Update to test across all accessLevels
 describe('list API', () => {
 	beforeAll(() => {
-		(AmplifyV6.Auth.fetchAuthSession as jest.Mock).mockResolvedValue({
+		(Amplify.Auth.fetchAuthSession as jest.Mock).mockResolvedValue({
 			credentials,
 			identityId: targetIdentityId,
 		});
-		(AmplifyV6.getConfig as jest.Mock).mockReturnValue({
+		(Amplify.getConfig as jest.Mock).mockReturnValue({
 			Storage: {
 				bucket,
 				region,
