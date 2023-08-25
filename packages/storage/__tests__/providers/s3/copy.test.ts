@@ -118,7 +118,7 @@ describe('copy API', () => {
 			jest.clearAllMocks();
 		});
 
-		describe('Copy from guest to other access levels', () => {
+		describe('Copy from guest to all access levels', () => {
 			it('Should copy guest -> guest', async () =>
 				await interAccessLevelTest('guest', 'guest'));
 			it('Should copy guest -> private', async () =>
