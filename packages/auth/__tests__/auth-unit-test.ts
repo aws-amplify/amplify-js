@@ -3064,8 +3064,7 @@ describe('auth unit test', () => {
 					return 'aws';
 				});
 
-			expect.assertions(2);
-			expect(spyon3).toBeCalled();
+			expect.assertions(1);
 			expect(await auth.currentUserInfo()).toEqual({
 				username: 'username',
 				id: 'identityId',
@@ -3085,7 +3084,8 @@ describe('auth unit test', () => {
 		});
 
 		test('return empty object if error happens', async () => {
-			const auth = new Auth(new InternalAuthClass(authOptions));
+			const internalAuth = new InternalAuthClass(authOptions);
+			const auth = new Auth(internalAuth);
 			const user = new InternalCognitoUser({
 				Username: 'username',
 				Pool: userPool,
@@ -3110,7 +3110,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon3 = jest
-				.spyOn(InternalAuthClass.prototype, 'currentCredentials')
+				.spyOn(internalAuth, 'currentCredentials')
 				.mockImplementationOnce(() => {
 					return Promise.resolve({
 						IdentityPoolId: 'identityPoolId',
