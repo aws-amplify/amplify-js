@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AuthClass } from './Auth';
-import { Hub } from '../Hub';
+import { Hub, AMPLIFY_SYMBOL } from '../Hub';
 import { LibraryOptions, ResourcesConfig } from './types';
 
 // TODO(v6): add default AuthTokenStore for each platform
@@ -54,7 +54,8 @@ export class AmplifyClass {
 				event: 'configure',
 				data: resourcesConfig,
 			},
-			'Configure'
+			'Configure',
+			AMPLIFY_SYMBOL
 		);
 	}
 
@@ -74,7 +75,7 @@ export class AmplifyClass {
  * @remarks
  * `Amplify` is responsible for orchestrating cross-category communication within the library.
  */
-export const AmplifyV6 = new AmplifyClass();
+export const Amplify = new AmplifyClass();
 
 // TODO(v6): validate until which level this will nested, during Amplify.configure API review.
 function mergeResourceConfig(

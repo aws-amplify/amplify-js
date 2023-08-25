@@ -5,7 +5,7 @@ import {
 	ICredentials,
 	StorageHelper,
 	parseAWSExports,
-	AmplifyV6,
+	Amplify,
 } from '@aws-amplify/core';
 import { 
 	ConsoleLogger as Logger
@@ -123,7 +123,7 @@ export class AWSS3Provider implements StorageProvider {
 		if (!config) return this._config;
 		const amplifyConfig = parseAWSExports(config);
 		this._config = Object.assign({}, this._config, amplifyConfig.Storage);
-		const { bucket } = AmplifyV6.getConfig()?.Storage ?? {};
+		const { bucket } = Amplify.getConfig()?.Storage ?? {};
 		if (!bucket) {
 			logger.debug('Do not have bucket yet');
 		}
@@ -333,7 +333,7 @@ export class AWSS3Provider implements StorageProvider {
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
 		}
-		const { bucket } = AmplifyV6.getConfig()?.Storage ?? {};
+		const { bucket } = Amplify.getConfig()?.Storage ?? {};
 		const opt = Object.assign({}, this._config, config);
 		const {
 			download,
@@ -432,7 +432,7 @@ export class AWSS3Provider implements StorageProvider {
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		logger.debug(`getProperties ${key} from ${final_key}`);
-		const { bucket } = AmplifyV6.getConfig()?.Storage ?? {};
+		const { bucket } = Amplify.getConfig()?.Storage ?? {};
 		const s3Config = loadS3Config({ ...opt, userAgentValue });
 		const params: HeadObjectInput = {
 			Bucket: bucket,
@@ -726,7 +726,7 @@ export class AWSS3Provider implements StorageProvider {
 
 	private async _ensureCredentials(): Promise<boolean> {
 		try {
-			const { credentials } = await AmplifyV6.Auth.fetchAuthSession();
+			const { credentials } = await Amplify.Auth.fetchAuthSession();
 			if (!credentials) return false;
 			logger.debug('set credentials for storage', credentials);
 			// this._config.credentials = credentials;

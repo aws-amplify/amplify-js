@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import { AmplifyV6, Identity } from '@aws-amplify/core';
+import { Amplify, Identity } from '@aws-amplify/core';
 import { DefaultIdentityIdStore } from '../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
 
 // TODO(V6): import these from top level core/ and not lib/
@@ -14,7 +14,7 @@ jest.mock('../../../src/providers/cognito/credentialsProvider/IdentityIdStore');
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	? A
 	: never;
-const ampConfig: ArgumentTypes<typeof AmplifyV6.configure>[0] = {
+const ampConfig: ArgumentTypes<typeof Amplify.configure>[0] = {
 	Auth: {
 		userPoolId: 'us-east-1:test-id',
 		userPoolWebClientId: 'test-id',
@@ -36,7 +36,7 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		MockDefaultIdentityIdStore.mock.instances[0];
 
 	beforeAll(() => {
-		jest.spyOn(AmplifyV6, 'getConfig').mockImplementationOnce(() => ampConfig);
+		jest.spyOn(Amplify, 'getConfig').mockImplementationOnce(() => ampConfig);
 
 		getIdClientSpy.mockImplementation(
 			async (config: {}, params: cogId.GetIdInput) => {
