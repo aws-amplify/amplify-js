@@ -77,8 +77,6 @@ async function globalSignOut(authConfig: AuthConfig) {
 			}
 		);
 
-		tokenOrchestrator.clearTokens();
-
 		await handleOAuthSignOut(authConfig);
 	} catch (err) {
 		throwSignOutError(err);
@@ -91,7 +89,7 @@ function throwSignOutError(underlyingError: string) {
 	throw new AuthError({
 		message: 'SignOut error',
 		name: 'SignOutError',
-		underlyingError: underlyingError,
+		underlyingError,
 	});
 }
 
