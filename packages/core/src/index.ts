@@ -50,6 +50,9 @@ export {
 	GetCredentialsForIdentityOutput,
 } from './AwsClients/CognitoIdentity';
 
+// Amplify-wide constructs
+export { UserProfile } from './types';
+
 // Storage helpers
 export {
 	StorageHelper,

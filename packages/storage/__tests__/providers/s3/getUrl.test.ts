@@ -1,6 +1,9 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { getProperties, getUrl } from '../../../src/providers/s3/apis';
 import { Credentials } from '@aws-sdk/types';
-import { AmplifyV6, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyV6 } from '@aws-amplify/core';
 import {
 	getPresignedGetObjectUrl,
 	headObject,
@@ -17,6 +20,10 @@ jest.mock('@aws-amplify/core', () => {
 		AmplifyV6: {
 			...core.AmplifyV6,
 			getConfig: jest.fn(),
+			Auth: {
+				...core.AmplifyV6.Auth,
+				fetchAuthSession: jest.fn(),
+			},
 		},
 	};
 });
@@ -35,10 +42,11 @@ describe('getProperties test', () => {
 		jest.clearAllMocks();
 	});
 
-	(fetchAuthSession as jest.Mock).mockResolvedValue({
+	(AmplifyV6.Auth.fetchAuthSession as jest.Mock).mockResolvedValue({
 		credentials,
 		identityId: targetIdentityId,
 	});
+
 	(AmplifyV6.getConfig as jest.Mock).mockReturnValue({
 		Storage: {
 			bucket,

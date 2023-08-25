@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AnalyticsConfig } from './Analytics/types';
 import {
 	AuthConfig,
 	LibraryAuthOptions,
@@ -19,7 +20,7 @@ import { I18nOptions } from '../I18n/types';
 
 export type ResourcesConfig = {
 	API?: {};
-	Analytics?: {};
+	Analytics?: AnalyticsConfig;
 	Auth?: AuthConfig;
 	Cache?: CacheConfig;
 	DataStore?: {};
