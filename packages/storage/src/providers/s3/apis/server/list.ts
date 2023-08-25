@@ -1,14 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6, AmplifyV6 } from '@aws-amplify/core';
+import {
+	AmplifyServer,
+	getAmplifyServerContext,
+} from '@aws-amplify/core/internals/adapter-core';
 import {
 	StorageListAllOptions,
 	StorageListPaginateOptions,
 	StorageListRequest,
-} from '../../..';
-import { S3ListAllResult, S3ListPaginateResult } from '../types';
-import { list as listInternal } from './internal/list';
+} from '../../../..';
+import { S3ListAllResult, S3ListPaginateResult } from '../../types';
+import { list as listInternal } from '../internal/list';
 
 type S3ListApi = {
 	/**
@@ -18,7 +21,10 @@ type S3ListApi = {
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
-	(req?: StorageListRequest<StorageListAllOptions>): Promise<S3ListAllResult>;
+	(
+		contextSpec: AmplifyServer.ContextSpec,
+		req?: StorageListRequest<StorageListAllOptions>
+	): Promise<S3ListAllResult>;
 	/**
 	 * Lists bucket objects with pagination.
 	 * @param {StorageListRequest<StorageListPaginateOptions>} req - The request object
@@ -28,12 +34,11 @@ type S3ListApi = {
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
 	(
+		contextSpec: AmplifyServer.ContextSpec,
 		req?: StorageListRequest<StorageListPaginateOptions>
 	): Promise<S3ListPaginateResult>;
 };
 
-export const list: S3ListApi = (
-	req
-): Promise<S3ListAllResult | S3ListPaginateResult> => {
-	return listInternal(AmplifyV6, req ?? {});
+export const list: S3ListApi = (contextSpec, req) => {
+	return listInternal(getAmplifyServerContext(contextSpec).amplify, req ?? {});
 };

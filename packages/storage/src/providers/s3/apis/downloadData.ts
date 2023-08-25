@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyV6 as Amplify } from '@aws-amplify/core';
 import { StorageDownloadDataRequest, DownloadTask } from '../../../types';
 import { S3TransferOptions, S3DownloadDataResult } from '../types';
 import {
@@ -49,8 +50,9 @@ const downloadDataJob =
 	async () => {
 		// TODO[AllanZhengYP]: refactor this to reduce duplication
 		const options = downloadDataRequest?.options ?? {};
-		const { credentials, identityId } = await resolveCredentials();
-		const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
+		const { credentials, identityId } = await resolveCredentials(Amplify);
+		const { defaultAccessLevel, bucket, region } =
+			resolveStorageConfig(Amplify);
 		const {
 			key,
 			options: {
@@ -61,7 +63,7 @@ const downloadDataJob =
 		} = downloadDataRequest;
 		assertValidationError(!!key, StorageValidationErrorCode.NoKey);
 
-		const finalKey = getKeyWithPrefix({
+		const finalKey = getKeyWithPrefix(Amplify, {
 			accessLevel,
 			targetIdentityId:
 				options.accessLevel === 'protected'
