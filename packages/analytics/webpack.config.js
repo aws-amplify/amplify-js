@@ -5,7 +5,7 @@ module.exports = {
 	externals: [
 		'react-native',
 		{
-			'@aws-amplify/core': 'aws_amplify_core'
+			'@aws-amplify/core': 'aws_amplify_core',
 		},
 		'aws-sdk/clients/pinpoint',
 		'aws-sdk/clients/kinesis',
@@ -29,8 +29,6 @@ module.exports = {
 	mode: 'production',
 	module: {
 		rules: [
-			// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-			//{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
 			{
 				test: /\.js?$/,
 				exclude: /node_modules/,
