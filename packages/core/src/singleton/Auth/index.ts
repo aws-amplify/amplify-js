@@ -57,15 +57,17 @@ export class AuthClass {
 		let tokens: AuthTokens | undefined;
 		let credentialsAndIdentityId: AWSCredentialsAndIdentityId | undefined;
 
-		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if not available
-		tokens =
-			(await this.authOptions?.tokenProvider?.getTokens(options)) ?? undefined;
 		asserts(!!this.authConfig, {
 			name: AUTH_CONFING_EXCEPTION,
 			message: 'AuthConfig is required',
 			recoverySuggestion:
 				'call Amplify.configure in your app with a valid AuthConfig',
 		});
+
+		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if not available
+		tokens =
+			(await this.authOptions?.tokenProvider?.getTokens(options)) ?? undefined;
+
 		if (tokens) {
 			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
 			credentialsAndIdentityId =
@@ -77,7 +79,7 @@ export class AuthClass {
 						forceRefresh: options.forceRefresh,
 					}
 				);
-		} else {
+		} else if (!this.authConfig.isMandatorySignInEnabled) {
 			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
 			credentialsAndIdentityId =
 				await this.authOptions?.credentialsProvider?.getCredentialsAndIdentityId(

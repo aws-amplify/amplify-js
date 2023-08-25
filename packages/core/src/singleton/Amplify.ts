@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AuthClass } from './Auth';
-import { Hub } from '../Hub';
+import { Hub, AMPLIFY_SYMBOL } from '../Hub';
 import { LibraryOptions, ResourcesConfig } from './types';
 
 // TODO(v6): add default AuthTokenStore for each platform
@@ -54,7 +54,8 @@ export class AmplifyClass {
 				event: 'configure',
 				data: resourcesConfig,
 			},
-			'Configure'
+			'Configure',
+			AMPLIFY_SYMBOL
 		);
 	}
 

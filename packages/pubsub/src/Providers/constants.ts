@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+export { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+
 export const MAX_DELAY_MS = 5000;
 
 export const NON_RETRYABLE_CODES = [400, 401, 403];
@@ -70,12 +72,6 @@ export enum SOCKET_STATUS {
 	READY,
 	CONNECTING,
 }
-
-export const AMPLIFY_SYMBOL = (
-	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
-		? Symbol.for('amplify_default')
-		: '@@amplify_default'
-) as Symbol;
 
 export const AWS_APPSYNC_REALTIME_HEADERS = {
 	accept: 'application/json, text/javascript',
