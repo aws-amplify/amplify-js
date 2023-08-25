@@ -74,7 +74,7 @@ describe('Session tests', () => {
 	});
 
 	test('fetch user after no credentials', async () => {
-		expect.assertions(2);
+		expect.assertions(3);
 		const config: ArgumentTypes<typeof Amplify.configure>[0] = {
 			Auth: {
 				userPoolId: 'us-east-1:aaaaaaa',
@@ -108,6 +108,8 @@ describe('Session tests', () => {
 			name: 'John Doe',
 			sub: '1234567890',
 		});
+
+		expect(session.userSub).toEqual('1234567890');
 	});
 
 	test('fetch session with token and credentials', async () => {

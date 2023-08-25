@@ -32,6 +32,7 @@ export type AuthSession = {
 	tokens?: AuthTokens;
 	credentials?: AWSCredentials;
 	identityId?: string;
+	userSub?: string;
 };
 
 export type LibraryAuthOptions = {
