@@ -101,17 +101,8 @@
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
     "test": "npm run lint && jest -w 1 --coverage",
-    "test:size": "size-limit",
     "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
   },
-  "size-limit": [
-    {
-      "name": "Adapter Next.js",
-      "path": "./lib-esm/index.js",
-      "import": "{ runWithAmplifyServerContext }",
-      "limit": "1.5 kB"
-    }
-  ],
   "typings": "./lib-esm/index.d.ts",
   "version": "0.0.1"
 }

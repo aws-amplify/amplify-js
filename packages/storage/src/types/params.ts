@@ -1,22 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-//
 
-// TODO(ashwinkumar6) this uses V5 Credentials, update to V6.
-import { Credentials } from '@aws-sdk/types';
 import { StorageAccessLevel } from '@aws-amplify/core';
 
-export type StorageConfig = {
-	region: string;
-	credentials: Credentials;
-};
-
 export type StorageOptions =
-	| { accessLevel?: 'guest' | 'private'; isObjectLockEnabled?: boolean }
+	| { accessLevel?: 'guest' | 'private' }
 	| {
 			accessLevel: 'protected';
 			targetIdentityId: string;
-			isObjectLockEnabled?: boolean;
 	  };
 
 export type StorageOperationRequest<Options extends StorageOptions> = {

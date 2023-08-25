@@ -3,7 +3,7 @@
 import {
 	LibraryOptions,
 	ResourcesConfig,
-	AmplifyV6,
+	Amplify,
 	LocalStorage,
 	CookieStorage,
 } from '@aws-amplify/core';
@@ -12,7 +12,7 @@ import {
 	cognitoCredentialsProvider,
 } from './auth';
 
-export const DefaultAmplifyV6 = {
+export const DefaultAmplify = {
 	configure(resourceConfig: ResourcesConfig, libraryOptions?: LibraryOptions) {
 		CognitoUserPoolsTokenProvider.setAuthConfig(resourceConfig.Auth);
 		cognitoCredentialsProvider.setAuthConfig(resourceConfig.Auth);
@@ -38,9 +38,9 @@ export const DefaultAmplifyV6 = {
 			updatedLibraryOptions = defaultLibraryOptions;
 		}
 
-		AmplifyV6.configure(resourceConfig, updatedLibraryOptions);
+		Amplify.configure(resourceConfig, updatedLibraryOptions);
 	},
 	getConfig(): ResourcesConfig {
-		return AmplifyV6.getConfig();
+		return Amplify.getConfig();
 	},
 };

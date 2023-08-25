@@ -4,7 +4,7 @@
 import { headObject } from '../../../src/AwsClients/S3';
 import { getProperties } from '../../../src/providers/s3';
 import { Credentials } from '@aws-sdk/types';
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 
 jest.mock('../../../src/AwsClients/S3');
 const mockHeadObject = headObject as jest.Mock;
@@ -14,11 +14,11 @@ jest.mock('@aws-amplify/core', () => {
 	return {
 		...core,
 		fetchAuthSession: jest.fn(),
-		AmplifyV6: {
-			...core.AmplifyV6,
+		Amplify: {
+			...core.Amplify,
 			getConfig: jest.fn(),
 			Auth: {
-				...core.AmplifyV6.Auth,
+				...core.Amplify.Auth,
 				fetchAuthSession: jest.fn(),
 			},
 		},
@@ -38,12 +38,12 @@ describe('getProperties test', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
-	(AmplifyV6.Auth.fetchAuthSession as jest.Mock).mockResolvedValue({
+	(Amplify.Auth.fetchAuthSession as jest.Mock).mockResolvedValue({
 		credentials,
 		identityId: targetIdentityId,
 	});
 
-	(AmplifyV6.getConfig as jest.Mock).mockReturnValue({
+	(Amplify.getConfig as jest.Mock).mockReturnValue({
 		Storage: {
 			bucket,
 			region,

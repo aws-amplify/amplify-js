@@ -98,3 +98,5 @@ export {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 	USER_AGENT_HEADER,
 } from './Util/Constants';
+export { fetchAuthSession } from './singleton/apis/internal/fetchAuthSession';
+export { AMPLIFY_SYMBOL } from './Hub';

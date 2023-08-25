@@ -12,12 +12,10 @@ import {
 	getKeyWithPrefix,
 	resolveCredentials,
 } from '../../utils';
-import { deleteObject, DeleteObjectInput } from '../../../../AwsClients/S3';
+import { deleteObject } from '../../../../AwsClients/S3';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import { AmplifyClassV6 } from '@aws-amplify/core';
-
-// TODO(ashwinkumar6) add unit test for remove API
 
 export const remove = async (
 	amplify: AmplifyClassV6,
