@@ -246,6 +246,42 @@
       "path": "./lib-esm/auth/index.js",
       "import": "{ fetchUserAttributes }",
       "limit": "18.25 kB"
+    },
+    {
+      "name": "[Storage] copy (S3)",
+      "path": "./lib-esm/storage/index.js",
+      "import": "{ copy }",
+      "limit": "21.1 kB"
+    },
+    {
+      "name": "[Storage] downloadData (S3)",
+      "path": "./lib-esm/storage/index.js",
+      "import": "{ downloadData }",
+      "limit": "21.6 kB"
+    },
+    {
+      "name": "[Storage] getProperties (S3)",
+      "path": "./lib-esm/storage/index.js",
+      "import": "{ getProperties }",
+      "limit": "20.7 kB"
+    },
+    {
+      "name": "[Storage] getUrl (S3)",
+      "path": "./lib-esm/storage/index.js",
+      "import": "{ getUrl }",
+      "limit": "22.35 kB"
+    },
+    {
+      "name": "[Storage] list (S3)",
+      "path": "./lib-esm/storage/index.js",
+      "import": "{ list }",
+      "limit": "21.14 kB"
+    },
+    {
+      "name": "[Storage] remove (S3)",
+      "path": "./lib-esm/storage/index.js",
+      "import": "{ remove }",
+      "limit": "20.55 kB"
     }
   ],
   "jest": {
