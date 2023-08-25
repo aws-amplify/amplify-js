@@ -27,7 +27,7 @@ export function assertAuthTokens(
 
 export const OAuthStorageKeys = {
 	inflightOAuth: 'inflightOAuth',
-	oauthSignIn: 'oAuthSignIn',
+	oauthSignIn: 'oauthSignIn',
 	oauthPKCE: 'oauthPKCE',
 	oauthState: 'oauthState',
 };

@@ -104,6 +104,7 @@ function oauthSignIn({
 		.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
 		.join('&');
 
+	// TODO(v6): use URL object instead
 	const URL = `https://${oauthConfig.domain}/oauth2/authorize?${queryString}`;
 	window.open(URL, SELF);
 }
@@ -192,7 +193,7 @@ async function handleCodeFlow({
 		});
 	}
 
-	store.clearOAuthInflightData();
+	await store.clearOAuthInflightData();
 
 	await cacheCognitoTokens({
 		AccessToken: access_token,
@@ -201,6 +202,8 @@ async function handleCodeFlow({
 		TokenType: token_type,
 		ExpiresIn: expires_in,
 	});
+
+	await store.storeOAuthSignIn(true);
 
 	clearHistory(redirectUri);
 
@@ -233,10 +236,10 @@ async function handleImplicitFlow({
 			expires_in: undefined,
 		});
 
+	await store.clearOAuthInflightData();
 	try {
 		await validateState(state);
 	} catch (error) {
-		store.clearOAuthInflightData();
 		invokeAndClearPromise();
 		return;
 	}
@@ -249,6 +252,7 @@ async function handleImplicitFlow({
 		ExpiresIn: expires_in,
 	});
 
+	await store.storeOAuthSignIn(true);
 	clearHistory(redirectUri);
 
 	invokeAndClearPromise();
