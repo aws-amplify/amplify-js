@@ -84,16 +84,10 @@
 	},
 	"size-limit": [
 		{
-			"name": "Analytics (Pinpoint)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Analytics, AWSPinpointProvider }",
-			"limit": "31.57 kB"
-		},
-		{
-			"name": "Analytics (Kinesis)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Analytics, AWSKinesisProvider }",
-			"limit": "60.82 kB"
+			"name": "record (Pinpoint)",
+			"path": "./lib-esm/providers/pinpoint/index.js",
+			"import": "{ record }",
+			"limit": "1.6 kB"
 		}
 	],
 	"jest": {
