@@ -11,7 +11,7 @@ export {
 	CONTENT_SHA256_HEADER,
 	toBase64,
 	utf8Encode,
-} from '#internals/AwsClients/S3/runtime';
+} from '../runtime';
 export {
 	deserializeBoolean,
 	deserializeMetadata,

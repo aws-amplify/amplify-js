@@ -7,7 +7,7 @@ import {
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { parser } from '#internals/AwsClients/S3/runtime';
+import { parser } from '../runtime';
 
 export const parseXmlError: ErrorParser = async (response?: HttpResponse) => {
 	if (!response || response.statusCode < 300) {

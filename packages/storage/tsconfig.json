@@ -4,12 +4,7 @@
 		"importHelpers": true,
 		"strict": true,
 		"noImplicitAny": true,
-		"moduleResolution": "NodeNext",
-		"paths": {
-			"#internals/AwsClients/S3/runtime": [
-				"./src/AwsClients/S3/runtime/index.ts"
-			]
-		}
+		"resolveJsonModule": true
 	},
 	"include": ["./src"],
 	"watchOptions": {
