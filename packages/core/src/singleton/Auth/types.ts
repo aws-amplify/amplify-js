@@ -11,6 +11,7 @@ interface JwtPayloadStandardFields {
 	iat?: number; // issued at: https://tools.ietf.org/html/rfc7519#section-4.1.6
 	scope?: string; // scopes: https://tools.ietf.org/html/rfc6749#section-3.3
 	jti?: string; // JWT ID: https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.7
+	sub?: string; // JWT sub https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2
 }
 
 /** JSON type */

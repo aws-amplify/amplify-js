@@ -65,9 +65,7 @@ export class AuthClass {
 			(await this.authOptions?.tokenProvider?.getTokens(options)) ?? undefined;
 
 		if (tokens) {
-			userSub = tokens.accessToken?.payload?.sub
-				? `${tokens.accessToken.payload.sub}`
-				: undefined;
+			userSub = tokens.accessToken?.payload?.sub;
 
 			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
 			credentialsAndIdentityId =
