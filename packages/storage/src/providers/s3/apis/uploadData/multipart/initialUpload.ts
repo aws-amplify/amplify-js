@@ -12,7 +12,7 @@ import { createMultipartUpload, Part } from '../../../../../AwsClients/S3';
 import { ResolvedS3Config } from '../../../types/options';
 import { UploadSource } from '../../../../../types';
 
-export type LoadOrCreateMultipartUploadOptions = {
+type LoadOrCreateMultipartUploadOptions = {
 	s3Config: ResolvedS3Config;
 	data: UploadSource;
 	bucket: string;
@@ -32,6 +32,12 @@ type LoadOrCreateMultipartUploadResult = {
 	cachedParts: Part[];
 };
 
+/**
+ * Load the in-progress multipart upload from local storage or async storage(RN) if it exists, or create a new multipart
+ * upload.
+ *
+ * @internal
+ */
 export const loadOrCreateMultipartUpload = async ({
 	s3Config,
 	data,

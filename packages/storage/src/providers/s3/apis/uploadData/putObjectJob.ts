@@ -7,6 +7,11 @@ import { putObject } from '../../../../AwsClients/S3';
 import { StorageUploadDataRequest } from '../../../../types';
 import { S3Item } from '../../types/results';
 
+/**
+ * Get a function the returns a promise to call putObject API to S3.
+ *
+ * @internal
+ */
 export const putObjectJob =
 	(
 		{

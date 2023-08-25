@@ -40,23 +40,23 @@
       ]
     }
   },
-	"imports": {
-		"#internals/AwsClients/S3/runtime": {
-			"browser": {
-				"import": "./lib-esm/AwsClients/S3/runtime/index.browser.js",
-				"require": "./lib/AwsClients/S3/runtime/index.browser.js"
-			},
-			"node": {
-				"import": "./lib-esm/AwsClients/S3/runtime/index.js",
-				"require": "./lib/AwsClients/S3/runtime/index.js"
-			},
-			"default": {
-				"import": "./lib-esm/AwsClients/S3/runtime/index.browser.js",
-				"require": "./lib-esm/AwsClients/S3/runtime/index.js",
-				"types": "./lib-esm/AwsClients/S3/runtime/index.d.ts"
-			}
-		}
-	},
+  "imports": {
+    "#internals/AwsClients/S3/runtime": {
+      "browser": {
+        "import": "./lib-esm/AwsClients/S3/runtime/index.browser.js",
+        "require": "./lib/AwsClients/S3/runtime/index.browser.js"
+      },
+      "node": {
+        "import": "./lib-esm/AwsClients/S3/runtime/index.js",
+        "require": "./lib/AwsClients/S3/runtime/index.js"
+      },
+      "default": {
+        "import": "./lib-esm/AwsClients/S3/runtime/index.browser.js",
+        "require": "./lib-esm/AwsClients/S3/runtime/index.js",
+        "types": "./lib-esm/AwsClients/S3/runtime/index.d.ts"
+      }
+    }
+  },
   "exports": {
     ".": {
       "types": "./lib-esm/index.d.ts",
@@ -97,21 +97,21 @@
   },
   "exports": {
     ".": {
-			"types": "./lib-esm/index.d.ts",
-			"import": "./lib-esm/index.js",
-			"require": "./lib/index.js"
-		},
-		"./server": {
-			"types": "./lib-esm/server.d.ts",
-			"import": "./lib-esm/server.js",
-			"require": "./lib/server.js"
-		},
-		"./internals": {
-			"types": "./lib-esm/lib-esm/internals/index.d.ts",
-			"import": "./lib-esm/internals/index.js",
-			"require": "./lib/internals/index.js"
-		},
-		"./package.json": "./package.json"
+      "types": "./lib-esm/index.d.ts",
+      "import": "./lib-esm/index.js",
+      "require": "./lib/index.js"
+    },
+    "./server": {
+      "types": "./lib-esm/server.d.ts",
+      "import": "./lib-esm/server.js",
+      "require": "./lib/server.js"
+    },
+    "./internals": {
+      "types": "./lib-esm/lib-esm/internals/index.d.ts",
+      "import": "./lib-esm/internals/index.js",
+      "require": "./lib/internals/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "peerDependencies": {
     "@aws-amplify/core": "^6.0.0"
@@ -154,9 +154,9 @@
       "json",
       "jsx"
     ],
-		"moduleNameMapper": {
-			"^#internals/(.*)$": "<rootDir>/src/$1"
-		},
+    "moduleNameMapper": {
+      "^#internals/(.*)$": "<rootDir>/src/$1"
+    },
     "testEnvironment": "jsdom",
     "testURL": "http://localhost/",
     "coverageThreshold": {

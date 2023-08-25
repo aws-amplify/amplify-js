@@ -8,6 +8,11 @@ type ConcurrentUploadsProgressTrackerOptions = {
 	onProgress?: (event: TransferProgressEvent) => void;
 };
 
+/**
+ * Track the progress from multiple concurrent uploads, and invoke the onProgress callback.
+ *
+ * @internal
+ */
 export const getConcurrentUploadsProgressTracker = ({
 	totalLength,
 	onProgress,

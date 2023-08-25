@@ -26,7 +26,6 @@ export type S3DownloadFileResult = S3Item;
 
 export type S3GetUrlResult = StorageGetUrlResult;
 
-// TODO: consolidate this type with S3CopyResult that excludes contentType, lastModified, size.
 export type S3UploadDataResult = S3Item;
 
 export type S3GetPropertiesResult = S3Item;

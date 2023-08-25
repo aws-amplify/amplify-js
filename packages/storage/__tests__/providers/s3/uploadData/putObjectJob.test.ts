@@ -51,6 +51,8 @@ mockPutObject.mockResolvedValue({
 	VersionId: 'versionId',
 });
 
+// TODO[AllanZhengYP]: add more unit tests to cover different access level combination.
+// TODO[AllanZhengYP]: add more unit tests to cover validations errors and service errors.
 describe('putObjectJob', () => {
 	it('should supply the correct parameters to putObject API handler', async () => {
 		const abortController = new AbortController();

@@ -24,7 +24,12 @@ import { uploadPartExecutor } from './uploadPartExecutor';
 import { StorageError } from '../../../../../errors/StorageError';
 import { AmplifyV6, StorageAccessLevel } from '@aws-amplify/core';
 
-// Create closure hiding the multipart upload implementation details.
+/**
+ * Create closure hiding the multipart upload implementation details and expose the upload job and control functions(
+ * onPause, onResume, onCancel).
+ *
+ * @internal
+ */
 export const getMultipartUploadHandlers = (
 	{
 		options: uploadDataOptions,
