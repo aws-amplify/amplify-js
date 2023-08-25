@@ -1,30 +1,36 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	AmplifyV6,
 	AuthTokens,
 	FetchAuthSessionOptions,
+	AuthConfig,
 } from '@aws-amplify/core';
-import {
-	isTokenExpired,
-} from '@aws-amplify/core/internals/utils';
+import { isTokenExpired } from '@aws-amplify/core/internals/utils';
 import {
 	AuthTokenOrchestrator,
 	AuthTokenStore,
 	CognitoAuthTokens,
 	TokenRefresher,
 } from './types';
-import { tokenOrchestrator } from '.';
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
+	private authConfig: AuthConfig;
+
 	tokenStore: AuthTokenStore;
 	tokenRefresher: TokenRefresher;
+	waitForInflightOAuth: () => Promise<void> = async () => {};
 
+	setAuthConfig(authConfig: AuthConfig) {
+		this.authConfig = authConfig;
+	}
 	setTokenRefresher(tokenRefresher: TokenRefresher) {
 		this.tokenRefresher = tokenRefresher;
 	}
 	setAuthTokenStore(tokenStore: AuthTokenStore) {
 		this.tokenStore = tokenStore;
+	}
+	setWaitForInflightOAuth(waitForInflightOAuth: () => Promise<void>) {
+		this.waitForInflightOAuth = waitForInflightOAuth;
 	}
 
 	async getTokens(
@@ -32,7 +38,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	): Promise<AuthTokens | null> {
 		let tokens: CognitoAuthTokens;
 
-		// TODO(v6): add wait for inflight OAuth in case there is one
+		await this.waitForInflightOAuth();
 		tokens = await this.tokenStore.loadTokens();
 
 		if (tokens === null) {
@@ -71,14 +77,12 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		tokens: CognitoAuthTokens;
 	}): Promise<CognitoAuthTokens | null> {
 		try {
-			const authConfig = AmplifyV6.getConfig().Auth;
-
 			const newTokens = await this.tokenRefresher({
 				tokens,
-				authConfig,
+				authConfig: this.authConfig,
 			});
 
-			tokenOrchestrator.setTokens({ tokens: newTokens });
+			this.setTokens({ tokens: newTokens });
 			return newTokens;
 		} catch (err) {
 			return this.handleErrors(err);
@@ -88,7 +92,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private handleErrors(err: Error) {
 		if (err.message !== 'Network error') {
 			// TODO(v6): Check errors on client
-			tokenOrchestrator.clearTokens();
+			this.clearTokens();
 		}
 		if (err.name.startsWith('NotAuthorizedException')) {
 			return null;

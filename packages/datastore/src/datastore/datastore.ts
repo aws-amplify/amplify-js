@@ -8,7 +8,7 @@ import {
 	Hub,
 	browserOrNode,
 	BackgroundProcessManager,
-	Cache
+	Cache,
 } from '@aws-amplify/core';
 import {
 	Draft,

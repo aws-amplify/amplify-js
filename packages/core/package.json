@@ -59,7 +59,8 @@
 		"src",
 		"typings.d.ts",
 		"internals",
-		"polyfills"
+		"polyfills",
+		"**/package.json"
 	],
 	"dependencies": {
 		"@aws-crypto/sha256-js": "1.2.2",

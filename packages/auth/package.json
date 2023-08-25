@@ -8,7 +8,9 @@
 	"react-native": "./lib-esm/index.js",
 	"sideEffects": [
 		"./lib/Auth.js",
-		"./lib-esm/Auth.js"
+		"./lib-esm/Auth.js",
+    "./lib/providers/cognito/apis/signInWithOAuth.js",
+    "./lib-esm/providers/cognito/apis/signInWithOAuth.js"
 	],
 	"publishConfig": {
 		"access": "public"
@@ -49,6 +51,16 @@
 			"import": "./lib-esm/providers/cognito/index.js",
 			"require": "./lib/providers/cognito/index.js"
 		},
+		"./server": {
+			"types": "./lib-esm/server.d.ts",
+			"import": "./lib-esm/server.js",
+			"require": "./lib/server.js"
+		},
+		"./internals": {
+			"types": "./lib-esm/lib-esm/internals/index.d.ts",
+			"import": "./lib-esm/internals/index.js",
+			"require": "./lib/internals/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"repository": {
@@ -65,10 +77,9 @@
 		"lib",
 		"lib-esm",
 		"src",
-		"**/package.json"
+		"internals"
 	],
 	"dependencies": {
-		"buffer": "4.9.2",
 		"tslib": "^2.5.0",
 		"url": "0.11.0",
 		"typescript": "5.0.2"

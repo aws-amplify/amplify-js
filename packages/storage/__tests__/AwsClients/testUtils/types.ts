@@ -46,6 +46,16 @@ export type ApiFunctionalTestCase<ApiHandler extends (...args: any) => any> =
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 
 /**
+ * Type definition for XMLHttpRequest's progress event with only the properties we care about.
+ *
+ * @internal
+ */
+export type XhrProgressEvent = Pick<
+	ProgressEvent<XMLHttpRequestEventTarget>,
+	'loaded' | 'total' | 'lengthComputable'
+>;
+
+/**
  * A spy for XMLHttpRequest instance including attached listeners to xhr instance and upload instance.
  *
  * @internal

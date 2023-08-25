@@ -54,6 +54,7 @@ const credentialsForidentityIdSpy = jest.spyOn(
 const configSpy = jest.spyOn(cogId.AmplifyV6, 'getConfig');
 
 describe('Guest Credentials', () => {
+	cognitoCredentialsProvider.setAuthConfig(validAuthConfig.Auth!);
 	describe('Happy Path Cases:', () => {
 		beforeEach(() => {
 			credentialsForidentityIdSpy.mockImplementationOnce(

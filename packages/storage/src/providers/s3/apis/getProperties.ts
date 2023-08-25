@@ -1,16 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { headObject } from '../../../AwsClients/S3';
-import { StorageOptions, StorageOperationRequest } from '../../../types';
-import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { S3Exception, S3GetPropertiesResult } from '../types';
-import {
-	resolveStorageConfig,
-	getKeyWithPrefix,
-	resolveCredentials,
-} from '../utils';
+import { AmplifyV6 } from '@aws-amplify/core';
+import { StorageOperationRequest, StorageOptions } from '../../..';
+import { S3GetPropertiesResult } from '../types';
+import { getProperties as getPropertiesInternal } from './internal/getProperties';
 
 /**
  * Gets the properties of a file. The properties include S3 system metadata and
@@ -21,42 +15,8 @@ import {
  * @throws A {@link S3Exception} when the underlying S3 service returned error.
  * @throws A {@link StorageValidationErrorCode} when API call parameters are invalid.
  */
-export const getProperties = async function (
+export const getProperties = (
 	req: StorageOperationRequest<StorageOptions>
-): Promise<S3GetPropertiesResult> {
-	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
-	const { identityId, credentials } = await resolveCredentials();
-	const { key, options = {} } = req;
-	const { accessLevel = defaultAccessLevel } = options;
-
-	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
-	// TODO[AllanZhengYP]: refactor this to reduce duplication
-	const finalKey = getKeyWithPrefix({
-		accessLevel,
-		targetIdentityId:
-			options.accessLevel === 'protected'
-				? options.targetIdentityId
-				: identityId,
-		key,
-	});
-
-	const response = await headObject(
-		{
-			region,
-			credentials,
-		},
-		{
-			Bucket: bucket,
-			Key: finalKey,
-		}
-	);
-	return {
-		key: finalKey,
-		contentType: response.ContentType,
-		size: response.ContentLength,
-		eTag: response.ETag,
-		lastModified: response.LastModified,
-		metadata: response.Metadata,
-		versionId: response.VersionId,
-	};
+): Promise<S3GetPropertiesResult> => {
+	return getPropertiesInternal(AmplifyV6, req);
 };

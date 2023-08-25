@@ -188,6 +188,7 @@ export enum AuthErrorTypes {
 	DeviceConfig = 'deviceConfig',
 	NetworkError = 'networkError',
 	AutoSignInError = 'autoSignInError',
+	OAuthSignInError = 'oauthSignInError',
 }
 
 export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };

@@ -29,6 +29,7 @@ export type ResourcesConfig = {
 	Notifications?: {};
 	Predictions?: {};
 	Storage?: StorageConfig;
+	ssr?: boolean;
 };
 
 export type LibraryOptions = {

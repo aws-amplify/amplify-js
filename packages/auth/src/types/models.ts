@@ -32,7 +32,7 @@ export type AuthCodeDeliveryDetails<
 };
 
 export type AuthNextResetPasswordStep<
-	UserAttributeKey extends AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	resetPasswordStep: AuthResetPasswordStep;
 	additionalInfo?: AdditionalInfo;
@@ -67,7 +67,7 @@ export type ConfirmSignInWithCustomChallenge = {
 };
 
 export type ConfirmSignInWithNewPasswordRequired<
-	UserAttributeKey extends AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED;
 	missingAttributes?: UserAttributeKey[];
@@ -90,7 +90,9 @@ export type DoneSignInStep = {
 	signInStep: AuthSignInStep.DONE;
 };
 
-export type AuthNextSignInStep<UserAttributeKey extends AuthUserAttributeKey> =
+export type AuthNextSignInStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> =
 	| ConfirmSignInWithCustomChallenge
 	| ContinueSignInWithMFASelection
 	| ConfirmSignInWithNewPasswordRequired<UserAttributeKey>
@@ -140,12 +142,13 @@ export type AuthUserAttributeKey = AuthStandardAttributeKey | AnyAttribute;
 /**
  * Data encapsulating the next step in the Sign Up process
  */
-export type AuthNextSignUpStep<UserAttributeKey extends AuthUserAttributeKey> =
-	{
-		signUpStep?: AuthSignUpStep;
-		additionalInfo?: AdditionalInfo;
-		codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
-	};
+export type AuthNextSignUpStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = {
+	signUpStep?: AuthSignUpStep;
+	additionalInfo?: AdditionalInfo;
+	codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
+};
 
 export type ConfirmAttributeWithCodeAttributeStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
@@ -161,3 +164,11 @@ export type DoneAttributeStep = {
 export type AuthNextUpdateAttributeStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = ConfirmAttributeWithCodeAttributeStep<UserAttributeKey> | DoneAttributeStep;
+
+/**
+ * The AuthUser object contains username and userId from the idToken.
+ */
+export type AuthUser = {
+	username: string;
+	userId: string;
+};

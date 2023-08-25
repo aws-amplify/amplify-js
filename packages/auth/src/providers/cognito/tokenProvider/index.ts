@@ -3,29 +3,54 @@
 import {
 	AuthTokens,
 	KeyValueStorageInterface,
-	MemoryKeyValueStorage,
-	FetchAuthSessionOptions
+	FetchAuthSessionOptions,
+	LocalStorage,
+	AuthConfig,
 } from '@aws-amplify/core';
 import { DefaultTokenStore } from './TokenStore';
 import { TokenOrchestrator } from './TokenOrchestrator';
 import { CognitoUserPoolTokenRefresher } from '../apis/tokenRefresher';
 import { CognitoUserPoolTokenProviderType } from './types';
 
-const authTokenStore = new DefaultTokenStore();
-authTokenStore.setKeyValueStorage(MemoryKeyValueStorage);
-const tokenOrchestrator = new TokenOrchestrator();
-tokenOrchestrator.setAuthTokenStore(authTokenStore);
-tokenOrchestrator.setTokenRefresher(CognitoUserPoolTokenRefresher);
-
-export const CognitoUserPoolsTokenProvider: CognitoUserPoolTokenProviderType = {
-	getTokens: (
+class CognitoUserPoolsTokenProviderClass
+	implements CognitoUserPoolTokenProviderType
+{
+	authTokenStore: DefaultTokenStore;
+	tokenOrchestrator: TokenOrchestrator;
+	constructor() {
+		this.authTokenStore = new DefaultTokenStore();
+		this.authTokenStore.setKeyValueStorage(LocalStorage);
+		this.tokenOrchestrator = new TokenOrchestrator();
+		this.tokenOrchestrator.setAuthTokenStore(this.authTokenStore);
+		this.tokenOrchestrator.setTokenRefresher(CognitoUserPoolTokenRefresher);
+	}
+	getTokens(
 		{ forceRefresh }: FetchAuthSessionOptions = { forceRefresh: false }
-	): Promise<AuthTokens | null> => {
-		return tokenOrchestrator.getTokens({ forceRefresh });
-	},
-	setKeyValueStorage: (keyValueStorage: KeyValueStorageInterface): void => {
-		authTokenStore.setKeyValueStorage(keyValueStorage);
-	},
-};
+	): Promise<AuthTokens | null> {
+		return this.tokenOrchestrator.getTokens({ forceRefresh });
+	}
 
-export { tokenOrchestrator };
+	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void {
+		this.authTokenStore.setKeyValueStorage(keyValueStorage);
+	}
+	setWaitForInflightOAuth(waitForInflightOAuth: () => Promise<void>): void {
+		this.tokenOrchestrator.setWaitForInflightOAuth(waitForInflightOAuth);
+	}
+	setAuthConfig(authConfig: AuthConfig) {
+		this.authTokenStore.setAuthConfig(authConfig);
+		this.tokenOrchestrator.setAuthConfig(authConfig);
+	}
+}
+
+export const CognitoUserPoolsTokenProvider =
+	new CognitoUserPoolsTokenProviderClass();
+
+export const tokenOrchestrator =
+	CognitoUserPoolsTokenProvider.tokenOrchestrator;
+
+export {
+	CognitoUserPoolTokenProviderType,
+	TokenOrchestrator,
+	DefaultTokenStore,
+	CognitoUserPoolTokenRefresher,
+};
