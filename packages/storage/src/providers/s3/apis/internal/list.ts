@@ -32,7 +32,6 @@ type ListRequestArgs = {
 	prefix: string;
 };
 
-// TODO(ashwinkumar6) add unit test for list API
 export const list = async (
 	amplify: AmplifyClassV6,
 	req?:
