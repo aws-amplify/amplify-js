@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { resolveConfig } from '../../../../src/providers/pinpoint/utils';
 
 describe('Analytics Pinpoint Provider Util: resolveConfig', () => {
@@ -10,7 +10,7 @@ describe('Analytics Pinpoint Provider Util: resolveConfig', () => {
 		region: 'region',
 	};
 	// create spies
-	const getConfigSpy = jest.spyOn(AmplifyV6, 'getConfig');
+	const getConfigSpy = jest.spyOn(Amplify, 'getConfig');
 
 	beforeEach(() => {
 		getConfigSpy.mockReset();

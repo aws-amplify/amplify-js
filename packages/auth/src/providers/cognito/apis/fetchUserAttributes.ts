@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { AuthUserAttribute } from '../../../types';
 import { CognitoUserAttributeKey } from '../types';
 import { fetchUserAttributes as fetchUserAttributesInternal } from './internal/fetchUserAttributes';
@@ -16,5 +16,5 @@ import { fetchUserAttributes as fetchUserAttributesInternal } from './internal/f
 export const fetchUserAttributes = (): Promise<
 	AuthUserAttribute<CognitoUserAttributeKey>
 > => {
-	return fetchUserAttributesInternal(AmplifyV6);
+	return fetchUserAttributesInternal(Amplify);
 };
