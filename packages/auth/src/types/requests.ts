@@ -44,8 +44,11 @@ export type SignInRequest<
 	password?: string;
 	options?: { serviceOptions?: ServiceOptions };
 };
+export type SignOutRequest = {
+	global: boolean;
+};
 
-export type AuthProvider =   'Amazon' | 'Apple'  | 'Facebook' | 'Google';
+export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
 
 export type SignInWithRedirectRequest = {
 	provider?: AuthProvider | { custom: string };

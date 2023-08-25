@@ -38,6 +38,7 @@ export {
 	Amplify,
 	fetchAuthSession,
 	AmplifyClass as AmplifyClassV6,
+	clearCredentials,
 } from './singleton';
 
 // AWSClients exports

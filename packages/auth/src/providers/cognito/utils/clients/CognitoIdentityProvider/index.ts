@@ -61,6 +61,13 @@ import {
 import { assertServiceError } from '../../../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../../../errors/AuthError';
 
+type RevokeTokenInput = {
+	Token: string;
+	ClientId: string;
+};
+
+type RevokeTokenOutput = {};
+
 type ClientOperation =
 	| 'SignUp'
 	| 'ConfirmSignUp'
@@ -82,7 +89,8 @@ type ClientOperation =
 	| 'UpdateUserAttributes'
 	| 'VerifyUserAttribute'
 	| 'UpdateDeviceStatus'
-	| 'ListDevices';
+	| 'ListDevices'
+	| 'RevokeToken';
 
 const buildUserPoolSerializer =
 	<Input>(operation: ClientOperation) =>
@@ -96,7 +104,6 @@ const buildUserPoolDeserializer = <Output>(): ((
 	response: HttpResponse
 ) => Promise<Output>) => {
 	return async (response: HttpResponse): Promise<Output> => {
-	
 		if (response.statusCode >= 300) {
 			const error = await parseJsonError(response);
 			assertServiceError(error);
@@ -112,6 +119,13 @@ export const initiateAuth = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<InitiateAuthInput>('InitiateAuth'),
 	buildUserPoolDeserializer<InitiateAuthOutput>(),
+	defaultConfig
+);
+
+export const revokeToken = composeServiceApi(
+	cognitoUserPoolTransferHandler,
+	buildUserPoolSerializer<RevokeTokenInput>('RevokeToken'),
+	buildUserPoolDeserializer<RevokeTokenOutput>(),
 	defaultConfig
 );
 
