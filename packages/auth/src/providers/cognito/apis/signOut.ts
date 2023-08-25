@@ -57,7 +57,8 @@ async function clientSignOut(authConfig: AuthConfig) {
 
 		await handleOAuthSignOut(authConfig);
 	} catch (err) {
-		throwSignOutError(err);
+		// this shouldn't throw
+		// TODO(v6): add logger message
 	} finally {
 		tokenOrchestrator.clearTokens();
 	}
@@ -79,18 +80,11 @@ async function globalSignOut(authConfig: AuthConfig) {
 
 		await handleOAuthSignOut(authConfig);
 	} catch (err) {
-		throwSignOutError(err);
+		// it should not throw
+		// TODO(v6): add logger
 	} finally {
 		tokenOrchestrator.clearTokens();
 	}
-}
-
-function throwSignOutError(underlyingError: string) {
-	throw new AuthError({
-		message: 'SignOut error',
-		name: 'SignOutError',
-		underlyingError,
-	});
 }
 
 function handleOAuthSignOut(authConfig: AuthConfig) {

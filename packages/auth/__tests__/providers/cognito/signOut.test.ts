@@ -9,11 +9,12 @@ const mockedAccessToken =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJvcmlnaW5fanRpIjoiYXNjIn0.4X9nPnldRthcZwi9b0y3rvNn1jvzHnkgJjeEmzmq5VQ';
 const mockRefreshToken = 'abcdefghijk';
 
-describe('signOut tests no oauth', () => {
+describe('signOut tests no oauth happy path', () => {
 	let tokenStoreSpy;
 	let tokenOrchestratorSpy;
 	let globalSignOutSpy;
 	let revokeTokenSpy;
+
 	beforeEach(() => {
 		Amplify.configure(
 			{
@@ -77,6 +78,115 @@ describe('signOut tests no oauth', () => {
 
 	test('global sign out no oauth', async () => {
 		await signOut({ global: true });
+
+		expect(globalSignOutSpy).toBeCalledWith(
+			{
+				region: 'us-west-2',
+			},
+			{
+				AccessToken: mockedAccessToken,
+			}
+		);
+
+		expect(tokenOrchestratorSpy).toBeCalled();
+		expect(tokenStoreSpy).toBeCalled();
+	});
+
+	beforeAll(() => {
+		jest.resetAllMocks();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+});
+
+describe('signOut tests no oauth request fail', () => {
+	let tokenStoreSpy;
+	let tokenOrchestratorSpy;
+	let globalSignOutSpy;
+	let revokeTokenSpy;
+
+	beforeAll(() => {
+		jest.resetAllMocks();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
+	beforeEach(() => {
+		Amplify.configure(
+			{
+				Auth: {
+					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+				},
+			},
+			{
+				Auth: {
+					tokenProvider: TokenProvider.CognitoUserPoolsTokenProvider,
+				},
+			}
+		);
+
+		revokeTokenSpy = jest
+			.spyOn(clients, 'revokeToken')
+			.mockImplementation(async () => {
+				throw new Error('fail!!!');
+			});
+
+		tokenStoreSpy = jest
+			.spyOn(TokenProvider.DefaultTokenStore.prototype, 'loadTokens')
+			.mockImplementation(async () => {
+				return {
+					accessToken: decodeJWT(mockedAccessToken),
+					refreshToken: mockRefreshToken,
+					clockDrift: 0,
+				};
+			});
+
+		tokenOrchestratorSpy = jest
+			.spyOn(TokenProvider.tokenOrchestrator, 'clearTokens')
+			.mockImplementation(async () => {});
+
+		globalSignOutSpy = jest
+			.spyOn(clients, 'globalSignOut')
+			.mockImplementation(async () => {
+				console.log('calling spy');
+				throw new Error('fail!!!');
+			});
+	});
+
+	test('test client signOut no oauth', async () => {
+		try {
+			await signOut({ global: false });
+		} catch (err) {
+			fail('this shouldnt happen');
+		}
+
+		expect(revokeTokenSpy).toBeCalledWith(
+			{
+				region: 'us-west-2',
+			},
+			{
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				Token: 'abcdefghijk',
+			}
+		);
+
+		expect(globalSignOutSpy).not.toHaveBeenCalled();
+		expect(tokenOrchestratorSpy).toBeCalled();
+		expect(tokenStoreSpy).toBeCalled();
+	});
+
+	test('global sign out no oauth', async () => {
+		try {
+			await signOut({ global: true });
+		} catch (err) {
+			fail('this shouldnt happen');
+		}
 
 		expect(globalSignOutSpy).toBeCalledWith(
 			{
