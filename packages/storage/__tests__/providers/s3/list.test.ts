@@ -77,6 +77,8 @@ const mockListObjectsV2ApiWithPages = pages => {
 	});
 };
 
+// TODO(ashwinkumar6) this currently only tests for guest
+// Update to test across all accessLevels
 describe('list API', () => {
 	beforeAll(() => {
 		(AmplifyV6.Auth.fetchAuthSession as jest.Mock).mockResolvedValue({
@@ -123,7 +125,7 @@ describe('list API', () => {
 				};
 			});
 
-			expect.assertions(3);
+			expect.assertions(4);
 			const customPageSize = 5;
 			const response = await list({
 				path: 'listWithTokenResultsPath',
@@ -135,6 +137,7 @@ describe('list API', () => {
 			});
 			expect(response.items).toEqual([copyResultItem]);
 			expect(response.nextToken).toEqual(nextToken);
+			expect(listObjectsV2).toBeCalledTimes(1);
 			expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 				Bucket: bucket,
 				Prefix: 'public/listWithTokenResultsPath',
@@ -144,17 +147,20 @@ describe('list API', () => {
 		});
 
 		it('Should list all objects successfully having three pages', async () => {
-			expect.assertions(4);
+			expect.assertions(5);
 			mockListObjectsV2ApiWithPages(3);
 
-			expect(
-				(
-					await list({
-						path: 'listALLResultsPath',
-						options: { accessLevel: 'guest', listAll: true },
-					})
-				).items
-			).toEqual([copyResultItem, copyResultItem, copyResultItem]);
+			const result = await list({
+				path: 'listALLResultsPath',
+				options: { accessLevel: 'guest', listAll: true },
+			});
+
+			expect(result.items).toEqual([
+				copyResultItem,
+				copyResultItem,
+				copyResultItem,
+			]);
+			expect(result).not.toHaveProperty(nextToken);
 
 			// listing three times for three pages
 			expect(listObjectsV2).toHaveBeenCalledTimes(3);
