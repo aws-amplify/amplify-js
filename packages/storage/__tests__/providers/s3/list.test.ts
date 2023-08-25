@@ -92,7 +92,7 @@ describe('list API', () => {
 			},
 		});
 	});
-	describe('Happy Path Cases:', () => {
+	describe('Happy Cases:', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
@@ -203,7 +203,7 @@ describe('list API', () => {
 		});
 	});
 
-	describe('Error Path Cases:', () => {
+	describe('Error Cases:', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
