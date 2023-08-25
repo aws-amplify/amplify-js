@@ -6,9 +6,11 @@ import { AWSS3Provider as AWSStorageProvider } from '../src/providers/AWSS3Provi
 import { Storage as StorageClass } from '../src/Storage';
 import {
 	S3ProviderListOutput,
-	Storage as StorageCategory,
 	StorageProvider,
 } from '../src';
+import {
+	StorageInstance as StorageCategory
+} from '../src/Storage'
 import { isCancelError } from '../src/AwsClients/S3/utils';
 import { getPrefix } from '../src/common/S3ClientUtils';
 import { AWSS3UploadTask } from '../src/providers/AWSS3UploadTask';
