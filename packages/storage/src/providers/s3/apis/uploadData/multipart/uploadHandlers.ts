@@ -22,7 +22,7 @@ import { getConcurrentUploadsProgressTracker } from './progressTracker';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { StorageError } from '../../../../../errors/StorageError';
-import { AmplifyV6, StorageAccessLevel } from '@aws-amplify/core';
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 
 /**
  * Create closure hiding the multipart upload implementation details and expose the upload job and control functions(
@@ -240,5 +240,5 @@ export const getMultipartUploadHandlers = (
 
 const resolveAccessLevel = (accessLevel?: StorageAccessLevel) =>
 	accessLevel ??
-	AmplifyV6.libraryOptions.Storage?.AWSS3?.defaultAccessLevel ??
+	Amplify.libraryOptions.Storage?.AWSS3?.defaultAccessLevel ??
 	DEFAULT_ACCESS_LEVEL;

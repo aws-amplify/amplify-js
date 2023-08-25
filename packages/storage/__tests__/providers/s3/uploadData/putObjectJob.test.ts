@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { AmplifyV6, fetchAuthSession } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { putObject } from '../../../../src/AwsClients/S3';
 import { calculateContentMd5 } from '../../../../src/providers/s3/utils';
 
@@ -20,8 +20,8 @@ jest.mock('@aws-amplify/core', () => {
 	const core = jest.requireActual('@aws-amplify/core');
 	return {
 		...core,
-		AmplifyV6: {
-			...core.AmplifyV6,
+		Amplify: {
+			...core.Amplify,
 			getConfig: jest.fn(),
 		},
 		fetchAuthSession: jest.fn(),
@@ -40,7 +40,7 @@ mockFetchAuthSession.mockResolvedValue({
 	credentials,
 	identityId,
 });
-(AmplifyV6.getConfig as jest.Mock).mockReturnValue({
+(Amplify.getConfig as jest.Mock).mockReturnValue({
 	Storage: {
 		bucket: 'bucket',
 		region: 'region',
@@ -111,7 +111,7 @@ describe('putObjectJob', () => {
 	});
 
 	it('should set ContentMD5 if object lock is enabled', async () => {
-		AmplifyV6.libraryOptions = {
+		Amplify.libraryOptions = {
 			Storage: {
 				AWSS3: {
 					isObjectLockEnabled: true,
