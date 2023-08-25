@@ -6,13 +6,13 @@ import { tokenOrchestrator } from '../tokenProvider';
 import {
 	assertOAuthConfig,
 	assertTokenProviderConfig,
+	JWT,
 } from '@aws-amplify/core/internals/utils';
 import {
-	globalSignOut,
+	globalSignOut as globalSignOutClient,
 	revokeToken,
 } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { JWT } from '@aws-amplify/core/lib-esm/singleton/Auth/types';
 import { AuthError } from '../../../errors/AuthError';
 const SELF = '_self';
 
@@ -27,51 +27,48 @@ const SELF = '_self';
 export async function signOut(
 	signOutRequest?: SignOutRequest
 ): Promise<AuthSignOutResult> {
+	const authConfig = AmplifyV6.getConfig().Auth;
+
 	if (signOutRequest?.global) {
-		return globalSignOutHandler();
+		return globalSignOut(authConfig);
 	} else {
-		return clientSignOut();
+		return clientSignOut(authConfig);
 	}
 }
 
-async function clientSignOut() {
-	const authConfig = AmplifyV6.getConfig().Auth;
-
+async function clientSignOut(authConfig: AuthConfig) {
 	try {
+		assertTokenProviderConfig(authConfig);
+
 		const { refreshToken, accessToken } =
 			await tokenOrchestrator.tokenStore.loadTokens();
+
 		if (isSessionRevocable(accessToken)) {
-			await revokeTokens({
-				region: getRegion(authConfig.userPoolId),
-				clientId: authConfig.userPoolWebClientId,
-				token: refreshToken,
-			});
+			await revokeToken(
+				{
+					region: getRegion(authConfig.userPoolId),
+				},
+				{
+					ClientId: authConfig.userPoolWebClientId,
+					Token: refreshToken,
+				}
+			);
 		}
 
 		await handleOAuthSignOut(authConfig);
-		const oauthStore = new DefaultOAuthStore(LocalStorage);
-		oauthStore.setAuthConfig(authConfig);
-		if (authConfig.oauth && oauthStore.loadOAuthSignIn()) {
-			oAuthSignOutRedirect(authConfig);
-		}
 	} catch (err) {
-		throw new AuthError({
-			message: 'SignOut error',
-			name: 'SignOutError',
-			underlyingError: err,
-		});
+		throwSignOutError(err);
 	} finally {
 		tokenOrchestrator.clearTokens();
 	}
 }
 
-async function globalSignOutHandler() {
-	const authConfig = AmplifyV6.getConfig().Auth;
-
+async function globalSignOut(authConfig: AuthConfig) {
 	try {
 		assertTokenProviderConfig(authConfig);
+
 		const { accessToken } = await tokenOrchestrator.tokenStore.loadTokens();
-		await globalSignOut(
+		await globalSignOutClient(
 			{
 				region: getRegion(authConfig.userPoolId),
 			},
@@ -83,20 +80,19 @@ async function globalSignOutHandler() {
 		tokenOrchestrator.clearTokens();
 
 		await handleOAuthSignOut(authConfig);
-		const oauthStore = new DefaultOAuthStore(LocalStorage);
-		oauthStore.setAuthConfig(authConfig);
-		if (authConfig.oauth && oauthStore.loadOAuthSignIn()) {
-			oAuthSignOutRedirect(authConfig);
-		}
 	} catch (err) {
-		throw new AuthError({
-			message: 'SignOut error',
-			name: 'SignOutError',
-			underlyingError: err,
-		});
+		throwSignOutError(err);
 	} finally {
 		tokenOrchestrator.clearTokens();
 	}
+}
+
+function throwSignOutError(underlyingError: string) {
+	throw new AuthError({
+		message: 'SignOut error',
+		name: 'SignOutError',
+		underlyingError: underlyingError,
+	});
 }
 
 function handleOAuthSignOut(authConfig: AuthConfig) {
@@ -106,7 +102,12 @@ function handleOAuthSignOut(authConfig: AuthConfig) {
 		// all good no oauth handling
 		return;
 	}
-	oAuthSignOutRedirect(authConfig);
+
+	const oauthStore = new DefaultOAuthStore(LocalStorage);
+	oauthStore.setAuthConfig(authConfig);
+	if (oauthStore.loadOAuthSignIn()) {
+		oAuthSignOutRedirect(authConfig);
+	}
 }
 
 function oAuthSignOutRedirect(authConfig: AuthConfig) {
@@ -132,27 +133,6 @@ function oAuthSignOutRedirect(authConfig: AuthConfig) {
 	// logger.debug(`Signing out from ${oAuthLogoutEndpoint}`);
 
 	window.open(oAuthLogoutEndpoint, SELF);
-}
-
-async function revokeTokens({
-	region,
-	token,
-	clientId,
-}: {
-	region: string;
-	token: string;
-	clientId: string;
-}) {
-	// this will invoke the API that revoke Cognito refresh token
-	await revokeToken(
-		{
-			region,
-		},
-		{
-			ClientId: clientId,
-			Token: token,
-		}
-	);
 }
 
 function isSessionRevocable(token: JWT) {
