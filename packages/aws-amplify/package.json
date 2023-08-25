@@ -248,6 +248,18 @@
       "limit": "18.25 kB"
     },
     {
+      "name": "[Auth] Basic Auth Flow (Cognito)",
+      "path": "./lib-esm/auth/index.js",
+      "import": "{ signIn, signOut, fetchAuthSession }",
+      "limit": "35.1 kB"
+    },
+    {
+      "name": "[Auth] OAuth Auth Flow (Cognito)",
+      "path": "./lib-esm/auth/index.js",
+      "import": "{ signInWithRedirect, signOut, fetchAuthSession }",
+      "limit": "27.95 kB"
+    },
+    {
       "name": "[Storage] copy (S3)",
       "path": "./lib-esm/storage/index.js",
       "import": "{ copy }",
