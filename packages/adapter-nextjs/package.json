@@ -2,7 +2,6 @@
   "author": "Amazon Web Services",
   "name": "@aws-amplify/adapter-nextjs",
   "description": "The adapter for the supporting of using Amplify APIs in Next.js.",
-  
   "peerDependencies": {
     "aws-amplify": "^6.0.0",
     "next": ">=13.4.0 <14.0.0"
@@ -21,6 +20,9 @@
     "next": ">= 13.4.0 < 14.0.0",
     "typescript": "5.1.6"
   },
+  "publishConfig": {
+		"access": "public"
+	},
   "bugs": {
     "url": "https://github.com/aws/aws-amplify/issues"
   },
