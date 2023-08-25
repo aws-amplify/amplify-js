@@ -1297,6 +1297,7 @@ jobs:
           spec: background-process-manager
           browser: webkit
 
+  # TODO: remove when updated CPK + related models tests are added
   integ_react_datastore_related_models:
     parameters:
       browser:
@@ -1312,6 +1313,23 @@ jobs:
           category: datastore
           sample_name: related-models
           spec: related-models
+          browser: << parameters.browser >>
+
+  integ_react_datastore_cpk_related_models:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/related-models
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Custom Primary Key + Related Models'
+          framework: react
+          category: datastore
+          sample_name: related-models
+          spec: cpk-related-models
           browser: << parameters.browser >>
 
   integ_react_iot_reconnect:
