@@ -5,7 +5,7 @@ import { authAPITestParams } from './testUtils/authApiTestParams';
 import { signIn } from '../../../src/providers/cognito/apis/signIn';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInStore } from '../../../src/providers/cognito/utils/signInStore';
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { cognitoCredentialsProvider } from '../../../src/providers/cognito/credentialsProvider';
 import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
@@ -40,7 +40,7 @@ describe('local sign-in state management tests', () => {
 				})
 			);
 
-		AmplifyV6.configure({
+		Amplify.configure({
 			Auth: authConfig,
 		});
 		await signIn({
@@ -68,7 +68,7 @@ describe('local sign-in state management tests', () => {
 					authAPITestParams.RespondToAuthChallengeCommandOutput
 			);
 
-		AmplifyV6.configure({
+		Amplify.configure({
 			Auth: authConfig,
 		});
 		await signIn({

@@ -1,17 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from 'aws-amplify';
+import { decodeJWT, fetchAuthSession } from '@aws-amplify/core/internals/utils';
 import * as getUserClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { GetUserException } from '../../../src/providers/cognito/types/errors';
 import { GetUserCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
-import { decodeJWT } from '@aws-amplify/core/internals/utils';
-import * as authUtils from '../../../src';
 import { fetchUserAttributes } from '../../../src/providers/cognito/apis/fetchUserAttributes';
+
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+	fetchAuthSession: jest.fn(),
+}));
 
 Amplify.configure({
 	Auth: {
@@ -22,23 +26,17 @@ Amplify.configure({
 });
 const mockedAccessToken =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 
 describe('fetchUserAttributes Happy Path Cases:', () => {
 	let getUserClientSpy;
-	let fetchAuthSessionsSpy;
 
 	beforeEach(() => {
-		fetchAuthSessionsSpy = jest
-			.spyOn(authUtils, 'fetchAuthSession')
-			.mockImplementationOnce(
-				async (): Promise<{ tokens: { accessToken: any } }> => {
-					return {
-						tokens: {
-							accessToken: decodeJWT(mockedAccessToken),
-						},
-					};
-				}
-			);
+		mockFetchAuthSession.mockResolvedValue({
+			tokens: {
+				accessToken: decodeJWT(mockedAccessToken),
+			},
+		});
 		getUserClientSpy = jest
 			.spyOn(getUserClient, 'getUser')
 			.mockImplementationOnce(async (): Promise<GetUserCommandOutput> => {
@@ -56,7 +54,7 @@ describe('fetchUserAttributes Happy Path Cases:', () => {
 	});
 	afterEach(() => {
 		getUserClientSpy.mockClear();
-		fetchAuthSessionsSpy.mockClear();
+		mockFetchAuthSession.mockClear();
 	});
 
 	test('fetchUserAttributes should return the current user attributes into a map format', async () => {
@@ -83,17 +81,12 @@ describe('fetchUserAttributes Error Path Cases:', () => {
 				buildMockErrorResponse(GetUserException.InvalidParameterException)
 			)
 		);
-		jest
-			.spyOn(authUtils, 'fetchAuthSession')
-			.mockImplementationOnce(
-				async (): Promise<{ tokens: { accessToken: any } }> => {
-					return {
-						tokens: {
-							accessToken: decodeJWT(mockedAccessToken),
-						},
-					};
-				}
-			);
+		mockFetchAuthSession.mockResolvedValueOnce({
+			tokens: {
+				accessToken: decodeJWT(mockedAccessToken),
+			},
+		});
+
 		try {
 			await fetchUserAttributes();
 		} catch (error) {

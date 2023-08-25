@@ -1,15 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from 'aws-amplify';
+import { decodeJWT, fetchAuthSession } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../src/errors/AuthError';
 import { getCurrentUser } from '../../../src/providers/cognito';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
-import { decodeJWT } from '@aws-amplify/core/internals/utils';
-import * as authUtils from '../../../src';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
+
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+	fetchAuthSession: jest.fn(),
+}));
 
 Amplify.configure({
 	Auth: {
@@ -20,33 +24,27 @@ Amplify.configure({
 });
 const mockedAccessToken =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-
+const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 const mockedSub = 'mockedSub';
 const mockedUsername = 'XXXXXXXXXXXXXX';
+
 describe('getUser API happy path cases', () => {
-	let fetchAuthSessionsSpy;
 	beforeEach(() => {
-		fetchAuthSessionsSpy = jest
-			.spyOn(authUtils, 'fetchAuthSession')
-			.mockImplementationOnce(
-				async (): Promise<{ tokens: { accessToken: any; idToken: any } }> => {
-					return {
-						tokens: {
-							accessToken: decodeJWT(mockedAccessToken),
-							idToken: {
-								payload: {
-									sub: mockedSub,
-									'cognito:username': mockedUsername,
-								},
-							},
-						},
-					};
-				}
-			);
+		mockFetchAuthSession.mockResolvedValue({
+			tokens: {
+				accessToken: decodeJWT(mockedAccessToken),
+				idToken: {
+					payload: {
+						sub: mockedSub,
+						'cognito:username': mockedUsername,
+					},
+				},
+			},
+		});
 	});
 
 	afterEach(() => {
-		fetchAuthSessionsSpy.mockClear();
+		mockFetchAuthSession.mockClear();
 	});
 
 	test('get current user', async () => {
@@ -58,14 +56,12 @@ describe('getUser API happy path cases', () => {
 describe('getUser API error path cases:', () => {
 	test('getUser API should raise service error', async () => {
 		expect.assertions(2);
-		jest
-			.spyOn(authUtils, 'fetchAuthSession')
-			.mockImplementationOnce(async () => {
-				throw new AuthError({
-					name: InitiateAuthException.InternalErrorException,
-					message: 'error at fetchAuthSession',
-				});
+		mockFetchAuthSession.mockImplementationOnce(async () => {
+			throw new AuthError({
+				name: InitiateAuthException.InternalErrorException,
+				message: 'error at fetchAuthSession',
 			});
+		});
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
 			mockJsonResponse(
 				buildMockErrorResponse(InitiateAuthException.InternalErrorException)

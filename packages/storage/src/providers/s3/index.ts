@@ -3,9 +3,7 @@
 
 export {
 	uploadData,
-	uploadFile,
 	downloadData,
-	downloadFile,
 	remove,
 	list,
 	getProperties,
