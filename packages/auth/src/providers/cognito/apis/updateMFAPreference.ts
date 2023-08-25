@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { UpdateMFAPreferenceRequest } from '../types';
 import { SetUserMFAPreferenceException } from '../types/errors';
@@ -25,7 +26,7 @@ export async function updateMFAPreference(
 	updateMFAPreferenceRequest: UpdateMFAPreferenceRequest
 ): Promise<void> {
 	const { sms, totp } = updateMFAPreferenceRequest;
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);

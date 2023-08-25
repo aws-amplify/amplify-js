@@ -8,8 +8,8 @@ import { SetUserMFAPreferenceException } from '../../../src/providers/cognito/ty
 import { UpdateMFAPreferenceRequest } from '../../../src/providers/cognito/types';
 import { getMFASettings } from '../../../src/providers/cognito/apis/updateMFAPreference';
 import { SetUserMFAPreferenceCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
-import { decodeJWT } from '@aws-amplify/core';
+import { Amplify } from 'aws-amplify';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import * as authUtils from '../../../src';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';

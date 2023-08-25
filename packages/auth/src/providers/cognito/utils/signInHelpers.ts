@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	AmplifyV6,
-	AuthConfig,
-	assertTokenProviderConfig,
+	Amplify,
+	AuthConfig
 } from '@aws-amplify/core';
+import {
+	assertTokenProviderConfig
+} from '@aws-amplify/core/internals/utils';
 import {
 	getLargeAValue,
 	getNowString,
@@ -68,7 +70,7 @@ export async function handleCustomChallenge({
 	session,
 	username,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolWebClientId } = AmplifyV6.getConfig().Auth;
+	const { userPoolId, userPoolWebClientId } = Amplify.getConfig().Auth;
 	const challengeResponses = { USERNAME: username, ANSWER: challengeResponse };
 	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'CUSTOM_CHALLENGE',
@@ -374,7 +376,7 @@ export async function getSignInResult(params: {
 	challengeParameters: ChallengeParameters;
 }): Promise<AuthSignInResult> {
 	const { challengeName, challengeParameters } = params;
-	const { userPoolId } = AmplifyV6.getConfig().Auth;
+	const { userPoolId } = Amplify.getConfig().Auth;
 	switch (challengeName) {
 		case 'CUSTOM_CHALLENGE':
 			return {

@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import {
 	AuthCodeDeliveryDetails,
 	AuthStandardAttributeKey,
@@ -35,7 +36,7 @@ export async function resendSignUpCode(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
 	);
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
 	const clientMetadata =
 		resendRequest.options?.serviceOptions?.clientMetadata ??

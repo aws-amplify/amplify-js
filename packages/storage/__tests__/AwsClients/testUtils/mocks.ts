@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { XhrSpy } from './types';
+import { XhrSpy, XhrProgressEvent } from './types';
 
 /**
  * Mock XMLHttpRequest instance so we can spy on the methods and listeners.
@@ -67,14 +67,31 @@ export const mockXhrResponse = (
 	(mockXhr.getAllResponseHeaders as jest.Mock).mockReturnValue(
 		response.headerString
 	);
-	mockXhr.uploadListeners.progress?.forEach(cb => {
-		cb({ name: 'MockUploadEvent' } as any);
-	});
-	mockXhr.listeners.progress?.forEach(cb => {
-		cb({ name: 'MockDownloadEvent' } as any);
-	});
 	mockXhr.listeners.readystatechange?.forEach(cb => {
 		cb({} as any);
+	});
+};
+
+/**
+ * Mock invoking XMLHttpRequest's download & upload progress event listeners on given mock XHR instance.
+ *
+ * @internal
+ */
+export const mockProgressEvents = (options: {
+	mockXhr: XhrSpy;
+	uploadEvents?: Array<XhrProgressEvent>;
+	downloadEvents?: Array<XhrProgressEvent>;
+}) => {
+	const { mockXhr, uploadEvents, downloadEvents } = options;
+	uploadEvents?.forEach(event => {
+		mockXhr.uploadListeners.progress?.forEach(cb => {
+			cb(event as any);
+		});
+	});
+	downloadEvents?.forEach(event => {
+		mockXhr.listeners.progress?.forEach(cb => {
+			cb(event as any);
+		});
 	});
 };
 

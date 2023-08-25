@@ -6,7 +6,7 @@ import { I18n as I18nClass } from './I18n';
 import { ConsoleLogger as Logger } from '../Logger';
 import { I18nOptions } from './types';
 import { asserts } from '../Util/errors/AssertError';
-import { I18N_EXCEPTION } from '../constants';
+import { I18N_EXCEPTION } from '../Util/Constants';
 
 const logger = new Logger('I18n');
 

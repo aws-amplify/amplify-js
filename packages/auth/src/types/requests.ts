@@ -5,7 +5,7 @@ import { AuthUserAttribute, AuthUserAttributeKey } from './models';
 import { AuthServiceOptions, AuthSignUpOptions } from './options';
 
 export type ConfirmResetPasswordRequest<
-	ServiceOptions extends AuthServiceOptions
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
 	username: string;
 	newPassword: string;
@@ -28,7 +28,9 @@ export type ResendSignUpCodeRequest<
 	options?: { serviceOptions?: ServiceOptions };
 };
 
-export type ResetPasswordRequest<ServiceOptions extends AuthServiceOptions> = {
+export type ResetPasswordRequest<
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+> = {
 	username: string;
 	options?: {
 		serviceOptions?: ServiceOptions;
@@ -41,6 +43,13 @@ export type SignInRequest<
 	username: string;
 	password?: string;
 	options?: { serviceOptions?: ServiceOptions };
+};
+
+export type AuthProvider =   'Amazon' | 'Apple'  | 'Facebook' | 'Google';
+
+export type SignInWithRedirectRequest = {
+	provider?: AuthProvider | { custom: string };
+	customState?: string;
 };
 
 /**
@@ -124,3 +133,20 @@ export type UpdateUserAttributesRequest<
 	userAttributes: AuthUserAttribute<UserAttributeKey>;
 	options?: { serviceOptions?: ServiceOptions };
 };
+
+/**
+ * Constructs a `GetCurrentUser` request.
+ * @param recache - whether to recache the user
+ */
+export type GetCurrentUserRequest = { recache: boolean };
+
+/*
+ * Constructs a `verifyUserAttribute` request.
+ *
+ * @param userAttributeKey - the user attribute key to be verified
+ * @param confirmationCode - the user attribute verification code sent to email or cellphone
+ *
+ */
+export type ConfirmUserAttributeRequest<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = { userAttributeKey: UserAttributeKey; confirmationCode: string };

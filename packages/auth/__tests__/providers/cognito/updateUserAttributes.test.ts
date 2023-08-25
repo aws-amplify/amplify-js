@@ -7,8 +7,8 @@ import {
 	UpdateUserAttributesException,
 } from '../../../src/providers/cognito/types/errors';
 import * as updateUserAttributesClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
-import { decodeJWT } from '@aws-amplify/core';
+import { Amplify } from 'aws-amplify';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import * as authUtils from '../../../src';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';

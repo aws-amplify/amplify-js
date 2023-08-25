@@ -1,13 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
+	Hub
+} from '@aws-amplify/core';
+import {
 	Category,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
-	Hub,
-	StorageAction,
-} from '@aws-amplify/core';
-import { AMPLIFY_SYMBOL } from './StorageConstants';
+	StorageAction
+} from '@aws-amplify/core/internals/utils';
 
 export const byteLength = (x: unknown) => {
 	if (typeof x === 'string') {
@@ -18,34 +19,6 @@ export const byteLength = (x: unknown) => {
 		return x.size;
 	} else {
 		throw new Error('Cannot determine byte length of ' + x);
-	}
-};
-
-export const dispatchStorageEvent = (
-	track: boolean | undefined,
-	event: string,
-	attrs: any,
-	metrics: any,
-	message: string
-): void => {
-	if (track) {
-		const data: {
-			attrs: any;
-			metrics?: any;
-		} = { attrs };
-		if (metrics) {
-			data['metrics'] = metrics;
-		}
-		Hub.dispatch(
-			'storage',
-			{
-				event,
-				data,
-				message,
-			},
-			'Storage',
-			AMPLIFY_SYMBOL
-		);
 	}
 };
 

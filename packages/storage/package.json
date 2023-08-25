@@ -17,7 +17,6 @@
   },
   "scripts": {
     "test": "npm run lint && jest -w 1 --coverage",
-    "test:size": "size-limit",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
@@ -29,6 +28,29 @@
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
     "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
+  },
+  "typesVersions": {
+    ">=3.8": {
+      "*": [
+        "./lib-esm/index.d.ts"
+      ],
+      "s3": [
+        "./lib-esm/Providers/s3/index.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./lib-esm/index.d.ts",
+      "import": "./lib-esm/index.js",
+      "require": "./lib/index.js"
+    },
+    "./s3": {
+      "types": "./lib-esm/providers/s3/index.d.ts",
+      "import": "./lib-esm/providers/s3/index.js",
+      "require": "./lib/providers/s3/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "repository": {
     "type": "git",
@@ -44,7 +66,8 @@
     "lib",
     "lib-esm",
     "src",
-    "internals"
+    "internals",
+    "server"
   ],
   "dependencies": {
     "@aws-sdk/md5-js": "3.6.1",
@@ -54,6 +77,24 @@
     "fast-xml-parser": "^4.2.5",
     "tslib": "^2.5.0"
   },
+  "exports": {
+    ".": {
+			"types": "./lib-esm/index.d.ts",
+			"import": "./lib-esm/index.js",
+			"require": "./lib/index.js"
+		},
+		"./server": {
+			"types": "./lib-esm/server.d.ts",
+			"import": "./lib-esm/server.js",
+			"require": "./lib/server.js"
+		},
+		"./internals": {
+			"types": "./lib-esm/lib-esm/internals/index.d.ts",
+			"import": "./lib-esm/internals/index.js",
+			"require": "./lib/internals/index.js"
+		},
+		"./package.json": "./package.json"
+  },
   "peerDependencies": {
     "@aws-amplify/core": "^6.0.0"
   },
@@ -62,14 +103,6 @@
     "@types/sinon": "^7.5.1",
     "typescript": "5.0.2"
   },
-  "size-limit": [
-    {
-      "name": "Storage (top-level class)",
-      "path": "./lib-esm/index.js",
-      "import": "{ Amplify, Storage }",
-      "limit": "39.29 kB"
-    }
-  ],
   "jest": {
     "globals": {
       "ts-jest": {

@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	ICookieStorageData,
-	ICognitoStorage,
-} from 'amazon-cognito-identity-js';
+// import {
+// 	ICookieStorageData,
+// 	ICognitoStorage,
+// } from 'amazon-cognito-identity-js';
 
 /**
  * Parameters for user sign up
@@ -21,22 +21,22 @@ export interface SignUpParams {
 /**
  * Auth instance options
  */
-export interface AuthOptions {
-	userPoolId?: string;
-	userPoolWebClientId?: string;
-	identityPoolId?: string;
-	region?: string;
-	mandatorySignIn?: boolean;
-	cookieStorage?: ICookieStorageData;
-	oauth?: OAuthOpts;
-	refreshHandlers?: object;
-	storage?: ICognitoStorage;
-	authenticationFlowType?: string;
-	identityPoolRegion?: string;
-	clientMetadata?: any;
-	endpoint?: string;
-	signUpVerificationMethod?: 'code' | 'link';
-}
+// export interface AuthOptions {
+// 	userPoolId?: string;
+// 	userPoolWebClientId?: string;
+// 	identityPoolId?: string;
+// 	region?: string;
+// 	mandatorySignIn?: boolean;
+// 	cookieStorage?: ICookieStorageData;
+// 	oauth?: OAuthOpts;
+// 	refreshHandlers?: object;
+// 	storage?: ICognitoStorage;
+// 	authenticationFlowType?: string;
+// 	identityPoolRegion?: string;
+// 	clientMetadata?: any;
+// 	endpoint?: string;
+// 	signUpVerificationMethod?: 'code' | 'link';
+// }
 
 export enum CognitoHostedUIIdentityProvider {
 	Cognito = 'COGNITO',
@@ -188,6 +188,7 @@ export enum AuthErrorTypes {
 	DeviceConfig = 'deviceConfig',
 	NetworkError = 'networkError',
 	AutoSignInError = 'autoSignInError',
+	OAuthSignInError = 'oauthSignInError',
 }
 
 export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };

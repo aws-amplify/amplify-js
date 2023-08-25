@@ -5,13 +5,13 @@ import {
 	AuthConfig,
 	Identity,
 	KeyValueStorageInterface,
-	assertIdentityPooIdConfig,
 } from '@aws-amplify/core';
-import { IdentityIdStorageKeys } from './types';
+import { assertIdentityPooIdConfig } from '@aws-amplify/core/internals/utils';
+import { IdentityIdStorageKeys, IdentityIdStore } from './types';
 import { AuthError } from '../../../errors/AuthError';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
 
-export class DefaultIdentityIdStore {
+export class DefaultIdentityIdStore implements IdentityIdStore {
 	keyValueStorage: KeyValueStorageInterface;
 	authConfig: AuthConfig;
 
@@ -99,7 +99,7 @@ export class DefaultIdentityIdStore {
 		} else {
 			this._primaryIdentityId = identity.id;
 			// Clear locally stored guest id
-			this.keyValueStorage.clear();
+			this.keyValueStorage.removeItem(authKeys.identityId);
 		}
 	}
 

@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	AmplifyV6,
-	KeyValueStorageInterface,
-	assertTokenProviderConfig,
-	asserts,
-	decodeJWT,
-} from '@aws-amplify/core';
+import { AuthConfig, KeyValueStorageInterface } from '@aws-amplify/core';
+import { asserts, decodeJWT } from '@aws-amplify/core/internals/utils';
 import {
 	AuthKeys,
 	AuthTokenStorageKeys,
@@ -15,8 +10,12 @@ import {
 } from './types';
 
 export class DefaultTokenStore implements AuthTokenStore {
-	constructor() {}
+	private authConfig: AuthConfig;
 	keyValueStorage: KeyValueStorageInterface;
+
+	setAuthConfig(authConfig: AuthConfig) {
+		this.authConfig = authConfig;
+	}
 
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface) {
 		this.keyValueStorage = keyValueStorage;
@@ -24,13 +23,6 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	async loadTokens(): Promise<CognitoAuthTokens | null> {
-		const authConfig = AmplifyV6.getConfig().Auth;
-		try {
-			assertTokenProviderConfig(authConfig);
-		} catch (err) {
-			return null;
-		}
-
 		// TODO(v6): migration logic should be here
 		// Reading V5 tokens old format
 
@@ -39,7 +31,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 			const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 			const authKeys = createKeysForAuthStorage(
 				name,
-				authConfig.userPoolWebClientId
+				this.authConfig.userPoolWebClientId
 			);
 
 			const accessTokenString = await this.keyValueStorage.getItem(
@@ -77,8 +69,6 @@ export class DefaultTokenStore implements AuthTokenStore {
 		}
 	}
 	async storeTokens(tokens: CognitoAuthTokens): Promise<void> {
-		const authConfig = AmplifyV6.getConfig().Auth;
-		assertTokenProviderConfig(authConfig);
 		asserts(!(tokens === undefined), {
 			message: 'Invalid tokens',
 			name: 'InvalidAuthTokens',
@@ -88,7 +78,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,
-			authConfig.userPoolWebClientId
+			this.authConfig.userPoolWebClientId
 		);
 
 		this.keyValueStorage.setItem(
@@ -115,13 +105,10 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	async clearTokens(): Promise<void> {
-		const authConfig = AmplifyV6.getConfig().Auth;
-		assertTokenProviderConfig(authConfig);
-
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,
-			authConfig.userPoolWebClientId
+			this.authConfig.userPoolWebClientId
 		);
 
 		// Not calling clear because it can remove data that is not managed by AuthTokenStore

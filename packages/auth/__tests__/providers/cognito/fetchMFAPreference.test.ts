@@ -8,8 +8,8 @@ import { GetUserException } from '../../../src/providers/cognito/types/errors';
 import { GetUserCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
-import { decodeJWT } from '@aws-amplify/core';
+import { Amplify } from 'aws-amplify';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import * as authUtils from '../../../src';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 

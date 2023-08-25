@@ -1,14 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	ConsoleLogger as Logger,
 	Credentials,
 	ICredentials,
 	StorageHelper,
-	Hub,
 	parseAWSExports,
-	AmplifyV6,
+	Amplify,
 } from '@aws-amplify/core';
+import { 
+	ConsoleLogger as Logger
+} from '@aws-amplify/core/internals/utils';
 import {
 	copyObject,
 	CopyObjectInput,
@@ -54,7 +55,6 @@ import {
 } from '../types';
 import { ConfigType } from '../types/Provider';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
-import { dispatchStorageEvent } from '../common/StorageUtils';
 import {
 	getPrefix,
 	S3ResolvedConfig,
@@ -96,12 +96,6 @@ export class AWSS3Provider implements StorageProvider {
 	constructor(config?: StorageOptions) {
 		this._config = config ? config : {};
 		this._storage = new StorageHelper().getStorage();
-		Hub.listen('auth', data => {
-			const { payload } = data;
-			if (payload.event === 'signOut' || payload.event === 'signIn') {
-				this._storage.removeItem(UPLOADS_STORAGE_KEY);
-			}
-		});
 		logger.debug('Storage Options', this._config);
 	}
 
@@ -129,7 +123,7 @@ export class AWSS3Provider implements StorageProvider {
 		if (!config) return this._config;
 		const amplifyConfig = parseAWSExports(config);
 		this._config = Object.assign({}, this._config, amplifyConfig.Storage);
-		const { bucket } = AmplifyV6.getConfig()?.Storage ?? {};
+		const { bucket } = Amplify.getConfig()?.Storage ?? {};
 		if (!bucket) {
 			logger.debug('Do not have bucket yet');
 		}
@@ -211,14 +205,6 @@ export class AWSS3Provider implements StorageProvider {
 			params,
 			prefixPromise,
 		});
-
-		dispatchStorageEvent(
-			track,
-			'upload',
-			{ method: 'put', result: 'success' },
-			null,
-			`Upload Task created successfully for ${key}`
-		);
 
 		// automatically start the upload task
 		task.resume();
@@ -316,30 +302,10 @@ export class AWSS3Provider implements StorageProvider {
 
 		try {
 			await copyObject(loadS3Config({ ...opt, userAgentValue }), params);
-			dispatchStorageEvent(
-				track,
-				'copy',
-				{
-					method: 'copy',
-					result: 'success',
-				},
-				null,
-				`Copy success from ${srcKey} to ${destKey}`
-			);
 			return {
 				key: destKey,
 			};
 		} catch (error) {
-			dispatchStorageEvent(
-				track,
-				'copy',
-				{
-					method: 'copy',
-					result: 'failed',
-				},
-				null,
-				`Copy failed from ${srcKey} to ${destKey}`
-			);
 			throw error;
 		}
 	}
@@ -367,7 +333,7 @@ export class AWSS3Provider implements StorageProvider {
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
 		}
-		const { bucket } = AmplifyV6.getConfig()?.Storage ?? {};
+		const { bucket } = Amplify.getConfig()?.Storage ?? {};
 		const opt = Object.assign({}, this._config, config);
 		const {
 			download,
@@ -406,29 +372,8 @@ export class AWSS3Provider implements StorageProvider {
 				}
 				const response = await getObject(s3Config, params);
 				emitter.removeAllListeners(SEND_DOWNLOAD_PROGRESS_EVENT);
-				dispatchStorageEvent(
-					track,
-					'download',
-					{ method: 'get', result: 'success' },
-					{
-						fileSize: Number(
-							response.Body?.['size'] ?? (response.Body as any)?.['length']
-						),
-					},
-					`Download success for ${key}`
-				);
 				return response;
 			} catch (error) {
-				dispatchStorageEvent(
-					track,
-					'download',
-					{
-						method: 'get',
-						result: 'failed',
-					},
-					null,
-					`Download failed with ${(error as any)?.message}`
-				);
 				throw error;
 			}
 		}
@@ -437,16 +382,6 @@ export class AWSS3Provider implements StorageProvider {
 				await headObject(s3Config, params);
 			} catch (error) {
 				if ((error as any)?.$metadata?.httpStatusCode === 404) {
-					dispatchStorageEvent(
-						track,
-						'getSignedUrl',
-						{
-							method: 'get',
-							result: 'failed',
-						},
-						null,
-						`${key} not found`
-					);
 				}
 				throw error;
 			}
@@ -462,23 +397,9 @@ export class AWSS3Provider implements StorageProvider {
 				},
 				params
 			);
-			dispatchStorageEvent(
-				track,
-				'getSignedUrl',
-				{ method: 'get', result: 'success' },
-				null,
-				`Signed URL: ${url}`
-			);
 			return url.toString();
 		} catch (error) {
 			logger.warn('get signed url error', error);
-			dispatchStorageEvent(
-				track,
-				'getSignedUrl',
-				{ method: 'get', result: 'failed' },
-				null,
-				`Could not get a signed URL for ${key}`
-			);
 			throw error;
 		}
 	}
@@ -511,7 +432,7 @@ export class AWSS3Provider implements StorageProvider {
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		logger.debug(`getProperties ${key} from ${final_key}`);
-		const { bucket } = AmplifyV6.getConfig()?.Storage ?? {};
+		const { bucket } = Amplify.getConfig()?.Storage ?? {};
 		const s3Config = loadS3Config({ ...opt, userAgentValue });
 		const params: HeadObjectInput = {
 			Bucket: bucket,
@@ -537,26 +458,9 @@ export class AWSS3Provider implements StorageProvider {
 				lastModified: response.LastModified!,
 				metadata: response.Metadata!,
 			};
-			dispatchStorageEvent(
-				track,
-				'getProperties',
-				{ method: 'getProperties', result: 'success' },
-				null,
-				`getProperties successful for ${key}`
-			);
 			return getPropertiesResponse;
 		} catch (error) {
 			if ((error as any)?.$metadata?.httpStatusCode === 404) {
-				dispatchStorageEvent(
-					track,
-					'getProperties',
-					{
-						method: 'getProperties',
-						result: 'failed',
-					},
-					null,
-					`${key} not found`
-				);
 			}
 			throw error;
 		}
@@ -683,24 +587,10 @@ export class AWSS3Provider implements StorageProvider {
 
 			return uploader.upload().then(response => {
 				logger.debug('upload result', response);
-				dispatchStorageEvent(
-					track,
-					'upload',
-					{ method: 'put', result: 'success' },
-					null,
-					`Upload success for ${key}`
-				);
 				return { key };
 			}) as S3ProviderPutOutput<T>;
 		} catch (error) {
 			logger.warn('error uploading', error);
-			dispatchStorageEvent(
-				track,
-				'upload',
-				{ method: 'put', result: 'failed' },
-				null,
-				`Error uploading ${key}`
-			);
 			throw error;
 		}
 	}
@@ -736,22 +626,8 @@ export class AWSS3Provider implements StorageProvider {
 		const s3Config = loadS3Config({ ...opt, userAgentValue });
 		try {
 			const response = await deleteObject(s3Config, params);
-			dispatchStorageEvent(
-				track,
-				'delete',
-				{ method: 'remove', result: 'success' },
-				null,
-				`Deleted ${key} successfully`
-			);
 			return response;
 		} catch (error) {
-			dispatchStorageEvent(
-				track,
-				'delete',
-				{ method: 'remove', result: 'failed' },
-				null,
-				`Deletion of ${key} failed with ${error}`
-			);
 			throw error;
 		}
 	}
@@ -840,31 +716,17 @@ export class AWSS3Provider implements StorageProvider {
 				list.hasNextToken = listResult.hasNextToken;
 				list.nextToken = null ?? listResult.nextToken;
 			}
-			dispatchStorageEvent(
-				track,
-				'list',
-				{ method: 'list', result: 'success' },
-				null,
-				`${list.results.length} items returned from list operation`
-			);
 			logger.debug('list', list);
 			return list;
 		} catch (error) {
 			logger.error('list InvalidArgument', error);
-			dispatchStorageEvent(
-				track,
-				'list',
-				{ method: 'list', result: 'failed' },
-				null,
-				`Listing items failed: ${(error as any)?.message}`
-			);
 			throw error;
 		}
 	}
 
 	private async _ensureCredentials(): Promise<boolean> {
 		try {
-			const { credentials } = await AmplifyV6.Auth.fetchAuthSession();
+			const { credentials } = await Amplify.Auth.fetchAuthSession();
 			if (!credentials) return false;
 			logger.debug('set credentials for storage', credentials);
 			// this._config.credentials = credentials;

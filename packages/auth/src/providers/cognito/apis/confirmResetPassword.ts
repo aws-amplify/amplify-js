@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { ConfirmResetPasswordRequest } from '../../../types';
@@ -24,7 +25,7 @@ import { ConfirmForgotPasswordException } from '../../cognito/types/errors';
 export async function confirmResetPassword(
 	confirmResetPasswordRequest: ConfirmResetPasswordRequest<CognitoConfirmResetPasswordOptions>
 ): Promise<void> {
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
 
 	const { username, newPassword } = confirmResetPasswordRequest;

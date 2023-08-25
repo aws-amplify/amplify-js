@@ -1,18 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { cognitoIdentityIdProvider, setIdentityId } from './IdentityIdProvider';
+import { cognitoIdentityIdProvider } from './IdentityIdProvider';
 import {
-	Logger,
 	AuthTokens,
-	AmplifyV6,
 	AWSCredentialsAndIdentityIdProvider,
 	AWSCredentialsAndIdentityId,
 	UserPoolConfigAndIdentityPoolConfig,
 	getCredentialsForIdentity,
 	GetCredentialsOptions,
+	AuthConfig,
 } from '@aws-amplify/core';
+import { Logger } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../errors/AuthError';
+import { IdentityIdStore } from './types';
 
 const logger = new Logger('CognitoCredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
@@ -20,11 +21,23 @@ const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if 
 export class CognitoAWSCredentialsAndIdentityIdProvider
 	implements AWSCredentialsAndIdentityIdProvider
 {
+	constructor(identityIdStore: IdentityIdStore) {
+		this._identityIdStore = identityIdStore;
+	}
+
+	private _authConfig: AuthConfig;
+
+	private _identityIdStore: IdentityIdStore;
+
 	private _credentialsAndIdentityId?: AWSCredentialsAndIdentityId & {
 		isAuthenticatedCreds: boolean;
 	};
 	private _nextCredentialsRefresh: number;
-	// TODO(V6): find what needs to happen to locally stored identityId
+
+	setAuthConfig(authConfig: AuthConfig) {
+		this._authConfig = authConfig;
+	}
+
 	// TODO(V6): export clear crecentials to singleton
 	async clearCredentials(): Promise<void> {
 		logger.debug('Clearing out credentials');
@@ -36,11 +49,16 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	): Promise<AWSCredentialsAndIdentityId> {
 		const isAuthenticated = getCredentialsOptions.authenticated;
 		const tokens = getCredentialsOptions.tokens;
+		// TODO: refactor use the this._authConfig
 		const authConfig =
 			getCredentialsOptions.authConfig as UserPoolConfigAndIdentityPoolConfig;
 		const forceRefresh = getCredentialsOptions.forceRefresh;
 		// TODO(V6): Listen to changes to AuthTokens and update the credentials
-		const identityId = await cognitoIdentityIdProvider({ tokens, authConfig });
+		const identityId = await cognitoIdentityIdProvider({
+			tokens,
+			authConfig,
+			identityIdStore: this._identityIdStore,
+		});
 		if (!identityId) {
 			throw new AuthError({
 				name: 'IdentityIdConfigException',
@@ -69,7 +87,8 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			}
 			return await this.getGuestCredentials(identityId, authConfig);
 		} else {
-			return await this.credsForOIDCTokens(authConfig, tokens, identityId);
+			// Tokens will always be present if getCredentialsOptions.authenticated is true as dictated by the type
+			return await this.credsForOIDCTokens(authConfig, tokens!, identityId);
 		}
 	}
 
@@ -98,7 +117,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		const region = authConfig.identityPoolId.split(':')[0];
 
-		// TODO(V6): When unauth role is diabled and crdentials are absent, we need to return null not throw an error
+		// TODO(V6): When unauth role is disabled and crdentials are absent, we need to return null not throw an error
 		const clientResult = await getCredentialsForIdentity(
 			{ region },
 			{
@@ -119,11 +138,12 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					sessionToken: clientResult.Credentials.SessionToken,
 					expiration: clientResult.Credentials.Expiration,
 				},
+				identityId,
 			};
 			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
 				res.identityId = identityIdRes;
-				setIdentityId({
+				this._identityIdStore.storeIdentityId({
 					id: identityIdRes,
 					type: 'guest',
 				});
@@ -163,7 +183,11 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		// TODO(V6): oidcProvider should come from config, TBD
 		const logins = authTokens.idToken
-			? formLoginsMap(authTokens.idToken.toString(), 'COGNITO')
+			? formLoginsMap(
+					authTokens.idToken.toString(),
+					'COGNITO',
+					this._authConfig
+			  )
 			: {};
 		const identityPoolId = authConfig.identityPoolId;
 		if (!identityPoolId) {
@@ -197,6 +221,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					// TODO(V6): Fixed expiration now + 50 mins
 					expiration: clientResult.Credentials.Expiration,
 				},
+				identityId,
 			};
 			// Store the credentials in-memory along with the expiration
 			this._credentialsAndIdentityId = {
@@ -206,7 +231,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
 				res.identityId = identityIdRes;
-				setIdentityId({
+				this._identityIdStore.storeIdentityId({
 					id: identityIdRes,
 					type: 'primary',
 				});
@@ -243,9 +268,12 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	}
 }
 
-export function formLoginsMap(idToken: string, oidcProvider: string) {
-	const authConfig = AmplifyV6.getConfig().Auth;
-	const userPoolId = authConfig?.userPoolId;
+export function formLoginsMap(
+	idToken: string,
+	oidcProvider: string,
+	authConfig: AuthConfig
+) {
+	const userPoolId = authConfig.userPoolId;
 	const res = {};
 	if (!userPoolId) {
 		logger.debug('userPoolId is not found in the config');
@@ -270,7 +298,7 @@ export function formLoginsMap(idToken: string, oidcProvider: string) {
 	if (oidcProvider === 'COGNITO') {
 		domainName = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
 	} else {
-		// TODO: Support custom OIDC providers
+		// TODO(V6): Support custom OIDC providers
 		throw new AuthError({
 			name: 'AuthConfigException',
 			message: 'OIDC provider not supported',

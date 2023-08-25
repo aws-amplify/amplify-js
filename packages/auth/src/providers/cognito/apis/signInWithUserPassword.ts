@@ -18,7 +18,8 @@ import {
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
 } from '../utils/signInHelpers';
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
 import { CognitoSignInOptions } from '../types';
 import {
@@ -42,7 +43,7 @@ export async function signInWithUserPassword(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { username, password, options } = signInRequest;
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
 	const metadata =
 		options?.serviceOptions?.clientMetadata || authConfig.clientMetadata;

@@ -7,7 +7,7 @@ import {
 	transferKeyToLowerCase,
 	transferKeyToUpperCase,
 	isStrictObject,
-} from '../src/JS';
+} from '../src/Util/JS';
 
 describe('JS test', () => {
 	describe('isEmpty test', () => {

@@ -7,7 +7,6 @@ export * from './AWSS3Provider';
 
 export { DownloadTask, TransferProgressEvent } from './common';
 export {
-	StorageConfig,
 	StorageListRequest,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
@@ -18,6 +17,9 @@ export {
 	StorageOptions,
 	StorageUploadFileParameter, // TODO: open question - should we export this?
 	StorageRemoveOptions,
+	StorageCopySource,
+	StorageCopyDestination,
+	CopyRequest,
 } from './params';
 export {
 	StorageItem,

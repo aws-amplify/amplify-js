@@ -1,4 +1,4 @@
-import { AmplifyError, ServiceWorker } from '../src';
+import { AmplifyError, ServiceWorker } from '../src/libraryUtils';
 
 describe('ServiceWorker test', () => {
 	describe('Error conditions', () => {
