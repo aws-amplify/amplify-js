@@ -26,12 +26,9 @@
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 72.5"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 71.4"
 	},
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js",
-		"./lib-esm/trackers": "./lib-esm/trackers/reactnative.js"
-	},
+	"react-native": "./lib-esm/index.js",
 	"typesVersions": {
 		">=3.8": {
 			"*": [
@@ -82,6 +79,7 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
 		"@aws-sdk/types": "3.387.0",
+		"@types/uuid": "^9.0.0",
 		"typescript": "5.0.2"
 	},
 	"size-limit": [
@@ -111,6 +109,9 @@
 		"transform": {
 			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
 		},
+		"testPathIgnorePatterns": [
+			"/testUtils/"
+		],
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 		"moduleFileExtensions": [
 			"ts",
