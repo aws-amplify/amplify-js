@@ -53,7 +53,6 @@ export const list = async (
 			options.accessLevel === 'protected'
 				? options.targetIdentityId
 				: identityId,
-		key: path,
 	});
 	const finalPath = prefix + path;
 	const listConfig = {
