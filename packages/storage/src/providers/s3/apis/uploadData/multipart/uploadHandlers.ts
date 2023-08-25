@@ -91,6 +91,16 @@ export const getMultipartUploadHandlers = (
 
 		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths
 		const finalKey = keyPrefix + key;
+		const uploadCacheKey = totalLength
+			? getUploadsCacheKey({
+					file: data instanceof File ? data : undefined,
+					accessLevel: resolveAccessLevel(uploadDataOptions?.accessLevel),
+					contentType: uploadDataOptions?.contentType,
+					bucket: bucket!,
+					size: totalLength,
+					key,
+			  })
+			: undefined;
 
 		const abortListener = async () => {
 			try {
@@ -102,17 +112,8 @@ export const getMultipartUploadHandlers = (
 					Key: finalKey,
 					UploadId: inProgressUpload?.uploadId,
 				});
-				if (totalLength) {
-					removeCachedUpload(
-						getUploadsCacheKey({
-							file: data instanceof File ? data : undefined,
-							accessLevel: resolveAccessLevel(uploadDataOptions?.accessLevel),
-							contentType: uploadDataOptions?.contentType,
-							bucket: bucket!,
-							size: totalLength,
-							key,
-						})
-					);
+				if (uploadCacheKey) {
+					removeCachedUpload(uploadCacheKey);
 				}
 			} catch (e) {
 				// TODO: debug message: Error cancelling upload task.
@@ -189,6 +190,10 @@ export const getMultipartUploadHandlers = (
 					message: `Upload failed. Expected object size ${totalLength}, but got ${uploadedObjectLength}.`,
 				});
 			}
+		}
+
+		if (uploadCacheKey) {
+			removeCachedUpload(uploadCacheKey);
 		}
 
 		return {
