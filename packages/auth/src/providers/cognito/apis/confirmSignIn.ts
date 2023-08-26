@@ -67,8 +67,7 @@ export async function confirmSignIn(
 	const authConfig = Amplify.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
 
-	const clientMetaData =
-		options?.serviceOptions?.clientMetadata || authConfig?.clientMetadata;
+	const clientMetaData = options?.serviceOptions?.clientMetadata;
 
 	assertValidationError(
 		!!challengeResponse,

@@ -39,7 +39,7 @@ export async function verifyTOTPSetup(
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	await verifySoftwareToken(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ region: getRegion(authConfig.Cognito.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
 			UserCode: code,

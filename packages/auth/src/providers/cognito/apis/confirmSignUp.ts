@@ -36,8 +36,7 @@ export async function confirmSignUp(
 
 	const authConfig = Amplify.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
-	const clientMetadata =
-		options?.serviceOptions?.clientMetadata ?? authConfig.clientMetadata;
+	const clientMetadata = options?.serviceOptions?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptyConfirmSignUpUsername
@@ -48,13 +47,13 @@ export async function confirmSignUp(
 	);
 
 	await confirmSignUpClient(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ region: getRegion(authConfig.Cognito.userPoolId) },
 		{
 			Username: username,
 			ConfirmationCode: confirmationCode,
 			ClientMetadata: clientMetadata,
 			ForceAliasCreation: options?.serviceOptions?.forceAliasCreation,
-			ClientId: authConfig.userPoolWebClientId,
+			ClientId: authConfig.Cognito.userPoolClientId,
 			// TODO: handle UserContextData
 		}
 	);

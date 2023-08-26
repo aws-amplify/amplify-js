@@ -12,14 +12,17 @@ import { cognitoCredentialsProvider } from '../../../src/providers/cognito/crede
 import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 
 const authConfig = {
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
 
 const authConfigWithMetadata = {
-	...authAPITestParams.configWithClientMetadata,
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
 
 describe('confirmSignIn API happy path cases', () => {
@@ -242,45 +245,6 @@ describe('confirmSignIn API happy path cases', () => {
 			authConfig,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			authAPITestParams.configWithClientMetadata
-		);
-		handleUserSRPAuthFlowSpy.mockClear();
-	});
-
-	test('handleChallengeName should be called with clientMetadata from config', async () => {
-		CognitoUserPoolsTokenProvider.setAuthConfig(authConfigWithMetadata);
-		cognitoCredentialsProvider.setAuthConfig(authConfigWithMetadata);
-		Amplify.configure({
-			Auth: authConfigWithMetadata,
-		});
-		const activeSignInSession = '1234234232';
-		const activeChallengeName = 'SMS_MFA';
-		const handleUserSRPAuthFlowSpy = jest
-			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
-			.mockImplementationOnce(
-				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
-					ChallengeName: 'SMS_MFA',
-					Session: '1234234232',
-					$metadata: {},
-					ChallengeParameters: {
-						CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
-						CODE_DELIVERY_DESTINATION: '*******9878',
-					},
-				})
-			);
-		await signIn({ username, password });
-
-		const challengeResponse = '123456';
-		await confirmSignIn({
-			challengeResponse,
-		});
-		expect(handleChallengeNameSpy).toBeCalledWith(
-			username,
-			activeChallengeName,
-			activeSignInSession,
-			challengeResponse,
-			authConfigWithMetadata,
-			authAPITestParams.configWithClientMetadata.clientMetadata,
-			undefined
 		);
 		handleUserSRPAuthFlowSpy.mockClear();
 	});

@@ -41,7 +41,7 @@ export async function updatePassword(
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	await changePassword(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ region: getRegion(authConfig.Cognito.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
 			PreviousPassword: oldPassword,

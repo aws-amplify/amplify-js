@@ -44,17 +44,16 @@ export async function confirmResetPassword(
 		AuthValidationErrorCode.EmptyConfirmResetPasswordConfirmationCode
 	);
 	const metadata =
-		confirmResetPasswordRequest.options?.serviceOptions?.clientMetadata ??
-		authConfig.clientMetadata;
+		confirmResetPasswordRequest.options?.serviceOptions?.clientMetadata;
 
 	await confirmForgotPassword(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ region: getRegion(authConfig.Cognito.userPoolId) },
 		{
 			Username: username,
 			ConfirmationCode: code,
 			Password: newPassword,
 			ClientMetadata: metadata,
-			ClientId: authConfig.userPoolWebClientId,
+			ClientId: authConfig.Cognito.userPoolClientId,
 		}
 	);
 }

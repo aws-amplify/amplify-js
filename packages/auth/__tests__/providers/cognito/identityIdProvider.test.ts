@@ -16,9 +16,11 @@ type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	: never;
 const ampConfig: ArgumentTypes<typeof Amplify.configure>[0] = {
 	Auth: {
-		userPoolId: 'us-east-1:test-id',
-		userPoolWebClientId: 'test-id',
-		identityPoolId: 'us-east-1:test-id',
+		Cognito: {
+			userPoolId: 'us-east-1:test-id',
+			userPoolClientId: 'test-id',
+			identityPoolId: 'us-east-1:test-id',
+		},
 	},
 };
 const getIdClientSpy = jest.spyOn(cogId, 'getId');

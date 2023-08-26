@@ -7,19 +7,15 @@ import {
 	JWT,
 	UserPoolConfig,
 	UserPoolConfigAndIdentityPoolConfig,
-	UserPoolConfigAndIdentityPoolConfigWithOAuth,
-	UserPoolConfigWithOAuth,
+	UserPoolWithOAuth,
 } from '../types';
 
 export function assertTokenProviderConfig(
 	authConfig?: AuthConfig
-): asserts authConfig is
-	| UserPoolConfigAndIdentityPoolConfigWithOAuth
-	| UserPoolConfigWithOAuth
-	| UserPoolConfigAndIdentityPoolConfig
-	| UserPoolConfig {
+): asserts authConfig is UserPoolConfigAndIdentityPoolConfig | UserPoolConfig {
 	const validConfig =
-		!!authConfig?.userPoolId && !!authConfig?.userPoolWebClientId;
+		!!authConfig?.Cognito?.userPoolId &&
+		!!authConfig?.Cognito?.userPoolClientId;
 	return asserts(validConfig, {
 		name: 'AuthTokenConfigException',
 		message: 'Auth Token Provider not configured',
@@ -29,15 +25,13 @@ export function assertTokenProviderConfig(
 
 export function assertOAuthConfig(
 	authConfig?: AuthConfig
-): asserts authConfig is
-	| UserPoolConfigAndIdentityPoolConfigWithOAuth
-	| UserPoolConfigWithOAuth {
+): asserts authConfig is UserPoolWithOAuth {
 	assertTokenProviderConfig(authConfig);
 	const validOAuthConfig =
-		!!authConfig.oauth?.domain &&
-		!!authConfig.oauth?.redirectSignOut &&
-		!!authConfig.oauth?.redirectSignIn &&
-		!!authConfig.oauth?.responseType;
+		!!authConfig.Cognito.loginWith?.oauth?.domain &&
+		!!authConfig.Cognito.loginWith?.oauth?.redirectSignOut &&
+		!!authConfig.Cognito.loginWith?.oauth?.redirectSignIn &&
+		!!authConfig.Cognito.loginWith?.oauth?.responseType;
 
 	return asserts(validOAuthConfig, {
 		name: 'OAuthNotConfigureException',
@@ -50,7 +44,7 @@ export function assertOAuthConfig(
 export function assertIdentityPooIdConfig(
 	authConfig: AuthConfig
 ): asserts authConfig is IdentityPoolConfig {
-	const validConfig = !!authConfig?.identityPoolId;
+	const validConfig = !!authConfig?.Cognito.identityPoolId;
 	return asserts(validConfig, {
 		name: 'AuthIdentityPoolIdException',
 		message: 'Auth IdentityPoolId not configured',
@@ -62,7 +56,8 @@ export function assertIdentityPooIdConfig(
 export function assertUserPoolAndIdentityPooConfig(
 	authConfig: AuthConfig
 ): asserts authConfig is UserPoolConfigAndIdentityPoolConfig {
-	const validConfig = !!authConfig?.identityPoolId && !!authConfig?.userPoolId;
+	const validConfig =
+		!!authConfig?.Cognito.identityPoolId && !!authConfig?.Cognito.userPoolId;
 	return asserts(validConfig, {
 		name: 'AuthUserPoolAndIdentityPoolException',
 		message: 'Auth UserPool and IdentityPool not configured',

@@ -41,14 +41,13 @@ export async function resetPassword(
 	const authConfig = Amplify.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
 	const clientMetadata =
-		resetPasswordRequest.options?.serviceOptions?.clientMetadata ??
-		authConfig.clientMetadata;
+		resetPasswordRequest.options?.serviceOptions?.clientMetadata;
 	const res = await forgotPassword(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ region: getRegion(authConfig.Cognito.userPoolId) },
 		{
 			Username: username,
 			ClientMetadata: clientMetadata,
-			ClientId: authConfig.userPoolWebClientId,
+			ClientId: authConfig.Cognito.userPoolClientId,
 		}
 	);
 	const codeDeliveryDetails = res.CodeDeliveryDetails;

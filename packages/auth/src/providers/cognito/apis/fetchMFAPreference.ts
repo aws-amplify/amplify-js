@@ -25,7 +25,7 @@ export async function fetchMFAPreference(): Promise<FetchMFAPreferenceResult> {
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const { PreferredMfaSetting, UserMFASettingList } = await getUser(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ region: getRegion(authConfig.Cognito.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
 		}

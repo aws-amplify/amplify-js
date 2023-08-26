@@ -24,7 +24,7 @@ export const fetchUserAttributes = async (
 	assertAuthTokens(tokens);
 
 	const { UserAttributes } = await getUser(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ region: getRegion(authConfig.Cognito.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
 		}

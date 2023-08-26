@@ -44,7 +44,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 			const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 			const authKeys = createKeysForAuthStorage(
 				name,
-				this.authConfig.identityPoolId
+				this.authConfig.Cognito.identityPoolId
 			);
 
 			if (!!this._primaryIdentityId) {
@@ -90,7 +90,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.identityPoolId
+			this.authConfig.Cognito.identityPoolId
 		);
 		if (identity.type === 'guest') {
 			this.keyValueStorage.setItem(authKeys.identityId, identity.id);
@@ -109,7 +109,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.identityPoolId
+			this.authConfig.Cognito.identityPoolId
 		);
 
 		this._primaryIdentityId = undefined;

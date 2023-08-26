@@ -49,9 +49,7 @@ export async function signInWithSRP(
 	const { username, password } = signInRequest;
 	const authConfig = Amplify.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
-	const clientMetaData =
-		signInRequest.options?.serviceOptions?.clientMetadata ||
-		authConfig.clientMetadata;
+	const clientMetaData = signInRequest.options?.serviceOptions?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername

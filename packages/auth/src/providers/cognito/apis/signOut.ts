@@ -53,10 +53,10 @@ async function clientSignOut(authConfig: AuthConfig) {
 		if (isSessionRevocable(accessToken)) {
 			await revokeToken(
 				{
-					region: getRegion(authConfig.userPoolId),
+					region: getRegion(authConfig.Cognito.userPoolId),
 				},
 				{
-					ClientId: authConfig.userPoolWebClientId,
+					ClientId: authConfig.Cognito.userPoolClientId,
 					Token: refreshToken,
 				}
 			);
@@ -79,7 +79,7 @@ async function globalSignOut(authConfig: AuthConfig) {
 		const { accessToken } = await tokenOrchestrator.tokenStore.loadTokens();
 		await globalSignOutClient(
 			{
-				region: getRegion(authConfig.userPoolId),
+				region: getRegion(authConfig.Cognito.userPoolId),
 			},
 			{
 				AccessToken: accessToken.toString(),
@@ -116,11 +116,12 @@ async function handleOAuthSignOut(authConfig: AuthConfig) {
 
 function oAuthSignOutRedirect(authConfig: AuthConfig) {
 	assertOAuthConfig(authConfig);
-	let oAuthLogoutEndpoint = 'https://' + authConfig.oauth.domain + '/logout?';
+	let oAuthLogoutEndpoint =
+		'https://' + authConfig.Cognito.loginWith.oauth.domain + '/logout?';
 
-	const client_id = authConfig.userPoolWebClientId;
+	const client_id = authConfig.Cognito.userPoolClientId;
 
-	const signout_uri = authConfig.oauth.redirectSignOut;
+	const signout_uri = authConfig.Cognito.loginWith.oauth.redirectSignOut;
 
 	oAuthLogoutEndpoint += Object.entries({
 		client_id,

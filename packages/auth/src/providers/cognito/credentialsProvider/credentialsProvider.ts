@@ -76,7 +76,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		// - if user is not signed in
 		if (!isAuthenticated) {
 			// Check if mandatory sign-in is enabled
-			if (authConfig.isMandatorySignInEnabled) {
+			if (authConfig.Cognito.allowGuestAccess) {
 				// TODO(V6): confirm if this needs to throw or log
 				throw new AuthError({
 					name: 'AuthConfigException',
@@ -115,7 +115,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		// No logins params should be passed for guest creds:
 		// https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetCredentialsForIdentity.html
 
-		const region = authConfig.identityPoolId.split(':')[0];
+		const region = authConfig.Cognito.identityPoolId.split(':')[0];
 
 		// TODO(V6): When unauth role is disabled and crdentials are absent, we need to return null not throw an error
 		const clientResult = await getCredentialsForIdentity(
@@ -189,7 +189,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					this._authConfig
 			  )
 			: {};
-		const identityPoolId = authConfig.identityPoolId;
+		const identityPoolId = authConfig.Cognito.identityPoolId;
 		if (!identityPoolId) {
 			logger.debug('identityPoolId is not found in the config');
 			throw new AuthError({
@@ -273,7 +273,7 @@ export function formLoginsMap(
 	oidcProvider: string,
 	authConfig: AuthConfig
 ) {
-	const userPoolId = authConfig.userPoolId;
+	const userPoolId = authConfig.Cognito.userPoolId;
 	const res = {};
 	if (!userPoolId) {
 		logger.debug('userPoolId is not found in the config');

@@ -40,9 +40,7 @@ export async function signUp(
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
 	const { username, password, options } = signUpRequest;
 	const authConfig = Amplify.getConfig().Auth;
-	const clientMetadata =
-		signUpRequest.options?.serviceOptions?.clientMetadata ??
-		authConfig.clientMetadata;
+	const clientMetadata = signUpRequest.options?.serviceOptions?.clientMetadata;
 	assertTokenProviderConfig(authConfig);
 	assertValidationError(
 		!!username,
@@ -64,14 +62,14 @@ export async function signUp(
 	}
 
 	const res = await signUpClient(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ region: getRegion(authConfig.Cognito.userPoolId) },
 		{
 			Username: username,
 			Password: password,
 			UserAttributes: attributes,
 			ClientMetadata: clientMetadata,
 			ValidationData: validationData,
-			ClientId: authConfig.userPoolWebClientId,
+			ClientId: authConfig.Cognito.userPoolClientId,
 		}
 	);
 

@@ -48,8 +48,8 @@ export function signInWithRedirect(
 	}
 
 	oauthSignIn({
-		oauthConfig: authConfig.oauth,
-		clientId: authConfig.userPoolWebClientId,
+		oauthConfig: authConfig.Cognito.loginWith.oauth,
+		clientId: authConfig.Cognito.userPoolClientId,
 		provider,
 		customState: signInWithRedirectRequest?.customState,
 	});
@@ -353,10 +353,10 @@ function urlListener() {
 
 				handleAuthResponse({
 					currentUrl: url,
-					clientId: authConfig.userPoolWebClientId,
-					domain: authConfig.oauth.domain,
-					redirectUri: authConfig.oauth.redirectSignIn,
-					responseType: authConfig.oauth.responseType,
+					clientId: authConfig.Cognito.userPoolClientId,
+					domain: authConfig.Cognito.loginWith.oauth.domain,
+					redirectUri: authConfig.Cognito.loginWith.oauth.redirectSignIn,
+					responseType: authConfig.Cognito.loginWith.oauth.responseType,
 				});
 			} catch (err) {
 				// is ok if there is not OAuthConfig

@@ -38,15 +38,13 @@ export async function resendSignUpCode(
 	);
 	const authConfig = Amplify.getConfig().Auth;
 	assertTokenProviderConfig(authConfig);
-	const clientMetadata =
-		resendRequest.options?.serviceOptions?.clientMetadata ??
-		authConfig.clientMetadata;
+	const clientMetadata = resendRequest.options?.serviceOptions?.clientMetadata;
 	const { CodeDeliveryDetails } = await resendConfirmationCode(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ region: getRegion(authConfig.Cognito.userPoolId) },
 		{
 			Username: username,
 			ClientMetadata: clientMetadata,
-			ClientId: authConfig.userPoolWebClientId,
+			ClientId: authConfig.Cognito.userPoolClientId,
 		}
 	);
 	const { DeliveryMedium, AttributeName, Destination } = {

@@ -1,13 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Amplify,
-	AuthConfig
-} from '@aws-amplify/core';
-import {
-	assertTokenProviderConfig
-} from '@aws-amplify/core/internals/utils';
+import { Amplify, AuthConfig } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import {
 	getLargeAValue,
 	getNowString,
@@ -70,14 +65,16 @@ export async function handleCustomChallenge({
 	session,
 	username,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolWebClientId } = Amplify.getConfig().Auth;
+	const {
+		Cognito: { userPoolId, userPoolClientId },
+	} = Amplify.getConfig().Auth;
 	const challengeResponses = { USERNAME: username, ANSWER: challengeResponse };
 	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'CUSTOM_CHALLENGE',
 		ChallengeResponses: challengeResponses,
 		Session: session,
 		ClientMetadata: clientMetadata,
-		ClientId: userPoolWebClientId,
+		ClientId: userPoolClientId,
 	};
 
 	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
@@ -91,7 +88,9 @@ export async function handleMFASetupChallenge({
 	deviceName,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolWebClientId } = config;
+	const {
+		Cognito: { userPoolId, userPoolClientId },
+	} = config;
 	const challengeResponses = {
 		USERNAME: username,
 	};
@@ -115,7 +114,7 @@ export async function handleMFASetupChallenge({
 		ChallengeResponses: challengeResponses,
 		Session,
 		ClientMetadata: clientMetadata,
-		ClientId: userPoolWebClientId,
+		ClientId: userPoolClientId,
 	};
 	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
@@ -127,7 +126,9 @@ export async function handleSelectMFATypeChallenge({
 	session,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolWebClientId } = config;
+	const {
+		Cognito: { userPoolId, userPoolClientId },
+	} = config;
 	assertValidationError(
 		challengeResponse === 'TOTP' || challengeResponse === 'SMS',
 		AuthValidationErrorCode.IncorrectMFAMethod
@@ -143,7 +144,7 @@ export async function handleSelectMFATypeChallenge({
 		ChallengeResponses: challengeResponses,
 		Session: session,
 		ClientMetadata: clientMetadata,
-		ClientId: userPoolWebClientId,
+		ClientId: userPoolClientId,
 	};
 
 	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
@@ -156,7 +157,9 @@ export async function handleSMSMFAChallenge({
 	username,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolWebClientId } = config;
+	const {
+		Cognito: { userPoolId, userPoolClientId },
+	} = config;
 	const challengeResponses = {
 		USERNAME: username,
 		SMS_MFA_CODE: challengeResponse,
@@ -166,7 +169,7 @@ export async function handleSMSMFAChallenge({
 		ChallengeResponses: challengeResponses,
 		Session: session,
 		ClientMetadata: clientMetadata,
-		ClientId: userPoolWebClientId,
+		ClientId: userPoolClientId,
 	};
 
 	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
@@ -178,7 +181,9 @@ export async function handleSoftwareTokenMFAChallenge({
 	username,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolWebClientId } = config;
+	const {
+		Cognito: { userPoolId, userPoolClientId },
+	} = config;
 	const challengeResponses = {
 		USERNAME: username,
 		SOFTWARE_TOKEN_MFA_CODE: challengeResponse,
@@ -188,7 +193,7 @@ export async function handleSoftwareTokenMFAChallenge({
 		ChallengeResponses: challengeResponses,
 		Session: session,
 		ClientMetadata: clientMetadata,
-		ClientId: userPoolWebClientId,
+		ClientId: userPoolClientId,
 	};
 	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
@@ -200,7 +205,9 @@ export async function handleCompleteNewPasswordChallenge({
 	requiredAttributes,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolWebClientId } = config;
+	const {
+		Cognito: { userPoolId, userPoolClientId },
+	} = config;
 	const challengeResponses = {
 		...createAttributes(requiredAttributes),
 		NEW_PASSWORD: challengeResponse,
@@ -212,7 +219,7 @@ export async function handleCompleteNewPasswordChallenge({
 		ChallengeResponses: challengeResponses,
 		ClientMetadata: clientMetadata,
 		Session: session,
-		ClientId: userPoolWebClientId,
+		ClientId: userPoolClientId,
 	};
 
 	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
@@ -222,7 +229,7 @@ export async function handleUserPasswordAuthFlow(
 	username: string,
 	password: string,
 	clientMetadata: ClientMetadata | undefined,
-	{ userPoolId, userPoolWebClientId }: AuthConfig
+	{ Cognito: { userPoolId, userPoolClientId } }: AuthConfig
 ): Promise<InitiateAuthCommandOutput> {
 	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'USER_PASSWORD_AUTH',
@@ -231,7 +238,7 @@ export async function handleUserPasswordAuthFlow(
 			PASSWORD: password,
 		},
 		ClientMetadata: clientMetadata,
-		ClientId: userPoolWebClientId,
+		ClientId: userPoolClientId,
 	};
 
 	return initiateAuth({ region: getRegion(userPoolId) }, jsonReq);
@@ -243,7 +250,9 @@ export async function handleUserSRPAuthFlow(
 	clientMetadata: ClientMetadata | undefined,
 	config: AuthConfig
 ): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolWebClientId } = config;
+	const {
+		Cognito: { userPoolId, userPoolClientId },
+	} = config;
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = new AuthenticationHelper(userPoolName);
 
@@ -254,7 +263,7 @@ export async function handleUserSRPAuthFlow(
 			SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
 		},
 		ClientMetadata: clientMetadata,
-		ClientId: userPoolWebClientId,
+		ClientId: userPoolClientId,
 	};
 
 	const resp = await initiateAuth({ region: getRegion(userPoolId) }, jsonReq);
@@ -273,7 +282,7 @@ export async function handleUserSRPAuthFlow(
 export async function handleCustomAuthFlowWithoutSRP(
 	username: string,
 	clientMetadata: ClientMetadata | undefined,
-	{ userPoolId, userPoolWebClientId }: AuthConfig
+	{ Cognito: { userPoolId, userPoolClientId } }: AuthConfig
 ): Promise<InitiateAuthCommandOutput> {
 	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'CUSTOM_AUTH',
@@ -281,7 +290,7 @@ export async function handleCustomAuthFlowWithoutSRP(
 			USERNAME: username,
 		},
 		ClientMetadata: clientMetadata,
-		ClientId: userPoolWebClientId,
+		ClientId: userPoolClientId,
 	};
 
 	return initiateAuth({ region: getRegion(userPoolId) }, jsonReq);
@@ -293,7 +302,9 @@ export async function handleCustomSRPAuthFlow(
 	clientMetadata: ClientMetadata | undefined,
 	config: AuthConfig
 ) {
-	const { userPoolId, userPoolWebClientId } = config;
+	const {
+		Cognito: { userPoolId, userPoolClientId },
+	} = config;
 	assertTokenProviderConfig(config);
 
 	const userPoolName = userPoolId?.split('_')[1] || '';
@@ -306,7 +317,7 @@ export async function handleCustomSRPAuthFlow(
 			CHALLENGE_NAME: 'SRP_A',
 		},
 		ClientMetadata: clientMetadata,
-		ClientId: userPoolWebClientId,
+		ClientId: userPoolClientId,
 	};
 
 	const { ChallengeParameters: challengeParameters, Session: session } =
@@ -328,7 +339,7 @@ export async function handlePasswordVerifierChallenge(
 	clientMetadata: ClientMetadata | undefined,
 	session: string | undefined,
 	authenticationHelper: AuthenticationHelper,
-	{ userPoolId, userPoolWebClientId }: AuthConfig
+	{ Cognito: { userPoolId, userPoolClientId } }: AuthConfig
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const serverBValue = new BigInteger(challengeParameters?.SRP_B, 16);
@@ -362,7 +373,7 @@ export async function handlePasswordVerifierChallenge(
 		ChallengeResponses: challengeResponses,
 		ClientMetadata: clientMetadata,
 		Session: session,
-		ClientId: userPoolWebClientId,
+		ClientId: userPoolClientId,
 	};
 
 	return respondToAuthChallenge(
@@ -376,7 +387,9 @@ export async function getSignInResult(params: {
 	challengeParameters: ChallengeParameters;
 }): Promise<AuthSignInResult> {
 	const { challengeName, challengeParameters } = params;
-	const { userPoolId } = Amplify.getConfig().Auth;
+	const {
+		Cognito: { userPoolId },
+	} = Amplify.getConfig().Auth;
 	switch (challengeName) {
 		case 'CUSTOM_CHALLENGE':
 			return {

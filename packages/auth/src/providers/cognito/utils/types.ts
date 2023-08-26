@@ -7,7 +7,11 @@ import { AuthError } from '../../../errors/AuthError';
 export function isTypeUserPoolConfig(
 	authConfig?: AuthConfig
 ): authConfig is UserPoolConfig {
-	if (authConfig && authConfig.userPoolId && authConfig.userPoolWebClientId) {
+	if (
+		authConfig &&
+		authConfig.Cognito.userPoolId &&
+		authConfig.Cognito.userPoolClientId
+	) {
 		return true;
 	}
 

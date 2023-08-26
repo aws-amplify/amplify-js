@@ -31,7 +31,7 @@ export async function updateMFAPreference(
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	await setUserMFAPreference(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ region: getRegion(authConfig.Cognito.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
 			SMSMfaSettings: getMFASettings(sms),

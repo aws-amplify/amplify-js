@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AuthConfig,
-	AuthTokens,
-	Identity,
-	getId,
-} from '@aws-amplify/core';
+import { AuthConfig, AuthTokens, getId } from '@aws-amplify/core';
 import { Logger } from '@aws-amplify/core/internals/utils';
 import { formLoginsMap } from './credentialsProvider';
 import { AuthError } from '../../../errors/AuthError';
@@ -80,7 +75,7 @@ async function generateIdentityId(
 	logins: {},
 	authConfig?: AuthConfig
 ): Promise<string> {
-	const identityPoolId = authConfig?.identityPoolId;
+	const identityPoolId = authConfig?.Cognito.identityPoolId;
 
 	// Access config to obtain IdentityPoolId & region
 	if (!identityPoolId) {

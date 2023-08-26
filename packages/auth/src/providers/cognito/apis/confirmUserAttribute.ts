@@ -14,9 +14,9 @@ import { assertAuthTokens } from '../utils/types';
 import { CognitoUserAttributeKey } from '../types';
 
 /**
- * Confirms a user attribute with the confirmation code. 
+ * Confirms a user attribute with the confirmation code.
  *
- * @param confirmUserAttributeRequest - The ConfirmUserAttributeRequest 
+ * @param confirmUserAttributeRequest - The ConfirmUserAttributeRequest
  *
  * @throws  -{@link AuthValidationErrorCode } -
  * Thrown when `confirmationCode` is not defined.
@@ -39,7 +39,7 @@ export async function confirmUserAttribute(
 	assertAuthTokens(tokens);
 	await verifyUserAttribute(
 		{
-			region: getRegion(authConfig.userPoolId),
+			region: getRegion(authConfig.Cognito.userPoolId),
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),

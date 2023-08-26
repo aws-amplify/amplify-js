@@ -73,9 +73,8 @@ export type AuthTokens = {
 export type AuthConfig = StrictUnion<
 	| IdentityPoolConfig
 	| UserPoolConfig
-	| UserPoolConfigWithOAuth
 	| UserPoolConfigAndIdentityPoolConfig
-	| UserPoolConfigAndIdentityPoolConfigWithOAuth
+	| UserPoolWithOAuth
 >;
 
 type UnionKeys<T> = T extends T ? keyof T : never;
@@ -85,26 +84,26 @@ type StrictUnionHelper<T, TAll> = T extends any
 type StrictUnion<T> = StrictUnionHelper<T, T>;
 
 export type IdentityPoolConfig = {
-	identityPoolId: string;
-	userPoolWebClientId?: never;
-	userPoolId?: never;
-	clientMetadata?: never;
-	isMandatorySignInEnabled?: never;
+	Cognito: {
+		identityPoolId: string;
+		allowGuestAccess?: boolean;
+		userPoolClientId?: never;
+		userPoolId?: never;
+		loginWith?: never;
+	};
 };
 
 export type UserPoolConfig = {
-	userPoolWebClientId: string;
-	userPoolId: string;
-	identityPoolId?: never;
-	clientMetadata?: Record<string, string>;
-};
-
-export type UserPoolConfigWithOAuth = {
-	userPoolWebClientId: string;
-	userPoolId: string;
-	identityPoolId?: never;
-	clientMetadata?: Record<string, string>;
-	oauth: OAuthConfig;
+	Cognito: {
+		userPoolClientId: string;
+		userPoolId: string;
+		signUpVerificationMethod?: 'code' | 'link';
+		identityPoolId?: never;
+		allowGuestAccess?: never;
+		loginWith?: {
+			oauth?: OAuthConfig;
+		};
+	};
 };
 
 export type OAuthConfig = {
@@ -113,23 +112,31 @@ export type OAuthConfig = {
 	redirectSignIn: string;
 	redirectSignOut: string;
 	responseType: string;
+	providers?: Array<string>;
 };
-
+export type UserPoolWithOAuth = {
+	Cognito: {
+		userPoolClientId: string;
+		userPoolId: string;
+		identityPoolId?: string;
+		allowGuestAccess?: boolean;
+		signUpVerificationMethod?: 'code' | 'link';
+		loginWith: {
+			oauth: OAuthConfig;
+		};
+	};
+};
 export type UserPoolConfigAndIdentityPoolConfig = {
-	userPoolWebClientId: string;
-	userPoolId: string;
-	identityPoolId: string;
-	clientMetadata?: Record<string, string>;
-	isMandatorySignInEnabled?: boolean;
-};
-
-export type UserPoolConfigAndIdentityPoolConfigWithOAuth = {
-	userPoolWebClientId: string;
-	userPoolId: string;
-	identityPoolId: string;
-	clientMetadata?: Record<string, string>;
-	isMandatorySignInEnabled?: boolean;
-	oauth: OAuthConfig;
+	Cognito: {
+		userPoolClientId: string;
+		userPoolId: string;
+		identityPoolId: string;
+		allowGuestAccess?: boolean;
+		signUpVerificationMethod?: 'code' | 'link';
+		loginWith?: {
+			oauth?: OAuthConfig;
+		};
+	};
 };
 
 export type GetCredentialsOptions =

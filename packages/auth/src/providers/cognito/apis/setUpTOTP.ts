@@ -33,7 +33,7 @@ export async function setUpTOTP(): Promise<TOTPSetupDetails> {
 	assertAuthTokens(tokens);
 	const username = tokens.idToken?.payload['cognito:username'] ?? '';
 	const { SecretCode } = await associateSoftwareToken(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ region: getRegion(authConfig.Cognito.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
 		}

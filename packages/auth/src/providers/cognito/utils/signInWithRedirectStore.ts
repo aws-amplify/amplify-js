@@ -20,7 +20,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.userPoolWebClientId
+			this.authConfig.Cognito.userPoolClientId
 		);
 		await Promise.all([
 			this.keyValueStorage.removeItem(authKeys.inflightOAuth),
@@ -33,7 +33,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.userPoolWebClientId
+			this.authConfig.Cognito.userPoolClientId
 		);
 		await this.clearOAuthInflightData();
 		this.keyValueStorage.removeItem(authKeys.oauthSignIn);
@@ -45,7 +45,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.userPoolWebClientId
+			this.authConfig.Cognito.userPoolClientId
 		);
 
 		return this.keyValueStorage.getItem(authKeys.oauthState);
@@ -57,7 +57,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.userPoolWebClientId
+			this.authConfig.Cognito.userPoolClientId
 		);
 
 		return this.keyValueStorage.setItem(authKeys.oauthState, state);
@@ -69,7 +69,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.userPoolWebClientId
+			this.authConfig.Cognito.userPoolClientId
 		);
 
 		return this.keyValueStorage.getItem(authKeys.oauthPKCE);
@@ -81,7 +81,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.userPoolWebClientId
+			this.authConfig.Cognito.userPoolClientId
 		);
 
 		return this.keyValueStorage.setItem(authKeys.oauthPKCE, pkce);
@@ -97,7 +97,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.userPoolWebClientId
+			this.authConfig.Cognito.userPoolClientId
 		);
 
 		return (
@@ -112,7 +112,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.userPoolWebClientId
+			this.authConfig.Cognito.userPoolClientId
 		);
 
 		return await this.keyValueStorage.setItem(
@@ -128,7 +128,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.userPoolWebClientId
+			this.authConfig.Cognito.userPoolClientId
 		);
 
 		const isOAuthSignIn = await this.keyValueStorage.getItem(
@@ -145,7 +145,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.userPoolWebClientId
+			this.authConfig.Cognito.userPoolClientId
 		);
 
 		return await this.keyValueStorage.setItem(
