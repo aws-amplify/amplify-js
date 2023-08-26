@@ -50,7 +50,7 @@ export interface AWSCredentialsAndIdentityIdProvider {
 	getCredentialsAndIdentityId: (
 		getCredentialsOptions: GetCredentialsOptions
 	) => Promise<AWSCredentialsAndIdentityId>;
-	clearCredentialsAndIdenityId: () => void;
+	clearCredentialsAndIdentityId: () => void;
 }
 
 export type TokenProvider = {

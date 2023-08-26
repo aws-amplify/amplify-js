@@ -99,7 +99,7 @@ export class AuthClass {
 
 	async clearCredentials(): Promise<void> {
 		if (this.authOptions?.credentialsProvider) {
-			return await this.authOptions.credentialsProvider.clearCredentialsAndIdenityId();
+			return await this.authOptions.credentialsProvider.clearCredentialsAndIdentityId();
 		}
 	}
 }
