@@ -76,13 +76,12 @@ export function decodeJWT(token: string): JWT {
 	if (tokenSplitted.length !== 3) {
 		throw new Error('Invalid token');
 	}
-
-	const payloadStringb64 = tokenSplitted[1];
-	const payloadArrayBuffer = base64ToBytes(payloadStringb64);
-	const decodeString = new TextDecoder().decode(payloadArrayBuffer);
-	const payload = JSON.parse(decodeString);
-
 	try {
+		const payloadStringb64 = tokenSplitted[1];
+		const payloadArrayBuffer = base64ToBytes(payloadStringb64);
+		const decodeString = new TextDecoder().decode(payloadArrayBuffer);
+		const payload = JSON.parse(decodeString);
+
 		return {
 			toString: () => token,
 			payload,
