@@ -52,6 +52,16 @@
       "import": "./lib-esm/storage/s3/index.js",
       "require": "./lib/storage/s3/index.js"
     },
+    "./storage/server": {
+      "types": "./lib-esm/storage/server.d.ts",
+      "import": "./lib-esm/storage/server.js",
+      "require": "./lib/storage/server.js"
+    },
+    "./storage/s3/server": {
+      "types": "./lib-esm/storage/s3/server.d.ts",
+      "import": "./lib-esm/storage/s3/server.js",
+      "require": "./lib/storage/s3/server.js"
+    },
     "./internals/adapter-core": {
       "types": "./lib-esm/adapterCore/index.d.ts",
       "import": "./lib-esm/adapterCore/index.js",
@@ -120,7 +130,8 @@
     "src",
     "analytics",
     "auth",
-    "internals"
+    "internals",
+    "storage"
   ],
   "dependencies": {
     "@aws-amplify/analytics": "7.0.0",
