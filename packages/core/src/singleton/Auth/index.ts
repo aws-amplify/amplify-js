@@ -51,6 +51,7 @@ export class AuthClass {
 	): Promise<AuthSession> {
 		let tokens: AuthTokens | undefined;
 		let credentialsAndIdentityId: AWSCredentialsAndIdentityId | undefined;
+		let userSub: string | undefined;
 
 		asserts(!!this.authConfig, {
 			name: AUTH_CONFING_EXCEPTION,
@@ -64,6 +65,8 @@ export class AuthClass {
 			(await this.authOptions?.tokenProvider?.getTokens(options)) ?? undefined;
 
 		if (tokens) {
+			userSub = tokens.accessToken?.payload?.sub;
+
 			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
 			credentialsAndIdentityId =
 				await this.authOptions?.credentialsProvider?.getCredentialsAndIdentityId(
@@ -90,6 +93,7 @@ export class AuthClass {
 			tokens,
 			credentials: credentialsAndIdentityId?.credentials,
 			identityId: credentialsAndIdentityId?.identityId,
+			userSub,
 		};
 	}
 
