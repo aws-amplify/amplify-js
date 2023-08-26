@@ -6,8 +6,5 @@
 		"noImplicitAny": true,
 		"resolveJsonModule": true
 	},
-	"include": ["./src"],
-	"watchOptions": {
-		"excludeDirectories": ["lib*"]
-	}
+	"include": ["./src"]
 }

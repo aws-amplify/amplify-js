@@ -101,7 +101,14 @@
         "diagnostics": {
           "pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
         },
-        "tsConfig": false
+        "tsConfig": {
+          "downlevelIteration": true,
+          "allowJs": true,
+          "types": ["@types/jest"],
+          "outDir": "./tsconfig.json",
+          "noEmitOnError": false,
+          "noImplicitAny": false
+        }
       }
     },
     "transform": {
