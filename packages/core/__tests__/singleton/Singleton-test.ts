@@ -2,7 +2,8 @@ import { Amplify } from '../../src/singleton';
 import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { AWSCredentialsAndIdentityId } from '../../src/singleton/Auth/types';
-
+import { TextEncoder, TextDecoder } from 'util';
+Object.assign(global, { TextDecoder, TextEncoder });
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	? A
 	: never;
