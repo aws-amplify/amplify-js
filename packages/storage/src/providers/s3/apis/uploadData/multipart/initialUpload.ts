@@ -123,7 +123,6 @@ export const loadOrCreateMultipartUpload = async ({
 		});
 		await cacheMultipartUpload(uploadCacheKey, {
 			uploadId: UploadId!,
-			lastTouched: Date.now(),
 			bucket,
 			key,
 			fileName: data instanceof File ? data.name : '',

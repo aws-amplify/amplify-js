@@ -8,9 +8,10 @@ import {
 
 import { getKvStorage } from './kvStorage';
 import { UPLOADS_STORAGE_KEY } from '../../../../utils/constants';
-import { FileMetadata } from '../../../../../..';
 import { listParts, Part } from '../../../../../../AwsClients/S3';
 import { ResolvedS3Config } from '../../../../types/options';
+
+const ONE_HOUR = 1000 * 60 * 60;
 
 export type FindCachedUploadPartsOptions = {
 	cacheKey: string;
@@ -30,7 +31,10 @@ export const findCachedUploadParts = async ({
 } | null> => {
 	const kvStorage = await getKvStorage();
 	const cachedUploads = await listCachedUploadTasks(kvStorage);
-	if (Object.keys(cachedUploads).length === 0 || !cachedUploads[cacheKey]) {
+	if (
+		!cachedUploads[cacheKey] ||
+		cachedUploads[cacheKey].lastTouched < Date.now() - ONE_HOUR // Uploads are cached for 1 hour
+	) {
 		return null;
 	}
 
@@ -49,6 +53,15 @@ export const findCachedUploadParts = async ({
 		parts: Parts,
 		uploadId: cachedUpload.uploadId,
 	};
+};
+
+type FileMetadata = {
+	bucket: string;
+	fileName: string;
+	key: string;
+	uploadId: string;
+	// Unix timestamp in ms
+	lastTouched: number;
 };
 
 const listCachedUploadTasks = async (
@@ -85,11 +98,14 @@ export const getUploadsCacheKey = ({
 
 export const cacheMultipartUpload = async (
 	cacheKey: string,
-	fileMetadata: FileMetadata
+	fileMetadata: Omit<FileMetadata, 'lastTouched'>
 ): Promise<void> => {
 	const kvStorage = await getKvStorage();
 	const cachedUploads = await listCachedUploadTasks(kvStorage);
-	cachedUploads[cacheKey] = fileMetadata;
+	cachedUploads[cacheKey] = {
+		...fileMetadata,
+		lastTouched: Date.now(),
+	};
 	await kvStorage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(cachedUploads));
 };
 

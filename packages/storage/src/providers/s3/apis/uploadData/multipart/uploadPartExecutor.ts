@@ -43,6 +43,10 @@ export const uploadPartExecutor = async ({
 		const partSize = partByteLength(data);
 		if (completedPartNumberSet.has(partNumber)) {
 			// TODO: debug message: part already uploaded
+			transferredBytes += partSize;
+			onProgress?.({
+				transferredBytes,
+			});
 		} else {
 			// handle cancel error
 			const { ETag: eTag } = await uploadPart(
@@ -68,13 +72,9 @@ export const uploadPartExecutor = async ({
 						: undefined,
 				}
 			);
+			transferredBytes += partSize;
 			// eTag will always be set even the S3 model interface marks it as optional.
 			onPartUploadCompletion(partNumber, eTag!);
 		}
-
-		transferredBytes += partSize;
-		onProgress?.({
-			transferredBytes,
-		});
 	}
 };

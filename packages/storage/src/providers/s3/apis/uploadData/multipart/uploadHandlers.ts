@@ -50,6 +50,10 @@ export const getMultipartUploadHandlers = (
 	let abortController: AbortController | undefined;
 	let bucket: string | undefined;
 	let keyPrefix: string | undefined;
+	// Special flag that differentiates HTTP requests abort error caused by pause() from ones caused by cancel().
+	// The former one should NOT cause the upload job to throw, but cancels any pending HTTP requests.
+	// This should be replaced by a special abort reason. However,the support of this API is lagged behind.
+	let isAbortSignalFromPause: boolean = false;
 
 	const startUpload = async (): Promise<S3Item> => {
 		const resolvedS3Options = await resolveS3ConfigAndInput(uploadDataOptions);
@@ -58,6 +62,7 @@ export const getMultipartUploadHandlers = (
 		keyPrefix = resolvedS3Options.keyPrefix;
 
 		abortController = new AbortController();
+		isAbortSignalFromPause = false;
 
 		const {
 			contentDisposition,
@@ -104,7 +109,7 @@ export const getMultipartUploadHandlers = (
 
 		const abortListener = async () => {
 			try {
-				if (abortController?.signal.reason === pauseUploadError) {
+				if (isAbortSignalFromPause) {
 					return;
 				}
 				await abortMultipartUpload(s3Config!, {
@@ -156,7 +161,7 @@ export const getMultipartUploadHandlers = (
 				})
 			);
 		}
-		// handle cancel error
+
 		await Promise.all(concurrentUploadPartExecutors);
 
 		const { ETag: eTag } = await completeMultipartUpload(
@@ -193,7 +198,7 @@ export const getMultipartUploadHandlers = (
 		}
 
 		if (uploadCacheKey) {
-			removeCachedUpload(uploadCacheKey);
+			await removeCachedUpload(uploadCacheKey);
 		}
 
 		return {
@@ -204,18 +209,15 @@ export const getMultipartUploadHandlers = (
 		};
 	};
 
-	// Special abort error that differentiates HTTP requests cancellation caused by pause() from ones caused by cancel().
-	// The former one should NOT cause the upload job to throw, but cancels any pending HTTP requests.
-	const pauseUploadError = new Error('Upload paused');
 	const startUploadWithResumability = () =>
 		startUpload()
 			.then(resolveCallback)
 			.catch(error => {
 				const abortSignal = abortController?.signal;
-				if (abortSignal?.aborted && abortSignal?.reason === pauseUploadError) {
+				if (abortSignal?.aborted && isAbortSignalFromPause) {
 					// TODO: debug message: upload paused
 				} else {
-					// TODO: debug message: upload cancelled
+					// TODO: debug message: upload canceled
 					rejectCallback!(error);
 				}
 			});
@@ -227,7 +229,8 @@ export const getMultipartUploadHandlers = (
 			startUploadWithResumability();
 		});
 	const onPause = () => {
-		abortController?.abort(pauseUploadError);
+		isAbortSignalFromPause = true;
+		abortController?.abort();
 	};
 	const onResume = () => {
 		startUploadWithResumability();

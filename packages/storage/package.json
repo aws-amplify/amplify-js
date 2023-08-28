@@ -114,7 +114,7 @@
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
     },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "testRegex": "(/__tests__/.*|\\.test|spec)\\.(tsx?|jsx?)$",
     "testPathIgnorePatterns": [
       "xmlParser-fixture.ts",
       "testUtils",

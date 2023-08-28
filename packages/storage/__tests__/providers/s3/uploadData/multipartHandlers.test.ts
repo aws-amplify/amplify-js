@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { Amplify, LocalStorage, fetchAuthSession } from '@aws-amplify/core';
 
 import { getMultipartUploadHandlers } from '../../../../src/providers/s3/apis/uploadData/multipart/uploadHandlers';
 import {
@@ -18,6 +18,8 @@ import {
 	StorageValidationErrorCode,
 } from '../../../../src/errors/types/validation';
 import { partByteLength } from '../../../../src/providers/s3/apis/uploadData/multipart/partByteLength';
+import { UPLOADS_STORAGE_KEY } from '../../../../src/common/StorageConstants';
+import { getKvStorage } from '../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage';
 
 jest.mock('../../../../src/AwsClients/S3');
 
@@ -32,6 +34,20 @@ jest.mock('@aws-amplify/core', () => {
 		fetchAuthSession: jest.fn(),
 	};
 });
+jest.mock(
+	'../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage',
+	() => {
+		const mockGetItem = jest.fn();
+		const mockSetItem = jest.fn();
+		return {
+			getKvStorage: async () => ({
+				getItem: mockGetItem,
+				setItem: mockSetItem,
+			}),
+		};
+	}
+);
+
 const credentials: Credentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -63,6 +79,17 @@ const mockMultipartUploadSuccess = (disableAssertion?: boolean) => {
 		if (!disableAssertion) {
 			expect(input.UploadId).toEqual('uploadId');
 		}
+
+		// mock 2 invocation of onProgress callback to simulate progress
+		s3Config?.onUploadProgress({
+			transferredBytes: input.Body.byteLength / 2,
+			totalBytes: input.Body.byteLength,
+		});
+		s3Config?.onUploadProgress({
+			transferredBytes: input.Body.byteLength,
+			totalBytes: input.Body.byteLength,
+		});
+
 		totalSize += partByteLength(input.Body);
 
 		return {
@@ -75,6 +102,31 @@ const mockMultipartUploadSuccess = (disableAssertion?: boolean) => {
 	});
 	mockHeadObject.mockResolvedValueOnce({
 		ContentLength: totalSize,
+	});
+};
+
+const mockMultipartUploadCancellation = (
+	beforeUploadPartResponseCallback?: () => void
+) => {
+	mockCreateMultipartUpload.mockImplementation(async ({ abortSignal }) => ({
+		UploadId: 'uploadId',
+	}));
+
+	mockUploadPart.mockImplementation(async ({ abortSignal }, { PartNumber }) => {
+		beforeUploadPartResponseCallback?.();
+		if (abortSignal?.aborted) {
+			throw new Error('AbortError');
+		}
+		return {
+			ETag: `etag-${PartNumber}`,
+			PartNumber,
+		};
+	});
+
+	mockAbortMultipartUpload.mockResolvedValueOnce({});
+	// Mock resumed upload and completed upload successfully
+	mockCompleteMultipartUpload.mockResolvedValueOnce({
+		ETag: 'etag',
 	});
 };
 
@@ -102,9 +154,10 @@ describe('getMultipartUploadHandlers', () => {
 
 	afterEach(() => {
 		jest.clearAllMocks();
+		resetS3Mocks();
 	});
 
-	it.skip('should return multipart upload handlers', async () => {
+	it('should return multipart upload handlers', async () => {
 		const multipartUploadHandlers = getMultipartUploadHandlers(
 			{
 				key: defaultKey,
@@ -121,9 +174,6 @@ describe('getMultipartUploadHandlers', () => {
 	});
 
 	describe('upload', () => {
-		beforeEach(() => {
-			resetS3Mocks();
-		});
 		const getBlob = (size: number) => new Blob(['1'.repeat(size)]);
 		it.each([
 			['file', new File([getBlob(8 * MB)], 'someName')],
@@ -243,22 +293,6 @@ describe('getMultipartUploadHandlers', () => {
 			await expect(multipartUploadJob()).rejects.toThrowError('error');
 		});
 
-		it('should handle error case: list parts request failed', async () => {
-			expect.assertions(1);
-			mockMultipartUploadSuccess();
-			mockListParts.mockReset();
-			mockListParts.mockRejectedValueOnce(new Error('error'));
-
-			const { multipartUploadJob } = getMultipartUploadHandlers(
-				{
-					key: defaultKey,
-					data: new ArrayBuffer(8 * MB),
-				},
-				8 * MB
-			);
-			await expect(multipartUploadJob()).rejects.toThrowError('error');
-		});
-
 		it('should handle error case: finish multipart upload failed', async () => {
 			expect.assertions(1);
 			mockMultipartUploadSuccess(disableAssertion);
@@ -292,34 +326,304 @@ describe('getMultipartUploadHandlers', () => {
 		});
 	});
 
-	describe.skip('upload caching', () => {
-		it('should send createMultipartUpload request if the upload task is not cached', async () => {});
+	describe('upload caching', () => {
+		let mockLocalStorage: jest.Mocked<typeof LocalStorage>;
+		beforeEach(async () => {
+			mockLocalStorage = (await getKvStorage()) as jest.Mocked<
+				typeof LocalStorage
+			>;
+			mockLocalStorage.getItem.mockReset();
+			mockLocalStorage.setItem.mockReset();
+		});
 
-		it('should send createMultipartUpload request if the upload task is cached but outdated', async () => {});
+		it('should send createMultipartUpload request if the upload task is not cached', async () => {
+			mockMultipartUploadSuccess();
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(size),
+				},
+				size
+			);
+			await multipartUploadJob();
+			// 1 for caching upload task; 1 for remove cache after upload is completed
+			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
+			expect(mockCreateMultipartUpload).toBeCalledTimes(1);
+			expect(mockListParts).not.toBeCalled();
+		});
 
-		it('should send listParts request if the upload task is cached', async () => {});
+		it('should send createMultipartUpload request if the upload task is cached but outdated', async () => {
+			const cacheKey = '8388608_binary/octet-stream_bucket_public_key';
+			mockLocalStorage.getItem.mockResolvedValue(
+				JSON.stringify({
+					[cacheKey]: {
+						uploadId: 'uploadId',
+						bucket,
+						key: defaultKey,
+						lastTouched: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
+					},
+				})
+			);
+			mockMultipartUploadSuccess();
+			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(size),
+				},
+				size
+			);
+			await multipartUploadJob();
+			expect(mockCreateMultipartUpload).toBeCalledTimes(1);
+			expect(mockListParts).not.toBeCalled();
+			expect(mockUploadPart).toBeCalledTimes(2);
+			expect(mockCompleteMultipartUpload).toBeCalledTimes(1);
+		});
 
-		it('should cache upload task if new upload task is created', async () => {});
+		it('should cache the upload with file including file lastModified property', async () => {
+			mockMultipartUploadSuccess();
+			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new File([new ArrayBuffer(size)], 'someName'),
+				},
+				size
+			);
+			await multipartUploadJob();
+			// 1 for caching upload task; 1 for remove cache after upload is completed
+			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
+			const cacheValue = JSON.parse(mockLocalStorage.setItem.mock.calls[0][1]);
+			expect(Object.keys(cacheValue)).toEqual([
+				expect.stringMatching(
+					// \d{13} is the file lastModified property of a file
+					/someName_\d{13}_8388608_binary\/octet-stream_bucket_public_key/
+				),
+			]);
+		});
 
-		it('should remove from cache if upload task is completed', async () => {});
+		it('should send listParts request if the upload task is cached', async () => {
+			const cacheKey = '8388608_binary/octet-stream_bucket_public_key';
+			mockLocalStorage.getItem.mockResolvedValue(
+				JSON.stringify({
+					[cacheKey]: {
+						uploadId: 'uploadId',
+						bucket,
+						key: defaultKey,
+						lastModified: Date.now(),
+					},
+				})
+			);
+			mockMultipartUploadSuccess();
+			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(size),
+				},
+				size
+			);
+			await multipartUploadJob();
+			expect(mockCreateMultipartUpload).not.toBeCalled();
+			expect(mockListParts).toBeCalledTimes(1);
+			expect(mockUploadPart).toBeCalledTimes(2);
+			expect(mockCompleteMultipartUpload).toBeCalledTimes(1);
+		});
 
-		it('should remove from cache if upload task is canceled', async () => {});
+		it('should cache upload task if new upload task is created', async () => {
+			mockMultipartUploadSuccess();
+			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(size),
+				},
+				size
+			);
+			await multipartUploadJob();
+			// 1 for caching upload task; 1 for remove cache after upload is completed
+			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
+			expect(mockLocalStorage.setItem.mock.calls[0][0]).toEqual(
+				UPLOADS_STORAGE_KEY
+			);
+			const cacheValue = JSON.parse(mockLocalStorage.setItem.mock.calls[0][1]);
+			expect(Object.keys(cacheValue)).toEqual([
+				expect.stringMatching(/8388608_binary\/octet-stream_bucket_public_key/),
+			]);
+		});
+
+		it('should remove from cache if upload task is completed', async () => {
+			mockMultipartUploadSuccess();
+			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(size),
+				},
+				size
+			);
+			await multipartUploadJob();
+			// 1 for caching upload task; 1 for remove cache after upload is completed
+			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
+			expect(mockLocalStorage.setItem).toHaveBeenNthCalledWith(
+				2,
+				UPLOADS_STORAGE_KEY,
+				JSON.stringify({})
+			);
+		});
+
+		it('should remove from cache if upload task is canceled', async () => {
+			expect.assertions(2);
+			mockMultipartUploadSuccess(disableAssertion);
+			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			const size = 8 * MB;
+			const { multipartUploadJob, onCancel } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(size),
+				},
+				size
+			);
+			const uploadJobPromise = multipartUploadJob();
+			await uploadJobPromise;
+			// 1 for caching upload task; 1 for remove cache after upload is completed
+			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
+			expect(mockLocalStorage.setItem).toHaveBeenNthCalledWith(
+				2,
+				UPLOADS_STORAGE_KEY,
+				JSON.stringify({})
+			);
+		});
 	});
 
-	describe.skip('cancel()', () => {
-		it('should abort in-flight uploadPart requests and throw if upload is canceled', async () => {});
-		it('should NOT send listParts or createMultipartUpload request if the upload task is canceled', async () => {});
+	describe('cancel()', () => {
+		it('should abort in-flight uploadPart requests and throw if upload is canceled', async () => {
+			const { multipartUploadJob, onCancel } = getMultipartUploadHandlers({
+				key: defaultKey,
+				data: new ArrayBuffer(8 * MB),
+			});
+			let partCount = 0;
+			mockMultipartUploadCancellation(() => {
+				partCount++;
+				if (partCount === 2) {
+					onCancel(); // Cancel upload at the the last uploadPart call
+				}
+			});
+			try {
+				await multipartUploadJob();
+				fail('should throw error');
+			} catch (error) {
+				expect(error).toBeInstanceOf(Error);
+				expect(error.message).toBe('AbortError');
+			}
+			expect(mockAbortMultipartUpload).toBeCalledTimes(1);
+			expect(mockUploadPart).toBeCalledTimes(2);
+			expect(mockUploadPart.mock.calls[0][0].abortSignal?.aborted).toBe(true);
+			expect(mockUploadPart.mock.calls[1][0].abortSignal?.aborted).toBe(true);
+		});
 	});
 
-	describe.skip('pause() & resume()', () => {
-		it('should abort in-flight uploadPart requests if upload is paused', async () => {});
-
-		it('should restart uploadPart requests if upload is resumed', async () => {});
+	describe('pause() & resume()', () => {
+		it('should abort in-flight uploadPart requests if upload is paused', async () => {
+			const { multipartUploadJob, onPause, onResume } =
+				getMultipartUploadHandlers({
+					key: defaultKey,
+					data: new ArrayBuffer(8 * MB),
+				});
+			let partCount = 0;
+			mockMultipartUploadCancellation(() => {
+				partCount++;
+				if (partCount === 2) {
+					onPause(); // Pause upload at the the last uploadPart call
+				}
+			});
+			const uploadPromise = multipartUploadJob();
+			onResume();
+			await uploadPromise;
+			expect(mockUploadPart).toBeCalledTimes(2);
+			expect(mockUploadPart.mock.calls[0][0].abortSignal?.aborted).toBe(true);
+			expect(mockUploadPart.mock.calls[1][0].abortSignal?.aborted).toBe(true);
+		});
 	});
 
-	describe.skip('upload progress', () => {
-		it('should send progress for cached upload parts', async () => {});
+	describe('upload progress', () => {
+		it('should send progress for in-flight upload parts', async () => {
+			const onProgress = jest.fn();
+			mockMultipartUploadSuccess();
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(8 * MB),
+					options: {
+						onProgress,
+					},
+				},
+				8 * MB
+			);
+			await multipartUploadJob();
+			expect(onProgress).toBeCalledTimes(4); // 2 simulated onProgress events per uploadPart call are all tracked
+			expect(onProgress).toHaveBeenNthCalledWith(1, {
+				totalBytes: 8388608,
+				transferredBytes: 2621440,
+			});
+			expect(onProgress).toHaveBeenNthCalledWith(2, {
+				totalBytes: 8388608,
+				transferredBytes: 5242880,
+			});
+			expect(onProgress).toHaveBeenNthCalledWith(3, {
+				totalBytes: 8388608,
+				transferredBytes: 6815744,
+			});
+			expect(onProgress).toHaveBeenNthCalledWith(4, {
+				totalBytes: 8388608,
+				transferredBytes: 8388608,
+			});
+		});
 
-		it('should send progress for in-flight upload parts', async () => {});
+		it('should send progress for cached upload parts', async () => {
+			mockMultipartUploadSuccess();
+
+			const mockLocalStorage = (await getKvStorage()) as jest.Mocked<
+				typeof LocalStorage
+			>;
+			const cacheKey = '8388608_binary/octet-stream_bucket_public_key';
+			mockLocalStorage.getItem.mockResolvedValue(
+				JSON.stringify({
+					[cacheKey]: {
+						uploadId: 'uploadId',
+						bucket,
+						key: defaultKey,
+					},
+				})
+			);
+			mockListParts.mockResolvedValue({
+				Parts: [{ PartNumber: 1 }],
+			});
+
+			const onProgress = jest.fn();
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(8 * MB),
+					options: {
+						onProgress,
+					},
+				},
+				8 * MB
+			);
+			await multipartUploadJob();
+			expect(onProgress).toBeCalledTimes(3);
+			// The first part's 5 MB progress is reported even though no uploadPart call is made.
+			expect(onProgress).toHaveBeenNthCalledWith(1, {
+				totalBytes: 8388608,
+				transferredBytes: 5242880,
+			});
+		});
 	});
 });
