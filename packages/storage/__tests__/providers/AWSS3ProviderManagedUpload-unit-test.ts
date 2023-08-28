@@ -10,15 +10,15 @@ import {
 	createMultipartUpload,
 	abortMultipartUpload,
 	listParts,
-} from '../../src/AwsClients/S3';
-import { SEND_UPLOAD_PROGRESS_EVENT } from '../../src/AwsClients/S3/utils';
+} from '../../src/providers/s3/utils/client';
+import { SEND_UPLOAD_PROGRESS_EVENT } from '../../src/providers/s3/utils/client/utils';
 import { credentialsProvider } from '../../src/common/S3ClientUtils';
 
 const MB = 1024 * 1024;
 const defaultPartSize = 5 * MB;
 
 jest.useRealTimers();
-jest.mock('../../src/AwsClients/S3');
+jest.mock('../../src/providers/s3/utils/client');
 jest.mock('../../src/common/S3ClientUtils', () => ({
 	...jest.requireActual('../../src/common/S3ClientUtils'),
 	credentialsProvider: jest.fn(), // mock this to avoid calling real credentials

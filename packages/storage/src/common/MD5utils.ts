@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Md5 } from '@aws-sdk/md5-js';
-import { toBase64 } from '../AwsClients/S3/utils';
+import { toBase64 } from '../providers/s3/utils/client/utils';
 
 export const calculateContentMd5 = async (
 	content: Blob | string

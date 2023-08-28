@@ -12,16 +12,14 @@ import {
 	putObject,
 	deleteObject,
 	copyObject,
-} from '../../src/AwsClients/S3';
+} from '../../src//providers/s3/utils/client';
 import { AWSS3Provider as StorageProvider } from '../../src/providers/AWSS3Provider';
 import {
 	S3CopySource,
 	S3CopyDestination,
-	StorageOptions,
 	S3ProviderGetConfig,
 } from '../../src/types';
 import { AWSS3UploadTask } from '../../src/providers/AWSS3UploadTask';
-import * as StorageUtils from '../../src/common/StorageUtils';
 
 jest.mock('events', function () {
 	return {
@@ -29,7 +27,7 @@ jest.mock('events', function () {
 	};
 });
 
-jest.mock('../../src/AwsClients/S3');
+jest.mock('../../src//providers/s3/utils/client');
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 
 const mockRemoveAllListeners = jest.fn();

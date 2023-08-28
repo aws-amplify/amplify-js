@@ -1,21 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ICredentials } from '@aws-amplify/core';
-import {
-	GetObjectInput,
-	GetObjectOutput,
-	PutObjectInput,
-	CopyObjectInput,
-	DeleteObjectOutput,
-	HeadObjectInput,
-	_Object,
-} from '../AwsClients/S3';
 import { StorageOptions, StorageAccessLevel } from './Storage';
 import {
 	UploadTaskCompleteEvent,
 	UploadTaskProgressEvent,
 } from '../providers/AWSS3UploadTask';
 import { UploadTask } from './Provider';
+import {
+	HeadObjectInput,
+	GetObjectOutput,
+	PutObjectInput,
+	CopyObjectInput,
+	DeleteObjectOutput,
+	_Object,
+} from '../providers/s3/utils/client';
 
 type ListObjectsCommandOutputContent = _Object;
 

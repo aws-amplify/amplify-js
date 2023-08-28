@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { S3Exception } from '../../types';
 import {
 	StorageOperationRequest,
 	StorageRemoveOptions,
@@ -12,10 +11,11 @@ import {
 	getKeyWithPrefix,
 	resolveCredentials,
 } from '../../utils';
-import { deleteObject } from '../../../../AwsClients/S3';
+
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import { deleteObject } from '../../utils/client';
 
 export const remove = async (
 	amplify: AmplifyClassV6,

@@ -1,17 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getProperties, getUrl } from '../../../src/providers/s3/apis';
+import { getUrl } from '../../../src/providers/s3/apis';
 import { Credentials } from '@aws-sdk/types';
 import { Amplify } from '@aws-amplify/core';
 import {
 	getPresignedGetObjectUrl,
 	headObject,
-} from '../../../src/AwsClients/S3';
+} from '../../../src/providers/s3/utils/client';
 
-jest.mock('../../../src/AwsClients/S3');
-
-jest.mock('../../../src/AwsClients/S3');
+jest.mock('../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => {
 	const core = jest.requireActual('@aws-amplify/core');
 	return {
@@ -52,7 +50,7 @@ describe('getProperties test', () => {
 			S3: {
 				bucket,
 				region,
-			}
+			},
 		},
 	});
 	it('get presigned url happy case', async () => {

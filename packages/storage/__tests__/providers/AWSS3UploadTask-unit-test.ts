@@ -15,12 +15,12 @@ import {
 	createMultipartUpload,
 	listObjectsV2,
 	uploadPart,
-} from '../../src/AwsClients/S3';
+} from '../../src/providers/s3/utils/client';
 import { StorageAccessLevel, FileMetadata } from '../../src/types';
 import { UPLOADS_STORAGE_KEY } from '../../src/common/StorageConstants';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-jest.mock('../../src/AwsClients/S3');
+jest.mock('../../src/providers/s3/utils/client');
 
 const MB = 1024 * 1024;
 

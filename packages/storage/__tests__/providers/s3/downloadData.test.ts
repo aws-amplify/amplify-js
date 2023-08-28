@@ -3,11 +3,11 @@
 
 import { Credentials } from '@aws-sdk/types';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
-import { getObject } from '../../../src/AwsClients/S3';
+import { getObject } from '../../../src/providers/s3/utils/client';
 import { downloadData } from '../../../src/providers/s3';
 import { createDownloadTask } from '../../../src/utils/transferTask';
 
-jest.mock('../../../src/AwsClients/S3');
+jest.mock('../../../src/providers/s3/utils/client');
 jest.mock('../../../src/utils/transferTask');
 jest.mock('@aws-amplify/core', () => {
 	const core = jest.requireActual('@aws-amplify/core');
@@ -42,7 +42,7 @@ describe('downloadData', () => {
 				S3: {
 					bucket: 'bucket',
 					region: 'region',
-				}
+				},
 			},
 		});
 	});

@@ -3,19 +3,7 @@
 import * as events from 'events';
 import { Logger } from '@aws-amplify/core/internals/utils';
 import { UploadTask } from '../types/Provider';
-import {
-	PutObjectInput,
-	createMultipartUpload,
-	uploadPart,
-	UploadPartInput,
-	listObjectsV2,
-	CompletedPart,
-	Part,
-	listParts,
-	completeMultipartUpload,
-	abortMultipartUpload,
-} from '../AwsClients/S3';
-import { isCancelError, CANCELED_ERROR_MESSAGE } from '../AwsClients/S3/utils';
+import { isCancelError, CANCELED_ERROR_MESSAGE } from './s3/utils/client/utils';
 import {
 	calculatePartSize,
 	DEFAULT_PART_SIZE,
@@ -26,6 +14,18 @@ import {
 import { byteLength, isFile } from '../common/StorageUtils';
 import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
 import { StorageAccessLevel } from '..';
+import {
+	completeMultipartUpload,
+	PutObjectInput,
+	createMultipartUpload,
+	uploadPart,
+	UploadPartInput,
+	listObjectsV2,
+	CompletedPart,
+	Part,
+	listParts,
+	abortMultipartUpload,
+} from './s3/utils/client';
 
 const logger = new Logger('AWSS3UploadTask');
 export enum AWSS3UploadTaskState {

@@ -7,29 +7,11 @@ import {
 	parseAWSExports,
 	Amplify,
 } from '@aws-amplify/core';
-import { 
-	ConsoleLogger as Logger
-} from '@aws-amplify/core/internals/utils';
-import {
-	copyObject,
-	CopyObjectInput,
-	getObject,
-	GetObjectInput,
-	GetObjectOutput,
-	getPresignedGetObjectUrl,
-	PutObjectInput,
-	headObject,
-	DeleteObjectInput,
-	deleteObject,
-	ListObjectsV2Input,
-	listObjectsV2,
-	SERVICE_NAME as S3_SERVICE_NAME,
-	HeadObjectInput,
-} from '../AwsClients/S3';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import {
 	SEND_DOWNLOAD_PROGRESS_EVENT,
 	SEND_UPLOAD_PROGRESS_EVENT,
-} from '../AwsClients/S3/utils';
+} from './s3/utils/client/utils';
 import {
 	StorageOptions,
 	StorageProvider,
@@ -62,8 +44,23 @@ import {
 } from '../common/S3ClientUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
-import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
 import * as events from 'events';
+import {
+	HeadObjectInput,
+	copyObject,
+	CopyObjectInput,
+	getObject,
+	GetObjectInput,
+	GetObjectOutput,
+	getPresignedGetObjectUrl,
+	PutObjectInput,
+	headObject,
+	DeleteObjectInput,
+	deleteObject,
+	ListObjectsV2Input,
+	listObjectsV2,
+	SERVICE_NAME as S3_SERVICE_NAME,
+} from './s3/utils/client';
 
 const logger = new Logger('AWSS3Provider');
 
