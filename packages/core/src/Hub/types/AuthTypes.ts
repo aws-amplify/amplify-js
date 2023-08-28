@@ -1,10 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// TODO Need to update types of data
 export type AuthHubEventData =
-	| { event: 'signInWithRedirect' } // Used when an oauth flow is done
-	| { event: 'tokenRefresh' } // used when a token is refreshed
-	| { event: 'tokenRefresh_failure' } // used when the refresh of tokens failed
-	| { event: 'customOAuthState' }
-	| { event: 'customState_failure' };
+	/** Dispatched when a user signs in with a oauth provider such as Google.*/
+	| { event: 'signInWithRedirect' }
+	/** Dispatched when there is an error in the oauth flow process.*/
+	| { event: 'signInWithRedirect_failure' }
+	/** Dispatched when auth tokens are successfully refreshed.*/
+	| { event: 'tokenRefresh' }
+	/** Dispatched when there is an error in the refresh of tokens.*/
+	| { event: 'tokenRefresh_failure' };

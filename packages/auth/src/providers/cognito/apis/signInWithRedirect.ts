@@ -3,6 +3,7 @@
 
 import { Amplify, Hub, LocalStorage, OAuthConfig } from '@aws-amplify/core';
 import {
+	AMPLIFY_SYMBOL,
 	AmplifyError,
 	assertOAuthConfig,
 	urlSafeEncode,
@@ -205,8 +206,8 @@ async function handleCodeFlow({
 
 	await store.storeOAuthSignIn(true);
 
+	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
 	clearHistory(redirectUri);
-
 	invokeAndClearPromise();
 	return;
 }
@@ -253,8 +254,8 @@ async function handleImplicitFlow({
 	});
 
 	await store.storeOAuthSignIn(true);
+	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
 	clearHistory(redirectUri);
-
 	invokeAndClearPromise();
 }
 
