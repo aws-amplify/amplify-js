@@ -10,7 +10,7 @@ import {
 import { Logger } from '@aws-amplify/core/internals/utils';
 import { formLoginsMap } from './credentialsProvider';
 import { AuthError } from '../../../errors/AuthError';
-import { defaultIdentityIdStore } from '.';
+import { IdentityIdStore } from './types';
 
 const logger = new Logger('CognitoIdentityIdProvider');
 
@@ -22,17 +22,18 @@ const logger = new Logger('CognitoIdentityIdProvider');
  * @throws internal: {@link AuthError }
  *  - Auth errors that may arise from misconfiguration.
  *
- * TODO(V6): convert the Auth errors to config errors
  */
 export async function cognitoIdentityIdProvider({
 	tokens,
 	authConfig,
+	identityIdStore,
 }: {
 	tokens?: AuthTokens;
 	authConfig?: AuthConfig;
+	identityIdStore: IdentityIdStore;
 }): Promise<string> {
-	if (authConfig) defaultIdentityIdStore.setAuthConfig(authConfig);
-	let identityId = await defaultIdentityIdStore.loadIdentityId();
+	if (authConfig) identityIdStore.setAuthConfig(authConfig);
+	let identityId = await identityIdStore.loadIdentityId();
 
 	if (tokens) {
 		// Tokens are available so return primary identityId
@@ -40,8 +41,9 @@ export async function cognitoIdentityIdProvider({
 			return identityId.id;
 		} else {
 			const logins = tokens.idToken
-				? formLoginsMap(tokens.idToken.toString(), 'COGNITO')
+				? formLoginsMap(tokens.idToken.toString(), 'COGNITO', authConfig)
 				: {};
+			// TODO(V6): reuse previous guest idenityId if present
 			const generatedIdentityId = await generateIdentityId(logins, authConfig);
 
 			if (identityId && identityId.id === generatedIdentityId) {
@@ -69,7 +71,7 @@ export async function cognitoIdentityIdProvider({
 	}
 
 	// Store in-memory or local storage
-	defaultIdentityIdStore.storeIdentityId(identityId);
+	identityIdStore.storeIdentityId(identityId);
 	logger.debug(`The identity being returned ${identityId.id}`);
 	return identityId.id;
 }
@@ -116,8 +118,4 @@ async function generateIdentityId(
 		});
 	}
 	return idResult;
-}
-
-export async function setIdentityId(newIdentityId: Identity): Promise<void> {
-	defaultIdentityIdStore.storeIdentityId(newIdentityId);
 }

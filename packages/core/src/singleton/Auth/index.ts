@@ -1,7 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Observable, Observer } from 'rxjs';
-
 import {
 	AWSCredentialsAndIdentityId,
 	AuthConfig,
@@ -25,13 +23,10 @@ export function isTokenExpired({
 }
 
 export class AuthClass {
-	private authSessionObservers: Set<Observer<AuthSession>>;
 	private authConfig?: AuthConfig;
 	private authOptions?: LibraryAuthOptions;
 
-	constructor() {
-		this.authSessionObservers = new Set();
-	}
+	constructor() {}
 
 	/**
 	 * Configure Auth category
@@ -56,17 +51,22 @@ export class AuthClass {
 	): Promise<AuthSession> {
 		let tokens: AuthTokens | undefined;
 		let credentialsAndIdentityId: AWSCredentialsAndIdentityId | undefined;
+		let userSub: string | undefined;
 
-		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if not available
-		tokens =
-			(await this.authOptions?.tokenProvider?.getTokens(options)) ?? undefined;
 		asserts(!!this.authConfig, {
 			name: AUTH_CONFING_EXCEPTION,
 			message: 'AuthConfig is required',
 			recoverySuggestion:
 				'call Amplify.configure in your app with a valid AuthConfig',
 		});
+
+		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if not available
+		tokens =
+			(await this.authOptions?.tokenProvider?.getTokens(options)) ?? undefined;
+
 		if (tokens) {
+			userSub = tokens.accessToken?.payload?.sub;
+
 			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
 			credentialsAndIdentityId =
 				await this.authOptions?.credentialsProvider?.getCredentialsAndIdentityId(
@@ -77,7 +77,7 @@ export class AuthClass {
 						forceRefresh: options.forceRefresh,
 					}
 				);
-		} else {
+		} else if (!this.authConfig.isMandatorySignInEnabled) {
 			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
 			credentialsAndIdentityId =
 				await this.authOptions?.credentialsProvider?.getCredentialsAndIdentityId(
@@ -93,21 +93,13 @@ export class AuthClass {
 			tokens,
 			credentials: credentialsAndIdentityId?.credentials,
 			identityId: credentialsAndIdentityId?.identityId,
+			userSub,
 		};
 	}
 
-	/**
-	 * Obtain an Observable that notifies on session changes
-	 *
-	 * @returns Observable<AmplifyUserSession>
-	 */
-	listenSessionChanges(): Observable<AuthSession> {
-		return new Observable(observer => {
-			this.authSessionObservers.add(observer);
-
-			return () => {
-				this.authSessionObservers.delete(observer);
-			};
-		});
+	async clearCredentials(): Promise<void> {
+		if (this.authOptions?.credentialsProvider) {
+			return await this.authOptions.credentialsProvider.clearCredentials();
+		}
 	}
 }

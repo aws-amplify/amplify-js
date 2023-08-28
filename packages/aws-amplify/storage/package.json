@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/storage",
+	"main": "../lib/storage/index.js",
+	"browser": "../lib-esm/storage/index.js",
+	"module": "../lib-esm/storage/index.js",
+	"typings": "../lib-esm/storage/index.d.ts"
+}

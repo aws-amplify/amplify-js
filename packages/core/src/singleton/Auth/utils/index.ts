@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Buffer } from 'buffer';
 import { asserts } from '../../../Util/errors/AssertError';
 import {
 	AuthConfig,
@@ -8,17 +7,43 @@ import {
 	JWT,
 	UserPoolConfig,
 	UserPoolConfigAndIdentityPoolConfig,
+	UserPoolConfigAndIdentityPoolConfigWithOAuth,
+	UserPoolConfigWithOAuth,
 } from '../types';
 
 export function assertTokenProviderConfig(
 	authConfig?: AuthConfig
-): asserts authConfig is UserPoolConfig {
+): asserts authConfig is
+	| UserPoolConfigAndIdentityPoolConfigWithOAuth
+	| UserPoolConfigWithOAuth
+	| UserPoolConfigAndIdentityPoolConfig
+	| UserPoolConfig {
 	const validConfig =
 		!!authConfig?.userPoolId && !!authConfig?.userPoolWebClientId;
 	return asserts(validConfig, {
 		name: 'AuthTokenConfigException',
 		message: 'Auth Token Provider not configured',
 		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
+	});
+}
+
+export function assertOAuthConfig(
+	authConfig?: AuthConfig
+): asserts authConfig is
+	| UserPoolConfigAndIdentityPoolConfigWithOAuth
+	| UserPoolConfigWithOAuth {
+	assertTokenProviderConfig(authConfig);
+	const validOAuthConfig =
+		!!authConfig.oauth?.domain &&
+		!!authConfig.oauth?.redirectSignOut &&
+		!!authConfig.oauth?.redirectSignIn &&
+		!!authConfig.oauth?.responseType;
+
+	return asserts(validOAuthConfig, {
+		name: 'OAuthNotConfigureException',
+		message: 'oauth param not configured',
+		recoverySuggestion:
+			'Make sure to call Amplify.configure with oauth parameter in your app',
 	});
 }
 
@@ -51,13 +76,12 @@ export function decodeJWT(token: string): JWT {
 	if (tokenSplitted.length !== 3) {
 		throw new Error('Invalid token');
 	}
-
-	const payloadString = tokenSplitted[1];
-	const payload = JSON.parse(
-		Buffer.from(payloadString, 'base64').toString('utf8')
-	);
-
 	try {
+		const payloadStringb64 = tokenSplitted[1];
+		const payloadArrayBuffer = base64ToBytes(payloadStringb64);
+		const decodeString = new TextDecoder().decode(payloadArrayBuffer);
+		const payload = JSON.parse(decodeString);
+
 		return {
 			toString: () => token,
 			payload,
@@ -65,4 +89,9 @@ export function decodeJWT(token: string): JWT {
 	} catch (err) {
 		throw new Error('Invalid token payload');
 	}
+}
+
+function base64ToBytes(base64: string): Uint8Array {
+	const binString = atob(base64);
+	return Uint8Array.from(binString, m => m.codePointAt(0) || 0);
 }

@@ -11,9 +11,11 @@ import { signInWithSRP } from '../../../src/providers/cognito/apis/signInWithSRP
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
+import { cognitoCredentialsProvider } from '../../../src/providers/cognito/credentialsProvider';
+import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 const authConfig = {
@@ -25,6 +27,8 @@ const authConfigWithClientmetadata = {
 	userPoolId: 'us-west-2_zzzzz',
 	...authAPITestParams.configWithClientMetadata,
 };
+cognitoCredentialsProvider.setAuthConfig(authConfig);
+CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 Amplify.configure({
 	Auth: authConfig,
 });
@@ -96,12 +100,15 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('handleUserSRPFlow should be called with clientMetada from config', async () => {
+		const authConfig = {
+			userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+			...authAPITestParams.configWithClientMetadata,
+		};
+		cognitoCredentialsProvider.setAuthConfig(authConfig);
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 		Amplify.configure({
-			Auth: {
-				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				userPoolId: 'us-west-2_zzzzz',
-				...authAPITestParams.configWithClientMetadata,
-			},
+			Auth: authConfig,
 		});
 		const username = authAPITestParams.user1.username;
 		const password = authAPITestParams.user1.password;

@@ -1,8 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Storage, StorageInstance } from './Storage';
-
-export { Storage as StorageClass, StorageInstance as Storage };
-export { AWSS3Provider } from './providers';
+export {
+	uploadData,
+	downloadData,
+	remove,
+	list,
+	getProperties,
+	copy,
+	getUrl,
+} from './providers/s3';
+export { isCancelError } from './AwsClients/S3/runtime';
 export * from './types';
