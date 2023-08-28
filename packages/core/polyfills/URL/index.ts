@@ -7,8 +7,8 @@
  * a commonjs package that would break the users' Jest unit tests, where MJS
  * is not supported by default.
  */
-if (process?.env?.NODE_ENV !== 'test') {
+/*if (process?.env?.NODE_ENV !== 'test') {
 	// Loading this polyfill in customers' unit tests will cause undefined
 	// variable error in un-mocked react-native package.
 	require('react-native-url-polyfill/auto');
-}
+}*/

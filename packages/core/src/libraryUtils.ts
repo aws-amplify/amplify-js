@@ -21,6 +21,7 @@ export {
 	transferKeyToUpperCase,
 } from './Util/JS';
 
+export { JWT } from './singleton/Auth/types';
 // Auth utilities
 export {
 	decodeJWT,

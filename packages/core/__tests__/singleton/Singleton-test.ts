@@ -2,7 +2,8 @@ import { Amplify } from '../../src/singleton';
 import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { AWSCredentialsAndIdentityId } from '../../src/singleton/Auth/types';
-
+import { TextEncoder, TextDecoder } from 'util';
+Object.assign(global, { TextDecoder, TextEncoder });
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	? A
 	: never;
@@ -74,7 +75,7 @@ describe('Session tests', () => {
 	});
 
 	test('fetch user after no credentials', async () => {
-		expect.assertions(2);
+		expect.assertions(3);
 		const config: ArgumentTypes<typeof Amplify.configure>[0] = {
 			Auth: {
 				userPoolId: 'us-east-1:aaaaaaa',
@@ -108,6 +109,8 @@ describe('Session tests', () => {
 			name: 'John Doe',
 			sub: '1234567890',
 		});
+
+		expect(session.userSub).toEqual('1234567890');
 	});
 
 	test('fetch session with token and credentials', async () => {

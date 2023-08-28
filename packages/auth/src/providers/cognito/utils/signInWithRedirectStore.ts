@@ -28,9 +28,15 @@ export class DefaultOAuthStore implements OAuthStore {
 			this.keyValueStorage.removeItem(authKeys.oauthState),
 		]);
 	}
-	clearOAuthData(): Promise<void> {
-		// TODO(v6): Implement this on signOut PR
-		throw new Error('Method not implemented.');
+	async clearOAuthData(): Promise<void> {
+		const name = 'Cognito';
+
+		const authKeys = createKeysForAuthStorage(
+			name,
+			this.authConfig.userPoolWebClientId
+		);
+		await this.clearOAuthInflightData();
+		this.keyValueStorage.removeItem(authKeys.oauthSignIn);
 	}
 	loadOAuthState(): Promise<string> {
 		assertTokenProviderConfig(this.authConfig);
@@ -125,10 +131,13 @@ export class DefaultOAuthStore implements OAuthStore {
 			this.authConfig.userPoolWebClientId
 		);
 
-		return (
-			(await this.keyValueStorage.getItem(authKeys.oauthSignIn)) === 'true'
+		const isOAuthSignIn = await this.keyValueStorage.getItem(
+			authKeys.oauthSignIn
 		);
+
+		return isOAuthSignIn === 'true';
 	}
+
 	async storeOAuthSignIn(oauthSignIn: boolean): Promise<void> {
 		assertTokenProviderConfig(this.authConfig);
 
