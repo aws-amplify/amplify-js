@@ -42,8 +42,10 @@ mockFetchAuthSession.mockResolvedValue({
 });
 (Amplify.getConfig as jest.Mock).mockReturnValue({
 	Storage: {
-		bucket: 'bucket',
-		region: 'region',
+		S3: {
+			bucket: 'bucket',
+			region: 'region',
+		},
 	},
 });
 mockPutObject.mockResolvedValue({
@@ -113,7 +115,7 @@ describe('putObjectJob', () => {
 	it('should set ContentMD5 if object lock is enabled', async () => {
 		Amplify.libraryOptions = {
 			Storage: {
-				AWSS3: {
+				S3: {
 					isObjectLockEnabled: true,
 				},
 			},

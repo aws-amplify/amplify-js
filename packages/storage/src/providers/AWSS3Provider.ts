@@ -50,8 +50,7 @@ import {
 	S3ProviderGetPropertiesConfig,
 	S3ProviderGetPropertiesOutput,
 } from '../types';
-import { UploadTask } from '../types/Provider';
-import { ConfigType } from '../types/Provider';
+import { ConfigType, UploadTask } from '../types/Provider';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import {
 	getPrefix,

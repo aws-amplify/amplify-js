@@ -3,7 +3,7 @@
 
 import { S3UploadDataResult, S3UploadOptions } from '../../types';
 import { createUploadTask } from '../../utils';
-import { UploadTask, StorageUploadDataRequest } from '../../../../types';
+import { StorageUploadDataRequest, UploadTask } from '../../../../types';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { DEFAULT_PART_SIZE, MAX_OBJECT_SIZE } from '../../utils/constants';

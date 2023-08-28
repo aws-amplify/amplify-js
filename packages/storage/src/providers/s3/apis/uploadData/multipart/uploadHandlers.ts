@@ -248,5 +248,5 @@ export const getMultipartUploadHandlers = (
 
 const resolveAccessLevel = (accessLevel?: StorageAccessLevel) =>
 	accessLevel ??
-	Amplify.libraryOptions.Storage?.AWSS3?.defaultAccessLevel ??
+	Amplify.libraryOptions.Storage?.S3?.defaultAccessLevel ??
 	DEFAULT_ACCESS_LEVEL;
