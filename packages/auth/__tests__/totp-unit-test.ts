@@ -198,7 +198,6 @@ jest.mock('amazon-cognito-identity-js/internals', () => {
 
 import { AuthClass as Auth } from '../src/Auth';
 import {
-	CognitoUser,
 	CognitoUserSession,
 	CognitoIdToken,
 	CognitoAccessToken,
@@ -241,7 +240,7 @@ const session = new CognitoUserSession({
 	AccessToken: accessToken,
 });
 
-const user = new CognitoUser({
+const user = new InternalCognitoUser({
 	Username: 'username',
 	Pool: userPool,
 });
@@ -249,7 +248,7 @@ const user = new CognitoUser({
 describe('auth unit test', () => {
 	describe('getMFAOptions test', () => {
 		test('happy case', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'getMFAOptions');
 			expect(await auth.getMFAOptions(user)).toBe('mfaOptions');
@@ -259,7 +258,7 @@ describe('auth unit test', () => {
 		});
 
 		test('err case', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			const spyon = jest
 				.spyOn(InternalCognitoUser.prototype, 'getMFAOptions')
@@ -278,7 +277,7 @@ describe('auth unit test', () => {
 
 	describe('disableMFA test', () => {
 		test('happy case', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'disableMFA');
 			expect(await auth.disableSMS(user)).toBe('Success');
 			expect(spyon).toBeCalled();
@@ -287,7 +286,7 @@ describe('auth unit test', () => {
 		});
 
 		test('err case', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			const spyon = jest
 				.spyOn(InternalCognitoUser.prototype, 'disableMFA')
@@ -306,7 +305,7 @@ describe('auth unit test', () => {
 
 	describe('enableMFA test', () => {
 		test('happy case', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'enableMFA');
 			expect(await auth.enableSMS(user)).toBe('Success');
@@ -316,7 +315,7 @@ describe('auth unit test', () => {
 		});
 
 		test('err case', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			const spyon = jest
 				.spyOn(InternalCognitoUser.prototype, 'enableMFA')
@@ -335,7 +334,7 @@ describe('auth unit test', () => {
 
 	describe('setupTOTP test', () => {
 		test('happy case', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			const spyon = jest.spyOn(
 				InternalCognitoUser.prototype,
@@ -348,7 +347,7 @@ describe('auth unit test', () => {
 		});
 
 		test('err case', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			const spyon = jest
 				.spyOn(InternalCognitoUser.prototype, 'associateSoftwareToken')
@@ -367,10 +366,10 @@ describe('auth unit test', () => {
 
 	describe('verifyTotpToken test', () => {
 		test('happy case during sign-in', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 			jest.clearAllMocks(); // clear hub calls
 
-			const happyCaseUser = new CognitoUser({
+			const happyCaseUser = new InternalCognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -396,10 +395,10 @@ describe('auth unit test', () => {
 		});
 
 		test('happy case signedin user', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 			jest.clearAllMocks(); // clear hub calls
 
-			const happyCaseUser = new CognitoUser({
+			const happyCaseUser = new InternalCognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -423,13 +422,13 @@ describe('auth unit test', () => {
 		});
 
 		test('err case user during sign in', async () => {
-			const errCaseUser = new CognitoUser({
+			const errCaseUser = new InternalCognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 			errCaseUser.getSignInUserSession = () => null;
 
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			const spyon = jest
 				.spyOn(InternalCognitoUser.prototype, 'verifySoftwareToken')
@@ -448,7 +447,7 @@ describe('auth unit test', () => {
 
 	describe('setPreferredMFA test', () => {
 		test('happy case', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			const spyon = jest.spyOn(
 				InternalCognitoUser.prototype,
@@ -469,7 +468,7 @@ describe('auth unit test', () => {
 		('User has not verified software token mfa');
 
 		test('totp not setup but TOTP chosed', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			const spyon = jest
 				.spyOn(InternalCognitoUser.prototype, 'setUserMfaPreference')
@@ -497,7 +496,7 @@ describe('auth unit test', () => {
 		});
 
 		test('incorrect mfa type', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 			try {
 				// using <any> to allow us to pass an incorrect value
 				await auth.setPreferredMFA(user, 'incorrect mfa type' as any);
@@ -509,13 +508,13 @@ describe('auth unit test', () => {
 
 	describe('getPreferredMFA test', () => {
 		test('happy case', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			expect(await auth.getPreferredMFA(user)).toBe('SMS_MFA');
 		});
 
 		test('error case', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			const spyon = jest
 				.spyOn(InternalCognitoUser.prototype, 'getUserData')

@@ -1,4 +1,6 @@
 import { AuthClass as Auth } from '../src/Auth';
+import { InternalAuthClass } from '../src/internals/InternalAuth';
+import { AuthOptions } from '../src/types';
 
 import {
 	CognitoUserPool,
@@ -13,9 +15,6 @@ import {
 	InternalCognitoUser,
 } from 'amazon-cognito-identity-js/internals';
 
-import { AuthOptions } from '../src/types';
-import { InternalAuthClass } from '../src/internals/InternalAuth';
-
 const authOptions: AuthOptions = {
 	userPoolId: 'us-west-2_0xxxxxxxx',
 	userPoolWebClientId: 'awsUserPoolsWebClientId',
@@ -27,7 +26,7 @@ const authOptions: AuthOptions = {
 describe('User-Attribute-validation', () => {
 	it('Check-non-verified-attributes', async () => {
 		const spyonAuthUserAttributes = jest
-			.spyOn(InternalAuthClass.prototype as any, '_userAttributes')
+			.spyOn(InternalAuthClass.prototype, 'userAttributes')
 			.mockImplementation((user: CognitoUser) => {
 				const emailAttribute = new CognitoUserAttribute({
 					Name: 'email',
@@ -51,7 +50,7 @@ describe('User-Attribute-validation', () => {
 				});
 			});
 
-		const auth = new Auth(authOptions);
+		const auth = new Auth(new InternalAuthClass(authOptions));
 
 		const verified = await auth.verifiedContact(
 			new CognitoUser({
@@ -76,7 +75,7 @@ describe('User-Attribute-validation', () => {
 	});
 
 	it('Checking not coerced values after sign in', async () => {
-		const auth = new Auth(authOptions);
+		const auth = new Auth(new InternalAuthClass(authOptions));
 
 		const spyUserPoolCurrentUser = jest
 			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')

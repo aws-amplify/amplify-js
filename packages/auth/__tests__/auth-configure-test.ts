@@ -1,4 +1,5 @@
 import { AuthClass as Auth } from '../src/Auth';
+import { InternalAuthClass } from '../src/internals/InternalAuth';
 import { Credentials } from '@aws-amplify/core';
 
 describe('configure test', () => {
@@ -11,7 +12,7 @@ describe('configure test', () => {
 			mandatorySignIn: false,
 			storage: {},
 		};
-		const auth = new Auth(null);
+		const auth = new Auth(new InternalAuthClass());
 		expect.assertions(1);
 		try {
 			auth.configure(opts);
@@ -31,7 +32,7 @@ describe('configure test', () => {
 
 		const spyOn = jest.spyOn(Credentials, 'configure');
 
-		const auth = new Auth(null);
+		const auth = new Auth(new InternalAuthClass());
 		expect.assertions(1);
 
 		auth.configure(opts);

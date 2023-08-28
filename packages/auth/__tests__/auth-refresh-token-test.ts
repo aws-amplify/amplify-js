@@ -1,4 +1,6 @@
 import { AuthClass as Auth } from '../src/Auth';
+import { InternalAuthClass } from '../src/internals/InternalAuth';
+import { AuthOptions } from '../src/types';
 
 import {
 	CognitoUser,
@@ -11,8 +13,6 @@ import {
 	InternalCognitoUser,
 	InternalCognitoUserPool,
 } from 'amazon-cognito-identity-js/internals';
-
-import { AuthOptions } from '../src/types';
 
 const clientMetadata = {
 	test: 'i need to be send for token refresh',
@@ -30,7 +30,7 @@ const authOptions: AuthOptions = {
 describe('Refresh token', () => {
 	it('currentUserPoolUser  user.getSession using ClientMetadata from config', async () => {
 		// configure with client metadata
-		const auth = new Auth(authOptions);
+		const auth = new Auth(new InternalAuthClass(authOptions));
 
 		expect.assertions(1);
 
@@ -69,7 +69,7 @@ describe('Refresh token', () => {
 
 	it('userSession  user.getSession using ClientMetadata from config', async () => {
 		// configure with client metadata
-		const auth = new Auth(authOptions);
+		const auth = new Auth(new InternalAuthClass(authOptions));
 
 		expect.assertions(2);
 
@@ -110,7 +110,8 @@ describe('Refresh token', () => {
 
 	it('cognitoIdentitySignOut user.getSession using ClientMetadata from config', async () => {
 		// configure with client metadata
-		const auth = new Auth(authOptions);
+		const internalAuth = new InternalAuthClass(authOptions);
+		const auth = new Auth(internalAuth);
 
 		expect.assertions(2);
 
@@ -150,13 +151,12 @@ describe('Refresh token', () => {
 			});
 		const user = await auth.currentUserPoolUser();
 
-		// @ts-ignore
-		await auth.cognitoIdentitySignOut({ global: true }, user);
+		await (internalAuth as any).cognitoIdentitySignOut({ global: true }, user);
 	});
 
 	it('currentUserPoolUser user.getUserData using ClientMetadata from config', async () => {
 		// configure with client metadata
-		const auth = new Auth(authOptions);
+		const auth = new Auth(new InternalAuthClass(authOptions));
 
 		expect.assertions(1);
 
@@ -208,7 +208,7 @@ describe('Refresh token', () => {
 
 	it('getPreferredMFA user.getUserData using ClientMetadata from config', async () => {
 		// configure with client metadata
-		const auth = new Auth(authOptions);
+		const auth = new Auth(new InternalAuthClass(authOptions));
 
 		expect.assertions(2);
 
@@ -262,7 +262,7 @@ describe('Refresh token', () => {
 
 	it('setPreferredMFA user.getUserData using ClientMetadata from config', async () => {
 		// configure with client metadata
-		const auth = new Auth(authOptions);
+		const auth = new Auth(new InternalAuthClass(authOptions));
 
 		expect.assertions(3);
 

@@ -1,4 +1,5 @@
 import { AuthClass as Auth } from '../src/Auth';
+import { InternalAuthClass } from '../src/internals/InternalAuth';
 import { Credentials } from '@aws-amplify/core';
 import { AuthOptions } from '../src/types';
 import {
@@ -22,7 +23,7 @@ const authOptions: AuthOptions = {
 
 describe('credentials syncing tests', () => {
 	it('BypassCache clear credentials', async () => {
-		const auth = new Auth(authOptions);
+		const auth = new Auth(new InternalAuthClass(authOptions));
 
 		jest
 			.spyOn(InternalCognitoUser.prototype, 'authenticateUser')

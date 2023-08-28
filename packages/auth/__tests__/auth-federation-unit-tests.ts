@@ -258,6 +258,7 @@ const DEFAULT_RETRY_TIMEOUT = 60000;
 
 import { AuthOptions } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
+import { InternalAuthClass } from '../src/internals/InternalAuth';
 import {
 	Credentials,
 	StorageHelper,
@@ -319,7 +320,7 @@ describe('auth federation unit test', () => {
 						return Promise.resolve('cred');
 					});
 
-				const auth = new Auth(authOptions);
+				const auth = new Auth(new InternalAuthClass(authOptions));
 
 				expect.assertions(2);
 				expect(await auth.currentUserCredentials()).toBe('cred');
@@ -370,7 +371,7 @@ describe('auth federation unit test', () => {
 						return Promise.resolve('cred');
 					});
 
-				const auth = new Auth(authOptions);
+				const auth = new Auth(new InternalAuthClass(authOptions));
 
 				expect.assertions(2);
 				expect(await auth.currentUserCredentials()).toBe('cred');
@@ -414,7 +415,7 @@ describe('auth federation unit test', () => {
 				.spyOn(Credentials, 'clear')
 				.mockImplementation();
 
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			try {
 				await auth.currentUserCredentials();
@@ -461,7 +462,7 @@ describe('auth federation unit test', () => {
 				.spyOn(Credentials, 'clear')
 				.mockImplementation();
 
-			const auth = new Auth(authOptions);
+			const auth = new Auth(new InternalAuthClass(authOptions));
 
 			try {
 				await auth.currentUserCredentials();

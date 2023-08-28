@@ -1,13 +1,137 @@
 import {
-	CognitoUser,
 	CognitoUserSession,
 	CognitoAccessToken,
 	CognitoIdToken,
 } from 'amazon-cognito-identity-js';
 
-import { InternalCognitoUserPool } from 'amazon-cognito-identity-js/internals';
+import {
+	InternalCognitoUser,
+	InternalCognitoUserPool,
+} from 'amazon-cognito-identity-js/internals';
 
 jest.mock('amazon-cognito-identity-js/internals', () => {
+	const InternalCognitoUser = () => {};
+
+	InternalCognitoUser.prototype.InternalCognitoUser = options => {
+		InternalCognitoUser.prototype.options = options;
+		return InternalCognitoUser;
+	};
+
+	InternalCognitoUser.prototype.getSession = callback => {
+		callback(null, 'session');
+	};
+
+	InternalCognitoUser.prototype.getUserAttributes = callback => {
+		callback(null, 'attributes');
+	};
+
+	InternalCognitoUser.prototype.getAttributeVerificationCode = (
+		attr,
+		callback
+	) => {
+		callback.onSuccess('success');
+	};
+
+	InternalCognitoUser.prototype.verifyAttribute = (attr, code, callback) => {
+		callback.onSuccess('success');
+	};
+
+	InternalCognitoUser.prototype.authenticateUser = (
+		authenticationDetails,
+		callback
+	) => {
+		callback.onSuccess('session');
+	};
+
+	InternalCognitoUser.prototype.sendMFACode = (code, callback) => {
+		callback.onSuccess('session');
+	};
+
+	InternalCognitoUser.prototype.resendConfirmationCode = callback => {
+		callback(null, 'result');
+	};
+
+	InternalCognitoUser.prototype.changePassword = (
+		oldPassword,
+		newPassword,
+		callback
+	) => {
+		callback(null, 'SUCCESS');
+	};
+
+	InternalCognitoUser.prototype.forgotPassword = callback => {
+		callback.onSuccess();
+	};
+
+	InternalCognitoUser.prototype.confirmPassword = (
+		code,
+		password,
+		callback
+	) => {
+		callback.onSuccess();
+	};
+
+	InternalCognitoUser.prototype.signOut = callback => {
+		if (callback && typeof callback === 'function') {
+			callback();
+		}
+	};
+
+	InternalCognitoUser.prototype.globalSignOut = callback => {
+		callback.onSuccess();
+	};
+
+	InternalCognitoUser.prototype.confirmRegistration = (
+		confirmationCode,
+		forceAliasCreation,
+		callback
+	) => {
+		callback(null, 'Success');
+	};
+
+	InternalCognitoUser.prototype.completeNewPasswordChallenge = (
+		password,
+		requiredAttributes,
+		callback
+	) => {
+		callback.onSuccess('session');
+	};
+
+	InternalCognitoUser.prototype.updateAttributes = (
+		attributeList,
+		callback
+	) => {
+		callback(null, 'SUCCESS');
+	};
+
+	InternalCognitoUser.prototype.setAuthenticationFlowType = type => {};
+
+	InternalCognitoUser.prototype.initiateAuth = (
+		authenticationDetails,
+		callback
+	) => {
+		callback.customChallenge('challengeParam');
+	};
+
+	InternalCognitoUser.prototype.sendCustomChallengeAnswer = (
+		challengeAnswer,
+		callback
+	) => {
+		callback.onSuccess('session');
+	};
+
+	InternalCognitoUser.prototype.refreshSession = (refreshToken, callback) => {
+		callback(null, 'session');
+	};
+
+	InternalCognitoUser.prototype.getUsername = () => {
+		return 'username';
+	};
+
+	InternalCognitoUser.prototype.getUserData = callback => {
+		callback(null, 'data');
+	};
+
 	const InternalCognitoUserPool = () => {};
 
 	InternalCognitoUserPool.prototype.InternalCognitoUserPool = options => {
@@ -44,121 +168,9 @@ jest.mock('amazon-cognito-identity-js/internals', () => {
 
 	return {
 		...jest.requireActual('amazon-cognito-identity-js/internals'),
+		InternalCognitoUser,
 		InternalCognitoUserPool,
 	};
-});
-
-jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
-	const CognitoUser = () => {};
-
-	CognitoUser.prototype.CognitoUser = options => {
-		CognitoUser.prototype.options = options;
-		return CognitoUser;
-	};
-
-	CognitoUser.prototype.getSession = callback => {
-		callback(null, 'session');
-	};
-
-	CognitoUser.prototype.getUserAttributes = callback => {
-		callback(null, 'attributes');
-	};
-
-	CognitoUser.prototype.getAttributeVerificationCode = (attr, callback) => {
-		callback.onSuccess('success');
-	};
-
-	CognitoUser.prototype.verifyAttribute = (attr, code, callback) => {
-		callback.onSuccess('success');
-	};
-
-	CognitoUser.prototype.authenticateUser = (
-		authenticationDetails,
-		callback
-	) => {
-		callback.onSuccess('session');
-	};
-
-	CognitoUser.prototype.sendMFACode = (code, callback) => {
-		callback.onSuccess('session');
-	};
-
-	CognitoUser.prototype.resendConfirmationCode = callback => {
-		callback(null, 'result');
-	};
-
-	CognitoUser.prototype.changePassword = (
-		oldPassword,
-		newPassword,
-		callback
-	) => {
-		callback(null, 'SUCCESS');
-	};
-
-	CognitoUser.prototype.forgotPassword = callback => {
-		callback.onSuccess();
-	};
-
-	CognitoUser.prototype.confirmPassword = (code, password, callback) => {
-		callback.onSuccess();
-	};
-
-	CognitoUser.prototype.signOut = callback => {
-		if (callback && typeof callback === 'function') {
-			callback();
-		}
-	};
-
-	CognitoUser.prototype.globalSignOut = callback => {
-		callback.onSuccess();
-	};
-
-	CognitoUser.prototype.confirmRegistration = (
-		confirmationCode,
-		forceAliasCreation,
-		callback
-	) => {
-		callback(null, 'Success');
-	};
-
-	CognitoUser.prototype.completeNewPasswordChallenge = (
-		password,
-		requiredAttributes,
-		callback
-	) => {
-		callback.onSuccess('session');
-	};
-
-	CognitoUser.prototype.updateAttributes = (attributeList, callback) => {
-		callback(null, 'SUCCESS');
-	};
-
-	CognitoUser.prototype.setAuthenticationFlowType = type => {};
-
-	CognitoUser.prototype.initiateAuth = (authenticationDetails, callback) => {
-		callback.customChallenge('challengeParam');
-	};
-
-	CognitoUser.prototype.sendCustomChallengeAnswer = (
-		challengeAnswer,
-		callback
-	) => {
-		callback.onSuccess('session');
-	};
-
-	CognitoUser.prototype.refreshSession = (refreshToken, callback) => {
-		callback(null, 'session');
-	};
-
-	CognitoUser.prototype.getUsername = () => {
-		return 'username';
-	};
-
-	CognitoUser.prototype.getUserData = callback => {
-		callback(null, 'data');
-	};
-
-	return CognitoUser;
 });
 
 import * as AmplifyCore from '@aws-amplify/core';
@@ -198,6 +210,7 @@ const session = new CognitoUserSession({
 });
 
 import { AuthClass as Auth } from '../src/Auth';
+import { InternalAuthClass } from '../src/internals/InternalAuth';
 import { AuthOptions } from '../src/types';
 
 describe('Hosted UI tests', () => {
@@ -207,8 +220,9 @@ describe('Hosted UI tests', () => {
 	});
 
 	test('hosted UI in progress, signIn success', done => {
-		const auth = new Auth(authOptionsWithOAuth);
-		const user = new CognitoUser({
+		const internalAuth = new InternalAuthClass(authOptionsWithOAuth);
+		const auth = new Auth(internalAuth);
+		const user = new InternalCognitoUser({
 			Username: 'username',
 			Pool: userPool,
 		});
@@ -218,13 +232,13 @@ describe('Hosted UI tests', () => {
 				return user;
 			});
 		jest
-			.spyOn(CognitoUser.prototype, 'getSession')
+			.spyOn(InternalCognitoUser.prototype, 'getSession')
 			.mockImplementation((callback: any) => {
 				return callback(null, session);
 			});
 
 		jest
-			.spyOn(CognitoUser.prototype, 'getUserData')
+			.spyOn(InternalCognitoUser.prototype, 'getUserData')
 			.mockImplementationOnce((callback: any) => {
 				const data = {
 					PreferredMfaSetting: 'SMS',
@@ -247,7 +261,7 @@ describe('Hosted UI tests', () => {
 
 		expect.assertions(2);
 
-		(auth as any).oAuthFlowInProgress = true;
+		(internalAuth as any).oAuthFlowInProgress = true;
 
 		auth.currentUserPoolUser().then(resUser => {
 			expect(resUser).toEqual(user);
@@ -278,9 +292,10 @@ describe('Hosted UI tests', () => {
 			isNode: false,
 		}));
 
-		const auth = new Auth(authOptionsWithOAuth);
+		const internalAuth = new InternalAuthClass(authOptionsWithOAuth);
+		const auth = new Auth(internalAuth);
 
-		const user = new CognitoUser({
+		const user = new InternalCognitoUser({
 			Username: 'username',
 			Pool: userPool,
 		});
@@ -296,12 +311,12 @@ describe('Hosted UI tests', () => {
 			});
 
 		const spyGlobalSignOut = jest
-			.spyOn(CognitoUser.prototype, 'globalSignOut')
+			.spyOn(InternalCognitoUser.prototype, 'globalSignOut')
 			.mockImplementation(({ onSuccess }) => {
 				onSuccess('success');
 			});
 
-		(auth as any)._oAuthHandler = {
+		(internalAuth as any)._oAuthHandler = {
 			signOut: () => {
 				// testing timeout
 				return new Promise(() => {});
@@ -332,9 +347,10 @@ describe('Hosted UI tests', () => {
 			isNode: true,
 		}));
 
-		const auth = new Auth(authOptionsWithOAuth);
+		const internalAuth = new InternalAuthClass(authOptionsWithOAuth);
+		const auth = new Auth(internalAuth);
 
-		const user = new CognitoUser({
+		const user = new InternalCognitoUser({
 			Username: 'username',
 			Pool: userPool,
 		});
@@ -350,12 +366,12 @@ describe('Hosted UI tests', () => {
 			});
 
 		const spyGlobalSignOut = jest
-			.spyOn(CognitoUser.prototype, 'globalSignOut')
+			.spyOn(InternalCognitoUser.prototype, 'globalSignOut')
 			.mockImplementation(({ onSuccess }) => {
 				onSuccess('success');
 			});
 
-		(auth as any)._oAuthHandler = {
+		(internalAuth as any)._oAuthHandler = {
 			signOut: () => {
 				// testing timeout
 				return new Promise(() => {});
@@ -386,9 +402,10 @@ describe('Hosted UI tests', () => {
 			isNode: true,
 		}));
 
-		const auth = new Auth(authOptionsWithOAuth);
+		const internalAuth = new InternalAuthClass(authOptionsWithOAuth);
+		const auth = new Auth(internalAuth);
 
-		const user = new CognitoUser({
+		const user = new InternalCognitoUser({
 			Username: 'username',
 			Pool: userPool,
 		});
@@ -403,7 +420,7 @@ describe('Hosted UI tests', () => {
 				return user;
 			});
 
-		(auth as any)._oAuthHandler = {
+		(internalAuth as any)._oAuthHandler = {
 			signOut: () => {
 				// testing timeout
 				return new Promise(() => {});
@@ -432,9 +449,10 @@ describe('Hosted UI tests', () => {
 			isNode: false,
 		}));
 
-		const auth = new Auth(authOptionsWithOAuth);
+		const internalAuth = new InternalAuthClass(authOptionsWithOAuth);
+		const auth = new Auth(internalAuth);
 
-		const user = new CognitoUser({
+		const user = new InternalCognitoUser({
 			Username: 'username',
 			Pool: userPool,
 		});
@@ -449,7 +467,7 @@ describe('Hosted UI tests', () => {
 				return user;
 			});
 
-		(auth as any)._oAuthHandler = {
+		(internalAuth as any)._oAuthHandler = {
 			signOut: () => {
 				// testing timeout
 				return new Promise(() => {});
@@ -492,9 +510,9 @@ describe('Hosted UI tests', () => {
 		};
 		options.oauth.urlOpener = urlOpener;
 
-		const auth = new Auth(options);
+		const auth = new Auth(new InternalAuthClass(options));
 
-		const user = new CognitoUser({
+		const user = new InternalCognitoUser({
 			Username: 'username',
 			Pool: userPool,
 		});
@@ -539,9 +557,9 @@ describe('Hosted UI tests', () => {
 		};
 		options.oauth.urlOpener = urlOpener;
 
-		const auth = new Auth(options);
+		const auth = new Auth(new InternalAuthClass(options));
 
-		const user = new CognitoUser({
+		const user = new InternalCognitoUser({
 			Username: 'username',
 			Pool: userPool,
 		});
