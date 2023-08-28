@@ -5,6 +5,7 @@ import { S3TransferOptions, S3DownloadDataResult } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { StorageDownloadDataRequest, DownloadTask } from '../../../types';
+import { getObject } from '../utils/client';
 import { createDownloadTask } from '../utils';
 import { getObject } from '../utils/client';
 
