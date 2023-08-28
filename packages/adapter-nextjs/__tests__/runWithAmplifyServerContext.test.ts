@@ -14,9 +14,11 @@ import { NextServer } from '../src/types';
 
 const mockAmplifyConfig: ResourcesConfig = {
 	Auth: {
-		identityPoolId: '123',
-		userPoolId: 'abc',
-		userPoolWebClientId: 'def',
+		Cognito: {
+			identityPoolId: '123',
+			userPoolId: 'abc',
+			userPoolClientId: 'def',
+		},
 	},
 	Storage: {
 		S3: {

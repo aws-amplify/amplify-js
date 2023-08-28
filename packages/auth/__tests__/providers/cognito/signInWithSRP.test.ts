@@ -19,13 +19,16 @@ import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/to
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 const authConfig = {
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
 const authConfigWithClientmetadata = {
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
-	...authAPITestParams.configWithClientMetadata,
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
 cognitoCredentialsProvider.setAuthConfig(authConfig);
 CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
@@ -95,32 +98,7 @@ describe('signIn API happy path cases', () => {
 			username,
 			password,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
-			authConfig
-		);
-	});
-
-	test('handleUserSRPFlow should be called with clientMetada from config', async () => {
-		const authConfig = {
-			userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			userPoolId: 'us-west-2_zzzzz',
-			...authAPITestParams.configWithClientMetadata,
-		};
-		cognitoCredentialsProvider.setAuthConfig(authConfig);
-		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-		Amplify.configure({
-			Auth: authConfig,
-		});
-		const username = authAPITestParams.user1.username;
-		const password = authAPITestParams.user1.password;
-		await signInWithSRP({
-			username,
-			password,
-		});
-		expect(handleUserSRPAuthflowSpy).toBeCalledWith(
-			username,
-			password,
-			authAPITestParams.configWithClientMetadata.clientMetadata,
-			authConfigWithClientmetadata
+			authConfig.Cognito
 		);
 	});
 });

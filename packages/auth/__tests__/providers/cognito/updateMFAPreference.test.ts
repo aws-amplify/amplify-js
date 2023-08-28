@@ -37,9 +37,11 @@ const mfaChoises: UpdateMFAPreferenceRequest[] = [
 
 Amplify.configure({
 	Auth: {
-		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-		userPoolId: 'us-west-2_zzzzz',
-		identityPoolId: 'us-west-2:xxxxxx',
+		Cognito: {
+			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+			identityPoolId: 'us-west-2:xxxxxx',
+		},
 	},
 });
 const mockedAccessToken =
@@ -88,7 +90,6 @@ describe('updateMFAPreference Happy Path Cases:', () => {
 });
 
 describe('updateMFAPreference Error Path Cases:', () => {
-
 	test('updateMFAPreference should expect a service error', async () => {
 		expect.assertions(2);
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(

@@ -71,8 +71,10 @@ describe('refresh token tests', () => {
 				refreshToken: 'refreshtoken',
 			},
 			authConfig: {
-				userPoolId: 'us-east-1_aaaaaaa',
-				userPoolWebClientId: 'aaaaaaaaaaaa',
+				Cognito: {
+					userPoolId: 'us-east-1_aaaaaaa',
+					userPoolClientId: 'aaaaaaaaaaaa',
+				},
 			},
 		});
 

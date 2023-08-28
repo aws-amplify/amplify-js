@@ -36,17 +36,15 @@ export async function resendSignUpCode(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
 	);
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const clientMetadata =
-		resendRequest.options?.serviceOptions?.clientMetadata ??
-		authConfig.clientMetadata;
+	const clientMetadata = resendRequest.options?.serviceOptions?.clientMetadata;
 	const { CodeDeliveryDetails } = await resendConfirmationCode(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
 			Username: username,
 			ClientMetadata: clientMetadata,
-			ClientId: authConfig.userPoolWebClientId,
+			ClientId: authConfig.userPoolClientId,
 		}
 	);
 	const { DeliveryMedium, AttributeName, Destination } = {

@@ -16,9 +16,11 @@ jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 Amplify.configure({
 	Auth: {
-		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-		userPoolId: 'us-west-2_zzzzz',
-		identityPoolId: 'us-west-2:xxxxxx',
+		Cognito: {
+			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+			identityPoolId: 'us-west-2:xxxxxx',
+		},
 	},
 });
 const mockedAccessToken =

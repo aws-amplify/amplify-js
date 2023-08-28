@@ -16,8 +16,10 @@ describe('local sign-in state management tests', () => {
 	const username = authAPITestParams.user1.username;
 	const password = authAPITestParams.user1.password;
 	const authConfig = {
-		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-		userPoolId: 'us-west-2_zzzzz',
+		Cognito: {
+			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+		},
 	};
 
 	beforeEach(() => {

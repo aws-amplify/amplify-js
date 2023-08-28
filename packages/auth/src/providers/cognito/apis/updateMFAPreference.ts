@@ -26,7 +26,7 @@ export async function updateMFAPreference(
 	updateMFAPreferenceRequest: UpdateMFAPreferenceRequest
 ): Promise<void> {
 	const { sms, totp } = updateMFAPreferenceRequest;
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
