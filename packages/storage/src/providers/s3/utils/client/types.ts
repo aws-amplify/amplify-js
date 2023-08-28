@@ -245,6 +245,14 @@ export interface DeleteObjectCommandInput extends DeleteObjectRequest {}
 /**
  * @public
  *
+ * The output of {@link DeleteObjectCommand}.
+ */
+export interface DeleteObjectCommandOutput
+	extends DeleteObjectOutput,
+		__MetadataBearer {}
+/**
+ * @public
+ *
  * The input for {@link GetObjectCommand}.
  */
 export interface GetObjectCommandInput extends GetObjectRequest {}
