@@ -33,7 +33,10 @@ const storagePackageSrcClientsPath = join(
 	'packages',
 	'storage',
 	'src',
-	'AwsClients'
+	'providers',
+	's3',
+	'utils',
+	'client'
 );
 const authPackageSrcClientsPath = join(
 	__dirname,
@@ -80,7 +83,11 @@ const config = {
 		},
 		{
 			filePath: './cognito-identity-provider.d.ts',
-			outFile: join(authPackageSrcClientsPath, 'CognitoIdentityProvider', 'types.ts'),
+			outFile: join(
+				authPackageSrcClientsPath,
+				'CognitoIdentityProvider',
+				'types.ts'
+			),
 			libraries: {
 				inlinedLibraries: ['@aws-sdk/client-cognito-identity-provider'],
 			},
