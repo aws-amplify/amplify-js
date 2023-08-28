@@ -11,8 +11,10 @@ const mockAmplifyConfig: ResourcesConfig = {
 		userPoolWebClientId: 'def',
 	},
 	Storage: {
-		bucket: 'bucket',
-		region: 'us-east-1',
+		S3: {
+			bucket: 'bucket',
+			region: 'us-east-1',
+		}
 	},
 };
 
