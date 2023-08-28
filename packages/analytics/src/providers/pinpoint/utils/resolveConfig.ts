@@ -11,7 +11,7 @@ import {
  * @internal
  */
 export const resolveConfig = () => {
-	const { appId, region } = Amplify.getConfig().Analytics?.AWSPinpoint ?? {};
+	const { appId, region } = Amplify.getConfig().Analytics?.Pinpoint ?? {};
 	assertValidationError(!!appId, AnalyticsValidationErrorCode.NoAppId);
 	assertValidationError(!!region, AnalyticsValidationErrorCode.NoRegion);
 	return { appId, region };
