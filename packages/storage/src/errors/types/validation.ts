@@ -12,7 +12,7 @@ export enum StorageValidationErrorCode {
 	NoBucket = 'NoBucket',
 	NoRegion = 'NoRegion',
 	UrlExpirationMaxLimitExceed = 'UrlExpirationMaxLimitExceed',
-	ObjectTooLarge = 'ObjectTooLarge',
+	ObjectIsTooLarge = 'ObjectIsTooLarge',
 	InvalidUploadSource = 'InvalidUploadSource',
 }
 
@@ -42,11 +42,11 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	[StorageValidationErrorCode.UrlExpirationMaxLimitExceed]: {
 		message: 'Url Expiration can not be greater than 7 Days.',
 	},
-	[StorageValidationErrorCode.ObjectTooLarge]: {
+	[StorageValidationErrorCode.ObjectIsTooLarge]: {
 		message: 'Object size cannot not be greater than 5TB.',
 	},
 	[StorageValidationErrorCode.InvalidUploadSource]: {
 		message:
-			'Invalid upload source type. Expected a Blob, File, ArrayBuffer, or a string.',
+			'Upload source type can only be a `Blob`, `File`, `ArrayBuffer`, or `string`.',
 	},
 };

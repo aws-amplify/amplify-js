@@ -26,6 +26,6 @@ export const getKvStorage = async () => {
 		return resolvedStorage;
 	} catch (e) {
 		resolvedStorage = MemoryKeyValueStorage;
-		return MemoryKeyValueStorage;
+		return resolvedStorage;
 	}
 };

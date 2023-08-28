@@ -23,7 +23,7 @@ type LoadOrCreateMultipartUploadOptions = {
 	contentDisposition?: string;
 	contentEncoding?: string;
 	metadata?: Record<string, string>;
-	totalLength?: number;
+	size?: number;
 	abortSignal?: AbortSignal;
 };
 
@@ -41,7 +41,7 @@ type LoadOrCreateMultipartUploadResult = {
 export const loadOrCreateMultipartUpload = async ({
 	s3Config,
 	data,
-	totalLength,
+	size,
 	contentType,
 	bucket,
 	accessLevel,
@@ -61,13 +61,13 @@ export const loadOrCreateMultipartUpload = async ({
 				uploadCacheKey: string;
 		  }
 		| undefined;
-	if (totalLength === undefined) {
+	if (size === undefined) {
 		// Cannot determine total length of the data source, so we cannot safely cache the upload
 		// TODO: logger message
 		cachedUpload = undefined;
 	} else {
 		const uploadCacheKey = getUploadsCacheKey({
-			size: totalLength,
+			size,
 			contentType,
 			file: data instanceof File ? data : undefined,
 			bucket,
@@ -105,7 +105,7 @@ export const loadOrCreateMultipartUpload = async ({
 				Metadata: metadata,
 			}
 		);
-		if (totalLength === undefined) {
+		if (size === undefined) {
 			// Cannot determine total length of the data source, so we cannot safely cache the upload
 			// TODO: logger message
 			return {
@@ -114,7 +114,7 @@ export const loadOrCreateMultipartUpload = async ({
 			};
 		}
 		const uploadCacheKey = getUploadsCacheKey({
-			size: totalLength,
+			size,
 			contentType,
 			file: data instanceof File ? data : undefined,
 			bucket,

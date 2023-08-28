@@ -12,7 +12,7 @@ import { calculatePartSize } from './calculatePartSize';
 export type PartToUpload = {
 	partNumber: number;
 	data: Blob | ArrayBuffer | string;
-	lastPart?: boolean;
+	size: number;
 };
 
 export const getDataChunker = (data: UploadSource, totalSize?: number) => {
@@ -34,6 +34,8 @@ export const getDataChunker = (data: UploadSource, totalSize?: number) => {
 	}
 };
 
+// TODO[AllanZhengYP]: the byte length of string is incorrect here which will cause the progress tracking behave
+// incorrectly. We should fix this in the future.
 const helper = function* (
 	buffer: ArrayBuffer | Blob | string,
 	byteOffset: number,
@@ -48,6 +50,7 @@ const helper = function* (
 		yield {
 			partNumber,
 			data: buffer.slice(startByte, endByte),
+			size: partSize,
 		};
 		partNumber += 1;
 		startByte = endByte;
@@ -57,6 +60,6 @@ const helper = function* (
 	yield {
 		partNumber,
 		data: buffer.slice(startByte, byteLength + byteOffset),
-		lastPart: true,
+		size: byteLength + byteOffset - startByte,
 	};
 };

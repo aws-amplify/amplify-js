@@ -40,7 +40,7 @@ describe('uploadData', () => {
 				})
 			).toThrowError(
 				expect.objectContaining(
-					validationErrorMap[StorageValidationErrorCode.ObjectTooLarge]
+					validationErrorMap[StorageValidationErrorCode.ObjectIsTooLarge]
 				)
 			);
 		});

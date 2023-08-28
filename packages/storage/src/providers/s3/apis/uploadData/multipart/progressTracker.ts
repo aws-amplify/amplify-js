@@ -4,7 +4,7 @@
 import { TransferProgressEvent } from '../../../../../types';
 
 type ConcurrentUploadsProgressTrackerOptions = {
-	totalLength?: number;
+	size?: number;
 	onProgress?: (event: TransferProgressEvent) => void;
 };
 
@@ -14,7 +14,7 @@ type ConcurrentUploadsProgressTrackerOptions = {
  * @internal
  */
 export const getConcurrentUploadsProgressTracker = ({
-	totalLength,
+	size,
 	onProgress,
 }: ConcurrentUploadsProgressTrackerOptions) => {
 	const transferredBytesPerListener: number[] = [];
@@ -34,7 +34,7 @@ export const getConcurrentUploadsProgressTracker = ({
 				transferredBytesPerListener[listenerIndex] = transferredBytes;
 				onProgress?.({
 					transferredBytes: getTransferredBytes(),
-					totalBytes: totalLength,
+					totalBytes: size,
 				});
 			};
 		},

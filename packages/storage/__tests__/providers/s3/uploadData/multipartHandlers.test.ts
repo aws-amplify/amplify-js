@@ -17,9 +17,9 @@ import {
 	validationErrorMap,
 	StorageValidationErrorCode,
 } from '../../../../src/errors/types/validation';
-import { partByteLength } from '../../../../src/providers/s3/apis/uploadData/multipart/partByteLength';
 import { UPLOADS_STORAGE_KEY } from '../../../../src/common/StorageConstants';
 import { getKvStorage } from '../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage';
+import { byteLength } from '../../../../src/providers/s3/apis/uploadData/byteLength';
 
 jest.mock('../../../../src/AwsClients/S3');
 
@@ -58,6 +58,8 @@ const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 const bucket = 'bucket';
 const region = 'region';
 const defaultKey = 'key';
+const defaultContentType = 'application/octet-stream';
+const defaultCacheKey = '8388608_application/octet-stream_bucket_public_key';
 
 const mockCreateMultipartUpload = createMultipartUpload as jest.Mock;
 const mockUploadPart = uploadPart as jest.Mock;
@@ -90,7 +92,7 @@ const mockMultipartUploadSuccess = (disableAssertion?: boolean) => {
 			totalBytes: input.Body.byteLength,
 		});
 
-		totalSize += partByteLength(input.Body);
+		totalSize += byteLength(input.Body)!;
 
 		return {
 			Etag: `etag-${input.PartNumber}`,
@@ -201,7 +203,7 @@ describe('getMultipartUploadHandlers', () => {
 					expect.objectContaining({
 						Bucket: bucket,
 						Key: `public/${defaultKey}`,
-						ContentType: 'binary/octet-stream',
+						ContentType: defaultContentType,
 					})
 				);
 				expect(result).toEqual(
@@ -356,10 +358,9 @@ describe('getMultipartUploadHandlers', () => {
 		});
 
 		it('should send createMultipartUpload request if the upload task is cached but outdated', async () => {
-			const cacheKey = '8388608_binary/octet-stream_bucket_public_key';
 			mockLocalStorage.getItem.mockResolvedValue(
 				JSON.stringify({
-					[cacheKey]: {
+					[defaultCacheKey]: {
 						uploadId: 'uploadId',
 						bucket,
 						key: defaultKey,
@@ -402,16 +403,15 @@ describe('getMultipartUploadHandlers', () => {
 			expect(Object.keys(cacheValue)).toEqual([
 				expect.stringMatching(
 					// \d{13} is the file lastModified property of a file
-					/someName_\d{13}_8388608_binary\/octet-stream_bucket_public_key/
+					/someName_\d{13}_8388608_application\/octet-stream_bucket_public_key/
 				),
 			]);
 		});
 
 		it('should send listParts request if the upload task is cached', async () => {
-			const cacheKey = '8388608_binary/octet-stream_bucket_public_key';
 			mockLocalStorage.getItem.mockResolvedValue(
 				JSON.stringify({
-					[cacheKey]: {
+					[defaultCacheKey]: {
 						uploadId: 'uploadId',
 						bucket,
 						key: defaultKey,
@@ -455,7 +455,9 @@ describe('getMultipartUploadHandlers', () => {
 			);
 			const cacheValue = JSON.parse(mockLocalStorage.setItem.mock.calls[0][1]);
 			expect(Object.keys(cacheValue)).toEqual([
-				expect.stringMatching(/8388608_binary\/octet-stream_bucket_public_key/),
+				expect.stringMatching(
+					/8388608_application\/octet-stream_bucket_public_key/
+				),
 			]);
 		});
 
@@ -594,10 +596,9 @@ describe('getMultipartUploadHandlers', () => {
 			const mockLocalStorage = (await getKvStorage()) as jest.Mocked<
 				typeof LocalStorage
 			>;
-			const cacheKey = '8388608_binary/octet-stream_bucket_public_key';
 			mockLocalStorage.getItem.mockResolvedValue(
 				JSON.stringify({
-					[cacheKey]: {
+					[defaultCacheKey]: {
 						uploadId: 'uploadId',
 						bucket,
 						key: defaultKey,

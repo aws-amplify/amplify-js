@@ -36,7 +36,7 @@ export const getMultipartUploadHandlers = (
 		key,
 		data,
 	}: StorageUploadDataRequest<S3UploadOptions>,
-	totalLength?: number
+	size?: number
 ) => {
 	let resolveCallback: ((value: S3Item) => void) | undefined;
 	let rejectCallback: ((reason?: any) => void) | undefined;
@@ -67,7 +67,7 @@ export const getMultipartUploadHandlers = (
 		const {
 			contentDisposition,
 			contentEncoding,
-			contentType = 'binary/octet-stream',
+			contentType = 'application/octet-stream',
 			metadata,
 			accessLevel,
 			onProgress,
@@ -85,7 +85,7 @@ export const getMultipartUploadHandlers = (
 				contentEncoding,
 				metadata,
 				data,
-				totalLength,
+				size,
 				abortSignal: abortController.signal,
 			});
 			inProgressUpload = {
@@ -96,13 +96,13 @@ export const getMultipartUploadHandlers = (
 
 		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths
 		const finalKey = keyPrefix + key;
-		const uploadCacheKey = totalLength
+		const uploadCacheKey = size
 			? getUploadsCacheKey({
 					file: data instanceof File ? data : undefined,
 					accessLevel: resolveAccessLevel(uploadDataOptions?.accessLevel),
 					contentType: uploadDataOptions?.contentType,
 					bucket: bucket!,
-					size: totalLength,
+					size,
 					key,
 			  })
 			: undefined;
@@ -128,7 +128,7 @@ export const getMultipartUploadHandlers = (
 		};
 		abortController?.signal.addEventListener('abort', abortListener);
 
-		const dataChunker = getDataChunker(data, totalLength);
+		const dataChunker = getDataChunker(data, size);
 		const completedPartNumberSet = new Set<number>(
 			inProgressUpload.completedParts.map(({ PartNumber }) => PartNumber!)
 		);
@@ -140,7 +140,7 @@ export const getMultipartUploadHandlers = (
 		};
 		const concurrentUploadsProgressTracker =
 			getConcurrentUploadsProgressTracker({
-				totalLength,
+				size,
 				onProgress,
 			});
 
@@ -181,18 +181,15 @@ export const getMultipartUploadHandlers = (
 			}
 		);
 
-		if (totalLength) {
-			const { ContentLength: uploadedObjectLength } = await headObject(
-				s3Config,
-				{
-					Bucket: bucket,
-					Key: finalKey,
-				}
-			);
-			if (uploadedObjectLength && uploadedObjectLength !== totalLength) {
+		if (size) {
+			const { ContentLength: uploadedObjectSize } = await headObject(s3Config, {
+				Bucket: bucket,
+				Key: finalKey,
+			});
+			if (uploadedObjectSize && uploadedObjectSize !== size) {
 				throw new StorageError({
 					name: 'Error',
-					message: `Upload failed. Expected object size ${totalLength}, but got ${uploadedObjectLength}.`,
+					message: `Upload failed. Expected object size ${size}, but got ${uploadedObjectSize}.`,
 				});
 			}
 		}

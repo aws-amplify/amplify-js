@@ -70,8 +70,14 @@ type FileMetadata = {
 
 const listCachedUploadTasks = async (
 	kvStorage: KeyValueStorageInterface
-): Promise<Record<string, FileMetadata>> =>
-	JSON.parse((await kvStorage.getItem(UPLOADS_STORAGE_KEY)) ?? '{}');
+): Promise<Record<string, FileMetadata>> => {
+	try {
+		return JSON.parse((await kvStorage.getItem(UPLOADS_STORAGE_KEY)) ?? '{}');
+	} catch (e) {
+		// TODO: debug message: cached uploads is not a valid JSON string
+		return {};
+	}
+};
 
 type UploadsCacheKeyOptions = {
 	size: number;
@@ -96,7 +102,7 @@ export const getUploadsCacheKey = ({
 	key,
 }: UploadsCacheKeyOptions) => {
 	const resolvedContentType =
-		contentType ?? file?.type ?? 'binary/octet-stream';
+		contentType ?? file?.type ?? 'application/octet-stream';
 	const levelStr = accessLevel === 'guest' ? 'public' : accessLevel;
 	const baseId = `${size}_${resolvedContentType}_${bucket}_${levelStr}_${key}`;
 	if (file) {

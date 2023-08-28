@@ -5,7 +5,6 @@ import { PartToUpload } from './getDataChunker';
 import { uploadPart } from '../../../../../AwsClients/S3';
 import { TransferProgressEvent } from '../../../../../types';
 import { ResolvedS3Config } from '../../../types/options';
-import { partByteLength } from './partByteLength';
 import { calculateContentMd5 } from '../../../utils';
 
 type UploadPartExecutorOptions = {
@@ -34,16 +33,15 @@ export const uploadPartExecutor = async ({
 	isObjectLockEnabled,
 }: UploadPartExecutorOptions) => {
 	let transferredBytes = 0;
-	for (const { data, partNumber } of dataChunkerGenerator) {
+	for (const { data, partNumber, size } of dataChunkerGenerator) {
 		if (abortSignal.aborted) {
 			// TODO: debug message: upload executor aborted
 			break;
 		}
 
-		const partSize = partByteLength(data);
 		if (completedPartNumberSet.has(partNumber)) {
 			// TODO: debug message: part already uploaded
-			transferredBytes += partSize;
+			transferredBytes += size;
 			onProgress?.({
 				transferredBytes,
 			});
@@ -72,7 +70,7 @@ export const uploadPartExecutor = async ({
 						: undefined,
 				}
 			);
-			transferredBytes += partSize;
+			transferredBytes += size;
 			// eTag will always be set even the S3 model interface marks it as optional.
 			onPartUploadCompletion(partNumber, eTag!);
 		}
