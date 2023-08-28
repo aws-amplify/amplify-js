@@ -13,13 +13,17 @@ import { ResolvedS3Config } from '../../../../types/options';
 
 const ONE_HOUR = 1000 * 60 * 60;
 
-export type FindCachedUploadPartsOptions = {
+type FindCachedUploadPartsOptions = {
 	cacheKey: string;
 	s3Config: ResolvedS3Config;
 	bucket: string;
 	finalKey: string;
 };
 
+/**
+ * Find the cached multipart upload id and get the parts that have been uploaded
+ * with ListParts API. If the cached upload is expired(1 hour), return null.
+ */
 export const findCachedUploadParts = async ({
 	cacheKey,
 	s3Config,
@@ -69,7 +73,7 @@ const listCachedUploadTasks = async (
 ): Promise<Record<string, FileMetadata>> =>
 	JSON.parse((await kvStorage.getItem(UPLOADS_STORAGE_KEY)) ?? '{}');
 
-export type UploadsCacheKeyOptions = {
+type UploadsCacheKeyOptions = {
 	size: number;
 	contentType?: string;
 	bucket: string;
@@ -77,6 +81,12 @@ export type UploadsCacheKeyOptions = {
 	key: string;
 	file?: File;
 };
+
+/**
+ * Get the cache key of a multipart upload. Data source cached by different: size, content type, bucket, access level,
+ * key. If the data source is a File instance, the upload is additionally indexed by file name and last modified time.
+ * So the library always created a new multipart upload if the file is modified.
+ */
 export const getUploadsCacheKey = ({
 	file,
 	size,
@@ -86,7 +96,7 @@ export const getUploadsCacheKey = ({
 	key,
 }: UploadsCacheKeyOptions) => {
 	const resolvedContentType =
-		contentType ?? (file ? file.type : 'binary/octet-stream');
+		contentType ?? file?.type ?? 'binary/octet-stream';
 	const levelStr = accessLevel === 'guest' ? 'public' : accessLevel;
 	const baseId = `${size}_${resolvedContentType}_${bucket}_${levelStr}_${key}`;
 	if (file) {

@@ -5,7 +5,7 @@ export * from './Storage';
 export * from './Provider';
 export * from './AWSS3Provider';
 
-export { DownloadTask, TransferProgressEvent } from './common';
+export { DownloadTask, TransferProgressEvent, UploadTask } from './common';
 export {
 	StorageListRequest,
 	StorageListAllOptions,

@@ -7,9 +7,7 @@ import {
 	parseAWSExports,
 	Amplify,
 } from '@aws-amplify/core';
-import { 
-	ConsoleLogger as Logger
-} from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import {
 	copyObject,
 	CopyObjectInput,
@@ -47,12 +45,12 @@ import {
 	S3ProviderRemoveOutput,
 	S3ProviderPutOutput,
 	ResumableUploadConfig,
-	UploadTask,
 	S3ClientOptions,
 	S3ProviderListOutput,
 	S3ProviderGetPropertiesConfig,
 	S3ProviderGetPropertiesOutput,
 } from '../types';
+import { UploadTask } from '../types/Provider';
 import { ConfigType } from '../types/Provider';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import {

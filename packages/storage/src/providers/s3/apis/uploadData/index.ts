@@ -3,7 +3,7 @@
 
 import { S3UploadDataResult, S3UploadOptions } from '../../types';
 import { createUploadTask } from '../../utils';
-import { StorageUploadDataRequest, DownloadTask } from '../../../../types';
+import { UploadTask, StorageUploadDataRequest } from '../../../../types';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { DEFAULT_PART_SIZE, MAX_OBJECT_SIZE } from '../../utils/constants';
@@ -21,7 +21,7 @@ import { getMultipartUploadHandlers } from './multipart';
  *
  * @param {StorageUploadDataRequest<S3UploadOptions>} uploadDataRequest The parameters that are passed to the
  * 	uploadData operation.
- * @returns {DownloadTask<S3UploadDataResult>} Cancelable and Resumable task exposing result promise from `result`
+ * @returns {UploadTask<S3UploadDataResult>} Cancelable and Resumable task exposing result promise from `result`
  * 	property.
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors
@@ -31,7 +31,7 @@ import { getMultipartUploadHandlers } from './multipart';
  */
 export const uploadData = (
 	uploadDataRequest: StorageUploadDataRequest<S3UploadOptions>
-): DownloadTask<S3UploadDataResult> => {
+): UploadTask<S3UploadDataResult> => {
 	const { data } = uploadDataRequest;
 
 	const dataByteLength = byteLength(data);

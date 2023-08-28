@@ -132,5 +132,4 @@ export const loadOrCreateMultipartUpload = async ({
 			cachedParts: [],
 		};
 	}
-	// handle cancel;
 };

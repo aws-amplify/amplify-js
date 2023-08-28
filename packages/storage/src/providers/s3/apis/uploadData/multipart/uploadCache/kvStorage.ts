@@ -9,6 +9,11 @@ import {
 
 let resolvedStorage: KeyValueStorageInterface | undefined;
 
+/**
+ * Get the key-value storage that is available in the current environment.
+ * In React Native, this will be async storage. In other environments like browsers, this will be local storage and
+ * fallback to memory storage.
+ */
 export const getKvStorage = async () => {
 	if (resolvedStorage) {
 		return resolvedStorage;
