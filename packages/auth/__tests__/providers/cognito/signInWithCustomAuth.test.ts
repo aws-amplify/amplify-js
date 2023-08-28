@@ -15,13 +15,16 @@ import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 const authConfig = {
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
 const authConfigWithClientmetadata = {
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
-	...authAPITestParams.configWithClientMetadata,
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
 Amplify.configure({
 	Auth: authConfig,
@@ -74,26 +77,7 @@ describe('signIn API happy path cases', () => {
 		expect(handleCustomAuthFlowWithoutSRPSpy).toBeCalledWith(
 			username,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
-			authConfig
-		);
-	});
-
-	test('handleCustomAuthFlowWithoutSRP should be called with clientMetada from config', async () => {
-		Amplify.configure({
-			Auth: {
-				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				userPoolId: 'us-west-2_zzzzz',
-				...authAPITestParams.configWithClientMetadata,
-			},
-		});
-		const username = authAPITestParams.user1.username;
-		await signInWithCustomAuth({
-			username,
-		});
-		expect(handleCustomAuthFlowWithoutSRPSpy).toBeCalledWith(
-			username,
-			authAPITestParams.configWithClientMetadata.clientMetadata,
-			authConfigWithClientmetadata
+			authConfig.Cognito
 		);
 	});
 });

@@ -16,7 +16,7 @@ import { toAuthUserAttribute } from '../../utils/apiHelpers';
 export const fetchUserAttributes = async (
 	amplify: AmplifyClassV6
 ): Promise<AuthUserAttribute<CognitoUserAttributeKey>> => {
-	const authConfig = amplify.getConfig().Auth;
+	const authConfig = amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession(amplify, {
 		forceRefresh: false,

@@ -23,6 +23,7 @@ export {
 	AWSCredentialsAndIdentityId,
 	Identity,
 	OAuthConfig,
+	CognitoUserPoolConfig,
 } from './singleton/Auth/types';
 export {
 	AuthConfig,
