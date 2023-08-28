@@ -34,7 +34,6 @@ export {
 	ResourcesConfig,
 	LibraryOptions,
 	AnalyticsConfig,
-	CacheConfig,
 } from './singleton/types';
 export {
 	Amplify,

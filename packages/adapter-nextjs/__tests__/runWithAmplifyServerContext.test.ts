@@ -51,8 +51,10 @@ describe('runWithAmplifyServerContext', () => {
 		it('should call runWithAmplifyServerContextCore without Auth library options', () => {
 			const mockAmplifyConfig: ResourcesConfig = {
 				Analytics: {
-					appId: 'app-id',
-					region: 'region',
+					Pinpoint: {
+						appId: 'app-id',
+						region: 'region',
+					}
 				},
 			};
 			mockGetAmplifyConfig.mockReturnValueOnce(mockAmplifyConfig);
