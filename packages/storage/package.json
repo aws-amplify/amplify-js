@@ -113,7 +113,8 @@
 					"types": ["@types/jest"],
 					"outDir": "./tsconfig.json",
 					"noEmitOnError": false,
-					"noImplicitAny": false
+					"noImplicitAny": false,
+					"skipLibCheck": true
 				}
 			}
 		},
@@ -125,6 +126,11 @@
 			"xmlParser-fixture.ts",
 			"testUtils",
 			"cases"
+		],
+		"modulePathIgnorePatterns": [
+			"dist",
+			"lib",
+			"lib-esm"
 		],
 		"moduleFileExtensions": [
 			"ts",
