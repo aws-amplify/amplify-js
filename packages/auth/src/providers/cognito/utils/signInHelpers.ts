@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, AuthConfig } from '@aws-amplify/core';
+import { Amplify, AuthConfig, CognitoUserPoolConfig } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import {
 	getLargeAValue,
@@ -46,7 +46,6 @@ import {
 	RespondToAuthChallengeCommandOutput,
 } from './clients/CognitoIdentityProvider/types';
 import { getRegion } from './clients/CognitoIdentityProvider/utils';
-import { CognitoUserPoolConfig } from '@aws-amplify/core/lib-esm/singleton/Auth/types';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 

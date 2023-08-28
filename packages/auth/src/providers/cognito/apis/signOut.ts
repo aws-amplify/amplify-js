@@ -3,9 +3,8 @@
 
 import {
 	Amplify,
-	AuthConfig,
+	CognitoUserPoolConfig,
 	LocalStorage,
-	UserPoolConfig,
 	clearCredentials,
 } from '@aws-amplify/core';
 import { SignOutRequest } from '../../../types/requests';
@@ -22,11 +21,7 @@ import {
 	revokeToken,
 } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import {
-	CognitoIdentityPoolConfig,
-	CognitoUserPoolConfig,
-	StrictUnion,
-} from '@aws-amplify/core/lib-esm/singleton/Auth/types';
+
 const SELF = '_self';
 
 /**
