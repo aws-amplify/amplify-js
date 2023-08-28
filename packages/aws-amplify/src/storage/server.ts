@@ -3,6 +3,6 @@
 
 /*
 This file maps exports from `aws-amplify/storage/server`.
-It provides access to the default Storage provider and category utils.
+It provides access to the default server context enabled Storage provider and category utils.
 */
 export * from '@aws-amplify/storage/server';
