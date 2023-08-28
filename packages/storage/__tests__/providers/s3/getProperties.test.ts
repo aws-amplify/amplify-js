@@ -45,8 +45,10 @@ describe('getProperties test', () => {
 
 	(Amplify.getConfig as jest.Mock).mockReturnValue({
 		Storage: {
-			bucket,
-			region,
+			S3: {
+				bucket,
+				region,
+			}
 		},
 	});
 	it('getProperties happy path case with private check', async () => {

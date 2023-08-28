@@ -43,7 +43,7 @@ export const resolveS3ConfigAndInput = async (
 	assertValidationError(!!identityId, StorageValidationErrorCode.NoIdentityId);
 
 	const { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
-	Amplify.getConfig()?.Storage ?? {};
+	Amplify.getConfig()?.Storage?.S3 ?? {};
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
 
@@ -51,7 +51,7 @@ export const resolveS3ConfigAndInput = async (
 		defaultAccessLevel,
 		prefixResolver = defaultPrefixResolver,
 		isObjectLockEnabled,
-	} = Amplify.libraryOptions?.Storage?.AWSS3 ?? {};
+	} = Amplify.libraryOptions?.Storage?.S3 ?? {};
 
 	const keyPrefix = await prefixResolver({
 		accessLevel:
