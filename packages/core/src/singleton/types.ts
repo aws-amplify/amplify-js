@@ -19,15 +19,15 @@ import { CacheConfig } from '../Cache/types';
 import { I18nOptions } from '../I18n/types';
 
 export type ResourcesConfig = {
-	//	API?: {};
+	// API?: {};
 	Analytics?: AnalyticsConfig;
 	Auth?: AuthConfig;
 	Cache?: CacheConfig;
-	//	DataStore?: {};
+	// DataStore?: {};
 	I18n?: I18nOptions;
-	//	Interactions?: {};
-	//	Notifications?: {};
-	//	Predictions?: {};
+	// Interactions?: {};
+	// Notifications?: {};
+	// Predictions?: {};
 	Storage?: StorageConfig;
 	ssr?: boolean;
 };
