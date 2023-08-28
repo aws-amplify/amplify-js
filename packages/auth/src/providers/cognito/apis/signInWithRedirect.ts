@@ -189,6 +189,12 @@ async function handleCodeFlow({
 	if (error) {
 		invokeAndClearPromise();
 
+		Hub.dispatch(
+			'auth',
+			{ event: 'signInWithRedirect_failure' },
+			'Auth',
+			AMPLIFY_SYMBOL
+		);
 		throw new AuthError({
 			message: error,
 			name: AuthErrorCodes.OAuthSignInError,
