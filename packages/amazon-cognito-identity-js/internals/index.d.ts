@@ -22,29 +22,6 @@ import {
 export const addAuthCategoryToCognitoUserAgent: () => void;
 export const addFrameworkToCognitoUserAgent: (content: string) => void;
 
-export class InternalCognitoUserPool {
-	constructor(
-		data: ICognitoUserPoolData,
-		wrapRefreshSessionCallback?: (target: NodeCallback.Any) => NodeCallback.Any
-	);
-
-	public getUserPoolId(): string;
-	public getUserPoolName(): string;
-	public getClientId(): string;
-
-	public signUp(
-		username: string,
-		password: string,
-		userAttributes: CognitoUserAttribute[],
-		validationData: CognitoUserAttribute[],
-		callback: NodeCallback<Error, ISignUpResult>,
-		clientMetadata?: ClientMetadata,
-		userAgentValue?: string
-	): void;
-
-	public getCurrentUser(): CognitoUser | null;
-}
-
 export class InternalCognitoUser {
 	constructor(data: ICognitoUserData);
 
@@ -234,6 +211,7 @@ export class InternalCognitoUser {
 	): void;
 	public deleteUser(
 		callback: NodeCallback<Error, string>,
+		clientMetaData?: ClientMetadata,
 		userAgentValue?: string
 	): void;
 	public enableMFA(
@@ -291,4 +269,27 @@ export class InternalCognitoUser {
 		},
 		userAgentValue?: string
 	): void;
+}
+
+export class InternalCognitoUserPool {
+	constructor(
+		data: ICognitoUserPoolData,
+		wrapRefreshSessionCallback?: (target: NodeCallback.Any) => NodeCallback.Any
+	);
+
+	public getUserPoolId(): string;
+	public getUserPoolName(): string;
+	public getClientId(): string;
+
+	public signUp(
+		username: string,
+		password: string,
+		userAttributes: CognitoUserAttribute[],
+		validationData: CognitoUserAttribute[],
+		callback: NodeCallback<Error, ISignUpResult>,
+		clientMetadata?: ClientMetadata,
+		userAgentValue?: string
+	): void;
+
+	public getCurrentUser(): CognitoUser | null;
 }
