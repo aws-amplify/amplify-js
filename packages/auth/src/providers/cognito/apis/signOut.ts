@@ -3,7 +3,7 @@
 
 import {
 	Amplify,
-	AuthConfig,
+	CognitoUserPoolConfig,
 	LocalStorage,
 	clearCredentials,
 } from '@aws-amplify/core';
@@ -21,6 +21,7 @@ import {
 	revokeToken,
 } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+
 const SELF = '_self';
 
 /**
@@ -34,35 +35,34 @@ const SELF = '_self';
 export async function signOut(
 	signOutRequest?: SignOutRequest
 ): Promise<AuthSignOutResult> {
-	const authConfig = Amplify.getConfig().Auth;
+	const cognitoConfig = Amplify.getConfig().Auth?.Cognito;
+	assertTokenProviderConfig(cognitoConfig);
 
 	if (signOutRequest?.global) {
-		return globalSignOut(authConfig);
+		return globalSignOut(cognitoConfig);
 	} else {
-		return clientSignOut(authConfig);
+		return clientSignOut(cognitoConfig);
 	}
 }
 
-async function clientSignOut(authConfig: AuthConfig) {
+async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 	try {
-		assertTokenProviderConfig(authConfig);
-
 		const { refreshToken, accessToken } =
 			await tokenOrchestrator.tokenStore.loadTokens();
 
 		if (isSessionRevocable(accessToken)) {
 			await revokeToken(
 				{
-					region: getRegion(authConfig.userPoolId),
+					region: getRegion(cognitoConfig.userPoolId),
 				},
 				{
-					ClientId: authConfig.userPoolWebClientId,
+					ClientId: cognitoConfig.userPoolClientId,
 					Token: refreshToken,
 				}
 			);
 		}
 
-		await handleOAuthSignOut(authConfig);
+		await handleOAuthSignOut(cognitoConfig);
 	} catch (err) {
 		// this shouldn't throw
 		// TODO(v6): add logger message
@@ -72,21 +72,19 @@ async function clientSignOut(authConfig: AuthConfig) {
 	}
 }
 
-async function globalSignOut(authConfig: AuthConfig) {
+async function globalSignOut(cognitoCognfig: CognitoUserPoolConfig) {
 	try {
-		assertTokenProviderConfig(authConfig);
-
 		const { accessToken } = await tokenOrchestrator.tokenStore.loadTokens();
 		await globalSignOutClient(
 			{
-				region: getRegion(authConfig.userPoolId),
+				region: getRegion(cognitoCognfig.userPoolId),
 			},
 			{
 				AccessToken: accessToken.toString(),
 			}
 		);
 
-		await handleOAuthSignOut(authConfig);
+		await handleOAuthSignOut(cognitoCognfig);
 	} catch (err) {
 		// it should not throw
 		// TODO(v6): add logger
@@ -96,31 +94,32 @@ async function globalSignOut(authConfig: AuthConfig) {
 	}
 }
 
-async function handleOAuthSignOut(authConfig: AuthConfig) {
+async function handleOAuthSignOut(cognitoConfig: CognitoUserPoolConfig) {
 	try {
-		assertOAuthConfig(authConfig);
+		assertOAuthConfig(cognitoConfig);
 	} catch (err) {
 		// all good no oauth handling
 		return;
 	}
 
 	const oauthStore = new DefaultOAuthStore(LocalStorage);
-	oauthStore.setAuthConfig(authConfig);
+	oauthStore.setAuthConfig(cognitoConfig);
 	const isOAuthSignIn = await oauthStore.loadOAuthSignIn();
 	oauthStore.clearOAuthData();
 
 	if (isOAuthSignIn) {
-		oAuthSignOutRedirect(authConfig);
+		oAuthSignOutRedirect(cognitoConfig);
 	}
 }
 
-function oAuthSignOutRedirect(authConfig: AuthConfig) {
+function oAuthSignOutRedirect(authConfig: CognitoUserPoolConfig) {
 	assertOAuthConfig(authConfig);
-	let oAuthLogoutEndpoint = 'https://' + authConfig.oauth.domain + '/logout?';
+	let oAuthLogoutEndpoint =
+		'https://' + authConfig.loginWith.oauth.domain + '/logout?';
 
-	const client_id = authConfig.userPoolWebClientId;
+	const client_id = authConfig.userPoolClientId;
 
-	const signout_uri = authConfig.oauth.redirectSignOut;
+	const signout_uri = authConfig.loginWith.oauth.redirectSignOut[0];
 
 	oAuthLogoutEndpoint += Object.entries({
 		client_id,

@@ -6,6 +6,7 @@ import {
 	AMPLIFY_SYMBOL,
 	AmplifyError,
 	assertOAuthConfig,
+	assertTokenProviderConfig,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
 } from '@aws-amplify/core/internals/utils';
@@ -36,7 +37,8 @@ const SELF = '_self';
 export function signInWithRedirect(
 	signInWithRedirectRequest?: SignInWithRedirectRequest
 ): void {
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 
 	let provider = 'COGNITO'; // Default
@@ -49,8 +51,8 @@ export function signInWithRedirect(
 	}
 
 	oauthSignIn({
-		oauthConfig: authConfig.oauth,
-		clientId: authConfig.userPoolWebClientId,
+		oauthConfig: authConfig.loginWith.oauth,
+		clientId: authConfig.userPoolClientId,
 		provider,
 		customState: signInWithRedirectRequest?.customState,
 	});
@@ -93,7 +95,7 @@ function oauthSignIn({
 	const scopesString = oauthConfig.scopes.join(' ');
 
 	const queryString = Object.entries({
-		redirect_uri: oauthConfig.redirectSignIn,
+		redirect_uri: oauthConfig.redirectSignIn[0], // TODO(v6): add logic to identity the correct url
 		response_type: oauthConfig.responseType,
 		client_id: clientId,
 		identity_provider: provider,
@@ -335,7 +337,8 @@ function urlListener() {
 	// TODO(v6): what happens if configure gets called multiple times during code exchange
 	Hub.listen('core', async capsule => {
 		if (capsule.payload.event === 'configure') {
-			const authConfig = Amplify.getConfig().Auth;
+			const authConfig = Amplify.getConfig().Auth?.Cognito;
+			assertTokenProviderConfig(authConfig);
 			store.setAuthConfig(authConfig);
 
 			// No OAuth inflight doesnt need to parse the url
@@ -354,10 +357,10 @@ function urlListener() {
 
 				handleAuthResponse({
 					currentUrl: url,
-					clientId: authConfig.userPoolWebClientId,
-					domain: authConfig.oauth.domain,
-					redirectUri: authConfig.oauth.redirectSignIn,
-					responseType: authConfig.oauth.responseType,
+					clientId: authConfig.userPoolClientId,
+					domain: authConfig.loginWith.oauth.domain,
+					redirectUri: authConfig.loginWith.oauth.redirectSignIn[0],
+					responseType: authConfig.loginWith.oauth.responseType,
 				});
 			} catch (err) {
 				// is ok if there is not OAuthConfig

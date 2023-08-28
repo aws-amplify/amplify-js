@@ -1,26 +1,36 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { asserts } from '../../../Util/errors/AssertError';
+
 import {
 	AuthConfig,
-	IdentityPoolConfig,
 	JWT,
-	UserPoolConfig,
-	UserPoolConfigAndIdentityPoolConfig,
-	UserPoolConfigAndIdentityPoolConfigWithOAuth,
-	UserPoolConfigWithOAuth,
+	AuthUserPoolAndIdentityPoolConfig,
+	CognitoUserPoolWithOAuthConfig,
+	CognitoUserPoolConfig,
+	CognitoUserPoolAndIdentityPoolConfig,
+	CognitoIdentityPoolConfig,
+	StrictUnion,
 } from '../types';
 
 export function assertTokenProviderConfig(
-	authConfig?: AuthConfig
-): asserts authConfig is
-	| UserPoolConfigAndIdentityPoolConfigWithOAuth
-	| UserPoolConfigWithOAuth
-	| UserPoolConfigAndIdentityPoolConfig
-	| UserPoolConfig {
-	const validConfig =
-		!!authConfig?.userPoolId && !!authConfig?.userPoolWebClientId;
-	return asserts(validConfig, {
+	cognitoConfig?: StrictUnion<
+		| CognitoUserPoolConfig
+		| CognitoUserPoolAndIdentityPoolConfig
+		| CognitoIdentityPoolConfig
+	>
+): asserts cognitoConfig is
+	| CognitoUserPoolAndIdentityPoolConfig
+	| CognitoUserPoolConfig {
+	let assertionValid = true; // assume valid until otherwise proveed
+	if (!cognitoConfig) {
+		assertionValid = false;
+	} else {
+		assertionValid =
+			!!cognitoConfig.userPoolClientId && !!cognitoConfig.userPoolClientId;
+	}
+
+	return asserts(assertionValid, {
 		name: 'AuthTokenConfigException',
 		message: 'Auth Token Provider not configured',
 		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
@@ -28,16 +38,13 @@ export function assertTokenProviderConfig(
 }
 
 export function assertOAuthConfig(
-	authConfig?: AuthConfig
-): asserts authConfig is
-	| UserPoolConfigAndIdentityPoolConfigWithOAuth
-	| UserPoolConfigWithOAuth {
-	assertTokenProviderConfig(authConfig);
+	cognitoConfig?: CognitoUserPoolConfig | CognitoUserPoolAndIdentityPoolConfig
+): asserts cognitoConfig is CognitoUserPoolWithOAuthConfig {
 	const validOAuthConfig =
-		!!authConfig.oauth?.domain &&
-		!!authConfig.oauth?.redirectSignOut &&
-		!!authConfig.oauth?.redirectSignIn &&
-		!!authConfig.oauth?.responseType;
+		!!cognitoConfig?.loginWith?.oauth?.domain &&
+		!!cognitoConfig?.loginWith?.oauth?.redirectSignOut &&
+		!!cognitoConfig?.loginWith?.oauth?.redirectSignIn &&
+		!!cognitoConfig?.loginWith?.oauth?.responseType;
 
 	return asserts(validOAuthConfig, {
 		name: 'OAuthNotConfigureException',
@@ -48,9 +55,13 @@ export function assertOAuthConfig(
 }
 
 export function assertIdentityPooIdConfig(
-	authConfig: AuthConfig
-): asserts authConfig is IdentityPoolConfig {
-	const validConfig = !!authConfig?.identityPoolId;
+	cognitoConfig?: StrictUnion<
+		| CognitoUserPoolConfig
+		| CognitoUserPoolAndIdentityPoolConfig
+		| CognitoIdentityPoolConfig
+	>
+): asserts cognitoConfig is CognitoIdentityPoolConfig {
+	const validConfig = !!cognitoConfig?.identityPoolId;
 	return asserts(validConfig, {
 		name: 'AuthIdentityPoolIdException',
 		message: 'Auth IdentityPoolId not configured',
@@ -59,10 +70,11 @@ export function assertIdentityPooIdConfig(
 	});
 }
 
-export function assertUserPoolAndIdentityPooConfig(
+function assertUserPoolAndIdentityPooConfig(
 	authConfig: AuthConfig
-): asserts authConfig is UserPoolConfigAndIdentityPoolConfig {
-	const validConfig = !!authConfig?.identityPoolId && !!authConfig?.userPoolId;
+): asserts authConfig is AuthUserPoolAndIdentityPoolConfig {
+	const validConfig =
+		!!authConfig?.Cognito.identityPoolId && !!authConfig?.Cognito.userPoolId;
 	return asserts(validConfig, {
 		name: 'AuthUserPoolAndIdentityPoolException',
 		message: 'Auth UserPool and IdentityPool not configured',
