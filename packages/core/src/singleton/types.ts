@@ -45,4 +45,6 @@ export {
 	GetCredentialsOptions,
 	StorageAccessLevel,
 	StorageConfig,
+	AnalyticsConfig,
+	CacheConfig,
 };

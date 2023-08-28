@@ -33,6 +33,8 @@ export {
 	GetCredentialsOptions,
 	ResourcesConfig,
 	LibraryOptions,
+	AnalyticsConfig,
+	CacheConfig,
 } from './singleton/types';
 export {
 	Amplify,
@@ -67,7 +69,6 @@ export { UniversalStorage } from './UniversalStorage';
 // Cache exports
 import { BrowserStorageCache } from './Cache/BrowserStorageCache';
 export { InMemoryCache } from './Cache/InMemoryCache';
-export { CacheConfig } from './Cache/types';
 export { BrowserStorageCache };
 export { BrowserStorageCache as Cache }; // Maintain interoperability with React Native
 
