@@ -3,7 +3,6 @@
 
 import { copyObject } from '../../../../../../src/providers/s3/utils/client';
 import { toBase64 } from '../../../../../../src/providers/s3/utils/client/runtime';
-
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 import {
 	defaultConfig,
