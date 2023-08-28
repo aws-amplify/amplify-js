@@ -26,12 +26,12 @@ export async function updateMFAPreference(
 	updateMFAPreferenceRequest: UpdateMFAPreferenceRequest
 ): Promise<void> {
 	const { sms, totp } = updateMFAPreferenceRequest;
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	await setUserMFAPreference(
-		{ region: getRegion(authConfig.Cognito.userPoolId) },
+		{ region: getRegion(authConfig.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
 			SMSMfaSettings: getMFASettings(sms),

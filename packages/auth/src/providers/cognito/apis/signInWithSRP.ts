@@ -47,7 +47,7 @@ export async function signInWithSRP(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { username, password } = signInRequest;
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const clientMetaData = signInRequest.options?.serviceOptions?.clientMetadata;
 	assertValidationError(

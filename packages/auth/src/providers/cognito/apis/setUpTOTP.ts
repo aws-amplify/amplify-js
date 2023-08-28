@@ -27,13 +27,13 @@ import { assertAuthTokens } from '../utils/types';
  *
  **/
 export async function setUpTOTP(): Promise<TOTPSetupDetails> {
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const username = tokens.idToken?.payload['cognito:username'] ?? '';
 	const { SecretCode } = await associateSoftwareToken(
-		{ region: getRegion(authConfig.Cognito.userPoolId) },
+		{ region: getRegion(authConfig.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
 		}

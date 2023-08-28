@@ -77,7 +77,7 @@ describe('signIn API happy path cases', () => {
 		expect(handleCustomAuthFlowWithoutSRPSpy).toBeCalledWith(
 			username,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
-			authConfig
+			authConfig.Cognito
 		);
 	});
 });

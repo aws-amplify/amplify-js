@@ -237,8 +237,8 @@ describe('signOut tests with oauth', () => {
 						loginWith: {
 							oauth: {
 								domain: 'https://amazonaws.com',
-								redirectSignIn: 'http://localhost:3000/',
-								redirectSignOut: 'http://localhost:3000/',
+								redirectSignIn: ['http://localhost:3000/'],
+								redirectSignOut: ['http://localhost:3000/'],
 								responseType: 'code',
 								scopes: ['admin'],
 							},

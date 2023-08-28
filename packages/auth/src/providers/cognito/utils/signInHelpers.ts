@@ -46,6 +46,7 @@ import {
 	RespondToAuthChallengeCommandOutput,
 } from './clients/CognitoIdentityProvider/types';
 import { getRegion } from './clients/CognitoIdentityProvider/utils';
+import { CognitoUserPoolConfig } from '@aws-amplify/core/lib-esm/singleton/Auth/types';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -56,7 +57,7 @@ type HandleAuthChallengeRequest = {
 	session?: string;
 	deviceName?: string;
 	requiredAttributes?: AuthUserAttribute;
-	config: AuthConfig;
+	config: CognitoUserPoolConfig;
 };
 
 export async function handleCustomChallenge({
@@ -88,9 +89,7 @@ export async function handleMFASetupChallenge({
 	deviceName,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const {
-		Cognito: { userPoolId, userPoolClientId },
-	} = config;
+	const { userPoolId, userPoolClientId } = config;
 	const challengeResponses = {
 		USERNAME: username,
 	};
@@ -126,9 +125,7 @@ export async function handleSelectMFATypeChallenge({
 	session,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const {
-		Cognito: { userPoolId, userPoolClientId },
-	} = config;
+	const { userPoolId, userPoolClientId } = config;
 	assertValidationError(
 		challengeResponse === 'TOTP' || challengeResponse === 'SMS',
 		AuthValidationErrorCode.IncorrectMFAMethod
@@ -157,9 +154,7 @@ export async function handleSMSMFAChallenge({
 	username,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const {
-		Cognito: { userPoolId, userPoolClientId },
-	} = config;
+	const { userPoolId, userPoolClientId } = config;
 	const challengeResponses = {
 		USERNAME: username,
 		SMS_MFA_CODE: challengeResponse,
@@ -181,9 +176,7 @@ export async function handleSoftwareTokenMFAChallenge({
 	username,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const {
-		Cognito: { userPoolId, userPoolClientId },
-	} = config;
+	const { userPoolId, userPoolClientId } = config;
 	const challengeResponses = {
 		USERNAME: username,
 		SOFTWARE_TOKEN_MFA_CODE: challengeResponse,
@@ -205,9 +198,7 @@ export async function handleCompleteNewPasswordChallenge({
 	requiredAttributes,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const {
-		Cognito: { userPoolId, userPoolClientId },
-	} = config;
+	const { userPoolId, userPoolClientId } = config;
 	const challengeResponses = {
 		...createAttributes(requiredAttributes),
 		NEW_PASSWORD: challengeResponse,
@@ -229,7 +220,7 @@ export async function handleUserPasswordAuthFlow(
 	username: string,
 	password: string,
 	clientMetadata: ClientMetadata | undefined,
-	{ Cognito: { userPoolId, userPoolClientId } }: AuthConfig
+	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig
 ): Promise<InitiateAuthCommandOutput> {
 	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'USER_PASSWORD_AUTH',
@@ -248,11 +239,9 @@ export async function handleUserSRPAuthFlow(
 	username: string,
 	password: string,
 	clientMetadata: ClientMetadata | undefined,
-	config: AuthConfig
+	config: CognitoUserPoolConfig
 ): Promise<RespondToAuthChallengeCommandOutput> {
-	const {
-		Cognito: { userPoolId, userPoolClientId },
-	} = config;
+	const { userPoolId, userPoolClientId } = config;
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = new AuthenticationHelper(userPoolName);
 
@@ -282,7 +271,7 @@ export async function handleUserSRPAuthFlow(
 export async function handleCustomAuthFlowWithoutSRP(
 	username: string,
 	clientMetadata: ClientMetadata | undefined,
-	{ Cognito: { userPoolId, userPoolClientId } }: AuthConfig
+	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig
 ): Promise<InitiateAuthCommandOutput> {
 	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'CUSTOM_AUTH',
@@ -300,12 +289,10 @@ export async function handleCustomSRPAuthFlow(
 	username: string,
 	password: string,
 	clientMetadata: ClientMetadata | undefined,
-	config: AuthConfig
+	config: CognitoUserPoolConfig
 ) {
-	const {
-		Cognito: { userPoolId, userPoolClientId },
-	} = config;
 	assertTokenProviderConfig(config);
+	const { userPoolId, userPoolClientId } = config;
 
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = new AuthenticationHelper(userPoolName);
@@ -339,7 +326,7 @@ export async function handlePasswordVerifierChallenge(
 	clientMetadata: ClientMetadata | undefined,
 	session: string | undefined,
 	authenticationHelper: AuthenticationHelper,
-	{ Cognito: { userPoolId, userPoolClientId } }: AuthConfig
+	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const serverBValue = new BigInteger(challengeParameters?.SRP_B, 16);
@@ -543,7 +530,7 @@ export async function handleChallengeName(
 	challengeName: ChallengeName,
 	session: string,
 	challengeResponse: string,
-	config: AuthConfig,
+	config: CognitoUserPoolConfig,
 	clientMetadata?: ClientMetadata,
 	options?: CognitoConfirmSignInOptions
 ): Promise<RespondToAuthChallengeCommandOutput> {

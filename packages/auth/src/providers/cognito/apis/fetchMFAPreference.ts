@@ -20,12 +20,12 @@ import { assertAuthTokens } from '../utils/types';
  * @returns FetchMFAPreferenceResult
  */
 export async function fetchMFAPreference(): Promise<FetchMFAPreferenceResult> {
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const { PreferredMfaSetting, UserMFASettingList } = await getUser(
-		{ region: getRegion(authConfig.Cognito.userPoolId) },
+		{ region: getRegion(authConfig.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
 		}

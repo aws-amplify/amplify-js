@@ -3,6 +3,7 @@
 
 import { AuthConfig, AuthTokens, UserPoolConfig } from '@aws-amplify/core';
 import { AuthError } from '../../../errors/AuthError';
+import { CognitoUserPoolConfig } from '@aws-amplify/core/lib-esm/singleton/Auth/types';
 
 export function isTypeUserPoolConfig(
 	authConfig?: AuthConfig
@@ -37,7 +38,7 @@ export const OAuthStorageKeys = {
 };
 
 export interface OAuthStore {
-	setAuthConfig(authConfigParam: AuthConfig): void;
+	setAuthConfig(authConfigParam: CognitoUserPoolConfig): void;
 	loadOAuthInFlight(): Promise<boolean>;
 	storeOAuthInFlight(inflight: boolean): Promise<void>;
 	loadOAuthSignIn(): Promise<boolean>;

@@ -43,7 +43,7 @@ export async function signInWithUserPassword(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { username, password, options } = signInRequest;
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const metadata = options?.serviceOptions?.clientMetadata;
 	assertValidationError(

@@ -242,7 +242,7 @@ describe('confirmSignIn API happy path cases', () => {
 			activeChallengeName,
 			activeSignInSession,
 			challengeResponse,
-			authConfig,
+			authConfig.Cognito,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			authAPITestParams.configWithClientMetadata
 		);

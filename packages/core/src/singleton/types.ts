@@ -5,9 +5,9 @@ import { AnalyticsConfig } from './Analytics/types';
 import {
 	AuthConfig,
 	LibraryAuthOptions,
-	UserPoolConfig,
-	IdentityPoolConfig,
-	UserPoolConfigAndIdentityPoolConfig,
+	AuthUserPoolConfig,
+	AuthIdentityPoolConfig,
+	AuthUserPoolAndIdentityPoolConfig,
 	GetCredentialsOptions,
 } from './Auth/types';
 import {
@@ -38,9 +38,9 @@ export type LibraryOptions = {
 
 export {
 	AuthConfig,
-	UserPoolConfig,
-	IdentityPoolConfig,
-	UserPoolConfigAndIdentityPoolConfig,
+	AuthUserPoolConfig as UserPoolConfig,
+	AuthIdentityPoolConfig as IdentityPoolConfig,
+	AuthUserPoolAndIdentityPoolConfig as UserPoolConfigAndIdentityPoolConfig,
 	GetCredentialsOptions,
 	StorageAccessLevel,
 	StorageConfig,

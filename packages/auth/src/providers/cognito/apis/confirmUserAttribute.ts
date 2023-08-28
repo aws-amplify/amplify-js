@@ -28,7 +28,7 @@ import { CognitoUserAttributeKey } from '../types';
 export async function confirmUserAttribute(
 	confirmUserAttributeRequest: ConfirmUserAttributeRequest<CognitoUserAttributeKey>
 ): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { confirmationCode, userAttributeKey } = confirmUserAttributeRequest;
 	assertValidationError(
@@ -39,7 +39,7 @@ export async function confirmUserAttribute(
 	assertAuthTokens(tokens);
 	await verifyUserAttribute(
 		{
-			region: getRegion(authConfig.Cognito.userPoolId),
+			region: getRegion(authConfig.userPoolId),
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),

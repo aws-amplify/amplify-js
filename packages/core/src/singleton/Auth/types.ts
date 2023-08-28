@@ -71,73 +71,79 @@ export type AuthTokens = {
 };
 
 export type AuthConfig = StrictUnion<
-	| IdentityPoolConfig
-	| UserPoolConfig
-	| UserPoolConfigAndIdentityPoolConfig
-	| UserPoolWithOAuth
+	| AuthIdentityPoolConfig
+	| AuthUserPoolConfig
+	| AuthUserPoolAndIdentityPoolConfig
 >;
 
 type UnionKeys<T> = T extends T ? keyof T : never;
 type StrictUnionHelper<T, TAll> = T extends any
 	? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>>
 	: never;
-type StrictUnion<T> = StrictUnionHelper<T, T>;
+export type StrictUnion<T> = StrictUnionHelper<T, T>;
 
-export type IdentityPoolConfig = {
-	Cognito: {
-		identityPoolId: string;
-		allowGuestAccess?: boolean;
+export type AuthIdentityPoolConfig = {
+	Cognito: CognitoIdentityPoolConfig & {
 		userPoolClientId?: never;
 		userPoolId?: never;
 		loginWith?: never;
 	};
 };
 
-export type UserPoolConfig = {
-	Cognito: {
-		userPoolClientId: string;
-		userPoolId: string;
-		signUpVerificationMethod?: 'code' | 'link';
+export type CognitoIdentityPoolConfig = {
+	identityPoolId: string;
+	allowGuestAccess?: boolean;
+};
+
+export type AuthUserPoolConfig = {
+	Cognito: CognitoUserPoolConfig & {
 		identityPoolId?: never;
 		allowGuestAccess?: never;
-		loginWith?: {
-			oauth?: OAuthConfig;
-		};
+	};
+};
+
+export type CognitoUserPoolConfig = {
+	userPoolClientId: string;
+	userPoolId: string;
+	signUpVerificationMethod?: 'code' | 'link';
+	loginWith?: {
+		oauth?: OAuthConfig;
 	};
 };
 
 export type OAuthConfig = {
 	domain: string;
-	scopes: Array<string>;
-	redirectSignIn: string;
-	redirectSignOut: string;
-	responseType: string;
-	providers?: Array<string>;
+	scopes: Array<OAuthScope>;
+	redirectSignIn: Array<string>;
+	redirectSignOut: Array<string>;
+	responseType: 'code' | 'token';
+	providers?: Array<OAuthProviders | CustomProvider>;
 };
-export type UserPoolWithOAuth = {
-	Cognito: {
-		userPoolClientId: string;
-		userPoolId: string;
-		identityPoolId?: string;
-		allowGuestAccess?: boolean;
-		signUpVerificationMethod?: 'code' | 'link';
-		loginWith: {
-			oauth: OAuthConfig;
-		};
+
+type OAuthProviders = 'Google' | 'Facebook' | 'Amazon' | 'Apple';
+type CustomProvider = { custom: string };
+
+type CustomScope = string & {};
+type OAuthScope =
+	| 'email'
+	| 'openid'
+	| 'phone'
+	| 'email'
+	| 'profile'
+	| 'aws.cognito.signin.user.admin'
+	| CustomScope;
+
+export type CognitoUserPoolWithOAuthConfig = CognitoUserPoolConfig & {
+	loginWith: {
+		oauth: OAuthConfig;
 	};
 };
-export type UserPoolConfigAndIdentityPoolConfig = {
-	Cognito: {
-		userPoolClientId: string;
-		userPoolId: string;
-		identityPoolId: string;
-		allowGuestAccess?: boolean;
-		signUpVerificationMethod?: 'code' | 'link';
-		loginWith?: {
-			oauth?: OAuthConfig;
-		};
-	};
+export type AuthUserPoolAndIdentityPoolConfig = {
+	Cognito: CognitoUserPoolAndIdentityPoolConfig;
 };
+
+export type CognitoUserPoolAndIdentityPoolConfig = CognitoUserPoolConfig &
+	CognitoIdentityPoolConfig;
 
 export type GetCredentialsOptions =
 	| GetCredentialsAuthenticatedUser

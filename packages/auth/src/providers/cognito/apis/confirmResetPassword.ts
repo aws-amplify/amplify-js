@@ -25,7 +25,7 @@ import { ConfirmForgotPasswordException } from '../../cognito/types/errors';
 export async function confirmResetPassword(
 	confirmResetPasswordRequest: ConfirmResetPasswordRequest<CognitoConfirmResetPasswordOptions>
 ): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
 	const { username, newPassword } = confirmResetPasswordRequest;
@@ -47,13 +47,13 @@ export async function confirmResetPassword(
 		confirmResetPasswordRequest.options?.serviceOptions?.clientMetadata;
 
 	await confirmForgotPassword(
-		{ region: getRegion(authConfig.Cognito.userPoolId) },
+		{ region: getRegion(authConfig.userPoolId) },
 		{
 			Username: username,
 			ConfirmationCode: code,
 			Password: newPassword,
 			ClientMetadata: metadata,
-			ClientId: authConfig.Cognito.userPoolClientId,
+			ClientId: authConfig.userPoolClientId,
 		}
 	);
 }

@@ -29,7 +29,7 @@ import { assertAuthTokens } from '../utils/types';
 export async function verifyTOTPSetup(
 	verifyTOTPSetupRequest: VerifyTOTPSetupRequest<CogntioVerifyTOTPSetupOptions>
 ): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { code, options } = verifyTOTPSetupRequest;
 	assertValidationError(
@@ -39,7 +39,7 @@ export async function verifyTOTPSetup(
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	await verifySoftwareToken(
-		{ region: getRegion(authConfig.Cognito.userPoolId) },
+		{ region: getRegion(authConfig.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
 			UserCode: code,

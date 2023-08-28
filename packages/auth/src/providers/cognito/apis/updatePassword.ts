@@ -26,7 +26,7 @@ import { assertAuthTokens } from '../utils/types';
 export async function updatePassword(
 	updatePasswordRequest: UpdatePasswordRequest
 ): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { oldPassword, newPassword } = updatePasswordRequest;
 	assertValidationError(
@@ -41,7 +41,7 @@ export async function updatePassword(
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	await changePassword(
-		{ region: getRegion(authConfig.Cognito.userPoolId) },
+		{ region: getRegion(authConfig.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
 			PreviousPassword: oldPassword,

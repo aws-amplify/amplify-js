@@ -98,7 +98,7 @@ describe('signIn API happy path cases', () => {
 			username,
 			password,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
-			authConfig
+			authConfig.Cognito
 		);
 	});
 });
