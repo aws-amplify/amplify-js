@@ -39,8 +39,10 @@ describe('downloadData', () => {
 		});
 		(Amplify.getConfig as jest.Mock).mockReturnValue({
 			Storage: {
-				bucket: 'bucket',
-				region: 'region',
+				S3: {
+					bucket: 'bucket',
+					region: 'region',
+				}
 			},
 		});
 	});
