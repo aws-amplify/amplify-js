@@ -38,17 +38,16 @@ export async function resetPassword(
 		!!username,
 		AuthValidationErrorCode.EmptyResetPasswordUsername
 	);
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const clientMetadata =
-		resetPasswordRequest.options?.serviceOptions?.clientMetadata ??
-		authConfig.clientMetadata;
+		resetPasswordRequest.options?.serviceOptions?.clientMetadata;
 	const res = await forgotPassword(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
 			Username: username,
 			ClientMetadata: clientMetadata,
-			ClientId: authConfig.userPoolWebClientId,
+			ClientId: authConfig.userPoolClientId,
 		}
 	);
 	const codeDeliveryDetails = res.CodeDeliveryDetails;

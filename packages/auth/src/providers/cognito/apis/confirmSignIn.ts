@@ -64,11 +64,10 @@ export async function confirmSignIn(
 	const { challengeResponse, options } = confirmSignInRequest;
 	const { username, challengeName, signInSession } = signInStore.getState();
 
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
-	const clientMetaData =
-		options?.serviceOptions?.clientMetadata || authConfig?.clientMetadata;
+	const clientMetaData = options?.serviceOptions?.clientMetadata;
 
 	assertValidationError(
 		!!challengeResponse,

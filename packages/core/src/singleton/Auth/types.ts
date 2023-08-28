@@ -71,66 +71,79 @@ export type AuthTokens = {
 };
 
 export type AuthConfig = StrictUnion<
-	| IdentityPoolConfig
-	| UserPoolConfig
-	| UserPoolConfigWithOAuth
-	| UserPoolConfigAndIdentityPoolConfig
-	| UserPoolConfigAndIdentityPoolConfigWithOAuth
+	| AuthIdentityPoolConfig
+	| AuthUserPoolConfig
+	| AuthUserPoolAndIdentityPoolConfig
 >;
 
 type UnionKeys<T> = T extends T ? keyof T : never;
 type StrictUnionHelper<T, TAll> = T extends any
 	? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>>
 	: never;
-type StrictUnion<T> = StrictUnionHelper<T, T>;
+export type StrictUnion<T> = StrictUnionHelper<T, T>;
 
-export type IdentityPoolConfig = {
+export type AuthIdentityPoolConfig = {
+	Cognito: CognitoIdentityPoolConfig & {
+		userPoolClientId?: never;
+		userPoolId?: never;
+		loginWith?: never;
+	};
+};
+
+export type CognitoIdentityPoolConfig = {
 	identityPoolId: string;
-	userPoolWebClientId?: never;
-	userPoolId?: never;
-	clientMetadata?: never;
-	isMandatorySignInEnabled?: never;
+	allowGuestAccess?: boolean;
 };
 
-export type UserPoolConfig = {
-	userPoolWebClientId: string;
-	userPoolId: string;
-	identityPoolId?: never;
-	clientMetadata?: Record<string, string>;
+export type AuthUserPoolConfig = {
+	Cognito: CognitoUserPoolConfig & {
+		identityPoolId?: never;
+		allowGuestAccess?: never;
+	};
 };
 
-export type UserPoolConfigWithOAuth = {
-	userPoolWebClientId: string;
+export type CognitoUserPoolConfig = {
+	userPoolClientId: string;
 	userPoolId: string;
-	identityPoolId?: never;
-	clientMetadata?: Record<string, string>;
-	oauth: OAuthConfig;
+	signUpVerificationMethod?: 'code' | 'link';
+	loginWith?: {
+		oauth?: OAuthConfig;
+	};
 };
 
 export type OAuthConfig = {
 	domain: string;
-	scopes: Array<string>;
-	redirectSignIn: string;
-	redirectSignOut: string;
-	responseType: string;
+	scopes: Array<OAuthScope>;
+	redirectSignIn: Array<string>;
+	redirectSignOut: Array<string>;
+	responseType: 'code' | 'token';
+	providers?: Array<OAuthProviders | CustomProvider>;
 };
 
-export type UserPoolConfigAndIdentityPoolConfig = {
-	userPoolWebClientId: string;
-	userPoolId: string;
-	identityPoolId: string;
-	clientMetadata?: Record<string, string>;
-	isMandatorySignInEnabled?: boolean;
+type OAuthProviders = 'Google' | 'Facebook' | 'Amazon' | 'Apple';
+type CustomProvider = { custom: string };
+
+type CustomScope = string & {};
+type OAuthScope =
+	| 'email'
+	| 'openid'
+	| 'phone'
+	| 'email'
+	| 'profile'
+	| 'aws.cognito.signin.user.admin'
+	| CustomScope;
+
+export type CognitoUserPoolWithOAuthConfig = CognitoUserPoolConfig & {
+	loginWith: {
+		oauth: OAuthConfig;
+	};
+};
+export type AuthUserPoolAndIdentityPoolConfig = {
+	Cognito: CognitoUserPoolAndIdentityPoolConfig;
 };
 
-export type UserPoolConfigAndIdentityPoolConfigWithOAuth = {
-	userPoolWebClientId: string;
-	userPoolId: string;
-	identityPoolId: string;
-	clientMetadata?: Record<string, string>;
-	isMandatorySignInEnabled?: boolean;
-	oauth: OAuthConfig;
-};
+export type CognitoUserPoolAndIdentityPoolConfig = CognitoUserPoolConfig &
+	CognitoIdentityPoolConfig;
 
 export type GetCredentialsOptions =
 	| GetCredentialsAuthenticatedUser

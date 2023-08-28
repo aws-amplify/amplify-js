@@ -15,8 +15,10 @@ import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 const authConfig = {
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
 
 describe('confirmSignUp API Happy Path Cases:', () => {
@@ -95,31 +97,6 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({
 				ClientMetadata: clientMetadata,
-				ConfirmationCode: confirmationCode,
-				Username: user1.username,
-				ForceAliasCreation: undefined,
-				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			})
-		);
-	});
-
-	test('confirmSignUp API input should contain clientMetadata from config', async () => {
-		Amplify.configure({
-			Auth: {
-				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				userPoolId: 'us-west-2_zzzzz',
-				...authAPITestParams.configWithClientMetadata,
-			},
-		});
-		await confirmSignUp({
-			username: user1.username,
-			confirmationCode,
-		});
-		expect(confirmSignUpClientSpy).toHaveBeenCalledWith(
-			expect.objectContaining({ region: 'us-west-2' }),
-			expect.objectContaining({
-				ClientMetadata:
-					authAPITestParams.configWithClientMetadata.clientMetadata,
 				ConfirmationCode: confirmationCode,
 				Username: user1.username,
 				ForceAliasCreation: undefined,

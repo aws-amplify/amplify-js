@@ -13,7 +13,7 @@ export const getCurrentUser = async (
 	amplify: AmplifyClassV6,
 	getCurrentUserRequest?: GetCurrentUserRequest
 ): Promise<AuthUser> => {
-	const authConfig = amplify.getConfig().Auth;
+	const authConfig = amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession(amplify, {
 		forceRefresh: getCurrentUserRequest?.recache ?? false,
