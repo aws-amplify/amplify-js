@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/api",
-	"version": "5.4.2",
+	"version": "5.4.4",
 	"description": "Api category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",

@@ -15,6 +15,81 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@aws-amplify/api-graphql@3.4.8":
+  version "3.4.8"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/api-graphql/-/api-graphql-3.4.8.tgz#7702c192a0bffdc8957ae036dc0a4723ca6d3897"
+  integrity sha512-gTq3aVJDuAVwA4m5nVzgyqmNIwbQlPok3LhklV3qSB6lsw61LnTjft7mkB871Grumi4z05u4mma9epHNv+9nFg==
+  dependencies:
+    "@aws-amplify/api-rest" "3.5.2"
+    "@aws-amplify/auth" "5.6.2"
+    "@aws-amplify/cache" "5.1.8"
+    "@aws-amplify/core" "5.8.2"
+    "@aws-amplify/pubsub" "5.5.2"
+    graphql "15.8.0"
+    tslib "^1.8.0"
+    uuid "^3.2.1"
+    zen-observable-ts "0.8.19"
+
+"@aws-amplify/api-rest@3.5.2":
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/api-rest/-/api-rest-3.5.2.tgz#5711cb329e2f42b2963c84e5affee94a3a8f73ba"
+  integrity sha512-yfZXXcTl/Dqm1jl8cmc4+eUzTA4PaRW/JAen22P/8bDgce+RxBrF0V8BhL0tPHLs8vCX7LnJZlrHTCMNn69Q2w==
+  dependencies:
+    "@aws-amplify/core" "5.8.2"
+    axios "0.26.0"
+    tslib "^1.8.0"
+    url "0.11.0"
+
+"@aws-amplify/auth@5.6.2":
+  version "5.6.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/auth/-/auth-5.6.2.tgz#92abdc0d0100e00e38c8b44dfbdf992ad895dc62"
+  integrity sha512-YwbGgwUP6VoRxPMT3e+bwK/onl+MEsA7PC/NdXj34MI6o4K0wcth1X6q9i8umnIhWMfmKNewqW1j+GhR4elH5Q==
+  dependencies:
+    "@aws-amplify/core" "5.8.2"
+    amazon-cognito-identity-js "6.3.3"
+    buffer "4.9.2"
+    tslib "^1.8.0"
+    url "0.11.0"
+
+"@aws-amplify/cache@5.1.8":
+  version "5.1.8"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/cache/-/cache-5.1.8.tgz#ec856b657e0a9b2347bed41f7cbf36d624ba3836"
+  integrity sha512-nwlsy/IyVz8BjzHgmUzijzWodB1sps3OxQKwkvMdF4puWxpArapnfNqAy//j0S9lrc7gq7nrIvrlDPER+QFI3Q==
+  dependencies:
+    "@aws-amplify/core" "5.8.2"
+    tslib "^1.8.0"
+
+"@aws-amplify/core@5.8.2":
+  version "5.8.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/core/-/core-5.8.2.tgz#6d7ebccc885ffeafc4db888cdd938f75581085f3"
+  integrity sha512-Bv87DqUek9E/omVbsvSgeaQhwTj4q+rhhFgUi2abbnMc6vh7+H8BqRvJ/2ytp4NTBZMtdJulxT+5awKQKoibFQ==
+  dependencies:
+    "@aws-crypto/sha256-js" "1.2.2"
+    "@aws-sdk/client-cloudwatch-logs" "3.6.1"
+    "@aws-sdk/types" "3.6.1"
+    "@aws-sdk/util-hex-encoding" "3.6.1"
+    "@types/node-fetch" "2.6.4"
+    isomorphic-unfetch "^3.0.0"
+    react-native-url-polyfill "^1.3.0"
+    tslib "^1.8.0"
+    universal-cookie "^4.0.4"
+    zen-observable-ts "0.8.19"
+
+"@aws-amplify/pubsub@5.5.2":
+  version "5.5.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/pubsub/-/pubsub-5.5.2.tgz#dcb49c397abe073c5045078d5a0dac80276e7b27"
+  integrity sha512-93g7Ar7XjG2sFRyDBHtrUYQP8BfiI1JEh/QJmpRQVWffwUcihm8C8EsH0OkTTlA6FsxIR2T5qxHGLjzbz5pYRg==
+  dependencies:
+    "@aws-amplify/auth" "5.6.2"
+    "@aws-amplify/cache" "5.1.8"
+    "@aws-amplify/core" "5.8.2"
+    buffer "4.9.2"
+    graphql "15.8.0"
+    tslib "^1.8.0"
+    url "0.11.0"
+    uuid "^3.2.1"
+    zen-observable-ts "0.8.19"
+
 "@aws-crypto/crc32@2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@aws-crypto/crc32/-/crc32-2.0.0.tgz#4ad432a3c03ec3087c5540ff6e41e6565d2dc153"
@@ -5261,6 +5336,17 @@ ajv@^8.0.0, ajv@^8.0.1, ajv@^8.9.0:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
+
+amazon-cognito-identity-js@6.3.3:
+  version "6.3.3"
+  resolved "https://registry.yarnpkg.com/amazon-cognito-identity-js/-/amazon-cognito-identity-js-6.3.3.tgz#d301309827aa7d74d6e3892cc27f25332c5cba3c"
+  integrity sha512-pw70WNbyfRPgCr3SsvMlCO/sADUSVytTMwhyTALPG62lmdBeYkvaXMLkQDerN15odSQHG+WFlNmDPCySEfKlNA==
+  dependencies:
+    "@aws-crypto/sha256-js" "1.2.2"
+    buffer "4.9.2"
+    fast-base64-decode "^1.0.0"
+    isomorphic-unfetch "^3.0.0"
+    js-cookie "^2.2.1"
 
 anser@^1.4.9:
   version "1.4.10"
