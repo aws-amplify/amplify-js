@@ -15,19 +15,18 @@ import {
 	StorageAccessLevel,
 	StorageConfig,
 } from './Storage/types';
-import { CacheConfig } from '../Cache/types';
 import { I18nOptions } from '../I18n/types';
 
 export type ResourcesConfig = {
-	API?: {};
+	// API?: {};
 	Analytics?: AnalyticsConfig;
 	Auth?: AuthConfig;
-	Cache?: CacheConfig;
-	DataStore?: {};
-	I18n?: I18nOptions;
-	Interactions?: {};
-	Notifications?: {};
-	Predictions?: {};
+	// Cache?: CacheConfig;
+	// DataStore?: {};
+	// I18n?: I18nOptions;
+	// Interactions?: {};
+	// Notifications?: {};
+	// Predictions?: {};
 	Storage?: StorageConfig;
 	ssr?: boolean;
 };
@@ -45,4 +44,5 @@ export {
 	GetCredentialsOptions,
 	StorageAccessLevel,
 	StorageConfig,
+	AnalyticsConfig,
 };

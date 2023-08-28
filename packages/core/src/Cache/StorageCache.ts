@@ -141,7 +141,8 @@ export class StorageCache {
 	 * @internal
 	 */
 	protected get cacheConfig(): CacheConfig {
-		const globalCacheConfig = Amplify.getConfig().Cache || {};
+		// const globalCacheConfig = Amplify.getConfig().Cache || {};
+		const globalCacheConfig = {};
 
 		if (this.instanceConfig) {
 			return Object.assign(

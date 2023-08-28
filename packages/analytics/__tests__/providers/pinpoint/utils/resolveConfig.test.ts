@@ -18,7 +18,7 @@ describe('Analytics Pinpoint Provider Util: resolveConfig', () => {
 
 	it('returns required config', () => {
 		getConfigSpy.mockReturnValue({
-			Analytics: { AWSPinpoint: pinpointConfig },
+			Analytics: { Pinpoint: pinpointConfig },
 		});
 		expect(resolveConfig()).toStrictEqual(pinpointConfig);
 	});
@@ -26,7 +26,7 @@ describe('Analytics Pinpoint Provider Util: resolveConfig', () => {
 	it('throws if appId is missing', () => {
 		getConfigSpy.mockReturnValue({
 			Analytics: {
-				AWSPinpoint: { ...pinpointConfig, appId: undefined } as any,
+				Pinpoint: { ...pinpointConfig, appId: undefined } as any,
 			},
 		});
 		expect(resolveConfig).toThrow();
@@ -35,7 +35,7 @@ describe('Analytics Pinpoint Provider Util: resolveConfig', () => {
 	it('throws if region is missing', () => {
 		getConfigSpy.mockReturnValue({
 			Analytics: {
-				AWSPinpoint: { ...pinpointConfig, region: undefined } as any,
+				Pinpoint: { ...pinpointConfig, region: undefined } as any,
 			},
 		});
 		expect(resolveConfig).toThrow();
