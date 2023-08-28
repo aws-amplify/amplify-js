@@ -39,29 +39,6 @@
       ]
     }
   },
-  "exports": {
-    ".": {
-      "types": "./lib-esm/index.d.ts",
-      "import": "./lib-esm/index.js",
-      "require": "./lib/index.js"
-    },
-    "./s3": {
-      "types": "./lib-esm/providers/s3/index.d.ts",
-      "import": "./lib-esm/providers/s3/index.js",
-      "require": "./lib/providers/s3/index.js"
-    },
-    "./server": {
-      "types": "./lib-esm/server.d.ts",
-      "import": "./lib-esm/server.js",
-      "require": "./lib/server.js"
-    },
-    "./internals": {
-      "types": "./lib-esm/lib-esm/internals/index.d.ts",
-      "import": "./lib-esm/internals/index.js",
-      "require": "./lib/internals/index.js"
-    },
-    "./package.json": "./package.json"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-js.git"
@@ -77,7 +54,8 @@
     "lib-esm",
     "src",
     "internals",
-    "server"
+    "server",
+	"s3"
   ],
   "dependencies": {
     "@aws-sdk/md5-js": "3.6.1",
@@ -86,6 +64,34 @@
     "events": "^3.1.0",
     "fast-xml-parser": "^4.2.5",
     "tslib": "^2.5.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./lib-esm/index.d.ts",
+      "import": "./lib-esm/index.js",
+      "require": "./lib/index.js"
+    },
+    "./server": {
+      "types": "./lib-esm/server.d.ts",
+      "import": "./lib-esm/server.js",
+      "require": "./lib/server.js"
+    },
+    "./internals": {
+      "types": "./lib-esm/lib-esm/internals/index.d.ts",
+      "import": "./lib-esm/internals/index.js",
+      "require": "./lib/internals/index.js"
+    },
+    "./s3": {
+      "types": "./lib-esm/providers/s3/index.d.ts",
+      "import": "./lib-esm/providers/s3/index.js",
+      "require": "./lib/providers/s3/index.js"
+    },
+    "./s3/server": {
+      "types": "./lib-esm/providers/s3/server.d.ts",
+      "import": "./lib-esm/providers/s3/server.js",
+      "require": "./lib/providers/s3/server.js"
+    },
+    "./package.json": "./package.json"
   },
   "peerDependencies": {
     "@aws-amplify/core": "^6.0.0"
