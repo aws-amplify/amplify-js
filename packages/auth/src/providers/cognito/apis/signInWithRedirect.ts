@@ -337,8 +337,13 @@ function urlListener() {
 	Hub.listen('core', async capsule => {
 		if (capsule.payload.event === 'configure') {
 			const authConfig = Amplify.getConfig().Auth?.Cognito;
-			assertTokenProviderConfig(authConfig);
-			store.setAuthConfig(authConfig);
+			try {
+				assertTokenProviderConfig(authConfig);
+				store.setAuthConfig(authConfig);
+			} catch (_err) {
+				// Token provider not configure nothing to do
+				return;
+			}
 
 			// No OAuth inflight doesnt need to parse the url
 			if (!(await store.loadOAuthInFlight())) {

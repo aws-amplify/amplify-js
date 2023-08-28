@@ -9,13 +9,13 @@ import {
 	AuthIdentityPoolConfig,
 	AuthUserPoolAndIdentityPoolConfig,
 	GetCredentialsOptions,
+	CognitoIdentityPoolConfig,
 } from './Auth/types';
 import {
 	LibraryStorageOptions,
 	StorageAccessLevel,
 	StorageConfig,
 } from './Storage/types';
-import { I18nOptions } from '../I18n/types';
 
 export type ResourcesConfig = {
 	// API?: {};
@@ -38,11 +38,12 @@ export type LibraryOptions = {
 
 export {
 	AuthConfig,
-	AuthUserPoolConfig as UserPoolConfig,
-	AuthIdentityPoolConfig as IdentityPoolConfig,
-	AuthUserPoolAndIdentityPoolConfig as UserPoolConfigAndIdentityPoolConfig,
+	AuthUserPoolConfig,
+	AuthIdentityPoolConfig,
+	AuthUserPoolAndIdentityPoolConfig,
 	GetCredentialsOptions,
 	StorageAccessLevel,
 	StorageConfig,
 	AnalyticsConfig,
+	CognitoIdentityPoolConfig,
 };

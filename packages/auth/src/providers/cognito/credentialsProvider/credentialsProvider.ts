@@ -6,12 +6,16 @@ import {
 	AuthTokens,
 	AWSCredentialsAndIdentityIdProvider,
 	AWSCredentialsAndIdentityId,
-	UserPoolConfigAndIdentityPoolConfig,
 	getCredentialsForIdentity,
 	GetCredentialsOptions,
 	AuthConfig,
 } from '@aws-amplify/core';
-import { Logger } from '@aws-amplify/core/internals/utils';
+import {
+	Logger,
+	assertIdentityPooIdConfig,
+	decodeJWT,
+	CognitoIdentityPoolConfig,
+} from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../errors/AuthError';
 import { IdentityIdStore } from './types';
 
@@ -50,13 +54,20 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		const isAuthenticated = getCredentialsOptions.authenticated;
 		const tokens = getCredentialsOptions.tokens;
 		// TODO: refactor use the this._authConfig
-		const authConfig =
-			getCredentialsOptions.authConfig as UserPoolConfigAndIdentityPoolConfig;
+		const authConfig = getCredentialsOptions.authConfig;
+
+		try {
+			assertIdentityPooIdConfig(authConfig?.Cognito);
+		} catch (_err) {
+			// No identity pool configured, skipping
+			return;
+		}
+
 		const forceRefresh = getCredentialsOptions.forceRefresh;
 		// TODO(V6): Listen to changes to AuthTokens and update the credentials
 		const identityId = await cognitoIdentityIdProvider({
 			tokens,
-			authConfig,
+			authConfig: authConfig.Cognito,
 			identityIdStore: this._identityIdStore,
 		});
 		if (!identityId) {
@@ -76,7 +87,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		// - if user is not signed in
 		if (!isAuthenticated) {
 			// Check if mandatory sign-in is enabled
-			if (authConfig.Cognito.allowGuestAccess) {
+			if (!authConfig.Cognito.allowGuestAccess) {
 				// TODO(V6): confirm if this needs to throw or log
 				throw new AuthError({
 					name: 'AuthConfigException',
@@ -85,16 +96,20 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					recoverySuggestion: 'Make sure mandatory signin is disabled.',
 				});
 			}
-			return await this.getGuestCredentials(identityId, authConfig);
+			return await this.getGuestCredentials(identityId, authConfig.Cognito);
 		} else {
 			// Tokens will always be present if getCredentialsOptions.authenticated is true as dictated by the type
-			return await this.credsForOIDCTokens(authConfig, tokens!, identityId);
+			return await this.credsForOIDCTokens(
+				authConfig.Cognito,
+				tokens!,
+				identityId
+			);
 		}
 	}
 
 	private async getGuestCredentials(
 		identityId: string,
-		authConfig: UserPoolConfigAndIdentityPoolConfig
+		authConfig: CognitoIdentityPoolConfig
 	): Promise<AWSCredentialsAndIdentityId> {
 		if (
 			this._credentialsAndIdentityId &&
@@ -115,7 +130,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		// No logins params should be passed for guest creds:
 		// https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetCredentialsForIdentity.html
 
-		const region = authConfig.Cognito.identityPoolId.split(':')[0];
+		const region = authConfig.identityPoolId.split(':')[0];
 
 		// TODO(V6): When unauth role is disabled and crdentials are absent, we need to return null not throw an error
 		const clientResult = await getCredentialsForIdentity(
@@ -163,7 +178,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	}
 
 	private async credsForOIDCTokens(
-		authConfig: UserPoolConfigAndIdentityPoolConfig,
+		authConfig: CognitoIdentityPoolConfig,
 		authTokens: AuthTokens,
 		identityId?: string
 	): Promise<AWSCredentialsAndIdentityId> {
@@ -183,13 +198,9 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		// TODO(V6): oidcProvider should come from config, TBD
 		const logins = authTokens.idToken
-			? formLoginsMap(
-					authTokens.idToken.toString(),
-					'COGNITO',
-					this._authConfig
-			  )
+			? formLoginsMap(authTokens.idToken.toString())
 			: {};
-		const identityPoolId = authConfig.Cognito.identityPoolId;
+		const identityPoolId = authConfig.identityPoolId;
 		if (!identityPoolId) {
 			logger.debug('identityPoolId is not found in the config');
 			throw new AuthError({
@@ -268,44 +279,12 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	}
 }
 
-export function formLoginsMap(
-	idToken: string,
-	oidcProvider: string,
-	authConfig: AuthConfig
-) {
-	const userPoolId = authConfig.Cognito.userPoolId;
+export function formLoginsMap(idToken: string) {
+	const issuer = decodeJWT(idToken).payload.iss;
 	const res = {};
-	if (!userPoolId) {
-		logger.debug('userPoolId is not found in the config');
-		throw new AuthError({
-			name: 'AuthConfigException',
-			message: 'Cannot get credentials without an userPoolId',
-			recoverySuggestion:
-				'Make sure a valid userPoolId is given in the config.',
-		});
-	}
 
-	const region = userPoolId.split('_')[0];
-	if (!region) {
-		logger.debug('region is not configured for getting the credentials');
-		throw new AuthError({
-			name: 'AuthConfigException',
-			message: 'Cannot get credentials without a region',
-			recoverySuggestion: 'Make sure a valid region is given in the config.',
-		});
-	}
-	let domainName: string = '';
-	if (oidcProvider === 'COGNITO') {
-		domainName = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
-	} else {
-		// TODO(V6): Support custom OIDC providers
-		throw new AuthError({
-			name: 'AuthConfigException',
-			message: 'OIDC provider not supported',
-			recoverySuggestion:
-				'Currently only COGNITO as OIDC provider is supported',
-		});
-	}
+	let domainName: string = issuer.replace(/(^\w+:|^)\/\//, '');
+
 	res[domainName] = idToken;
 	return res;
 }
