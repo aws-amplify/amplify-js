@@ -46,5 +46,4 @@ export {
 	StorageAccessLevel,
 	StorageConfig,
 	AnalyticsConfig,
-	CacheConfig,
 };
