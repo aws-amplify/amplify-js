@@ -15,7 +15,7 @@ export const getKeyWithPrefix = (
 	{ accessLevel, targetIdentityId, key = '' }: GetKeyWithPrefixOptions
 ) => {
 	const { prefixResolver = defaultPrefixResolver } =
-		amplify.libraryOptions?.Storage?.AWSS3 ?? {};
+		amplify.libraryOptions?.Storage?.S3 ?? {};
 	return (
 		prefixResolver({
 			accessLevel,
