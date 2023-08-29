@@ -39,6 +39,7 @@ const validAuthConfig: cogId.ResourcesConfig = {
 			userPoolId: 'us-east-1_test-id',
 			identityPoolId: 'us-east-1:1_test-id',
 			userPoolClientId: 'test-id',
+			allowGuestAccess: true,
 		},
 	},
 };
@@ -85,12 +86,7 @@ describe('Guest Credentials', () => {
 		test('Should call identityIdClient with no logins to obtain guest creds', async () => {
 			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: false,
-				authConfig: {
-					Cognito: {
-						identityPoolId: 'us-east-1:identityPoolIdValue',
-						allowGuestAccess: true,
-					},
-				},
+				authConfig: validAuthConfig.Auth!,
 			});
 			expect(res.credentials.accessKeyId).toEqual(
 				authAPITestParams.CredentialsForIdentityIdResult.Credentials.AccessKeyId
@@ -108,22 +104,12 @@ describe('Guest Credentials', () => {
 		test('in-memory guest creds are returned if not expired and not past TTL', async () => {
 			await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: false,
-				authConfig: {
-					Cognito: {
-						identityPoolId: 'us-east-1:identityPoolIdValue',
-						allowGuestAccess: true,
-					},
-				},
+				authConfig: validAuthConfig.Auth!,
 			});
 			expect(credentialsForidentityIdSpy).toBeCalledTimes(1);
 			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: false,
-				authConfig: {
-					Cognito: {
-						allowGuestAccess: true,
-						identityPoolId: 'us-east-1:identityPoolIdValue',
-					},
-				},
+				authConfig: validAuthConfig.Auth!,
 			});
 			expect(res.credentials.accessKeyId).toEqual(
 				authAPITestParams.CredentialsForIdentityIdResult.Credentials.AccessKeyId
