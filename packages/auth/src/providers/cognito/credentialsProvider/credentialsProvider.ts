@@ -100,7 +100,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			return await this.getGuestCredentials(identityId, authConfig.Cognito);
 		} else {
 			// Tokens will always be present if getCredentialsOptions.authenticated is true as dictated by the type
-			return await this.credsForOIDCTokens(
+			return this.credsForOIDCTokens(
 				authConfig.Cognito,
 				tokens!,
 				identityId
