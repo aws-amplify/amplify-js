@@ -305,6 +305,12 @@
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ remove }",
 			"limit": "20.55 kB"
+		},
+		{
+			"name": "[Storage] uploadData (S3)",
+			"path": "./lib-esm/storage/index.js",
+			"import": "{ uploadData }",
+			"limit": "23.7 kB"
 		}
 	],
 	"jest": {
