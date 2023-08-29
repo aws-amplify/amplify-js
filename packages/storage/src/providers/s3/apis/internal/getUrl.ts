@@ -5,11 +5,6 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageDownloadDataRequest } from '../../../../types';
 import { S3GetUrlOptions, S3GetUrlResult } from '../../types';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
-import {
-	SERVICE_NAME as S3_SERVICE_NAME,
-	GetObjectInput,
-	getPresignedGetObjectUrl,
-} from '../../../../AwsClients/S3';
 import { getProperties } from './getProperties';
 import {
 	getKeyWithPrefix,
@@ -17,6 +12,11 @@ import {
 	resolveStorageConfig,
 } from '../../utils';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
+import {
+	getPresignedGetObjectUrl,
+	SERVICE_NAME as S3_SERVICE_NAME,
+	GetObjectInput,
+} from '../../utils/client';
 
 const DEFAULT_PRESIGN_EXPIRATION = 900;
 const MAX_URL_EXPIRATION = 7 * 24 * 60 * 60 * 1000;

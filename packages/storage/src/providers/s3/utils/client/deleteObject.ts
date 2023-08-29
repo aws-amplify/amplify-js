@@ -8,7 +8,6 @@ import {
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import { StorageError } from '../../errors/StorageError';
 import type {
 	DeleteObjectCommandInput,
 	DeleteObjectCommandOutput,
@@ -16,13 +15,16 @@ import type {
 
 import { defaultConfig } from './base';
 import {
+	serializePathnameObjectKey,
 	validateS3RequiredParameter,
+} from './utils/serializeHelpers';
+import {
 	deserializeBoolean,
 	map,
 	parseXmlError,
 	s3TransferHandler,
-	serializePathnameObjectKey,
 } from './utils';
+import { StorageError } from '../../../../errors/StorageError';
 
 export type DeleteObjectInput = Pick<
 	DeleteObjectCommandInput,

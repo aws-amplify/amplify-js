@@ -9,23 +9,20 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import { defaultConfig } from './base';
-import type {
-	CompatibleHttpResponse,
-	HeadObjectCommandInput,
-	HeadObjectCommandOutput,
-} from './types';
+import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
 import {
+	serializePathnameObjectKey,
 	validateS3RequiredParameter,
+} from './utils/serializeHelpers';
+import {
 	deserializeMetadata,
 	deserializeNumber,
 	deserializeTimestamp,
 	map,
 	parseXmlError,
 	s3TransferHandler,
-	serializePathnameObjectKey,
 } from './utils';
-
-import { StorageError } from '../../errors/StorageError';
+import { StorageError } from '../../../../errors/StorageError';
 
 export type HeadObjectInput = Pick<
 	HeadObjectCommandInput,

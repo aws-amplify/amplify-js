@@ -7,7 +7,6 @@ import {
 	HttpResponse,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { StorageError } from '../../errors/StorageError';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import type {
 	ListObjectsV2CommandInput,
@@ -24,8 +23,8 @@ import {
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
-	serializePathnameObjectKey,
 } from './utils';
+import { StorageError } from '../../../../errors/StorageError';
 
 export type ListObjectsV2Input = ListObjectsV2CommandInput;
 

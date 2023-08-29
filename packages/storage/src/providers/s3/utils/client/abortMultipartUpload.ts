@@ -17,7 +17,7 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
-} from '../../../../AwsClients/S3/utils';
+} from './utils';
 
 export type AbortMultipartUploadInput = Pick<
 	AbortMultipartUploadCommandInput,
