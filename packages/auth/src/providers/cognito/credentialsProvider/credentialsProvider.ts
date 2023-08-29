@@ -65,10 +65,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 		if (!isAuthenticated && !authConfig.Cognito.allowGuestAccess) {
 			// TODO(V6): return partial result like Native platforms
-			console.log(
-				`${!isAuthenticated} ${JSON.stringify(authConfig.Cognito)}`,
-				'XXXX isAuthenticanted and not allowGuestAccess'
-			);
 			return;
 		}
 
