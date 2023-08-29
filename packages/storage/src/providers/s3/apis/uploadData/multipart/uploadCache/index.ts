@@ -47,16 +47,21 @@ export const findCachedUploadParts = async ({
 
 	await kvStorage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(cachedUploads));
 
-	const { Parts = [] } = await listParts(s3Config, {
-		Bucket: bucket,
-		Key: finalKey,
-		UploadId: cachedUpload.uploadId,
-	});
-
-	return {
-		parts: Parts,
-		uploadId: cachedUpload.uploadId,
-	};
+	try {
+		const { Parts = [] } = await listParts(s3Config, {
+			Bucket: bucket,
+			Key: finalKey,
+			UploadId: cachedUpload.uploadId,
+		});
+		return {
+			parts: Parts,
+			uploadId: cachedUpload.uploadId,
+		};
+	} catch (e) {
+		// TODO: debug message: failed to list parts. The cached upload will be removed.
+		await removeCachedUpload(cacheKey);
+		return null;
+	}
 };
 
 type FileMetadata = {

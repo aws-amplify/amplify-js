@@ -7,7 +7,6 @@ export {
 	SEND_UPLOAD_PROGRESS_EVENT,
 	s3TransferHandler,
 	CANCELED_ERROR_MESSAGE,
-	isCancelError,
 	CONTENT_SHA256_HEADER,
 	toBase64,
 	utf8Encode,
