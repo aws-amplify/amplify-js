@@ -23,7 +23,6 @@ const corePackageSrcClientsPath = join(
 	'packages',
 	'core',
 	'src',
-	'providers',
 	'AwsClients'
 );
 
@@ -47,7 +46,8 @@ const authPackageSrcClientsPath = join(
 	'src',
 	'providers',
 	'cognito',
-	'utils'
+	'utils',
+	'clients'
 );
 
 /** @type import('dts-bundle-generator/config-schema').BundlerConfig */
