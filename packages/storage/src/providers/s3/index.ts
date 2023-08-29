@@ -10,4 +10,4 @@ export {
 	copy,
 	getUrl,
 } from './apis';
-export { isCancelError } from '../../AwsClients/S3/runtime';
+export { isCancelError } from '../../providers/s3/utils/client/runtime';

@@ -9,7 +9,7 @@ import {
 	completeMultipartUpload,
 	headObject,
 	Part,
-} from '../../../../../AwsClients/S3';
+} from '../../../../../providers/s3/utils/client';
 import { StorageUploadDataRequest } from '../../../../../types';
 import { S3Item } from '../../../types/results';
 import {

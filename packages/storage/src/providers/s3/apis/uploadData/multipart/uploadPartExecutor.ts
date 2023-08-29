@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PartToUpload } from './getDataChunker';
-import { uploadPart } from '../../../../../AwsClients/S3';
+import { uploadPart } from '../../../../../providers/s3/utils/client';
 import { TransferProgressEvent } from '../../../../../types';
 import { ResolvedS3Config } from '../../../types/options';
 import { calculateContentMd5 } from '../../../utils';

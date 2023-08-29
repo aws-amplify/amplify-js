@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { isCancelError } from '../../../AwsClients/S3/runtime';
 import {
 	DownloadTask,
 	TransferTaskState,
 	UploadTask,
 } from '../../../types/common';
+import { isCancelError } from './client/runtime';
 
 type CreateCancellableTaskOptions<Result> = {
 	job: () => Promise<Result>;

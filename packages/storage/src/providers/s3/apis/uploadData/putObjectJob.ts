@@ -3,7 +3,7 @@
 
 import { S3UploadOptions } from '../../types';
 import { calculateContentMd5, resolveS3ConfigAndInput } from '../../utils';
-import { putObject } from '../../../../AwsClients/S3';
+import { putObject } from '../../../../providers/s3/utils/client';
 import { StorageUploadDataRequest } from '../../../../types';
 import { S3Item } from '../../types/results';
 
