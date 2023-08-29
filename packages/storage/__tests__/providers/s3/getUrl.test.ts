@@ -10,14 +10,12 @@ import {
 } from '../../../src/AwsClients/S3';
 
 jest.mock('../../../src/AwsClients/S3');
-jest.mock('@aws-amplify/core', () => {
-	return {
-		fetchAuthSession: jest.fn(),
-		Amplify: {
-			getConfig: jest.fn(),
-		},
-	};
-});
+jest.mock('@aws-amplify/core', () => ({
+	fetchAuthSession: jest.fn(),
+	Amplify: {
+		getConfig: jest.fn(),
+	},
+}));
 
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;

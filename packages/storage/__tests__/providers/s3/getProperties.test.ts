@@ -11,14 +11,12 @@ const mockHeadObject = headObject as jest.Mock;
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 
-jest.mock('@aws-amplify/core', () => {
-	return {
-		fetchAuthSession: jest.fn(),
-		Amplify: {
-			getConfig: jest.fn(),
-		},
-	};
-});
+jest.mock('@aws-amplify/core', () => ({
+	fetchAuthSession: jest.fn(),
+	Amplify: {
+		getConfig: jest.fn(),
+	},
+}));
 
 const bucket = 'bucket';
 const region = 'region';

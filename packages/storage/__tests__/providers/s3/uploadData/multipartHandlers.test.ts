@@ -24,17 +24,13 @@ import { CanceledError } from '../../../../src/errors/CanceledError';
 
 jest.mock('../../../../src/AwsClients/S3');
 
-jest.mock('@aws-amplify/core', () => {
-	const core = jest.requireActual('@aws-amplify/core');
-	return {
-		...core,
-		Amplify: {
-			...core.Amplify,
-			getConfig: jest.fn(),
-		},
-		fetchAuthSession: jest.fn(),
-	};
-});
+jest.mock('@aws-amplify/core', () => ({
+	Amplify: {
+		getConfig: jest.fn(),
+		libraryOptions: {},
+	},
+	fetchAuthSession: jest.fn(),
+}));
 jest.mock(
 	'../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage',
 	() => {

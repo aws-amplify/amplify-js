@@ -11,14 +11,12 @@ import { copyObject } from '../../../src/AwsClients/S3';
 import { copy } from '../../../src/providers/s3/apis';
 
 jest.mock('../../../src/AwsClients/S3');
-jest.mock('@aws-amplify/core', () => {
-	return {
-		fetchAuthSession: jest.fn(),
-		Amplify: {
-			getConfig: jest.fn(),
-		},
-	};
-});
+jest.mock('@aws-amplify/core', () => ({
+	fetchAuthSession: jest.fn(),
+	Amplify: {
+		getConfig: jest.fn(),
+	},
+}));
 const mockCopyObject = copyObject as jest.Mock;
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
