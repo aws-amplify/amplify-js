@@ -43,8 +43,14 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	}
 
 	// TODO(V6): export clear crecentials to singleton
+	async clearCredentialsAndIdentityId(): Promise<void> {
+		logger.debug('Clearing out credentials and identityId');
+		this._credentialsAndIdentityId = undefined;
+		await this._identityIdStore.clearIdentityId();
+	}
+
 	async clearCredentials(): Promise<void> {
-		logger.debug('Clearing out credentials');
+		logger.debug('Clearing out in-memory credentials');
 		this._credentialsAndIdentityId = undefined;
 	}
 
@@ -90,9 +96,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			this.clearCredentials();
 		}
 
-		// check eligibility for guest credentials
-		// - if there is error fetching tokens
-		// - if user is not signed in
 		if (!isAuthenticated) {
 			return await this.getGuestCredentials(identityId, authConfig.Cognito);
 		} else {

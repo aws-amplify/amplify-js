@@ -9,6 +9,7 @@ export {
 	getProperties,
 	copy,
 	getUrl,
-	isCancelError,
 } from './providers/s3';
 export * from './types';
+// TODO[AllanZhengYP]: support isCancelError in Node.js with node-fetch
+export { isCancelError } from './errors/CanceledError';
