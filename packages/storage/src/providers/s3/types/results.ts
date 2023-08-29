@@ -26,9 +26,7 @@ export type S3DownloadFileResult = S3Item;
 
 export type S3GetUrlResult = StorageGetUrlResult;
 
-export type S3UploadDataResult = StorageUploadResult;
-
-export type S3UploadFileResult = StorageUploadResult;
+export type S3UploadDataResult = S3Item;
 
 export type S3GetPropertiesResult = S3Item;
 
