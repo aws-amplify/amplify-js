@@ -7,8 +7,9 @@ import {
 	Hub,
 } from '@aws-amplify/core';
 import {
-	isTokenExpired,
 	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+	isTokenExpired,
 } from '@aws-amplify/core/internals/utils';
 import {
 	AuthTokenOrchestrator,
@@ -41,7 +42,12 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		options?: FetchAuthSessionOptions
 	): Promise<AuthTokens | null> {
 		let tokens: CognitoAuthTokens;
-
+		try {
+			assertTokenProviderConfig(this.authConfig.Cognito);
+		} catch (_err) {
+			// Token provider not configured
+			return null;
+		}
 		await this.waitForInflightOAuth();
 		tokens = await this.tokenStore.loadTokens();
 

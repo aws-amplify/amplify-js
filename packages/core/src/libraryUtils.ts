@@ -21,7 +21,11 @@ export {
 	transferKeyToUpperCase,
 } from './Util/JS';
 
-export { JWT, StrictUnion } from './singleton/Auth/types';
+export {
+	JWT,
+	StrictUnion,
+	CognitoIdentityPoolConfig,
+} from './singleton/Auth/types';
 // Auth utilities
 export {
 	decodeJWT,
