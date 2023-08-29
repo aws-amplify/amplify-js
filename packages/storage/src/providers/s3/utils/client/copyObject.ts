@@ -12,12 +12,14 @@ import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
 import { defaultConfig } from './base';
 import { StorageError } from '../../../../errors/StorageError';
 import {
+	parseXmlBody,
+	parseXmlError,
+	s3TransferHandler,
 	assignStringVariables,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils/serializeHelpers';
-import { parseXmlBody, parseXmlError, s3TransferHandler } from './utils';
+} from './utils';
 
 export type CopyObjectInput = Pick<
 	CopyObjectCommandInput,

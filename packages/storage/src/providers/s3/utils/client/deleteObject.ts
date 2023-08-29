@@ -15,14 +15,12 @@ import type {
 
 import { defaultConfig } from './base';
 import {
-	serializePathnameObjectKey,
-	validateS3RequiredParameter,
-} from './utils/serializeHelpers';
-import {
 	deserializeBoolean,
 	map,
 	parseXmlError,
 	s3TransferHandler,
+	serializePathnameObjectKey,
+	validateS3RequiredParameter,
 } from './utils';
 import { StorageError } from '../../../../errors/StorageError';
 

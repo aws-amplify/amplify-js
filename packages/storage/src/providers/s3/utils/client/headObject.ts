@@ -10,10 +10,7 @@ import {
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import { defaultConfig } from './base';
 import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
-import {
-	serializePathnameObjectKey,
-	validateS3RequiredParameter,
-} from './utils/serializeHelpers';
+
 import {
 	deserializeMetadata,
 	deserializeNumber,
@@ -21,6 +18,8 @@ import {
 	map,
 	parseXmlError,
 	s3TransferHandler,
+	serializePathnameObjectKey,
+	validateS3RequiredParameter
 } from './utils';
 import { StorageError } from '../../../../errors/StorageError';
 
