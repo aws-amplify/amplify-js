@@ -3,30 +3,24 @@
 
 import { getProperties, getUrl } from '../../../src/providers/s3/apis';
 import { Credentials } from '@aws-sdk/types';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
 	getPresignedGetObjectUrl,
 	headObject,
 } from '../../../src/AwsClients/S3';
 
 jest.mock('../../../src/AwsClients/S3');
-
-jest.mock('../../../src/AwsClients/S3');
 jest.mock('@aws-amplify/core', () => {
-	const core = jest.requireActual('@aws-amplify/core');
 	return {
-		...core,
 		fetchAuthSession: jest.fn(),
 		Amplify: {
-			...core.Amplify,
 			getConfig: jest.fn(),
-			Auth: {
-				...core.Amplify.Auth,
-				fetchAuthSession: jest.fn(),
-			},
 		},
 	};
 });
+
+const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockGetConfig = Amplify.getConfig as jest.Mock;
 
 const bucket = 'bucket';
 const region = 'region';
@@ -42,17 +36,17 @@ describe('getProperties test', () => {
 		jest.clearAllMocks();
 	});
 
-	(Amplify.Auth.fetchAuthSession as jest.Mock).mockResolvedValue({
+	mockFetchAuthSession.mockResolvedValue({
 		credentials,
 		identityId: targetIdentityId,
 	});
 
-	(Amplify.getConfig as jest.Mock).mockReturnValue({
+	mockGetConfig.mockReturnValue({
 		Storage: {
 			S3: {
 				bucket,
 				region,
-			}
+			},
 		},
 	});
 	it('get presigned url happy case', async () => {

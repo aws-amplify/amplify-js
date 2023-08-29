@@ -2,27 +2,26 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import {
+	Amplify,
+	fetchAuthSession,
+	StorageAccessLevel,
+} from '@aws-amplify/core';
 import { copyObject } from '../../../src/AwsClients/S3';
 import { copy } from '../../../src/providers/s3/apis';
 
 jest.mock('../../../src/AwsClients/S3');
 jest.mock('@aws-amplify/core', () => {
-	const core = jest.requireActual('@aws-amplify/core');
 	return {
-		...core,
 		fetchAuthSession: jest.fn(),
 		Amplify: {
-			...core.Amplify,
 			getConfig: jest.fn(),
-			Auth: {
-				...core.Amplify.Auth,
-				fetchAuthSession: jest.fn(),
-			},
 		},
 	};
 });
 const mockCopyObject = copyObject as jest.Mock;
+const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockGetConfig = Amplify.getConfig as jest.Mock;
 
 const sourceKey = 'sourceKey';
 const destinationKey = 'destinationKey';
@@ -99,16 +98,16 @@ const interAccessLevelTest = async (
 
 describe('copy API', () => {
 	beforeAll(() => {
-		(Amplify.Auth.fetchAuthSession as jest.Mock).mockResolvedValue({
+		mockFetchAuthSession.mockResolvedValue({
 			credentials,
 			identityId: targetIdentityId,
 		});
-		(Amplify.getConfig as jest.Mock).mockReturnValue({
+		mockGetConfig.mockReturnValue({
 			Storage: {
 				S3: {
 					bucket: 'bucket',
 					region: 'region',
-				}
+				},
 			},
 		});
 	});
