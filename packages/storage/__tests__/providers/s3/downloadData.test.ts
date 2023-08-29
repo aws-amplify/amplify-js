@@ -7,8 +7,8 @@ import { getObject } from '../../../src/providers/s3/utils/client';
 import { createDownloadTask } from '../../../src/providers/s3/utils';
 import { downloadData } from '../../../src';
 
-jest.mock('../../../src/providers/s3/utils/client');
-jest.mock('../../../src/utils/transferTask');
+jest.mock('../../../src/AwsClients/S3');
+jest.mock('../../../src/providers/s3/utils');
 jest.mock('@aws-amplify/core', () => {
 	const core = jest.requireActual('@aws-amplify/core');
 	return {
