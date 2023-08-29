@@ -11,11 +11,6 @@ import {
 	_Object,
 } from '../AwsClients/S3';
 import { StorageOptions, StorageAccessLevel } from './Storage';
-import {
-	UploadTaskCompleteEvent,
-	UploadTaskProgressEvent,
-} from '../providers/AWSS3UploadTask';
-import { UploadTask } from './Provider';
 
 type ListObjectsCommandOutputContent = _Object;
 
@@ -82,8 +77,6 @@ type _S3ProviderPutConfig = {
 
 export type ResumableUploadConfig = {
 	resumable: true;
-	progressCallback?: (progress: UploadTaskProgressEvent) => any;
-	completeCallback?: (event: UploadTaskCompleteEvent) => any;
 	errorCallback?: (err: any) => any;
 };
 
@@ -188,7 +181,3 @@ export type S3ProviderGetPropertiesOutput = {
 export type PutResult = {
 	key: string;
 };
-
-export type S3ProviderPutOutput<T> = T extends { resumable: true }
-	? UploadTask
-	: Promise<PutResult>;
