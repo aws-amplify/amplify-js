@@ -133,7 +133,7 @@ describe('signOut tests no oauth request fail', () => {
 				Auth: {
 					tokenProvider: TokenProvider.CognitoUserPoolsTokenProvider,
 					credentialsProvider: {
-						clearCredentials() {
+						clearCredentialsAndIdentityId() {
 							clearCredentialsSpy();
 						},
 						getCredentialsAndIdentityId(getCredentialsOptions) {
@@ -250,7 +250,7 @@ describe('signOut tests with oauth', () => {
 				Auth: {
 					tokenProvider: TokenProvider.CognitoUserPoolsTokenProvider,
 					credentialsProvider: {
-						clearCredentials() {
+						clearCredentialsAndIdentityId() {
 							clearCredentialsSpy();
 						},
 						getCredentialsAndIdentityId(getCredentialsOptions) {
