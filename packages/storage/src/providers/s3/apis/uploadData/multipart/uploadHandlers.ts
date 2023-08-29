@@ -23,6 +23,7 @@ import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { StorageError } from '../../../../../errors/StorageError';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import { CanceledError } from '../../../../../errors/CanceledError';
 
 /**
  * Create closure hiding the multipart upload implementation details and expose the upload job and control functions(
@@ -50,6 +51,7 @@ export const getMultipartUploadHandlers = (
 	let abortController: AbortController | undefined;
 	let bucket: string | undefined;
 	let keyPrefix: string | undefined;
+	let uploadCacheKey: string | undefined;
 	// Special flag that differentiates HTTP requests abort error caused by pause() from ones caused by cancel().
 	// The former one should NOT cause the upload job to throw, but cancels any pending HTTP requests.
 	// This should be replaced by a special abort reason. However,the support of this API is lagged behind.
@@ -96,7 +98,7 @@ export const getMultipartUploadHandlers = (
 
 		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths
 		const finalKey = keyPrefix + key;
-		const uploadCacheKey = size
+		uploadCacheKey = size
 			? getUploadsCacheKey({
 					file: data instanceof File ? data : undefined,
 					accessLevel: resolveAccessLevel(uploadDataOptions?.accessLevel),
@@ -106,27 +108,6 @@ export const getMultipartUploadHandlers = (
 					key,
 			  })
 			: undefined;
-
-		const abortListener = async () => {
-			try {
-				if (isAbortSignalFromPause) {
-					return;
-				}
-				await abortMultipartUpload(s3Config!, {
-					Bucket: bucket,
-					Key: finalKey,
-					UploadId: inProgressUpload?.uploadId,
-				});
-				if (uploadCacheKey) {
-					removeCachedUpload(uploadCacheKey);
-				}
-			} catch (e) {
-				// TODO: debug message: Error cancelling upload task.
-			} finally {
-				abortController?.signal.removeEventListener('abort', abortListener);
-			}
-		};
-		abortController?.signal.addEventListener('abort', abortListener);
 
 		const dataChunker = getDataChunker(data, size);
 		const completedPartNumberSet = new Set<number>(
@@ -214,7 +195,7 @@ export const getMultipartUploadHandlers = (
 				if (abortSignal?.aborted && isAbortSignalFromPause) {
 					// TODO: debug message: upload paused
 				} else {
-					// TODO: debug message: upload canceled
+					// Uncaught errors should be exposed to the users.
 					rejectCallback!(error);
 				}
 			});
@@ -233,7 +214,34 @@ export const getMultipartUploadHandlers = (
 		startUploadWithResumability();
 	};
 	const onCancel = (abortErrorOverwrite?: Error) => {
+		// 1. abort in-flight API requests
 		abortController?.abort(abortErrorOverwrite);
+
+		const cancelUpload = async () => {
+			// 2. clear upload cache.
+			if (uploadCacheKey) {
+				await removeCachedUpload(uploadCacheKey);
+			}
+			// 3. clear multipart upload on server side.
+			await abortMultipartUpload(s3Config!, {
+				Bucket: bucket,
+				Key: keyPrefix! + key,
+				UploadId: inProgressUpload?.uploadId,
+			});
+		};
+		cancelUpload().catch(e => {
+			// TODO: debug message: Error cancelling upload task.
+		});
+
+		rejectCallback!(
+			abortErrorOverwrite ??
+				// Internal error that should not be exposed to the users. They should use isCancelError() to check if
+				// the error is caused by cancel().
+				new CanceledError({
+					name: 'StorageCanceledError',
+					message: 'Upload is canceled by user',
+				})
+		);
 	};
 	return {
 		multipartUploadJob,
