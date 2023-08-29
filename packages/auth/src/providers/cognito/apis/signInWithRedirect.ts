@@ -288,6 +288,12 @@ async function handleAuthResponse({
 		const error_description = urlParams.searchParams.get('error_description');
 
 		if (error) {
+			Hub.dispatch(
+				'auth',
+				{ event: 'signInWithRedirect_failure' },
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			throw new AuthError({
 				message: AuthErrorTypes.OAuthSignInError,
 				underlyingError: error_description,
