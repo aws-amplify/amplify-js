@@ -16,8 +16,8 @@ import {
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-	Cache,
 } from '@aws-amplify/core';
+import { Cache } from '@aws-amplify/cache';
 import { InternalPubSub } from '@aws-amplify/pubsub/internals';
 import { Auth } from '@aws-amplify/auth';
 import {
