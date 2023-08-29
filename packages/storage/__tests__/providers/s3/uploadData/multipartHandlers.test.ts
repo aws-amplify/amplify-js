@@ -17,7 +17,7 @@ import {
 	validationErrorMap,
 	StorageValidationErrorCode,
 } from '../../../../src/errors/types/validation';
-import { UPLOADS_STORAGE_KEY } from '../../../../src/common/StorageConstants';
+import { UPLOADS_STORAGE_KEY } from '../../../../src/providers/s3/utils/constants';
 import { getKvStorage } from '../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage';
 import { byteLength } from '../../../../src/providers/s3/apis/uploadData/byteLength';
 import { CanceledError } from '../../../../src/errors/CanceledError';

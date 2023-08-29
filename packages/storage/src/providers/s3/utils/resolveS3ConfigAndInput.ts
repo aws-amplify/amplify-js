@@ -11,12 +11,12 @@ import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { StorageError } from '../../../errors/StorageError';
 import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
 import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
-import { S3Options } from '../types';
 import { ResolvedS3Config } from '../types/options';
 
-type ApiOptions = Omit<S3Options, 'accessLevel' | 'targetIdentityId'> & {
+type S3ApiOptions = {
 	accessLevel?: StorageAccessLevel;
 	targetIdentityId?: string;
+	useAccelerateEndpoint?: boolean;
 };
 
 type ResolvedS3ConfigAndInput = {
@@ -29,7 +29,8 @@ type ResolvedS3ConfigAndInput = {
 /**
  * resolve the common input options for S3 API handlers from Amplify configuration and library options.
  *
- * @param {ApiOptions} apiOptions The input options for S3 provider.
+ * @param {AmplifyClassV6} amplify The Amplify instance.
+ * @param {S3ApiOptions} apiOptions The input options for S3 provider.
  * @returns {Promise<ResolvedS3ConfigAndInput>} The resolved common input options for S3 API handlers.
  * @throws A {@link StorageError} with `error.name` from {@link StorageValidationErrorCode} indicating invalid
  *   configurations or Amplify library options.
@@ -40,7 +41,7 @@ type ResolvedS3ConfigAndInput = {
  */
 export const resolveS3ConfigAndInput = async (
 	amplify: AmplifyClassV6,
-	apiOptions?: ApiOptions
+	apiOptions?: S3ApiOptions
 ): Promise<ResolvedS3ConfigAndInput> => {
 	// identityId is always cached in memory if forceRefresh is not set. So we can safely make calls here.
 	const { credentials, identityId } = await fetchAuthSession({
