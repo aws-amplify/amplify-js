@@ -1,6 +1,6 @@
 {
-	"name": "@aws-amplify/storage/src/AwsClients/S3/runtime",
-	"main": "../../../../lib/AwsClients/S3/runtime/index.js",
-	"browser": "../../../../lib-esm/AwsClients/S3/runtime/index.browser.js",
-	"module": "../../../../lib-esm/AwsClients/S3/runtime/index.js"
+	"name": "@aws-amplify/storage/src/providers/s3/utils/client/runtime",
+	"main": "../../../../lib/providers/s3/utils/client/runtime/index.js",
+	"browser": "../../../../lib-esm/providers/s3/utils/client/runtime/index.browser.js",
+	"module": "../../../../lib-esm/providers/s3/utils/client/runtime/index.js"
 }
