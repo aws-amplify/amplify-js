@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export * from './Storage';
-export * from './Provider';
-export * from './AWSS3Provider';
-
-export { DownloadTask, TransferProgressEvent } from './common';
+export { DownloadTask, TransferProgressEvent, UploadTask } from './common';
 export {
 	StorageListRequest,
 	StorageListAllOptions,
@@ -13,13 +9,13 @@ export {
 	StorageOperationRequest,
 	StorageDownloadDataRequest,
 	StorageDownloadFileParameter,
-	StorageUploadDataParameter,
+	StorageUploadDataRequest,
 	StorageOptions,
-	StorageUploadFileParameter, // TODO: open question - should we export this?
 	StorageRemoveOptions,
 	StorageCopySource,
 	StorageCopyDestination,
 	CopyRequest,
+	UploadSource,
 } from './params';
 export {
 	StorageItem,

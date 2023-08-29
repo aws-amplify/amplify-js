@@ -12,7 +12,6 @@ export {
 	S3DownloadFileResult,
 	S3GetUrlResult,
 	S3UploadDataResult,
-	S3UploadFileResult,
 	S3ListOutputItem,
 	S3ListAllResult,
 	S3ListPaginateResult,

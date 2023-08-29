@@ -61,7 +61,6 @@
 		"@aws-sdk/md5-js": "3.6.1",
 		"@aws-sdk/types": "3.6.1",
 		"buffer": "4.9.2",
-		"events": "^3.1.0",
 		"fast-xml-parser": "^4.2.5",
 		"tslib": "^2.5.0"
 	},
@@ -107,17 +106,30 @@
 				"diagnostics": {
 					"pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
 				},
-				"tsConfig": false
+				"tsConfig": {
+					"downlevelIteration": true,
+					"allowJs": true,
+					"types": ["@types/jest"],
+					"outDir": "./tsconfig.json",
+					"noEmitOnError": false,
+					"noImplicitAny": false,
+					"skipLibCheck": true
+				}
 			}
 		},
 		"transform": {
 			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
 		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"testRegex": "(/__tests__/.*|\\.test|spec)\\.(tsx?|jsx?)$",
 		"testPathIgnorePatterns": [
 			"xmlParser-fixture.ts",
 			"testUtils",
 			"cases"
+		],
+		"modulePathIgnorePatterns": [
+			"dist",
+			"lib",
+			"lib-esm"
 		],
 		"moduleFileExtensions": [
 			"ts",
