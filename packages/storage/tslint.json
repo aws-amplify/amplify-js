@@ -1,6 +1,6 @@
 {
 	"linterOptions": {
-		"exclude": ["src/AwsClients/S3/types.ts"]
+		"exclude": ["src/providers/s3/utils/client/types.ts"]
 	},
 	"defaultSeverity": "error",
 	"plugins": ["prettier"],
@@ -11,7 +11,7 @@
 		"max-line-length": [
 			true,
 			{
-				"limit": 700,
+				"limit": 120,
 				"ignore-pattern": "//"
 			}
 		],
