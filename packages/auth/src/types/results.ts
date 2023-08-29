@@ -19,6 +19,8 @@ export type AuthSignInResult<
 	nextStep: AuthNextSignInStep<UserAttributeKey>;
 };
 
+export type AuthSignOutResult = void;
+
 /**
  * The Result of a Sign Up request.
  */

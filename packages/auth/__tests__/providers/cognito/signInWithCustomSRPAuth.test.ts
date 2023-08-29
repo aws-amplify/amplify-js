@@ -9,19 +9,22 @@ import { InitiateAuthException } from '../../../src/providers/cognito/types/erro
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInWithCustomSRPAuth } from '../../../src/providers/cognito/apis/signInWithCustomSRPAuth';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 const authConfig = {
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
 const authConfigWithClientmetadata = {
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
-	...authAPITestParams.configWithClientMetadata,
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
 Amplify.configure({
 	Auth: authConfig,
@@ -80,29 +83,7 @@ describe('signIn API happy path cases', () => {
 			username,
 			password,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
-			authConfig
-		);
-	});
-
-	test('handleCustomSRPAuthFlow should be called with clientMetada from config', async () => {
-		Amplify.configure({
-			Auth: {
-				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				userPoolId: 'us-west-2_zzzzz',
-				...authAPITestParams.configWithClientMetadata,
-			},
-		});
-		const username = authAPITestParams.user1.username;
-		const password = authAPITestParams.user1.password;
-		await signInWithCustomSRPAuth({
-			username,
-			password,
-		});
-		expect(handleCustomSRPAuthFlowSpy).toBeCalledWith(
-			username,
-			password,
-			authAPITestParams.configWithClientMetadata.clientMetadata,
-			authConfigWithClientmetadata
+			authConfig.Cognito
 		);
 	});
 });

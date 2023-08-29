@@ -26,9 +26,7 @@ export type S3DownloadFileResult = S3Item;
 
 export type S3GetUrlResult = StorageGetUrlResult;
 
-export type S3UploadDataResult = StorageUploadResult;
-
-export type S3UploadFileResult = StorageUploadResult;
+export type S3UploadDataResult = S3Item;
 
 export type S3GetPropertiesResult = S3Item;
 
@@ -39,3 +37,6 @@ export type S3ListAllResult = StorageListResult<S3Item>;
 export type S3ListPaginateResult = StorageListResult<S3Item> & {
 	nextToken?: string;
 };
+
+// TODO: expose more properties if required
+export type S3CopyResult = Required<Pick<S3Item, 'key'>>;

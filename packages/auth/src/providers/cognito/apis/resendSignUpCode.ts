@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import {
 	AuthCodeDeliveryDetails,
@@ -36,17 +36,15 @@ export async function resendSignUpCode(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
 	);
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const clientMetadata =
-		resendRequest.options?.serviceOptions?.clientMetadata ??
-		authConfig.clientMetadata;
+	const clientMetadata = resendRequest.options?.serviceOptions?.clientMetadata;
 	const { CodeDeliveryDetails } = await resendConfirmationCode(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
 			Username: username,
 			ClientMetadata: clientMetadata,
-			ClientId: authConfig.userPoolWebClientId,
+			ClientId: authConfig.userPoolClientId,
 		}
 	);
 	const { DeliveryMedium, AttributeName, Destination } = {

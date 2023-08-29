@@ -3,8 +3,6 @@
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/safe-json-parse.ts
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/jwt-model.ts
 
-import { Credentials } from '@aws-sdk/types';
-
 interface JwtPayloadStandardFields {
 	exp?: number; // expires: https://tools.ietf.org/html/rfc7519#section-4.1.4
 	iss?: string; // issuer: https://tools.ietf.org/html/rfc7519#section-4.1.1
@@ -13,6 +11,7 @@ interface JwtPayloadStandardFields {
 	iat?: number; // issued at: https://tools.ietf.org/html/rfc7519#section-4.1.6
 	scope?: string; // scopes: https://tools.ietf.org/html/rfc6749#section-3.3
 	jti?: string; // JWT ID: https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.7
+	sub?: string; // JWT sub https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2
 }
 
 /** JSON type */
@@ -34,6 +33,7 @@ export type AuthSession = {
 	tokens?: AuthTokens;
 	credentials?: AWSCredentials;
 	identityId?: string;
+	userSub?: string;
 };
 
 export type LibraryAuthOptions = {
@@ -56,7 +56,7 @@ export interface AWSCredentialsAndIdentityIdProvider {
 export type TokenProvider = {
 	getTokens: ({
 		forceRefresh,
-	}: {
+	}?: {
 		forceRefresh?: boolean;
 	}) => Promise<AuthTokens | null>;
 };
@@ -70,33 +70,80 @@ export type AuthTokens = {
 	accessToken: JWT;
 };
 
-export type AuthConfig =
-	| IdentityPoolConfig
-	| UserPoolConfig
-	| UserPoolConfigAndIdentityPoolConfig;
+export type AuthConfig = StrictUnion<
+	| AuthIdentityPoolConfig
+	| AuthUserPoolConfig
+	| AuthUserPoolAndIdentityPoolConfig
+>;
 
-export type IdentityPoolConfig = {
+type UnionKeys<T> = T extends T ? keyof T : never;
+type StrictUnionHelper<T, TAll> = T extends any
+	? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>>
+	: never;
+export type StrictUnion<T> = StrictUnionHelper<T, T>;
+
+export type AuthIdentityPoolConfig = {
+	Cognito: CognitoIdentityPoolConfig & {
+		userPoolClientId?: never;
+		userPoolId?: never;
+		loginWith?: never;
+	};
+};
+
+export type CognitoIdentityPoolConfig = {
 	identityPoolId: string;
-	userPoolWebClientId?: never;
-	userPoolId?: never;
-	clientMetadata?: never;
-	isMandatorySignInEnabled?: never;
+	allowGuestAccess?: boolean;
 };
 
-export type UserPoolConfig = {
-	userPoolWebClientId: string;
-	userPoolId: string;
-	identityPoolId?: never;
-	clientMetadata?: Record<string, string>;
+export type AuthUserPoolConfig = {
+	Cognito: CognitoUserPoolConfig & {
+		identityPoolId?: never;
+		allowGuestAccess?: never;
+	};
 };
 
-export type UserPoolConfigAndIdentityPoolConfig = {
-	userPoolWebClientId: string;
+export type CognitoUserPoolConfig = {
+	userPoolClientId: string;
 	userPoolId: string;
-	identityPoolId: string;
-	clientMetadata?: Record<string, string>;
-	isMandatorySignInEnabled?: boolean;
+	signUpVerificationMethod?: 'code' | 'link';
+	loginWith?: {
+		oauth?: OAuthConfig;
+	};
 };
+
+export type OAuthConfig = {
+	domain: string;
+	scopes: Array<OAuthScope>;
+	redirectSignIn: Array<string>;
+	redirectSignOut: Array<string>;
+	responseType: 'code' | 'token';
+	providers?: Array<OAuthProviders | CustomProvider>;
+};
+
+type OAuthProviders = 'Google' | 'Facebook' | 'Amazon' | 'Apple';
+type CustomProvider = { custom: string };
+
+type CustomScope = string & {};
+type OAuthScope =
+	| 'email'
+	| 'openid'
+	| 'phone'
+	| 'email'
+	| 'profile'
+	| 'aws.cognito.signin.user.admin'
+	| CustomScope;
+
+export type CognitoUserPoolWithOAuthConfig = CognitoUserPoolConfig & {
+	loginWith: {
+		oauth: OAuthConfig;
+	};
+};
+export type AuthUserPoolAndIdentityPoolConfig = {
+	Cognito: CognitoUserPoolAndIdentityPoolConfig;
+};
+
+export type CognitoUserPoolAndIdentityPoolConfig = CognitoUserPoolConfig &
+	CognitoIdentityPoolConfig;
 
 export type GetCredentialsOptions =
 	| GetCredentialsAuthenticatedUser
@@ -106,7 +153,7 @@ type GetCredentialsAuthenticatedUser = {
 	authenticated: true;
 	forceRefresh?: boolean;
 	authConfig: AuthConfig;
-	tokens?: AuthTokens;
+	tokens: AuthTokens;
 };
 
 type GetCredentialsUnauthenticatedUser = {

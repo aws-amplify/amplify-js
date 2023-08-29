@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
@@ -25,7 +25,7 @@ import { ConfirmForgotPasswordException } from '../../cognito/types/errors';
 export async function confirmResetPassword(
 	confirmResetPasswordRequest: ConfirmResetPasswordRequest<CognitoConfirmResetPasswordOptions>
 ): Promise<void> {
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
 	const { username, newPassword } = confirmResetPasswordRequest;
@@ -44,8 +44,7 @@ export async function confirmResetPassword(
 		AuthValidationErrorCode.EmptyConfirmResetPasswordConfirmationCode
 	);
 	const metadata =
-		confirmResetPasswordRequest.options?.serviceOptions?.clientMetadata ??
-		authConfig.clientMetadata;
+		confirmResetPasswordRequest.options?.serviceOptions?.clientMetadata;
 
 	await confirmForgotPassword(
 		{ region: getRegion(authConfig.userPoolId) },
@@ -54,7 +53,7 @@ export async function confirmResetPassword(
 			ConfirmationCode: code,
 			Password: newPassword,
 			ClientMetadata: metadata,
-			ClientId: authConfig.userPoolWebClientId,
+			ClientId: authConfig.userPoolClientId,
 		}
 	);
 }

@@ -1,21 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-//
 
-// TODO(ashwinkumar6) this uses V5 Credentials, update to V6.
-import { Credentials } from '@aws-sdk/types';
-
-export type StorageConfig = {
-	region: string;
-	credentials: Credentials;
-};
+import { StorageAccessLevel } from '@aws-amplify/core';
 
 export type StorageOptions =
-	| { accessLevel?: 'guest' | 'private'; isObjectLockEnabled?: boolean }
+	| { accessLevel?: 'guest' | 'private' }
 	| {
 			accessLevel: 'protected';
 			targetIdentityId: string;
-			isObjectLockEnabled?: boolean;
 	  };
 
 export type StorageOperationRequest<Options extends StorageOptions> = {
@@ -53,16 +45,28 @@ export type StorageDownloadFileParameter<Options extends StorageOptions> =
 		localFile: string;
 	};
 
-// TODO: open question whether we should treat uploadFile differently from uploadData
-export type StorageUploadDataParameter<Options extends StorageOptions> =
-	StorageOperationRequest<Options> & {
-		data: Blob | BufferSource | FormData | URLSearchParams | string;
-	};
+/**
+ * The data payload type for upload operation.
+ */
+export type UploadSource = Blob | BufferSource | string | File;
 
-// TODO: open question whether we should treat uploadFile differently from uploadData
-export type StorageUploadFileParameter<Options extends StorageOptions> =
+export type StorageUploadDataRequest<Options extends StorageOptions> =
 	StorageOperationRequest<Options> & {
-		data: File;
+		data: UploadSource;
 	};
 
 export type StorageRemoveOptions = StorageOptions;
+
+export type StorageCopySource = {
+	key: string;
+} & StorageOptions;
+
+export type StorageCopyDestination = {
+	key: string;
+	accessLevel?: StorageAccessLevel;
+};
+
+export type CopyRequest = {
+	source: StorageCopySource;
+	destination: StorageCopyDestination;
+};

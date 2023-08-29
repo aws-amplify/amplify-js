@@ -3,12 +3,11 @@
 
 export {
 	uploadData,
-	uploadFile,
 	downloadData,
-	downloadFile,
 	remove,
 	list,
 	getProperties,
 	copy,
 	getUrl,
 } from './apis';
+export { isCancelError } from '../../AwsClients/S3/runtime';

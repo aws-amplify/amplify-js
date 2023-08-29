@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import {
 	AuthSignUpResult,
@@ -34,10 +34,9 @@ export async function confirmSignUp(
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
 	const { username, confirmationCode, options } = confirmSignUpRequest;
 
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const clientMetadata =
-		options?.serviceOptions?.clientMetadata ?? authConfig.clientMetadata;
+	const clientMetadata = options?.serviceOptions?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptyConfirmSignUpUsername
@@ -54,7 +53,7 @@ export async function confirmSignUp(
 			ConfirmationCode: confirmationCode,
 			ClientMetadata: clientMetadata,
 			ForceAliasCreation: options?.serviceOptions?.forceAliasCreation,
-			ClientId: authConfig.userPoolWebClientId,
+			ClientId: authConfig.userPoolClientId,
 			// TODO: handle UserContextData
 		}
 	);

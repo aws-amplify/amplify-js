@@ -6,17 +6,18 @@ import { resetPassword } from '../../../src/providers/cognito';
 import { ForgotPasswordException } from '../../../src/providers/cognito/types/errors';
 import * as resetPasswordClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import { ForgotPasswordCommandOutput }
- from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
+import { ForgotPasswordCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { Amplify } from 'aws-amplify';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 Amplify.configure({
 	Auth: {
-		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-		userPoolId: 'us-west-2_zzzzz',
+		Cognito: {
+			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+		},
 	},
 });
 describe('ResetPassword API happy path cases', () => {
@@ -53,25 +54,6 @@ describe('ResetPassword API happy path cases', () => {
 			expect.objectContaining({
 				Username: 'username',
 				ClientMetadata: { foo: 'foo' },
-				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			})
-		);
-	});
-
-	test('ResetPassword API input should contain clientMetadata from config', async () => {
-		Amplify.configure({
-			Auth: {
-				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				userPoolId: 'us-west-2_zzzzz',
-				...authAPITestParams.configWithClientMetadata,
-			},
-		});
-		await resetPassword({ username: 'username' });
-		expect(resetPasswordSpy).toHaveBeenCalledWith(
-			expect.objectContaining({ region: 'us-west-2' }),
-			expect.objectContaining({
-				Username: 'username',
-				ClientMetadata: { foo: 'bar' },
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 			})
 		);

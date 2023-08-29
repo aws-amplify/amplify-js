@@ -30,30 +30,35 @@ jest.mock(
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	? A
 	: never;
-const validAuthConfig: ArgumentTypes<typeof cogId.AmplifyV6.configure>[0] = {
+const validAuthConfig: ArgumentTypes<typeof cogId.Amplify.configure>[0] = {
 	Auth: {
-		userPoolId: 'us-east-1_test-id',
-		identityPoolId: 'us-east:1_test-id',
-		userPoolWebClientId: 'test-id',
+		Cognito: {
+			userPoolId: 'us-east-1_test-id',
+			identityPoolId: 'us-east:1_test-id',
+			userPoolClientId: 'test-id',
+		},
 	},
 };
 const mandatorySignInEnabledConfig: ArgumentTypes<
-	typeof cogId.AmplifyV6.configure
+	typeof cogId.Amplify.configure
 >[0] = {
 	Auth: {
-		userPoolId: 'us-east-1_test-id',
-		identityPoolId: 'us-east:1_test-id',
-		userPoolWebClientId: 'test-id',
-		isMandatorySignInEnabled: true,
+		Cognito: {
+			userPoolId: 'us-east-1_test-id',
+			identityPoolId: 'us-east:1_test-id',
+			userPoolClientId: 'test-id',
+			allowGuestAccess: false,
+		},
 	},
 };
 const credentialsForidentityIdSpy = jest.spyOn(
 	cogId,
 	'getCredentialsForIdentity'
 );
-const configSpy = jest.spyOn(cogId.AmplifyV6, 'getConfig');
+const configSpy = jest.spyOn(cogId.Amplify, 'getConfig');
 
 describe('Guest Credentials', () => {
+	cognitoCredentialsProvider.setAuthConfig(validAuthConfig.Auth!);
 	describe('Happy Path Cases:', () => {
 		beforeEach(() => {
 			credentialsForidentityIdSpy.mockImplementationOnce(

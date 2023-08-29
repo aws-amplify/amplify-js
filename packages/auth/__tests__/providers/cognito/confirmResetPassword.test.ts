@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 as Amplify } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { confirmResetPassword } from '../../../src/providers/cognito';
@@ -14,8 +14,10 @@ jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 Amplify.configure({
 	Auth: {
-		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-		userPoolId: 'us-west-2_zzzzz',
+		Cognito: {
+			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+		},
 	},
 });
 describe('ConfirmResetPassword API happy path cases', () => {
@@ -60,23 +62,6 @@ describe('ConfirmResetPassword API happy path cases', () => {
 				ClientMetadata: { fooo: 'fooo' },
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 			})
-		);
-	});
-
-	test('ConfirmResetPassword API input should contain clientMetadata from config', async () => {
-		Amplify.configure({
-			Auth: {
-				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				userPoolId: 'us-west-2_zzzzz',
-				clientMetadata: { foo: 'bar' },
-			},
-		});
-		await confirmResetPassword(authAPITestParams.confirmResetPasswordRequest);
-		expect(confirmForgotPasswordSpy).toHaveBeenCalledWith(
-			expect.objectContaining({ region: 'us-west-2' }),
-			expect.objectContaining(
-				authAPITestParams.confirmForgotPasswordCommandWithClientMetadata
-			)
 		);
 	});
 });

@@ -2,12 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthError } from '../../../src/errors/AuthError';
-import {
-	confirmUserAttribute,
-} from '../../../src/providers/cognito';
+import { confirmUserAttribute } from '../../../src/providers/cognito';
 import { VerifyUserAttributeException } from '../../../src/providers/cognito/types/errors';
 import * as userPoolClients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import * as authUtils from '../../../src';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
@@ -18,9 +16,11 @@ jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 Amplify.configure({
 	Auth: {
-		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-		userPoolId: 'us-west-2_zzzzz',
-		identityPoolId: 'us-west-2:xxxxxx',
+		Cognito: {
+			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+			identityPoolId: 'us-west-2:xxxxxx',
+		},
 	},
 });
 const mockedAccessToken =
@@ -77,8 +77,7 @@ describe('confirm user attribute API happy path cases', () => {
 });
 
 describe('confirmUserAttribute API error path cases:', () => {
-	test('confirmUserAttribute API should raise a validation error when confirmationCode is not defined',
-     async () => {
+	test('confirmUserAttribute API should raise a validation error when confirmationCode is not defined', async () => {
 		try {
 			const confirmationCode = '';
 			await confirmUserAttribute({

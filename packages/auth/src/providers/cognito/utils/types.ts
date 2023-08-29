@@ -1,13 +1,22 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthConfig, AuthTokens, UserPoolConfig } from '@aws-amplify/core';
+import {
+	AuthConfig,
+	AuthTokens,
+	UserPoolConfig,
+	CognitoUserPoolConfig,
+} from '@aws-amplify/core';
 import { AuthError } from '../../../errors/AuthError';
 
 export function isTypeUserPoolConfig(
 	authConfig?: AuthConfig
 ): authConfig is UserPoolConfig {
-	if (authConfig && authConfig.userPoolId && authConfig.userPoolWebClientId) {
+	if (
+		authConfig &&
+		authConfig.Cognito.userPoolId &&
+		authConfig.Cognito.userPoolClientId
+	) {
 		return true;
 	}
 
@@ -23,4 +32,25 @@ export function assertAuthTokens(
 			message: 'No Auth Tokens were found',
 		});
 	}
+}
+
+export const OAuthStorageKeys = {
+	inflightOAuth: 'inflightOAuth',
+	oauthSignIn: 'oauthSignIn',
+	oauthPKCE: 'oauthPKCE',
+	oauthState: 'oauthState',
+};
+
+export interface OAuthStore {
+	setAuthConfig(authConfigParam: CognitoUserPoolConfig): void;
+	loadOAuthInFlight(): Promise<boolean>;
+	storeOAuthInFlight(inflight: boolean): Promise<void>;
+	loadOAuthSignIn(): Promise<boolean>;
+	storeOAuthSignIn(oauthSignIn: boolean): Promise<void>;
+	loadOAuthState(): Promise<string>;
+	storeOAuthState(state: string): Promise<void>;
+	loadPKCE(): Promise<string>;
+	storePKCE(pkce: string): Promise<void>;
+	clearOAuthInflightData(): Promise<void>;
+	clearOAuthData(): Promise<void>;
 }

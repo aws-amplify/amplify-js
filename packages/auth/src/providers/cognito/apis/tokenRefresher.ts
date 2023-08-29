@@ -12,13 +12,12 @@ export const CognitoUserPoolTokenRefresher: TokenRefresher = async ({
 	tokens: CognitoAuthTokens;
 	authConfig: AuthConfig;
 }) => {
-	const region = authConfig.userPoolId.split('_')[0];
+	const region = authConfig?.Cognito?.userPoolId?.split('_')[0];
 	const refreshTokenString = tokens.refreshToken;
 	const result = await initiateAuth(
 		{ region },
 		{
-			ClientId: authConfig.userPoolWebClientId,
-			ClientMetadata: authConfig.clientMetadata,
+			ClientId: authConfig?.Cognito?.userPoolClientId,
 			AuthFlow: 'REFRESH_TOKEN_AUTH',
 			AuthParameters: {
 				REFRESH_TOKEN: refreshTokenString,

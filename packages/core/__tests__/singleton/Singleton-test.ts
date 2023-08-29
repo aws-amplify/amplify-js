@@ -1,8 +1,9 @@
-import { AmplifyV6 as Amplify } from '../../src/singleton';
+import { Amplify } from '../../src/singleton';
 import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { AWSCredentialsAndIdentityId } from '../../src/singleton/Auth/types';
-
+import { TextEncoder, TextDecoder } from 'util';
+Object.assign(global, { TextDecoder, TextEncoder });
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	? A
 	: never;
@@ -12,9 +13,11 @@ describe('Amplify config test', () => {
 		expect.assertions(1);
 		const config: ArgumentTypes<typeof Amplify.configure>[0] = {
 			Auth: {
-				userPoolId: 'us-east-1:aaaaaaa',
-				identityPoolId: 'us-east-1:bbbbb',
-				userPoolWebClientId: 'aaaaaaaaaaaa',
+				Cognito: {
+					userPoolId: 'us-east-1:aaaaaaa',
+					identityPoolId: 'us-east-1:bbbbb',
+					userPoolClientId: 'aaaaaaaaaaaa',
+				},
 			},
 		};
 
@@ -24,12 +27,14 @@ describe('Amplify config test', () => {
 		expect(result).toEqual(config);
 	});
 
-	test('Incremental set and get config', () => {
+	test('Replace Cognito configuration set and get config', () => {
 		expect.assertions(1);
 		const config1: ArgumentTypes<typeof Amplify.configure>[0] = {
 			Auth: {
-				userPoolId: 'us-east-1:aaaaaaa',
-				userPoolWebClientId: 'aaaaaaaaaaaa',
+				Cognito: {
+					userPoolId: 'us-east-1:aaaaaaa',
+					userPoolClientId: 'aaaaaaaaaaaa',
+				},
 			},
 		};
 
@@ -37,7 +42,9 @@ describe('Amplify config test', () => {
 
 		const config2: ArgumentTypes<typeof Amplify.configure>[0] = {
 			Auth: {
-				identityPoolId: 'us-east-1:bbbbb',
+				Cognito: {
+					identityPoolId: 'us-east-1:bbbbb',
+				},
 			},
 		};
 		Amplify.configure(config2);
@@ -46,22 +53,28 @@ describe('Amplify config test', () => {
 
 		expect(result).toEqual({
 			Auth: {
-				userPoolId: 'us-east-1:aaaaaaa',
-				identityPoolId: 'us-east-1:bbbbb',
-				userPoolWebClientId: 'aaaaaaaaaaaa',
+				Cognito: {
+					identityPoolId: 'us-east-1:bbbbb',
+				},
 			},
 		});
 	});
 });
 
 describe('Session tests', () => {
+	beforeEach(() => {
+		jest.resetAllMocks();
+		jest.clearAllMocks();
+	});
 	test('fetch empty session', async () => {
 		expect.assertions(2);
 		const config: ArgumentTypes<typeof Amplify.configure>[0] = {
 			Auth: {
-				userPoolId: 'us-east-1:aaaaaaa',
-				identityPoolId: 'us-east-1:bbbbb',
-				userPoolWebClientId: 'aaaaaaaaaaaa',
+				Cognito: {
+					userPoolId: 'us-east-1:aaaaaaa',
+					identityPoolId: 'us-east-1:bbbbb',
+					userPoolClientId: 'aaaaaaaaaaaa',
+				},
 			},
 		};
 
@@ -74,12 +87,14 @@ describe('Session tests', () => {
 	});
 
 	test('fetch user after no credentials', async () => {
-		expect.assertions(2);
+		expect.assertions(3);
 		const config: ArgumentTypes<typeof Amplify.configure>[0] = {
 			Auth: {
-				userPoolId: 'us-east-1:aaaaaaa',
-				identityPoolId: 'us-east-1:bbbbb',
-				userPoolWebClientId: 'aaaaaaaaaaaa',
+				Cognito: {
+					userPoolId: 'us-east-1:aaaaaaa',
+					identityPoolId: 'us-east-1:bbbbb',
+					userPoolClientId: 'aaaaaaaaaaaa',
+				},
 			},
 		};
 
@@ -108,6 +123,8 @@ describe('Session tests', () => {
 			name: 'John Doe',
 			sub: '1234567890',
 		});
+
+		expect(session.userSub).toEqual('1234567890');
 	});
 
 	test('fetch session with token and credentials', async () => {
@@ -115,9 +132,11 @@ describe('Session tests', () => {
 
 		const config: ArgumentTypes<typeof Amplify.configure>[0] = {
 			Auth: {
-				userPoolId: 'us-east-1:aaaaaaa',
-				identityPoolId: 'us-east-1:bbbbb',
-				userPoolWebClientId: 'aaaaaaaaaaaa',
+				Cognito: {
+					userPoolId: 'us-east-1:aaaaaaa',
+					identityPoolId: 'us-east-1:bbbbb',
+					userPoolClientId: 'aaaaaaaaaaaa',
+				},
 			},
 		};
 
@@ -180,9 +199,11 @@ describe('Session tests', () => {
 
 		expect(credentialsSpy).toBeCalledWith({
 			authConfig: {
-				identityPoolId: 'us-east-1:bbbbb',
-				userPoolId: 'us-east-1:aaaaaaa',
-				userPoolWebClientId: 'aaaaaaaaaaaa',
+				Cognito: {
+					identityPoolId: 'us-east-1:bbbbb',
+					userPoolId: 'us-east-1:aaaaaaa',
+					userPoolClientId: 'aaaaaaaaaaaa',
+				},
 			},
 			tokens: {
 				accessToken: {
@@ -205,9 +226,12 @@ describe('Session tests', () => {
 
 		const config: ArgumentTypes<typeof Amplify.configure>[0] = {
 			Auth: {
-				userPoolId: 'us-east-1:aaaaaaa',
-				identityPoolId: 'us-east-1:bbbbb',
-				userPoolWebClientId: 'aaaaaaaaaaaa',
+				Cognito: {
+					userPoolId: 'us-east-1:aaaaaaa',
+					identityPoolId: 'us-east-1:bbbbb',
+					userPoolClientId: 'aaaaaaaaaaaa',
+					allowGuestAccess: true,
+				},
 			},
 		};
 
@@ -260,11 +284,15 @@ describe('Session tests', () => {
 
 		expect(credentialsSpy).toBeCalledWith({
 			authConfig: {
-				identityPoolId: 'us-east-1:bbbbb',
-				userPoolId: 'us-east-1:aaaaaaa',
-				userPoolWebClientId: 'aaaaaaaaaaaa',
+				Cognito: {
+					allowGuestAccess: true,
+					identityPoolId: 'us-east-1:bbbbb',
+					userPoolId: 'us-east-1:aaaaaaa',
+					userPoolClientId: 'aaaaaaaaaaaa',
+				},
 			},
 			authenticated: false,
+			forceRefresh: undefined,
 		});
 	});
 
@@ -282,9 +310,11 @@ describe('Session tests', () => {
 
 		auth.configure(
 			{
-				userPoolId: 'us-east-1:aaaaaaa',
-				identityPoolId: 'us-east-1:bbbbb',
-				userPoolWebClientId: 'aaaaaaaaaaaa',
+				Cognito: {
+					userPoolId: 'us-east-1:aaaaaaa',
+					identityPoolId: 'us-east-1:bbbbb',
+					userPoolClientId: 'aaaaaaaaaaaa',
+				},
 			},
 			{
 				tokenProvider: {
@@ -308,9 +338,11 @@ describe('Session tests', () => {
 
 		auth.configure(
 			{
-				userPoolId: 'us-east-1:aaaaaaa',
-				identityPoolId: 'us-east-1:bbbbb',
-				userPoolWebClientId: 'aaaaaaaaaaaa',
+				Cognito: {
+					userPoolId: 'us-east-1:aaaaaaa',
+					identityPoolId: 'us-east-1:bbbbb',
+					userPoolClientId: 'aaaaaaaaaaaa',
+				},
 			},
 			{
 				tokenProvider: {

@@ -5,7 +5,7 @@ import { FetchMFAPreferenceResult } from '../types/results';
 import { getMFAType, getMFATypes } from '../utils/signInHelpers';
 import { GetUserException } from '../types/errors';
 import { getUser } from '../utils/clients/CognitoIdentityProvider';
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
@@ -20,7 +20,7 @@ import { assertAuthTokens } from '../utils/types';
  * @returns FetchMFAPreferenceResult
  */
 export async function fetchMFAPreference(): Promise<FetchMFAPreferenceResult> {
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);

@@ -5,19 +5,21 @@ export * from './Storage';
 export * from './Provider';
 export * from './AWSS3Provider';
 
-export { DownloadTask, TransferProgressEvent } from './common';
+export { DownloadTask, TransferProgressEvent, UploadTask } from './common';
 export {
-	StorageConfig,
 	StorageListRequest,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
 	StorageOperationRequest,
 	StorageDownloadDataRequest,
 	StorageDownloadFileParameter,
-	StorageUploadDataParameter,
+	StorageUploadDataRequest,
 	StorageOptions,
-	StorageUploadFileParameter, // TODO: open question - should we export this?
 	StorageRemoveOptions,
+	StorageCopySource,
+	StorageCopyDestination,
+	CopyRequest,
+	UploadSource,
 } from './params';
 export {
 	StorageItem,

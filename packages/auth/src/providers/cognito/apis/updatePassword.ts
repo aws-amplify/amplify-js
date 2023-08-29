@@ -6,7 +6,7 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { UpdatePasswordRequest } from '../../../types/requests';
 import { changePassword } from '../utils/clients/CognitoIdentityProvider';
 import { ChangePasswordException } from '../../cognito/types/errors';
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
@@ -17,7 +17,7 @@ import { assertAuthTokens } from '../utils/types';
  *
  * @param updatePasswordRequest - The updatePasswordRequest object.
  *
- * @throws - {@link ChangePasswordException} - Cognito service errors thrown when updatinga password.
+ * @throws - {@link ChangePasswordException} - Cognito service errors thrown when updating a password.
  *
  * @throws - {@link AuthValidationErrorCode} - Validation errors thrown when oldPassword or newPassword are empty.
  *
@@ -26,7 +26,7 @@ import { assertAuthTokens } from '../utils/types';
 export async function updatePassword(
 	updatePasswordRequest: UpdatePasswordRequest
 ): Promise<void> {
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { oldPassword, newPassword } = updatePasswordRequest;
 	assertValidationError(

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 as Amplify } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
@@ -14,9 +14,9 @@ import { assertAuthTokens } from '../utils/types';
 import { CognitoUserAttributeKey } from '../types';
 
 /**
- * Confirms a user attribute with the confirmation code. 
+ * Confirms a user attribute with the confirmation code.
  *
- * @param confirmUserAttributeRequest - The ConfirmUserAttributeRequest 
+ * @param confirmUserAttributeRequest - The ConfirmUserAttributeRequest
  *
  * @throws  -{@link AuthValidationErrorCode } -
  * Thrown when `confirmationCode` is not defined.
@@ -28,7 +28,7 @@ import { CognitoUserAttributeKey } from '../types';
 export async function confirmUserAttribute(
 	confirmUserAttributeRequest: ConfirmUserAttributeRequest<CognitoUserAttributeKey>
 ): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { confirmationCode, userAttributeKey } = confirmUserAttributeRequest;
 	assertValidationError(

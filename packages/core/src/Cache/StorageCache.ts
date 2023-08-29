@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getCurrTime, getByteLength, defaultConfig } from './Utils';
-import { AmplifyV6 } from '../singleton';
+import { Amplify } from '../singleton';
 import { CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '../Logger';
 
@@ -141,7 +141,8 @@ export class StorageCache {
 	 * @internal
 	 */
 	protected get cacheConfig(): CacheConfig {
-		const globalCacheConfig = AmplifyV6.getConfig().Cache || {};
+		// const globalCacheConfig = Amplify.getConfig().Cache || {};
+		const globalCacheConfig = {};
 
 		if (this.instanceConfig) {
 			return Object.assign(

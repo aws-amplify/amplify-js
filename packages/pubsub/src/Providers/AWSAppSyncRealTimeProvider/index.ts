@@ -18,7 +18,7 @@ import {
 	isNonRetryableError,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
-	Cache
+	Cache,
 } from '@aws-amplify/core';
 import { Auth, GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from '../PubSubProvider';
@@ -54,12 +54,8 @@ import {
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
-const dispatchApiEvent = (
-	event: string,
-	data: Record<string, unknown>,
-	message: string
-) => {
-	Hub.dispatch('api', { event, data, message }, 'PubSub', AMPLIFY_SYMBOL);
+const dispatchApiEvent = payload => {
+	Hub.dispatch('api', payload, 'PubSub', AMPLIFY_SYMBOL);
 };
 
 export type ObserverQuery = {
@@ -134,14 +130,14 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		this.connectionStateMonitorSubscription =
 			this.connectionStateMonitor.connectionStateObservable.subscribe(
 				connectionState => {
-					dispatchApiEvent(
-						CONNECTION_STATE_CHANGE,
-						{
+					dispatchApiEvent({
+						event: CONNECTION_STATE_CHANGE,
+						data: {
 							provider: this,
 							connectionState,
 						},
-						`Connection state is ${connectionState}`
-					);
+						message: `Connection state is ${connectionState}`,
+					});
 					this.connectionState = connectionState;
 
 					// Trigger START_RECONNECT when the connection is disrupted

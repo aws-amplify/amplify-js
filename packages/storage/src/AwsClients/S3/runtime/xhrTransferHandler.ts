@@ -9,10 +9,7 @@ import {
 	withMemoization,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
-import type { EventEmitter } from 'events';
 import {
-	SEND_DOWNLOAD_PROGRESS_EVENT,
-	SEND_UPLOAD_PROGRESS_EVENT,
 	ABORT_ERROR_CODE,
 	ABORT_ERROR_MESSAGE,
 	CANCELED_ERROR_CODE,
@@ -20,8 +17,17 @@ import {
 	NETWORK_ERROR_CODE,
 	NETWORK_ERROR_MESSAGE,
 } from './constants';
+import { TransferProgressEvent } from '../../../types/common';
 
 const logger = new Logger('xhr-http-handler');
+
+/**
+ * Internal type for CanceledError thrown by handler when AbortController is called
+ * with out overwriting.
+ */
+interface CanceledError extends Error {
+	__CANCEL__: true;
+}
 
 /**
  * @internal
@@ -31,7 +37,8 @@ export interface XhrTransferHandlerOptions {
 	// download binary data. Otherwise, use `text` to return the response as a string.
 	responseType: 'text' | 'blob';
 	abortSignal?: AbortSignal;
-	emitter?: EventEmitter;
+	onDownloadProgress?: (event: TransferProgressEvent) => void;
+	onUploadProgress?: (event: TransferProgressEvent) => void;
 }
 
 /**
@@ -49,7 +56,8 @@ export const xhrTransferHandler: TransferHandler<
 	XhrTransferHandlerOptions
 > = (request, options): Promise<HttpResponse> => {
 	const { url, method, headers, body } = request;
-	const { emitter, responseType, abortSignal } = options;
+	const { onDownloadProgress, onUploadProgress, responseType, abortSignal } =
+		options;
 
 	return new Promise((resolve, reject) => {
 		let xhr: XMLHttpRequest | null = new XMLHttpRequest();
@@ -63,39 +71,37 @@ export const xhrTransferHandler: TransferHandler<
 
 		xhr.responseType = responseType;
 
-		if (emitter) {
-			xhr.upload.addEventListener('progress', event => {
-				emitter.emit(SEND_UPLOAD_PROGRESS_EVENT, event);
+		if (onDownloadProgress) {
+			xhr.addEventListener('progress', event => {
+				onDownloadProgress(convertToTransferProgressEvent(event));
 				logger.debug(event);
 			});
-			xhr.addEventListener('progress', event => {
-				emitter.emit(SEND_DOWNLOAD_PROGRESS_EVENT, event);
+		}
+		if (onUploadProgress) {
+			xhr.upload.addEventListener('progress', event => {
+				onUploadProgress(convertToTransferProgressEvent(event));
 				logger.debug(event);
 			});
 		}
 
 		xhr.addEventListener('error', () => {
-			const error = simulateAxiosError(
+			const networkError = buildHandlerError(
 				NETWORK_ERROR_MESSAGE,
-				NETWORK_ERROR_CODE,
-				xhr!,
-				options
+				NETWORK_ERROR_CODE
 			);
 			logger.error(NETWORK_ERROR_MESSAGE);
-			reject(error);
+			reject(networkError);
 			xhr = null; // clean up request
 		});
 
 		// Handle browser request cancellation (as opposed to a manual cancellation)
 		xhr.addEventListener('abort', () => {
 			// The abort event can be triggered after the error or load event. So we need to check if the xhr is null.
+			// When request is aborted by AbortSignal, the promise is rejected in the abortSignal's 'abort' event listener.
 			if (!xhr || abortSignal?.aborted) return;
-			const error = simulateAxiosError(
-				ABORT_ERROR_MESSAGE,
-				ABORT_ERROR_CODE,
-				xhr,
-				options
-			);
+			// Handle abort request caused by browser instead of AbortController
+			// see: https://github.com/axios/axios/issues/537
+			const error = buildHandlerError(ABORT_ERROR_MESSAGE, ABORT_ERROR_CODE);
 			logger.error(ABORT_ERROR_MESSAGE);
 			reject(error);
 			xhr = null; // clean up request
@@ -159,14 +165,12 @@ export const xhrTransferHandler: TransferHandler<
 				if (!xhr) {
 					return;
 				}
-				const canceledError = simulateAxiosCanceledError(
-					CANCELED_ERROR_MESSAGE ?? abortSignal.reason,
-					CANCELED_ERROR_CODE,
-					xhr,
-					options
+				const canceledError = Object.assign(
+					buildHandlerError(CANCELED_ERROR_MESSAGE, CANCELED_ERROR_CODE),
+					{ __CANCEL__: true }
 				);
-				xhr.abort();
 				reject(canceledError);
+				xhr.abort();
 				xhr = null;
 			};
 			abortSignal.aborted
@@ -186,35 +190,21 @@ export const xhrTransferHandler: TransferHandler<
 	});
 };
 
-// TODO[AllanZhengYP]: V6 remove this
-const simulateAxiosError = (
-	message: string,
-	code: string,
-	request: XMLHttpRequest,
-	config: XhrTransferHandlerOptions
-) =>
-	Object.assign(new Error(message), {
-		code,
-		config,
-		request,
-	});
+const convertToTransferProgressEvent = (
+	event: ProgressEvent
+): TransferProgressEvent => ({
+	transferredBytes: event.loaded,
+	totalBytes: event.lengthComputable ? event.total : undefined,
+});
 
-const simulateAxiosCanceledError = (
-	message: string,
-	code: string,
-	request: XMLHttpRequest,
-	config: XhrTransferHandlerOptions
-) => {
-	const error = simulateAxiosError(message, code, request, config);
-	error.name = 'CanceledError';
-	// @ts-expect-error. mock axios error
-	error['__CANCEL__'] = true;
+const buildHandlerError = (message: string, name: string): Error => {
+	const error = new Error(message);
+	error.name = name;
 	return error;
 };
 
-export const isCancelError = (error: unknown): error is Error =>
-	// @ts-expect-error. mock axios error
-	!!error?.['__CANCEL__'];
+export const isCancelError = (error: unknown): boolean =>
+	!!error && (error as CanceledError).__CANCEL__ === true;
 /**
  * Convert xhr.getAllResponseHeaders() string to a Record<string, string>. Note that modern browser already returns
  * header names in lowercase.

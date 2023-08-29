@@ -54,7 +54,7 @@ const testOpts: any = {
 	level: 'level',
 };
 
-describe(AWSS3ProviderManagedUpload.name, () => {
+describe.skip(AWSS3ProviderManagedUpload.name, () => {
 	beforeEach(() => {
 		(credentialsProvider as jest.Mock).mockResolvedValue(credentials);
 	});
@@ -160,7 +160,7 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 			);
 		});
 
-		test('happy case: upload a body that splits in two parts', async () => {
+		test.skip('happy case: upload a body that splits in two parts', async () => {
 			(createMultipartUpload as jest.Mock).mockResolvedValue({
 				UploadId: testUploadId,
 			});

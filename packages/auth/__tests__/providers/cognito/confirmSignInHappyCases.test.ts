@@ -1,30 +1,38 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 as Amplify } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { signIn } from '../../../src/providers/cognito/apis/signIn';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { AuthSignInStep } from '../../../src/types';
 import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { cognitoCredentialsProvider } from '../../../src/providers/cognito/credentialsProvider';
+import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 
 const authConfig = {
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
 
 const authConfigWithMetadata = {
-	...authAPITestParams.configWithClientMetadata,
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
 
 describe('confirmSignIn API happy path cases', () => {
 	let handleChallengeNameSpy;
 	const username = authAPITestParams.user1.username;
 	const password = authAPITestParams.user1.password;
+
 	beforeEach(async () => {
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		handleChallengeNameSpy = jest
 			.spyOn(signInHelpers, 'handleChallengeName')
 			.mockImplementation(
@@ -234,46 +242,9 @@ describe('confirmSignIn API happy path cases', () => {
 			activeChallengeName,
 			activeSignInSession,
 			challengeResponse,
-			authConfig,
+			authConfig.Cognito,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			authAPITestParams.configWithClientMetadata
-		);
-		handleUserSRPAuthFlowSpy.mockClear();
-	});
-
-	test('handleChallengeName should be called with clientMetadata from config', async () => {
-		Amplify.configure({
-			Auth: authConfigWithMetadata,
-		});
-		const activeSignInSession = '1234234232';
-		const activeChallengeName = 'SMS_MFA';
-		const handleUserSRPAuthFlowSpy = jest
-			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
-			.mockImplementationOnce(
-				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
-					ChallengeName: 'SMS_MFA',
-					Session: '1234234232',
-					$metadata: {},
-					ChallengeParameters: {
-						CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
-						CODE_DELIVERY_DESTINATION: '*******9878',
-					},
-				})
-			);
-		await signIn({ username, password });
-
-		const challengeResponse = '123456';
-		await confirmSignIn({
-			challengeResponse,
-		});
-		expect(handleChallengeNameSpy).toBeCalledWith(
-			username,
-			activeChallengeName,
-			activeSignInSession,
-			challengeResponse,
-			authConfigWithMetadata,
-			authAPITestParams.configWithClientMetadata.clientMetadata,
-			undefined
 		);
 		handleUserSRPAuthFlowSpy.mockClear();
 	});

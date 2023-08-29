@@ -3,11 +3,9 @@
 
 import { AuthError } from '../../../src/errors/AuthError';
 import { updateUserAttributes } from '../../../src/providers/cognito';
-import {
-	UpdateUserAttributesException,
-} from '../../../src/providers/cognito/types/errors';
+import { UpdateUserAttributesException } from '../../../src/providers/cognito/types/errors';
 import * as updateUserAttributesClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import * as authUtils from '../../../src';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
@@ -19,9 +17,11 @@ jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 Amplify.configure({
 	Auth: {
-		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-		userPoolId: 'us-west-2_zzzzz',
-		identityPoolId: 'us-west-2:xxxxxx',
+		Cognito: {
+			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+			identityPoolId: 'us-west-2:xxxxxx',
+		},
 	},
 });
 const mockedAccessToken =

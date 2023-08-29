@@ -28,7 +28,7 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
@@ -64,11 +64,10 @@ export async function confirmSignIn(
 	const { challengeResponse, options } = confirmSignInRequest;
 	const { username, challengeName, signInSession } = signInStore.getState();
 
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
-	const clientMetaData =
-		options?.serviceOptions?.clientMetadata || authConfig?.clientMetadata;
+	const clientMetaData = options?.serviceOptions?.clientMetadata;
 
 	assertValidationError(
 		!!challengeResponse,

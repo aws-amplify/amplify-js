@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger as Logger } from '../Logger';
-import { AmplifyV6 } from '../singleton';
+import { Amplify } from '../singleton';
 import { I18nOptions } from './types';
 
 const logger = new Logger('I18n');
@@ -43,10 +43,10 @@ export class I18n {
 	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	setDefaultLanguage() {
-		if (!this._lang) {
-			const i18nConfig = AmplifyV6.getConfig().I18n;
+		/*if (!this._lang) {
+			const i18nConfig = Amplify.getConfig().I18n;
 			this._lang = i18nConfig?.language;
-		}
+		}*/
 
 		// Default to window language if not set in config
 		if (
