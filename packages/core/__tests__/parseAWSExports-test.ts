@@ -34,7 +34,7 @@ describe('Parser', () => {
 			})
 		).toStrictEqual({
 			Analytics: {
-				AWSPinpoint: {
+				Pinpoint: {
 					appId: 'c',
 					region: '',
 				},

@@ -34,10 +34,9 @@ export async function confirmSignUp(
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
 	const { username, confirmationCode, options } = confirmSignUpRequest;
 
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const clientMetadata =
-		options?.serviceOptions?.clientMetadata ?? authConfig.clientMetadata;
+	const clientMetadata = options?.serviceOptions?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptyConfirmSignUpUsername
@@ -54,7 +53,7 @@ export async function confirmSignUp(
 			ConfirmationCode: confirmationCode,
 			ClientMetadata: clientMetadata,
 			ForceAliasCreation: options?.serviceOptions?.forceAliasCreation,
-			ClientId: authConfig.userPoolWebClientId,
+			ClientId: authConfig.userPoolClientId,
 			// TODO: handle UserContextData
 		}
 	);

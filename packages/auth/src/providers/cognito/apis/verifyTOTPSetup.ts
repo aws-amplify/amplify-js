@@ -29,7 +29,7 @@ import { assertAuthTokens } from '../utils/types';
 export async function verifyTOTPSetup(
 	verifyTOTPSetupRequest: VerifyTOTPSetupRequest<CogntioVerifyTOTPSetupOptions>
 ): Promise<void> {
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { code, options } = verifyTOTPSetupRequest;
 	assertValidationError(

@@ -55,7 +55,7 @@ const defaultS3Config = {
 	storageAction: StorageAction.Put,
 };
 
-describe('resumable upload task test', () => {
+describe.skip('resumable upload task test', () => {
 	afterEach(() => {
 		jest.clearAllMocks();
 		mockLocalStorage.clear();

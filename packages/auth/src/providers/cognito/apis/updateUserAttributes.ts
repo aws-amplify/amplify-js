@@ -40,9 +40,8 @@ export const updateUserAttributes = async (
 	>
 ): Promise<UpdateUserAttributesResult<CognitoUserAttributeKey>> => {
 	const { userAttributes, options } = updateUserAttributesRequest;
-	const authConfig = Amplify.getConfig().Auth;
-	const clientMetadata =
-		options?.serviceOptions?.clientMetadata ?? authConfig.clientMetadata;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const clientMetadata = options?.serviceOptions?.clientMetadata;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);

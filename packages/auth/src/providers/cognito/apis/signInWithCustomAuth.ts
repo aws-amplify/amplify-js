@@ -42,11 +42,10 @@ import {
 export async function signInWithCustomAuth(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { username, password, options } = signInRequest;
-	const metadata =
-		options?.serviceOptions?.clientMetadata || authConfig?.clientMetadata;
+	const metadata = options?.serviceOptions?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername

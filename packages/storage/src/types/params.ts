@@ -45,16 +45,14 @@ export type StorageDownloadFileParameter<Options extends StorageOptions> =
 		localFile: string;
 	};
 
-// TODO: open question whether we should treat uploadFile differently from uploadData
-export type StorageUploadDataParameter<Options extends StorageOptions> =
-	StorageOperationRequest<Options> & {
-		data: Blob | BufferSource | FormData | URLSearchParams | string;
-	};
+/**
+ * The data payload type for upload operation.
+ */
+export type UploadSource = Blob | BufferSource | string | File;
 
-// TODO: open question whether we should treat uploadFile differently from uploadData
-export type StorageUploadFileParameter<Options extends StorageOptions> =
+export type StorageUploadDataRequest<Options extends StorageOptions> =
 	StorageOperationRequest<Options> & {
-		data: File;
+		data: UploadSource;
 	};
 
 export type StorageRemoveOptions = StorageOptions;
