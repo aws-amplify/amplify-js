@@ -3,7 +3,7 @@
 import { API } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import { Auth } from '@aws-amplify/auth';
-import { InternalAuth } from '@aws-amplify/auth/internals';
+import { AuthClass, InternalAuthClass } from '@aws-amplify/auth/internals';
 import { AmplifyClass, Credentials, UniversalStorage } from '@aws-amplify/core';
 import { DataStore } from '@aws-amplify/datastore';
 
@@ -34,12 +34,13 @@ export function withSSRContext(context: Context = {}) {
 	const amplify = new AmplifyClass();
 	const storage = new UniversalStorage({ req });
 
-	// @ts-ignore This expression is not constructable.
-	// Type 'Function' has no construct signatures.ts(2351)
-	const SSRInternalAuth = new InternalAuth.constructor();
-	// @ts-ignore This expression is not constructable.
-	// Type 'Function' has no construct signatures.ts(2351)
-	amplify.register(new Auth.constructor(SSRInternalAuth));
+	// Always instanciate Auth/InternalAuth
+	// Auth and InternalAuth are constructed differently than other modules
+	const SSRInternalAuth = new InternalAuthClass();
+	amplify.register(new AuthClass(SSRInternalAuth));
+	// Manually add InternalAuth to Amplify _modules for dependency injection
+	// Avoids duplicate configure calls to InternalAuth as it is configured through Auth
+	amplify['_modules']['InternalAuth'] = SSRInternalAuth;
 
 	requiredModules.forEach(m => {
 		if (!modules.includes(m)) {
@@ -58,6 +59,8 @@ export function withSSRContext(context: Context = {}) {
 
 	// Configure new Amplify instances with previous configuration
 	amplify.configure({ ...previousConfig, storage });
+
+	// Add InternalAuth to Amplify instance after config to avoid duplicate config calls
 	amplify['InternalAuth'] = SSRInternalAuth;
 
 	return amplify;
