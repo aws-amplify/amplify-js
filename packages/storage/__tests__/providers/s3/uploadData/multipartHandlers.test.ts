@@ -20,6 +20,7 @@ import {
 import { UPLOADS_STORAGE_KEY } from '../../../../src/common/StorageConstants';
 import { getKvStorage } from '../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage';
 import { byteLength } from '../../../../src/providers/s3/apis/uploadData/byteLength';
+import { CanceledError } from '../../../../src/errors/CanceledError';
 
 jest.mock('../../../../src/AwsClients/S3');
 
@@ -523,8 +524,8 @@ describe('getMultipartUploadHandlers', () => {
 				await multipartUploadJob();
 				fail('should throw error');
 			} catch (error) {
-				expect(error).toBeInstanceOf(Error);
-				expect(error.message).toBe('AbortError');
+				expect(error).toBeInstanceOf(CanceledError);
+				expect(error.message).toBe('Upload is canceled by user');
 			}
 			expect(mockAbortMultipartUpload).toBeCalledTimes(1);
 			expect(mockUploadPart).toBeCalledTimes(2);

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { isCancelError } from '../../../AwsClients/S3/runtime';
+import { isCancelError } from '../../../errors/CanceledError';
 import {
 	DownloadTask,
 	TransferTaskState,

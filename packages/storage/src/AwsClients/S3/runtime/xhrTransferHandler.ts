@@ -18,16 +18,9 @@ import {
 	NETWORK_ERROR_MESSAGE,
 } from './constants';
 import { TransferProgressEvent } from '../../../types/common';
+import { CanceledError } from '../../../errors/CanceledError';
 
 const logger = new Logger('xhr-http-handler');
-
-/**
- * Internal type for CanceledError thrown by handler when AbortController is called
- * with out overwriting.
- */
-interface CanceledError extends Error {
-	__CANCEL__: true;
-}
 
 /**
  * @internal
@@ -165,10 +158,10 @@ export const xhrTransferHandler: TransferHandler<
 				if (!xhr) {
 					return;
 				}
-				const canceledError = Object.assign(
-					buildHandlerError(CANCELED_ERROR_MESSAGE, CANCELED_ERROR_CODE),
-					{ __CANCEL__: true }
-				);
+				const canceledError = new CanceledError({
+					name: CANCELED_ERROR_CODE,
+					message: CANCELED_ERROR_MESSAGE,
+				});
 				reject(canceledError);
 				xhr.abort();
 				xhr = null;
@@ -203,8 +196,6 @@ const buildHandlerError = (message: string, name: string): Error => {
 	return error;
 };
 
-export const isCancelError = (error: unknown): boolean =>
-	!!error && (error as CanceledError).__CANCEL__ === true;
 /**
  * Convert xhr.getAllResponseHeaders() string to a Record<string, string>. Note that modern browser already returns
  * header names in lowercase.

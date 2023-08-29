@@ -20,11 +20,7 @@ import {
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
 } from './utils';
-import type { S3ProviderCopyConfig } from '../../types/AWSS3Provider';
 
-/**
- * @see {@link S3ProviderCopyConfig}
- */
 export type CopyObjectInput = Pick<
 	CopyObjectCommandInput,
 	| 'Bucket'
