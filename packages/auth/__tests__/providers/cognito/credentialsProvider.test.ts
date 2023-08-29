@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { cognitoCredentialsProvider } from '../../../src/providers/cognito';
+import {
+	CognitoAWSCredentialsAndIdentityIdProvider,
+	DefaultIdentityIdStore,
+} from '../../../src/providers/cognito';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthError } from '../../../src/errors/AuthError';
 
@@ -56,9 +59,15 @@ const credentialsForidentityIdSpy = jest.spyOn(
 const configSpy = jest.spyOn(cogId.Amplify, 'getConfig');
 
 describe('Guest Credentials', () => {
-	cognitoCredentialsProvider.setAuthConfig(validAuthConfig.Auth!);
+	let cognitoCredentialsProvider: CognitoAWSCredentialsAndIdentityIdProvider;
+
 	describe('Happy Path Cases:', () => {
 		beforeEach(() => {
+			cognitoCredentialsProvider =
+				new CognitoAWSCredentialsAndIdentityIdProvider(
+					new DefaultIdentityIdStore(cogId.MemoryKeyValueStorage)
+				);
+			cognitoCredentialsProvider.setAuthConfig(validAuthConfig.Auth!);
 			credentialsForidentityIdSpy.mockImplementationOnce(
 				async (config: {}, params: cogId.GetCredentialsForIdentityInput) => {
 					return authAPITestParams.CredentialsForIdentityIdResult as cogId.GetCredentialsForIdentityOutput;
@@ -92,6 +101,9 @@ describe('Guest Credentials', () => {
 				{ region: 'us-east-1' },
 				{ IdentityId: 'identity-id-test' }
 			);
+			expect(
+				cognitoCredentialsProvider['_nextCredentialsRefresh']
+			).toBeGreaterThan(0);
 		});
 		test('in-memory guest creds are returned if not expired and not past TTL', async () => {
 			await cognitoCredentialsProvider.getCredentialsAndIdentityId({
@@ -121,7 +133,12 @@ describe('Guest Credentials', () => {
 		});
 	});
 	describe('Error Path Cases:', () => {
+		let cognitoCredentialsProvider;
 		beforeEach(() => {
+			cognitoCredentialsProvider =
+				new CognitoAWSCredentialsAndIdentityIdProvider(
+					new DefaultIdentityIdStore(cogId.MemoryKeyValueStorage)
+				);
 			credentialsForidentityIdSpy.mockImplementationOnce(
 				async (config: {}, params: cogId.GetCredentialsForIdentityInput) => {
 					return authAPITestParams.NoAccessKeyCredentialsForIdentityIdResult as cogId.GetCredentialsForIdentityOutput;
@@ -156,8 +173,13 @@ describe('Guest Credentials', () => {
 });
 
 describe('Primary Credentials', () => {
+	let cognitoCredentialsProvider;
 	describe('Happy Path Cases:', () => {
 		beforeEach(() => {
+			cognitoCredentialsProvider =
+				new CognitoAWSCredentialsAndIdentityIdProvider(
+					new DefaultIdentityIdStore(cogId.MemoryKeyValueStorage)
+				);
 			credentialsForidentityIdSpy.mockImplementationOnce(
 				async (config: {}, params: cogId.GetCredentialsForIdentityInput) => {
 					// expect(params.Logins).toBeUndefined();
@@ -184,6 +206,9 @@ describe('Primary Credentials', () => {
 			);
 
 			expect(credentialsForidentityIdSpy).toBeCalledTimes(1);
+			// expect(
+			// 	cognitoCredentialsProvider['_nextCredentialsRefresh']
+			// ).toBeGreaterThan(0);
 		});
 		test('in-memory primary creds are returned if not expired and not past TTL', async () => {
 			await cognitoCredentialsProvider.getCredentialsAndIdentityId({
@@ -204,6 +229,7 @@ describe('Primary Credentials', () => {
 				}
 			);
 			expect(credentialsForidentityIdSpy).toBeCalledTimes(1);
+
 			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: true,
 				authConfig: validAuthConfig.Auth!,
@@ -218,6 +244,10 @@ describe('Primary Credentials', () => {
 	});
 	describe('Error Path Cases:', () => {
 		beforeEach(() => {
+			cognitoCredentialsProvider =
+				new CognitoAWSCredentialsAndIdentityIdProvider(
+					new DefaultIdentityIdStore(cogId.MemoryKeyValueStorage)
+				);
 			credentialsForidentityIdSpy.mockImplementationOnce(
 				async (config: {}, params: cogId.GetCredentialsForIdentityInput) => {
 					// expect(params.Logins).toBeUndefined();

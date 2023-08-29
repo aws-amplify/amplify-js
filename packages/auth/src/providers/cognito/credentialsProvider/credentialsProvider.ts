@@ -36,7 +36,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	private _credentialsAndIdentityId?: AWSCredentialsAndIdentityId & {
 		isAuthenticatedCreds: boolean;
 	};
-	private _nextCredentialsRefresh: number;
+	private _nextCredentialsRefresh: number = 0;
 
 	setAuthConfig(authConfig: AuthConfig) {
 		this._authConfig = authConfig;
@@ -239,6 +239,9 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 				...res,
 				isAuthenticatedCreds: true,
 			};
+
+			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
+
 			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
 				res.identityId = identityIdRes;
