@@ -27,8 +27,8 @@ export {
 } from './singleton/Auth/types';
 export {
 	AuthConfig,
-	UserPoolConfig,
-	UserPoolConfigAndIdentityPoolConfig,
+	AuthUserPoolConfig,
+	AuthUserPoolAndIdentityPoolConfig,
 	StorageAccessLevel,
 	StorageConfig,
 	GetCredentialsOptions,

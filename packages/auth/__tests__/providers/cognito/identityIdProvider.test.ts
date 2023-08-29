@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import { Amplify, Identity } from '@aws-amplify/core';
+import { Amplify, Identity, ResourcesConfig } from '@aws-amplify/core';
 import { DefaultIdentityIdStore } from '../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
 
 // TODO(V6): import these from top level core/ and not lib/
@@ -14,7 +14,7 @@ jest.mock('../../../src/providers/cognito/credentialsProvider/IdentityIdStore');
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	? A
 	: never;
-const ampConfig: ArgumentTypes<typeof Amplify.configure>[0] = {
+const ampConfig: ResourcesConfig = {
 	Auth: {
 		Cognito: {
 			userPoolId: 'us-east-1:test-id',
@@ -23,6 +23,7 @@ const ampConfig: ArgumentTypes<typeof Amplify.configure>[0] = {
 		},
 	},
 };
+
 const getIdClientSpy = jest.spyOn(cogId, 'getId');
 const mockKeyValueStorage = {
 	setItem: jest.fn(),
@@ -81,7 +82,9 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		);
 		expect(
 			await cognitoIdentityIdProvider({
-				authConfig: ampConfig.Auth,
+				authConfig: {
+					identityPoolId: 'us-east-1:test-id',
+				},
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
 			})
 		).toBe(authAPITestParams.GuestIdentityId.id);
@@ -116,7 +119,9 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		expect(
 			await cognitoIdentityIdProvider({
 				tokens: authAPITestParams.ValidAuthTokens,
-				authConfig: ampConfig.Auth,
+				authConfig: {
+					identityPoolId: 'us-east-1:test-id',
+				},
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
 			})
 		).toBe(authAPITestParams.PrimaryIdentityId.id);
