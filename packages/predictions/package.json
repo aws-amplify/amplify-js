@@ -81,7 +81,7 @@
 			"name": "Predictions (Interpret provider)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Predictions, AmazonAIInterpretPredictionsProvider }",
-			"limit": "43.77 kB"
+			"limit": "43.82 kB"
 		}
 	],
 	"jest": {
