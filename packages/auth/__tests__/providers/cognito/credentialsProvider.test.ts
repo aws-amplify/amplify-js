@@ -4,9 +4,18 @@
 import { cognitoCredentialsProvider } from '../../../src/providers/cognito';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthError } from '../../../src/errors/AuthError';
+import {
+	getCredentialsForIdentity,
+	GetCredentialsForIdentityInput,
+	GetCredentialsForIdentityOutput,
+	ResourcesConfig,
+} from '@aws-amplify/core';
 
-// TODO(V6): import these from top level core/ and not lib/
-import * as cogId from '@aws-amplify/core';
+jest.mock('@aws-amplify/core', () => ({
+	...jest.requireActual('@aws-amplify/core'),
+	getCredentialsForIdentity: jest.fn(),
+}));
+
 jest.mock('@aws-amplify/core/lib/AwsClients/CognitoIdentity');
 
 jest.mock(
@@ -27,10 +36,9 @@ jest.mock(
 	})
 );
 
-type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
-	? A
-	: never;
-const validAuthConfig: ArgumentTypes<typeof cogId.Amplify.configure>[0] = {
+const mockGetCredentialsForIdentity = getCredentialsForIdentity as jest.Mock;
+
+const defaultConfigThatDoesNotAllowGuestAccess: ResourcesConfig = {
 	Auth: {
 		Cognito: {
 			userPoolId: 'us-east-1_test-id',
@@ -39,99 +47,96 @@ const validAuthConfig: ArgumentTypes<typeof cogId.Amplify.configure>[0] = {
 		},
 	},
 };
-const mandatorySignInEnabledConfig: ArgumentTypes<
-	typeof cogId.Amplify.configure
->[0] = {
+
+const allowGuestAccessConfig: ResourcesConfig = {
 	Auth: {
 		Cognito: {
 			userPoolId: 'us-east-1_test-id',
 			identityPoolId: 'us-east:1_test-id',
 			userPoolClientId: 'test-id',
-			allowGuestAccess: false,
+			allowGuestAccess: true,
 		},
 	},
 };
-const credentialsForidentityIdSpy = jest.spyOn(
-	cogId,
-	'getCredentialsForIdentity'
-);
-const configSpy = jest.spyOn(cogId.Amplify, 'getConfig');
 
 describe('Guest Credentials', () => {
-	cognitoCredentialsProvider.setAuthConfig(validAuthConfig.Auth!);
+	cognitoCredentialsProvider.setAuthConfig(allowGuestAccessConfig.Auth!);
 	describe('Happy Path Cases:', () => {
 		beforeEach(() => {
-			credentialsForidentityIdSpy.mockImplementationOnce(
-				async (config: {}, params: cogId.GetCredentialsForIdentityInput) => {
-					return authAPITestParams.CredentialsForIdentityIdResult as cogId.GetCredentialsForIdentityOutput;
+			mockGetCredentialsForIdentity.mockImplementationOnce(
+				async (config: {}, params: GetCredentialsForIdentityInput) => {
+					return authAPITestParams.CredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
 				}
 			);
-			configSpy.mockImplementationOnce(() => validAuthConfig);
 		});
+
 		afterEach(() => {
 			cognitoCredentialsProvider.clearCredentials();
-			credentialsForidentityIdSpy?.mockReset();
+			mockGetCredentialsForIdentity?.mockReset();
 		});
-		afterAll(() => {
-			configSpy?.mockReset();
-		});
+
 		test('Should call identityIdClient with no logins to obtain guest creds', async () => {
 			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: false,
-				authConfig: validAuthConfig.Auth!,
+				authConfig: allowGuestAccessConfig.Auth!,
 			});
 			expect(res.credentials.accessKeyId).toEqual(
 				authAPITestParams.CredentialsForIdentityIdResult.Credentials.AccessKeyId
 			);
 
-			expect(credentialsForidentityIdSpy).toBeCalledTimes(1);
+			expect(mockGetCredentialsForIdentity).toBeCalledTimes(1);
 		});
+
 		test('in-memory guest creds are returned if not expired and not past TTL', async () => {
 			await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: false,
-				authConfig: validAuthConfig.Auth!,
+				authConfig: allowGuestAccessConfig.Auth!,
 			});
-			expect(credentialsForidentityIdSpy).toBeCalledTimes(1);
+			expect(mockGetCredentialsForIdentity).toBeCalledTimes(1);
 			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: false,
-				authConfig: validAuthConfig.Auth!,
+				authConfig: allowGuestAccessConfig.Auth!,
 			});
 			expect(res.credentials.accessKeyId).toEqual(
 				authAPITestParams.CredentialsForIdentityIdResult.Credentials.AccessKeyId
 			);
 			// expecting to be called only once becasue in-memory creds should be returned
-			expect(credentialsForidentityIdSpy).toBeCalledTimes(1);
+			expect(mockGetCredentialsForIdentity).toBeCalledTimes(1);
 		});
 	});
 	describe('Error Path Cases:', () => {
-		beforeEach(() => {
-			credentialsForidentityIdSpy.mockImplementationOnce(
-				async (config: {}, params: cogId.GetCredentialsForIdentityInput) => {
-					return authAPITestParams.NoAccessKeyCredentialsForIdentityIdResult as cogId.GetCredentialsForIdentityOutput;
-				}
-			);
-			configSpy.mockImplementationOnce(() => mandatorySignInEnabledConfig);
-		});
 		afterEach(() => {
 			cognitoCredentialsProvider.clearCredentials();
 		});
+
 		afterAll(() => {
-			configSpy?.mockReset();
-			credentialsForidentityIdSpy?.mockReset();
+			mockGetCredentialsForIdentity?.mockReset();
 		});
-		test('Should throw AuthError when isMandatorySignInEnabled is true in the config', async () => {
+
+		test('Should throw AuthError when allowGuestAccess is set to false in the config', async () => {
+			mockGetCredentialsForIdentity.mockImplementationOnce(
+				async (config: {}, params: GetCredentialsForIdentityInput) => {
+					return authAPITestParams.NoAccessKeyCredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
+				}
+			);
 			expect(
 				cognitoCredentialsProvider.getCredentialsAndIdentityId({
 					authenticated: false,
-					authConfig: validAuthConfig.Auth!,
+					authConfig: defaultConfigThatDoesNotAllowGuestAccess.Auth!,
 				})
 			).rejects.toThrow(AuthError);
 		});
+
 		test('Should throw AuthError if either Credentials, accessKeyId or secretKey is absent in the response', async () => {
+			mockGetCredentialsForIdentity.mockImplementationOnce(
+				async (config: {}, params: GetCredentialsForIdentityInput) => {
+					return {} as GetCredentialsForIdentityOutput;
+				}
+			);
 			expect(
 				cognitoCredentialsProvider.getCredentialsAndIdentityId({
 					authenticated: false,
-					authConfig: validAuthConfig.Auth!,
+					authConfig: defaultConfigThatDoesNotAllowGuestAccess.Auth!,
 				})
 			).rejects.toThrow(AuthError);
 		});
@@ -141,74 +146,75 @@ describe('Guest Credentials', () => {
 describe('Primary Credentials', () => {
 	describe('Happy Path Cases:', () => {
 		beforeEach(() => {
-			credentialsForidentityIdSpy.mockImplementationOnce(
-				async (config: {}, params: cogId.GetCredentialsForIdentityInput) => {
+			mockGetCredentialsForIdentity.mockImplementationOnce(
+				async (config: {}, params: GetCredentialsForIdentityInput) => {
 					// expect(params.Logins).toBeUndefined();
-					return authAPITestParams.CredentialsForIdentityIdResult as cogId.GetCredentialsForIdentityOutput;
+					return authAPITestParams.CredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
 				}
 			);
-			configSpy.mockImplementation(() => validAuthConfig);
 		});
+
 		afterEach(() => {
 			cognitoCredentialsProvider.clearCredentials();
-			credentialsForidentityIdSpy?.mockReset();
+			mockGetCredentialsForIdentity?.mockReset();
 		});
-		afterAll(() => {
-			configSpy?.mockReset();
-		});
+
 		test('Should call identityIdClient with the logins map to obtain primary creds', async () => {
 			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: true,
-				authConfig: validAuthConfig.Auth!,
+				authConfig: defaultConfigThatDoesNotAllowGuestAccess.Auth!,
 				tokens: authAPITestParams.ValidAuthTokens,
 			});
 			expect(res.credentials.accessKeyId).toEqual(
 				authAPITestParams.CredentialsForIdentityIdResult.Credentials.AccessKeyId
 			);
 
-			expect(credentialsForidentityIdSpy).toBeCalledTimes(1);
+			expect(mockGetCredentialsForIdentity).toBeCalledTimes(1);
 		});
+
 		test('in-memory primary creds are returned if not expired and not past TTL', async () => {
 			await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: true,
-				authConfig: validAuthConfig.Auth!,
+				authConfig: defaultConfigThatDoesNotAllowGuestAccess.Auth!,
 				tokens: authAPITestParams.ValidAuthTokens,
 			});
-			expect(credentialsForidentityIdSpy).toBeCalledTimes(1);
+			expect(mockGetCredentialsForIdentity).toBeCalledTimes(1);
 			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: true,
-				authConfig: validAuthConfig.Auth!,
+				authConfig: defaultConfigThatDoesNotAllowGuestAccess.Auth!,
 				tokens: authAPITestParams.ValidAuthTokens,
 			});
 			expect(res.credentials.accessKeyId).toEqual(
 				authAPITestParams.CredentialsForIdentityIdResult.Credentials.AccessKeyId
 			);
 			// expecting to be called only once becasue in-memory creds should be returned
-			expect(credentialsForidentityIdSpy).toBeCalledTimes(1);
+			expect(mockGetCredentialsForIdentity).toBeCalledTimes(1);
 		});
 	});
+
 	describe('Error Path Cases:', () => {
 		beforeEach(() => {
-			credentialsForidentityIdSpy.mockImplementationOnce(
-				async (config: {}, params: cogId.GetCredentialsForIdentityInput) => {
+			mockGetCredentialsForIdentity.mockImplementationOnce(
+				async (config: {}, params: GetCredentialsForIdentityInput) => {
 					// expect(params.Logins).toBeUndefined();
-					return authAPITestParams.NoAccessKeyCredentialsForIdentityIdResult as cogId.GetCredentialsForIdentityOutput;
+					return authAPITestParams.NoAccessKeyCredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
 				}
 			);
-			configSpy.mockImplementationOnce(() => mandatorySignInEnabledConfig);
 		});
+
 		afterEach(() => {
 			cognitoCredentialsProvider.clearCredentials();
 		});
+
 		afterAll(() => {
-			configSpy?.mockReset();
-			credentialsForidentityIdSpy?.mockReset();
+			mockGetCredentialsForIdentity?.mockReset();
 		});
+
 		test('Should throw AuthError if either Credentials, accessKeyId or secretKey is absent in the response', async () => {
 			expect(
 				cognitoCredentialsProvider.getCredentialsAndIdentityId({
 					authenticated: true,
-					authConfig: validAuthConfig.Auth!,
+					authConfig: defaultConfigThatDoesNotAllowGuestAccess.Auth!,
 					tokens: authAPITestParams.ValidAuthTokens,
 				})
 			).rejects.toThrow(AuthError);
@@ -221,7 +227,7 @@ describe('Credentials Provider Error Path Cases:', () => {
 		expect(
 			cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: true,
-				authConfig: validAuthConfig.Auth!,
+				authConfig: defaultConfigThatDoesNotAllowGuestAccess.Auth!,
 				tokens: authAPITestParams.ValidAuthTokens,
 			})
 		).rejects.toThrow(AuthError);

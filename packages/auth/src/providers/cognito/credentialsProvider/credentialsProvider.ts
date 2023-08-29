@@ -75,20 +75,22 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		// - if there is error fetching tokens
 		// - if user is not signed in
 		if (!isAuthenticated) {
-			// Check if mandatory sign-in is enabled
+			// Check if guest access is allowed (get credentials for the unauthenticated role)
 			if (authConfig.Cognito.allowGuestAccess) {
-				// TODO(V6): confirm if this needs to throw or log
-				throw new AuthError({
-					name: 'AuthConfigException',
-					message:
-						'Cannot get guest credentials when mandatory signin is enabled',
-					recoverySuggestion: 'Make sure mandatory signin is disabled.',
-				});
+				return this.getGuestCredentials(identityId, authConfig);
 			}
-			return await this.getGuestCredentials(identityId, authConfig);
+
+			// This needs to throw, otherwise the category APIs would throw the "Credentials is absent" error.
+			throw new AuthError({
+				name: 'AuthConfigException',
+				message:
+					'Cannot get guest credentials when guest access is not allowed.',
+				recoverySuggestion:
+					'Ensure guest access (unauthenticated access) is enabled.',
+			});
 		} else {
 			// Tokens will always be present if getCredentialsOptions.authenticated is true as dictated by the type
-			return await this.credsForOIDCTokens(authConfig, tokens!, identityId);
+			return this.credsForOIDCTokens(authConfig, tokens!, identityId);
 		}
 	}
 
