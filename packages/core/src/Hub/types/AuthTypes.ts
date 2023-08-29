@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export type AuthHubEventData =
-	/** Dispatched when a user signs in with a oauth provider such as Google.*/
+	/** Dispatched when a user signs in with an oauth provider such as Google.*/
 	| { event: 'signInWithRedirect' }
 	/** Dispatched when there is an error in the oauth flow process.*/
 	| { event: 'signInWithRedirect_failure' }
