@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export * from './Storage';
-export * from './Provider';
 
 export { DownloadTask, TransferProgressEvent, UploadTask } from './common';
 export {
