@@ -49,7 +49,7 @@ export type Identity = {
 export interface AWSCredentialsAndIdentityIdProvider {
 	getCredentialsAndIdentityId: (
 		getCredentialsOptions: GetCredentialsOptions
-	) => Promise<AWSCredentialsAndIdentityId>;
+	) => Promise<AWSCredentialsAndIdentityId | undefined>;
 	clearCredentialsAndIdentityId: () => void;
 }
 
