@@ -24,9 +24,7 @@ const corePackageSrcClientsPath = join(
 	'core',
 	'src',
 	'providers',
-	's3',
-	'utils',
-	'client'
+	'AwsClients'
 );
 
 const storagePackageSrcClientsPath = join(
@@ -38,8 +36,7 @@ const storagePackageSrcClientsPath = join(
 	'src',
 	'providers',
 	's3',
-	'utils',
-	'client'
+	'utils'
 );
 const authPackageSrcClientsPath = join(
 	__dirname,
@@ -50,8 +47,7 @@ const authPackageSrcClientsPath = join(
 	'src',
 	'providers',
 	'cognito',
-	'utils',
-	'clients'
+	'utils'
 );
 
 /** @type import('dts-bundle-generator/config-schema').BundlerConfig */
@@ -78,7 +74,7 @@ const config = {
 		},
 		{
 			filePath: './s3.d.ts',
-			outFile: join(storagePackageSrcClientsPath, 'S3', 'types.ts'),
+			outFile: join(storagePackageSrcClientsPath, 'client', 'types.ts'),
 			libraries: {
 				inlinedLibraries: ['@aws-sdk/client-s3'],
 			},
