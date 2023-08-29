@@ -6,7 +6,7 @@
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
 	"browser": {
-		"./lib-esm/AwsClients/S3/runtime/index": "./lib-esm/AwsClients/S3/runtime/index.browser.js"
+		"./lib-esm/lib-esm/providers/s3/utils/client/runtime/index": "./lib-esm/providers/s3/utils/client/runtime/index.browser.js"
 	},
 	"sideEffects": [
 		"./lib/Storage.js",
@@ -35,7 +35,7 @@
 				"./lib-esm/index.d.ts"
 			],
 			"s3": [
-				"./lib-esm/Providers/s3/index.d.ts"
+				"./lib-esm/providers/s3/index.d.ts"
 			]
 		}
 	},
@@ -60,7 +60,6 @@
 	"dependencies": {
 		"@aws-sdk/md5-js": "3.6.1",
 		"@aws-sdk/types": "3.6.1",
-		"buffer": "4.9.2",
 		"fast-xml-parser": "^4.2.5",
 		"tslib": "^2.5.0"
 	},
