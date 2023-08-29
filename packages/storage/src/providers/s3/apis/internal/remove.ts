@@ -12,10 +12,10 @@ import {
 	getKeyWithPrefix,
 	resolveCredentials,
 } from '../../utils';
-import { deleteObject } from '../../../../AwsClients/S3';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import { deleteObject } from '../../utils/client';
 
 export const remove = async (
 	amplify: AmplifyClassV6,

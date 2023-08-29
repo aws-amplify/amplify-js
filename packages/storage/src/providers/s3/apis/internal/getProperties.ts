@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { headObject } from '../../../../AwsClients/S3';
 import { StorageOptions, StorageOperationRequest } from '../../../../types';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
@@ -12,6 +11,7 @@ import {
 	resolveCredentials,
 } from '../../utils';
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import { headObject } from '../../utils/client';
 
 export const getProperties = async function (
 	amplify: AmplifyClassV6,

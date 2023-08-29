@@ -2,11 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	ListObjectsV2Input,
-	ListObjectsV2Output,
-	listObjectsV2,
-} from '../../../../AwsClients/S3';
-import {
 	StorageListRequest,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
@@ -23,6 +18,11 @@ import {
 } from '../../utils';
 import { ResolvedS3Config } from '../../types/options';
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import {
+	listObjectsV2,
+	ListObjectsV2Input,
+	ListObjectsV2Output,
+} from '../../utils/client';
 
 const MAX_PAGE_SIZE = 1000;
 

@@ -17,8 +17,8 @@ import {
 	NETWORK_ERROR_CODE,
 	NETWORK_ERROR_MESSAGE,
 } from './constants';
-import { TransferProgressEvent } from '../../../types/common';
-import { CanceledError } from '../../../errors/CanceledError';
+import { TransferProgressEvent } from '../../../../../types/common';
+import { CanceledError } from '../../../../../errors/CanceledError';
 
 const logger = new Logger('xhr-http-handler');
 
