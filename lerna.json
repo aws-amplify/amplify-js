@@ -1,16 +1,7 @@
 {
 	"npmClient": "yarn",
 	"useWorkspaces": true,
-	"packages": [
-		"packages/core",
-		"packages/auth",
-		"packages/analytics",
-		"packages/storage",
-		"packages/aws-amplify",
-		"packages/api",
-		"packages/amplify-v6-types-package",
-		"packages/api-graphql"
-	],
+	"packages": ["packages/*"],
 	"exact": true,
 	"version": "independent",
 	"useNx": false,

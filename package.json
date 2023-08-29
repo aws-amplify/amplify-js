@@ -40,12 +40,7 @@
 	},
 	"workspaces": {
 		"packages": [
-			"packages/core",
-			"packages/auth",
-			"packages/analytics",
-			"packages/storage",
-			"packages/aws-amplify",
-			"packages/adapter-nextjs"
+			"packages/*"
 		],
 		"nohoist": [
 			"**/@types/react-native",

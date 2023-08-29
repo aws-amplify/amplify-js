@@ -15,7 +15,7 @@ import type { ModelTypes } from '@aws-amplify/types-package-alpha';
 
 const logger = new Logger('API');
 /**
- * @deprecatedeiifccuhchvdfvcgl
+ * @deprecated
  * Use RestApi or GraphQLAPI to reduce your application bundle size
  * Export Cloud Logic APIs
  */
