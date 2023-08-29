@@ -1,6 +1,0 @@
-{
-	"name": "@aws-amplify/storage/src/AwsClients/S3/runtime",
-	"main": "../../../../lib/AwsClients/S3/runtime/index.js",
-	"browser": "../../../../lib-esm/AwsClients/S3/runtime/index.browser.js",
-	"module": "../../../../lib-esm/AwsClients/S3/runtime/index.js"
-}

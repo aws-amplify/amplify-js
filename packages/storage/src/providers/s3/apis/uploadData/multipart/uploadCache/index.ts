@@ -8,8 +8,8 @@ import {
 
 import { getKvStorage } from './kvStorage';
 import { UPLOADS_STORAGE_KEY } from '../../../../utils/constants';
-import { listParts, Part } from '../../../../../../AwsClients/S3';
 import { ResolvedS3Config } from '../../../../types/options';
+import { Part, listParts } from '../../../../utils/client';
 
 const ONE_HOUR = 1000 * 60 * 60;
 

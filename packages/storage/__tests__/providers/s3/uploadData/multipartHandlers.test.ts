@@ -12,7 +12,7 @@ import {
 	abortMultipartUpload,
 	listParts,
 	headObject,
-} from '../../../../src/AwsClients/S3';
+} from '../../../../src/providers/s3/utils/client';
 import {
 	validationErrorMap,
 	StorageValidationErrorCode,
@@ -22,7 +22,7 @@ import { getKvStorage } from '../../../../src/providers/s3/apis/uploadData/multi
 import { byteLength } from '../../../../src/providers/s3/apis/uploadData/byteLength';
 import { CanceledError } from '../../../../src/errors/CanceledError';
 
-jest.mock('../../../../src/AwsClients/S3');
+jest.mock('../../../../src/providers/s3/utils/client');
 
 jest.mock('@aws-amplify/core', () => {
 	const core = jest.requireActual('@aws-amplify/core');
