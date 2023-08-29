@@ -45,7 +45,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		await this._identityIdStore.clearIdentityId();
 	}
 
-	private async clearCredentials(): Promise<void> {
+	async clearCredentials(): Promise<void> {
 		logger.debug('Clearing out in-memory credentials');
 		this._credentialsAndIdentityId = undefined;
 	}
