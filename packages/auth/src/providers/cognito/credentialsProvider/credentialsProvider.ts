@@ -50,7 +50,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 	async getCredentialsAndIdentityId(
 		getCredentialsOptions: GetCredentialsOptions
-	): Promise<AWSCredentialsAndIdentityId> {
+	): Promise<AWSCredentialsAndIdentityId | undefined> {
 		const isAuthenticated = getCredentialsOptions.authenticated;
 		const tokens = getCredentialsOptions.tokens;
 		// TODO: refactor use the this._authConfig
@@ -63,13 +63,25 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			return;
 		}
 
+		if (!isAuthenticated && !authConfig.Cognito.allowGuestAccess) {
+			// TODO(V6): return partial result like Native platforms
+			console.log(
+				`${!isAuthenticated} ${JSON.stringify(authConfig.Cognito)}`,
+				'XXXX isAuthenticanted and not allowGuestAccess'
+			);
+			return;
+		}
+
 		const forceRefresh = getCredentialsOptions.forceRefresh;
 		// TODO(V6): Listen to changes to AuthTokens and update the credentials
+
+		// it seems is uuid generated on the client
 		const identityId = await cognitoIdentityIdProvider({
 			tokens,
 			authConfig: authConfig.Cognito,
 			identityIdStore: this._identityIdStore,
 		});
+
 		if (!identityId) {
 			throw new AuthError({
 				name: 'IdentityIdConfigException',
@@ -86,16 +98,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		// - if there is error fetching tokens
 		// - if user is not signed in
 		if (!isAuthenticated) {
-			// Check if mandatory sign-in is enabled
-			if (!authConfig.Cognito.allowGuestAccess) {
-				// TODO(V6): confirm if this needs to throw or log
-				throw new AuthError({
-					name: 'AuthConfigException',
-					message:
-						'Cannot get guest credentials when mandatory signin is enabled',
-					recoverySuggestion: 'Make sure mandatory signin is disabled.',
-				});
-			}
 			return await this.getGuestCredentials(identityId, authConfig.Cognito);
 		} else {
 			// Tokens will always be present if getCredentialsOptions.authenticated is true as dictated by the type

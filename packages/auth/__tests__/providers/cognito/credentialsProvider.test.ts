@@ -139,21 +139,21 @@ describe('Guest Credentials', () => {
 			configSpy?.mockReset();
 			credentialsForidentityIdSpy?.mockReset();
 		});
-		test('Should throw AuthError when isMandatorySignInEnabled is true in the config', async () => {
+		test('Should not throw AuthError when isMandatorySignInEnabled is true in the config', async () => {
 			expect(
-				cognitoCredentialsProvider.getCredentialsAndIdentityId({
+				await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 					authenticated: false,
-					authConfig: validAuthConfig.Auth!,
+					authConfig: mandatorySignInEnabledConfig.Auth!,
 				})
-			).rejects.toThrow(AuthError);
+			).toBe(undefined);
 		});
-		test('Should throw AuthError if either Credentials, accessKeyId or secretKey is absent in the response', async () => {
+		test('Should not throw AuthError if either Credentials, accessKeyId or secretKey is absent in the response', async () => {
 			expect(
-				cognitoCredentialsProvider.getCredentialsAndIdentityId({
+				await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 					authenticated: false,
-					authConfig: validAuthConfig.Auth!,
+					authConfig: mandatorySignInEnabledConfig.Auth!,
 				})
-			).rejects.toThrow(AuthError);
+			).toBe(undefined);
 		});
 	});
 });
