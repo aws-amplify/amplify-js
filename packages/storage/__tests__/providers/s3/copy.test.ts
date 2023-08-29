@@ -7,10 +7,10 @@ import {
 	fetchAuthSession,
 	StorageAccessLevel,
 } from '@aws-amplify/core';
-import { copyObject } from '../../../src/AwsClients/S3';
+import { copyObject } from '../../../src/providers/s3/utils/client';
 import { copy } from '../../../src/providers/s3/apis';
 
-jest.mock('../../../src/AwsClients/S3');
+jest.mock('../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
 	fetchAuthSession: jest.fn(),
 	Amplify: {

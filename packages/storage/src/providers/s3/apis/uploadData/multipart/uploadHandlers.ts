@@ -6,12 +6,6 @@ import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { getDataChunker } from './getDataChunker';
 import { S3UploadOptions } from '../../../types';
 import { resolveS3ConfigAndInput } from '../../../utils';
-import {
-	abortMultipartUpload,
-	completeMultipartUpload,
-	headObject,
-	Part,
-} from '../../../../../AwsClients/S3';
 import { StorageUploadDataRequest } from '../../../../../types';
 import { S3Item } from '../../../types/results';
 import {
@@ -25,6 +19,12 @@ import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { StorageError } from '../../../../../errors/StorageError';
 import { CanceledError } from '../../../../../errors/CanceledError';
+import {
+	Part,
+	abortMultipartUpload,
+	completeMultipartUpload,
+	headObject,
+} from '../../../utils/client';
 
 /**
  * Create closure hiding the multipart upload implementation details and expose the upload job and control functions(

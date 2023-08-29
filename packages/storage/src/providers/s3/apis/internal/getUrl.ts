@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
+
 import { StorageDownloadDataRequest } from '../../../../types';
 import { S3GetUrlOptions, S3GetUrlResult } from '../../types';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
-import { getPresignedGetObjectUrl } from '../../../../AwsClients/S3';
+import { getPresignedGetObjectUrl } from '../../utils/client';
 import { getProperties } from './getProperties';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';

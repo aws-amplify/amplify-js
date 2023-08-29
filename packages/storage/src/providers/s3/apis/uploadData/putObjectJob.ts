@@ -5,9 +5,9 @@ import { Amplify } from '@aws-amplify/core';
 
 import { S3UploadOptions } from '../../types';
 import { calculateContentMd5, resolveS3ConfigAndInput } from '../../utils';
-import { putObject } from '../../../../AwsClients/S3';
 import { StorageUploadDataRequest } from '../../../../types';
 import { S3Item } from '../../types/results';
+import { putObject } from '../../utils/client';
 
 /**
  * Get a function the returns a promise to call putObject API to S3.

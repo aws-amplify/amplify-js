@@ -1,14 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyClassV6 } from '@aws-amplify/core';
+
 import {
 	StorageOperationRequest,
 	StorageRemoveOptions,
 	StorageRemoveResult,
 } from '../../../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
-import { deleteObject } from '../../../../AwsClients/S3';
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { deleteObject } from '../../utils/client';
 
 export const remove = async (
 	amplify: AmplifyClassV6,

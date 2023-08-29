@@ -3,8 +3,8 @@
 import { Md5 } from '@aws-sdk/md5-js';
 import { extendedEncodeURIComponent } from '@aws-amplify/core/internals/aws-client-utils';
 import { AmplifyErrorString } from '@aws-amplify/core/internals/utils';
-import { toBase64, utf8Encode } from '../utils';
-import { StorageError } from '../../../errors/StorageError';
+import { StorageError } from '../../../../../errors/StorageError';
+import { toBase64, utf8Encode } from '../runtime/index.native';
 
 /**
  * @internal

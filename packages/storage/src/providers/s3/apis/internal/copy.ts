@@ -5,9 +5,9 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { S3CopyResult } from '../../types';
 import { CopyRequest } from '../../../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
-import { copyObject } from '../../../../AwsClients/S3';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
+import { copyObject } from '../../utils/client';
 
 export const copy = async (
 	amplify: AmplifyClassV6,

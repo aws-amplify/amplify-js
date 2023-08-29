@@ -7,9 +7,9 @@ import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
 	getPresignedGetObjectUrl,
 	headObject,
-} from '../../../src/AwsClients/S3';
+} from '../../../src/providers/s3/utils/client';
 
-jest.mock('../../../src/AwsClients/S3');
+jest.mock('../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
 	fetchAuthSession: jest.fn(),
 	Amplify: {

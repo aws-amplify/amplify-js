@@ -8,82 +8,84 @@ import {
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import { StorageError } from '../../errors/StorageError';
-import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
 import { defaultConfig } from './base';
+import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
+
 import {
-	validateS3RequiredParameter,
-	assignStringVariables,
-	parseXmlBody,
+	deserializeMetadata,
+	deserializeNumber,
+	deserializeTimestamp,
+	map,
 	parseXmlError,
 	s3TransferHandler,
-	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
+	validateS3RequiredParameter,
 } from './utils';
+import { StorageError } from '../../../../errors/StorageError';
 
-export type CopyObjectInput = Pick<
-	CopyObjectCommandInput,
+export type HeadObjectInput = Pick<
+	HeadObjectCommandInput,
 	| 'Bucket'
-	| 'CopySource'
 	| 'Key'
-	| 'MetadataDirective'
-	| 'CacheControl'
-	| 'ContentType'
-	| 'ContentDisposition'
-	| 'ContentLanguage'
-	| 'Expires'
-	| 'ACL'
-	| 'ServerSideEncryption'
-	| 'SSECustomerAlgorithm'
 	| 'SSECustomerKey'
 	// TODO(AllanZhengYP): remove in V6.
 	| 'SSECustomerKeyMD5'
-	| 'SSEKMSKeyId'
-	| 'Tagging'
-	| 'Metadata'
+	| 'SSECustomerAlgorithm'
 >;
 
-export type CopyObjectOutput = CopyObjectCommandOutput;
+export type HeadObjectOutput = Pick<
+	HeadObjectCommandOutput,
+	| 'ContentLength'
+	| 'ContentType'
+	| 'ETag'
+	| 'LastModified'
+	| 'Metadata'
+	| 'VersionId'
+	| '$metadata'
+>;
 
-const copyObjectSerializer = async (
-	input: CopyObjectInput,
+const headObjectSerializer = async (
+	input: HeadObjectInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	const headers = {
-		...(await serializeObjectConfigsToHeaders(input)),
-		...assignStringVariables({
-			'x-amz-copy-source': input.CopySource,
-			'x-amz-metadata-directive': input.MetadataDirective,
-		}),
-	};
 	const url = new URL(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
-		method: 'PUT',
-		headers,
+		method: 'HEAD',
+		headers: {},
 		url,
 	};
 };
 
-const copyObjectDeserializer = async (
+const headObjectDeserializer = async (
 	response: HttpResponse
-): Promise<CopyObjectOutput> => {
+): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
 		const error = (await parseXmlError(response)) as Error;
 		throw StorageError.fromServiceError(error, response.statusCode);
 	} else {
-		await parseXmlBody(response);
+		const contents = {
+			...map(response.headers, {
+				ContentLength: ['content-length', deserializeNumber],
+				ContentType: 'content-type',
+				ETag: 'etag',
+				LastModified: ['last-modified', deserializeTimestamp],
+				VersionId: 'x-amz-version-id',
+			}),
+			Metadata: deserializeMetadata(response.headers),
+		};
 		return {
 			$metadata: parseMetadata(response),
+			...contents,
 		};
 	}
 };
 
-export const copyObject = composeServiceApi(
+export const headObject = composeServiceApi(
 	s3TransferHandler,
-	copyObjectSerializer,
-	copyObjectDeserializer,
+	headObjectSerializer,
+	headObjectDeserializer,
 	{ ...defaultConfig, responseType: 'text' }
 );
