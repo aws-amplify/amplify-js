@@ -29,13 +29,12 @@ import {
 	S3ProviderRemoveOutput,
 	S3ProviderPutOutput,
 	ResumableUploadConfig,
-	UploadTask,
 	S3ClientOptions,
 	S3ProviderListOutput,
 	S3ProviderGetPropertiesConfig,
 	S3ProviderGetPropertiesOutput,
 } from '../types';
-import { ConfigType } from '../types/Provider';
+import { ConfigType, UploadTask } from '../types/Provider';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import {
 	getPrefix,

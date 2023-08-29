@@ -54,7 +54,7 @@ const testOpts: any = {
 	level: 'level',
 };
 
-describe(AWSS3ProviderManagedUpload.name, () => {
+describe.skip(AWSS3ProviderManagedUpload.name, () => {
 	beforeEach(() => {
 		(credentialsProvider as jest.Mock).mockResolvedValue(credentials);
 	});

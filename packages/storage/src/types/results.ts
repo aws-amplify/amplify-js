@@ -43,9 +43,7 @@ export type StorageGetUrlResult = {
 	expiresAt: Date;
 };
 
-export type StorageUploadResult = {
-	key: string;
-};
+export type StorageUploadResult<Item extends StorageItem> = Item;
 
 export type StorageRemoveResult = {
 	key: string;

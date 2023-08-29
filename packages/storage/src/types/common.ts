@@ -17,10 +17,11 @@ export type TransferProgressEvent = {
 export type TransferTask<Result> = {
 	/**
 	 * Cancel an ongoing transfer(upload/download) task. This will reject the `result` promise with an `AbortError` by
-	 * default.
+	 * default. You can use `isCancelError` to check if the error is caused by cancellation.
 	 *
 	 * @param {Error} [abortErrorOverwrite] - Optional error to overwrite the default `AbortError` thrown when the task is
-	 * 	canceled.
+	 * 	canceled. If provided, the `result` promise will be rejected with this error instead, and you can no longer use
+	 *  `isCancelError` to check if the error is caused by cancellation.
 	 */
 	cancel: (abortErrorOverwrite?: Error) => void;
 

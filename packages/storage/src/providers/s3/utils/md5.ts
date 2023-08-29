@@ -5,11 +5,15 @@ import { Md5 } from '@aws-sdk/md5-js';
 import { toBase64, utf8Encode } from '../providers/s3/utils/client/utils';
 
 export const calculateContentMd5 = async (
-	content: Blob | string
+	content: Blob | string | ArrayBuffer | ArrayBufferView
 ): Promise<string> => {
 	const hasher = new Md5();
 	if (typeof content === 'string') {
 		hasher.update(content);
+	} else if (ArrayBuffer.isView(content) || content instanceof ArrayBuffer) {
+		const blob = new Blob([content]);
+		const buffer = await readFileToBase64(blob);
+		hasher.update(buffer);
 	} else {
 		const buffer = await readFileToBase64(content);
 		hasher.update(utf8Encode(buffer));

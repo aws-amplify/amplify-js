@@ -1,10 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	ConsoleLogger as Logger,
-	StorageAction,
-} from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import {
 	PutObjectInput,
 	putObject,
@@ -21,7 +18,7 @@ import {
 	SEND_UPLOAD_PROGRESS_EVENT,
 } from './s3/utils/client/utils';
 import { EventEmitter } from 'events';
-import { calculateContentMd5 } from '../common/MD5utils';
+import { calculateContentMd5 } from './s3/utils/md5';
 import {
 	calculatePartSize,
 	DEFAULT_PART_SIZE,
