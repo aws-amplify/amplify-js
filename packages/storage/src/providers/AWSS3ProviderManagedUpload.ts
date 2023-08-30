@@ -65,6 +65,7 @@ export class AWSS3ProviderManagedUpload {
 		this.s3Config = loadS3Config({
 			...opts,
 			emitter,
+			storageAction: StorageAction.Put,
 		});
 	}
 

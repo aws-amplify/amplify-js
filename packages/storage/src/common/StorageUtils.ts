@@ -1,12 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	Category,
-	CustomUserAgentDetails,
-	getAmplifyUserAgent,
-	Hub,
-	StorageAction,
-} from '@aws-amplify/core';
+import { Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from './StorageConstants';
 
 export const byteLength = (x: unknown) => {
@@ -53,16 +47,6 @@ export const isFile = (x: unknown): x is File => {
 export const isBlob = (x: unknown): x is Blob => {
 	return typeof x !== 'undefined' && x instanceof Blob;
 };
-
-export const getStorageUserAgentValue = (
-	action: StorageAction,
-	customUserAgentDetails?: CustomUserAgentDetails
-): string =>
-	getAmplifyUserAgent({
-		category: Category.Storage,
-		action,
-		...customUserAgentDetails,
-	});
 
 const isArrayBuffer = (x: unknown): x is ArrayBuffer => {
 	return typeof x !== 'undefined' && x instanceof ArrayBuffer;

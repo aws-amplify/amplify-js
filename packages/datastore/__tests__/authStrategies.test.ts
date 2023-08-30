@@ -1,9 +1,4 @@
 import {
-	Category,
-	CustomUserAgentDetails,
-	DataStoreAction,
-} from '@aws-amplify/core';
-import {
 	InternalSchema,
 	ModelAttributeAuthAllow,
 	ModelAttributeAuthProperty,
@@ -452,7 +447,7 @@ async function testMultiAuthStrategy({
 	hasAuthenticatedUser: boolean;
 	result: any;
 }) {
-	const currentUserSpy = mockCurrentUser({ hasAuthenticatedUser });
+	mockCurrentUser({ hasAuthenticatedUser });
 
 	const multiAuthStrategyWrapper =
 		require('../src/authModeStrategies/multiAuthStrategy').multiAuthStrategy;
@@ -460,10 +455,6 @@ async function testMultiAuthStrategy({
 	const multiAuthStrategy = multiAuthStrategyWrapper({});
 
 	const schema = getAuthSchema(authRules);
-	const customUserAgentDetails: CustomUserAgentDetails = {
-		category: Category.DataStore,
-		action: DataStoreAction.GraphQl,
-	};
 
 	const authModes = await multiAuthStrategy({
 		schema,
@@ -472,11 +463,9 @@ async function testMultiAuthStrategy({
 		// but it still technically a required attribute in TS, since customers
 		// won't actually be calling the function directly in their app.
 		operation: ModelOperation.READ,
-		customUserAgentDetails,
 	});
 
 	expect(authModes).toEqual(result);
-	expect(currentUserSpy).toBeCalledWith(undefined, customUserAgentDetails);
 	jest.resetModules();
 	jest.resetAllMocks();
 }
@@ -551,22 +540,18 @@ function mockCurrentUser({
 }: {
 	hasAuthenticatedUser: boolean;
 }) {
-	const currentAuthenticatedUserSpy = jest.fn().mockImplementation(() => {
-		return new Promise((res, rej) => {
-			if (hasAuthenticatedUser) {
-				res(hasAuthenticatedUser);
-			} else {
-				rej(hasAuthenticatedUser);
-			}
-		});
-	});
-
-	jest.mock('@aws-amplify/auth/internals', () => ({
-		InternalAuth: {
-			currentAuthenticatedUser: currentAuthenticatedUserSpy,
+	jest.mock('@aws-amplify/auth', () => ({
+		Auth: {
+			currentAuthenticatedUser: () => {
+				return new Promise((res, rej) => {
+					if (hasAuthenticatedUser) {
+						res(hasAuthenticatedUser);
+					} else {
+						rej(hasAuthenticatedUser);
+					}
+				});
+			},
 		},
 		GRAPHQL_AUTH_MODE,
 	}));
-
-	return currentAuthenticatedUserSpy;
 }
