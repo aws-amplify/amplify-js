@@ -9,7 +9,7 @@ import { ResourcesConfig } from './singleton/types';
  *
  * @param config A configuration object from `aws-exports.js`.
  *
- * @returns A `ResourcesConfig` object.
+ * @returns A {@link ResourcesConfig} object.
  */
 export const parseAWSExports = (
 	config: Record<string, any> = {}
