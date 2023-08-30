@@ -3,10 +3,10 @@
 
 import { Credentials } from '@aws-sdk/types';
 import { Amplify } from '@aws-amplify/core';
-import { listObjectsV2 } from '../../../src/AwsClients/S3';
+import { listObjectsV2 } from '../../../src/providers/s3/utils/client';
 import { list } from '../../../src/providers/s3/apis';
 
-jest.mock('../../../src/AwsClients/S3');
+jest.mock('../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => {
 	const core = jest.requireActual('@aws-amplify/core');
 	return {
@@ -90,7 +90,7 @@ describe('list API', () => {
 				S3: {
 					bucket,
 					region,
-				}
+				},
 			},
 		});
 	});

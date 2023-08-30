@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import cases from './xmlParser-fixture';
-import { parser as browserParser } from '../../src/AwsClients/S3/runtime/index.browser';
-import { parser as nodeParser } from '../../src/AwsClients/S3/runtime/index';
+import { parser as browserParser } from '../../src/providers/s3/utils/client/runtime/index.browser';
+import { parser as nodeParser } from '../../src/providers/s3/utils/client/runtime/index';
 
 describe('xmlParser for browsers', () => {
 	cases.forEach(({ spec, xml, expected }) => {

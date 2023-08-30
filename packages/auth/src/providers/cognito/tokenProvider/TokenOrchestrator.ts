@@ -4,8 +4,13 @@ import {
 	AuthTokens,
 	FetchAuthSessionOptions,
 	AuthConfig,
+	Hub,
 } from '@aws-amplify/core';
-import { isTokenExpired } from '@aws-amplify/core/internals/utils';
+import {
+	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+	isTokenExpired,
+} from '@aws-amplify/core/internals/utils';
 import {
 	AuthTokenOrchestrator,
 	AuthTokenStore,
@@ -17,7 +22,6 @@ import { AuthError } from '../../../errors/AuthError';
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
-
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
 	waitForInflightOAuth: () => Promise<void> = async () => {};
@@ -60,6 +64,12 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	): Promise<AuthTokens | null> {
 		let tokens: CognitoAuthTokens | null;
 
+		try {
+			assertTokenProviderConfig(this.authConfig.Cognito);
+		} catch (_err) {
+			// Token provider not configured
+			return null;
+		}
 		await this.waitForInflightOAuth();
 		tokens = await this.getTokenStore().loadTokens();
 
@@ -105,6 +115,8 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			});
 
 			this.setTokens({ tokens: newTokens });
+			Hub.dispatch('auth', { event: 'tokenRefresh' }, 'Auth', AMPLIFY_SYMBOL);
+
 			return newTokens;
 		} catch (err) {
 			return this.handleErrors(err);
@@ -120,6 +132,12 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		if (err.name.startsWith('NotAuthorizedException')) {
 			return null;
 		} else {
+			Hub.dispatch(
+				'auth',
+				{ event: 'tokenRefresh_failure' },
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			throw err;
 		}
 	}

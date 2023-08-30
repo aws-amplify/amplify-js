@@ -8,17 +8,17 @@ import {
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import { StorageError } from '../../errors/StorageError';
 import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
 import { defaultConfig } from './base';
+import { StorageError } from '../../../../errors/StorageError';
 import {
-	validateS3RequiredParameter,
-	assignStringVariables,
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
+	assignStringVariables,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
+	validateS3RequiredParameter,
 } from './utils';
 
 export type CopyObjectInput = Pick<

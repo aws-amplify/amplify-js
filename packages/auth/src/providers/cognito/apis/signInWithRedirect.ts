@@ -3,6 +3,7 @@
 
 import { Amplify, Hub, LocalStorage, OAuthConfig } from '@aws-amplify/core';
 import {
+	AMPLIFY_SYMBOL,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
 	getAmplifyUserAgent,
@@ -188,6 +189,12 @@ async function handleCodeFlow({
 	if (error) {
 		invokeAndClearPromise();
 
+		Hub.dispatch(
+			'auth',
+			{ event: 'signInWithRedirect_failure' },
+			'Auth',
+			AMPLIFY_SYMBOL
+		);
 		throw new AuthError({
 			message: error,
 			name: AuthErrorCodes.OAuthSignInError,
@@ -207,8 +214,8 @@ async function handleCodeFlow({
 
 	await store.storeOAuthSignIn(true);
 
+	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
 	clearHistory(redirectUri);
-
 	invokeAndClearPromise();
 	return;
 }
@@ -255,8 +262,8 @@ async function handleImplicitFlow({
 	});
 
 	await store.storeOAuthSignIn(true);
+	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
 	clearHistory(redirectUri);
-
 	invokeAndClearPromise();
 }
 
@@ -281,6 +288,12 @@ async function handleAuthResponse({
 		const error_description = urlParams.searchParams.get('error_description');
 
 		if (error) {
+			Hub.dispatch(
+				'auth',
+				{ event: 'signInWithRedirect_failure' },
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			throw new AuthError({
 				message: AuthErrorTypes.OAuthSignInError,
 				underlyingError: error_description,
@@ -340,8 +353,13 @@ function urlListener() {
 	Hub.listen('core', async capsule => {
 		if (capsule.payload.event === 'configure') {
 			const authConfig = Amplify.getConfig().Auth?.Cognito;
-			assertTokenProviderConfig(authConfig);
-			store.setAuthConfig(authConfig);
+			try {
+				assertTokenProviderConfig(authConfig);
+				store.setAuthConfig(authConfig);
+			} catch (_err) {
+				// Token provider not configure nothing to do
+				return;
+			}
 
 			// No OAuth inflight doesnt need to parse the url
 			if (!(await store.loadOAuthInFlight())) {

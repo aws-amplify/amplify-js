@@ -1,18 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AuthConfig,
-	AuthTokens,
-	UserPoolConfig,
-	CognitoUserPoolConfig,
-} from '@aws-amplify/core';
+import { AuthConfig, AuthTokens, AuthUserPoolConfig, CognitoUserPoolConfig } from '@aws-amplify/core';
+
 import { AuthError } from '../../../errors/AuthError';
 import { CognitoAuthTokens } from '../tokenProvider/types';
 
 export function isTypeUserPoolConfig(
 	authConfig?: AuthConfig
-): authConfig is UserPoolConfig {
+): authConfig is AuthUserPoolConfig {
 	if (
 		authConfig &&
 		authConfig.Cognito.userPoolId &&
