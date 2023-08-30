@@ -4,15 +4,9 @@
 /*
 This file maps top-level exports from `@aws-amplify/core`. These are intended to be potentially customer-facing exports.
 */
-// TODO Remove these
-export { ClientDevice } from './ClientDevice';
-export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
+// Hub exports
 export { Hub } from './Hub';
 export { HubCapsule, HubCallback, HubPayload } from './Hub/types';
-export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
-export { AppState, AsyncStorage, Linking } from './RNComponents';
-export { Credentials, CredentialsClass } from './Credentials';
-export { ICredentials } from './types';
 
 // Singleton exports
 export {
