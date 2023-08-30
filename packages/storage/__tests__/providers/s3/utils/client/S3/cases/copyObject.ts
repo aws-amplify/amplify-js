@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { copyObject } from '../../../../../../../src/providers/s3/utils/client';
-import { toBase64 } from '../../../../../../../src/providers/s3/utils/client/utils';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 import {
 	defaultConfig,
@@ -23,11 +22,6 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 		CacheControl: 'cacheControl',
 		ContentType: 'contentType',
 		ACL: 'acl',
-		ServerSideEncryption: 'serverSideEncryption',
-		SSECustomerAlgorithm: 'sseCustomerAlgorithm',
-		SSECustomerKey: 'SSECustomerKey',
-		SSECustomerKeyMD5: 'sseCustomerKeyMD5',
-		SSEKMSKeyId: 'sseKMSKeyId',
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
@@ -39,12 +33,6 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 			'cache-control': 'cacheControl',
 			'content-type': 'contentType',
 			'x-amz-acl': 'acl',
-			'x-amz-server-side-encryption': 'serverSideEncryption',
-			'x-amz-server-side-encryption-customer-algorithm': 'sseCustomerAlgorithm',
-			'x-amz-server-side-encryption-customer-key': toBase64('SSECustomerKey'),
-			'x-amz-server-side-encryption-customer-key-md5':
-				'u2yTVQWmqQ+XbBDNNmwr4Q==',
-			'x-amz-server-side-encryption-aws-kms-key-id': 'sseKMSKeyId',
 		}),
 	}),
 	{

@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthConfig, AuthTokens, AuthUserPoolConfig, CognitoUserPoolConfig } from '@aws-amplify/core';
+import {
+	AuthConfig,
+	AuthTokens,
+	AuthUserPoolConfig,
+	CognitoUserPoolConfig,
+} from '@aws-amplify/core';
 
 import { AuthError } from '../../../errors/AuthError';
 import { CognitoAuthTokens } from '../tokenProvider/types';
@@ -27,6 +32,17 @@ export function assertAuthTokens(
 		throw new AuthError({
 			name: 'Invalid Auth Tokens',
 			message: 'No Auth Tokens were found',
+		});
+	}
+}
+
+export function assertIdTokenInAuthTokens(
+	tokens?: AuthTokens
+): asserts tokens is AuthTokens {
+	if (!tokens || !tokens.idToken) {
+		throw new AuthError({
+			name: 'IdToken not present in Auth Tokens',
+			message: 'No IdToken in Auth Tokens',
 		});
 	}
 }

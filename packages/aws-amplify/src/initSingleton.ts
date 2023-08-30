@@ -15,7 +15,6 @@ import {
 export const DefaultAmplify = {
 	configure(resourceConfig: ResourcesConfig, libraryOptions?: LibraryOptions) {
 		CognitoUserPoolsTokenProvider.setAuthConfig(resourceConfig.Auth);
-		cognitoCredentialsProvider.setAuthConfig(resourceConfig.Auth);
 		const defaultLibraryOptions: LibraryOptions = {
 			Auth: {
 				tokenProvider: CognitoUserPoolsTokenProvider,
