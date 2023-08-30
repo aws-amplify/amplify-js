@@ -9,7 +9,7 @@ import {
 	StorageOperationRequest,
 	StorageRemoveOptions,
 	StorageRemoveResult,
-} from '../../../../';
+} from '../../../../types';
 import { remove as removeInternal } from '../internal/remove';
 
 export const remove = (
