@@ -16,7 +16,6 @@ import type {
 import { defaultConfig } from './base';
 import {
 	emptyArrayGuard,
-	serializeObjectSsecOptionsToHeaders,
 	map,
 	parseXmlBody,
 	parseXmlError,
@@ -28,13 +27,7 @@ import {
 
 export type ListPartsInput = Pick<
 	ListPartsCommandInput,
-	| 'Bucket'
-	| 'Key'
-	| 'UploadId'
-	| 'SSECustomerAlgorithm'
-	| 'SSECustomerKey'
-	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
+	'Bucket' | 'Key' | 'UploadId'
 >;
 
 export type ListPartsOutput = Pick<
@@ -46,7 +39,7 @@ const listPartsSerializer = async (
 	input: ListPartsInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	const headers = await serializeObjectSsecOptionsToHeaders(input);
+	const headers = {};
 	const url = new URL(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);

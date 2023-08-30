@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { putObject } from '../../../../../../../src/providers/s3/utils/client';
-import { toBase64 } from '../../../../../../../src/providers/s3/utils/client/utils';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 import {
 	defaultConfig,
@@ -14,11 +13,6 @@ export const putObjectRequest = {
 	Bucket: 'bucket',
 	Key: 'key',
 	Body: 'body',
-	ServerSideEncryption: 'ServerSideEncryption',
-	SSECustomerAlgorithm: 'SSECustomerAlgorithm',
-	SSECustomerKey: 'SSECustomerKey',
-	SSECustomerKeyMD5: 'SSECustomerKeyMD5',
-	SSEKMSKeyId: 'SSEKMSKeyId',
 	ACL: 'public-read',
 	CacheControl: 'CacheControl',
 	ContentDisposition: 'ContentDisposition',
@@ -32,11 +26,6 @@ export const putObjectRequest = {
 };
 
 export const expectedPutObjectRequestHeaders = {
-	'x-amz-server-side-encryption': 'ServerSideEncryption',
-	'x-amz-server-side-encryption-customer-algorithm': 'SSECustomerAlgorithm',
-	'x-amz-server-side-encryption-customer-key': toBase64('SSECustomerKey'),
-	'x-amz-server-side-encryption-customer-key-md5': 'u2yTVQWmqQ+XbBDNNmwr4Q==',
-	'x-amz-server-side-encryption-aws-kms-key-id': 'SSEKMSKeyId',
 	'x-amz-acl': 'public-read',
 	'cache-control': 'CacheControl',
 	'content-disposition': 'ContentDisposition',
