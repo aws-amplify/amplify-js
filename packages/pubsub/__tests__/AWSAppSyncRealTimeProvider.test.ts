@@ -10,16 +10,8 @@ jest.mock('@aws-amplify/core', () => ({
 }));
 
 import Observable from 'zen-observable-ts';
-import {
-	Reachability,
-	Credentials,
-	Logger,
-	Signer,
-	Category,
-	PubSubAction,
-	CustomUserAgentDetails,
-} from '@aws-amplify/core';
-import { InternalAuth } from '@aws-amplify/auth/internals';
+import { Reachability, Credentials, Logger, Signer } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
 import { Cache } from '@aws-amplify/cache';
 
 import { MESSAGE_TYPES } from '../src/Providers/constants';
@@ -30,11 +22,6 @@ import { ConnectionState as CS } from '../src';
 
 import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
 import { loggers } from 'winston';
-
-const userAgentDetails: CustomUserAgentDetails = {
-	category: Category.PubSub,
-	action: PubSubAction.Subscribe,
-};
 
 describe('AWSAppSyncRealTimeProvider', () => {
 	describe('isCustomDomain()', () => {
@@ -1075,10 +1062,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 
 					test('authenticating with OPENID_CONNECT', async () => {
-						expect.assertions(2);
+						expect.assertions(1);
 
-						const authSpy = jest
-							.spyOn(InternalAuth, 'currentAuthenticatedUser')
+						const userSpy = jest
+							.spyOn(Auth, 'currentAuthenticatedUser')
 							.mockImplementation(() => {
 								return Promise.resolve({
 									token: 'test',
@@ -1086,14 +1073,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							});
 
 						provider
-							.subscribe(
-								'test',
-								{
-									appSyncGraphqlEndpoint: 'ws://localhost:8080',
-									authenticationType: 'OPENID_CONNECT',
-								},
-								userAgentDetails
-							)
+							.subscribe('test', {
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+								authenticationType: 'OPENID_CONNECT',
+							})
 							.subscribe({ error: () => {} });
 
 						await fakeWebSocketInterface?.readyForUse;
@@ -1102,15 +1085,13 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							'DEBUG',
 							'Authenticating with OPENID_CONNECT'
 						);
-						expect(authSpy).toBeCalledWith(undefined, userAgentDetails);
-						authSpy.mockClear();
 					});
 
 					test('authenticating with OPENID_CONNECT with empty token', async () => {
-						expect.assertions(2);
+						expect.assertions(1);
 
-						const authSpy = jest
-							.spyOn(InternalAuth, 'currentAuthenticatedUser')
+						jest
+							.spyOn(Auth, 'currentAuthenticatedUser')
 							.mockImplementation(() => {
 								return Promise.resolve({
 									token: undefined,
@@ -1118,14 +1099,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							});
 
 						provider
-							.subscribe(
-								'test',
-								{
-									appSyncGraphqlEndpoint: 'ws://localhost:8080',
-									authenticationType: 'OPENID_CONNECT',
-								},
-								userAgentDetails
-							)
+							.subscribe('test', {
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+								authenticationType: 'OPENID_CONNECT',
+							})
 							.subscribe({ error: () => {} });
 
 						// TODO Find a better way to give the catch stack time to resolve
@@ -1135,8 +1112,6 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							'DEBUG',
 							'AppSync Realtime subscription init error: Error: No federated jwt'
 						);
-						expect(authSpy).toBeCalledWith(undefined, userAgentDetails);
-						authSpy.mockClear();
 					});
 
 					test('authenticating with OPENID_CONNECT from cached token', async () => {
@@ -1163,29 +1138,23 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 
 					test('authenticating with AMAZON_COGNITO_USER_POOLS', async () => {
-						expect.assertions(2);
+						expect.assertions(1);
 
-						const authSpy = jest
-							.spyOn(InternalAuth, 'currentSession')
-							.mockImplementation(() => {
-								return Promise.resolve({
-									getAccessToken: () => {
-										return {
-											getJwtToken: () => {},
-										};
-									},
-								} as any);
-							});
+						jest.spyOn(Auth, 'currentSession').mockImplementation(() => {
+							return Promise.resolve({
+								getAccessToken: () => {
+									return {
+										getJwtToken: () => {},
+									};
+								},
+							} as any);
+						});
 
 						provider
-							.subscribe(
-								'test',
-								{
-									appSyncGraphqlEndpoint: 'ws://localhost:8080',
-									authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-								},
-								userAgentDetails
-							)
+							.subscribe('test', {
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+								authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+							})
 							.subscribe({ error: () => {} });
 
 						await fakeWebSocketInterface?.readyForUse;
@@ -1194,9 +1163,6 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							'DEBUG',
 							'Authenticating with AMAZON_COGNITO_USER_POOLS'
 						);
-						expect(authSpy).toBeCalledWith(userAgentDetails);
-
-						authSpy.mockClear();
 					});
 
 					test('authenticating with AWS_LAMBDA', async () => {

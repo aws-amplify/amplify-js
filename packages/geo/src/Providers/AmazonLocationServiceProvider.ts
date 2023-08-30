@@ -6,7 +6,6 @@ import {
 	ConsoleLogger as Logger,
 	Credentials,
 	getAmplifyUserAgentObject,
-	CustomUserAgentDetails,
 } from '@aws-amplify/core';
 import {
 	Place as PlaceResult,
@@ -148,13 +147,11 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * Search by text input with optional parameters
 	 * @param  {string} text - The text string that is to be searched for
 	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
-	 * @param  {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns {Promise<Place[]>} - Promise resolves to a list of Places that match search parameters
 	 */
 	public async searchByText(
 		text: string,
-		options?: SearchByTextOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: SearchByTextOptions
 	): Promise<Place[]> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -184,7 +181,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgentObject(customUserAgentDetails),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 		const command = new SearchPlaceIndexForTextCommand(locationServiceInput);
 
@@ -215,14 +212,12 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * Search for suggestions based on the input text
 	 * @param  {string} text - The text string that is to be searched for
 	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
-	 * @param  {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns {Promise<SearchForSuggestionsResults>} - Resolves to an array of search suggestion strings
 	 */
 
 	public async searchForSuggestions(
 		text: string,
-		options?: SearchByTextOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: SearchByTextOptions
 	): Promise<SearchForSuggestionsResults> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -252,7 +247,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgentObject(customUserAgentDetails),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 		const command = new SearchPlaceIndexForSuggestionsCommand(
 			locationServiceInput
@@ -287,8 +282,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	public async searchByPlaceId(
 		placeId: string,
-		options?: searchByPlaceIdOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: searchByPlaceIdOptions
 	): Promise<Place | undefined> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -301,7 +295,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgentObject(customUserAgentDetails),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 
 		const searchByPlaceIdInput: GetPlaceCommandInput = {
@@ -335,8 +329,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	public async searchByCoordinates(
 		coordinates: Coordinates,
-		options?: SearchByCoordinatesOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: SearchByCoordinatesOptions
 	): Promise<Place> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -360,7 +353,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgentObject(customUserAgentDetails),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 		const command = new SearchPlaceIndexForPositionCommand(
 			locationServiceInput
@@ -391,15 +384,13 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * Create geofences inside of a geofence collection
 	 * @param geofences - Array of geofence objects to create
 	 * @param options? - Optional parameters for creating geofences
-	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns {Promise<AmazonLocationServiceSaveGeofencesResults>} - Promise that resolves to an object with:
 	 *   successes: list of geofences successfully created
 	 *   errors: list of geofences that failed to create
 	 */
 	public async saveGeofences(
 		geofences: GeofenceInput[],
-		options?: AmazonLocationServiceGeofenceOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: AmazonLocationServiceGeofenceOptions
 	): Promise<SaveGeofencesResults> {
 		if (geofences.length < 1) {
 			throw new Error('Geofence input array is empty');
@@ -451,8 +442,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 				try {
 					response = await this._AmazonLocationServiceBatchPutGeofenceCall(
 						batch,
-						options?.collectionName || this._config.geofenceCollections.default,
-						customUserAgentDetails
+						options?.collectionName || this._config.geofenceCollections.default
 					);
 				} catch (error) {
 					// If the API call fails, add the geofences to the errors array and move to next batch
@@ -502,13 +492,11 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * Get geofence from a geofence collection
 	 * @param geofenceId:string
 	 * @param options?: Optional parameters for getGeofence
-	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns {Promise<AmazonLocationServiceGeofence>} - Promise that resolves to a geofence object
 	 */
 	public async getGeofence(
 		geofenceId: GeofenceId,
-		options?: AmazonLocationServiceGeofenceOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: AmazonLocationServiceGeofenceOptions
 	): Promise<AmazonLocationServiceGeofence> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -529,7 +517,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgentObject(customUserAgentDetails),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 
 		// Create Amazon Location Service command
@@ -567,14 +555,12 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	/**
 	 * List geofences from a geofence collection
 	 * @param  options?: ListGeofenceOptions
-	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns {Promise<ListGeofencesResults>} - Promise that resolves to an object with:
 	 *   entries: list of geofences - 100 geofences are listed per page
 	 *   nextToken: token for next page of geofences
 	 */
 	public async listGeofences(
-		options?: AmazonLocationServiceListGeofenceOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: AmazonLocationServiceListGeofenceOptions
 	): Promise<ListGeofenceResults> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -593,7 +579,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgentObject(customUserAgentDetails),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 
 		// Create Amazon Location Service input
@@ -650,15 +636,13 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * Delete geofences from a geofence collection
 	 * @param geofenceIds: string|string[]
 	 * @param options?: GeofenceOptions
-	 * @param {CustomUserAgentDetails} customUserAgentDetails - Optional parameter to send user agent details
 	 * @returns {Promise<DeleteGeofencesResults>} - Promise that resolves to an object with:
 	 *  successes: list of geofences successfully deleted
 	 *  errors: list of geofences that failed to delete
 	 */
 	public async deleteGeofences(
 		geofenceIds: string[],
-		options?: AmazonLocationServiceGeofenceOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: AmazonLocationServiceGeofenceOptions
 	): Promise<AmazonLocationServiceDeleteGeofencesResults> {
 		if (geofenceIds.length < 1) {
 			throw new Error('GeofenceId input array is empty');
@@ -701,8 +685,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 				try {
 					response = await this._AmazonLocationServiceBatchDeleteGeofenceCall(
 						batch,
-						options?.collectionName || this._config.geofenceCollections.default,
-						customUserAgentDetails
+						options?.collectionName || this._config.geofenceCollections.default
 					);
 				} catch (error) {
 					// If the API call fails, add the geofences to the errors array and move to next batch
@@ -789,8 +772,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	private async _AmazonLocationServiceBatchPutGeofenceCall(
 		PascalGeofences: BatchPutGeofenceRequestEntry[],
-		collectionName?: string,
-		customUserAgentDetails?: CustomUserAgentDetails
+		collectionName?: string
 	) {
 		// Create the BatchPutGeofence input
 		const geofenceInput: BatchPutGeofenceCommandInput = {
@@ -802,7 +784,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgentObject(customUserAgentDetails),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 		const command = new BatchPutGeofenceCommand(geofenceInput);
 
@@ -817,8 +799,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	private async _AmazonLocationServiceBatchDeleteGeofenceCall(
 		geofenceIds: string[],
-		collectionName?: string,
-		customUserAgentDetails?: CustomUserAgentDetails
+		collectionName?: string
 	): Promise<BatchDeleteGeofenceCommandOutput> {
 		// Create the BatchDeleteGeofence input
 		const deleteGeofencesInput: BatchDeleteGeofenceCommandInput = {
@@ -830,7 +811,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
-			customUserAgent: getAmplifyUserAgentObject(customUserAgentDetails),
+			customUserAgent: getAmplifyUserAgentObject(),
 		});
 		const command = new BatchDeleteGeofenceCommand(deleteGeofencesInput);
 

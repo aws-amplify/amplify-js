@@ -1,4 +1,4 @@
-import { InternalAuth } from '@aws-amplify/auth/internals';
+import { Auth } from '@aws-amplify/auth';
 import { GraphQLAPIClass as API } from '../src';
 import { InternalGraphQLAPIClass as InternalAPI } from '../src/internals';
 import { graphqlOperation } from '../src/GraphQLAPI';
@@ -363,7 +363,7 @@ describe('API test', () => {
 				});
 
 			const spyonAuth = jest
-				.spyOn(InternalAuth, 'currentAuthenticatedUser')
+				.spyOn(Auth, 'currentAuthenticatedUser')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res({
@@ -884,7 +884,7 @@ describe('API test', () => {
 				.spyOn(RestClient.prototype, 'post')
 				.mockReturnValue(Promise.resolve({}));
 
-			jest.spyOn(InternalAuth, 'currentSession').mockReturnValue({
+			jest.spyOn(Auth, 'currentSession').mockReturnValue({
 				getAccessToken: () => ({
 					getJwtToken: () => 'Secret-Token',
 				}),
@@ -1396,7 +1396,7 @@ describe('Internal API customUserAgent test', () => {
 			});
 	});
 	describe('graphql test', () => {
-		test('happy case mutation - API_KEY', async () => {
+		test('happy case mutation', async () => {
 			const spyonAuth = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1412,7 +1412,6 @@ describe('Internal API customUserAgent test', () => {
 						res({});
 					});
 				});
-
 			const internalApi = new InternalAPI(config);
 			const url = 'https://appsync.amazonaws.com',
 				region = 'us-east-2',
@@ -1467,152 +1466,6 @@ describe('Internal API customUserAgent test', () => {
 			);
 
 			expect(spyon).toBeCalledWith(url, init);
-
-			spyonAuth.mockClear();
-			spyon.mockClear();
-		});
-
-		test('happy case mutation - OPENID_CONNECT', async () => {
-			const cache_config = {
-				capacityInBytes: 3000,
-				itemMaxSize: 800,
-				defaultTTL: 3000000,
-				defaultPriority: 5,
-				warningThreshold: 0.8,
-				storage: window.localStorage,
-			};
-
-			Cache.configure(cache_config);
-
-			const spyonCache = jest
-				.spyOn(Cache, 'getItem')
-				.mockImplementationOnce(() => {
-					return null;
-				});
-
-			const spyonAuth = jest
-				.spyOn(InternalAuth, 'currentAuthenticatedUser')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res({
-							name: 'federated user',
-							token: 'federated_token_from_storage',
-						});
-					});
-				});
-
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce((url, init) => {
-					return new Promise((res, rej) => {
-						res({});
-					});
-				});
-
-			const internalApi = new InternalAPI(config);
-			const url = 'https://appsync.amazonaws.com',
-				region = 'us-east-2',
-				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
-			internalApi.configure({
-				aws_appsync_graphqlEndpoint: url,
-				aws_appsync_region: region,
-				aws_appsync_authenticationType: 'OPENID_CONNECT',
-			});
-
-			const headers = {
-				Authorization: 'federated_token_from_storage',
-				'x-amz-user-agent': expectedUserAgentAPI,
-			};
-
-			const body = {
-				query: getEventQuery,
-				variables,
-			};
-
-			const init = {
-				headers,
-				body,
-				signerServiceInfo: {
-					service: 'appsync',
-					region,
-				},
-				cancellableToken: mockCancellableToken,
-			};
-
-			await internalApi.graphql(
-				graphqlOperation(GetEvent, variables),
-				undefined,
-				customUserAgentDetailsAPI
-			);
-
-			expect(spyon).toBeCalledWith(url, init);
-			expect(spyonAuth).toBeCalledWith(undefined, customUserAgentDetailsAPI);
-
-			spyonCache.mockClear();
-			spyonAuth.mockClear();
-			spyon.mockClear();
-		});
-
-		test('happy case mutation - AMAZON_COGNITO_USER_POOLS', async () => {
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockReturnValue(Promise.resolve({}));
-
-			const spyonAuth = jest
-				.spyOn(InternalAuth, 'currentSession')
-				.mockReturnValue({
-					getAccessToken: () => ({
-						getJwtToken: () => 'Secret-Token',
-					}),
-				} as any);
-
-			const internalApi = new InternalAPI(config);
-			const url = 'https://appsync.amazonaws.com',
-				region = 'us-east-2',
-				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
-				apiKey = 'secret-api-key';
-			internalApi.configure({
-				aws_appsync_graphqlEndpoint: url,
-				aws_appsync_region: region,
-				aws_appsync_authenticationType: 'API_KEY',
-				aws_appsync_apiKey: apiKey,
-			});
-
-			const headers = {
-				Authorization: 'Secret-Token',
-				'x-amz-user-agent': expectedUserAgentAPI,
-			};
-
-			const body = {
-				query: getEventQuery,
-				variables,
-			};
-
-			const init = {
-				headers,
-				body,
-				signerServiceInfo: {
-					service: 'appsync',
-					region,
-				},
-				cancellableToken: mockCancellableToken,
-			};
-
-			await internalApi.graphql(
-				{
-					query: GetEvent,
-					variables,
-					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-				},
-				undefined,
-				customUserAgentDetailsAPI
-			);
-
-			expect(spyon).toBeCalledWith(url, init);
-			expect(spyonAuth).toBeCalledWith(customUserAgentDetailsAPI);
-
-			spyon.mockClear();
-			spyonAuth.mockClear();
 		});
 
 		test('happy case subscription', async done => {

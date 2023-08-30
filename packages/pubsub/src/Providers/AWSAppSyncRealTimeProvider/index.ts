@@ -21,8 +21,7 @@ import {
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import { Cache } from '@aws-amplify/cache';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
-import { InternalAuth } from '@aws-amplify/auth/internals';
+import { Auth, GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from '../PubSubProvider';
 import {
 	CONTROL_MSG,
@@ -115,7 +114,6 @@ type AWSAppSyncRealTimeAuthInput =
 		canonicalUri: string;
 		payload: string;
 		host?: string | undefined;
-		customUserAgentDetails?: CustomUserAgentDetails;
 	};
 
 export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyncRealTimeProviderOptions> {
@@ -351,7 +349,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 				canonicalUri: '',
 				region,
 				additionalHeaders,
-				customUserAgentDetails,
 			})),
 			...(await graphql_headers()),
 			...additionalHeaders,
@@ -899,7 +896,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		apiKey,
 		region,
 		additionalHeaders,
-		customUserAgentDetails,
 	}: AWSAppSyncRealTimeAuthInput): Promise<
 		Record<string, unknown> | undefined
 	> {
@@ -931,18 +927,14 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 				region,
 				host,
 				additionalHeaders,
-				customUserAgentDetails,
 			});
 
 			return result;
 		}
 	}
 
-	private async _awsRealTimeCUPHeader({
-		host,
-		customUserAgentDetails,
-	}: AWSAppSyncRealTimeAuthInput) {
-		const session = await InternalAuth.currentSession(customUserAgentDetails);
+	private async _awsRealTimeCUPHeader({ host }: AWSAppSyncRealTimeAuthInput) {
+		const session = await Auth.currentSession();
 		return {
 			Authorization: session.getAccessToken().getJwtToken(),
 			host,
@@ -951,7 +943,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 
 	private async _awsRealTimeOPENIDHeader({
 		host,
-		customUserAgentDetails,
 	}: AWSAppSyncRealTimeAuthInput) {
 		let token;
 		// backwards compatibility
@@ -959,10 +950,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		if (federatedInfo) {
 			token = federatedInfo.token;
 		} else {
-			const currentUser = await InternalAuth.currentAuthenticatedUser(
-				undefined,
-				customUserAgentDetails
-			);
+			const currentUser = await Auth.currentAuthenticatedUser();
 			if (currentUser) {
 				token = currentUser.token;
 			}
