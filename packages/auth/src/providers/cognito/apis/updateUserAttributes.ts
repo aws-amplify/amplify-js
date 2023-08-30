@@ -82,18 +82,19 @@ function getUnConfirmedAttributes(
 	const unConfirmedAttributes = {} as UpdateUserAttributesResult;
 	codeDeliveryDetailsList?.forEach(codeDeliveryDetails => {
 		const { AttributeName, DeliveryMedium, Destination } = codeDeliveryDetails;
-		unConfirmedAttributes[AttributeName] = {
-			isUpdated: false,
-			nextStep: {
-				updateAttributeStep:
-					AuthUpdateAttributeStep.CONFIRM_ATTRIBUTE_WITH_CODE,
-				codeDeliveryDetails: {
-					attributeName: AttributeName,
-					deliveryMedium: DeliveryMedium as DeliveryMedium,
-					destination: Destination,
+		if (AttributeName)
+			unConfirmedAttributes[AttributeName] = {
+				isUpdated: false,
+				nextStep: {
+					updateAttributeStep:
+						AuthUpdateAttributeStep.CONFIRM_ATTRIBUTE_WITH_CODE,
+					codeDeliveryDetails: {
+						attributeName: AttributeName,
+						deliveryMedium: DeliveryMedium as DeliveryMedium,
+						destination: Destination,
+					},
 				},
-			},
-		};
+			};
 	});
 	return unConfirmedAttributes;
 }

@@ -21,7 +21,6 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
-	serializeObjectSsecOptionsToHeaders,
 	validateS3RequiredParameter,
 } from './utils';
 
@@ -30,14 +29,7 @@ const INVALID_PARAMETER_ERROR_MSG =
 
 export type CompleteMultipartUploadInput = Pick<
 	CompleteMultipartUploadCommandInput,
-	| 'Bucket'
-	| 'Key'
-	| 'UploadId'
-	| 'MultipartUpload'
-	| 'SSECustomerAlgorithm'
-	| 'SSECustomerKey'
-	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
+	'Bucket' | 'Key' | 'UploadId' | 'MultipartUpload'
 >;
 
 export type CompleteMultipartUploadOutput = Pick<
@@ -49,8 +41,9 @@ const completeMultipartUploadSerializer = async (
 	input: CompleteMultipartUploadInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	const headers = await serializeObjectSsecOptionsToHeaders(input);
-	headers['content-type'] = 'application/xml';
+	const headers = {
+		'content-type': 'application/xml',
+	};
 	const url = new URL(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);

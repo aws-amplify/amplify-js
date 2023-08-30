@@ -1,9 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyError, decodeJWT } from '@aws-amplify/core/internals/utils';
-
 import { tokenOrchestrator } from '.';
-
 import { AuthenticationResultType } from '../utils/clients/CognitoIdentityProvider/types';
 
 export async function cacheCognitoTokens(
@@ -18,8 +16,8 @@ export async function cacheCognitoTokens(
 				? accessTokenIssuedAtInMillis - currentTime
 				: 0;
 		let idToken;
-		let refreshToken: string;
-		let NewDeviceMetadata: string;
+		let refreshToken: string | undefined;
+		let NewDeviceMetadata: string | undefined;
 
 		if (AuthenticationResult.RefreshToken) {
 			refreshToken = AuthenticationResult.RefreshToken;
