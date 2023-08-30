@@ -18,7 +18,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 
 	// Used as in-memory storage
 	_primaryIdentityId: string | undefined;
-	_authKeys: AuthKeys<string>;
+	_authKeys: AuthKeys<string> = {};
 	setAuthConfig(authConfigParam: AuthConfig) {
 		assertIdentityPooIdConfig(authConfigParam.Cognito);
 		this.authConfig = authConfigParam;
