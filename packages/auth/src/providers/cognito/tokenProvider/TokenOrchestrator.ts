@@ -8,7 +8,7 @@ import {
 } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
-	assertTokenProviderConfig,
+	assertUserPoolClientIdInConfig,
 	isTokenExpired,
 } from '@aws-amplify/core/internals/utils';
 import {
@@ -65,7 +65,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		let tokens: CognitoAuthTokens | null;
 
 		try {
-			assertTokenProviderConfig(this.authConfig?.Cognito);
+			assertUserPoolClientIdInConfig(this.authConfig?.Cognito);
 		} catch (_err) {
 			// Token provider not configured
 			return null;

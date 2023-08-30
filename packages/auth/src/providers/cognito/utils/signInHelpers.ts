@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, CognitoUserPoolConfig } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertUserPoolClientIdInConfig } from '@aws-amplify/core/internals/utils';
 import {
 	getLargeAValue,
 	getNowString,
@@ -289,7 +289,7 @@ export async function handleCustomSRPAuthFlow(
 	clientMetadata: ClientMetadata | undefined,
 	config: CognitoUserPoolConfig
 ) {
-	assertTokenProviderConfig(config);
+	assertUserPoolClientIdInConfig(config);
 	const { userPoolId, userPoolClientId } = config;
 
 	const userPoolName = userPoolId?.split('_')[1] || '';
@@ -378,7 +378,7 @@ export async function getSignInResult(params: {
 }): Promise<AuthSignInResult> {
 	const { challengeName, challengeParameters } = params;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	assertTokenProviderConfig(authConfig);
+	assertUserPoolClientIdInConfig(authConfig);
 
 	switch (challengeName) {
 		case 'CUSTOM_CHALLENGE':

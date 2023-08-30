@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertUserPoolClientIdInConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { UpdateMFAPreferenceRequest } from '../types';
 import { SetUserMFAPreferenceException } from '../types/errors';
@@ -27,7 +27,7 @@ export async function updateMFAPreference(
 ): Promise<void> {
 	const { sms, totp } = updateMFAPreferenceRequest;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	assertTokenProviderConfig(authConfig);
+	assertUserPoolClientIdInConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	await setUserMFAPreference(

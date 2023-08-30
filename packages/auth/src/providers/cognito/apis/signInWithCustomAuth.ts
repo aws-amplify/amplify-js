@@ -15,7 +15,7 @@ import {
 	getSignInResultFromError,
 } from '../utils/signInHelpers';
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertUserPoolClientIdInConfig } from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
 import { CognitoSignInOptions } from '../types';
 import {
@@ -43,7 +43,7 @@ export async function signInWithCustomAuth(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	assertTokenProviderConfig(authConfig);
+	assertUserPoolClientIdInConfig(authConfig);
 	const { username, password, options } = signInRequest;
 	const metadata = options?.serviceOptions?.clientMetadata;
 	assertValidationError(

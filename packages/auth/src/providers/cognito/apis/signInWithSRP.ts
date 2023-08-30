@@ -13,7 +13,7 @@ import {
 	RespondToAuthChallengeException,
 } from '../types/errors';
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertUserPoolClientIdInConfig } from '@aws-amplify/core/internals/utils';
 import {
 	getSignInResult,
 	getSignInResultFromError,
@@ -48,7 +48,7 @@ export async function signInWithSRP(
 ): Promise<AuthSignInResult> {
 	const { username, password } = signInRequest;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	assertTokenProviderConfig(authConfig);
+	assertUserPoolClientIdInConfig(authConfig);
 	const clientMetaData = signInRequest.options?.serviceOptions?.clientMetadata;
 	assertValidationError(
 		!!username,

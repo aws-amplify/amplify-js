@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertUserPoolClientIdInConfig } from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { ConfirmUserAttributeRequest } from '../../../types/requests';
@@ -29,7 +29,7 @@ export async function confirmUserAttribute(
 	confirmUserAttributeRequest: ConfirmUserAttributeRequest<CognitoUserAttributeKey>
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	assertTokenProviderConfig(authConfig);
+	assertUserPoolClientIdInConfig(authConfig);
 	const { confirmationCode, userAttributeKey } = confirmUserAttributeRequest;
 	assertValidationError(
 		!!confirmationCode,

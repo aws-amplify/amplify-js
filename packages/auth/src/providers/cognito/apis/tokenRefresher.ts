@@ -3,7 +3,7 @@
 import { CognitoAuthTokens, TokenRefresher } from '../tokenProvider/types';
 import { AuthConfig } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
+	assertUserPoolClientIdInConfig,
 	decodeJWT,
 } from '@aws-amplify/core/internals/utils';
 import { initiateAuth } from '../utils/clients/CognitoIdentityProvider';
@@ -18,7 +18,7 @@ export const CognitoUserPoolTokenRefresher: TokenRefresher = async ({
 	tokens: CognitoAuthTokens;
 	authConfig?: AuthConfig;
 }): Promise<CognitoAuthTokens> => {
-	assertTokenProviderConfig(authConfig?.Cognito);
+	assertUserPoolClientIdInConfig(authConfig?.Cognito);
 	const region = getRegion(authConfig.Cognito.userPoolId);
 	assertAuthTokensWithRefreshToken(tokens);
 	const refreshTokenString = tokens.refreshToken;

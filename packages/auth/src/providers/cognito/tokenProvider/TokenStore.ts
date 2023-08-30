@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AuthConfig, KeyValueStorageInterface } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
+	assertUserPoolClientIdInConfig,
 	asserts,
 	decodeJWT,
 } from '@aws-amplify/core/internals/utils';
@@ -40,7 +40,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		// Reading V5 tokens old format
 
 		// Reading V6 tokens
-		assertTokenProviderConfig(this.authConfig?.Cognito);
+		assertUserPoolClientIdInConfig(this.authConfig?.Cognito);
 		try {
 			const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 			const authKeys = createKeysForAuthStorage(
@@ -90,7 +90,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 			name: 'InvalidAuthTokens',
 			recoverySuggestion: 'Make sure the tokens are valid',
 		});
-		assertTokenProviderConfig(this.authConfig?.Cognito);
+		assertUserPoolClientIdInConfig(this.authConfig?.Cognito);
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
@@ -131,7 +131,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	async clearTokens(): Promise<void> {
-		assertTokenProviderConfig(this.authConfig?.Cognito);
+		assertUserPoolClientIdInConfig(this.authConfig?.Cognito);
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,

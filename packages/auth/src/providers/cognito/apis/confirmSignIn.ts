@@ -29,7 +29,7 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertUserPoolClientIdInConfig } from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,
@@ -65,7 +65,7 @@ export async function confirmSignIn(
 	const { username, challengeName, signInSession } = signInStore.getState();
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	assertTokenProviderConfig(authConfig);
+	assertUserPoolClientIdInConfig(authConfig);
 
 	const clientMetaData = options?.serviceOptions?.clientMetadata;
 

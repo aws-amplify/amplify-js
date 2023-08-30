@@ -13,7 +13,7 @@ import {
 	StrictUnion,
 } from '../types';
 
-export function assertTokenProviderConfig(
+export function assertUserPoolClientIdInConfig(
 	cognitoConfig?: StrictUnion<
 		| CognitoUserPoolConfig
 		| CognitoUserPoolAndIdentityPoolConfig

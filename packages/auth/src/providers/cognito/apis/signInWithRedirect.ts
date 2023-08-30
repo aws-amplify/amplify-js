@@ -5,7 +5,7 @@ import { Amplify, Hub, LocalStorage, OAuthConfig } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
 	assertOAuthConfig,
-	assertTokenProviderConfig,
+	assertUserPoolClientIdInConfig,
 	getAmplifyUserAgent,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
@@ -38,7 +38,7 @@ export function signInWithRedirect(
 	signInWithRedirectRequest?: SignInWithRedirectRequest
 ): void {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	assertTokenProviderConfig(authConfig);
+	assertUserPoolClientIdInConfig(authConfig);
 	assertOAuthConfig(authConfig);
 
 	let provider = 'COGNITO'; // Default
@@ -354,7 +354,7 @@ function urlListener() {
 		if (capsule.payload.event === 'configure') {
 			const authConfig = Amplify.getConfig().Auth?.Cognito;
 			try {
-				assertTokenProviderConfig(authConfig);
+				assertUserPoolClientIdInConfig(authConfig);
 				store.setAuthConfig(authConfig);
 			} catch (_err) {
 				// Token provider not configure nothing to do

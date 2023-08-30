@@ -3,7 +3,7 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
+	assertUserPoolClientIdInConfig,
 	fetchAuthSession,
 } from '@aws-amplify/core/internals/utils';
 import { getUser } from '../../utils/clients/CognitoIdentityProvider';
@@ -17,7 +17,7 @@ export const fetchUserAttributes = async (
 	amplify: AmplifyClassV6
 ): Promise<AuthUserAttribute<CognitoUserAttributeKey>> => {
 	const authConfig = amplify.getConfig().Auth?.Cognito;
-	assertTokenProviderConfig(authConfig);
+	assertUserPoolClientIdInConfig(authConfig);
 	const { tokens } = await fetchAuthSession(amplify, {
 		forceRefresh: false,
 	});

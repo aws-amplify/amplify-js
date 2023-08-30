@@ -13,7 +13,7 @@ import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { tokenOrchestrator } from '../tokenProvider';
 import {
 	assertOAuthConfig,
-	assertTokenProviderConfig,
+	assertUserPoolClientIdInConfig,
 	JWT,
 } from '@aws-amplify/core/internals/utils';
 import {
@@ -40,7 +40,7 @@ export async function signOut(
 	signOutRequest?: SignOutRequest
 ): Promise<AuthSignOutResult> {
 	const cognitoConfig = Amplify.getConfig().Auth?.Cognito;
-	assertTokenProviderConfig(cognitoConfig);
+	assertUserPoolClientIdInConfig(cognitoConfig);
 
 	if (signOutRequest?.global) {
 		return globalSignOut(cognitoConfig);

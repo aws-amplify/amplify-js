@@ -7,7 +7,7 @@ import { UpdatePasswordRequest } from '../../../types/requests';
 import { changePassword } from '../utils/clients/CognitoIdentityProvider';
 import { ChangePasswordException } from '../../cognito/types/errors';
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertUserPoolClientIdInConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
@@ -27,7 +27,7 @@ export async function updatePassword(
 	updatePasswordRequest: UpdatePasswordRequest
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	assertTokenProviderConfig(authConfig);
+	assertUserPoolClientIdInConfig(authConfig);
 	const { oldPassword, newPassword } = updatePasswordRequest;
 	assertValidationError(
 		!!oldPassword,

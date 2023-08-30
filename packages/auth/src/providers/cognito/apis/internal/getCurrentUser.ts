@@ -3,7 +3,7 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
+	assertUserPoolClientIdInConfig,
 	fetchAuthSession,
 } from '@aws-amplify/core/internals/utils';
 import { GetCurrentUserRequest, AuthUser } from '../../../../types';
@@ -14,7 +14,7 @@ export const getCurrentUser = async (
 	getCurrentUserRequest?: GetCurrentUserRequest
 ): Promise<AuthUser> => {
 	const authConfig = amplify.getConfig().Auth?.Cognito;
-	assertTokenProviderConfig(authConfig);
+	assertUserPoolClientIdInConfig(authConfig);
 	const { tokens } = await fetchAuthSession(amplify, {
 		forceRefresh: getCurrentUserRequest?.recache ?? false,
 	});

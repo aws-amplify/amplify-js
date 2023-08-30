@@ -8,7 +8,7 @@ import { CogntioVerifyTOTPSetupOptions } from '../types/options';
 import { verifySoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { VerifySoftwareTokenException } from '../types/errors';
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertUserPoolClientIdInConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
@@ -30,7 +30,7 @@ export async function verifyTOTPSetup(
 	verifyTOTPSetupRequest: VerifyTOTPSetupRequest<CogntioVerifyTOTPSetupOptions>
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	assertTokenProviderConfig(authConfig);
+	assertUserPoolClientIdInConfig(authConfig);
 	const { code, options } = verifyTOTPSetupRequest;
 	assertValidationError(
 		!!code,

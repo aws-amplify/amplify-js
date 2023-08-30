@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertUserPoolClientIdInConfig } from '@aws-amplify/core/internals/utils';
 import {
 	AuthSignUpResult,
 	AuthSignUpStep,
@@ -41,7 +41,7 @@ export async function signUp(
 	const { username, password, options } = signUpRequest;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const clientMetadata = signUpRequest.options?.serviceOptions?.clientMetadata;
-	assertTokenProviderConfig(authConfig);
+	assertUserPoolClientIdInConfig(authConfig);
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
