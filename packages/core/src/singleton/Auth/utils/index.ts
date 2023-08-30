@@ -26,14 +26,12 @@ export function assertUserPoolClientIdInConfig(
 	if (!cognitoConfig) {
 		assertionValid = false;
 	} else {
-		assertionValid =
-			!!cognitoConfig.userPoolClientId && !!cognitoConfig.userPoolClientId;
+		assertionValid = !!cognitoConfig.userPoolClientId;
 	}
-
 	return asserts(assertionValid, {
-		name: 'AuthTokenConfigException',
-		message: 'Auth Token Provider not configured',
-		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
+		name: 'UserPoolClientIdConfigException',
+		message: 'UserPoolClientId not present in Config',
+		recoverySuggestion: 'Make sure to provide UserPoolClientId in the config',
 	});
 }
 
