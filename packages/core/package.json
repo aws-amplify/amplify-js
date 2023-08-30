@@ -85,12 +85,6 @@
 	},
 	"size-limit": [
 		{
-			"name": "Core (ServiceWorker)",
-			"path": "./lib-esm/index.js",
-			"import": "{ ServiceWorker }",
-			"limit": "19.6 kB"
-		},
-		{
 			"name": "Core (Hub)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Hub }",
@@ -101,24 +95,6 @@
 			"path": "./lib-esm/index.js",
 			"import": "{ I18n }",
 			"limit": "6.1 kB"
-		},
-		{
-			"name": "Core (Logger)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Logger }",
-			"limit": "4.60 kB"
-		},
-		{
-			"name": "Core (Credentials)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Credentials }",
-			"limit": "14.1 kB"
-		},
-		{
-			"name": "Core (Signer)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Signer }",
-			"limit": "19.6 kB"
 		},
 		{
 			"name": "Custom clients (fetch handler)",
@@ -161,12 +137,6 @@
 			"path": "./lib-esm/index.js",
 			"import": "{ Cache }",
 			"limit": "7.8 kB"
-		},
-		{
-			"name": "Cache (in-memory)",
-			"path": "./lib-esm/index.js",
-			"import": "{ InMemoryCache }",
-			"limit": "7.9 kB"
 		}
 	],
 	"jest": {
