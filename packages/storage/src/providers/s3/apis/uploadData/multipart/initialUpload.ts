@@ -8,9 +8,9 @@ import {
 	findCachedUploadParts,
 	getUploadsCacheKey,
 } from './uploadCache';
-import { createMultipartUpload, Part } from '../../../../../AwsClients/S3';
 import { ResolvedS3Config } from '../../../types/options';
 import { UploadSource } from '../../../../../types';
+import { Part, createMultipartUpload } from '../../../utils/client';
 
 type LoadOrCreateMultipartUploadOptions = {
 	s3Config: ResolvedS3Config;
