@@ -12,3 +12,4 @@ export {
 } from './providers/s3';
 // TODO[AllanZhengYP]: support isCancelError in Node.js with node-fetch
 export { isCancelError } from './errors/CanceledError';
+export { StorageError } from './errors/StorageError';
