@@ -10,5 +10,6 @@ export {
 	copy,
 	getUrl,
 } from './providers/s3';
-export { isCancelError } from './AwsClients/S3/runtime';
 export * from './types';
+// TODO[AllanZhengYP]: support isCancelError in Node.js with node-fetch
+export { isCancelError } from './errors/CanceledError';

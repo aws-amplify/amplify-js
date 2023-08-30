@@ -8,11 +8,11 @@ import { StorageValidationErrorCode } from '../../../errors/types/validation';
 const DEFAULT_ACCESS_LEVEL = 'guest';
 
 export function resolveStorageConfig(amplify: AmplifyClassV6) {
-	const { bucket, region } = amplify.getConfig()?.Storage ?? {};
+	const { bucket, region } = amplify.getConfig()?.Storage?.S3 ?? {};
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
 	const { defaultAccessLevel = DEFAULT_ACCESS_LEVEL } =
-		amplify.libraryOptions?.Storage?.AWSS3 ?? {};
+		amplify.libraryOptions?.Storage?.S3 ?? {};
 	return {
 		defaultAccessLevel,
 		bucket,

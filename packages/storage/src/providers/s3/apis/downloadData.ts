@@ -3,10 +3,10 @@
 
 import { S3TransferOptions, S3DownloadDataResult } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
-import { getObject } from '../../../AwsClients/S3';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { StorageDownloadDataRequest, DownloadTask } from '../../../types';
-import { createDownloadTask } from '../../../utils/transferTask';
+import { createDownloadTask } from '../utils';
+import { getObject } from '../utils/client';
 
 /**
  * Download S3 object data to memory
@@ -30,7 +30,6 @@ export const downloadData = (
 		onCancel: (abortErrorOverwrite?: Error) => {
 			abortController.abort(abortErrorOverwrite);
 		},
-		abortController,
 	});
 	return downloadTask;
 };
@@ -72,6 +71,7 @@ const downloadDataJob =
 		return {
 			// Casting with ! as body always exists for getObject API.
 			// TODO[AllanZhengYP]: remove casting when we have better typing for getObject API
+			key,
 			body: body!,
 			lastModified,
 			size,

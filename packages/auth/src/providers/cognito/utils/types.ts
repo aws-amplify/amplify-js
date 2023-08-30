@@ -1,13 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthConfig, AuthTokens, UserPoolConfig } from '@aws-amplify/core';
+import { AuthConfig, AuthTokens, AuthUserPoolConfig } from '@aws-amplify/core';
+
 import { AuthError } from '../../../errors/AuthError';
+import { CognitoUserPoolConfig } from '@aws-amplify/core';
 
 export function isTypeUserPoolConfig(
 	authConfig?: AuthConfig
-): authConfig is UserPoolConfig {
-	if (authConfig && authConfig.userPoolId && authConfig.userPoolWebClientId) {
+): authConfig is AuthUserPoolConfig {
+	if (
+		authConfig &&
+		authConfig.Cognito.userPoolId &&
+		authConfig.Cognito.userPoolClientId
+	) {
 		return true;
 	}
 
@@ -33,7 +39,7 @@ export const OAuthStorageKeys = {
 };
 
 export interface OAuthStore {
-	setAuthConfig(authConfigParam: AuthConfig): void;
+	setAuthConfig(authConfigParam: CognitoUserPoolConfig): void;
 	loadOAuthInFlight(): Promise<boolean>;
 	storeOAuthInFlight(inflight: boolean): Promise<void>;
 	loadOAuthSignIn(): Promise<boolean>;

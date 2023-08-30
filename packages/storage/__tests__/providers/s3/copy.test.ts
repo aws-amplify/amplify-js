@@ -3,10 +3,10 @@
 
 import { Credentials } from '@aws-sdk/types';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
-import { copyObject } from '../../../src/AwsClients/S3';
+import { copyObject } from '../../../src/providers/s3/utils/client';
 import { copy } from '../../../src/providers/s3/apis';
 
-jest.mock('../../../src/AwsClients/S3');
+jest.mock('../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => {
 	const core = jest.requireActual('@aws-amplify/core');
 	return {
@@ -105,8 +105,10 @@ describe('copy API', () => {
 		});
 		(Amplify.getConfig as jest.Mock).mockReturnValue({
 			Storage: {
-				bucket: 'bucket',
-				region: 'region',
+				S3: {
+					bucket: 'bucket',
+					region: 'region',
+				},
 			},
 		});
 	});

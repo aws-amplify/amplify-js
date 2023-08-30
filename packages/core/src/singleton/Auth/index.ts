@@ -77,7 +77,7 @@ export class AuthClass {
 						forceRefresh: options.forceRefresh,
 					}
 				);
-		} else if (!this.authConfig.isMandatorySignInEnabled) {
+		} else if (this.authConfig.Cognito.allowGuestAccess) {
 			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
 			credentialsAndIdentityId =
 				await this.authOptions?.credentialsProvider?.getCredentialsAndIdentityId(
@@ -99,7 +99,7 @@ export class AuthClass {
 
 	async clearCredentials(): Promise<void> {
 		if (this.authOptions?.credentialsProvider) {
-			return await this.authOptions.credentialsProvider.clearCredentials();
+			return await this.authOptions.credentialsProvider.clearCredentialsAndIdentityId();
 		}
 	}
 }

@@ -3,8 +3,10 @@
 
 import { Amplify, Hub, LocalStorage, OAuthConfig } from '@aws-amplify/core';
 import {
+	AMPLIFY_SYMBOL,
 	AmplifyError,
 	assertOAuthConfig,
+	assertTokenProviderConfig,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
 } from '@aws-amplify/core/internals/utils';
@@ -35,7 +37,8 @@ const SELF = '_self';
 export function signInWithRedirect(
 	signInWithRedirectRequest?: SignInWithRedirectRequest
 ): void {
-	const authConfig = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 
 	let provider = 'COGNITO'; // Default
@@ -48,8 +51,8 @@ export function signInWithRedirect(
 	}
 
 	oauthSignIn({
-		oauthConfig: authConfig.oauth,
-		clientId: authConfig.userPoolWebClientId,
+		oauthConfig: authConfig.loginWith.oauth,
+		clientId: authConfig.userPoolClientId,
 		provider,
 		customState: signInWithRedirectRequest?.customState,
 	});
@@ -92,7 +95,7 @@ function oauthSignIn({
 	const scopesString = oauthConfig.scopes.join(' ');
 
 	const queryString = Object.entries({
-		redirect_uri: oauthConfig.redirectSignIn,
+		redirect_uri: oauthConfig.redirectSignIn[0], // TODO(v6): add logic to identity the correct url
 		response_type: oauthConfig.responseType,
 		client_id: clientId,
 		identity_provider: provider,
@@ -186,6 +189,12 @@ async function handleCodeFlow({
 	if (error) {
 		invokeAndClearPromise();
 
+		Hub.dispatch(
+			'auth',
+			{ event: 'signInWithRedirect_failure' },
+			'Auth',
+			AMPLIFY_SYMBOL
+		);
 		throw new AuthError({
 			message: error,
 			name: AuthErrorCodes.OAuthSignInError,
@@ -205,8 +214,8 @@ async function handleCodeFlow({
 
 	await store.storeOAuthSignIn(true);
 
+	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
 	clearHistory(redirectUri);
-
 	invokeAndClearPromise();
 	return;
 }
@@ -253,8 +262,8 @@ async function handleImplicitFlow({
 	});
 
 	await store.storeOAuthSignIn(true);
+	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
 	clearHistory(redirectUri);
-
 	invokeAndClearPromise();
 }
 
@@ -279,6 +288,12 @@ async function handleAuthResponse({
 		const error_description = urlParams.searchParams.get('error_description');
 
 		if (error) {
+			Hub.dispatch(
+				'auth',
+				{ event: 'signInWithRedirect_failure' },
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			throw new AuthError({
 				message: AuthErrorTypes.OAuthSignInError,
 				underlyingError: error_description,
@@ -334,8 +349,14 @@ function urlListener() {
 	// TODO(v6): what happens if configure gets called multiple times during code exchange
 	Hub.listen('core', async capsule => {
 		if (capsule.payload.event === 'configure') {
-			const authConfig = Amplify.getConfig().Auth;
-			store.setAuthConfig(authConfig);
+			const authConfig = Amplify.getConfig().Auth?.Cognito;
+			try {
+				assertTokenProviderConfig(authConfig);
+				store.setAuthConfig(authConfig);
+			} catch (_err) {
+				// Token provider not configure nothing to do
+				return;
+			}
 
 			// No OAuth inflight doesnt need to parse the url
 			if (!(await store.loadOAuthInFlight())) {
@@ -353,10 +374,10 @@ function urlListener() {
 
 				handleAuthResponse({
 					currentUrl: url,
-					clientId: authConfig.userPoolWebClientId,
-					domain: authConfig.oauth.domain,
-					redirectUri: authConfig.oauth.redirectSignIn,
-					responseType: authConfig.oauth.responseType,
+					clientId: authConfig.userPoolClientId,
+					domain: authConfig.loginWith.oauth.domain,
+					redirectUri: authConfig.loginWith.oauth.redirectSignIn[0],
+					responseType: authConfig.loginWith.oauth.responseType,
 				});
 			} catch (err) {
 				// is ok if there is not OAuthConfig

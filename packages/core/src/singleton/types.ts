@@ -5,29 +5,28 @@ import { AnalyticsConfig } from './Analytics/types';
 import {
 	AuthConfig,
 	LibraryAuthOptions,
-	UserPoolConfig,
-	IdentityPoolConfig,
-	UserPoolConfigAndIdentityPoolConfig,
+	AuthUserPoolConfig,
+	AuthIdentityPoolConfig,
+	AuthUserPoolAndIdentityPoolConfig,
 	GetCredentialsOptions,
+	CognitoIdentityPoolConfig,
 } from './Auth/types';
 import {
 	LibraryStorageOptions,
 	StorageAccessLevel,
 	StorageConfig,
 } from './Storage/types';
-import { CacheConfig } from '../Cache/types';
-import { I18nOptions } from '../I18n/types';
 
 export type ResourcesConfig = {
-	API?: {};
+	// API?: {};
 	Analytics?: AnalyticsConfig;
 	Auth?: AuthConfig;
-	Cache?: CacheConfig;
-	DataStore?: {};
-	I18n?: I18nOptions;
-	Interactions?: {};
-	Notifications?: {};
-	Predictions?: {};
+	// Cache?: CacheConfig;
+	// DataStore?: {};
+	// I18n?: I18nOptions;
+	// Interactions?: {};
+	// Notifications?: {};
+	// Predictions?: {};
 	Storage?: StorageConfig;
 	ssr?: boolean;
 };
@@ -39,10 +38,12 @@ export type LibraryOptions = {
 
 export {
 	AuthConfig,
-	UserPoolConfig,
-	IdentityPoolConfig,
-	UserPoolConfigAndIdentityPoolConfig,
+	AuthUserPoolConfig,
+	AuthIdentityPoolConfig,
+	AuthUserPoolAndIdentityPoolConfig,
 	GetCredentialsOptions,
 	StorageAccessLevel,
 	StorageConfig,
+	AnalyticsConfig,
+	CognitoIdentityPoolConfig,
 };

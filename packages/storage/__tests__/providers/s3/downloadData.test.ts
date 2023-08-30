@@ -3,12 +3,12 @@
 
 import { Credentials } from '@aws-sdk/types';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
-import { getObject } from '../../../src/AwsClients/S3';
+import { getObject } from '../../../src/providers/s3/utils/client';
 import { downloadData } from '../../../src/providers/s3';
-import { createDownloadTask } from '../../../src/utils/transferTask';
+import { createDownloadTask } from '../../../src/providers/s3/utils';
 
-jest.mock('../../../src/AwsClients/S3');
-jest.mock('../../../src/utils/transferTask');
+jest.mock('../../../src/providers/s3/utils/client');
+jest.mock('../../../src/providers/s3/utils');
 jest.mock('@aws-amplify/core', () => {
 	const core = jest.requireActual('@aws-amplify/core');
 	return {
@@ -39,8 +39,10 @@ describe('downloadData', () => {
 		});
 		(Amplify.getConfig as jest.Mock).mockReturnValue({
 			Storage: {
-				bucket: 'bucket',
-				region: 'region',
+				S3: {
+					bucket: 'bucket',
+					region: 'region',
+				},
 			},
 		});
 	});
@@ -97,6 +99,7 @@ describe('downloadData', () => {
 		const versionId = 'versionId';
 		const contentType = 'contentType';
 		const body = 'body';
+		const key = 'key';
 		(getObject as jest.Mock).mockResolvedValueOnce({
 			Body: body,
 			LastModified: lastModified,
@@ -106,11 +109,12 @@ describe('downloadData', () => {
 			VersionId: versionId,
 			ContentType: contentType,
 		});
-		downloadData({ key: 'key' });
+		downloadData({ key });
 		const job = mockCreateDownloadTask.mock.calls[0][0].job;
 		const result = await job();
 		expect(getObject).toBeCalledTimes(1);
 		expect(result).toEqual({
+			key,
 			body,
 			lastModified,
 			size: contentLength,

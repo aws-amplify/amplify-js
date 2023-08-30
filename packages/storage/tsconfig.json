@@ -3,10 +3,8 @@
 	"compilerOptions": {
 		"importHelpers": true,
 		"strict": true,
-		"noImplicitAny": true
+		"noImplicitAny": true,
+		"resolveJsonModule": true
 	},
-	"include": ["./src"],
-	"watchOptions": {
-		"excludeDirectories": ["lib*"]
-	}
+	"include": ["./src"]
 }

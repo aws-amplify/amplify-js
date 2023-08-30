@@ -5,3 +5,7 @@
 This file maps top-level exports from `aws-amplify`.
 */
 export { DefaultAmplify as Amplify } from './initSingleton';
+export {
+	parseAWSExports as parseAmplifyConfig,
+	ResourcesConfig,
+} from '@aws-amplify/core';

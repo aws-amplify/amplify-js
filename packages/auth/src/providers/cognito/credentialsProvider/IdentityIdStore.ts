@@ -29,7 +29,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	}
 
 	async loadIdentityId(): Promise<Identity | undefined> {
-		assertIdentityPooIdConfig(this.authConfig);
+		assertIdentityPooIdConfig(this.authConfig.Cognito);
 		if (this.keyValueStorage === undefined) {
 			throw new AuthError({
 				message: 'No KeyValueStorage available',
@@ -44,7 +44,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 			const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 			const authKeys = createKeysForAuthStorage(
 				name,
-				this.authConfig.identityPoolId
+				this.authConfig.Cognito.identityPoolId
 			);
 
 			if (!!this._primaryIdentityId) {
@@ -70,7 +70,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	}
 
 	async storeIdentityId(identity: Identity): Promise<void> {
-		assertIdentityPooIdConfig(this.authConfig);
+		assertIdentityPooIdConfig(this.authConfig.Cognito);
 		if (identity === undefined) {
 			throw new AuthError({
 				message: 'Invalid Identity parameter',
@@ -90,7 +90,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.identityPoolId
+			this.authConfig.Cognito.identityPoolId
 		);
 		if (identity.type === 'guest') {
 			this.keyValueStorage.setItem(authKeys.identityId, identity.id);
@@ -104,12 +104,12 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	}
 
 	async clearIdentityId(): Promise<void> {
-		assertIdentityPooIdConfig(this.authConfig);
+		assertIdentityPooIdConfig(this.authConfig.Cognito);
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.authConfig.identityPoolId
+			this.authConfig.Cognito.identityPoolId
 		);
 
 		this._primaryIdentityId = undefined;

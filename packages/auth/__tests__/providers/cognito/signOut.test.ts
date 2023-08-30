@@ -20,9 +20,11 @@ describe('signOut tests no oauth happy path', () => {
 		Amplify.configure(
 			{
 				Auth: {
-					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-					userPoolId: 'us-west-2_zzzzz',
-					identityPoolId: 'us-west-2:xxxxxx',
+					Cognito: {
+						userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+						userPoolId: 'us-west-2_zzzzz',
+						identityPoolId: 'us-west-2:xxxxxx',
+					},
 				},
 			},
 			{
@@ -120,16 +122,18 @@ describe('signOut tests no oauth request fail', () => {
 		Amplify.configure(
 			{
 				Auth: {
-					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-					userPoolId: 'us-west-2_zzzzz',
-					identityPoolId: 'us-west-2:xxxxxx',
+					Cognito: {
+						userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+						userPoolId: 'us-west-2_zzzzz',
+						identityPoolId: 'us-west-2:xxxxxx',
+					},
 				},
 			},
 			{
 				Auth: {
 					tokenProvider: TokenProvider.CognitoUserPoolsTokenProvider,
 					credentialsProvider: {
-						clearCredentials() {
+						clearCredentialsAndIdentityId() {
 							clearCredentialsSpy();
 						},
 						getCredentialsAndIdentityId(getCredentialsOptions) {
@@ -226,15 +230,19 @@ describe('signOut tests with oauth', () => {
 		Amplify.configure(
 			{
 				Auth: {
-					userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-					userPoolId: 'us-west-2_zzzzz',
-					identityPoolId: 'us-west-2:xxxxxx',
-					oauth: {
-						domain: 'https://amazonaws.com',
-						redirectSignIn: 'http://localhost:3000/',
-						redirectSignOut: 'http://localhost:3000/',
-						responseType: 'code',
-						scopes: ['admin'],
+					Cognito: {
+						userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+						userPoolId: 'us-west-2_zzzzz',
+						identityPoolId: 'us-west-2:xxxxxx',
+						loginWith: {
+							oauth: {
+								domain: 'https://amazonaws.com',
+								redirectSignIn: ['http://localhost:3000/'],
+								redirectSignOut: ['http://localhost:3000/'],
+								responseType: 'code',
+								scopes: ['admin'],
+							},
+						},
 					},
 				},
 			},
@@ -242,7 +250,7 @@ describe('signOut tests with oauth', () => {
 				Auth: {
 					tokenProvider: TokenProvider.CognitoUserPoolsTokenProvider,
 					credentialsProvider: {
-						clearCredentials() {
+						clearCredentialsAndIdentityId() {
 							clearCredentialsSpy();
 						},
 						getCredentialsAndIdentityId(getCredentialsOptions) {

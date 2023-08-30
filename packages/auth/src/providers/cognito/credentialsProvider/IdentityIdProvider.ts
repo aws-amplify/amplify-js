@@ -1,13 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AuthTokens, getId } from '@aws-amplify/core';
 import {
-	AuthConfig,
-	AuthTokens,
-	Identity,
-	getId,
-} from '@aws-amplify/core';
-import { Logger } from '@aws-amplify/core/internals/utils';
+	Logger,
+	CognitoIdentityPoolConfig,
+} from '@aws-amplify/core/internals/utils';
 import { formLoginsMap } from './credentialsProvider';
 import { AuthError } from '../../../errors/AuthError';
 import { IdentityIdStore } from './types';
@@ -29,10 +27,10 @@ export async function cognitoIdentityIdProvider({
 	identityIdStore,
 }: {
 	tokens?: AuthTokens;
-	authConfig?: AuthConfig;
+	authConfig?: CognitoIdentityPoolConfig;
 	identityIdStore: IdentityIdStore;
 }): Promise<string> {
-	if (authConfig) identityIdStore.setAuthConfig(authConfig);
+	if (authConfig) identityIdStore.setAuthConfig({ Cognito: authConfig });
 	let identityId = await identityIdStore.loadIdentityId();
 
 	if (tokens) {
@@ -41,7 +39,7 @@ export async function cognitoIdentityIdProvider({
 			return identityId.id;
 		} else {
 			const logins = tokens.idToken
-				? formLoginsMap(tokens.idToken.toString(), 'COGNITO', authConfig)
+				? formLoginsMap(tokens.idToken.toString())
 				: {};
 			// TODO(V6): reuse previous guest idenityId if present
 			const generatedIdentityId = await generateIdentityId(logins, authConfig);
@@ -78,7 +76,7 @@ export async function cognitoIdentityIdProvider({
 
 async function generateIdentityId(
 	logins: {},
-	authConfig?: AuthConfig
+	authConfig: CognitoIdentityPoolConfig
 ): Promise<string> {
 	const identityPoolId = authConfig?.identityPoolId;
 
