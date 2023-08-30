@@ -3,23 +3,18 @@
 
 import { Credentials } from '@aws-sdk/types';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
-import { getObject } from '../../../src/AwsClients/S3';
+import { getObject } from '../../../src/providers/s3/utils/client';
 import { downloadData } from '../../../src/providers/s3';
 import { createDownloadTask } from '../../../src/providers/s3/utils';
 
-jest.mock('../../../src/AwsClients/S3');
+jest.mock('../../../src/providers/s3/utils/client');
 jest.mock('../../../src/providers/s3/utils');
-jest.mock('@aws-amplify/core', () => {
-	const core = jest.requireActual('@aws-amplify/core');
-	return {
-		...core,
-		Amplify: {
-			...core.Amplify,
-			getConfig: jest.fn(),
-		},
-		fetchAuthSession: jest.fn(),
-	};
-});
+jest.mock('@aws-amplify/core', () => ({
+	Amplify: {
+		getConfig: jest.fn(),
+	},
+	fetchAuthSession: jest.fn(),
+}));
 const credentials: Credentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -42,7 +37,7 @@ describe('downloadData', () => {
 				S3: {
 					bucket: 'bucket',
 					region: 'region',
-				}
+				},
 			},
 		});
 	});

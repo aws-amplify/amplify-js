@@ -12,28 +12,25 @@ import {
 	abortMultipartUpload,
 	listParts,
 	headObject,
-} from '../../../../src/AwsClients/S3';
+} from '../../../../src/providers/s3/utils/client';
 import {
 	validationErrorMap,
 	StorageValidationErrorCode,
 } from '../../../../src/errors/types/validation';
-import { UPLOADS_STORAGE_KEY } from '../../../../src/common/StorageConstants';
+import { UPLOADS_STORAGE_KEY } from '../../../../src/providers/s3/utils/constants';
 import { getKvStorage } from '../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage';
 import { byteLength } from '../../../../src/providers/s3/apis/uploadData/byteLength';
+import { CanceledError } from '../../../../src/errors/CanceledError';
 
-jest.mock('../../../../src/AwsClients/S3');
+jest.mock('../../../../src/providers/s3/utils/client');
 
-jest.mock('@aws-amplify/core', () => {
-	const core = jest.requireActual('@aws-amplify/core');
-	return {
-		...core,
-		Amplify: {
-			...core.Amplify,
-			getConfig: jest.fn(),
-		},
-		fetchAuthSession: jest.fn(),
-	};
-});
+jest.mock('@aws-amplify/core', () => ({
+	Amplify: {
+		getConfig: jest.fn(),
+		libraryOptions: {},
+	},
+	fetchAuthSession: jest.fn(),
+}));
 jest.mock(
 	'../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage',
 	() => {
@@ -523,8 +520,8 @@ describe('getMultipartUploadHandlers', () => {
 				await multipartUploadJob();
 				fail('should throw error');
 			} catch (error) {
-				expect(error).toBeInstanceOf(Error);
-				expect(error.message).toBe('AbortError');
+				expect(error).toBeInstanceOf(CanceledError);
+				expect(error.message).toBe('Upload is canceled by user');
 			}
 			expect(mockAbortMultipartUpload).toBeCalledTimes(1);
 			expect(mockUploadPart).toBeCalledTimes(2);
