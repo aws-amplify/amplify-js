@@ -17,7 +17,6 @@ import {
 	map,
 	parseXmlError,
 	s3TransferHandler,
-	serializeObjectSsecOptionsToHeaders,
 	serializePathnameObjectKey,
 } from './utils';
 
@@ -25,16 +24,7 @@ import {
 // and will be set by browser or fetch polyfill.
 export type UploadPartInput = Pick<
 	UploadPartCommandInput,
-	| 'PartNumber'
-	| 'Body'
-	| 'UploadId'
-	| 'Bucket'
-	| 'Key'
-	| 'ContentMD5'
-	| 'SSECustomerAlgorithm'
-	| 'SSECustomerKey'
-	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
+	'PartNumber' | 'Body' | 'UploadId' | 'Bucket' | 'Key' | 'ContentMD5'
 >;
 
 export type UploadPartOutput = Pick<
@@ -47,7 +37,6 @@ const uploadPartSerializer = async (
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
 	const headers = {
-		...(await serializeObjectSsecOptionsToHeaders(input)),
 		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
 	};
 	headers['content-type'] = 'application/octet-stream';
