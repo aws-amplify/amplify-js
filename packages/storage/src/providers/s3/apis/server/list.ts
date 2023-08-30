@@ -9,7 +9,7 @@ import {
 	StorageListAllOptions,
 	StorageListPaginateOptions,
 	StorageListRequest,
-} from '../../../..';
+} from '../../../../types';
 import { S3ListAllResult, S3ListPaginateResult } from '../../types';
 import { list as listInternal } from '../internal/list';
 
