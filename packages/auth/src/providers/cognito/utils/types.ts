@@ -31,6 +31,17 @@ export function assertAuthTokens(
 	}
 }
 
+export function assertIdTokenInAuthTokens(
+	tokens?: AuthTokens
+): asserts tokens is AuthTokens {
+	if (!tokens || !tokens.idToken) {
+		throw new AuthError({
+			name: 'IdToken not present in Auth Tokens',
+			message: 'No IdToken in Auth Tokens',
+		});
+	}
+}
+
 export const OAuthStorageKeys = {
 	inflightOAuth: 'inflightOAuth',
 	oauthSignIn: 'oauthSignIn',

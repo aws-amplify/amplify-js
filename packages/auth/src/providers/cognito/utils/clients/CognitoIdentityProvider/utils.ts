@@ -14,13 +14,13 @@ export function getRegion(userPoolId?: string): string {
 }
 
 export function getRegionFromIdentityPoolId(identityPoolId?: string): string {
-	const region = identityPoolId?.split(':')[0];
-	if (identityPoolId?.indexOf(':') < 0 || !region || typeof region !== 'string')
+	if (!identityPoolId || !identityPoolId.includes(':')) {
 		throw new AuthError({
 			name: 'InvalidIdentityPoolId',
 			message: 'Invalid identity pool id provided.',
 			recoverySuggestion:
 				'Make sure a valid identityPoolId is given in the config.',
 		});
-	return region;
+	}
+	return identityPoolId.split(':')[0];
 }

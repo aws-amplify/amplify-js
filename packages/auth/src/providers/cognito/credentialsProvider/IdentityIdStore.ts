@@ -21,7 +21,6 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	_authKeys: AuthKeys<string>;
 	setAuthConfig(authConfigParam: AuthConfig) {
 		this.authConfig = authConfigParam;
-		// TODO(v6): update after API review for Amplify.configure
 		this._authKeys = createKeysForAuthStorage(
 			'Cognito',
 			this.authConfig.Cognito.identityPoolId
@@ -99,7 +98,6 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	}
 
 	async clearIdentityId(): Promise<void> {
-		assertIdentityPooIdConfig(this.authConfig.Cognito);
 		this._primaryIdentityId = undefined;
 		await Promise.all([
 			this.keyValueStorage.removeItem(this._authKeys.identityId),
