@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 as Amplify } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import {
@@ -38,9 +38,8 @@ export const resendUserAttributeConfirmationCode = async (
 ): Promise<AuthCodeDeliveryDetails<CognitoUserAttributeKey>> => {
 	const { userAttributeKey, options } =
 		resendUserAttributeConfirmationCodeRequest;
-	const authConfig = Amplify.getConfig().Auth;
-	const clientMetadata =
-		options?.serviceOptions?.clientMetadata ?? authConfig.clientMetadata;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const clientMetadata = options?.serviceOptions?.clientMetadata;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
@@ -56,10 +55,8 @@ export const resendUserAttributeConfirmationCode = async (
 		...CodeDeliveryDetails,
 	};
 	return {
-		destination: Destination as string,
+		destination: Destination,
 		deliveryMedium: DeliveryMedium as DeliveryMedium,
-		attributeName: AttributeName
-			? (AttributeName as AuthStandardAttributeKey)
-			: undefined,
+		attributeName: AttributeName,
 	};
 };
