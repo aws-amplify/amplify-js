@@ -81,7 +81,6 @@
 	"dependencies": {
 		"@aws-sdk/util-base64-browser": "3.52.0",
 		"tslib": "^2.5.0",
-		"url": "0.11.0",
 		"typescript": "5.0.2"
 	},
 	"peerDependencies": {
