@@ -9,7 +9,7 @@ import {
 	headObject,
 } from '../../../../src/providers/s3/utils/client';
 
-jest.mock('../../../src/providers/s3/utils/client');
+jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => {
 	const core = jest.requireActual('@aws-amplify/core');
 	return {

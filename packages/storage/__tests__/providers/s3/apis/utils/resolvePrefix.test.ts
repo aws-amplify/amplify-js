@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { resolvePrefix } from '../../src/utils/resolvePrefix';
+import { resolvePrefix } from '../../../../../src/utils/resolvePrefix';
 import {
 	validationErrorMap,
 	StorageValidationErrorCode,
-} from '../../src/errors/types/validation';
+} from '../../../../../src/errors/types/validation';
 
 describe('resolvePrefix', () => {
 	it('should return the correct prefix for private access level', async () => {

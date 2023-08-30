@@ -11,9 +11,9 @@ import {
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';
 
-jest.mock('../../../../src/providers/s3/utils');
-jest.mock('../../../../src/providers/s3/apis/uploadData/putObjectJob');
-jest.mock('../../../../src/providers/s3/apis/uploadData/multipart');
+jest.mock('../../../../../src/providers/s3/utils/');
+jest.mock('../../../../../src/providers/s3/apis/uploadData/putObjectJob');
+jest.mock('../../../../../src/providers/s3/apis/uploadData/multipart');
 
 const mockCreateUploadTask = createUploadTask as jest.Mock;
 const mockPutObjectJob = putObjectJob as jest.Mock;

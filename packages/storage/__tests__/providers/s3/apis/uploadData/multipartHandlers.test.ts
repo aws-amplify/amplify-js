@@ -11,6 +11,7 @@ import {
 	listParts,
 	headObject,
 } from '../../../../../src/providers/s3/utils/client';
+import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';
 import {
 	validationErrorMap,
 	StorageValidationErrorCode,
@@ -20,7 +21,7 @@ import { getKvStorage } from '../../../../../src/providers/s3/apis/uploadData/mu
 import { byteLength } from '../../../../../src/providers/s3/apis/uploadData/byteLength';
 import { CanceledError } from '../../../../../src/errors/CanceledError';
 
-jest.mock('../../../../src/providers/s3/utils/client');
+jest.mock('../../../../../src/providers/s3/utils/client');
 
 jest.mock('@aws-amplify/core', () => {
 	const core = jest.requireActual('@aws-amplify/core');
@@ -34,7 +35,7 @@ jest.mock('@aws-amplify/core', () => {
 	};
 });
 jest.mock(
-	'../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage',
+	'../../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage',
 	() => {
 		const mockGetItem = jest.fn();
 		const mockSetItem = jest.fn();
@@ -629,9 +630,3 @@ describe('getMultipartUploadHandlers', () => {
 		});
 	});
 });
-function getMultipartUploadHandlers(arg0: {
-	key: string;
-	data: string | ArrayBuffer | Blob;
-}): { multipartUploadJob: any } {
-	throw new Error('Function not implemented.');
-}

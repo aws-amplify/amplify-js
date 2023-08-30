@@ -7,9 +7,9 @@ import { putObject } from '../../../../../src/providers/s3/utils/client';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 
-jest.mock('../../../../src/providers/s3/utils/client');
-jest.mock('../../../../src/providers/s3/utils', () => {
-	const utils = jest.requireActual('../../../../src/providers/s3/utils');
+jest.mock('../../../../../src/providers/s3/utils/client');
+jest.mock('../../../../../src/providers/s3/utils', () => {
+	const utils = jest.requireActual('../../../../../src/providers/s3/utils');
 	return {
 		...utils,
 		calculateContentMd5: jest.fn(),

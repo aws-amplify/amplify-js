@@ -6,7 +6,7 @@ import { getProperties } from '../../../../src/providers/s3';
 import { Credentials } from '@aws-sdk/types';
 import { Amplify } from '@aws-amplify/core';
 
-jest.mock('../../../src/providers/s3/utils/client');
+jest.mock('../../../../src/providers/s3/utils/client');
 const mockHeadObject = headObject as jest.Mock;
 
 jest.mock('@aws-amplify/core', () => {
