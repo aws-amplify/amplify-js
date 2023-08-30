@@ -10,18 +10,12 @@ import {
 	validationErrorMap,
 } from '../../src/errors/types/validation';
 
-jest.mock('@aws-amplify/core', () => {
-	const core = jest.requireActual('@aws-amplify/core');
-	return {
-		...core,
-		Amplify: {
-			...core.Amplify,
-			getConfig: jest.fn(),
-			libraryOptions: {},
-		},
-		fetchAuthSession: jest.fn(),
-	};
-});
+jest.mock('@aws-amplify/core', () => ({
+	fetchAuthSession: jest.fn(),
+	Amplify: {
+		getConfig: jest.fn(),
+	},
+}));
 jest.mock('../../src/utils/resolvePrefix');
 
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
