@@ -19,19 +19,11 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
-	validateS3RequiredParameter
+	validateS3RequiredParameter,
 } from './utils';
 import { StorageError } from '../../../../errors/StorageError';
 
-export type HeadObjectInput = Pick<
-	HeadObjectCommandInput,
-	| 'Bucket'
-	| 'Key'
-	| 'SSECustomerKey'
-	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
-	| 'SSECustomerAlgorithm'
->;
+export type HeadObjectInput = Pick<HeadObjectCommandInput, 'Bucket' | 'Key'>;
 
 export type HeadObjectOutput = Pick<
 	HeadObjectCommandOutput,

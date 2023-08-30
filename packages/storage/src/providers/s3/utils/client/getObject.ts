@@ -41,17 +41,9 @@ const getObjectSerializer = async (
 	input: GetObjectInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	const query = map(input, {
-		'response-cache-control': 'ResponseCacheControl',
-		'response-content-disposition': 'ResponseContentDisposition',
-		'response-content-encoding': 'ResponseContentEncoding',
-		'response-content-language': 'ResponseContentLanguage',
-		'response-content-type': 'ResponseContentType',
-	});
 	const url = new URL(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
-	url.search = new URLSearchParams(query).toString();
 	return {
 		method: 'GET',
 		headers: {},
