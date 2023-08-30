@@ -274,43 +274,43 @@
 			"name": "[Storage] copy (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ copy }",
-			"limit": "21.1 kB"
+			"limit": "17.22 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ downloadData }",
-			"limit": "21.6 kB"
+			"limit": "18.04 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ getProperties }",
-			"limit": "20.7 kB"
+			"limit": "17.22 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ getUrl }",
-			"limit": "22.35 kB"
+			"limit": "22.73 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ list }",
-			"limit": "21.14 kB"
+			"limit": "17.78 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ remove }",
-			"limit": "20.55 kB"
+			"limit": "17.06 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ uploadData }",
-			"limit": "23.7 kB"
+			"limit": "25 kB"
 		}
 	],
 	"jest": {
