@@ -13,7 +13,7 @@ import {
 	StrictUnion,
 } from '../types';
 
-export function assertUserPoolClientIdInConfig(
+export function assertTokenProviderConfig(
 	cognitoConfig?: StrictUnion<
 		| CognitoUserPoolConfig
 		| CognitoUserPoolAndIdentityPoolConfig
@@ -29,10 +29,11 @@ export function assertUserPoolClientIdInConfig(
 		assertionValid =
 			!!cognitoConfig.userPoolClientId && !!cognitoConfig.userPoolClientId;
 	}
+
 	return asserts(assertionValid, {
-		name: 'UserPoolClientIdConfigException',
-		message: 'UserPoolClientId not present in Config',
-		recoverySuggestion: 'Make sure to provide UserPoolClientId in the config',
+		name: 'AuthTokenConfigException',
+		message: 'Auth Token Provider not configured',
+		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
 	});
 }
 
