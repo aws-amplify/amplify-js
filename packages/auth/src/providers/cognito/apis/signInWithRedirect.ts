@@ -4,9 +4,9 @@
 import { Amplify, Hub, LocalStorage, OAuthConfig } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
-	AmplifyError,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
+	getAmplifyUserAgent,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
 } from '@aws-amplify/core/internals/utils';
@@ -120,7 +120,7 @@ async function handleCodeFlow({
 	domain,
 }: {
 	currentUrl: string;
-	userAgentValue?: string;
+	userAgentValue: string;
 	clientId: string;
 	redirectUri: string;
 	domain: string;
@@ -176,14 +176,14 @@ async function handleCodeFlow({
 		token_type,
 		expires_in,
 	} = await (
-		(await fetch(oAuthTokenEndpoint, {
+		await fetch(oAuthTokenEndpoint, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 				[USER_AGENT_HEADER]: userAgentValue,
 			},
 			body,
-		})) as any
+		})
 	).json();
 
 	if (error) {
@@ -275,8 +275,8 @@ async function handleAuthResponse({
 	responseType,
 	domain,
 }: {
-	currentUrl?: string;
-	userAgentValue?: string;
+	currentUrl: string;
+	userAgentValue: string;
 	clientId: string;
 	redirectUri: string;
 	responseType: string;
@@ -323,23 +323,26 @@ async function handleAuthResponse({
 
 async function validateStateFromURL(urlParams: URL): Promise<string> {
 	if (!urlParams) {
-		return;
 	}
 	const returnedState = urlParams.searchParams.get('state');
 
-	await validateState(returnedState);
+	validateState(returnedState);
 	return returnedState;
 }
 
-async function validateState(state: string) {
-	const savedState = await store.loadOAuthState();
+function validateState(state?: string | null): asserts state {
+	let savedState: string | undefined | null;
+
+	store.loadOAuthState().then(resp => {
+		savedState = resp;
+	});
 
 	// This is because savedState only exists if the flow was initiated by Amplify
-	if (savedState && savedState !== state) {
-		throw new AmplifyError({
-			name: '',
-			message: '',
-			recoverySuggestion: '',
+	if (savedState && state && savedState !== state) {
+		throw new AuthError({
+			name: AuthErrorTypes.OAuthSignInError,
+			message: 'An error occurred while validating the state',
+			recoverySuggestion: 'Try to initiate an OAuth flow from Amplify',
 		});
 	}
 }
@@ -378,6 +381,7 @@ function urlListener() {
 					domain: authConfig.loginWith.oauth.domain,
 					redirectUri: authConfig.loginWith.oauth.redirectSignIn[0],
 					responseType: authConfig.loginWith.oauth.responseType,
+					userAgentValue: getAmplifyUserAgent(),
 				});
 			} catch (err) {
 				// is ok if there is not OAuthConfig
@@ -408,6 +412,6 @@ CognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
 );
 function clearHistory(redirectUri: string) {
 	if (window && typeof window.history !== 'undefined') {
-		window.history.replaceState({}, null, redirectUri);
+		window.history.replaceState({}, '', redirectUri);
 	}
 }

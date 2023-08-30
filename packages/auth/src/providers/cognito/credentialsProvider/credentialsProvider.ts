@@ -30,6 +30,11 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		this._identityIdStore = identityIdStore;
 	}
 
+<<<<<<< HEAD
+=======
+	private _authConfig?: AuthConfig;
+
+>>>>>>> next
 	private _identityIdStore: IdentityIdStore;
 
 	private _credentialsAndIdentityId?: AWSCredentialsAndIdentityId & {
@@ -245,8 +250,13 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 export function formLoginsMap(idToken: string) {
 	const issuer = decodeJWT(idToken).payload.iss;
-	const res = {};
-
+	const res: Record<string, string> = {};
+	if (!issuer) {
+		throw new AuthError({
+			name: 'InvalidIdTokenException',
+			message: 'Invalid Idtoken',
+		});
+	}
 	let domainName: string = issuer.replace(/(^\w+:|^)\/\//, '');
 
 	res[domainName] = idToken;
