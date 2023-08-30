@@ -5,6 +5,7 @@ import { HttpResponse } from '@aws-amplify/core/internals/aws-client-utils';
 import { fetchTransferHandler } from '@aws-amplify/core/lib/clients/handlers/fetch';
 
 import cases from './cases';
+import { StorageError } from '../../../../../../src/errors/StorageError';
 
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
@@ -38,7 +39,7 @@ describe('S3 APIs functional test', () => {
 	beforeEach(() => {
 		mockFetchTransferHandler.mockReset();
 	});
-	test.skip.each(cases)(
+	test.each(cases)(
 		'%s %s',
 		async (
 			caseType,

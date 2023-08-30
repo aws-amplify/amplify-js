@@ -23,6 +23,5 @@ export {
 	assignStringVariables,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
-	serializeObjectSsecOptionsToHeaders,
 	validateS3RequiredParameter,
 } from './serializeHelpers';
