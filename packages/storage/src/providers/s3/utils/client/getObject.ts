@@ -20,6 +20,7 @@ import type {
 	GetObjectCommandOutput,
 } from './types';
 import {
+	buildStorageServiceError,
 	deserializeBoolean,
 	deserializeMetadata,
 	deserializeNumber,
@@ -64,8 +65,8 @@ const getObjectDeserializer = async (
 	response: HttpResponse
 ): Promise<GetObjectOutput> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		throw error;
+		const error = (await parseXmlError(response)) as Error;
+		throw buildStorageServiceError(error, response.statusCode);
 	} else if (!response.body) {
 		throw new Error('Got empty response body.');
 	} else {

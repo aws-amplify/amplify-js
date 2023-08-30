@@ -15,7 +15,7 @@ import type {
 import { defaultConfig } from './base';
 import {
 	assignStringVariables,
-	deserializeBoolean,
+	buildStorageServiceError,
 	deserializeNumber,
 	deserializeTimestamp,
 	emptyArrayGuard,
@@ -63,7 +63,7 @@ const listObjectsV2Deserializer = async (
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
 		const error = (await parseXmlError(response)) as Error;
-		throw StorageError.fromServiceError(error, response.statusCode);
+		throw buildStorageServiceError(error, response.statusCode);
 	} else {
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {

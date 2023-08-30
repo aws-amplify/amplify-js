@@ -16,6 +16,7 @@ import type {
 } from './types';
 import { defaultConfig } from './base';
 import {
+	buildStorageServiceError,
 	map,
 	parseXmlBody,
 	parseXmlError,
@@ -108,8 +109,8 @@ const completeMultipartUploadDeserializer = async (
 	response: HttpResponse
 ): Promise<CompleteMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		throw error;
+		const error = (await parseXmlError(response)) as Error;
+		throw buildStorageServiceError(error, response.statusCode);
 	} else {
 		const parsed = await parseXmlBodyOrThrow(response);
 		const contents = map(parsed, {

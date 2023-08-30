@@ -12,6 +12,7 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 import { defaultConfig } from './base';
 import type { PutObjectCommandInput, PutObjectCommandOutput } from './types';
 import {
+	buildStorageServiceError,
 	validateS3RequiredParameter,
 	assignStringVariables,
 	map,
@@ -76,8 +77,8 @@ const putObjectDeserializer = async (
 	response: HttpResponse
 ): Promise<PutObjectOutput> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		throw error;
+		const error = (await parseXmlError(response)) as Error;
+		throw buildStorageServiceError(error, response.statusCode);
 	} else {
 		return {
 			...map(response.headers, {

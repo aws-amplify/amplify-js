@@ -12,6 +12,7 @@ import { defaultConfig } from './base';
 import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
 
 import {
+	buildStorageServiceError,
 	deserializeMetadata,
 	deserializeNumber,
 	deserializeTimestamp,
@@ -64,7 +65,7 @@ const headObjectDeserializer = async (
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
 		const error = (await parseXmlError(response)) as Error;
-		throw StorageError.fromServiceError(error, response.statusCode);
+		throw buildStorageServiceError(error, response.statusCode);
 	} else {
 		const contents = {
 			...map(response.headers, {

@@ -12,6 +12,7 @@ export {
 	utf8Encode,
 } from '../runtime';
 export {
+	buildStorageServiceError,
 	deserializeBoolean,
 	deserializeMetadata,
 	deserializeNumber,

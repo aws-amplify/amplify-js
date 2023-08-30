@@ -15,6 +15,7 @@ import type {
 } from './types';
 import { defaultConfig } from './base';
 import {
+	buildStorageServiceError,
 	emptyArrayGuard,
 	serializeObjectSsecOptionsToHeaders,
 	map,
@@ -65,8 +66,8 @@ const listPartsDeserializer = async (
 	response: HttpResponse
 ): Promise<ListPartsOutput> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		throw error;
+		const error = (await parseXmlError(response)) as Error;
+		throw buildStorageServiceError(error, response.statusCode);
 	} else {
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {
