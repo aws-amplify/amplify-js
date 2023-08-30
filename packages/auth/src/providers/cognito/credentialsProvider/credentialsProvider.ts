@@ -18,6 +18,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../errors/AuthError';
 import { IdentityIdStore } from './types';
+import { getRegionFromIdentityPoolId } from '../utils/clients/CognitoIdentityProvider/utils';
 
 const logger = new Logger('CognitoCredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
@@ -29,8 +30,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		this._identityIdStore = identityIdStore;
 	}
 
-	private _authConfig: AuthConfig;
-
 	private _identityIdStore: IdentityIdStore;
 
 	private _credentialsAndIdentityId?: AWSCredentialsAndIdentityId & {
@@ -38,11 +37,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	};
 	private _nextCredentialsRefresh: number = 0;
 
-	setAuthConfig(authConfig: AuthConfig) {
-		this._authConfig = authConfig;
-	}
-
-	// TODO(V6): export clear crecentials to singleton
 	async clearCredentialsAndIdentityId(): Promise<void> {
 		logger.debug('Clearing out credentials and identityId');
 		this._credentialsAndIdentityId = undefined;
@@ -59,9 +53,8 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	): Promise<AWSCredentialsAndIdentityId | undefined> {
 		const isAuthenticated = getCredentialsOptions.authenticated;
 		const tokens = getCredentialsOptions.tokens;
-		// TODO: refactor use the this._authConfig
+		// TODO: refactor set this once instead of passing it in every call
 		const authConfig = getCredentialsOptions.authConfig;
-
 		try {
 			assertIdentityPooIdConfig(authConfig?.Cognito);
 		} catch (_err) {
@@ -77,7 +70,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		const forceRefresh = getCredentialsOptions.forceRefresh;
 		// TODO(V6): Listen to changes to AuthTokens and update the credentials
 
-		// it seems is uuid generated on the client
 		const identityId = await cognitoIdentityIdProvider({
 			tokens,
 			authConfig: authConfig.Cognito,
@@ -100,11 +92,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			return this.getGuestCredentials(identityId, authConfig.Cognito);
 		} else {
 			// Tokens will always be present if getCredentialsOptions.authenticated is true as dictated by the type
-			return this.credsForOIDCTokens(
-				authConfig.Cognito,
-				tokens!,
-				identityId
-			);
+			return this.credsForOIDCTokens(authConfig.Cognito, tokens!, identityId);
 		}
 	}
 
@@ -131,9 +119,8 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		// No logins params should be passed for guest creds:
 		// https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetCredentialsForIdentity.html
 
-		const region = authConfig.identityPoolId.split(':')[0];
+		const region = getRegionFromIdentityPoolId(authConfig.identityPoolId);
 
-		// TODO(V6): When unauth role is disabled and crdentials are absent, we need to return null not throw an error
 		const clientResult = await getCredentialsForIdentity(
 			{ region },
 			{
@@ -173,7 +160,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		} else {
 			throw new AuthError({
 				name: 'CredentialsException',
-				message: `Error getting credentials.`,
+				message: `Cognito did not respond with either Credentials, AccessKeyId or SecretKey.`,
 			});
 		}
 	}
@@ -197,21 +184,12 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		// Clear to discard if any unauthenticated credentials are set and start with a clean slate
 		this.clearCredentials();
 
-		// TODO(V6): oidcProvider should come from config, TBD
 		const logins = authTokens.idToken
 			? formLoginsMap(authTokens.idToken.toString())
 			: {};
-		const identityPoolId = authConfig.identityPoolId;
-		if (!identityPoolId) {
-			logger.debug('identityPoolId is not found in the config');
-			throw new AuthError({
-				name: 'AuthConfigException',
-				message: 'Cannot get credentials without an identityPoolId',
-				recoverySuggestion:
-					'Make sure a valid identityPoolId is given in the config.',
-			});
-		}
-		const region = identityPoolId.split(':')[0];
+
+		const region = getRegionFromIdentityPoolId(authConfig.identityPoolId);
+
 		const clientResult = await getCredentialsForIdentity(
 			{ region },
 			{
@@ -230,7 +208,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					accessKeyId: clientResult.Credentials.AccessKeyId,
 					secretAccessKey: clientResult.Credentials.SecretKey,
 					sessionToken: clientResult.Credentials.SessionToken,
-					// TODO(V6): Fixed expiration now + 50 mins
 					expiration: clientResult.Credentials.Expiration,
 				},
 				identityId,
@@ -255,7 +232,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		} else {
 			throw new AuthError({
 				name: 'CredentialsException',
-				message: `Error getting credentials.`,
+				message: `Cognito did not respond with either Credentials, AccessKeyId or SecretKey.`,
 			});
 		}
 	}
