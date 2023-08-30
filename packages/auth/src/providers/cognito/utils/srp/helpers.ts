@@ -2,8 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Sha256 } from '@aws-crypto/sha256-js';
+import { SourceData } from '@smithy/types';
+import { AuthError } from '../../../../errors/AuthError';
+import AuthenticationHelper, { BigInteger } from './AuthenticationHelper';
 
-export function hash(buf) {
+export function hash(buf: SourceData) {
 	const awsCryptoHash = new Sha256();
 	awsCryptoHash.update(buf);
 
@@ -18,12 +21,12 @@ export function hash(buf) {
  * @returns {String} Hex-encoded hash.
  * @private
  */
-export function hexHash(hexStr) {
+export function hexHash(hexStr: string) {
 	return hash(fromHex(hexStr));
 }
 
-const SHORT_TO_HEX = {};
-const HEX_TO_SHORT = {};
+const SHORT_TO_HEX: Record<string, string> = {};
+const HEX_TO_SHORT: Record<string, number> = {};
 
 for (let i = 0; i < 256; i++) {
 	let encodedByte = i.toString(16).toLowerCase();
@@ -65,7 +68,7 @@ export function fromHex(encoded: string) {
  *
  * @param bytes The binary data to encode
  */
-export function toHex(bytes) {
+export function toHex(bytes: Uint8Array) {
 	let out = '';
 	for (let i = 0; i < bytes.byteLength; i++) {
 		out += SHORT_TO_HEX[bytes[i]];
@@ -75,26 +78,28 @@ export function toHex(bytes) {
 }
 
 const getAtob = () => {
-	let atob;
-
 	if (typeof window !== 'undefined' && window.atob) {
-		atob = window.atob;
+		return window.atob;
 	}
 
-	return atob;
+	throw new AuthError({
+		name: 'NoWindowAtobException',
+		message: 'atob not available',
+	});
 };
 
 const getBtoa = () => {
-	let btoa;
-
 	if (typeof window !== 'undefined' && window.btoa) {
-		btoa = window.btoa;
+		return window.btoa;
 	}
 
-	return btoa;
+	throw new AuthError({
+		name: 'NoWindowBtoaException',
+		message: 'btoa not available',
+	});
 };
 
-export function _urlB64ToUint8Array(base64String) {
+export function _urlB64ToUint8Array(base64String: string) {
 	const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
 	const base64 = (base64String + padding)
 		.replace(/\-/g, '+')
@@ -109,7 +114,7 @@ export function _urlB64ToUint8Array(base64String) {
 	return outputArray;
 }
 
-export function _encodeBase64Bytes(bytes) {
+export function _encodeBase64Bytes(bytes: Uint8Array) {
 	return getBtoa()(
 		bytes.reduce((acc, current) => acc + String.fromCharCode(current), '')
 	);
@@ -167,6 +172,12 @@ export function getSignatureString({
 	challengeParameters,
 	dateNow,
 	hkdf,
+}: {
+	userPoolName: string;
+	username: string;
+	challengeParameters: Record<string, any>;
+	dateNow: string;
+	hkdf: SourceData;
 }): string {
 	const encoder = new TextEncoder();
 
@@ -196,9 +207,9 @@ export function getSignatureString({
 	return signatureString;
 }
 
-export function getLargeAValue(authenticationHelper) {
+export function getLargeAValue(authenticationHelper: AuthenticationHelper) {
 	return new Promise(res => {
-		authenticationHelper.getLargeAValue((err, aValue) => {
+		authenticationHelper.getLargeAValue((err: unknown, aValue: BigInteger) => {
 			res(aValue);
 		});
 	});
@@ -210,14 +221,20 @@ export function getPasswordAuthenticationKey({
 	password,
 	serverBValue,
 	salt,
-}) {
+}: {
+	authenticationHelper: AuthenticationHelper;
+	username: string;
+	password: string;
+	serverBValue: BigInteger;
+	salt: BigInteger;
+}):Promise<SourceData> {
 	return new Promise((res, rej) => {
 		authenticationHelper.getPasswordAuthenticationKey(
 			username,
 			password,
 			serverBValue,
 			salt,
-			(err, hkdf) => {
+			(err: unknown, hkdf: SourceData) => {
 				if (err) {
 					return rej(err);
 				}

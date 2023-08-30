@@ -27,10 +27,10 @@ function hexStringify(wordArray: WordArray): string {
 }
 
 export default class WordArray {
-	words = [];
+	words: number[] = [];
 	sigBytes: number;
 
-	constructor(words?, sigBytes?) {
+	constructor(words?: number[], sigBytes?: number) {
 		let Words = words;
 		Words = this.words = Words || [];
 
