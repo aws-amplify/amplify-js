@@ -137,6 +137,12 @@
 			"path": "./lib-esm/index.js",
 			"import": "{ Cache }",
 			"limit": "7.8 kB"
+		},
+		{
+			"name": "Cache (in-memory)",
+			"path": "./lib-esm/index.js",
+			"import": "{ InMemoryCache }",
+			"limit": "7.9 kB"
 		}
 	],
 	"jest": {
