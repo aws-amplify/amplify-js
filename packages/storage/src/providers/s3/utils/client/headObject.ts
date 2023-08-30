@@ -19,7 +19,7 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
-	validateS3RequiredParameter
+	validateS3RequiredParameter,
 } from './utils';
 import { StorageError } from '../../../../errors/StorageError';
 
