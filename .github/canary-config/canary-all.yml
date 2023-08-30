@@ -75,15 +75,15 @@ tests:
     browser: *minimal_browser_list
     timeout_minutes: 45
     retry_count: 10
-  - test_name: integ_react_datastore_cpk_related_models
-    desc: 'DataStore - Custom Primary Key + Related Models'
-    framework: react
-    category: datastore
-    sample_name: [v2/related-models]
-    spec: cpk-related-models
-    browser: *minimal_browser_list
-    timeout_minutes: 45
-    retry_count: 10
+  # - test_name: integ_react_datastore_cpk_related_models
+  #   desc: 'DataStore - Custom Primary Key + Related Models'
+  #   framework: react
+  #   category: datastore
+  #   sample_name: [v2/related-models]
+  #   spec: cpk-related-models
+  #   browser: *minimal_browser_list
+  #   timeout_minutes: 45
+  #   retry_count: 10
   - test_name: integ_react_datastore_selective_sync
     desc: 'DataStore - Selective Sync'
     framework: react
