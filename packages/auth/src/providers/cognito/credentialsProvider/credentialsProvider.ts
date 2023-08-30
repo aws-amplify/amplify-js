@@ -25,14 +25,14 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		this._identityIdStore = identityIdStore;
 	}
 
-	private _authConfig: AuthConfig;
+	private _authConfig?: AuthConfig;
 
 	private _identityIdStore: IdentityIdStore;
 
 	private _credentialsAndIdentityId?: AWSCredentialsAndIdentityId & {
 		isAuthenticatedCreds: boolean;
 	};
-	private _nextCredentialsRefresh: number;
+	private _nextCredentialsRefresh?: number;
 
 	setAuthConfig(authConfig: AuthConfig) {
 		this._authConfig = authConfig;
@@ -264,10 +264,10 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 export function formLoginsMap(
 	idToken: string,
 	oidcProvider: string,
-	authConfig: AuthConfig
+	authConfig?: AuthConfig
 ) {
-	const userPoolId = authConfig.Cognito.userPoolId;
-	const res = {};
+	const userPoolId = authConfig?.Cognito.userPoolId;
+	const res: Record<string, string> = {};
 	if (!userPoolId) {
 		logger.debug('userPoolId is not found in the config');
 		throw new AuthError({

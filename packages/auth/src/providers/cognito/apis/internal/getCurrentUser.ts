@@ -19,10 +19,10 @@ export const getCurrentUser = async (
 		forceRefresh: getCurrentUserRequest?.recache ?? false,
 	});
 	assertAuthTokens(tokens);
-	const { payload } = tokens.idToken;
+	const { 'cognito:username': username, sub } = tokens.idToken?.payload ?? {};
 
 	return {
-		username: payload['cognito:username'] as string,
-		userId: payload['sub'] as string,
+		username: username as string,
+		userId: sub as string,
 	};
 };
