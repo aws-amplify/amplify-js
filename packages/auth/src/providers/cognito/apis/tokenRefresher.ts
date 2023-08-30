@@ -39,11 +39,12 @@ export const CognitoUserPoolTokenRefresher: TokenRefresher = async ({
 		: undefined;
 	const iat = accessToken.payload.iat;
 	// This should never happen. If it does, it's a bug from the service.
-	if (!iat)
+	if (!iat) {
 		throw new AuthError({
 			name: 'iatNotFoundException',
 			message: 'iat not found in access token',
 		});
+	}
 	const clockDrift = iat * 1000 - new Date().getTime();
 	const refreshToken = AuthenticationResult?.RefreshToken;
 	const NewDeviceMetadata = JSON.stringify(

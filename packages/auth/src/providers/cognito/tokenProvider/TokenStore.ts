@@ -21,8 +21,8 @@ export class DefaultTokenStore implements AuthTokenStore {
 	getKeyValueStorage(): KeyValueStorageInterface {
 		if (!this.keyValueStorage) {
 			throw new AuthError({
-				name: 'EmptyKeyValueStorageException',
-				message: 'KeyValueStorage was not set in TokenStore',
+				name: 'KeyValueStorageNotFoundException',
+				message: 'KeyValueStorage was not found in TokenStore',
 			});
 		}
 		return this.keyValueStorage;

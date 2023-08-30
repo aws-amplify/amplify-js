@@ -282,11 +282,12 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 export function formLoginsMap(idToken: string) {
 	const issuer = decodeJWT(idToken).payload.iss;
 	const res: Record<string, string> = {};
-	if (!issuer)
+	if (!issuer) {
 		throw new AuthError({
-			name: 'InvalidTokenException',
-			message: 'Invalid token',
+			name: 'InvalidIdTokenException',
+			message: 'Invalid Idtoken',
 		});
+	}
 	let domainName: string = issuer.replace(/(^\w+:|^)\/\//, '');
 
 	res[domainName] = idToken;

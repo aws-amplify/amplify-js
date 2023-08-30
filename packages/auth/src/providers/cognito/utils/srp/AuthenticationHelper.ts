@@ -197,7 +197,7 @@ export default class AuthenticationHelper {
 	/**
 	 * @returns {string} Generated random value included in devices hash.
 	 */
-	getSaltDevices(): string {
+	getSaltToHashDevices(): string {
 		if (!this.SaltToHashDevices) {
 			throw new AuthError({
 				name: 'EmptyBigIntegerSaltToHashDevices',
