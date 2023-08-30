@@ -29,7 +29,7 @@ export {
 // Auth utilities
 export {
 	decodeJWT,
-	assertUserPoolClientIdInConfig as assertTokenProviderConfig,
+	assertTokenProviderConfig,
 	assertIdentityPooIdConfig,
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
