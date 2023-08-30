@@ -15,13 +15,11 @@ jest.mock('../../../../../src/providers/s3/utils', () => {
 		calculateContentMd5: jest.fn(),
 	};
 });
-
 jest.mock('@aws-amplify/core', () => ({
+	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
-		libraryOptions: {},
 	},
-	fetchAuthSession: jest.fn(),
 }));
 const credentials: Credentials = {
 	accessKeyId: 'accessKeyId',
