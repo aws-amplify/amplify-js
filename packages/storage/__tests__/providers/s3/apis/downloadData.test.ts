@@ -34,7 +34,6 @@ describe('downloadData', () => {
 			credentials,
 			identityId: identityId,
 		});
-
 		mockGetConfig.mockReturnValue({
 			Storage: {
 				S3: {

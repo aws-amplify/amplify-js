@@ -100,7 +100,6 @@ describe('copy API', () => {
 			credentials,
 			identityId: targetIdentityId,
 		});
-
 		mockGetConfig.mockReturnValue({
 			Storage: {
 				S3: {

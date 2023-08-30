@@ -78,7 +78,6 @@ describe('list API', () => {
 			credentials,
 			identityId: targetIdentityId,
 		});
-
 		mockGetConfig.mockReturnValue({
 			Storage: {
 				S3: {

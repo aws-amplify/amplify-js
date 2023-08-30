@@ -35,7 +35,6 @@ describe('getProperties test', () => {
 		credentials,
 		identityId: targetIdentityId,
 	});
-
 	mockGetConfig.mockReturnValue({
 		Storage: {
 			S3: {
