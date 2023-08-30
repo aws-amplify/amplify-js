@@ -7,21 +7,13 @@ import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';
 
 jest.mock('../../../../src/providers/s3/utils/client');
-jest.mock('@aws-amplify/core', () => {
-	const core = jest.requireActual('@aws-amplify/core');
-	return {
-		...core,
-		fetchAuthSession: jest.fn(),
-		Amplify: {
-			...core.Amplify,
-			getConfig: jest.fn(),
-			Auth: {
-				...core.Amplify.Auth,
-				fetchAuthSession: jest.fn(),
-			},
-		},
-	};
-});
+jest.mock('../../../src/providers/s3/utils/client');
+jest.mock('@aws-amplify/core', () => ({
+	fetchAuthSession: jest.fn(),
+	Amplify: {
+		getConfig: jest.fn(),
+	},
+}));
 const mockCopyObject = copyObject as jest.Mock;
 
 const sourceKey = 'sourceKey';

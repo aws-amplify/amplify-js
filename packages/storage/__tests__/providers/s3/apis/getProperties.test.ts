@@ -9,21 +9,12 @@ import { Amplify } from '@aws-amplify/core';
 jest.mock('../../../../src/providers/s3/utils/client');
 const mockHeadObject = headObject as jest.Mock;
 
-jest.mock('@aws-amplify/core', () => {
-	const core = jest.requireActual('@aws-amplify/core');
-	return {
-		...core,
-		fetchAuthSession: jest.fn(),
-		Amplify: {
-			...core.Amplify,
-			getConfig: jest.fn(),
-			Auth: {
-				...core.Amplify.Auth,
-				fetchAuthSession: jest.fn(),
-			},
-		},
-	};
-});
+jest.mock('@aws-amplify/core', () => ({
+	fetchAuthSession: jest.fn(),
+	Amplify: {
+		getConfig: jest.fn(),
+	},
+}));
 
 const bucket = 'bucket';
 const region = 'region';

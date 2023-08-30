@@ -7,21 +7,12 @@ import { listObjectsV2 } from '../../../../src/providers/s3/utils/client';
 import { list } from '../../../../src/providers/s3/apis';
 
 jest.mock('../../../../src/providers/s3/utils/client');
-jest.mock('@aws-amplify/core', () => {
-	const core = jest.requireActual('@aws-amplify/core');
-	return {
-		...core,
-		fetchAuthSession: jest.fn(),
-		Amplify: {
-			...core.Amplify,
-			getConfig: jest.fn(),
-			Auth: {
-				...core.Amplify.Auth,
-				fetchAuthSession: jest.fn(),
-			},
-		},
-	};
-});
+jest.mock('@aws-amplify/core', () => ({
+	fetchAuthSession: jest.fn(),
+	Amplify: {
+		getConfig: jest.fn(),
+	},
+}));
 const mockListObject = listObjectsV2 as jest.Mock;
 const key = 'path/itemsKey';
 const bucket = 'bucket';
