@@ -142,6 +142,17 @@ export const authAPITestParams = {
 		},
 		$metadata: {},
 	},
+	NoCredentialsForIdentityIdResult: {
+		$metadata: {},
+	},
+	NoSecretKeyInCredentialsForIdentityIdResult: {
+		Credentials: {
+			AccessKeyId: 'AccessKeyId',
+			SessionToken: 'SessionToken',
+			Expiration: new Date('2023-07-29'),
+		},
+		$metadata: {},
+	},
 	// Test values
 	ValidAuthTokens: {
 		idToken: decodeJWT(

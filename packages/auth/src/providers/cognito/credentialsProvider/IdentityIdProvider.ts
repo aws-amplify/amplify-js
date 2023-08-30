@@ -9,6 +9,7 @@ import {
 import { formLoginsMap } from './credentialsProvider';
 import { AuthError } from '../../../errors/AuthError';
 import { IdentityIdStore } from './types';
+import { getRegionFromIdentityPoolId } from '../utils/clients/CognitoIdentityProvider/utils';
 
 const logger = new Logger('CognitoIdentityIdProvider');
 
@@ -30,7 +31,7 @@ export async function cognitoIdentityIdProvider({
 	authConfig: CognitoIdentityPoolConfig;
 	identityIdStore: IdentityIdStore;
 }): Promise<string> {
-	if (authConfig) identityIdStore.setAuthConfig({ Cognito: authConfig });
+	identityIdStore.setAuthConfig({ Cognito: authConfig });
 	let identityId = await identityIdStore.loadIdentityId();
 
 	if (tokens) {
@@ -41,7 +42,7 @@ export async function cognitoIdentityIdProvider({
 			const logins = tokens.idToken
 				? formLoginsMap(tokens.idToken.toString())
 				: {};
-			// TODO(V6): reuse previous guest idenityId if present
+
 			const generatedIdentityId = await generateIdentityId(logins, authConfig);
 
 			if (identityId && identityId.id === generatedIdentityId) {
@@ -80,19 +81,9 @@ async function generateIdentityId(
 ): Promise<string> {
 	const identityPoolId = authConfig?.identityPoolId;
 
-	// Access config to obtain IdentityPoolId & region
-	if (!identityPoolId) {
-		throw new AuthError({
-			name: 'IdentityPoolIdConfigException',
-			message: 'No Cognito Identity pool provided',
-			recoverySuggestion: 'Make sure to pass a valid identityPoolId to config.',
-		});
-	}
-	const region = identityPoolId.split(':')[0];
+	const region = getRegionFromIdentityPoolId(identityPoolId);
 
 	// IdentityId is absent so get it using IdentityPoolId with Cognito's GetId API
-	// Region is not needed for this API as suggested by the API spec:
-	// https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetId.html
 	const idResult =
 		// for a first-time user, this will return a brand new identity
 		// for a returning user, this will retrieve the previous identity assocaited with the logins
