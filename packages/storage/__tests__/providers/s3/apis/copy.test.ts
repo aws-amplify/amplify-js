@@ -11,7 +11,6 @@ import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';
 
 jest.mock('../../../../src/providers/s3/utils/client');
-jest.mock('../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
 	fetchAuthSession: jest.fn(),
 	Amplify: {
