@@ -31,7 +31,6 @@ describe('getProperties test', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
-
 	mockFetchAuthSession.mockResolvedValue({
 		credentials,
 		identityId: targetIdentityId,
