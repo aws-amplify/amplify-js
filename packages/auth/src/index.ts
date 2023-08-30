@@ -17,5 +17,6 @@ export {
 
 // Default provider APIs & types
 export * from './providers/cognito';
+export * from './types/enums';
 
 export { fetchAuthSession } from '@aws-amplify/core';
