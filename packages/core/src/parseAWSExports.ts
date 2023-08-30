@@ -69,13 +69,9 @@ export const parseAWSExports = (
 	// Geo
 	if (geo) {
 		const { amazon_location_service } = geo;
-		if (amazon_location_service) {
-			(amplifyConfig as any).Geo = {
-				AmazonLocationService: amazon_location_service,
-			};
-		} else {
-			(amplifyConfig as any).Geo = { ...geo };
-		}
+		(amplifyConfig as any).Geo = amazon_location_service
+			? { AmazonLocationService: amazon_location_service }
+			: { ...geo };
 	}
 
 	return amplifyConfig;
