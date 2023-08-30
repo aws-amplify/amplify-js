@@ -3,8 +3,6 @@
 
 import { Credentials } from '@aws-sdk/types';
 import { Amplify, LocalStorage, fetchAuthSession } from '@aws-amplify/core';
-
-import { getMultipartUploadHandlers } from '../../../../src/providers/s3/apis/uploadData/multipart/uploadHandlers';
 import {
 	createMultipartUpload,
 	uploadPart,
@@ -12,15 +10,15 @@ import {
 	abortMultipartUpload,
 	listParts,
 	headObject,
-} from '../../../../src/providers/s3/utils/client';
+} from '../../../../../src/providers/s3/utils/client';
 import {
 	validationErrorMap,
 	StorageValidationErrorCode,
-} from '../../../../src/errors/types/validation';
-import { UPLOADS_STORAGE_KEY } from '../../../../src/common/StorageConstants';
-import { getKvStorage } from '../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage';
-import { byteLength } from '../../../../src/providers/s3/apis/uploadData/byteLength';
-import { CanceledError } from '../../../../src/errors/CanceledError';
+} from '../../../../../src/errors/types/validation';
+import { UPLOADS_STORAGE_KEY } from '../../../../../src/common/StorageConstants';
+import { getKvStorage } from '../../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage';
+import { byteLength } from '../../../../../src/providers/s3/apis/uploadData/byteLength';
+import { CanceledError } from '../../../../../src/errors/CanceledError';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 
@@ -631,3 +629,9 @@ describe('getMultipartUploadHandlers', () => {
 		});
 	});
 });
+function getMultipartUploadHandlers(arg0: {
+	key: string;
+	data: string | ArrayBuffer | Blob;
+}): { multipartUploadJob: any } {
+	throw new Error('Function not implemented.');
+}

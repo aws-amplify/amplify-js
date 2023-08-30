@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { TransferTaskState } from '../../src/types/common';
-import { createDownloadTask } from '../../src/providers/s3/utils';
+import { createDownloadTask } from '../../../../../src/providers/s3/utils';
+import { TransferTaskState } from '../../../../../src/types/common';
 
 describe('createDownloadTask', () => {
 	it('should create a download task', async () => {

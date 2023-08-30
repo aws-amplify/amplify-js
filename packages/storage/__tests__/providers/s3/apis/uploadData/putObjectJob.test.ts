@@ -3,10 +3,9 @@
 
 import { Credentials } from '@aws-sdk/types';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
-import { putObject } from '../../../../src/providers/s3/utils/client';
-import { calculateContentMd5 } from '../../../../src/providers/s3/utils';
-
-import { putObjectJob } from '../../../../src/providers/s3/apis/uploadData/putObjectJob';
+import { putObject } from '../../../../../src/providers/s3/utils/client';
+import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
+import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('../../../../src/providers/s3/utils', () => {

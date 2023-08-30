@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { headObject } from '../../../src/providers/s3/utils/client';
-import { getProperties } from '../../../src/providers/s3';
+import { headObject } from '../../../../src/providers/s3/utils/client';
+import { getProperties } from '../../../../src/providers/s3';
 import { Credentials } from '@aws-sdk/types';
 import { Amplify } from '@aws-amplify/core';
 

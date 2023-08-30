@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { uploadData } from '../../../../src/providers/s3/apis';
-import { MAX_OBJECT_SIZE } from '../../../../src/providers/s3/utils/constants';
-import { createUploadTask } from '../../../../src/providers/s3/utils';
+import { uploadData } from '../../../../../src/providers/s3/apis';
+import { MAX_OBJECT_SIZE } from '../../../../../src/providers/s3/utils/constants';
+import { createUploadTask } from '../../../../../src/providers/s3/utils';
 import {
 	validationErrorMap,
 	StorageValidationErrorCode,
-} from '../../../../src/errors/types/validation';
-import { putObjectJob } from '../../../../src/providers/s3/apis/uploadData/putObjectJob';
-import { getMultipartUploadHandlers } from '../../../../src/providers/s3/apis/uploadData/multipart';
+} from '../../../../../src/errors/types/validation';
+import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
+import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';
 
 jest.mock('../../../../src/providers/s3/utils');
 jest.mock('../../../../src/providers/s3/apis/uploadData/putObjectJob');

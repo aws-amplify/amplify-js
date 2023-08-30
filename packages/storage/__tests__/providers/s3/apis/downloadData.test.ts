@@ -3,9 +3,9 @@
 
 import { Credentials } from '@aws-sdk/types';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
-import { getObject } from '../../../src/providers/s3/utils/client';
-import { downloadData } from '../../../src/providers/s3';
-import { createDownloadTask } from '../../../src/providers/s3/utils';
+import { getObject } from '../../../../src/providers/s3/utils/client';
+import { downloadData } from '../../../../src/providers/s3';
+import { createDownloadTask } from '../../../../src/providers/s3/utils';
 
 jest.mock('../../../src/providers/s3/utils/client');
 jest.mock('../../../src/providers/s3/utils');
