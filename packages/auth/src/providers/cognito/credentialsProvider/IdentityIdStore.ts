@@ -20,10 +20,11 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	_primaryIdentityId: string | undefined;
 	_authKeys: AuthKeys<string>;
 	setAuthConfig(authConfigParam: AuthConfig) {
+		assertIdentityPooIdConfig(authConfigParam.Cognito);
 		this.authConfig = authConfigParam;
 		this._authKeys = createKeysForAuthStorage(
 			'Cognito',
-			this.authConfig.Cognito.identityPoolId
+			authConfigParam.Cognito.identityPoolId
 		);
 		return;
 	}
