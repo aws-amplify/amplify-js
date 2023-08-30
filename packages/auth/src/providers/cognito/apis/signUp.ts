@@ -88,12 +88,10 @@ export async function signUp(
 			nextStep: {
 				signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
 				codeDeliveryDetails: {
-					deliveryMedium: CodeDeliveryDetails.DeliveryMedium
-						? (CodeDeliveryDetails.DeliveryMedium as DeliveryMedium)
-						: undefined,
-					destination: CodeDeliveryDetails.Destination,
+					deliveryMedium: CodeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
+					destination: CodeDeliveryDetails?.Destination as string,
 					attributeName:
-						CodeDeliveryDetails.AttributeName as CognitoUserAttributeKey,
+						CodeDeliveryDetails?.AttributeName as CognitoUserAttributeKey,
 				},
 			},
 			userId: UserSub,

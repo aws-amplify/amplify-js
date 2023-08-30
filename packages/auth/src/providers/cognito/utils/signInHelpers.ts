@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, AuthConfig, CognitoUserPoolConfig } from '@aws-amplify/core';
+import { Amplify, CognitoUserPoolConfig } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import {
 	getLargeAValue,
@@ -64,10 +64,9 @@ export async function handleCustomChallenge({
 	clientMetadata,
 	session,
 	username,
+	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const {
-		Cognito: { userPoolId, userPoolClientId },
-	} = Amplify.getConfig().Auth;
+	const { userPoolId, userPoolClientId } = config;
 	const challengeResponses = { USERNAME: username, ANSWER: challengeResponse };
 	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'CUSTOM_CHALLENGE',
@@ -328,9 +327,14 @@ export async function handlePasswordVerifierChallenge(
 	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const userPoolName = userPoolId?.split('_')[1] || '';
-	const serverBValue = new BigInteger(challengeParameters?.SRP_B, 16);
-	const salt = new BigInteger(challengeParameters?.SALT, 16);
+	const serverBValue = new (BigInteger as any)(challengeParameters?.SRP_B, 16);
+	const salt = new (BigInteger as any)(challengeParameters?.SALT, 16);
 	const username = challengeParameters?.USER_ID_FOR_SRP;
+	if (!username)
+		throw new AuthError({
+			name: 'EmptyUserIdForSRPException',
+			message: 'USER_ID_FOR_SRP was not found in challengeParameters',
+		});
 	const hkdf = await getPasswordAuthenticationKey({
 		authenticationHelper,
 		username,
@@ -346,7 +350,7 @@ export async function handlePasswordVerifierChallenge(
 		PASSWORD_CLAIM_SECRET_BLOCK: challengeParameters?.SECRET_BLOCK,
 		TIMESTAMP: dateNow,
 		PASSWORD_CLAIM_SIGNATURE: getSignatureString({
-			username: challengeParameters?.USER_ID_FOR_SRP,
+			username,
 			userPoolName,
 			challengeParameters,
 			dateNow,
@@ -373,9 +377,9 @@ export async function getSignInResult(params: {
 	challengeParameters: ChallengeParameters;
 }): Promise<AuthSignInResult> {
 	const { challengeName, challengeParameters } = params;
-	const {
-		Cognito: { userPoolId },
-	} = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	assertTokenProviderConfig(authConfig);
+
 	switch (challengeName) {
 		case 'CUSTOM_CHALLENGE':
 			return {
@@ -396,7 +400,7 @@ export async function getSignInResult(params: {
 					)}`,
 				});
 			const { Session, SecretCode: secretCode } = await associateSoftwareToken(
-				{ region: getRegion(userPoolId) },
+				{ region: getRegion(authConfig.userPoolId) },
 				{
 					Session: signInSession,
 				}
@@ -516,10 +520,10 @@ export function createAttributes(
 ): Record<string, string> {
 	if (!attributes) return {};
 
-	const newAttributes = {};
+	const newAttributes: Record<string, string> = {};
 
 	Object.entries(attributes).forEach(([key, value]) => {
-		newAttributes[`${USER_ATTRIBUTES}${key}`] = value;
+		if (value) newAttributes[`${USER_ATTRIBUTES}${key}`] = value;
 	});
 	return newAttributes;
 }
