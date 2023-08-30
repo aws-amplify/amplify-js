@@ -65,7 +65,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		let tokens: CognitoAuthTokens | null;
 
 		try {
-			assertTokenProviderConfig(this.authConfig.Cognito);
+			assertTokenProviderConfig(this.authConfig?.Cognito);
 		} catch (_err) {
 			// Token provider not configured
 			return null;
