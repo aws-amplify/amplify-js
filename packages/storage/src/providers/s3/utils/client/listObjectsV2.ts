@@ -78,6 +78,7 @@ const listObjectsV2Deserializer = async (
 			ContinuationToken: 'ContinuationToken',
 			Delimiter: 'Delimiter',
 			EncodingType: 'EncodingType',
+			IsTruncated: ['IsTruncated', deserializeBoolean],
 			KeyCount: ['KeyCount', deserializeNumber],
 			MaxKeys: ['MaxKeys', deserializeNumber],
 			Name: 'Name',

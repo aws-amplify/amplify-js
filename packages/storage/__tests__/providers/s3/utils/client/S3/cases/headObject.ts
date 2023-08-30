@@ -19,21 +19,12 @@ const headObjectHappyCase: ApiFunctionalTestCase<typeof headObject> = [
 	{
 		Bucket: 'bucket',
 		Key: 'key',
-		SSECustomerAlgorithm: 'sseCustomerAlgorithm',
-		SSECustomerKey: 'SSECustomerKey',
-		SSECustomerKeyMD5: 'sseCustomerKeyMD5',
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
 			href: 'https://bucket.s3.us-east-1.amazonaws.com/key',
 		}),
 		method: 'HEAD',
-		headers: expect.objectContaining({
-			'x-amz-server-side-encryption-customer-algorithm': 'sseCustomerAlgorithm',
-			'x-amz-server-side-encryption-customer-key': toBase64('SSECustomerKey'),
-			'x-amz-server-side-encryption-customer-key-md5':
-				'u2yTVQWmqQ+XbBDNNmwr4Q==',
-		}),
 	}),
 	{
 		status: 200,

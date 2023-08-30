@@ -27,12 +27,6 @@ export type PutObjectInput = Pick<
 	| 'Bucket'
 	| 'Key'
 	| 'Body'
-	| 'ServerSideEncryption'
-	| 'SSECustomerAlgorithm'
-	| 'SSECustomerKey'
-	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
-	| 'SSEKMSKeyId'
 	| 'ACL'
 	| 'CacheControl'
 	| 'ContentDisposition'
