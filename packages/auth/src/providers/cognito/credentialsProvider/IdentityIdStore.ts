@@ -21,14 +21,11 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	_authKeys: AuthKeys<string>;
 	setAuthConfig(authConfigParam: AuthConfig) {
 		this.authConfig = authConfigParam;
-<<<<<<< HEAD
 		this._authKeys = createKeysForAuthStorage(
 			'Cognito',
 			this.authConfig.Cognito.identityPoolId
 		);
 		return;
-=======
->>>>>>> next
 	}
 
 	constructor(keyValueStorage: KeyValueStorageInterface) {

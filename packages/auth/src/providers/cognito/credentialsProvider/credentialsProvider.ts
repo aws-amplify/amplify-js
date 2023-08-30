@@ -30,11 +30,6 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		this._identityIdStore = identityIdStore;
 	}
 
-<<<<<<< HEAD
-=======
-	private _authConfig?: AuthConfig;
-
->>>>>>> next
 	private _identityIdStore: IdentityIdStore;
 
 	private _credentialsAndIdentityId?: AWSCredentialsAndIdentityId & {
