@@ -3,16 +3,16 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 const logger = new Logger('urlListener');
 
-let handler;
+let handler: Function | undefined;
 
-export default async callback => {
+export default async (callback: Function) => {
 	if (handler) {
 		return;
 	}
 
 	let Linking: any;
 	let AppState: any;
-	let subscription;
+	let subscription: any;
 	try {
 		({ Linking, AppState } = require('react-native'));
 	} catch (error) {
@@ -35,10 +35,10 @@ export default async callback => {
 		subscription?.remove?.();
 		subscription = Linking.addEventListener('url', handler);
 	}
-	AppState.addEventListener('change', async newAppState => {
+	AppState.addEventListener('change', async (newAppState: string) => {
 		if (newAppState === 'active') {
 			const initialUrl = await Linking.getInitialURL();
-			handler({ url: initialUrl });
+			if (handler) handler({ url: initialUrl });
 		}
 	});
 };

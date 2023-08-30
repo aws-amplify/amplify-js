@@ -27,7 +27,7 @@ export async function cognitoIdentityIdProvider({
 	identityIdStore,
 }: {
 	tokens?: AuthTokens;
-	authConfig?: CognitoIdentityPoolConfig;
+	authConfig: CognitoIdentityPoolConfig;
 	identityIdStore: IdentityIdStore;
 }): Promise<string> {
 	if (authConfig) identityIdStore.setAuthConfig({ Cognito: authConfig });

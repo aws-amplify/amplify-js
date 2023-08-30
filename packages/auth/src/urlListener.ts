@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { browserOrNode } from '@aws-amplify/core/internals/utils';
 
-export default callback => {
+export default (callback: Function) => {
 	if (browserOrNode().isBrowser && window.location) {
 		const url = window.location.href;
 
