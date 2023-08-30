@@ -21,8 +21,10 @@ const credentials: Credentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const identityId = 'identityId';
+
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 const mockCreateDownloadTask = createDownloadTask as jest.Mock;
+const mockGetConfig = Amplify.getConfig as jest.Mock;
 
 // TODO: test validation errors
 // TODO: test downloadData from guest, private, protected access level respectively.
@@ -30,9 +32,10 @@ describe('downloadData', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
-			identityId,
+			identityId: identityId,
 		});
-		(Amplify.getConfig as jest.Mock).mockReturnValue({
+
+		mockGetConfig.mockReturnValue({
 			Storage: {
 				S3: {
 					bucket: 'bucket',

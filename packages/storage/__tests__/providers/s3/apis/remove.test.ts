@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { deleteObject } from '../../../../src/providers/s3/utils/client';
 import { remove } from '../../../../src/providers/s3/apis';
 
@@ -14,6 +14,8 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 const mockDeleteObject = deleteObject as jest.Mock;
+const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockGetConfig = Amplify.getConfig as jest.Mock;
 const key = 'key';
 const bucket = 'bucket';
 const region = 'region';
@@ -31,11 +33,12 @@ const deleteObjectClientConfig = {
 
 describe('remove API', () => {
 	beforeAll(() => {
-		(Amplify.Auth.fetchAuthSession as jest.Mock).mockResolvedValue({
+		mockFetchAuthSession.mockResolvedValue({
 			credentials,
 			identityId: targetIdentityId,
 		});
-		(Amplify.getConfig as jest.Mock).mockReturnValue({
+
+		mockGetConfig.mockReturnValue({
 			Storage: {
 				S3: {
 					bucket: 'bucket',

@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import {
+	Amplify,
+	StorageAccessLevel,
+	fetchAuthSession,
+} from '@aws-amplify/core';
 import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';
 
@@ -15,6 +19,8 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 const mockCopyObject = copyObject as jest.Mock;
+const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockGetConfig = Amplify.getConfig as jest.Mock;
 
 const sourceKey = 'sourceKey';
 const destinationKey = 'destinationKey';
@@ -91,11 +97,12 @@ const interAccessLevelTest = async (
 
 describe('copy API', () => {
 	beforeAll(() => {
-		(Amplify.Auth.fetchAuthSession as jest.Mock).mockResolvedValue({
+		mockFetchAuthSession.mockResolvedValue({
 			credentials,
 			identityId: targetIdentityId,
 		});
-		(Amplify.getConfig as jest.Mock).mockReturnValue({
+
+		mockGetConfig.mockReturnValue({
 			Storage: {
 				S3: {
 					bucket: 'bucket',
