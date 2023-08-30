@@ -50,6 +50,9 @@ const validAuthConfig: ResourcesConfig = {
 		},
 	},
 };
+const inValidAuthConfig: ResourcesConfig = {
+	Auth: {},
+};
 const disallowGuestAccessConfig: ResourcesConfig = {
 	Auth: {
 		Cognito: {
@@ -141,6 +144,14 @@ describe('Guest Credentials', () => {
 				await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 					authenticated: false,
 					authConfig: disallowGuestAccessConfig.Auth!,
+				})
+			).toBe(undefined);
+		});
+		test('Should not throw AuthError when there is no Cognito object in the config', async () => {
+			expect(
+				await cognitoCredentialsProvider.getCredentialsAndIdentityId({
+					authenticated: false,
+					authConfig: inValidAuthConfig.Auth!,
 				})
 			).toBe(undefined);
 		});

@@ -56,7 +56,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		const authConfig = getCredentialsOptions.authConfig;
 		try {
 			assertIdentityPooIdConfig(authConfig?.Cognito);
-		} catch (_err) {
+		} catch {
 			// No identity pool configured, skipping
 			return;
 		}
