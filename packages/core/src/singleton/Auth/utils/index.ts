@@ -26,12 +26,13 @@ export function assertUserPoolClientIdInConfig(
 	if (!cognitoConfig) {
 		assertionValid = false;
 	} else {
-		assertionValid = !!cognitoConfig.userPoolClientId;
+		assertionValid =
+			!!cognitoConfig.userPoolClientId && !!cognitoConfig.userPoolId;
 	}
 	return asserts(assertionValid, {
 		name: 'UserPoolClientIdConfigException',
-		message: 'UserPoolClientId not present in Config',
-		recoverySuggestion: 'Make sure to provide UserPoolClientId in the config',
+		message: 'UserPoolClientId not present in Config.',
+		recoverySuggestion: 'Make sure to provide UserPoolClientId in the config.',
 	});
 }
 
