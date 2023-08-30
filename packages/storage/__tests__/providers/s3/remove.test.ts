@@ -2,26 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { deleteObject } from '../../../src/providers/s3/utils/client';
 import { remove } from '../../../src/providers/s3/apis';
 
 jest.mock('../../../src/providers/s3/utils/client');
-jest.mock('@aws-amplify/core', () => {
-	const core = jest.requireActual('@aws-amplify/core');
-	return {
-		...core,
-		fetchAuthSession: jest.fn(),
-		Amplify: {
-			...core.Amplify,
-			getConfig: jest.fn(),
-			Auth: {
-				...core.Amplify.Auth,
-				fetchAuthSession: jest.fn(),
-			},
-		},
-	};
-});
+jest.mock('@aws-amplify/core', () => ({
+	fetchAuthSession: jest.fn(),
+	Amplify: {
+		getConfig: jest.fn(),
+	},
+}));
+
+const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockGetConfig = Amplify.getConfig as jest.Mock;
 const mockDeleteObject = deleteObject as jest.Mock;
 const key = 'key';
 const bucket = 'bucket';
@@ -40,11 +34,11 @@ const deleteObjectClientConfig = {
 
 describe('remove API', () => {
 	beforeAll(() => {
-		(Amplify.Auth.fetchAuthSession as jest.Mock).mockResolvedValue({
+		mockFetchAuthSession.mockResolvedValue({
 			credentials,
 			identityId: targetIdentityId,
 		});
-		(Amplify.getConfig as jest.Mock).mockReturnValue({
+		mockGetConfig.mockReturnValue({
 			Storage: {
 				S3: {
 					bucket: 'bucket',
@@ -53,6 +47,7 @@ describe('remove API', () => {
 			},
 		});
 	});
+
 	describe('Happy Path Cases:', () => {
 		beforeEach(() => {
 			mockDeleteObject.mockImplementation(() => {

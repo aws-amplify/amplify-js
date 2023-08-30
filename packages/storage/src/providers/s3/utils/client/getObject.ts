@@ -12,7 +12,6 @@ import {
 	HttpResponse,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import { USER_AGENT_HEADER } from '@aws-amplify/core/internals/utils';
 
 import { S3EndpointResolverOptions, defaultConfig } from './base';
 import type {
@@ -32,6 +31,8 @@ import {
 	CONTENT_SHA256_HEADER,
 	validateS3RequiredParameter,
 } from './utils';
+
+const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 export type GetObjectInput = Pick<GetObjectCommandInput, 'Bucket' | 'Key'>;
 
@@ -119,13 +120,21 @@ export const getObject = composeServiceApi(
 	{ ...defaultConfig, responseType: 'blob' }
 );
 
+type S3GetObjectPresignedUrlConfig = Omit<
+	UserAgentOptions & PresignUrlOptions & S3EndpointResolverOptions,
+	'signingService' | 'signingRegion'
+> & {
+	signingService?: string;
+	signingRegion?: string;
+};
+
 /**
  * Get a presigned URL for the `getObject` API.
  *
  * @internal
  */
 export const getPresignedGetObjectUrl = async (
-	config: UserAgentOptions & PresignUrlOptions & S3EndpointResolverOptions,
+	config: S3GetObjectPresignedUrlConfig,
 	input: GetObjectInput
 ): Promise<URL> => {
 	const endpoint = defaultConfig.endpointResolver(config, input);
@@ -150,6 +159,8 @@ export const getPresignedGetObjectUrl = async (
 	return presignUrl(
 		{ method, url, body: undefined },
 		{
+			signingService: defaultConfig.service,
+			signingRegion: config.region,
 			...defaultConfig,
 			...config,
 		}

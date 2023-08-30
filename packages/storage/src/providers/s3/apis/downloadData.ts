@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
+
 import { S3TransferOptions, S3DownloadDataResult } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
@@ -44,6 +46,7 @@ const downloadDataJob =
 	) =>
 	async () => {
 		const { bucket, keyPrefix, s3Config } = await resolveS3ConfigAndInput(
+			Amplify,
 			downloadDataOptions
 		);
 		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths
