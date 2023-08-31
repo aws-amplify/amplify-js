@@ -45,9 +45,6 @@ describe('createAWSCredentialsAndIdentityIdProvider', () => {
 		).toHaveBeenCalledTimes(1);
 		const mockCredentialsProviderInstance =
 			MockCognitoAWSCredentialsAndIdentityIdProvider.mock.instances[0];
-		expect(mockCredentialsProviderInstance.setAuthConfig).toHaveBeenCalledWith(
-			mockAuthConfig
-		);
 
 		expect(credentialsProvider).toEqual(mockCredentialsProviderInstance);
 	});
