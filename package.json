@@ -46,6 +46,7 @@
 			"packages/storage",
 			"packages/aws-amplify",
 			"packages/adapter-nextjs",
+			"packages/pubsub",
 			"packages/api",
 			"packages/api-graphql",
 			"packages/api-rest",
