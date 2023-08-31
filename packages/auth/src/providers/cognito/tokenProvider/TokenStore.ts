@@ -117,12 +117,11 @@ export class DefaultTokenStore implements AuthTokenStore {
 			this.keyValueStorage.removeItem(authKeys.idToken),
 			this.keyValueStorage.removeItem(authKeys.clockDrift),
 			this.keyValueStorage.removeItem(authKeys.refreshToken),
-			this.keyValueStorage.removeItem(authKeys.NewDeviceMetadata),
 		]);
 	}
 }
 
-const createKeysForAuthStorage = (provider: string, identifier: string) => {
+export const createKeysForAuthStorage = (provider: string, identifier: string) => {
 	return getAuthStorageKeys(AuthTokenStorageKeys)(
 		`com.amplify.${provider}`,
 		identifier

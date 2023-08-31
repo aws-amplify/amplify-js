@@ -19,6 +19,7 @@ export { confirmUserAttribute } from './apis/confirmUserAttribute';
 export { signInWithRedirect } from './apis/signInWithRedirect';
 export { fetchUserAttributes } from './apis/fetchUserAttributes';
 export { signOut } from './apis/signOut';
+export { deleteUser } from './apis/deleteUser';
 export {
 	cognitoCredentialsProvider,
 	CognitoAWSCredentialsAndIdentityIdProvider,
