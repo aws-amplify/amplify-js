@@ -1,4 +1,5 @@
-import { Signer } from '@aws-amplify/core';
+// import { Signer } from '@aws-amplify/core';
+import { Signer } from '@aws-amplify/core/internals/utils';
 
 jest
 	.spyOn(Signer, 'sign')

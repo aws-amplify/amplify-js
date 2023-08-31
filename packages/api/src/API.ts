@@ -8,7 +8,11 @@ import {
 	GraphQLSubscription,
 } from '@aws-amplify/api-graphql';
 import { graphql as v6graphql } from '@aws-amplify/api-graphql/internals';
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import {
+	Amplify,
+	// ConsoleLogger as Logger
+} from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import Observable from 'zen-observable-ts';
 import { InternalAPIClass } from './internals/InternalAPI';
 import type { ModelTypes } from '@aws-amplify/types-package-alpha';

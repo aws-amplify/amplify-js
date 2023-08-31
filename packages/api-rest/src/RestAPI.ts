@@ -3,9 +3,10 @@
 import { RestClient } from './RestClient';
 import {
 	Amplify,
-	ConsoleLogger as Logger,
+	// ConsoleLogger as Logger,
 	Credentials,
 } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import { ApiInfo } from './types';
 
 const logger = new Logger('RestAPI');

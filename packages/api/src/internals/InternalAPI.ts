@@ -8,19 +8,22 @@ import {
 	GraphQLQuery,
 	GraphQLSubscription,
 } from '@aws-amplify/api-graphql';
+// TODO V6
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
 import { RestAPIClass } from '@aws-amplify/api-rest';
 // TODO this doesn't exist anymore:
 import { Auth } from '@aws-amplify/auth';
 import { Cache } from '@aws-amplify/cache';
+// TODO V6
 import {
 	Amplify,
 	// ApiAction,
 	// Category,
 	Credentials,
 	// CustomUserAgentDetails,
-	ConsoleLogger as Logger,
+	// ConsoleLogger as Logger,
 } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 // import { AmplifyV6 } from '@aws-amplify';
 import {
 	ApiAction,

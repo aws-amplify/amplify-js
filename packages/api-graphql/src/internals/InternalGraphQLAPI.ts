@@ -9,15 +9,21 @@ import {
 	OperationTypeNode,
 } from 'graphql';
 import Observable from 'zen-observable-ts';
+// TODO V6
 import {
 	Amplify,
-	ConsoleLogger as Logger,
+	// ConsoleLogger as Logger,
 	Credentials,
 	// CustomUserAgentDetails,
+	// getAmplifyUserAgent,
+	// INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+} from '@aws-amplify/core';
+import {
+	CustomUserAgentDetails,
+	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-} from '@aws-amplify/core';
-import { CustomUserAgentDetails } from '@aws-amplify/core/internals/utils';
+} from '@aws-amplify/core/internals/utils';
 import { InternalPubSub } from '@aws-amplify/pubsub/internals';
 import { InternalAuth } from '@aws-amplify/auth/internals';
 import { Cache } from '@aws-amplify/cache';

@@ -1,12 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+// TODO V6
+import {
+	// ConsoleLogger as Logger,
+	Credentials,
+	// DateUtils,
+	// Signer,
+} from '@aws-amplify/core';
 import {
 	ConsoleLogger as Logger,
-	Credentials,
 	DateUtils,
 	Signer,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/utils';
 
 import { apiOptions, ApiInfo } from './types';
 import axios, { CancelTokenSource } from 'axios';
