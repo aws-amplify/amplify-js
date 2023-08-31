@@ -21,6 +21,7 @@ export { signInWithRedirect } from './apis/signInWithRedirect';
 export { fetchUserAttributes } from './apis/fetchUserAttributes';
 export { signOut } from './apis/signOut';
 export { sendUserAttributeVerificationCode } from './apis/sendUserAttributeVerificationCode';
+export { deleteUser } from './apis/deleteUser';
 export {
 	ConfirmResetPasswordInput,
 	ConfirmSignInInput,

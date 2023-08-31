@@ -23,6 +23,7 @@ export {
 	fetchUserAttributes,
 	signOut,
 	sendUserAttributeVerificationCode,
+	deleteUser,
 } from './providers/cognito';
 
 export {
