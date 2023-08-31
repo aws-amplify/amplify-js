@@ -28,7 +28,6 @@ const authConfigWithClientmetadata = {
 		userPoolId: 'us-west-2_zzzzz',
 	},
 };
-cognitoCredentialsProvider.setAuthConfig(authConfig);
 CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 Amplify.configure({
 	Auth: authConfig,
