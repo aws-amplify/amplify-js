@@ -21,12 +21,13 @@ export {
 	signInWithRedirect,
 	fetchUserAttributes,
 	signOut,
+	deleteUser,
 } from './providers/cognito';
 export {
 	AuthResetPasswordStep,
 	AuthSignInStep,
 	AuthSignUpStep,
-	AuthUpdateAttributeStep
+	AuthUpdateAttributeStep,
 } from './types/enums';
 
 export { AuthError } from './errors/AuthError';

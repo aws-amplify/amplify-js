@@ -3,12 +3,13 @@
 
 import { Amplify, LocalStorage } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
-import { fetchAuthSession, signOut } from '../../../';
+import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
 import { deleteUser as deleteUserClient } from '../utils/clients/CognitoIdentityProvider';
-import { createKeysForAuthStorage } from '../tokenProvider/TokenStore';
 import { DeleteUserException } from '../types/errors';
+import { DefaultTokenStore } from '../tokenProvider/TokenStore';
+import { tokenOrchestrator } from '../tokenProvider';
 /**
  * Deletes a user from the user pool while authenticated.
  *
@@ -16,6 +17,8 @@ import { DeleteUserException } from '../types/errors';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function deleteUser(): Promise<void> {
+	const tokenStore = new DefaultTokenStore();
+	tokenStore.setKeyValueStorage(LocalStorage);
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
@@ -29,18 +32,10 @@ export async function deleteUser(): Promise<void> {
 		}
 	);
 
-	await signOut();
-
-	await deleteDeviceKeys(authConfig.userPoolClientId);
-}
-
-async function deleteDeviceKeys(userPoolClientId: string): Promise<void> {
-	const { NewDeviceMetadata } = createKeysForAuthStorage(
-		'cognito',
-		userPoolClientId
-	);
-
-	if (typeof window !== 'undefined') {
-		await LocalStorage.removeItem(NewDeviceMetadata);
-	}
+	// Todo: TokenOrchestrator
+	// 1. create a method to delete only deviceKeys
+	// Todo:
+	// 1. Clean auth tokens
+	// 2. clean creds
+	// 3. clean device keys
 }
