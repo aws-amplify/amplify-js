@@ -14,30 +14,26 @@ import {
 
 export const DefaultAmplify = {
 	configure(resourceConfig: ResourcesConfig, libraryOptions?: LibraryOptions) {
-		CognitoUserPoolsTokenProvider.setAuthConfig(resourceConfig.Auth);
-		const defaultLibraryOptions: LibraryOptions = {
-			Auth: {
-				tokenProvider: CognitoUserPoolsTokenProvider,
-				credentialsProvider: cognitoCredentialsProvider,
-			},
-		};
+		if (resourceConfig.Auth && !libraryOptions) {
+			CognitoUserPoolsTokenProvider.setAuthConfig(resourceConfig.Auth);
 
-		let updatedLibraryOptions = {};
+			const defaultLibraryOptions: LibraryOptions = {
+				Auth: {
+					tokenProvider: CognitoUserPoolsTokenProvider,
+					credentialsProvider: cognitoCredentialsProvider,
+				},
+			};
 
-		if (libraryOptions !== undefined) {
-			updatedLibraryOptions = libraryOptions;
-		} else {
 			CognitoUserPoolsTokenProvider.setKeyValueStorage(
 				resourceConfig.ssr
 					? new CookieStorage({
 							sameSite: 'strict',
-					  })
+					})
 					: LocalStorage
 			);
-			updatedLibraryOptions = defaultLibraryOptions;
-		}
 
-		Amplify.configure(resourceConfig, updatedLibraryOptions);
+			Amplify.configure(resourceConfig, defaultLibraryOptions);
+		}
 	},
 	getConfig(): ResourcesConfig {
 		return Amplify.getConfig();
