@@ -4,19 +4,21 @@
 export { DownloadTask, TransferProgressEvent, UploadTask } from './common';
 export {
 	StorageListRequest,
-	StorageListAllOptions,
-	StorageListPaginateOptions,
 	StorageOperationRequest,
 	StorageDownloadDataRequest,
-	StorageDownloadFileParameter,
+	StorageDownloadFileRequest,
 	StorageUploadDataRequest,
+	CopyRequest,
+} from './requests';
+export {
 	StorageOptions,
 	StorageRemoveOptions,
+	StorageListAllOptions,
+	StorageListPaginateOptions,
 	StorageCopySource,
 	StorageCopyDestination,
-	CopyRequest,
 	UploadSource,
-} from './params';
+} from './options';
 export {
 	StorageItem,
 	StorageListResult,

@@ -1,14 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StorageAccessLevel } from '@aws-amplify/core';
-
-export type StorageOptions =
-	| { accessLevel?: 'guest' | 'private' }
-	| {
-			accessLevel: 'protected';
-			targetIdentityId?: string;
-	  };
+import {
+	StorageOptions,
+	UploadSource,
+	StorageListAllOptions,
+	StorageListPaginateOptions,
+	StorageCopySource,
+	StorageCopyDestination,
+} from './options';
 
 export type StorageOperationRequest<Options extends StorageOptions> = {
 	key: string;
@@ -22,20 +22,10 @@ export type StorageListRequest<
 	options?: Options;
 };
 
-export type StorageListAllOptions = StorageOptions & {
-	listAll: true;
-};
-
-export type StorageListPaginateOptions = StorageOptions & {
-	listAll?: false;
-	pageSize?: number;
-	nextToken?: string;
-};
-
 export type StorageDownloadDataRequest<Options extends StorageOptions> =
 	StorageOperationRequest<Options>;
 
-export type StorageDownloadFileParameter<Options extends StorageOptions> =
+export type StorageDownloadFileRequest<Options extends StorageOptions> =
 	StorageOperationRequest<Options> & {
 		/**
 		 * If supplied full file path in browsers(e.g. path/to/foo.bar)
@@ -45,26 +35,10 @@ export type StorageDownloadFileParameter<Options extends StorageOptions> =
 		localFile: string;
 	};
 
-/**
- * The data payload type for upload operation.
- */
-export type UploadSource = Blob | BufferSource | string | File;
-
 export type StorageUploadDataRequest<Options extends StorageOptions> =
 	StorageOperationRequest<Options> & {
 		data: UploadSource;
 	};
-
-export type StorageRemoveOptions = StorageOptions;
-
-export type StorageCopySource = {
-	key: string;
-} & StorageOptions;
-
-export type StorageCopyDestination = {
-	key: string;
-	accessLevel?: StorageAccessLevel;
-};
 
 export type CopyRequest = {
 	source: StorageCopySource;
