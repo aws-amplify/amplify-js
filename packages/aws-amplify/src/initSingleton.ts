@@ -33,6 +33,8 @@ export const DefaultAmplify = {
 			);
 
 			Amplify.configure(resourceConfig, defaultLibraryOptions);
+		} else {
+			Amplify.configure(resourceConfig, libraryOptions);
 		}
 	},
 	getConfig(): ResourcesConfig {
