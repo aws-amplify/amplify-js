@@ -21,6 +21,7 @@ import {
 	// CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 } from '@aws-amplify/core';
+// import { AmplifyV6 } from '@aws-amplify';
 import {
 	ApiAction,
 	Category,
