@@ -1,22 +1,34 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	CognitoHostedUIIdentityProvider,
-	SignUpParams,
-	GRAPHQL_AUTH_MODE,
-} from './types/Auth';
-import { AuthErrorStrings } from './common/AuthErrorStrings';
-
+// Default provider APIs & enums
 export {
-	CognitoHostedUIIdentityProvider,
-	SignUpParams,
-	AuthErrorStrings,
-	GRAPHQL_AUTH_MODE,
-};
+	signUp,
+	resetPassword,
+	confirmResetPassword,
+	signIn,
+	resendSignUpCode,
+	confirmSignUp,
+	confirmSignIn,
+	updateMFAPreference,
+	fetchMFAPreference,
+	verifyTOTPSetup,
+	updatePassword,
+	setUpTOTP,
+	updateUserAttributes,
+	getCurrentUser,
+	confirmUserAttribute,
+	signInWithRedirect,
+	fetchUserAttributes,
+	signOut,
+} from './providers/cognito';
+export {
+	AuthResetPasswordStep,
+	AuthSignInStep,
+	AuthSignUpStep,
+	AuthUpdateAttributeStep
+} from './types/enums';
 
-// Default provider APIs & types
-export * from './providers/cognito';
-export * from './types';
+export { AuthError } from './errors/AuthError';
 
 export { fetchAuthSession } from '@aws-amplify/core';
