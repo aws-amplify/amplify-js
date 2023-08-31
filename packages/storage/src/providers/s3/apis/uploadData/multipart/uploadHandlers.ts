@@ -1,15 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+
 import { getDataChunker } from './getDataChunker';
 import { S3UploadOptions } from '../../../types';
 import { resolveS3ConfigAndInput } from '../../../utils';
-import {
-	abortMultipartUpload,
-	completeMultipartUpload,
-	headObject,
-	Part,
-} from '../../../../../AwsClients/S3';
 import { StorageUploadDataRequest } from '../../../../../types';
 import { S3Item } from '../../../types/results';
 import {
@@ -22,8 +18,13 @@ import { getConcurrentUploadsProgressTracker } from './progressTracker';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { StorageError } from '../../../../../errors/StorageError';
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { CanceledError } from '../../../../../errors/CanceledError';
+import {
+	Part,
+	abortMultipartUpload,
+	completeMultipartUpload,
+	headObject,
+} from '../../../utils/client';
 
 /**
  * Create closure hiding the multipart upload implementation details and expose the upload job and control functions(
@@ -58,7 +59,10 @@ export const getMultipartUploadHandlers = (
 	let isAbortSignalFromPause: boolean = false;
 
 	const startUpload = async (): Promise<S3Item> => {
-		const resolvedS3Options = await resolveS3ConfigAndInput(uploadDataOptions);
+		const resolvedS3Options = await resolveS3ConfigAndInput(
+			Amplify,
+			uploadDataOptions
+		);
 		s3Config = resolvedS3Options.s3Config;
 		bucket = resolvedS3Options.bucket;
 		keyPrefix = resolvedS3Options.keyPrefix;

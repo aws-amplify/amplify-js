@@ -4,31 +4,18 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { S3CopyResult } from '../../types';
 import { CopyRequest } from '../../../../types';
-import {
-	resolveStorageConfig,
-	getKeyWithPrefix,
-	resolveCredentials,
-} from '../../utils';
-import { copyObject } from '../../../../AwsClients/S3';
+import { resolveS3ConfigAndInput } from '../../utils';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
+import { copyObject } from '../../utils/client';
 
 export const copy = async (
 	amplify: AmplifyClassV6,
 	copyRequest: CopyRequest
 ): Promise<S3CopyResult> => {
-	const { identityId: defaultIdentityId, credentials } =
-		await resolveCredentials(amplify);
-	const { defaultAccessLevel, bucket, region } = resolveStorageConfig(amplify);
 	const {
-		source: {
-			key: sourceKey,
-			accessLevel: sourceAccessLevel = defaultAccessLevel,
-		},
-		destination: {
-			key: destinationKey,
-			accessLevel: destinationAccessLevel = defaultAccessLevel,
-		},
+		source: { key: sourceKey },
+		destination: { key: destinationKey },
 	} = copyRequest;
 
 	assertValidationError(!!sourceKey, StorageValidationErrorCode.NoSourceKey);
@@ -37,35 +24,24 @@ export const copy = async (
 		StorageValidationErrorCode.NoDestinationKey
 	);
 
-	const sourceFinalKey = `${bucket}/${getKeyWithPrefix(amplify, {
-		accessLevel: sourceAccessLevel,
-		targetIdentityId:
-			copyRequest.source.accessLevel === 'protected'
-				? copyRequest.source.targetIdentityId
-				: defaultIdentityId,
-		key: sourceKey,
-	})}`;
-
-	const destinationFinalKey = getKeyWithPrefix(amplify, {
-		accessLevel: destinationAccessLevel,
-		targetIdentityId: defaultIdentityId,
-		key: destinationKey,
-	});
+	const {
+		s3Config,
+		bucket,
+		keyPrefix: sourceKeyPrefix,
+	} = await resolveS3ConfigAndInput(amplify, copyRequest.source);
+	const { keyPrefix: destinationKeyPrefix } = await resolveS3ConfigAndInput(
+		amplify,
+		copyRequest.destination
+	); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
 	// TODO(ashwinkumar6) V6-logger: debug `copying ${finalSrcKey} to ${finalDestKey}`
-	await copyObject(
-		{
-			region,
-			credentials,
-		},
-		{
-			Bucket: bucket,
-			CopySource: sourceFinalKey,
-			Key: destinationFinalKey,
-			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
-		}
-	);
+	await copyObject(s3Config, {
+		Bucket: bucket,
+		CopySource: `${bucket}/${sourceKeyPrefix}${sourceKey}`,
+		Key: `${destinationKeyPrefix}${destinationKey}`,
+		MetadataDirective: 'COPY', // Copies over metadata like contentType as well
+	});
 
 	return {
 		key: destinationKey,

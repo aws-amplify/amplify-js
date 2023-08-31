@@ -32,7 +32,6 @@ describe('confirmSignIn API happy path cases', () => {
 
 	beforeEach(async () => {
 		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-		cognitoCredentialsProvider.setAuthConfig(authConfig);
 		handleChallengeNameSpy = jest
 			.spyOn(signInHelpers, 'handleChallengeName')
 			.mockImplementation(

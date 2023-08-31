@@ -1,12 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
+
 import { S3TransferOptions, S3DownloadDataResult } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
-import { getObject } from '../../../AwsClients/S3';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { StorageDownloadDataRequest, DownloadTask } from '../../../types';
 import { createDownloadTask } from '../utils';
+import { getObject } from '../utils/client';
 
 /**
  * Download S3 object data to memory
@@ -44,6 +46,7 @@ const downloadDataJob =
 	) =>
 	async () => {
 		const { bucket, keyPrefix, s3Config } = await resolveS3ConfigAndInput(
+			Amplify,
 			downloadDataOptions
 		);
 		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths
