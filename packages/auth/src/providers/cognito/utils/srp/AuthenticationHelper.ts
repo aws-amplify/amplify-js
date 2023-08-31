@@ -5,7 +5,7 @@ import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
 import BigInteger from './BigInteger';
 import { toHex, fromHex } from './helpers';
 import WordArray from './WordArray';
-import { toBase64 } from '@aws-sdk/util-base64-browser';
+import { toBase64 } from '@smithy/util-base64';
 import { AuthError } from '../../../../errors/AuthError';
 
 export type BigInteger = typeof BigInteger & {
