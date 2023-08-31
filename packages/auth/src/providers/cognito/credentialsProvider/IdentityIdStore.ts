@@ -10,6 +10,7 @@ import { assertIdentityPooIdConfig } from '@aws-amplify/core/internals/utils';
 import { IdentityIdStorageKeys, IdentityIdStore } from './types';
 import { AuthError } from '../../../errors/AuthError';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
+import { AuthKeys } from '../tokenProvider/types';
 
 export class DefaultIdentityIdStore implements IdentityIdStore {
 	keyValueStorage: KeyValueStorageInterface;
@@ -17,9 +18,15 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 
 	// Used as in-memory storage
 	_primaryIdentityId: string | undefined;
-
+	_authKeys: AuthKeys<string> = {};
 	setAuthConfig(authConfigParam: AuthConfig) {
+		assertIdentityPooIdConfig(authConfigParam.Cognito);
 		this.authConfig = authConfigParam;
+		this._authKeys = createKeysForAuthStorage(
+			'Cognito',
+			authConfigParam.Cognito.identityPoolId
+		);
+		return;
 	}
 
 	constructor(keyValueStorage: KeyValueStorageInterface) {
@@ -39,12 +46,6 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 		// TODO(v6): migration logic should be here
 		// Reading V5 tokens old format
 		try {
-			const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-			const authKeys = createKeysForAuthStorage(
-				name,
-				this.authConfig.Cognito.identityPoolId
-			);
-
 			if (!!this._primaryIdentityId) {
 				return {
 					id: this._primaryIdentityId,
@@ -52,7 +53,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 				};
 			} else {
 				const storedIdentityId = await this.keyValueStorage.getItem(
-					authKeys.identityId
+					this._authKeys.identityId
 				);
 				if (!!storedIdentityId) {
 					return {
@@ -85,33 +86,22 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 			});
 		}
 
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-		const authKeys = createKeysForAuthStorage(
-			name,
-			this.authConfig.Cognito.identityPoolId
-		);
 		if (identity.type === 'guest') {
-			this.keyValueStorage.setItem(authKeys.identityId, identity.id);
+			this.keyValueStorage.setItem(this._authKeys.identityId, identity.id);
 			// Clear in-memory storage of primary identityId
 			this._primaryIdentityId = undefined;
 		} else {
 			this._primaryIdentityId = identity.id;
 			// Clear locally stored guest id
-			this.keyValueStorage.removeItem(authKeys.identityId);
+			this.keyValueStorage.removeItem(this._authKeys.identityId);
 		}
 	}
 
 	async clearIdentityId(): Promise<void> {
-		assertIdentityPooIdConfig(this.authConfig?.Cognito);
-
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-		const authKeys = createKeysForAuthStorage(
-			name,
-			this.authConfig.Cognito.identityPoolId
-		);
-
 		this._primaryIdentityId = undefined;
-		await Promise.all([this.keyValueStorage.removeItem(authKeys.identityId)]);
+		await Promise.all([
+			this.keyValueStorage.removeItem(this._authKeys.identityId),
+		]);
 	}
 }
 

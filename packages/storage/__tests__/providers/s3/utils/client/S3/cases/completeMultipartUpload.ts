@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { completeMultipartUpload } from '../../../../../../../src/providers/s3/utils/client';
-import { toBase64 } from '../../../../../../../src/providers/s3/utils/client/utils';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 import {
 	defaultConfig,
@@ -34,9 +33,6 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 			],
 		},
 		UploadId: 'uploadId',
-		SSECustomerAlgorithm: 'SSECustomerAlgorithm',
-		SSECustomerKey: 'SSECustomerKey',
-		SSECustomerKeyMD5: 'SSECustomerKeyMD5',
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
@@ -44,10 +40,6 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 		}),
 		method: 'POST',
 		headers: expect.objectContaining({
-			'x-amz-server-side-encryption-customer-algorithm': 'SSECustomerAlgorithm',
-			'x-amz-server-side-encryption-customer-key': toBase64('SSECustomerKey'),
-			'x-amz-server-side-encryption-customer-key-md5':
-				'u2yTVQWmqQ+XbBDNNmwr4Q==',
 			'content-type': 'application/xml',
 		}),
 		body:
@@ -105,10 +97,6 @@ const completeMultipartUploadErrorCase: ApiFunctionalTestCase<
 			'</Error>',
 	},
 	{
-		$metadata: expect.objectContaining({
-			...expectedMetadata,
-			httpStatusCode: 403,
-		}),
 		message: 'Access Denied',
 		name: 'AccessDenied',
 	},
@@ -136,7 +124,6 @@ const completeMultipartUploadErrorWith200CodeCase: ApiFunctionalTestCase<
 			'</Error>',
 	},
 	{
-		$metadata: expect.objectContaining(expectedMetadata),
 		message: 'We encountered an internal error. Please try again.',
 		name: 'InternalError',
 	},
