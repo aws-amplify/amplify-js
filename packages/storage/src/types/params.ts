@@ -7,7 +7,7 @@ export type StorageOptions =
 	| { accessLevel?: 'guest' | 'private' }
 	| {
 			accessLevel: 'protected';
-			targetIdentityId?: string;
+			targetIdentityId: string;
 	  };
 
 export type StorageOperationRequest<Options extends StorageOptions> = {
