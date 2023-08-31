@@ -10,16 +10,23 @@ import {
 } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
 import { RestAPIClass } from '@aws-amplify/api-rest';
-import { InternalAuth } from '@aws-amplify/auth/internals';
+// TODO this doesn't exist anymore:
+import { Auth } from '@aws-amplify/auth';
 import { Cache } from '@aws-amplify/cache';
 import {
 	Amplify,
-	ApiAction,
-	Category,
+	// ApiAction,
+	// Category,
 	Credentials,
-	CustomUserAgentDetails,
+	// CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 } from '@aws-amplify/core';
+import {
+	ApiAction,
+	Category,
+	CustomUserAgentDetails,
+} from '@aws-amplify/core/internals/utils';
+
 import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
 import Observable from 'zen-observable-ts';
 
@@ -38,7 +45,7 @@ export class InternalAPIClass {
 	private _restApi: RestAPIClass;
 	private _graphqlApi: InternalGraphQLAPIClass;
 
-	InternalAuth = InternalAuth;
+	Auth = Auth;
 	Cache = Cache;
 	Credentials = Credentials;
 
@@ -68,7 +75,7 @@ export class InternalAPIClass {
 		// Share Amplify instance with client for SSR
 		this._restApi.Credentials = this.Credentials;
 
-		this._graphqlApi.InternalAuth = this.InternalAuth;
+		this._graphqlApi.Auth = this.Auth;
 		this._graphqlApi.Cache = this.Cache;
 		this._graphqlApi.Credentials = this.Credentials;
 

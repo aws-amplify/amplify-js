@@ -10,11 +10,16 @@ import {
 	Credentials,
 	Constants,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-	Category,
+	// Category,
 	Framework,
-	ApiAction,
-	CustomUserAgentDetails,
+	// ApiAction,
+	// CustomUserAgentDetails,
 } from '@aws-amplify/core';
+import {
+	ApiAction,
+	Category,
+	CustomUserAgentDetails,
+} from '@aws-amplify/core/internals/utils';
 import { InternalPubSub } from '@aws-amplify/pubsub/internals';
 import { Cache } from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';

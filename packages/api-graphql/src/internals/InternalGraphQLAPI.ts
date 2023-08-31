@@ -13,10 +13,11 @@ import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Credentials,
-	CustomUserAgentDetails,
+	// CustomUserAgentDetails,
 	getAmplifyUserAgent,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
+import { CustomUserAgentDetails } from '@aws-amplify/core/internals/utils';
 import { InternalPubSub } from '@aws-amplify/pubsub/internals';
 import { InternalAuth } from '@aws-amplify/auth/internals';
 import { Cache } from '@aws-amplify/cache';
