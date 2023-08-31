@@ -8,6 +8,7 @@ import {
 	GeofencePolygon,
 	GeofenceInput,
 	PolygonGeometry,
+	Geofence,
 } from '../src/types';
 
 export const credentials = {
@@ -199,7 +200,7 @@ export const geofenceWithTooManyVertices: GeofenceInput = {
 	geometry: { polygon: polygonTooManyVertices },
 };
 
-export const validGeofences = [];
+export const validGeofences: Geofence[] = [];
 for (let i = 0; i < 132; i++) {
 	validGeofences.push({
 		geofenceId: `validGeofenceId${i}`,

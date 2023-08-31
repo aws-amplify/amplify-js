@@ -46,7 +46,7 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-sdk/client-location": "3.186.3",
+		"@aws-sdk/client-location": "3.398.0",
 		"@turf/boolean-clockwise": "6.5.0",
 		"camelcase-keys": "6.2.2",
 		"tslib": "^2.5.0"

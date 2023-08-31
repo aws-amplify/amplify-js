@@ -60,6 +60,7 @@ import {
 	GeofencePolygon,
 	AmazonLocationServiceDeleteGeofencesResults,
 	searchByPlaceIdOptions,
+	AmazonLocationServiceBatchGeofenceErrorMessages,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServiceProvider');
@@ -451,7 +452,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 							geofenceId: geofence.GeofenceId!,
 							error: {
 								code: 'APIConnectionError',
-								message: error.message,
+								message: (error as Error).message,
 							},
 						});
 					});
@@ -689,8 +690,10 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 						const errorObject = {
 							geofenceId,
 							error: {
-								code: error.message,
-								message: error.message,
+								code: (error as Error)
+									.message as AmazonLocationServiceBatchGeofenceErrorMessages,
+								message: (error as Error)
+									.message as AmazonLocationServiceBatchGeofenceErrorMessages,
 							},
 						};
 						results.errors.push(errorObject);

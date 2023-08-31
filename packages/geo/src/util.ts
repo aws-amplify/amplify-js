@@ -48,12 +48,12 @@ export function validateLinearRing(
 	}
 
 	// Validate all coordinates are valid, error with which ones are bad
-	const badCoordinates = [];
+	const badCoordinates: any[] = [];
 	linearRing.forEach(coordinates => {
 		try {
 			validateCoordinates(coordinates[0], coordinates[1]);
 		} catch (error) {
-			badCoordinates.push({ coordinates, error: error.message });
+			badCoordinates.push({ coordinates, error: (error as Error).message });
 		}
 	});
 	if (badCoordinates.length > 0) {
@@ -153,7 +153,7 @@ export function validateGeofencesInput(geofences: GeofenceInput[]) {
 			validatePolygon(polygon, geofenceId);
 		} catch (error) {
 			if (
-				error.message.includes(
+				(error as Error).message.includes(
 					'Polygon has more than the maximum 1000 vertices.'
 				)
 			) {
