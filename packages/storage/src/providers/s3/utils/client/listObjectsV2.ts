@@ -16,6 +16,7 @@ import { defaultConfig } from './base';
 import {
 	assignStringVariables,
 	buildStorageServiceError,
+	deserializeBoolean,
 	deserializeNumber,
 	deserializeTimestamp,
 	emptyArrayGuard,
@@ -24,7 +25,6 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 } from './utils';
-import { StorageError } from '../../../../errors/StorageError';
 
 export type ListObjectsV2Input = ListObjectsV2CommandInput;
 

@@ -88,12 +88,11 @@ const serializeCompletedPartList = (input: CompletedPart): string => {
 const parseXmlBodyOrThrow = async (response: HttpResponse): Promise<any> => {
 	const parsed = await parseXmlBody(response); // Handles empty body case
 	if (parsed.Code !== undefined && parsed.Message !== undefined) {
-		const error = await parseXmlError({
+		const error = (await parseXmlError({
 			...response,
 			statusCode: 500, // To workaround the >=300 status code check common to other APIs.
-		});
-		error!.$metadata.httpStatusCode = response.statusCode;
-		throw error;
+		})) as Error;
+		throw buildStorageServiceError(error, response.statusCode);
 	}
 	return parsed;
 };
