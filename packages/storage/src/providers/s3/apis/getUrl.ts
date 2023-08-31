@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { StorageDownloadDataRequest } from '../../..';
+import { StorageDownloadDataRequest } from '../../../types';
 import { S3GetUrlOptions, S3GetUrlResult } from '../types';
 import { getUrl as getUrlInternal } from './internal/getUrl';
 

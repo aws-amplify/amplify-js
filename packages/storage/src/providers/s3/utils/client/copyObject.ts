@@ -33,12 +33,6 @@ export type CopyObjectInput = Pick<
 	| 'ContentLanguage'
 	| 'Expires'
 	| 'ACL'
-	| 'ServerSideEncryption'
-	| 'SSECustomerAlgorithm'
-	| 'SSECustomerKey'
-	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
-	| 'SSEKMSKeyId'
 	| 'Tagging'
 	| 'Metadata'
 >;
