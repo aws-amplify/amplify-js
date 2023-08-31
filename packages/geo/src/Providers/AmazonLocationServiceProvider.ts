@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import camelcaseKeys from 'camelcase-keys';
 
+import { fetchAuthSession } from '@aws-amplify/core';
 import {
 	ConsoleLogger as Logger,
-	Credentials,
 	getAmplifyUserAgentObject,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/utils';
 import {
 	Place as PlaceResult,
 	LocationClient,
@@ -203,7 +203,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		);
 		const results: Place[] = camelcaseKeys(PascalResults, {
 			deep: true,
-		}) as undefined as Place[];
+		}) as unknown as Place[];
 
 		return results;
 	}
@@ -448,7 +448,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 					// If the API call fails, add the geofences to the errors array and move to next batch
 					batch.forEach(geofence => {
 						results.errors.push({
-							geofenceId: geofence.GeofenceId,
+							geofenceId: geofence.GeofenceId!,
 							error: {
 								code: 'APIConnectionError',
 								message: error.message,
@@ -459,29 +459,31 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 				}
 
 				// Push all successes to results
-				response.Successes.forEach(success => {
-					const { GeofenceId, CreateTime, UpdateTime } = success;
-					results.successes.push({
-						geofenceId: GeofenceId,
-						createTime: CreateTime,
-						updateTime: UpdateTime,
+				if (response.Successes) {
+					response.Successes.forEach(success => {
+						const { GeofenceId, CreateTime, UpdateTime } = success;
+						results.successes.push({
+							geofenceId: GeofenceId!,
+							createTime: CreateTime,
+							updateTime: UpdateTime,
+						});
 					});
-				});
+				}
 
 				// Push all errors to results
-				response.Errors.forEach(error => {
-					const {
-						Error: { Code, Message },
-						GeofenceId,
-					} = error;
-					results.errors.push({
-						error: {
-							code: Code,
-							message: Message,
-						},
-						geofenceId: GeofenceId,
+				if (response.Errors) {
+					response.Errors.forEach(error => {
+						const { Error, GeofenceId } = error;
+						const { Code, Message } = Error!;
+						results.errors.push({
+							error: {
+								code: Code!,
+								message: Message!,
+							},
+							geofenceId: GeofenceId!,
+						});
 					});
-				});
+				}
 			})
 		);
 
@@ -541,9 +543,9 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const { GeofenceId, CreateTime, UpdateTime, Status, Geometry } = response;
 		const geofence: AmazonLocationServiceGeofence = {
 			createTime: CreateTime,
-			geofenceId: GeofenceId,
+			geofenceId: GeofenceId!,
 			geometry: {
-				polygon: Geometry.Polygon as GeofencePolygon,
+				polygon: Geometry!.Polygon as GeofencePolygon,
 			},
 			status: Status as AmazonLocationServiceGeofenceStatus,
 			updateTime: UpdateTime,
@@ -607,21 +609,15 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const { NextToken, Entries } = response;
 
 		const results: ListGeofenceResults = {
-			entries: Entries.map(
-				({
-					GeofenceId,
-					CreateTime,
-					UpdateTime,
-					Status,
-					Geometry: { Polygon },
-				}) => {
+			entries: Entries!.map(
+				({ GeofenceId, CreateTime, UpdateTime, Status, Geometry }) => {
 					return {
-						geofenceId: GeofenceId,
+						geofenceId: GeofenceId!,
 						createTime: CreateTime,
 						updateTime: UpdateTime,
 						status: Status,
 						geometry: {
-							polygon: Polygon as GeofencePolygon,
+							polygon: Geometry!.Polygon as GeofencePolygon,
 						},
 					};
 				}
@@ -718,11 +714,13 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	private async _ensureCredentials(): Promise<boolean> {
 		try {
-			const credentials = await Credentials.get();
+			const credentials = (await fetchAuthSession()).credentials;
 			if (!credentials) return false;
-			const cred = Credentials.shear(credentials);
-			logger.debug('Set credentials for storage. Credentials are:', cred);
-			this._config.credentials = cred;
+			logger.debug(
+				'Set credentials for storage. Credentials are:',
+				credentials
+			);
+			this._config.credentials = credentials;
 			return true;
 		} catch (error) {
 			logger.debug('Ensure credentials error. Credentials are:', error);

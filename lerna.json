@@ -7,7 +7,8 @@
 		"packages/analytics",
 		"packages/storage",
 		"packages/aws-amplify",
-		"packages/adapter-nextjs"
+		"packages/adapter-nextjs",
+		"packages/geo"
 	],
 	"exact": true,
 	"version": "independent",

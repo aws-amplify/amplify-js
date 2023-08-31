@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Credentials } from '@aws-amplify/core';
+import { fetchAuthSession } from '@aws-amplify/core';
 import {
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
@@ -13,6 +13,7 @@ import camelcaseKeys from 'camelcase-keys';
 import { GeoClass } from '../src/Geo';
 import { AmazonLocationServiceProvider } from '../src/Providers/AmazonLocationServiceProvider';
 import {
+	AmazonLocationServiceMapStyle,
 	Coordinates,
 	SearchByCoordinatesOptions,
 	SearchByTextOptions,
@@ -67,6 +68,12 @@ LocationClient.prototype.send = jest.fn(async command => {
 			Place: TestPlacePascalCase,
 		};
 	}
+});
+
+jest.mock('@aws-amplify/core', () => {
+	return {
+		fetchAuthSession: jest.fn(),
+	};
 });
 
 describe('Geo', () => {
@@ -135,8 +142,8 @@ describe('Geo', () => {
 
 	describe('get map resources', () => {
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -164,7 +171,7 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
 
-			const maps = [];
+			const maps: AmazonLocationServiceMapStyle[] = [];
 			const availableMaps = awsConfig.geo.amazon_location_service.maps.items;
 			const region = awsConfig.geo.amazon_location_service.region;
 
@@ -219,8 +226,8 @@ describe('Geo', () => {
 		const testString = 'star';
 
 		test('should search with just text input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -238,8 +245,8 @@ describe('Geo', () => {
 		});
 
 		test('should search using given options with biasPosition', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -266,8 +273,8 @@ describe('Geo', () => {
 		});
 
 		test('should search using given options with searchAreaConstraints', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -294,8 +301,8 @@ describe('Geo', () => {
 		});
 
 		test('should throw an error if both BiasPosition and SearchAreaConstraints are given in the options', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -315,8 +322,8 @@ describe('Geo', () => {
 		});
 
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -334,8 +341,8 @@ describe('Geo', () => {
 		const testResults = camelcaseKeys(TestPlacePascalCase, { deep: true });
 
 		test('should search with PlaceId as input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -353,8 +360,8 @@ describe('Geo', () => {
 		});
 
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -380,8 +387,8 @@ describe('Geo', () => {
 		];
 
 		test('should search with just text input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -399,8 +406,8 @@ describe('Geo', () => {
 		});
 
 		test('should search using given options with biasPosition', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -427,8 +434,8 @@ describe('Geo', () => {
 		});
 
 		test('should search using given options with searchAreaConstraints', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -455,8 +462,8 @@ describe('Geo', () => {
 		});
 
 		test('should throw an error if both BiasPosition and SearchAreaConstraints are given in the options', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -478,8 +485,8 @@ describe('Geo', () => {
 		});
 
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -496,8 +503,8 @@ describe('Geo', () => {
 		const testCoordinates: Coordinates = [45, 90];
 
 		test('should search with just coordinate input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -515,8 +522,8 @@ describe('Geo', () => {
 		});
 
 		test('should search using options when given', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -542,8 +549,8 @@ describe('Geo', () => {
 		});
 
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -558,8 +565,8 @@ describe('Geo', () => {
 
 	describe('saveGeofences', () => {
 		test('saveGeofences with a single geofence', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
@@ -591,8 +598,8 @@ describe('Geo', () => {
 		});
 
 		test('saveGeofences with multiple geofences', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
@@ -614,8 +621,8 @@ describe('Geo', () => {
 		});
 
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const geo = new GeoClass();
@@ -630,8 +637,8 @@ describe('Geo', () => {
 
 	describe('getGeofence', () => {
 		test('getGeofence returns the right geofence', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
@@ -665,8 +672,8 @@ describe('Geo', () => {
 
 	describe('listGeofences', () => {
 		test('listGeofences gets the first 100 geofences when no arguments are given', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
@@ -682,8 +689,8 @@ describe('Geo', () => {
 		});
 
 		test('listGeofences gets the second 100 geofences when nextToken is passed', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest

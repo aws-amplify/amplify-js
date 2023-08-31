@@ -45,7 +45,8 @@
 			"packages/analytics",
 			"packages/storage",
 			"packages/aws-amplify",
-			"packages/adapter-nextjs"
+			"packages/adapter-nextjs",
+			"packages/geo"
 		],
 		"nohoist": [
 			"**/@types/react-native",

@@ -1,10 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	parseAWSExports,
-} from '@aws-amplify/core';
+import { parseAWSExports } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import { AmazonLocationServiceProvider } from './Providers/AmazonLocationServiceProvider';
 
 import { validateCoordinates } from './util';
@@ -331,4 +328,3 @@ export class GeoClass {
 }
 
 export const Geo = new GeoClass();
-Amplify.register(Geo);

@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Credentials } from '@aws-amplify/core';
+import { fetchAuthSession } from '@aws-amplify/core';
 import {
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
@@ -68,6 +68,12 @@ LocationClient.prototype.send = jest.fn(async command => {
 	}
 });
 
+jest.mock('@aws-amplify/core', () => {
+	return {
+		fetchAuthSession: jest.fn(),
+	};
+});
+
 describe('AmazonLocationServiceProvider', () => {
 	afterEach(() => {
 		jest.restoreAllMocks();
@@ -122,7 +128,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const provider = new AmazonLocationServiceProvider();
 			provider.configure(awsConfig.geo.amazon_location_service);
 
-			const maps = [];
+			const maps: any[] = [];
 			const availableMaps = awsConfig.geo.amazon_location_service.maps.items;
 			const region = awsConfig.geo.amazon_location_service.region;
 			for (const mapName in availableMaps) {
@@ -173,8 +179,8 @@ describe('AmazonLocationServiceProvider', () => {
 		const testString = 'star';
 
 		test('should search with just text input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -192,8 +198,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should use biasPosition when given', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -225,8 +231,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should use searchAreaConstraints when given', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -257,8 +263,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should throw an error if both BiasPosition and SearchAreaConstraints are given in the options', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -280,8 +286,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if credentials are invalid', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve();
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials: undefined });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -292,7 +298,7 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
 				return Promise.reject();
 			});
 
@@ -304,8 +310,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if there are no search index resources', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -330,8 +336,8 @@ describe('AmazonLocationServiceProvider', () => {
 		];
 
 		test('should search with just text input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -350,8 +356,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should use biasPosition when given', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -383,8 +389,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should use searchAreaConstraints when given', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -413,8 +419,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should throw an error if both BiasPosition and SearchAreaConstraints are given in the options', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -436,8 +442,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if credentials are invalid', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve();
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials: undefined });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -448,7 +454,7 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
 				return Promise.reject();
 			});
 
@@ -460,8 +466,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if there are no search index resources', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -480,8 +486,8 @@ describe('AmazonLocationServiceProvider', () => {
 		const testResults = camelcaseKeys(TestPlacePascalCase, { deep: true });
 
 		test('should search with PlaceId as input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -500,8 +506,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if PlaceId as input is empty string', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -513,8 +519,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if credentials are invalid', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve();
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials: undefined });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -525,7 +531,7 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
 				return Promise.reject();
 			});
 
@@ -537,8 +543,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if there are no search index resources', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -556,8 +562,8 @@ describe('AmazonLocationServiceProvider', () => {
 		const testCoordinates: Coordinates = [45, 90];
 
 		test('should search with just text input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -577,8 +583,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should use options when given', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -604,8 +610,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if credentials resolve to invalid', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve();
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials: undefined });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -616,7 +622,7 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
 				return Promise.reject();
 			});
 
@@ -628,8 +634,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if there are no search index resources', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -645,8 +651,8 @@ describe('AmazonLocationServiceProvider', () => {
 
 	describe('saveGeofences', () => {
 		test('saveGeofences with multiple geofences', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
@@ -662,8 +668,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('saveGeofences calls batchPutGeofences in batches of 10 from input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -699,8 +705,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('saveGeofences properly handles errors with bad network calls', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -755,8 +761,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should error if a geofence is wound clockwise', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
@@ -774,8 +780,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should error if input is empty array', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
@@ -791,8 +797,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should error if there are no geofenceCollections in config', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -808,8 +814,8 @@ describe('AmazonLocationServiceProvider', () => {
 
 	describe('getGeofence', () => {
 		test('getGeofence returns the right geofence', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
@@ -834,8 +840,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('getGeofence errors when a bad geofenceId is given', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
@@ -852,8 +858,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should error if there are no geofenceCollections in config', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -867,8 +873,8 @@ describe('AmazonLocationServiceProvider', () => {
 
 	describe('listGeofences', () => {
 		test('listGeofences gets the first 100 geofences when no arguments are given', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
@@ -884,8 +890,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('listGeofences gets the second 100 geofences when nextToken is passed', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
@@ -911,8 +917,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should error if there are no geofenceCollections in config', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -926,8 +932,8 @@ describe('AmazonLocationServiceProvider', () => {
 
 	describe('deleteGeofences', () => {
 		test('deleteGeofences deletes given geofences successfully', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
@@ -950,8 +956,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('deleteGeofences calls batchDeleteGeofences in batches of 10 from input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -981,8 +987,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('deleteGeofences properly handles errors with bad network calls', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();
@@ -1034,8 +1040,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should error if there is a bad geofence in the input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
@@ -1051,8 +1057,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should error if input array is empty', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
@@ -1062,8 +1068,8 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should error if there are no geofenceCollections in config', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			const locationProvider = new AmazonLocationServiceProvider();

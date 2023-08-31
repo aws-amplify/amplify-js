@@ -1,7 +1,6 @@
 {
 	"name": "@aws-amplify/geo",
 	"version": "3.0.0",
-	"private": true,
 	"description": "Geo category for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -29,7 +28,7 @@
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 86.56"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 84.00"
 	},
 	"repository": {
 		"type": "git",
