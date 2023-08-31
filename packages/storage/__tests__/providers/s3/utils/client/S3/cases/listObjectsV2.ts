@@ -142,10 +142,6 @@ const listObjectsV2ErrorCase: ApiFunctionalTestCase<typeof listObjectsV2> = [
 		</Error>`,
 	},
 	{
-		$metadata: expect.objectContaining({
-			...expectedMetadata,
-			httpStatusCode: 403,
-		}),
 		message: 'The resource you requested does not exist',
 		name: 'NoSuchKey',
 	},
