@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
+import { ServiceError } from '@aws-amplify/core/internals/utils';
+
+import { StorageError } from '../../../../../errors/StorageError';
 
 type PropertyNameWithStringValue = string;
 type PropertyNameWithSubsequentDeserializer<T> = [string, (arg: any) => T];
@@ -132,4 +135,24 @@ export const deserializeMetadata = (
 			return acc;
 		}, {} as any);
 	return Object.keys(deserialized).length > 0 ? deserialized : undefined;
+};
+
+/**
+ * Internal-only method to create a new StorageError from a service error.
+ *
+ * @internal
+ */
+export const buildStorageServiceError = (
+	error: Error,
+	statusCode: number
+): ServiceError => {
+	const storageError = new StorageError({
+		name: error.name,
+		message: error.message,
+	});
+	if (statusCode === 404) {
+		storageError.recoverySuggestion =
+			'Please add the object with this key to the bucket as the key is not found.';
+	}
+	return storageError;
 };
