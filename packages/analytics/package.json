@@ -5,10 +5,7 @@
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
-	"sideEffects": [
-		"./lib/Analytics.js",
-		"./lib-esm/Analytics.js"
-	],
+	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
 	},
