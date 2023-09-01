@@ -6,5 +6,6 @@ on:
 
 jobs:
   canaries:
+    if: github.repository == 'aws-amplify/amplify-js'
     secrets: inherit
     uses: ./.github/workflows/callable-canary-e2e.yml

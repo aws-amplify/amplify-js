@@ -1,8 +1,6 @@
 name: Update yarn.lock
 
 on:
-  push:
-    branches: ['01-yarnlock']
   schedule:
     - cron: '0 8 * * 0' # run weekly on Sunday at 8am GMT
 
@@ -11,6 +9,7 @@ permissions:
 
 jobs:
   yarn-update:
+    if: github.repository == 'aws-amplify/amplify-js'
     runs-on: ubuntu-latest
     steps:
       - name: Get current date
