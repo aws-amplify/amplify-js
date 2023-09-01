@@ -1,9 +1,3 @@
 {
-	"extends": "../tsconfig.base.json",
-	"compilerOptions": {
-		"strict": true,
-		"typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
-		"types": ["node", "jest"]
-	},
-	"include": ["./src"]
+	"extends": "./tsconfig.build.json"
 }
