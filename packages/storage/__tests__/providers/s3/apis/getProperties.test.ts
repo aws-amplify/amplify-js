@@ -42,9 +42,6 @@ describe('getProperties api', () => {
 				},
 			},
 		});
-		afterEach(() => {
-			jest.clearAllMocks();
-		});
 	});
 	describe('getProperties happy path ', () => {
 		beforeEach(() => {

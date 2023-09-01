@@ -60,9 +60,6 @@ describe('getUrl test', () => {
 				url: new URL('https://google.com'),
 			});
 		});
-		afterEach(() => {
-			jest.clearAllMocks();
-		});
 		it.each([
 			[
 				'key',
