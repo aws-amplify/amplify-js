@@ -3,10 +3,10 @@
 
 export { DownloadTask, TransferProgressEvent, UploadTask } from './common';
 export {
-	StorageListRequest,
-	StorageOperationRequest,
-	StorageDownloadDataRequest,
-	StorageUploadDataRequest,
+	ListRequest,
+	OperationRequest,
+	DownloadDataRequest,
+	UploadDataRequest,
 	CopyRequest,
 } from './requests';
 export {

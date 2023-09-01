@@ -10,23 +10,23 @@ import {
 	StorageCopyDestinationOptions,
 } from './options';
 
-export type StorageOperationRequest<Options extends StorageOptions> = {
+export type OperationRequest<Options extends StorageOptions> = {
 	key: string;
 	options?: Options;
 };
 
-export type StorageListRequest<
+export type ListRequest<
 	Options extends StorageListAllOptions | StorageListPaginateOptions
 > = {
 	path?: string;
 	options?: Options;
 };
 
-export type StorageDownloadDataRequest<Options extends StorageOptions> =
-	StorageOperationRequest<Options>;
+export type DownloadDataRequest<Options extends StorageOptions> =
+	OperationRequest<Options>;
 
-export type StorageUploadDataRequest<Options extends StorageOptions> =
-	StorageOperationRequest<Options> & {
+export type UploadDataRequest<Options extends StorageOptions> =
+	OperationRequest<Options> & {
 		data: StorageUploadSourceOptions;
 	};
 
