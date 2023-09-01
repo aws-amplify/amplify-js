@@ -21,7 +21,7 @@ export const getUrl = async function (
 	const { key, options } = getUrlRequest;
 
 	if (options?.validateObjectExistence) {
-		await getProperties(amplify, { key });
+		await getProperties(amplify, { key, options });
 	}
 
 	const { s3Config, keyPrefix, bucket } = await resolveS3ConfigAndInput(
