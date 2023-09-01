@@ -14,10 +14,22 @@ runs:
       env:
         SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
     - uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
-      id: cache-build-artifacts
+      id: cache-yarn-artifacts
       with:
         path: |
           **/node_modules
+        key: ${{ runner.os }}-yarn-artifacts-${{ hashFiles('./amplify-js/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-artifacts-
+    - name: Install
+      if: steps.cache-yarn-artifacts.outputs.cache-hit != 'true'
+      run: yarn
+      shell: bash
+      working-directory: ./amplify-js
+    - uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+      id: cache-build-artifacts
+      with:
+        path: |
           **/dist
           **/lib
           **/lib-esm/
@@ -25,19 +37,13 @@ runs:
           **/esm/
           **/cjs/
           **/packages/core/src/Platform/version.ts
-        key: ${{ runner.os }}-build-artifacts-${{ github.sha }}
+        key: ${{ runner.os }}-build-artifacts-${{ hashFiles('./amplify-js/packages/*/src/**', './amplify-js/packages/*/*.json', './amplify-js/packages/*/*.js') }}
         restore-keys: |
           ${{ runner.os }}-build-artifacts-
       env:
         SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
-    # TODO We should be able to skip yarn / bootstrap if we cache enough things. Leaving because skipping causes issues.
-    - name: Install
-      if: inputs.is-prebuild != 'true' || steps.cache-build-artifacts.outputs.cache-hit != 'true'
-      run: yarn
-      shell: bash
-      working-directory: ./amplify-js
     - name: Bootstrap
-      if: inputs.is-prebuild != 'true' || steps.cache-build-artifacts.outputs.cache-hit != 'true'
+      if: steps.cache-build-artifacts.outputs.cache-hit != 'true'
       run: yarn bootstrap
       shell: bash
       working-directory: ./amplify-js

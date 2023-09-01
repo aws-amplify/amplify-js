@@ -5,6 +5,9 @@ concurrency:
   group: push-release-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
@@ -17,7 +20,5 @@ jobs:
   release:
     needs:
       - e2e
-    permissions:
-      contents: write
     secrets: inherit
     uses: ./.github/workflows/callable-npm-publish-release.yml

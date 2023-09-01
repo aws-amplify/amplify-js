@@ -1,0 +1,50 @@
+name: Update yarn.lock
+
+on:
+  push:
+    branches: ['01-yarnlock']
+  schedule:
+    - cron: '0 8 * * 0' # run weekly on Sunday at 8am GMT
+
+permissions:
+  contents: write
+
+jobs:
+  yarn-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get current date
+        id: current-date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
+        with:
+          ref: main
+      - name: Set github commit user
+        shell: bash
+        env:
+          GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
+          GITHUB_USER: ${{ vars.GH_USER }}
+        run: |
+          git config --global user.email $GITHUB_EMAIL
+          git config --global user.name $GITHUB_USER
+      - name: Update yarn.lock on a branch
+        env:
+          BRANCH: update-yarnlock/${{ steps.current-date.outputs.date }}
+        run: |
+          git fetch origin
+          git checkout -b $BRANCH
+          rm yarn.lock
+          yarn || true
+          git add yarn.lock
+          git commit -am "chore: update yarn.lock"
+          git push origin HEAD
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN_AMPLIFY_JS_AUTOMATION }}
+          BRANCH: update-yarnlock/${{ steps.current-date.outputs.date }}
+        run: |
+          gh pr create \
+          --title "chore: update yarn.lock" \
+          --body "Update the yarn.lock file" \
+          --head $BRANCH \
+          --base main

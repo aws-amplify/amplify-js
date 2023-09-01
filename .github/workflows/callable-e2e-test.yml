@@ -61,7 +61,7 @@ jobs:
       - name: Setup samples staging repository
         uses: ./amplify-js/.github/actions/setup-samples-staging
         with:
-          GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
+          GH_TOKEN_AMPLIFY_JS_AUTOMATION: ${{ secrets.GH_TOKEN_AMPLIFY_JS_AUTOMATION }}
       - name: Load Verdaccio with AmplifyJs
         uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
       - name: Run cypress tests for ${{ inputs.test_name }} dev

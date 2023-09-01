@@ -1,0 +1,65 @@
+name: After release - Merge from release back to main
+
+on:
+  workflow_run:
+    workflows:
+      - Push - release from release to latest
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  pr-release-to-main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create branch name
+        env:
+          GH_SHA: ${{ github.sha }}
+        id: branch-name
+        run: |
+          export SHORT_SHA=$(echo $GH_SHA | cut -c -7)
+          echo "name=merge-release-to-main/$SHORT_SHA" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
+        with:
+          ref: release
+          fetch-depth: 0
+          path: amplify-js
+
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+
+      - name: Set github commit user
+        shell: bash
+        env:
+          GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
+          GITHUB_USER: ${{ vars.GH_USER }}
+        run: |
+          git config --global user.email $GITHUB_EMAIL
+          git config --global user.name $GITHUB_USER
+      - name: Update API documentation
+        working-directory: ./amplify-js
+        run: |
+          yarn run docs
+          git add ./docs/api/
+          git commit -m "chore: update API docs"
+      - name:
+        working-directory: ./amplify-js
+        env:
+          BRANCH: ${{ steps.branch-name.outputs.name }}
+        run: |
+          git fetch origin
+          git checkout -b $BRANCH
+          git push origin HEAD
+      - name: Create Pull Request
+        working-directory: ./amplify-js
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN_AMPLIFY_JS_AUTOMATION }}
+          BRANCH: ${{ steps.branch-name.outputs.name }}
+        run: |
+          gh pr create \
+          --title "chore: Merge release back to main" \
+          --body "Merge version updates and docs changes from release back to main." \
+          --head $BRANCH \
+          --base main
