@@ -159,7 +159,7 @@ describe('getProperties api', () => {
 		});
 	});
 
-	describe('getProperties Error path', () => {
+	describe('getProperties error path', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
