@@ -58,7 +58,6 @@ export {
 	MemoryKeyValueStorage,
 } from './StorageHelper';
 export { KeyValueStorageInterface } from './types';
-export { UniversalStorage } from './UniversalStorage';
 
 // Cache exports
 import { BrowserStorageCache } from './Cache/BrowserStorageCache';
