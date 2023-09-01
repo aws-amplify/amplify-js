@@ -15,6 +15,9 @@ export type OperationRequest<Options extends StorageOptions> = {
 	options?: Options;
 };
 
+export type GetPropertiesRequest<Options extends StorageOptions> =
+	OperationRequest<Options>;
+
 export type ListRequest<
 	Options extends StorageListAllOptions | StorageListPaginateOptions
 > = {

@@ -3,6 +3,7 @@
 
 export { DownloadTask, TransferProgressEvent, UploadTask } from './common';
 export {
+	GetPropertiesRequest,
 	ListRequest,
 	OperationRequest,
 	DownloadDataRequest,
