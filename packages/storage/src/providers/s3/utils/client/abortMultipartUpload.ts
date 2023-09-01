@@ -13,10 +13,11 @@ import type { AbortMultipartUploadCommandInput } from './types';
 
 import { defaultConfig } from './base';
 import {
-	validateS3RequiredParameter,
+	buildStorageServiceError,
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
+	validateS3RequiredParameter,
 } from './utils';
 
 export type AbortMultipartUploadInput = Pick<
@@ -48,8 +49,8 @@ const abortMultipartUploadDeserializer = async (
 	response: HttpResponse
 ): Promise<AbortMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		throw error;
+		const error = (await parseXmlError(response)) as Error;
+		throw buildStorageServiceError(error, response.statusCode);
 	} else {
 		return {
 			$metadata: parseMetadata(response),

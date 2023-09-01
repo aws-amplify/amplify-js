@@ -171,7 +171,7 @@ describe('Session tests', () => {
 			Auth: {
 				credentialsProvider: {
 					getCredentialsAndIdentityId: credentialsSpy,
-					clearCredentials: () => {},
+					clearCredentialsAndIdentityId: () => {},
 				},
 				tokenProvider: {
 					getTokens: spyTokenProvider,
@@ -261,7 +261,7 @@ describe('Session tests', () => {
 			Auth: {
 				credentialsProvider: {
 					getCredentialsAndIdentityId: credentialsSpy,
-					clearCredentials: () => {},
+					clearCredentialsAndIdentityId: () => {},
 				},
 				tokenProvider: {
 					getTokens: spyTokenProvider,

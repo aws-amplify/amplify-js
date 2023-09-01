@@ -62,16 +62,14 @@
 		"server"
 	],
 	"dependencies": {
-		"@aws-crypto/sha256-js": "1.2.2",
-		"@aws-sdk/types": "3.6.1",
-		"@aws-sdk/util-hex-encoding": "3.6.1",
+		"@aws-crypto/sha256-js": "5.0.0",
+		"@aws-sdk/types": "3.398.0",
+		"@smithy/util-hex-encoding": "2.0.0",
 		"@types/node-fetch": "2.6.4",
 		"isomorphic-unfetch": "^3.0.0",
 		"tslib": "^2.5.0",
-		"universal-cookie": "^4.0.4",
 		"uuid": "^9.0.0",
 		"zen-observable-ts": "0.8.19",
-		"rxjs": "^7.8.1",
 		"js-cookie": "^2.2.1"
 	},
 	"devDependencies": {
@@ -85,12 +83,6 @@
 	},
 	"size-limit": [
 		{
-			"name": "Core (ServiceWorker)",
-			"path": "./lib-esm/index.js",
-			"import": "{ ServiceWorker }",
-			"limit": "19.6 kB"
-		},
-		{
 			"name": "Core (Hub)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Hub }",
@@ -101,24 +93,6 @@
 			"path": "./lib-esm/index.js",
 			"import": "{ I18n }",
 			"limit": "6.1 kB"
-		},
-		{
-			"name": "Core (Logger)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Logger }",
-			"limit": "1.3 kB"
-		},
-		{
-			"name": "Core (Credentials)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Credentials }",
-			"limit": "14.1 kB"
-		},
-		{
-			"name": "Core (Signer)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Signer }",
-			"limit": "19.6 kB"
 		},
 		{
 			"name": "Custom clients (fetch handler)",
