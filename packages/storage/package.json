@@ -55,8 +55,8 @@
 		"s3"
 	],
 	"dependencies": {
-		"@aws-sdk/md5-js": "3.6.1",
-		"@aws-sdk/types": "3.6.1",
+		"@smithy/md5-js": "2.0.5",
+		"@aws-sdk/types": "3.398.0",
 		"fast-xml-parser": "^4.2.5",
 		"buffer": "4.9.2",
 		"tslib": "^2.5.0"
