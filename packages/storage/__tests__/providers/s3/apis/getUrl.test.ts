@@ -59,9 +59,10 @@ describe('getUrl test', () => {
 				url: new URL('https://google.com'),
 			});
 		});
-		afterAll(() => {
+		afterEach(() => {
 			jest.clearAllMocks();
 		});
+
 		it('get presigned url with guest accessLevel', async () => {
 			expect.assertions(4);
 			const result = await getUrl({
@@ -118,8 +119,7 @@ describe('getUrl test', () => {
 			const result = await getUrl({
 				key: 'key',
 				options: {
-					accessLevel: 'protected',
-					targetIdentityId,
+					accessLevel: 'private',
 					validateObjectExistence: true,
 				},
 			});
