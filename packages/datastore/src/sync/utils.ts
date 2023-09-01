@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { GraphQLAuthError } from '@aws-amplify/api';
 import { Logger } from '@aws-amplify/core';
@@ -11,6 +13,7 @@ import {
 	isGraphQLScalarType,
 	isPredicateObj,
 	isSchemaModel,
+	isSchemaModelWithAttributes,
 	isTargetNameAssociation,
 	isNonModelFieldType,
 	ModelFields,
@@ -19,6 +22,7 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicatesGroup,
+	PredicateObject,
 	RelationshipType,
 	SchemaModel,
 	SchemaNamespace,
@@ -26,8 +30,14 @@ import {
 	ModelOperation,
 	InternalSchema,
 	AuthModeStrategy,
+	ModelAttributes,
+	isPredicateGroup,
 } from '../types';
-import { exhaustiveCheck } from '../util';
+import {
+	extractPrimaryKeyFieldNames,
+	establishRelationAndKeys,
+	IDENTIFIER_KEY_SEPARATOR,
+} from '../util';
 import { MutationEvent } from './';
 
 const logger = new Logger('DataStore');
@@ -47,10 +57,10 @@ export enum TransformerMutationType {
 	GET = 'Get',
 }
 
-const dummyMetadata: Omit<ModelInstanceMetadata, 'id'> = {
-	_version: undefined,
-	_lastChangedAt: undefined,
-	_deleted: undefined,
+const dummyMetadata: ModelInstanceMetadata = {
+	_version: undefined!,
+	_lastChangedAt: undefined!,
+	_deleted: undefined!,
 };
 
 const metadataFields = <(keyof ModelInstanceMetadata)[]>(
@@ -79,7 +89,7 @@ export function generateSelectionSet(
 	if (isSchemaModel(modelDefinition)) {
 		scalarAndMetadataFields = scalarAndMetadataFields
 			.concat(getMetadataFields())
-			.concat(getConnectionFields(modelDefinition));
+			.concat(getConnectionFields(modelDefinition, namespace));
 	}
 
 	const result = scalarAndMetadataFields.join('\n');
@@ -103,8 +113,8 @@ function getOwnerFields(
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string[] {
 	const ownerFields: string[] = [];
-	if (isSchemaModel(modelDefinition) && modelDefinition.attributes) {
-		modelDefinition.attributes.forEach(attr => {
+	if (isSchemaModelWithAttributes(modelDefinition)) {
+		modelDefinition.attributes!.forEach(attr => {
 			if (attr.properties && attr.properties.rules) {
 				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
 				if (rule && rule.ownerField) {
@@ -138,13 +148,17 @@ function getScalarFields(
 	return result;
 }
 
-function getConnectionFields(modelDefinition: SchemaModel): string[] {
-	const result = [];
+// Used for generating the selection set for queries and mutations
+function getConnectionFields(
+	modelDefinition: SchemaModel,
+	namespace: SchemaNamespace
+): string[] {
+	const result: string[] = [];
 
 	Object.values(modelDefinition.fields)
 		.filter(({ association }) => association && Object.keys(association).length)
 		.forEach(({ name, association }) => {
-			const { connectionType } = association;
+			const { connectionType } = association || {};
 
 			switch (connectionType) {
 				case 'HAS_ONE':
@@ -153,11 +167,30 @@ function getConnectionFields(modelDefinition: SchemaModel): string[] {
 					break;
 				case 'BELONGS_TO':
 					if (isTargetNameAssociation(association)) {
-						result.push(`${name} { id _deleted }`);
+						// New codegen (CPK)
+						if (association.targetNames && association.targetNames.length > 0) {
+							// Need to retrieve relations in order to get connected model keys
+							const [relations] = establishRelationAndKeys(namespace);
+
+							const connectedModelName =
+								modelDefinition.fields[name].type['model'];
+
+							const byPkIndex = relations[connectedModelName].indexes.find(
+								([name]) => name === 'byPk'
+							);
+							const keyFields = byPkIndex && byPkIndex[1];
+							const keyFieldSelectionSet = keyFields?.join(' ');
+
+							// We rely on `_deleted` when we process the sync query (e.g. in batchSave in the adapters)
+							result.push(`${name} { ${keyFieldSelectionSet} _deleted }`);
+						} else {
+							// backwards-compatability for schema generated prior to custom primary key support
+							result.push(`${name} { id _deleted }`);
+						}
 					}
 					break;
 				default:
-					exhaustiveCheck(connectionType);
+					throw new Error(`Invalid connection type ${connectionType}`);
 			}
 		});
 
@@ -168,7 +201,7 @@ function getNonModelFields(
 	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string[] {
-	const result = [];
+	const result: string[] = [];
 
 	Object.values(modelDefinition.fields).forEach(({ name, type }) => {
 		if (isNonModelFieldType(type)) {
@@ -177,13 +210,12 @@ function getNonModelFields(
 				({ name }) => name
 			);
 
-			const nested = [];
+			const nested: string[] = [];
 			Object.values(typeDefinition.fields).forEach(field => {
 				const { type, name } = field;
 
 				if (isNonModelFieldType(type)) {
 					const typeDefinition = namespace.nonModels![type.nonModel];
-
 					nested.push(
 						`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`
 					);
@@ -201,8 +233,8 @@ export function getAuthorizationRules(
 	modelDefinition: SchemaModel
 ): AuthorizationRule[] {
 	// Searching for owner authorization on attributes
-	const authConfig = []
-		.concat(modelDefinition.attributes)
+	const authConfig = ([] as ModelAttributes)
+		.concat(modelDefinition.attributes || [])
 		.find(attr => attr && attr.type === 'auth');
 
 	const { properties: { rules = [] } = {} } = authConfig || {};
@@ -219,6 +251,7 @@ export function getAuthorizationRules(
 			groupClaim = 'cognito:groups',
 			allow: authStrategy = 'iam',
 			groups = [],
+			groupsField = '',
 		} = rule;
 
 		const isReadAuthorized = operations.includes('read');
@@ -235,14 +268,15 @@ export function getAuthorizationRules(
 			groupClaim,
 			authStrategy,
 			groups,
+			groupsField,
 			areSubscriptionsPublic: false,
 		};
 
 		if (isOwnerAuth) {
 			// look for the subscription level override
 			// only pay attention to the public level
-			const modelConfig = (<typeof modelDefinition.attributes>[])
-				.concat(modelDefinition.attributes)
+			const modelConfig = ([] as ModelAttributes)
+				.concat(modelDefinition.attributes || [])
 				.find(attr => attr && attr.type === 'model');
 
 			// find the subscriptions level. ON is default
@@ -272,26 +306,36 @@ export function buildSubscriptionGraphQLOperation(
 	modelDefinition: SchemaModel,
 	transformerMutationType: TransformerMutationType,
 	isOwnerAuthorization: boolean,
-	ownerField: string
+	ownerField: string,
+	filterArg: boolean = false
 ): [TransformerMutationType, string, string] {
 	const selectionSet = generateSelectionSet(namespace, modelDefinition);
 
-	const { name: typeName, pluralName: pluralTypeName } = modelDefinition;
+	const { name: typeName } = modelDefinition;
 
 	const opName = `on${transformerMutationType}${typeName}`;
-	let docArgs = '';
-	let opArgs = '';
+
+	const docArgs: string[] = [];
+	const opArgs: string[] = [];
+
+	if (filterArg) {
+		docArgs.push(`$filter: ModelSubscription${typeName}FilterInput`);
+		opArgs.push('filter: $filter');
+	}
 
 	if (isOwnerAuthorization) {
-		docArgs = `($${ownerField}: String!)`;
-		opArgs = `(${ownerField}: $${ownerField})`;
+		docArgs.push(`$${ownerField}: String!`);
+		opArgs.push(`${ownerField}: $${ownerField}`);
 	}
+
+	const docStr = docArgs.length ? `(${docArgs.join(',')})` : '';
+	const opStr = opArgs.length ? `(${opArgs.join(',')})` : '';
 
 	return [
 		transformerMutationType,
 		opName,
-		`subscription operation${docArgs}{
-			${opName}${opArgs}{
+		`subscription operation${docStr}{
+			${opName}${opStr}{
 				${selectionSet}
 			}
 		}`,
@@ -308,8 +352,8 @@ export function buildGraphQLOperation(
 	const { name: typeName, pluralName: pluralTypeName } = modelDefinition;
 
 	let operation: string;
-	let documentArgs: string = ' ';
-	let operationArgs: string = ' ';
+	let documentArgs: string;
+	let operationArgs: string;
 	let transformerMutationType: TransformerMutationType;
 
 	switch (graphQLOpType) {
@@ -348,17 +392,16 @@ export function buildGraphQLOperation(
 			operationArgs = '(id: $id)';
 			transformerMutationType = TransformerMutationType.GET;
 			break;
-
 		default:
-			exhaustiveCheck(graphQLOpType);
+			throw new Error(`Invalid graphQlOpType ${graphQLOpType}`);
 	}
 
 	return [
 		[
-			transformerMutationType,
-			operation,
+			transformerMutationType!,
+			operation!,
 			`${GraphQLOperationType[graphQLOpType]} operation${documentArgs}{
-		${operation}${operationArgs}{
+		${operation!}${operationArgs}{
 			${selectionSet}
 		}
 	}`,
@@ -392,7 +435,7 @@ export function createMutationInstanceFromModelOperation<
 			operation = TransformerMutationType.DELETE;
 			break;
 		default:
-			exhaustiveCheck(opType);
+			throw new Error(`Invalid opType ${opType}`);
 	}
 
 	// stringify nested objects of type AWSJSON
@@ -412,12 +455,15 @@ export function createMutationInstanceFromModelOperation<
 		return v;
 	};
 
+	const modelId = getIdentifierValue(modelDefinition, element);
+	const optionalId = OpType.INSERT && id ? { id } : {};
+
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
-		...(id ? { id } : {}),
+		...optionalId,
 		data: JSON.stringify(element, replacer),
-		modelId: element.id,
+		modelId,
 		model: model.name,
-		operation,
+		operation: operation!,
 		condition: JSON.stringify(condition),
 	});
 
@@ -425,7 +471,8 @@ export function createMutationInstanceFromModelOperation<
 }
 
 export function predicateToGraphQLCondition(
-	predicate: PredicatesGroup<any>
+	predicate: PredicatesGroup<any>,
+	modelDefinition: SchemaModel
 ): GraphQLCondition {
 	const result = {};
 
@@ -433,25 +480,37 @@ export function predicateToGraphQLCondition(
 		return result;
 	}
 
-	predicate.predicates.forEach(p => {
-		if (isPredicateObj(p)) {
-			const { field, operator, operand } = p;
+	// This is compatible with how the GQL Transform currently generates the Condition Input,
+	// i.e. any PK and SK fields are omitted and can't be used as conditions.
+	// However, I think this limits usability.
+	// What if we want to delete all records where SK > some value
+	// Or all records where PK = some value but SKs are different values
 
-			if (field === 'id') {
-				return;
-			}
+	// TODO: if the Transform gets updated we'll need to modify this logic to only omit
+	// key fields from the predicate/condition when ALL of the keyFields are present and using `eq` operators
 
-			result[field] = { [operator]: operand };
-		} else {
-			result[p.type] = predicateToGraphQLCondition(p);
-		}
-	});
-
-	return result;
+	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+	return predicateToGraphQLFilter(predicate, keyFields) as GraphQLCondition;
 }
+/**
+ * @param predicatesGroup - Predicate Group
+	@returns GQL Filter Expression from Predicate Group
+	
+	@remarks Flattens redundant list predicates
+	@example
 
+	```js
+	{ and:[{ and:[{ username:  { eq: 'bob' }}] }] }
+	```
+	Becomes
+	```js
+	{ and:[{ username: { eq: 'bob' }}] }
+	```
+	*/
 export function predicateToGraphQLFilter(
-	predicatesGroup: PredicatesGroup<any>
+	predicatesGroup: PredicatesGroup<any>,
+	fieldsToOmit: string[] = [],
+	root = true
 ): GraphQLFilter {
 	const result: GraphQLFilter = {};
 
@@ -464,25 +523,275 @@ export function predicateToGraphQLFilter(
 
 	result[type] = isList ? [] : {};
 
-	const appendToFilter = value =>
-		isList ? result[type].push(value) : (result[type] = value);
+	const children: GraphQLFilter[] = [];
 
 	predicates.forEach(predicate => {
 		if (isPredicateObj(predicate)) {
 			const { field, operator, operand } = predicate;
 
+			if (fieldsToOmit.includes(field as string)) return;
+
 			const gqlField: GraphQLField = {
 				[field]: { [operator]: operand },
 			};
 
-			appendToFilter(gqlField);
+			children.push(gqlField);
 			return;
 		}
 
-		appendToFilter(predicateToGraphQLFilter(predicate));
+		const child = predicateToGraphQLFilter(predicate, fieldsToOmit, false);
+		if (Object.keys(child).length > 0) {
+			children.push(child);
+		}
 	});
 
+	// flatten redundant list predicates
+	if (children.length === 1) {
+		const [child] = children;
+		if (
+			// any nested list node
+			(isList && !root) ||
+			// root list node where the only child is also a list node
+			(isList && root && ('and' in child || 'or' in child))
+		) {
+			delete result[type];
+			Object.assign(result, child);
+			return result;
+		}
+	}
+
+	children.forEach(child => {
+		if (isList) {
+			result[type].push(child);
+		} else {
+			result[type] = child;
+		}
+	});
+
+	if (isList) {
+		if (result[type].length === 0) return {};
+	} else {
+		if (Object.keys(result[type]).length === 0) return {};
+	}
+
 	return result;
+}
+
+/**
+ *
+ * @param group - selective sync predicate group
+ * @returns set of distinct field names in the filter group
+ */
+export function filterFields(group?: PredicatesGroup<any>): Set<string> {
+	const fields = new Set<string>();
+
+	if (!group || !Array.isArray(group.predicates)) return fields;
+
+	const { predicates } = group;
+	const stack = [...predicates];
+
+	while (stack.length > 0) {
+		const current = stack.pop();
+		if (isPredicateObj(current)) {
+			fields.add(current.field as string);
+		} else if (isPredicateGroup(current)) {
+			stack.push(...current.predicates);
+		}
+	}
+
+	return fields;
+}
+
+/**
+ *
+ * @param modelDefinition
+ * @returns set of field names used with dynamic auth modes configured for the provided model definition
+ */
+export function dynamicAuthFields(modelDefinition: SchemaModel): Set<string> {
+	const rules = getAuthorizationRules(modelDefinition);
+	const fields = new Set<string>();
+
+	for (const rule of rules) {
+		if (rule.groupsField && !rule.groups.length) {
+			// dynamic group rule will have no values in `rule.groups`
+			fields.add((rule as AuthorizationRule).groupsField);
+		} else if (rule.ownerField) {
+			fields.add(rule.ownerField);
+		}
+	}
+
+	return fields;
+}
+
+/**
+ *
+ * @param group - selective sync predicate group
+ * @returns the total number of OR'd predicates in the filter group
+ *
+ * @example returns 2
+ * ```js
+ * { type: "or", predicates: [
+ * { field: "username", operator: "beginsWith", operand: "a" },
+ * { field: "title", operator: "contains", operand: "abc" },
+ * ]}
+ * ```
+ */
+export function countFilterCombinations(group?: PredicatesGroup<any>): number {
+	if (!group || !Array.isArray(group.predicates)) return 0;
+
+	let count = 0;
+	const stack: (PredicatesGroup<any> | PredicateObject<any>)[] = [group];
+
+	while (stack.length > 0) {
+		const current = stack.pop();
+
+		if (isPredicateGroup(current)) {
+			const { predicates, type } = current;
+			// ignore length = 1; groups with 1 predicate will get flattened when converted to gqlFilter
+			if (type === 'or' && predicates.length > 1) {
+				count += predicates.length;
+			}
+			stack.push(...predicates);
+		}
+	}
+
+	// if we didn't encounter any OR groups, default to 1
+	return count || 1;
+}
+
+/**
+ *
+ * @param group - selective sync predicate group
+ * @returns name of repeated field | null
+ *
+ * @example returns "username"
+ * ```js
+ * { type: "and", predicates: [
+ * 		{ field: "username", operator: "beginsWith", operand: "a" },
+ * 		{ field: "username", operator: "contains", operand: "abc" },
+ * ] }
+ * ```
+ */
+export function repeatedFieldInGroup(
+	group?: PredicatesGroup<any>
+): string | null {
+	if (!group || !Array.isArray(group.predicates)) return null;
+
+	// convert to filter in order to flatten redundant groups
+	const gqlFilter = predicateToGraphQLFilter(group);
+
+	const stack: GraphQLFilter[] = [gqlFilter];
+
+	const hasGroupRepeatedFields = (fields: GraphQLFilter[]): string | null => {
+		const seen = {};
+
+		for (const f of fields) {
+			const [fieldName] = Object.keys(f);
+			if (seen[fieldName]) {
+				return fieldName;
+			}
+			seen[fieldName] = true;
+		}
+		return null;
+	};
+
+	while (stack.length > 0) {
+		const current = stack.pop();
+
+		const [key] = Object.keys(current!);
+		const values = current![key];
+
+		if (!Array.isArray(values)) {
+			return null;
+		}
+
+		// field value will be single object
+		const predicateObjects = values.filter(
+			v => !Array.isArray(Object.values(v)[0])
+		);
+
+		// group value will be an array
+		const predicateGroups = values.filter(v =>
+			Array.isArray(Object.values(v)[0])
+		);
+
+		if (key === 'and') {
+			const repeatedField = hasGroupRepeatedFields(predicateObjects);
+			if (repeatedField) {
+				return repeatedField;
+			}
+		}
+
+		stack.push(...predicateGroups);
+	}
+
+	return null;
+}
+
+export enum RTFError {
+	UnknownField,
+	MaxAttributes,
+	MaxCombinations,
+	RepeatedFieldname,
+	NotGroup,
+	FieldNotInType,
+}
+
+export function generateRTFRemediation(
+	errorType: RTFError,
+	modelDefinition: SchemaModel,
+	predicatesGroup: PredicatesGroup<any> | undefined
+): string {
+	const selSyncFields = filterFields(predicatesGroup);
+	const selSyncFieldStr = [...selSyncFields].join(', ');
+	const dynamicAuthModeFields = dynamicAuthFields(modelDefinition);
+	const dynamicAuthFieldsStr = [...dynamicAuthModeFields].join(', ');
+	const filterCombinations = countFilterCombinations(predicatesGroup);
+	const repeatedField = repeatedFieldInGroup(predicatesGroup);
+
+	switch (errorType) {
+		case RTFError.UnknownField:
+			return (
+				`Your API was generated with an older version of the CLI that doesn't support backend subscription filtering.` +
+				'To enable backend subscription filtering, upgrade your Amplify CLI to the latest version and push your app by running `amplify upgrade` followed by `amplify push`'
+			);
+
+		case RTFError.MaxAttributes: {
+			let message = `Your selective sync expression for ${modelDefinition.name} contains ${selSyncFields.size} different model fields: ${selSyncFieldStr}.\n\n`;
+
+			if (dynamicAuthModeFields.size > 0) {
+				message +=
+					`Note: the number of fields you can use with selective sync is affected by @auth rules configured on the model.\n\n` +
+					`Dynamic auth modes, such as owner auth and dynamic group auth each utilize 1 field.\n` +
+					`You currently have ${dynamicAuthModeFields.size} dynamic auth mode(s) configured on this model: ${dynamicAuthFieldsStr}.`;
+			}
+
+			return message;
+		}
+
+		case RTFError.MaxCombinations: {
+			let message = `Your selective sync expression for ${modelDefinition.name} contains ${filterCombinations} field combinations (total number of predicates in an OR expression).\n\n`;
+
+			if (dynamicAuthModeFields.size > 0) {
+				message +=
+					`Note: the number of fields you can use with selective sync is affected by @auth rules configured on the model.\n\n` +
+					`Dynamic auth modes, such as owner auth and dynamic group auth factor in to the number of combinations you're using.\n` +
+					`You currently have ${dynamicAuthModeFields.size} dynamic auth mode(s) configured on this model: ${dynamicAuthFieldsStr}.`;
+			}
+			return message;
+		}
+
+		case RTFError.RepeatedFieldname:
+			return `Your selective sync expression for ${modelDefinition.name} contains multiple entries for ${repeatedField} in the same AND group.`;
+		case RTFError.NotGroup:
+			return (
+				`Your selective sync expression for ${modelDefinition.name} uses a \`not\` group. If you'd like to filter subscriptions in the backend, ` +
+				`rewrite your expression using \`ne\` or \`notContains\` operators.`
+			);
+		case RTFError.FieldNotInType:
+			// no remediation instructions. We'll surface the message directly
+			return '';
+	}
 }
 
 export function getUserGroupsFromToken(
@@ -515,11 +824,9 @@ export async function getModelAuthModes({
 	defaultAuthMode: GRAPHQL_AUTH_MODE;
 	modelName: string;
 	schema: InternalSchema;
-}): Promise<
-	{
-		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
-	}
-> {
+}): Promise<{
+	[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+}> {
 	const operations = Object.values(ModelOperation);
 
 	const modelAuthModes: {
@@ -611,4 +918,16 @@ export async function getTokenForCustomAuth(
 			);
 		}
 	}
+}
+
+// Util that takes a modelDefinition and model and returns either the id value(s) or the custom primary key value(s)
+export function getIdentifierValue(
+	modelDefinition: SchemaModel,
+	model: ModelInstanceMetadata | PersistentModel
+): string {
+	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
+
+	const idOrPk = pkFieldNames.map(f => model[f]).join(IDENTIFIER_KEY_SEPARATOR);
+
+	return idOrPk;
 }

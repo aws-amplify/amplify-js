@@ -18,6 +18,7 @@ import {
 const postSelectionSet = `
 id
 title
+referencePostId
 metadata {
 	rating
 	tags
@@ -135,7 +136,10 @@ describe('DataStore GraphQL generation', () => {
 				<any>graphQLOpType
 			);
 
-			expect(print(parse(query))).toStrictEqual(print(parse(expectedGraphQL)));
+			// why does it think `expectedGraphQL` is `string[] | undefined`?
+			expect(print(parse(query))).toStrictEqual(
+				print(parse(expectedGraphQL as any))
+			);
 		}
 	);
 
@@ -240,11 +244,7 @@ describe('DataStore PredicateGroups to GraphQL filter', () => {
 		const groupExpected = { and: [{ someField: { eq: 'value' } }] };
 
 		const gqlResult = predicateToGraphQLFilter(group);
-
-		// stringifying to normalize whitespace and escape chars
-		expect(JSON.stringify(gqlResult)).toStrictEqual(
-			JSON.stringify(groupExpected)
-		);
+		expect(gqlResult).toMatchObject(groupExpected);
 	});
 
 	test('Multiple field', () => {
@@ -265,9 +265,7 @@ describe('DataStore PredicateGroups to GraphQL filter', () => {
 
 		const gqlResult = predicateToGraphQLFilter(group);
 
-		expect(JSON.stringify(gqlResult)).toStrictEqual(
-			JSON.stringify(groupExpected)
-		);
+		expect(gqlResult).toMatchObject(groupExpected);
 	});
 
 	test('Nested field', () => {
@@ -298,10 +296,7 @@ describe('DataStore PredicateGroups to GraphQL filter', () => {
 		};
 
 		const gqlResult = predicateToGraphQLFilter(group);
-
-		expect(JSON.stringify(gqlResult)).toStrictEqual(
-			JSON.stringify(groupExpected)
-		);
+		expect(gqlResult).toMatchObject(groupExpected);
 	});
 
 	test('Nested not', () => {
@@ -328,9 +323,115 @@ describe('DataStore PredicateGroups to GraphQL filter', () => {
 		};
 
 		const gqlResult = predicateToGraphQLFilter(group);
+		expect(gqlResult).toMatchObject(groupExpected);
+	});
 
-		expect(JSON.stringify(gqlResult)).toStrictEqual(
-			JSON.stringify(groupExpected)
-		);
+	test('Flattens redundant and/or operators - simple', () => {
+		const group: PredicatesGroup<any> = {
+			type: 'and',
+			predicates: [
+				{
+					type: 'and',
+					predicates: [
+						{
+							type: 'and',
+							predicates: [
+								{
+									field: 'username',
+									operator: 'eq',
+									operand: 'bob',
+								},
+							],
+						},
+					],
+				},
+			],
+		};
+
+		const expected = {
+			and: [
+				{
+					username: {
+						eq: 'bob',
+					},
+				},
+			],
+		};
+
+		const gqlResult = predicateToGraphQLFilter(group);
+
+		expect(gqlResult).toMatchObject(expected);
+	});
+
+	test('Flattens redundant and/or operators - nested', () => {
+		const group: PredicatesGroup<any> = {
+			type: 'and',
+			predicates: [
+				{
+					type: 'or',
+					predicates: [
+						{
+							type: 'and',
+							predicates: [
+								{
+									type: 'and',
+									predicates: [
+										{
+											field: 'username',
+											operator: 'eq',
+											operand: 'bob',
+										},
+									],
+								},
+							],
+						},
+						{
+							type: 'and',
+							predicates: [
+								{
+									field: 'name',
+									operator: 'eq',
+									operand: 'Robert',
+								},
+							],
+						},
+						{
+							type: 'and',
+							predicates: [
+								{
+									field: 'label',
+									operator: 'eq',
+									operand: 'main',
+								},
+							],
+						},
+					],
+				},
+			],
+		};
+
+		const expected = {
+			or: [
+				{
+					username: {
+						eq: 'bob',
+					},
+				},
+				{
+					name: {
+						eq: 'Robert',
+					},
+				},
+				{
+					label: {
+						eq: 'main',
+					},
+				},
+			],
+		};
+
+		const gqlResult = predicateToGraphQLFilter(group);
+
+		expect(gqlResult).toMatchObject(expected);
 	});
 });

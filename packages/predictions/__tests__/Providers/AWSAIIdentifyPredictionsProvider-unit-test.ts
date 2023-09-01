@@ -1,5 +1,10 @@
-import { Credentials } from '@aws-amplify/core';
-import Storage from '@aws-amplify/storage';
+import {
+	Category,
+	Credentials,
+	PredictionsAction,
+	getAmplifyUserAgentObject,
+} from '@aws-amplify/core';
+import { Storage } from '@aws-amplify/storage';
 import {
 	IdentifyEntitiesInput,
 	IdentifyEntitiesOutput,
@@ -47,10 +52,11 @@ RekognitionClient.prototype.send = jest.fn(command => {
 		};
 		return Promise.resolve(detectlabelsResponse);
 	} else if (command instanceof DetectModerationLabelsCommand) {
-		const detectModerationLabelsResponse: DetectModerationLabelsCommandOutput = {
-			ModerationLabels: [{ Name: 'test', Confidence: 0.0 }],
-			$metadata: null,
-		};
+		const detectModerationLabelsResponse: DetectModerationLabelsCommandOutput =
+			{
+				ModerationLabels: [{ Name: 'test', Confidence: 0.0 }],
+				$metadata: null,
+			};
 		return Promise.resolve(detectModerationLabelsResponse);
 	} else if (command instanceof DetectFacesCommand) {
 		const detectFacesResponse: DetectFacesCommandOutput = {
@@ -680,6 +686,83 @@ describe('Predictions identify provider test', () => {
 			return expect(
 				predictionsProvider.identify(detectLabelInput)
 			).rejects.toMatch('not configured correctly');
+		});
+	});
+
+	describe('custom user agent', () => {
+		test('identify for label initializes a client with the correct custom user agent', async () => {
+			predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
+			predictionsProvider.configure(options);
+			jest.spyOn(TextractClient.prototype, 'send');
+			jest.spyOn(RekognitionClient.prototype, 'send');
+			const fileInput = new File([Buffer.from('file')], 'file');
+			const detectLabelInput: IdentifyLabelsInput = {
+				labels: { source: { bytes: fileInput }, type: 'LABELS' },
+			};
+			await predictionsProvider.identify(detectLabelInput);
+			expect(
+				predictionsProvider['rekognitionClient'].config.customUserAgent
+			).toEqual(
+				getAmplifyUserAgentObject({
+					category: Category.Predictions,
+					action: PredictionsAction.Identify,
+				})
+			);
+			expect(predictionsProvider['textractClient']).toBeUndefined();
+		});
+
+		test('identify for entities initializes a client with the correct custom user agent', async () => {
+			predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
+			predictionsProvider.configure(options);
+			jest.spyOn(TextractClient.prototype, 'send');
+			jest.spyOn(RekognitionClient.prototype, 'send');
+			const fileInput = new File([Buffer.from('file')], 'file');
+			const detectFacesInput: IdentifyEntitiesInput = {
+				entities: {
+					source: {
+						key: 'key',
+					},
+					celebrityDetection: true,
+				},
+			};
+			await predictionsProvider.identify(detectFacesInput);
+			expect(
+				predictionsProvider['rekognitionClient'].config.customUserAgent
+			).toEqual(
+				getAmplifyUserAgentObject({
+					category: Category.Predictions,
+					action: PredictionsAction.Identify,
+				})
+			);
+			expect(predictionsProvider['textractClient']).toBeUndefined();
+		});
+
+		test('identify for text initializes a client with the correct custom user agent', async () => {
+			predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
+			predictionsProvider.configure(options);
+			jest.spyOn(TextractClient.prototype, 'send');
+			jest.spyOn(RekognitionClient.prototype, 'send');
+			const fileInput = new File([Buffer.from('file')], 'file');
+			const detectTextInput: IdentifyTextInput = {
+				text: { source: { key: 'key' }, format: 'PLAIN' },
+			};
+			await predictionsProvider.identify(detectTextInput);
+			expect(
+				predictionsProvider['rekognitionClient'].config.customUserAgent
+			).toEqual(
+				getAmplifyUserAgentObject({
+					category: Category.Predictions,
+					action: PredictionsAction.Identify,
+				})
+			);
+			expect(
+				predictionsProvider['textractClient'].config.customUserAgent
+			).toEqual(
+				getAmplifyUserAgentObject({
+					category: Category.Predictions,
+					action: PredictionsAction.Identify,
+				})
+			);
 		});
 	});
 });

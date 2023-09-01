@@ -1,16 +1,14 @@
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
-
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+import { AnalyticsAction, ConsoleLogger as Logger } from '@aws-amplify/core';
 import {
-	PutEventsResponse,
-	EventBuffer,
-	EventObject,
-	EventMap,
-} from '../types';
-import {
-	PutEventsCommand,
-	PutEventsCommandOutput,
-} from '@aws-sdk/client-pinpoint';
+	putEvents,
+	PutEventsInput,
+	PutEventsOutput,
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
+import { EventBuffer, EventObject, EventMap } from '../types';
 import { isAppInForeground } from '../utils/AppUtils';
+import { getAnalyticsUserAgentString } from '../utils/UserAgent';
 
 const logger = new Logger('EventsBuffer');
 const RETRYABLE_CODES = [429, 500];
@@ -25,16 +23,14 @@ type EventsBufferConfig = {
 
 export default class EventsBuffer {
 	private _config;
-	private _client;
 	private _interval;
 	private _buffer: EventBuffer;
 	private _pause = false;
 	private _flush = false;
 
-	constructor(client, config: EventsBufferConfig) {
+	constructor(config: EventsBufferConfig) {
 		logger.debug('Instantiating buffer with config:', config);
 		this._buffer = [];
-		this._client = client;
 		this._config = config;
 
 		this._sendBatch = this._sendBatch.bind(this);
@@ -43,7 +39,8 @@ export default class EventsBuffer {
 	}
 
 	public push(event: EventObject) {
-		if (this._buffer > this._config.bufferSize) {
+		// if the buffer is currently at the configured limit, pushing would exceed it
+		if (this._buffer.length >= this._config.bufferSize) {
 			logger.debug('Exceeded analytics events buffer size');
 			return event.handlers.reject(
 				new Error('Exceeded the size of analytics events buffer')
@@ -61,10 +58,6 @@ export default class EventsBuffer {
 
 	public resume() {
 		this._pause = false;
-	}
-
-	public updateClient(client) {
-		this._client = client;
 	}
 
 	public flush() {
@@ -109,15 +102,22 @@ export default class EventsBuffer {
 		const batchEventParams = this._generateBatchEventParams(eventMap);
 
 		try {
-			const command: PutEventsCommand = new PutEventsCommand(batchEventParams);
-			const data: PutEventsCommandOutput = await this._client.send(command);
+			const { credentials, region } = this._config;
+			const data: PutEventsOutput = await putEvents(
+				{
+					credentials,
+					region,
+					userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
+				},
+				batchEventParams
+			);
 			this._processPutEventsSuccessResponse(data, eventMap);
 		} catch (err) {
 			return this._handlePutEventsFailure(err, eventMap);
 		}
 	}
 
-	private _generateBatchEventParams(eventMap: EventMap) {
+	private _generateBatchEventParams(eventMap: EventMap): PutEventsInput {
 		const batchEventParams = {
 			ApplicationId: '',
 			EventsRequest: {
@@ -166,50 +166,53 @@ export default class EventsBuffer {
 	}
 
 	private _processPutEventsSuccessResponse(
-		data: PutEventsResponse,
+		data: PutEventsOutput,
 		eventMap: EventMap
 	) {
-		const { Results } = data.EventsResponse;
+		const { Results = {} } = data.EventsResponse ?? {};
 		const retryableEvents: EventObject[] = [];
 
 		Object.entries(Results).forEach(([endpointId, endpointValues]) => {
-			const responses = endpointValues.EventsItemResponse;
+			const responses = endpointValues.EventsItemResponse ?? {};
 
-			Object.entries(responses).forEach(
-				([eventId, { StatusCode, Message }]) => {
-					const eventObject = eventMap[eventId];
+			Object.entries(responses).forEach(([eventId, eventValues]) => {
+				const eventObject = eventMap[eventId];
+				if (!eventObject) {
+					return;
+				}
 
-					// manually crafting handlers response to keep API consistant
-					const response = {
-						EventsResponse: {
-							Results: {
-								[endpointId]: {
-									EventsItemResponse: {
-										[eventId]: { StatusCode, Message },
-									},
+				const { StatusCode, Message } = eventValues ?? {};
+
+				// manually crafting handlers response to keep API consistant
+				const response = {
+					EventsResponse: {
+						Results: {
+							[endpointId]: {
+								EventsItemResponse: {
+									[eventId]: { StatusCode, Message },
 								},
 							},
 						},
-					};
+					},
+				};
 
-					if (ACCEPTED_CODES.includes(StatusCode)) {
-						eventObject.handlers.resolve(response);
-						return;
-					}
-
-					if (RETRYABLE_CODES.includes(StatusCode)) {
-						retryableEvents.push(eventObject);
-						return;
-					}
-
-					const { name } = eventObject.params.event;
-
-					logger.error(
-						`event ${eventId} : ${name} failed with error: ${Message}`
-					);
-					return eventObject.handlers.reject(response);
+				if (StatusCode && ACCEPTED_CODES.includes(StatusCode)) {
+					eventObject.handlers.resolve(response);
+					return;
 				}
-			);
+
+				if (StatusCode && RETRYABLE_CODES.includes(StatusCode)) {
+					retryableEvents.push(eventObject);
+					return;
+				}
+
+				const { name } = eventObject.params.event;
+
+				logger.error(
+					`event ${eventId} : ${name} failed with error: ${Message}`
+				);
+				return eventObject.handlers.reject(response);
+			});
 		});
 
 		if (retryableEvents.length) {

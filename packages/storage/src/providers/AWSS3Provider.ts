@@ -1,44 +1,34 @@
-/*
- * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	Parser,
-	getAmplifyUserAgent,
 	ICredentials,
 	StorageHelper,
 	Hub,
+	parseAWSExports,
+	StorageAction,
 } from '@aws-amplify/core';
 import {
-	S3Client,
-	GetObjectCommand,
-	DeleteObjectCommand,
-	ListObjectsCommand,
-	GetObjectCommandOutput,
-	DeleteObjectCommandInput,
-	CopyObjectCommandInput,
-	CopyObjectCommand,
-	PutObjectCommandInput,
-	GetObjectCommandInput,
-} from '@aws-sdk/client-s3';
-import { formatUrl } from '@aws-sdk/util-format-url';
-import { createRequest } from '@aws-sdk/util-create-request';
-import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
+	copyObject,
+	CopyObjectInput,
+	getObject,
+	GetObjectInput,
+	GetObjectOutput,
+	getPresignedGetObjectUrl,
+	PutObjectInput,
+	headObject,
+	DeleteObjectInput,
+	deleteObject,
+	ListObjectsV2Input,
+	listObjectsV2,
+	SERVICE_NAME as S3_SERVICE_NAME,
+	HeadObjectInput,
+} from '../AwsClients/S3';
 import {
-	AxiosHttpHandler,
 	SEND_DOWNLOAD_PROGRESS_EVENT,
 	SEND_UPLOAD_PROGRESS_EVENT,
-} from './axios-http-handler';
+} from '../AwsClients/S3/utils';
 import {
 	StorageOptions,
 	StorageProvider,
@@ -46,7 +36,6 @@ import {
 	S3ProviderGetOuput,
 	S3ProviderPutConfig,
 	S3ProviderRemoveConfig,
-	S3ProviderListOutput,
 	S3ProviderListConfig,
 	S3ProviderCopyConfig,
 	S3ProviderCopyOutput,
@@ -58,30 +47,27 @@ import {
 	S3ProviderPutOutput,
 	ResumableUploadConfig,
 	UploadTask,
+	S3ClientOptions,
+	S3ProviderListOutput,
+	S3ProviderGetPropertiesConfig,
+	S3ProviderGetPropertiesOutput,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
 import {
-	createPrefixMiddleware,
-	prefixMiddlewareOptions,
 	getPrefix,
+	S3ResolvedConfig,
+	loadS3Config,
 } from '../common/S3ClientUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
-import {
-	localTestingStorageEndpoint,
-	UPLOADS_STORAGE_KEY,
-	SET_CONTENT_LENGTH_HEADER,
-} from '../common/StorageConstants';
+import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
 import * as events from 'events';
-import { CancelTokenSource } from 'axios';
 
 const logger = new Logger('AWSS3Provider');
 
 const DEFAULT_STORAGE_LEVEL = 'public';
 const DEFAULT_PRESIGN_EXPIRATION = 900;
-// placeholder credentials in order to satisfy type requirement, always results in 403 when used
-const INVALID_CRED = { accessKeyId: '', secretAccessKey: '' };
 
 interface AddTaskInput {
 	accessLevel: StorageAccessLevel;
@@ -89,8 +75,8 @@ interface AddTaskInput {
 	bucket: string;
 	emitter: events.EventEmitter;
 	key: string;
-	s3Client: S3Client;
-	params?: PutObjectCommandInput;
+	s3Config: S3ResolvedConfig;
+	params?: PutObjectInput;
 }
 
 /**
@@ -140,7 +126,7 @@ export class AWSS3Provider implements StorageProvider {
 	public configure(config?): object {
 		logger.debug('configure Storage', config);
 		if (!config) return this._config;
-		const amplifyConfig = Parser.parseMobilehubConfig(config);
+		const amplifyConfig = parseAWSExports(config);
 		this._config = Object.assign({}, this._config, amplifyConfig.Storage);
 		if (!this._config.bucket) {
 			logger.debug('Do not have bucket yet');
@@ -152,7 +138,7 @@ export class AWSS3Provider implements StorageProvider {
 		addTaskInput: AddTaskInput,
 		config: S3ProviderPutConfig & ResumableUploadConfig
 	): UploadTask {
-		const { s3Client, emitter, key, file, params } = addTaskInput;
+		const { s3Config, emitter, key, file, params } = addTaskInput;
 		const {
 			progressCallback,
 			completeCallback,
@@ -208,16 +194,17 @@ export class AWSS3Provider implements StorageProvider {
 				const cred = Credentials.shear(credentials);
 				return getPrefix({
 					...config,
+					level: addTaskInput.accessLevel,
 					credentials: cred,
 				});
 			}
 		);
 
 		const task = new AWSS3UploadTask({
-			s3Client,
+			s3Config,
 			file,
 			emitter,
-			level: config.level,
+			level: addTaskInput.accessLevel,
 			storage: this._storage,
 			params,
 			prefixPromise,
@@ -296,7 +283,7 @@ export class AWSS3Provider implements StorageProvider {
 		const finalDestKey = `${destPrefix}${destKey}`;
 		logger.debug(`copying ${finalSrcKey} to ${finalDestKey}`);
 
-		const params: CopyObjectCommandInput = {
+		const params: CopyObjectInput = {
 			Bucket: bucket,
 			CopySource: finalSrcKey,
 			Key: finalDestKey,
@@ -323,10 +310,14 @@ export class AWSS3Provider implements StorageProvider {
 		}
 		if (acl) params.ACL = acl;
 
-		const s3 = this._createNewS3Client(opt);
-		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		try {
-			await s3.send(new CopyObjectCommand(params));
+			await copyObject(
+				loadS3Config({
+					...opt,
+					storageAction: StorageAction.Copy,
+				}),
+				params
+			);
 			dispatchStorageEvent(
 				track,
 				'copy',
@@ -360,7 +351,7 @@ export class AWSS3Provider implements StorageProvider {
 	 *
 	 * @param {string} key - key of the object
 	 * @param {S3ProviderGetConfig} [config] - Optional configuration for the underlying S3 command
-	 * @return {Promise<string | GetObjectCommandOutput>} - A promise resolves to Amazon S3 presigned URL or the
+	 * @return {Promise<string | GetObjectOutput>} - A promise resolves to Amazon S3 presigned URL or the
 	 * GetObjectCommandOutput if download is set to true on success
 	 */
 	public async get<T extends S3ProviderGetConfig & StorageOptions>(
@@ -370,7 +361,7 @@ export class AWSS3Provider implements StorageProvider {
 	public async get(
 		key: string,
 		config?: S3ProviderGetConfig
-	): Promise<string | GetObjectCommandOutput> {
+	): Promise<string | GetObjectOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
@@ -390,18 +381,22 @@ export class AWSS3Provider implements StorageProvider {
 			SSECustomerKey,
 			SSECustomerKeyMD5,
 			progressCallback,
+			validateObjectExistence = false,
 		} = opt;
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		const emitter = new events.EventEmitter();
-		const s3 = this._createNewS3Client(opt, emitter);
+		const s3Config = loadS3Config({
+			...opt,
+			emitter,
+			storageAction: StorageAction.Get,
+		});
 		logger.debug('get ' + key + ' from ' + final_key);
 
-		const params: GetObjectCommandInput = {
+		const params: GetObjectInput = {
 			Bucket: bucket,
 			Key: final_key,
 		};
-
 		// See: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
 		if (cacheControl) params.ResponseCacheControl = cacheControl;
 		if (contentDisposition)
@@ -420,7 +415,6 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		if (download === true) {
-			const getObjectCommand = new GetObjectCommand(params);
 			try {
 				if (progressCallback) {
 					if (typeof progressCallback === 'function') {
@@ -434,7 +428,7 @@ export class AWSS3Provider implements StorageProvider {
 						);
 					}
 				}
-				const response = await s3.send(getObjectCommand);
+				const response = await getObject(s3Config, params);
 				emitter.removeAllListeners(SEND_DOWNLOAD_PROGRESS_EVENT);
 				dispatchStorageEvent(
 					track,
@@ -460,15 +454,35 @@ export class AWSS3Provider implements StorageProvider {
 				throw error;
 			}
 		}
-
+		if (validateObjectExistence) {
+			try {
+				await headObject(s3Config, params);
+			} catch (error) {
+				if (error.$metadata?.httpStatusCode === 404) {
+					dispatchStorageEvent(
+						track,
+						'getSignedUrl',
+						{
+							method: 'get',
+							result: 'failed',
+						},
+						null,
+						`${key} not found`
+					);
+				}
+				throw error;
+			}
+		}
 		try {
-			const signer = new S3RequestPresigner({ ...s3.config });
-			const request = await createRequest(s3, new GetObjectCommand(params));
-			// Default is 15 mins as defined in V2 AWS SDK
-			const url = formatUrl(
-				await signer.presign(request, {
-					expiresIn: expires || DEFAULT_PRESIGN_EXPIRATION,
-				})
+			const url = await getPresignedGetObjectUrl(
+				{
+					...s3Config,
+					expiration: expires || DEFAULT_PRESIGN_EXPIRATION,
+					credentials: await s3Config.credentials(),
+					signingRegion: s3Config.region,
+					signingService: S3_SERVICE_NAME,
+				},
+				params
 			);
 			dispatchStorageEvent(
 				track,
@@ -492,6 +506,87 @@ export class AWSS3Provider implements StorageProvider {
 	}
 
 	/**
+	 * Get Properties of the object
+	 *
+	 * @param {string} key - key of the object
+	 * @param {S3ProviderGetPropertiesConfig} [config] - Optional configuration for the underlying S3 command
+	 * @return {Promise<S3ProviderGetPropertiesOutput>} - A promise resolves to contentType,
+	 * contentLength, eTag, lastModified, metadata
+	 */
+	public async getProperties(
+		key: string,
+		config?: S3ProviderGetPropertiesConfig
+	): Promise<S3ProviderGetPropertiesOutput> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK || !this._isWithCredentials(this._config)) {
+			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
+		}
+		const opt = Object.assign({}, this._config, config);
+		const {
+			bucket,
+			track = false,
+			SSECustomerAlgorithm,
+			SSECustomerKey,
+			SSECustomerKeyMD5,
+		} = opt;
+		const prefix = this._prefix(opt);
+		const final_key = prefix + key;
+		logger.debug(`getProperties ${key} from ${final_key}`);
+
+		const s3Config = loadS3Config({
+			...opt,
+			storageAction: StorageAction.GetProperties,
+		});
+		const params: HeadObjectInput = {
+			Bucket: bucket,
+			Key: final_key,
+		};
+
+		if (SSECustomerAlgorithm) {
+			params.SSECustomerAlgorithm = SSECustomerAlgorithm;
+		}
+		if (SSECustomerKey) {
+			params.SSECustomerKey = SSECustomerKey;
+		}
+		if (SSECustomerKeyMD5) {
+			params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
+		}
+
+		try {
+			const response = await headObject(s3Config, params);
+			const getPropertiesResponse: S3ProviderGetPropertiesOutput = {
+				contentLength: response.ContentLength,
+				contentType: response.ContentType,
+				eTag: response.ETag,
+				lastModified: response.LastModified,
+				metadata: response.Metadata,
+			};
+			dispatchStorageEvent(
+				track,
+				'getProperties',
+				{ method: 'getProperties', result: 'success' },
+				null,
+				`getProperties successful for ${key}`
+			);
+			return getPropertiesResponse;
+		} catch (error) {
+			if (error.$metadata?.httpStatusCode === 404) {
+				dispatchStorageEvent(
+					track,
+					'getProperties',
+					{
+						method: 'getProperties',
+						result: 'failed',
+					},
+					null,
+					`${key} not found`
+				);
+			}
+			throw error;
+		}
+	}
+
+	/**
 	 * Put a file in S3 bucket specified to configure method
 	 * @param key - key of the object
 	 * @param object - File to be put in Amazon S3 bucket
@@ -501,7 +596,7 @@ export class AWSS3Provider implements StorageProvider {
 	 */
 	public put<T extends S3ProviderPutConfig>(
 		key: string,
-		object: PutObjectCommandInput['Body'],
+		object: PutObjectInput['Body'],
 		config?: T
 	): S3ProviderPutOutput<T> {
 		const opt = Object.assign({}, this._config, config);
@@ -525,7 +620,7 @@ export class AWSS3Provider implements StorageProvider {
 		} = opt;
 		const type = contentType ? contentType : 'binary/octet-stream';
 
-		const params: PutObjectCommandInput = {
+		const params: PutObjectInput = {
 			Bucket: bucket,
 			Key: key,
 			Body: object,
@@ -573,17 +668,14 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		if (resumable === true) {
-			const s3Client = this._createNewS3Client(opt);
-			// we are using aws sdk middleware to inject the prefix to key, this way we don't have to call
-			// this._ensureCredentials() which allows us to make this function sync so we can return non-Promise like UploadTask
-			s3Client.middlewareStack.add(
-				createPrefixMiddleware(opt, key),
-				prefixMiddlewareOptions
-			);
+			const s3Config = loadS3Config({
+				...opt,
+				storageAction: StorageAction.Put,
+			});
 			const addTaskInput: AddTaskInput = {
 				bucket,
 				key,
-				s3Client,
+				s3Config,
 				file: object as Blob,
 				emitter,
 				accessLevel: level,
@@ -653,18 +745,19 @@ export class AWSS3Provider implements StorageProvider {
 
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
-		const s3 = this._createNewS3Client(opt);
 		logger.debug('remove ' + key + ' from ' + final_key);
 
-		const params: DeleteObjectCommandInput = {
+		const params: DeleteObjectInput = {
 			Bucket: bucket,
 			Key: final_key,
 		};
 
-		const deleteObjectCommand = new DeleteObjectCommand(params);
-
+		const s3Config = loadS3Config({
+			...opt,
+			storageAction: StorageAction.Remove,
+		});
 		try {
-			const response = await s3.send(deleteObjectCommand);
+			const response = await deleteObject(s3Config, params);
 			dispatchStorageEvent(
 				track,
 				'delete',
@@ -684,13 +777,43 @@ export class AWSS3Provider implements StorageProvider {
 			throw error;
 		}
 	}
+	private async _list(
+		params: ListObjectsV2Input,
+		opt: S3ClientOptions,
+		prefix: string
+	): Promise<S3ProviderListOutput> {
+		const list: S3ProviderListOutput = {
+			results: [],
+			hasNextToken: false,
+		};
+		const response = await listObjectsV2(
+			loadS3Config({
+				...opt,
+				storageAction: StorageAction.List,
+			}),
+			{ ...params }
+		);
+		if (response && response.Contents) {
+			list.results = response.Contents.map(item => {
+				return {
+					key: item.Key.substr(prefix.length),
+					eTag: item.ETag,
+					lastModified: item.LastModified,
+					size: item.Size,
+				};
+			});
+			list.nextToken = response.NextContinuationToken;
+			list.hasNextToken = response.IsTruncated;
+		}
+		return list;
+	}
 
 	/**
 	 * List bucket objects relative to the level and prefix specified
 	 * @param {string} path - the path that contains objects
 	 * @param {S3ProviderListConfig} [config] - Optional configuration for the underlying S3 command
-	 * @return {Promise<S3ProviderListOutput>} - Promise resolves to list of keys, eTags, lastModified and file size for
-	 * all objects in path
+	 * @return {Promise<S3ProviderListOutput>} - Promise resolves to list of keys, eTags, lastModified
+	 * and file size for all objects in path
 	 */
 	public async list(
 		path: string,
@@ -700,46 +823,56 @@ export class AWSS3Provider implements StorageProvider {
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
 		}
-		const opt = Object.assign({}, this._config, config);
-		const { bucket, track, maxKeys } = opt;
-
+		const opt: S3ClientOptions = Object.assign({}, this._config, config);
+		const { bucket, track, pageSize, nextToken } = opt;
 		const prefix = this._prefix(opt);
 		const final_path = prefix + path;
-		const s3 = this._createNewS3Client(opt);
 		logger.debug('list ' + path + ' from ' + final_path);
-
-		const params = {
-			Bucket: bucket,
-			Prefix: final_path,
-			MaxKeys: maxKeys,
-		};
-
-		const listObjectsCommand = new ListObjectsCommand(params);
-
 		try {
-			const response = await s3.send(listObjectsCommand);
-			let list: S3ProviderListOutput = [];
-			if (response && response.Contents) {
-				list = response.Contents.map(item => {
-					return {
-						key: item.Key.substr(prefix.length),
-						eTag: item.ETag,
-						lastModified: item.LastModified,
-						size: item.Size,
-					};
-				});
+			const list: S3ProviderListOutput = {
+				results: [],
+				hasNextToken: false,
+			};
+			const MAX_PAGE_SIZE = 1000;
+			let listResult: S3ProviderListOutput;
+			const params: ListObjectsV2Input = {
+				Bucket: bucket,
+				Prefix: final_path,
+				MaxKeys: MAX_PAGE_SIZE,
+				ContinuationToken: nextToken,
+			};
+			params.ContinuationToken = nextToken;
+			if (pageSize === 'ALL') {
+				do {
+					listResult = await this._list(params, opt, prefix);
+					list.results.push(...listResult.results);
+					if (listResult.nextToken)
+						params.ContinuationToken = listResult.nextToken;
+				} while (listResult.nextToken);
+			} else {
+				if (
+					pageSize &&
+					pageSize <= MAX_PAGE_SIZE &&
+					typeof pageSize === 'number'
+				)
+					params.MaxKeys = pageSize;
+				else logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
+				listResult = await this._list(params, opt, prefix);
+				list.results.push(...listResult.results);
+				list.hasNextToken = listResult.hasNextToken;
+				list.nextToken = null ?? listResult.nextToken;
 			}
 			dispatchStorageEvent(
 				track,
 				'list',
 				{ method: 'list', result: 'success' },
 				null,
-				`${list.length} items returned from list operation`
+				`${list.results.length} items returned from list operation`
 			);
 			logger.debug('list', list);
 			return list;
 		} catch (error) {
-			logger.warn('list error', error);
+			logger.error('list InvalidArgument', error);
 			dispatchStorageEvent(
 				track,
 				'list',
@@ -804,62 +937,4 @@ export class AWSS3Provider implements StorageProvider {
 				return publicPath;
 		}
 	}
-
-	private async _credentialsProvider() {
-		try {
-			const credentials = await Credentials.get();
-			if (!credentials) return INVALID_CRED;
-			const cred = Credentials.shear(credentials);
-			logger.debug('credentials provider get credentials', cred);
-
-			return cred;
-		} catch (error) {
-			logger.warn('credentials provider error', error);
-			return INVALID_CRED;
-		}
-	}
-
-	/**
-	 * Creates an S3 client with new V3 aws sdk
-	 */
-	private _createNewS3Client(
-		config: {
-			region?: string;
-			cancelTokenSource?: CancelTokenSource;
-			dangerouslyConnectToHttpEndpointForTesting?: boolean;
-		},
-		emitter?: events.EventEmitter
-	): S3Client {
-		const {
-			region,
-			cancelTokenSource,
-			dangerouslyConnectToHttpEndpointForTesting,
-		} = config;
-		let localTestingConfig = {};
-
-		if (dangerouslyConnectToHttpEndpointForTesting) {
-			localTestingConfig = {
-				endpoint: localTestingStorageEndpoint,
-				tls: false,
-				bucketEndpoint: false,
-				forcePathStyle: true,
-			};
-		}
-
-		const s3client = new S3Client({
-			region,
-			// Using provider instead of a static credentials, so that if an upload task was in progress, but credentials gets
-			// changed or invalidated (e.g user signed out), the subsequent requests will fail.
-			credentials: this._credentialsProvider,
-			customUserAgent: getAmplifyUserAgent(),
-			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
-		});
-		return s3client;
-	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AWSS3Provider;

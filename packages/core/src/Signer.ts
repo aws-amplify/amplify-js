@@ -1,254 +1,16 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger as Logger } from './Logger';
-import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
-import { toHex } from '@aws-sdk/util-hex-encoding';
-import { parse, format } from 'url';
 import { DateUtils } from './Util';
+import {
+	presignUrl,
+	signRequest,
+	TOKEN_QUERY_PARAM,
+} from './clients/middleware/signing/signer/signatureV4';
 
-const logger = new Logger('Signer');
-
-const DEFAULT_ALGORITHM = 'AWS4-HMAC-SHA256';
 const IOT_SERVICE_NAME = 'iotdevicegateway';
-
-const encrypt = function(key, src) {
-	const hash = new jsSha256(key);
-	hash.update(src);
-	return hash.digestSync();
-};
-
-const hash = function(src) {
-	const arg = src || '';
-	const hash = new jsSha256();
-	hash.update(arg);
-	return toHex(hash.digestSync());
-};
-
-/**
- * @private
- * RFC 3986 compliant version of encodeURIComponent
- */
-const escape_RFC3986 = function(component) {
-	return component.replace(/[!'()*]/g, function(c) {
-		return (
-			'%' +
-			c
-				.charCodeAt(0)
-				.toString(16)
-				.toUpperCase()
-		);
-	});
-};
-
-/**
- * @private
- * Create canonical query string
- *
- */
-const canonical_query = function(query) {
-	if (!query || query.length === 0) {
-		return '';
-	}
-
-	return query
-		.split('&')
-		.map(e => {
-			const key_val = e.split('=');
-
-			if (key_val.length === 1) {
-				return e;
-			} else {
-				const reencoded_val = escape_RFC3986(key_val[1]);
-				return key_val[0] + '=' + reencoded_val;
-			}
-		})
-		.sort((a, b) => {
-			const key_a = a.split('=')[0];
-			const key_b = b.split('=')[0];
-			if (key_a === key_b) {
-				return a < b ? -1 : 1;
-			} else {
-				return key_a < key_b ? -1 : 1;
-			}
-		})
-		.join('&');
-};
-
-/**
-* @private
-* Create canonical headers
-*
-<pre>
-CanonicalHeaders =
-    CanonicalHeadersEntry0 + CanonicalHeadersEntry1 + ... + CanonicalHeadersEntryN
-CanonicalHeadersEntry =
-    Lowercase(HeaderName) + ':' + Trimall(HeaderValue) + '\n'
-</pre>
-*/
-const canonical_headers = function(headers) {
-	if (!headers || Object.keys(headers).length === 0) {
-		return '';
-	}
-
-	return (
-		Object.keys(headers)
-			.map(function(key) {
-				return {
-					key: key.toLowerCase(),
-					value: headers[key] ? headers[key].trim().replace(/\s+/g, ' ') : '',
-				};
-			})
-			.sort(function(a, b) {
-				return a.key < b.key ? -1 : 1;
-			})
-			.map(function(item) {
-				return item.key + ':' + item.value;
-			})
-			.join('\n') + '\n'
-	);
-};
-
-/**
- * List of header keys included in the canonical headers.
- * @access private
- */
-const signed_headers = function(headers) {
-	return Object.keys(headers)
-		.map(function(key) {
-			return key.toLowerCase();
-		})
-		.sort()
-		.join(';');
-};
-
-/**
-* @private
-* Create canonical request
-* Refer to
-* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html|Create a Canonical Request}
-*
-<pre>
-CanonicalRequest =
-    HTTPRequestMethod + '\n' +
-    CanonicalURI + '\n' +
-    CanonicalQueryString + '\n' +
-    CanonicalHeaders + '\n' +
-    SignedHeaders + '\n' +
-    HexEncode(Hash(RequestPayload))
-</pre>
-*/
-const canonical_request = function(request) {
-	const url_info = parse(request.url);
-
-	return [
-		request.method || '/',
-		encodeURIComponent(url_info.pathname).replace(/%2F/gi, '/'),
-		canonical_query(url_info.query),
-		canonical_headers(request.headers),
-		signed_headers(request.headers),
-		hash(request.data),
-	].join('\n');
-};
-
-const parse_service_info = function(request) {
-	const url_info = parse(request.url),
-		host = url_info.host;
-
-	const matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/);
-	let parsed = (matched || []).slice(1, 3);
-
-	if (parsed[1] === 'es') {
-		// Elastic Search
-		parsed = parsed.reverse();
-	}
-
-	return {
-		service: request.service || parsed[0],
-		region: request.region || parsed[1],
-	};
-};
-
-const credential_scope = function(d_str, region, service) {
-	return [d_str, region, service, 'aws4_request'].join('/');
-};
-
-/**
-* @private
-* Create a string to sign
-* Refer to
-* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html|Create String to Sign}
-*
-<pre>
-StringToSign =
-    Algorithm + \n +
-    RequestDateTime + \n +
-    CredentialScope + \n +
-    HashedCanonicalRequest
-</pre>
-*/
-const string_to_sign = function(algorithm, canonical_request, dt_str, scope) {
-	return [algorithm, dt_str, scope, hash(canonical_request)].join('\n');
-};
-
-/**
-* @private
-* Create signing key
-* Refer to
-* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html|Calculate Signature}
-*
-<pre>
-kSecret = your secret access key
-kDate = HMAC("AWS4" + kSecret, Date)
-kRegion = HMAC(kDate, Region)
-kService = HMAC(kRegion, Service)
-kSigning = HMAC(kService, "aws4_request")
-</pre>
-*/
-const get_signing_key = function(secret_key, d_str, service_info) {
-	logger.debug(service_info);
-	const k = 'AWS4' + secret_key,
-		k_date = encrypt(k, d_str),
-		k_region = encrypt(k_date, service_info.region),
-		k_service = encrypt(k_region, service_info.service),
-		k_signing = encrypt(k_service, 'aws4_request');
-
-	return k_signing;
-};
-
-const get_signature = function(signing_key, str_to_sign) {
-	return toHex(encrypt(signing_key, str_to_sign));
-};
-
-/**
- * @private
- * Create authorization header
- * Refer to
- * {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html|Add the Signing Information}
- */
-const get_authorization_header = function(
-	algorithm,
-	access_key,
-	scope,
-	signed_headers,
-	signature
-) {
-	return [
-		algorithm + ' ' + 'Credential=' + access_key + '/' + scope,
-		'SignedHeaders=' + signed_headers,
-		'Signature=' + signature,
-	].join(', ');
-};
+// Best practice regex to parse the service and region from an AWS endpoint
+const AWS_ENDPOINT_REGEX = /([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com(.cn)?$/;
 
 export class Signer {
 	/**
@@ -287,54 +49,34 @@ export class Signer {
     *
     * @returns {object} Signed HTTP request
     */
-	static sign(request, access_info, service_info = null) {
+	static sign(request, accessInfo, serviceInfo) {
 		request.headers = request.headers || {};
 
-		// datetime string and date string
-		const dt = DateUtils.getDateWithClockOffset(),
-			dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''),
-			d_str = dt_str.substr(0, 8);
-
-		const url_info = parse(request.url);
-		request.headers['host'] = url_info.host;
-		request.headers['x-amz-date'] = dt_str;
-		if (access_info.session_token) {
-			request.headers['X-Amz-Security-Token'] = access_info.session_token;
+		if (request.body && !request.data) {
+			throw new Error(
+				'The attribute "body" was found on the request object. Please use the attribute "data" instead.'
+			);
 		}
 
-		// Task 1: Create a Canonical Request
-		const request_str = canonical_request(request);
-		logger.debug(request_str);
+		const requestToSign = {
+			...request,
+			body: request.data,
+			url: new URL(request.url as string),
+		};
 
-		// Task 2: Create a String to Sign
-		const serviceInfo = service_info || parse_service_info(request),
-			scope = credential_scope(d_str, serviceInfo.region, serviceInfo.service),
-			str_to_sign = string_to_sign(
-				DEFAULT_ALGORITHM,
-				request_str,
-				dt_str,
-				scope
-			);
-
-		// Task 3: Calculate the Signature
-		const signing_key = get_signing_key(
-				access_info.secret_key,
-				d_str,
-				serviceInfo
-			),
-			signature = get_signature(signing_key, str_to_sign);
-
-		// Task 4: Adding the Signing information to the Request
-		const authorization_header = get_authorization_header(
-			DEFAULT_ALGORITHM,
-			access_info.access_key,
-			scope,
-			signed_headers(request.headers),
-			signature
-		);
-		request.headers['Authorization'] = authorization_header;
-
-		return request;
+		const options = getOptions(requestToSign, accessInfo, serviceInfo);
+		const signedRequest: any = signRequest(requestToSign, options);
+		// Prior to using `signRequest`, Signer accepted urls as strings and outputted urls as string. Coerce the property
+		// back to a string so as not to disrupt consumers of Signer.
+		signedRequest.url = signedRequest.url.toString();
+		// HTTP headers should be case insensitive but, to maintain parity with the previous Signer implementation and
+		// limit the impact of this implementation swap, replace lowercased headers with title cased ones.
+		signedRequest.headers.Authorization = signedRequest.headers.authorization;
+		signedRequest.headers['X-Amz-Security-Token'] =
+			signedRequest.headers['x-amz-security-token'];
+		delete signedRequest.headers.authorization;
+		delete signedRequest.headers['x-amz-security-token'];
+		return signedRequest;
 	}
 
 	static signUrl(
@@ -362,85 +104,73 @@ export class Signer {
 		const body: any =
 			typeof urlOrRequest === 'object' ? urlOrRequest.body : undefined;
 
-		const now = DateUtils.getDateWithClockOffset()
-			.toISOString()
-			.replace(/[:\-]|\.\d{3}/g, '');
-		const today = now.substr(0, 8);
-		// Intentionally discarding search
-		const { search, ...parsedUrl } = parse(urlToSign, true, true);
-		const { host } = parsedUrl;
-		const signedHeaders = { host };
-
-		const { region, service } =
-			serviceInfo || parse_service_info({ url: format(parsedUrl) });
-		const credentialScope = credential_scope(today, region, service);
-
-		// IoT service does not allow the session token in the canonical request
-		// https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
-		const sessionTokenRequired =
-			accessInfo.session_token && service !== IOT_SERVICE_NAME;
-		const queryParams = {
-			'X-Amz-Algorithm': DEFAULT_ALGORITHM,
-			'X-Amz-Credential': [accessInfo.access_key, credentialScope].join('/'),
-			'X-Amz-Date': now.substr(0, 16),
-			...(sessionTokenRequired
-				? { 'X-Amz-Security-Token': `${accessInfo.session_token}` }
-				: {}),
-			...(expiration ? { 'X-Amz-Expires': `${expiration}` } : {}),
-			'X-Amz-SignedHeaders': Object.keys(signedHeaders).join(','),
-		};
-
-		const canonicalRequest = canonical_request({
+		const presignable = {
+			body,
 			method,
-			url: format({
-				...parsedUrl,
-				query: {
-					...parsedUrl.query,
-					...queryParams,
-				},
-			}),
-			headers: signedHeaders,
-			data: body,
-		});
-
-		const stringToSign = string_to_sign(
-			DEFAULT_ALGORITHM,
-			canonicalRequest,
-			now,
-			credentialScope
-		);
-
-		const signing_key = get_signing_key(accessInfo.secret_key, today, {
-			region,
-			service,
-		});
-		const signature = get_signature(signing_key, stringToSign);
-
-		const additionalQueryParams = {
-			'X-Amz-Signature': signature,
-			...(accessInfo.session_token && {
-				'X-Amz-Security-Token': accessInfo.session_token,
-			}),
+			url: new URL(urlToSign),
 		};
 
-		const result = format({
-			protocol: parsedUrl.protocol,
-			slashes: true,
-			hostname: parsedUrl.hostname,
-			port: parsedUrl.port,
-			pathname: parsedUrl.pathname,
-			query: {
-				...parsedUrl.query,
-				...queryParams,
-				...additionalQueryParams,
-			},
-		});
-
-		return result;
+		const options = getOptions(
+			presignable,
+			accessInfo,
+			serviceInfo,
+			expiration
+		);
+		const signedUrl = presignUrl(presignable, options);
+		if (
+			accessInfo.session_token &&
+			!sessionTokenRequiredInSigning(options.signingService)
+		) {
+			signedUrl.searchParams.append(
+				TOKEN_QUERY_PARAM,
+				accessInfo.session_token
+			);
+		}
+		return signedUrl.toString();
 	}
 }
 
-/**
- * @deprecated use per-function import
- */
-export default Signer;
+const getOptions = (request, accessInfo, serviceInfo, expiration?) => {
+	const { access_key, secret_key, session_token } = accessInfo ?? {};
+	const { region: urlRegion, service: urlService } = parseServiceInfo(
+		request.url
+	);
+	const { region = urlRegion, service = urlService } = serviceInfo ?? {};
+	const credentials = {
+		accessKeyId: access_key,
+		secretAccessKey: secret_key,
+		...(sessionTokenRequiredInSigning(service)
+			? { sessionToken: session_token }
+			: {}),
+	};
+	return {
+		credentials,
+		signingDate: DateUtils.getDateWithClockOffset(),
+		signingRegion: region,
+		signingService: service,
+		...(expiration && { expiration }),
+	};
+};
+
+// TODO: V6 investigate whether add to custom clients' general signer implementation.
+const parseServiceInfo = (url: URL) => {
+	const host = url.host;
+	const matched = host.match(AWS_ENDPOINT_REGEX) ?? [];
+	let parsed = matched.slice(1, 3);
+
+	if (parsed[1] === 'es') {
+		// Elastic Search
+		parsed = parsed.reverse();
+	}
+
+	return {
+		service: parsed[0],
+		region: parsed[1],
+	};
+};
+
+// IoT service does not allow the session token in the canonical request
+// https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
+// TODO: V6 investigate whether add to custom clients' general signer implementation.
+const sessionTokenRequiredInSigning = (service: string) =>
+	service !== IOT_SERVICE_NAME;

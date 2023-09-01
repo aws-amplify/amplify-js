@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *	 http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import {
 	AuthOptions,
@@ -40,10 +30,12 @@ import {
 	Hub,
 	StorageHelper,
 	ICredentials,
-	Parser,
-	JS,
+	Platform,
+	browserOrNode,
+	parseAWSExports,
 	UniversalStorage,
 	urlSafeDecode,
+	HubCallback,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
@@ -62,7 +54,12 @@ import {
 	CognitoRefreshToken,
 	CognitoAccessToken,
 	NodeCallback,
+	CodeDeliveryDetails,
 } from 'amazon-cognito-identity-js';
+import {
+	addAuthCategoryToCognitoUserAgent,
+	addFrameworkToCognitoUserAgent,
+} from 'amazon-cognito-identity-js/internals';
 
 import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
@@ -70,6 +67,7 @@ import { default as urlListener } from './urlListener';
 import { AuthError, NoUserPoolError } from './Errors';
 import {
 	AuthErrorTypes,
+	AutoSignInOptions,
 	CognitoHostedUIIdentityProvider,
 	IAuthDevice,
 } from './types/Auth';
@@ -80,10 +78,11 @@ const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 // 10 sec, following this guide https://www.nngroup.com/articles/response-times-3-important-limits/
 const OAUTH_FLOW_MS_TIMEOUT = 10 * 1000;
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
@@ -93,6 +92,8 @@ const dispatchAuthEvent = (event: string, data: any, message: string) => {
 // tslint:disable-next-line:max-line-length
 // https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
 const MAX_DEVICES = 60;
+
+const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 
 /**
  * Provide authentication steps
@@ -106,7 +107,9 @@ export class AuthClass {
 	private _storageSync;
 	private oAuthFlowInProgress: boolean = false;
 	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
-
+	private autoSignInInitiated: boolean = false;
+	private inflightSessionPromise: Promise<CognitoUserSession> | null = null;
+	private inflightSessionPromiseCounter: number = 0;
 	Credentials = Credentials;
 
 	/**
@@ -121,6 +124,7 @@ export class AuthClass {
 		Hub.listen('auth', ({ payload }) => {
 			const { event } = payload;
 			switch (event) {
+				case 'verify':
 				case 'signIn':
 					this._storage.setItem('amplify-signin-with-hostedUI', 'false');
 					break;
@@ -131,6 +135,12 @@ export class AuthClass {
 					this._storage.setItem('amplify-signin-with-hostedUI', 'true');
 					break;
 			}
+		});
+
+		addAuthCategoryToCognitoUserAgent();
+		addFrameworkToCognitoUserAgent(Platform.framework);
+		Platform.observeFrameworkChanges(() => {
+			addFrameworkToCognitoUserAgent(Platform.framework);
 		});
 	}
 
@@ -144,7 +154,7 @@ export class AuthClass {
 		const conf = Object.assign(
 			{},
 			this._config,
-			Parser.parseMobilehubConfig(config).Auth,
+			parseAWSExports(config).Auth,
 			config
 		);
 		this._config = conf;
@@ -160,9 +170,10 @@ export class AuthClass {
 			identityPoolRegion,
 			clientMetadata,
 			endpoint,
+			storage,
 		} = this._config;
 
-		if (!this._config.storage) {
+		if (!storage) {
 			// backward compatability
 			if (cookieStorage) this._storage = new CookieStorage(cookieStorage);
 			else {
@@ -171,11 +182,11 @@ export class AuthClass {
 					: new StorageHelper().getStorage();
 			}
 		} else {
-			if (!this._isValidAuthStorage(this._config.storage)) {
+			if (!this._isValidAuthStorage(storage)) {
 				logger.error('The storage in the Auth config is not valid!');
 				throw new Error('Empty storage object');
 			}
-			this._storage = this._config.storage;
+			this._storage = storage;
 		}
 
 		this._storageSync = Promise.resolve();
@@ -199,11 +210,12 @@ export class AuthClass {
 
 		this.Credentials.configure({
 			mandatorySignIn,
-			region: identityPoolRegion || region,
+			region,
 			userPoolId,
 			identityPoolId,
 			refreshHandlers,
 			storage: this._storage,
+			identityPoolRegion,
 		});
 
 		// initialize cognitoauth client if hosted ui options provided
@@ -256,6 +268,24 @@ export class AuthClass {
 			null,
 			`The Auth category has been configured successfully`
 		);
+
+		if (
+			!this.autoSignInInitiated &&
+			typeof this._storage['getItem'] === 'function'
+		) {
+			const pollingInitiated = this.isTrueStorageValue(
+				'amplify-polling-started'
+			);
+			if (pollingInitiated) {
+				dispatchAuthEvent(
+					'autoSignIn_failure',
+					null,
+					AuthErrorTypes.AutoSignInError
+				);
+				this._storage.removeItem('amplify-auto-sign-in');
+			}
+			this._storage.removeItem('amplify-polling-started');
+		}
 		return this._config;
 	}
 
@@ -294,6 +324,9 @@ export class AuthClass {
 		const attributes: CognitoUserAttribute[] = [];
 		let validationData: CognitoUserAttribute[] = null;
 		let clientMetadata;
+		let autoSignIn: AutoSignInOptions = { enabled: false };
+		let autoSignInValidationData = {};
+		let autoSignInClientMetaData: ClientMetaData = {};
 
 		if (params && typeof params === 'string') {
 			username = params;
@@ -344,6 +377,13 @@ export class AuthClass {
 					);
 				});
 			}
+
+			autoSignIn = params.autoSignIn ?? { enabled: false };
+			if (autoSignIn.enabled) {
+				this._storage.setItem('amplify-auto-sign-in', 'true');
+				autoSignInValidationData = autoSignIn.validationData ?? {};
+				autoSignInClientMetaData = autoSignIn.clientMetaData ?? {};
+			}
 		} else {
 			return this.rejectAuthError(AuthErrorTypes.SignUpError);
 		}
@@ -378,12 +418,112 @@ export class AuthClass {
 							data,
 							`${username} has signed up successfully`
 						);
+						if (autoSignIn.enabled) {
+							this.handleAutoSignIn(
+								username,
+								password,
+								autoSignInValidationData,
+								autoSignInClientMetaData,
+								data
+							);
+						}
 						resolve(data);
 					}
 				},
 				clientMetadata
 			);
 		});
+	}
+
+	private handleAutoSignIn(
+		username: string,
+		password: string,
+		validationData: {},
+		clientMetadata: any,
+		data: any
+	) {
+		this.autoSignInInitiated = true;
+		const authDetails = new AuthenticationDetails({
+			Username: username,
+			Password: password,
+			ValidationData: validationData,
+			ClientMetadata: clientMetadata,
+		});
+		if (data.userConfirmed) {
+			this.signInAfterUserConfirmed(authDetails);
+		} else if (this._config.signUpVerificationMethod === 'link') {
+			this.handleLinkAutoSignIn(authDetails);
+		} else {
+			this.handleCodeAutoSignIn(authDetails);
+		}
+	}
+
+	private handleCodeAutoSignIn(authDetails: AuthenticationDetails) {
+		const listenEvent = ({ payload }) => {
+			if (payload.event === 'confirmSignUp') {
+				this.signInAfterUserConfirmed(authDetails, listenEvent);
+			}
+		};
+		Hub.listen('auth', listenEvent);
+	}
+
+	private handleLinkAutoSignIn(authDetails: AuthenticationDetails) {
+		this._storage.setItem('amplify-polling-started', 'true');
+		const start = Date.now();
+		const autoSignInPollingIntervalId = setInterval(() => {
+			if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_MS) {
+				clearInterval(autoSignInPollingIntervalId);
+				dispatchAuthEvent(
+					'autoSignIn_failure',
+					null,
+					'Please confirm your account and use your credentials to sign in.'
+				);
+				this._storage.removeItem('amplify-auto-sign-in');
+			} else {
+				this.signInAfterUserConfirmed(
+					authDetails,
+					null,
+					autoSignInPollingIntervalId
+				);
+			}
+		}, 5000);
+	}
+
+	private async signInAfterUserConfirmed(
+		authDetails: AuthenticationDetails,
+		listenEvent?: HubCallback,
+		autoSignInPollingIntervalId?: ReturnType<typeof setInterval>
+	) {
+		const user = this.createCognitoUser(authDetails.getUsername());
+		try {
+			await user.authenticateUser(
+				authDetails,
+				this.authCallbacks(
+					user,
+					value => {
+						dispatchAuthEvent(
+							'autoSignIn',
+							value,
+							`${authDetails.getUsername()} has signed in successfully`
+						);
+						if (listenEvent) {
+							Hub.remove('auth', listenEvent);
+						}
+						if (autoSignInPollingIntervalId) {
+							clearInterval(autoSignInPollingIntervalId);
+							this._storage.removeItem('amplify-polling-started');
+						}
+						this._storage.removeItem('amplify-auto-sign-in');
+					},
+					error => {
+						logger.error(error);
+						this._storage.removeItem('amplify-auto-sign-in');
+					}
+				)
+			);
+		} catch (error) {
+			logger.error(error);
+		}
 	}
 
 	/**
@@ -428,12 +568,31 @@ export class AuthClass {
 					if (err) {
 						reject(err);
 					} else {
+						dispatchAuthEvent(
+							'confirmSignUp',
+							data,
+							`${username} has been confirmed successfully`
+						);
+						const autoSignIn = this.isTrueStorageValue('amplify-auto-sign-in');
+						if (autoSignIn && !this.autoSignInInitiated) {
+							dispatchAuthEvent(
+								'autoSignIn_failure',
+								null,
+								AuthErrorTypes.AutoSignInError
+							);
+							this._storage.removeItem('amplify-auto-sign-in');
+						}
 						resolve(data);
 					}
 				},
 				clientMetadata
 			);
 		});
+	}
+
+	private isTrueStorageValue(value: string) {
+		const item = this._storage.getItem(value);
+		return item ? item === 'true' : false;
 	}
 
 	/**
@@ -468,7 +627,8 @@ export class AuthClass {
 	/**
 	 * Sign in
 	 * @param {String | SignInOpts} usernameOrSignInOpts - The username to be signed in or the sign in options
-	 * @param {String} password - The password of the username
+	 * @param {String} pw - The password of the username
+	 * @param {ClientMetaData} clientMetadata - Client metadata for custom workflows
 	 * @return - A promise resolves the CognitoUser
 	 */
 	public signIn(
@@ -699,9 +859,21 @@ export class AuthClass {
 
 			const bypassCache = params ? params.bypassCache : false;
 			user.getUserData(
-				(err, data) => {
+				async (err, data) => {
 					if (err) {
 						logger.debug('getting preferred mfa failed', err);
+						if (this.isSessionInvalid(err)) {
+							try {
+								await this.cleanUpInvalidSession(user);
+							} catch (cleanUpError) {
+								rej(
+									new Error(
+										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+									)
+								);
+								return;
+							}
+						}
 						rej(err);
 						return;
 					}
@@ -752,14 +924,25 @@ export class AuthClass {
 
 	private _getUserData(user, params) {
 		return new Promise((res, rej) => {
-			user.getUserData((err, data) => {
+			user.getUserData(async (err, data) => {
 				if (err) {
 					logger.debug('getting user data failed', err);
+					if (this.isSessionInvalid(err)) {
+						try {
+							await this.cleanUpInvalidSession(user);
+						} catch (cleanUpError) {
+							rej(
+								new Error(
+									`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+								)
+							);
+							return;
+						}
+					}
 					rej(err);
 					return;
 				} else {
 					res(data);
-					return;
 				}
 			}, params);
 		});
@@ -773,7 +956,7 @@ export class AuthClass {
 	 */
 	public async setPreferredMFA(
 		user: CognitoUser | any,
-		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' 
+		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
 	): Promise<string> {
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
@@ -793,7 +976,7 @@ export class AuthClass {
 				};
 				break;
 			case 'SMS':
-			case 'SMS_MFA':	
+			case 'SMS_MFA':
 				smsMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
@@ -855,9 +1038,21 @@ export class AuthClass {
 					logger.debug('Caching the latest user data into local');
 					// cache the latest result into user data
 					user.getUserData(
-						(err, data) => {
+						async (err, data) => {
 							if (err) {
 								logger.debug('getting user data failed', err);
+								if (this.isSessionInvalid(err)) {
+									try {
+										await this.cleanUpInvalidSession(user);
+									} catch (cleanUpError) {
+										rej(
+											new Error(
+												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+											)
+										);
+										return;
+									}
+								}
 								return rej(err);
 							} else {
 								return res(result);
@@ -929,7 +1124,7 @@ export class AuthClass {
 					return;
 				},
 				associateSecretCode: secretCode => {
-					logger.debug('associateSoftwareToken sucess', secretCode);
+					logger.debug('associateSoftwareToken success', secretCode);
 					res(secretCode);
 					return;
 				},
@@ -948,6 +1143,13 @@ export class AuthClass {
 		challengeAnswer: string
 	): Promise<CognitoUserSession> {
 		logger.debug('verification totp token', user, challengeAnswer);
+
+		let signInUserSession;
+		if (user && typeof user.getSignInUserSession === 'function') {
+			signInUserSession = (user as CognitoUser).getSignInUserSession();
+		}
+		const isLoggedIn = signInUserSession?.isValid();
+
 		return new Promise((res, rej) => {
 			user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
 				onFailure: err => {
@@ -956,10 +1158,17 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
+					if (!isLoggedIn) {
+						dispatchAuthEvent(
+							'signIn',
+							user,
+							`A user ${user.getUsername()} has been signed in`
+						);
+					}
 					dispatchAuthEvent(
-						'signIn',
+						'verify',
 						user,
-						`A user ${user.getUsername()} has been signed in`
+						`A user ${user.getUsername()} has been verified`
 					);
 					logger.debug('verifyTotpToken success', data);
 					res(data);
@@ -999,7 +1208,12 @@ export class AuthClass {
 							logger.debug('cannot get cognito credentials', e);
 						} finally {
 							that.user = user;
-
+							try {
+								const currentUser = await this.currentUserPoolUser();
+								user.attributes = currentUser.attributes;
+							} catch (e) {
+								logger.debug('cannot get updated Cognito User', e);
+							}
 							dispatchAuthEvent(
 								'signIn',
 								user,
@@ -1120,24 +1334,102 @@ export class AuthClass {
 	 **/
 	public deleteUserAttributes(
 		user: CognitoUser | any,
-		attributeNames: string[],
+		attributeNames: string[]
 	) {
 		const that = this;
 		return new Promise((resolve, reject) => {
 			that.userSession(user).then(session => {
-				user.deleteAttributes(
-					attributeNames,
-					(err, result) => {
-						if (err) {
-							return reject(err);
-						} else {
-							return resolve(result);
-						}
+				user.deleteAttributes(attributeNames, (err, result) => {
+					if (err) {
+						return reject(err);
+					} else {
+						return resolve(result);
 					}
-				);
+				});
 			});
 		});
+	}
 
+	/**
+	 * Delete the current authenticated user
+	 * @return {Promise}
+	 **/
+	// TODO: Check return type void
+	public async deleteUser(): Promise<string | void> {
+		try {
+			await this._storageSync;
+		} catch (e) {
+			logger.debug('Failed to sync cache info into memory', e);
+			throw new Error(e);
+		}
+
+		const isSignedInHostedUI =
+			this._oAuthHandler &&
+			this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
+
+		return new Promise(async (res, rej) => {
+			if (this.userPool) {
+				const user = this.userPool.getCurrentUser();
+
+				if (!user) {
+					logger.debug('Failed to get user from user pool');
+					return rej(new Error('No current user.'));
+				} else {
+					user.getSession(async (err, session) => {
+						if (err) {
+							logger.debug('Failed to get the user session', err);
+							if (this.isSessionInvalid(err)) {
+								try {
+									await this.cleanUpInvalidSession(user);
+								} catch (cleanUpError) {
+									rej(
+										new Error(
+											`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+										)
+									);
+									return;
+								}
+							}
+							return rej(err);
+						} else {
+							user.deleteUser((err, result: string) => {
+								if (err) {
+									rej(err);
+								} else {
+									dispatchAuthEvent(
+										'userDeleted',
+										result,
+										'The authenticated user has been deleted.'
+									);
+									user.signOut();
+									this.user = null;
+									try {
+										this.cleanCachedItems(); // clean aws credentials
+									} catch (e) {
+										// TODO: change to rejects in refactor
+										logger.debug('failed to clear cached items');
+									}
+
+									if (isSignedInHostedUI) {
+										this.oAuthSignOutRedirect(res, rej);
+									} else {
+										dispatchAuthEvent(
+											'signOut',
+											this.user,
+											`A user has been signed out`
+										);
+										res(result);
+									}
+								}
+							});
+						}
+					});
+				}
+			} else {
+				logger.debug('no Congito User pool');
+				rej(new Error('Cognito User pool does not exist'));
+			}
+		});
 	}
 
 	/**
@@ -1165,10 +1457,24 @@ export class AuthClass {
 				}
 				user.updateAttributes(
 					attributeList,
-					(err, result) => {
+					(err, result, details) => {
 						if (err) {
+							dispatchAuthEvent(
+								'updateUserAttributes_failure',
+								err,
+								'Failed to update attributes'
+							);
 							return reject(err);
 						} else {
+							const attrs = this.createUpdateAttributesResultList(
+								attributes as Record<string, string>,
+								details?.CodeDeliveryDetailsList
+							);
+							dispatchAuthEvent(
+								'updateUserAttributes',
+								attrs,
+								'Attributes successfully updated'
+							);
 							return resolve(result);
 						}
 					},
@@ -1177,6 +1483,27 @@ export class AuthClass {
 			});
 		});
 	}
+
+	private createUpdateAttributesResultList(
+		attributes: Record<string, string>,
+		codeDeliveryDetailsList?: CodeDeliveryDetails[]
+	): Record<string, string> {
+		const attrs = {};
+		Object.keys(attributes).forEach(key => {
+			attrs[key] = {
+				isUpdated: true,
+			};
+			const codeDeliveryDetails = codeDeliveryDetailsList?.find(
+				value => value.AttributeName === key
+			);
+			if (codeDeliveryDetails) {
+				attrs[key].isUpdated = false;
+				attrs[key].codeDeliveryDetails = codeDeliveryDetails;
+			}
+		});
+		return attrs;
+	}
+
 	/**
 	 * Return user attributes
 	 * @param {Object} user - The CognitoUser object
@@ -1223,6 +1550,99 @@ export class AuthClass {
 				unverified,
 			};
 		});
+	}
+
+	private isErrorWithMessage(err: any): err is { message: string } {
+		return (
+			typeof err === 'object' &&
+			Object.prototype.hasOwnProperty.call(err, 'message')
+		);
+	}
+
+	// Session revoked by another app
+	private isTokenRevokedError(
+		err: any
+	): err is { message: 'Access Token has been revoked' } {
+		return (
+			this.isErrorWithMessage(err) &&
+			err.message === 'Access Token has been revoked'
+		);
+	}
+
+	private isRefreshTokenRevokedError(
+		err: any
+	): err is { message: 'Refresh Token has been revoked' } {
+		return (
+			this.isErrorWithMessage(err) &&
+			err.message === 'Refresh Token has been revoked'
+		);
+	}
+
+	private isUserDisabledError(
+		err: any
+	): err is { message: 'User is disabled.' } {
+		return this.isErrorWithMessage(err) && err.message === 'User is disabled.';
+	}
+
+	private isUserDoesNotExistError(
+		err: any
+	): err is { message: 'User does not exist.' } {
+		return (
+			this.isErrorWithMessage(err) && err.message === 'User does not exist.'
+		);
+	}
+
+	private isRefreshTokenExpiredError(
+		err: any
+	): err is { message: 'Refresh Token has expired' } {
+		return (
+			this.isErrorWithMessage(err) &&
+			err.message === 'Refresh Token has expired'
+		);
+	}
+
+	private isPasswordResetRequiredError(
+		err: any
+	): err is { message: 'Password reset required for the user' } {
+		return (
+			this.isErrorWithMessage(err) &&
+			err.message === 'Password reset required for the user'
+		);
+	}
+
+	private isSignedInHostedUI() {
+		return (
+			this._oAuthHandler &&
+			this._storage.getItem('amplify-signin-with-hostedUI') === 'true'
+		);
+	}
+
+	private isSessionInvalid(err: any) {
+		return (
+			this.isUserDisabledError(err) ||
+			this.isUserDoesNotExistError(err) ||
+			this.isTokenRevokedError(err) ||
+			this.isRefreshTokenRevokedError(err) ||
+			this.isRefreshTokenExpiredError(err) ||
+			this.isPasswordResetRequiredError(err)
+		);
+	}
+
+	private async cleanUpInvalidSession(user: CognitoUser) {
+		user.signOut();
+		this.user = null;
+		try {
+			await this.cleanCachedItems(); // clean aws credentials
+		} catch (e) {
+			logger.debug('failed to clear cached items');
+		}
+		if (this.isSignedInHostedUI()) {
+			return new Promise((res, rej) => {
+				this.oAuthSignOutRedirect(res, rej);
+			});
+		} else {
+			dispatchAuthEvent('signOut', this.user, `A user has been signed out`);
+		}
 	}
 
 	/**
@@ -1279,75 +1699,71 @@ export class AuthClass {
 						return;
 					}
 
-					const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
-
 					// refresh the session if the session expired.
-					user.getSession(
-						async (err, session) => {
-							if (err) {
-								logger.debug('Failed to get the user session', err);
-								rej(err);
-								return;
-							}
+					try {
+						const session = await this._userSession(user);
 
-							// get user data from Cognito
-							const bypassCache = params ? params.bypassCache : false;
+						// get user data from Cognito
+						const bypassCache = params ? params.bypassCache : false;
 
-							if (bypassCache) {
-								await this.Credentials.clear();
-							}
+						if (bypassCache) {
+							await this.Credentials.clear();
+						}
 
-							const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+						const clientMetadata = this._config.clientMetadata;
 
-							// validate the token's scope first before calling this function
-							const { scope = '' } = session.getAccessToken().decodePayload();
-							if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
-								user.getUserData(
-									(err, data) => {
-										if (err) {
-											logger.debug('getting user data failed', err);
-											// Make sure the user is still valid
-											if (
-												err.message === 'User is disabled.' ||
-												err.message === 'User does not exist.' ||
-												err.message === 'Access Token has been revoked' // Session revoked by another app
-											) {
-												rej(err);
-											} else {
-												// the error may also be thrown when lack of permissions to get user info etc
-												// in that case we just bypass the error
-												res(user);
+						// validate the token's scope first before calling this function
+						const { scope = '' } = session.getAccessToken().decodePayload();
+						if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
+							user.getUserData(
+								async (err, data) => {
+									if (err) {
+										logger.debug('getting user data failed', err);
+										if (this.isSessionInvalid(err)) {
+											try {
+												await this.cleanUpInvalidSession(user);
+											} catch (cleanUpError) {
+												rej(
+													new Error(
+														`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+													)
+												);
+												return;
 											}
-											return;
+											rej(err);
+										} else {
+											res(user);
 										}
-										const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
-										const attributeList = [];
+										return;
+									}
+									const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+									const attributeList = [];
 
-										for (let i = 0; i < data.UserAttributes.length; i++) {
-											const attribute = {
-												Name: data.UserAttributes[i].Name,
-												Value: data.UserAttributes[i].Value,
-											};
-											const userAttribute = new CognitoUserAttribute(attribute);
-											attributeList.push(userAttribute);
-										}
+									for (let i = 0; i < data.UserAttributes.length; i++) {
+										const attribute = {
+											Name: data.UserAttributes[i].Name,
+											Value: data.UserAttributes[i].Value,
+										};
+										const userAttribute = new CognitoUserAttribute(attribute);
+										attributeList.push(userAttribute);
+									}
 
-										const attributes = this.attributesToObject(attributeList);
-										Object.assign(user, { attributes, preferredMFA });
-										return res(user);
-									},
-									{ bypassCache, clientMetadata }
-								);
-							} else {
-								logger.debug(
-									`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
-										`is not in the scopes of the access token`
-								);
-								return res(user);
-							}
-						},
-						{ clientMetadata }
-					);
+									const attributes = this.attributesToObject(attributeList);
+									Object.assign(user, { attributes, preferredMFA });
+									return res(user);
+								},
+								{ bypassCache, clientMetadata }
+							);
+						} else {
+							logger.debug(
+								`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
+									`is not in the scopes of the access token`
+							);
+							return res(user);
+						}
+					} catch (err) {
+						rej(err);
+					}
 				})
 				.catch(e => {
 					logger.debug('Failed to sync cache info into memory', e);
@@ -1424,7 +1840,7 @@ export class AuthClass {
 		logger.debug('Getting current session');
 		// Purposely not calling the reject method here because we don't need a console error
 		if (!this.userPool) {
-			return Promise.reject();
+			return Promise.reject(new Error('No User Pool in the configuration.'));
 		}
 
 		return new Promise((res, rej) => {
@@ -1451,35 +1867,66 @@ export class AuthClass {
 		});
 	}
 
+	private async _userSession(user?: CognitoUser): Promise<CognitoUserSession> {
+		if (!user) {
+			logger.debug('the user is null');
+			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
+		}
+		const clientMetadata = this._config.clientMetadata;
+		// Debouncing the concurrent userSession calls by caching the promise.
+		// This solution assumes users will always call this function with the same CognitoUser instance.
+		if (this.inflightSessionPromiseCounter === 0) {
+			this.inflightSessionPromise = new Promise<CognitoUserSession>(
+				(res, rej) => {
+					user.getSession(
+						async (err, session) => {
+							if (err) {
+								logger.debug('Failed to get the session from user', user);
+								if (this.isSessionInvalid(err)) {
+									try {
+										await this.cleanUpInvalidSession(user);
+									} catch (cleanUpError) {
+										rej(
+											new Error(
+												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+											)
+										);
+										return;
+									}
+								}
+								rej(err);
+								return;
+							} else {
+								logger.debug('Succeed to get the user session', session);
+								res(session);
+								return;
+							}
+						},
+						{ clientMetadata }
+					);
+				}
+			);
+		}
+		this.inflightSessionPromiseCounter++;
+
+		try {
+			const userSession = await this.inflightSessionPromise;
+			// Set private member. Avoid user.setSignInUserSession() to prevent excessive localstorage refresh.
+			// @ts-ignore
+			user.signInUserSession = userSession;
+			return userSession!;
+		} finally {
+			this.inflightSessionPromiseCounter--;
+		}
+	}
+
 	/**
 	 * Get the corresponding user session
 	 * @param {Object} user - The CognitoUser object
 	 * @return - A promise resolves to the session
 	 */
 	public userSession(user): Promise<CognitoUserSession> {
-		if (!user) {
-			logger.debug('the user is null');
-			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
-		}
-		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
-
-		return new Promise((resolve, reject) => {
-			logger.debug('Getting the session from this user:', user);
-			user.getSession(
-				(err, session) => {
-					if (err) {
-						logger.debug('Failed to get the session from user', user);
-						reject(err);
-						return;
-					} else {
-						logger.debug('Succeed to get the user session', session);
-						resolve(session);
-						return;
-					}
-				},
-				{ clientMetadata }
-			);
-		});
+		return this._userSession(user);
 	}
 
 	/**
@@ -1515,8 +1962,8 @@ export class AuthClass {
 					logger.debug('getting session success', session);
 					return this.Credentials.set(session, 'session');
 				})
-				.catch(error => {
-					logger.debug('getting session failed', error);
+				.catch(() => {
+					logger.debug('getting guest credentials');
 					return this.Credentials.set(null, 'guest');
 				});
 		}
@@ -1630,9 +2077,21 @@ export class AuthClass {
 				const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
 				user.getSession(
-					(err, result) => {
+					async (err, result) => {
 						if (err) {
 							logger.debug('failed to get the user session', err);
+							if (this.isSessionInvalid(err)) {
+								try {
+									await this.cleanUpInvalidSession(user);
+								} catch (cleanUpError) {
+									rej(
+										new Error(
+											`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+										)
+									);
+									return;
+								}
+							}
 							return rej(err);
 						}
 						user.globalSignOut({
@@ -1669,7 +2128,7 @@ export class AuthClass {
 		resolve: () => void,
 		reject: (reason?: any) => void
 	) {
-		const { isBrowser } = JS.browserOrNode();
+		const { isBrowser } = browserOrNode();
 
 		if (isBrowser) {
 			this.oAuthSignOutRedirectOrReject(reject);
@@ -1687,7 +2146,7 @@ export class AuthClass {
 		this._oAuthHandler.signOut(); // this method redirects url
 
 		// App should be redirected to another url otherwise it will reject
-		setTimeout(() => reject('Signout timeout fail'), 3000);
+		setTimeout(() => reject(Error('Signout timeout fail')), 3000);
 	}
 
 	/**
@@ -1710,7 +2169,7 @@ export class AuthClass {
 				logger.debug('no current Cognito user');
 			}
 		} else {
-			logger.debug('no Congito User pool');
+			logger.debug('no Cognito User pool');
 		}
 
 		/**
@@ -1841,7 +2300,7 @@ export class AuthClass {
 				code,
 				password,
 				{
-					onSuccess: (success) => {
+					onSuccess: success => {
 						dispatchAuthEvent(
 							'forgotPasswordSubmit',
 							user,
@@ -2037,7 +2496,7 @@ export class AuthClass {
 			);
 
 			const currentUrl =
-				URL || (JS.browserOrNode().isBrowser ? window.location.href : '');
+				URL || (browserOrNode().isBrowser ? window.location.href : '');
 
 			const hasCodeOrError = !!(parse(currentUrl).query || '')
 				.split('&')
@@ -2053,12 +2512,8 @@ export class AuthClass {
 			if (hasCodeOrError || hasTokenOrError) {
 				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
 				try {
-					const {
-						accessToken,
-						idToken,
-						refreshToken,
-						state,
-					} = await this._oAuthHandler.handleAuthResponse(currentUrl);
+					const { accessToken, idToken, refreshToken, state } =
+						await this._oAuthHandler.handleAuthResponse(currentUrl);
 					const session = new CognitoUserSession({
 						IdToken: new CognitoIdToken({ IdToken: idToken }),
 						RefreshToken: new CognitoRefreshToken({
@@ -2076,7 +2531,7 @@ export class AuthClass {
 						logger.debug('AWS credentials', credentials);
 					}
 
-					/* 
+					/*
 				Prior to the request we do sign the custom state along with the state we set. This check will verify
 				if there is a dash indicated when setting custom state from the request. If a dash is contained
 				then there is custom state present on the state string.
@@ -2115,10 +2570,7 @@ export class AuthClass {
 					);
 
 					if (isCustomStateIncluded) {
-						const customState = state
-							.split('-')
-							.splice(1)
-							.join('-');
+						const customState = state.split('-').splice(1).join('-');
 
 						dispatchAuthEvent(
 							'customOAuthState',
@@ -2352,4 +2804,3 @@ export class AuthClass {
 export const Auth = new AuthClass(null);
 
 Amplify.register(Auth);
-

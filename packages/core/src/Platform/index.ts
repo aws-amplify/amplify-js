@@ -1,45 +1,54 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { CustomUserAgentDetails, Framework } from './types';
 import { version } from './version';
+import { detectFramework, observeFrameworkChanges } from './detectFramework';
+import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
 
-const BASE_USER_AGENT = `aws-amplify/${version}`;
+const BASE_USER_AGENT = `aws-amplify`;
 
-export const Platform = {
-	userAgent: `${BASE_USER_AGENT} js`,
-	product: '',
-	navigator: null,
-	isReactNative: false,
-};
-if (typeof navigator !== 'undefined' && navigator.product) {
-	Platform.product = navigator.product || '';
-	Platform.navigator = navigator || null;
-	switch (navigator.product) {
-		case 'ReactNative':
-			Platform.userAgent = `${BASE_USER_AGENT} react-native`;
-			Platform.isReactNative = true;
-			break;
-		default:
-			Platform.userAgent = `${BASE_USER_AGENT} js`;
-			Platform.isReactNative = false;
-			break;
+class PlatformBuilder {
+	userAgent = `${BASE_USER_AGENT}/${version}`;
+	get framework() {
+		return detectFramework();
+	}
+
+	get isReactNative() {
+		return (
+			this.framework === Framework.ReactNative ||
+			this.framework === Framework.Expo
+		);
+	}
+
+	observeFrameworkChanges(fcn: () => void) {
+		observeFrameworkChanges(fcn);
 	}
 }
 
-export const getAmplifyUserAgent = () => {
-	return Platform.userAgent;
+export const Platform = new PlatformBuilder();
+
+export const getAmplifyUserAgentObject = ({
+	category,
+	action,
+	framework,
+}: CustomUserAgentDetails = {}): AWSUserAgent => {
+	const userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
+	if (category) {
+		userAgent.push([category, action]);
+	}
+	userAgent.push(['framework', detectFramework()]);
+
+	return userAgent;
 };
 
-/**
- * @deprecated use named import
- */
-export default Platform;
+export const getAmplifyUserAgent = (
+	customUserAgentDetails?: CustomUserAgentDetails
+): string => {
+	const userAgent = getAmplifyUserAgentObject(customUserAgentDetails);
+	const userAgentString = userAgent
+		.map(([agentKey, agentValue]) => `${agentKey}/${agentValue}`)
+		.join(' ');
+
+	return userAgentString;
+};

@@ -6,6 +6,7 @@
 	<title>AnalyticsClass | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
 /* ========================================================================== HTML5 display definitions ========================================================================== */
 /** Correct `block` display not defined in IE 6/7/8/9 and Firefox 3. */
@@ -880,12 +881,12 @@ img { max-width: 100%; }
 			<div class="table-wrap">
 				<div class="table-cell logo">
 					<a href="../index.html">
-						<img src="https://aws-amplify.github.io/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
-						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+						<img src="https://aws-amplify.github.io/amplify-js/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: relative;">AWS Amplify JS API</div>
 					</a>
 				</div>
 				<div class="table-cell" style="">	<body>
-						<a href="/amplify-js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
+						<a href="https://docs.amplify.aws/lib/q/platform/js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify JS Dev Center</a>
 </div>	</body>
 <div class="table-cell" id="tsd-widgets">
 <div id="tsd-filter">
@@ -1020,7 +1021,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Analytics.ts#L54">packages/analytics/src/Analytics.ts:54</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L59">packages/analytics/src/Analytics.ts:59</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1045,7 +1046,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Analytics.ts#L128">packages/analytics/src/Analytics.ts:128</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L138">packages/analytics/src/Analytics.ts:138</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1070,25 +1071,95 @@ img { max-width: 100%; }
 			<a name="autotrack" class="tsd-anchor"></a>
 			<h3>auto<wbr>Track</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">auto<wbr>Track<span class="tsd-signature-symbol">(</span>trackerType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, opts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">auto<wbr>Track<span class="tsd-signature-symbol">(</span>trackerType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"session"</span>, opts<span class="tsd-signature-symbol">: </span><a href="../interfaces/autotracksessionopts.html" class="tsd-signature-type">AutoTrackSessionOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">auto<wbr>Track<span class="tsd-signature-symbol">(</span>trackerType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"pageView"</span>, opts<span class="tsd-signature-symbol">: </span><a href="../interfaces/autotrackpageviewopts.html" class="tsd-signature-type">AutoTrackPageViewOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">auto<wbr>Track<span class="tsd-signature-symbol">(</span>trackerType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"event"</span>, opts<span class="tsd-signature-symbol">: </span><a href="../interfaces/autotrackeventopts.html" class="tsd-signature-type">AutoTrackEventOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">auto<wbr>Track<span class="tsd-signature-symbol">(</span>trackerType<span class="tsd-signature-symbol">: </span><a href="../globals.html#trackertypes" class="tsd-signature-type">TrackerTypes</a>, opts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Analytics.ts#L277">packages/analytics/src/Analytics.ts:277</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L290">packages/analytics/src/Analytics.ts:290</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Enable or disable auto tracking</p>
+						</div>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>trackerType: <span class="tsd-signature-type">"session"</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>The type of tracker to activate.</p>
+							</div>
+						</li>
+						<li>
+							<h5>opts: <a href="../interfaces/autotracksessionopts.html" class="tsd-signature-type">AutoTrackSessionOpts</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L291">packages/analytics/src/Analytics.ts:291</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>trackerType: <span class="tsd-signature-type">any</span></h5>
+							<h5>trackerType: <span class="tsd-signature-type">"pageView"</span></h5>
 						</li>
 						<li>
-							<h5>opts: <span class="tsd-signature-type">any</span></h5>
+							<h5>opts: <a href="../interfaces/autotrackpageviewopts.html" class="tsd-signature-type">AutoTrackPageViewOpts</a></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L292">packages/analytics/src/Analytics.ts:292</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>trackerType: <span class="tsd-signature-type">"event"</span></h5>
+						</li>
+						<li>
+							<h5>opts: <a href="../interfaces/autotrackeventopts.html" class="tsd-signature-type">AutoTrackEventOpts</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L294">packages/analytics/src/Analytics.ts:294</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>trackerType: <a href="../globals.html#trackertypes" class="tsd-signature-type">TrackerTypes</a></h5>
+						</li>
+						<li>
+							<h5>opts: <span class="tsd-signature-type">object</span></h5>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-index-signature">
+									<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li class="tsd-parameter">
+									<h5>provider<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1102,7 +1173,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Analytics.ts#L76">packages/analytics/src/Analytics.ts:76</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L86">packages/analytics/src/Analytics.ts:86</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1133,7 +1204,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Analytics.ts#L184">packages/analytics/src/Analytics.ts:184</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L194">packages/analytics/src/Analytics.ts:194</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1155,7 +1226,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Analytics.ts#L191">packages/analytics/src/Analytics.ts:191</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L201">packages/analytics/src/Analytics.ts:201</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1177,7 +1248,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Analytics.ts#L69">packages/analytics/src/Analytics.ts:69</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L79">packages/analytics/src/Analytics.ts:79</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1188,13 +1259,13 @@ img { max-width: 100%; }
 			<a name="getpluggable" class="tsd-anchor"></a>
 			<h3>get<wbr>Pluggable</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">get<wbr>Pluggable<span class="tsd-signature-symbol">(</span>providerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/analyticsprovider.html" class="tsd-signature-type">AnalyticsProvider</a></li>
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Pluggable<span class="tsd-signature-symbol">(</span>providerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/analyticsprovider.html" class="tsd-signature-type">AnalyticsProvider</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Analytics.ts#L147">packages/analytics/src/Analytics.ts:147</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L157">packages/analytics/src/Analytics.ts:157</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1205,9 +1276,9 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>providerName: <span class="tsd-signature-type">any</span></h5>
+							<h5>providerName: <span class="tsd-signature-type">string</span></h5>
 							<div class="tsd-comment tsd-typography">
-								<p>the name of the plugin</p>
+								<p>the name of the provider to be removed</p>
 							</div>
 						</li>
 					</ul>
@@ -1219,13 +1290,13 @@ img { max-width: 100%; }
 			<a name="record" class="tsd-anchor"></a>
 			<h3>record</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">record<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span>, provider<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, metrics<span class="tsd-signature-symbol">?: </span><a href="../interfaces/eventmetrics.html" class="tsd-signature-type">EventMetrics</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">record<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="../interfaces/analyticsevent.html" class="tsd-signature-type">AnalyticsEvent</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/personalizeanalyticsevent.html" class="tsd-signature-type">PersonalizeAnalyticsEvent</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/kinesisanalyticsevent.html" class="tsd-signature-type">KinesisAnalyticsEvent</a>, provider<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Analytics.ts#L220">packages/analytics/src/Analytics.ts:220</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L246">packages/analytics/src/Analytics.ts:246</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1236,19 +1307,16 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>event: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></h5>
+							<h5>event: <a href="../interfaces/analyticsevent.html" class="tsd-signature-type">AnalyticsEvent</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/personalizeanalyticsevent.html" class="tsd-signature-type">PersonalizeAnalyticsEvent</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/kinesisanalyticsevent.html" class="tsd-signature-type">KinesisAnalyticsEvent</a></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>An object with the name of the event, attributes of the event and event metrics.</p>
+							</div>
 						</li>
 						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> provider: <span class="tsd-signature-type">any</span></h5>
-						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> metrics: <a href="../interfaces/eventmetrics.html" class="tsd-signature-type">EventMetrics</a></h5>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> provider: <span class="tsd-signature-type">string</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4>
-					<ul>
-						<li>A promise which resolves if buffer doesn&#39;t overflow</li>
-					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1256,13 +1324,13 @@ img { max-width: 100%; }
 			<a name="removepluggable" class="tsd-anchor"></a>
 			<h3>remove<wbr>Pluggable</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">remove<wbr>Pluggable<span class="tsd-signature-symbol">(</span>providerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">remove<wbr>Pluggable<span class="tsd-signature-symbol">(</span>providerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Analytics.ts#L163">packages/analytics/src/Analytics.ts:163</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L173">packages/analytics/src/Analytics.ts:173</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1273,9 +1341,9 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>providerName: <span class="tsd-signature-type">any</span></h5>
+							<h5>providerName: <span class="tsd-signature-type">string</span></h5>
 							<div class="tsd-comment tsd-typography">
-								<p>the name of the plugin</p>
+								<p>the name of the provider to be removed</p>
 							</div>
 						</li>
 					</ul>
@@ -1287,13 +1355,13 @@ img { max-width: 100%; }
 			<a name="startsession" class="tsd-anchor"></a>
 			<h3>start<wbr>Session</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">start<wbr>Session<span class="tsd-signature-symbol">(</span>provider<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">start<wbr>Session<span class="tsd-signature-symbol">(</span>provider<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Analytics.ts#L199">packages/analytics/src/Analytics.ts:199</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L210">packages/analytics/src/Analytics.ts:210</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1307,7 +1375,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> provider: <span class="tsd-signature-type">string</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise which resolves if buffer doesn&#39;t overflow</li>
 					</ul>
@@ -1318,13 +1386,13 @@ img { max-width: 100%; }
 			<a name="stopsession" class="tsd-anchor"></a>
 			<h3>stop<wbr>Session</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">stop<wbr>Session<span class="tsd-signature-symbol">(</span>provider<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">stop<wbr>Session<span class="tsd-signature-symbol">(</span>provider<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Analytics.ts#L208">packages/analytics/src/Analytics.ts:208</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L228">packages/analytics/src/Analytics.ts:228</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1338,7 +1406,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> provider: <span class="tsd-signature-type">string</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise which resolves if buffer doesn&#39;t overflow</li>
 					</ul>
@@ -1349,25 +1417,30 @@ img { max-width: 100%; }
 			<a name="updateendpoint" class="tsd-anchor"></a>
 			<h3>update<wbr>Endpoint</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">update<wbr>Endpoint<span class="tsd-signature-symbol">(</span>attrs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, provider<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">update<wbr>Endpoint<span class="tsd-signature-symbol">(</span>attrs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span>, provider<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/analytics/src/Analytics.ts#L248">packages/analytics/src/Analytics.ts:248</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/analytics/src/Analytics.ts#L257">packages/analytics/src/Analytics.ts:257</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>attrs: <span class="tsd-signature-type">any</span></h5>
+							<h5>attrs: <span class="tsd-signature-type">object</span></h5>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-index-signature">
+									<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
 						</li>
 						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> provider: <span class="tsd-signature-type">any</span></h5>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> provider: <span class="tsd-signature-type">string</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>

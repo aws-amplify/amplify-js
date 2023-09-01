@@ -6,13 +6,14 @@ import {
 	modelInsertStatement,
 	modelUpdateStatement,
 	whereClauseFromPredicate,
+	whereConditionFromPredicateObject,
 	limitClauseFromPagination,
 	orderByClauseFromSort,
 	deleteByIdStatement,
 	deleteByPredicateStatement,
 	modelCreateTableStatement,
 	implicitAuthFieldsForModel,
-} from '../src/SQLiteAdapter/SQLiteUtils';
+} from '../src/common/SQLiteUtils';
 import {
 	InternalSchema,
 	PersistentModelConstructor,
@@ -34,6 +35,9 @@ const INTERNAL_TEST_SCHEMA_STATEMENTS = [
 
 const INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT =
 	'CREATE TABLE IF NOT EXISTS "PostEditor" ("id" PRIMARY KEY NOT NULL, "post" TEXT, "postID" TEXT NOT NULL, "editor" TEXT, "editorID" TEXT NOT NULL, "createdAt" TEXT, "updatedAt" TEXT, "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" INTEGER);';
+
+const INTERNAL_TEST_SCHEMA_ONE_TO_MANY_STATEMENT =
+	'CREATE TABLE IF NOT EXISTS "Post" ("id" PRIMARY KEY NOT NULL, "title" TEXT NOT NULL, "comments" TEXT, "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" INTEGER);';
 
 describe('SQLiteUtils tests', () => {
 	let Model: PersistentModelConstructor<Model>;
@@ -59,15 +63,21 @@ describe('SQLiteUtils tests', () => {
 	});
 
 	describe('modelCreateTableStatement', () => {
-		it('should generate valid CREATE TABLE statement from a M:N join table model with implicit FKs', () => {
+		it('should generate a valid CREATE TABLE statement from a M:N join table model with implicit FKs', () => {
 			expect(modelCreateTableStatement(postEditorImplicit, true)).toEqual(
 				INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT
 			);
 		});
 
-		it('should generate valid CREATE TABLE statement from a M:N join table model with explicit FKs', () => {
+		it('should generate a valid CREATE TABLE statement from a M:N join table model with explicit FKs', () => {
 			expect(modelCreateTableStatement(postEditorExplicit, true)).toEqual(
 				INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT
+			);
+		});
+
+		it('should generate a valid CREATE TABLE statement from a 1:M join table model', () => {
+			expect(modelCreateTableStatement(postWithRequiredComments, true)).toEqual(
+				INTERNAL_TEST_SCHEMA_ONE_TO_MANY_STATEMENT
 			);
 		});
 	});
@@ -151,8 +161,8 @@ describe('SQLiteUtils tests', () => {
 			const page = 3;
 
 			const expected = [
-				`SELECT * FROM "Model" WHERE ("firstName" = ? AND "lastName" LIKE ? AND "sortOrder" > ?) ORDER BY "sortOrder" ASC, "lastName" DESC, _rowid_ ASC LIMIT ? OFFSET ?`,
-				['Bob', 'Sm%', 5, 10, 30],
+				`SELECT * FROM "Model" WHERE ("firstName" = ? AND instr("lastName", ?) = 1 AND "sortOrder" > ?) ORDER BY "sortOrder" ASC, "lastName" DESC, _rowid_ ASC LIMIT ? OFFSET ?`,
+				['Bob', 'Sm', 5, 10, 30],
 			];
 
 			expect(
@@ -192,7 +202,7 @@ describe('SQLiteUtils tests', () => {
 			});
 
 			const expected = [
-				'INSERT INTO "Model" ("field1", "dateCreated", "id", "_version", "_lastChangedAt", "_deleted") VALUES (?, ?, ?, ?, ?, ?)',
+				'INSERT INTO "Model" ("field1", "dateCreated", "id", "_version", "_lastChangedAt", "_deleted", "optionalField1", "emails", "ips", "metadata", "createdAt", "updatedAt") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 				[
 					model.field1,
 					model.dateCreated,
@@ -200,6 +210,12 @@ describe('SQLiteUtils tests', () => {
 					undefined,
 					undefined,
 					undefined,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
 				],
 			];
 
@@ -215,13 +231,19 @@ describe('SQLiteUtils tests', () => {
 			});
 
 			const expected = [
-				`UPDATE "Model" SET "field1"=?, "dateCreated"=?, "_version"=?, "_lastChangedAt"=?, "_deleted"=? WHERE id=?`,
+				`UPDATE "Model" SET "field1"=?, "dateCreated"=?, "_version"=?, "_lastChangedAt"=?, "_deleted"=?, "optionalField1"=?, "emails"=?, "ips"=?, "metadata"=?, "createdAt"=?, "updatedAt"=? WHERE id=?`,
 				[
 					model.field1,
 					model.dateCreated,
 					undefined,
 					undefined,
 					undefined,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
 					model.id,
 				],
 			];
@@ -254,11 +276,66 @@ describe('SQLiteUtils tests', () => {
 			};
 
 			const expected = [
-				`WHERE ("firstName" = ? AND "lastName" LIKE ? AND "sortOrder" > ?)`,
-				['Bob', 'Sm%', 5],
+				`WHERE ("firstName" = ? AND instr("lastName", ?) = 1 AND "sortOrder" > ?)`,
+				['Bob', 'Sm', 5],
 			];
 
 			expect(whereClauseFromPredicate(predicateGroup as any)).toEqual(expected);
+		});
+	});
+
+	describe('whereConditionFromPredicateObject', () => {
+		it('should generate valid `beginsWith` condition from predicate object', () => {
+			const predicate = {
+				field: 'name',
+				operator: 'beginsWith',
+				operand: '%',
+			};
+
+			const expected = [`instr("name", ?) = 1`, ['%']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
+				expected
+			);
+		});
+		it('should generate valid `contains` condition from predicate object', () => {
+			const predicate = {
+				field: 'name',
+				operator: 'contains',
+				operand: '%',
+			};
+
+			const expected = [`instr("name", ?) > 0`, ['%']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
+				expected
+			);
+		});
+		it('should generate valid `notContains` condition from predicate object', () => {
+			const predicate = {
+				field: 'name',
+				operator: 'notContains',
+				operand: '%',
+			};
+
+			const expected = [`instr("name", ?) = 0`, ['%']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
+				expected
+			);
+		});
+		it('should generate valid `between` condition from predicate object', () => {
+			const predicate = {
+				field: 'name',
+				operator: 'between',
+				operand: ['a', 'b'],
+			};
+
+			const expected = [`"name" BETWEEN ? AND ?`, ['a', 'b']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
+				expected
+			);
 		});
 	});
 
@@ -653,6 +730,47 @@ const groupsAuthExplicit: SchemaModel = {
 					},
 				],
 			},
+		},
+	],
+};
+
+const postWithRequiredComments: SchemaModel = {
+	name: 'Post',
+	pluralName: 'Posts',
+	fields: {
+		id: {
+			name: 'id',
+			isArray: false,
+			type: 'ID',
+			isRequired: true,
+			attributes: [],
+		},
+		title: {
+			name: 'title',
+			isArray: false,
+			type: 'String',
+			isRequired: true,
+			attributes: [],
+		},
+		comments: {
+			name: 'comments',
+			isArray: true,
+			type: {
+				model: 'Comment',
+			},
+			isRequired: true,
+			attributes: [],
+			isArrayNullable: true,
+			association: {
+				connectionType: 'HAS_MANY',
+				associatedWith: 'post',
+			},
+		},
+	},
+	attributes: [
+		{
+			type: 'model',
+			properties: {},
 		},
 	],
 };

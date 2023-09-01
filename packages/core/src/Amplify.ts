@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { ConsoleLogger as LoggerClass } from './Logger';
 
 const logger = new LoggerClass('Amplify');
@@ -27,6 +29,7 @@ export class AmplifyClass {
 	Predictions = null;
 	DataStore = null;
 	Geo = null;
+	Notifications = null;
 
 	Logger = LoggerClass;
 	ServiceWorker = null;
@@ -95,8 +98,3 @@ export class AmplifyClass {
 }
 
 export const Amplify = new AmplifyClass();
-
-/**
- * @deprecated use named import
- */
-export default Amplify;

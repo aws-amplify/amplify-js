@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { InputLogEvent, LogGroup } from '@aws-sdk/client-cloudwatch-logs';
 import { Credentials } from '@aws-sdk/types';
 
@@ -9,6 +11,9 @@ export interface AmplifyConfig {
 	Storage?: object;
 	Cache?: object;
 	Geo?: object;
+	Notifications?: {
+		InAppMessaging?: object;
+	};
 	ssr?: boolean;
 }
 

@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 export enum AuthErrorStrings {
 	DEFAULT_MSG = 'Authentication Error',
 	EMPTY_EMAIL = 'Email cannot be empty',
@@ -13,4 +15,5 @@ export enum AuthErrorStrings {
 	NO_USER_SESSION = 'Failed to get the session because the user is empty',
 	NETWORK_ERROR = 'Network Error',
 	DEVICE_CONFIG = 'Device tracking has not been configured in this User Pool',
+	AUTOSIGNIN_ERROR = 'Please use your credentials to sign in',
 }

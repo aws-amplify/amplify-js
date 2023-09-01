@@ -1,9 +1,9 @@
 import { PredictionsOptions, TranslateTextInput } from '../src/types';
 import { PredictionsClass } from '../src/Predictions';
-import { default as AWSConvertPredictionsProvider } from '../src/Providers/AmazonAIConvertPredictionsProvider';
-import { default as AWSIdentifyPredictionsProvider } from '../src/Providers/AmazonAIIdentifyPredictionsProvider';
-import { default as AWSInterpretPredictionsProvider } from '../src/Providers/AmazonAIInterpretPredictionsProvider';
-import { default as AWSPredictionsProvider } from '../src/Providers/AmazonAIPredictionsProvider';
+import { AmazonAIConvertPredictionsProvider as AWSConvertPredictionsProvider } from '../src/Providers/AmazonAIConvertPredictionsProvider';
+import { AmazonAIIdentifyPredictionsProvider as AWSIdentifyPredictionsProvider } from '../src/Providers/AmazonAIIdentifyPredictionsProvider';
+import { AmazonAIInterpretPredictionsProvider as AWSInterpretPredictionsProvider } from '../src/Providers/AmazonAIInterpretPredictionsProvider';
+import { AmazonAIPredictionsProvider as AWSPredictionsProvider } from '../src/Providers/AmazonAIPredictionsProvider';
 
 const options: PredictionsOptions = {
 	region: 'region',
@@ -352,9 +352,7 @@ describe('Predictions test', () => {
 			try {
 				predictions.convert(input, { providerName: 'WRONG_NAME' });
 			} catch (e) {
-				expect(e.message).toMatch(
-					"Cannot read property 'convert' of undefined"
-				);
+				expect(e.message).toMatch(/(Cannot read prop).+(convert)/);
 			}
 		});
 		test('happy case with pluggable name provided', async () => {

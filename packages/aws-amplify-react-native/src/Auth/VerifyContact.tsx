@@ -12,21 +12,14 @@
  */
 
 import React from 'react';
-import { View, Picker } from 'react-native';
+import { View } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { Auth, I18n, Logger } from 'aws-amplify';
-import {
-	AmplifyButton,
-	FormField,
-	LinkCell,
-	Header,
-	ErrorRow,
-	SignedOutMessage,
-	Wrapper,
-} from '../AmplifyUI';
+import { AmplifyButton, FormField, LinkCell, Header, ErrorRow, SignedOutMessage, Wrapper } from '../AmplifyUI';
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
-import { setTestId } from '../Utils'
+import { setTestId } from '../Utils';
 
 const logger = new Logger('VerifyContact');
 
@@ -38,10 +31,7 @@ interface IVerifyContactState extends IAuthPieceState {
 	verifyAttr?: string;
 }
 
-export default class VerifyContact extends AuthPiece<
-	IVerifyContactProps,
-	IVerifyContactState
-> {
+export default class VerifyContact extends AuthPiece<IVerifyContactProps, IVerifyContactState> {
 	constructor(props: IVerifyContactProps) {
 		super(props);
 
@@ -90,22 +80,22 @@ export default class VerifyContact extends AuthPiece<
 
 		const that = this;
 		Auth.verifyCurrentUserAttribute(attr)
-			.then(data => {
+			.then((data) => {
 				logger.debug(data);
 				that.setState({ verifyAttr: attr });
 			})
-			.catch(err => this.error(err));
+			.catch((err) => this.error(err));
 	}
 
 	submit() {
 		const attr = this.state.verifyAttr;
 		const { code } = this.state;
 		Auth.verifyCurrentUserAttributeSubmit(attr, code)
-			.then(data => {
+			.then((data) => {
 				logger.debug(data);
 				this.changeState('signedIn', this.props.authData);
 			})
-			.catch(err => this.error(err));
+			.catch((err) => this.error(err));
 	}
 
 	skip() {
@@ -178,7 +168,7 @@ export default class VerifyContact extends AuthPiece<
 			<View style={theme.sectionBody}>
 				<FormField
 					theme={theme}
-					onChangeText={text => this.setState({ code: text })}
+					onChangeText={(text) => this.setState({ code: text })}
 					label={I18n.get('Confirmation Code')}
 					placeholder={I18n.get('Enter your confirmation code')}
 					required={true}
@@ -206,11 +196,7 @@ export default class VerifyContact extends AuthPiece<
 						{!this.state.verifyAttr && this.verifyBody(theme)}
 						{this.state.verifyAttr && this.submitBody(theme)}
 						<View style={theme.sectionFooter}>
-							<LinkCell
-								theme={theme}
-								onPress={() => this.changeState('signedIn')}
-								testID={TEST_ID.AUTH.SKIP_BUTTON}
-							>
+							<LinkCell theme={theme} onPress={() => this.changeState('signedIn')} testID={TEST_ID.AUTH.SKIP_BUTTON}>
 								{I18n.get('Skip')}
 							</LinkCell>
 						</View>

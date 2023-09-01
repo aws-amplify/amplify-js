@@ -1,21 +1,11 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StorageCache } from './StorageCache';
 import { defaultConfig, getCurrTime } from './Utils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ICache } from './types';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('AsyncStorageCache');
 
@@ -177,9 +167,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 */
 	async _findValidKeys() {
 		const keys = [];
-		let keyInCache = [];
-
-		keyInCache = await AsyncStorage.getAllKeys();
+		const keyInCache = await AsyncStorage.getAllKeys();
 
 		for (let i = 0; i < keyInCache.length; i += 1) {
 			const key = keyInCache[i];
@@ -491,4 +479,5 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 
 const instance: ICache = new AsyncStorageCache();
 export { AsyncStorage, instance as Cache };
-export default instance;
+
+Amplify.register(instance);

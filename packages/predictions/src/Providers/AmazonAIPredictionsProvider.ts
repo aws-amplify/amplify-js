@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { AbstractPredictionsProvider } from '../types/Providers';
 import { AmazonAIConvertPredictionsProvider } from './AmazonAIConvertPredictionsProvider';
 import { AmazonAIInterpretPredictionsProvider } from './AmazonAIInterpretPredictionsProvider';
@@ -65,8 +67,3 @@ export class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
 		return this.identifyProvider.identify(input);
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AmazonAIPredictionsProvider;

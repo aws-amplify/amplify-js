@@ -1,22 +1,11 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import {
 	ConsoleLogger as Logger,
 	Credentials,
 	DateUtils,
 	Signer,
-	Platform,
 } from '@aws-amplify/core';
 
 import { apiOptions, ApiInfo } from './types';
@@ -119,15 +108,7 @@ export class RestClient {
 			cancelToken: null,
 		};
 
-		let libraryHeaders = {};
-
-		if (Platform.isReactNative) {
-			const userAgent = Platform.userAgent || 'aws-amplify/0.1.x';
-			libraryHeaders = {
-				'User-Agent': userAgent,
-			};
-		}
-
+		const libraryHeaders = {};
 		const initParams = Object.assign({}, init);
 		const isAllResponse = initParams.response;
 		if (initParams.body) {
@@ -190,39 +171,42 @@ export class RestClient {
 			return this._request(params, isAllResponse);
 		}
 
-		// Signing the request in case there credentials are available
-		return this.Credentials.get().then(
-			credentials => {
-				return this._signed({ ...params }, credentials, isAllResponse, {
-					region,
-					service,
-				}).catch(error => {
-					if (DateUtils.isClockSkewError(error)) {
-						const { headers } = error.response;
-						const dateHeader = headers && (headers.date || headers.Date);
-						const responseDate = new Date(dateHeader);
-						const requestDate = DateUtils.getDateFromHeaderString(
-							params.headers['x-amz-date']
-						);
+		let credentials;
+		try {
+			credentials = await this.Credentials.get();
+		} catch (error) {
+			logger.debug('No credentials available, the request will be unsigned');
+			return this._request(params, isAllResponse);
+		}
+		let signedParams;
+		try {
+			signedParams = this._sign({ ...params }, credentials, {
+				region,
+				service,
+			});
+			const response = await axios(signedParams);
+			return isAllResponse ? response : response.data;
+		} catch (error) {
+			logger.debug(error);
+			if (DateUtils.isClockSkewError(error)) {
+				const { headers } = error.response;
+				const dateHeader = headers && (headers.date || headers.Date);
+				const responseDate = new Date(dateHeader);
+				const requestDate = DateUtils.getDateFromHeaderString(
+					signedParams.headers['x-amz-date']
+				);
 
-						// Compare local clock to the server clock
-						if (DateUtils.isClockSkewed(responseDate)) {
-							DateUtils.setClockOffset(
-								responseDate.getTime() - requestDate.getTime()
-							);
+				// Compare local clock to the server clock
+				if (DateUtils.isClockSkewed(responseDate)) {
+					DateUtils.setClockOffset(
+						responseDate.getTime() - requestDate.getTime()
+					);
 
-							return this.ajax(urlOrApiInfo, method, init);
-						}
-					}
-
-					throw error;
-				});
-			},
-			err => {
-				logger.debug('No credentials available, the request will be unsigned');
-				return this._request(params, isAllResponse);
+					return this.ajax(urlOrApiInfo, method, init);
+				}
 			}
-		);
+			throw error;
+		}
 	}
 
 	/**
@@ -294,8 +278,18 @@ export class RestClient {
 		const source = this._cancelTokenMap.get(request);
 		if (source) {
 			source.cancel(message);
+			return true;
 		}
-		return true;
+		return false;
+	}
+
+	/**
+	 * Check if the request has a corresponding cancel token in the WeakMap.
+	 * @params request - The request promise
+	 * @return if the request has a corresponding cancel token.
+	 */
+	hasCancelToken(request: Promise<any>) {
+		return this._cancelTokenMap.has(request);
 	}
 
 	/**
@@ -365,11 +359,9 @@ export class RestClient {
 
 	/** private methods **/
 
-	private _signed(params, credentials, isAllResponse, { service, region }) {
-		const {
-			signerServiceInfo: signerServiceInfoParams,
-			...otherParams
-		} = params;
+	private _sign(params, credentials, { service, region }) {
+		const { signerServiceInfo: signerServiceInfoParams, ...otherParams } =
+			params;
 
 		const endpoint_region: string =
 			region || this._region || this._options.region;
@@ -402,12 +394,7 @@ export class RestClient {
 
 		delete signed_params.headers['host'];
 
-		return axios(signed_params)
-			.then(response => (isAllResponse ? response : response.data))
-			.catch(error => {
-				logger.debug(error);
-				throw error;
-			});
+		return signed_params;
 	}
 
 	private _request(params, isAllResponse = false) {

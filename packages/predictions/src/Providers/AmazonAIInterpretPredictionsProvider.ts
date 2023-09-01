@@ -1,4 +1,11 @@
-import { Credentials, getAmplifyUserAgent } from '@aws-amplify/core';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+import {
+	Category,
+	Credentials,
+	PredictionsAction,
+	getAmplifyUserAgentObject,
+} from '@aws-amplify/core';
 import { AbstractInterpretPredictionsProvider } from '../types/Providers';
 
 import {
@@ -20,6 +27,8 @@ import {
 } from '@aws-sdk/client-comprehend';
 
 export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredictionsProvider {
+	private comprehendClient: ComprehendClient;
+
 	constructor() {
 		super();
 	}
@@ -45,14 +54,16 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 				} = {},
 			} = ({} = input);
 
-			const {
-				text: { source: { language = undefined } = {} } = {},
-			} = ({} = input as any); // language is only required for specific interpret types
+			const { text: { source: { language = undefined } = {} } = {} } = ({} =
+				input as any); // language is only required for specific interpret types
 
-			const comprehendClient = new ComprehendClient({
+			this.comprehendClient = new ComprehendClient({
 				credentials,
 				region,
-				customUserAgent: getAmplifyUserAgent(),
+				customUserAgent: getAmplifyUserAgentObject({
+					category: Category.Predictions,
+					action: PredictionsAction.Interpret,
+				}),
 			});
 
 			const doAll = interpretType === InterpretTextCategories.ALL;
@@ -62,10 +73,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 				const languageDetectionParams = {
 					Text: text,
 				};
-				languagePromise = this.detectLanguage(
-					languageDetectionParams,
-					comprehendClient
-				);
+				languagePromise = this.detectLanguage(languageDetectionParams);
 			}
 
 			let entitiesPromise: Promise<Array<TextEntities>>;
@@ -78,10 +86,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 					Text: text,
 					LanguageCode,
 				};
-				entitiesPromise = this.detectEntities(
-					entitiesDetectionParams,
-					comprehendClient
-				);
+				entitiesPromise = this.detectEntities(entitiesDetectionParams);
 			}
 
 			let sentimentPromise: Promise<TextSentiment>;
@@ -94,10 +99,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 					Text: text,
 					LanguageCode,
 				};
-				sentimentPromise = this.detectSentiment(
-					sentimentParams,
-					comprehendClient
-				);
+				sentimentPromise = this.detectSentiment(sentimentParams);
 			}
 
 			let syntaxPromise: Promise<Array<TextSyntax>>;
@@ -110,7 +112,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 					Text: text,
 					LanguageCode,
 				};
-				syntaxPromise = this.detectSyntax(syntaxParams, comprehendClient);
+				syntaxPromise = this.detectSyntax(syntaxParams);
 			}
 
 			let keyPhrasesPromise: Promise<Array<KeyPhrases>>;
@@ -123,10 +125,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 					Text: text,
 					LanguageCode,
 				};
-				keyPhrasesPromise = this.detectKeyPhrases(
-					keyPhrasesParams,
-					comprehendClient
-				);
+				keyPhrasesPromise = this.detectKeyPhrases(keyPhrasesParams);
 			}
 			try {
 				const results = await Promise.all([
@@ -151,13 +150,10 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 		});
 	}
 
-	private async detectKeyPhrases(
-		params,
-		comprehend
-	): Promise<Array<KeyPhrases>> {
+	private async detectKeyPhrases(params): Promise<Array<KeyPhrases>> {
 		try {
 			const detectKeyPhrasesCommand = new DetectKeyPhrasesCommand(params);
-			const data = await comprehend.send(detectKeyPhrasesCommand);
+			const data = await this.comprehendClient.send(detectKeyPhrasesCommand);
 			const { KeyPhrases = [] } = data || {};
 			return KeyPhrases.map(({ Text: text }) => {
 				return { text };
@@ -174,10 +170,10 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 		}
 	}
 
-	private async detectSyntax(params, comprehend): Promise<Array<TextSyntax>> {
+	private async detectSyntax(params): Promise<Array<TextSyntax>> {
 		try {
 			const detectSyntaxCommand = new DetectSyntaxCommand(params);
-			const data = await comprehend.send(detectSyntaxCommand);
+			const data = await this.comprehendClient.send(detectSyntaxCommand);
 			const { SyntaxTokens = [] } = data || {};
 			return this.serializeSyntaxFromComprehend(SyntaxTokens);
 		} catch (err) {
@@ -204,10 +200,10 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 		return response;
 	}
 
-	private async detectSentiment(params, comprehend): Promise<TextSentiment> {
+	private async detectSentiment(params): Promise<TextSentiment> {
 		try {
 			const detectSentimentCommand = new DetectSentimentCommand(params);
-			const data = await comprehend.send(detectSentimentCommand);
+			const data = await this.comprehendClient.send(detectSentimentCommand);
 			const {
 				Sentiment: predominant = '',
 				SentimentScore: {
@@ -230,13 +226,10 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 		}
 	}
 
-	private async detectEntities(
-		params,
-		comprehend
-	): Promise<Array<TextEntities>> {
+	private async detectEntities(params): Promise<Array<TextEntities>> {
 		try {
 			const detectEntitiesCommand = new DetectEntitiesCommand(params);
-			const data = await comprehend.send(detectEntitiesCommand);
+			const data = await this.comprehendClient.send(detectEntitiesCommand);
 			const { Entities = [] } = data || {};
 			return this.serializeEntitiesFromComprehend(Entities);
 		} catch (err) {
@@ -261,13 +254,15 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 		return response;
 	}
 
-	private async detectLanguage(params, comprehend): Promise<string> {
+	private async detectLanguage(params): Promise<string> {
 		try {
 			const detectDominantLanguageCommand = new DetectDominantLanguageCommand(
 				params
 			);
-			const data = await comprehend.send(detectDominantLanguageCommand);
-			const { Languages: [{ LanguageCode }] = [''] } = ({} = data || {});
+			const data = await this.comprehendClient.send(
+				detectDominantLanguageCommand
+			);
+			const { Languages: [{ LanguageCode }] = [{}] } = ({} = data || {});
 			if (!LanguageCode) {
 				Promise.reject('Language not detected');
 			}
@@ -284,8 +279,3 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 		}
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AmazonAIInterpretPredictionsProvider;

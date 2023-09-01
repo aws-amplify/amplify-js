@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pushnotification",
-  "version": "4.3.0",
+  "version": "5.0.44",
   "description": "Push notifications category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -9,14 +9,15 @@
     "access": "public"
   },
   "scripts": {
-    "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+    "test": "npm run lint && jest -w 1 --coverage",
     "build-with-test": "npm test && npm run build",
     "build": "npm run clean && tsc",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "echo \"ES Modules are not exported in react-native. Use target build:cjs:watch\"",
     "clean": "rimraf lib lib-esm dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'"
+    "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 55"
   },
   "repository": {
     "type": "git",
@@ -31,26 +32,18 @@
   "devDependencies": {
     "@types/jest": "^20.0.8",
     "@types/node": "^8.10.15",
-    "awesome-typescript-loader": "^3.2.2",
-    "babel-loader": "^7.1.2",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "compression-webpack-plugin": "^1.1.3",
     "find": "^0.2.7",
-    "json-loader": "^0.5.7",
-    "prepend-file": "^1.3.1",
-    "rimraf": "^2.6.2",
-    "source-map-loader": "^0.2.1",
-    "uglifyjs-webpack-plugin": "^0.4.6",
-    "webpack": "^3.5.5"
+    "rimraf": "^2.6.2"
   },
+  "files": [
+    "lib",
+    "lib-esm",
+    "src",
+    "android"
+  ],
   "dependencies": {
-    "@aws-amplify/core": "4.3.3",
+    "@aws-amplify/core": "5.8.4",
     "@react-native-community/push-notification-ios": "1.0.3"
-  },
-  "peerdependencies": {
-    "react-native": "^0.55.0"
   },
   "jest": {
     "globals": {

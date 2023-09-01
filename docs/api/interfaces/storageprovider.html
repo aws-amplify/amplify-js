@@ -6,6 +6,7 @@
 	<title>StorageProvider | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
 /* ========================================================================== HTML5 display definitions ========================================================================== */
 /** Correct `block` display not defined in IE 6/7/8/9 and Firefox 3. */
@@ -880,12 +881,12 @@ img { max-width: 100%; }
 			<div class="table-wrap">
 				<div class="table-cell logo">
 					<a href="../index.html">
-						<img src="https://aws-amplify.github.io/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
-						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+						<img src="https://aws-amplify.github.io/amplify-js/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: relative;">AWS Amplify JS API</div>
 					</a>
 				</div>
 				<div class="table-cell" style="">	<body>
-						<a href="/amplify-js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
+						<a href="https://docs.amplify.aws/lib/q/platform/js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify JS Dev Center</a>
 </div>	</body>
 <div class="table-cell" id="tsd-widgets">
 <div id="tsd-filter">
@@ -919,13 +920,22 @@ img { max-width: 100%; }
 		<a href="storageprovider.html" class="tsd-kind-icon">Storage<wbr>Provider</a>
 		<ul>
 			<li class=" tsd-kind-method tsd-parent-kind-interface">
+				<a href="storageprovider.html#cancel" class="tsd-kind-icon">cancel</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-interface">
 				<a href="storageprovider.html#configure" class="tsd-kind-icon">configure</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-interface">
+				<a href="storageprovider.html#copy" class="tsd-kind-icon">copy</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-interface">
 				<a href="storageprovider.html#get" class="tsd-kind-icon">get</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-interface">
 				<a href="storageprovider.html#getcategory" class="tsd-kind-icon">get<wbr>Category</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-interface">
+				<a href="storageprovider.html#getproperties" class="tsd-kind-icon">get<wbr>Properties</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-interface">
 				<a href="storageprovider.html#getprovidername" class="tsd-kind-icon">get<wbr>Provider<wbr>Name</a>
@@ -950,6 +960,14 @@ img { max-width: 100%; }
 		<ul class="tsd-hierarchy">
 			<li>
 				<span class="target">StorageProvider</span>
+				<ul class="tsd-hierarchy">
+					<li>
+						<a href="storageproviderwithcopy.html" class="tsd-signature-type">StorageProviderWithCopy</a>
+					</li>
+					<li>
+						<a href="storageproviderwithgetproperties.html" class="tsd-signature-type">StorageProviderWithGetProperties</a>
+					</li>
+				</ul>
 			</li>
 		</ul>
 	</section>
@@ -966,9 +984,12 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
+						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#cancel" class="tsd-kind-icon">cancel</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#configure" class="tsd-kind-icon">configure</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#copy" class="tsd-kind-icon">copy</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#get" class="tsd-kind-icon">get</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#getcategory" class="tsd-kind-icon">get<wbr>Category</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#getproperties" class="tsd-kind-icon">get<wbr>Properties</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#getprovidername" class="tsd-kind-icon">get<wbr>Provider<wbr>Name</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#list" class="tsd-kind-icon">list</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="storageprovider.html#put" class="tsd-kind-icon">put</a></li>
@@ -981,6 +1002,29 @@ img { max-width: 100%; }
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Methods</h2>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+			<a name="cancel" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> cancel</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+				<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/storage/src/types/Provider.ts#L17">packages/storage/src/types/Provider.ts:17</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>request: <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 			<a name="configure" class="tsd-anchor"></a>
 			<h3>configure</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -990,7 +1034,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/storage/src/types/Provider.ts#L17">packages/storage/src/types/Provider.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/storage/src/types/Provider.ts#L27">packages/storage/src/types/Provider.ts:27</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1004,16 +1048,45 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-			<a name="get" class="tsd-anchor"></a>
-			<h3>get</h3>
+			<a name="copy" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> copy</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">String</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">copy<span class="tsd-signature-symbol">(</span>src<span class="tsd-signature-symbol">: </span><a href="../globals.html#storagecopysource" class="tsd-signature-type">StorageCopySource</a>, dest<span class="tsd-signature-symbol">: </span><a href="../globals.html#storagecopydestination" class="tsd-signature-type">StorageCopyDestination</a>, config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/storage/src/types/Provider.ts#L20">packages/storage/src/types/Provider.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/storage/src/types/Provider.ts#L20">packages/storage/src/types/Provider.ts:20</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>src: <a href="../globals.html#storagecopysource" class="tsd-signature-type">StorageCopySource</a></h5>
+						</li>
+						<li>
+							<h5>dest: <a href="../globals.html#storagecopydestination" class="tsd-signature-type">StorageCopyDestination</a></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> config: <span class="tsd-signature-type">any</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+			<a name="get" class="tsd-anchor"></a>
+			<h3>get</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+				<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/storage/src/types/Provider.ts#L30">packages/storage/src/types/Provider.ts:30</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1025,7 +1098,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">any</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">String</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1039,10 +1112,36 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/storage/src/types/Provider.ts#L32">packages/storage/src/types/Provider.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/storage/src/types/Provider.ts#L45">packages/storage/src/types/Provider.ts:45</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+			<a name="getproperties" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> get<wbr>Properties</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Properties<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/storage/src/types/Provider.ts#L33">packages/storage/src/types/Provider.ts:33</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>key: <span class="tsd-signature-type">string</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">any</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1056,7 +1155,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/storage/src/types/Provider.ts#L35">packages/storage/src/types/Provider.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/storage/src/types/Provider.ts#L48">packages/storage/src/types/Provider.ts:48</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1067,13 +1166,13 @@ img { max-width: 100%; }
 			<a name="list" class="tsd-anchor"></a>
 			<h3>list</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">list<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">list<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/storage/src/types/Provider.ts#L29">packages/storage/src/types/Provider.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/storage/src/types/Provider.ts#L42">packages/storage/src/types/Provider.ts:42</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1085,7 +1184,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">any</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1093,13 +1192,13 @@ img { max-width: 100%; }
 			<a name="put" class="tsd-anchor"></a>
 			<h3>put</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">put<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">put<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="uploadtask.html" class="tsd-signature-type">UploadTask</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/storage/src/types/Provider.ts#L23">packages/storage/src/types/Provider.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/storage/src/types/Provider.ts#L36">packages/storage/src/types/Provider.ts:36</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1114,7 +1213,10 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">any</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span>
+						<span class="tsd-signature-symbol"> | </span>
+						<a href="uploadtask.html" class="tsd-signature-type">UploadTask</a>
+					</h4>
 				</li>
 			</ul>
 		</section>
@@ -1122,13 +1224,13 @@ img { max-width: 100%; }
 			<a name="remove" class="tsd-anchor"></a>
 			<h3>remove</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">remove<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">remove<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/storage/src/types/Provider.ts#L26">packages/storage/src/types/Provider.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/storage/src/types/Provider.ts#L39">packages/storage/src/types/Provider.ts:39</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1140,7 +1242,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">any</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>

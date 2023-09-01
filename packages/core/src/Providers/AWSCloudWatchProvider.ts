@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import {
 	CloudWatchLogsClient,
@@ -42,8 +32,8 @@ import {
 } from '../types/types';
 import { Credentials } from '../..';
 import { ConsoleLogger as Logger } from '../Logger';
-import { getAmplifyUserAgent } from '../Platform';
-import { parseMobileHubConfig } from '../Parser';
+import { getAmplifyUserAgentObject } from '../Platform';
+import { parseAWSExports } from '../parseAWSExports';
 import {
 	AWS_CLOUDWATCH_BASE_BUFFER_SIZE,
 	AWS_CLOUDWATCH_CATEGORY,
@@ -96,7 +86,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		const conf = Object.assign(
 			{},
 			this._config,
-			parseMobileHubConfig(config).Logging,
+			parseAWSExports(config).Logging,
 			config
 		);
 		this._config = conf;
@@ -331,7 +321,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		return new CloudWatchLogsClient({
 			region: this._config.region,
 			credentials: this._config.credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAmplifyUserAgentObject(),
 			endpoint: this._config.endpoint,
 		});
 	}
@@ -366,17 +356,16 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		try {
 			await this._validateLogGroupExistsAndCreate(this._config.logGroupName);
 
+			this._nextSequenceToken = undefined;
+
 			const logStream = await this._validateLogStreamExists(
 				this._config.logGroupName,
 				this._config.logStreamName
 			);
-			if (!logStream) {
-				this._nextSequenceToken = '';
 
-				return '';
+			if (logStream) {
+				this._nextSequenceToken = logStream.uploadSequenceToken;
 			}
-
-			this._nextSequenceToken = logStream.uploadSequenceToken || '';
 
 			return this._nextSequenceToken;
 		} catch (err) {
@@ -475,7 +464,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		payload: PutLogEventsCommandInput
 	): Promise<PutLogEventsCommandOutput> {
 		try {
-			this._nextSequenceToken = '';
+			this._nextSequenceToken = undefined;
 			this._dataTracker.eventUploadInProgress = true;
 
 			const seqToken = await this._getNextSequenceToken();

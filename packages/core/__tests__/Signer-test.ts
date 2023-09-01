@@ -1,75 +1,218 @@
-import Signer from '../src/Signer';
-import { DateUtils } from '../src';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
-jest.mock('@aws-sdk/util-hex-encoding', () => ({
-	...jest.requireActual('@aws-sdk/util-hex-encoding'),
-	toHex: () => {
-		return 'encrypt';
-	},
-}));
+import { SignRequestOptions } from '../src/clients/middleware/signing/signer/signatureV4/types';
+import { Signer } from '../src/Signer';
+import { DateUtils } from '../src/Util/DateUtils';
+import * as getSignatureModule from '../src/clients/middleware/signing/signer/signatureV4/utils/getSignature';
+import {
+	credentials,
+	credentialsWithToken,
+	getDefaultRequest,
+	signingDate,
+	signingOptions,
+	signingRegion,
+	signingService,
+	url,
+} from './clients/middleware/signing/signer/signatureV4/testUtils/data';
+import { signingTestTable } from './clients/middleware/signing/signer/signatureV4/testUtils/signingTestTable';
 
-describe('Signer test', () => {
-	describe('sign test', () => {
-		test('happy case', () => {
-			const url = 'https://host/some/path';
+const getDateSpy = jest.spyOn(DateUtils, 'getDateWithClockOffset');
+const getSignatureSpy = jest.spyOn(getSignatureModule, 'getSignature');
 
+describe('Signer.sign', () => {
+	beforeAll(() => {
+		getDateSpy.mockReturnValue(signingDate);
+	});
+
+	test.each(
+		signingTestTable.map(
+			({ name, request, queryParams, options, expectedAuthorization }) => {
+				const updatedRequest = {
+					...getDefaultRequest(),
+					...request,
+				};
+				queryParams?.forEach(([key, value]) => {
+					updatedRequest.url?.searchParams.append(key, value);
+				});
+				const updatedOptions: SignRequestOptions = {
+					...signingOptions,
+					...options,
+				};
+				return [name, updatedRequest, updatedOptions, expectedAuthorization];
+			}
+		)
+	)(
+		'signs request with %s',
+		(
+			_,
+			{ url, ...request },
+			{ credentials, signingRegion, signingService },
+			expected
+		) => {
+			const { accessKeyId, secretAccessKey, sessionToken } = credentials;
+			const accessInfo = {
+				access_key: accessKeyId,
+				secret_key: secretAccessKey,
+				session_token: sessionToken,
+			};
+			const serviceInfo = {
+				region: signingRegion,
+				service: signingService,
+			};
+			const signedRequest = Signer.sign(
+				{ ...request, url: url.toString() },
+				accessInfo,
+				serviceInfo as any
+			);
+			expect(signedRequest.headers?.Authorization).toBe(expected);
+		}
+	);
+
+	describe('Error handling', () => {
+		const { accessKeyId, secretAccessKey, sessionToken } = credentials;
+		const accessInfo = {
+			access_key: accessKeyId,
+			secret_key: secretAccessKey,
+			session_token: sessionToken,
+		};
+		const serviceInfo = {
+			region: signingRegion,
+			service: signingService,
+		};
+
+		test('should throw an Error if body attribute is passed to sign method', () => {
 			const request = {
+				...getDefaultRequest(),
+				body: 'foo',
 				url,
-				headers: {},
-			};
-			const access_info = {
-				session_token: 'session_token',
 			};
 
-			const spyon = jest
-				.spyOn(Date.prototype, 'toISOString')
-				.mockReturnValueOnce('0');
-
-			const getDateSpy = jest.spyOn(DateUtils, 'getDateWithClockOffset');
-
-			const res = {
-				headers: {
-					Authorization:
-						'AWS4-HMAC-SHA256 Credential=undefined/0/aregion/aservice/aws4_request, SignedHeaders=host;x-amz-date;x-amz-security-token, Signature=encrypt',
-					'X-Amz-Security-Token': 'session_token',
-					host: 'host',
-					'x-amz-date': '0',
-				},
-				url: url,
-			};
-			expect(
-				Signer.sign(request, access_info, {
-					service: 'aservice',
-					region: 'aregion',
-				})
-			).toEqual(res);
-			expect(getDateSpy).toHaveBeenCalledTimes(1);
-
-			spyon.mockClear();
+			expect(() => {
+				Signer.sign(request, accessInfo, serviceInfo as any);
+			}).toThrow();
 		});
 
-		test('happy case signUrl', () => {
-			const url = 'https://example.com:1234/some/path';
-
-			const access_info = {
-				session_token: 'session_token',
+		test('should not throw an Error if data attribute is passed to sign method', () => {
+			const request = {
+				...getDefaultRequest(),
+				data: 'foo',
+				url,
 			};
 
-			const spyon = jest
-				.spyOn(Date.prototype, 'toISOString')
-				.mockReturnValueOnce('0');
-
-			const expectedUrl =
-				'https://example.com:1234/some/path?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=%2F0%2Faregion%2Faservice%2Faws4_request&X-Amz-Date=0&X-Amz-Security-Token=session_token&X-Amz-SignedHeaders=host&X-Amz-Signature=encrypt';
-
-			const signedUrl = Signer.signUrl(url, access_info, {
-				service: 'aservice',
-				region: 'aregion',
-			});
-
-			expect(signedUrl).toEqual(expectedUrl);
-
-			spyon.mockClear();
+			expect(() => {
+				Signer.sign(request, accessInfo, serviceInfo as any);
+			}).not.toThrow();
 		});
+	});
+
+	test('should populate signing region and service from url', () => {
+		const request = {
+			...getDefaultRequest(),
+			url: new URL('https://foo.us-east-1.amazonaws.com'),
+		};
+		const accessInfo = {
+			access_key: credentials.accessKeyId,
+			secret_key: credentials.secretAccessKey,
+			session_token: credentials.sessionToken,
+		};
+		const {
+			headers: { Authorization },
+		} = Signer.sign(request, accessInfo, undefined);
+		expect(Authorization).toEqual(
+			expect.stringContaining(
+				'Credential=access-key-id/20200918/us-east-1/foo/aws4_request'
+			)
+		);
+	});
+});
+
+describe('Signer.signUrl', () => {
+	beforeAll(() => {
+		getDateSpy.mockReturnValue(signingDate);
+	});
+
+	test.each(
+		signingTestTable.map(
+			({ name, request, queryParams, options, expectedUrl }) => {
+				const updatedRequest = {
+					...getDefaultRequest(),
+					...request,
+				};
+				queryParams?.forEach(([key, value]) => {
+					updatedRequest.url?.searchParams.append(key, value);
+				});
+				const updatedOptions: SignRequestOptions = {
+					...signingOptions,
+					...options,
+				};
+				return [name, updatedRequest, updatedOptions, expectedUrl];
+			}
+		)
+	)(
+		'signs url with %s',
+		(
+			_,
+			{ url, ...request },
+			{ credentials, signingRegion, signingService },
+			expected
+		) => {
+			const { accessKeyId, secretAccessKey, sessionToken } = credentials;
+			const accessInfo = {
+				access_key: accessKeyId,
+				secret_key: secretAccessKey,
+				session_token: sessionToken,
+			};
+			const serviceInfo = {
+				region: signingRegion,
+				service: signingService,
+			};
+			const signedUrl = Signer.signUrl(
+				{ ...request, url: url.toString() },
+				accessInfo,
+				serviceInfo as any
+			);
+			expect(signedUrl).toBe(expected);
+		}
+	);
+
+	test('should populate signing region and service from url', () => {
+		const request = {
+			...getDefaultRequest(),
+			url: new URL('https://foo.us-east-1.amazonaws.com'),
+		};
+		const accessInfo = {
+			access_key: credentials.accessKeyId,
+			secret_key: credentials.secretAccessKey,
+			session_token: credentials.sessionToken,
+		};
+		const signedUrl = Signer.signUrl(request, accessInfo);
+		expect(signedUrl).toEqual(
+			expect.stringContaining(
+				'X-Amz-Credential=access-key-id%2F20200918%2Fus-east-1%2Ffoo%2Faws4_request'
+			)
+		);
+	});
+
+	test('should not use session token in signature for IoT gateway service', () => {
+		const request = {
+			...getDefaultRequest(),
+			url: new URL('https://abc-ats.iot.us-foo-1.amazonaws.com'),
+		};
+		const accessInfo = {
+			access_key: credentialsWithToken.accessKeyId,
+			secret_key: credentialsWithToken.secretAccessKey,
+			session_token: credentialsWithToken.sessionToken,
+		};
+		const serviceInfo = {
+			region: 'us-foo-1',
+			service: 'iotdevicegateway',
+		};
+		const signedUrl = Signer.signUrl(request, accessInfo, serviceInfo);
+		expect(signedUrl).toEqual(expect.stringContaining('X-Amz-Security-Token'));
+		expect(getSignatureSpy).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({ sessionToken: undefined })
+		);
 	});
 });

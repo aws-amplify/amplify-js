@@ -6,6 +6,7 @@
 	<title>GraphQLOptions | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
 /* ========================================================================== HTML5 display definitions ========================================================================== */
 /** Correct `block` display not defined in IE 6/7/8/9 and Firefox 3. */
@@ -880,12 +881,12 @@ img { max-width: 100%; }
 			<div class="table-wrap">
 				<div class="table-cell logo">
 					<a href="../index.html">
-						<img src="https://aws-amplify.github.io/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
-						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+						<img src="https://aws-amplify.github.io/amplify-js/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: relative;">AWS Amplify JS API</div>
 					</a>
 				</div>
 				<div class="table-cell" style="">	<body>
-						<a href="/amplify-js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
+						<a href="https://docs.amplify.aws/lib/q/platform/js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify JS Dev Center</a>
 </div>	</body>
 <div class="table-cell" id="tsd-widgets">
 <div id="tsd-filter">
@@ -922,7 +923,13 @@ img { max-width: 100%; }
 				<a href="graphqloptions.html#authmode" class="tsd-kind-icon">auth<wbr>Mode</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="graphqloptions.html#authtoken" class="tsd-kind-icon">auth<wbr>Token</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="graphqloptions.html#query" class="tsd-kind-icon">query</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="graphqloptions.html#useragentsuffix" class="tsd-kind-icon">user<wbr>Agent<wbr>Suffix</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="graphqloptions.html#variables" class="tsd-kind-icon">variables</a>
@@ -949,7 +956,9 @@ img { max-width: 100%; }
 					<h3>Properties</h3>
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="graphqloptions.html#authmode" class="tsd-kind-icon">auth<wbr>Mode</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="graphqloptions.html#authtoken" class="tsd-kind-icon">auth<wbr>Token</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="graphqloptions.html#query" class="tsd-kind-icon">query</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="graphqloptions.html#useragentsuffix" class="tsd-kind-icon">user<wbr>Agent<wbr>Suffix</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="graphqloptions.html#variables" class="tsd-kind-icon">variables</a></li>
 					</ul>
 				</section>
@@ -961,10 +970,20 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 			<a name="authmode" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagOptional">Optional</span> auth<wbr>Mode</h3>
-			<div class="tsd-signature tsd-kind-icon">auth<wbr>Mode<span class="tsd-signature-symbol">:</span> <a href="../enums/graphql_auth_mode.html" class="tsd-signature-type">GRAPHQL_AUTH_MODE</a></div>
+			<div class="tsd-signature tsd-kind-icon">auth<wbr>Mode<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">keyof typeof GRAPHQL_AUTH_MODE</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/types/index.ts#L72">packages/api/src/types/index.ts:72</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/api-graphql/src/types/index.ts#L12">packages/api-graphql/src/types/index.ts:12</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="authtoken" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> auth<wbr>Token</h3>
+			<div class="tsd-signature tsd-kind-icon">auth<wbr>Token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/api-graphql/src/types/index.ts#L13">packages/api-graphql/src/types/index.ts:13</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -974,9 +993,26 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">query<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">DocumentNode</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/types/index.ts#L70">packages/api/src/types/index.ts:70</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/api-graphql/src/types/index.ts#L10">packages/api-graphql/src/types/index.ts:10</a></li>
 				</ul>
 			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="useragentsuffix" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> user<wbr>Agent<wbr>Suffix</h3>
+			<div class="tsd-signature tsd-kind-icon">user<wbr>Agent<wbr>Suffix<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/api-graphql/src/types/index.ts#L17">packages/api-graphql/src/types/index.ts:17</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<dl class="tsd-comment-tags">
+					<dt>deprecated</dt>
+					<dd><p>This property should not be used</p>
+					</dd>
+				</dl>
+			</div>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 			<a name="variables" class="tsd-anchor"></a>
@@ -984,7 +1020,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">variables<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/types/index.ts#L71">packages/api/src/types/index.ts:71</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/api-graphql/src/types/index.ts#L11">packages/api-graphql/src/types/index.ts:11</a></li>
 				</ul>
 			</aside>
 		</section>

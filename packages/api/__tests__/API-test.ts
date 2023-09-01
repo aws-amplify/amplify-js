@@ -1,6 +1,7 @@
 import { RestAPIClass } from '@aws-amplify/api-rest';
-import { GraphQLAPIClass } from '@aws-amplify/api-graphql';
+import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
 import { APIClass as API } from '../src/API';
+import { ApiAction, Category } from '@aws-amplify/core';
 
 describe('API test', () => {
 	test('configure', () => {
@@ -8,7 +9,7 @@ describe('API test', () => {
 			.spyOn(RestAPIClass.prototype, 'configure')
 			.mockReturnValue({ restapi: 'configured' });
 		jest
-			.spyOn(GraphQLAPIClass.prototype, 'configure')
+			.spyOn(InternalGraphQLAPIClass.prototype, 'configure')
 			.mockReturnValue({ graphqlapi: 'configured' });
 		const api = new API(null);
 		expect(api.configure(null)).toStrictEqual({
@@ -18,31 +19,63 @@ describe('API test', () => {
 	});
 
 	test('get', async () => {
-		jest.spyOn(RestAPIClass.prototype, 'get').mockResolvedValue('getResponse');
+		const spy = jest
+			.spyOn(RestAPIClass.prototype, 'get')
+			.mockResolvedValue('getResponse');
 		const api = new API(null);
 		expect(await api.get(null, null, null)).toBe('getResponse');
+
+		expect(spy).toBeCalledWith(null, null, {
+			customUserAgentDetails: {
+				category: Category.API,
+				action: ApiAction.Get,
+			},
+		});
 	});
 
 	test('post', async () => {
-		jest
+		const spy = jest
 			.spyOn(RestAPIClass.prototype, 'post')
 			.mockResolvedValue('postResponse');
 		const api = new API(null);
 		expect(await api.post(null, null, null)).toBe('postResponse');
+
+		expect(spy).toBeCalledWith(null, null, {
+			customUserAgentDetails: {
+				category: Category.API,
+				action: ApiAction.Post,
+			},
+		});
 	});
 
 	test('put', async () => {
-		jest.spyOn(RestAPIClass.prototype, 'put').mockResolvedValue('putResponse');
+		const spy = jest
+			.spyOn(RestAPIClass.prototype, 'put')
+			.mockResolvedValue('putResponse');
 		const api = new API(null);
 		expect(await api.put(null, null, null)).toBe('putResponse');
+
+		expect(spy).toBeCalledWith(null, null, {
+			customUserAgentDetails: {
+				category: Category.API,
+				action: ApiAction.Put,
+			},
+		});
 	});
 
 	test('patch', async () => {
-		jest
+		const spy = jest
 			.spyOn(RestAPIClass.prototype, 'patch')
 			.mockResolvedValue('patchResponse');
 		const api = new API(null);
 		expect(await api.patch(null, null, null)).toBe('patchResponse');
+
+		expect(spy).toBeCalledWith(null, null, {
+			customUserAgentDetails: {
+				category: Category.API,
+				action: ApiAction.Patch,
+			},
+		});
 	});
 
 	test('del', async () => {
@@ -52,11 +85,18 @@ describe('API test', () => {
 	});
 
 	test('head', async () => {
-		jest
+		const spy = jest
 			.spyOn(RestAPIClass.prototype, 'head')
 			.mockResolvedValue('headResponse');
 		const api = new API(null);
 		expect(await api.head(null, null, null)).toBe('headResponse');
+
+		expect(spy).toBeCalledWith(null, null, {
+			customUserAgentDetails: {
+				category: Category.API,
+				action: ApiAction.Head,
+			},
+		});
 	});
 
 	test('endpoint', async () => {
@@ -69,7 +109,7 @@ describe('API test', () => {
 
 	test('getGraphqlOperationType', () => {
 		jest
-			.spyOn(GraphQLAPIClass.prototype, 'getGraphqlOperationType')
+			.spyOn(InternalGraphQLAPIClass.prototype, 'getGraphqlOperationType')
 			.mockReturnValueOnce('getGraphqlOperationTypeResponse' as any);
 		const api = new API(null);
 		expect(api.getGraphqlOperationType(null)).toBe(
@@ -78,10 +118,49 @@ describe('API test', () => {
 	});
 
 	test('graphql', async () => {
-		jest
-			.spyOn(GraphQLAPIClass.prototype, 'graphql')
+		const spy = jest
+			.spyOn(InternalGraphQLAPIClass.prototype, 'graphql')
 			.mockResolvedValue('grapqhqlResponse' as any);
 		const api = new API(null);
-		expect(await api.graphql(null)).toBe('grapqhqlResponse');
+		expect(await api.graphql({ query: 'query' })).toBe('grapqhqlResponse');
+
+		expect(spy).toBeCalledWith(expect.anything(), undefined, {
+			category: Category.API,
+			action: ApiAction.GraphQl,
+		});
+	});
+
+	describe('cancel', () => {
+		test('cancel RestAPI request', async () => {
+			jest
+				.spyOn(InternalGraphQLAPIClass.prototype, 'hasCancelToken')
+				.mockImplementation(() => false);
+			const restAPICancelSpy = jest
+				.spyOn(RestAPIClass.prototype, 'cancel')
+				.mockImplementation(() => true);
+			jest
+				.spyOn(RestAPIClass.prototype, 'hasCancelToken')
+				.mockImplementation(() => true);
+			const api = new API(null);
+			const request = Promise.resolve();
+			expect(api.cancel(request)).toBe(true);
+			expect(restAPICancelSpy).toHaveBeenCalled();
+		});
+
+		test('cancel GraphQLAPI request', async () => {
+			jest
+				.spyOn(InternalGraphQLAPIClass.prototype, 'hasCancelToken')
+				.mockImplementation(() => true);
+			const graphQLAPICancelSpy = jest
+				.spyOn(InternalGraphQLAPIClass.prototype, 'cancel')
+				.mockImplementation(() => true);
+			jest
+				.spyOn(RestAPIClass.prototype, 'hasCancelToken')
+				.mockImplementation(() => false);
+			const api = new API(null);
+			const request = Promise.resolve();
+			expect(api.cancel(request)).toBe(true);
+			expect(graphQLAPICancelSpy).toHaveBeenCalled();
+		});
 	});
 });

@@ -1,21 +1,11 @@
-/*
- * Copyright 2019-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	JS,
-	getAmplifyUserAgent,
+	browserOrNode,
+	AnalyticsAction,
 } from '@aws-amplify/core';
 import {
 	PersonalizeEventsClient,
@@ -33,6 +23,7 @@ import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
 import { AnalyticsProvider } from '../types';
+import { getAnalyticsUserAgent } from '../utils/UserAgent';
 
 const logger = new Logger('AmazonPersonalizeProvider');
 
@@ -67,7 +58,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 				this._config.trackingId
 			);
 		}
-		this._isBrowser = JS.browserOrNode().isBrowser;
+		this._isBrowser = browserOrNode().isBrowser;
 
 		// flush event buffer
 		this._setupTimer();
@@ -260,10 +251,8 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 			const events: RecordEventPayload[] = [];
 			for (let i = 0; i < groupLen; i += 1) {
 				const params: RequestParams = group.shift();
-				const eventPayload: RecordEventPayload = this._generateSingleRecordPayload(
-					params,
-					sessionInfo
-				);
+				const eventPayload: RecordEventPayload =
+					this._generateSingleRecordPayload(params, sessionInfo);
 				events.push(eventPayload);
 			}
 			const payload = <PutEventsCommandInput>{};
@@ -384,7 +373,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		this._personalize = new PersonalizeEventsClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: getAnalyticsUserAgent(AnalyticsAction.Record),
 		});
 		return true;
 	}
@@ -407,8 +396,3 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 			});
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AmazonPersonalizeProvider;

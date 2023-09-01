@@ -1,8 +1,18 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import {
 	getPrefix,
-	createPrefixMiddleware,
+	loadS3Config,
+	credentialsProvider,
 } from '../../src/common/S3ClientUtils';
-import { ICredentials, Credentials } from '@aws-amplify/core';
+import {
+	ICredentials,
+	Credentials,
+	getAmplifyUserAgent,
+	StorageAction,
+	Category,
+} from '@aws-amplify/core';
 
 const credentials: ICredentials = {
 	accessKeyId: 'accessKeyId',
@@ -31,6 +41,7 @@ describe('S3ClientUtils tests', () => {
 		});
 		expect(privatePrefix).toEqual('private/identityId/');
 	});
+
 	test('getPrefix with customPrefix', () => {
 		const customPrefix = {
 			public: 'myPublic/',
@@ -57,57 +68,71 @@ describe('S3ClientUtils tests', () => {
 		expect(privatePrefix).toEqual('myPrivate/identityId/');
 	});
 
-	test('createPrefixMiddleware test', async () => {
-		jest.spyOn(Credentials, 'get').mockImplementation(() => {
-			return Promise.resolve(credentials);
+	test('createS3Client test', async () => {
+		expect.assertions(4);
+		const s3Config = loadS3Config({
+			region: 'us-west-2',
+			useAccelerateEndpoint: true,
+			storageAction: StorageAction.Get,
+			credentials,
 		});
-		const publicPrefixMiddleware = createPrefixMiddleware(
-			{
-				credentials,
-				level: 'public',
-			},
-			'key'
+		expect(s3Config.userAgentValue).toEqual(
+			getAmplifyUserAgent({
+				category: Category.Storage,
+				action: StorageAction.Get,
+			})
 		);
-		const protectedPrefixMiddleware = createPrefixMiddleware(
-			{
-				credentials,
-				level: 'protected',
-			},
-			'key'
+		expect(s3Config.region).toEqual('us-west-2');
+		expect(s3Config.useAccelerateEndpoint).toBe(true);
+		expect(await s3Config.credentials()).toBe(credentials);
+	});
+
+	test('createS3Client injects credentials provider', async () => {
+		expect.assertions(4);
+		jest
+			.spyOn(Credentials, 'get')
+			.mockImplementationOnce(() => Promise.resolve(credentials));
+		const s3Config = loadS3Config({
+			region: 'us-west-2',
+			useAccelerateEndpoint: true,
+			storageAction: StorageAction.Get,
+		});
+		expect(s3Config.userAgentValue).toEqual(
+			getAmplifyUserAgent({
+				category: Category.Storage,
+				action: StorageAction.Get,
+			})
 		);
-		const privatePrefixMiddleware = createPrefixMiddleware(
-			{
-				credentials,
-				level: 'private',
-			},
-			'key'
-		);
-		const { output: publicPrefix } = await publicPrefixMiddleware(
-			arg =>
-				Promise.resolve({
-					output: arg.input.Key,
-					response: null,
-				}),
-			null
-		)({ input: { Key: 'key' } });
-		const { output: protectedPrefix } = await protectedPrefixMiddleware(
-			arg =>
-				Promise.resolve({
-					output: arg.input.Key,
-					response: null,
-				}),
-			null
-		)({ input: { Key: 'key' } });
-		const { output: privatePrefix } = await privatePrefixMiddleware(
-			arg =>
-				Promise.resolve({
-					output: arg.input.Key,
-					response: null,
-				}),
-			null
-		)({ input: { Key: 'key' } });
-		expect(publicPrefix).toEqual('public/key');
-		expect(protectedPrefix).toEqual('protected/identityId/key');
-		expect(privatePrefix).toEqual('private/identityId/key');
+		expect(s3Config.region).toEqual('us-west-2');
+		expect(s3Config.useAccelerateEndpoint).toBe(true);
+		expect(await s3Config.credentials()).toEqual(credentials);
+	});
+
+	test('createS3Client test - dangerouslyConnectToHttpEndpointForTesting', async () => {
+		const s3Config = loadS3Config({
+			region: 'us-west-2',
+			dangerouslyConnectToHttpEndpointForTesting: true,
+			storageAction: StorageAction.Get,
+		});
+		expect(s3Config).toMatchObject({
+			customEndpoint: 'http://localhost:20005',
+			forcePathStyle: true,
+		});
+	});
+
+	test('credentialsProvider test', async () => {
+		jest
+			.spyOn(Credentials, 'get')
+			.mockImplementationOnce(() => Promise.resolve(credentials));
+		const credentials = await credentialsProvider();
+		expect(credentials).toStrictEqual(credentials);
+	});
+
+	test('credentialsProvider - Credentials.get error', async () => {
+		jest
+			.spyOn(Credentials, 'get')
+			.mockImplementationOnce(() => Promise.reject('err'));
+		const credentials = await credentialsProvider();
+		expect(credentials).toStrictEqual({ accessKeyId: '', secretAccessKey: '' });
 	});
 });

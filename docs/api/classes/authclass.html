@@ -6,6 +6,7 @@
 	<title>AuthClass | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
 /* ========================================================================== HTML5 display definitions ========================================================================== */
 /** Correct `block` display not defined in IE 6/7/8/9 and Firefox 3. */
@@ -880,12 +881,12 @@ img { max-width: 100%; }
 			<div class="table-wrap">
 				<div class="table-cell logo">
 					<a href="../index.html">
-						<img src="https://aws-amplify.github.io/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
-						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+						<img src="https://aws-amplify.github.io/amplify-js/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: relative;">AWS Amplify JS API</div>
 					</a>
 				</div>
 				<div class="table-cell" style="">	<body>
-						<a href="/amplify-js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
+						<a href="https://docs.amplify.aws/lib/q/platform/js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify JS Dev Center</a>
 </div>	</body>
 <div class="table-cell" id="tsd-widgets">
 <div id="tsd-filter">
@@ -922,7 +923,7 @@ img { max-width: 100%; }
 				<a href="authclass.html#constructor" class="tsd-kind-icon">constructor</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-class">
-				<a href="authclass.html#data" class="tsd-kind-icon">data</a>
+				<a href="authclass.html#credentials" class="tsd-kind-icon">Credentials</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="authclass.html#changepassword" class="tsd-kind-icon">change<wbr>Password</a>
@@ -958,6 +959,12 @@ img { max-width: 100%; }
 				<a href="authclass.html#currentuserpooluser" class="tsd-kind-icon">current<wbr>User<wbr>Pool<wbr>User</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="authclass.html#deleteuser" class="tsd-kind-icon">delete<wbr>User</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="authclass.html#deleteuserattributes" class="tsd-kind-icon">delete<wbr>User<wbr>Attributes</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="authclass.html#disablesms" class="tsd-kind-icon">disableSMS</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -968,6 +975,12 @@ img { max-width: 100%; }
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="authclass.html#federatedsignin" class="tsd-kind-icon">federated<wbr>Sign<wbr>In</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="authclass.html#fetchdevices" class="tsd-kind-icon">fetch<wbr>Devices</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="authclass.html#forgetdevice" class="tsd-kind-icon">forget<wbr>Device</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="authclass.html#forgotpassword" class="tsd-kind-icon">forgot<wbr>Password</a>
@@ -983,6 +996,9 @@ img { max-width: 100%; }
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="authclass.html#getpreferredmfa" class="tsd-kind-icon">get<wbr>PreferredMFA</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="authclass.html#rememberdevice" class="tsd-kind-icon">remember<wbr>Device</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="authclass.html#resendsignup" class="tsd-kind-icon">resend<wbr>Sign<wbr>Up</a>
@@ -1032,6 +1048,9 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="authclass.html#verifyuserattributesubmit" class="tsd-kind-icon">verify<wbr>User<wbr>Attribute<wbr>Submit</a>
 			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="authclass.html#wraprefreshsessioncallback" class="tsd-kind-icon">wrap<wbr>Refresh<wbr>Session<wbr>Callback</a>
+			</li>
 		</ul>
 	</li>
 </ul>
@@ -1066,7 +1085,7 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Properties</h3>
 					<ul class="tsd-index-list">
-						<li class="tsd-kind-property tsd-parent-kind-class"><a href="authclass.html#data" class="tsd-kind-icon">data</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class"><a href="authclass.html#credentials" class="tsd-kind-icon">Credentials</a></li>
 					</ul>
 				</section>
 				<section class="tsd-index-section ">
@@ -1083,15 +1102,20 @@ img { max-width: 100%; }
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#currentusercredentials" class="tsd-kind-icon">current<wbr>User<wbr>Credentials</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#currentuserinfo" class="tsd-kind-icon">current<wbr>User<wbr>Info</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#currentuserpooluser" class="tsd-kind-icon">current<wbr>User<wbr>Pool<wbr>User</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#deleteuser" class="tsd-kind-icon">delete<wbr>User</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#deleteuserattributes" class="tsd-kind-icon">delete<wbr>User<wbr>Attributes</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#disablesms" class="tsd-kind-icon">disableSMS</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#enablesms" class="tsd-kind-icon">enableSMS</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#essentialcredentials" class="tsd-kind-icon">essential<wbr>Credentials</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#federatedsignin" class="tsd-kind-icon">federated<wbr>Sign<wbr>In</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#fetchdevices" class="tsd-kind-icon">fetch<wbr>Devices</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#forgetdevice" class="tsd-kind-icon">forget<wbr>Device</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#forgotpassword" class="tsd-kind-icon">forgot<wbr>Password</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#forgotpasswordsubmit" class="tsd-kind-icon">forgot<wbr>Password<wbr>Submit</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#getmfaoptions" class="tsd-kind-icon">getMFAOptions</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#getmodulename" class="tsd-kind-icon">get<wbr>Module<wbr>Name</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#getpreferredmfa" class="tsd-kind-icon">get<wbr>PreferredMFA</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#rememberdevice" class="tsd-kind-icon">remember<wbr>Device</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#resendsignup" class="tsd-kind-icon">resend<wbr>Sign<wbr>Up</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#sendcustomchallengeanswer" class="tsd-kind-icon">send<wbr>Custom<wbr>Challenge<wbr>Answer</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#setpreferredmfa" class="tsd-kind-icon">set<wbr>PreferredMFA</a></li>
@@ -1108,6 +1132,7 @@ img { max-width: 100%; }
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#verifytotptoken" class="tsd-kind-icon">verify<wbr>Totp<wbr>Token</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#verifyuserattribute" class="tsd-kind-icon">verify<wbr>User<wbr>Attribute</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#verifyuserattributesubmit" class="tsd-kind-icon">verify<wbr>User<wbr>Attribute<wbr>Submit</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#wraprefreshsessioncallback" class="tsd-kind-icon">wrap<wbr>Refresh<wbr>Session<wbr>Callback</a></li>
 					</ul>
 				</section>
 			</div>
@@ -1125,7 +1150,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L99">packages/auth/src/Auth.ts:99</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L113">packages/auth/src/Auth.ts:113</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1152,12 +1177,12 @@ img { max-width: 100%; }
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Properties</h2>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-			<a name="data" class="tsd-anchor"></a>
-			<h3>data</h3>
-			<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+			<a name="credentials" class="tsd-anchor"></a>
+			<h3>Credentials</h3>
+			<div class="tsd-signature tsd-kind-icon">Credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">CredentialsClass</span><span class="tsd-signature-symbol"> = Credentials</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/aws-amplify-angular/src/components/authenticator/authenticator/authenticator.class.ts#L17">packages/aws-amplify-angular/src/components/authenticator/authenticator/authenticator.class.ts:17</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L113">packages/auth/src/Auth.ts:113</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1168,13 +1193,13 @@ img { max-width: 100%; }
 			<a name="changepassword" class="tsd-anchor"></a>
 			<h3>change<wbr>Password</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">change<wbr>Password<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, oldPassword<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, newPassword<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">"SUCCESS"</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">change<wbr>Password<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, oldPassword<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, newPassword<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">"SUCCESS"</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1517">packages/auth/src/Auth.ts:1517</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2197">packages/auth/src/Auth.ts:2197</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1206,7 +1231,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> clientMetadata: <a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol"> = this._config.clientMetadata</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">"SUCCESS"</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">"SUCCESS"</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves if success</li>
 					</ul>
@@ -1217,13 +1242,13 @@ img { max-width: 100%; }
 			<a name="completenewpassword" class="tsd-anchor"></a>
 			<h3>complete<wbr>New<wbr>Password</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">complete<wbr>New<wbr>Password<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, password<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, requiredAttributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">complete<wbr>New<wbr>Password<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, password<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, requiredAttributes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L931">packages/auth/src/Auth.ts:931</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1236">packages/auth/src/Auth.ts:1236</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1235,13 +1260,13 @@ img { max-width: 100%; }
 							<h5>password: <span class="tsd-signature-type">string</span></h5>
 						</li>
 						<li>
-							<h5>requiredAttributes: <span class="tsd-signature-type">any</span></h5>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> requiredAttributes: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = {}</span></h5>
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> clientMetadata: <a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol"> = this._config.clientMetadata</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1249,19 +1274,19 @@ img { max-width: 100%; }
 			<a name="configure" class="tsd-anchor"></a>
 			<h3>configure</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/authoptions.html" class="tsd-signature-type">AuthOptions</a></li>
+				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/authoptions.html" class="tsd-signature-type">AuthOptions</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L135">packages/auth/src/Auth.ts:135</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L151">packages/auth/src/Auth.ts:151</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>config: <span class="tsd-signature-type">any</span></h5>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> config: <span class="tsd-signature-type">any</span></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="../interfaces/authoptions.html" class="tsd-signature-type">AuthOptions</a></h4>
@@ -1272,13 +1297,13 @@ img { max-width: 100%; }
 			<a name="confirmsignin" class="tsd-anchor"></a>
 			<h3>confirm<wbr>Sign<wbr>In</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">confirm<wbr>Sign<wbr>In<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, mfaType<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">"SMS_MFA"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"SOFTWARE_TOKEN_MFA"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">confirm<wbr>Sign<wbr>In<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, mfaType<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">"SMS_MFA"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"SOFTWARE_TOKEN_MFA"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L890">packages/auth/src/Auth.ts:890</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1186">packages/auth/src/Auth.ts:1186</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1307,7 +1332,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> clientMetadata: <a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol"> = this._config.clientMetadata</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1315,13 +1340,13 @@ img { max-width: 100%; }
 			<a name="confirmsignup" class="tsd-anchor"></a>
 			<h3>confirm<wbr>Sign<wbr>Up</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">confirm<wbr>Sign<wbr>Up<span class="tsd-signature-symbol">(</span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/confirmsignupoptions.html" class="tsd-signature-type">ConfirmSignUpOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">confirm<wbr>Sign<wbr>Up<span class="tsd-signature-symbol">(</span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/confirmsignupoptions.html" class="tsd-signature-type">ConfirmSignUpOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L344">packages/auth/src/Auth.ts:344</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L536">packages/auth/src/Auth.ts:536</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1350,7 +1375,7 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves callback data if success</li>
 					</ul>
@@ -1361,13 +1386,13 @@ img { max-width: 100%; }
 			<a name="currentauthenticateduser" class="tsd-anchor"></a>
 			<h3>current<wbr>Authenticated<wbr>User</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">current<wbr>Authenticated<wbr>User<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">?: </span><a href="../interfaces/currentuseropts.html" class="tsd-signature-type">CurrentUserOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">current<wbr>Authenticated<wbr>User<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">?: </span><a href="../interfaces/currentuseropts.html" class="tsd-signature-type">CurrentUserOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1191">packages/auth/src/Auth.ts:1191</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1784">packages/auth/src/Auth.ts:1784</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1381,7 +1406,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> params: <a href="../interfaces/currentuseropts.html" class="tsd-signature-type">CurrentUserOpts</a></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves to current authenticated CognitoUser if success</li>
 					</ul>
@@ -1392,16 +1417,16 @@ img { max-width: 100%; }
 			<a name="currentcredentials" class="tsd-anchor"></a>
 			<h3>current<wbr>Credentials</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">current<wbr>Credentials<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icredentials.html" class="tsd-signature-type">ICredentials</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">current<wbr>Credentials<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ICredentials</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1338">packages/auth/src/Auth.ts:1338</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1972">packages/auth/src/Auth.ts:1972</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icredentials.html" class="tsd-signature-type">ICredentials</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ICredentials</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1409,13 +1434,13 @@ img { max-width: 100%; }
 			<a name="currentsession" class="tsd-anchor"></a>
 			<h3>current<wbr>Session</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">current<wbr>Session<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserSession</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">current<wbr>Session<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserSession</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1239">packages/auth/src/Auth.ts:1239</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1838">packages/auth/src/Auth.ts:1838</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1423,7 +1448,7 @@ img { max-width: 100%; }
 							<p>Get current user&#39;s session</p>
 						</div>
 					</div>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserSession</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserSession</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves to session object if success</li>
 					</ul>
@@ -1434,21 +1459,21 @@ img { max-width: 100%; }
 			<a name="currentusercredentials" class="tsd-anchor"></a>
 			<h3>current<wbr>User<wbr>Credentials</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">current<wbr>User<wbr>Credentials<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icredentials.html" class="tsd-signature-type">ICredentials</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">current<wbr>User<wbr>Credentials<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ICredentials</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1301">packages/auth/src/Auth.ts:1301</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1936">packages/auth/src/Auth.ts:1936</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Get  authenticated credentials of current user.</p>
+							<p>Get authenticated credentials of current user.</p>
 						</div>
 					</div>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icredentials.html" class="tsd-signature-type">ICredentials</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ICredentials</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves to be current user&#39;s credentials</li>
 					</ul>
@@ -1459,13 +1484,13 @@ img { max-width: 100%; }
 			<a name="currentuserinfo" class="tsd-anchor"></a>
 			<h3>current<wbr>User<wbr>Info</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">current<wbr>User<wbr>Info<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">current<wbr>User<wbr>Info<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1652">packages/auth/src/Auth.ts:1652</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2332">packages/auth/src/Auth.ts:2332</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1477,7 +1502,7 @@ img { max-width: 100%; }
 							<dd></dd>
 						</dl>
 					</div>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>current User&#39;s information</li>
 					</ul>
@@ -1488,13 +1513,13 @@ img { max-width: 100%; }
 			<a name="currentuserpooluser" class="tsd-anchor"></a>
 			<h3>current<wbr>User<wbr>Pool<wbr>User</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">current<wbr>User<wbr>Pool<wbr>User<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">?: </span><a href="../interfaces/currentuseropts.html" class="tsd-signature-type">CurrentUserOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">current<wbr>User<wbr>Pool<wbr>User<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">?: </span><a href="../interfaces/currentuseropts.html" class="tsd-signature-type">CurrentUserOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1104">packages/auth/src/Auth.ts:1104</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1652">packages/auth/src/Auth.ts:1652</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1508,7 +1533,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> params: <a href="../interfaces/currentuseropts.html" class="tsd-signature-type">CurrentUserOpts</a></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves to current authenticated CognitoUser if success</li>
 					</ul>
@@ -1516,21 +1541,74 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-			<a name="disablesms" class="tsd-anchor"></a>
-			<h3>disableSMS</h3>
+			<a name="deleteuser" class="tsd-anchor"></a>
+			<h3>delete<wbr>User</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">disableSMS<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">delete<wbr>User<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L800">packages/auth/src/Auth.ts:800</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1358">packages/auth/src/Auth.ts:1358</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>diable SMS</p>
+							<p>Delete the current authenticated user</p>
+						</div>
+					</div>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="deleteuserattributes" class="tsd-anchor"></a>
+			<h3>delete<wbr>User<wbr>Attributes</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">delete<wbr>User<wbr>Attributes<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, attributeNames<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1335">packages/auth/src/Auth.ts:1335</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Delete an authenticated users&#39; attributes</p>
+						</div>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>user: <span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></h5>
+						</li>
+						<li>
+							<h5>attributeNames: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="disablesms" class="tsd-anchor"></a>
+			<h3>disableSMS</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">disableSMS<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1077">packages/auth/src/Auth.ts:1077</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>disable SMS</p>
 						</div>
 						<dl class="tsd-comment-tags">
 							<dt>deprecated</dt>
@@ -1546,7 +1624,7 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves is success</li>
 					</ul>
@@ -1557,13 +1635,13 @@ img { max-width: 100%; }
 			<a name="enablesms" class="tsd-anchor"></a>
 			<h3>enableSMS</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">enableSMS<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">enableSMS<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L821">packages/auth/src/Auth.ts:821</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1098">packages/auth/src/Auth.ts:1098</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1584,7 +1662,7 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves is success</li>
 					</ul>
@@ -1595,13 +1673,13 @@ img { max-width: 100%; }
 			<a name="essentialcredentials" class="tsd-anchor"></a>
 			<h3>essential<wbr>Credentials</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">essential<wbr>Credentials<span class="tsd-signature-symbol">(</span>credentials<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/icredentials.html" class="tsd-signature-type">ICredentials</a></li>
+				<li class="tsd-signature tsd-kind-icon">essential<wbr>Credentials<span class="tsd-signature-symbol">(</span>credentials<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ICredentials</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1920">packages/auth/src/Auth.ts:1920</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2624">packages/auth/src/Auth.ts:2624</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1615,7 +1693,7 @@ img { max-width: 100%; }
 							<h5>credentials: <span class="tsd-signature-type">any</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <a href="../interfaces/icredentials.html" class="tsd-signature-type">ICredentials</a></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ICredentials</span></h4>
 					<ul>
 						<li>Credentials</li>
 					</ul>
@@ -1626,15 +1704,15 @@ img { max-width: 100%; }
 			<a name="federatedsignin" class="tsd-anchor"></a>
 			<h3>federated<wbr>Sign<wbr>In</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">federated<wbr>Sign<wbr>In<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#federatedsigninoptions" class="tsd-signature-type">FederatedSignInOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icredentials.html" class="tsd-signature-type">ICredentials</a><span class="tsd-signature-symbol">&gt;</span></li>
-				<li class="tsd-signature tsd-kind-icon">federated<wbr>Sign<wbr>In<span class="tsd-signature-symbol">(</span>provider<span class="tsd-signature-symbol">: </span><a href="../globals.html#legacyprovider" class="tsd-signature-type">LegacyProvider</a>, response<span class="tsd-signature-symbol">: </span><a href="../interfaces/federatedresponse.html" class="tsd-signature-type">FederatedResponse</a>, user<span class="tsd-signature-symbol">: </span><a href="../interfaces/federateduser.html" class="tsd-signature-type">FederatedUser</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icredentials.html" class="tsd-signature-type">ICredentials</a><span class="tsd-signature-symbol">&gt;</span></li>
-				<li class="tsd-signature tsd-kind-icon">federated<wbr>Sign<wbr>In<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#federatedsigninoptionscustom" class="tsd-signature-type">FederatedSignInOptionsCustom</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icredentials.html" class="tsd-signature-type">ICredentials</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">federated<wbr>Sign<wbr>In<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#federatedsigninoptions" class="tsd-signature-type">FederatedSignInOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ICredentials</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">federated<wbr>Sign<wbr>In<span class="tsd-signature-symbol">(</span>provider<span class="tsd-signature-symbol">: </span><a href="../globals.html#legacyprovider" class="tsd-signature-type">LegacyProvider</a>, response<span class="tsd-signature-symbol">: </span><a href="../interfaces/federatedresponse.html" class="tsd-signature-type">FederatedResponse</a>, user<span class="tsd-signature-symbol">: </span><a href="../interfaces/federateduser.html" class="tsd-signature-type">FederatedUser</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ICredentials</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">federated<wbr>Sign<wbr>In<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#federatedsigninoptionscustom" class="tsd-signature-type">FederatedSignInOptionsCustom</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ICredentials</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1694">packages/auth/src/Auth.ts:1694</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2374">packages/auth/src/Auth.ts:2374</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1643,12 +1721,12 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../globals.html#federatedsigninoptions" class="tsd-signature-type">FederatedSignInOptions</a></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icredentials.html" class="tsd-signature-type">ICredentials</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ICredentials</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1697">packages/auth/src/Auth.ts:1697</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2377">packages/auth/src/Auth.ts:2377</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1663,12 +1741,12 @@ img { max-width: 100%; }
 							<h5>user: <a href="../interfaces/federateduser.html" class="tsd-signature-type">FederatedUser</a></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icredentials.html" class="tsd-signature-type">ICredentials</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ICredentials</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1702">packages/auth/src/Auth.ts:1702</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2382">packages/auth/src/Auth.ts:2382</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1677,7 +1755,41 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../globals.html#federatedsigninoptionscustom" class="tsd-signature-type">FederatedSignInOptionsCustom</a></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/icredentials.html" class="tsd-signature-type">ICredentials</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ICredentials</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="fetchdevices" class="tsd-anchor"></a>
+			<h3>fetch<wbr>Devices</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">fetch<wbr>Devices<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/iauthdevice.html" class="tsd-signature-type">IAuthDevice</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2761">packages/auth/src/Auth.ts:2761</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/iauthdevice.html" class="tsd-signature-type">IAuthDevice</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="forgetdevice" class="tsd-anchor"></a>
+			<h3>forget<wbr>Device</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">forget<wbr>Device<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2732">packages/auth/src/Auth.ts:2732</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1685,13 +1797,13 @@ img { max-width: 100%; }
 			<a name="forgotpassword" class="tsd-anchor"></a>
 			<h3>forgot<wbr>Password</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">forgot<wbr>Password<span class="tsd-signature-symbol">(</span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">forgot<wbr>Password<span class="tsd-signature-symbol">(</span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1547">packages/auth/src/Auth.ts:1547</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2227">packages/auth/src/Auth.ts:2227</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1711,7 +1823,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> clientMetadata: <a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol"> = this._config.clientMetadata</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves if success</li>
 					</ul>
@@ -1722,13 +1834,13 @@ img { max-width: 100%; }
 			<a name="forgotpasswordsubmit" class="tsd-anchor"></a>
 			<h3>forgot<wbr>Password<wbr>Submit</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">forgot<wbr>Password<wbr>Submit<span class="tsd-signature-symbol">(</span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, password<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">forgot<wbr>Password<wbr>Submit<span class="tsd-signature-symbol">(</span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, password<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1598">packages/auth/src/Auth.ts:1598</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2278">packages/auth/src/Auth.ts:2278</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1760,7 +1872,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> clientMetadata: <a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol"> = this._config.clientMetadata</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise that resolves if success</li>
 					</ul>
@@ -1771,19 +1883,20 @@ img { max-width: 100%; }
 			<a name="getmfaoptions" class="tsd-anchor"></a>
 			<h3>getMFAOptions</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">getMFAOptions<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MFAOption</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">getMFAOptions<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MFAOption</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L602">packages/auth/src/Auth.ts:602</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L832">packages/auth/src/Auth.ts:832</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>get user current preferred mfa option
-							this method doesn&#39;t work with totp, we need to deprecate it.</p>
+							<p>This was previously used by an authenticated user to get MFAOptions,
+								but no longer returns a meaningful response. Refer to the documentation for
+							how to setup and use MFA: <a href="https://docs.amplify.aws/lib/auth/mfa/q/platform/js">https://docs.amplify.aws/lib/auth/mfa/q/platform/js</a></p>
 						</div>
 						<dl class="tsd-comment-tags">
 							<dt>deprecated</dt>
@@ -1799,7 +1912,7 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MFAOption</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MFAOption</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves the current preferred mfa option if success</li>
 					</ul>
@@ -1816,7 +1929,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L131">packages/auth/src/Auth.ts:131</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L147">packages/auth/src/Auth.ts:147</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1827,13 +1940,13 @@ img { max-width: 100%; }
 			<a name="getpreferredmfa" class="tsd-anchor"></a>
 			<h3>get<wbr>PreferredMFA</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">get<wbr>PreferredMFA<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, params<span class="tsd-signature-symbol">?: </span><a href="../interfaces/getpreferredmfaopts.html" class="tsd-signature-type">GetPreferredMFAOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<wbr>PreferredMFA<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, params<span class="tsd-signature-symbol">?: </span><a href="../interfaces/getpreferredmfaopts.html" class="tsd-signature-type">GetPreferredMFAOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L622">packages/auth/src/Auth.ts:622</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L852">packages/auth/src/Auth.ts:852</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1856,7 +1969,24 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="rememberdevice" class="tsd-anchor"></a>
+			<h3>remember<wbr>Device</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">remember<wbr>Device<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="autherror.html" class="tsd-signature-type">AuthError</a><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2703">packages/auth/src/Auth.ts:2703</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="autherror.html" class="tsd-signature-type">AuthError</a><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1864,13 +1994,13 @@ img { max-width: 100%; }
 			<a name="resendsignup" class="tsd-anchor"></a>
 			<h3>resend<wbr>Sign<wbr>Up</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">resend<wbr>Sign<wbr>Up<span class="tsd-signature-symbol">(</span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">resend<wbr>Sign<wbr>Up<span class="tsd-signature-symbol">(</span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L393">packages/auth/src/Auth.ts:393</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L604">packages/auth/src/Auth.ts:604</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1893,9 +2023,9 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
-						<li>A promise resolves data if success</li>
+						<li>A promise resolves code delivery details if successful</li>
 					</ul>
 				</li>
 			</ul>
@@ -1904,13 +2034,13 @@ img { max-width: 100%; }
 			<a name="sendcustomchallengeanswer" class="tsd-anchor"></a>
 			<h3>send<wbr>Custom<wbr>Challenge<wbr>Answer</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">send<wbr>Custom<wbr>Challenge<wbr>Answer<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, challengeResponses<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">send<wbr>Custom<wbr>Challenge<wbr>Answer<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, challengeResponses<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L993">packages/auth/src/Auth.ts:993</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1308">packages/auth/src/Auth.ts:1308</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1936,7 +2066,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> clientMetadata: <a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol"> = this._config.clientMetadata</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1944,13 +2074,13 @@ img { max-width: 100%; }
 			<a name="setpreferredmfa" class="tsd-anchor"></a>
 			<h3>set<wbr>PreferredMFA</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">set<wbr>PreferredMFA<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, mfaMethod<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"TOTP"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"SMS"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"NOMFA"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">set<wbr>PreferredMFA<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, mfaMethod<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"TOTP"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"SMS"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"NOMFA"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"SMS_MFA"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"SOFTWARE_TOKEN_MFA"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L702">packages/auth/src/Auth.ts:702</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L957">packages/auth/src/Auth.ts:957</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1967,13 +2097,13 @@ img { max-width: 100%; }
 							</div>
 						</li>
 						<li>
-							<h5>mfaMethod: <span class="tsd-signature-type">"TOTP"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"SMS"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"NOMFA"</span></h5>
+							<h5>mfaMethod: <span class="tsd-signature-type">"TOTP"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"SMS"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"NOMFA"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"SMS_MFA"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"SOFTWARE_TOKEN_MFA"</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>preferred mfa method</p>
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolve if success</li>
 					</ul>
@@ -1984,13 +2114,13 @@ img { max-width: 100%; }
 			<a name="setuptotp" class="tsd-anchor"></a>
 			<h3>setupTOTP</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">setupTOTP<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">setupTOTP<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L841">packages/auth/src/Auth.ts:841</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1118">packages/auth/src/Auth.ts:1118</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -2007,7 +2137,7 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves with the secret code if success</li>
 					</ul>
@@ -2018,13 +2148,13 @@ img { max-width: 100%; }
 			<a name="signin" class="tsd-anchor"></a>
 			<h3>sign<wbr>In</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">sign<wbr>In<span class="tsd-signature-symbol">(</span>usernameOrSignInOpts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#signinopts" class="tsd-signature-type">SignInOpts</a>, pw<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">sign<wbr>In<span class="tsd-signature-symbol">(</span>usernameOrSignInOpts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#signinopts" class="tsd-signature-type">SignInOpts</a>, pw<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L422">packages/auth/src/Auth.ts:422</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L634">packages/auth/src/Auth.ts:634</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -2042,12 +2172,18 @@ img { max-width: 100%; }
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> pw: <span class="tsd-signature-type">string</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>The password of the username</p>
+							</div>
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> clientMetadata: <a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol"> = this._config.clientMetadata</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>Client metadata for custom workflows</p>
+							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves the CognitoUser</li>
 					</ul>
@@ -2058,13 +2194,13 @@ img { max-width: 100%; }
 			<a name="signout" class="tsd-anchor"></a>
 			<h3>sign<wbr>Out</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">sign<wbr>Out<span class="tsd-signature-symbol">(</span>opts<span class="tsd-signature-symbol">?: </span><a href="../interfaces/signoutopts.html" class="tsd-signature-type">SignOutOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">sign<wbr>Out<span class="tsd-signature-symbol">(</span>opts<span class="tsd-signature-symbol">?: </span><a href="../interfaces/signoutopts.html" class="tsd-signature-type">SignOutOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1477">packages/auth/src/Auth.ts:1477</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2157">packages/auth/src/Auth.ts:2157</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -2079,7 +2215,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> opts: <a href="../interfaces/signoutopts.html" class="tsd-signature-type">SignOutOpts</a></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolved if success</li>
 					</ul>
@@ -2090,13 +2226,13 @@ img { max-width: 100%; }
 			<a name="signup" class="tsd-anchor"></a>
 			<h3>sign<wbr>Up</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">sign<wbr>Up<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/signupparams.html" class="tsd-signature-type">SignUpParams</a>, <span class="tsd-signature-symbol">...</span>restOfAttrs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ISignUpResult</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">sign<wbr>Up<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/signupparams.html" class="tsd-signature-type">SignUpParams</a>, <span class="tsd-signature-symbol">...</span>restOfAttrs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ISignUpResult</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L255">packages/auth/src/Auth.ts:255</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L314">packages/auth/src/Auth.ts:314</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -2119,7 +2255,7 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ISignUpResult</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ISignUpResult</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves callback data if success</li>
 					</ul>
@@ -2130,13 +2266,13 @@ img { max-width: 100%; }
 			<a name="updateuserattributes" class="tsd-anchor"></a>
 			<h3>update<wbr>User<wbr>Attributes</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">update<wbr>User<wbr>Attributes<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">update<wbr>User<wbr>Attributes<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1020">packages/auth/src/Auth.ts:1020</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1440">packages/auth/src/Auth.ts:1440</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -2156,7 +2292,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> clientMetadata: <a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol"> = this._config.clientMetadata</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -2164,13 +2300,13 @@ img { max-width: 100%; }
 			<a name="userattributes" class="tsd-anchor"></a>
 			<h3>user<wbr>Attributes</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">user<wbr>Attributes<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserAttribute</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">user<wbr>Attributes<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserAttribute</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1057">packages/auth/src/Auth.ts:1057</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1512">packages/auth/src/Auth.ts:1512</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -2187,7 +2323,7 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserAttribute</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserAttribute</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves to user attributes if success</li>
 					</ul>
@@ -2198,13 +2334,13 @@ img { max-width: 100%; }
 			<a name="usersession" class="tsd-anchor"></a>
 			<h3>user<wbr>Session</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">user<wbr>Session<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserSession</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">user<wbr>Session<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserSession</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1276">packages/auth/src/Auth.ts:1276</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1928">packages/auth/src/Auth.ts:1928</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -2221,7 +2357,7 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserSession</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserSession</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves to the session</li>
 					</ul>
@@ -2232,13 +2368,13 @@ img { max-width: 100%; }
 			<a name="verifiedcontact" class="tsd-anchor"></a>
 			<h3>verified<wbr>Contact</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">verified<wbr>Contact<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">verified<wbr>Contact<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1073">packages/auth/src/Auth.ts:1073</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1528">packages/auth/src/Auth.ts:1528</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2247,7 +2383,7 @@ img { max-width: 100%; }
 							<h5>user: <span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -2255,13 +2391,13 @@ img { max-width: 100%; }
 			<a name="verifycurrentuserattribute" class="tsd-anchor"></a>
 			<h3>verify<wbr>Current<wbr>User<wbr>Attribute</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">verify<wbr>Current<wbr>User<wbr>Attribute<span class="tsd-signature-symbol">(</span>attr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">verify<wbr>Current<wbr>User<wbr>Attribute<span class="tsd-signature-symbol">(</span>attr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1397">packages/auth/src/Auth.ts:1397</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2034">packages/auth/src/Auth.ts:2034</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2270,7 +2406,7 @@ img { max-width: 100%; }
 							<h5>attr: <span class="tsd-signature-type">string</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -2278,13 +2414,13 @@ img { max-width: 100%; }
 			<a name="verifycurrentuserattributesubmit" class="tsd-anchor"></a>
 			<h3>verify<wbr>Current<wbr>User<wbr>Attribute<wbr>Submit</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">verify<wbr>Current<wbr>User<wbr>Attribute<wbr>Submit<span class="tsd-signature-symbol">(</span>attr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">verify<wbr>Current<wbr>User<wbr>Attribute<wbr>Submit<span class="tsd-signature-symbol">(</span>attr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1410">packages/auth/src/Auth.ts:1410</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2047">packages/auth/src/Auth.ts:2047</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -2307,7 +2443,7 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves to callback data if success</li>
 					</ul>
@@ -2318,13 +2454,13 @@ img { max-width: 100%; }
 			<a name="verifytotptoken" class="tsd-anchor"></a>
 			<h3>verify<wbr>Totp<wbr>Token</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">verify<wbr>Totp<wbr>Token<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, challengeAnswer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserSession</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">verify<wbr>Totp<wbr>Token<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, challengeAnswer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserSession</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L864">packages/auth/src/Auth.ts:864</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1141">packages/auth/src/Auth.ts:1141</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -2347,7 +2483,7 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserSession</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUserSession</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves is success</li>
 					</ul>
@@ -2358,13 +2494,13 @@ img { max-width: 100%; }
 			<a name="verifyuserattribute" class="tsd-anchor"></a>
 			<h3>verify<wbr>User<wbr>Attribute</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">verify<wbr>User<wbr>Attribute<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, attr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">verify<wbr>User<wbr>Attribute<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, attr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, clientMetadata<span class="tsd-signature-symbol">?: </span><a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1349">packages/auth/src/Auth.ts:1349</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L1983">packages/auth/src/Auth.ts:1983</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -2390,7 +2526,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> clientMetadata: <a href="../globals.html#clientmetadata" class="tsd-signature-type">ClientMetaData</a><span class="tsd-signature-symbol"> = this._config.clientMetadata</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves to callback data if success</li>
 					</ul>
@@ -2401,13 +2537,13 @@ img { max-width: 100%; }
 			<a name="verifyuserattributesubmit" class="tsd-anchor"></a>
 			<h3>verify<wbr>User<wbr>Attribute<wbr>Submit</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">verify<wbr>User<wbr>Attribute<wbr>Submit<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, attr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">verify<wbr>User<wbr>Attribute<wbr>Submit<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span>, attr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/auth/src/Auth.ts#L1374">packages/auth/src/Auth.ts:1374</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L2011">packages/auth/src/Auth.ts:2011</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -2436,9 +2572,53 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise resolves to callback data if success</li>
+					</ul>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="wraprefreshsessioncallback" class="tsd-anchor"></a>
+			<h3>wrap<wbr>Refresh<wbr>Session<wbr>Callback</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">wrap<wbr>Refresh<wbr>Session<wbr>Callback<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NodeCallback.Any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/auth/src/Auth.ts#L292">packages/auth/src/Auth.ts:292</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>callback: <span class="tsd-signature-type">NodeCallback.Any</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">function</span></h4>
+					<ul class="tsd-parameters">
+						<li class="tsd-parameter-siganture">
+							<ul class="tsd-signatures tsd-kind-type-literal">
+								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">E</span>, result<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+							</ul>
+							<ul class="tsd-descriptions">
+								<li class="tsd-description">
+									<h4 class="tsd-parameters-title">Parameters</h4>
+									<ul class="tsd-parameters">
+										<li>
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> err: <span class="tsd-signature-type">E</span></h5>
+										</li>
+										<li>
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> result: <span class="tsd-signature-type">T</span></h5>
+										</li>
+									</ul>
+									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+								</li>
+							</ul>
+						</li>
 					</ul>
 				</li>
 			</ul>

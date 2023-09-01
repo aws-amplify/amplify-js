@@ -1,8 +1,12 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 export {
 	DataStore,
 	DataStoreClass,
 	initSchema,
 	ModelInstanceCreator,
+	AsyncCollection,
+	AsyncItem,
 } from './datastore/datastore';
 
 export {
@@ -19,6 +23,8 @@ import {
 	isNonModelConstructor,
 	isModelConstructor,
 } from './util';
+
+export { NAMESPACES } from './util';
 
 export const utils = {
 	USER,

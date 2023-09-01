@@ -28,18 +28,6 @@ depending on your project setup and experience with modern JavaScript build tool
 
 - Install the dependencies with npm and use a bundler like webpack.
 
-**Note:** This library uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). For [older browsers](https://caniuse.com/#feat=fetch) or in Node.js, you may need to include a polyfill. For example.
-
-```javascript
-// Using ES6 modules
-import 'cross-fetch/polyfill';
-import AmazonCognitoIdentity from 'amazon-cognito-identity-js';
-
-// Or, using CommonJS modules
-require('cross-fetch/polyfill');
-var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
-```
-
 Note: We removed the build files in the github repo. You can use npm to download the whole package and extract the build files from it.
 
 ## Install using separate JavaScript file
@@ -478,7 +466,7 @@ cognitoUser.forgotPassword({
 	//Optional automatic callback
 	inputVerificationCode: function(data) {
 		console.log('Code sent to: ' + data);
-		var code = document.getElementById('code').value;
+		var verificationCode = document.getElementById('code').value;
 		var newPassword = document.getElementById('new_password').value;
 		cognitoUser.confirmPassword(verificationCode, newPassword, {
 			onSuccess() {
@@ -776,7 +764,7 @@ To use the CookieStorage you have to pass it in the constructor map of CognitoUs
  var poolData = {
      UserPoolId : '...', // Your user pool id here
      ClientId : '...' // Your client id here
-     Storage: new AmazonCognitoIdentity.CookieStorage({domain: ".yourdomain.com"})
+     Storage: new AmazonCognitoIdentity.CookieStorage({domain: ".yourdomain.com"}) // Subdomains are included
  };
 
  var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
@@ -790,7 +778,7 @@ To use the CookieStorage you have to pass it in the constructor map of CognitoUs
 
 The CookieStorage object receives a map (data) in its constructor that may have these values:
 
-- data.domain Cookies domain (mandatory)
+- data.domain Cookies domain (default: domain of the page where the cookie was created, excluding subdomains)
 - data.path Cookies path (default: '/')
 - data.expires Cookie expiration (in days, default: 365)
 - data.secure Cookie secure flag (default: true)

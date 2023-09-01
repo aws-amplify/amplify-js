@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import {
 	ModelInstanceMetadata,
 	ModelPredicate,
@@ -29,7 +31,7 @@ export interface Adapter extends SystemComponent {
 		firstOrLast: QueryOne
 	): Promise<T | undefined>;
 	batchSave<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<any>,
+		modelConstructor: PersistentModelConstructor<T>,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]>;
 }

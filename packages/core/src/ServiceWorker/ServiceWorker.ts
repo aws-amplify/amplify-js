@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 /**
  * Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -42,7 +44,7 @@ export class ServiceWorkerClass {
 	// The AWS Amplify logger
 	private _logger: Logger = new Logger('ServiceWorker');
 
-	constructor() { }
+	constructor() {}
 
 	/**
 	 * Get the currently active service worker
@@ -202,8 +204,3 @@ export class ServiceWorkerClass {
 		});
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default ServiceWorkerClass;

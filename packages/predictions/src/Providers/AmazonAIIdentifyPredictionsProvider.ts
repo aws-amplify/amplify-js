@@ -1,9 +1,13 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import {
+	Category,
 	Credentials,
 	ConsoleLogger as Logger,
-	getAmplifyUserAgent,
+	PredictionsAction,
+	getAmplifyUserAgentObject,
 } from '@aws-amplify/core';
-import Storage from '@aws-amplify/storage';
+import { Storage } from '@aws-amplify/storage';
 import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
 import {
 	RekognitionClient,
@@ -80,7 +84,8 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				};
 				Storage.get(source.key, storageConfig)
 					.then((url: string) => {
-						const parser = /https:\/\/([a-zA-Z0-9%-_.]+)\.s3\.[A-Za-z0-9%-._~]+\/([a-zA-Z0-9%-._~/]+)\?/;
+						const parser =
+							/https:\/\/([a-zA-Z0-9%\-_.]+)\.s3\.[A-Za-z0-9%\-._~]+\/([a-zA-Z0-9%\-._~/]+)\?/;
 						const parsedURL = url.match(parser);
 						if (parsedURL.length < 3) rej('Invalid S3 key was given.');
 						res({
@@ -137,12 +142,12 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		this.rekognitionClient = new RekognitionClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 		});
 		this.textractClient = new TextractClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 		});
 		let inputDocument: Document;
 
@@ -239,7 +244,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			this.rekognitionClient = new RekognitionClient({
 				region,
 				credentials,
-				customUserAgent: getAmplifyUserAgent(),
+				customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 			});
 			let inputImage: Image;
 			await this.configureSource(input.labels.source)
@@ -358,7 +363,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		this.rekognitionClient = new RekognitionClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(),
+			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 		});
 		let inputImage: Image;
 		await this.configureSource(input.entities.source)
@@ -449,7 +454,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 						'Beard',
 						'Mustache',
 						'EyesOpen',
-						'MouthOpen'
+						'MouthOpen',
 					];
 					const faceAttributes = makeCamelCase(detail, attributeKeys);
 					if (detail.Emotions) {
@@ -480,7 +485,9 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 	}
 }
 
-/**
- * @deprecated use named import
- */
-export default AmazonAIIdentifyPredictionsProvider;
+function _getPredictionsIdentifyAmplifyUserAgent() {
+	return getAmplifyUserAgentObject({
+		category: Category.Predictions,
+		action: PredictionsAction.Identify,
+	});
+}

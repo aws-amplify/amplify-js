@@ -3,6 +3,398 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 5.5.4 (2023-08-23)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## 5.5.3 (2023-08-22)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## 5.5.2 (2023-08-17)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## 5.5.1 (2023-08-10)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+# [5.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.4.5...@aws-amplify/predictions@5.5.0) (2023-07-31)
+
+### Features
+
+- custom user agent Geo changes for UI handoff ([#11632](https://github.com/aws-amplify/amplify-js/issues/11632)) ([01bfa8f](https://github.com/aws-amplify/amplify-js/commit/01bfa8f692737bd14422f7dc2eae11ed00c19048))
+- custom user agent InAppMessaging changes for UI handoff ([#11639](https://github.com/aws-amplify/amplify-js/issues/11639)) ([4d389da](https://github.com/aws-amplify/amplify-js/commit/4d389da22c9f39d5a5d7cd6df9116327a9d6a04e))
+- custom user agent Storage changes for UI handoff ([#11627](https://github.com/aws-amplify/amplify-js/issues/11627)) ([b0231af](https://github.com/aws-amplify/amplify-js/commit/b0231af9d7fe631ef9e0e669df7a20802e3a21b3)), closes [#11656](https://github.com/aws-amplify/amplify-js/issues/11656) [#11657](https://github.com/aws-amplify/amplify-js/issues/11657)
+
+## [5.4.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.4.4...@aws-amplify/predictions@5.4.5) (2023-07-20)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.4.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.4.3...@aws-amplify/predictions@5.4.4) (2023-07-13)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.4.2...@aws-amplify/predictions@5.4.3) (2023-06-28)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.4.1...@aws-amplify/predictions@5.4.2) (2023-06-27)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.4.0...@aws-amplify/predictions@5.4.1) (2023-06-21)
+
+### Bug Fixes
+
+- Update getAmplifyUserAgent to retain original interface ([#11535](https://github.com/aws-amplify/amplify-js/issues/11535)) ([dc84cc8](https://github.com/aws-amplify/amplify-js/commit/dc84cc8bfa7811b5f4f8ac2f7e5ea1b5edc54fe1))
+
+# [5.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.3.0...@aws-amplify/predictions@5.4.0) (2023-06-20)
+
+### Bug Fixes
+
+- **predictions:** Refactor shared identify user agent ([#11522](https://github.com/aws-amplify/amplify-js/issues/11522)) ([f95d10d](https://github.com/aws-amplify/amplify-js/commit/f95d10d828c603bdfeecd14b2af9eb4578433ff3))
+
+### Features
+
+- Add custom user agent enhancements for Predictions ([#11437](https://github.com/aws-amplify/amplify-js/issues/11437)) ([424e9d4](https://github.com/aws-amplify/amplify-js/commit/424e9d46c9b218401472123c0c0d5cd240afe00d))
+- **core:** API detection for 8 framework targets ([#11384](https://github.com/aws-amplify/amplify-js/issues/11384)) ([388f207](https://github.com/aws-amplify/amplify-js/commit/388f2074db0640f2d22aa7cd1a44d8eb8f2301d2))
+- Custom user agent enhancement for api-rest ([#11457](https://github.com/aws-amplify/amplify-js/issues/11457)) ([4315ba0](https://github.com/aws-amplify/amplify-js/commit/4315ba05ad2e4463a4ef19431f20f8d5308cdc62))
+
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.2.3...@aws-amplify/predictions@5.3.0) (2023-06-15)
+
+### Features
+
+- **storage:** add getProperties API ([#11469](https://github.com/aws-amplify/amplify-js/issues/11469)) ([f47d472](https://github.com/aws-amplify/amplify-js/commit/f47d472ea021dadb1a04d03295c3c6065155f0c0))
+
+## [5.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.2.2...@aws-amplify/predictions@5.2.3) (2023-06-14)
+
+### Bug Fixes
+
+- Update AmazonAIConvertPredictionsProvider.ts ([#11453](https://github.com/aws-amplify/amplify-js/issues/11453)) ([129e35f](https://github.com/aws-amplify/amplify-js/commit/129e35f5f52db01eb4de90b7eeb9d76e372147a6))
+
+## [5.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.2.1...@aws-amplify/predictions@5.2.2) (2023-06-05)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.2.0...@aws-amplify/predictions@5.2.1) (2023-05-27)
+
+### Reverts
+
+- Revert "feat(storage): getProperties API (#11378)" ([7179636](https://github.com/aws-amplify/amplify-js/commit/7179636b183282c299304501cb5aad2cee942a86)), closes [#11378](https://github.com/aws-amplify/amplify-js/issues/11378)
+
+# [5.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.7...@aws-amplify/predictions@5.2.0) (2023-05-25)
+
+### Features
+
+- **storage:** getProperties API ([#11378](https://github.com/aws-amplify/amplify-js/issues/11378)) ([3bed12b](https://github.com/aws-amplify/amplify-js/commit/3bed12b6960c676095689ee895c60ae55a041c8c))
+
+## [5.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.6...@aws-amplify/predictions@5.1.7) (2023-05-18)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.5...@aws-amplify/predictions@5.1.6) (2023-05-12)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.4...@aws-amplify/predictions@5.1.5) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.3...@aws-amplify/predictions@5.1.4) (2023-04-27)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.2...@aws-amplify/predictions@5.1.3) (2023-04-20)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.1...@aws-amplify/predictions@5.1.2) (2023-04-18)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.0...@aws-amplify/predictions@5.1.1) (2023-04-13)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+# [5.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.25...@aws-amplify/predictions@5.1.0) (2023-04-12)
+
+### Features
+
+- **storage:** add validateObjectExistence option in Get API ([#11154](https://github.com/aws-amplify/amplify-js/issues/11154)) ([8005225](https://github.com/aws-amplify/amplify-js/commit/8005225b929a2cef50fd55d6e67b9057f58868fc))
+
+## [5.0.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.24...@aws-amplify/predictions@5.0.25) (2023-04-06)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.23...@aws-amplify/predictions@5.0.24) (2023-04-04)
+
+### Bug Fixes
+
+- **deps:** update AWS SDK clients with fast-xml-parser dependency ([#11181](https://github.com/aws-amplify/amplify-js/issues/11181)) ([a05e1dd](https://github.com/aws-amplify/amplify-js/commit/a05e1dd9da7fb7a65f1ad1c78886e095e21a5c5a))
+
+## [5.0.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.22...@aws-amplify/predictions@5.0.23) (2023-03-30)
+
+### Bug Fixes
+
+- Codescanning alerts ([#11159](https://github.com/aws-amplify/amplify-js/issues/11159)) ([b19e0ba](https://github.com/aws-amplify/amplify-js/commit/b19e0bab948d995b70fb98ad5d935483b3e15d8d))
+
+## [5.0.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.21...@aws-amplify/predictions@5.0.22) (2023-03-23)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.20...@aws-amplify/predictions@5.0.21) (2023-03-21)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.19...@aws-amplify/predictions@5.0.20) (2023-03-16)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.18...@aws-amplify/predictions@5.0.19) (2023-03-13)
+
+### Bug Fixes
+
+- Run ts coverage check with test ([#11047](https://github.com/aws-amplify/amplify-js/issues/11047)) ([430bedf](https://github.com/aws-amplify/amplify-js/commit/430bedfd0d0618bd0093b488233521356feef787))
+
+## [5.0.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.17...@aws-amplify/predictions@5.0.18) (2023-03-08)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.16...@aws-amplify/predictions@5.0.17) (2023-03-06)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.15...@aws-amplify/predictions@5.0.16) (2023-02-24)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.14...@aws-amplify/predictions@5.0.15) (2023-02-16)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.13...@aws-amplify/predictions@5.0.14) (2023-02-09)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.12...@aws-amplify/predictions@5.0.13) (2023-02-08)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.11...@aws-amplify/predictions@5.0.12) (2023-01-30)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.10...@aws-amplify/predictions@5.0.11) (2023-01-19)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.9...@aws-amplify/predictions@5.0.10) (2023-01-13)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.8...@aws-amplify/predictions@5.0.9) (2023-01-10)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.7...@aws-amplify/predictions@5.0.8) (2022-12-27)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.6...@aws-amplify/predictions@5.0.7) (2022-12-16)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.5...@aws-amplify/predictions@5.0.6) (2022-12-15)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.4...@aws-amplify/predictions@5.0.5) (2022-12-06)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.3...@aws-amplify/predictions@5.0.4) (2022-11-23)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.2...@aws-amplify/predictions@5.0.3) (2022-11-19)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.1...@aws-amplify/predictions@5.0.2) (2022-11-16)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.0...@aws-amplify/predictions@5.0.1) (2022-11-11)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+# [5.0.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.61...@aws-amplify/predictions@5.0.0) (2022-11-09)
+
+### Features
+
+- Setup tslib & importHelpers to improve bundle size ([#10435](https://github.com/aws-amplify/amplify-js/pull/10435))
+- Remove (most) default exports ([10461](https://github.com/aws-amplify/amplify-js/pull/10461))
+- add a typescript coverage report mechanism ([#10551](https://github.com/aws-amplify/amplify-js/issues/10551)) ([8e8df55](https://github.com/aws-amplify/amplify-js/commit/8e8df55b449f8bae2fe962fe282613d1b818cc5a)), closes [#10379](https://github.com/aws-amplify/amplify-js/issues/10379)
+
+## [4.0.60](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.59...@aws-amplify/predictions@4.0.60) (2022-10-27)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.59](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.58...@aws-amplify/predictions@4.0.59) (2022-10-26)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.58](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.57...@aws-amplify/predictions@4.0.58) (2022-10-25)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.57](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.56...@aws-amplify/predictions@4.0.57) (2022-10-14)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.56](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.55...@aws-amplify/predictions@4.0.56) (2022-10-14)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.55](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.53...@aws-amplify/predictions@4.0.55) (2022-09-30)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.54](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.53...@aws-amplify/predictions@4.0.54) (2022-09-20)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.53](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.52...@aws-amplify/predictions@4.0.53) (2022-09-08)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.52](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.51...@aws-amplify/predictions@4.0.52) (2022-09-01)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.51](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.50...@aws-amplify/predictions@4.0.51) (2022-08-23)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.50](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.49...@aws-amplify/predictions@4.0.50) (2022-08-18)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.49](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.48...@aws-amplify/predictions@4.0.49) (2022-08-16)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.48](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.47...@aws-amplify/predictions@4.0.48) (2022-08-01)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.47](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.46...@aws-amplify/predictions@4.0.47) (2022-07-28)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.46](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.45...@aws-amplify/predictions@4.0.46) (2022-07-21)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.45](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.44...@aws-amplify/predictions@4.0.45) (2022-07-07)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.44](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.43...@aws-amplify/predictions@4.0.44) (2022-06-18)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.43](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.42...@aws-amplify/predictions@4.0.43) (2022-06-15)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.42](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.41...@aws-amplify/predictions@4.0.42) (2022-05-24)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.41](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.40...@aws-amplify/predictions@4.0.41) (2022-05-23)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.40](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.39...@aws-amplify/predictions@4.0.40) (2022-05-12)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.39](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.38...@aws-amplify/predictions@4.0.39) (2022-05-03)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.38](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.37...@aws-amplify/predictions@4.0.38) (2022-04-14)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.37](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.36...@aws-amplify/predictions@4.0.37) (2022-04-04)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.36](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.35...@aws-amplify/predictions@4.0.36) (2022-03-28)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.35](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.34...@aws-amplify/predictions@4.0.35) (2022-03-22)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.34](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.33...@aws-amplify/predictions@4.0.34) (2022-03-10)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.32...@aws-amplify/predictions@4.0.33) (2022-02-28)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.31...@aws-amplify/predictions@4.0.32) (2022-02-03)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.30...@aws-amplify/predictions@4.0.31) (2022-01-27)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.29...@aws-amplify/predictions@4.0.30) (2022-01-07)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.28...@aws-amplify/predictions@4.0.29) (2021-12-16)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.27...@aws-amplify/predictions@4.0.28) (2021-12-03)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.26...@aws-amplify/predictions@4.0.27) (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.25...@aws-amplify/predictions@4.0.26) (2021-11-18)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.24...@aws-amplify/predictions@4.0.25) (2021-11-16)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.23...@aws-amplify/predictions@4.0.24) (2021-11-12)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [4.0.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.22...@aws-amplify/predictions@4.0.23) (2021-11-09)
+
+### Reverts
+
+- uuid dependency upgrade ([#9159](https://github.com/aws-amplify/amplify-js/issues/9159)) ([4ef8aa9](https://github.com/aws-amplify/amplify-js/commit/4ef8aa9c7c25dbe921fd02b6205b8defb93fbaec))
+
+## [4.0.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.21...@aws-amplify/predictions@4.0.22) (2021-10-28)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
 ## [4.0.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.20...@aws-amplify/predictions@4.0.21) (2021-10-21)
 
 **Note:** Version bump only for package @aws-amplify/predictions

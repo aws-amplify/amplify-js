@@ -6,6 +6,7 @@
 	<title>Logger | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
 /* ========================================================================== HTML5 display definitions ========================================================================== */
 /** Correct `block` display not defined in IE 6/7/8/9 and Firefox 3. */
@@ -880,12 +881,12 @@ img { max-width: 100%; }
 			<div class="table-wrap">
 				<div class="table-cell logo">
 					<a href="../index.html">
-						<img src="https://aws-amplify.github.io/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
-						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+						<img src="https://aws-amplify.github.io/amplify-js/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: relative;">AWS Amplify JS API</div>
 					</a>
 				</div>
 				<div class="table-cell" style="">	<body>
-						<a href="/amplify-js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
+						<a href="https://docs.amplify.aws/lib/q/platform/js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify JS Dev Center</a>
 </div>	</body>
 <div class="table-cell" id="tsd-widgets">
 <div id="tsd-filter">
@@ -918,6 +919,9 @@ img { max-width: 100%; }
 	<li class="current tsd-kind-interface">
 		<a href="logger.html" class="tsd-kind-icon">Logger</a>
 		<ul>
+			<li class=" tsd-kind-method tsd-parent-kind-interface">
+				<a href="logger.html#addpluggable" class="tsd-kind-icon">add<wbr>Pluggable</a>
+			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-interface">
 				<a href="logger.html#debug" class="tsd-kind-icon">debug</a>
 			</li>
@@ -957,6 +961,7 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
+						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="logger.html#addpluggable" class="tsd-kind-icon">add<wbr>Pluggable</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="logger.html#debug" class="tsd-kind-icon">debug</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="logger.html#error" class="tsd-kind-icon">error</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="logger.html#info" class="tsd-kind-icon">info</a></li>
@@ -969,6 +974,29 @@ img { max-width: 100%; }
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Methods</h2>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+			<a name="addpluggable" class="tsd-anchor"></a>
+			<h3>add<wbr>Pluggable</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+				<li class="tsd-signature tsd-kind-icon">add<wbr>Pluggable<span class="tsd-signature-symbol">(</span>pluggable<span class="tsd-signature-symbol">: </span><a href="loggingprovider.html" class="tsd-signature-type">LoggingProvider</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/Logger/logger-interface.ts#L11">packages/core/src/Logger/logger-interface.ts:11</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>pluggable: <a href="loggingprovider.html" class="tsd-signature-type">LoggingProvider</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 			<a name="debug" class="tsd-anchor"></a>
 			<h3>debug</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -978,7 +1006,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/logger-interface.ts#L15">packages/core/src/Logger/logger-interface.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/Logger/logger-interface.ts#L7">packages/core/src/Logger/logger-interface.ts:7</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1001,7 +1029,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/logger-interface.ts#L18">packages/core/src/Logger/logger-interface.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/Logger/logger-interface.ts#L10">packages/core/src/Logger/logger-interface.ts:10</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1024,7 +1052,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/logger-interface.ts#L16">packages/core/src/Logger/logger-interface.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/Logger/logger-interface.ts#L8">packages/core/src/Logger/logger-interface.ts:8</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1047,7 +1075,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/logger-interface.ts#L17">packages/core/src/Logger/logger-interface.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/Logger/logger-interface.ts#L9">packages/core/src/Logger/logger-interface.ts:9</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>

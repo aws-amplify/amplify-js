@@ -103,7 +103,8 @@ export const vCognitoUserSession = new CognitoUserSession({
 });
 
 /** CognitoUserPool */
-export const userPoolId = 'us-east-1_QdbSdK39m';
+export const userPoolName = 'QdbSdK39m';
+export const userPoolId = `us-east-1_${userPoolName}`;
 export const clientId = '3pu8tnp684l4lmlfoth25ojmd2';
 export const userName = 'peculiarAmazonian';
 export const password = 'Very$ecur3';

@@ -1,4 +1,4 @@
-import { Amplify, CredentialsClass, UniversalStorage } from '@aws-amplify/core';
+import { Amplify, UniversalStorage } from '@aws-amplify/core';
 
 import { withSSRContext } from '../src/withSSRContext';
 
@@ -68,6 +68,15 @@ describe('withSSRContext', () => {
 	describe('DataStore', () => {
 		it('should be a different instance than Amplify.DataStore', () => {
 			expect(withSSRContext().DataStore).not.toBe(Amplify.DataStore);
+		});
+
+		it('should use Amplify components from the ssr context', () => {
+			const { Auth, DataStore, InternalAPI } = withSSRContext();
+
+			expect(DataStore.Auth).toBe(Auth);
+			expect(DataStore.Auth).not.toBe(Amplify.Auth);
+
+			expect(DataStore.InternalAPI).toBe(InternalAPI);
 		});
 	});
 

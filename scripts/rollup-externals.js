@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 const core_externals = ['aws-sdk', 'aws-sdk/global', 'react-native', 'url'];
 
 const analytics_externals = [
@@ -57,7 +59,6 @@ const amplify_externals = [
 	'@aws-amplify/interactions',
 	'@aws-amplify/pubsub',
 	'@aws-amplify/storage',
-	'@aws-amplify/ui',
 	'@aws-amplify/xr',
 ];
 
@@ -68,8 +69,6 @@ const aws_amplify_react = [
 	'@aws-amplify/core',
 	'@aws-amplify/interactions',
 	'@aws-amplify/storage',
-	'@aws-amplify/ui',
-	'@aws-amplify/ui/dist/style.css',
 	'@aws-amplify/xr',
 	'react',
 	'regenerator-runtime/runtime',

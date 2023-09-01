@@ -6,6 +6,7 @@
 	<title>HubClass | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
 /* ========================================================================== HTML5 display definitions ========================================================================== */
 /** Correct `block` display not defined in IE 6/7/8/9 and Firefox 3. */
@@ -880,12 +881,12 @@ img { max-width: 100%; }
 			<div class="table-wrap">
 				<div class="table-cell logo">
 					<a href="../index.html">
-						<img src="https://aws-amplify.github.io/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
-						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+						<img src="https://aws-amplify.github.io/amplify-js/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: relative;">AWS Amplify JS API</div>
 					</a>
 				</div>
 				<div class="table-cell" style="">	<body>
-						<a href="/amplify-js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
+						<a href="https://docs.amplify.aws/lib/q/platform/js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify JS Dev Center</a>
 </div>	</body>
 <div class="table-cell" id="tsd-widgets">
 <div id="tsd-filter">
@@ -990,7 +991,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Hub.ts#L67">packages/core/src/Hub.ts:67</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/Hub.ts#L59">packages/core/src/Hub.ts:59</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1012,17 +1013,17 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Hub.ts#L54">packages/core/src/Hub.ts:54</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/Hub.ts#L45">packages/core/src/Hub.ts:45</a></li>
 				</ul>
 			</aside>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 			<a name="protectedchannels" class="tsd-anchor"></a>
 			<h3>protected<wbr>Channels</h3>
-			<div class="tsd-signature tsd-kind-icon">protected<wbr>Channels<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = [&#x27;core&#x27;,&#x27;auth&#x27;,&#x27;api&#x27;,&#x27;analytics&#x27;,&#x27;interactions&#x27;,&#x27;pubsub&#x27;,&#x27;storage&#x27;,&#x27;xr&#x27;,]</span></div>
+			<div class="tsd-signature tsd-kind-icon">protected<wbr>Channels<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = [&#x27;core&#x27;,&#x27;auth&#x27;,&#x27;api&#x27;,&#x27;analytics&#x27;,&#x27;interactions&#x27;,&#x27;pubsub&#x27;,&#x27;storage&#x27;,&#x27;ui&#x27;,&#x27;xr&#x27;,]</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Hub.ts#L58">packages/core/src/Hub.ts:58</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/Hub.ts#L49">packages/core/src/Hub.ts:49</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1039,22 +1040,39 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Hub.ts#L96">packages/core/src/Hub.ts:96</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/Hub.ts#L109">packages/core/src/Hub.ts:109</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Used to send a Hub event.</p>
+						</div>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
 							<h5>channel: <span class="tsd-signature-type">string</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>The channel on which the event will be broadcast</p>
+							</div>
 						</li>
 						<li>
 							<h5>payload: <a href="../globals.html#hubpayload" class="tsd-signature-type">HubPayload</a></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>The HubPayload</p>
+							</div>
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> source: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;&quot;</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>The source of the event; defaults to &#39;&#39;</p>
+							</div>
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> ampSymbol: <span class="tsd-signature-type">Symbol</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>Symbol used to determine if the event is dispatched internally on a protected channel</p>
+							</div>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1065,28 +1083,43 @@ img { max-width: 100%; }
 			<a name="listen" class="tsd-anchor"></a>
 			<h3>listen</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">listen<span class="tsd-signature-symbol">(</span>channel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span>, callback<span class="tsd-signature-symbol">?: </span><a href="../globals.html#hubcallback" class="tsd-signature-type">HubCallback</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#legacycallback" class="tsd-signature-type">LegacyCallback</a>, listenerName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">listen<span class="tsd-signature-symbol">(</span>channel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span>, callback<span class="tsd-signature-symbol">?: </span><a href="../globals.html#hubcallback" class="tsd-signature-type">HubCallback</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#legacycallback" class="tsd-signature-type">LegacyCallback</a>, listenerName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">(Anonymous function)</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Hub.ts#L126">packages/core/src/Hub.ts:126</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/Hub.ts#L148">packages/core/src/Hub.ts:148</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Used to listen for Hub events.</p>
+						</div>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
 							<h5>channel: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>The channel on which to listen</p>
+							</div>
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <a href="../globals.html#hubcallback" class="tsd-signature-type">HubCallback</a><span class="tsd-signature-symbol"> | </span><a href="../globals.html#legacycallback" class="tsd-signature-type">LegacyCallback</a></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>The callback to execute when an event is received on the specified channel</p>
+							</div>
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> listenerName: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;noname&quot;</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>The name of the listener; defaults to &#39;noname&#39;</p>
+							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">(Anonymous function)</span></h4>
+					<p>A function which can be called to cancel the listener.</p>
 				</li>
 			</ul>
 		</section>
@@ -1100,9 +1133,16 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Hub.ts#L74">packages/core/src/Hub.ts:74</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/Hub.ts#L96">packages/core/src/Hub.ts:96</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>Instead of calling Hub.remove, call the result of Hub.listen.</p>
+							</dd>
+						</dl>
+					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>

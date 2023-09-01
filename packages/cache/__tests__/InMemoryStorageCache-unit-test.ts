@@ -1,4 +1,7 @@
-import { default as cache, InMemoryCacheClass } from '../src/InMemoryCache';
+import {
+	InMemoryCache as cache,
+	InMemoryCacheClass,
+} from '../src/InMemoryCache';
 import { defaultConfig, getByteLength } from '../src/Utils/CacheUtils';
 import { CacheConfig, CacheItem, CacheItemOptions } from '../src/types/Cache';
 
