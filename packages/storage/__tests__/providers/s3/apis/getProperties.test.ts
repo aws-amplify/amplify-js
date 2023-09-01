@@ -5,6 +5,7 @@ import { headObject } from '../../../../src/providers/s3/utils/client';
 import { getProperties } from '../../../../src/providers/s3';
 import { Credentials } from '@aws-sdk/types';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { StorageOptions } from '../../../../src/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 const mockHeadObject = headObject as jest.Mock;
@@ -59,28 +60,19 @@ describe('getProperties api', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-
-		it('getProperties with guest accessLevel', async () => {
-			expect.assertions(3);
-			const metadata = { key: 'value' };
-			expect(
-				await getProperties({
+		it.each([
+			[
+				'key',
+				{ accessLevel: 'guest' },
+				{
 					key: 'key',
-					options: {
-						accessLevel: 'guest',
-					},
-				})
-			).toEqual({
-				key: 'key',
-				size: '100',
-				contentType: 'text/plain',
-				eTag: 'etag',
-				metadata,
-				lastModified: 'last-modified',
-				versionId: 'version-id',
-			});
-			expect(headObject).toBeCalledTimes(1);
-			expect(headObject).toHaveBeenCalledWith(
+					size: '100',
+					contentType: 'text/plain',
+					eTag: 'etag',
+					metadata: { key: 'value' },
+					lastModified: 'last-modified',
+					versionId: 'version-id',
+				},
 				{
 					credentials,
 					region: 'region',
@@ -88,32 +80,20 @@ describe('getProperties api', () => {
 				{
 					Bucket: 'bucket',
 					Key: 'public/key',
-				}
-			);
-		});
-
-		it('getProperties with protected accessLevel', async () => {
-			expect.assertions(3);
-			const metadata = { key: 'value' };
-			expect(
-				await getProperties({
+				},
+			],
+			[
+				'key',
+				{ accessLevel: 'protected', targetIdentityId: 'targetIdentityId' },
+				{
 					key: 'key',
-					options: {
-						targetIdentityId: 'targetIdentityId',
-						accessLevel: 'protected',
-					},
-				})
-			).toEqual({
-				key: 'key',
-				size: '100',
-				contentType: 'text/plain',
-				eTag: 'etag',
-				metadata,
-				lastModified: 'last-modified',
-				versionId: 'version-id',
-			});
-			expect(headObject).toBeCalledTimes(1);
-			expect(headObject).toHaveBeenCalledWith(
+					size: '100',
+					contentType: 'text/plain',
+					eTag: 'etag',
+					metadata: { key: 'value' },
+					lastModified: 'last-modified',
+					versionId: 'version-id',
+				},
 				{
 					credentials,
 					region: 'region',
@@ -121,42 +101,42 @@ describe('getProperties api', () => {
 				{
 					Bucket: 'bucket',
 					Key: 'protected/targetIdentityId/key',
-				}
-			);
-		});
-
-		it('getProperties with private accessLevel', async () => {
-			expect.assertions(3);
-			const metadata = { key: 'value' };
-			expect(
-				await getProperties({
+				},
+			],
+			[
+				'key',
+				{ accessLevel: 'private' },
+				{
 					key: 'key',
-					options: {
-						targetIdentityId: 'targetIdentityId',
-						accessLevel: 'protected',
-					},
-				})
-			).toEqual({
-				key: 'key',
-				size: '100',
-				contentType: 'text/plain',
-				eTag: 'etag',
-				metadata,
-				lastModified: 'last-modified',
-				versionId: 'version-id',
-			});
-			expect(headObject).toBeCalledTimes(1);
-			expect(headObject).toHaveBeenCalledWith(
+					size: '100',
+					contentType: 'text/plain',
+					eTag: 'etag',
+					metadata: { key: 'value' },
+					lastModified: 'last-modified',
+					versionId: 'version-id',
+				},
 				{
 					credentials,
 					region: 'region',
 				},
 				{
 					Bucket: 'bucket',
-					Key: 'protected/targetIdentityId/key',
-				}
-			);
-		});
+					Key: 'private/targetIdentityId/key',
+				},
+			],
+		])(
+			'getProperties with all accessLevels',
+			async (key, options, expected, config, headObjectOptions) => {
+				expect(
+					await getProperties({
+						key,
+						options: options as StorageOptions,
+					})
+				).toEqual(expected);
+				expect(headObject).toBeCalledTimes(1);
+				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
+			}
+		);
 	});
 
 	describe('getProperties error path', () => {
