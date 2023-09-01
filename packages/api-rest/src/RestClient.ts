@@ -2,10 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { fetchAuthSession } from '@aws-amplify/core';
-
-import { apiOptions, ApiInfo } from './types';
+import { apiOptions } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { parse, format } from 'url';
+import {
+	Credentials,
+	signRequest,
+} from '@aws-amplify/core/internals/aws-client-utils';
 
 // const logger = new Logger('RestClient');
 
@@ -73,7 +76,8 @@ export class RestClient {
 	async ajax(url: string, method: string, init) {
 		// logger.debug(method, urlOrApiInfo);
 
-		let parsed_url;
+		let parsed_url = new URL(url);
+
 		let region: string = 'us-east-1';
 		let service: string = 'execute-api';
 		let custom_header:
@@ -86,9 +90,9 @@ export class RestClient {
 			method,
 			url,
 			host: parsed_url.host,
-			path: parsed_url.path,
+			path: parsed_url.pathname,
 			headers: {},
-			data: {},
+			data: JSON.stringify(''),
 			responseType: 'json',
 			timeout: 0,
 			cancelToken: null,
@@ -154,40 +158,29 @@ export class RestClient {
 			return this._request(params, isAllResponse);
 		}
 
-		let credentials;
+		let credentials: Credentials;
+
 		try {
 			credentials = (await fetchAuthSession()).credentials;
 		} catch (error) {
 			// logger.debug('No credentials available, the request will be unsigned');
 			return this._request(params, isAllResponse);
 		}
+
 		let signedParams;
 		try {
+			// before signed PARAMS
 			signedParams = this._sign({ ...params }, credentials, {
 				region,
 				service,
 			});
-			const response = await axios(signedParams);
+
+			const response = await axios({
+				...signedParams,
+				data: signedParams.body,
+			});
 			return isAllResponse ? response : response.data;
 		} catch (error) {
-			// logger.debug(error);
-			// if (DateUtils.isClockSkewError(error)) {
-			// 	const { headers } = error.response;
-			// 	const dateHeader = headers && (headers.date || headers.Date);
-			// 	const responseDate = new Date(dateHeader);
-			// 	const requestDate = DateUtils.getDateFromHeaderString(
-			// 		signedParams.headers['x-amz-date']
-			// 	);
-
-			// 	// Compare local clock to the server clock
-			// 	if (DateUtils.isClockSkewed(responseDate)) {
-			// 		DateUtils.setClockOffset(
-			// 			responseDate.getTime() - requestDate.getTime()
-			// 		);
-
-			// 		return this.ajax(urlOrApiInfo, method, init);
-			// 	}
-			// }
 			throw error;
 		}
 	}
@@ -342,43 +335,40 @@ export class RestClient {
 
 	/** private methods **/
 
-	private _sign(params, credentials, { service, region }) {
-		const { signerServiceInfo: signerServiceInfoParams, ...otherParams } =
-			params;
-
-		const endpoint_region: string =
-			region || this._region || this._options.region;
-		const endpoint_service: string =
-			service || this._service || this._options.service;
-
-		const creds = {
-			secret_key: credentials.secretAccessKey,
-			access_key: credentials.accessKeyId,
-			session_token: credentials.sessionToken,
-		};
-
-		const endpointInfo = {
-			region: endpoint_region,
-			service: endpoint_service,
-		};
-
-		const signerServiceInfo = Object.assign(
-			endpointInfo,
-			signerServiceInfoParams
+	private _sign(
+		params: {
+			method: string;
+			url: string;
+			host: string;
+			path: string;
+			headers: {};
+			data: BodyInit;
+			responseType: string;
+			timeout: number;
+			cancelToken: any;
+		},
+		credentials: Credentials,
+		{ service, region }
+	) {
+		const signed_params = signRequest(
+			{
+				method: params.method,
+				headers: params.headers,
+				url: new URL(params.url),
+				body: params.data,
+			},
+			{
+				credentials,
+				signingRegion: region,
+				signingService: service,
+			}
 		);
-
-		// TODO(v6): pull signer from core
-		// const signed_params = Signer.sign(otherParams, creds, signerServiceInfo);
-
-		// if (signed_params.data) {
-		// 	signed_params.body = signed_params.data;
-		// }
 
 		// logger.debug('Signed Request: ', signed_params);
 
 		// delete signed_params.headers['host'];
 
-		return {}; //signed_params;
+		return signed_params;
 	}
 
 	private _request(params, isAllResponse = false) {

@@ -24,6 +24,10 @@ export class RestClientOptions {
 	}
 }
 
+export type PostOptions = {
+	headers?: Record<string, string>;
+	body: JSON;
+};
 /**
  * AWS credentials needed for RestClient
  */
