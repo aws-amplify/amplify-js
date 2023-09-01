@@ -13,19 +13,22 @@ import Observable from 'zen-observable-ts';
 import {
 	Amplify,
 	// ConsoleLogger as Logger,
-	Credentials,
+	// Credentials,
 	// CustomUserAgentDetails,
 	// getAmplifyUserAgent,
 	// INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+	fetchAuthSession,
 } from '@aws-amplify/core';
+// TODO V6 - not available?
+// import { Credentials } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core/internals/utils';
-import { InternalPubSub } from '@aws-amplify/pubsub/internals';
-import { InternalAuth } from '@aws-amplify/auth/internals';
+// import { InternalPubSub } from '@aws-amplify/pubsub/internals';
+// import { InternalAuth } from '@aws-amplify/auth/internals';
 import { Cache } from '@aws-amplify/cache';
 import {
 	GraphQLAuthError,
@@ -58,9 +61,11 @@ export class InternalGraphQLAPIClass {
 	private _options;
 	private _api = null;
 
-	InternalAuth = InternalAuth;
+	// TODO V6
+	// InternalAuth = InternalAuth;
 	Cache = Cache;
-	Credentials = Credentials;
+	// TODO V6
+	// Credentials = Credentials;
 
 	/**
 	 * Initialize GraphQL API with AWS configuration
@@ -116,7 +121,8 @@ export class InternalGraphQLAPIClass {
 		if (this._options) {
 			this._api = new RestClient(this._options);
 			// Share instance Credentials with client for SSR
-			this._api.Credentials = this.Credentials;
+			// TODO V6: fetchAuthSesssion?
+			// this._api.Credentials = this.Credentials;
 
 			return true;
 		} else {
@@ -124,11 +130,13 @@ export class InternalGraphQLAPIClass {
 		}
 	}
 
+	// TODO V6
 	private async _headerBasedAuth(
 		defaultAuthenticationType?,
 		additionalHeaders: { [key: string]: string } = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	) {
+		// TODO V6 - preferred way to get apiKey?
 		const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
 			this._options;
 		const authenticationType =
@@ -159,13 +167,16 @@ export class InternalGraphQLAPIClass {
 					if (federatedInfo) {
 						token = federatedInfo.token;
 					} else {
-						const currentUser = await InternalAuth.currentAuthenticatedUser(
-							undefined,
-							customUserAgentDetails
-						);
-						if (currentUser) {
-							token = currentUser.token;
-						}
+						// const currentUser = await InternalAuth.currentAuthenticatedUser(
+						// 	undefined,
+						// 	customUserAgentDetails
+						// );
+						// if (currentUser) {
+						// 	token = currentUser.token;
+						// }
+
+						// TODO V6
+						token = (await fetchAuthSession()).tokens?.accessToken;
 					}
 					if (!token) {
 						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
@@ -179,11 +190,16 @@ export class InternalGraphQLAPIClass {
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
 				try {
-					const session = await this.InternalAuth.currentSession(
-						customUserAgentDetails
-					);
+					// TODO V6
+					// const session = await this.InternalAuth.currentSession(
+					// 	customUserAgentDetails
+					// );
+					const session = await fetchAuthSession();
 					headers = {
-						Authorization: session.getAccessToken().getJwtToken(),
+						// TODO V6
+						// Authorization: session.getAccessToken().getJwtToken(),
+						// `idToken` or `accessToken`?
+						Authorization: session.tokens?.accessToken,
 					};
 				} catch (e) {
 					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
@@ -424,36 +440,38 @@ export class InternalGraphQLAPIClass {
 		const authenticationType =
 			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
 
-		if (InternalPubSub && typeof InternalPubSub.subscribe === 'function') {
-			return InternalPubSub.subscribe(
-				'',
-				{
-					provider: INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-					appSyncGraphqlEndpoint,
-					authenticationType,
-					apiKey,
-					query: print(query as DocumentNode),
-					region,
-					variables,
-					graphql_headers,
-					additionalHeaders,
-					authToken,
-				},
-				customUserAgentDetails
-			);
-		} else {
-			logger.debug('No pubsub module applied for subscription');
-			throw new Error('No pubsub module applied for subscription');
-		}
+		// if (InternalPubSub && typeof InternalPubSub.subscribe === 'function') {
+		// 	return InternalPubSub.subscribe(
+		// 		'',
+		// 		{
+		// 			provider: INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+		// 			appSyncGraphqlEndpoint,
+		// 			authenticationType,
+		// 			apiKey,
+		// 			query: print(query as DocumentNode),
+		// 			region,
+		// 			variables,
+		// 			graphql_headers,
+		// 			additionalHeaders,
+		// 			authToken,
+		// 		},
+		// 		customUserAgentDetails
+		// 	);
+		// } else {
+		// 	logger.debug('No pubsub module applied for subscription');
+		// 	throw new Error('No pubsub module applied for subscription');
+		// }
 	}
 
 	/**
 	 * @private
 	 */
-	_ensureCredentials() {
-		return this.Credentials.get()
+	async _ensureCredentials() {
+		// return this.Credentials.get()
+		return await fetchAuthSession()
 			.then(credentials => {
 				if (!credentials) return false;
+				// TODO V6
 				const cred = this.Credentials.shear(credentials);
 				logger.debug('set credentials for api', cred);
 
