@@ -5,7 +5,7 @@ export { DownloadTask, TransferProgressEvent, UploadTask } from './common';
 export {
 	GetPropertiesRequest,
 	StorageListRequest,
-	OperationRequest,
+	StorageOperationRequest,
 	StorageDownloadDataRequest,
 	StorageUploadDataRequest,
 	CopyRequest,
