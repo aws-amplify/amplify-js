@@ -34,7 +34,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 	private _credentialsAndIdentityId?: AWSCredentialsAndIdentityId & {
 		isAuthenticatedCreds: boolean;
-		idTokenAssociated?: string;
+		associatedIdToken?: string;
 	};
 	private _nextCredentialsRefresh: number = 0;
 
@@ -89,9 +89,9 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		if (!isAuthenticated) {
 			return this.getGuestCredentials(identityId, authConfig.Cognito);
 		} else {
-			assertIdTokenInAuthTokens(tokens);
 			// Tokens will always be present if getCredentialsOptions.authenticated is true as dictated by the type
-			return this.credsForOIDCTokens(authConfig.Cognito, tokens!, identityId);
+			assertIdTokenInAuthTokens(tokens);
+			return this.credsForOIDCTokens(authConfig.Cognito, tokens, identityId);
 		}
 	}
 
@@ -214,7 +214,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			this._credentialsAndIdentityId = {
 				...res,
 				isAuthenticatedCreds: true,
-				idTokenAssociated: authTokens.idToken?.toString(),
+				associatedIdToken: authTokens.idToken?.toString(),
 			};
 			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 
@@ -243,9 +243,9 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	private hasTokenChanged(tokens?: AuthTokens): boolean {
 		return (
 			!!tokens &&
-			!!this._credentialsAndIdentityId?.idTokenAssociated &&
+			!!this._credentialsAndIdentityId?.associatedIdToken &&
 			tokens.idToken?.toString() !==
-				this._credentialsAndIdentityId.idTokenAssociated
+				this._credentialsAndIdentityId.associatedIdToken
 		);
 	}
 }
