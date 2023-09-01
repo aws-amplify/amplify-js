@@ -34,6 +34,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 	private _credentialsAndIdentityId?: AWSCredentialsAndIdentityId & {
 		isAuthenticatedCreds: boolean;
+		associatedIdToken?: string;
 	};
 	private _nextCredentialsRefresh: number = 0;
 
@@ -67,8 +68,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		}
 
 		const forceRefresh = getCredentialsOptions.forceRefresh;
-		// TODO(V6): Listen to changes to AuthTokens and update the credentials
-
+		const tokenHasChanged = this.hasTokenChanged(tokens);
 		const identityId = await cognitoIdentityIdProvider({
 			tokens,
 			authConfig: authConfig.Cognito,
@@ -83,15 +83,14 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			});
 		}
 
-		if (forceRefresh) {
+		if (forceRefresh || tokenHasChanged) {
 			this.clearCredentials();
 		}
-
 		if (!isAuthenticated) {
 			return this.getGuestCredentials(identityId, authConfig.Cognito);
 		} else {
-			assertIdTokenInAuthTokens(tokens);
 			// Tokens will always be present if getCredentialsOptions.authenticated is true as dictated by the type
+			assertIdTokenInAuthTokens(tokens);
 			return this.credsForOIDCTokens(authConfig.Cognito, tokens, identityId);
 		}
 	}
@@ -106,7 +105,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			this._credentialsAndIdentityId.isAuthenticatedCreds === false
 		) {
 			logger.info(
-				'returning stored credentials as they neither past TTL nor expired'
+				'returning stored credentials as they neither past TTL nor expired.'
 			);
 			return this._credentialsAndIdentityId;
 		}
@@ -215,8 +214,8 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			this._credentialsAndIdentityId = {
 				...res,
 				isAuthenticatedCreds: true,
+				associatedIdToken: authTokens.idToken?.toString(),
 			};
-
 			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 
 			const identityIdRes = clientResult.IdentityId;
@@ -240,6 +239,14 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		return this._nextCredentialsRefresh === undefined
 			? true
 			: this._nextCredentialsRefresh <= Date.now();
+	}
+	private hasTokenChanged(tokens?: AuthTokens): boolean {
+		return (
+			!!tokens &&
+			!!this._credentialsAndIdentityId?.associatedIdToken &&
+			tokens.idToken?.toString() !==
+				this._credentialsAndIdentityId.associatedIdToken
+		);
 	}
 }
 
