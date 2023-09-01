@@ -3,11 +3,11 @@
 
 import {
 	StorageOptions,
-	UploadSource,
+	StorageUploadSourceOptions,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
-	StorageCopySource,
-	StorageCopyDestination,
+	StorageCopySourceOptions,
+	StorageCopyDestinationOptions,
 } from './options';
 
 export type StorageOperationRequest<Options extends StorageOptions> = {
@@ -25,22 +25,12 @@ export type StorageListRequest<
 export type StorageDownloadDataRequest<Options extends StorageOptions> =
 	StorageOperationRequest<Options>;
 
-export type StorageDownloadFileRequest<Options extends StorageOptions> =
-	StorageOperationRequest<Options> & {
-		/**
-		 * If supplied full file path in browsers(e.g. path/to/foo.bar)
-		 * the directory will be stripped. However, full directory could be
-		 * supported in RN.
-		 */
-		localFile: string;
-	};
-
 export type StorageUploadDataRequest<Options extends StorageOptions> =
 	StorageOperationRequest<Options> & {
-		data: UploadSource;
+		data: StorageUploadSourceOptions;
 	};
 
 export type CopyRequest = {
-	source: StorageCopySource;
-	destination: StorageCopyDestination;
+	source: StorageCopySourceOptions;
+	destination: StorageCopyDestinationOptions;
 };

@@ -13,7 +13,7 @@ export type StorageOptions =
 /**
  * The data payload type for upload operation.
  */
-export type UploadSource = Blob | BufferSource | string | File;
+export type StorageUploadSourceOptions = Blob | BufferSource | string | File;
 
 export type StorageListAllOptions = StorageOptions & {
 	listAll: true;
@@ -27,11 +27,11 @@ export type StorageListPaginateOptions = StorageOptions & {
 
 export type StorageRemoveOptions = StorageOptions;
 
-export type StorageCopySource = {
+export type StorageCopySourceOptions = {
 	key: string;
 } & StorageOptions;
 
-export type StorageCopyDestination = {
+export type StorageCopyDestinationOptions = {
 	key: string;
 	accessLevel?: StorageAccessLevel;
 };

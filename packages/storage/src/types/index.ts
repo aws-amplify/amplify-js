@@ -6,7 +6,6 @@ export {
 	StorageListRequest,
 	StorageOperationRequest,
 	StorageDownloadDataRequest,
-	StorageDownloadFileRequest,
 	StorageUploadDataRequest,
 	CopyRequest,
 } from './requests';
@@ -15,9 +14,9 @@ export {
 	StorageRemoveOptions,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
-	StorageCopySource,
-	StorageCopyDestination,
-	UploadSource,
+	StorageCopySourceOptions,
+	StorageCopyDestinationOptions,
+	StorageUploadSourceOptions,
 } from './options';
 export {
 	StorageItem,
