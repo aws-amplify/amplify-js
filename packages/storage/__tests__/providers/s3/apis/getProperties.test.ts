@@ -27,74 +27,58 @@ const credentials: Credentials = {
 };
 const targetIdentityId = 'targetIdentityId';
 
-describe('getProperties test', () => {
-	beforeEach(() => {
-		jest.clearAllMocks();
-	});
-	mockFetchAuthSession.mockResolvedValue({
-		credentials,
-		identityId: targetIdentityId,
-	});
-	mockGetConfig.mockReturnValue({
-		Storage: {
-			S3: {
-				bucket,
-				region,
-			},
-		},
-	});
-	it('getProperties happy path case with private check', async () => {
-		expect.assertions(3);
-		mockHeadObject.mockReturnValueOnce({
-			ContentLength: '100',
-			ContentType: 'text/plain',
-			ETag: 'etag',
-			LastModified: 'last-modified',
-			Metadata: { key: 'value' },
-			VersionId: 'version-id',
+describe('getProperties api', () => {
+	beforeAll(() => {
+		mockFetchAuthSession.mockResolvedValue({
+			credentials,
+			identityId: targetIdentityId,
 		});
-		const metadata = { key: 'value' };
-		expect(
-			await getProperties({
-				key: 'key',
-				options: {
-					targetIdentityId: 'targetIdentityId',
-					accessLevel: 'protected',
+		mockGetConfig.mockReturnValue({
+			Storage: {
+				S3: {
+					bucket,
+					region,
 				},
-			})
-		).toEqual({
-			key: 'key',
-			size: '100',
-			contentType: 'text/plain',
-			eTag: 'etag',
-			metadata,
-			lastModified: 'last-modified',
-			versionId: 'version-id',
-		});
-		expect(headObject).toBeCalledTimes(1);
-		expect(headObject).toHaveBeenCalledWith(
-			{
-				credentials,
-				region: 'region',
 			},
-			{
-				Bucket: 'bucket',
-				Key: 'protected/targetIdentityId/key',
-			}
-		);
+		});
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
 	});
+	describe('getProperties happy path ', () => {
+		beforeEach(() => {
+			mockHeadObject.mockReturnValueOnce({
+				ContentLength: '100',
+				ContentType: 'text/plain',
+				ETag: 'etag',
+				LastModified: 'last-modified',
+				Metadata: { key: 'value' },
+				VersionId: 'version-id',
+			});
+		});
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
 
-	it('getProperties should return a not found error', async () => {
-		mockHeadObject.mockRejectedValueOnce(
-			Object.assign(new Error(), {
-				$metadata: { httpStatusCode: 404 },
-				name: 'NotFound',
-			})
-		);
-		try {
-			await getProperties({ key: 'keyed' });
-		} catch (error) {
+		it('getProperties with guest accessLevel', async () => {
 			expect.assertions(3);
+			const metadata = { key: 'value' };
+			expect(
+				await getProperties({
+					key: 'key',
+					options: {
+						accessLevel: 'guest',
+					},
+				})
+			).toEqual({
+				key: 'key',
+				size: '100',
+				contentType: 'text/plain',
+				eTag: 'etag',
+				metadata,
+				lastModified: 'last-modified',
+				versionId: 'version-id',
+			});
 			expect(headObject).toBeCalledTimes(1);
 			expect(headObject).toHaveBeenCalledWith(
 				{
@@ -103,10 +87,106 @@ describe('getProperties test', () => {
 				},
 				{
 					Bucket: 'bucket',
-					Key: 'public/keyed',
+					Key: 'public/key',
 				}
 			);
-			expect(error.$metadata.httpStatusCode).toBe(404);
-		}
+		});
+
+		it('getProperties with protected accessLevel', async () => {
+			expect.assertions(3);
+			const metadata = { key: 'value' };
+			expect(
+				await getProperties({
+					key: 'key',
+					options: {
+						targetIdentityId: 'targetIdentityId',
+						accessLevel: 'protected',
+					},
+				})
+			).toEqual({
+				key: 'key',
+				size: '100',
+				contentType: 'text/plain',
+				eTag: 'etag',
+				metadata,
+				lastModified: 'last-modified',
+				versionId: 'version-id',
+			});
+			expect(headObject).toBeCalledTimes(1);
+			expect(headObject).toHaveBeenCalledWith(
+				{
+					credentials,
+					region: 'region',
+				},
+				{
+					Bucket: 'bucket',
+					Key: 'protected/targetIdentityId/key',
+				}
+			);
+		});
+
+		it('getProperties with private accessLevel', async () => {
+			expect.assertions(3);
+			const metadata = { key: 'value' };
+			expect(
+				await getProperties({
+					key: 'key',
+					options: {
+						targetIdentityId: 'targetIdentityId',
+						accessLevel: 'protected',
+					},
+				})
+			).toEqual({
+				key: 'key',
+				size: '100',
+				contentType: 'text/plain',
+				eTag: 'etag',
+				metadata,
+				lastModified: 'last-modified',
+				versionId: 'version-id',
+			});
+			expect(headObject).toBeCalledTimes(1);
+			expect(headObject).toHaveBeenCalledWith(
+				{
+					credentials,
+					region: 'region',
+				},
+				{
+					Bucket: 'bucket',
+					Key: 'protected/targetIdentityId/key',
+				}
+			);
+		});
+	});
+
+	describe('getProperties Error path', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+		it('getProperties should return a not found error', async () => {
+			mockHeadObject.mockRejectedValueOnce(
+				Object.assign(new Error(), {
+					$metadata: { httpStatusCode: 404 },
+					name: 'NotFound',
+				})
+			);
+			try {
+				await getProperties({ key: 'keyed' });
+			} catch (error) {
+				expect.assertions(3);
+				expect(headObject).toBeCalledTimes(1);
+				expect(headObject).toHaveBeenCalledWith(
+					{
+						credentials,
+						region: 'region',
+					},
+					{
+						Bucket: 'bucket',
+						Key: 'public/keyed',
+					}
+				);
+				expect(error.$metadata.httpStatusCode).toBe(404);
+			}
+		});
 	});
 });
