@@ -3,13 +3,13 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { GetPropertiesRequest } from '../../../../types';
-import { S3GetPropertiesResult, S3Options } from '../../types';
+import { S3GetPropertiesResult, S3GetPropertiesOptions } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { headObject } from '../../utils/client';
 
 export const getProperties = async function (
 	amplify: AmplifyClassV6,
-	getPropertiesRequest: GetPropertiesRequest<S3Options>
+	getPropertiesRequest: GetPropertiesRequest<S3GetPropertiesOptions>
 ): Promise<S3GetPropertiesResult> {
 	const { key, options } = getPropertiesRequest;
 	const { s3Config, bucket, keyPrefix } = await resolveS3ConfigAndInput(

@@ -6,6 +6,7 @@ export {
 	S3TransferOptions,
 	S3GetUrlOptions,
 	S3UploadOptions,
+	S3GetPropertiesOptions,
 } from './options';
 export {
 	S3DownloadDataResult,

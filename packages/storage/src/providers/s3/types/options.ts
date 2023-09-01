@@ -19,6 +19,11 @@ export type S3Options = StorageOptions & {
 };
 
 /**
+ * Request options type for S3 Storage operations.
+ */
+export type GetPropertiesOptions = S3Options;
+
+/**
  * Request options type for S3 downloadData, uploadData APIs.
  */
 export type S3TransferOptions = S3Options & {

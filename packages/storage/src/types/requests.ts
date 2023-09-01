@@ -18,17 +18,17 @@ export type OperationRequest<Options extends StorageOptions> = {
 export type GetPropertiesRequest<Options extends StorageOptions> =
 	OperationRequest<Options>;
 
-export type ListRequest<
+export type StorageListRequest<
 	Options extends StorageListAllOptions | StorageListPaginateOptions
 > = {
 	path?: string;
 	options?: Options;
 };
 
-export type DownloadDataRequest<Options extends StorageOptions> =
+export type StorageDownloadDataRequest<Options extends StorageOptions> =
 	OperationRequest<Options>;
 
-export type UploadDataRequest<Options extends StorageOptions> =
+export type StorageUploadDataRequest<Options extends StorageOptions> =
 	OperationRequest<Options> & {
 		data: StorageUploadSourceOptions;
 	};
