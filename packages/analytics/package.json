@@ -68,7 +68,6 @@
 		"pinpoint"
 	],
 	"dependencies": {
-		"lodash": "^4.17.20",
 		"tslib": "^2.5.0",
 		"uuid": "^9.0.0"
 	},
