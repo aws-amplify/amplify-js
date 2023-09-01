@@ -24,10 +24,41 @@ import { getMultipartUploadHandlers } from './multipart';
  * @returns {UploadTask<S3UploadDataResult>} Cancelable and Resumable task exposing result promise from `result`
  * 	property.
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
- * @throws validation: {@link StorageValidationErrorCode } - Validation errors
- * thrown either username or key are not defined.
+ * @throws validation: {@link StorageValidationErrorCode } - Validation errors.
  *
- * TODO: add config errors
+ * @example
+ * ```ts
+ * // Upload a file to s3 bucket
+ * await uploadData({ key, data: file, options: {
+ *   onProgress, // Optional progress callback.
+ * } }).result;
+ * ```
+ * @example
+ * ```ts
+ * // Cancel a task
+ * const uploadTask = uploadData({ key, data: file });
+ * //...
+ * uploadTask.cancel();
+ * try {
+ *   await uploadTask.result;
+ * } catch (error) {
+ *   if(isCancelError(error)) {
+ *     // Handle error thrown by task cancelation.
+ *   }
+ * }
+ *```
+ *
+ * @example
+ * ```ts
+ * // Pause and resume a task
+ * const uploadTask = uploadData({ key, data: file });
+ * //...
+ * uploadTask.pause();
+ * //...
+ * uploadTask.resume();
+ * //...
+ * await uploadTask.result;
+ * ```
  */
 export const uploadData = (
 	uploadDataRequest: StorageUploadDataRequest<S3UploadOptions>
