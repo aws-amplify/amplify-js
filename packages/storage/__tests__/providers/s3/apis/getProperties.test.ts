@@ -127,6 +127,7 @@ describe('getProperties api', () => {
 		])(
 			'getProperties with all accessLevels',
 			async (key, options, expected, config, headObjectOptions) => {
+				expect.assertions(3);
 				expect(
 					await getProperties({
 						key,
