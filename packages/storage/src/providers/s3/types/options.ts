@@ -5,7 +5,7 @@
 import { Credentials } from '@aws-sdk/types';
 
 import { TransferProgressEvent } from '../../../types';
-import { StorageOptions } from '../../../types/params';
+import { StorageOptions } from '../../../types/options';
 
 /**
  * Request options type for S3 Storage operations.
