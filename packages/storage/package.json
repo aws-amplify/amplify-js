@@ -8,10 +8,7 @@
 	"browser": {
 		"./lib-esm/lib-esm/providers/s3/utils/client/runtime/index": "./lib-esm/providers/s3/utils/client/runtime/index.browser.js"
 	},
-	"sideEffects": [
-		"./lib/Storage.js",
-		"./lib-esm/Storage.js"
-	],
+	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
 	},

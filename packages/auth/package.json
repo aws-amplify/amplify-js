@@ -7,10 +7,8 @@
 	"typings": "./lib-esm/index.d.ts",
 	"react-native": "./lib-esm/index.js",
 	"sideEffects": [
-		"./lib/Auth.js",
-		"./lib-esm/Auth.js",
-    "./lib/providers/cognito/apis/signInWithOAuth.js",
-    "./lib-esm/providers/cognito/apis/signInWithOAuth.js"
+		"./lib/providers/cognito/apis/signInWithOAuth.js",
+		"./lib-esm/providers/cognito/apis/signInWithOAuth.js"
 	],
 	"publishConfig": {
 		"access": "public"
