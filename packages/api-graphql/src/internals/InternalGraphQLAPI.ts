@@ -467,4 +467,11 @@ export class InternalGraphQLAPIClass {
 }
 
 export const InternalGraphQLAPI = new InternalGraphQLAPIClass(null);
-Amplify.register(InternalGraphQLAPI);
+// Amplify.register(InternalGraphQLAPI);
+// Get access to the current back-end resource config:
+const config = Amplify.getConfig();
+
+// TODO V6: is this needed?
+// Hub.listen('config', async config => RestAPI.configure(config.));
+
+Amplify.configure(config);

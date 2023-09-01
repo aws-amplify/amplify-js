@@ -17,8 +17,9 @@ import {
 	StorageConfig,
 } from './Storage/types';
 
+// TODO V6: API types??
 export type ResourcesConfig = {
-	// API?: {};
+	API?: {};
 	Analytics?: AnalyticsConfig;
 	Auth?: AuthConfig;
 	// Cache?: CacheConfig;

@@ -8,6 +8,7 @@ import {
 } from '@aws-amplify/core';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import { ApiInfo } from './types';
+import { Hub } from '@aws-amplify/core';
 
 const logger = new Logger('RestAPI');
 
@@ -336,4 +337,12 @@ export class RestAPIClass {
 }
 
 export const RestAPI = new RestAPIClass(null);
-Amplify.register(RestAPI);
+// Amplify.register(RestAPI);
+
+// Get access to the current back-end resource config:
+const config = Amplify.getConfig();
+
+// TODO V6: is this needed?
+
+// Hub.listen('config', async config => RestAPI.configure(config.));
+Amplify.configure(config);

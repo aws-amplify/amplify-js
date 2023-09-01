@@ -294,4 +294,12 @@ export class InternalAPIClass {
 }
 
 export const InternalAPI = new InternalAPIClass(null);
-Amplify.register(InternalAPI);
+// Amplify.register(InternalAPI);
+
+// Get access to the current back-end resource config:
+const config = Amplify.getConfig();
+
+// TODO V6: is this needed?
+// Hub.listen('config', async config => RestAPI.configure(config.));
+
+Amplify.configure(config);
