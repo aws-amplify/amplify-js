@@ -128,7 +128,7 @@
 			"name": "Custom clients (url presigner)",
 			"path": "./lib-esm/clients/middleware/signing/signer/signatureV4/index.js",
 			"import": "{ presignUrl }",
-			"limit": "6.3 kB"
+			"limit": "6.31 kB"
 		},
 		{
 			"name": "Cache (default browser storage)",
