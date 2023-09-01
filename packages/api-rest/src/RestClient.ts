@@ -76,15 +76,10 @@ export class RestClient {
 	async ajax(url: string, method: string, init) {
 		// logger.debug(method, urlOrApiInfo);
 
-		let parsed_url = new URL(url);
+		const parsed_url = new URL(url);
 
-		let region: string = 'us-east-1';
-		let service: string = 'execute-api';
-		let custom_header:
-			| (() => {
-					[key: string]: string;
-			  })
-			| undefined = undefined;
+		const region: string = init.region || 'us-east-1';
+		const service: string = init.serviceName || 'execute-api';
 
 		const params = {
 			method,

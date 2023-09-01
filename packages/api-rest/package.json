@@ -29,7 +29,7 @@
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 60.0"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 70.0"
 	},
 	"repository": {
 		"type": "git",
@@ -71,20 +71,17 @@
 			"ts-jest": {
 				"diagnostics": false,
 				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2017.object"
-					],
-					"allowJs": true
+					"allowJs": true,
+					"noEmitOnError": false
 				}
 			}
 		},
 		"transform": {
 			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
 		},
+		"testPathIgnorePatterns": [
+			"/testUtils/"
+		],
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 		"moduleFileExtensions": [
 			"ts",
@@ -104,10 +101,13 @@
 			}
 		},
 		"coveragePathIgnorePatterns": [
-			"/node_modules/",
+			"node_modules",
 			"dist",
 			"lib",
 			"lib-esm"
+		],
+		"setupFiles": [
+			"<rootDir>/setupTests.ts"
 		]
 	}
 }

@@ -24,9 +24,17 @@ export class RestClientOptions {
 	}
 }
 
+/** JSON type */
+type Json = null | string | number | boolean | Json[] | JsonObject;
+
+/** JSON Object type */
+type JsonObject = { [name: string]: Json };
+
 export type PostOptions = {
 	headers?: Record<string, string>;
-	body: JSON;
+	body: JsonObject;
+	region?: string;
+	serviceName?: string;
 };
 /**
  * AWS credentials needed for RestClient
