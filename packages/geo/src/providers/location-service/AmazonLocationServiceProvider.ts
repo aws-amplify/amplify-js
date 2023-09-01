@@ -38,7 +38,7 @@ import {
 	mapSearchOptions,
 	validateGeofenceId,
 	validateGeofencesInput,
-} from '../util';
+} from '../../util';
 
 import {
 	GeoConfig,
@@ -61,7 +61,7 @@ import {
 	AmazonLocationServiceDeleteGeofencesResults,
 	searchByPlaceIdOptions,
 	AmazonLocationServiceBatchGeofenceErrorMessages,
-} from '../types';
+} from '../../types';
 
 const logger = new Logger('AmazonLocationServiceProvider');
 

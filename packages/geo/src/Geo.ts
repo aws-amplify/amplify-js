@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { parseAWSExports } from '@aws-amplify/core';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
-import { AmazonLocationServiceProvider } from './Providers/AmazonLocationServiceProvider';
+import { AmazonLocationServiceProvider } from './providers/location-service/AmazonLocationServiceProvider';
 
 import { validateCoordinates } from './util';
 
