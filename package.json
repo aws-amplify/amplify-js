@@ -44,13 +44,13 @@
 			"packages/auth",
 			"packages/analytics",
 			"packages/storage",
-			"packages/api-rest",
 			"packages/aws-amplify",
 			"packages/adapter-nextjs",
 			"packages/api",
 			"packages/api-graphql",
 			"packages/api-rest",
-			"packages/amplify-v6-types-package"
+			"packages/amplify-v6-types-package",
+			"packages/pubsub"
 		],
 		"nohoist": [
 			"**/@types/react-native",

@@ -4,7 +4,6 @@
 	"packages": [
 		"packages/core",
 		"packages/auth",
-		"packages/api-rest",
 		"packages/analytics",
 		"packages/storage",
 		"packages/aws-amplify",
@@ -12,7 +11,8 @@
 		"packages/api",
 		"packages/api-rest",
 		"packages/api-graphql",
-		"packages/amplify-v6-types-package"
+		"packages/amplify-v6-types-package",
+		"packages/pub-sub"
 	],
 	"exact": true,
 	"version": "independent",

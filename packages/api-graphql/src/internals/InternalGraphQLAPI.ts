@@ -95,6 +95,7 @@ export class InternalGraphQLAPIClass {
 	 * @return {Object} - The current configuration
 	 */
 	configure(options) {
+		debugger;
 		const { API = {}, ...otherOptions } = options || {};
 		let opt = { ...otherOptions, ...API };
 		logger.debug('configure GraphQL API', { opt });
@@ -126,6 +127,7 @@ export class InternalGraphQLAPIClass {
 	 * @return - A promise of true if Success
 	 */
 	createInstance() {
+		debugger;
 		logger.debug('create Rest instance');
 		if (this._options) {
 			// TODO: remove options, use getConfig here
@@ -148,6 +150,7 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders: { [key: string]: string } = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	) {
+		debugger;
 		// TODO: Amplify.getConfig().API
 		// apikey is the same (but needs to be on the config)
 		const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
@@ -243,6 +246,7 @@ export class InternalGraphQLAPIClass {
 	 * @param operation
 	 */
 	getGraphqlOperationType(operation: GraphQLOperation): OperationTypeNode {
+		debugger;
 		const doc = parse(operation);
 		const definitions =
 			doc.definitions as ReadonlyArray<OperationDefinitionNode>;
@@ -265,7 +269,8 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
-		// Could retrieve headers and config here. Call post method.
+		debugger;
+		// TODO: Could retrieve headers and config here. Call post method.
 		const query =
 			typeof paramQuery === 'string'
 				? parse(paramQuery)
@@ -322,6 +327,7 @@ export class InternalGraphQLAPIClass {
 		initParams = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
+		debugger;
 		this.createInstanceIfNotCreated();
 		const {
 			aws_appsync_region: region,
@@ -417,27 +423,31 @@ export class InternalGraphQLAPIClass {
 	 * @param {any} error - Any error
 	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
 	 */
-	isCancel(error) {
-		return this._api.isCancel(error);
-	}
+	// TODO V6
+	// isCancel(error) {
+	// 	debugger;
+	// 	return this._api.isCancel(error);
+	// }
 
 	/**
 	 * Cancels an inflight request. Only applicable for graphql queries and mutations
 	 * @param {any} request - request to cancel
 	 * @return {boolean} - A boolean indicating if the request was cancelled
 	 */
-	cancel(request: Promise<any>, message?: string) {
-		return this._api.cancel(request, message);
-	}
+	// TODO V6
+	// cancel(request: Promise<any>, message?: string) {
+	// 	return this._api.cancel(request, message);
+	// }
 
 	/**
 	 * Check if the request has a corresponding cancel token in the WeakMap.
 	 * @params request - The request promise
 	 * @return if the request has a corresponding cancel token.
 	 */
-	hasCancelToken(request: Promise<any>) {
-		return this._api.hasCancelToken(request);
-	}
+	// TODO V6
+	// hasCancelToken(request: Promise<any>) {
+	// 	return this._api.hasCancelToken(request);
+	// }
 
 	private _graphqlSubscribe(
 		{

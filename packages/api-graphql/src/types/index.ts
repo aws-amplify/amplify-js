@@ -5,6 +5,7 @@ export { OperationTypeNode } from 'graphql';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 export { GRAPHQL_AUTH_MODE };
 import { Observable } from 'zen-observable-ts';
+// TODO: remove for now:
 import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
 
 /**
