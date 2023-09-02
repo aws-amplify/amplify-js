@@ -4,6 +4,7 @@
 	"packages": [
 		"packages/core",
 		"packages/auth",
+		"packages/api-rest",
 		"packages/analytics",
 		"packages/storage",
 		"packages/aws-amplify",

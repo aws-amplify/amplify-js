@@ -44,6 +44,7 @@
 			"packages/auth",
 			"packages/analytics",
 			"packages/storage",
+			"packages/api-rest",
 			"packages/aws-amplify",
 			"packages/adapter-nextjs",
 			"packages/api",

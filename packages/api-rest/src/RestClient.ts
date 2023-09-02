@@ -1,24 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// TODO V6
-import {
-	// ConsoleLogger as Logger,
-	Credentials,
-	// DateUtils,
-	// Signer,
-} from '@aws-amplify/core';
-import {
-	ConsoleLogger as Logger,
-	DateUtils,
-	Signer,
-} from '@aws-amplify/core/internals/utils';
-
-import { apiOptions, ApiInfo } from './types';
+import { fetchAuthSession } from '@aws-amplify/core';
+import { apiOptions } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { parse, format } from 'url';
+import {
+	Credentials,
+	signRequest,
+} from '@aws-amplify/core/internals/aws-client-utils';
 
-const logger = new Logger('RestClient');
+// const logger = new Logger('RestClient');
 
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
@@ -53,16 +45,14 @@ export class RestClient {
 	 *
 	 * For more details, see https://github.com/aws-amplify/amplify-js/pull/3769#issuecomment-552660025
 	 */
-	private _cancelTokenMap: WeakMap<any, CancelTokenSource> = null;
-
-	Credentials = Credentials;
+	private _cancelTokenMap: WeakMap<any, CancelTokenSource> | null = null;
 
 	/**
 	 * @param {RestClientOptions} [options] - Instance options
 	 */
 	constructor(options: apiOptions) {
 		this._options = options;
-		logger.debug('API Options', this._options);
+		// logger.debug('API Options', this._options);
 		if (this._cancelTokenMap == null) {
 			this._cancelTokenMap = new WeakMap();
 		}
@@ -83,32 +73,21 @@ export class RestClient {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async ajax(urlOrApiInfo: string | ApiInfo, method: string, init) {
-		logger.debug(method, urlOrApiInfo);
+	async ajax(url: string, method: string, init) {
+		// logger.debug(method, urlOrApiInfo);
 
-		let parsed_url;
-		let url: string;
-		let region: string = 'us-east-1';
-		let service: string = 'execute-api';
-		let custom_header: () => {
-			[key: string]: string;
-		} = undefined;
+		const parsed_url = new URL(url);
 
-		if (typeof urlOrApiInfo === 'string') {
-			parsed_url = this._parseUrl(urlOrApiInfo);
-			url = urlOrApiInfo;
-		} else {
-			({ endpoint: url, custom_header, region, service } = urlOrApiInfo);
-			parsed_url = this._parseUrl(urlOrApiInfo.endpoint);
-		}
+		const region: string = init.region || 'us-east-1';
+		const service: string = init.serviceName || 'execute-api';
 
 		const params = {
 			method,
 			url,
 			host: parsed_url.host,
-			path: parsed_url.path,
+			path: parsed_url.pathname,
 			headers: {},
-			data: null,
+			data: JSON.stringify(''),
 			responseType: 'json',
 			timeout: 0,
 			cancelToken: null,
@@ -145,12 +124,9 @@ export class RestClient {
 		params['signerServiceInfo'] = initParams.signerServiceInfo;
 
 		// custom_header callback
-		const custom_header_obj =
-			typeof custom_header === 'function' ? await custom_header() : undefined;
 
 		params.headers = {
 			...libraryHeaders,
-			...custom_header_obj,
 			...initParams.headers,
 		};
 
@@ -177,40 +153,29 @@ export class RestClient {
 			return this._request(params, isAllResponse);
 		}
 
-		let credentials;
+		let credentials: Credentials;
+
 		try {
-			credentials = await this.Credentials.get();
+			credentials = (await fetchAuthSession()).credentials;
 		} catch (error) {
-			logger.debug('No credentials available, the request will be unsigned');
+			// logger.debug('No credentials available, the request will be unsigned');
 			return this._request(params, isAllResponse);
 		}
+
 		let signedParams;
 		try {
+			// before signed PARAMS
 			signedParams = this._sign({ ...params }, credentials, {
 				region,
 				service,
 			});
-			const response = await axios(signedParams);
+
+			const response = await axios({
+				...signedParams,
+				data: signedParams.body,
+			});
 			return isAllResponse ? response : response.data;
 		} catch (error) {
-			logger.debug(error);
-			if (DateUtils.isClockSkewError(error)) {
-				const { headers } = error.response;
-				const dateHeader = headers && (headers.date || headers.Date);
-				const responseDate = new Date(dateHeader);
-				const requestDate = DateUtils.getDateFromHeaderString(
-					signedParams.headers['x-amz-date']
-				);
-
-				// Compare local clock to the server clock
-				if (DateUtils.isClockSkewed(responseDate)) {
-					DateUtils.setClockOffset(
-						responseDate.getTime() - requestDate.getTime()
-					);
-
-					return this.ajax(urlOrApiInfo, method, init);
-				}
-			}
 			throw error;
 		}
 	}
@@ -221,7 +186,7 @@ export class RestClient {
 	 * @param {JSON} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	get(urlOrApiInfo: string | ApiInfo, init) {
+	get(urlOrApiInfo: string, init) {
 		return this.ajax(urlOrApiInfo, 'GET', init);
 	}
 
@@ -231,7 +196,7 @@ export class RestClient {
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	put(urlOrApiInfo: string | ApiInfo, init) {
+	put(urlOrApiInfo: string, init) {
 		return this.ajax(urlOrApiInfo, 'PUT', init);
 	}
 
@@ -241,7 +206,7 @@ export class RestClient {
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	patch(urlOrApiInfo: string | ApiInfo, init) {
+	patch(urlOrApiInfo: string, init) {
 		return this.ajax(urlOrApiInfo, 'PATCH', init);
 	}
 
@@ -251,7 +216,7 @@ export class RestClient {
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	post(urlOrApiInfo: string | ApiInfo, init) {
+	post(urlOrApiInfo: string, init) {
 		return this.ajax(urlOrApiInfo, 'POST', init);
 	}
 
@@ -261,7 +226,7 @@ export class RestClient {
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	del(urlOrApiInfo: string | ApiInfo, init) {
+	del(urlOrApiInfo: string, init) {
 		return this.ajax(urlOrApiInfo, 'DELETE', init);
 	}
 
@@ -271,7 +236,7 @@ export class RestClient {
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	head(urlOrApiInfo: string | ApiInfo, init) {
+	head(urlOrApiInfo: string, init) {
 		return this.ajax(urlOrApiInfo, 'HEAD', init);
 	}
 
@@ -281,7 +246,7 @@ export class RestClient {
 	 * @param {string} [message] - A message to include in the cancelation exception
 	 */
 	cancel(request: Promise<any>, message?: string) {
-		const source = this._cancelTokenMap.get(request);
+		const source = this._cancelTokenMap?.get(request);
 		if (source) {
 			source.cancel(message);
 			return true;
@@ -295,7 +260,7 @@ export class RestClient {
 	 * @return if the request has a corresponding cancel token.
 	 */
 	hasCancelToken(request: Promise<any>) {
-		return this._cancelTokenMap.has(request);
+		return this._cancelTokenMap?.has(request);
 	}
 
 	/**
@@ -324,7 +289,7 @@ export class RestClient {
 		promise: Promise<any>,
 		cancelTokenSource: CancelTokenSource
 	) {
-		this._cancelTokenMap.set(promise, cancelTokenSource);
+		this._cancelTokenMap?.set(promise, cancelTokenSource);
 	}
 
 	/**
@@ -365,40 +330,38 @@ export class RestClient {
 
 	/** private methods **/
 
-	private _sign(params, credentials, { service, region }) {
-		const { signerServiceInfo: signerServiceInfoParams, ...otherParams } =
-			params;
-
-		const endpoint_region: string =
-			region || this._region || this._options.region;
-		const endpoint_service: string =
-			service || this._service || this._options.service;
-
-		const creds = {
-			secret_key: credentials.secretAccessKey,
-			access_key: credentials.accessKeyId,
-			session_token: credentials.sessionToken,
-		};
-
-		const endpointInfo = {
-			region: endpoint_region,
-			service: endpoint_service,
-		};
-
-		const signerServiceInfo = Object.assign(
-			endpointInfo,
-			signerServiceInfoParams
+	private _sign(
+		params: {
+			method: string;
+			url: string;
+			host: string;
+			path: string;
+			headers: {};
+			data: BodyInit;
+			responseType: string;
+			timeout: number;
+			cancelToken: any;
+		},
+		credentials: Credentials,
+		{ service, region }
+	) {
+		const signed_params = signRequest(
+			{
+				method: params.method,
+				headers: params.headers,
+				url: new URL(params.url),
+				body: params.data,
+			},
+			{
+				credentials,
+				signingRegion: region,
+				signingService: service,
+			}
 		);
 
-		const signed_params = Signer.sign(otherParams, creds, signerServiceInfo);
+		// logger.debug('Signed Request: ', signed_params);
 
-		if (signed_params.data) {
-			signed_params.body = signed_params.data;
-		}
-
-		logger.debug('Signed Request: ', signed_params);
-
-		delete signed_params.headers['host'];
+		// delete signed_params.headers['host'];
 
 		return signed_params;
 	}
@@ -407,7 +370,7 @@ export class RestClient {
 		return axios(params)
 			.then(response => (isAllResponse ? response : response.data))
 			.catch(error => {
-				logger.debug(error);
+				// logger.debug(error);
 				throw error;
 			});
 	}
