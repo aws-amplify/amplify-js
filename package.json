@@ -49,8 +49,7 @@
 			"packages/api",
 			"packages/api-graphql",
 			"packages/api-rest",
-			"packages/amplify-v6-types-package",
-			"packages/pubsub"
+			"packages/amplify-v6-types-package"
 		],
 		"nohoist": [
 			"**/@types/react-native",

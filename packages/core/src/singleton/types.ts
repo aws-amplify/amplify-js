@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { APIGraphQLConfig, LibraryAPIGraphQLOptions } from
+import { APIGraphQLConfig, LibraryAPIGraphQLOptions } from './API/types';
 import { AnalyticsConfig } from './Analytics/types';
 import {
 	AuthConfig,
