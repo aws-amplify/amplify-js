@@ -41,11 +41,3 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 
 export const GraphQLAPI = new GraphQLAPIClass(null);
 // Amplify.register(GraphQLAPI);
-
-// Get access to the current back-end resource config:
-const config = Amplify.getConfig();
-
-// TODO V6: is this needed?
-// Hub.listen('config', async config => RestAPI.configure(config.));
-
-Amplify.configure(config);

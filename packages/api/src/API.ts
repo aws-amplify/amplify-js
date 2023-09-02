@@ -282,11 +282,3 @@ declare type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 
 export const API = new APIClass(null);
 // Amplify.register(API);
-
-// Get access to the current back-end resource config:
-const config = Amplify.getConfig();
-
-// TODO V6: is this needed?
-// Hub.listen('config', async config => RestAPI.configure(config.));
-
-Amplify.configure(config);

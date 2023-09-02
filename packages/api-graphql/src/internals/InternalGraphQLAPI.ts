@@ -1,3 +1,6 @@
+// TODO: Francisco is migrating pubsub
+// TODO: remove pubsub dep for now
+
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
@@ -20,7 +23,8 @@ import {
 	fetchAuthSession,
 } from '@aws-amplify/core';
 // TODO V6 - not available?
-// import { Credentials } from '@aws-amplify/core/internals/aws-client-utils';
+// should work with yarn bootstrap
+import { Credentials } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
@@ -51,6 +55,8 @@ export const graphqlOperation = (
 	authToken,
 });
 
+// Can also create function using headerbasedauth + creatingbody, then call post api
+
 /**
  * Export Cloud Logic APIs
  */
@@ -61,7 +67,7 @@ export class InternalGraphQLAPIClass {
 	private _options;
 	private _api = null;
 
-	// TODO V6
+	// TODO V6: can be removed
 	// InternalAuth = InternalAuth;
 	Cache = Cache;
 	// TODO V6
@@ -119,6 +125,7 @@ export class InternalGraphQLAPIClass {
 	createInstance() {
 		logger.debug('create Rest instance');
 		if (this._options) {
+			// TODO: remove options, use getConfig here
 			this._api = new RestClient(this._options);
 			// Share instance Credentials with client for SSR
 			// TODO V6: fetchAuthSesssion?
@@ -136,7 +143,8 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders: { [key: string]: string } = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	) {
-		// TODO V6 - preferred way to get apiKey?
+		// TODO: Amplify.getConfig().API
+		// apikey is the same (but needs to be on the config)
 		const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
 			this._options;
 		const authenticationType =
@@ -163,21 +171,21 @@ export class InternalGraphQLAPIClass {
 				try {
 					let token;
 					// backwards compatibility
-					const federatedInfo = await Cache.getItem('federatedInfo');
-					if (federatedInfo) {
-						token = federatedInfo.token;
-					} else {
-						// const currentUser = await InternalAuth.currentAuthenticatedUser(
-						// 	undefined,
-						// 	customUserAgentDetails
-						// );
-						// if (currentUser) {
-						// 	token = currentUser.token;
-						// }
+					// const federatedInfo = await Cache.getItem('federatedInfo');
+					// if (federatedInfo) {
+					// 	token = federatedInfo.token;
+					// } else {
+					// const currentUser = await InternalAuth.currentAuthenticatedUser(
+					// 	undefined,
+					// 	customUserAgentDetails
+					// );
+					// if (currentUser) {
+					// 	token = currentUser.token;
+					// }
 
-						// TODO V6
-						token = (await fetchAuthSession()).tokens?.accessToken;
-					}
+					// correct token:
+					token = (await fetchAuthSession()).tokens?.accessToken.toString();
+					// }
 					if (!token) {
 						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
 					}
@@ -199,7 +207,7 @@ export class InternalGraphQLAPIClass {
 						// TODO V6
 						// Authorization: session.getAccessToken().getJwtToken(),
 						// `idToken` or `accessToken`?
-						Authorization: session.tokens?.accessToken,
+						Authorization: session.tokens?.accessToken.toString(),
 					};
 				} catch (e) {
 					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
@@ -236,6 +244,8 @@ export class InternalGraphQLAPIClass {
 		return operationType;
 	}
 
+	// TODO V6: COULD JUST EXPORT THIS:
+
 	/**
 	 * Executes a GraphQL operation
 	 *
@@ -248,6 +258,7 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
+		// Could retrieve headers and config here. Call post method.
 		const query =
 			typeof paramQuery === 'string'
 				? parse(paramQuery)
@@ -270,6 +281,7 @@ export class InternalGraphQLAPIClass {
 			case 'query':
 			case 'mutation':
 				this.createInstanceIfNotCreated();
+				// TODO: This is being removed:
 				const cancellableToken = this._api.getCancellableToken();
 				const initParams = {
 					cancellableToken,
@@ -486,10 +498,3 @@ export class InternalGraphQLAPIClass {
 
 export const InternalGraphQLAPI = new InternalGraphQLAPIClass(null);
 // Amplify.register(InternalGraphQLAPI);
-// Get access to the current back-end resource config:
-const config = Amplify.getConfig();
-
-// TODO V6: is this needed?
-// Hub.listen('config', async config => RestAPI.configure(config.));
-
-Amplify.configure(config);
