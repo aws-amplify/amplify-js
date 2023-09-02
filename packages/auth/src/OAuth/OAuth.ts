@@ -303,7 +303,7 @@ export default class OAuth {
 		const chars =
 			'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		for (; i > 0; --i)
-			result += chars[Math.round(Math.random() * (chars.length - 1))];
+			result += chars[Math.floor(Math.random() * chars.length)];
 		return result;
 	}
 
