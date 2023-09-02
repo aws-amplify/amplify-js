@@ -1,5 +1,6 @@
 // TODO: Francisco is migrating pubsub
 // TODO: remove pubsub dep for now
+// TODO update package.json with francisco's changes.
 
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
@@ -41,6 +42,8 @@ import {
 	GraphQLOperation,
 } from '../types';
 import { RestClient } from '@aws-amplify/api-rest';
+import { post } from '@aws-amplify/api-rest';
+
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 const logger = new Logger('GraphQLAPI');
@@ -55,7 +58,7 @@ export const graphqlOperation = (
 	authToken,
 });
 
-// Can also create function using headerbasedauth + creatingbody, then call post api
+// TODO sCan also create function using headerbasedauth + creatingbody, then call post api
 
 /**
  * Export Cloud Logic APIs
@@ -126,7 +129,9 @@ export class InternalGraphQLAPIClass {
 		logger.debug('create Rest instance');
 		if (this._options) {
 			// TODO: remove options, use getConfig here
-			this._api = new RestClient(this._options);
+			// this._api = new RestClient(this._options);
+			this._api = post;
+
 			// Share instance Credentials with client for SSR
 			// TODO V6: fetchAuthSesssion?
 			// this._api.Credentials = this.Credentials;
@@ -152,6 +157,7 @@ export class InternalGraphQLAPIClass {
 		let headers = {};
 
 		switch (authenticationType) {
+			// NOTHING HERE
 			case 'API_KEY':
 				if (!apiKey) {
 					throw new Error(GraphQLAuthError.NO_API_KEY);
@@ -161,6 +167,7 @@ export class InternalGraphQLAPIClass {
 					'X-Api-Key': apiKey,
 				};
 				break;
+			// NOTHING HERE
 			case 'AWS_IAM':
 				const credentialsOK = await this._ensureCredentials();
 				if (!credentialsOK) {
@@ -282,9 +289,9 @@ export class InternalGraphQLAPIClass {
 			case 'mutation':
 				this.createInstanceIfNotCreated();
 				// TODO: This is being removed:
-				const cancellableToken = this._api.getCancellableToken();
+				// const cancellableToken = this._api.getCancellableToken();
 				const initParams = {
-					cancellableToken,
+					// cancellableToken,
 					withCredentials: this._options.withCredentials,
 				};
 				const responsePromise = this._graphql<T>(
@@ -293,10 +300,10 @@ export class InternalGraphQLAPIClass {
 					initParams,
 					customUserAgentDetails
 				);
-				this._api.updateRequestToBeCancellable(
-					responsePromise,
-					cancellableToken
-				);
+				// this._api.updateRequestToBeCancellable(
+				// 	responsePromise,
+				// 	cancellableToken
+				// );
 				return responsePromise;
 			case 'subscription':
 				return this._graphqlSubscribe(
