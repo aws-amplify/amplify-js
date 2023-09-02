@@ -29,6 +29,44 @@ const credentials: Credentials = {
 };
 const targetIdentityId = 'targetIdentityId';
 
+const getUrlInput = {
+	key: 'key',
+	options: { accessLevel: 'guest', validateObjectExistence: true },
+	config: {
+		credentials,
+		region: 'region',
+	},
+	headObjectOptions: {
+		Bucket: 'bucket',
+		Key: 'public/key',
+	},
+};
+
+const getUrlInputWithAllAccessLevels = [
+	getUrlInput,
+	Object.assign(getUrlInput, {
+		options: {
+			accessLevel: 'protected',
+			targetIdentityId: 'targetIdentityId',
+			validateObjectExistence: true,
+		},
+		headObjectOptions: {
+			Bucket: 'bucket',
+			Key: 'protected/targetIdentityId/key',
+		},
+	}),
+	Object.assign(getUrlInput, {
+		options: {
+			accessLevel: 'private',
+			validateObjectExistence: true,
+		},
+		headObjectOptions: {
+			Bucket: 'bucket',
+			Key: 'private/targetIdentityId/key',
+		},
+	}),
+];
+
 describe('getUrl test', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
@@ -60,50 +98,12 @@ describe('getUrl test', () => {
 				url: new URL('https://google.com'),
 			});
 		});
-		it.each([
-			[
-				'key',
-				{ accessLevel: 'guest', validateObjectExistence: true },
-				{
-					credentials,
-					region: 'region',
-				},
-				{
-					Bucket: 'bucket',
-					Key: 'public/key',
-				},
-			],
-			[
-				'key',
-				{
-					accessLevel: 'protected',
-					targetIdentityId: 'targetIdentityId',
-					validateObjectExistence: true,
-				},
-				{
-					credentials,
-					region: 'region',
-				},
-				{
-					Bucket: 'bucket',
-					Key: 'protected/targetIdentityId/key',
-				},
-			],
-			[
-				'key',
-				{ accessLevel: 'private', validateObjectExistence: true },
-				{
-					credentials,
-					region: 'region',
-				},
-				{
-					Bucket: 'bucket',
-					Key: 'private/targetIdentityId/key',
-				},
-			],
-		])(
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+		it.each(getUrlInputWithAllAccessLevels)(
 			'getUrl with accessLevels',
-			async (key, options, config, headObjectOptions) => {
+			async ({ key, options, config, headObjectOptions }) => {
 				expect.assertions(4);
 				const result = await getUrl({
 					key,
