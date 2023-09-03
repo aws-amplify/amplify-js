@@ -27,50 +27,7 @@ const credentials: Credentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const targetIdentityId = 'targetIdentityId';
-const getPropertiesInput = {
-	key: 'key',
-	options: { accessLevel: 'guest' },
-	expected: {
-		key: 'key',
-		size: '100',
-		contentType: 'text/plain',
-		eTag: 'etag',
-		metadata: { key: 'value' },
-		lastModified: 'last-modified',
-		versionId: 'version-id',
-	},
-	config: {
-		credentials,
-		region: 'region',
-	},
-	headObjectOptions: {
-		Bucket: 'bucket',
-		Key: 'public/key',
-	},
-};
 
-const getPropertiesInputWithALlAccessLevels = [
-	getPropertiesInput,
-	Object.assign(getPropertiesInput, {
-		options: {
-			accessLevel: 'protected',
-			targetIdentityId: 'targetIdentityId',
-		},
-		headObjectOptions: {
-			Bucket: 'bucket',
-			Key: 'protected/targetIdentityId/key',
-		},
-	}),
-	Object.assign(getPropertiesInput, {
-		options: {
-			accessLevel: 'private',
-		},
-		headObjectOptions: {
-			Bucket: 'bucket',
-			Key: 'private/targetIdentityId/key',
-		},
-	}),
-];
 describe('getProperties api', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
@@ -100,8 +57,72 @@ describe('getProperties api', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		it.each(getPropertiesInputWithALlAccessLevels)(
-			'getProperties with all accessLevels',
+		it.each([
+			{
+				key: 'key',
+				options: { accessLevel: 'guest' },
+				expected: {
+					key: 'key',
+					size: '100',
+					contentType: 'text/plain',
+					eTag: 'etag',
+					metadata: { key: 'value' },
+					lastModified: 'last-modified',
+					versionId: 'version-id',
+				},
+				config: {
+					credentials,
+					region: 'region',
+				},
+				headObjectOptions: {
+					Bucket: 'bucket',
+					Key: 'public/key',
+				},
+			},
+			{
+				key: 'key',
+				options: { accessLevel: 'protected', targetIdentityId },
+				expected: {
+					key: 'key',
+					size: '100',
+					contentType: 'text/plain',
+					eTag: 'etag',
+					metadata: { key: 'value' },
+					lastModified: 'last-modified',
+					versionId: 'version-id',
+				},
+				config: {
+					credentials,
+					region: 'region',
+				},
+				headObjectOptions: {
+					Bucket: 'bucket',
+					Key: 'protected/targetIdentityId/key',
+				},
+			},
+			{
+				key: 'key',
+				options: { accessLevel: 'private' },
+				expected: {
+					key: 'key',
+					size: '100',
+					contentType: 'text/plain',
+					eTag: 'etag',
+					metadata: { key: 'value' },
+					lastModified: 'last-modified',
+					versionId: 'version-id',
+				},
+				config: {
+					credentials,
+					region: 'region',
+				},
+				headObjectOptions: {
+					Bucket: 'bucket',
+					Key: 'private/targetIdentityId/key',
+				},
+			},
+		])(
+			'getProperties api with $options.accessLevel',
 			async ({ key, options, expected, config, headObjectOptions }) => {
 				expect.assertions(3);
 				expect(

@@ -29,44 +29,6 @@ const credentials: Credentials = {
 };
 const targetIdentityId = 'targetIdentityId';
 
-const getUrlInput = {
-	key: 'key',
-	options: { accessLevel: 'guest', validateObjectExistence: true },
-	config: {
-		credentials,
-		region: 'region',
-	},
-	headObjectOptions: {
-		Bucket: 'bucket',
-		Key: 'public/key',
-	},
-};
-
-const getUrlInputWithAllAccessLevels = [
-	getUrlInput,
-	Object.assign(getUrlInput, {
-		options: {
-			accessLevel: 'protected',
-			targetIdentityId: 'targetIdentityId',
-			validateObjectExistence: true,
-		},
-		headObjectOptions: {
-			Bucket: 'bucket',
-			Key: 'protected/targetIdentityId/key',
-		},
-	}),
-	Object.assign(getUrlInput, {
-		options: {
-			accessLevel: 'private',
-			validateObjectExistence: true,
-		},
-		headObjectOptions: {
-			Bucket: 'bucket',
-			Key: 'private/targetIdentityId/key',
-		},
-	}),
-];
-
 describe('getUrl test', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
@@ -101,8 +63,53 @@ describe('getUrl test', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		it.each(getUrlInputWithAllAccessLevels)(
-			'getUrl with accessLevels',
+		it.each([
+			{
+				key: 'key',
+				options: { accessLevel: 'guest', validateObjectExistence: true },
+				config: {
+					credentials,
+					region: 'region',
+				},
+				headObjectOptions: {
+					Bucket: 'bucket',
+					Key: 'public/key',
+				},
+			},
+			{
+				key: 'key',
+				options: {
+					accessLevel: 'protected',
+					targetIdentityId,
+					validateObjectExistence: true,
+				},
+				config: {
+					credentials,
+					region: 'region',
+				},
+				headObjectOptions: {
+					Bucket: 'bucket',
+					Key: 'protected/targetIdentityId/key',
+				},
+			},
+			{
+				key: 'key',
+				options: {
+					accessLevel: 'private',
+					targetIdentityId,
+					validateObjectExistence: true,
+				},
+				config: {
+					credentials,
+					region: 'region',
+				},
+				headObjectOptions: {
+					Bucket: 'bucket',
+					Key: 'private/targetIdentityId/key',
+				},
+			},
+		])(
+			'getUrl with $options.accessLevel',
 			async ({ key, options, config, headObjectOptions }) => {
 				expect.assertions(4);
 				const result = await getUrl({
