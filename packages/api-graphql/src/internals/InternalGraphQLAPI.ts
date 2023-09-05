@@ -172,10 +172,10 @@ export class InternalGraphQLAPIClass {
 				break;
 			// NOTHING HERE
 			case 'AWS_IAM':
-				const credentialsOK = await this._ensureCredentials();
-				if (!credentialsOK) {
-					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
-				}
+				// const credentialsOK = await this._ensureCredentials();
+				// if (!credentialsOK) {
+				// 	throw new Error(GraphQLAuthError.NO_CREDENTIALS);
+				// }
 				break;
 			case 'OPENID_CONNECT':
 				try {
@@ -473,49 +473,50 @@ export class InternalGraphQLAPIClass {
 	// 	const authenticationType =
 	// 		defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
 
-	// 	if (InternalPubSub && typeof InternalPubSub.subscribe === 'function') {
-	// 		return InternalPubSub.subscribe(
-	// 			'',
-	// 			{
-	// 				provider: INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-	// 				appSyncGraphqlEndpoint,
-	// 				authenticationType,
-	// 				apiKey,
-	// 				query: print(query as DocumentNode),
-	// 				region,
-	// 				variables,
-	// 				graphql_headers,
-	// 				additionalHeaders,
-	// 				authToken,
-	// 			},
-	// 			customUserAgentDetails
-	// 		);
-	// 	} else {
-	// 		logger.debug('No pubsub module applied for subscription');
-	// 		throw new Error('No pubsub module applied for subscription');
-	// 	}
-	// }
-
-	/**
-	 * @private
-	 */
-	async _ensureCredentials() {
-		// return this.Credentials.get()
-		return await fetchAuthSession()
-			.then(credentials => {
-				if (!credentials) return false;
-				// TODO V6
-				const cred = this.Credentials.shear(credentials);
-				logger.debug('set credentials for api', cred);
-
-				return true;
-			})
-			.catch(err => {
-				logger.warn('ensure credentials error', err);
-				return false;
-			});
+		throw new Error('not implemented yet');
 	}
+	// if (InternalPubSub && typeof InternalPubSub.subscribe === 'function') {
+	// 	return InternalPubSub.subscribe(
+	// 		'',
+	// 		{
+	// 			provider: INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+	// 			appSyncGraphqlEndpoint,
+	// 			authenticationType,
+	// 			apiKey,
+	// 			query: print(query as DocumentNode),
+	// 			region,
+	// 			variables,
+	// 			graphql_headers,
+	// 			additionalHeaders,
+	// 			authToken,
+	// 		},
+	// 		customUserAgentDetails
+	// 	);
+	// } else {
+	// 	logger.debug('No pubsub module applied for subscription');
+	// 	throw new Error('No pubsub module applied for subscription');
+	// }
 }
+
+/**
+ * @private
+ */
+// async _ensureCredentials() {
+// 	// return this.Credentials.get()
+// 	return await fetchAuthSession()
+// 		.then(credentials => {
+// 			if (!credentials) return false;
+// 			// TODO V6
+// 			const cred = this.Credentials.shear(credentials);
+// 			logger.debug('set credentials for api', cred);
+
+// 			return true;
+// 		})
+// 		.catch(err => {
+// 			logger.warn('ensure credentials error', err);
+// 			return false;
+// 		});
+// }
 
 export const InternalGraphQLAPI = new InternalGraphQLAPIClass(null);
 // Amplify.register(InternalGraphQLAPI);

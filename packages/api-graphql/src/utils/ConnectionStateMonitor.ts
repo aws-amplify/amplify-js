@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Observable, { ZenObservable } from 'zen-observable-ts';
-import { ConnectionState } from '../../../api-graphql/src/types/PubSub';
+import { ConnectionState } from '../types/PubSub';
 import { ReachabilityMonitor } from './ReachabilityMonitor';
 
 // Internal types for tracking different connection states

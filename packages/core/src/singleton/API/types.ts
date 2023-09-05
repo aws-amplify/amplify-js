@@ -28,6 +28,22 @@ export type APIGraphQLConfig = {
 	authMode?: string;
 };
 
+export type APIConfig = {
+	AppSync?: {
+		defaultAuthMode: GraphQLAuthMode;
+		region: string;
+		endpoint: string;
+	};
+};
+
+export type GraphQLAuthMode =
+	| { type: 'apiKey'; apiKey: string }
+	| { type: 'jwt'; token: 'id' | 'access' }
+	| { type: 'iam' }
+	| { type: 'lambda' }
+	| { type: 'custom' };
+// TODO V6
+
 // import type { ModelIntrospectionSchema as InternalModelIntrospectionSchema } from '@aws-amplify/appsync-modelgen-plugin';
 // import { REGION_SET_PARAM } from '../../clients/middleware/signing/signer/signatureV4/constants';
 // export namespace Amplify {

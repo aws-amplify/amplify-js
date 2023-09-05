@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import Observable from 'zen-observable-ts';
-import { PubSubContent } from './PubSub';
+import { PubSubContent } from '../../../api-graphql/src/types/PubSub';
 
 export interface PubSubOptions {
 	[key: string]: any;

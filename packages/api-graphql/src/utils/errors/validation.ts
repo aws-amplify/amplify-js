@@ -8,6 +8,7 @@ export enum APIValidationErrorCode {
 	NoAppId = 'NoAppId',
 	NoCredentials = 'NoCredentials',
 	NoRegion = 'NoRegion',
+	NoDefaultAuthMode = 'NoDefaultAuthMode',
 }
 
 export const validationErrorMap: AmplifyErrorMap<APIValidationErrorCode> = {
@@ -19,5 +20,8 @@ export const validationErrorMap: AmplifyErrorMap<APIValidationErrorCode> = {
 	},
 	[APIValidationErrorCode.NoRegion]: {
 		message: 'Missing region.',
+	},
+	[APIValidationErrorCode.NoDefaultAuthMode]: {
+		message: 'Missing default auth mode',
 	},
 };
