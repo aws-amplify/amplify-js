@@ -6,11 +6,16 @@ import {
 	Identity,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
-import { assertIdentityPooIdConfig } from '@aws-amplify/core/internals/utils';
+import {
+	Logger,
+	assertIdentityPooIdConfig,
+} from '@aws-amplify/core/internals/utils';
 import { IdentityIdStorageKeys, IdentityIdStore } from './types';
 import { AuthError } from '../../../errors/AuthError';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
 import { AuthKeys } from '../tokenProvider/types';
+
+const logger = new Logger('DefaultIdentityIdStore');
 
 export class DefaultIdentityIdStore implements IdentityIdStore {
 	keyValueStorage: KeyValueStorageInterface;
@@ -33,18 +38,9 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 		this.keyValueStorage = keyValueStorage;
 	}
 
-	async loadIdentityId(): Promise<Identity | undefined> {
+	async loadIdentityId(): Promise<Identity | null> {
 		assertIdentityPooIdConfig(this.authConfig?.Cognito);
-		if (this.keyValueStorage === undefined) {
-			throw new AuthError({
-				message: 'No KeyValueStorage available',
-				name: 'KeyValueStorageNotFound',
-				recoverySuggestion:
-					'Make sure to set the keyValueStorage before using this method',
-			});
-		}
 		// TODO(v6): migration logic should be here
-		// Reading V5 tokens old format
 		try {
 			if (!!this._primaryIdentityId) {
 				return {
@@ -61,30 +57,17 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 						type: 'guest',
 					};
 				}
+				return null;
 			}
 		} catch (err) {
 			// TODO(v6): validate partial results with mobile implementation
-			throw new Error(`Error loading identityId from storage: ${err}`);
+			logger.error(`Error loading identityId from storage: ${err}`);
+			return null;
 		}
 	}
 
 	async storeIdentityId(identity: Identity): Promise<void> {
 		assertIdentityPooIdConfig(this.authConfig?.Cognito);
-		if (identity === undefined) {
-			throw new AuthError({
-				message: 'Invalid Identity parameter',
-				name: 'InvalidAuthIdentity',
-				recoverySuggestion: 'Make sure a valid Identity object is passed',
-			});
-		}
-		if (this.keyValueStorage === undefined) {
-			throw new AuthError({
-				message: 'No KeyValueStorage available',
-				name: 'KeyValueStorageNotFound',
-				recoverySuggestion:
-					'Make sure to set the keyValueStorage before using this method',
-			});
-		}
 
 		if (identity.type === 'guest') {
 			this.keyValueStorage.setItem(this._authKeys.identityId, identity.id);
