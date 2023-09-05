@@ -44,6 +44,20 @@ describe('getProperties api', () => {
 		});
 	});
 	describe('getProperties happy path ', () => {
+		const expected = {
+			key: 'key',
+			size: '100',
+			contentType: 'text/plain',
+			eTag: 'etag',
+			metadata: { key: 'value' },
+			lastModified: 'last-modified',
+			versionId: 'version-id',
+		};
+		const config = {
+			credentials,
+			region: 'region',
+		};
+		const key = 'key';
 		beforeEach(() => {
 			mockHeadObject.mockReturnValueOnce({
 				ContentLength: '100',
@@ -59,63 +73,21 @@ describe('getProperties api', () => {
 		});
 		it.each([
 			{
-				key: 'key',
 				options: { accessLevel: 'guest' },
-				expected: {
-					key: 'key',
-					size: '100',
-					contentType: 'text/plain',
-					eTag: 'etag',
-					metadata: { key: 'value' },
-					lastModified: 'last-modified',
-					versionId: 'version-id',
-				},
-				config: {
-					credentials,
-					region: 'region',
-				},
 				headObjectOptions: {
 					Bucket: 'bucket',
 					Key: 'public/key',
 				},
 			},
 			{
-				key: 'key',
 				options: { accessLevel: 'protected', targetIdentityId },
-				expected: {
-					key: 'key',
-					size: '100',
-					contentType: 'text/plain',
-					eTag: 'etag',
-					metadata: { key: 'value' },
-					lastModified: 'last-modified',
-					versionId: 'version-id',
-				},
-				config: {
-					credentials,
-					region: 'region',
-				},
 				headObjectOptions: {
 					Bucket: 'bucket',
 					Key: 'protected/targetIdentityId/key',
 				},
 			},
 			{
-				key: 'key',
 				options: { accessLevel: 'private' },
-				expected: {
-					key: 'key',
-					size: '100',
-					contentType: 'text/plain',
-					eTag: 'etag',
-					metadata: { key: 'value' },
-					lastModified: 'last-modified',
-					versionId: 'version-id',
-				},
-				config: {
-					credentials,
-					region: 'region',
-				},
 				headObjectOptions: {
 					Bucket: 'bucket',
 					Key: 'private/targetIdentityId/key',
@@ -123,7 +95,7 @@ describe('getProperties api', () => {
 			},
 		])(
 			'getProperties api with $options.accessLevel',
-			async ({ key, options, expected, config, headObjectOptions }) => {
+			async ({ options, headObjectOptions }) => {
 				expect.assertions(3);
 				expect(
 					await getProperties({
