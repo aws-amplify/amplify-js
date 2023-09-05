@@ -91,6 +91,7 @@
 	"license": "Apache-2.0",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
+	"sideEffects": false,
 	"scripts": {
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
 		"build-with-test": "npm test && npm run build",

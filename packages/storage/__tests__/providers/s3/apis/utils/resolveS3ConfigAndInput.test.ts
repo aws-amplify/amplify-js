@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 
 import { resolveS3ConfigAndInput } from '../../../../../src/providers/s3/utils';
 import { resolvePrefix } from '../../../../../src/utils/resolvePrefix';
@@ -11,16 +11,18 @@ import {
 } from '../../../../../src/errors/types/validation';
 
 jest.mock('@aws-amplify/core', () => ({
-	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
+		Auth: {
+			fetchAuthSession: jest.fn(),
+		},
 	},
 }));
 jest.mock('../../../../../src/utils/resolvePrefix');
 
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 const mockDefaultResolvePrefix = resolvePrefix as jest.Mock;
+const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 
 const bucket = 'bucket';
 const region = 'region';

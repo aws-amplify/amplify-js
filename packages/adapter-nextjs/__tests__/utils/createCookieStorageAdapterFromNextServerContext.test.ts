@@ -224,7 +224,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 	it('should throw error when no cookie storage adapter is created from the context', () => {
 		expect(() =>
 			createCookieStorageAdapterFromNextServerContext({
-				request: {} as any,
+				request: undefined,
 				response: new ServerResponse({} as any),
 			} as any)
 		).toThrowError();
