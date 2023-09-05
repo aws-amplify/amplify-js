@@ -4,8 +4,13 @@
 import { headObject } from '../../../../src/providers/s3/utils/client';
 import { getProperties } from '../../../../src/providers/s3';
 import { Credentials } from '@aws-sdk/types';
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import {
+	Amplify,
+	StorageAccessLevel,
+	fetchAuthSession,
+} from '@aws-amplify/core';
 import { StorageOptions } from '../../../../src/types';
+import { buildClientRequestKey } from './__utils__/buildClientRequestKey';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 const mockHeadObject = headObject as jest.Mock;
@@ -73,24 +78,34 @@ describe('getProperties api', () => {
 		});
 		it.each([
 			{
-				options: { accessLevel: 'guest' },
-				expectedKey: 'public/key',
+				accessLevel: 'guest',
 			},
 			{
-				options: { accessLevel: 'protected', targetIdentityId },
-				expectedKey: 'protected/targetIdentityId/key',
+				accessLevel: 'protected',
 			},
 			{
-				options: { accessLevel: 'private' },
-				expectedKey: 'private/targetIdentityId/key',
+				accessLevel: 'private',
 			},
 		])(
 			'getProperties api with $options.accessLevel',
-			async ({ options, expectedKey }) => {
+			async ({ accessLevel }) => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
-					Key: expectedKey,
+					Key: buildClientRequestKey(
+						key,
+						'destination',
+						accessLevel as StorageAccessLevel
+					),
 				};
+				const options =
+					accessLevel === 'protected'
+						? {
+								accessLevel,
+								targetIdentityId,
+						  }
+						: {
+								accessLevel,
+						  };
 				expect.assertions(3);
 				expect(
 					await getProperties({
