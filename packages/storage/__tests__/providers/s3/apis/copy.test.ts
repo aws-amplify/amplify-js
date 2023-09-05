@@ -9,7 +9,6 @@ import { buildClientRequestKey } from './__utils__/buildClientRequestKey';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
-	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {
