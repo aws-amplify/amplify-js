@@ -15,7 +15,7 @@ import {
 import Observable from 'zen-observable-ts';
 // TODO V6
 import {
-	Amplify,
+	// Amplify,
 	// ConsoleLogger as Logger,
 	// Credentials,
 	// CustomUserAgentDetails,
@@ -30,7 +30,7 @@ import {
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
-	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+	// INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core/internals/utils';
 // import { InternalPubSub } from '@aws-amplify/pubsub/internals';
 // import { InternalAuth } from '@aws-amplify/auth/internals';
@@ -41,7 +41,7 @@ import {
 	GraphQLResult,
 	GraphQLOperation,
 } from '../types';
-import { RestClient } from '@aws-amplify/api-rest';
+// import { RestClient } from '@aws-amplify/api-rest';
 import { post } from '@aws-amplify/api-rest';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
@@ -310,12 +310,12 @@ export class InternalGraphQLAPIClass {
 				// 	cancellableToken
 				// );
 				return responsePromise;
-			case 'subscription':
-				return this._graphqlSubscribe(
-					{ query, variables, authMode },
-					headers,
-					customUserAgentDetails
-				);
+			// case 'subscription':
+			// 	return this._graphqlSubscribe(
+			// 		{ query, variables, authMode },
+			// 		headers,
+			// 		customUserAgentDetails
+			// 	);
 			default:
 				throw new Error(`invalid operation type: ${operationType}`);
 		}
@@ -389,14 +389,18 @@ export class InternalGraphQLAPIClass {
 
 		let response;
 		try {
-			response = await this._api.post(endpoint, init);
+			// response = await this._api.post(endpoint, init);
+			// TODO V6
+			// @ts-ignore
+			response = await post(endpoint, { headers, body, region });
 		} catch (err) {
 			// If the exception is because user intentionally
 			// cancelled the request, do not modify the exception
 			// so that clients can identify the exception correctly.
-			if (this._api.isCancel(err)) {
-				throw err;
-			}
+			// TODO V6
+			// if (this._api.isCancel(err)) {
+			// 	throw err;
+			// }
 			response = {
 				data: {},
 				errors: [new GraphQLError(err.message, null, null, null, null, err)],
@@ -449,48 +453,48 @@ export class InternalGraphQLAPIClass {
 	// 	return this._api.hasCancelToken(request);
 	// }
 
-	private _graphqlSubscribe(
-		{
-			query,
-			variables,
-			authMode: defaultAuthenticationType,
-			authToken,
-		}: GraphQLOptions,
-		additionalHeaders = {},
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Observable<any> {
-		const {
-			aws_appsync_region: region,
-			aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
-			aws_appsync_authenticationType,
-			aws_appsync_apiKey: apiKey,
-			graphql_headers = () => ({}),
-		} = this._options;
-		const authenticationType =
-			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
+	// private _graphqlSubscribe(
+	// 	{
+	// 		query,
+	// 		variables,
+	// 		authMode: defaultAuthenticationType,
+	// 		authToken,
+	// 	}: GraphQLOptions,
+	// 	additionalHeaders = {},
+	// 	customUserAgentDetails?: CustomUserAgentDetails
+	// ): Observable<any> {
+	// 	const {
+	// 		aws_appsync_region: region,
+	// 		aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
+	// 		aws_appsync_authenticationType,
+	// 		aws_appsync_apiKey: apiKey,
+	// 		graphql_headers = () => ({}),
+	// 	} = this._options;
+	// 	const authenticationType =
+	// 		defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
 
-		// if (InternalPubSub && typeof InternalPubSub.subscribe === 'function') {
-		// 	return InternalPubSub.subscribe(
-		// 		'',
-		// 		{
-		// 			provider: INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-		// 			appSyncGraphqlEndpoint,
-		// 			authenticationType,
-		// 			apiKey,
-		// 			query: print(query as DocumentNode),
-		// 			region,
-		// 			variables,
-		// 			graphql_headers,
-		// 			additionalHeaders,
-		// 			authToken,
-		// 		},
-		// 		customUserAgentDetails
-		// 	);
-		// } else {
-		// 	logger.debug('No pubsub module applied for subscription');
-		// 	throw new Error('No pubsub module applied for subscription');
-		// }
-	}
+	// 	if (InternalPubSub && typeof InternalPubSub.subscribe === 'function') {
+	// 		return InternalPubSub.subscribe(
+	// 			'',
+	// 			{
+	// 				provider: INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+	// 				appSyncGraphqlEndpoint,
+	// 				authenticationType,
+	// 				apiKey,
+	// 				query: print(query as DocumentNode),
+	// 				region,
+	// 				variables,
+	// 				graphql_headers,
+	// 				additionalHeaders,
+	// 				authToken,
+	// 			},
+	// 			customUserAgentDetails
+	// 		);
+	// 	} else {
+	// 		logger.debug('No pubsub module applied for subscription');
+	// 		throw new Error('No pubsub module applied for subscription');
+	// 	}
+	// }
 
 	/**
 	 * @private

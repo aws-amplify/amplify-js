@@ -5,8 +5,8 @@ export { OperationTypeNode } from 'graphql';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 export { GRAPHQL_AUTH_MODE };
 import { Observable } from 'zen-observable-ts';
-// TODO: remove for now:
-import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
+// PubSub does not currently compile in V6, and will be replaced:
+// import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
 
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
@@ -79,7 +79,8 @@ export type GraphqlSubscriptionResult<T> = Observable<
  * ```
  */
 export type GraphqlSubscriptionMessage<T> = {
-	provider: AWSAppSyncRealTimeProvider;
+	// provider: AWSAppSyncRealTimeProvider;
+	provider: {};
 	value: { data?: T };
 };
 
