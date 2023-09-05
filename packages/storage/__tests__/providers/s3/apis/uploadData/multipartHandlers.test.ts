@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { Amplify, LocalStorage, fetchAuthSession } from '@aws-amplify/core';
+import { Amplify, LocalStorage } from '@aws-amplify/core';
 import {
 	createMultipartUpload,
 	uploadPart,
@@ -27,8 +27,10 @@ jest.mock('@aws-amplify/core', () => ({
 	Amplify: {
 		getConfig: jest.fn(),
 		libraryOptions: {},
+		Auth: {
+			fetchAuthSession: jest.fn(),
+		},
 	},
-	fetchAuthSession: jest.fn(),
 }));
 jest.mock(
 	'../../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage',
@@ -50,7 +52,7 @@ const credentials: Credentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const identityId = 'identityId';
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const bucket = 'bucket';
 const region = 'region';
 const defaultKey = 'key';

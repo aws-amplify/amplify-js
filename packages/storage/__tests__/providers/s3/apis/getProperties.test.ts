@@ -7,22 +7,22 @@ import { Credentials } from '@aws-sdk/types';
 import {
 	Amplify,
 	StorageAccessLevel,
-	fetchAuthSession,
 } from '@aws-amplify/core';
 import { StorageOptions } from '../../../../src/types';
 import { buildClientRequestKey } from './__utils__/buildClientRequestKey';
 
 jest.mock('../../../../src/providers/s3/utils/client');
-const mockHeadObject = headObject as jest.Mock;
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-const mockGetConfig = Amplify.getConfig as jest.Mock;
-
 jest.mock('@aws-amplify/core', () => ({
-	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
+		Auth: {
+			fetchAuthSession: jest.fn(),
+		},
 	},
 }));
+const mockHeadObject = headObject as jest.Mock;
+const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
+const mockGetConfig = Amplify.getConfig as jest.Mock;
 
 const bucket = 'bucket';
 const region = 'region';
