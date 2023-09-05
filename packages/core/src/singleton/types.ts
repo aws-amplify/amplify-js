@@ -11,6 +11,7 @@ import {
 	GetCredentialsOptions,
 	CognitoIdentityPoolConfig,
 } from './Auth/types';
+import { PredictionsConfig } from './Predictions/types';
 import {
 	LibraryStorageOptions,
 	StorageAccessLevel,
@@ -26,7 +27,7 @@ export type ResourcesConfig = {
 	// I18n?: I18nOptions;
 	// Interactions?: {};
 	// Notifications?: {};
-	// Predictions?: {};
+	predictions?: PredictionsConfig;
 	Storage?: StorageConfig;
 	ssr?: boolean;
 };
