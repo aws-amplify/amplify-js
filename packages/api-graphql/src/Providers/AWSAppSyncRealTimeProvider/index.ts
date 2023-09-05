@@ -12,7 +12,7 @@ import {
 	ConnectionState,
 	PubSubContent,
 	PubSubContentObserver,
-} from '../../../../api-graphql/src/types/PubSub';
+} from '../../types/PubSub';
 
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 
@@ -180,29 +180,22 @@ export class AWSAppSyncRealTimeProvider {
 		return 'AWSAppSyncRealTimeProvider';
 	}
 
-	newClient(): Promise<any> {
-		throw new Error('Not used here');
-	}
-
-	public async publish(
-		_topics: string[] | string,
-		_msg: PubSubContent,
-		_options?: AWSAppSyncRealTimeProviderOptions
-	) {
-		throw new Error('Operation not supported');
-	}
-
 	// Check if url matches standard domain pattern
 	private isCustomDomain(url: string): boolean {
 		return url.match(standardDomainPattern) === null;
 	}
 
 	subscribe(
-		_topics: string[] | string,
 		options?: AWSAppSyncRealTimeProviderOptions,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<Record<string, unknown>> {
-		const appSyncGraphqlEndpoint = options?.appSyncGraphqlEndpoint;
+		const {
+			appSyncGraphqlEndpoint,
+			region,
+			query,
+			variables,
+			authenticationType,
+		} = options;
 
 		return new Observable(observer => {
 			if (!options || !appSyncGraphqlEndpoint) {
@@ -225,7 +218,13 @@ export class AWSAppSyncRealTimeProvider {
 
 						const startSubscriptionPromise =
 							this._startSubscriptionWithAWSAppSyncRealTime({
-								options,
+								options: {
+									query,
+									variables,
+									region,
+									authenticationType,
+									appSyncGraphqlEndpoint,
+								},
 								observer,
 								subscriptionId,
 								customUserAgentDetails,
@@ -877,20 +876,19 @@ export class AWSAppSyncRealTimeProvider {
 		payload,
 		canonicalUri,
 		appSyncGraphqlEndpoint,
-		apiKey,
 		region,
 		additionalHeaders,
 	}: AWSAppSyncRealTimeAuthInput): Promise<
 		Record<string, unknown> | undefined
 	> {
+		debugger;
 		const headerHandler: {
 			[key: string]: (AWSAppSyncRealTimeAuthInput) => {};
 		} = {
-			API_KEY: this._awsRealTimeApiKeyHeader.bind(this),
-			AWS_IAM: this._awsRealTimeIAMHeader.bind(this),
-			OPENID_CONNECT: this._awsRealTimeOPENIDHeader.bind(this),
-			AMAZON_COGNITO_USER_POOLS: this._awsRealTimeCUPHeader.bind(this),
-			AWS_LAMBDA: this._customAuthHeader,
+			apiKey: this._awsRealTimeApiKeyHeader.bind(this),
+			iam: this._awsRealTimeIAMHeader.bind(this),
+			jwt: this._awsRealTimeOPENIDHeader.bind(this),
+			custom: this._customAuthHeader,
 		};
 
 		if (!authenticationType || !headerHandler[authenticationType.type]) {
@@ -902,7 +900,10 @@ export class AWSAppSyncRealTimeProvider {
 			const { host } = url.parse(appSyncGraphqlEndpoint ?? '');
 
 			logger.debug(`Authenticating with ${authenticationType}`);
-
+			let apiKey;
+			if (authenticationType.type === 'apiKey') {
+				apiKey = authenticationType.apiKey;
+			}
 			const result = await handler({
 				payload,
 				canonicalUri,

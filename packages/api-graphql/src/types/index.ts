@@ -15,7 +15,7 @@ type GraphQLAuthMode = 'AWS_IAM' | 'COGNITO_USERPOOLS' | 'API_KEY';
  */
 export interface GraphQLOptions {
 	query: string | DocumentNode;
-	variables?: object;
+	variables?: Record<string, unknown>;
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
 	/**

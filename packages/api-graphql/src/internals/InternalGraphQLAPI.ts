@@ -15,6 +15,7 @@ import {
 import Observable from 'zen-observable-ts';
 // TODO V6
 import {
+	Amplify,
 	// Amplify,
 	// ConsoleLogger as Logger,
 	// Credentials,
@@ -43,6 +44,7 @@ import {
 } from '../types';
 // import { RestClient } from '@aws-amplify/api-rest';
 import { post } from '@aws-amplify/api-rest';
+import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -69,6 +71,7 @@ export class InternalGraphQLAPIClass {
 	 */
 	private _options;
 	private _api = null;
+	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
 	// TODO V6: can be removed
 	// InternalAuth = InternalAuth;
@@ -453,27 +456,29 @@ export class InternalGraphQLAPIClass {
 	// 	return this._api.hasCancelToken(request);
 	// }
 
-	// private _graphqlSubscribe(
-	// 	{
-	// 		query,
-	// 		variables,
-	// 		authMode: defaultAuthenticationType,
-	// 		authToken,
-	// 	}: GraphQLOptions,
-	// 	additionalHeaders = {},
-	// 	customUserAgentDetails?: CustomUserAgentDetails
-	// ): Observable<any> {
-	// 	const {
-	// 		aws_appsync_region: region,
-	// 		aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
-	// 		aws_appsync_authenticationType,
-	// 		aws_appsync_apiKey: apiKey,
-	// 		graphql_headers = () => ({}),
-	// 	} = this._options;
-	// 	const authenticationType =
-	// 		defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
+	private _graphqlSubscribe(
+		{
+			query,
+			variables,
+			authMode: defaultAuthenticationType,
+			authToken,
+		}: GraphQLOptions,
+		additionalHeaders = {},
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Observable<any> {
+		if (!this.appSyncRealTime) {
+			const { AppSync } = Amplify.getConfig().API ?? {};
 
-		throw new Error('not implemented yet');
+			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
+
+			return this.appSyncRealTime.subscribe({
+				query: print(query as DocumentNode),
+				variables,
+				appSyncGraphqlEndpoint: AppSync.endpoint,
+				region: AppSync.region,
+				authenticationType: AppSync.defaultAuthMode,
+			});
+		}
 	}
 	// if (InternalPubSub && typeof InternalPubSub.subscribe === 'function') {
 	// 	return InternalPubSub.subscribe(
