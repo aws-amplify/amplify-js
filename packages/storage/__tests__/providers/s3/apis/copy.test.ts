@@ -8,7 +8,6 @@ import { copy } from '../../../../src/providers/s3/apis';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
-	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {
@@ -42,7 +41,7 @@ const copyObjectClientBaseParams = {
 
 /**
  * bucket is appended at start if it's a sourceKey
- * guest: public/${targetIdentityId}/${key}`
+ * guest: public/${key}`
  * private: private/${targetIdentityId}/${key}`
  * protected: protected/${targetIdentityId}/${key}`
  */
@@ -51,6 +50,8 @@ const buildClientRequestKey = (
 	KeyType: 'source' | 'destination',
 	accessLevel: StorageAccessLevel
 ) => {
+	const targetIdentityId = 'targetIdentityId';
+	const bucket = 'bucket';
 	const finalAccessLevel = accessLevel == 'guest' ? 'public' : accessLevel;
 	let finalKey = KeyType == 'source' ? `${bucket}/` : '';
 	finalKey += `${finalAccessLevel}/`;
