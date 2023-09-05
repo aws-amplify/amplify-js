@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
-import { StorageOptions, StorageOperationRequest } from '../../../../types';
-import { S3GetPropertiesResult } from '../../types';
+import { GetPropertiesRequest } from '../../../../types';
+import { S3GetPropertiesOptions, S3GetPropertiesResult } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { headObject } from '../../utils/client';
 
 export const getProperties = async function (
 	amplify: AmplifyClassV6,
-	getPropertiesRequest: StorageOperationRequest<StorageOptions>
+	getPropertiesRequest: GetPropertiesRequest<S3GetPropertiesOptions>
 ): Promise<S3GetPropertiesResult> {
 	const { key, options } = getPropertiesRequest;
 	const { s3Config, bucket, keyPrefix } = await resolveS3ConfigAndInput(

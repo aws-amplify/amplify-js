@@ -5,7 +5,11 @@
 import { Credentials } from '@aws-sdk/types';
 
 import { TransferProgressEvent } from '../../../types';
-import { StorageOptions } from '../../../types/options';
+import {
+	StorageOptions,
+	StorageListAllOptions,
+	StorageListPaginateOptions,
+} from '../../../types/options';
 
 /**
  * Request options type for S3 Storage operations.
@@ -19,15 +23,33 @@ export type S3Options = StorageOptions & {
 };
 
 /**
- * Request options type for S3 downloadData, uploadData APIs.
+ * Request options type for S3 getProperties API.
  */
-export type S3TransferOptions = S3Options & {
-	/**
-	 * Callback function tracking the upload/download progress.
-	 */
-	onProgress?: (event: TransferProgressEvent) => void;
-};
+export type S3GetPropertiesOptions = S3Options;
 
+/**
+ * Request options type for S3 getProperties API.
+ */
+export type S3RemoveOptions = S3Options;
+
+/**
+ * Request options type for S3 list API.
+ */
+export type S3ListAllOptions = StorageListAllOptions;
+
+/**
+ * Request options type for S3 list API.
+ */
+export type S3ListPaginateOptions = StorageListPaginateOptions;
+
+/**
+ * Request options type for S3 downloadData API.
+ */
+export type S3DownloadDataOptions = S3TransferOptions;
+
+/**
+ * Request options type for S3 getUrl API.
+ */
 export type S3GetUrlOptions = S3Options & {
 	/**
 	 * Whether to head object to make sure the object existence before downloading.
@@ -41,7 +63,7 @@ export type S3GetUrlOptions = S3Options & {
 	expiresIn?: number;
 };
 
-export type S3UploadOptions = S3TransferOptions & {
+export type S3UploadDataOptions = S3TransferOptions & {
 	/**
 	 * The default content-disposition header value of the file when downloading it.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
@@ -75,4 +97,13 @@ export type ResolvedS3Config = {
 	customEndpoint?: string;
 	forcePathStyle?: boolean;
 	useAccelerateEndpoint?: boolean;
+};
+/**
+ * Request options type for S3 downloadData, uploadData APIs.
+ */
+type S3TransferOptions = S3Options & {
+	/**
+	 * Callback function tracking the upload/download progress.
+	 */
+	onProgress?: (event: TransferProgressEvent) => void;
 };

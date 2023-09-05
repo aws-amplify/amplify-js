@@ -3,9 +3,13 @@
 
 export {
 	S3Options,
-	S3TransferOptions,
 	S3GetUrlOptions,
-	S3UploadOptions,
+	S3UploadDataOptions,
+	S3GetPropertiesOptions,
+	S3ListAllOptions,
+	S3ListPaginateOptions,
+	S3RemoveOptions,
+	S3DownloadDataOptions,
 } from './options';
 export {
 	S3DownloadDataResult,
@@ -17,5 +21,6 @@ export {
 	S3ListPaginateResult,
 	S3GetPropertiesResult,
 	S3CopyResult,
+	S3RemoveResult,
 } from './results';
 export { S3Exception } from './errors';

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StorageUploadSourceOptions } from '../../../../../types';
+import { UploadDataPayload } from '../../../../../types';
 import {
 	StorageValidationErrorCode,
 	validationErrorMap,
@@ -15,10 +15,7 @@ export type PartToUpload = {
 	size: number;
 };
 
-export const getDataChunker = (
-	data: StorageUploadSourceOptions,
-	totalSize?: number
-) => {
+export const getDataChunker = (data: UploadDataPayload, totalSize?: number) => {
 	const partSize = calculatePartSize(totalSize);
 
 	if (data instanceof Blob) {

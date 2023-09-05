@@ -3,7 +3,7 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 
-import { StorageDownloadDataRequest } from '../../../../types';
+import { GetUrlRequest } from '../../../../types';
 import { S3GetUrlOptions, S3GetUrlResult } from '../../types';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { getPresignedGetObjectUrl } from '../../utils/client';
@@ -16,7 +16,7 @@ const MAX_URL_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
 
 export const getUrl = async function (
 	amplify: AmplifyClassV6,
-	getUrlRequest: StorageDownloadDataRequest<S3GetUrlOptions>
+	getUrlRequest: GetUrlRequest<S3GetUrlOptions>
 ): Promise<S3GetUrlResult> {
 	const { key, options } = getUrlRequest;
 

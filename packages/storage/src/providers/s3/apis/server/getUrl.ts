@@ -5,13 +5,16 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
-import { StorageDownloadDataRequest } from '../../../../types';
+import { GetUrlRequest } from '../../../../types';
 import { S3GetUrlOptions, S3GetUrlResult } from '../../types';
 import { getUrl as getUrlInternal } from '../internal/getUrl';
 
 export const getUrl = async (
 	contextSpec: AmplifyServer.ContextSpec,
-	req: StorageDownloadDataRequest<S3GetUrlOptions>
+	getUrlRequest: GetUrlRequest<S3GetUrlOptions>
 ): Promise<S3GetUrlResult> => {
-	return getUrlInternal(getAmplifyServerContext(contextSpec).amplify, req);
+	return getUrlInternal(
+		getAmplifyServerContext(contextSpec).amplify,
+		getUrlRequest
+	);
 };

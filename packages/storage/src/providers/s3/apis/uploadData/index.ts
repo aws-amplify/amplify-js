@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { S3UploadDataResult, S3UploadOptions } from '../../types';
+import { S3UploadDataResult, S3UploadDataOptions } from '../../types';
 import { createUploadTask } from '../../utils';
-import { StorageUploadDataRequest, UploadTask } from '../../../../types';
+import { UploadDataRequest, UploadTask } from '../../../../types';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { DEFAULT_PART_SIZE, MAX_OBJECT_SIZE } from '../../utils/constants';
@@ -19,7 +19,7 @@ import { getMultipartUploadHandlers } from './multipart';
  * * Maximum object size is 5TB.
  * * Maximum object size if the size cannot be determined before upload is 50GB.
  *
- * @param {StorageUploadDataRequest<S3UploadOptions>} uploadDataRequest The parameters that are passed to the
+ * @param {UploadDataRequest<S3UploadDataOptions>} uploadDataRequest The parameters that are passed to the
  * 	uploadData operation.
  * @returns {UploadTask<S3UploadDataResult>} Cancelable and Resumable task exposing result promise from `result`
  * 	property.
@@ -61,7 +61,7 @@ import { getMultipartUploadHandlers } from './multipart';
  * ```
  */
 export const uploadData = (
-	uploadDataRequest: StorageUploadDataRequest<S3UploadOptions>
+	uploadDataRequest: UploadDataRequest<S3UploadDataOptions>
 ): UploadTask<S3UploadDataResult> => {
 	const { data } = uploadDataRequest;
 

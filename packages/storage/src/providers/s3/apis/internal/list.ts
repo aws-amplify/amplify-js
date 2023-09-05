@@ -2,13 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
-import {
-	StorageListRequest,
-	StorageListAllOptions,
-	StorageListPaginateOptions,
-} from '../../../../types';
+import { ListRequest } from '../../../../types';
 import {
 	S3ListOutputItem,
+	S3ListAllOptions,
+	S3ListPaginateOptions,
 	S3ListAllResult,
 	S3ListPaginateResult,
 } from '../../types';
@@ -31,8 +29,8 @@ type ListRequestArgs = {
 export const list = async (
 	amplify: AmplifyClassV6,
 	listRequest?:
-		| StorageListRequest<StorageListAllOptions>
-		| StorageListRequest<StorageListPaginateOptions>
+		| ListRequest<S3ListAllOptions>
+		| ListRequest<S3ListPaginateOptions>
 ): Promise<S3ListAllResult | S3ListPaginateResult> => {
 	const { options = {}, path = '' } = listRequest ?? {};
 	const {

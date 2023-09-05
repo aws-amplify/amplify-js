@@ -7,7 +7,7 @@ export type StorageItem = {
 	/**
 	 * Key of the object
 	 */
-	key?: string;
+	key: string;
 	/**
 	 * Creation date of the object.
 	 */
@@ -44,10 +44,6 @@ export type StorageGetUrlResult = {
 };
 
 export type StorageUploadResult<Item extends StorageItem> = Item;
-
-export type StorageRemoveResult = {
-	key: string;
-};
 
 export type StorageListResult<Item extends StorageItem> = {
 	items: Item[];

@@ -3,17 +3,17 @@
 
 import { Amplify } from '@aws-amplify/core';
 
-import { S3TransferOptions, S3DownloadDataResult } from '../types';
+import { S3DownloadDataOptions, S3DownloadDataResult } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { StorageDownloadDataRequest, DownloadTask } from '../../../types';
+import { DownloadDataRequest, DownloadTask } from '../../../types';
 import { createDownloadTask } from '../utils';
 import { getObject } from '../utils/client';
 
 /**
  * Download S3 object data to memory
  *
- * @param {StorageDownloadDataRequest<S3TransferOptions>} downloadDataRequest The parameters that are passed to the
+ * @param {DownloadDataRequest<S3DownloadDataOptions>} downloadDataRequest The parameters that are passed to the
  * 	downloadData operation.
  * @returns {DownloadTask<S3DownloadDataResult>} Cancelable task exposing result promise from `result` property.
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
@@ -42,7 +42,7 @@ import { getObject } from '../utils/client';
  *```
  */
 export const downloadData = (
-	downloadDataRequest: StorageDownloadDataRequest<S3TransferOptions>
+	downloadDataRequest: DownloadDataRequest<S3DownloadDataOptions>
 ): DownloadTask<S3DownloadDataResult> => {
 	const abortController = new AbortController();
 
@@ -60,7 +60,7 @@ const downloadDataJob =
 		{
 			options: downloadDataOptions,
 			key,
-		}: StorageDownloadDataRequest<S3TransferOptions>,
+		}: DownloadDataRequest<S3DownloadDataOptions>,
 		abortSignal: AbortSignal
 	) =>
 	async () => {

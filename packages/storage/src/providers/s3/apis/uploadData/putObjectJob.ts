@@ -3,9 +3,9 @@
 
 import { Amplify } from '@aws-amplify/core';
 
-import { S3UploadOptions } from '../../types';
+import { S3UploadDataOptions } from '../../types';
 import { calculateContentMd5, resolveS3ConfigAndInput } from '../../utils';
-import { StorageUploadDataRequest } from '../../../../types';
+import { UploadDataRequest } from '../../../../types';
 import { S3Item } from '../../types/results';
 import { putObject } from '../../utils/client';
 
@@ -20,7 +20,7 @@ export const putObjectJob =
 			options: uploadDataOptions,
 			key,
 			data,
-		}: StorageUploadDataRequest<S3UploadOptions>,
+		}: UploadDataRequest<S3UploadDataOptions>,
 		abortSignal: AbortSignal,
 		totalLength?: number
 	) =>

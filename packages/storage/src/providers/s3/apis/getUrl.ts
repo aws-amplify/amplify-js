@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { StorageDownloadDataRequest } from '../../../types';
+import { GetUrlRequest } from '../../../types';
 import { S3GetUrlOptions, S3GetUrlResult } from '../types';
 import { getUrl as getUrlInternal } from './internal/getUrl';
 
 /**
  * Get Presigned url of the object
  *
- * @param {StorageDownloadDataRequest<S3GetUrlOptions>} The request object
+ * @param {GetUrlRequest<S3GetUrlOptions>} The request object
  * @return {Promise<S3GetUrlResult>} url of the object
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors
@@ -19,7 +19,7 @@ import { getUrl as getUrlInternal } from './internal/getUrl';
  *
  */
 export const getUrl = (
-	req: StorageDownloadDataRequest<S3GetUrlOptions>
+	getUrlRequest: GetUrlRequest<S3GetUrlOptions>
 ): Promise<S3GetUrlResult> => {
-	return getUrlInternal(Amplify, req);
+	return getUrlInternal(Amplify, getUrlRequest);
 };
