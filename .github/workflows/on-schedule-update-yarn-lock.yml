@@ -41,9 +41,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN_AMPLIFY_JS_AUTOMATION }}
           BRANCH: update-yarnlock/${{ steps.current-date.outputs.date }}
+          WEBHOOK_URL: ${{ secrets.SLACK_PR_WEBHOOK_URL }}
         run: |
-          gh pr create \
+          PR_URL=$(gh pr create \
           --title "chore: update yarn.lock" \
           --body "Update the yarn.lock file" \
           --head $BRANCH \
-          --base main
+          --base main) && export PR_URL
+          curl -X POST -H "Content-Type: application/json" --data '{ \
+            "PR_URL": "$PR_URL", \
+            "PR_DESC": "yarn.lock file update" \
+          }' $WEBHOOK_URL

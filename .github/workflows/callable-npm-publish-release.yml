@@ -43,3 +43,4 @@ jobs:
         working-directory: ./amplify-js
         run: |
           git push origin release
+          git push -f origin required-release
