@@ -2,23 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import {
-	Amplify,
-	StorageAccessLevel,
-	fetchAuthSession,
-} from '@aws-amplify/core';
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
-	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
+		Auth: {
+			fetchAuthSession: jest.fn(),
+		},
 	},
 }));
 const mockCopyObject = copyObject as jest.Mock;
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 
 const sourceKey = 'sourceKey';
@@ -43,7 +41,7 @@ const copyObjectClientBaseParams = {
 
 /**
  * bucket is appended at start if it's a sourceKey
- * guest: public/${targetIdentityId}/${key}`
+ * guest: public/${key}`
  * private: private/${targetIdentityId}/${key}`
  * protected: protected/${targetIdentityId}/${key}`
  */
@@ -52,6 +50,8 @@ const buildClientRequestKey = (
 	KeyType: 'source' | 'destination',
 	accessLevel: StorageAccessLevel
 ) => {
+	const targetIdentityId = 'targetIdentityId';
+	const bucket = 'bucket';
 	const finalAccessLevel = accessLevel == 'guest' ? 'public' : accessLevel;
 	let finalKey = KeyType == 'source' ? `${bucket}/` : '';
 	finalKey += `${finalAccessLevel}/`;

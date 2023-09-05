@@ -7,18 +7,41 @@ import {
 	AmplifyServerContextError,
 	CookieStorage,
 } from '@aws-amplify/core/internals/adapter-core';
-import { IncomingMessage, ServerResponse } from 'http';
 
 export const DATE_IN_THE_PAST = new Date(0);
 
 export const createCookieStorageAdapterFromNextServerContext = (
 	context: NextServer.Context
 ): CookieStorage.Adapter => {
-	const { request, response } = context as
-		| NextServer.NextRequestAndNextResponseContext
-		| NextServer.NextRequestAndResponseContext;
+	const { request: req, response: res } =
+		context as Partial<NextServer.GetServerSidePropsContext>;
 
-	if (request instanceof NextRequest && response) {
+	// When the server context is from `getServerSideProps`, the `req` is an instance
+	// of IncomingMessage, and the `res` is an instance of ServerResponse.
+	// We cannot import these two classes here from `http` as it breaks in Next
+	// Edge Runtime. Hence, we check the methods that we need to use for creating
+	// cookie adapter.
+	if (
+		req &&
+		res &&
+		Object.prototype.toString.call(req.cookies) === '[object Object]' &&
+		typeof res.setHeader === 'function'
+	) {
+		return createCookieStorageAdapterFromGetServerSidePropsContext(req, res);
+	}
+
+	const { request, response } = context as Partial<
+		| NextServer.NextRequestAndNextResponseContext
+		| NextServer.NextRequestAndResponseContext
+	>;
+
+	// When the server context is from `middleware`, the `request` is an instance
+	// of `NextRequest`.
+	// When the server context is from a route handler, the `request` is an `Proxy`
+	// wrapped `Request`.
+	// The `NextRequest` and the `Proxy` are sharing the same interface by Next
+	// implementation. So we don't need to detect the difference.
+	if (request && response) {
 		if (response instanceof NextResponse) {
 			return createCookieStorageAdapterFromNextRequestAndNextResponse(
 				request,
@@ -32,19 +55,12 @@ export const createCookieStorageAdapterFromNextServerContext = (
 		}
 	}
 
-	const { cookies } = context as
-		| NextServer.ServerComponentContext
-		| NextServer.ServerActionContext;
+	const { cookies } = context as Partial<
+		NextServer.ServerComponentContext | NextServer.ServerActionContext
+	>;
 
 	if (typeof cookies === 'function') {
 		return createCookieStorageAdapterFromNextCookies(cookies);
-	}
-
-	const { request: req, response: res } =
-		context as NextServer.GetServerSidePropsContext;
-
-	if (req instanceof IncomingMessage && res instanceof ServerResponse) {
-		return createCookieStorageAdapterFromGetServerSidePropsContext(req, res);
 	}
 
 	// This should not happen normally.
