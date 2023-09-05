@@ -71,10 +71,7 @@ describe('getUrl test', () => {
 		it.each([
 			{
 				options: { accessLevel: 'guest', validateObjectExistence: true },
-				headObjectOptions: {
-					Bucket: 'bucket',
-					Key: 'public/key',
-				},
+				expectedKey: 'public/key',
 			},
 			{
 				options: {
@@ -82,11 +79,7 @@ describe('getUrl test', () => {
 					targetIdentityId,
 					validateObjectExistence: true,
 				},
-
-				headObjectOptions: {
-					Bucket: 'bucket',
-					Key: 'protected/targetIdentityId/key',
-				},
+				expectedKey: 'protected/targetIdentityId/key',
 			},
 			{
 				options: {
@@ -94,27 +87,25 @@ describe('getUrl test', () => {
 					targetIdentityId,
 					validateObjectExistence: true,
 				},
-				headObjectOptions: {
-					Bucket: 'bucket',
-					Key: 'private/targetIdentityId/key',
-				},
+				expectedKey: 'private/targetIdentityId/key',
 			},
-		])(
-			'getUrl with $options.accessLevel',
-			async ({ options, headObjectOptions }) => {
-				expect.assertions(4);
-				const result = await getUrl({
-					key,
-					options: options as StorageOptions,
-				});
-				expect(getPresignedGetObjectUrl).toBeCalledTimes(1);
-				expect(headObject).toBeCalledTimes(1);
-				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
-				expect(result.url).toEqual({
-					url: new URL('https://google.com'),
-				});
-			}
-		);
+		])('getUrl with $options.accessLevel', async ({ options, expectedKey }) => {
+			const headObjectOptions = {
+				Bucket: 'bucket',
+				Key: expectedKey,
+			};
+			expect.assertions(4);
+			const result = await getUrl({
+				key,
+				options: options as StorageOptions,
+			});
+			expect(getPresignedGetObjectUrl).toBeCalledTimes(1);
+			expect(headObject).toBeCalledTimes(1);
+			expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
+			expect(result.url).toEqual({
+				url: new URL('https://google.com'),
+			});
+		});
 	});
 	describe('getUrl error path', () => {
 		afterAll(() => {

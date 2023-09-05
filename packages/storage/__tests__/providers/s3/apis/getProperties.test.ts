@@ -74,28 +74,23 @@ describe('getProperties api', () => {
 		it.each([
 			{
 				options: { accessLevel: 'guest' },
-				headObjectOptions: {
-					Bucket: 'bucket',
-					Key: 'public/key',
-				},
+				expectedKey: 'public/key',
 			},
 			{
 				options: { accessLevel: 'protected', targetIdentityId },
-				headObjectOptions: {
-					Bucket: 'bucket',
-					Key: 'protected/targetIdentityId/key',
-				},
+				expectedKey: 'protected/targetIdentityId/key',
 			},
 			{
 				options: { accessLevel: 'private' },
-				headObjectOptions: {
-					Bucket: 'bucket',
-					Key: 'private/targetIdentityId/key',
-				},
+				expectedKey: 'private/targetIdentityId/key',
 			},
 		])(
 			'getProperties api with $options.accessLevel',
-			async ({ options, headObjectOptions }) => {
+			async ({ options, expectedKey }) => {
+				const headObjectOptions = {
+					Bucket: 'bucket',
+					Key: expectedKey,
+				};
 				expect.assertions(3);
 				expect(
 					await getProperties({
