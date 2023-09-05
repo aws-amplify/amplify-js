@@ -45,6 +45,11 @@ describe('getUrl test', () => {
 		});
 	});
 	describe('getUrl happy path', () => {
+		const config = {
+			credentials,
+			region: 'region',
+		};
+		const key = 'key';
 		beforeEach(() => {
 			(headObject as jest.Mock).mockImplementation(() => {
 				return {
@@ -65,43 +70,29 @@ describe('getUrl test', () => {
 		});
 		it.each([
 			{
-				key: 'key',
 				options: { accessLevel: 'guest', validateObjectExistence: true },
-				config: {
-					credentials,
-					region: 'region',
-				},
 				headObjectOptions: {
 					Bucket: 'bucket',
 					Key: 'public/key',
 				},
 			},
 			{
-				key: 'key',
 				options: {
 					accessLevel: 'protected',
 					targetIdentityId,
 					validateObjectExistence: true,
 				},
-				config: {
-					credentials,
-					region: 'region',
-				},
+
 				headObjectOptions: {
 					Bucket: 'bucket',
 					Key: 'protected/targetIdentityId/key',
 				},
 			},
 			{
-				key: 'key',
 				options: {
 					accessLevel: 'private',
 					targetIdentityId,
 					validateObjectExistence: true,
-				},
-				config: {
-					credentials,
-					region: 'region',
 				},
 				headObjectOptions: {
 					Bucket: 'bucket',
@@ -110,7 +101,7 @@ describe('getUrl test', () => {
 			},
 		])(
 			'getUrl with $options.accessLevel',
-			async ({ key, options, config, headObjectOptions }) => {
+			async ({ options, headObjectOptions }) => {
 				expect.assertions(4);
 				const result = await getUrl({
 					key,
