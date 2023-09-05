@@ -30,12 +30,13 @@ const credentials: Credentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const targetIdentityId = 'targetIdentityId';
+const identityId = 'identityId';
 
 describe('getUrl test', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
-			identityId: targetIdentityId,
+			identityId,
 		});
 		mockGetConfig.mockReturnValue({
 			Storage: {
@@ -80,8 +81,12 @@ describe('getUrl test', () => {
 				expectedKey: 'protected/targetIdentityId/key',
 			},
 			{
+				options: { accessLevel: 'protected' },
+				expectedKey: 'protected/identityId/key',
+			},
+			{
 				options: { accessLevel: 'private' },
-				expectedKey: 'private/targetIdentityId/key',
+				expectedKey: 'private/identityId/key',
 			},
 		])('getUrl with $options.accessLevel', async ({ options, expectedKey }) => {
 			const headObjectOptions = {
