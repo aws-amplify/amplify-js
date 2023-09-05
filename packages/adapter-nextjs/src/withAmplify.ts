@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ResourcesConfig } from '@aws-amplify/core';
+import { ResourcesConfig, parseAmplifyConfig } from 'aws-amplify';
 import { NextConfig } from 'next';
 
 // NOTE: this function is exported from the subpath `/with-amplify`.
@@ -10,8 +10,21 @@ import { NextConfig } from 'next';
 
 /**
  * Merges the `amplifyConfig` into the `nextConfig.env`.
+ *
  * @param nextConfig The next config for a Next.js app.
- * @param amplifyConfig
+ * @param amplifyConfig The Amplify configuration.
+ *
+ *   **NOTE**: If you are using Amplify CLI to generate the `aws-exports.js`
+ *   file, you need to use {@link parseAmplifyConfig} to reformat the configuration.
+ *   E.g.
+ *   ```javascript
+ *   const { parseAmplifyConfig } = require('aws-amplify');
+ *   const { withAmplify } = require('@aws-amplify/adapter-nextjs/with-amplify');
+ *   const config = require('./src/aws-exports');
+ *
+ *   const nextConfig = {};
+ *   module.exports = withAmplify(nextConfig, parseAmplifyConfig(config));
+ *   ```
  * @returns The updated `nextConfig`.
  */
 export const withAmplify = (
