@@ -121,8 +121,7 @@
 		"testPathIgnorePatterns": [
 			"xmlParser-fixture.ts",
 			"testUtils",
-			"cases",
-			"__utils__"
+			"cases"
 		],
 		"modulePathIgnorePatterns": [
 			"dist",

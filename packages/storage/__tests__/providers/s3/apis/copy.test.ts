@@ -5,7 +5,6 @@ import { Credentials } from '@aws-sdk/types';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';
-import { buildClientRequestKey } from './__utils__/buildClientRequestKey';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -38,6 +37,27 @@ const copyObjectClientConfig = {
 const copyObjectClientBaseParams = {
 	Bucket: bucket,
 	MetadataDirective: 'COPY',
+};
+
+/**
+ * bucket is appended at start if it's a sourceKey
+ * guest: public/${key}`
+ * private: private/${targetIdentityId}/${key}`
+ * protected: protected/${targetIdentityId}/${key}`
+ */
+const buildClientRequestKey = (
+	key: string,
+	KeyType: 'source' | 'destination',
+	accessLevel: StorageAccessLevel
+) => {
+	const targetIdentityId = 'targetIdentityId';
+	const bucket = 'bucket';
+	const finalAccessLevel = accessLevel == 'guest' ? 'public' : accessLevel;
+	let finalKey = KeyType == 'source' ? `${bucket}/` : '';
+	finalKey += `${finalAccessLevel}/`;
+	finalKey += finalAccessLevel != 'public' ? `${targetIdentityId}/` : '';
+	finalKey += `${key}`;
+	return finalKey;
 };
 
 const interAccessLevelTest = async (
