@@ -1,14 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fetchAuthSession } from '@aws-amplify/core';
+import {
+	AWSCredentialsAndIdentityId,
+	fetchAuthSession,
+} from '@aws-amplify/core';
 import { apiOptions } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { parse, format } from 'url';
-import {
-	Credentials,
-	signRequest,
-} from '@aws-amplify/core/internals/aws-client-utils';
+import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 
 // const logger = new Logger('RestClient');
 
@@ -45,8 +45,8 @@ export class RestClient {
 	 *
 	 * For more details, see https://github.com/aws-amplify/amplify-js/pull/3769#issuecomment-552660025
 	 */
-	private _cancelTokenMap: WeakMap<any, CancelTokenSource> | null = null;
-
+	private _cancelTokenMap: WeakMap<Promise<any>, CancelTokenSource> | null =
+		null;
 	/**
 	 * @param {RestClientOptions} [options] - Instance options
 	 */
@@ -73,111 +73,117 @@ export class RestClient {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async ajax(url: string, method: string, init) {
+	ajax(url: string, method: string, init) {
 		// logger.debug(method, urlOrApiInfo);
+		const source = axios.CancelToken.source();
+		const promise = new Promise(async (res, rej) => {
+			const parsed_url = new URL(url);
 
-		const parsed_url = new URL(url);
+			const region: string = init.region || 'us-east-1';
+			const service: string = init.serviceName || 'execute-api';
 
-		const region: string = init.region || 'us-east-1';
-		const service: string = init.serviceName || 'execute-api';
+			const params = {
+				method,
+				url,
+				host: parsed_url.host,
+				path: parsed_url.pathname,
+				headers: {},
+				data: JSON.stringify(''),
+				responseType: 'json',
+				timeout: 0,
+			};
 
-		const params = {
-			method,
-			url,
-			host: parsed_url.host,
-			path: parsed_url.pathname,
-			headers: {},
-			data: JSON.stringify(''),
-			responseType: 'json',
-			timeout: 0,
-			cancelToken: null,
-		};
-
-		const libraryHeaders = {};
-		const initParams = Object.assign({}, init);
-		const isAllResponse = initParams.response;
-		if (initParams.body) {
-			if (
-				typeof FormData === 'function' &&
-				initParams.body instanceof FormData
-			) {
-				libraryHeaders['Content-Type'] = 'multipart/form-data';
-				params.data = initParams.body;
-			} else {
-				libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
-				params.data = JSON.stringify(initParams.body);
-			}
-		}
-		if (initParams.responseType) {
-			params.responseType = initParams.responseType;
-		}
-		if (initParams.withCredentials) {
-			params['withCredentials'] = initParams.withCredentials;
-		}
-		if (initParams.timeout) {
-			params.timeout = initParams.timeout;
-		}
-		if (initParams.cancellableToken) {
-			params.cancelToken = initParams.cancellableToken.token;
-		}
-
-		params['signerServiceInfo'] = initParams.signerServiceInfo;
-
-		// custom_header callback
-
-		params.headers = {
-			...libraryHeaders,
-			...initParams.headers,
-		};
-
-		// Intentionally discarding search
-		const { search, ...parsedUrl } = parse(url, true, true);
-		params.url = format({
-			...parsedUrl,
-			query: {
-				...parsedUrl.query,
-				...(initParams.queryStringParameters || {}),
-			},
-		});
-
-		// Do not sign the request if client has added 'Authorization' header,
-		// which means custom authorizer.
-		if (typeof params.headers['Authorization'] !== 'undefined') {
-			params.headers = Object.keys(params.headers).reduce((acc, k) => {
-				if (params.headers[k]) {
-					acc[k] = params.headers[k];
+			const libraryHeaders = {};
+			const initParams = Object.assign({}, init);
+			const isAllResponse = initParams.response;
+			if (initParams.body) {
+				if (
+					typeof FormData === 'function' &&
+					initParams.body instanceof FormData
+				) {
+					libraryHeaders['Content-Type'] = 'multipart/form-data';
+					params.data = initParams.body;
+				} else {
+					libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
+					params.data = JSON.stringify(initParams.body);
 				}
-				return acc;
-				// tslint:disable-next-line:align
-			}, {});
-			return this._request(params, isAllResponse);
-		}
+			}
+			if (initParams.responseType) {
+				params.responseType = initParams.responseType;
+			}
+			if (initParams.withCredentials) {
+				params['withCredentials'] = initParams.withCredentials;
+			}
+			if (initParams.timeout) {
+				params.timeout = initParams.timeout;
+			}
 
-		let credentials: Credentials;
+			params['signerServiceInfo'] = initParams.signerServiceInfo;
 
-		try {
-			credentials = (await fetchAuthSession()).credentials;
-		} catch (error) {
-			// logger.debug('No credentials available, the request will be unsigned');
-			return this._request(params, isAllResponse);
-		}
+			// custom_header callback
 
-		let signedParams;
-		try {
+			params.headers = {
+				...libraryHeaders,
+				...initParams.headers,
+			};
+
+			// Intentionally discarding search
+			const { search, ...parsedUrl } = parse(url, true, true);
+			params.url = format({
+				...parsedUrl,
+				query: {
+					...parsedUrl.query,
+					...(initParams.queryStringParameters || {}),
+				},
+			});
+
+			// Do not sign the request if client has added 'Authorization' header,
+			// which means custom authorizer.
+			if (typeof params.headers['Authorization'] !== 'undefined') {
+				params.headers = Object.keys(params.headers).reduce((acc, k) => {
+					if (params.headers[k]) {
+						acc[k] = params.headers[k];
+					}
+					return acc;
+					// tslint:disable-next-line:align
+				}, {});
+				return this._request(params, isAllResponse);
+			}
+
+			let credentials: AWSCredentialsAndIdentityId;
+
+			try {
+				const session = await fetchAuthSession();
+				credentials = {
+					credentials: session.credentials,
+					identityId: session.identityId,
+				};
+			} catch (error) {
+				// logger.debug('No credentials available, the request will be unsigned');
+				return this._request(params, isAllResponse);
+			}
+
+			let signedParams;
 			// before signed PARAMS
 			signedParams = this._sign({ ...params }, credentials, {
 				region,
 				service,
 			});
 
-			const response = await axios({
-				...signedParams,
-				data: signedParams.body,
-			});
-			return isAllResponse ? response : response.data;
-		} catch (error) {
-			throw error;
-		}
+			try {
+				res(
+					await axios({
+						...signedParams,
+						data: signedParams.body,
+						cancelToken: source.token,
+					})
+				);
+			} catch (error) {
+				rej(error);
+			}
+		});
+		this._cancelTokenMap.set(promise, source);
+		return promise;
 	}
 
 	/**
@@ -340,9 +346,8 @@ export class RestClient {
 			data: BodyInit;
 			responseType: string;
 			timeout: number;
-			cancelToken: any;
 		},
-		credentials: Credentials,
+		credentialsAndIdentityId: AWSCredentialsAndIdentityId,
 		{ service, region }
 	) {
 		const signed_params = signRequest(
@@ -353,7 +358,7 @@ export class RestClient {
 				body: params.data,
 			},
 			{
-				credentials,
+				credentials: credentialsAndIdentityId.credentials,
 				signingRegion: region,
 				signingService: service,
 			}
@@ -361,7 +366,7 @@ export class RestClient {
 
 		// logger.debug('Signed Request: ', signed_params);
 
-		// delete signed_params.headers['host'];
+		delete signed_params.headers['host'];
 
 		return signed_params;
 	}
