@@ -313,12 +313,12 @@ export class InternalGraphQLAPIClass {
 				// 	cancellableToken
 				// );
 				return responsePromise;
-			// case 'subscription':
-			// 	return this._graphqlSubscribe(
-			// 		{ query, variables, authMode },
-			// 		headers,
-			// 		customUserAgentDetails
-			// 	);
+			case 'subscription':
+				return this._graphqlSubscribe(
+					{ query, variables, authMode },
+					headers,
+					customUserAgentDetails
+				);
 			default:
 				throw new Error(`invalid operation type: ${operationType}`);
 		}
