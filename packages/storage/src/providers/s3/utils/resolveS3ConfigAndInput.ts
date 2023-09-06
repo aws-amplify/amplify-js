@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyClassV6,
-	fetchAuthSession,
-	StorageAccessLevel,
-} from '@aws-amplify/core';
+import { AmplifyClassV6, StorageAccessLevel } from '@aws-amplify/core';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { StorageError } from '../../../errors/StorageError';
@@ -44,7 +40,7 @@ export const resolveS3ConfigAndInput = async (
 	apiOptions?: S3ApiOptions
 ): Promise<ResolvedS3ConfigAndInput> => {
 	// identityId is always cached in memory if forceRefresh is not set. So we can safely make calls here.
-	const { credentials, identityId } = await fetchAuthSession({
+	const { credentials, identityId } = await amplify.Auth.fetchAuthSession({
 		forceRefresh: false,
 	});
 	assertValidationError(
