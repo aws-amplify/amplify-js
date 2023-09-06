@@ -28,7 +28,7 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 
 const logger = new Logger('Predictions');
 
-class PredictionsClass {
+export class PredictionsClass {
 	private _convertPluggables: AbstractConvertPredictionsProvider[] = [];
 	private _identifyPluggables: AbstractIdentifyPredictionsProvider[] = [];
 	private _interpretPluggables: AbstractInterpretPredictionsProvider[] = [];
@@ -192,14 +192,7 @@ class PredictionsClass {
 	}
 
 	private configurePluggable(pluggable: AbstractPredictionsProvider) {
-		const config = Amplify.getConfig();
-		const category = pluggable.getCategory().toLowerCase();
-
-		const categoryConfig = {
-			...config.predictions, // Parent predictions config for the top level provider
-			...config.predictions[category], // Actual category level config
-		};
-		pluggable.configure(categoryConfig);
+		pluggable.configure(Amplify.getConfig().predictions || {});
 	}
 
 	private implementsConvertPluggable(
