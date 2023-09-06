@@ -7,15 +7,13 @@ import { S3GetUrlOptions, S3GetUrlResult } from '../types';
 import { getUrl as getUrlInternal } from './internal/getUrl';
 
 /**
- * Get Presigned url of the object
+ * Get a preSigned and temporary URL from your S3 bucket. The result has the expiration at which url expires
  *
  * @param {StorageDownloadDataRequest<S3GetUrlOptions>} The request object
  * @return {Promise<S3GetUrlResult>} url of the object
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors
  * thrown either username or key are not defined.
- *
- * TODO: add config errors
  *
  */
 export const getUrl = (
