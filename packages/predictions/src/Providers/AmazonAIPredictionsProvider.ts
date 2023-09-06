@@ -8,7 +8,6 @@ import {
 	TranslateTextInput,
 	TextToSpeechInput,
 	SpeechToTextInput,
-	PredictionsOptions,
 	IdentifyTextInput,
 	IdentifyTextOutput,
 	IdentifyLabelsInput,
@@ -40,13 +39,6 @@ export class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
 
 	getProviderName(): string {
 		return 'AmazonAIPredictionsProvider';
-	}
-
-	configure(config: PredictionsOptions) {
-		this.convertProvider.configure(config.convert);
-		this.identifyProvider.configure(config.identify);
-		this.interpretProvider.configure(config.interpret);
-		return config;
 	}
 
 	interpret(input: InterpretTextInput): Promise<InterpretTextOutput> {

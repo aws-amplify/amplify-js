@@ -23,7 +23,6 @@ import {
 	AbstractInterpretPredictionsProvider,
 	AbstractPredictionsProvider,
 } from './types/Providers';
-import { Amplify } from '@aws-amplify/core';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 
 const logger = new Logger('Predictions');
@@ -59,9 +58,6 @@ export class PredictionsClass {
 		if (this.implementsInterpretPluggable(pluggable)) {
 			this._interpretPluggables.push(pluggable);
 			pluggableAdded = true;
-		}
-		if (pluggableAdded) {
-			this.configurePluggable(pluggable);
 		}
 	}
 
@@ -189,10 +185,6 @@ export class PredictionsClass {
 			...this._identifyPluggables,
 			...this._interpretPluggables,
 		];
-	}
-
-	private configurePluggable(pluggable: AbstractPredictionsProvider) {
-		pluggable.configure(Amplify.getConfig().predictions || {});
 	}
 
 	private implementsConvertPluggable(

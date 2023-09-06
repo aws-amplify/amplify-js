@@ -138,7 +138,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				region = '',
 				defaults: { format: configFormat = 'PLAIN' } = {},
 			} = {},
-		} = this._config;
+		} = Amplify.getConfig().predictions?.identify || {};
 		this.rekognitionClient = new RekognitionClient({
 			region,
 			credentials,
@@ -240,7 +240,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 					region = '',
 					defaults: { type = 'LABELS' } = {},
 				} = {},
-			} = this._config;
+			} = Amplify.getConfig().predictions?.identify || {};
 			this.rekognitionClient = new RekognitionClient({
 				region,
 				credentials,
@@ -357,7 +357,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 					maxEntities: maxFacesConfig = 50,
 				} = {},
 			} = {},
-		} = this._config;
+		} = Amplify.getConfig().predictions?.identify || {};
 		// default arguments
 
 		this.rekognitionClient = new RekognitionClient({
