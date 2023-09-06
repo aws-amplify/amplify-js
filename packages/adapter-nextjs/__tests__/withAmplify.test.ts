@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ResourcesConfig } from '@aws-amplify/core';
+import { ResourcesConfig } from 'aws-amplify';
 import { withAmplify } from '../src/withAmplify';
 
 const mockAmplifyConfig: ResourcesConfig = {
@@ -16,7 +16,7 @@ const mockAmplifyConfig: ResourcesConfig = {
 		S3: {
 			bucket: 'bucket',
 			region: 'us-east-1',
-		}
+		},
 	},
 };
 
