@@ -12,7 +12,6 @@ import { resolveS3ConfigAndInput } from '../../utils';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 
 const DEFAULT_PRESIGN_EXPIRATION = 900;
-const MAX_URL_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
 
 export const getUrl = async function (
 	amplify: AmplifyClassV6,
@@ -37,9 +36,8 @@ export const getUrl = async function (
 		);
 		urlExpirationInSec = Math.min(awsCredExpirationInSec, urlExpirationInSec);
 	}
-
 	assertValidationError(
-		urlExpirationInSec < MAX_URL_EXPIRATION,
+		!(urlExpirationInSec > DEFAULT_PRESIGN_EXPIRATION),
 		StorageValidationErrorCode.UrlExpirationMaxLimitExceed
 	);
 
