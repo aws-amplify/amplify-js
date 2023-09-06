@@ -37,7 +37,7 @@ jobs:
           git add yarn.lock
           git commit -am "chore: update yarn.lock"
           git push origin HEAD
-      - name: Create Pull Request
+      - name: Create Pull Request and post to slack
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN_AMPLIFY_JS_AUTOMATION }}
           BRANCH: update-yarnlock/${{ steps.current-date.outputs.date }}

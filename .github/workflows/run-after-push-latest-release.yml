@@ -53,7 +53,7 @@ jobs:
           git fetch origin
           git checkout -b $BRANCH
           git push origin HEAD
-      - name: Create Pull Request
+      - name: Create Pull Request and post to slack
         working-directory: ./amplify-js
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN_AMPLIFY_JS_AUTOMATION }}
