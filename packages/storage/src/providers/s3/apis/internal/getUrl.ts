@@ -40,7 +40,7 @@ export const getUrl = async function (
 	}
 	const maxUrlExpirationInSec = MAX_URL_EXPIRATION / 1000;
 	assertValidationError(
-		urlExpirationInSec < maxUrlExpirationInSec,
+		urlExpirationInSec <= maxUrlExpirationInSec,
 		StorageValidationErrorCode.UrlExpirationMaxLimitExceed
 	);
 
