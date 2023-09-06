@@ -7,7 +7,7 @@ import {
 	PredictionsAction,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
-import { Storage } from '@aws-amplify/storage';
+import { getUrl } from '@aws-amplify/storage';
 import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
 import {
 	RekognitionClient,
@@ -79,14 +79,15 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		return new Promise((res, rej) => {
 			if (isStorageSource(source)) {
 				const storageConfig = {
-					level: source.level,
-					identityId: source.identityId,
+					accessLevel: source.level,
+					targetIdentityId: source.identityId,
 				};
-				Storage.get(source.key, storageConfig)
-					.then((url: string) => {
+				console.log(storageConfig);
+				getUrl({ key: source.key, options: storageConfig })
+					.then(value => {
 						const parser =
 							/https:\/\/([a-zA-Z0-9%\-_.]+)\.s3\.[A-Za-z0-9%\-._~]+\/([a-zA-Z0-9%\-._~/]+)\?/;
-						const parsedURL = url.match(parser);
+						const parsedURL = value.url.toString().match(parser) || '';
 						if (parsedURL.length < 3) rej('Invalid S3 key was given.');
 						res({
 							S3Object: {
