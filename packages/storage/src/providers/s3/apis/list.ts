@@ -23,7 +23,7 @@ type S3ListApi = {
 		req?: StorageListRequest<StorageListPaginateOptions>
 	): Promise<S3ListPaginateResult>;
 	/**
-	 * List all files from S3. You can set list all to true in options to get all the files from S3.
+	 * List all files from S3. You can set listAll to true in options to get all the files from S3.
 	 * @param {StorageListRequest<StorageListAllOptions>} req - The request object
 	 * @return {Promise<S3ListAllResult>} - Promise resolves to list of keys and metadata for all objects in path
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
