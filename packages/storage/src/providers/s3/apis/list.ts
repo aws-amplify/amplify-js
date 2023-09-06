@@ -12,7 +12,7 @@ import { list as listInternal } from './internal/list';
 
 type S3ListApi = {
 	/**
-	 * List files from your S3 bucket.
+	 * List files with given prefix in pages
 	 * pageSize defaulted to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
 	 * @param {StorageListRequest<StorageListPaginateOptions>} req - The request object
 	 * @return {Promise<S3ListPaginateResult>} - Promise resolves to list of keys and metadata with
