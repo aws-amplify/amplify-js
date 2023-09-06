@@ -1,42 +1,57 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+// Defaults for ConvertConfig
+type SpeechGeneratorDefaults = {
+	VoiceId?: string;
+};
+type TranscriptionDefaults = {
+	language?: string;
+};
+type TranslateTextDefaults = {
+	sourceLanguage?: string;
+	targetLanguage?: string;
+};
+
+// Defaults for IdentifyConfig
+type IdentifyEntitiesDefaults = {
+	collectionId?: string;
+	maxEntities?: number;
+};
+type IdentityLabelsDefaults = {
+	type?: string;
+};
+type IdentifyTextDefaults = {
+	format?: string;
+};
+
+// Defaults for InterpretConfig
+type InterpretTextDefaults = {
+	type?: string;
+};
+
 type ConvertConfig = {
-	speechGenerator?: {
-		region: string;
-		proxy: boolean;
-		defaults: { VoiceId: string };
-	};
-	translateText?: {
-		region?: string;
-		proxy?: boolean;
-		defaults?: {
-			sourceLanguage?: string;
-			targetLanguage?: string;
-		};
-	};
+	speechGenerator?: PredictionsProviderConfig<SpeechGeneratorDefaults>;
+	transcriptionDefaults?: PredictionsProviderConfig<TranscriptionDefaults>;
+	translateText?: PredictionsProviderConfig<TranslateTextDefaults>;
 };
 
 type IdentifyConfig = {
-	identifyEntities?: {
-		region?: string;
-		proxy?: boolean;
+	identifyEntities?: PredictionsProviderConfig<IdentifyEntitiesDefaults> & {
 		celebrityDetectionEnabled?: boolean;
-		defaults?: {
-			collectionId?: string;
-			maxEntities?: number;
-		};
 	};
+	identifyLabels?: PredictionsProviderConfig<IdentityLabelsDefaults>;
+	identifyText?: PredictionsProviderConfig<IdentifyTextDefaults>;
 };
 
 type InterpretConfig = {
-	interpretText?: {
-		region?: string;
-		proxy?: boolean;
-		defaults?: {
-			type?: string;
-		};
-	};
+	interpretText?: PredictionsProviderConfig<InterpretTextDefaults>;
+};
+
+export type PredictionsProviderConfig<T> = {
+	region?: string;
+	proxy?: boolean;
+	defaults?: T;
 };
 
 export type PredictionsConfig = {
