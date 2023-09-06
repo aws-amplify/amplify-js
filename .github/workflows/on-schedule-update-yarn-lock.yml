@@ -47,8 +47,7 @@ jobs:
           --title "chore: update yarn.lock" \
           --body "Update the yarn.lock file" \
           --head $BRANCH \
-          --base main) && export PR_URL
-          curl -X POST -H "Content-Type: application/json" --data '{ \
-            "PR_URL": "$PR_URL", \
-            "PR_DESC": "yarn.lock file update" \
-          }' $WEBHOOK_URL
+          --base main)
+          curl -X POST -H "Content-Type: application/json" \
+            --data '{"PR_URL":"'$PR_URL'","PR_DESC":"yarn.lock file update"}' \
+            $WEBHOOK_URL

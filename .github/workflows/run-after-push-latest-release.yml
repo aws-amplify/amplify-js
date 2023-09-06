@@ -64,8 +64,7 @@ jobs:
           --title "chore: Merge release back to main" \
           --body "Merge version updates and docs changes from release back to main." \
           --head $BRANCH \
-          --base main) && export PR_URL
-          curl -X POST -H "Content-Type: application/json" --data '{ \
-            "PR_URL": "$PR_URL", \
-            "PR_DESC": "Post-release merge to main" \
-          }' $WEBHOOK_URL
+          --base main)
+          curl -X POST -H "Content-Type: application/json" \
+            --data '{"PR_URL":"'$PR_URL'","PR_DESC":"Post-release merge to main"}' \
+            $WEBHOOK_URL
