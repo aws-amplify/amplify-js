@@ -32,7 +32,7 @@ type InterpretTextDefaults = {
 
 type ConvertConfig = {
 	speechGenerator?: PredictionsProviderConfig<SpeechGeneratorDefaults>;
-	transcriptionDefaults?: PredictionsProviderConfig<TranscriptionDefaults>;
+	transcription?: PredictionsProviderConfig<TranscriptionDefaults>;
 	translateText?: PredictionsProviderConfig<TranslateTextDefaults>;
 };
 
