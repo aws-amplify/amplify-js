@@ -7,7 +7,7 @@ import { S3GetUrlOptions, S3GetUrlResult } from '../types';
 import { getUrl as getUrlInternal } from './internal/getUrl';
 
 /**
- * Get a preSigned and temporary URL from your S3 bucket. The result has the expiration at which url expires
+ * Get a preSigned and temporary URL from your S3 bucket. The result has the expiresAt which the url expires.
  *
  * @param {StorageDownloadDataRequest<S3GetUrlOptions>} The request object
  * @return {Promise<S3GetUrlResult>} url of the object
