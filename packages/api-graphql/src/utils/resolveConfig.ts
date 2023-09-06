@@ -9,9 +9,14 @@ import { APIValidationErrorCode, assertValidationError } from './errors';
  */
 export const resolveConfig = () => {
 	// TODO V6
-	const { appId, region } = Amplify.getConfig().API ?? {};
-	assertValidationError(!!appId, APIValidationErrorCode.NoAppId);
+	const { region, defaultAuthMode, endpoint } =
+		Amplify.getConfig().API?.AppSync ?? {};
+	assertValidationError(!!endpoint, APIValidationErrorCode.NoAppId);
 	assertValidationError(!!region, APIValidationErrorCode.NoRegion);
+	assertValidationError(
+		!!defaultAuthMode,
+		APIValidationErrorCode.NoDefaultAuthMode
+	);
 	// TODO V6
-	return { appId, region };
+	return { endpoint, region, defaultAuthMode };
 };

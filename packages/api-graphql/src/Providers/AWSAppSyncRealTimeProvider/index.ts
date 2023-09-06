@@ -5,29 +5,16 @@ import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';
 import { Buffer } from 'buffer';
-import { ProviderOptions } from '../../types/Provider';
-import {
-	Logger,
-	Credentials,
-	Signer,
-	Hub,
-	USER_AGENT_HEADER,
-	jitteredExponentialRetry,
-	NonRetryableError,
-	ICredentials,
-	isNonRetryableError,
-	CustomUserAgentDetails,
-	getAmplifyUserAgent,
-	Cache,
-} from '@aws-amplify/core';
-import { Auth, GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
-import { AbstractPubSubProvider } from '../PubSubProvider';
+import { Hub, fetchAuthSession } from '@aws-amplify/core';
+
 import {
 	CONTROL_MSG,
 	ConnectionState,
 	PubSubContent,
 	PubSubContentObserver,
-} from '../../../../api-graphql/src/types/PubSub';
+} from '../../types/PubSub';
+
+import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 
 import {
 	AMPLIFY_SYMBOL,
@@ -51,6 +38,17 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
+import { GraphQLAuthMode } from '@aws-amplify/core/lib-esm/singleton/API/types';
+
+import {
+	CustomUserAgentDetails,
+	Logger,
+	NonRetryableError,
+	USER_AGENT_HEADER,
+	getAmplifyUserAgent,
+	isNonRetryableError,
+	jitteredExponentialRetry,
+} from '@aws-amplify/core/internals/utils';
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
@@ -73,8 +71,6 @@ const standardDomainPattern =
 
 const customDomainPath = '/realtime';
 
-type GraphqlAuthModes = keyof typeof GRAPHQL_AUTH_MODE;
-
 type DataObject = {
 	data: Record<string, unknown>;
 };
@@ -93,9 +89,9 @@ type ParsedMessagePayload = {
 	};
 };
 
-export interface AWSAppSyncRealTimeProviderOptions extends ProviderOptions {
+export interface AWSAppSyncRealTimeProviderOptions {
 	appSyncGraphqlEndpoint?: string;
-	authenticationType?: GraphqlAuthModes;
+	authenticationType?: GraphQLAuthMode;
 	query?: string;
 	variables?: Record<string, unknown>;
 	apiKey?: string;
@@ -111,7 +107,7 @@ type AWSAppSyncRealTimeAuthInput =
 		host?: string | undefined;
 	};
 
-export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyncRealTimeProviderOptions> {
+export class AWSAppSyncRealTimeProvider {
 	private awsRealTimeSocket?: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
 	private keepAliveTimeoutId?: ReturnType<typeof setTimeout>;
@@ -124,8 +120,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
 	private connectionStateMonitorSubscription: ZenObservable.Subscription;
 
-	constructor(options: ProviderOptions = {}) {
-		super(options);
+	constructor(options: AWSAppSyncRealTimeProviderOptions = {}) {
 		// Monitor the connection state and pass changes along to Hub
 		this.connectionStateMonitorSubscription =
 			this.connectionStateMonitor.connectionStateObservable.subscribe(
@@ -185,29 +180,22 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		return 'AWSAppSyncRealTimeProvider';
 	}
 
-	newClient(): Promise<any> {
-		throw new Error('Not used here');
-	}
-
-	public async publish(
-		_topics: string[] | string,
-		_msg: PubSubContent,
-		_options?: AWSAppSyncRealTimeProviderOptions
-	) {
-		throw new Error('Operation not supported');
-	}
-
 	// Check if url matches standard domain pattern
 	private isCustomDomain(url: string): boolean {
 		return url.match(standardDomainPattern) === null;
 	}
 
 	subscribe(
-		_topics: string[] | string,
 		options?: AWSAppSyncRealTimeProviderOptions,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<Record<string, unknown>> {
-		const appSyncGraphqlEndpoint = options?.appSyncGraphqlEndpoint;
+		const {
+			appSyncGraphqlEndpoint,
+			region,
+			query,
+			variables,
+			authenticationType,
+		} = options;
 
 		return new Observable(observer => {
 			if (!options || !appSyncGraphqlEndpoint) {
@@ -230,7 +218,13 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 
 						const startSubscriptionPromise =
 							this._startSubscriptionWithAWSAppSyncRealTime({
-								options,
+								options: {
+									query,
+									variables,
+									region,
+									authenticationType,
+									appSyncGraphqlEndpoint,
+								},
 								observer,
 								subscriptionId,
 								customUserAgentDetails,
@@ -288,12 +282,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 				};
 			}
 		});
-	}
-
-	protected get isSSLEnabled() {
-		return !this.options[
-			'aws_appsync_dangerously_connect_to_http_endpoint_for_testing'
-		];
 	}
 
 	private async _startSubscriptionWithAWSAppSyncRealTime({
@@ -572,11 +560,11 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 				subscriptionReadyCallback();
 			}
 			if (startAckTimeoutId) clearTimeout(startAckTimeoutId);
-			dispatchApiEvent(
-				CONTROL_MSG.SUBSCRIPTION_ACK,
-				{ query, variables },
-				'Connection established for subscription'
-			);
+			// dispatchApiEvent(
+			// 	CONTROL_MSG.SUBSCRIPTION_ACK,
+			// 	{ query, variables },
+			// 	'Connection established for subscription'
+			// );
 			const subscriptionState = SUBSCRIPTION_STATUS.CONNECTED;
 			if (observer) {
 				this.subscriptionObserverMap.set(id, {
@@ -727,7 +715,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 					}
 
 					// Creating websocket url with required query strings
-					const protocol = this.isSSLEnabled ? 'wss://' : 'ws://';
+					const protocol = 'wss://';
 					discoverableEndpoint = discoverableEndpoint
 						.replace('https://', protocol)
 						.replace('http://', protocol);
@@ -888,32 +876,34 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		payload,
 		canonicalUri,
 		appSyncGraphqlEndpoint,
-		apiKey,
 		region,
 		additionalHeaders,
 	}: AWSAppSyncRealTimeAuthInput): Promise<
 		Record<string, unknown> | undefined
 	> {
+		debugger;
 		const headerHandler: {
-			[key in GraphqlAuthModes]: (AWSAppSyncRealTimeAuthInput) => {};
+			[key: string]: (AWSAppSyncRealTimeAuthInput) => {};
 		} = {
-			API_KEY: this._awsRealTimeApiKeyHeader.bind(this),
-			AWS_IAM: this._awsRealTimeIAMHeader.bind(this),
-			OPENID_CONNECT: this._awsRealTimeOPENIDHeader.bind(this),
-			AMAZON_COGNITO_USER_POOLS: this._awsRealTimeCUPHeader.bind(this),
-			AWS_LAMBDA: this._customAuthHeader,
+			apiKey: this._awsRealTimeApiKeyHeader.bind(this),
+			iam: this._awsRealTimeIAMHeader.bind(this),
+			jwt: this._awsRealTimeOPENIDHeader.bind(this),
+			custom: this._customAuthHeader,
 		};
 
-		if (!authenticationType || !headerHandler[authenticationType]) {
+		if (!authenticationType || !headerHandler[authenticationType.type]) {
 			logger.debug(`Authentication type ${authenticationType} not supported`);
 			return undefined;
 		} else {
-			const handler = headerHandler[authenticationType];
+			const handler = headerHandler[authenticationType.type];
 
 			const { host } = url.parse(appSyncGraphqlEndpoint ?? '');
 
 			logger.debug(`Authenticating with ${authenticationType}`);
-
+			let apiKey;
+			if (authenticationType.type === 'apiKey') {
+				apiKey = authenticationType.apiKey;
+			}
 			const result = await handler({
 				payload,
 				canonicalUri,
@@ -929,9 +919,9 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 	}
 
 	private async _awsRealTimeCUPHeader({ host }: AWSAppSyncRealTimeAuthInput) {
-		const session = await Auth.currentSession();
+		const session = await fetchAuthSession();
 		return {
-			Authorization: session.getAccessToken().getJwtToken(),
+			Authorization: session.tokens.accessToken.toString(),
 			host,
 		};
 	}
@@ -939,22 +929,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 	private async _awsRealTimeOPENIDHeader({
 		host,
 	}: AWSAppSyncRealTimeAuthInput) {
-		let token;
-		// backwards compatibility
-		const federatedInfo = await Cache.getItem('federatedInfo');
-		if (federatedInfo) {
-			token = federatedInfo.token;
-		} else {
-			const currentUser = await Auth.currentAuthenticatedUser();
-			if (currentUser) {
-				token = currentUser.token;
-			}
-		}
-		if (!token) {
-			throw new Error('No federated jwt');
-		}
+		const session = await fetchAuthSession();
+
 		return {
-			Authorization: token,
+			Authorization: session.tokens.accessToken.toString(),
 			host,
 		};
 	}
@@ -984,20 +962,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 			service: 'appsync',
 		};
 
-		const credentialsOK = await this._ensureCredentials();
-		if (!credentialsOK) {
-			throw new Error('No credentials');
-		}
-		const creds = await Credentials.get().then((credentials: any) => {
-			const { secretAccessKey, accessKeyId, sessionToken } =
-				credentials as ICredentials;
-
-			return {
-				secret_key: secretAccessKey,
-				access_key: accessKeyId,
-				session_token: sessionToken,
-			};
-		});
+		const creds = (await fetchAuthSession()).credentials;
 
 		const request = {
 			url: `${appSyncGraphqlEndpoint}${canonicalUri}`,
@@ -1006,7 +971,19 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 			headers: { ...AWS_APPSYNC_REALTIME_HEADERS },
 		};
 
-		const signed_params = Signer.sign(request, creds, endpointInfo);
+		const signed_params = signRequest(
+			{
+				headers: request.headers,
+				method: request.method,
+				url: new URL(request.url),
+				body: request.data,
+			},
+			{
+				credentials: creds,
+				signingRegion: endpointInfo.region,
+				signingService: endpointInfo.service,
+			}
+		);
 		return signed_params.headers;
 	}
 
@@ -1022,23 +999,5 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 			Authorization: additionalHeaders.Authorization,
 			host,
 		};
-	}
-
-	/**
-	 * @private
-	 */
-	_ensureCredentials() {
-		return Credentials.get()
-			.then((credentials: any) => {
-				if (!credentials) return false;
-				const cred = Credentials.shear(credentials);
-				logger.debug('set credentials for AWSAppSyncRealTimeProvider', cred);
-
-				return true;
-			})
-			.catch((err: any) => {
-				logger.warn('ensure credentials error', err);
-				return false;
-			});
 	}
 }

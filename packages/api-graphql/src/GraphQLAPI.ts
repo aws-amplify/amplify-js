@@ -40,4 +40,3 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 }
 
 export const GraphQLAPI = new GraphQLAPIClass(null);
-// Amplify.register(GraphQLAPI);

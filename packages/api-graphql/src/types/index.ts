@@ -2,19 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
-export { GRAPHQL_AUTH_MODE };
+// import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
+// export { GRAPHQL_AUTH_MODE };
 import { Observable } from 'zen-observable-ts';
-// PubSub does not currently compile in V6, and will be replaced:
+// TODO: remove for now:
 // import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
+
+type GraphQLAuthMode = 'AWS_IAM' | 'COGNITO_USERPOOLS' | 'API_KEY';
 
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
  */
 export interface GraphQLOptions {
 	query: string | DocumentNode;
-	variables?: object;
-	authMode?: keyof typeof GRAPHQL_AUTH_MODE;
+	variables?: Record<string, unknown>;
+	authMode?: GraphQLAuthMode;
 	authToken?: string;
 	/**
 	 * @deprecated This property should not be used
@@ -84,6 +86,23 @@ export type GraphqlSubscriptionMessage<T> = {
 	value: { data?: T };
 };
 
+export interface AWSAppSyncRealTimeProviderOptions {
+	appSyncGraphqlEndpoint?: string;
+	authenticationType?: GraphQLAuthMode;
+	query?: string;
+	variables?: Record<string, unknown>;
+	apiKey?: string;
+	region?: string;
+	graphql_headers?: () => {} | (() => Promise<{}>);
+	additionalHeaders?: { [key: string]: string };
+}
+
+export type AWSAppSyncRealTimeProvider = {
+	subscribe(
+		options?: AWSAppSyncRealTimeProviderOptions
+	): Observable<Record<string, unknown>>;
+};
+
 export enum GraphQLAuthError {
 	NO_API_KEY = 'No api-key configured',
 	NO_CURRENT_USER = 'No current user',
@@ -108,7 +127,7 @@ export interface GraphQLOptionsV6<
 > {
 	query: TYPED_GQL_STRING | DocumentNode;
 	variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
-	authMode?: keyof typeof GRAPHQL_AUTH_MODE;
+	authMode?: GraphQLAuthMode;
 	authToken?: string;
 	/**
 	 * @deprecated This property should not be used

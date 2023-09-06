@@ -1,4 +1,4 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { post } from './API';
+export { post, cancel, isCancel } from './API';
