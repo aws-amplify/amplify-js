@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { Amplify } from '@aws-amplify/core';
 import {
 	Category,
-	Credentials,
 	PredictionsAction,
 	getAmplifyUserAgentObject,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/utils';
 import { AbstractInterpretPredictionsProvider } from '../types/Providers';
 
 import {
@@ -39,7 +39,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 
 	interpretText(input: InterpretTextInput): Promise<InterpretTextOutput> {
 		return new Promise(async (res, rej) => {
-			const credentials = await Credentials.get();
+			const { credentials } = await Amplify.Auth.fetchAuthSession();
 			if (!credentials) return rej('No credentials');
 			const {
 				interpretText: {

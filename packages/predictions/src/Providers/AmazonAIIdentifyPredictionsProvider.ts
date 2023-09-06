@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { Amplify } from '@aws-amplify/core';
 import {
 	Category,
-	Credentials,
 	ConsoleLogger as Logger,
 	PredictionsAction,
 	getAmplifyUserAgentObject,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/utils';
 import { Storage } from '@aws-amplify/storage';
 import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
 import {
@@ -131,7 +131,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 	protected async identifyText(
 		input: IdentifyTextInput
 	): Promise<IdentifyTextOutput> {
-		const credentials = await Credentials.get();
+		const { credentials } = await Amplify.Auth.fetchAuthSession();
 		if (!credentials) return Promise.reject('No credentials');
 		const {
 			identifyText: {
@@ -233,7 +233,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		input: IdentifyLabelsInput
 	): Promise<IdentifyLabelsOutput> {
 		try {
-			const credentials = await Credentials.get();
+			const { credentials } = await Amplify.Auth.fetchAuthSession();
 			if (!credentials) return Promise.reject('No credentials');
 			const {
 				identifyLabels: {
@@ -346,7 +346,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 	protected async identifyEntities(
 		input: IdentifyEntitiesInput
 	): Promise<IdentifyEntitiesOutput> {
-		const credentials = await Credentials.get();
+		const { credentials } = await Amplify.Auth.fetchAuthSession();
 		if (!credentials) return Promise.reject('No credentials');
 		const {
 			identifyEntities: {
