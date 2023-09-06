@@ -114,7 +114,7 @@ export interface TextToSpeechOutput {
 
 export interface StorageSource {
 	key: string;
-	level?: 'public' | 'private' | 'protected';
+	level?: 'guest' | 'private' | 'protected';
 	identityId?: string;
 }
 
