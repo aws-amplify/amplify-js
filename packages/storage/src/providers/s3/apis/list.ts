@@ -13,10 +13,9 @@ import { list as listInternal } from './internal/list';
 type S3ListApi = {
 	/**
 	 * List files from your S3 bucket.
-	 * You can paginate through files by passing page size and nextToken from previous api call.
+	 * pageSize defaulted to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
 	 * @param {StorageListRequest<StorageListPaginateOptions>} req - The request object
 	 * @return {Promise<S3ListPaginateResult>} - Promise resolves to list of keys and metadata with
-	 * pageSize defaulting to 1000. Additionally the result will include a nextToken if there are more items to retrieve
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
