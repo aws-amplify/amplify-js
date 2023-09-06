@@ -12,7 +12,7 @@ import {
 	SpeechToTextOutput,
 } from '../Predictions';
 import { AbstractPredictionsProvider } from './AbstractPredictionsProvider';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 const logger = new Logger('AbstractConvertPredictionsProvider');
 
 export abstract class AbstractConvertPredictionsProvider extends AbstractPredictionsProvider {
