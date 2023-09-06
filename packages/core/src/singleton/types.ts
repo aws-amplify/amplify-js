@@ -43,6 +43,7 @@ export {
 	AuthIdentityPoolConfig,
 	AuthUserPoolAndIdentityPoolConfig,
 	GetCredentialsOptions,
+	PredictionsConfig,
 	StorageAccessLevel,
 	StorageConfig,
 	AnalyticsConfig,
