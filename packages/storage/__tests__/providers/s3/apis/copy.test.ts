@@ -50,6 +50,8 @@ const buildClientRequestKey = (
 	KeyType: 'source' | 'destination',
 	accessLevel: StorageAccessLevel
 ) => {
+	const targetIdentityId = 'targetIdentityId';
+	const bucket = 'bucket';
 	const finalAccessLevel = accessLevel == 'guest' ? 'public' : accessLevel;
 	let finalKey = KeyType == 'source' ? `${bucket}/` : '';
 	finalKey += `${finalAccessLevel}/`;
