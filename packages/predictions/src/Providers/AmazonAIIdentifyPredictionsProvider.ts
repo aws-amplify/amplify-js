@@ -82,7 +82,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 					accessLevel: source.level,
 					targetIdentityId: source.identityId,
 				};
-				console.log(storageConfig);
+
 				getUrl({ key: source.key, options: storageConfig })
 					.then(value => {
 						const parser =
