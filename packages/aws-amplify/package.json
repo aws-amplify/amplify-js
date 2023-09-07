@@ -321,6 +321,12 @@
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ uploadData }",
 			"limit": "23.05 kB"
+		},
+		{
+			"name": "[Geo] Geo (Location Service)",
+			"path": "./lib-esm/geo/index.js",
+			"import": "{ Geo }",
+			"limit": "47.50 kB"
 		}
 	],
 	"jest": {
