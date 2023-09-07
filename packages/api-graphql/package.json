@@ -52,7 +52,6 @@
   "dependencies": {
     "@aws-amplify/api-rest": "4.0.0",
     "@aws-amplify/auth": "6.0.0",
-    "@aws-amplify/cache": "5.1.10",
     "@aws-amplify/core": "6.0.0",
 	"@aws-sdk/types": "3.387.0",
     "graphql": "15.8.0",

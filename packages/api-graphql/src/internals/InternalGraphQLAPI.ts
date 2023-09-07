@@ -31,7 +31,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 // import { InternalPubSub } from '@aws-amplify/pubsub/internals';
 // import { InternalAuth } from '@aws-amplify/auth/internals';
-import { Cache } from '@aws-amplify/cache';
+import { Cache } from '@aws-amplify/core';
 import {
 	GraphQLAuthError,
 	GraphQLOptions,

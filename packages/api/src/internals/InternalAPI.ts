@@ -14,7 +14,7 @@ import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
 import { post, cancel, isCancel } from '@aws-amplify/api-rest';
 // TODO this doesn't exist anymore:
 // import { Auth } from '@aws-amplify/auth';
-import { Cache } from '@aws-amplify/cache';
+import { Cache } from '@aws-amplify/core';
 // TODO V6
 // import {
 // 	Amplify,
