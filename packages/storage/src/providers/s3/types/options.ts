@@ -5,12 +5,12 @@
 import { Credentials } from '@aws-sdk/types';
 
 import { TransferProgressEvent } from '../../../types';
-import { StorageOptions } from '../../../types/options';
+import { AccessLevel } from '../../../types/options';
 
 /**
  * Request options type for S3 Storage operations.
  */
-export type S3Options = StorageOptions & {
+export type S3Options = AccessLevel & {
 	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false

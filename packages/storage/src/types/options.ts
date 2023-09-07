@@ -33,5 +33,8 @@ export type StorageCopySourceOptions = {
 
 export type StorageCopyDestinationOptions = {
 	key: string;
+} & AccessLevel;
+
+export type AccessLevel = {
 	accessLevel?: StorageAccessLevel;
 };
