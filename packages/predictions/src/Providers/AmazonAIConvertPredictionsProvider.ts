@@ -15,7 +15,7 @@ import {
 	SpeechToTextOutput,
 	isBytesSource,
 } from '../types';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
 	ConsoleLogger as Logger,
 	Signer,
@@ -62,7 +62,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			return Promise.reject('region not configured for transcription');
 		}
 
-		const { credentials } = await Amplify.Auth.fetchAuthSession();
+		const { credentials } = await fetchAuthSession();
 		if (!credentials) {
 			return Promise.reject('No credentials');
 		}
@@ -101,7 +101,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 	protected async convertTextToSpeech(
 		input: TextToSpeechInput
 	): Promise<TextToSpeechOutput> {
-		const { credentials } = await Amplify.Auth.fetchAuthSession();
+		const { credentials } = await fetchAuthSession();
 		if (!credentials) {
 			return Promise.reject('No credentials');
 		}
@@ -162,7 +162,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 	): Promise<SpeechToTextOutput> {
 		try {
 			logger.debug('starting transcription..');
-			const { credentials } = await Amplify.Auth.fetchAuthSession();
+			const { credentials } = await fetchAuthSession();
 			if (!credentials) {
 				return Promise.reject('No credentials');
 			}
