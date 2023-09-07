@@ -5,12 +5,12 @@
 import { Credentials } from '@aws-sdk/types';
 
 import { TransferProgressEvent } from '../../../types';
-import { AccessLevel } from '../../../types/options';
+import { StorageOptions } from '../../../types/options';
 
 /**
  * Request options type for S3 Storage operations.
  */
-export type S3Options = AccessLevel & {
+export type S3Options = StorageOptions & {
 	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false
@@ -41,7 +41,7 @@ export type S3GetUrlOptions = S3Options & {
 	expiresIn?: number;
 };
 
-export type S3UploadOptions = S3TransferOptions & {
+export type S3UploadOptions = Omit<S3TransferOptions, 'targetIdentityId'> & {
 	/**
 	 * The default content-disposition header value of the file when downloading it.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
