@@ -205,7 +205,7 @@ describe('list API', () => {
 		it.each(accessLevelTests)(
 			'Should list all objects successfully having three pages from $options.accessLevel accessLevel',
 			async ({ path, options, expectedPath }) => {
-				// expect.assertions(5);
+				expect.assertions(5);
 				mockListObjectsV2ApiWithPages(3);
 
 				const result = await list({

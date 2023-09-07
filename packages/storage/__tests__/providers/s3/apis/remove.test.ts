@@ -85,7 +85,6 @@ describe('remove API', () => {
 			'Should remove object with $options.accessLevel accessLevel',
 			async ({ options, expectedKey }) => {
 				expect.assertions(3);
-				console.log('options', options);
 				expect(
 					await remove({ key, options: options as StorageOptions })
 				).toEqual(removeResult);
@@ -109,7 +108,7 @@ describe('remove API', () => {
 					name: 'NotFound',
 				})
 			);
-			// expect.assertions(3);
+			expect.assertions(3);
 			const key = 'wrongKey';
 			try {
 				await remove({ key });
