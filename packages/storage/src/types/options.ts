@@ -25,7 +25,7 @@ export type StorageListPaginateOptions = StorageOptions & {
 	nextToken?: string;
 };
 
-export type StorageRemoveOptions = StorageOptions;
+export type StorageRemoveOptions = Omit<StorageOptions, 'targetIdentityId'>;
 
 export type StorageCopySourceOptions = {
 	key: string;

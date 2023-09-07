@@ -98,9 +98,9 @@ describe('remove API', () => {
 		it('Should remove object with protected accessLevel', async () => {
 			expect.assertions(3);
 			const accessLevel = 'protected';
-			expect(
-				await remove({ key, options: { accessLevel, targetIdentityId } })
-			).toEqual(removeResult);
+			expect(await remove({ key, options: { accessLevel } })).toEqual(
+				removeResult
+			);
 			expect(deleteObject).toBeCalledTimes(1);
 			expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 				Bucket: bucket,
