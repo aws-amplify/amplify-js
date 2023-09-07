@@ -16,7 +16,6 @@ jest.mock('@aws-amplify/core', () => ({
 			fetchAuthSession: jest.fn(),
 		},
 	},
-	fetchAuthSession: jest.fn(),
 }));
 const credentials: Credentials = {
 	accessKeyId: 'accessKeyId',

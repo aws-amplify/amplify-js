@@ -8,7 +8,6 @@ import { copy } from '../../../../src/providers/s3/apis';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
-	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {
@@ -42,7 +41,7 @@ const copyObjectClientBaseParams = {
 
 /**
  * bucket is appended at start if it's a sourceKey
- * guest: public/${targetIdentityId}/${key}`
+ * guest: public/${key}`
  * private: private/${targetIdentityId}/${key}`
  * protected: protected/${targetIdentityId}/${key}`
  */
@@ -57,40 +56,6 @@ const buildClientRequestKey = (
 	finalKey += finalAccessLevel != 'public' ? `${targetIdentityId}/` : '';
 	finalKey += `${key}`;
 	return finalKey;
-};
-
-const interAccessLevelTest = async (
-	sourceAccessLevel,
-	destinationAccessLevel
-) => {
-	expect.assertions(3);
-	const source = {
-		key: sourceKey,
-		accessLevel: sourceAccessLevel,
-	};
-	sourceAccessLevel == 'protected'
-		? (source['targetIdentityId'] = targetIdentityId)
-		: null;
-
-	expect(
-		await copy({
-			source,
-			destination: {
-				key: destinationKey,
-				accessLevel: destinationAccessLevel,
-			},
-		})
-	).toEqual(copyResult);
-	expect(copyObject).toBeCalledTimes(1);
-	expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
-		...copyObjectClientBaseParams,
-		CopySource: buildClientRequestKey(sourceKey, 'source', sourceAccessLevel),
-		Key: buildClientRequestKey(
-			destinationKey,
-			'destination',
-			destinationAccessLevel
-		),
-	});
 };
 
 describe('copy API', () => {
@@ -120,32 +85,83 @@ describe('copy API', () => {
 			jest.clearAllMocks();
 		});
 
-		describe('Copy from guest to all access levels', () => {
-			it('Should copy guest -> guest', async () =>
-				await interAccessLevelTest('guest', 'guest'));
-			it('Should copy guest -> private', async () =>
-				await interAccessLevelTest('guest', 'private'));
-			it('Should copy guest -> protected', async () =>
-				await interAccessLevelTest('guest', 'protected'));
-		});
+		it.each([
+			{
+				sourceAccessLevel: 'guest',
+				destinationAccessLevel: 'guest',
+			},
+			{
+				sourceAccessLevel: 'guest',
+				destinationAccessLevel: 'private',
+			},
+			{
+				sourceAccessLevel: 'guest',
+				destinationAccessLevel: 'protected',
+			},
+			{
+				sourceAccessLevel: 'private',
+				destinationAccessLevel: 'guest',
+			},
+			{
+				sourceAccessLevel: 'private',
+				destinationAccessLevel: 'private',
+			},
+			{
+				sourceAccessLevel: 'private',
+				destinationAccessLevel: 'protected',
+			},
+			{
+				sourceAccessLevel: 'protected',
+				destinationAccessLevel: 'guest',
+			},
+			{
+				sourceAccessLevel: 'protected',
+				destinationAccessLevel: 'private',
+			},
+			{
+				sourceAccessLevel: 'protected',
+				destinationAccessLevel: 'protected',
+			},
+		] as {
+			sourceAccessLevel: StorageAccessLevel;
+			destinationAccessLevel: StorageAccessLevel;
+		}[])(
+			'Should copy $sourceAccessLevel -> $destinationAccessLevel',
+			async ({ sourceAccessLevel, destinationAccessLevel }) => {
+				expect.assertions(3);
+				const source = {
+					key: sourceKey,
+					accessLevel: sourceAccessLevel,
+				};
+				sourceAccessLevel == 'protected'
+					? (source['targetIdentityId'] = targetIdentityId)
+					: null;
 
-		describe('Copy from private to all access levels', () => {
-			it('Should copy private -> guest', async () =>
-				await interAccessLevelTest('private', 'guest'));
-			it('Should copy private -> private', async () =>
-				await interAccessLevelTest('private', 'private'));
-			it('Should copy private -> protected', async () =>
-				await interAccessLevelTest('private', 'protected'));
-		});
-
-		describe('Copy from protected to all access levels', () => {
-			it('Should copy protected -> guest', async () =>
-				await interAccessLevelTest('protected', 'guest'));
-			it('Should copy protected -> private', async () =>
-				await interAccessLevelTest('protected', 'private'));
-			it('Should copy protected -> protected', async () =>
-				await interAccessLevelTest('protected', 'protected'));
-		});
+				expect(
+					await copy({
+						source: source,
+						destination: {
+							key: destinationKey,
+							accessLevel: destinationAccessLevel,
+						},
+					})
+				).toEqual(copyResult);
+				expect(copyObject).toBeCalledTimes(1);
+				expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
+					...copyObjectClientBaseParams,
+					CopySource: buildClientRequestKey(
+						sourceKey,
+						'source',
+						sourceAccessLevel
+					),
+					Key: buildClientRequestKey(
+						destinationKey,
+						'destination',
+						destinationAccessLevel
+					),
+				});
+			}
+		);
 	});
 
 	describe('Error Path Cases:', () => {

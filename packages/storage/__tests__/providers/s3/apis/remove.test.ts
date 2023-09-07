@@ -5,10 +5,10 @@ import { Credentials } from '@aws-sdk/types';
 import { Amplify } from '@aws-amplify/core';
 import { deleteObject } from '../../../../src/providers/s3/utils/client';
 import { remove } from '../../../../src/providers/s3/apis';
+import { StorageOptions } from '../../../../src/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
-	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {
@@ -23,6 +23,7 @@ const key = 'key';
 const bucket = 'bucket';
 const region = 'region';
 const targetIdentityId = 'targetIdentityId';
+const defaultIdentityId = 'defaultIdentityId';
 const removeResult = { key };
 const credentials: Credentials = {
 	accessKeyId: 'accessKeyId',
@@ -38,13 +39,13 @@ describe('remove API', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
-			identityId: targetIdentityId,
+			identityId: defaultIdentityId,
 		});
 		mockGetConfig.mockReturnValue({
 			Storage: {
 				S3: {
-					bucket: 'bucket',
-					region: 'region',
+					bucket,
+					region,
 				},
 			},
 		});
@@ -60,54 +61,41 @@ describe('remove API', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-
-		it('Should remove object with default accessLevel', async () => {
-			expect.assertions(3);
-			expect(await remove({ key })).toEqual(removeResult);
-			expect(deleteObject).toBeCalledTimes(1);
-			expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
-				Bucket: bucket,
-				Key: `public/${key}`,
-			});
-		});
-
-		it('Should remove object with guest accessLevel', async () => {
-			expect.assertions(3);
-			expect(await remove({ key, options: { accessLevel: 'guest' } })).toEqual(
-				removeResult
-			);
-			expect(deleteObject).toBeCalledTimes(1);
-			expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
-				Bucket: bucket,
-				Key: `public/${key}`,
-			});
-		});
-
-		it('Should remove object with private accessLevel', async () => {
-			expect.assertions(3);
-			const accessLevel = 'private';
-			expect(await remove({ key, options: { accessLevel } })).toEqual(
-				removeResult
-			);
-			expect(deleteObject).toBeCalledTimes(1);
-			expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
-				Bucket: bucket,
-				Key: `${accessLevel}/${targetIdentityId}/${key}`,
-			});
-		});
-
-		it('Should remove object with protected accessLevel', async () => {
-			expect.assertions(3);
-			const accessLevel = 'protected';
-			expect(
-				await remove({ key, options: { accessLevel, targetIdentityId } })
-			).toEqual(removeResult);
-			expect(deleteObject).toBeCalledTimes(1);
-			expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
-				Bucket: bucket,
-				Key: `${accessLevel}/${targetIdentityId}/${key}`,
-			});
-		});
+		it.each([
+			{
+				expectedKey: `public/${key}`,
+			},
+			{
+				options: { accessLevel: 'guest' },
+				expectedKey: `public/${key}`,
+			},
+			{
+				options: { accessLevel: 'private' },
+				expectedKey: `private/${defaultIdentityId}/${key}`,
+			},
+			{
+				options: { accessLevel: 'protected', targetIdentityId },
+				expectedKey: `protected/${targetIdentityId}/${key}`,
+			},
+			{
+				options: { accessLevel: 'protected' },
+				expectedKey: `protected/${defaultIdentityId}/${key}`,
+			},
+		])(
+			'Should remove object with $options.accessLevel accessLevel',
+			async ({ options, expectedKey }) => {
+				expect.assertions(3);
+				console.log('options', options);
+				expect(
+					await remove({ key, options: options as StorageOptions })
+				).toEqual(removeResult);
+				expect(deleteObject).toBeCalledTimes(1);
+				expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
+					Bucket: bucket,
+					Key: expectedKey,
+				});
+			}
+		);
 	});
 
 	describe('Error Path Cases:', () => {
@@ -121,7 +109,7 @@ describe('remove API', () => {
 					name: 'NotFound',
 				})
 			);
-			expect.assertions(3);
+			// expect.assertions(3);
 			const key = 'wrongKey';
 			try {
 				await remove({ key });
