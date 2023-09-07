@@ -27,12 +27,12 @@ export const runWithAmplifyServerContext: NextServer.RunOperationWithContext =
 		// context with token and credentials provider.
 		if (amplifyConfig.Auth) {
 			const keyValueStorage =
+				// When `null` is passed as the value of `nextServerContext`, opt-in
+				// unauthenticated role (primarily for static rendering). It's
+				// safe to use the singleton `MemoryKeyValueStorage` here, as the
+				// static rendering uses the same unauthenticated role cross-sever.
 				nextServerContext === null
-					? // When `null` is passed as the value of `nextServerContext`, opt-in
-					  // unauthenticated role (primarily for static rendering). It's
-					  // safe to use the singleton `MemoryKeyValueStorage` here, as the
-					  // static rendering uses the same unauthenticated role cross-sever.
-					  MemoryKeyValueStorage
+					? MemoryKeyValueStorage
 					: createKeyValueStorageFromCookieStorageAdapter(
 							createCookieStorageAdapterFromNextServerContext(nextServerContext)
 					  );
