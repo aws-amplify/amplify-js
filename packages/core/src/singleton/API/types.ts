@@ -1,11 +1,17 @@
-// TODO V6 - Ivan will own this
+// TODO V6
+/**
+ * exports file
+ * auth modes
+ * headers should be on second param
+ */
 
 // import { DocumentNode } from 'graphql';
 // TODO: update as this no longer exists:
 // import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 
 // See packages/api-graphql/src/types/index.ts
-export type LibraryAPIGraphQLOptions = {
+// custom headers, dynamic, etc.
+export type LibraryAPIOptions = {
 	AppSync: {
 		// query: string | DocumentNode;
 		query: string;
@@ -19,13 +25,7 @@ export type LibraryAPIGraphQLOptions = {
 		 */
 		userAgentSuffix?: string; // TODO: remove in v6
 	};
-};
-
-// TODO: simple config:
-export type APIGraphQLConfig = {
-	apiKey?: string;
-	region?: string;
-	authMode?: string;
+	customHeaders: Function; //
 };
 
 export type APIConfig = {

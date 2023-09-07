@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	APIConfig,
-	APIGraphQLConfig,
-	LibraryAPIGraphQLOptions,
-} from './API/types';
+import { APIConfig, LibraryAPIOptions } from './API/types';
 import { AnalyticsConfig } from './Analytics/types';
 import {
 	AuthConfig,
@@ -22,7 +18,6 @@ import {
 	StorageConfig,
 } from './Storage/types';
 
-// TODO V6: API types??
 export type ResourcesConfig = {
 	API?: APIConfig;
 	Analytics?: AnalyticsConfig;
@@ -37,14 +32,15 @@ export type ResourcesConfig = {
 	ssr?: boolean;
 };
 
+// Dynamic config
 export type LibraryOptions = {
-	APIGraphQL?: LibraryAPIGraphQLOptions;
+	API?: LibraryAPIOptions;
 	Auth?: LibraryAuthOptions;
 	Storage?: LibraryStorageOptions;
 };
 
 export {
-	APIGraphQLConfig,
+	APIConfig,
 	AuthConfig,
 	AuthUserPoolConfig,
 	AuthIdentityPoolConfig,
