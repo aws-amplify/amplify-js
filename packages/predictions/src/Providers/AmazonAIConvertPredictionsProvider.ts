@@ -57,11 +57,6 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 				region = '',
 			} = {},
 		} = Amplify.getConfig().predictions?.convert || {};
-		console.log(
-			'Compare:',
-			Amplify.getConfig().predictions?.convert?.translateText,
-			region
-		);
 
 		if (!region) {
 			return Promise.reject('region not configured for transcription');
@@ -113,11 +108,6 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		const {
 			speechGenerator: { defaults: { VoiceId = '' } = {}, region = '' } = {},
 		} = Amplify.getConfig().predictions?.convert || {};
-		console.log(
-			'Compare:',
-			Amplify.getConfig().predictions?.convert?.speechGenerator,
-			region
-		);
 
 		if (!input.textToSpeech.source) {
 			return Promise.reject('Source needs to be provided in the input');
@@ -182,7 +172,6 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 					region = '',
 				} = {},
 			} = Amplify.getConfig().predictions?.convert || {};
-			console.log('Compare:', Amplify.getConfig().predictions, region);
 			if (!region) {
 				return Promise.reject('region not configured for transcription');
 			}
