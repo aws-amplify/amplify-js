@@ -10,7 +10,7 @@ export {
 	graphqlOperation,
 	GraphQLAuthError,
 	GraphQLResult,
-	GRAPHQL_AUTH_MODE,
+	GraphQLAuthMode,
 } from '@aws-amplify/api-graphql';
 
 // Opaque type used for determining the graphql query type

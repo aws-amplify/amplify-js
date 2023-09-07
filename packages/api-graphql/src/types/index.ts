@@ -8,7 +8,7 @@ import { Observable } from 'zen-observable-ts';
 // TODO: remove for now:
 // import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
 
-type GraphQLAuthMode = 'AWS_IAM' | 'COGNITO_USERPOOLS' | 'API_KEY';
+export type GraphQLAuthMode = 'AWS_IAM' | 'COGNITO_USERPOOLS' | 'API_KEY';
 
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.

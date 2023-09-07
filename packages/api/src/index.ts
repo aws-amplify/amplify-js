@@ -6,7 +6,7 @@ export { API, APIClass } from './API';
 export {
 	graphqlOperation,
 	GraphQLAuthError,
-	GRAPHQL_AUTH_MODE,
+	GraphQLAuthMode,
 } from '@aws-amplify/api-graphql';
 
 export type { GraphQLResult } from '@aws-amplify/api-graphql';

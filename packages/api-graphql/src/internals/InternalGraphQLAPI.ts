@@ -1,7 +1,3 @@
-// TODO: Francisco is migrating pubsub
-// TODO: remove pubsub dep for now
-// TODO update package.json with francisco's changes.
-
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
@@ -26,7 +22,7 @@ import {
 } from '@aws-amplify/core';
 // TODO V6 - not available?
 // should work with yarn bootstrap
-import { Credentials } from '@aws-amplify/core/internals/aws-client-utils';
+// import { Credentials } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
