@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import camelcaseKeys from 'camelcase-keys';
 
-import { fetchAuthSession } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
 	ConsoleLogger as Logger,
 	getAmplifyUserAgentObject,
@@ -73,6 +73,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * @private
 	 */
 	private _config;
+	private _credentials;
 
 	/**
 	 * Initialize Geo with AWS configurations
@@ -97,18 +98,6 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	public getProviderName(): string {
 		return AmazonLocationServiceProvider.PROVIDER_NAME;
-	}
-
-	/**
-	 * Configure Geo part with aws configuration
-	 * @param {Object} config - Configuration of the Geo
-	 * @return {Object} - Current configuration
-	 */
-	public configure(config?): object {
-		logger.debug('configure Amazon Location Service Provider', config);
-		if (!config) return this._config;
-		this._config = Object.assign({}, this._config, config);
-		return this._config;
 	}
 
 	/**
@@ -180,7 +169,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		}
 
 		const client = new LocationClient({
-			credentials: this._config.credentials,
+			credentials: this._credentials,
 			region: this._config.region,
 			customUserAgent: getAmplifyUserAgentObject(),
 		});
@@ -246,7 +235,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		}
 
 		const client = new LocationClient({
-			credentials: this._config.credentials,
+			credentials: this._credentials,
 			region: this._config.region,
 			customUserAgent: getAmplifyUserAgentObject(),
 		});
@@ -294,7 +283,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		this._verifyPlaceId(placeId);
 
 		const client = new LocationClient({
-			credentials: this._config.credentials,
+			credentials: this._credentials,
 			region: this._config.region,
 			customUserAgent: getAmplifyUserAgentObject(),
 		});
@@ -352,7 +341,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		}
 
 		const client = new LocationClient({
-			credentials: this._config.credentials,
+			credentials: this._credentials,
 			region: this._config.region,
 			customUserAgent: getAmplifyUserAgentObject(),
 		});
@@ -518,7 +507,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 		// Create Amazon Location Service Client
 		const client = new LocationClient({
-			credentials: this._config.credentials,
+			credentials: this._credentials,
 			region: this._config.region,
 			customUserAgent: getAmplifyUserAgentObject(),
 		});
@@ -580,7 +569,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 		// Create Amazon Location Service Client
 		const client = new LocationClient({
-			credentials: this._config.credentials,
+			credentials: this._credentials,
 			region: this._config.region,
 			customUserAgent: getAmplifyUserAgentObject(),
 		});
@@ -723,7 +712,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 				'Set credentials for storage. Credentials are:',
 				credentials
 			);
-			this._config.credentials = credentials;
+			this._credentials = credentials;
 			return true;
 		} catch (error) {
 			logger.debug('Ensure credentials error. Credentials are:', error);
@@ -731,7 +720,18 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		}
 	}
 
+	private _refreshConfig() {
+		this._config = Amplify.getConfig().Geo?.LocationService;
+		if (!this._config) {
+			const errorString =
+				"No Geo configuration found in amplify config, run 'amplify add geo' to create one and run `amplify push` after";
+			logger.debug(errorString);
+			throw new Error(errorString);
+		}
+	}
+
 	private _verifyMapResources() {
+		this._refreshConfig();
 		if (!this._config.maps) {
 			const errorString =
 				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after";
@@ -747,8 +747,9 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	}
 
 	private _verifySearchIndex(optionalSearchIndex?: string) {
+		this._refreshConfig();
 		if (
-			(!this._config.search_indices || !this._config.search_indices.default) &&
+			(!this._config.searchIndices || !this._config.searchIndices.default) &&
 			!optionalSearchIndex
 		) {
 			const errorString =
@@ -759,6 +760,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	}
 
 	private _verifyGeofenceCollections(optionalGeofenceCollectionName?: string) {
+		this._refreshConfig();
 		if (
 			(!this._config.geofenceCollections ||
 				!this._config.geofenceCollections.default) &&
@@ -783,7 +785,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		};
 
 		const client = new LocationClient({
-			credentials: this._config.credentials,
+			credentials: this._credentials,
 			region: this._config.region,
 			customUserAgent: getAmplifyUserAgentObject(),
 		});
@@ -810,7 +812,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		};
 
 		const client = new LocationClient({
-			credentials: this._config.credentials,
+			credentials: this._credentials,
 			region: this._config.region,
 			customUserAgent: getAmplifyUserAgentObject(),
 		});

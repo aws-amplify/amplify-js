@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { fetchAuthSession } from '@aws-amplify/core';
+import { fetchAuthSession, Amplify } from '@aws-amplify/core';
 import {
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
@@ -11,7 +11,7 @@ import {
 import camelcaseKeys from 'camelcase-keys';
 
 import { GeoClass } from '../src/Geo';
-import { AmazonLocationServiceProvider } from '../src/Providers/AmazonLocationServiceProvider';
+import { AmazonLocationServiceProvider } from '../src/providers/location-service/AmazonLocationServiceProvider';
 import {
 	AmazonLocationServiceMapStyle,
 	Coordinates,
@@ -29,6 +29,7 @@ import {
 	validGeofence1,
 	singleGeofenceCamelcaseResults,
 	batchGeofencesCamelcaseResults,
+	awsConfigGeoV4,
 } from './testData';
 
 import {
@@ -71,8 +72,13 @@ LocationClient.prototype.send = jest.fn(async command => {
 });
 
 jest.mock('@aws-amplify/core', () => {
+	const originalModule = jest.requireActual('@aws-amplify/core');
 	return {
+		...originalModule,
 		fetchAuthSession: jest.fn(),
+		Amplify: {
+			getConfig: jest.fn(),
+		},
 	};
 });
 
@@ -84,11 +90,13 @@ describe('Geo', () => {
 
 	describe('constructor', () => {
 		test('happy case', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
 		});
 	});
 
 	describe('getModuleName', () => {
+		(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 		const geo = new GeoClass();
 		const moduleName = geo.getModuleName();
 
@@ -97,6 +105,7 @@ describe('Geo', () => {
 
 	describe('pluggables', () => {
 		test('getPluggable', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
 			const provider = new AmazonLocationServiceProvider();
 			geo.addPluggable(provider);
@@ -107,6 +116,7 @@ describe('Geo', () => {
 		});
 
 		test('removePluggable', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
 			const provider = new AmazonLocationServiceProvider();
 			geo.addPluggable(provider);
@@ -120,23 +130,11 @@ describe('Geo', () => {
 
 	describe('AmazonLocationService is used as default provider', () => {
 		test('creates the proper default provider', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			expect(geo.getPluggable('AmazonLocationService')).toBeInstanceOf(
 				AmazonLocationServiceProvider
 			);
-		});
-	});
-
-	describe('configure', () => {
-		test('configure with aws-exports file', () => {
-			const geo = new GeoClass();
-			const config = geo.configure(awsConfig);
-			const expected = {
-				...awsConfig,
-				AmazonLocationService: awsConfig.geo.amazon_location_service,
-			};
-			expect(config).toEqual(expected);
 		});
 	});
 
@@ -146,8 +144,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
 			expect(() => geo.getAvailableMaps()).toThrow(
@@ -159,8 +157,10 @@ describe('Geo', () => {
 		});
 
 		test('should tell you if there are no available map resources', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue({
+				Geo: { LocationService: {} },
+			});
 			const geo = new GeoClass();
-			geo.configure({});
 
 			expect(() => geo.getAvailableMaps()).toThrow(
 				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
@@ -168,8 +168,8 @@ describe('Geo', () => {
 		});
 
 		test('should get all available map resources', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const maps: AmazonLocationServiceMapStyle[] = [];
 			const availableMaps = awsConfig.geo.amazon_location_service.maps.items;
@@ -183,9 +183,20 @@ describe('Geo', () => {
 			expect(geo.getAvailableMaps()).toEqual(maps);
 		});
 
-		test('should tell you if there is no map resources when running getDefaultMap', () => {
+		test('should fail gracefully if no config is found', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue({});
 			const geo = new GeoClass();
-			geo.configure({});
+
+			expect(() => geo.getDefaultMap()).toThrow(
+				"No Geo configuration found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
+			);
+		});
+
+		test('should tell you if there is no map resources when running getDefaultMap', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue({
+				Geo: { LocationService: {} },
+			});
+			const geo = new GeoClass();
 
 			expect(() => geo.getDefaultMap()).toThrow(
 				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
@@ -193,14 +204,14 @@ describe('Geo', () => {
 		});
 
 		test('should tell you if there is no default map resources (but there are maps) when running getDefaultMap', () => {
-			const geo = new GeoClass();
-			geo.configure({
-				geo: {
-					amazon_location_service: {
+			(Amplify.getConfig as jest.Mock).mockReturnValue({
+				Geo: {
+					LocationService: {
 						maps: { items: { testMap: { style: 'teststyle' } } },
 					},
 				},
-			});
+			} as any);
+			const geo = new GeoClass();
 
 			expect(() => geo.getDefaultMap()).toThrow(
 				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
@@ -208,8 +219,8 @@ describe('Geo', () => {
 		});
 
 		test('should get the default map resource', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const mapName = awsConfig.geo.amazon_location_service.maps.default;
 			const style =
@@ -230,8 +241,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const results = await geo.searchByText(testString);
 			expect(results).toEqual([testPlaceCamelCase]);
@@ -249,8 +260,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByTextOptions = {
 				biasPosition: [12345, 67890],
@@ -277,8 +288,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByTextOptions = {
 				searchAreaConstraints: [123, 456, 789, 321],
@@ -305,8 +316,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByTextOptions = {
 				countries: ['USA'],
@@ -326,8 +337,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchByText(testString)).rejects.toThrow(
@@ -345,8 +356,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const results = await geo.searchByPlaceId(testPlaceId);
 			expect(results).toEqual(testResults);
@@ -364,8 +375,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchByPlaceId(testPlaceId)).rejects.toThrow(
@@ -391,8 +402,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const results = await geo.searchForSuggestions(testString);
 			expect(results).toEqual(testResults);
@@ -410,8 +421,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByTextOptions = {
 				biasPosition: [12345, 67890],
@@ -438,8 +449,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByTextOptions = {
 				searchAreaConstraints: [123, 456, 789, 321],
@@ -466,8 +477,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByTextOptions = {
 				countries: ['USA'],
@@ -489,8 +500,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchForSuggestions(testString)).rejects.toThrow(
@@ -507,8 +518,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const results = await geo.searchByCoordinates(testCoordinates);
 			expect(results).toEqual(testPlaceCamelCase);
@@ -526,8 +537,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByCoordinatesOptions = {
 				maxResults: 40,
@@ -553,8 +564,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchByCoordinates(testCoordinates)).rejects.toThrow(
@@ -573,8 +584,8 @@ describe('Geo', () => {
 				.fn()
 				.mockImplementationOnce(mockBatchPutGeofenceCommand);
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			// Check that results are what's expected
 			const results = await geo.saveGeofences(validGeofence1);
@@ -606,8 +617,8 @@ describe('Geo', () => {
 				.fn()
 				.mockImplementation(mockBatchPutGeofenceCommand);
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			// Check that results are what's expected
 			const results = await geo.saveGeofences(validGeofences);
@@ -625,8 +636,8 @@ describe('Geo', () => {
 				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.saveGeofences(validGeofence1)).rejects.toThrow(
@@ -645,8 +656,8 @@ describe('Geo', () => {
 				.fn()
 				.mockImplementationOnce(mockGetGeofenceCommand);
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			// Check that results are what's expected
 			const results = await geo.getGeofence('testGeofenceId');
@@ -680,8 +691,8 @@ describe('Geo', () => {
 				.fn()
 				.mockImplementationOnce(mockListGeofencesCommand);
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			// Check that results are what's expected
 			const results = await geo.listGeofences();
@@ -697,8 +708,8 @@ describe('Geo', () => {
 				.fn()
 				.mockImplementation(mockListGeofencesCommand);
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			// Check that results are what's expected
 

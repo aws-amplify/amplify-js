@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export interface GeoConfig {
-	region?: string;
-	AmazonLocationService?: {
+	LocationService?: {
+		region?: string;
 		maps?: {
 			items: {};
 			default: string;
 		};
-		search_indices?: {
+		searchIndices?: {
 			items: string[];
 			default: string;
 		};

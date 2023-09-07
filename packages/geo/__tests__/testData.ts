@@ -10,6 +10,7 @@ import {
 	PolygonGeometry,
 	Geofence,
 } from '../src/types';
+import { GeoConfig, parseAWSExports } from '@aws-amplify/core';
 
 export const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -46,6 +47,8 @@ export const awsConfig = {
 	},
 	credentials,
 };
+
+export const awsConfigGeoV4 = parseAWSExports(awsConfig) as GeoConfig;
 
 export const TestPlacePascalCase = {
 	AddressNumber: '123',
