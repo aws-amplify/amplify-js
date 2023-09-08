@@ -47,6 +47,7 @@ describe('getUrl test', () => {
 			},
 		});
 	});
+
 	describe('getUrl happy path', () => {
 		const config = {
 			credentials,
@@ -71,7 +72,7 @@ describe('getUrl test', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		it.each([
+		[
 			{
 				expectedKey: `public/${key}`,
 			},
@@ -84,16 +85,19 @@ describe('getUrl test', () => {
 				expectedKey: `private/${defaultIdentityId}/${key}`,
 			},
 			{
-				options: { accessLevel: 'protected', targetIdentityId },
-				expectedKey: `protected/${targetIdentityId}/${key}`,
-			},
-			{
 				options: { accessLevel: 'protected' },
 				expectedKey: `protected/${defaultIdentityId}/${key}`,
 			},
-		])(
-			'should getUrl with $options.accessLevel',
-			async ({ options, expectedKey }) => {
+			{
+				options: { accessLevel: 'protected', targetIdentityId },
+				expectedKey: `protected/${targetIdentityId}/${key}`,
+			},
+		].forEach(({ options, expectedKey }) => {
+			const accessLevelMsg = options?.accessLevel ?? 'default';
+			const targetIdentityIdMsg = options?.targetIdentityId
+				? `and targetIdentityId`
+				: '';
+			it(`should getUrl with ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 				const headObjectOptions = {
 					Bucket: bucket,
 					Key: expectedKey,
@@ -110,8 +114,8 @@ describe('getUrl test', () => {
 				expect(result.url).toEqual({
 					url: new URL('https://google.com'),
 				});
-			}
-		);
+			});
+		});
 	});
 	describe('getUrl error path', () => {
 		afterAll(() => {

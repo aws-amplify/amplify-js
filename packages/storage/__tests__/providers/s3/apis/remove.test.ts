@@ -22,7 +22,6 @@ const mockGetConfig = Amplify.getConfig as jest.Mock;
 const key = 'key';
 const bucket = 'bucket';
 const region = 'region';
-const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
 const removeResult = { key };
 const credentials: Credentials = {
@@ -61,7 +60,7 @@ describe('remove API', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		it.each([
+		[
 			{
 				expectedKey: `public/${key}`,
 			},
@@ -74,16 +73,13 @@ describe('remove API', () => {
 				expectedKey: `private/${defaultIdentityId}/${key}`,
 			},
 			{
-				options: { accessLevel: 'protected', targetIdentityId },
-				expectedKey: `protected/${targetIdentityId}/${key}`,
-			},
-			{
 				options: { accessLevel: 'protected' },
 				expectedKey: `protected/${defaultIdentityId}/${key}`,
 			},
-		])(
-			'Should remove object with $options.accessLevel accessLevel',
-			async ({ options, expectedKey }) => {
+		].forEach(({ options, expectedKey }) => {
+			const accessLevel = options?.accessLevel ?? 'default';
+
+			it(`Should remove object with ${accessLevel} accessLevel`, async () => {
 				expect.assertions(3);
 				expect(
 					await remove({ key, options: options as StorageOptions })
@@ -93,8 +89,8 @@ describe('remove API', () => {
 					Bucket: bucket,
 					Key: expectedKey,
 				});
-			}
-		);
+			});
+		});
 	});
 
 	describe('Error Path Cases:', () => {

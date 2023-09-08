@@ -73,7 +73,7 @@ describe('getProperties api', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		it.each([
+		[
 			{
 				expectedKey: `public/${key}`,
 			},
@@ -86,16 +86,19 @@ describe('getProperties api', () => {
 				expectedKey: `private/${defaultIdentityId}/${key}`,
 			},
 			{
-				options: { accessLevel: 'protected', targetIdentityId },
-				expectedKey: `protected/${targetIdentityId}/${key}`,
-			},
-			{
 				options: { accessLevel: 'protected' },
 				expectedKey: `protected/${defaultIdentityId}/${key}`,
 			},
-		])(
-			'getProperties api with $options.accessLevel',
-			async ({ options, expectedKey }) => {
+			{
+				options: { accessLevel: 'protected', targetIdentityId },
+				expectedKey: `protected/${targetIdentityId}/${key}`,
+			},
+		].forEach(({ options, expectedKey }) => {
+			const accessLevelMsg = options?.accessLevel ?? 'default';
+			const targetIdentityIdMsg = options?.targetIdentityId
+				? `and targetIdentityId`
+				: '';
+			it(`getProperties api with ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
 					Key: expectedKey,
@@ -109,8 +112,8 @@ describe('getProperties api', () => {
 				).toEqual(expected);
 				expect(headObject).toBeCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
-			}
-		);
+			});
+		});
 	});
 
 	describe('getProperties error path', () => {
@@ -144,3 +147,7 @@ describe('getProperties api', () => {
 		});
 	});
 });
+
+// [].forEach(({ options, expectedKey }) => {
+// 	it(`getProperties api with ${options.accessLevel}`, async () => {});
+// });

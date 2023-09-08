@@ -107,19 +107,23 @@ describe('list API', () => {
 			},
 			{
 				path,
-				options: { accessLevel: 'protected', targetIdentityId },
-				expectedPath: `protected/${targetIdentityId}/${path}`,
-			},
-			{
-				path,
 				options: { accessLevel: 'protected' },
 				expectedPath: `protected/${defaultIdentityId}/${path}`,
 			},
+			{
+				path,
+				options: { accessLevel: 'protected', targetIdentityId },
+				expectedPath: `protected/${targetIdentityId}/${path}`,
+			},
 		];
 
-		it.each(accessLevelTests)(
-			'Should list objects with pagination using default pageSize and $options.accessLevel accessLevel',
-			async ({ path, options, expectedPath }) => {
+		accessLevelTests.forEach(({ path, options, expectedPath }) => {
+			const pathMsg = path ? 'custom' : 'default';
+			const accessLevelMsg = options?.accessLevel ?? 'default';
+			const targetIdentityIdMsg = options?.targetIdentityId
+				? `with targetIdentityId`
+				: '';
+			it(`Should list objects with pagination, default pageSize, ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {
 						Contents: [
@@ -128,7 +132,6 @@ describe('list API', () => {
 						NextContinuationToken: nextToken,
 					};
 				});
-
 				expect.assertions(4);
 				let response = await list({ path, options: options as StorageOptions });
 				expect(response.items).toEqual([
@@ -141,12 +144,16 @@ describe('list API', () => {
 					MaxKeys: 1000,
 					Prefix: expectedPath,
 				});
-			}
-		);
+			});
+		});
 
-		it.each(accessLevelTests)(
-			'Should list objects with pagination using pageSize, nextToken and $options.accessLevel accessLevel',
-			async ({ path, options, expectedPath }) => {
+		accessLevelTests.forEach(({ path, options, expectedPath }) => {
+			const pathMsg = path ? 'custom' : 'default';
+			const accessLevelMsg = options?.accessLevel ?? 'default';
+			const targetIdentityIdMsg = options?.targetIdentityId
+				? `with targetIdentityId`
+				: '';
+			it(`Should list objects with pagination using pageSize, nextToken, ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {
 						Contents: [
@@ -155,7 +162,6 @@ describe('list API', () => {
 						NextContinuationToken: nextToken,
 					};
 				});
-
 				expect.assertions(4);
 				const customPageSize = 5;
 				const response = await list({
@@ -177,16 +183,19 @@ describe('list API', () => {
 					ContinuationToken: nextToken,
 					MaxKeys: customPageSize,
 				});
-			}
-		);
+			});
+		});
 
-		it.each(accessLevelTests)(
-			'Should list objects with zero results from $options.accessLevel accessLevel',
-			async ({ path, options, expectedPath }) => {
+		accessLevelTests.forEach(({ path, options, expectedPath }) => {
+			const pathMsg = path ? 'custom' : 'default';
+			const accessLevelMsg = options?.accessLevel ?? 'default';
+			const targetIdentityIdMsg = options?.targetIdentityId
+				? `with targetIdentityId`
+				: '';
+			it(`Should list objects with zero results with ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {};
 				});
-
 				expect.assertions(3);
 				let response = await list({
 					path,
@@ -199,15 +208,18 @@ describe('list API', () => {
 					MaxKeys: 1000,
 					Prefix: expectedPath,
 				});
-			}
-		);
+			});
+		});
 
-		it.each(accessLevelTests)(
-			'Should list all objects successfully having three pages from $options.accessLevel accessLevel',
-			async ({ path, options, expectedPath }) => {
+		accessLevelTests.forEach(({ path, options, expectedPath }) => {
+			const pathMsg = path ? 'custom' : 'default';
+			const accessLevelMsg = options?.accessLevel ?? 'default';
+			const targetIdentityIdMsg = options?.targetIdentityId
+				? `with targetIdentityId`
+				: '';
+			it(`Should list all objects having three pages with ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 				expect.assertions(5);
 				mockListObjectsV2ApiWithPages(3);
-
 				const result = await list({
 					path,
 					options: { ...(options as StorageOptions), listAll: true },
@@ -242,8 +254,8 @@ describe('list API', () => {
 						ContinuationToken: nextToken,
 					}
 				);
-			}
-		);
+			});
+		});
 	});
 
 	describe('Error Cases:', () => {
