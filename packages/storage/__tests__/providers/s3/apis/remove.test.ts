@@ -8,7 +8,6 @@ import { remove } from '../../../../src/providers/s3/apis';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
-	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {
@@ -99,9 +98,9 @@ describe('remove API', () => {
 		it('Should remove object with protected accessLevel', async () => {
 			expect.assertions(3);
 			const accessLevel = 'protected';
-			expect(
-				await remove({ key, options: { accessLevel, targetIdentityId } })
-			).toEqual(removeResult);
+			expect(await remove({ key, options: { accessLevel } })).toEqual(
+				removeResult
+			);
 			expect(deleteObject).toBeCalledTimes(1);
 			expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 				Bucket: bucket,
