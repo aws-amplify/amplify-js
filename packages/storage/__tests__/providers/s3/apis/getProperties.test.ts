@@ -147,7 +147,3 @@ describe('getProperties api', () => {
 		});
 	});
 });
-
-// [].forEach(({ options, expectedKey }) => {
-// 	it(`getProperties api with ${options.accessLevel}`, async () => {});
-// });
