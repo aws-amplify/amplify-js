@@ -102,11 +102,13 @@ describe('getUrl test', () => {
 					Bucket: bucket,
 					Key: expectedKey,
 				};
-				const optionsVal = { ...options, validateObjectExistence: true };
 				expect.assertions(4);
 				const result = await getUrl({
 					key,
-					options: optionsVal as StorageOptions,
+					options: {
+						...(options as StorageOptions),
+						validateObjectExistence: true,
+					},
 				});
 				expect(getPresignedGetObjectUrl).toBeCalledTimes(1);
 				expect(headObject).toBeCalledTimes(1);
@@ -121,7 +123,7 @@ describe('getUrl test', () => {
 		afterAll(() => {
 			jest.clearAllMocks();
 		});
-		it('Should return not found error when the object is not found', async () => {
+		it('should return not found error when the object is not found', async () => {
 			(headObject as jest.Mock).mockImplementation(() =>
 				Object.assign(new Error(), {
 					$metadata: { httpStatusCode: 404 },

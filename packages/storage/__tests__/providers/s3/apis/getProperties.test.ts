@@ -98,7 +98,7 @@ describe('getProperties api', () => {
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `and targetIdentityId`
 				: '';
-			it(`getProperties api with ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
+			it(`should getProperties with ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
 					Key: expectedKey,

@@ -123,7 +123,7 @@ describe('list API', () => {
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
 				: '';
-			it(`Should list objects with pagination, default pageSize, ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
+			it(`should list objects with pagination, default pageSize, ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {
 						Contents: [
@@ -153,7 +153,7 @@ describe('list API', () => {
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
 				: '';
-			it(`Should list objects with pagination using pageSize, nextToken, ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
+			it(`should list objects with pagination using pageSize, nextToken, ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {
 						Contents: [
@@ -192,7 +192,7 @@ describe('list API', () => {
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
 				: '';
-			it(`Should list objects with zero results with ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
+			it(`should list objects with zero results with ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {};
 				});
@@ -217,7 +217,7 @@ describe('list API', () => {
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
 				: '';
-			it(`Should list all objects having three pages with ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
+			it(`should list all objects having three pages with ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 				expect.assertions(5);
 				mockListObjectsV2ApiWithPages(3);
 				const result = await list({
@@ -262,7 +262,7 @@ describe('list API', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		it('Should return a not found error', async () => {
+		it('should return a not found error', async () => {
 			mockListObject.mockRejectedValueOnce(
 				Object.assign(new Error(), {
 					$metadata: { httpStatusCode: 404 },

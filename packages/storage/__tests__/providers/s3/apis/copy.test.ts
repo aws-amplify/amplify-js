@@ -148,7 +148,7 @@ describe('copy API', () => {
 				const targetIdentityIdMsg = source?.targetIdentityId
 					? `with targetIdentityId`
 					: '';
-				it(`Should copy ${source.accessLevel} ${targetIdentityIdMsg} -> ${destination.accessLevel}`, async () => {
+				it(`should copy ${source.accessLevel} ${targetIdentityIdMsg} -> ${destination.accessLevel}`, async () => {
 					expect.assertions(3);
 					expect(
 						await copy({
@@ -177,7 +177,7 @@ describe('copy API', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		it('Should return a not found error', async () => {
+		it('should return a not found error', async () => {
 			mockCopyObject.mockRejectedValueOnce(
 				Object.assign(new Error(), {
 					$metadata: { httpStatusCode: 404 },

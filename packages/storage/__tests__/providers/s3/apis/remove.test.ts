@@ -79,7 +79,7 @@ describe('remove API', () => {
 		].forEach(({ options, expectedKey }) => {
 			const accessLevel = options?.accessLevel ?? 'default';
 
-			it(`Should remove object with ${accessLevel} accessLevel`, async () => {
+			it(`should remove object with ${accessLevel} accessLevel`, async () => {
 				expect.assertions(3);
 				expect(
 					await remove({ key, options: options as StorageOptions })
@@ -97,7 +97,7 @@ describe('remove API', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		it('Should return a not found error', async () => {
+		it('should return a not found error', async () => {
 			mockDeleteObject.mockRejectedValueOnce(
 				Object.assign(new Error(), {
 					$metadata: { httpStatusCode: 404 },
