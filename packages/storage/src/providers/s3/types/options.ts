@@ -41,7 +41,7 @@ export type S3GetUrlOptions = S3Options & {
 	expiresIn?: number;
 };
 
-export type S3UploadOptions = S3TransferOptions & {
+export type S3UploadOptions = Omit<S3TransferOptions, 'targetIdentityId'> & {
 	/**
 	 * The default content-disposition header value of the file when downloading it.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
