@@ -44,6 +44,23 @@ describe(UniversalStorage.name, () => {
 				const universalStorage = new UniversalStorage();
 				expect(universalStorage.store).toMatchObject({ bar: 'barz' });
 			});
+
+			test('decodes encoded cookie name', () => {
+				const expectedCookieName = 'CognitoUserPool.test@email.com.idToken';
+				const cookieValue = '123';
+				const encodedCookieName = encodeURIComponent(expectedCookieName);
+				const mockCookieHeaderValue = `${encodedCookieName}=${cookieValue}`;
+				const expectedCookieHeaderValue = `${expectedCookieName}=${cookieValue}`;
+				new UniversalStorage({
+					req: {
+						headers: {
+							cookie: mockCookieHeaderValue,
+						},
+					},
+				});
+				console.log(mockCookies.mock.calls);
+				expect(mockCookies).toHaveBeenCalledWith(expectedCookieHeaderValue);
+			});
 		});
 
 		describe('setItem', () => {
