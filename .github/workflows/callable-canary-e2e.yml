@@ -38,9 +38,9 @@ jobs:
     steps:
       - name: Send slack message
         env:
-          WORKFLOW_URL: ${{ env.WORKFLOW_URL }}
+          WORKFLOW_URL: '{ "URL": "${{ env.WORKFLOW_URL }}" }'
           WEBHOOK_URL: ${{ env.WEBHOOK_URL }}
         run: |
           curl -X POST -H "Content-Type: application/json" \
-          --data {URL:$WORKFLOW_URL} \
+          --data "$WORKFLOW_URL" \
           $WEBHOOK_URL
