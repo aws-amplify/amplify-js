@@ -88,6 +88,12 @@
 			"auth/cognito": [
 				"./lib-esm/auth/cognito/index.d.ts"
 			],
+			"auth/cognito/server": [
+				"./lib-esm/auth/cognito/server/index.d.ts"
+			],
+			"auth/server": [
+				"./lib-esm/auth/server.d.ts"
+			],
 			"analytics": [
 				"./lib-esm/analytics/index.d.ts"
 			],
@@ -99,6 +105,15 @@
 			],
 			"storage/s3": [
 				"./lib-esm/storage/s3/index.d.ts"
+			],
+			"storage/server": [
+				"./lib-esm/storage/server.d.ts"
+			],
+			"storage/s3/server": [
+				"./lib-esm/storage/s3/server.d.ts"
+			],
+			"internals/adapter-core": [
+				"./lib-esm/adapterCore/index.d.ts"
 			]
 		}
 	},
