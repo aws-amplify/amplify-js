@@ -90,7 +90,7 @@ const credentials = {
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
 };
-const targetIdentityId = 'identityId';
+const identityId = 'identityId';
 
 const options = {
 	translateText: {
@@ -154,7 +154,7 @@ describe('Predictions convert provider test', () => {
 		test('happy case credentials exist', () => {
 			mockFetchAuthSession.mockResolvedValue({
 				credentials,
-				targetIdentityId,
+				identityId,
 			});
 			mockGetConfig.mockReturnValue({
 				predictions: {
@@ -181,7 +181,7 @@ describe('Predictions convert provider test', () => {
 		test('error case credentials exist but service fails', () => {
 			mockFetchAuthSession.mockResolvedValue({
 				credentials,
-				targetIdentityId,
+				identityId,
 			});
 			mockGetConfig.mockReturnValue({
 				predictions: {
@@ -205,7 +205,7 @@ describe('Predictions convert provider test', () => {
 		test('happy case credentials exist', () => {
 			mockFetchAuthSession.mockResolvedValue({
 				credentials,
-				targetIdentityId,
+				identityId,
 			});
 			mockGetConfig.mockReturnValue({
 				predictions: {
@@ -242,7 +242,7 @@ describe('Predictions convert provider test', () => {
 		test('error case credentials exist but service fails', () => {
 			mockFetchAuthSession.mockResolvedValue({
 				credentials,
-				targetIdentityId,
+				identityId,
 			});
 			mockGetConfig.mockReturnValue({
 				predictions: {
@@ -266,7 +266,7 @@ describe('Predictions convert provider test', () => {
 		test('Error region not configured', () => {
 			mockFetchAuthSession.mockResolvedValue({
 				credentials,
-				targetIdentityId,
+				identityId,
 			});
 			mockGetConfig.mockReturnValue({
 				predictions: {
@@ -295,7 +295,7 @@ describe('Predictions convert provider test', () => {
 		test('Error languageCode not configured ', () => {
 			mockFetchAuthSession.mockResolvedValue({
 				credentials,
-				targetIdentityId,
+				identityId,
 			});
 			mockGetConfig.mockReturnValue({
 				predictions: {
@@ -324,7 +324,7 @@ describe('Predictions convert provider test', () => {
 		test('Happy case ', () => {
 			mockFetchAuthSession.mockResolvedValue({
 				credentials,
-				targetIdentityId,
+				identityId,
 			});
 			mockGetConfig.mockReturnValue({
 				predictions: {
@@ -350,7 +350,7 @@ describe('Predictions convert provider test', () => {
 		test('Downsized Happy case ', async () => {
 			mockFetchAuthSession.mockResolvedValue({
 				credentials,
-				targetIdentityId,
+				identityId,
 			});
 			mockGetConfig.mockReturnValue({
 				predictions: {
@@ -392,7 +392,7 @@ describe('Predictions convert provider test', () => {
 		test('convert text to speech initializes a client with the correct custom user agent', async () => {
 			mockFetchAuthSession.mockResolvedValue({
 				credentials,
-				targetIdentityId,
+				identityId,
 			});
 			mockGetConfig.mockReturnValue({
 				predictions: {
@@ -417,7 +417,7 @@ describe('Predictions convert provider test', () => {
 		test('convert translate text initializes a client with the correct custom user agent', async () => {
 			mockFetchAuthSession.mockResolvedValue({
 				credentials,
-				targetIdentityId,
+				identityId,
 			});
 			mockGetConfig.mockReturnValue({
 				predictions: {
