@@ -88,7 +88,9 @@
 		"lib",
 		"lib-esm",
 		"src",
-		"internals"
+		"internals",
+		"cognito",
+		"server"
 	],
 	"dependencies": {
 		"@smithy/util-base64": "2.0.0",
