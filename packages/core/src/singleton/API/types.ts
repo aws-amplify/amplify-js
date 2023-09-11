@@ -1,23 +1,10 @@
-// TODO V6
-/**
- * exports file
- * auth modes
- * headers should be on second param
- */
+// TODO V6: dependency not yet added.
+// import type { ModelIntrospectionSchema as InternalModelIntrospectionSchema } from '@aws-amplify/appsync-modelgen-plugin';
 
-// import { DocumentNode } from 'graphql';
-// TODO: update as this no longer exists:
-// import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
-
-// See packages/api-graphql/src/types/index.ts
-// custom headers, dynamic, etc.
 export type LibraryAPIOptions = {
 	AppSync: {
-		// query: string | DocumentNode;
 		query: string;
 		variables?: object;
-		// TODO V6
-		// authMode?: keyof typeof GRAPHQL_AUTH_MODE;
 		authMode?: any;
 		authToken?: string;
 		/**
@@ -33,6 +20,9 @@ export type APIConfig = {
 		defaultAuthMode: GraphQLAuthMode;
 		region: string;
 		endpoint: string;
+		// TODO: switch this when dependency is added:
+		// modelIntrospectionSchema: InternalModelIntrospectionSchema;
+		modelIntrospectionSchema: any;
 	};
 };
 
@@ -42,7 +32,8 @@ export type GraphQLAuthMode =
 	| { type: 'iam' }
 	| { type: 'lambda' }
 	| { type: 'custom' };
-// TODO V6
+
+// Francisco's type draft for reference:
 
 // import type { ModelIntrospectionSchema as InternalModelIntrospectionSchema } from '@aws-amplify/appsync-modelgen-plugin';
 // import { REGION_SET_PARAM } from '../../clients/middleware/signing/signer/signatureV4/constants';
