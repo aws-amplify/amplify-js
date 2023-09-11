@@ -163,7 +163,7 @@
 		{
 			"name": "[API] [todo] (AppSync)",
 			"path": "./lib-esm/api/index.js",
-			"import": "{ record }",
+			"import": "{ API }",
 			"limit": "70.00 kB"
 		},
 		{
