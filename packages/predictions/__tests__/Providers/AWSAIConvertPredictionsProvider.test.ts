@@ -270,7 +270,14 @@ describe('Predictions convert provider test', () => {
 			});
 			mockGetConfig.mockReturnValue({
 				predictions: {
-					convert: options,
+					convert: {
+						transcription: {
+							proxy: false,
+							defaults: {
+								language: 'en-US',
+							},
+						},
+					},
 				},
 			});
 			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
