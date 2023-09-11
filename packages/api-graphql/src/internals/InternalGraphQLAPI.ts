@@ -456,8 +456,11 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
+		debugger;
 		if (!this.appSyncRealTime) {
 			const { AppSync } = Amplify.getConfig().API ?? {};
+
+			debugger;
 
 			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
 

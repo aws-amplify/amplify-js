@@ -11,15 +11,24 @@ import { ResourcesConfig } from './singleton/types';
  *
  * @returns A {@link ResourcesConfig} object.
  */
+
 export const parseAWSExports = (
 	config: Record<string, any> = {}
 ): ResourcesConfig => {
 	const {
+		aws_appsync_apiKey,
+		aws_appsync_authenticationType,
+		aws_appsync_graphqlEndpoint,
+		aws_appsync_region,
 		aws_cognito_identity_pool_id,
+		// TODO - which category does this fall under?
+		// aws_cognito_region,
 		aws_cognito_sign_up_verification_method,
 		aws_mandatory_sign_in,
 		aws_mobile_analytics_app_id,
 		aws_mobile_analytics_app_region,
+		// TODO - which category does this fall under?
+		// aws_project_region,
 		aws_user_files_s3_bucket,
 		aws_user_files_s3_bucket_region,
 		aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing,
@@ -36,6 +45,18 @@ export const parseAWSExports = (
 			Pinpoint: {
 				appId: aws_mobile_analytics_app_id,
 				region: aws_mobile_analytics_app_region,
+			},
+		};
+	}
+
+	// API
+	if (aws_appsync_graphqlEndpoint) {
+		amplifyConfig.API = {
+			AppSync: {
+				apiKey: aws_appsync_apiKey,
+				defaultAuthMode: aws_appsync_authenticationType,
+				endpoint: aws_appsync_graphqlEndpoint,
+				region: aws_appsync_region,
 			},
 		};
 	}
