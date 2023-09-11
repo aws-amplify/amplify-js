@@ -18,7 +18,7 @@ export type StorageOperationRequest<Options extends StorageOptions> = {
 export type StorageListRequest<
 	Options extends StorageListAllOptions | StorageListPaginateOptions
 > = {
-	path?: string;
+	prefix?: string;
 	options?: Options;
 };
 
