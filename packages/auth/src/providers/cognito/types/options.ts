@@ -64,7 +64,7 @@ export type CognitoConfirmSignInOptions<
 /**
  * Options specific to a Cognito Verify TOTP Setup request.
  */
-export type CogntioVerifyTOTPSetupOptions = {
+export type CognitoVerifyTOTPSetupOptions = {
 	friendlyDeviceName?: string;
 };
 
