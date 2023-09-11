@@ -881,7 +881,6 @@ export class AWSAppSyncRealTimeProvider {
 	}: AWSAppSyncRealTimeAuthInput): Promise<
 		Record<string, unknown> | undefined
 	> {
-		debugger;
 		const headerHandler: {
 			[key: string]: (AWSAppSyncRealTimeAuthInput) => {};
 		} = {

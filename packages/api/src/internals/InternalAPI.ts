@@ -86,12 +86,15 @@ export class InternalAPIClass {
 		this._graphqlApi.Cache = this.Cache;
 		// this._graphqlApi.Credentials = this.Credentials;
 
-		// TODO V6
-		// @ts-ignore
-		const restAPIConfig = this._restApi.configure(this._options);
+		// TODO V6 - `Amplify.getConfig` for REST?
+		// const restAPIConfig = Amplify.getConfig().RestApi;
+
+		// V5:
+		// const restAPIConfig = this._restApi.configure(this._options);
 		const graphQLAPIConfig = this._graphqlApi.configure(this._options);
 
-		return { ...restAPIConfig, ...graphQLAPIConfig };
+		// return { ...restAPIConfig, ...graphQLAPIConfig };
+		return { ...graphQLAPIConfig };
 	}
 
 	/**

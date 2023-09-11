@@ -94,7 +94,6 @@ export class InternalGraphQLAPIClass {
 	 * @return {Object} - The current configuration
 	 */
 	configure(options) {
-		debugger;
 		const { API = {}, ...otherOptions } = options || {};
 		let opt = { ...otherOptions, ...API };
 		logger.debug('configure GraphQL API', { opt });
@@ -126,7 +125,6 @@ export class InternalGraphQLAPIClass {
 	 * @return - A promise of true if Success
 	 */
 	createInstance() {
-		debugger;
 		logger.debug('create Rest instance');
 		if (this._options) {
 			// TODO: remove options, use getConfig here
@@ -149,7 +147,6 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders: { [key: string]: string } = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	) {
-		debugger;
 		// TODO: Amplify.getConfig().API
 		// apikey is the same (but needs to be on the config)
 		const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
@@ -245,7 +242,6 @@ export class InternalGraphQLAPIClass {
 	 * @param operation
 	 */
 	getGraphqlOperationType(operation: GraphQLOperation): OperationTypeNode {
-		debugger;
 		const doc = parse(operation);
 		const definitions =
 			doc.definitions as ReadonlyArray<OperationDefinitionNode>;
@@ -268,7 +264,6 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
-		debugger;
 		// TODO: Could retrieve headers and config here. Call post method.
 		const query =
 			typeof paramQuery === 'string'
@@ -326,7 +321,6 @@ export class InternalGraphQLAPIClass {
 		initParams = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
-		debugger;
 		this.createInstanceIfNotCreated();
 		const {
 			aws_appsync_region: region,
