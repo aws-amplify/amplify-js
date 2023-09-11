@@ -17,12 +17,12 @@ export type LibraryAPIOptions = {
 
 export type APIConfig = {
 	AppSync?: {
-		defaultAuthMode: GraphQLAuthMode;
-		region: string;
-		endpoint: string;
+		defaultAuthMode?: GraphQLAuthMode;
+		region?: string;
+		endpoint?: string;
 		// TODO: switch this when dependency is added:
 		// modelIntrospectionSchema: InternalModelIntrospectionSchema;
-		modelIntrospectionSchema: any;
+		modelIntrospectionSchema?: any;
 	};
 };
 
