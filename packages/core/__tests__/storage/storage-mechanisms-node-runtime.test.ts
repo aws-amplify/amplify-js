@@ -3,15 +3,15 @@
  */
 
 import { AmplifyError, AmplifyErrorString } from '../../src/Util/Errors';
-import { localStorage, sessionStorage } from '../../src/storage';
+import { defaultStorage, sessionStorage } from '../../src/storage';
 
 const key = 'k';
 const value = 'value';
 
 describe('test mechanisms', () => {
-	test('test localStorage operations in node environment', async () => {
+	test('test defaultStorage operations in node environment', async () => {
 		try {
-			await localStorage.setItem(key, value);
+			await defaultStorage.setItem(key, value);
 		} catch (error) {
 			expect(error).toBeInstanceOf(AmplifyError);
 			expect(error.name).toBe(AmplifyErrorString.PLATFORM_NOT_SUPPORTED_ERROR);

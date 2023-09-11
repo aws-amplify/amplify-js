@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	defaultStorage,
 	KeyValueStorageInterface,
 	StorageAccessLevel,
-	localStorage,
 } from '@aws-amplify/core';
 
 import { UPLOADS_STORAGE_KEY } from '../../../utils/constants';
@@ -33,7 +33,7 @@ export const findCachedUploadParts = async ({
 	parts: Part[];
 	uploadId: string;
 } | null> => {
-	const cachedUploads = await listCachedUploadTasks(localStorage);
+	const cachedUploads = await listCachedUploadTasks(defaultStorage);
 	if (
 		!cachedUploads[cacheKey] ||
 		cachedUploads[cacheKey].lastTouched < Date.now() - ONE_HOUR // Uploads are cached for 1 hour
@@ -44,7 +44,7 @@ export const findCachedUploadParts = async ({
 	const cachedUpload = cachedUploads[cacheKey];
 	cachedUpload.lastTouched = Date.now();
 
-	await localStorage.setItem(
+	await defaultStorage.setItem(
 		UPLOADS_STORAGE_KEY,
 		JSON.stringify(cachedUploads)
 	);
@@ -123,21 +123,21 @@ export const cacheMultipartUpload = async (
 	cacheKey: string,
 	fileMetadata: Omit<FileMetadata, 'lastTouched'>
 ): Promise<void> => {
-	const cachedUploads = await listCachedUploadTasks(localStorage);
+	const cachedUploads = await listCachedUploadTasks(defaultStorage);
 	cachedUploads[cacheKey] = {
 		...fileMetadata,
 		lastTouched: Date.now(),
 	};
-	await localStorage.setItem(
+	await defaultStorage.setItem(
 		UPLOADS_STORAGE_KEY,
 		JSON.stringify(cachedUploads)
 	);
 };
 
 export const removeCachedUpload = async (cacheKey: string): Promise<void> => {
-	const cachedUploads = await listCachedUploadTasks(localStorage);
+	const cachedUploads = await listCachedUploadTasks(defaultStorage);
 	delete cachedUploads[cacheKey];
-	await localStorage.setItem(
+	await defaultStorage.setItem(
 		UPLOADS_STORAGE_KEY,
 		JSON.stringify(cachedUploads)
 	);

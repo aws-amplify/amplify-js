@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { browserOrNode } from '../Util/JS';
-import { getLocalStorageWithFallback } from '../storage/utils';
+import { getDefaultStorageWithFallback } from '../storage/utils';
 
 export const Linking = {};
 export const AppState = {
@@ -12,5 +12,5 @@ export const AppState = {
 
 // if not in react native, just use local storage
 export const AsyncStorage = browserOrNode().isBrowser
-	? getLocalStorageWithFallback()
+	? getDefaultStorageWithFallback()
 	: undefined;

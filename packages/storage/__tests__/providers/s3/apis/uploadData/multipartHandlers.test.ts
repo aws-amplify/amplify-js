@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { Amplify, localStorage } from '@aws-amplify/core';
+import { Amplify, defaultStorage } from '@aws-amplify/core';
 import {
 	createMultipartUpload,
 	uploadPart,
@@ -306,10 +306,12 @@ describe('getMultipartUploadHandlers', () => {
 	});
 
 	describe('upload caching', () => {
-		const mockLocalStorage = localStorage as jest.Mocked<typeof localStorage>;
+		const mockDefaultStorage = defaultStorage as jest.Mocked<
+			typeof defaultStorage
+		>;
 		beforeEach(() => {
-			mockLocalStorage.getItem.mockReset();
-			mockLocalStorage.setItem.mockReset();
+			mockDefaultStorage.getItem.mockReset();
+			mockDefaultStorage.setItem.mockReset();
 		});
 
 		it('should send createMultipartUpload request if the upload task is not cached', async () => {
@@ -324,13 +326,13 @@ describe('getMultipartUploadHandlers', () => {
 			);
 			await multipartUploadJob();
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
+			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
 			expect(mockCreateMultipartUpload).toBeCalledTimes(1);
 			expect(mockListParts).not.toBeCalled();
 		});
 
 		it('should send createMultipartUpload request if the upload task is cached but outdated', async () => {
-			mockLocalStorage.getItem.mockResolvedValue(
+			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
 					[defaultCacheKey]: {
 						uploadId: 'uploadId',
@@ -370,8 +372,10 @@ describe('getMultipartUploadHandlers', () => {
 			);
 			await multipartUploadJob();
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
-			const cacheValue = JSON.parse(mockLocalStorage.setItem.mock.calls[0][1]);
+			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
+			const cacheValue = JSON.parse(
+				mockDefaultStorage.setItem.mock.calls[0][1]
+			);
 			expect(Object.keys(cacheValue)).toEqual([
 				expect.stringMatching(
 					// \d{13} is the file lastModified property of a file
@@ -381,7 +385,7 @@ describe('getMultipartUploadHandlers', () => {
 		});
 
 		it('should send listParts request if the upload task is cached', async () => {
-			mockLocalStorage.getItem.mockResolvedValue(
+			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
 					[defaultCacheKey]: {
 						uploadId: 'uploadId',
@@ -421,11 +425,13 @@ describe('getMultipartUploadHandlers', () => {
 			);
 			await multipartUploadJob();
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
-			expect(mockLocalStorage.setItem.mock.calls[0][0]).toEqual(
+			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
+			expect(mockDefaultStorage.setItem.mock.calls[0][0]).toEqual(
 				UPLOADS_STORAGE_KEY
 			);
-			const cacheValue = JSON.parse(mockLocalStorage.setItem.mock.calls[0][1]);
+			const cacheValue = JSON.parse(
+				mockDefaultStorage.setItem.mock.calls[0][1]
+			);
 			expect(Object.keys(cacheValue)).toEqual([
 				expect.stringMatching(
 					/8388608_application\/octet-stream_bucket_public_key/
@@ -446,8 +452,8 @@ describe('getMultipartUploadHandlers', () => {
 			);
 			await multipartUploadJob();
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
-			expect(mockLocalStorage.setItem).toHaveBeenNthCalledWith(
+			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
+			expect(mockDefaultStorage.setItem).toHaveBeenNthCalledWith(
 				2,
 				UPLOADS_STORAGE_KEY,
 				JSON.stringify({})
@@ -469,8 +475,8 @@ describe('getMultipartUploadHandlers', () => {
 			const uploadJobPromise = multipartUploadJob();
 			await uploadJobPromise;
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
-			expect(mockLocalStorage.setItem).toHaveBeenNthCalledWith(
+			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
+			expect(mockDefaultStorage.setItem).toHaveBeenNthCalledWith(
 				2,
 				UPLOADS_STORAGE_KEY,
 				JSON.stringify({})
@@ -565,8 +571,10 @@ describe('getMultipartUploadHandlers', () => {
 		it('should send progress for cached upload parts', async () => {
 			mockMultipartUploadSuccess();
 
-			const mockLocalStorage = localStorage as jest.Mocked<typeof localStorage>;
-			mockLocalStorage.getItem.mockResolvedValue(
+			const mockDefaultStorage = defaultStorage as jest.Mocked<
+				typeof defaultStorage
+			>;
+			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
 					[defaultCacheKey]: {
 						uploadId: 'uploadId',

@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { KeyValueStorage } from './KeyValueStorage';
-import { getLocalStorageWithFallback } from './utils';
+import { getDefaultStorageWithFallback } from './utils';
 
 /**
  * @internal
  */
-export class LocalStorage extends KeyValueStorage {
+export class DefaultStorage extends KeyValueStorage {
 	constructor() {
-		super(getLocalStorageWithFallback());
+		super(getDefaultStorageWithFallback());
 	}
 }

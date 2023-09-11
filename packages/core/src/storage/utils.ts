@@ -9,7 +9,7 @@ const TEST_KEY = 'aws.amplify.test-ls';
  * @internal
  * @returns Either a reference to window.localStorage or an in-memory storage as fallback
  */
-export const getLocalStorageWithFallback = (): Storage => {
+export const getDefaultStorageWithFallback = (): Storage => {
 	try {
 		window.localStorage.setItem(TEST_KEY, '');
 		window.localStorage.removeItem(TEST_KEY);

@@ -3,7 +3,7 @@
 
 import { DefaultIdentityIdStore } from './IdentityIdStore';
 import { CognitoAWSCredentialsAndIdentityIdProvider } from './credentialsProvider';
-import { localStorage } from '@aws-amplify/core';
+import { defaultStorage } from '@aws-amplify/core';
 
 /**
  * Cognito specific implmentation of the CredentialsProvider interface
@@ -15,7 +15,7 @@ import { localStorage } from '@aws-amplify/core';
  */
 export const cognitoCredentialsProvider =
 	new CognitoAWSCredentialsAndIdentityIdProvider(
-		new DefaultIdentityIdStore(localStorage)
+		new DefaultIdentityIdStore(defaultStorage)
 	);
 
 export { CognitoAWSCredentialsAndIdentityIdProvider, DefaultIdentityIdStore };
