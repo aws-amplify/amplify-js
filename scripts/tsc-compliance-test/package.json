@@ -1,0 +1,13 @@
+{
+  "name": "tsc-compliance-test",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "@types/node": "16.11.7",
+    "typescript": "3.8.x"
+  },
+  "scripts": {
+	"test:compliance:ts3.8": "tsc -p tsconfig.json"
+  }
+}
