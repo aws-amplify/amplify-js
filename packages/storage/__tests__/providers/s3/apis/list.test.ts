@@ -125,7 +125,7 @@ describe('list API', () => {
 			expect.assertions(4);
 			const customPageSize = 5;
 			const response = await list({
-				path: 'listWithTokenResultsPath',
+				prefix: 'listWithTokenResultsPath',
 				options: {
 					accessLevel: 'guest',
 					pageSize: customPageSize,
@@ -148,7 +148,7 @@ describe('list API', () => {
 			mockListObjectsV2ApiWithPages(3);
 
 			const result = await list({
-				path: 'listALLResultsPath',
+				prefix: 'listALLResultsPath',
 				options: { accessLevel: 'guest', listAll: true },
 			});
 
@@ -185,7 +185,7 @@ describe('list API', () => {
 
 			expect.assertions(3);
 			let response = await list({
-				path: 'emptyListResultsPath',
+				prefix: 'emptyListResultsPath',
 				options: {
 					accessLevel: 'guest',
 				},
