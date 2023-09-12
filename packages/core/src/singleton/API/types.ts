@@ -20,7 +20,7 @@ export type APIConfig = {
 		defaultAuthMode?: GraphQLAuthMode;
 		region?: string;
 		endpoint?: string;
-		apiKey: string;
+		apiKey?: string;
 		// TODO: switch this when dependency is added:
 		// modelIntrospectionSchema: InternalModelIntrospectionSchema;
 		modelIntrospectionSchema?: any;
