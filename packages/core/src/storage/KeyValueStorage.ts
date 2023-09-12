@@ -10,7 +10,7 @@ import { KeyValueStorageInterface } from '../types';
 export class KeyValueStorage implements KeyValueStorageInterface {
 	storage?: Storage;
 
-	constructor(storage: Storage) {
+	constructor(storage?: Storage) {
 		this.storage = storage;
 	}
 
