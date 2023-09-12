@@ -115,6 +115,9 @@ export class InternalGraphQLAPIClass {
 
 		this._options = Object.assign({}, this._options, opt);
 
+		console.log(this._options);
+		debugger;
+
 		this.createInstance();
 
 		return this._options;
@@ -250,8 +253,6 @@ export class InternalGraphQLAPIClass {
 		return operationType;
 	}
 
-	// TODO V6: COULD JUST EXPORT THIS:
-
 	/**
 	 * Executes a GraphQL operation
 	 *
@@ -279,6 +280,8 @@ export class InternalGraphQLAPIClass {
 		const headers = additionalHeaders || {};
 
 		// if an authorization header is set, have the explicit authToken take precedence
+		console.log(authToken);
+		debugger;
 		if (authToken) {
 			headers.Authorization = authToken;
 		}
@@ -289,14 +292,21 @@ export class InternalGraphQLAPIClass {
 				this.createInstanceIfNotCreated();
 				// TODO: This is being removed:
 				// const cancellableToken = this._api.getCancellableToken();
-				const initParams = {
-					// cancellableToken,
-					withCredentials: this._options.withCredentials,
-				};
+
+				const authSession = fetchAuthSession();
+				// CHECK this._options.withCredentials:
+				console.log(authSession);
+				console.log(this._options);
+				debugger;
+				// const initParams = {
+				// 	// cancellableToken,
+				// 	withCredentials: this._options.withCredentials,
+				// };
+
 				const responsePromise = this._graphql<T>(
 					{ query, variables, authMode },
 					headers,
-					initParams,
+					// initParams,
 					customUserAgentDetails
 				);
 				// this._api.updateRequestToBeCancellable(
@@ -305,6 +315,7 @@ export class InternalGraphQLAPIClass {
 				// );
 				return responsePromise;
 			case 'subscription':
+				debugger;
 				return this._graphqlSubscribe(
 					{ query, variables, authMode },
 					headers,
@@ -318,7 +329,8 @@ export class InternalGraphQLAPIClass {
 	private async _graphql<T = any>(
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
-		initParams = {},
+		// See question below
+		// initParams = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
 		this.createInstanceIfNotCreated();
@@ -357,17 +369,19 @@ export class InternalGraphQLAPIClass {
 			variables,
 		};
 
-		const init = Object.assign(
-			{
-				headers,
-				body,
-				signerServiceInfo: {
-					service: !customGraphqlEndpoint ? 'appsync' : 'execute-api',
-					region: !customGraphqlEndpoint ? region : customEndpointRegion,
-				},
-			},
-			initParams
-		);
+		// No longer used after Francisco's changes.
+		// TODO V6: Do we still need the `signerServiceInfo`?
+		// const init = Object.assign(
+		// 	{
+		// 		headers,
+		// 		body,
+		// 		signerServiceInfo: {
+		// 			service: !customGraphqlEndpoint ? 'appsync' : 'execute-api',
+		// 			region: !customGraphqlEndpoint ? region : customEndpointRegion,
+		// 		},
+		// 	},
+		// 	initParams
+		// );
 
 		const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
 
