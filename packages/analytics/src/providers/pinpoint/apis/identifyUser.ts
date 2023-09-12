@@ -5,7 +5,7 @@ import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
 import { AnalyticsValidationErrorCode } from '../../../errors';
 import { getAnalyticsUserAgentString } from '../../../utils/userAgent';
-import { IdentifyUserParameters, UpdateEndpointException } from '../types';
+import { IdentifyUserInput, UpdateEndpointException } from '../types';
 import { resolveConfig, resolveCredentials } from '../utils';
 
 /**
@@ -19,7 +19,7 @@ import { resolveConfig, resolveCredentials } from '../utils';
 export const identifyUser = async ({
 	userId,
 	userProfile,
-}: IdentifyUserParameters): Promise<void> => {
+}: IdentifyUserInput): Promise<void> => {
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
 	updateEndpoint({
