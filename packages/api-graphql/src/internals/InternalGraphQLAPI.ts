@@ -66,6 +66,7 @@ export class InternalGraphQLAPIClass {
 	 * @private
 	 */
 	private _options;
+	// TODO V6: can likely remove:
 	private _api = null;
 	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
@@ -93,54 +94,58 @@ export class InternalGraphQLAPIClass {
 	 * @param {Object} config - Configuration of the API
 	 * @return {Object} - The current configuration
 	 */
-	configure(options) {
-		const { API = {}, ...otherOptions } = options || {};
-		let opt = { ...otherOptions, ...API };
-		logger.debug('configure GraphQL API', { opt });
+	// configure(options) {
+	// 	const { API = {}, ...otherOptions } = options || {};
+	// 	let opt = { ...otherOptions, ...API };
+	// 	logger.debug('configure GraphQL API', { opt });
 
-		if (opt['aws_project_region']) {
-			opt = Object.assign({}, opt, {
-				region: opt['aws_project_region'],
-				header: {},
-			});
-		}
+	// 	const config = Amplify.getConfig().API.AppSync;
+	// 	console.log(config);
+	// 	debugger;
 
-		if (
-			typeof opt.graphql_headers !== 'undefined' &&
-			typeof opt.graphql_headers !== 'function'
-		) {
-			logger.warn('graphql_headers should be a function');
-			opt.graphql_headers = undefined;
-		}
+	// 	if (opt['aws_project_region']) {
+	// 		opt = Object.assign({}, opt, {
+	// 			region: opt['aws_project_region'],
+	// 			header: {},
+	// 		});
+	// 	}
 
-		// TODO V6: options Empty here:
-		this._options = Object.assign({}, this._options, opt);
+	// 	if (
+	// 		typeof opt.graphql_headers !== 'undefined' &&
+	// 		typeof opt.graphql_headers !== 'function'
+	// 	) {
+	// 		logger.warn('graphql_headers should be a function');
+	// 		opt.graphql_headers = undefined;
+	// 	}
 
-		this.createInstance();
+	// 	// TODO V6: options Empty here:
+	// 	this._options = Object.assign({}, this._options, opt);
 
-		return this._options;
-	}
+	// 	this.createInstance();
+
+	// 	return this._options;
+	// }
 
 	/**
 	 * Create an instance of API for the library
 	 * @return - A promise of true if Success
 	 */
-	createInstance() {
-		logger.debug('create Rest instance');
-		if (this._options) {
-			// TODO: remove options, use getConfig here
-			// this._api = new RestClient(this._options);
-			this._api = post;
+	// createInstance() {
+	// 	logger.debug('create Rest instance');
+	// 	if (this._options) {
+	// 		// TODO: remove options, use getConfig here
+	// 		// this._api = new RestClient(this._options);
+	// 		this._api = post;
 
-			// Share instance Credentials with client for SSR
-			// TODO V6: fetchAuthSesssion?
-			// this._api.Credentials = this.Credentials;
+	// 		// Share instance Credentials with client for SSR
+	// 		// TODO V6: fetchAuthSesssion?
+	// 		// this._api.Credentials = this.Credentials;
 
-			return true;
-		} else {
-			return Promise.reject('API not configured');
-		}
-	}
+	// 		return true;
+	// 	} else {
+	// 		return Promise.reject('API not configured');
+	// 	}
+	// }
 
 	// TODO V6
 	private async _headerBasedAuth(
@@ -148,12 +153,27 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders: { [key: string]: string } = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	) {
-		// TODO: Amplify.getConfig().API
 		// apikey is the same (but needs to be on the config)
-		const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
-			this._options;
-		const authenticationType =
-			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
+		// const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
+		// 	this._options;
+		// const authenticationType =
+		// 	defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
+
+		const config = Amplify.getConfig();
+		const {
+			region: region,
+			endpoint: appSyncGraphqlEndpoint,
+			defaultAuthMode: authenticationType,
+			apiKey,
+			// TODO V6: not needed for Studio:
+			// graphql_headers = () => ({}),
+			// TODO: V6
+			// graphql_endpoint: customGraphqlEndpoint,
+			// TODO V6:
+			// graphql_endpoint_iam_region: customEndpointRegion,
+		} = config.API.AppSync as any;
+		debugger;
+
 		let headers = {};
 
 		switch (authenticationType) {
@@ -169,6 +189,8 @@ export class InternalGraphQLAPIClass {
 				break;
 			// NOTHING HERE
 			case 'AWS_IAM':
+				// TODO V6:
+				// Make sure credentials exist (maybe)
 				// const credentialsOK = await this._ensureCredentials();
 				// if (!credentialsOK) {
 				// 	throw new Error(GraphQLAuthError.NO_CREDENTIALS);
@@ -287,7 +309,7 @@ export class InternalGraphQLAPIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
-				this.createInstanceIfNotCreated();
+				// this.createInstanceIfNotCreated();
 				// TODO: This is being removed:
 				// const cancellableToken = this._api.getCancellableToken();
 
@@ -331,7 +353,7 @@ export class InternalGraphQLAPIClass {
 		// initParams = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
-		this.createInstanceIfNotCreated();
+		// this.createInstanceIfNotCreated();
 		const config = Amplify.getConfig();
 		// Replace?
 		debugger;
@@ -439,11 +461,11 @@ export class InternalGraphQLAPIClass {
 		return response;
 	}
 
-	async createInstanceIfNotCreated() {
-		if (!this._api) {
-			await this.createInstance();
-		}
-	}
+	// async createInstanceIfNotCreated() {
+	// 	if (!this._api) {
+	// 		await this.createInstance();
+	// 	}
+	// }
 
 	/**
 	 * Checks to see if an error thrown is from an api request cancellation

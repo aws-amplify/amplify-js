@@ -16,7 +16,8 @@ export type GraphQLAuthMode = 'AWS_IAM' | 'COGNITO_USERPOOLS' | 'API_KEY';
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: Record<string, unknown>;
-	authMode?: GraphQLAuthMode;
+	// authMode?: GraphQLAuthMode;
+	authMode?: string;
 	authToken?: string;
 	/**
 	 * @deprecated This property should not be used

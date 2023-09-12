@@ -63,6 +63,9 @@ export class InternalAPIClass {
 		this._options = options;
 		// TODO V6
 		// this._restApi = new RestAPIClass(options);
+		// TODO V6 - support for options:
+		// const config = Amplify.getConfig();
+		debugger;
 		this._graphqlApi = new InternalGraphQLAPIClass(options);
 		logger.debug('API Options', this._options);
 	}
@@ -76,26 +79,26 @@ export class InternalAPIClass {
 	 * @param {Object} config - Configuration of the API
 	 * @return {Object} - The current configuration
 	 */
-	configure(options) {
-		this._options = Object.assign({}, this._options, options);
+	// configure(options) {
+	// 	this._options = Object.assign({}, this._options, options);
 
-		// Share Amplify instance with client for SSR
-		// this._restApi.Credentials = this.Credentials;
+	// 	// Share Amplify instance with client for SSR
+	// 	// this._restApi.Credentials = this.Credentials;
 
-		// this._graphqlApi.Auth = this.Auth;
-		this._graphqlApi.Cache = this.Cache;
-		// this._graphqlApi.Credentials = this.Credentials;
+	// 	// this._graphqlApi.Auth = this.Auth;
+	// 	this._graphqlApi.Cache = this.Cache;
+	// 	// this._graphqlApi.Credentials = this.Credentials;
 
-		// TODO V6 - `Amplify.getConfig` for REST?
-		// const restAPIConfig = Amplify.getConfig().RestApi;
+	// 	// TODO V6 - `Amplify.getConfig` for REST?
+	// 	// const restAPIConfig = Amplify.getConfig().RestApi;
 
-		// V5:
-		// const restAPIConfig = this._restApi.configure(this._options);
-		const graphQLAPIConfig = this._graphqlApi.configure(this._options);
+	// 	// V5:
+	// 	// const restAPIConfig = this._restApi.configure(this._options);
+	// 	const graphQLAPIConfig = this._graphqlApi.configure(this._options);
 
-		// return { ...restAPIConfig, ...graphQLAPIConfig };
-		return { ...graphQLAPIConfig };
-	}
+	// 	// return { ...restAPIConfig, ...graphQLAPIConfig };
+	// 	return { ...graphQLAPIConfig };
+	// }
 
 	/**
 	 * Make a GET request

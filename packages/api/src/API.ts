@@ -19,6 +19,9 @@ import { InternalAPIClass } from './internals/InternalAPI';
 import type { ModelTypes } from '@aws-amplify/types-package-alpha';
 
 const logger = new Logger('API');
+
+// TODO V6: export `generateClient`
+
 /**
  * @deprecated
  * Use RestApi or GraphQLAPI to reduce your application bundle size
@@ -58,54 +61,54 @@ export class APIClass extends InternalAPIClass {
 	 * Generates an API client that can work with models or raw GraphQL
 	 */
 	generateClient<T extends Record<any, any> = never>(): V6Client<T> {
-		const config = super.configure({});
+		// const config = super.configure({});
 
-		const { modelIntrospection } = config;
+		// const { modelIntrospection } = config;
 
 		const client: V6Client<any> = {
 			graphql: v6graphql,
 			models: {},
 		};
 
-		if (modelIntrospection) {
-			for (const model of Object.values(modelIntrospection.models)) {
-				const { name } = model as any;
+		// if (modelIntrospection) {
+		// 	for (const model of Object.values(modelIntrospection.models)) {
+		// 		const { name } = model as any;
 
-				client.models[name] = {} as any;
+		// 		client.models[name] = {} as any;
 
-				Object.entries(graphQLOperationsInfo).forEach(
-					([key, { operationPrefix }]) => {
-						const operation = key as ModelOperation;
+		// 		Object.entries(graphQLOperationsInfo).forEach(
+		// 			([key, { operationPrefix }]) => {
+		// 				const operation = key as ModelOperation;
 
-						// e.g. clients.models.Todo.update
-						client.models[name][operationPrefix] = async (arg?: any) => {
-							const query = generateGraphQLDocument(model, operation);
-							const variables = buildGraphQLVariables(model, operation, arg);
+		// 				// e.g. clients.models.Todo.update
+		// 				client.models[name][operationPrefix] = async (arg?: any) => {
+		// 					const query = generateGraphQLDocument(model, operation);
+		// 					const variables = buildGraphQLVariables(model, operation, arg);
 
-							const res = (await this.graphql({
-								query,
-								// TODO V6
-								// @ts-ignore
-								variables,
-							})) as any;
+		// 					const res = (await this.graphql({
+		// 						query,
+		// 						// TODO V6
+		// 						// @ts-ignore
+		// 						variables,
+		// 					})) as any;
 
-							// flatten response
-							if (res.data !== undefined) {
-								const [key] = Object.keys(res.data);
+		// 					// flatten response
+		// 					if (res.data !== undefined) {
+		// 						const [key] = Object.keys(res.data);
 
-								if (res.data[key].items) {
-									return res.data[key].items;
-								}
+		// 						if (res.data[key].items) {
+		// 							return res.data[key].items;
+		// 						}
 
-								return res.data[key];
-							}
+		// 						return res.data[key];
+		// 					}
 
-							return res;
-						};
-					}
-				);
-			}
-		}
+		// 					return res;
+		// 				};
+		// 			}
+		// 		);
+		// 	}
+		// }
 
 		return client as V6Client<T>;
 	}
