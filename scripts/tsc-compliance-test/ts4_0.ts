@@ -13,7 +13,7 @@ import * as storageS3Server from 'aws-amplify/storage/s3/server';
 
 import * as utils from 'aws-amplify/utils';
 
-console.log([
+export const allPublicPaths = [
 	Amplify,
 	analytics,
 	auth,
@@ -25,4 +25,4 @@ console.log([
 	storageS3,
 	storageS3Server,
 	utils,
-]);
+];
