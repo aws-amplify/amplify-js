@@ -113,10 +113,8 @@ export class InternalGraphQLAPIClass {
 			opt.graphql_headers = undefined;
 		}
 
+		// TODO V6: options Empty here:
 		this._options = Object.assign({}, this._options, opt);
-
-		console.log(this._options);
-		debugger;
 
 		this.createInstance();
 
@@ -334,13 +332,30 @@ export class InternalGraphQLAPIClass {
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
 		this.createInstanceIfNotCreated();
+		const config = Amplify.getConfig();
+		// Replace?
+		debugger;
+		// const {
+		// 	aws_appsync_region: region,
+		// 	aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
+		// 	graphql_headers = () => ({}),
+		// 	graphql_endpoint: customGraphqlEndpoint,
+		// 	graphql_endpoint_iam_region: customEndpointRegion,
+		// } = this._options;
 		const {
-			aws_appsync_region: region,
-			aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
-			graphql_headers = () => ({}),
-			graphql_endpoint: customGraphqlEndpoint,
-			graphql_endpoint_iam_region: customEndpointRegion,
-		} = this._options;
+			region: region,
+			endpoint: appSyncGraphqlEndpoint,
+			// TODO V6: not needed for Studio:
+			// graphql_headers = () => ({}),
+			// TODO: V6
+			// graphql_endpoint: customGraphqlEndpoint,
+			// TODO V6:
+			// graphql_endpoint_iam_region: customEndpointRegion,
+		} = config.API.AppSync;
+
+		// TODO V6:
+		const customGraphqlEndpoint = null;
+		const customEndpointRegion = null;
 
 		const headers = {
 			...(!customGraphqlEndpoint &&
