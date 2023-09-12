@@ -7,7 +7,11 @@
 		"packages/analytics",
 		"packages/storage",
 		"packages/aws-amplify",
-		"packages/adapter-nextjs"
+		"packages/adapter-nextjs",
+		"packages/api",
+		"packages/api-rest",
+		"packages/api-graphql",
+		"packages/amplify-v6-types-package"
 	],
 	"exact": true,
 	"version": "independent",

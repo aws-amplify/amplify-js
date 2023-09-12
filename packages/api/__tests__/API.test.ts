@@ -1,7 +1,8 @@
 import { RestAPIClass } from '@aws-amplify/api-rest';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
 import { APIClass as API } from '../src/API';
-import { ApiAction, Category } from '@aws-amplify/core';
+// import { ApiAction, Category } from '@aws-amplify/core';
+import { ApiAction, Category } from '@aws-amplify/core/internals/utils';
 
 describe('API test', () => {
 	test('configure', () => {

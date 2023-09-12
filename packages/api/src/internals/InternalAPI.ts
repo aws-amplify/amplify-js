@@ -5,22 +5,36 @@ import {
 	GraphQLOptions,
 	GraphQLResult,
 	OperationTypeNode,
+	GraphQLQuery,
+	GraphQLSubscription,
 } from '@aws-amplify/api-graphql';
+// TODO V6
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
-import { RestAPIClass } from '@aws-amplify/api-rest';
-import { Auth } from '@aws-amplify/auth';
+// import { RestAPIClass } from '@aws-amplify/api-rest';
+import { post, cancel, isCancel } from '@aws-amplify/api-rest';
+// TODO this doesn't exist anymore:
+// import { Auth } from '@aws-amplify/auth';
+import { Cache } from '@aws-amplify/core';
+// TODO V6
+// import {
+// 	Amplify,
+// 	ApiAction,
+// 	Category,
+// 	Credentials,
+// 	CustomUserAgentDetails,
+// 	ConsoleLogger as Logger,
+// } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
+// import { AmplifyV6 } from '@aws-amplify';
 import {
-	Amplify,
 	ApiAction,
-	Cache,
 	Category,
-	Credentials,
 	CustomUserAgentDetails,
-	ConsoleLogger as Logger,
-} from '@aws-amplify/core';
-import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
+} from '@aws-amplify/core/internals/utils';
+
+// import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
+import { AWSAppSyncRealTimeProvider } from '@aws-amplify/api-graphql';
 import Observable from 'zen-observable-ts';
-import { GraphQLQuery, GraphQLSubscription } from '../types';
 
 const logger = new Logger('API');
 /**
@@ -34,12 +48,12 @@ export class InternalAPIClass {
 	 * @param {Object} options - Configuration object for API
 	 */
 	private _options;
-	private _restApi: RestAPIClass;
+	// private _restApi: RestAPIClass;
 	private _graphqlApi: InternalGraphQLAPIClass;
 
-	Auth = Auth;
+	// Auth = Auth;
 	Cache = Cache;
-	Credentials = Credentials;
+	// Credentials = Credentials;
 
 	/**
 	 * Initialize API with AWS configuration
@@ -47,7 +61,8 @@ export class InternalAPIClass {
 	 */
 	constructor(options) {
 		this._options = options;
-		this._restApi = new RestAPIClass(options);
+		// TODO V6
+		// this._restApi = new RestAPIClass(options);
 		this._graphqlApi = new InternalGraphQLAPIClass(options);
 		logger.debug('API Options', this._options);
 	}
@@ -65,16 +80,21 @@ export class InternalAPIClass {
 		this._options = Object.assign({}, this._options, options);
 
 		// Share Amplify instance with client for SSR
-		this._restApi.Credentials = this.Credentials;
+		// this._restApi.Credentials = this.Credentials;
 
-		this._graphqlApi.Auth = this.Auth;
+		// this._graphqlApi.Auth = this.Auth;
 		this._graphqlApi.Cache = this.Cache;
-		this._graphqlApi.Credentials = this.Credentials;
+		// this._graphqlApi.Credentials = this.Credentials;
 
-		const restAPIConfig = this._restApi.configure(this._options);
+		// TODO V6 - `Amplify.getConfig` for REST?
+		// const restAPIConfig = Amplify.getConfig().RestApi;
+
+		// V5:
+		// const restAPIConfig = this._restApi.configure(this._options);
 		const graphQLAPIConfig = this._graphqlApi.configure(this._options);
 
-		return { ...restAPIConfig, ...graphQLAPIConfig };
+		// return { ...restAPIConfig, ...graphQLAPIConfig };
+		return { ...graphQLAPIConfig };
 	}
 
 	/**
@@ -84,17 +104,18 @@ export class InternalAPIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	get(
-		apiName: string,
-		path: string,
-		init: { [key: string]: any }
-	): Promise<any> {
-		return this._restApi.get(
-			apiName,
-			path,
-			this.getInitWithCustomUserAgentDetails(init, ApiAction.Get)
-		);
-	}
+	// TODO: need REST API `get` method
+	// get(
+	// 	apiName: string,
+	// 	path: string,
+	// 	init: { [key: string]: any }
+	// ): Promise<any> {
+	// 	return this._restApi.get(
+	// 		apiName,
+	// 		path,
+	// 		this.getInitWithCustomUserAgentDetails(init, ApiAction.Get)
+	// 	);
+	// }
 
 	/**
 	 * Make a POST request
@@ -103,17 +124,17 @@ export class InternalAPIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	post(
-		apiName: string,
-		path: string,
-		init: { [key: string]: any }
-	): Promise<any> {
-		return this._restApi.post(
-			apiName,
-			path,
-			this.getInitWithCustomUserAgentDetails(init, ApiAction.Post)
-		);
-	}
+	// post(
+	// 	apiName: string,
+	// 	path: string,
+	// 	init: { [key: string]: any }
+	// ): Promise<any> {
+	// 	return this._restApi.post(
+	// 		apiName,
+	// 		path,
+	// 		this.getInitWithCustomUserAgentDetails(init, ApiAction.Post)
+	// 	);
+	// }
 
 	/**
 	 * Make a PUT request
@@ -122,17 +143,18 @@ export class InternalAPIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	put(
-		apiName: string,
-		path: string,
-		init: { [key: string]: any }
-	): Promise<any> {
-		return this._restApi.put(
-			apiName,
-			path,
-			this.getInitWithCustomUserAgentDetails(init, ApiAction.Put)
-		);
-	}
+	// TODO: need REST API `put` method
+	// put(
+	// 	apiName: string,
+	// 	path: string,
+	// 	init: { [key: string]: any }
+	// ): Promise<any> {
+	// 	return this._restApi.put(
+	// 		apiName,
+	// 		path,
+	// 		this.getInitWithCustomUserAgentDetails(init, ApiAction.Put)
+	// 	);
+	// }
 
 	/**
 	 * Make a PATCH request
@@ -141,17 +163,18 @@ export class InternalAPIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	patch(
-		apiName: string,
-		path: string,
-		init: { [key: string]: any }
-	): Promise<any> {
-		return this._restApi.patch(
-			apiName,
-			path,
-			this.getInitWithCustomUserAgentDetails(init, ApiAction.Patch)
-		);
-	}
+	// TODO: need REST API `patch` method
+	// patch(
+	// 	apiName: string,
+	// 	path: string,
+	// 	init: { [key: string]: any }
+	// ): Promise<any> {
+	// 	return this._restApi.patch(
+	// 		apiName,
+	// 		path,
+	// 		this.getInitWithCustomUserAgentDetails(init, ApiAction.Patch)
+	// 	);
+	// }
 
 	/**
 	 * Make a DEL request
@@ -160,17 +183,18 @@ export class InternalAPIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	del(
-		apiName: string,
-		path: string,
-		init: { [key: string]: any }
-	): Promise<any> {
-		return this._restApi.del(
-			apiName,
-			path,
-			this.getInitWithCustomUserAgentDetails(init, ApiAction.Del)
-		);
-	}
+	// TODO: need REST API `del` method
+	// del(
+	// 	apiName: string,
+	// 	path: string,
+	// 	init: { [key: string]: any }
+	// ): Promise<any> {
+	// 	return this._restApi.del(
+	// 		apiName,
+	// 		path,
+	// 		this.getInitWithCustomUserAgentDetails(init, ApiAction.Del)
+	// 	);
+	// }
 
 	/**
 	 * Make a HEAD request
@@ -179,17 +203,18 @@ export class InternalAPIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	head(
-		apiName: string,
-		path: string,
-		init: { [key: string]: any }
-	): Promise<any> {
-		return this._restApi.head(
-			apiName,
-			path,
-			this.getInitWithCustomUserAgentDetails(init, ApiAction.Head)
-		);
-	}
+	// TODO: need REST API `head` method
+	// head(
+	// 	apiName: string,
+	// 	path: string,
+	// 	init: { [key: string]: any }
+	// ): Promise<any> {
+	// 	return this._restApi.head(
+	// 		apiName,
+	// 		path,
+	// 		this.getInitWithCustomUserAgentDetails(init, ApiAction.Head)
+	// 	);
+	// }
 
 	/**
 	 * Checks to see if an error thrown is from an api request cancellation
@@ -197,7 +222,8 @@ export class InternalAPIClass {
 	 * @return If the error was from an api request cancellation
 	 */
 	isCancel(error: any): boolean {
-		return this._restApi.isCancel(error);
+		// return this._restApi.isCancel(error);
+		return isCancel(error);
 	}
 	/**
 	 * Cancels an inflight request for either a GraphQL request or a Rest API request.
@@ -205,13 +231,16 @@ export class InternalAPIClass {
 	 * @param [message] - custom error message
 	 * @return If the request was cancelled
 	 */
+	// TODO V6 - need `hasCancelToken` from REST API, or
+	// `isCancel` needs to accept both errors and requests.
 	cancel(request: Promise<any>, message?: string): boolean {
-		if (this._restApi.hasCancelToken(request)) {
-			return this._restApi.cancel(request, message);
-		} else if (this._graphqlApi.hasCancelToken(request)) {
-			return this._graphqlApi.cancel(request, message);
-		}
-		return false;
+		// if (this._restApi.hasCancelToken(request)) {
+		// 	return this._restApi.cancel(request, message);
+		// } else if (this._graphqlApi.hasCancelToken(request)) {
+		// 	return this._graphqlApi.cancel(request, message);
+		// }
+		// return false;
+		return cancel(request, message);
 	}
 
 	private getInitWithCustomUserAgentDetails(
@@ -231,9 +260,10 @@ export class InternalAPIClass {
 	 * @param apiName - The name of the api
 	 * @return The endpoint of the api
 	 */
-	async endpoint(apiName: string): Promise<string> {
-		return this._restApi.endpoint(apiName);
-	}
+	// TODO: need REST API `endpoint` method
+	// async endpoint(apiName: string): Promise<string> {
+	// 	return this._restApi.endpoint(apiName);
+	// }
 
 	/**
 	 * to get the operation type
@@ -282,4 +312,4 @@ export class InternalAPIClass {
 }
 
 export const InternalAPI = new InternalAPIClass(null);
-Amplify.register(InternalAPI);
+// Amplify.register(InternalAPI);

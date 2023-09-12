@@ -27,7 +27,7 @@ import {
 	ConnectionState,
 	PubSubContent,
 	PubSubContentObserver,
-} from '../../types/PubSub';
+} from '../../../../api-graphql/src/types/PubSub';
 
 import {
 	AMPLIFY_SYMBOL,
