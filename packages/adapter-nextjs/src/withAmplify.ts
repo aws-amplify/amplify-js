@@ -31,9 +31,15 @@ export const withAmplify = (
 	nextConfig: NextConfig,
 	amplifyConfig: ResourcesConfig
 ) => {
+	const configStr = JSON.stringify(amplifyConfig);
 	nextConfig.env = {
 		...nextConfig.env,
-		amplifyConfig: JSON.stringify(amplifyConfig),
+		amplifyConfig: configStr,
+	};
+
+	nextConfig.serverRuntimeConfig = {
+		...nextConfig.serverRuntimeConfig,
+		amplifyConfig: configStr,
 	};
 
 	return nextConfig;
