@@ -40,6 +40,15 @@ describe(fetchTransferHandler.name, () => {
 		);
 	});
 
+	test('should cache configure', async () => {
+		const cacheMode = 'no-store';
+		await fetchTransferHandler(mockRequest, { cache: cacheMode });
+		expect(mockUnfetch).toBeCalledTimes(1);
+		expect(mockUnfetch.mock.calls[0][1]).toEqual(
+			expect.objectContaining({ cache: cacheMode })
+		);
+	});
+
 	test('should support headers', async () => {
 		mockFetchResponse.headers.forEach.mockImplementation((cb: any) => {
 			cb('foo', 'bar');
