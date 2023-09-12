@@ -11,7 +11,6 @@ import {
 	assertIdentityPooIdConfig,
 } from '@aws-amplify/core/internals/utils';
 import { IdentityIdStorageKeys, IdentityIdStore } from './types';
-import { AuthError } from '../../../errors/AuthError';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
 import { AuthKeys } from '../tokenProvider/types';
 
@@ -82,9 +81,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 
 	async clearIdentityId(): Promise<void> {
 		this._primaryIdentityId = undefined;
-		await Promise.all([
-			this.keyValueStorage.removeItem(this._authKeys.identityId),
-		]);
+		await this.keyValueStorage.removeItem(this._authKeys.identityId);
 	}
 }
 
