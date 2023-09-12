@@ -63,7 +63,7 @@ export type GetUrlOptions = Options & {
 	expiresIn?: number;
 };
 
-export type UploadDataOptions = TransferOptions & {
+export type UploadDataOptions = Omit<TransferOptions, 'targetIdentityId'> & {
 	/**
 	 * The default content-disposition header value of the file when downloading it.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition

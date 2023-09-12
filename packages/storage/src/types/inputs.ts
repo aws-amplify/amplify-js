@@ -23,7 +23,7 @@ export type StorageRemoveInput<Options extends StorageOptions> =
 export type StorageListInput<
 	Options extends StorageListAllOptions | StorageListPaginateOptions
 > = {
-	path?: string;
+	prefix?: string;
 	options?: Options;
 };
 

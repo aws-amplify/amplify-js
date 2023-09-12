@@ -29,7 +29,7 @@ export const list = async (
 	amplify: AmplifyClassV6,
 	input?: ListAllInput | ListPaginateInput
 ): Promise<ListAllOutput | ListPaginateOutput> => {
-	const { options = {}, path = '' } = input ?? {};
+	const { options = {}, prefix: path = '' } = input ?? {};
 	const {
 		s3Config,
 		bucket,

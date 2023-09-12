@@ -2,18 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { listObjectsV2 } from '../../../../src/providers/s3/utils/client';
 import { list } from '../../../../src/providers/s3/apis';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
-	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
+		Auth: {
+			fetchAuthSession: jest.fn(),
+		},
 	},
 }));
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 const mockListObject = listObjectsV2 as jest.Mock;
 const key = 'path/itemsKey';
@@ -123,7 +125,7 @@ describe('list API', () => {
 			expect.assertions(4);
 			const customPageSize = 5;
 			const response = await list({
-				path: 'listWithTokenResultsPath',
+				prefix: 'listWithTokenResultsPath',
 				options: {
 					accessLevel: 'guest',
 					pageSize: customPageSize,
@@ -146,7 +148,7 @@ describe('list API', () => {
 			mockListObjectsV2ApiWithPages(3);
 
 			const result = await list({
-				path: 'listALLResultsPath',
+				prefix: 'listALLResultsPath',
 				options: { accessLevel: 'guest', listAll: true },
 			});
 
@@ -183,7 +185,7 @@ describe('list API', () => {
 
 			expect.assertions(3);
 			let response = await list({
-				path: 'emptyListResultsPath',
+				prefix: 'emptyListResultsPath',
 				options: {
 					accessLevel: 'guest',
 				},

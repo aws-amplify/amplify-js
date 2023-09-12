@@ -6,7 +6,7 @@ import { RemoveInput, RemoveOutput } from '../types';
 import { remove as removeInternal } from './internal/remove';
 
 /**
- * Remove the object that is specified by the `input`.
+ * Remove a file from your S3 bucket.
  * @param {RemoveInput} The input object
  * @return {Promise<RemoveOutput>} - Promise resolves upon successful removal of the object
  * @throws service: {@link S3Exception} - S3 service errors thrown while getting properties

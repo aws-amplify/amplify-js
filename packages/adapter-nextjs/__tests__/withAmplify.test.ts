@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ResourcesConfig } from '@aws-amplify/core';
+import { ResourcesConfig } from 'aws-amplify';
 import { withAmplify } from '../src/withAmplify';
 
 const mockAmplifyConfig: ResourcesConfig = {
@@ -16,7 +16,7 @@ const mockAmplifyConfig: ResourcesConfig = {
 		S3: {
 			bucket: 'bucket',
 			region: 'us-east-1',
-		}
+		},
 	},
 };
 
@@ -29,6 +29,9 @@ describe('withAmplify', () => {
 			env: {
 				amplifyConfig: JSON.stringify(mockAmplifyConfig),
 			},
+			serverRuntimeConfig: {
+				amplifyConfig: JSON.stringify(mockAmplifyConfig),
+			},
 		});
 	});
 
@@ -37,12 +40,19 @@ describe('withAmplify', () => {
 			env: {
 				existingKey: '123',
 			},
+			serverRuntimeConfig: {
+				myKey: 'myValue',
+			},
 		};
 		const result = withAmplify(nextConfig, mockAmplifyConfig);
 
 		expect(result).toEqual({
 			env: {
 				existingKey: '123',
+				amplifyConfig: JSON.stringify(mockAmplifyConfig),
+			},
+			serverRuntimeConfig: {
+				myKey: 'myValue',
 				amplifyConfig: JSON.stringify(mockAmplifyConfig),
 			},
 		});
