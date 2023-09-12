@@ -88,14 +88,12 @@ function mergeResourceConfig(
 		resultConfig[category] = existingConfig[category as keyof ResourcesConfig];
 	}
 
-	for (const key of Object.keys(newConfig).filter(key => key !== 'ssr')) {
+	for (const key of Object.keys(newConfig)) {
 		resultConfig[key] = {
 			...resultConfig[key],
-			...newConfig[key as Exclude<keyof ResourcesConfig, 'ssr'>],
+			...newConfig[key as keyof ResourcesConfig],
 		};
 	}
-
-	resultConfig.ssr = newConfig.ssr;
 
 	return resultConfig;
 }
@@ -110,12 +108,14 @@ function mergeLibraryOptions(
 		resultConfig[category] = existingConfig[category as keyof LibraryOptions];
 	}
 
-	for (const category of Object.keys(newConfig)) {
-		resultConfig[category] = {
-			...resultConfig[category],
-			...newConfig[category as keyof LibraryOptions],
+	for (const key of Object.keys(newConfig).filter(key => key !== 'ssr')) {
+		resultConfig[key] = {
+			...resultConfig[key],
+			...newConfig[key as Exclude<keyof LibraryOptions, 'ssr'>],
 		};
 	}
+
+	resultConfig.ssr = newConfig.ssr;
 
 	return resultConfig;
 }

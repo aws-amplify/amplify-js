@@ -29,13 +29,13 @@ export type ResourcesConfig = {
 	// Notifications?: {};
 	// Predictions?: {};
 	Storage?: StorageConfig;
-	ssr?: boolean;
 	Geo?: GeoConfig;
 };
 
 export type LibraryOptions = {
 	Auth?: LibraryAuthOptions;
 	Storage?: LibraryStorageOptions;
+	ssr?: boolean;
 };
 
 export {
