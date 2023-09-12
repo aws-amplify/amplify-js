@@ -5,7 +5,10 @@ import { MetadataBearer } from '@aws-sdk/types';
 import { Endpoint } from './core';
 import { HttpResponse } from './http';
 
-export type { Credentials, MetadataBearer } from '@aws-sdk/types';
+export type {
+	AwsCredentialIdentity as Credentials,
+	MetadataBearer,
+} from '@aws-sdk/types';
 
 export type SourceData = string | ArrayBuffer | ArrayBufferView;
 
