@@ -34,7 +34,7 @@ export const list = async (
 		| StorageListRequest<StorageListAllOptions>
 		| StorageListRequest<StorageListPaginateOptions>
 ): Promise<S3ListAllResult | S3ListPaginateResult> => {
-	const { options = {}, path = '' } = listRequest ?? {};
+	const { options = {}, prefix: path = '' } = listRequest ?? {};
 	const {
 		s3Config,
 		bucket,
