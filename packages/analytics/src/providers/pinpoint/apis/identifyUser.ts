@@ -25,13 +25,18 @@ import { resolveConfig, resolveCredentials } from '../utils';
  * ```ts
  * // Identify a user with Pinpoint
  * await identifyUser({
- *     userId
+ *     userId,
+ *     userProfile: {
+ *         attributes: {
+ *             email: [userEmail],
+ *         },
+ *     }
  * });
  * ```
  * 
  * @example
  * ```ts
- * // Identify a user with Pinpoint and specify some information about the user & their environment
+ * // Identify a user with Pinpoint with some additional demographics
  * await identifyUser({
  *     userId,
  *     userProfile: {
