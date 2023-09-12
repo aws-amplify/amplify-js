@@ -372,7 +372,8 @@ export class InternalGraphQLAPIClass {
 							customUserAgentDetails
 					  )
 					: { Authorization: null })),
-			...(await graphql_headers({ query, variables })),
+			// TODO V6:
+			// ...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
