@@ -49,7 +49,10 @@ export const parseAWSExports = (
 				signUpVerificationMethod: aws_cognito_sign_up_verification_method,
 				userPoolClientId: aws_user_pools_web_client_id,
 				userPoolId: aws_user_pools_id,
-				...(oauth && { loginWith: getOAuthConfig(oauth) }),
+				...(oauth &&
+					Object.keys(oauth).length > 0 && {
+						loginWith: getOAuthConfig(oauth),
+					}),
 			},
 		};
 	}
