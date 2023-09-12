@@ -40,7 +40,7 @@ export function signInWithRedirect(
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
-
+	store.setAuthConfig(authConfig);
 	let provider = 'COGNITO'; // Default
 
 	if (typeof signInWithRedirectRequest?.provider === 'string') {
@@ -347,45 +347,49 @@ function validateState(state?: string | null): asserts state {
 	}
 }
 
+async function parseRedirectURL() {
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	try {
+		assertTokenProviderConfig(authConfig);
+		store.setAuthConfig(authConfig);
+	} catch (_err) {
+		// Token provider not configure nothing to do
+		return;
+	}
+
+	// No OAuth inflight doesnt need to parse the url
+	if (!(await store.loadOAuthInFlight())) {
+		return;
+	}
+	try {
+		assertOAuthConfig(authConfig);
+	} catch (err) {
+		// TODO(v6): this should warn you have signInWithRedirect but is not configured
+		return;
+	}
+
+	try {
+		const url = window.location.href;
+
+		handleAuthResponse({
+			currentUrl: url,
+			clientId: authConfig.userPoolClientId,
+			domain: authConfig.loginWith.oauth.domain,
+			redirectUri: authConfig.loginWith.oauth.redirectSignIn[0],
+			responseType: authConfig.loginWith.oauth.responseType,
+			userAgentValue: getAmplifyUserAgent(),
+		});
+	} catch (err) {
+		// is ok if there is not OAuthConfig
+	}
+}
+
 function urlListener() {
 	// Listen configure to parse url
-	// TODO(v6): what happens if configure gets called multiple times during code exchange
+	parseRedirectURL();
 	Hub.listen('core', async capsule => {
 		if (capsule.payload.event === 'configure') {
-			const authConfig = Amplify.getConfig().Auth?.Cognito;
-			try {
-				assertTokenProviderConfig(authConfig);
-				store.setAuthConfig(authConfig);
-			} catch (_err) {
-				// Token provider not configure nothing to do
-				return;
-			}
-
-			// No OAuth inflight doesnt need to parse the url
-			if (!(await store.loadOAuthInFlight())) {
-				return;
-			}
-			try {
-				assertOAuthConfig(authConfig);
-			} catch (err) {
-				// TODO(v6): this should warn you have signInWithRedirect but is not configured
-				return;
-			}
-
-			try {
-				const url = window.location.href;
-
-				handleAuthResponse({
-					currentUrl: url,
-					clientId: authConfig.userPoolClientId,
-					domain: authConfig.loginWith.oauth.domain,
-					redirectUri: authConfig.loginWith.oauth.redirectSignIn[0],
-					responseType: authConfig.loginWith.oauth.responseType,
-					userAgentValue: getAmplifyUserAgent(),
-				});
-			} catch (err) {
-				// is ok if there is not OAuthConfig
-			}
+			parseRedirectURL();
 		}
 	});
 }

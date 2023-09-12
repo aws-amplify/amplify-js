@@ -14,10 +14,13 @@ import {
 
 export const DefaultAmplify = {
 	configure(resourceConfig: ResourcesConfig, libraryOptions?: LibraryOptions) {
-		if (resourceConfig.Auth && !libraryOptions) {
+		// When Auth config is provided but no custom Auth provider defined
+		// use the default Auth Providers
+		if (resourceConfig.Auth && !libraryOptions?.Auth) {
 			CognitoUserPoolsTokenProvider.setAuthConfig(resourceConfig.Auth);
 
-			const defaultLibraryOptions: LibraryOptions = {
+			const libraryOptionsWithDefaultAuthProviders: LibraryOptions = {
+				...libraryOptions,
 				Auth: {
 					tokenProvider: CognitoUserPoolsTokenProvider,
 					credentialsProvider: cognitoCredentialsProvider,
@@ -25,14 +28,14 @@ export const DefaultAmplify = {
 			};
 
 			CognitoUserPoolsTokenProvider.setKeyValueStorage(
-				resourceConfig.ssr
+				libraryOptions?.ssr
 					? new CookieStorage({
 							sameSite: 'strict',
 					  })
 					: defaultStorage
 			);
 
-			Amplify.configure(resourceConfig, defaultLibraryOptions);
+			Amplify.configure(resourceConfig, libraryOptionsWithDefaultAuthProviders);
 		} else {
 			Amplify.configure(resourceConfig, libraryOptions);
 		}
