@@ -5,9 +5,9 @@
   "private": true,
   "devDependencies": {
     "@types/node": "16.11.7",
-    "typescript": "3.8.x"
+    "typescript": "4.0.x"
   },
   "scripts": {
-	"test:compliance:ts3.8": "tsc -p tsconfig.json"
+	"test:compliance:ts4.0": "tsc -p tsconfig.json"
   }
 }
