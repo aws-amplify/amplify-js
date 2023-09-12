@@ -3,16 +3,16 @@
 
 export { DownloadTask, TransferProgressEvent, UploadTask } from './common';
 export {
-	OperationRequest,
-	ListRequest,
-	GetPropertiesRequest,
-	RemoveRequest,
-	DownloadDataRequest,
-	UploadDataRequest,
-	CopyRequest,
-	GetUrlRequest,
-	UploadDataPayload,
-} from './requests';
+	StorageOperationInput,
+	StorageListInput,
+	StorageGetPropertiesInput,
+	StorageRemoveInput,
+	StorageDownloadDataInput,
+	StorageUploadDataInput,
+	StorageCopyInput,
+	StorageGetUrlInput,
+	StorageUploadDataPayload,
+} from './inputs';
 export {
 	StorageOptions,
 	StorageRemoveOptions,
@@ -23,8 +23,8 @@ export {
 } from './options';
 export {
 	StorageItem,
-	StorageListResult,
-	StorageDownloadDataResult,
-	StorageGetUrlResult,
-	StorageUploadResult,
-} from './results';
+	StorageListOutput,
+	StorageDownloadDataOutput,
+	StorageGetUrlOutput,
+	StorageUploadOutput,
+} from './outputs';

@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
-
-import { GetUrlRequest } from '../../../../types';
-import { S3GetUrlOptions, S3GetUrlResult } from '../../types';
+import { GetUrlInput, GetUrlOutput } from '../../types';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { getPresignedGetObjectUrl } from '../../utils/client';
 import { getProperties } from './getProperties';
@@ -16,9 +14,9 @@ const MAX_URL_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
 
 export const getUrl = async function (
 	amplify: AmplifyClassV6,
-	getUrlRequest: GetUrlRequest<S3GetUrlOptions>
-): Promise<S3GetUrlResult> {
-	const { key, options } = getUrlRequest;
+	input: GetUrlInput
+): Promise<GetUrlOutput> {
+	const { key, options } = input;
 
 	if (options?.validateObjectExistence) {
 		await getProperties(amplify, { key, options });

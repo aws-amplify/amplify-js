@@ -2,15 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { GetUrlRequest } from '../../../types';
-import { S3GetUrlOptions, S3GetUrlResult } from '../types';
+import {} from '../../../types';
+import { GetUrlInput, GetUrlOutput } from '../types';
 import { getUrl as getUrlInternal } from './internal/getUrl';
 
 /**
  * Get Presigned url of the object
  *
- * @param {GetUrlRequest<S3GetUrlOptions>} The request object
- * @return {Promise<S3GetUrlResult>} url of the object
+ * @param {GetUrlInput} The input object
+ * @return {Promise<GetUrlOutput>} url of the object
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors
  * thrown either username or key are not defined.
@@ -18,8 +18,6 @@ import { getUrl as getUrlInternal } from './internal/getUrl';
  * TODO: add config errors
  *
  */
-export const getUrl = (
-	getUrlRequest: GetUrlRequest<S3GetUrlOptions>
-): Promise<S3GetUrlResult> => {
-	return getUrlInternal(Amplify, getUrlRequest);
+export const getUrl = (input: GetUrlInput): Promise<GetUrlOutput> => {
+	return getUrlInternal(Amplify, input);
 };

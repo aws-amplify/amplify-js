@@ -2,21 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { GetPropertiesRequest } from '../../../types';
-import { S3GetPropertiesOptions, S3GetPropertiesResult } from '../types';
+import { GetPropertiesOutput, GetPropertiesInput } from '../types';
 import { getProperties as getPropertiesInternal } from './internal/getProperties';
 
 /**
  * Gets the properties of a file. The properties include S3 system metadata and
  * the user metadata that was provided when uploading the file.
  *
- * @param {GetPropertiesRequest<S3GetPropertiesOptions>} req The request to make an API call.
- * @returns {Promise<S3GetPropertiesResult>} A promise that resolves the properties.
+ * @param {GetPropertiesInput} The input to make an API call.
+ * @returns {Promise<GetPropertiesOutput>} A promise that resolves the properties.
  * @throws A {@link S3Exception} when the underlying S3 service returned error.
  * @throws A {@link StorageValidationErrorCode} when API call parameters are invalid.
  */
 export const getProperties = (
-	getPropertiesRequest: GetPropertiesRequest<S3GetPropertiesOptions>
-): Promise<S3GetPropertiesResult> => {
-	return getPropertiesInternal(Amplify, getPropertiesRequest);
+	input: GetPropertiesInput
+): Promise<GetPropertiesOutput> => {
+	return getPropertiesInternal(Amplify, input);
 };

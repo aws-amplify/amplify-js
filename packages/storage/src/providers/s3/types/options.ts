@@ -12,9 +12,9 @@ import {
 } from '../../../types/options';
 
 /**
- * Request options type for S3 Storage operations.
+ * Input options type for S3 Storage operations.
  */
-export type S3Options = StorageOptions & {
+export type Options = StorageOptions & {
 	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false
@@ -23,34 +23,34 @@ export type S3Options = StorageOptions & {
 };
 
 /**
- * Request options type for S3 getProperties API.
+ * Input options type for S3 getProperties API.
  */
-export type S3GetPropertiesOptions = S3Options;
+export type GetPropertiesOptions = Options;
 
 /**
- * Request options type for S3 getProperties API.
+ * Input options type for S3 getProperties API.
  */
-export type S3RemoveOptions = S3Options;
+export type RemoveOptions = Options;
 
 /**
- * Request options type for S3 list API.
+ * Input options type for S3 list API.
  */
-export type S3ListAllOptions = StorageListAllOptions;
+export type ListAllOptions = StorageListAllOptions;
 
 /**
- * Request options type for S3 list API.
+ * Input options type for S3 list API.
  */
-export type S3ListPaginateOptions = StorageListPaginateOptions;
+export type ListPaginateOptions = StorageListPaginateOptions;
 
 /**
- * Request options type for S3 downloadData API.
+ * Input options type for S3 downloadData API.
  */
-export type S3DownloadDataOptions = S3TransferOptions;
+export type DownloadDataOptions = TransferOptions;
 
 /**
- * Request options type for S3 getUrl API.
+ * Input options type for S3 getUrl API.
  */
-export type S3GetUrlOptions = S3Options & {
+export type GetUrlOptions = Options & {
 	/**
 	 * Whether to head object to make sure the object existence before downloading.
 	 * @default false
@@ -63,7 +63,7 @@ export type S3GetUrlOptions = S3Options & {
 	expiresIn?: number;
 };
 
-export type S3UploadDataOptions = S3TransferOptions & {
+export type UploadDataOptions = TransferOptions & {
 	/**
 	 * The default content-disposition header value of the file when downloading it.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
@@ -99,9 +99,9 @@ export type ResolvedS3Config = {
 	useAccelerateEndpoint?: boolean;
 };
 /**
- * Request options type for S3 downloadData, uploadData APIs.
+ * Input options type for S3 downloadData, uploadData APIs.
  */
-type S3TransferOptions = S3Options & {
+type TransferOptions = Options & {
 	/**
 	 * Callback function tracking the upload/download progress.
 	 */
