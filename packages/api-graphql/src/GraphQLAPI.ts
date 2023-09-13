@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // TODO V6
 // import { Amplify } from '@aws-amplify/core';
-// import { GraphQLOptions, GraphQLResult } from './types';
-import { GraphQLOptionsV6, GraphQLResult } from './types';
+import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internals';
 import Observable from 'zen-observable-ts';
 
@@ -33,7 +32,7 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
-		options: GraphQLOptionsV6,
+		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		// options present

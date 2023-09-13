@@ -20,7 +20,7 @@ import {
 	GraphQLAuthError,
 	GraphQLResult,
 	GraphQLOperation,
-	GraphQLOptionsV6,
+	GraphQLOptions,
 } from '../types';
 import { post } from '@aws-amplify/api-rest';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
@@ -168,12 +168,7 @@ export class InternalGraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
-		{
-			query: paramQuery,
-			variables = {},
-			authMode,
-			authToken,
-		}: GraphQLOptionsV6,
+		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
@@ -219,7 +214,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private async _graphql<T = any>(
-		{ query, variables, authMode }: GraphQLOptionsV6,
+		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
 		initParams = {},
 		customUserAgentDetails?: CustomUserAgentDetails
@@ -376,7 +371,7 @@ export class InternalGraphQLAPIClass {
 			variables,
 			authMode: defaultAuthenticationType,
 			authToken,
-		}: GraphQLOptionsV6,
+		}: GraphQLOptions,
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
