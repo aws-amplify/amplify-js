@@ -2,11 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
-// import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
-// export { GRAPHQL_AUTH_MODE };
 import { Observable } from 'zen-observable-ts';
-// TODO: remove for now:
-// import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
 
 export type GraphQLAuthMode = 'AWS_IAM' | 'COGNITO_USERPOOLS' | 'API_KEY';
 
@@ -16,13 +12,12 @@ export type GraphQLAuthMode = 'AWS_IAM' | 'COGNITO_USERPOOLS' | 'API_KEY';
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: Record<string, unknown>;
-	// authMode?: GraphQLAuthMode;
 	authMode?: string;
 	authToken?: string;
 	/**
 	 * @deprecated This property should not be used
 	 */
-	userAgentSuffix?: string; // TODO: remove in v6
+	userAgentSuffix?: string;
 }
 
 export interface GraphQLResult<T = object> {
@@ -131,7 +126,7 @@ export interface GraphQLOptionsV6<
 	/**
 	 * @deprecated This property should not be used
 	 */
-	userAgentSuffix?: string; // TODO: remove in v6
+	userAgentSuffix?: string;
 }
 
 /**

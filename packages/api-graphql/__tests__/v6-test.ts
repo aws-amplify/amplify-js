@@ -7,8 +7,6 @@ import * as untypedQueries from './fixtures/without-types/queries';
 import * as untypedMutations from './fixtures/without-types/mutations';
 import * as untypedSubscriptions from './fixtures/without-types/subscriptions';
 import { Observable } from 'zen-observable-ts';
-// TODO:
-// import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
 import { InternalPubSub } from '@aws-amplify/pubsub/internals';
 import {
 	expectGet,
