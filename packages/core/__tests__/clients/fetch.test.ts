@@ -40,7 +40,7 @@ describe(fetchTransferHandler.name, () => {
 		);
 	});
 
-	test('should cache configure', async () => {
+	test('should configure cache', async () => {
 		const cacheMode = 'no-store';
 		await fetchTransferHandler(mockRequest, { cache: cacheMode });
 		expect(mockUnfetch).toBeCalledTimes(1);
