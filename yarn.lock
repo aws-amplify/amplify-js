@@ -83,6 +83,48 @@
     "@aws-sdk/util-utf8-browser" "^3.0.0"
     tslib "^1.11.1"
 
+"@aws-sdk/client-firehose@3.398.0":
+  version "3.398.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-firehose/-/client-firehose-3.398.0.tgz#20f915d089b2510fe64425f7f53a561bb83f41d7"
+  integrity sha512-qOWNLAD7K+7LofQCeBe56xP/+XJ7C0Wmkkczra2QuA4dveYBrBftxMJcWQjiA2SY4C0GjlMcBoSdXNCtinJnIQ==
+  dependencies:
+    "@aws-crypto/sha256-browser" "3.0.0"
+    "@aws-crypto/sha256-js" "3.0.0"
+    "@aws-sdk/client-sts" "3.398.0"
+    "@aws-sdk/credential-provider-node" "3.398.0"
+    "@aws-sdk/middleware-host-header" "3.398.0"
+    "@aws-sdk/middleware-logger" "3.398.0"
+    "@aws-sdk/middleware-recursion-detection" "3.398.0"
+    "@aws-sdk/middleware-signing" "3.398.0"
+    "@aws-sdk/middleware-user-agent" "3.398.0"
+    "@aws-sdk/types" "3.398.0"
+    "@aws-sdk/util-endpoints" "3.398.0"
+    "@aws-sdk/util-user-agent-browser" "3.398.0"
+    "@aws-sdk/util-user-agent-node" "3.398.0"
+    "@smithy/config-resolver" "^2.0.5"
+    "@smithy/fetch-http-handler" "^2.0.5"
+    "@smithy/hash-node" "^2.0.5"
+    "@smithy/invalid-dependency" "^2.0.5"
+    "@smithy/middleware-content-length" "^2.0.5"
+    "@smithy/middleware-endpoint" "^2.0.5"
+    "@smithy/middleware-retry" "^2.0.5"
+    "@smithy/middleware-serde" "^2.0.5"
+    "@smithy/middleware-stack" "^2.0.0"
+    "@smithy/node-config-provider" "^2.0.5"
+    "@smithy/node-http-handler" "^2.0.5"
+    "@smithy/protocol-http" "^2.0.5"
+    "@smithy/smithy-client" "^2.0.5"
+    "@smithy/types" "^2.2.2"
+    "@smithy/url-parser" "^2.0.5"
+    "@smithy/util-base64" "^2.0.0"
+    "@smithy/util-body-length-browser" "^2.0.0"
+    "@smithy/util-body-length-node" "^2.1.0"
+    "@smithy/util-defaults-mode-browser" "^2.0.5"
+    "@smithy/util-defaults-mode-node" "^2.0.5"
+    "@smithy/util-retry" "^2.0.0"
+    "@smithy/util-utf8" "^2.0.0"
+    tslib "^2.5.0"
+
 "@aws-sdk/client-kinesis@3.398.0":
   version "3.398.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/client-kinesis/-/client-kinesis-3.398.0.tgz#7b1c5e60f70d03d0591ea29230488380272f70b4"
@@ -4642,14 +4684,14 @@ browser-resolve@^1.11.3:
     resolve "1.1.7"
 
 browserslist@^4.14.5, browserslist@^4.21.10, browserslist@^4.21.9:
-  version "4.21.10"
-  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.21.10.tgz#dbbac576628c13d3b2231332cb2ec5a46e015bb0"
-  integrity sha512-bipEBdZfVH5/pwrvqc+Ub0kUPVfGUhlKxbvfD+z1BDnPEO/X98ruXGA1WP5ASpAFKan7Qr6j736IacbZQuAlKQ==
+  version "4.21.11"
+  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.21.11.tgz#35f74a3e51adc4d193dcd76ea13858de7b8fecb8"
+  integrity sha512-xn1UXOKUz7DjdGlg9RrUr0GGiWzI97UQJnugHtH0OLDfJB7jMgoIkYvRIEO1l9EeEERVqeqLYOcFBW9ldjypbQ==
   dependencies:
-    caniuse-lite "^1.0.30001517"
-    electron-to-chromium "^1.4.477"
+    caniuse-lite "^1.0.30001538"
+    electron-to-chromium "^1.4.526"
     node-releases "^2.0.13"
-    update-browserslist-db "^1.0.11"
+    update-browserslist-db "^1.0.13"
 
 bs-logger@0.x:
   version "0.2.6"
@@ -4864,7 +4906,7 @@ camelcase@^6.0.0:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-6.3.0.tgz#5685b95eb209ac9c0c177467778c9c84df58ba9a"
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
-caniuse-lite@^1.0.30001406, caniuse-lite@^1.0.30001517:
+caniuse-lite@^1.0.30001406, caniuse-lite@^1.0.30001538:
   version "1.0.30001538"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001538.tgz#9dbc6b9af1ff06b5eb12350c2012b3af56744f3f"
   integrity sha512-HWJnhnID+0YMtGlzcp3T9drmBJUVDchPJ08tpUGFLs9CYlwWPH2uLgpHn8fND5pCgXVtnGS3H4QR9XLMHVNkHw==
@@ -5870,7 +5912,7 @@ ejs@^3.1.7:
   dependencies:
     jake "^10.8.5"
 
-electron-to-chromium@^1.4.477:
+electron-to-chromium@^1.4.526:
   version "1.4.526"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.526.tgz#1bcda5f2b8238e497c20fcdb41af5da907a770e2"
   integrity sha512-tjjTMjmZAx1g6COrintLTa2/jcafYKxKoiEkdQOrVdbLaHh2wCt2nsAF8ZHweezkrP+dl/VG9T5nabcYoo0U5Q==
@@ -6549,9 +6591,9 @@ flat@^5.0.2:
   integrity sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==
 
 flow-parser@0.*:
-  version "0.216.1"
-  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.216.1.tgz#eeba9b0b689deeccc34a6b7d2b1f97b8f943afc0"
-  integrity sha512-wstw46/C/8bRv/8RySCl15lK376j8DHxm41xFjD9eVL+jSS1UmVpbdLdA0LzGuS2v5uGgQiBLEj6mgSJQwW+MA==
+  version "0.217.0"
+  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.217.0.tgz#0e6bed214151fa3240dc9fd83ac8a9e050e523c5"
+  integrity sha512-hEa5n0dta1RcaDwJDWbnyelw07PK7+Vx0f9kDht28JOt2hXgKdKGaT3wM45euWV2DxOXtzDSTaUgGSD/FPvC2Q==
 
 flow-parser@^0.121.0:
   version "0.121.0"
@@ -13491,7 +13533,7 @@ upath@2.0.1, upath@^2.0.1:
   resolved "https://registry.yarnpkg.com/upath/-/upath-2.0.1.tgz#50c73dea68d6f6b990f51d279ce6081665d61a8b"
   integrity sha512-1uEe95xksV1O0CYKXo8vQvN1JEbtJp7lb7C5U9HMsIp6IVwntkH/oNUzyVNQSd4S1sYk2FpSSW44FqMc8qee5w==
 
-update-browserslist-db@^1.0.11:
+update-browserslist-db@^1.0.13:
   version "1.0.13"
   resolved "https://registry.yarnpkg.com/update-browserslist-db/-/update-browserslist-db-1.0.13.tgz#3c5e4f5c083661bd38ef64b6328c26ed6c8248c4"
   integrity sha512-xebP81SNcPuNpPP3uzeW1NYXxI3rxyJzF3pD6sH4jE7o/IX+WtSpwnVU+qIsDPyk0d3hmFQ7mjqc6AtV604hbg==
