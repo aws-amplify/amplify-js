@@ -22,9 +22,6 @@ export {
 	fetchUserAttributes,
 	signOut,
 } from './providers/cognito';
-export {
-	AuthUpdateAttributeStep
-} from './types/enums';
 
 export { AuthError } from './errors/AuthError';
 

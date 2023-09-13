@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthUpdateAttributeStep } from './enums';
-
 /**
  * Additional data that may be returned from Auth APIs.
  */
@@ -246,20 +244,26 @@ export type AuthNextSignUpStep<
 	codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
 };
 
-export type ConfirmAttributeWithCodeAttributeStep<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
-> = {
-	updateAttributeStep: AuthUpdateAttributeStep.CONFIRM_ATTRIBUTE_WITH_CODE;
-	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
-};
+/**
+ * Denotes the next step in the Update User Attribute process.
+ */
+export type AuthUpdateAttributeStep =
+	/**
+	 * Auth update attribute step requires user to confirm an attribute with a code sent to cellphone or email.
+	 */
+	| 'CONFIRM_ATTRIBUTE_WITH_CODE'
 
-export type DoneAttributeStep = {
-	updateAttributeStep: AuthUpdateAttributeStep.DONE;
-};
+	/**
+	 * Auth update attribute step indicates that the attribute is updated.
+	 */
+	| 'DONE';
 
 export type AuthNextUpdateAttributeStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
-> = ConfirmAttributeWithCodeAttributeStep<UserAttributeKey> | DoneAttributeStep;
+> = {
+	updateAttributeStep: AuthUpdateAttributeStep;
+	codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
+};
 
 /**
  * The AuthUser object contains username and userId from the idToken.
