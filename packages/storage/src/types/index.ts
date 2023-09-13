@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { DownloadTask, TransferProgressEvent, UploadTask } from './common';
+export {
+	DownloadTask,
+	TransferProgressEvent,
+	TransferTaskState,
+	UploadTask,
+} from './common';
 export {
 	StorageOperationInput,
 	StorageListInput,
