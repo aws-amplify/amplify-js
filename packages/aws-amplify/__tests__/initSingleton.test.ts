@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	ResourcesConfig,
 	Amplify as AmplifySingleton,
-	LocalStorage,
 	CookieStorage,
+	ResourcesConfig,
 	TokenProvider,
+	defaultStorage,
 } from '@aws-amplify/core';
 import {
 	CognitoUserPoolsTokenProvider,
@@ -15,16 +15,7 @@ import {
 
 import { Amplify } from '../src';
 
-jest.mock('@aws-amplify/core', () => ({
-	...jest.requireActual('@aws-amplify/core'),
-	Amplify: {
-		configure: jest.fn(),
-		getConfig: jest.fn(),
-	},
-	LocalStorage: jest.fn(),
-	CookieStorage: jest.fn(),
-}));
-
+jest.mock('@aws-amplify/core');
 jest.mock('../src/auth/cognito', () => ({
 	CognitoUserPoolsTokenProvider: {
 		setAuthConfig: jest.fn(),
@@ -116,12 +107,12 @@ describe('initSingleton (DefaultAmplify)', () => {
 					);
 				});
 
-				it('should use LocalStorage by default for the default CognitoUserPoolsTokenProvider', () => {
+				it('should use defaultStorage for the default CognitoUserPoolsTokenProvider', () => {
 					Amplify.configure(mockResourceConfig);
 
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage
-					).toHaveBeenCalledWith(LocalStorage);
+					).toHaveBeenCalledWith(defaultStorage);
 				});
 
 				it('should use cookie storage if LibraryOptions.ssr is set to true for the default CognitoUserPoolsTokenProvider', () => {

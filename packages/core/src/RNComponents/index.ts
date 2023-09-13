@@ -2,15 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { browserOrNode } from '../Util/JS';
-import { StorageHelper } from '../StorageHelper';
+import { getDefaultStorageWithFallback } from '../storage/utils';
 
 export const Linking = {};
 export const AppState = {
 	addEventListener: (action: any, handler: any) => undefined,
-	currentState: 'active'
+	currentState: 'active',
 };
 
 // if not in react native, just use local storage
 export const AsyncStorage = browserOrNode().isBrowser
-	? new StorageHelper().getStorage()
+	? getDefaultStorageWithFallback()
 	: undefined;
