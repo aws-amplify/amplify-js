@@ -3,31 +3,26 @@
 
 import { StorageAccessLevel } from '@aws-amplify/core';
 
-export type StorageWriteOptions = {
+export type StorageOptions = {
 	accessLevel?: StorageAccessLevel;
-	targetIdentityId: never;
 };
 
-export type StorageReadOptions =
-	| { accessLevel?: 'guest' | 'private' }
-	| { accessLevel: 'protected'; targetIdentityId?: string };
-
-export type StorageListAllOptions = StorageReadOptions & {
+export type StorageListAllOptions = StorageOptions & {
 	listAll: true;
 };
 
-export type StorageListPaginateOptions = StorageReadOptions & {
+export type StorageListPaginateOptions = StorageOptions & {
 	listAll?: false;
 	pageSize?: number;
 	nextToken?: string;
 };
 
-export type StorageRemoveOptions = StorageWriteOptions;
+export type StorageRemoveOptions = StorageOptions;
 
-export type StorageCopySourceOptions = StorageReadOptions & {
+export type StorageCopySourceOptions = StorageOptions & {
 	key: string;
 };
 
-export type StorageCopyDestinationOptions = StorageWriteOptions & {
+export type StorageCopyDestinationOptions = StorageOptions & {
 	key: string;
 };

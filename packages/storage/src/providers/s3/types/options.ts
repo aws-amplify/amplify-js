@@ -1,13 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { StorageAccessLevel } from '@aws-amplify/core';
 // TODO(ashwinkumar6) this uses V5 Credentials, update to V6.
 import { Credentials } from '@aws-sdk/types';
 
 import { TransferProgressEvent } from '../../../types';
 import {
-	StorageReadOptions,
-	StorageWriteOptions,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
 } from '../../../types/options';
@@ -18,6 +17,15 @@ type S3SharedOptions = {
 	 * @default false
 	 */
 	useAccelerateEndpoint?: boolean;
+};
+
+type S3ReadOptions =
+	| { accessLevel?: 'guest' | 'private' }
+	| { accessLevel: 'protected'; targetIdentityId?: string };
+
+type S3WriteOptions = {
+	accessLevel?: StorageAccessLevel;
+	targetIdentityId: never;
 };
 
 /**
@@ -33,27 +41,31 @@ type TransferOptions = {
 /**
  * Input options type for S3 getProperties API.
  */
-export type GetPropertiesOptions = StorageReadOptions & S3SharedOptions;
+export type GetPropertiesOptions = S3ReadOptions & S3SharedOptions;
 
 /**
  * Input options type for S3 getProperties API.
  */
-export type RemoveOptions = StorageWriteOptions & S3SharedOptions;
+export type RemoveOptions = S3WriteOptions & S3SharedOptions;
 
 /**
  * Input options type for S3 list API.
  */
-export type ListAllOptions = StorageListAllOptions & S3SharedOptions;
+export type ListAllOptions = StorageListAllOptions &
+	S3ReadOptions &
+	S3SharedOptions;
 
 /**
  * Input options type for S3 list API.
  */
-export type ListPaginateOptions = StorageListPaginateOptions & S3SharedOptions;
+export type ListPaginateOptions = StorageListPaginateOptions &
+	S3ReadOptions &
+	S3SharedOptions;
 
 /**
  * Input options type for S3 getUrl API.
  */
-export type GetUrlOptions = StorageReadOptions &
+export type GetUrlOptions = S3ReadOptions &
 	S3SharedOptions & {
 		/**
 		 * Whether to head object to make sure the object existence before downloading.
@@ -70,11 +82,11 @@ export type GetUrlOptions = StorageReadOptions &
 /**
  * Input options type for S3 downloadData API.
  */
-export type DownloadDataOptions = StorageReadOptions &
+export type DownloadDataOptions = S3ReadOptions &
 	S3SharedOptions &
 	TransferOptions;
 
-export type UploadDataOptions = StorageWriteOptions &
+export type UploadDataOptions = S3WriteOptions &
 	S3SharedOptions &
 	TransferOptions & {
 		/**

@@ -2,25 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	StorageReadOptions,
-	StorageWriteOptions,
+	StorageOptions,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
 	StorageCopySourceOptions,
 	StorageCopyDestinationOptions,
 } from './options';
 
-export type StorageOperationInput<
-	Options extends StorageReadOptions | StorageWriteOptions
-> = {
+export type StorageOperationInput<Options extends StorageOptions> = {
 	key: string;
 	options?: Options;
 };
 
-export type StorageGetPropertiesInput<Options extends StorageReadOptions> =
+export type StorageGetPropertiesInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
-export type StorageRemoveInput<Options extends StorageWriteOptions> = {
+export type StorageRemoveInput<Options extends StorageOptions> = {
 	key: string;
 	options?: Options;
 };
@@ -32,13 +29,13 @@ export type StorageListInput<
 	options?: Options;
 };
 
-export type StorageGetUrlInput<Options extends StorageReadOptions> =
+export type StorageGetUrlInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
-export type StorageDownloadDataInput<Options extends StorageReadOptions> =
+export type StorageDownloadDataInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
-export type StorageUploadDataInput<Options extends StorageWriteOptions> =
+export type StorageUploadDataInput<Options extends StorageOptions> =
 	StorageOperationInput<Options> & {
 		data: StorageUploadDataPayload;
 	};
