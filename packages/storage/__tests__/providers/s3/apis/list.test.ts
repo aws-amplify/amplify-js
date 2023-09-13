@@ -133,7 +133,10 @@ describe('list API', () => {
 					};
 				});
 				expect.assertions(4);
-				let response = await list({ path, options: options as StorageOptions });
+				let response = await list({
+					prefix: path,
+					options: options as StorageOptions,
+				});
 				expect(response.items).toEqual([
 					{ ...listResultItem, key: path ?? '' },
 				]);
@@ -165,7 +168,7 @@ describe('list API', () => {
 				expect.assertions(4);
 				const customPageSize = 5;
 				const response = await list({
-					path,
+					prefix: path,
 					options: {
 						...(options as StorageOptions),
 						pageSize: customPageSize,
@@ -198,7 +201,7 @@ describe('list API', () => {
 				});
 				expect.assertions(3);
 				let response = await list({
-					path,
+					prefix: path,
 					options: options as StorageOptions,
 				});
 				expect(response.items).toEqual([]);
@@ -221,7 +224,7 @@ describe('list API', () => {
 				expect.assertions(5);
 				mockListObjectsV2ApiWithPages(3);
 				const result = await list({
-					path,
+					prefix: path,
 					options: { ...(options as StorageOptions), listAll: true },
 				});
 
