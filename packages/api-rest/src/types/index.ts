@@ -24,15 +24,17 @@ export class RestClientOptions {
 	}
 }
 
-/** JSON type */
-type Json = null | string | number | boolean | Json[] | JsonObject;
-
-/** JSON Object type */
-type JsonObject = { [name: string]: Json };
+export type DocumentType =
+	| null
+	| boolean
+	| number
+	| string
+	| DocumentType[]
+	| { [prop: string]: DocumentType };
 
 export type PostOptions = {
 	headers?: Record<string, string>;
-	body: Record<string, unknown>;
+	body: DocumentType;
 	region?: string;
 	serviceName?: string;
 };
