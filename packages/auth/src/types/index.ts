@@ -6,7 +6,6 @@ export * from './Auth';
 
 export {
 	AuthSignUpStep,
-	AuthResetPasswordStep,
 	AuthUpdateAttributeStep,
 } from './enums';
 
@@ -26,6 +25,7 @@ export {
 	AllowedMFATypes,
 	AuthUser,
 	TOTPSetupDetails,
+	AuthResetPasswordStep,
 } from './models';
 
 export { AuthServiceOptions, AuthSignUpOptions } from './options';

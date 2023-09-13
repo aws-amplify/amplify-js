@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
-import {
-	AuthResetPasswordStep,
-	AuthSignInResult,
-} from '../../../../src/types';
+import { AuthSignInResult } from '../../../../src/types';
 
 export const authAPITestParams = {
 	user1: {
@@ -40,7 +37,7 @@ export const authAPITestParams = {
 	resetPasswordResult: {
 		isPasswordReset: false,
 		nextStep: {
-			resetPasswordStep: AuthResetPasswordStep.CONFIRM_RESET_PASSWORD_WITH_CODE,
+			resetPasswordStep: 'CONFIRM_RESET_PASSWORD_WITH_CODE',
 			codeDeliveryDetails: {
 				destination: 'test@email.com',
 				deliveryMedium: 'EMAIL',

@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AuthResetPasswordStep,
-	AuthSignUpStep,
-	AuthUpdateAttributeStep,
-} from './enums';
+import { AuthSignUpStep, AuthUpdateAttributeStep } from './enums';
 
 /**
  * Additional data that may be returned from Auth APIs.
@@ -29,7 +25,10 @@ export type AuthCodeDeliveryDetails<
 	deliveryMedium?: DeliveryMedium;
 	attributeName?: UserAttributeKey;
 };
-
+/**
+ * Denotes the next step in the Reset Password process.
+ */
+export type AuthResetPasswordStep = 'CONFIRM_RESET_PASSWORD_WITH_CODE' | 'DONE';
 export type AuthNextResetPasswordStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
