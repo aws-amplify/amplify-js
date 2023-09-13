@@ -5,7 +5,6 @@ import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import {
 	AuthResetPasswordStep,
 	AuthSignInResult,
-	AuthSignInStep,
 } from '../../../../src/types';
 
 export const authAPITestParams = {
@@ -202,7 +201,7 @@ export const authAPITestParams = {
 		return {
 			isSignedIn: false,
 			nextStep: {
-				signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE,
+				signInStep: 'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
 			},
 		};
 	},
@@ -210,7 +209,7 @@ export const authAPITestParams = {
 		return {
 			isSignedIn: true,
 			nextStep: {
-				signInStep: AuthSignInStep.DONE,
+				signInStep: 'DONE',
 			},
 		};
 	},

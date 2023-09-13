@@ -24,7 +24,6 @@ export {
 } from './providers/cognito';
 export {
 	AuthResetPasswordStep,
-	AuthSignInStep,
 	AuthSignUpStep,
 	AuthUpdateAttributeStep
 } from './types/enums';

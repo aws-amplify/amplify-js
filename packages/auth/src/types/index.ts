@@ -7,7 +7,6 @@ export * from './Auth';
 export {
 	AuthSignUpStep,
 	AuthResetPasswordStep,
-	AuthSignInStep,
 	AuthUpdateAttributeStep,
 } from './enums';
 
