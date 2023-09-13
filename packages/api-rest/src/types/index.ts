@@ -32,7 +32,7 @@ type JsonObject = { [name: string]: Json };
 
 export type PostOptions = {
 	headers?: Record<string, string>;
-	body: JsonObject;
+	body: Record<string, unknown>;
 	region?: string;
 	serviceName?: string;
 };
