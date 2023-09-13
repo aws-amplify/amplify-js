@@ -9,13 +9,12 @@ import {
 	OperationTypeNode,
 } from 'graphql';
 import Observable from 'zen-observable-ts';
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { Amplify, Cache, fetchAuthSession } from '@aws-amplify/core';
 import {
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
-import { Cache } from '@aws-amplify/core';
 import {
 	GraphQLAuthError,
 	GraphQLResult,
