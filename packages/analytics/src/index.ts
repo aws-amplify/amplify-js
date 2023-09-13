@@ -4,7 +4,7 @@
 export {
 	record,
 	identifyUser,
-	RecordInput as AnalyticsRecordInput,
-	IdentifyUserInput as AnalyticsIdentifyUserInput,
+	RecordInput,
+	IdentifyUserInput,
 } from './providers/pinpoint';
 export { AnalyticsError } from './errors';
