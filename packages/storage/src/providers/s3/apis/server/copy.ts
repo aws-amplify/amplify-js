@@ -5,16 +5,12 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
-import { CopyRequest } from '../../../../types';
-import { S3CopyResult } from '../../types';
+import { CopyInput, CopyOutput } from '../../types';
 import { copy as copyInternal } from '../internal/copy';
 
 export const copy = async (
 	contextSpec: AmplifyServer.ContextSpec,
-	copyRequest: CopyRequest
-): Promise<S3CopyResult> => {
-	return copyInternal(
-		getAmplifyServerContext(contextSpec).amplify,
-		copyRequest
-	);
+	input: CopyInput
+): Promise<CopyOutput> => {
+	return copyInternal(getAmplifyServerContext(contextSpec).amplify, input);
 };

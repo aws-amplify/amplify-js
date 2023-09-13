@@ -2,20 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
-
-import {
-	StorageOperationRequest,
-	StorageRemoveOptions,
-	StorageRemoveResult,
-} from '../../../../types';
+import { RemoveInput, RemoveOutput } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { deleteObject } from '../../utils/client';
 
 export const remove = async (
 	amplify: AmplifyClassV6,
-	removeRequest: StorageOperationRequest<StorageRemoveOptions>
-): Promise<StorageRemoveResult> => {
-	const { key, options = {} } = removeRequest;
+	input: RemoveInput
+): Promise<RemoveOutput> => {
+	const { key, options = {} } = input;
 	const { s3Config, keyPrefix, bucket } = await resolveS3ConfigAndInput(
 		amplify,
 		options
