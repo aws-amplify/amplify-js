@@ -57,6 +57,11 @@
 			"import": "./lib-esm/analytics/pinpoint/index.js",
 			"require": "./lib/analytics/pinpoint/index.js"
 		},
+		"./analytics/kinesis": {
+			"types": "./lib-esm/analytics/kinesis/index.d.ts",
+			"import": "./lib-esm/analytics/kinesis/index.js",
+			"require": "./lib/analytics/kinesis/index.js"
+		},
 		"./storage": {
 			"types": "./lib-esm/storage/index.d.ts",
 			"import": "./lib-esm/storage/index.js",
@@ -122,6 +127,9 @@
 			],
 			"analytics/pinpoint": [
 				"./lib-esm/analytics/pinpoint/index.d.ts"
+			],
+			"analytics/kinesis": [
+				"./lib-esm/analytics/kinesis/index.d.ts"
 			],
 			"storage": [
 				"./lib-esm/storage/index.d.ts"

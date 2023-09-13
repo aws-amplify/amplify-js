@@ -32,6 +32,9 @@
 			],
 			"pinpoint": [
 				"./lib-esm/providers/pinpoint/index.d.ts"
+			],
+			"kinesis": [
+				"./lib-esm/providers/kinesis/index.d.ts"
 			]
 		}
 	},
@@ -45,6 +48,11 @@
 			"types": "./lib-esm/providers/pinpoint/index.d.ts",
 			"import": "./lib-esm/providers/pinpoint/index.js",
 			"require": "./lib/providers/pinpoint/index.js"
+		},
+		"./kinesis": {
+			"types": "./lib-esm/providers/kinesis/index.d.ts",
+			"import": "./lib-esm/providers/kinesis/index.js",
+			"require": "./lib/providers/kinesis/index.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -73,6 +81,7 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
+		"@aws-sdk/client-kinesis": "3.398.0",
 		"@aws-sdk/types": "3.398.0",
 		"@types/uuid": "^9.0.0",
 		"typescript": "5.0.2"
