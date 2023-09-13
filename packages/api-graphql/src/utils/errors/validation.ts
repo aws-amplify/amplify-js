@@ -3,7 +3,6 @@
 
 import { AmplifyErrorMap } from '@aws-amplify/core/internals/utils';
 
-// TODO V6 - include all errors:
 export enum APIValidationErrorCode {
 	NoAppId = 'NoAppId',
 	NoCredentials = 'NoCredentials',

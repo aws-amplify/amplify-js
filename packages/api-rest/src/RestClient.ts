@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
 import {
 	AWSCredentialsAndIdentityId,
 	fetchAuthSession,
@@ -9,22 +8,6 @@ import { apiOptions } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { parse, format } from 'url';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
-
-// const logger = new Logger('RestClient');
-
-/**
-* HTTP Client for REST requests. Send and receive JSON data.
-* Sign request with AWS credentials if available
-* Usage:
-<pre>
-const restClient = new RestClient();
-restClient.get('...')
-    .then(function(data) {
-        console.log(data);
-    })
-    .catch(err => console.log(err));
-</pre>
-*/
 export class RestClient {
 	private _options;
 	private _region: string = 'us-east-1'; // this will be updated by endpoint function
@@ -59,14 +42,6 @@ export class RestClient {
 	}
 
 	/**
-    * Update AWS credentials
-    * @param {AWSCredentials} credentials - AWS credentials
-    *
-    updateCredentials(credentials: AWSCredentials) {
-        this.options.credentials = credentials;
-    }
-*/
-	/**
 	 * Basic HTTP request. Customizable
 	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {string} method - Request HTTP method
@@ -74,7 +49,6 @@ export class RestClient {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	ajax(url: string, method: string, init) {
-		// logger.debug(method, urlOrApiInfo);
 		const source = axios.CancelToken.source();
 		const promise = new Promise(async (res, rej) => {
 			const parsed_url = new URL(url);
@@ -120,8 +94,6 @@ export class RestClient {
 
 			params['signerServiceInfo'] = initParams.signerServiceInfo;
 
-			// custom_header callback
-
 			params.headers = {
 				...libraryHeaders,
 				...initParams.headers,
@@ -139,12 +111,6 @@ export class RestClient {
 
 			// Do not sign the request if client has added 'Authorization' or x-api-key header,
 			// which means custom authorizer.
-
-			// V5:
-			// if (typeof params.headers['Authorization'] !== 'undefined') {
-			// V6:
-			// TODO V6 - I had to add an additional check here since this header is `null`
-			// Need to investigate if there are side effects of this being present at all..
 			if (
 				(params.headers['Authorization'] &&
 					typeof params.headers['Authorization'] !== 'undefined') ||
@@ -164,12 +130,8 @@ export class RestClient {
 
 			let credentials: AWSCredentialsAndIdentityId;
 
-			// DO WE GET HERE? C
-
 			try {
-				// THIS IS BROKEN FOR API_KEY AUTH
 				const session = await fetchAuthSession();
-				// TODO V6 - no credentials or identityId are available here...
 				if (
 					session.credentials === undefined &&
 					session.identityId === undefined
@@ -180,10 +142,7 @@ export class RestClient {
 					credentials: session.credentials,
 					identityId: session.identityId,
 				};
-				// FETCH AUTH SESSION ISN'T GETTING THE CREDENTIALS NOR IDENTITY ID!!!!
 			} catch (error) {
-				// logger.debug('No credentials available, the request will be unsigned');
-				// DO WE GET HERE? D
 				res(await this._request(params, isAllResponse));
 			}
 
@@ -208,7 +167,6 @@ export class RestClient {
 		});
 		this._cancelTokenMap.set(promise, source);
 
-		// DO WE GET HERE? G
 		return promise;
 	}
 
@@ -390,8 +348,6 @@ export class RestClient {
 			}
 		);
 
-		// logger.debug('Signed Request: ', signed_params);
-
 		delete signed_params.headers['host'];
 
 		return signed_params;
@@ -401,17 +357,7 @@ export class RestClient {
 		return axios(params)
 			.then(response => (isAllResponse ? response : response.data))
 			.catch(error => {
-				// logger.debug(error);
 				throw error;
 			});
-	}
-
-	private _parseUrl(url) {
-		const parts = url.split('/');
-
-		return {
-			host: parts[2],
-			path: '/' + parts.slice(3).join('/'),
-		};
 	}
 }
