@@ -6,15 +6,13 @@ import { Credentials } from '@aws-sdk/types';
 
 import { TransferProgressEvent } from '../../../types';
 import {
-	StorageOptions,
+	StorageReadOptions,
+	StorageWriteOptions,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
 } from '../../../types/options';
 
-/**
- * Input options type for S3 Storage operations.
- */
-export type Options = StorageOptions & {
+type S3SharedOptions = {
 	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false
@@ -23,68 +21,83 @@ export type Options = StorageOptions & {
 };
 
 /**
- * Input options type for S3 getProperties API.
+ * Transfer-related options type for S3 downloadData, uploadData APIs.
  */
-export type GetPropertiesOptions = Options;
+type TransferOptions = {
+	/**
+	 * Callback function tracking the upload/download progress.
+	 */
+	onProgress?: (event: TransferProgressEvent) => void;
+};
 
 /**
  * Input options type for S3 getProperties API.
  */
-export type RemoveOptions = Options;
+export type GetPropertiesOptions = StorageReadOptions & S3SharedOptions;
+
+/**
+ * Input options type for S3 getProperties API.
+ */
+export type RemoveOptions = StorageWriteOptions & S3SharedOptions;
 
 /**
  * Input options type for S3 list API.
  */
-export type ListAllOptions = StorageListAllOptions;
+export type ListAllOptions = StorageListAllOptions & S3SharedOptions;
 
 /**
  * Input options type for S3 list API.
  */
-export type ListPaginateOptions = StorageListPaginateOptions;
-
-/**
- * Input options type for S3 downloadData API.
- */
-export type DownloadDataOptions = TransferOptions;
+export type ListPaginateOptions = StorageListPaginateOptions & S3SharedOptions;
 
 /**
  * Input options type for S3 getUrl API.
  */
-export type GetUrlOptions = Options & {
-	/**
-	 * Whether to head object to make sure the object existence before downloading.
-	 * @default false
-	 */
-	validateObjectExistence?: boolean;
-	/**
-	 * Number of seconds till the URL expires.
-	 * @default 900 (15 minutes)
-	 */
-	expiresIn?: number;
-};
+export type GetUrlOptions = StorageReadOptions &
+	S3SharedOptions & {
+		/**
+		 * Whether to head object to make sure the object existence before downloading.
+		 * @default false
+		 */
+		validateObjectExistence?: boolean;
+		/**
+		 * Number of seconds till the URL expires.
+		 * @default 900 (15 minutes)
+		 */
+		expiresIn?: number;
+	};
 
-export type UploadDataOptions = Omit<TransferOptions, 'targetIdentityId'> & {
-	/**
-	 * The default content-disposition header value of the file when downloading it.
-	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
-	 */
-	contentDisposition?: string;
-	/**
-	 * The default content-encoding header value of the file when downloading it.
-	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding
-	 */
-	contentEncoding?: string;
-	/**
-	 * The default content-type header value of the file when downloading it.
-	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
-	 */
-	contentType?: string;
-	/**
-	 * The user-defined metadata for the object uploaded to S3.
-	 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html#UserMetadata
-	 */
-	metadata?: Record<string, string>;
-};
+/**
+ * Input options type for S3 downloadData API.
+ */
+export type DownloadDataOptions = StorageReadOptions &
+	S3SharedOptions &
+	TransferOptions;
+
+export type UploadDataOptions = StorageWriteOptions &
+	S3SharedOptions &
+	TransferOptions & {
+		/**
+		 * The default content-disposition header value of the file when downloading it.
+		 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
+		 */
+		contentDisposition?: string;
+		/**
+		 * The default content-encoding header value of the file when downloading it.
+		 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding
+		 */
+		contentEncoding?: string;
+		/**
+		 * The default content-type header value of the file when downloading it.
+		 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
+		 */
+		contentType?: string;
+		/**
+		 * The user-defined metadata for the object uploaded to S3.
+		 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html#UserMetadata
+		 */
+		metadata?: Record<string, string>;
+	};
 
 /**
  * Internal only type for S3 API handlers' config parameter.
@@ -97,13 +110,4 @@ export type ResolvedS3Config = {
 	customEndpoint?: string;
 	forcePathStyle?: boolean;
 	useAccelerateEndpoint?: boolean;
-};
-/**
- * Input options type for S3 downloadData, uploadData APIs.
- */
-type TransferOptions = Options & {
-	/**
-	 * Callback function tracking the upload/download progress.
-	 */
-	onProgress?: (event: TransferProgressEvent) => void;
 };

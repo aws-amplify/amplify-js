@@ -14,7 +14,8 @@ export {
 	StorageUploadDataPayload,
 } from './inputs';
 export {
-	StorageOptions,
+	StorageReadOptions,
+	StorageWriteOptions,
 	StorageRemoveOptions,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
