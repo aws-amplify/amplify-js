@@ -23,19 +23,17 @@ export interface Item extends StorageItem {
 
 export type DownloadDataOutput = DownloadTask<StorageDownloadDataOutput<Item>>;
 
-export type DownloadFileOutput = Item;
-
 export type GetUrlOutput = StorageGetUrlOutput;
 
 export type UploadDataOutput = UploadTask<Item>;
 
 export type GetPropertiesOutput = Item;
 
-export type ListOutputItem = Item;
+export type ListOutputItem = Omit<StorageItem, 'metadata'>;
 
-export type ListAllOutput = StorageListOutput<Item>;
+export type ListAllOutput = StorageListOutput<ListOutputItem>;
 
-export type ListPaginateOutput = StorageListOutput<Item> & {
+export type ListPaginateOutput = StorageListOutput<ListOutputItem> & {
 	nextToken?: string;
 };
 
