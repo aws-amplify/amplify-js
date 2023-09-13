@@ -29,6 +29,9 @@ describe('withAmplify', () => {
 			env: {
 				amplifyConfig: JSON.stringify(mockAmplifyConfig),
 			},
+			serverRuntimeConfig: {
+				amplifyConfig: JSON.stringify(mockAmplifyConfig),
+			},
 		});
 	});
 
@@ -37,12 +40,19 @@ describe('withAmplify', () => {
 			env: {
 				existingKey: '123',
 			},
+			serverRuntimeConfig: {
+				myKey: 'myValue',
+			},
 		};
 		const result = withAmplify(nextConfig, mockAmplifyConfig);
 
 		expect(result).toEqual({
 			env: {
 				existingKey: '123',
+				amplifyConfig: JSON.stringify(mockAmplifyConfig),
+			},
+			serverRuntimeConfig: {
+				myKey: 'myValue',
 				amplifyConfig: JSON.stringify(mockAmplifyConfig),
 			},
 		});
