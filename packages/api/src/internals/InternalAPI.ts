@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	GraphQLOperation,
-	GraphQLOptions,
+	// GraphQLOptions,
+	GraphQLOptionsV6,
 	GraphQLResult,
 	OperationTypeNode,
 	GraphQLQuery,
@@ -284,7 +285,7 @@ export class InternalAPIClass {
 	 * @returns An Observable if queryType is 'subscription', else a promise of the graphql result from the query.
 	 */
 	graphql<T>(
-		options: GraphQLOptions,
+		options: GraphQLOptionsV6,
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): T extends GraphQLQuery<T>
@@ -296,7 +297,7 @@ export class InternalAPIClass {
 		  }>
 		: Promise<GraphQLResult<any>> | Observable<object>;
 	graphql<T = any>(
-		options: GraphQLOptions,
+		options: GraphQLOptionsV6,
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<any>> | Observable<object> {
@@ -306,6 +307,7 @@ export class InternalAPIClass {
 			...customUserAgentDetails,
 		};
 
+		debugger;
 		return this._graphqlApi.graphql(
 			options,
 			additionalHeaders,

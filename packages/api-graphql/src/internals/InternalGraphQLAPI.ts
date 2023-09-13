@@ -34,9 +34,10 @@ import {
 import { Cache } from '@aws-amplify/core';
 import {
 	GraphQLAuthError,
-	GraphQLOptions,
+	// GraphQLOptions,
 	GraphQLResult,
 	GraphQLOperation,
+	GraphQLOptionsV6,
 } from '../types';
 // import { RestClient } from '@aws-amplify/api-rest';
 import { post } from '@aws-amplify/api-rest';
@@ -281,10 +282,17 @@ export class InternalGraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
-		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
+		{
+			query: paramQuery,
+			variables = {},
+			authMode,
+			authToken,
+		}: GraphQLOptionsV6,
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
+		// 2
+		debugger;
 		// TODO: Could retrieve headers and config here. Call post method.
 		const query =
 			typeof paramQuery === 'string'
@@ -323,6 +331,9 @@ export class InternalGraphQLAPIClass {
 				// 	withCredentials: this._options.withCredentials,
 				// };
 
+				// 3
+				// OH NO! AUTH MODE IS UNDEFINED, HERE!
+				debugger;
 				const responsePromise = this._graphql<T>(
 					{ query, variables, authMode },
 					headers,
@@ -347,7 +358,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private async _graphql<T = any>(
-		{ query, variables, authMode }: GraphQLOptions,
+		{ query, variables, authMode }: GraphQLOptionsV6,
 		additionalHeaders = {},
 		// See question below
 		// initParams = {},
@@ -355,8 +366,9 @@ export class InternalGraphQLAPIClass {
 	): Promise<GraphQLResult<T>> {
 		// this.createInstanceIfNotCreated();
 		const config = Amplify.getConfig();
-		// Replace?
-		// debugger;
+
+		// 4
+		debugger;
 		// const {
 		// 	aws_appsync_region: region,
 		// 	aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
@@ -374,6 +386,9 @@ export class InternalGraphQLAPIClass {
 			// TODO V6:
 			// graphql_endpoint_iam_region: customEndpointRegion,
 		} = config.API.AppSync;
+
+		// 5
+		debugger;
 
 		// TODO V6:
 		const customGraphqlEndpoint = null;
@@ -401,6 +416,9 @@ export class InternalGraphQLAPIClass {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 			}),
 		};
+
+		// 6
+		debugger;
 
 		const body = {
 			query: print(query as DocumentNode),
@@ -437,6 +455,8 @@ export class InternalGraphQLAPIClass {
 			// response = await this._api.post(endpoint, init);
 			// TODO V6
 			// @ts-ignore
+			// 7
+			debugger;
 			response = await post(endpoint, { headers, body, region });
 		} catch (err) {
 			// If the exception is because user intentionally
@@ -503,10 +523,11 @@ export class InternalGraphQLAPIClass {
 			variables,
 			authMode: defaultAuthenticationType,
 			authToken,
-		}: GraphQLOptions,
+		}: GraphQLOptionsV6,
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
+		debugger;
 		if (!this.appSyncRealTime) {
 			const { AppSync } = Amplify.getConfig().API ?? {};
 

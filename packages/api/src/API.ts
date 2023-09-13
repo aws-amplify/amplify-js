@@ -3,7 +3,8 @@
 // import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
 import { AWSAppSyncRealTimeProvider } from '@aws-amplify/api-graphql';
 import {
-	GraphQLOptions,
+	// GraphQLOptions,
+	GraphQLOptionsV6,
 	GraphQLResult,
 	GraphQLQuery,
 	GraphQLSubscription,
@@ -40,7 +41,7 @@ export class APIClass extends InternalAPIClass {
 	 * @returns An Observable if queryType is 'subscription', else a promise of the graphql result from the query.
 	 */
 	graphql<T>(
-		options: GraphQLOptions,
+		options: GraphQLOptionsV6,
 		additionalHeaders?: { [key: string]: string }
 	): T extends GraphQLQuery<T>
 		? Promise<GraphQLResult<T>>
@@ -51,9 +52,10 @@ export class APIClass extends InternalAPIClass {
 		  }>
 		: Promise<GraphQLResult<any>> | Observable<object>;
 	graphql<T = any>(
-		options: GraphQLOptions,
+		options: GraphQLOptionsV6,
 		additionalHeaders?: { [key: string]: string }
 	): Promise<GraphQLResult<any>> | Observable<object> {
+		debugger;
 		return super.graphql(options, additionalHeaders);
 	}
 
@@ -115,166 +117,166 @@ export class APIClass extends InternalAPIClass {
 	}
 }
 
-const graphQLOperationsInfo = {
-	CREATE: { operationPrefix: 'create' as const, usePlural: false },
-	READ: { operationPrefix: 'get' as const, usePlural: false },
-	UPDATE: { operationPrefix: 'update' as const, usePlural: false },
-	DELETE: { operationPrefix: 'delete' as const, usePlural: false },
-	LIST: { operationPrefix: 'list' as const, usePlural: true },
-};
-type ModelOperation = keyof typeof graphQLOperationsInfo;
-type OperationPrefix =
-	(typeof graphQLOperationsInfo)[ModelOperation]['operationPrefix'];
+// const graphQLOperationsInfo = {
+// 	CREATE: { operationPrefix: 'create' as const, usePlural: false },
+// 	READ: { operationPrefix: 'get' as const, usePlural: false },
+// 	UPDATE: { operationPrefix: 'update' as const, usePlural: false },
+// 	DELETE: { operationPrefix: 'delete' as const, usePlural: false },
+// 	LIST: { operationPrefix: 'list' as const, usePlural: true },
+// };
+// type ModelOperation = keyof typeof graphQLOperationsInfo;
+// type OperationPrefix =
+// 	(typeof graphQLOperationsInfo)[ModelOperation]['operationPrefix'];
 
-const graphQLDocumentsCache = new Map<string, Map<ModelOperation, string>>();
+// const graphQLDocumentsCache = new Map<string, Map<ModelOperation, string>>();
 
-function generateGraphQLDocument(
-	modelDefinition: any,
-	modelOperation: ModelOperation
-): string {
-	const {
-		name,
-		pluralName,
-		fields,
-		primaryKeyInfo: {
-			isCustomPrimaryKey,
-			primaryKeyFieldName,
-			sortKeyFieldNames,
-		},
-	} = modelDefinition;
-	const { operationPrefix, usePlural } = graphQLOperationsInfo[modelOperation];
+// function generateGraphQLDocument(
+// 	modelDefinition: any,
+// 	modelOperation: ModelOperation
+// ): string {
+// 	const {
+// 		name,
+// 		pluralName,
+// 		fields,
+// 		primaryKeyInfo: {
+// 			isCustomPrimaryKey,
+// 			primaryKeyFieldName,
+// 			sortKeyFieldNames,
+// 		},
+// 	} = modelDefinition;
+// 	const { operationPrefix, usePlural } = graphQLOperationsInfo[modelOperation];
 
-	const fromCache = graphQLDocumentsCache.get(name)?.get(modelOperation);
+// 	const fromCache = graphQLDocumentsCache.get(name)?.get(modelOperation);
 
-	if (fromCache !== undefined) {
-		return fromCache;
-	}
+// 	if (fromCache !== undefined) {
+// 		return fromCache;
+// 	}
 
-	if (!graphQLDocumentsCache.has(name)) {
-		graphQLDocumentsCache.set(name, new Map());
-	}
+// 	if (!graphQLDocumentsCache.has(name)) {
+// 		graphQLDocumentsCache.set(name, new Map());
+// 	}
 
-	const graphQLFieldName = `${operationPrefix}${usePlural ? pluralName : name}`;
-	let graphQLOperationType: 'mutation' | 'query' | undefined;
-	let graphQLSelectionSet: string | undefined;
-	let graphQLArguments: Record<string, any> | undefined;
+// 	const graphQLFieldName = `${operationPrefix}${usePlural ? pluralName : name}`;
+// 	let graphQLOperationType: 'mutation' | 'query' | undefined;
+// 	let graphQLSelectionSet: string | undefined;
+// 	let graphQLArguments: Record<string, any> | undefined;
 
-	const selectionSetFields = Object.values<any>(fields)
-		.map(({ type, name }) => typeof type === 'string' && name) // Only scalars for now
-		.filter(Boolean)
-		.join(' ');
+// 	const selectionSetFields = Object.values<any>(fields)
+// 		.map(({ type, name }) => typeof type === 'string' && name) // Only scalars for now
+// 		.filter(Boolean)
+// 		.join(' ');
 
-	switch (modelOperation) {
-		case 'CREATE':
-		case 'UPDATE':
-		case 'DELETE':
-			graphQLArguments ??
-				(graphQLArguments = {
-					input: `${
-						operationPrefix.charAt(0).toLocaleUpperCase() +
-						operationPrefix.slice(1)
-					}${name}Input!`,
-				});
-			graphQLOperationType ?? (graphQLOperationType = 'mutation');
-		case 'READ':
-			graphQLArguments ??
-				(graphQLArguments = isCustomPrimaryKey
-					? [primaryKeyFieldName, ...sortKeyFieldNames].reduce(
-							(acc, fieldName) => {
-								acc[fieldName] = fields[fieldName].type;
+// 	switch (modelOperation) {
+// 		case 'CREATE':
+// 		case 'UPDATE':
+// 		case 'DELETE':
+// 			graphQLArguments ??
+// 				(graphQLArguments = {
+// 					input: `${
+// 						operationPrefix.charAt(0).toLocaleUpperCase() +
+// 						operationPrefix.slice(1)
+// 					}${name}Input!`,
+// 				});
+// 			graphQLOperationType ?? (graphQLOperationType = 'mutation');
+// 		case 'READ':
+// 			graphQLArguments ??
+// 				(graphQLArguments = isCustomPrimaryKey
+// 					? [primaryKeyFieldName, ...sortKeyFieldNames].reduce(
+// 							(acc, fieldName) => {
+// 								acc[fieldName] = fields[fieldName].type;
 
-								return acc;
-							},
-							{}
-					  )
-					: {
-							[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}!`,
-					  });
-			graphQLSelectionSet ?? (graphQLSelectionSet = selectionSetFields);
-		case 'LIST':
-			graphQLOperationType ?? (graphQLOperationType = 'query');
-			graphQLSelectionSet ??
-				(graphQLSelectionSet = `items { ${selectionSetFields} }`);
-	}
+// 								return acc;
+// 							},
+// 							{}
+// 					  )
+// 					: {
+// 							[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}!`,
+// 					  });
+// 			graphQLSelectionSet ?? (graphQLSelectionSet = selectionSetFields);
+// 		case 'LIST':
+// 			graphQLOperationType ?? (graphQLOperationType = 'query');
+// 			graphQLSelectionSet ??
+// 				(graphQLSelectionSet = `items { ${selectionSetFields} }`);
+// 	}
 
-	const graphQLDocument = `${graphQLOperationType}${
-		graphQLArguments
-			? `(${Object.entries(graphQLArguments).map(
-					([fieldName, type]) => `\$${fieldName}: ${type}`
-			  )})`
-			: ''
-	} { ${graphQLFieldName}${
-		graphQLArguments
-			? `(${Object.keys(graphQLArguments).map(
-					fieldName => `${fieldName}: \$${fieldName}`
-			  )})`
-			: ''
-	} { ${graphQLSelectionSet} } }`;
+// 	const graphQLDocument = `${graphQLOperationType}${
+// 		graphQLArguments
+// 			? `(${Object.entries(graphQLArguments).map(
+// 					([fieldName, type]) => `\$${fieldName}: ${type}`
+// 			  )})`
+// 			: ''
+// 	} { ${graphQLFieldName}${
+// 		graphQLArguments
+// 			? `(${Object.keys(graphQLArguments).map(
+// 					fieldName => `${fieldName}: \$${fieldName}`
+// 			  )})`
+// 			: ''
+// 	} { ${graphQLSelectionSet} } }`;
 
-	graphQLDocumentsCache.get(name)?.set(modelOperation, graphQLDocument);
+// 	graphQLDocumentsCache.get(name)?.set(modelOperation, graphQLDocument);
 
-	return graphQLDocument;
-}
+// 	return graphQLDocument;
+// }
 
-function buildGraphQLVariables(
-	modelDefinition: any,
-	operation: ModelOperation,
-	arg: any
-): object {
-	const {
-		fields,
-		primaryKeyInfo: {
-			isCustomPrimaryKey,
-			primaryKeyFieldName,
-			sortKeyFieldNames,
-		},
-	} = modelDefinition;
+// function buildGraphQLVariables(
+// 	modelDefinition: any,
+// 	operation: ModelOperation,
+// 	arg: any
+// ): object {
+// 	const {
+// 		fields,
+// 		primaryKeyInfo: {
+// 			isCustomPrimaryKey,
+// 			primaryKeyFieldName,
+// 			sortKeyFieldNames,
+// 		},
+// 	} = modelDefinition;
 
-	let variables = {};
+// 	let variables = {};
 
-	switch (operation) {
-		case 'CREATE':
-			variables = { input: arg };
-			break;
-		case 'UPDATE':
-			// readonly fields are not  updated
-			variables = {
-				input: Object.fromEntries(
-					Object.entries(arg).filter(([fieldName]) => {
-						const { isReadOnly } = fields[fieldName];
+// 	switch (operation) {
+// 		case 'CREATE':
+// 			variables = { input: arg };
+// 			break;
+// 		case 'UPDATE':
+// 			// readonly fields are not  updated
+// 			variables = {
+// 				input: Object.fromEntries(
+// 					Object.entries(arg).filter(([fieldName]) => {
+// 						const { isReadOnly } = fields[fieldName];
 
-						return !isReadOnly;
-					})
-				),
-			};
-			break;
-		case 'READ':
-		case 'DELETE':
-			// only identifiers are sent
-			variables = isCustomPrimaryKey
-				? [primaryKeyFieldName, ...sortKeyFieldNames].reduce(
-						(acc, fieldName) => {
-							acc[fieldName] = arg[fieldName];
+// 						return !isReadOnly;
+// 					})
+// 				),
+// 			};
+// 			break;
+// 		case 'READ':
+// 		case 'DELETE':
+// 			// only identifiers are sent
+// 			variables = isCustomPrimaryKey
+// 				? [primaryKeyFieldName, ...sortKeyFieldNames].reduce(
+// 						(acc, fieldName) => {
+// 							acc[fieldName] = arg[fieldName];
 
-							return acc;
-						},
-						{}
-				  )
-				: { [primaryKeyFieldName]: arg[primaryKeyFieldName] };
+// 							return acc;
+// 						},
+// 						{}
+// 				  )
+// 				: { [primaryKeyFieldName]: arg[primaryKeyFieldName] };
 
-			if (operation === 'DELETE') {
-				variables = { input: variables };
-			}
-			break;
-		case 'LIST':
-			break;
-		default:
-			const exhaustiveCheck: never = operation;
-			throw new Error(`Unhandled operation case: ${exhaustiveCheck}`);
-	}
+// 			if (operation === 'DELETE') {
+// 				variables = { input: variables };
+// 			}
+// 			break;
+// 		case 'LIST':
+// 			break;
+// 		default:
+// 			const exhaustiveCheck: never = operation;
+// 			throw new Error(`Unhandled operation case: ${exhaustiveCheck}`);
+// 	}
 
-	return variables;
-}
+// 	return variables;
+// }
 
 type FilteredKeys<T> = {
 	[P in keyof T]: T[P] extends never ? never : P;

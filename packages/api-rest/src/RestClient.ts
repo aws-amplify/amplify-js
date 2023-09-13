@@ -93,6 +93,8 @@ export class RestClient {
 				timeout: 0,
 			};
 
+			debugger;
+
 			const libraryHeaders = {};
 			const initParams = Object.assign({}, init);
 			const isAllResponse = initParams.response;
@@ -137,6 +139,8 @@ export class RestClient {
 				},
 			});
 
+			debugger;
+
 			// Do not sign the request if client has added 'Authorization' header,
 			// which means custom authorizer.
 			if (typeof params.headers['Authorization'] !== 'undefined') {
@@ -158,6 +162,7 @@ export class RestClient {
 					credentials: session.credentials,
 					identityId: session.identityId,
 				};
+				debugger;
 			} catch (error) {
 				// logger.debug('No credentials available, the request will be unsigned');
 				return this._request(params, isAllResponse);
@@ -223,6 +228,8 @@ export class RestClient {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	post(urlOrApiInfo: string, init) {
+		// 8-ish
+		debugger;
 		return this.ajax(urlOrApiInfo, 'POST', init);
 	}
 
