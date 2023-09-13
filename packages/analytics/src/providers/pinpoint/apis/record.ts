@@ -11,7 +11,7 @@ import {
 	assertValidationError,
 } from '../../../errors';
 import { getAnalyticsUserAgentString } from '../../../utils/userAgent';
-import { RecordInput } from '../types/parameters';
+import { RecordInput } from '../types';
 import { resolveConfig, resolveCredentials } from '../utils';
 
 const logger = new Logger('Analytics');
@@ -19,7 +19,7 @@ const logger = new Logger('Analytics');
 /**
  * Records an Analytic event to Pinpoint. Events will be buffered and periodically sent to Pinpoint.
  *
- * @param {RecordInput} params Parameters used to construct the request.
+ * @param {RecordInput} params The input object used to construct the request.
  *
  * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library 
  *  configuration is incorrect.

@@ -13,7 +13,8 @@ import { resolveConfig, resolveCredentials } from '../utils';
  * profile and activities or actions in your application. Activity can be tracked across devices & platforms by using
  * the same `userId`.
  *
- * @param {IdentifyUserParameters} params Parameters used to construct requests sent to Pinpoint's UpdateEndpoint API.
+ * @param {IdentifyUserParameters} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
+ *  API.
  *
  * @throws service: {@link UpdateEndpointException} - Thrown when the underlying Pinpoint service returns an error.
  * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library 
