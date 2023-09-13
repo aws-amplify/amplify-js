@@ -70,7 +70,8 @@
 		"lib",
 		"lib-esm",
 		"src",
-		"pinpoint"
+		"pinpoint",
+		"kinesis"
 	],
 	"dependencies": {
 		"tslib": "^2.5.0",
