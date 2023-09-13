@@ -4,8 +4,8 @@
 import {
 	Amplify,
 	CognitoUserPoolConfig,
-	LocalStorage,
 	clearCredentials,
+	defaultStorage,
 } from '@aws-amplify/core';
 import { SignOutRequest } from '../../../types/requests';
 import { AuthSignOutResult } from '../../../types/results';
@@ -106,7 +106,7 @@ async function handleOAuthSignOut(cognitoConfig: CognitoUserPoolConfig) {
 		return;
 	}
 
-	const oauthStore = new DefaultOAuthStore(LocalStorage);
+	const oauthStore = new DefaultOAuthStore(defaultStorage);
 	oauthStore.setAuthConfig(cognitoConfig);
 	const isOAuthSignIn = await oauthStore.loadOAuthSignIn();
 	oauthStore.clearOAuthData();
