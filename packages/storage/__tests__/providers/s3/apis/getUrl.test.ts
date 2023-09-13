@@ -8,7 +8,7 @@ import {
 	getPresignedGetObjectUrl,
 	headObject,
 } from '../../../../src/providers/s3/utils/client';
-import { StorageOptions } from '../../../../src/types';
+import { GetUrlOptions } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -106,9 +106,9 @@ describe('getUrl test', () => {
 				const result = await getUrl({
 					key,
 					options: {
-						...(options as StorageOptions),
+						...options,
 						validateObjectExistence: true,
-					},
+					} as GetUrlOptions,
 				});
 				expect(getPresignedGetObjectUrl).toBeCalledTimes(1);
 				expect(headObject).toBeCalledTimes(1);

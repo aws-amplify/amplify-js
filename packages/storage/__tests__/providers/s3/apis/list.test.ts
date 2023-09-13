@@ -4,8 +4,11 @@
 import { Credentials } from '@aws-sdk/types';
 import { Amplify } from '@aws-amplify/core';
 import { listObjectsV2 } from '../../../../src/providers/s3/utils/client';
-import { list } from '../../../../src/providers/s3/apis';
-import { StorageOptions } from '../../../../src/types';
+import { list } from '../../../../src/providers/s3';
+import {
+	ListAllOptions,
+	ListPaginateOptions,
+} from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -135,7 +138,7 @@ describe('list API', () => {
 				expect.assertions(4);
 				let response = await list({
 					prefix: path,
-					options: options as StorageOptions,
+					options: options as ListPaginateOptions,
 				});
 				expect(response.items).toEqual([
 					{ ...listResultItem, key: path ?? '' },
@@ -170,7 +173,7 @@ describe('list API', () => {
 				const response = await list({
 					prefix: path,
 					options: {
-						...(options as StorageOptions),
+						...(options as ListPaginateOptions),
 						pageSize: customPageSize,
 						nextToken: nextToken,
 					},
@@ -202,9 +205,10 @@ describe('list API', () => {
 				expect.assertions(3);
 				let response = await list({
 					prefix: path,
-					options: options as StorageOptions,
+					options: options as ListPaginateOptions,
 				});
 				expect(response.items).toEqual([]);
+				//
 				expect(response.nextToken).toEqual(undefined);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
@@ -225,7 +229,7 @@ describe('list API', () => {
 				mockListObjectsV2ApiWithPages(3);
 				const result = await list({
 					prefix: path,
-					options: { ...(options as StorageOptions), listAll: true },
+					options: { ...options, listAll: true } as ListAllOptions,
 				});
 
 				const listResult = { ...listResultItem, key: path ?? '' };
