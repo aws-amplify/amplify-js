@@ -506,19 +506,17 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
+		const { AppSync } = Amplify.getConfig().API ?? {};
 		if (!this.appSyncRealTime) {
-			const { AppSync } = Amplify.getConfig().API ?? {};
-
 			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
-
-			return this.appSyncRealTime.subscribe({
-				query: print(query as DocumentNode),
-				variables,
-				appSyncGraphqlEndpoint: AppSync.endpoint,
-				region: AppSync.region,
-				authenticationType: AppSync.defaultAuthMode,
-			});
 		}
+		return this.appSyncRealTime.subscribe({
+			query: print(query as DocumentNode),
+			variables,
+			appSyncGraphqlEndpoint: AppSync.endpoint,
+			region: AppSync.region,
+			authenticationType: AppSync.defaultAuthMode,
+		});
 	}
 	// if (InternalPubSub && typeof InternalPubSub.subscribe === 'function') {
 	// 	return InternalPubSub.subscribe(
