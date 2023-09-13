@@ -110,6 +110,7 @@ export class APIClass extends InternalAPIClass {
 		// 	}
 		// }
 
+		debugger;
 		return client as V6Client<T>;
 	}
 }

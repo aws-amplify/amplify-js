@@ -172,7 +172,7 @@ export class InternalGraphQLAPIClass {
 			// TODO V6:
 			// graphql_endpoint_iam_region: customEndpointRegion,
 		} = config.API.AppSync as any;
-		debugger;
+		// debugger;
 
 		let headers = {};
 
@@ -300,8 +300,8 @@ export class InternalGraphQLAPIClass {
 		const headers = additionalHeaders || {};
 
 		// if an authorization header is set, have the explicit authToken take precedence
-		console.log(authToken);
-		debugger;
+		// console.log(authToken);
+		// debugger;
 		if (authToken) {
 			headers.Authorization = authToken;
 		}
@@ -313,11 +313,11 @@ export class InternalGraphQLAPIClass {
 				// TODO: This is being removed:
 				// const cancellableToken = this._api.getCancellableToken();
 
-				const authSession = fetchAuthSession();
+				// const authSession = fetchAuthSession();
 				// CHECK this._options.withCredentials:
-				console.log(authSession);
-				console.log(this._options);
-				debugger;
+				// console.log(authSession);
+				// console.log(this._options);
+				// debugger;
 				// const initParams = {
 				// 	// cancellableToken,
 				// 	withCredentials: this._options.withCredentials,
@@ -335,7 +335,7 @@ export class InternalGraphQLAPIClass {
 				// );
 				return responsePromise;
 			case 'subscription':
-				debugger;
+				// debugger;
 				return this._graphqlSubscribe(
 					{ query, variables, authMode },
 					headers,
@@ -356,7 +356,7 @@ export class InternalGraphQLAPIClass {
 		// this.createInstanceIfNotCreated();
 		const config = Amplify.getConfig();
 		// Replace?
-		debugger;
+		// debugger;
 		// const {
 		// 	aws_appsync_region: region,
 		// 	aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
