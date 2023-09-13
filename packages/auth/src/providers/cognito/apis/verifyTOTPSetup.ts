@@ -3,7 +3,7 @@
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { VerifyTOTPSetupRequest } from '../../../types/requests';
+import { VerifyTOTPSetupRequest } from '../../../types';
 import { CognitoVerifyTOTPSetupOptions } from '../types/options';
 import { verifySoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { VerifySoftwareTokenException } from '../types/errors';

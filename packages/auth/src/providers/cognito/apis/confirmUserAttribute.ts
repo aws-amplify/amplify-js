@@ -5,7 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { ConfirmUserAttributeRequest } from '../../../types/requests';
+import { ConfirmUserAttributeRequest } from '../../../types';
 import { verifyUserAttribute } from '../utils/clients/CognitoIdentityProvider';
 import { VerifyUserAttributeException } from '../types/errors';
 import { fetchAuthSession } from '../../../';

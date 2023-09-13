@@ -3,7 +3,7 @@
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { UpdatePasswordRequest } from '../../../types/requests';
+import { UpdatePasswordRequest } from '../../../types';
 import { changePassword } from '../utils/clients/CognitoIdentityProvider';
 import { ChangePasswordException } from '../../cognito/types/errors';
 import { Amplify } from '@aws-amplify/core';

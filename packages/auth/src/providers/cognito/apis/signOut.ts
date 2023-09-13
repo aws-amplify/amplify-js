@@ -7,7 +7,7 @@ import {
 	LocalStorage,
 	clearCredentials,
 } from '@aws-amplify/core';
-import { SignOutRequest } from '../../../types/requests';
+import { SignOutRequest } from '../../../types';
 import { AuthSignOutResult } from '../../../types/results';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { tokenOrchestrator } from '../tokenProvider';

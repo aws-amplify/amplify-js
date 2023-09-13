@@ -10,7 +10,7 @@ import {
 	urlSafeEncode,
 	USER_AGENT_HEADER,
 } from '@aws-amplify/core/internals/utils';
-import { SignInWithRedirectRequest } from '../../../types/requests';
+import { SignInWithRedirectRequest } from '../../../types';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { CognitoUserPoolsTokenProvider } from '../tokenProvider';
 import {

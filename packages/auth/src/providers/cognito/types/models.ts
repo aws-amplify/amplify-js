@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthStandardAttributeKey } from '../../../types';
-import { AuthProvider } from '../../../types/requests';
+import { AuthProvider } from '../../../types/inputs';
 
 /**
  * Cognito supported AuthFlowTypes that may be passed as part of the Sign In request.

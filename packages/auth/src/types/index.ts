@@ -44,7 +44,9 @@ export {
 	GetCurrentUserRequest,
 	ConfirmUserAttributeRequest,
 	VerifyTOTPSetupRequest,
-} from './requests';
+	SignInWithRedirectRequest,
+	SignOutRequest,
+} from './inputs';
 
 export {
 	AuthSignUpResult,
