@@ -82,9 +82,7 @@ export type GraphqlSubscriptionResult<T> = Observable<
  * ```
  */
 export type GraphqlSubscriptionMessage<T> = {
-	// provider: AWSAppSyncRealTimeProvider;
-	provider: {};
-	value: { data?: T };
+	data?: T;
 };
 
 export interface AWSAppSyncRealTimeProviderOptions {
