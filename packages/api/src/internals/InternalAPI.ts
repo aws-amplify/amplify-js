@@ -307,7 +307,7 @@ export class InternalAPIClass {
 			...customUserAgentDetails,
 		};
 
-		debugger;
+		// debugger;
 		return this._graphqlApi.graphql(
 			options,
 			additionalHeaders,

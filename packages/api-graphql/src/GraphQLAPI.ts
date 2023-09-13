@@ -38,7 +38,7 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		// options present
 		// 1
-		debugger;
+		// debugger;
 		return super.graphql(options, additionalHeaders);
 	}
 }

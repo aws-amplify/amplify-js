@@ -173,13 +173,16 @@ export class InternalGraphQLAPIClass {
 			// TODO V6:
 			// graphql_endpoint_iam_region: customEndpointRegion,
 		} = config.API.AppSync as any;
+
+		// We get auth mode here, so maybe that's okay
 		// debugger;
 
 		let headers = {};
 
 		switch (authenticationType) {
-			// NOTHING HERE
 			case 'API_KEY':
+				// 8
+				// debugger;
 				if (!apiKey) {
 					throw new Error(GraphQLAuthError.NO_API_KEY);
 				}
@@ -188,14 +191,16 @@ export class InternalGraphQLAPIClass {
 					'X-Api-Key': apiKey,
 				};
 				break;
-			// NOTHING HERE
 			case 'AWS_IAM':
-				// TODO V6:
-				// Make sure credentials exist (maybe)
+				// 8
 				// const credentialsOK = await this._ensureCredentials();
 				// if (!credentialsOK) {
 				// 	throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				// }
+				const session = await fetchAuthSession();
+				if (session.credentials === undefined) {
+					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
+				}
 				break;
 			case 'OPENID_CONNECT':
 				try {
@@ -291,8 +296,10 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
+		// TODO V6: SUPPORT PASSING AUTH MODE HERE
+
 		// 2
-		debugger;
+		// debugger;
 		// TODO: Could retrieve headers and config here. Call post method.
 		const query =
 			typeof paramQuery === 'string'
@@ -308,7 +315,7 @@ export class InternalGraphQLAPIClass {
 		const headers = additionalHeaders || {};
 
 		// if an authorization header is set, have the explicit authToken take precedence
-		// console.log(authToken);
+		// DO WE DO THIS???
 		// debugger;
 		if (authToken) {
 			headers.Authorization = authToken;
@@ -333,7 +340,7 @@ export class InternalGraphQLAPIClass {
 
 				// 3
 				// OH NO! AUTH MODE IS UNDEFINED, HERE!
-				debugger;
+				// debugger;
 				const responsePromise = this._graphql<T>(
 					{ query, variables, authMode },
 					headers,
@@ -368,7 +375,8 @@ export class InternalGraphQLAPIClass {
 		const config = Amplify.getConfig();
 
 		// 4
-		debugger;
+		// TODO V6: SUPPORT PASSING AUTH MODE HERE
+		// debugger;
 		// const {
 		// 	aws_appsync_region: region,
 		// 	aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
@@ -388,7 +396,7 @@ export class InternalGraphQLAPIClass {
 		} = config.API.AppSync;
 
 		// 5
-		debugger;
+		// debugger;
 
 		// TODO V6:
 		const customGraphqlEndpoint = null;
@@ -418,7 +426,8 @@ export class InternalGraphQLAPIClass {
 		};
 
 		// 6
-		debugger;
+		// OH NO! `Authorization` FIELD IS NULL HERE, BUT API KEY PRESENT
+		// debugger;
 
 		const body = {
 			query: print(query as DocumentNode),
@@ -458,6 +467,7 @@ export class InternalGraphQLAPIClass {
 			// 7
 			debugger;
 			response = await post(endpoint, { headers, body, region });
+			debugger;
 		} catch (err) {
 			// If the exception is because user intentionally
 			// cancelled the request, do not modify the exception
@@ -466,6 +476,7 @@ export class InternalGraphQLAPIClass {
 			// if (this._api.isCancel(err)) {
 			// 	throw err;
 			// }
+			debugger;
 			response = {
 				data: {},
 				errors: [new GraphQLError(err.message, null, null, null, null, err)],
@@ -475,9 +486,16 @@ export class InternalGraphQLAPIClass {
 		const { errors } = response;
 
 		if (errors && errors.length) {
+			// 8
+			debugger;
 			throw response;
 		}
 
+		// 8-ish
+		// DO WE EVER GET HERE?!?!?
+		// WHAT HAPPENS?!?!?!?!?!?!
+		console.log('RESPONSE FROM POST', response);
+		debugger;
 		return response;
 	}
 

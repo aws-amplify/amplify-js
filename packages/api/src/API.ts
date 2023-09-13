@@ -55,7 +55,7 @@ export class APIClass extends InternalAPIClass {
 		options: GraphQLOptionsV6,
 		additionalHeaders?: { [key: string]: string }
 	): Promise<GraphQLResult<any>> | Observable<object> {
-		debugger;
+		// debugger;
 		return super.graphql(options, additionalHeaders);
 	}
 
@@ -112,7 +112,7 @@ export class APIClass extends InternalAPIClass {
 		// 	}
 		// }
 
-		debugger;
+		// debugger;
 		return client as V6Client<T>;
 	}
 }

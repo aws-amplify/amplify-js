@@ -73,7 +73,7 @@ export class RestClient {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	ajax(url: string, method: string, init) {
+	async ajax(url: string, method: string, init) {
 		// logger.debug(method, urlOrApiInfo);
 		const source = axios.CancelToken.source();
 		const promise = new Promise(async (res, rej) => {
@@ -93,7 +93,8 @@ export class RestClient {
 				timeout: 0,
 			};
 
-			debugger;
+			// DO WE GET HERE? A
+			// debugger;
 
 			const libraryHeaders = {};
 			const initParams = Object.assign({}, init);
@@ -139,11 +140,22 @@ export class RestClient {
 				},
 			});
 
-			debugger;
+			// DO WE GET HERE? B
+			// console.log(typeof params.headers);
+			// debugger;
 
 			// Do not sign the request if client has added 'Authorization' header,
 			// which means custom authorizer.
-			if (typeof params.headers['Authorization'] !== 'undefined') {
+
+			// V5:
+			// if (typeof params.headers['Authorization'] !== 'undefined') {
+			// V6:
+			// TODO V6 - I had to add an additional check here since this header is `null`
+			// Need to investigate if there are side effects of this being present at all..
+			if (
+				params.headers['Authorization'] &&
+				typeof params.headers['Authorization'] !== 'undefined'
+			) {
 				params.headers = Object.keys(params.headers).reduce((acc, k) => {
 					if (params.headers[k]) {
 						acc[k] = params.headers[k];
@@ -151,22 +163,44 @@ export class RestClient {
 					return acc;
 					// tslint:disable-next-line:align
 				}, {});
+
+				// FIXED, WE DON'T GET HERE
+				// debugger;
 				return this._request(params, isAllResponse);
 			}
 
 			let credentials: AWSCredentialsAndIdentityId;
 
+			// DO WE GET HERE? C
+			debugger;
+
 			try {
+				// THIS IS BROKEN FOR API_KEY AUTH
 				const session = await fetchAuthSession();
+				// TODO V6 - no credentials or identityId are available here...
+				if (
+					session.credentials === undefined &&
+					session.identityId === undefined
+				) {
+					throw new Error('No credentials available');
+				}
 				credentials = {
 					credentials: session.credentials,
 					identityId: session.identityId,
 				};
+				// FETCH AUTH SESSION ISN'T GETTING THE CREDENTIALS NOR IDENTITY ID!!!!
 				debugger;
 			} catch (error) {
 				// logger.debug('No credentials available, the request will be unsigned');
+				// DO WE GET HERE? D
+				debugger;
 				return this._request(params, isAllResponse);
 			}
+
+			// DO WE GET HERE? E
+			// Are params correct??????????
+			console.log(params);
+			debugger;
 
 			let signedParams;
 			// before signed PARAMS
@@ -174,6 +208,9 @@ export class RestClient {
 				region,
 				service,
 			});
+
+			// DO WE GET HERE? F
+			debugger;
 
 			try {
 				res(
@@ -188,6 +225,8 @@ export class RestClient {
 			}
 		});
 		this._cancelTokenMap.set(promise, source);
+
+		// DO WE GET HERE? G
 		return promise;
 	}
 
@@ -227,10 +266,10 @@ export class RestClient {
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	post(urlOrApiInfo: string, init) {
+	async post(urlOrApiInfo: string, init) {
 		// 8-ish
 		debugger;
-		return this.ajax(urlOrApiInfo, 'POST', init);
+		return await this.ajax(urlOrApiInfo, 'POST', init);
 	}
 
 	/**

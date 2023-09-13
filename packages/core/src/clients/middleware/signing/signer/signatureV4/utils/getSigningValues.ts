@@ -21,6 +21,8 @@ export const getSigningValues = ({
 	signingService,
 	uriEscapePath = true,
 }: SignRequestOptions): SigningValues => {
+	// WHAT ARE THE CREDENTIALS HERE? ACCESSKEYID PRESENT?
+	debugger;
 	// get properties from credentials
 	const { accessKeyId, secretAccessKey, sessionToken } = credentials;
 	// get formatted dates for signing
