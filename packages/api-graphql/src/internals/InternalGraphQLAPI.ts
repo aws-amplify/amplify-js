@@ -9,37 +9,19 @@ import {
 	OperationTypeNode,
 } from 'graphql';
 import Observable from 'zen-observable-ts';
-// TODO V6
-import {
-	Amplify,
-	// Amplify,
-	// ConsoleLogger as Logger,
-	// Credentials,
-	// CustomUserAgentDetails,
-	// getAmplifyUserAgent,
-	// INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-	fetchAuthSession,
-} from '@aws-amplify/core';
-// TODO V6 - not available?
-// should work with yarn bootstrap
-// import { Credentials } from '@aws-amplify/core/internals/aws-client-utils';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
-	// INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core/internals/utils';
-// import { InternalPubSub } from '@aws-amplify/pubsub/internals';
-// import { InternalAuth } from '@aws-amplify/auth/internals';
 import { Cache } from '@aws-amplify/core';
 import {
 	GraphQLAuthError,
-	// GraphQLOptions,
 	GraphQLResult,
 	GraphQLOperation,
 	GraphQLOptionsV6,
 } from '../types';
-// import { RestClient } from '@aws-amplify/api-rest';
 import { post } from '@aws-amplify/api-rest';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 
@@ -57,8 +39,6 @@ export const graphqlOperation = (
 	authToken,
 });
 
-// TODO sCan also create function using headerbasedauth + creatingbody, then call post api
-
 /**
  * Export Cloud Logic APIs
  */
@@ -67,15 +47,9 @@ export class InternalGraphQLAPIClass {
 	 * @private
 	 */
 	private _options;
-	// TODO V6: can likely remove:
-	private _api = null;
 	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
-	// TODO V6: can be removed
-	// InternalAuth = InternalAuth;
 	Cache = Cache;
-	// TODO V6
-	// Credentials = Credentials;
 
 	/**
 	 * Initialize GraphQL API with AWS configuration
@@ -90,99 +64,29 @@ export class InternalGraphQLAPIClass {
 		return 'InternalGraphQLAPI';
 	}
 
-	/**
-	 * Configure API
-	 * @param {Object} config - Configuration of the API
-	 * @return {Object} - The current configuration
-	 */
-	// configure(options) {
-	// 	const { API = {}, ...otherOptions } = options || {};
-	// 	let opt = { ...otherOptions, ...API };
-	// 	logger.debug('configure GraphQL API', { opt });
-
-	// 	const config = Amplify.getConfig().API.AppSync;
-	// 	console.log(config);
-	// 	debugger;
-
-	// 	if (opt['aws_project_region']) {
-	// 		opt = Object.assign({}, opt, {
-	// 			region: opt['aws_project_region'],
-	// 			header: {},
-	// 		});
-	// 	}
-
-	// 	if (
-	// 		typeof opt.graphql_headers !== 'undefined' &&
-	// 		typeof opt.graphql_headers !== 'function'
-	// 	) {
-	// 		logger.warn('graphql_headers should be a function');
-	// 		opt.graphql_headers = undefined;
-	// 	}
-
-	// 	// TODO V6: options Empty here:
-	// 	this._options = Object.assign({}, this._options, opt);
-
-	// 	this.createInstance();
-
-	// 	return this._options;
-	// }
-
-	/**
-	 * Create an instance of API for the library
-	 * @return - A promise of true if Success
-	 */
-	// createInstance() {
-	// 	logger.debug('create Rest instance');
-	// 	if (this._options) {
-	// 		// TODO: remove options, use getConfig here
-	// 		// this._api = new RestClient(this._options);
-	// 		this._api = post;
-
-	// 		// Share instance Credentials with client for SSR
-	// 		// TODO V6: fetchAuthSesssion?
-	// 		// this._api.Credentials = this.Credentials;
-
-	// 		return true;
-	// 	} else {
-	// 		return Promise.reject('API not configured');
-	// 	}
-	// }
-
-	// TODO V6
 	private async _headerBasedAuth(
 		defaultAuthenticationType?,
 		additionalHeaders: { [key: string]: string } = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	) {
-		// apikey is the same (but needs to be on the config)
-		// const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
-		// 	this._options;
-		// const authenticationType =
-		// 	defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
-
 		const config = Amplify.getConfig();
 		const {
 			region: region,
 			endpoint: appSyncGraphqlEndpoint,
 			defaultAuthMode: authenticationType,
 			apiKey,
-			// TODO V6: not needed for Studio:
+			// TODO V6: needed?
 			// graphql_headers = () => ({}),
-			// TODO: V6
+			// TODO V6: verify only for custom domains
 			// graphql_endpoint: customGraphqlEndpoint,
-			// TODO V6:
+			// TODO V6: verify only for custom domains
 			// graphql_endpoint_iam_region: customEndpointRegion,
 		} = config.API.AppSync as any;
-
-		// We get auth mode here, so maybe that's okay
-		// debugger;
 
 		let headers = {};
 
 		switch (authenticationType) {
 			case 'API_KEY':
-				// 8
-				// debugger;
 				if (!apiKey) {
 					throw new Error(GraphQLAuthError.NO_API_KEY);
 				}
@@ -192,38 +96,19 @@ export class InternalGraphQLAPIClass {
 				};
 				break;
 			case 'AWS_IAM':
-				// 8
-				// const credentialsOK = await this._ensureCredentials();
-				// if (!credentialsOK) {
-				// 	throw new Error(GraphQLAuthError.NO_CREDENTIALS);
-				// }
 				const session = await fetchAuthSession();
 				if (session.credentials === undefined) {
-					// TODO V6 (commented for debugging)
+					// TODO V6: (error not thrown to assist debugging)
 					// throw new Error(GraphQLAuthError.NO_CREDENTIALS);
-					console.log(session);
-					debugger;
+					console.warn(GraphQLAuthError.NO_CREDENTIALS);
 				}
 				break;
 			case 'OPENID_CONNECT':
 				try {
 					let token;
-					// backwards compatibility
-					// const federatedInfo = await Cache.getItem('federatedInfo');
-					// if (federatedInfo) {
-					// 	token = federatedInfo.token;
-					// } else {
-					// const currentUser = await InternalAuth.currentAuthenticatedUser(
-					// 	undefined,
-					// 	customUserAgentDetails
-					// );
-					// if (currentUser) {
-					// 	token = currentUser.token;
-					// }
 
-					// correct token:
 					token = (await fetchAuthSession()).tokens?.accessToken.toString();
-					// }
+
 					if (!token) {
 						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
 					}
@@ -236,15 +121,8 @@ export class InternalGraphQLAPIClass {
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
 				try {
-					// TODO V6
-					// const session = await this.InternalAuth.currentSession(
-					// 	customUserAgentDetails
-					// );
 					const session = await fetchAuthSession();
 					headers = {
-						// TODO V6
-						// Authorization: session.getAccessToken().getJwtToken(),
-						// `idToken` or `accessToken`?
 						Authorization: session.tokens?.accessToken.toString(),
 					};
 				} catch (e) {
@@ -299,11 +177,6 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
-		// TODO V6: SUPPORT PASSING AUTH MODE HERE
-
-		// 2
-		// debugger;
-		// TODO: Could retrieve headers and config here. Call post method.
 		const query =
 			typeof paramQuery === 'string'
 				? parse(paramQuery)
@@ -318,8 +191,6 @@ export class InternalGraphQLAPIClass {
 		const headers = additionalHeaders || {};
 
 		// if an authorization header is set, have the explicit authToken take precedence
-		// DO WE DO THIS???
-		// debugger;
 		if (authToken) {
 			headers.Authorization = authToken;
 		}
@@ -327,33 +198,13 @@ export class InternalGraphQLAPIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
-				// this.createInstanceIfNotCreated();
-				// TODO: This is being removed:
-				// const cancellableToken = this._api.getCancellableToken();
-
-				// const authSession = fetchAuthSession();
-				// CHECK this._options.withCredentials:
-				// console.log(authSession);
-				// console.log(this._options);
-				// debugger;
-				// const initParams = {
-				// 	// cancellableToken,
-				// 	withCredentials: this._options.withCredentials,
-				// };
-
-				// 3
-				// OH NO! AUTH MODE IS UNDEFINED, HERE!
-				// debugger;
 				const responsePromise = this._graphql<T>(
 					{ query, variables, authMode },
 					headers,
 					// initParams,
 					customUserAgentDetails
 				);
-				// this._api.updateRequestToBeCancellable(
-				// 	responsePromise,
-				// 	cancellableToken
-				// );
+
 				return responsePromise;
 			case 'subscription':
 				// debugger;
@@ -370,23 +221,11 @@ export class InternalGraphQLAPIClass {
 	private async _graphql<T = any>(
 		{ query, variables, authMode }: GraphQLOptionsV6,
 		additionalHeaders = {},
-		// See question below
-		// initParams = {},
+		initParams = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
-		// this.createInstanceIfNotCreated();
 		const config = Amplify.getConfig();
 
-		// 4
-		// TODO V6: SUPPORT PASSING AUTH MODE HERE
-		// debugger;
-		// const {
-		// 	aws_appsync_region: region,
-		// 	aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
-		// 	graphql_headers = () => ({}),
-		// 	graphql_endpoint: customGraphqlEndpoint,
-		// 	graphql_endpoint_iam_region: customEndpointRegion,
-		// } = this._options;
 		const {
 			region: region,
 			endpoint: appSyncGraphqlEndpoint,
@@ -398,10 +237,7 @@ export class InternalGraphQLAPIClass {
 			// graphql_endpoint_iam_region: customEndpointRegion,
 		} = config.API.AppSync;
 
-		// 5
-		// debugger;
-
-		// TODO V6:
+		// TODO V6: temporary workaround unti we support custom endpoints
 		const customGraphqlEndpoint = null;
 		const customEndpointRegion = null;
 
@@ -427,10 +263,6 @@ export class InternalGraphQLAPIClass {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 			}),
 		};
-
-		// 6
-		// OH NO! `Authorization` FIELD IS NULL HERE, BUT API KEY PRESENT
-		// debugger;
 
 		const body = {
 			query: print(query as DocumentNode),
