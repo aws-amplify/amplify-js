@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { CopyRequest } from '../../../types';
-import { S3CopyResult } from '../types';
+import { CopyInput, CopyOutput } from '../types';
 import { copy as copyInternal } from './internal/copy';
 
 /**
@@ -11,12 +10,12 @@ import { copy as copyInternal } from './internal/copy';
  * different level or identityId (if source object's level is 'protected').
  *
  * @async
- * @param {CopyRequest} copyRequest - The request object.
- * @return {Promise<S3CopyResult>} Promise resolves upon successful copy of the object.
+ * @param {CopyInput} input - The request object.
+ * @return {Promise<CopyOutput>} Promise resolves upon successful copy of the object.
  * @throws service: {@link S3Exception} - Thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Thrown when
  * source or destination key are not defined.
  */
-export const copy = async (copyRequest: CopyRequest): Promise<S3CopyResult> => {
-	return copyInternal(Amplify, copyRequest);
+export const copy = async (input: CopyInput): Promise<CopyOutput> => {
+	return copyInternal(Amplify, input);
 };
