@@ -9,8 +9,12 @@ import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
-import { AuthSignInResult, SignInRequest } from '../../../types';
+import { AuthSignInResult, AuthUser, SignInRequest } from '../../../types';
 import { CognitoSignInOptions } from '../types';
+import { getCurrentUser } from './getCurrentUser';
+import { AuthError } from '../../../errors/AuthError';
+import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants';
+
 /**
  * Signs a user in
  *
@@ -27,7 +31,7 @@ export async function signIn(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const authFlowType = signInRequest.options?.serviceOptions?.authFlowType;
-
+	await isUserAuthenticated();
 	switch (authFlowType) {
 		case 'USER_SRP_AUTH':
 			return signInWithSRP(signInRequest);
@@ -39,5 +43,20 @@ export async function signIn(
 			return signInWithCustomSRPAuth(signInRequest);
 		default:
 			return signInWithSRP(signInRequest);
+	}
+}
+
+async function isUserAuthenticated() {
+	let authUser: AuthUser | undefined;
+	try {
+		authUser = await getCurrentUser();
+	} catch (error) {}
+
+	if (authUser && authUser.userId && authUser.username) {
+		throw new AuthError({
+			name: USER_ALREADY_AUTHENTICATED_EXCEPTION,
+			message: 'There is already an authenticated user.',
+			recoverySuggestion: 'Please call signOut before calling signIn.',
+		});
 	}
 }
