@@ -165,38 +165,28 @@ export class InternalGraphQLAPIClass {
 			region: region,
 			endpoint: appSyncGraphqlEndpoint,
 			defaultAuthMode: authenticationType,
-			apiKey,
-			// TODO V6: not needed for Studio:
 			// graphql_headers = () => ({}),
 			// TODO: V6
 			// graphql_endpoint: customGraphqlEndpoint,
 			// TODO V6:
 			// graphql_endpoint_iam_region: customEndpointRegion,
-		} = config.API.AppSync as any;
+		} = config.API.AppSync;
 
 		// We get auth mode here, so maybe that's okay
 		// debugger;
 
 		let headers = {};
 
-		switch (authenticationType) {
-			case 'API_KEY':
-				// 8
-				// debugger;
-				if (!apiKey) {
+		switch (authenticationType.type) {
+			case 'apiKey':
+				if (!authenticationType.apiKey) {
 					throw new Error(GraphQLAuthError.NO_API_KEY);
 				}
 				headers = {
-					Authorization: null,
-					'X-Api-Key': apiKey,
+					'X-Api-Key': authenticationType.apiKey,
 				};
 				break;
-			case 'AWS_IAM':
-				// 8
-				// const credentialsOK = await this._ensureCredentials();
-				// if (!credentialsOK) {
-				// 	throw new Error(GraphQLAuthError.NO_CREDENTIALS);
-				// }
+			case 'iam':
 				const session = await fetchAuthSession();
 				if (session.credentials === undefined) {
 					// TODO V6 (commented for debugging)
@@ -205,7 +195,7 @@ export class InternalGraphQLAPIClass {
 					debugger;
 				}
 				break;
-			case 'OPENID_CONNECT':
+			case 'jwt':
 				try {
 					let token;
 					// backwards compatibility
@@ -234,24 +224,7 @@ export class InternalGraphQLAPIClass {
 					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
 				}
 				break;
-			case 'AMAZON_COGNITO_USER_POOLS':
-				try {
-					// TODO V6
-					// const session = await this.InternalAuth.currentSession(
-					// 	customUserAgentDetails
-					// );
-					const session = await fetchAuthSession();
-					headers = {
-						// TODO V6
-						// Authorization: session.getAccessToken().getJwtToken(),
-						// `idToken` or `accessToken`?
-						Authorization: session.tokens?.accessToken.toString(),
-					};
-				} catch (e) {
-					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
-				}
-				break;
-			case 'AWS_LAMBDA':
+			case 'custom':
 				if (!additionalHeaders.Authorization) {
 					throw new Error(GraphQLAuthError.NO_AUTH_TOKEN);
 				}
@@ -351,7 +324,6 @@ export class InternalGraphQLAPIClass {
 				// );
 				return responsePromise;
 			case 'subscription':
-				// debugger;
 				return this._graphqlSubscribe(
 					{ query, variables, authMode },
 					headers,
@@ -459,13 +431,12 @@ export class InternalGraphQLAPIClass {
 
 		let response;
 		try {
-			// response = await this._api.post(endpoint, init);
-			// TODO V6
-			// @ts-ignore
-			// 7
-			debugger;
-			response = post(endpoint, { headers, body, region });
-			debugger;
+			response = await post(endpoint, {
+				headers,
+				body,
+				region,
+				serviceName: 'appsync',
+			});
 		} catch (err) {
 			// If the exception is because user intentionally
 			// cancelled the request, do not modify the exception
@@ -474,7 +445,6 @@ export class InternalGraphQLAPIClass {
 			// if (this._api.isCancel(err)) {
 			// 	throw err;
 			// }
-			debugger;
 			response = {
 				data: {},
 				errors: [new GraphQLError(err.message, null, null, null, null, err)],
@@ -484,16 +454,9 @@ export class InternalGraphQLAPIClass {
 		const { errors } = response;
 
 		if (errors && errors.length) {
-			// 8
-			debugger;
 			throw response;
 		}
 
-		// 8-ish
-		// DO WE EVER GET HERE?!?!?
-		// WHAT HAPPENS?!?!?!?!?!?!
-		console.log('RESPONSE FROM POST', response);
-		debugger;
 		return response;
 	}
 
@@ -543,7 +506,6 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
-		debugger;
 		if (!this.appSyncRealTime) {
 			const { AppSync } = Amplify.getConfig().API ?? {};
 

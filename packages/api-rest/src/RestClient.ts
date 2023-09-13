@@ -93,9 +93,6 @@ export class RestClient {
 				timeout: 0,
 			};
 
-			// DO WE GET HERE? A
-			// debugger;
-
 			const libraryHeaders = {};
 			const initParams = Object.assign({}, init);
 			const isAllResponse = initParams.response;
@@ -140,11 +137,7 @@ export class RestClient {
 				},
 			});
 
-			// DO WE GET HERE? B
-			// console.log(typeof params.headers);
-			// debugger;
-
-			// Do not sign the request if client has added 'Authorization' header,
+			// Do not sign the request if client has added 'Authorization' or x-api-key header,
 			// which means custom authorizer.
 
 			// V5:
@@ -153,8 +146,10 @@ export class RestClient {
 			// TODO V6 - I had to add an additional check here since this header is `null`
 			// Need to investigate if there are side effects of this being present at all..
 			if (
-				params.headers['Authorization'] &&
-				typeof params.headers['Authorization'] !== 'undefined'
+				(params.headers['Authorization'] &&
+					typeof params.headers['Authorization'] !== 'undefined') ||
+				(params.headers['X-Api-Key'] &&
+					typeof params.headers['X-Api-Key'] !== 'undefined')
 			) {
 				params.headers = Object.keys(params.headers).reduce((acc, k) => {
 					if (params.headers[k]) {
@@ -164,15 +159,12 @@ export class RestClient {
 					// tslint:disable-next-line:align
 				}, {});
 
-				// FIXED, WE DON'T GET HERE
-				// debugger;
-				return this._request(params, isAllResponse);
+				return res(await this._request(params, isAllResponse));
 			}
 
 			let credentials: AWSCredentialsAndIdentityId;
 
 			// DO WE GET HERE? C
-			debugger;
 
 			try {
 				// THIS IS BROKEN FOR API_KEY AUTH
@@ -189,18 +181,11 @@ export class RestClient {
 					identityId: session.identityId,
 				};
 				// FETCH AUTH SESSION ISN'T GETTING THE CREDENTIALS NOR IDENTITY ID!!!!
-				debugger;
 			} catch (error) {
 				// logger.debug('No credentials available, the request will be unsigned');
 				// DO WE GET HERE? D
-				debugger;
-				return this._request(params, isAllResponse);
+				res(await this._request(params, isAllResponse));
 			}
-
-			// DO WE GET HERE? E
-			// Are params correct??????????
-			console.log(params);
-			debugger;
 
 			let signedParams;
 			// before signed PARAMS
@@ -208,9 +193,6 @@ export class RestClient {
 				region,
 				service,
 			});
-
-			// DO WE GET HERE? F
-			debugger;
 
 			try {
 				res(
@@ -267,8 +249,6 @@ export class RestClient {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	post(urlOrApiInfo: string, init) {
-		// 8-ish
-		debugger;
 		return this.ajax(urlOrApiInfo, 'POST', init);
 	}
 

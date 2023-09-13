@@ -65,7 +65,6 @@ export class InternalAPIClass {
 		// this._restApi = new RestAPIClass(options);
 		// TODO V6 - support for options:
 		// const config = Amplify.getConfig();
-		// debugger;
 		this._graphqlApi = new InternalGraphQLAPIClass(options);
 		logger.debug('API Options', this._options);
 	}
@@ -306,7 +305,6 @@ export class InternalAPIClass {
 			...customUserAgentDetails,
 		};
 
-		// debugger;
 		return this._graphqlApi.graphql(
 			options,
 			additionalHeaders,
