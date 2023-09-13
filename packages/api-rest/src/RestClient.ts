@@ -73,7 +73,7 @@ export class RestClient {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async ajax(url: string, method: string, init) {
+	ajax(url: string, method: string, init) {
 		// logger.debug(method, urlOrApiInfo);
 		const source = axios.CancelToken.source();
 		const promise = new Promise(async (res, rej) => {
@@ -266,10 +266,10 @@ export class RestClient {
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async post(urlOrApiInfo: string, init) {
+	post(urlOrApiInfo: string, init) {
 		// 8-ish
 		debugger;
-		return await this.ajax(urlOrApiInfo, 'POST', init);
+		return this.ajax(urlOrApiInfo, 'POST', init);
 	}
 
 	/**

@@ -296,7 +296,7 @@ export class InternalGraphQLAPIClass {
 			// @ts-ignore
 			// 7
 			debugger;
-			response = await post(endpoint, { headers, body, region });
+			response = post(endpoint, { headers, body, region });
 			debugger;
 		} catch (err) {
 			// If the exception is because user intentionally
