@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';
 import {
-	StorageCopySourceOptions,
-	StorageCopyDestinationOptions,
-} from '../../../../src/types';
+	CopySourceOptions,
+	CopyDestinationOptions,
+} from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -153,11 +153,11 @@ describe('copy API', () => {
 					expect(
 						await copy({
 							source: {
-								...(source as StorageCopySourceOptions),
+								...(source as CopySourceOptions),
 								key: sourceKey,
 							},
 							destination: {
-								...(destination as StorageCopyDestinationOptions),
+								...(destination as CopyDestinationOptions),
 								key: destinationKey,
 							},
 						})
