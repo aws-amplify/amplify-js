@@ -55,8 +55,8 @@ async function isUserAuthenticated() {
 	if (authUser && authUser.userId && authUser.username) {
 		throw new AuthError({
 			name: USER_ALREADY_AUTHENTICATED_EXCEPTION,
-			message: 'There is already an authenticated user.',
-			recoverySuggestion: 'Please call signOut before calling signIn.',
+			message: 'There is already signed in user because auth tokens were found.',
+			recoverySuggestion: 'Please call signOut before calling signIn again.',
 		});
 	}
 }
