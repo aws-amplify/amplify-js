@@ -154,7 +154,7 @@ export class RestClient {
 
 			try {
 				res(
-					await axios({
+					await this._request({
 						...signedParams,
 						data: signedParams.body,
 						cancelToken: source.token,
