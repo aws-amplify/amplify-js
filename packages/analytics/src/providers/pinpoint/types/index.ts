@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { UpdateEndpointException } from './errors';
-export { IdentifyUserParameters } from './parameters';
+export { RecordInput, IdentifyUserInput } from './inputs';
