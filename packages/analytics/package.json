@@ -74,7 +74,6 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
 		"@aws-sdk/types": "3.398.0",
-		"@smithy/types": "^2.3.1",
 		"@types/uuid": "^9.0.0",
 		"typescript": "5.0.2"
 	},
