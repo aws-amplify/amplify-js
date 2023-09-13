@@ -30,13 +30,13 @@ const credentials: Credentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const targetIdentityId = 'targetIdentityId';
-const identityId = 'identityId';
+const defaultIdentityId = 'defaultIdentityId';
 
 describe('getUrl test', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
-			identityId,
+			identityId: defaultIdentityId,
 		});
 		mockGetConfig.mockReturnValue({
 			Storage: {
@@ -47,10 +47,11 @@ describe('getUrl test', () => {
 			},
 		});
 	});
+
 	describe('getUrl happy path', () => {
 		const config = {
 			credentials,
-			region: 'region',
+			region,
 		};
 		const key = 'key';
 		beforeEach(() => {
@@ -71,40 +72,50 @@ describe('getUrl test', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		it.each([
+		[
+			{
+				expectedKey: `public/${key}`,
+			},
 			{
 				options: { accessLevel: 'guest' },
-				expectedKey: 'public/key',
-			},
-			{
-				options: { accessLevel: 'protected', targetIdentityId },
-				expectedKey: 'protected/targetIdentityId/key',
-			},
-			{
-				options: { accessLevel: 'protected' },
-				expectedKey: 'protected/identityId/key',
+				expectedKey: `public/${key}`,
 			},
 			{
 				options: { accessLevel: 'private' },
-				expectedKey: 'private/identityId/key',
+				expectedKey: `private/${defaultIdentityId}/${key}`,
 			},
-		])('getUrl with $options.accessLevel', async ({ options, expectedKey }) => {
-			const headObjectOptions = {
-				Bucket: 'bucket',
-				Key: expectedKey,
-			};
-			const optionsVal = { ...options, validateObjectExistence: true };
-
-			expect.assertions(4);
-			const result = await getUrl({
-				key,
-				options: optionsVal as StorageOptions,
-			});
-			expect(getPresignedGetObjectUrl).toBeCalledTimes(1);
-			expect(headObject).toBeCalledTimes(1);
-			expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
-			expect(result.url).toEqual({
-				url: new URL('https://google.com'),
+			{
+				options: { accessLevel: 'protected' },
+				expectedKey: `protected/${defaultIdentityId}/${key}`,
+			},
+			{
+				options: { accessLevel: 'protected', targetIdentityId },
+				expectedKey: `protected/${targetIdentityId}/${key}`,
+			},
+		].forEach(({ options, expectedKey }) => {
+			const accessLevelMsg = options?.accessLevel ?? 'default';
+			const targetIdentityIdMsg = options?.targetIdentityId
+				? `and targetIdentityId`
+				: '';
+			it(`should getUrl with ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
+				const headObjectOptions = {
+					Bucket: bucket,
+					Key: expectedKey,
+				};
+				expect.assertions(4);
+				const result = await getUrl({
+					key,
+					options: {
+						...(options as StorageOptions),
+						validateObjectExistence: true,
+					},
+				});
+				expect(getPresignedGetObjectUrl).toBeCalledTimes(1);
+				expect(headObject).toBeCalledTimes(1);
+				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
+				expect(result.url).toEqual({
+					url: new URL('https://google.com'),
+				});
 			});
 		});
 	});
@@ -112,7 +123,7 @@ describe('getUrl test', () => {
 		afterAll(() => {
 			jest.clearAllMocks();
 		});
-		it('Should return not found error when the object is not found', async () => {
+		it('should return not found error when the object is not found', async () => {
 			(headObject as jest.Mock).mockImplementation(() =>
 				Object.assign(new Error(), {
 					$metadata: { httpStatusCode: 404 },
