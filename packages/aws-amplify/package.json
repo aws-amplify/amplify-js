@@ -62,6 +62,11 @@
 			"import": "./lib-esm/analytics/kinesis-firehose/index.js",
 			"require": "./lib/analytics/kinesis-firehose/index.js"
 		},
+		"./analytics/personalize": {
+			"types": "./lib-esm/analytics/personalize/index.d.ts",
+			"import": "./lib-esm/analytics/personalize/index.js",
+			"require": "./lib/analytics/personalize/index.js"
+		},
 		"./storage": {
 			"types": "./lib-esm/storage/index.d.ts",
 			"import": "./lib-esm/storage/index.js",
@@ -130,6 +135,10 @@
 			],
 			"analytics/kinesis-firehose": [
 				"./lib-esm/analytics/kinesis-firehose/index.d.ts"
+			],
+			"analytics/personalize": [
+				"./lib-esm/analytics/personalize/index.d.ts"
+
 			],
 			"storage": [
 				"./lib-esm/storage/index.d.ts"

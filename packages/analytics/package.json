@@ -38,6 +38,9 @@
 			],
 			"kinesis-firehose": [
 				"./lib-esm/providers/kinesis-firehose/index.d.ts"
+			],
+			"personalize": [
+				"./lib-esm/providers/personalize/index.d.ts"
 			]
 		}
 	},
@@ -62,6 +65,11 @@
 			"import": "./lib-esm/providers/kinesis-firehose/index.js",
 			"require": "./lib/providers/kinesis-firehose/index.js"
 		},
+		"./personalize": {
+			"types": "./lib-esm/providers/personalize/index.d.ts",
+			"import": "./lib-esm/providers/personalize/index.js",
+			"require": "./lib/providers/personalize/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"repository": {
@@ -80,7 +88,8 @@
 		"src",
 		"pinpoint",
 		"kinesis",
-		"kinesis-firehose"
+		"kinesis-firehose",
+		"personalize"
 	],
 	"dependencies": {
 		"tslib": "^2.5.0",
