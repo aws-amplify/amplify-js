@@ -61,7 +61,6 @@
 	"dependencies": {
 		"@aws-amplify/api-graphql": "4.0.0",
 		"@aws-amplify/api-rest": "4.0.0",
-		"@aws-amplify/types-package-alpha": "0.0.0",
 		"tslib": "^2.6.1"
 	},
 	"size-limit": [

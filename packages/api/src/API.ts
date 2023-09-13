@@ -10,7 +10,6 @@ import {
 import { graphql as v6graphql } from '@aws-amplify/api-graphql/internals';
 import Observable from 'zen-observable-ts';
 import { InternalAPIClass } from './internals/InternalAPI';
-import type { ModelTypes } from '@aws-amplify/types-package-alpha';
 
 /**
  * @deprecated
@@ -70,7 +69,7 @@ type ExcludeNeverFields<O> = {
 // If no T is passed, ExcludeNeverFields removes "models" from the client
 declare type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	graphql: typeof v6graphql;
-	models: ModelTypes<T>;
+	models: {};
 }>;
 
 export const API = new APIClass(null);
