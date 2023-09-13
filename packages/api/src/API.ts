@@ -3,8 +3,7 @@
 // import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
 import { AWSAppSyncRealTimeProvider } from '@aws-amplify/api-graphql';
 import {
-	// GraphQLOptions,
-	GraphQLOptionsV6,
+	GraphQLOptions,
 	GraphQLResult,
 	GraphQLQuery,
 	GraphQLSubscription,
@@ -41,7 +40,7 @@ export class APIClass extends InternalAPIClass {
 	 * @returns An Observable if queryType is 'subscription', else a promise of the graphql result from the query.
 	 */
 	graphql<T>(
-		options: GraphQLOptionsV6,
+		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): T extends GraphQLQuery<T>
 		? Promise<GraphQLResult<T>>
@@ -52,7 +51,7 @@ export class APIClass extends InternalAPIClass {
 		  }>
 		: Promise<GraphQLResult<any>> | Observable<object>;
 	graphql<T = any>(
-		options: GraphQLOptionsV6,
+		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Promise<GraphQLResult<any>> | Observable<object> {
 		return super.graphql(options, additionalHeaders);

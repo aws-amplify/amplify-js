@@ -248,8 +248,8 @@ export class RestClient {
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async post(urlOrApiInfo: string, init) {
-		return await this.ajax(urlOrApiInfo, 'POST', init);
+	post(urlOrApiInfo: string, init) {
+		return this.ajax(urlOrApiInfo, 'POST', init);
 	}
 
 	/**
