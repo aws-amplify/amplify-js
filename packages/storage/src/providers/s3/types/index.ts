@@ -12,7 +12,6 @@ export {
 } from './options';
 export {
 	DownloadDataOutput,
-	DownloadFileOutput,
 	GetUrlOutput,
 	UploadDataOutput,
 	ListOutputItem,
