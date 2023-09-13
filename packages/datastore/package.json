@@ -48,7 +48,7 @@
 		"ssr"
 	],
 	"dependencies": {
-		"@aws-amplify/api": "5.4.2",
+		"@aws-amplify/api": "6.0.0",
 		"@aws-amplify/auth": "6.0.0",
 		"@aws-amplify/pubsub": "6.0.0",
 		"amazon-cognito-identity-js": "6.4.0",
