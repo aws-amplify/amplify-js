@@ -35,7 +35,6 @@ export class RestClient {
 	 */
 	constructor(options: apiOptions) {
 		this._options = options;
-		// logger.debug('API Options', this._options);
 		if (this._cancelTokenMap == null) {
 			this._cancelTokenMap = new WeakMap();
 		}

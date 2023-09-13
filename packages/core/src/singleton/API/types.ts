@@ -17,7 +17,6 @@ export type APIConfig = {
 		defaultAuthMode?: GraphQLAuthMode;
 		region?: string;
 		endpoint?: string;
-		apiKey?: string;
 		modelIntrospectionSchema?: any;
 	};
 };
