@@ -8,7 +8,7 @@ export interface StorageConfig {
 		bucket?: string;
 		region?: string;
 		/**
-		 * Internal-only configuration for testing purpose. you should not use this.
+		 * Internal-only configuration for testing purpose. You should not use this.
 		 *
 		 * @internal
 		 */
