@@ -18,9 +18,15 @@ import {
 	RemoveOptions,
 	DownloadDataOptions,
 	UploadDataOptions,
+	CopyDestinationOptions,
+	CopySourceOptions,
 } from '../types';
 
-export type CopyInput = StorageCopyInput;
+// TODO: support use accelerate endpoint option
+export type CopyInput = StorageCopyInput<
+	CopySourceOptions,
+	CopyDestinationOptions
+>;
 
 export type GetPropertiesInput =
 	StorageGetPropertiesInput<GetPropertiesOptions>;

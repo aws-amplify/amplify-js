@@ -18,8 +18,6 @@ export {
 	StorageRemoveOptions,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
-	StorageCopySourceOptions,
-	StorageCopyDestinationOptions,
 } from './options';
 export {
 	StorageItem,

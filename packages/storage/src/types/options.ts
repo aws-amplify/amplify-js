@@ -18,11 +18,3 @@ export type StorageListPaginateOptions = StorageOptions & {
 };
 
 export type StorageRemoveOptions = StorageOptions;
-
-export type StorageCopySourceOptions = StorageOptions & {
-	key: string;
-};
-
-export type StorageCopyDestinationOptions = StorageOptions & {
-	key: string;
-};

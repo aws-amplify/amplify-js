@@ -9,6 +9,8 @@ export {
 	ListPaginateOptions,
 	RemoveOptions,
 	DownloadDataOptions,
+	CopyDestinationOptions,
+	CopySourceOptions,
 } from './options';
 export {
 	DownloadDataOutput,

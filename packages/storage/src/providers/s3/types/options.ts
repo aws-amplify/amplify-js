@@ -25,7 +25,6 @@ type S3ReadOptions =
 
 type S3WriteOptions = {
 	accessLevel?: StorageAccessLevel;
-	targetIdentityId: never;
 };
 
 /**
@@ -110,6 +109,14 @@ export type UploadDataOptions = S3WriteOptions &
 		 */
 		metadata?: Record<string, string>;
 	};
+
+export type CopySourceOptions = S3ReadOptions & {
+	key: string;
+};
+
+export type CopyDestinationOptions = S3WriteOptions & {
+	key: string;
+};
 
 /**
  * Internal only type for S3 API handlers' config parameter.
