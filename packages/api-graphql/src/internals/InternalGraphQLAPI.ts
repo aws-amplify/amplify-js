@@ -199,7 +199,10 @@ export class InternalGraphQLAPIClass {
 				// }
 				const session = await fetchAuthSession();
 				if (session.credentials === undefined) {
-					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
+					// TODO V6 (commented for debugging)
+					// throw new Error(GraphQLAuthError.NO_CREDENTIALS);
+					console.log(session);
+					debugger;
 				}
 				break;
 			case 'OPENID_CONNECT':
