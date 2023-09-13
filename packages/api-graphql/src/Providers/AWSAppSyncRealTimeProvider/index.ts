@@ -49,6 +49,7 @@ import {
 	isNonRetryableError,
 	jitteredExponentialRetry,
 } from '@aws-amplify/core/internals/utils';
+import { DocumentType } from '@aws-amplify/api-rest';
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
@@ -59,7 +60,7 @@ const dispatchApiEvent = payload => {
 export type ObserverQuery = {
 	observer: PubSubContentObserver;
 	query: string;
-	variables: Record<string, unknown>;
+	variables: Record<string, DocumentType>;
 	subscriptionState: SUBSCRIPTION_STATUS;
 	subscriptionReadyCallback?: Function;
 	subscriptionFailedCallback?: Function;
@@ -93,7 +94,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	appSyncGraphqlEndpoint?: string;
 	authenticationType?: GraphQLAuthMode;
 	query?: string;
-	variables?: Record<string, unknown>;
+	variables?: Record<string, DocumentType>;
 	apiKey?: string;
 	region?: string;
 	graphql_headers?: () => {} | (() => Promise<{}>);

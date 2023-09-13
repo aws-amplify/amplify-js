@@ -4,6 +4,7 @@ import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { Observable } from 'zen-observable-ts';
 
+import { DocumentType } from '@aws-amplify/api-rest';
 export type GraphQLAuthMode = 'AWS_IAM' | 'COGNITO_USERPOOLS' | 'API_KEY';
 
 /**
@@ -11,7 +12,8 @@ export type GraphQLAuthMode = 'AWS_IAM' | 'COGNITO_USERPOOLS' | 'API_KEY';
  */
 export interface GraphQLOptions {
 	query: string | DocumentNode;
-	variables?: Record<string, unknown>;
+	variables?: Record<string, DocumentType>;
+	// authMode?: GraphQLAuthMode;
 	authMode?: string;
 	authToken?: string;
 	/**
