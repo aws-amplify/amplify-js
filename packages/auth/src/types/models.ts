@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthSignUpStep, AuthUpdateAttributeStep } from './enums';
+import { AuthUpdateAttributeStep } from './enums';
 
 /**
  * Additional data that may be returned from Auth APIs.
@@ -229,6 +229,11 @@ export type AuthUserAttribute<
  * A user attribute key type consisting of standard OIDC claims or custom attributes.
  */
 export type AuthUserAttributeKey = AuthStandardAttributeKey | AnyAttribute;
+
+/**
+ * Denotes the next step in the Sign Up process.
+ */
+export type AuthSignUpStep = 'CONFIRM_SIGN_UP' | 'DONE';
 
 /**
  * Data encapsulating the next step in the Sign Up process

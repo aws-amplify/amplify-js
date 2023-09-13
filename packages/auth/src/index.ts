@@ -23,7 +23,6 @@ export {
 	signOut,
 } from './providers/cognito';
 export {
-	AuthSignUpStep,
 	AuthUpdateAttributeStep
 } from './types/enums';
 

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { confirmSignUp } from '../../../src/providers/cognito';
-import { AuthSignUpStep } from '../../../src/types';
 import * as confirmSignUpClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
@@ -46,7 +45,7 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 		expect(result).toEqual({
 			isSignUpComplete: true,
 			nextStep: {
-				signUpStep: AuthSignUpStep.DONE,
+				signUpStep: 'DONE',
 			},
 		});
 		expect(confirmSignUpClientSpy).toHaveBeenCalledWith(

@@ -5,7 +5,6 @@ import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import {
 	AuthSignUpResult,
-	AuthSignUpStep,
 	AuthStandardAttributeKey,
 	DeliveryMedium,
 	SignUpRequest,
@@ -79,14 +78,14 @@ export async function signUp(
 		return {
 			isSignUpComplete: true,
 			nextStep: {
-				signUpStep: AuthSignUpStep.DONE,
+				signUpStep: 'DONE',
 			},
 		};
 	} else {
 		return {
 			isSignUpComplete: false,
 			nextStep: {
-				signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
+				signUpStep: 'CONFIRM_SIGN_UP',
 				codeDeliveryDetails: {
 					deliveryMedium: CodeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
 					destination: CodeDeliveryDetails?.Destination as string,
