@@ -4,10 +4,9 @@
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 
 import { getDataChunker } from './getDataChunker';
-import { S3UploadOptions } from '../../../types';
+import { UploadDataInput } from '../../../types';
 import { resolveS3ConfigAndInput } from '../../../utils';
-import { StorageUploadDataRequest } from '../../../../../types';
-import { S3Item } from '../../../types/results';
+import { Item as S3Item } from '../../../types/outputs';
 import {
 	DEFAULT_ACCESS_LEVEL,
 	DEFAULT_QUEUE_SIZE,
@@ -33,11 +32,7 @@ import {
  * @internal
  */
 export const getMultipartUploadHandlers = (
-	{
-		options: uploadDataOptions,
-		key,
-		data,
-	}: StorageUploadDataRequest<S3UploadOptions>,
+	{ options: uploadDataOptions, key, data }: UploadDataInput,
 	size?: number
 ) => {
 	let resolveCallback: ((value: S3Item) => void) | undefined;
