@@ -3,7 +3,6 @@
 
 import {
 	AuthResetPasswordStep,
-	AuthSignInStep,
 	AuthSignUpStep,
 	AuthUpdateAttributeStep,
 } from './enums';
@@ -49,45 +48,138 @@ export type MFAType = 'SMS' | 'TOTP';
 export type AllowedMFATypes = MFAType[];
 
 export type ContinueSignInWithTOTPSetup = {
-	signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_TOTP_SETUP;
+	/**
+	 * Auth step requires user to set up TOTP as multifactor authentication by associating an authenticator app
+	 * and retriving an OTP code.
+	 *
+	 * ```typescript
+	 *  // Example
+	 *
+	 *   // Code retrieved from authenticator app
+	 *   const otpCode = '112233'
+	 *   await confirmSignIn({challengeResponse: otpCode})
+	 *
+	 * ```
+	 */
+	signInStep: 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP';
 	totpSetupDetails: TOTPSetupDetails;
 };
 export type ConfirmSignInWithTOTPCode = {
-	signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_TOTP_CODE;
+	/**
+	 * Auth step requires user to use TOTP as multifactor authentication by retriving an OTP code from authenticator app.
+	 * 
+	 * ```typescript
+	 *  // Example
+	 *  
+	 *   // Code retrieved from authenticator app
+	 *   const otpCode = '112233'
+	 *   await confirmSignIn({challengeResponse: otpCode})
+	 
+	 * ```
+	 */
+	signInStep: 'CONFIRM_SIGN_IN_WITH_TOTP_CODE';
 };
 
 export type ContinueSignInWithMFASelection = {
-	signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_MFA_SELECTION;
+	/**
+	 * Auth step requires user to select an mfa option(SMS | TOTP) to continue with the sign-in flow.
+	 *
+	 * ```typescript
+	 *  // Example
+	 *
+	 *   await confirmSignIn({challengeResponse:'TOTP'})
+	 *   // OR
+	 *   await confirmSignIn({challengeResponse:'SMS'})
+	 * ```
+	 */
+	signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SELECTION';
 	allowedMFATypes?: AllowedMFATypes;
 };
 
 export type ConfirmSignInWithCustomChallenge = {
-	signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE;
+	/**
+	 * Auth step requires user to respond to a custom challenge.
+	 *
+	 * ```typescript
+	 *  // Example
+	 *
+	 *   const challengeAnswer = 'my-custom-response'
+	 *   await confirmSignIn({challengeResponse: challengeAnswer})
+	 * ```
+	 */
+	signInStep: 'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE';
 	additionalInfo?: AdditionalInfo;
 };
 
 export type ConfirmSignInWithNewPasswordRequired<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
-	signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED;
+	/**
+	 * Auth step requires user to change their password with any requierd attributes.
+	 *
+	 * ```typescript
+	 *  // Example
+	 *
+	 *   const attributes = {
+	 *    email: 'email@email'
+	 *    phone_number: '+11111111111'
+	 *    }
+	 *   const newPassword = 'my-new-password'
+	 *   await confirmSignIn({
+	 *     challengeResponse: newPassword,
+	 *     options: {
+	 *       serviceOptions: {
+	 *        userAttributes: attributes
+	 *       }
+	 *     }
+	 *    })
+	 * ```
+	 */
+	signInStep: 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED';
 	missingAttributes?: UserAttributeKey[];
 };
 
 export type ConfirmSignInWithSMSCode = {
-	signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_CODE;
+	/**
+	 * Auth step requires user to use SMS as multifactor authentication by retriving a code sent to cellphone.
+	 *
+	 * ```typescript
+	 *  // Example
+	 *
+	 *   // Code retrieved from cellphone
+	 *   const smsCode = '112233'
+	 *   await confirmSignIn({challengeResponse: smsCode})
+	 * ```
+	 */
+	signInStep: 'CONFIRM_SIGN_IN_WITH_SMS_CODE';
 	codeDeliveryDetails?: AuthCodeDeliveryDetails;
 };
 
 export type ConfirmSignUpStep = {
-	signInStep: AuthSignInStep.CONFIRM_SIGN_UP;
+	/**
+	 * Auth step requires to confirm user's sign-up.
+	 *
+	 * Try calling confirmSignUp.
+	 */
+	signInStep: 'CONFIRM_SIGN_UP';
 };
 
 export type ResetPasswordStep = {
-	signInStep: AuthSignInStep.RESET_PASSWORD;
+	/**
+	 * Auth step requires user to chage their password.
+	 *
+	 * Try calling resetPassword.
+	 */
+	signInStep: 'RESET_PASSWORD';
 };
 
 export type DoneSignInStep = {
-	signInStep: AuthSignInStep.DONE;
+	/**
+	 * The sign-in process is complete.
+	 *
+	 * No further action is needed.
+	 */
+	signInStep: 'DONE';
 };
 
 export type AuthNextSignInStep<
