@@ -21,9 +21,9 @@ const logger = new Logger('Analytics');
  *
  * @param {RecordInput} params The input object used to construct the request.
  *
- * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library
+ * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library 
  *  configuration is incorrect.
- *
+ * 
  * @example
  * ```ts
  * // Send an event to Pinpoint
@@ -33,7 +33,7 @@ const logger = new Logger('Analytics');
  *     }
  * })
  * ```
- *
+ * 
  * @example
  * ```ts
  * // Send an event to Pinpoint with metrics & custom attributes
