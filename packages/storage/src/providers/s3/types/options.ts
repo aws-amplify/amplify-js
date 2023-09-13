@@ -11,7 +11,7 @@ import {
 	StorageListPaginateOptions,
 } from '../../../types/options';
 
-type S3SharedOptions = {
+type CommonOptions = {
 	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false
@@ -19,11 +19,11 @@ type S3SharedOptions = {
 	useAccelerateEndpoint?: boolean;
 };
 
-type S3ReadOptions =
+type ReadOptions =
 	| { accessLevel?: 'guest' | 'private' }
 	| { accessLevel: 'protected'; targetIdentityId?: string };
 
-type S3WriteOptions = {
+type WriteOptions = {
 	accessLevel?: StorageAccessLevel;
 };
 
@@ -40,32 +40,32 @@ type TransferOptions = {
 /**
  * Input options type for S3 getProperties API.
  */
-export type GetPropertiesOptions = S3ReadOptions & S3SharedOptions;
+export type GetPropertiesOptions = ReadOptions & CommonOptions;
 
 /**
  * Input options type for S3 getProperties API.
  */
-export type RemoveOptions = S3WriteOptions & S3SharedOptions;
+export type RemoveOptions = WriteOptions & CommonOptions;
 
 /**
  * Input options type for S3 list API.
  */
 export type ListAllOptions = StorageListAllOptions &
-	S3ReadOptions &
-	S3SharedOptions;
+	ReadOptions &
+	CommonOptions;
 
 /**
  * Input options type for S3 list API.
  */
 export type ListPaginateOptions = StorageListPaginateOptions &
-	S3ReadOptions &
-	S3SharedOptions;
+	ReadOptions &
+	CommonOptions;
 
 /**
  * Input options type for S3 getUrl API.
  */
-export type GetUrlOptions = S3ReadOptions &
-	S3SharedOptions & {
+export type GetUrlOptions = ReadOptions &
+	CommonOptions & {
 		/**
 		 * Whether to head object to make sure the object existence before downloading.
 		 * @default false
@@ -81,12 +81,10 @@ export type GetUrlOptions = S3ReadOptions &
 /**
  * Input options type for S3 downloadData API.
  */
-export type DownloadDataOptions = S3ReadOptions &
-	S3SharedOptions &
-	TransferOptions;
+export type DownloadDataOptions = ReadOptions & CommonOptions & TransferOptions;
 
-export type UploadDataOptions = S3WriteOptions &
-	S3SharedOptions &
+export type UploadDataOptions = WriteOptions &
+	CommonOptions &
 	TransferOptions & {
 		/**
 		 * The default content-disposition header value of the file when downloading it.
@@ -110,11 +108,11 @@ export type UploadDataOptions = S3WriteOptions &
 		metadata?: Record<string, string>;
 	};
 
-export type CopySourceOptions = S3ReadOptions & {
+export type CopySourceOptions = ReadOptions & {
 	key: string;
 };
 
-export type CopyDestinationOptions = S3WriteOptions & {
+export type CopyDestinationOptions = WriteOptions & {
 	key: string;
 };
 
