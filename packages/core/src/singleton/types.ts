@@ -31,7 +31,6 @@ export type ResourcesConfig = {
 	Storage?: StorageConfig;
 };
 
-// Dynamic config
 export type LibraryOptions = {
 	API?: LibraryAPIOptions;
 	Auth?: LibraryAuthOptions;

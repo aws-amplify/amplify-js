@@ -57,7 +57,6 @@ export class InternalAPIClass {
 	 * @return If the error was from an api request cancellation
 	 */
 	isCancel(error: any): boolean {
-		// return this._restApi.isCancel(error);
 		return isCancel(error);
 	}
 	/**

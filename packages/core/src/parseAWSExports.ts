@@ -57,9 +57,7 @@ export const parseAWSExports = (
 		amplifyConfig.API = {
 			AppSync: {
 				apiKey: aws_appsync_apiKey,
-				// defaultAuthMode: aws_appsync_authenticationType,
 				defaultAuthMode: {
-					// type: GRAPHQL_AUTH_MODE[aws_appsync_authenticationType],
 					type: authTypeMapping[aws_appsync_authenticationType],
 					apiKey: aws_appsync_apiKey,
 				},
