@@ -4,10 +4,15 @@
 // TODO(v6): revisit exports
 
 export { GraphQLQuery, GraphQLSubscription } from './types';
-import { API } from './API';
+import { API, APIClass } from './API';
+export {
+	graphqlOperation,
+	GraphQLAuthError,
+	GraphQLAuthMode,
+} from '@aws-amplify/api-graphql';
 
 export type { GraphQLResult } from '@aws-amplify/api-graphql';
 
 const generateClient = API.generateClient;
 
-export { generateClient };
+export { API, APIClass, generateClient };
