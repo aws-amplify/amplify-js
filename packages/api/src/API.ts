@@ -52,7 +52,6 @@ export class APIClass extends InternalAPIClass {
 	generateClient<T extends Record<any, any> = never>(): V6Client<T> {
 		const client: V6Client<any> = {
 			graphql: v6graphql,
-			models: {},
 		};
 
 		return client as V6Client<T>;
