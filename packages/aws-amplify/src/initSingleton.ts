@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
+	Amplify,
+	CookieStorage,
 	LibraryOptions,
 	ResourcesConfig,
-	Amplify,
-	LocalStorage,
-	CookieStorage,
+	defaultStorage,
 } from '@aws-amplify/core';
 import {
 	CognitoUserPoolsTokenProvider,
@@ -32,7 +32,7 @@ export const DefaultAmplify = {
 					? new CookieStorage({
 							sameSite: 'strict',
 					  })
-					: LocalStorage
+					: defaultStorage
 			);
 
 			Amplify.configure(resourceConfig, libraryOptionsWithDefaultAuthProviders);

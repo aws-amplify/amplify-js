@@ -6,39 +6,45 @@ import {
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
 import {
-	StorageListAllOptions,
-	StorageListPaginateOptions,
-	StorageListRequest,
-} from '../../../../types';
-import { S3ListAllResult, S3ListPaginateResult } from '../../types';
+	ListAllInput,
+	ListPaginateInput,
+	ListAllOutput,
+	ListPaginateOutput,
+} from '../../types';
 import { list as listInternal } from '../internal/list';
 
-type S3ListApi = {
+type ListApi = {
 	/**
 	 * Lists bucket objects with pagination.
-	 * @param {StorageListRequest<StorageListPaginateOptions>} req - The request object
-	 * @return {Promise<S3ListPaginateResult>} - Promise resolves to list of keys and metadata with
+	 * @param {ListPaginateInput} The input object
+	 * @return {Promise<ListPaginateOutput>} - Promise resolves to list of keys and metadata with
 	 * pageSize defaulting to 1000. Additionally the result will include a nextToken if there are more items to retrieve
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		req?: StorageListRequest<StorageListPaginateOptions>
-	): Promise<S3ListPaginateResult>;
+		input?: ListPaginateInput
+	): Promise<ListPaginateOutput>;
 	/**
 	 * Lists all bucket objects.
-	 * @param {StorageListRequest<StorageListAllOptions>} req - The request object
-	 * @return {Promise<S3ListAllResult>} - Promise resolves to list of keys and metadata for all objects in path
+	 * @param {ListAllInput} The input object
+	 * @return {Promise<ListAllOutput>} - Promise resolves to list of keys and metadata for all objects in path
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		req?: StorageListRequest<StorageListAllOptions>
-	): Promise<S3ListAllResult>;
+		input?: ListAllInput
+	): Promise<ListAllOutput>;
 };
 
-export const list: S3ListApi = (contextSpec, req) => {
-	return listInternal(getAmplifyServerContext(contextSpec).amplify, req ?? {});
+export const list: ListApi = (
+	contextSpec: AmplifyServer.ContextSpec,
+	input?: ListAllInput | ListPaginateInput
+): Promise<ListAllOutput | ListPaginateOutput> => {
+	return listInternal(
+		getAmplifyServerContext(contextSpec).amplify,
+		input ?? {}
+	);
 };

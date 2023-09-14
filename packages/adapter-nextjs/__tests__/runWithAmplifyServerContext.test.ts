@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ResourcesConfig, MemoryKeyValueStorage } from '@aws-amplify/core';
+import { ResourcesConfig, sharedInMemoryStorage } from '@aws-amplify/core';
 import {
 	createAWSCredentialsAndIdentityIdProvider,
 	createKeyValueStorageFromCookieStorageAdapter,
@@ -24,7 +24,7 @@ const mockAmplifyConfig: ResourcesConfig = {
 		S3: {
 			bucket: 'bucket',
 			region: 'us-east-1',
-		}
+		},
 	},
 };
 
@@ -58,7 +58,7 @@ describe('runWithAmplifyServerContext', () => {
 					Pinpoint: {
 						appId: 'app-id',
 						region: 'region',
-					}
+					},
 				},
 			};
 			mockGetAmplifyConfig.mockReturnValueOnce(mockAmplifyConfig);
@@ -74,15 +74,15 @@ describe('runWithAmplifyServerContext', () => {
 
 	describe('when amplifyConfig.Auth is defined', () => {
 		describe('when nextServerContext is null (opt-in unauthenticated role)', () => {
-			it('should create auth providers with MemoryKeyValueStorage', () => {
+			it('should create auth providers with sharedInMemoryStorage', () => {
 				const operation = jest.fn();
 				runWithAmplifyServerContext({ operation, nextServerContext: null });
 				expect(
 					mockCreateAWSCredentialsAndIdentityIdProvider
-				).toHaveBeenCalledWith(mockAmplifyConfig.Auth, MemoryKeyValueStorage);
+				).toHaveBeenCalledWith(mockAmplifyConfig.Auth, sharedInMemoryStorage);
 				expect(mockCreateUserPoolsTokenProvider).toHaveBeenCalledWith(
 					mockAmplifyConfig.Auth,
-					MemoryKeyValueStorage
+					sharedInMemoryStorage
 				);
 			});
 		});

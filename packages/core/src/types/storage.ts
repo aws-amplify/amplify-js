@@ -13,6 +13,10 @@ export type SameSite = 'strict' | 'lax' | 'none';
 export type CookieStorageData = {
 	domain?: string;
 	path?: string;
+
+	/**
+	 * Expiration in days
+	 */
 	expires?: number;
 	secure?: boolean;
 	sameSite?: SameSite;

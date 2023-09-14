@@ -7,8 +7,13 @@ export interface StorageConfig {
 	S3: {
 		bucket?: string;
 		region?: string;
+		/**
+		 * Internal-only configuration for testing purpose. You should not use this.
+		 *
+		 * @internal
+		 */
 		dangerouslyConnectToHttpEndpointForTesting?: string;
-	}
+	};
 }
 
 type StoragePrefixResolver = (params: {
@@ -16,7 +21,6 @@ type StoragePrefixResolver = (params: {
 	targetIdentityId?: string;
 }) => Promise<string>;
 
-// TODO[AllanZhengYP]: need to finalize the decision whether to move defaultAccessLevel to StorageConfig
 export interface LibraryStorageOptions {
 	S3: {
 		prefixResolver?: StoragePrefixResolver;

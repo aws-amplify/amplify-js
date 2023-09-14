@@ -19,7 +19,6 @@ import { assertAuthTokens } from '../utils/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { toAttributeType } from '../utils/apiHelpers';
 import { CodeDeliveryDetailsType } from '../utils/clients/CognitoIdentityProvider/types';
-import { AuthUpdateAttributeStep } from '../../../types/enums';
 import { UpdateUserAttributesException } from '../types/errors';
 
 /**
@@ -68,7 +67,7 @@ function getConfirmedAttributes(
 		confirmedAttributes[key] = {
 			isUpdated: true,
 			nextStep: {
-				updateAttributeStep: AuthUpdateAttributeStep.DONE,
+				updateAttributeStep: 'DONE',
 			},
 		};
 	});
@@ -86,8 +85,7 @@ function getUnConfirmedAttributes(
 			unConfirmedAttributes[AttributeName] = {
 				isUpdated: false,
 				nextStep: {
-					updateAttributeStep:
-						AuthUpdateAttributeStep.CONFIRM_ATTRIBUTE_WITH_CODE,
+					updateAttributeStep: 'CONFIRM_ATTRIBUTE_WITH_CODE',
 					codeDeliveryDetails: {
 						attributeName: AttributeName,
 						deliveryMedium: DeliveryMedium as DeliveryMedium,

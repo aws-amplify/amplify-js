@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	AuthTokens,
-	KeyValueStorageInterface,
-	FetchAuthSessionOptions,
-	LocalStorage,
 	AuthConfig,
+	AuthTokens,
+	FetchAuthSessionOptions,
+	KeyValueStorageInterface,
+	defaultStorage,
 } from '@aws-amplify/core';
 import { DefaultTokenStore } from './TokenStore';
 import { TokenOrchestrator } from './TokenOrchestrator';
@@ -19,7 +19,7 @@ class CognitoUserPoolsTokenProviderClass
 	tokenOrchestrator: TokenOrchestrator;
 	constructor() {
 		this.authTokenStore = new DefaultTokenStore();
-		this.authTokenStore.setKeyValueStorage(LocalStorage);
+		this.authTokenStore.setKeyValueStorage(defaultStorage);
 		this.tokenOrchestrator = new TokenOrchestrator();
 		this.tokenOrchestrator.setAuthTokenStore(this.authTokenStore);
 		this.tokenOrchestrator.setTokenRefresher(CognitoUserPoolTokenRefresher);
