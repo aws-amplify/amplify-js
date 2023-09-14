@@ -38,11 +38,11 @@ jobs:
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
 
-      - name: Run npm publish
-        uses: ./amplify-js/.github/actions/npm-publish
-        with:
-          target: preid
-          preid: ${{ inputs.preid }}
-          npm_token: ${{ secrets.NPM_TOKEN }}
-          github_user: ${{ vars.GH_USER}}
-          github_email: ${{ vars.GH_EMAIL}}
+      # - name: Run npm publish
+      #   uses: ./amplify-js/.github/actions/npm-publish
+      #   with:
+      #     target: preid
+      #     preid: ${{ inputs.preid }}
+      #     npm_token: ${{ secrets.NPM_TOKEN }}
+      #     github_user: ${{ vars.GH_USER}}
+      #     github_email: ${{ vars.GH_EMAIL}}
