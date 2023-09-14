@@ -6,9 +6,7 @@ import {
 	RespondToAuthChallengeException,
 	AssociateSoftwareTokenException,
 } from '../types/errors';
-import { AuthSignInStep } from '../../../types';
 import { ConfirmSignInInput, ConfirmSignInOutput } from '../types';
-
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
@@ -108,7 +106,7 @@ export async function confirmSignIn(
 			await cacheCognitoTokens(AuthenticationResult);
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 

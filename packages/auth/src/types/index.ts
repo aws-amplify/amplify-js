@@ -5,13 +5,6 @@
 export * from './Auth';
 
 export {
-	AuthSignUpStep,
-	AuthResetPasswordStep,
-	AuthSignInStep,
-	AuthUpdateAttributeStep,
-} from './enums';
-
-export {
 	AdditionalInfo,
 	DeliveryMedium,
 	AnyAttribute,
@@ -27,6 +20,9 @@ export {
 	AllowedMFATypes,
 	AuthUser,
 	TOTPSetupDetails,
+	AuthResetPasswordStep,
+	AuthSignUpStep,
+	AuthUpdateAttributeStep,
 } from './models';
 
 export { AuthServiceOptions, AuthSignUpOptions } from './options';

@@ -15,7 +15,6 @@ import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
-import { AuthSignInStep } from '../../../types';
 import {
 	SignInWithCustomSRPAuthInput,
 	SignInWithCustomSRPAuthOutput,
@@ -76,7 +75,7 @@ export async function signInWithCustomSRPAuth(
 			cleanActiveSignInState();
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 

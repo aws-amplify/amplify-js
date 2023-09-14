@@ -1,8 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
-import { AmplifyErrorString } from '@aws-amplify/core/internals/utils';
-
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { authAPITestParams } from './testUtils/authApiTestParams';
@@ -14,7 +11,6 @@ import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cogn
 import { Amplify } from 'aws-amplify';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-import { cognitoCredentialsProvider } from '../../../src/providers/cognito/credentialsProvider';
 import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 

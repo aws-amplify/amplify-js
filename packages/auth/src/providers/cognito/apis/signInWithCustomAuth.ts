@@ -3,7 +3,6 @@
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { AuthSignInStep } from '../../../types';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
 	handleCustomAuthFlowWithoutSRP,
@@ -72,7 +71,7 @@ export async function signInWithCustomAuth(
 			await cacheCognitoTokens(AuthenticationResult);
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 

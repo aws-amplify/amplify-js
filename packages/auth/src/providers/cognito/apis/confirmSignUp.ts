@@ -3,7 +3,6 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
-import { AuthSignUpStep } from '../../../types';
 import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -54,7 +53,7 @@ export async function confirmSignUp(
 	return {
 		isSignUpComplete: true,
 		nextStep: {
-			signUpStep: AuthSignUpStep.DONE,
+			signUpStep: 'DONE',
 		},
 	};
 }

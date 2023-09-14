@@ -20,7 +20,6 @@ import {
 	handleUserSRPAuthFlow,
 } from '../utils/signInHelpers';
 import { SignInWithSRPInput, SignInWithSRPOutput } from '../types';
-import { AuthSignInStep } from '../../../types';
 import {
 	setActiveSignInState,
 	cleanActiveSignInState,
@@ -78,7 +77,7 @@ export async function signInWithSRP(
 			await cacheCognitoTokens(AuthenticationResult);
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 
