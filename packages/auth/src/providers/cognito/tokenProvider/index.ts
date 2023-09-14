@@ -7,9 +7,9 @@ import {
 	KeyValueStorageInterface,
 	defaultStorage,
 } from '@aws-amplify/core';
+import { refreshAuthTokens } from '../utils/refreshAuthTokens';
 import { DefaultTokenStore } from './TokenStore';
 import { TokenOrchestrator } from './TokenOrchestrator';
-import { CognitoUserPoolTokenRefresher } from '../apis/tokenRefresher';
 import { CognitoUserPoolTokenProviderType } from './types';
 
 class CognitoUserPoolsTokenProviderClass
@@ -22,7 +22,7 @@ class CognitoUserPoolsTokenProviderClass
 		this.authTokenStore.setKeyValueStorage(defaultStorage);
 		this.tokenOrchestrator = new TokenOrchestrator();
 		this.tokenOrchestrator.setAuthTokenStore(this.authTokenStore);
-		this.tokenOrchestrator.setTokenRefresher(CognitoUserPoolTokenRefresher);
+		this.tokenOrchestrator.setTokenRefresher(refreshAuthTokens);
 	}
 	getTokens(
 		{ forceRefresh }: FetchAuthSessionOptions = { forceRefresh: false }
@@ -50,7 +50,7 @@ export const tokenOrchestrator =
 
 export {
 	CognitoUserPoolTokenProviderType,
-	TokenOrchestrator,
 	DefaultTokenStore,
-	CognitoUserPoolTokenRefresher,
+	TokenOrchestrator,
+	refreshAuthTokens,
 };
