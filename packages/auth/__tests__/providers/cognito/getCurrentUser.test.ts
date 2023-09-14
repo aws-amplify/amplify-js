@@ -8,12 +8,8 @@ import { getCurrentUser } from '../../../src/providers/cognito';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-
+import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
-jest.mock('@aws-amplify/core/internals/utils', () => ({
-	...jest.requireActual('@aws-amplify/core/internals/utils'),
-	fetchAuthSession: jest.fn(),
-}));
 
 Amplify.configure({
 	Auth: {
@@ -26,27 +22,28 @@ Amplify.configure({
 });
 const mockedAccessToken =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockGetTokensFunction = jest.spyOn(
+	CognitoUserPoolsTokenProvider,
+	'getTokens'
+);
 const mockedSub = 'mockedSub';
 const mockedUsername = 'XXXXXXXXXXXXXX';
 
 describe('getUser API happy path cases', () => {
 	beforeEach(() => {
-		mockFetchAuthSession.mockResolvedValue({
-			tokens: {
-				accessToken: decodeJWT(mockedAccessToken),
-				idToken: {
-					payload: {
-						sub: mockedSub,
-						'cognito:username': mockedUsername,
-					},
+		mockGetTokensFunction.mockResolvedValue({
+			accessToken: decodeJWT(mockedAccessToken),
+			idToken: {
+				payload: {
+					sub: mockedSub,
+					'cognito:username': mockedUsername,
 				},
 			},
 		});
 	});
 
 	afterEach(() => {
-		mockFetchAuthSession.mockClear();
+		mockGetTokensFunction.mockClear();
 	});
 
 	test('get current user', async () => {
@@ -58,7 +55,7 @@ describe('getUser API happy path cases', () => {
 describe('getUser API error path cases:', () => {
 	test('getUser API should raise service error', async () => {
 		expect.assertions(2);
-		mockFetchAuthSession.mockImplementationOnce(async () => {
+		mockGetTokensFunction.mockImplementationOnce(async () => {
 			throw new AuthError({
 				name: InitiateAuthException.InternalErrorException,
 				message: 'error at fetchAuthSession',
