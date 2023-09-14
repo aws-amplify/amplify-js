@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { StorageDownloadDataRequest } from '../../../types';
-import { S3GetUrlOptions, S3GetUrlResult } from '../types';
+import {} from '../../../types';
+import { GetUrlInput, GetUrlOutput } from '../types';
 import { getUrl as getUrlInternal } from './internal/getUrl';
 
 /**
@@ -14,15 +14,13 @@ import { getUrl as getUrlInternal } from './internal/getUrl';
  * to true, this method will verify the given object already exists in S3 before returning a presigned
  * URL, and will throw {@link StorageError} if the object does not exist.
  *
- * @param {StorageDownloadDataRequest<S3GetUrlOptions>} The request object
- * @return {Promise<S3GetUrlResult>} url of the object
+ * @param {GetUrlInput} The input object
+ * @return {Promise<GetUrlOutput>} url of the object
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors
  * thrown either username or key are not defined.
  *
  */
-export const getUrl = (
-	req: StorageDownloadDataRequest<S3GetUrlOptions>
-): Promise<S3GetUrlResult> => {
-	return getUrlInternal(Amplify, req);
+export const getUrl = (input: GetUrlInput): Promise<GetUrlOutput> => {
+	return getUrlInternal(Amplify, input);
 };

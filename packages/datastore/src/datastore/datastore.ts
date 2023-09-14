@@ -6,7 +6,6 @@ import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Hub,
-	browserOrNode,
 	BackgroundProcessManager,
 	Cache,
 } from '@aws-amplify/core';
@@ -117,7 +116,6 @@ enablePatches();
 const logger = new Logger('DataStore');
 
 const ulid = monotonicUlidFactory(Date.now());
-const { isNode } = browserOrNode();
 
 type SettingMetaData = {
 	identifier: ManagedIdentifier<Setting, 'id'>;
@@ -1563,11 +1561,8 @@ class DataStore {
 						.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
 						.subscribe({
 							next: ({ type, data }) => {
-								// In Node, we need to wait for queries to be synced to prevent returning empty arrays.
 								// In the Browser, we can begin returning data once subscriptions are in place.
-								const readyType = isNode
-									? ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
-									: ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
+								const readyType = ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
 
 								if (type === readyType) {
 									this.initResolve();
