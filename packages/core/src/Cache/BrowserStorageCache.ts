@@ -5,9 +5,8 @@ import { ConsoleLogger as Logger } from '../Logger';
 import { defaultConfig, getCurrTime } from './Utils';
 import { StorageCache } from './StorageCache';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
-import { asserts } from '../Util/errors/AssertError';
-import { STORAGE_CACHE_EXCEPTION } from '../Util/Constants';
 import { getCurrSizeKey } from './Utils/CacheUtils';
+import { assert, CacheErrorCode } from './Utils/errorHelpers';
 
 const logger = new Logger('Cache');
 
@@ -22,20 +21,14 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	constructor(config?: CacheConfig) {
 		super(config);
 
-		asserts(!!this.cacheConfig.storage, {
-			name: STORAGE_CACHE_EXCEPTION,
-			message: 'Storage is not defined in the cache config',
-		});
+		assert(!!this.cacheConfig.storage, CacheErrorCode.NoCacheStorage);
 		this.cacheConfig.storage = this.cacheConfig.storage;
 		this.getItem = this.getItem.bind(this);
 		this.setItem = this.setItem.bind(this);
 		this.removeItem = this.removeItem.bind(this);
 	}
 	private getStorage(): Storage {
-		asserts(!!this.cacheConfig.storage, {
-			name: STORAGE_CACHE_EXCEPTION,
-			message: 'Storage is not defined in the cache config',
-		});
+		assert(!!this.cacheConfig.storage, CacheErrorCode.NoCacheStorage);
 		return this.cacheConfig.storage;
 	}
 	/**
@@ -91,10 +84,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	 */
 	private _isExpired(key: string): boolean {
 		const text: string | null = this.getStorage().getItem(key);
-		asserts(text !== null, {
-			name: STORAGE_CACHE_EXCEPTION,
-			message: `Item not found in the storage by the key: ${key}.`,
-		});
+		assert(text !== null, CacheErrorCode.NoCacheItem, `Key: ${key}`);
 		const item: CacheItem = JSON.parse(text);
 		if (getCurrTime() >= item.expires) {
 			return true;
@@ -111,10 +101,7 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 	 */
 	private _removeItem(prefixedKey: string, size?: number): void {
 		const item = this.getStorage().getItem(prefixedKey);
-		asserts(item !== null, {
-			name: STORAGE_CACHE_EXCEPTION,
-			message: `Item not found in the storage by the key: ${prefixedKey}.`,
-		});
+		assert(item !== null, CacheErrorCode.NoCacheItem, `Key: ${prefixedKey}`);
 		const itemSize: number = size ?? JSON.parse(item).byteSize;
 		this._decreaseCurSizeInBytes(itemSize);
 		// remove the cache item

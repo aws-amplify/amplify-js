@@ -15,9 +15,8 @@
 import { ConsoleLogger as Logger } from '../Logger';
 import { browserOrNode } from '../Util/JS';
 import { Amplify } from '../Amplify';
-import { asserts } from '../Util/errors/AssertError';
-import { AmplifyError } from '../Util/Errors';
-import { SERVICE_WORKER_EXCEPTION } from '../Util/Constants';
+import { AmplifyError } from '../errors';
+import { assert, ServiceWorkerErrorCode } from './errorHelpers';
 /**
  * Provides a means to registering a service worker in the browser
  * and communicating with it via postMessage events.
@@ -53,10 +52,10 @@ export class ServiceWorkerClass {
 	 * Get the currently active service worker
 	 */
 	get serviceWorker(): ServiceWorker {
-		asserts(this._serviceWorker !== undefined, {
-			name: SERVICE_WORKER_EXCEPTION,
-			message: 'Service Worker instance is undefined',
-		});
+		assert(
+			this._serviceWorker !== undefined,
+			ServiceWorkerErrorCode.UndefinedInstance
+		);
 
 		return this._serviceWorker;
 	}
@@ -101,7 +100,7 @@ export class ServiceWorkerClass {
 						this._logger.debug(`Service Worker Registration Failed ${error}`);
 						return reject(
 							new AmplifyError({
-								name: SERVICE_WORKER_EXCEPTION,
+								name: ServiceWorkerErrorCode.Unavailable,
 								message: 'Service Worker not available',
 								underlyingError: error,
 							})
@@ -110,7 +109,7 @@ export class ServiceWorkerClass {
 			} else {
 				return reject(
 					new AmplifyError({
-						name: SERVICE_WORKER_EXCEPTION,
+						name: ServiceWorkerErrorCode.Unavailable,
 						message: 'Service Worker not available',
 					})
 				);
@@ -130,17 +129,17 @@ export class ServiceWorkerClass {
 	 *  - reject(Error)
 	 */
 	enablePush(publicKey: string) {
-		asserts(this._registration !== undefined, {
-			name: SERVICE_WORKER_EXCEPTION,
-			message: 'Service Worker registration is undefined',
-		});
+		assert(
+			this._registration !== undefined,
+			ServiceWorkerErrorCode.UndefinedRegistration
+		);
 		this._publicKey = publicKey;
 		return new Promise((resolve, reject) => {
 			if (browserOrNode().isBrowser) {
-				asserts(this._registration !== undefined, {
-					name: SERVICE_WORKER_EXCEPTION,
-					message: 'Service Worker registration is undefined',
-				});
+				assert(
+					this._registration !== undefined,
+					ServiceWorkerErrorCode.UndefinedRegistration
+				);
 				this._registration.pushManager.getSubscription().then(subscription => {
 					if (subscription) {
 						this._subscription = subscription;
@@ -169,7 +168,7 @@ export class ServiceWorkerClass {
 			} else {
 				return reject(
 					new AmplifyError({
-						name: SERVICE_WORKER_EXCEPTION,
+						name: ServiceWorkerErrorCode.Unavailable,
 						message: 'Service Worker not available',
 					})
 				);

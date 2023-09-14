@@ -6,7 +6,7 @@ import {
 	Identity,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
-import { assertIdentityPooIdConfig } from '@aws-amplify/core/internals/utils';
+import { assertIdentityPoolIdConfig } from '@aws-amplify/core/internals/utils';
 import { IdentityIdStorageKeys, IdentityIdStore } from './types';
 import { AuthError } from '../../../errors/AuthError';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
@@ -20,7 +20,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	_primaryIdentityId: string | undefined;
 	_authKeys: AuthKeys<string> = {};
 	setAuthConfig(authConfigParam: AuthConfig) {
-		assertIdentityPooIdConfig(authConfigParam.Cognito);
+		assertIdentityPoolIdConfig(authConfigParam.Cognito);
 		this.authConfig = authConfigParam;
 		this._authKeys = createKeysForAuthStorage(
 			'Cognito',
@@ -34,7 +34,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	}
 
 	async loadIdentityId(): Promise<Identity | undefined> {
-		assertIdentityPooIdConfig(this.authConfig?.Cognito);
+		assertIdentityPoolIdConfig(this.authConfig?.Cognito);
 		if (this.keyValueStorage === undefined) {
 			throw new AuthError({
 				message: 'No KeyValueStorage available',
@@ -69,7 +69,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	}
 
 	async storeIdentityId(identity: Identity): Promise<void> {
-		assertIdentityPooIdConfig(this.authConfig?.Cognito);
+		assertIdentityPoolIdConfig(this.authConfig?.Cognito);
 		if (identity === undefined) {
 			throw new AuthError({
 				message: 'Invalid Identity parameter',

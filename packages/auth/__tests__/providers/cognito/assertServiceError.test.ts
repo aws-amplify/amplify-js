@@ -1,4 +1,4 @@
-import { AmplifyErrorString } from '@aws-amplify/core/internals/utils';
+import { AmplifyErrorCode } from '@aws-amplify/core/internals/utils';
 import { assertServiceError } from '../../../src/errors/utils/assertServiceError';
 import { AuthError } from '../../../src/errors/AuthError';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
@@ -10,7 +10,7 @@ describe('asserts service errors', () => {
 			expect(assertServiceError(error)).toThrowError();
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
+			expect(error.name).toBe(AmplifyErrorCode.Unknown);
 		}
 	});
 	test('it should throw an unknown error when error is a TypeError', () => {
@@ -19,7 +19,7 @@ describe('asserts service errors', () => {
 			expect(assertServiceError(error)).toThrowError();
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
+			expect(error.name).toBe(AmplifyErrorCode.Unknown);
 		}
 	});
 	test('it should throw an unknown error when error does not have a name', () => {
@@ -28,7 +28,7 @@ describe('asserts service errors', () => {
 			expect(assertServiceError(error)).toThrowError();
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
+			expect(error.name).toBe(AmplifyErrorCode.Unknown);
 		}
 	});
 	test('it should not throw if the error is coming from the service', () => {

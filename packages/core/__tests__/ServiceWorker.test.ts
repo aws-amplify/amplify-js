@@ -1,4 +1,5 @@
 import { AmplifyError, ServiceWorker } from '../src/libraryUtils';
+import { ServiceWorkerErrorCode } from '../src/ServiceWorker/errorHelpers';
 
 describe('ServiceWorker test', () => {
 	describe('Error conditions', () => {
@@ -28,7 +29,7 @@ describe('ServiceWorker test', () => {
 				await serviceWorker.register();
 			} catch (e) {
 				expect(e).toBeInstanceOf(AmplifyError);
-				expect(e.name).toBe('ServiceWorkerException');
+				expect(e.name).toBe(ServiceWorkerErrorCode.Unavailable);
 			}
 		});
 	});

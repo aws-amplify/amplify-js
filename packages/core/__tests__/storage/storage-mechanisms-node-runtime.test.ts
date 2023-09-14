@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { AmplifyError, AmplifyErrorString } from '../../src/Util/Errors';
+import { AmplifyError, AmplifyErrorCode } from '../../src/libraryUtils';
 import { defaultStorage, sessionStorage } from '../../src/storage';
 
 const key = 'k';
@@ -14,7 +14,7 @@ describe('test mechanisms', () => {
 			await defaultStorage.setItem(key, value);
 		} catch (error) {
 			expect(error).toBeInstanceOf(AmplifyError);
-			expect(error.name).toBe(AmplifyErrorString.PLATFORM_NOT_SUPPORTED_ERROR);
+			expect(error.name).toBe(AmplifyErrorCode.PlatformNotSupported);
 		}
 	});
 
@@ -23,7 +23,7 @@ describe('test mechanisms', () => {
 			await sessionStorage.setItem(key, value);
 		} catch (error) {
 			expect(error).toBeInstanceOf(AmplifyError);
-			expect(error.name).toBe(AmplifyErrorString.PLATFORM_NOT_SUPPORTED_ERROR);
+			expect(error.name).toBe(AmplifyErrorCode.PlatformNotSupported);
 		}
 	});
 });

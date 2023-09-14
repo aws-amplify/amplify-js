@@ -8,8 +8,7 @@ import {
 	FetchAuthSessionOptions,
 	LibraryAuthOptions,
 } from './types';
-import { asserts } from '../../Util/errors/AssertError';
-import { AUTH_CONFING_EXCEPTION } from '../../Util/Constants';
+import { AuthConfigurationErrorCode, assert } from './utils/errorHelpers';
 
 export function isTokenExpired({
 	expiresAt,
@@ -53,12 +52,7 @@ export class AuthClass {
 		let credentialsAndIdentityId: AWSCredentialsAndIdentityId | undefined;
 		let userSub: string | undefined;
 
-		asserts(!!this.authConfig, {
-			name: AUTH_CONFING_EXCEPTION,
-			message: 'AuthConfig is required',
-			recoverySuggestion:
-				'call Amplify.configure in your app with a valid AuthConfig',
-		});
+		assert(!!this.authConfig, AuthConfigurationErrorCode.AuthConfigException);
 
 		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if not available
 		tokens =

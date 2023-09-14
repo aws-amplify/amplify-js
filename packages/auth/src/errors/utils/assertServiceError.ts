@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthError } from '../AuthError';
-import { AmplifyErrorString, ServiceError } from '@aws-amplify/core/internals/utils';
+import {
+	AmplifyErrorCode,
+	ServiceError,
+} from '@aws-amplify/core/internals/utils';
 
 export function assertServiceError(
 	error: unknown
@@ -13,7 +16,7 @@ export function assertServiceError(
 		error instanceof TypeError
 	) {
 		throw new AuthError({
-			name: AmplifyErrorString.UNKNOWN,
+			name: AmplifyErrorCode.Unknown,
 			message: 'An unknown error has ocurred.',
 			underlyingError: error,
 		});
