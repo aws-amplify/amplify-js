@@ -22,3 +22,5 @@ export {
 } from './options';
 
 export { UpdateMFAPreferenceRequest } from './inputs';
+
+export { FetchMFAPreferenceResult } from './outputs';
