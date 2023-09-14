@@ -38,7 +38,7 @@ export type PinpointAnalyticsEvent = {
 type PinpointCommonParameters = {
 	appId: string;
 	category: SupportedCategory;
-	credentials: AuthSession['credentials'];
+	credentials: Required<AuthSession>['credentials'];
 	identityId?: AuthSession['identityId'];
 	region: string;
 	userAgentValue?: string;
