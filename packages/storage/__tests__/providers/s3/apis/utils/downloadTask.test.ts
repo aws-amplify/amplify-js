@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { createDownloadTask } from '../../../../../src/providers/s3/utils';
-import { TransferTaskState } from '../../../../../src/types/common';
 
 describe('createDownloadTask', () => {
 	it('should create a download task', async () => {
@@ -10,7 +9,7 @@ describe('createDownloadTask', () => {
 			job: jest.fn().mockResolvedValueOnce('test'),
 			onCancel: jest.fn(),
 		});
-		expect(task.state).toBe(TransferTaskState.IN_PROGRESS);
+		expect(task.state).toBe('IN_PROGRESS');
 		expect(await task.result).toEqual('test');
 	});
 
@@ -20,7 +19,7 @@ describe('createDownloadTask', () => {
 			onCancel: jest.fn(),
 		});
 		task.cancel();
-		expect(task.state).toBe(TransferTaskState.CANCELED);
+		expect(task.state).toBe('CANCELED');
 	});
 
 	it('should set overwriting abort error to the onCancel callback', () => {
@@ -31,7 +30,7 @@ describe('createDownloadTask', () => {
 		});
 		const customError = new Error('Custom Error');
 		task.cancel(customError);
-		expect(task.state).toBe(TransferTaskState.CANCELED);
+		expect(task.state).toBe('CANCELED');
 		expect(onCancel).toHaveBeenCalledWith(customError);
 	});
 
@@ -46,7 +45,7 @@ describe('createDownloadTask', () => {
 			await task.result;
 		} catch (e) {
 			expect(e).toBe(rejectedError);
-			expect(task.state).toBe(TransferTaskState.ERROR);
+			expect(task.state).toBe('ERROR');
 		}
 	});
 
@@ -56,14 +55,10 @@ describe('createDownloadTask', () => {
 			onCancel: jest.fn(),
 		});
 		await task.result;
-		expect(task.state).toBe(TransferTaskState.SUCCESS);
+		expect(task.state).toBe('SUCCESS');
 	});
 
-	it.each([
-		TransferTaskState.CANCELED,
-		TransferTaskState.ERROR,
-		TransferTaskState.SUCCESS,
-	])(
+	it.each(['CANCELED', 'ERROR', 'SUCCESS'])(
 		'should not call the onCancel callback if the task is already in status of %s',
 		async state => {
 			const onCancel = jest.fn();
