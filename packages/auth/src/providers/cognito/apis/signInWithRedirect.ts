@@ -24,6 +24,7 @@ import { AuthError } from '../../../errors/AuthError';
 import { AuthErrorTypes } from '../../../types';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { authErrorMessages } from '../../../Errors';
+import { isUserAuthenticated } from '../utils/signInHelpers';
 
 const SELF = '_self';
 
@@ -34,9 +35,10 @@ const SELF = '_self';
  *
  * TODO: add config errors
  */
-export function signInWithRedirect(
+export async function signInWithRedirect(
 	signInWithRedirectRequest?: SignInWithRedirectRequest
-): void {
+): Promise<void> {
+	await isUserAuthenticated();
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);

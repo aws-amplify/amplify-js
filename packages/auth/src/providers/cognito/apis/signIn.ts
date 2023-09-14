@@ -9,11 +9,9 @@ import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
-import { AuthSignInResult, AuthUser, SignInRequest } from '../../../types';
+import { AuthSignInResult, SignInRequest } from '../../../types';
 import { CognitoSignInOptions } from '../types';
-import { getCurrentUser } from './getCurrentUser';
-import { AuthError } from '../../../errors/AuthError';
-import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants';
+import { isUserAuthenticated } from '../utils/signInHelpers';
 
 /**
  * Signs a user in
@@ -43,20 +41,5 @@ export async function signIn(
 			return signInWithCustomSRPAuth(signInRequest);
 		default:
 			return signInWithSRP(signInRequest);
-	}
-}
-
-async function isUserAuthenticated() {
-	let authUser: AuthUser | undefined;
-	try {
-		authUser = await getCurrentUser();
-	} catch (error) {}
-
-	if (authUser && authUser.userId && authUser.username) {
-		throw new AuthError({
-			name: USER_ALREADY_AUTHENTICATED_EXCEPTION,
-			message: 'There is already signed in user because auth tokens were found.',
-			recoverySuggestion: 'Please call signOut before calling signIn again.',
-		});
 	}
 }

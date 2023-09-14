@@ -22,6 +22,7 @@ import {
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
 import {
+	AuthUser,
 	AuthUserAttribute,
 	MFAType,
 	TOTPSetupDetails,
@@ -46,6 +47,8 @@ import {
 	RespondToAuthChallengeCommandOutput,
 } from './clients/CognitoIdentityProvider/types';
 import { getRegion } from './clients/CognitoIdentityProvider/utils';
+import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants';
+import { getCurrentUser } from '../apis/getCurrentUser';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -630,4 +633,20 @@ export function isMFATypeEnabled(
 	const mfaTypes = getMFATypes(parseMFATypes(MFAS_CAN_SETUP));
 	if (!mfaTypes) return false;
 	return mfaTypes.includes(mfaType);
+}
+
+export async function isUserAuthenticated() {
+	let authUser: AuthUser | undefined;
+	try {
+		authUser = await getCurrentUser();
+	} catch (error) {}
+
+	if (authUser && authUser.userId && authUser.username) {
+		throw new AuthError({
+			name: USER_ALREADY_AUTHENTICATED_EXCEPTION,
+			message:
+				'There is already a signed in user because auth tokens were found.',
+			recoverySuggestion: 'Please call signOut before calling signIn again.',
+		});
+	}
 }
