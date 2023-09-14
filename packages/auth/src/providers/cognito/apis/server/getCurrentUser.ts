@@ -20,11 +20,7 @@ import { getCurrentUser as getCurrentUserInternal } from '../internal/getCurrent
  * @returns AuthUser
  */
 export const getCurrentUser = async (
-	contextSpec: AmplifyServer.ContextSpec,
-	getCurrentUserRequest?: GetCurrentUserRequest
+	contextSpec: AmplifyServer.ContextSpec
 ): Promise<AuthUser> => {
-	return getCurrentUserInternal(
-		getAmplifyServerContext(contextSpec).amplify,
-		getCurrentUserRequest
-	);
+	return getCurrentUserInternal(getAmplifyServerContext(contextSpec).amplify);
 };
