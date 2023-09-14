@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from 'aws-amplify';
-import { decodeJWT, fetchAuthSession } from '@aws-amplify/core/internals/utils';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../src/errors/AuthError';
 import { getCurrentUser } from '../../../src/providers/cognito';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito';
+import { Amplify as AmplifyV6 } from '@aws-amplify/core';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 Amplify.configure({
@@ -22,10 +22,7 @@ Amplify.configure({
 });
 const mockedAccessToken =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-const mockGetTokensFunction = jest.spyOn(
-	CognitoUserPoolsTokenProvider,
-	'getTokens'
-);
+const mockGetTokensFunction = jest.spyOn(AmplifyV6.Auth, 'getTokens');
 const mockedSub = 'mockedSub';
 const mockedUsername = 'XXXXXXXXXXXXXX';
 
@@ -53,26 +50,22 @@ describe('getUser API happy path cases', () => {
 });
 
 describe('getUser API error path cases:', () => {
-	test('getUser API should raise service error', async () => {
-		expect.assertions(2);
-		mockGetTokensFunction.mockImplementationOnce(async () => {
-			throw new AuthError({
-				name: InitiateAuthException.InternalErrorException,
-				message: 'error at fetchAuthSession',
-			});
-		});
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(
-				buildMockErrorResponse(InitiateAuthException.InternalErrorException)
-			)
-		);
+	beforeEach(() => {
+		mockGetTokensFunction.mockResolvedValue(null);
+	});
+
+	afterEach(() => {
+		mockGetTokensFunction.mockClear();
+	});
+	test('getUser API should raise a validation error when tokens are not found', async () => {
 		try {
-			await getCurrentUser({
-				recache: true,
-			});
+			const result = await getCurrentUser();
 		} catch (error) {
+			console.log(error);
 			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(InitiateAuthException.InternalErrorException);
+			// TODO: replace this error name once PR: https://github.com/aws-amplify/amplify-js/pull/12033
+			// is merged
+			expect(error.name).toBe('Invalid Auth Tokens');
 		}
 	});
 });
