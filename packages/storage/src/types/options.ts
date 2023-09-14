@@ -10,11 +10,6 @@ export type StorageOptions =
 			targetIdentityId?: string;
 	  };
 
-/**
- * The data payload type for upload operation.
- */
-export type StorageUploadSourceOptions = Blob | BufferSource | string | File;
-
 export type StorageListAllOptions = StorageOptions & {
 	listAll: true;
 };

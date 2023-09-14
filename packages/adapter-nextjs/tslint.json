@@ -5,7 +5,13 @@
 	"jsRules": {},
 	"rules": {
 		"prefer-const": true,
-		"max-line-length": [true, 120],
+		"max-line-length": [
+			true,
+			{
+				"limit": 120,
+				"ignore-pattern": "^//|^ *"
+			}
+		],
 		"no-empty-interface": true,
 		"no-var-keyword": true,
 		"object-literal-shorthand": true,

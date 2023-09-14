@@ -152,14 +152,14 @@ export type GetCredentialsOptions =
 type GetCredentialsAuthenticatedUser = {
 	authenticated: true;
 	forceRefresh?: boolean;
-	authConfig: AuthConfig;
+	authConfig: AuthConfig | undefined;
 	tokens: AuthTokens;
 };
 
 type GetCredentialsUnauthenticatedUser = {
 	authenticated: false;
 	forceRefresh?: boolean;
-	authConfig: AuthConfig;
+	authConfig: AuthConfig | undefined;
 	tokens?: never;
 };
 

@@ -19,6 +19,7 @@ import {
 import { UPLOADS_STORAGE_KEY } from '../../../../../src/providers/s3/utils/constants';
 import { byteLength } from '../../../../../src/providers/s3/apis/uploadData/byteLength';
 import { CanceledError } from '../../../../../src/errors/CanceledError';
+import { StorageOptions } from '../../../../../src/types';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/providers/s3/utils/client');
@@ -28,7 +29,7 @@ const credentials: Credentials = {
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
 };
-const identityId = 'identityId';
+const defaultIdentityId = 'defaultIdentityId';
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const bucket = 'bucket';
 const region = 'region';
@@ -119,7 +120,7 @@ describe('getMultipartUploadHandlers', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
-			identityId,
+			identityId: defaultIdentityId,
 		});
 		(Amplify.getConfig as jest.Mock).mockReturnValue({
 			Storage: {
@@ -154,41 +155,61 @@ describe('getMultipartUploadHandlers', () => {
 
 	describe('upload', () => {
 		const getBlob = (size: number) => new Blob(['1'.repeat(size)]);
-		it.each([
-			['file', new File([getBlob(8 * MB)], 'someName')],
-			['blob', getBlob(8 * MB)],
-			['string', '1'.repeat(8 * MB)],
-			['arrayBuffer', new ArrayBuffer(8 * MB)],
-			['arrayBufferView', new Uint8Array(8 * MB)],
-		])(
-			'should upload a %s type body that splits in 2 parts',
-			async (_, twoPartsPayload) => {
-				mockMultipartUploadSuccess();
-				const { multipartUploadJob } = getMultipartUploadHandlers({
-					key: defaultKey,
-					data: twoPartsPayload,
-				});
-				const result = await multipartUploadJob();
-				expect(mockCreateMultipartUpload).toBeCalledWith(
-					expect.objectContaining({
-						credentials,
-						region,
-						abortSignal: expect.any(AbortSignal),
-					}),
-					expect.objectContaining({
-						Bucket: bucket,
-						Key: `public/${defaultKey}`,
-						ContentType: defaultContentType,
-					})
-				);
-				expect(result).toEqual(
-					expect.objectContaining({ key: defaultKey, eTag: 'etag' })
-				);
-				expect(mockCreateMultipartUpload).toBeCalledTimes(1);
-				expect(mockUploadPart).toBeCalledTimes(2);
-				expect(mockCompleteMultipartUpload).toBeCalledTimes(1);
-			}
-		);
+		[
+			{
+				expectedKey: `public/${defaultKey}`,
+			},
+			{
+				options: { accessLevel: 'guest' },
+				expectedKey: `public/${defaultKey}`,
+			},
+			{
+				options: { accessLevel: 'private' },
+				expectedKey: `private/${defaultIdentityId}/${defaultKey}`,
+			},
+			{
+				options: { accessLevel: 'protected' },
+				expectedKey: `protected/${defaultIdentityId}/${defaultKey}`,
+			},
+		].forEach(({ options, expectedKey }) => {
+			const accessLevelMsg = options?.accessLevel ?? 'default';
+			it.each([
+				['file', new File([getBlob(8 * MB)], 'someName')],
+				['blob', getBlob(8 * MB)],
+				['string', '1'.repeat(8 * MB)],
+				['arrayBuffer', new ArrayBuffer(8 * MB)],
+				['arrayBufferView', new Uint8Array(8 * MB)],
+			])(
+				`should upload a %s type body that splits in 2 parts using ${accessLevelMsg} accessLevel`,
+				async (_, twoPartsPayload) => {
+					mockMultipartUploadSuccess();
+					const { multipartUploadJob } = getMultipartUploadHandlers({
+						key: defaultKey,
+						data: twoPartsPayload,
+						options: options as StorageOptions,
+					});
+					const result = await multipartUploadJob();
+					expect(mockCreateMultipartUpload).toBeCalledWith(
+						expect.objectContaining({
+							credentials,
+							region,
+							abortSignal: expect.any(AbortSignal),
+						}),
+						expect.objectContaining({
+							Bucket: bucket,
+							Key: expectedKey,
+							ContentType: defaultContentType,
+						})
+					);
+					expect(result).toEqual(
+						expect.objectContaining({ key: defaultKey, eTag: 'etag' })
+					);
+					expect(mockCreateMultipartUpload).toBeCalledTimes(1);
+					expect(mockUploadPart).toBeCalledTimes(2);
+					expect(mockCompleteMultipartUpload).toBeCalledTimes(1);
+				}
+			);
+		});
 
 		it('should throw if unsupported payload type is provided', async () => {
 			mockMultipartUploadSuccess();

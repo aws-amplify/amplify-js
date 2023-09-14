@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/api",
+	"main": "../lib/api/index.js",
+	"browser": "../lib-esm/api/index.js",
+	"module": "../lib-esm/api/index.js",
+	"typings": "../lib-esm/api/index.d.ts"
+}

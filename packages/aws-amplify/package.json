@@ -22,6 +22,11 @@
 			"import": "./lib-esm/auth/index.js",
 			"require": "./lib/auth/index.js"
 		},
+		"./api": {
+			"types": "./lib-esm/api/index.d.ts",
+			"import": "./lib-esm/api/index.js",
+			"require": "./lib/api/index.js"
+		},
 		"./auth/cognito": {
 			"types": "./lib-esm/auth/cognito/index.d.ts",
 			"import": "./lib-esm/auth/cognito/index.js",
@@ -78,6 +83,9 @@
 		">=3.8": {
 			"*": [
 				"./lib-esm/index.d.ts"
+			],
+			"api": [
+				"./lib-esm/api/index.d.ts"
 			],
 			"utils": [
 				"./lib-esm/utils/index.d.ts"
@@ -149,11 +157,13 @@
 		"lib-esm",
 		"src",
 		"analytics",
+		"api",
 		"auth",
 		"internals",
 		"storage"
 	],
 	"dependencies": {
+		"@aws-amplify/api": "6.0.0",
 		"@aws-amplify/analytics": "7.0.0",
 		"@aws-amplify/auth": "6.0.0",
 		"@aws-amplify/core": "6.0.0",
@@ -169,6 +179,18 @@
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ record }",
 			"limit": "20.49 kB"
+		},
+		{
+			"name": "[API] class (AppSync)",
+			"path": "./lib-esm/api/index.js",
+			"import": "{ API }",
+			"limit": "70.00 kB"
+		},
+		{
+			"name": "[API] generateClient (AppSync)",
+			"path": "./lib-esm/api/index.js",
+			"import": "{ generateClient }",
+			"limit": "70.00 kB"
 		},
 		{
 			"name": "[Analytics] identifyUser (Pinpoint)",

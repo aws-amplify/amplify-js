@@ -4,11 +4,7 @@
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import {
-	AuthSignInResult,
-	AuthSignInStep,
-	SignInRequest,
-} from '../../../types';
+import { AuthSignInResult, SignInRequest } from '../../../types';
 import {
 	ChallengeName,
 	ChallengeParameters,
@@ -79,7 +75,7 @@ export async function signInWithUserPassword(
 			cleanActiveSignInState();
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 
