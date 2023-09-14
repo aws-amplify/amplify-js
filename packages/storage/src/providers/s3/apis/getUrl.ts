@@ -15,7 +15,7 @@ import { getUrl as getUrlInternal } from './internal/getUrl';
  * to true, this method will verify the given object already exists in S3 before returning a presigned
  * URL, and will throw {@link StorageError} if the object does not exist.
  *
- * @param input - The input object
+ * @param input - The GetUrlInput object.
  * @returns Presigned URL and timestamp when the URL MAY expire.
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors

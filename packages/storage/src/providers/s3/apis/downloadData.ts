@@ -12,8 +12,7 @@ import { getObject } from '../utils/client';
 /**
  * Download S3 object data to memory
  *
- * @param input - The input parameters that are passed to the
- * 	downloadData operation.
+ * @param input - The DownloadDataInput object.
  * @returns A cancelable task exposing result promise from `result` property.
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors

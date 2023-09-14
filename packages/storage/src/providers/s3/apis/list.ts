@@ -14,7 +14,7 @@ type ListApi = {
 	/**
 	 * List files with given prefix in pages
 	 * pageSize defaulted to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
-	 * @param input - The input object
+	 * @param input - The ListPaginateInput object.
 	 * @returns A list of keys and metadata with
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials

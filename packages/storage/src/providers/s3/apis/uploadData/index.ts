@@ -18,8 +18,7 @@ import { getMultipartUploadHandlers } from './multipart';
  * * Maximum object size is 5TB.
  * * Maximum object size if the size cannot be determined before upload is 50GB.
  *
- * @param - The input parameters that are passed to the
- * 	uploadData operation.
+ * @param input - The UploadDataInput object.
  * @returns A cancelable and resumable task exposing result promise from `result`
  * 	property.
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
