@@ -3,14 +3,11 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
-	StorageListRequest,
-	StorageListAllOptions,
-	StorageListPaginateOptions,
-} from '../../../../types';
-import {
-	S3ListOutputItem,
-	S3ListAllResult,
-	S3ListPaginateResult,
+	ListAllInput,
+	ListPaginateInput,
+	ListAllOutput,
+	ListPaginateOutput,
+	ListOutputItem,
 } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { ResolvedS3Config } from '../../types/options';
@@ -22,7 +19,7 @@ import {
 
 const MAX_PAGE_SIZE = 1000;
 
-type ListRequestArgs = {
+type ListInputArgs = {
 	s3Config: ResolvedS3Config;
 	listParams: ListObjectsV2Input;
 	prefix: string;
@@ -30,11 +27,9 @@ type ListRequestArgs = {
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	listRequest?:
-		| StorageListRequest<StorageListAllOptions>
-		| StorageListRequest<StorageListPaginateOptions>
-): Promise<S3ListAllResult | S3ListPaginateResult> => {
-	const { options = {}, prefix: path = '' } = listRequest ?? {};
+	input?: ListAllInput | ListPaginateInput
+): Promise<ListAllOutput | ListPaginateOutput> => {
+	const { options = {}, prefix: path = '' } = input ?? {};
 	const {
 		s3Config,
 		bucket,
@@ -55,9 +50,9 @@ const _listAll = async ({
 	s3Config,
 	listParams,
 	prefix,
-}: ListRequestArgs): Promise<S3ListAllResult> => {
+}: ListInputArgs): Promise<ListAllOutput> => {
 	// TODO(ashwinkumar6) V6-logger: pageSize and nextToken aren't required when listing all items
-	const listResult: S3ListOutputItem[] = [];
+	const listResult: ListOutputItem[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
 		const { items: pageResults, nextToken: pageNextToken } = await _list({
@@ -82,7 +77,7 @@ const _list = async ({
 	s3Config,
 	listParams,
 	prefix,
-}: ListRequestArgs): Promise<S3ListPaginateResult> => {
+}: ListInputArgs): Promise<ListPaginateOutput> => {
 	const listParamsClone = { ...listParams };
 	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;

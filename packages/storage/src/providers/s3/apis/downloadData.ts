@@ -3,19 +3,18 @@
 
 import { Amplify } from '@aws-amplify/core';
 
-import { S3TransferOptions, S3DownloadDataResult } from '../types';
+import { DownloadDataInput, DownloadDataOutput } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { StorageDownloadDataRequest, DownloadTask } from '../../../types';
 import { createDownloadTask } from '../utils';
 import { getObject } from '../utils/client';
 
 /**
  * Download S3 object data to memory
  *
- * @param {StorageDownloadDataRequest<S3TransferOptions>} downloadDataRequest The parameters that are passed to the
+ * @param {DownloadDataRequest<S3DownloadDataOptions>} input The parameters that are passed to the
  * 	downloadData operation.
- * @returns {DownloadTask<S3DownloadDataResult>} Cancelable task exposing result promise from `result` property.
+ * @returns {DownloadDataOutput} Cancelable task exposing result promise from `result` property.
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors
  *
@@ -41,13 +40,11 @@ import { getObject } from '../utils/client';
  * }
  *```
  */
-export const downloadData = (
-	downloadDataRequest: StorageDownloadDataRequest<S3TransferOptions>
-): DownloadTask<S3DownloadDataResult> => {
+export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
 	const abortController = new AbortController();
 
 	const downloadTask = createDownloadTask({
-		job: downloadDataJob(downloadDataRequest, abortController.signal),
+		job: downloadDataJob(input, abortController.signal),
 		onCancel: (abortErrorOverwrite?: Error) => {
 			abortController.abort(abortErrorOverwrite);
 		},
@@ -57,10 +54,7 @@ export const downloadData = (
 
 const downloadDataJob =
 	(
-		{
-			options: downloadDataOptions,
-			key,
-		}: StorageDownloadDataRequest<S3TransferOptions>,
+		{ options: downloadDataOptions, key }: DownloadDataInput,
 		abortSignal: AbortSignal
 	) =>
 	async () => {
