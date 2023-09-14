@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { browserOrNode } from '../Util/JS';
 import { getDefaultStorageWithFallback } from '../storage/utils';
+import { isBrowser } from '../Util/JS';
 
 export const Linking = {};
 export const AppState = {
@@ -11,6 +11,6 @@ export const AppState = {
 };
 
 // if not in react native, just use local storage
-export const AsyncStorage = browserOrNode().isBrowser
+export const AsyncStorage = isBrowser()
 	? getDefaultStorageWithFallback()
 	: undefined;

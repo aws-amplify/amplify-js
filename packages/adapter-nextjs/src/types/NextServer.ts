@@ -51,12 +51,18 @@ export namespace NextServer {
 		response: NextGetServerSidePropsContext['res'];
 	};
 
+	/**
+	 * The union of possible Next.js app server context types.
+	 */
 	export type Context =
 		| NextRequestAndNextResponseContext
 		| NextRequestAndResponseContext
 		| ServerComponentContext
 		| GetServerSidePropsContext;
 
+	/**
+	 * The interface of the input of {@link RunOperationWithContext}.
+	 */
 	export interface RunWithContextInput<OperationResult> {
 		nextServerContext: Context | null;
 		operation: (

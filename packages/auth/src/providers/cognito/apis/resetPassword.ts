@@ -6,7 +6,6 @@ import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import {
-	AuthResetPasswordStep,
 	AuthStandardAttributeKey,
 	DeliveryMedium,
 	ResetPasswordRequest,
@@ -54,7 +53,7 @@ export async function resetPassword(
 	return {
 		isPasswordReset: false,
 		nextStep: {
-			resetPasswordStep: AuthResetPasswordStep.CONFIRM_RESET_PASSWORD_WITH_CODE,
+			resetPasswordStep: 'CONFIRM_RESET_PASSWORD_WITH_CODE',
 			codeDeliveryDetails: {
 				deliveryMedium: codeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
 				destination: codeDeliveryDetails?.Destination as string,

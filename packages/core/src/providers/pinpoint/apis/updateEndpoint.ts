@@ -7,7 +7,7 @@ import {
 	updateEndpoint as clientUpdateEndpoint,
 	UpdateEndpointInput,
 } from '../../../AwsClients/Pinpoint';
-import { PinpointUpdateEndpointParameters } from '../types';
+import { PinpointUpdateEndpointInput } from '../types';
 import { cacheEndpointId, getEndpointId } from '../utils';
 
 /**
@@ -25,7 +25,7 @@ export const updateEndpoint = async ({
 	userId,
 	userProfile,
 	userAgentValue,
-}: PinpointUpdateEndpointParameters): Promise<void> => {
+}: PinpointUpdateEndpointInput): Promise<void> => {
 	const endpointId = await getEndpointId(appId, category);
 	// only generate a new endpoint id if one was not found in cache
 	const createdEndpointId = !endpointId ? uuidv4() : undefined;
