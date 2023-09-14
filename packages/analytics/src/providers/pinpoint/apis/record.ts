@@ -11,21 +11,46 @@ import {
 	assertValidationError,
 } from '../../../errors';
 import { getAnalyticsUserAgentString } from '../../../utils/userAgent';
-import { RecordParameters } from '../types/parameters';
+import { RecordInput } from '../types';
 import { resolveConfig, resolveCredentials } from '../utils';
 
 const logger = new Logger('Analytics');
 
 /**
- * Sends an event to Pinpoint.
+ * Records an Analytic event to Pinpoint. Events will be buffered and periodically sent to Pinpoint.
  *
- * @param {RecordParameters} params Parameters used to construct the request.
+ * @param {RecordInput} params The input object used to construct the request.
  *
- * @throws An {@link AnalyticsValidationErrorCode} when there is an error in the parameters or configuration.
- *
- * @returns A promise that will resolve when the request is complete.
+ * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library 
+ *  configuration is incorrect.
+ * 
+ * @example
+ * ```ts
+ * // Send an event to Pinpoint
+ * record({
+ *     event: {
+ * 	       name: eventName,
+ *     }
+ * })
+ * ```
+ * 
+ * @example
+ * ```ts
+ * // Send an event to Pinpoint with metrics & custom attributes
+ * record({
+ *     event: {
+ *         name: eventName,
+ *         attributes: {
+ *             'my-attribute': attributeValue
+ *         },
+ *         metrics: {
+ *             'my-metric': metricValue
+ *         }
+ *     }
+ * })
+ * ```
  */
-export const record = ({ event }: RecordParameters): void => {
+export const record = ({ event }: RecordInput): void => {
 	const { appId, region } = resolveConfig();
 
 	assertValidationError(!!event, AnalyticsValidationErrorCode.NoEvent);

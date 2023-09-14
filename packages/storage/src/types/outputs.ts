@@ -7,7 +7,7 @@ export type StorageItem = {
 	/**
 	 * Key of the object
 	 */
-	key?: string;
+	key: string;
 	/**
 	 * Creation date of the object.
 	 */
@@ -28,11 +28,11 @@ export type StorageItem = {
 	metadata?: Record<string, string>;
 };
 
-export type StorageDownloadDataResult<T extends StorageItem> = T & {
+export type StorageDownloadDataOutput<T extends StorageItem> = T & {
 	body: ResponseBodyMixin;
 };
 
-export type StorageGetUrlResult = {
+export type StorageGetUrlOutput = {
 	/**
 	 * presigned URL of the given object.
 	 */
@@ -43,12 +43,8 @@ export type StorageGetUrlResult = {
 	expiresAt: Date;
 };
 
-export type StorageUploadResult<Item extends StorageItem> = Item;
+export type StorageUploadOutput<Item extends StorageItem> = Item;
 
-export type StorageRemoveResult = {
-	key: string;
-};
-
-export type StorageListResult<Item extends StorageItem> = {
+export type StorageListOutput<Item extends StorageItem> = {
 	items: Item[];
 };

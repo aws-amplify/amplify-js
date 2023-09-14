@@ -5,12 +5,16 @@
 import { Credentials } from '@aws-sdk/types';
 
 import { TransferProgressEvent } from '../../../types';
-import { StorageOptions } from '../../../types/options';
+import {
+	StorageOptions,
+	StorageListAllOptions,
+	StorageListPaginateOptions,
+} from '../../../types/options';
 
 /**
- * Request options type for S3 Storage operations.
+ * Input options type for S3 Storage operations.
  */
-export type S3Options = StorageOptions & {
+export type Options = StorageOptions & {
 	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false
@@ -19,16 +23,34 @@ export type S3Options = StorageOptions & {
 };
 
 /**
- * Request options type for S3 downloadData, uploadData APIs.
+ * Input options type for S3 getProperties API.
  */
-export type S3TransferOptions = S3Options & {
-	/**
-	 * Callback function tracking the upload/download progress.
-	 */
-	onProgress?: (event: TransferProgressEvent) => void;
-};
+export type GetPropertiesOptions = Options;
 
-export type S3GetUrlOptions = S3Options & {
+/**
+ * Input options type for S3 getProperties API.
+ */
+export type RemoveOptions = Options;
+
+/**
+ * Input options type for S3 list API.
+ */
+export type ListAllOptions = StorageListAllOptions;
+
+/**
+ * Input options type for S3 list API.
+ */
+export type ListPaginateOptions = StorageListPaginateOptions;
+
+/**
+ * Input options type for S3 downloadData API.
+ */
+export type DownloadDataOptions = TransferOptions;
+
+/**
+ * Input options type for S3 getUrl API.
+ */
+export type GetUrlOptions = Options & {
 	/**
 	 * Whether to head object to make sure the object existence before downloading.
 	 * @default false
@@ -41,7 +63,7 @@ export type S3GetUrlOptions = S3Options & {
 	expiresIn?: number;
 };
 
-export type S3UploadOptions = Omit<S3TransferOptions, 'targetIdentityId'> & {
+export type UploadDataOptions = Omit<TransferOptions, 'targetIdentityId'> & {
 	/**
 	 * The default content-disposition header value of the file when downloading it.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
@@ -75,4 +97,13 @@ export type ResolvedS3Config = {
 	customEndpoint?: string;
 	forcePathStyle?: boolean;
 	useAccelerateEndpoint?: boolean;
+};
+/**
+ * Input options type for S3 downloadData, uploadData APIs.
+ */
+type TransferOptions = Options & {
+	/**
+	 * Callback function tracking the upload/download progress.
+	 */
+	onProgress?: (event: TransferProgressEvent) => void;
 };
