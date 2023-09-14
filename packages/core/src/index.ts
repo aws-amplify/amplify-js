@@ -50,13 +50,11 @@ export { UserProfile } from './types';
 
 // Storage helpers
 export {
-	StorageHelper,
-	MemoryStorage,
-	LocalStorage,
 	CookieStorage,
-	SessionStorage,
-	MemoryKeyValueStorage,
-} from './StorageHelper';
+	defaultStorage,
+	sessionStorage,
+	sharedInMemoryStorage,
+} from './storage';
 export { KeyValueStorageInterface } from './types';
 
 // Cache exports
