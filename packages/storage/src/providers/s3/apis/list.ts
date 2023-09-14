@@ -22,7 +22,7 @@ type ListApi = {
 	(input?: ListPaginateInput): Promise<ListPaginateOutput>;
 	/**
 	 * List all files from S3. You can set `listAll` to true in `options` to get all the files from S3.
-	 * @param input - The input object
+	 * @param input - The ListAllInput object.
 	 * @returns A list of keys and metadata for all objects in path
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
