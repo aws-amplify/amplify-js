@@ -429,6 +429,7 @@ tests:
   #   browser: *minimal_browser_list
 
   # AUTH
+  # TODO(v6) Migrate
   # - test_name: integ_react_auth_1_react_authenticator
   #   desc: 'React Authenticator'
   #   framework: react
@@ -436,6 +437,7 @@ tests:
   #   sample_name: [amplify-authenticator]
   #   spec: new-ui-authenticator
   #   browser: *minimal_browser_list
+  # TODO(v6) Migrate?
   # - test_name: integ_react_auth_1_guest_to_authenticated_user
   #   desc: 'Guest to Authenticated User'
   #   framework: react
@@ -450,20 +452,13 @@ tests:
     sample_name: [typescript-amplify-authentication]
     spec: functional-authentication
     browser: *minimal_browser_list
-  # - test_name: integ_react_auth_2_react_credentials_different_region
-  #   desc: 'React Credentials Different Region'
-  #   framework: react
-  #   category: auth
-  #   sample_name: [credentials-auth]
-  #   spec: credentials-auth
-  #   browser: *minimal_browser_list
-  # - test_name: integ_react_auth_2_react_authenticator
-  #   desc: 'React Custom Authenticator'
-  #   framework: react
-  #   category: auth
-  #   sample_name: [with-authenticator]
-  #   spec: new-ui-authenticator
-  #   browser: *minimal_browser_list
+  - test_name: integ_react_auth_2_react_credentials_different_region
+    desc: 'React Credentials Different Region'
+    framework: react
+    category: auth
+    sample_name: [credentials-auth]
+    spec: credentials-auth
+    browser: *minimal_browser_list
   # - test_name: integ_react_auth_2_sign_in_after_sign_up
   #   desc: 'Sign In after Sign Up'
   #   framework: react
@@ -535,6 +530,7 @@ tests:
   #   sample_name: [authenticator-vue3]
   #   spec: new-ui-authenticator
   #   browser: *minimal_browser_list
+  # TODO(v6) Migrate
   # - test_name: integ_next_auth_authenticator_and_ssr_page
   #   desc: 'Authenticator and SSR page'
   #   framework: next
@@ -542,6 +538,7 @@ tests:
   #   sample_name: [auth-ssr]
   #   spec: auth-ssr
   #   browser: *minimal_browser_list
+  # TODO(v6) Migrate
   # - test_name: integ_next_auth_authenticator_and_rsc_page
   #   desc: 'Authenticator and RSC page'
   #   framework: next
