@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
 import { CognitoAuthTokens, TokenRefresher } from '../tokenProvider/types';
 import { AuthConfig } from '@aws-amplify/core';
 import {
@@ -11,7 +12,7 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokensWithRefreshToken } from '../utils/types';
 import { AuthError } from '../../../errors/AuthError';
 
-export const CognitoUserPoolTokenRefresher: TokenRefresher = async ({
+export const refreshAuthTokens: TokenRefresher = async ({
 	tokens,
 	authConfig,
 }: {

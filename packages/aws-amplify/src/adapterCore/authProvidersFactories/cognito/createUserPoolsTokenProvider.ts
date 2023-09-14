@@ -4,7 +4,7 @@
 import {
 	DefaultTokenStore,
 	TokenOrchestrator,
-	CognitoUserPoolTokenRefresher,
+	refreshAuthTokens,
 } from '@aws-amplify/auth/cognito';
 import {
 	AuthConfig,
@@ -28,7 +28,7 @@ export const createUserPoolsTokenProvider = (
 	const tokenOrchestrator = new TokenOrchestrator();
 	tokenOrchestrator.setAuthConfig(authConfig);
 	tokenOrchestrator.setAuthTokenStore(authTokenStore);
-	tokenOrchestrator.setTokenRefresher(CognitoUserPoolTokenRefresher);
+	tokenOrchestrator.setTokenRefresher(refreshAuthTokens);
 
 	return {
 		getTokens: ({ forceRefresh } = { forceRefresh: false }) =>
