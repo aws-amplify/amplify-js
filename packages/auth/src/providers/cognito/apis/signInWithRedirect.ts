@@ -7,6 +7,7 @@ import {
 	assertOAuthConfig,
 	assertTokenProviderConfig,
 	getAmplifyUserAgent,
+	isBrowser,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
 } from '@aws-amplify/core/internals/utils';
@@ -391,7 +392,7 @@ function urlListener() {
 	});
 }
 
-urlListener();
+isBrowser() && urlListener();
 
 // This has a reference for listeners that requires to be notified, TokenOrchestrator use this for load tokens
 let resolveInflightPromise = () => {};
