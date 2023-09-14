@@ -74,7 +74,7 @@ describe('runWithAmplifyServerContext', () => {
 
 	describe('when amplifyConfig.Auth is defined', () => {
 		describe('when nextServerContext is null (opt-in unauthenticated role)', () => {
-			it('should create auth providers with MemoryKeyValueStorage', () => {
+			it('should create auth providers with sharedInMemoryStorage', () => {
 				const operation = jest.fn();
 				runWithAmplifyServerContext({ operation, nextServerContext: null });
 				expect(
