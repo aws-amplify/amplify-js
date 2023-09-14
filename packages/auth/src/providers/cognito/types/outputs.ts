@@ -2,30 +2,29 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	MFAType,
+	AuthMFAType,
 	AuthUserAttribute,
 	AuthUser,
 	AuthStandardAttributeKey,
 	AuthCodeDeliveryDetails,
-	TOTPSetupDetails,
+	AuthTOTPSetupDetails,
 	AuthSignInOutput,
 	AuthSignUpOutput,
 	AuthResetPasswordOutput,
 	AuthSignOutOutput,
 	AuthUpdateUserAttributesOutput,
 } from '../../../types';
-import { CognitoUserAttributeKey, CustomAttribute } from '../types';
+import { UserAttributeKey, CustomAttribute } from '../types';
 
 export type FetchMFAPreferenceOutput = {
-	enabled?: MFAType[];
-	preferred?: MFAType;
+	enabled?: AuthMFAType[];
+	preferred?: AuthMFAType;
 };
 
 /**
  * Output type for Cognito fetchUserAttributes API.
  */
-export type FetchUserAttributesOutput =
-	AuthUserAttribute<CognitoUserAttributeKey>;
+export type FetchUserAttributesOutput = AuthUserAttribute<UserAttributeKey>;
 
 /**
  * Output type for Cognito getCurrentUser API.
@@ -47,8 +46,7 @@ export type ConfirmSignUpOutput = AuthSignUpOutput<
 /**
  * Output type for Cognito resendSignUpCode API.
  */
-export type ResendSignUpCodeOutput =
-	AuthCodeDeliveryDetails<CognitoUserAttributeKey>;
+export type ResendSignUpCodeOutput = AuthCodeDeliveryDetails<UserAttributeKey>;
 
 /**
  * Output type for Cognito resetPassword API.
@@ -60,7 +58,7 @@ export type ResetPasswordOutput = AuthResetPasswordOutput<
 /**
  * Output type for Cognito setUpTOTP API.
  */
-export type SetUpTOTPOutput = TOTPSetupDetails;
+export type SetUpTOTPOutput = AuthTOTPSetupDetails;
 
 /**
  * Output type for Cognito signIn API.
@@ -103,4 +101,4 @@ export type SignUpOutput = AuthSignUpOutput<
  * Output type for Cognito updateUserAttributes API.
  */
 export type UpdateUserAttributesOutput =
-	AuthUpdateUserAttributesOutput<CognitoUserAttributeKey>;
+	AuthUpdateUserAttributesOutput<UserAttributeKey>;

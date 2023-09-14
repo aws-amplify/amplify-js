@@ -5,7 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { DeliveryMedium, AuthStandardAttributeKey } from '../../../types';
+import { AuthDeliveryMedium, AuthStandardAttributeKey } from '../../../types';
 import { ResetPasswordInput, ResetPasswordOutput } from '../types';
 import { forgotPassword } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
@@ -47,7 +47,8 @@ export async function resetPassword(
 		nextStep: {
 			resetPasswordStep: 'CONFIRM_RESET_PASSWORD_WITH_CODE',
 			codeDeliveryDetails: {
-				deliveryMedium: codeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
+				deliveryMedium:
+					codeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
 				destination: codeDeliveryDetails?.Destination as string,
 				attributeName:
 					codeDeliveryDetails?.AttributeName as AuthStandardAttributeKey,

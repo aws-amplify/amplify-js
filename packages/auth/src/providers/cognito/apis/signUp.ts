@@ -3,8 +3,8 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
-import { DeliveryMedium } from '../../../types';
-import { CognitoUserAttributeKey, SignUpInput, SignUpOutput } from '../types';
+import { AuthDeliveryMedium } from '../../../types';
+import { UserAttributeKey, SignUpInput, SignUpOutput } from '../types';
 import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -74,10 +74,10 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			nextStep: {
 				signUpStep: 'CONFIRM_SIGN_UP',
 				codeDeliveryDetails: {
-					deliveryMedium: CodeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
+					deliveryMedium:
+						CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
 					destination: CodeDeliveryDetails?.Destination as string,
-					attributeName:
-						CodeDeliveryDetails?.AttributeName as CognitoUserAttributeKey,
+					attributeName: CodeDeliveryDetails?.AttributeName as UserAttributeKey,
 				},
 			},
 			userId: UserSub,

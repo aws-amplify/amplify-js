@@ -7,7 +7,7 @@ import { fetchAuthSession } from '../../../';
 import {
 	AuthUserAttribute,
 	AuthUpdateUserAttributesOutput,
-	DeliveryMedium,
+	AuthDeliveryMedium,
 } from '../../../types';
 import {
 	UpdateUserAttributesInput,
@@ -81,7 +81,7 @@ function getUnConfirmedAttributes(
 					updateAttributeStep: 'CONFIRM_ATTRIBUTE_WITH_CODE',
 					codeDeliveryDetails: {
 						attributeName: AttributeName,
-						deliveryMedium: DeliveryMedium as DeliveryMedium,
+						deliveryMedium: DeliveryMedium as AuthDeliveryMedium,
 						destination: Destination,
 					},
 				},

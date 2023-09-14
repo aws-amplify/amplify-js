@@ -3,7 +3,7 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
-import { AuthStandardAttributeKey, DeliveryMedium } from '../../../types';
+import { AuthStandardAttributeKey, AuthDeliveryMedium } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { ResendSignUpCodeInput, ResendSignUpCodeOutput } from '../types';
@@ -43,7 +43,7 @@ export async function resendSignUpCode(
 	};
 	return {
 		destination: Destination as string,
-		deliveryMedium: DeliveryMedium as DeliveryMedium,
+		deliveryMedium: DeliveryMedium as AuthDeliveryMedium,
 		attributeName: AttributeName
 			? (AttributeName as AuthStandardAttributeKey)
 			: undefined,

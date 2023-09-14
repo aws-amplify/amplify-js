@@ -6,7 +6,7 @@ import {
 	ConfirmResetPasswordOptions,
 	ConfirmSignInOptions,
 	ConfirmSignUpOptions,
-	CognitoUserAttributeKey,
+	UserAttributeKey,
 	ResendSignUpCodeOptions,
 	ResetPasswordOptions,
 	SignInOptions,
@@ -56,7 +56,7 @@ export type ConfirmSignUpInput = AuthConfirmSignUpInput<ConfirmSignUpOptions>;
  * Input type for Cognito confirmUserAttribute API.
  */
 export type ConfirmUserAttributeInput =
-	AuthConfirmUserAttributeInput<CognitoUserAttributeKey>;
+	AuthConfirmUserAttributeInput<UserAttributeKey>;
 
 /**
  * Input type for Cognito resendSignUpCode API.
@@ -107,10 +107,7 @@ export type SignOutInput = AuthSignOutInput;
 /**
  * Input type for Cognito signUp API.
  */
-export type SignUpInput = AuthSignUpInput<
-	CognitoUserAttributeKey,
-	SignUpOptions
->;
+export type SignUpInput = AuthSignUpInput<UserAttributeKey, SignUpOptions>;
 
 /**
  * Input type for Cognito updateMFAPreference API.
@@ -129,7 +126,7 @@ export type UpdatePasswordInput = AuthUpdatePasswordInput;
  * Input type for Cognito updateUserAttributes API.
  */
 export type UpdateUserAttributesInput = AuthUpdateUserAttributesInput<
-	CognitoUserAttributeKey,
+	UserAttributeKey,
 	UpdateUserAttributesOptions
 >;
 

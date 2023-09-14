@@ -14,16 +14,16 @@ import BigInteger from './srp/BigInteger';
 
 import { ClientMetadata, ConfirmSignInOptions } from '../types';
 import {
-	AdditionalInfo,
+	AuthAdditionalInfo,
 	AuthSignInOutput,
-	DeliveryMedium,
+	AuthDeliveryMedium,
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
 import {
 	AuthUserAttribute,
-	MFAType,
-	TOTPSetupDetails,
+	AuthMFAType,
+	AuthTOTPSetupDetails,
 } from '../../../types/models';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -385,7 +385,7 @@ export async function getSignInResult(params: {
 				isSignedIn: false,
 				nextStep: {
 					signInStep: 'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
-					additionalInfo: challengeParameters as AdditionalInfo,
+					additionalInfo: challengeParameters as AuthAdditionalInfo,
 				},
 			};
 		case 'MFA_SETUP':
@@ -443,7 +443,7 @@ export async function getSignInResult(params: {
 					signInStep: 'CONFIRM_SIGN_IN_WITH_SMS_CODE',
 					codeDeliveryDetails: {
 						deliveryMedium:
-							challengeParameters.CODE_DELIVERY_DELIVERY_MEDIUM as DeliveryMedium,
+							challengeParameters.CODE_DELIVERY_DELIVERY_MEDIUM as AuthDeliveryMedium,
 						destination: challengeParameters.CODE_DELIVERY_DESTINATION,
 					},
 				},
@@ -476,7 +476,7 @@ export async function getSignInResult(params: {
 export function getTOTPSetupDetails(
 	secretCode: string,
 	username?: string
-): TOTPSetupDetails {
+): AuthTOTPSetupDetails {
 	return {
 		sharedSecret: secretCode,
 		getSetupUri: (appName, accountName) => {
@@ -606,15 +606,15 @@ export function mapMfaType(mfa: string): CognitoMFAType {
 	return mfaType;
 }
 
-export function getMFAType(type?: string): MFAType | undefined {
+export function getMFAType(type?: string): AuthMFAType | undefined {
 	if (type === 'SMS_MFA') return 'SMS';
 	if (type === 'SOFTWARE_TOKEN_MFA') return 'TOTP';
 	// TODO: log warning for unknown MFA type
 }
 
-export function getMFATypes(types?: string[]): MFAType[] | undefined {
+export function getMFATypes(types?: string[]): AuthMFAType[] | undefined {
 	if (!types) return undefined;
-	return types.map(getMFAType).filter(Boolean) as MFAType[];
+	return types.map(getMFAType).filter(Boolean) as AuthMFAType[];
 }
 export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 	if (!mfa) return [];
@@ -623,7 +623,7 @@ export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 
 export function isMFATypeEnabled(
 	challengeParams: ChallengeParameters,
-	mfaType: MFAType
+	mfaType: AuthMFAType
 ): boolean {
 	const { MFAS_CAN_SETUP } = challengeParams;
 	const mfaTypes = getMFATypes(parseMFATypes(MFAS_CAN_SETUP));

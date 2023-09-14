@@ -5,7 +5,7 @@ export {
 	CustomAttribute,
 	ValidationData,
 	AuthFlowType,
-	CognitoUserAttributeKey,
+	UserAttributeKey,
 	MFAPreference,
 } from './models';
 
