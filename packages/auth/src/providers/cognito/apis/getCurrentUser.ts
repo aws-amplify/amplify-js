@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { AuthUser, GetCurrentUserRequest } from '../../../types';
+import { AuthUser } from '../../../types';
 import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentUser';
 
 /**
@@ -16,8 +16,6 @@ import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentU
  *
  * @returns AuthUser
  */
-export const getCurrentUser = async (
-	getCurrentUserRequest?: GetCurrentUserRequest
-): Promise<AuthUser> => {
-	return getCurrentUserInternal(Amplify, getCurrentUserRequest);
+export const getCurrentUser = async (): Promise<AuthUser> => {
+	return getCurrentUserInternal(Amplify);
 };
