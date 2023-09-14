@@ -20,6 +20,46 @@ export { signInWithRedirect } from './apis/signInWithRedirect';
 export { fetchUserAttributes } from './apis/fetchUserAttributes';
 export { signOut } from './apis/signOut';
 export {
+	GetCurrentUserInput,
+	ConfirmResetPasswordInput,
+	ConfirmSignInInput,
+	ConfirmSignUpInput,
+	ConfirmUserAttributeInput,
+	ResendSignUpCodeInput,
+	ResetPasswordInput,
+	SignInInput,
+	SignInWithCustomAuthInput,
+	SignInWithCustomSRPAuthInput,
+	SignInWithSRPInput,
+	SignInWithUserPasswordInput,
+	SignInWithRedirectInput,
+	SignOutInput,
+	SignUpInput,
+	UpdateMFAPreferenceInput,
+	UpdatePasswordInput,
+	UpdateUserAttributesInput,
+	VerifyTOTPSetupInput,
+} from './types/inputs';
+
+export {
+	FetchUserAttributesOutput,
+	GetCurrentUserOutput,
+	ConfirmSignInOutput,
+	ConfirmSignUpOutput,
+	FetchMFAPreferenceOutput,
+	ResendSignUpCodeOutput,
+	ResetPasswordOutput,
+	SetUpTOTPOutput,
+	SignInOutput,
+	SignInWithCustomAuthOutput,
+	SignInWithSRPOutput,
+	SignInWithUserPasswordOutput,
+	SignInWithCustomSRPAuthOutput,
+	SignOutOutput,
+	SignUpOutput,
+	UpdateUserAttributesOutput,
+} from './types/outputs';
+export {
 	cognitoCredentialsProvider,
 	CognitoAWSCredentialsAndIdentityIdProvider,
 	DefaultIdentityIdStore,
