@@ -6,17 +6,17 @@ import {
 	assertTokenProviderConfig,
 	fetchAuthSession,
 } from '@aws-amplify/core/internals/utils';
-import { GetCurrentUserRequest, AuthUser } from '../../../../types';
+import { GetCurrentUserInput, GetCurrentUserOutput } from '../../types';
 import { assertAuthTokens } from '../../utils/types';
 
 export const getCurrentUser = async (
 	amplify: AmplifyClassV6,
-	getCurrentUserRequest?: GetCurrentUserRequest
-): Promise<AuthUser> => {
+	input?: GetCurrentUserInput
+): Promise<GetCurrentUserOutput> => {
 	const authConfig = amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession(amplify, {
-		forceRefresh: getCurrentUserRequest?.recache ?? false,
+		forceRefresh: input?.recache ?? false,
 	});
 	assertAuthTokens(tokens);
 	const { 'cognito:username': username, sub } = tokens.idToken?.payload ?? {};

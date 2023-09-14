@@ -9,35 +9,31 @@ import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
-import { AuthSignInResult, SignInRequest } from '../../../types';
-import { CognitoSignInOptions } from '../types';
+import { SignInInput, SignInOutput } from '../types';
 /**
  * Signs a user in
  *
- * @param signInRequest - The SignInRequest object
- * @returns AuthSignInResult
+ * @param input -  The SignInInput object
+ * @returns SignInOutput
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException }
  *  - Cognito service errors thrown during the sign-in process.
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signIn(
-	signInRequest: SignInRequest<CognitoSignInOptions>
-): Promise<AuthSignInResult> {
-	const authFlowType = signInRequest.options?.serviceOptions?.authFlowType;
+export async function signIn(input: SignInInput): Promise<SignInOutput> {
+	const authFlowType = input.options?.serviceOptions?.authFlowType;
 
 	switch (authFlowType) {
 		case 'USER_SRP_AUTH':
-			return signInWithSRP(signInRequest);
+			return signInWithSRP(input);
 		case 'USER_PASSWORD_AUTH':
-			return signInWithUserPassword(signInRequest);
+			return signInWithUserPassword(input);
 		case 'CUSTOM_WITHOUT_SRP':
-			return signInWithCustomAuth(signInRequest);
+			return signInWithCustomAuth(input);
 		case 'CUSTOM_WITH_SRP':
-			return signInWithCustomSRPAuth(signInRequest);
+			return signInWithCustomSRPAuth(input);
 		default:
-			return signInWithSRP(signInRequest);
+			return signInWithSRP(input);
 	}
 }

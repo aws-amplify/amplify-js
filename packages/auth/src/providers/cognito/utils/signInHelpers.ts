@@ -12,10 +12,10 @@ import {
 import AuthenticationHelper from './srp/AuthenticationHelper';
 import BigInteger from './srp/BigInteger';
 
-import { ClientMetadata, CognitoConfirmSignInOptions } from '../types';
+import { ClientMetadata, ConfirmSignInOptions } from '../types';
 import {
 	AdditionalInfo,
-	AuthSignInResult,
+	AuthSignInOutput,
 	AuthSignInStep,
 	DeliveryMedium,
 } from '../../../types';
@@ -375,7 +375,7 @@ export async function handlePasswordVerifierChallenge(
 export async function getSignInResult(params: {
 	challengeName: ChallengeName;
 	challengeParameters: ChallengeParameters;
-}): Promise<AuthSignInResult> {
+}): Promise<AuthSignInOutput> {
 	const { challengeName, challengeParameters } = params;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -492,7 +492,7 @@ export function getTOTPSetupDetails(
 
 export function getSignInResultFromError(
 	errorName: string
-): AuthSignInResult | undefined {
+): AuthSignInOutput | undefined {
 	if (errorName === InitiateAuthException.PasswordResetRequiredException) {
 		return {
 			isSignedIn: false,
@@ -535,7 +535,7 @@ export async function handleChallengeName(
 	challengeResponse: string,
 	config: CognitoUserPoolConfig,
 	clientMetadata?: ClientMetadata,
-	options?: CognitoConfirmSignInOptions
+	options?: ConfirmSignInOptions
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const userAttributes = options?.userAttributes;
 	const deviceName = options?.friendlyDeviceName;

@@ -10,17 +10,54 @@ export {
 } from './models';
 
 export {
-	CognitoConfirmResetPasswordOptions,
-	CognitoSignUpOptions,
-	CognitoResetPasswordOptions,
-	CognitoSignInOptions,
-	CognitoResendSignUpCodeOptions,
-	CognitoConfirmSignUpOptions,
-	CognitoConfirmSignInOptions,
-	CognitoUpdateUserAttributesOptions,
-	CognitoVerifyTOTPSetupOptions,
+	ConfirmResetPasswordOptions,
+	SignUpOptions,
+	ResetPasswordOptions,
+	SignInOptions,
+	ResendSignUpCodeOptions,
+	ConfirmSignUpOptions,
+	ConfirmSignInOptions,
+	UpdateUserAttributesOptions,
+	VerifyTOTPSetupOptions,
 } from './options';
 
-export { UpdateMFAPreferenceRequest } from './inputs';
+export {
+	GetCurrentUserInput,
+	ConfirmResetPasswordInput,
+	ConfirmSignInInput,
+	ConfirmSignUpInput,
+	ConfirmUserAttributeInput,
+	ResendSignUpCodeInput,
+	ResetPasswordInput,
+	SignInInput,
+	SignInWithCustomAuthInput,
+	SignInWithCustomSRPAuthInput,
+	SignInWithSRPInput,
+	SignInWithUserPasswordInput,
+	SignInWithRedirectInput,
+	SignOutInput,
+	SignUpInput,
+	UpdateMFAPreferenceInput,
+	UpdatePasswordInput,
+	UpdateUserAttributesInput,
+	VerifyTOTPSetupInput,
+} from './inputs';
 
-export { FetchMFAPreferenceResult } from './outputs';
+export {
+	FetchUserAttributesOutput,
+	GetCurrentUserOutput,
+	ConfirmSignInOutput,
+	ConfirmSignUpOutput,
+	FetchMFAPreferenceOutput,
+	ResendSignUpCodeOutput,
+	ResetPasswordOutput,
+	SetUpTOTPOutput,
+	SignInOutput,
+	SignInWithCustomAuthOutput,
+	SignInWithSRPOutput,
+	SignInWithUserPasswordOutput,
+	SignInWithCustomSRPAuthOutput,
+	SignOutOutput,
+	SignUpOutput,
+	UpdateUserAttributesOutput,
+} from './outputs';

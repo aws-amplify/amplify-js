@@ -3,18 +3,8 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
-import {
-	AuthSignUpResult,
-	AuthSignUpStep,
-	AuthStandardAttributeKey,
-	DeliveryMedium,
-	SignUpRequest,
-} from '../../../types';
-import {
-	CognitoSignUpOptions,
-	CustomAttribute,
-	CognitoUserAttributeKey,
-} from '../types';
+import { AuthSignUpStep, DeliveryMedium } from '../../../types';
+import { CognitoUserAttributeKey, SignUpInput, SignUpOutput } from '../types';
 import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -26,21 +16,17 @@ import { toAttributeType } from '../utils/apiHelpers';
 /**
  * Creates a user
  *
- * @param signUpRequest - The SignUpRequest object
- * @returns AuthSignUpResult
+ * @param input - The SignUpInput object
+ * @returns SignUpOutput
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
  * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
  *  are not defined.
- *
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signUp(
-	signUpRequest: SignUpRequest<CognitoUserAttributeKey, CognitoSignUpOptions>
-): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
-	const { username, password, options } = signUpRequest;
+export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
+	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	const clientMetadata = signUpRequest.options?.serviceOptions?.clientMetadata;
+	const clientMetadata = input.options?.serviceOptions?.clientMetadata;
 	assertTokenProviderConfig(authConfig);
 	assertValidationError(
 		!!username,
