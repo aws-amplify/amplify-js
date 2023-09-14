@@ -7,8 +7,7 @@ import {
 	LocalStorage,
 	clearCredentials,
 } from '@aws-amplify/core';
-import { SignOutRequest } from '../../../types/requests';
-import { AuthSignOutResult } from '../../../types/results';
+import { SignOutInput, SignOutOutput } from '../types';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { tokenOrchestrator } from '../tokenProvider';
 import {
@@ -31,18 +30,15 @@ const SELF = '_self';
 /**
  * Signs a user out
  *
- * @param signOutRequest - The SignOutRequest object
- * @returns AuthSignOutResult
- *
+ * @param input - The SignOutInput object
+ * @returns SignOutOutput
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signOut(
-	signOutRequest?: SignOutRequest
-): Promise<AuthSignOutResult> {
+export async function signOut(input?: SignOutInput): Promise<SignOutOutput> {
 	const cognitoConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(cognitoConfig);
 
-	if (signOutRequest?.global) {
+	if (input?.global) {
 		return globalSignOut(cognitoConfig);
 	} else {
 		return clientSignOut(cognitoConfig);
