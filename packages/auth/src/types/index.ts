@@ -51,7 +51,8 @@ export {
 export {
 	AuthSignUpResult,
 	AuthSignInResult,
+	AuthSignOutResult,
 	ResetPasswordResult,
 	UpdateUserAttributeResult,
 	UpdateUserAttributesResult,
-} from './results';
+} from './outputs';
