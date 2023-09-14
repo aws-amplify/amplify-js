@@ -21,4 +21,4 @@ export {
 	CognitoVerifyTOTPSetupOptions,
 } from './options';
 
-export { UpdateMFAPreferenceRequest } from './requests';
+export { UpdateMFAPreferenceRequest } from './inputs';
