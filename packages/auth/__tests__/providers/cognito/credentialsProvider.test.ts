@@ -10,9 +10,9 @@ import { AuthError } from '../../../src/errors/AuthError';
 import {
 	GetCredentialsForIdentityInput,
 	GetCredentialsForIdentityOutput,
-	MemoryKeyValueStorage,
 	ResourcesConfig,
 	getCredentialsForIdentity,
+	sharedInMemoryStorage,
 } from '@aws-amplify/core';
 
 jest.mock('@aws-amplify/core', () => ({
@@ -20,7 +20,7 @@ jest.mock('@aws-amplify/core', () => ({
 	getCredentialsForIdentity: jest.fn(),
 }));
 
-jest.mock('@aws-amplify/core/lib/AwsClients/CognitoIdentity');
+jest.mock('@aws-amplify/core/lib/awsClients/cognitoIdentity');
 
 jest.mock(
 	'./../../../src/providers/cognito/credentialsProvider/IdentityIdProvider',
@@ -73,7 +73,7 @@ describe('Guest Credentials', () => {
 		beforeEach(() => {
 			cognitoCredentialsProvider =
 				new CognitoAWSCredentialsAndIdentityIdProvider(
-					new DefaultIdentityIdStore(MemoryKeyValueStorage)
+					new DefaultIdentityIdStore(sharedInMemoryStorage)
 				);
 			credentialsForIdentityIdSpy.mockImplementationOnce(
 				async ({}, params: GetCredentialsForIdentityInput) => {
@@ -125,7 +125,7 @@ describe('Guest Credentials', () => {
 		beforeEach(() => {
 			cognitoCredentialsProvider =
 				new CognitoAWSCredentialsAndIdentityIdProvider(
-					new DefaultIdentityIdStore(MemoryKeyValueStorage)
+					new DefaultIdentityIdStore(sharedInMemoryStorage)
 				);
 			credentialsForIdentityIdSpy.mockImplementationOnce(
 				async ({}, params: GetCredentialsForIdentityInput) => {
@@ -164,7 +164,7 @@ describe('Primary Credentials', () => {
 		beforeEach(() => {
 			cognitoCredentialsProvider =
 				new CognitoAWSCredentialsAndIdentityIdProvider(
-					new DefaultIdentityIdStore(MemoryKeyValueStorage)
+					new DefaultIdentityIdStore(sharedInMemoryStorage)
 				);
 			credentialsForIdentityIdSpy.mockImplementation(
 				async ({}, params: GetCredentialsForIdentityInput) => {
@@ -245,7 +245,7 @@ describe('Primary Credentials', () => {
 		beforeEach(() => {
 			cognitoCredentialsProvider =
 				new CognitoAWSCredentialsAndIdentityIdProvider(
-					new DefaultIdentityIdStore(MemoryKeyValueStorage)
+					new DefaultIdentityIdStore(sharedInMemoryStorage)
 				);
 		});
 		afterEach(() => {
