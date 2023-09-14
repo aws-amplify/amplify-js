@@ -6,7 +6,7 @@ import {
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 } from '@aws-amplify/core';
-import { PubSubContent } from '../../../api-graphql/src/types/PubSub';
+import { PubSubContent } from '../types/PubSub';
 
 const logger = new Logger('AbstractPubSubProvider');
 
