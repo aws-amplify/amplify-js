@@ -13,7 +13,7 @@ export const fetchTransferHandler: TransferHandler<
 	HttpRequest,
 	HttpResponse,
 	HttpTransferOptions
-> = async ({ url, method, headers, body }, { abortSignal }) => {
+> = async ({ url, method, headers, body }, { abortSignal, cache }) => {
 	let resp: Response;
 	try {
 		resp = await fetch(url, {
@@ -21,6 +21,7 @@ export const fetchTransferHandler: TransferHandler<
 			headers,
 			body: shouldSendBody(method) ? body : undefined,
 			signal: abortSignal,
+			cache,
 		});
 	} catch (e) {
 		// TODO: needs to revise error handling in v6

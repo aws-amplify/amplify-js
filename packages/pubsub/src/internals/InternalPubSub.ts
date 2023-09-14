@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	Amplify,
-	browserOrNode,
 	Category,
 	ConsoleLogger as Logger,
 	CustomUserAgentDetails,
@@ -14,7 +13,6 @@ import { AWSAppSyncRealTimeProvider } from '../Providers';
 import { PubSubContent } from '../types/PubSub';
 import Observable from 'zen-observable-ts';
 
-const { isNode } = browserOrNode();
 const logger = new Logger('PubSub');
 
 type PubSubObservable = {
@@ -144,12 +142,6 @@ export class InternalPubSubClass {
 		options?: ProviderOptions,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<PubSubObservable> {
-		if (isNode && this._options && this._options.ssr) {
-			throw new Error(
-				'Subscriptions are not supported for Server-Side Rendering (SSR)'
-			);
-		}
-
 		logger.debug('subscribe options', options);
 
 		const providers = this.getProviders(options);
