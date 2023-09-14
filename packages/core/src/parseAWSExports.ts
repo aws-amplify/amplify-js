@@ -6,7 +6,7 @@ import { ResourcesConfig } from './singleton/types';
 const authTypeMapping: Record<any, any> = {
 	API_KEY: 'apiKey',
 	AWS_IAM: 'iam',
-	COGNITO_USERPOOLS: 'jwt',
+	AMAZON_COGNITO_USER_POOLS: 'jwt',
 };
 
 /**
