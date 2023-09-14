@@ -1,19 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Auth } from '@aws-amplify/auth';
+import { Hub, HubCapsule, Cache, fetchAuthSession } from '@aws-amplify/core';
 import {
 	Category,
-	ConsoleLogger as Logger,
+	Logger,
 	CustomUserAgentDetails,
 	DataStoreAction,
-	Hub,
-	HubCapsule,
 	BackgroundProcessManager,
-	Cache
-} from '@aws-amplify/core';
-import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
+	GraphQLAuthModeKeys,
+} from '@aws-amplify/core/internals/utils';
+
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import {
 	InternalSchema,
@@ -45,6 +43,8 @@ import {
 import { ModelPredicateCreator } from '../../predicates';
 import { validatePredicate } from '../../util';
 import { getSubscriptionErrorType } from './errorMaps';
+import { JwtPayload } from '@aws-amplify/core/internals/utils';
+import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/api-graphql';
 
 const logger = new Logger('DataStore');
 
@@ -59,7 +59,7 @@ export enum USER_CREDENTIALS {
 }
 
 type AuthorizationInfo = {
-	authMode: GRAPHQL_AUTH_MODE;
+	authMode: GraphQLAuthModeKeys;
 	isOwner: boolean;
 	ownerField?: string;
 	ownerValue?: string;
@@ -86,9 +86,7 @@ class SubscriptionProcessor {
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
 		private readonly amplifyContext: AmplifyContext = {
-			Auth,
 			InternalAPI,
-			Cache,
 		}
 	) {}
 
@@ -97,15 +95,14 @@ class SubscriptionProcessor {
 		model: SchemaModel,
 		transformerMutationType: TransformerMutationType,
 		userCredentials: USER_CREDENTIALS,
-		cognitoTokenPayload: { [field: string]: any } | undefined,
-		oidcTokenPayload: { [field: string]: any } | undefined,
-		authMode: GRAPHQL_AUTH_MODE,
+		oidcTokenPayload: JwtPayload | undefined,
+		authMode: GraphQLAuthModeKeys,
 		filterArg: boolean = false
 	): {
 		opType: TransformerMutationType;
 		opName: string;
 		query: string;
-		authMode: GRAPHQL_AUTH_MODE;
+		authMode: GraphQLAuthModeKeys;
 		isOwner: boolean;
 		ownerField?: string;
 		ownerValue?: string;
@@ -116,7 +113,6 @@ class SubscriptionProcessor {
 				model,
 				userCredentials,
 				aws_appsync_authenticationType,
-				cognitoTokenPayload,
 				oidcTokenPayload,
 				authMode
 			) || {};
@@ -135,16 +131,15 @@ class SubscriptionProcessor {
 	private getAuthorizationInfo(
 		model: SchemaModel,
 		userCredentials: USER_CREDENTIALS,
-		defaultAuthType: GRAPHQL_AUTH_MODE,
-		cognitoTokenPayload: { [field: string]: any } = {},
-		oidcTokenPayload: { [field: string]: any } = {},
-		authMode: GRAPHQL_AUTH_MODE
+		defaultAuthType: GraphQLAuthModeKeys,
+		oidcTokenPayload: JwtPayload | undefined,
+		authMode: GraphQLAuthModeKeys
 	): AuthorizationInfo {
 		const rules = getAuthorizationRules(model);
 
 		// Return null if user doesn't have proper credentials for private API with IAM auth
 		const iamPrivateAuth =
-			authMode === GRAPHQL_AUTH_MODE.AWS_IAM &&
+			authMode === GraphQLAuthModeKeys.iam &&
 			rules.find(
 				rule => rule.authStrategy === 'private' && rule.provider === 'iam'
 			);
@@ -164,22 +159,19 @@ class SubscriptionProcessor {
 		);
 
 		const validGroup =
-			(authMode === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS ||
-				authMode === GRAPHQL_AUTH_MODE.OPENID_CONNECT) &&
+			authMode === GraphQLAuthModeKeys.jwt &&
 			groupAuthRules.find(groupAuthRule => {
 				// validate token against groupClaim
-				const cognitoUserGroups = getUserGroupsFromToken(
-					cognitoTokenPayload,
-					groupAuthRule
-				);
-				const oidcUserGroups = getUserGroupsFromToken(
-					oidcTokenPayload,
-					groupAuthRule
-				);
+				if (oidcTokenPayload) {
+					const oidcUserGroups = getUserGroupsFromToken(
+						oidcTokenPayload,
+						groupAuthRule
+					);
 
-				return [...cognitoUserGroups, ...oidcUserGroups].find(userGroup => {
-					return groupAuthRule.groups.find(group => group === userGroup);
-				});
+					return [...oidcUserGroups].find(userGroup => {
+						return groupAuthRule.groups.find(group => group === userGroup);
+					});
+				}
 			});
 
 		if (validGroup) {
@@ -193,7 +185,7 @@ class SubscriptionProcessor {
 		// the correct parameters so we are getting the owner value from the Cognito token via the
 		// identityClaim from the auth rule.
 		const cognitoOwnerAuthRules =
-			authMode === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+			authMode === GraphQLAuthModeKeys.jwt
 				? rules.filter(
 						rule =>
 							rule.authStrategy === 'owner' && rule.provider === 'userPools'
@@ -201,26 +193,6 @@ class SubscriptionProcessor {
 				: [];
 
 		let ownerAuthInfo: AuthorizationInfo;
-		cognitoOwnerAuthRules.forEach(ownerAuthRule => {
-			const ownerValue = cognitoTokenPayload[ownerAuthRule.identityClaim];
-
-			// AuthZ for "list of owners" is handled dynamically in the subscription auth request
-			// resolver. It doesn't rely on a subscription arg.
-			// Only pass a subscription arg for single owner auth
-			const singleOwner =
-				model.fields[ownerAuthRule.ownerField]?.isArray !== true;
-			const isOwnerArgRequired =
-				singleOwner && !ownerAuthRule.areSubscriptionsPublic;
-
-			if (ownerValue) {
-				ownerAuthInfo = {
-					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-					isOwner: isOwnerArgRequired,
-					ownerField: ownerAuthRule.ownerField,
-					ownerValue,
-				};
-			}
-		});
 
 		if (ownerAuthInfo!) {
 			return ownerAuthInfo!;
@@ -230,27 +202,29 @@ class SubscriptionProcessor {
 		// the correct parameters so we are getting the owner value from the OIDC token via the
 		// identityClaim from the auth rule.
 		const oidcOwnerAuthRules =
-			authMode === GRAPHQL_AUTH_MODE.OPENID_CONNECT
+			authMode === GraphQLAuthModeKeys.jwt
 				? rules.filter(
 						rule => rule.authStrategy === 'owner' && rule.provider === 'oidc'
 				  )
 				: [];
 
 		oidcOwnerAuthRules.forEach(ownerAuthRule => {
-			const ownerValue = oidcTokenPayload[ownerAuthRule.identityClaim];
+			if (oidcTokenPayload) {
+				const ownerValue = oidcTokenPayload[ownerAuthRule.identityClaim];
 
-			const singleOwner =
-				model.fields[ownerAuthRule.ownerField]?.isArray !== true;
-			const isOwnerArgRequired =
-				singleOwner && !ownerAuthRule.areSubscriptionsPublic;
+				const singleOwner =
+					model.fields[ownerAuthRule.ownerField]?.isArray !== true;
+				const isOwnerArgRequired =
+					singleOwner && !ownerAuthRule.areSubscriptionsPublic;
 
-			if (ownerValue) {
-				ownerAuthInfo = {
-					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-					isOwner: isOwnerArgRequired,
-					ownerField: ownerAuthRule.ownerField,
-					ownerValue,
-				};
+				if (typeof ownerValue === 'string') {
+					ownerAuthInfo = {
+						authMode: GraphQLAuthModeKeys.jwt,
+						isOwner: isOwnerArgRequired,
+						ownerField: ownerAuthRule.ownerField,
+						ownerValue,
+					};
+				}
 			}
 		});
 
@@ -265,7 +239,10 @@ class SubscriptionProcessor {
 		};
 	}
 
-	private hubQueryCompletionListener(completed: Function, capsule: HubCapsule) {
+	private hubQueryCompletionListener(
+		completed: Function,
+		capsule: HubCapsule<'datastore', { event: string }>
+	) {
 		const {
 			payload: { event },
 		} = capsule;
@@ -294,15 +271,13 @@ class SubscriptionProcessor {
 					[TransformerMutationType.DELETE]: ZenObservable.Subscription[];
 				};
 			} = {};
-			let cognitoTokenPayload: { [field: string]: any },
-				oidcTokenPayload: { [field: string]: any };
+			let oidcTokenPayload: JwtPayload | undefined;
 			let userCredentials = USER_CREDENTIALS.none;
 			this.runningProcesses.add(async () => {
 				try {
 					// retrieving current AWS Credentials
-					const credentials =
-						await this.amplifyContext.Auth.currentCredentials();
-					userCredentials = credentials.authenticated
+					const credentials = (await fetchAuthSession()).tokens?.accessToken;
+					userCredentials = credentials
 						? USER_CREDENTIALS.auth
 						: USER_CREDENTIALS.unauth;
 				} catch (err) {
@@ -311,45 +286,10 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
-					const session = await this.amplifyContext.Auth.currentSession();
-					cognitoTokenPayload = session.getIdToken().decodePayload();
+					const session = await await fetchAuthSession();
+					oidcTokenPayload = session.tokens?.idToken?.payload;
 				} catch (err) {
 					// best effort to get jwt from Cognito
-				}
-
-				try {
-					// Checking for the Cognito region in config to see if Auth is configured
-					// before attempting to get federated token. We're using the Cognito region
-					// because it will be there regardless of user/identity pool being present.
-					const { aws_cognito_region, Auth: AuthConfig } = this.amplifyConfig;
-					if (!aws_cognito_region || (AuthConfig && !AuthConfig.region)) {
-						throw 'Auth is not configured';
-					}
-
-					let token;
-					// backwards compatibility
-					const federatedInfo = await this.amplifyContext.Cache.getItem(
-						'federatedInfo'
-					);
-					if (federatedInfo) {
-						token = federatedInfo.token;
-					} else {
-						const currentUser =
-							await this.amplifyContext.Auth.currentAuthenticatedUser();
-						if (currentUser) {
-							token = currentUser.token;
-						}
-					}
-
-					if (token) {
-						const payload = token.split('.')[1];
-						oidcTokenPayload = JSON.parse(
-							Buffer.from(payload, 'base64').toString('utf8')
-						);
-					}
-				} catch (err) {
-					logger.debug('error getting OIDC JWT', err);
-					// best effort to get oidc jwt
 				}
 
 				Object.values(this.schema.namespaces).forEach(namespace => {
@@ -418,7 +358,6 @@ class SubscriptionProcessor {
 											modelDefinition,
 											operation,
 											userCredentials,
-											cognitoTokenPayload,
 											oidcTokenPayload,
 											readAuthModes[operationAuthModeAttempts[operation]],
 											addFilter
@@ -473,7 +412,7 @@ class SubscriptionProcessor {
 											customUserAgentDetails
 										));
 
-										let subscriptionReadyCallback: () => void;
+										let subscriptionReadyCallback: (param?: unknown) => void;
 
 										// TODO: consider onTerminate.then(() => API.cancel(...))
 
@@ -668,7 +607,7 @@ class SubscriptionProcessor {
 													);
 													Hub.listen('api', boundFunction);
 												});
-												Hub.remove('api', boundFunction);
+												// Hub.remove('api', boundFunction);
 											})()
 										);
 									};

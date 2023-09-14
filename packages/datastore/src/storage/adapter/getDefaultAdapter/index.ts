@@ -1,10 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { browserOrNode, isWebWorker } from '@aws-amplify/core';
 import { Adapter } from '..';
 import IndexedDBAdapter from '../IndexedDBAdapter';
 import AsyncStorageAdapter from '../AsyncStorageAdapter';
-
+import { browserOrNode, isWebWorker } from '@aws-amplify/core/internals/utils';
 const getDefaultAdapter: () => Adapter = () => {
 	const { isBrowser } = browserOrNode();
 

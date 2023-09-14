@@ -1,14 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Auth } from '@aws-amplify/auth';
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	Hub,
-	BackgroundProcessManager,
-	Cache,
-} from '@aws-amplify/core';
+import { Amplify, Hub, Cache } from '@aws-amplify/core';
+
 import {
 	Draft,
 	immerable,
@@ -109,6 +103,11 @@ import {
 } from '../predicates/next';
 import { getIdentifierValue } from '../sync/utils';
 import DataStoreConnectivity from '../sync/datastoreConnectivity';
+import {
+	BackgroundProcessManager,
+	Logger,
+	browserOrNode,
+} from '@aws-amplify/core/internals/utils';
 
 setAutoFreeze(true);
 enablePatches();
@@ -1381,7 +1380,6 @@ enum DataStoreState {
 // https://github.com/aws-amplify/amplify-js/pull/10477/files#r1007363485
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
-	private Auth = Auth;
 	private InternalAPI = InternalAPI;
 	private Cache = Cache;
 
@@ -1412,9 +1410,7 @@ class DataStore {
 	private storageAdapter!: Adapter;
 	// object that gets passed to descendent classes. Allows us to pass these down by reference
 	private amplifyContext: AmplifyContext = {
-		Auth: this.Auth,
 		InternalAPI: this.InternalAPI,
-		Cache: this.Cache,
 	};
 	private connectivityMonitor?: DataStoreConnectivity;
 
@@ -2421,10 +2417,10 @@ class DataStore {
 					data?.model?.name === model.name
 				) {
 					generateAndEmitSnapshot();
-					Hub.remove('datastore', hubCallback);
+					hubRemove();
 				}
 			};
-			Hub.listen('datastore', hubCallback);
+			const hubRemove = Hub.listen('datastore', hubCallback);
 
 			return this.runningProcesses.addCleaner(async () => {
 				if (handle) {
@@ -2435,9 +2431,7 @@ class DataStore {
 	};
 
 	configure = (config: DataStoreConfig = {}) => {
-		this.amplifyContext.Auth = this.Auth;
 		this.amplifyContext.InternalAPI = this.InternalAPI;
-		this.amplifyContext.Cache = this.Cache;
 
 		const {
 			DataStore: configDataStore,
@@ -2747,6 +2741,5 @@ class DataStore {
 }
 
 const instance = new DataStore();
-Amplify.register(instance);
 
 export { DataStore as DataStoreClass, initSchema, instance as DataStore };

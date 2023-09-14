@@ -1,15 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	ConsoleLogger as Logger,
+	browserOrNode,
+	Logger,
 	BackgroundProcessManager,
-	Hub,
-} from '@aws-amplify/core';
-import {
-	CONTROL_MSG as PUBSUB_CONTROL_MSG,
-	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
-	ConnectionState,
-} from '@aws-amplify/pubsub';
+} from '@aws-amplify/core/internals/utils';
+import { Hub } from '@aws-amplify/core';
+
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
@@ -52,6 +49,16 @@ import {
 	TransformerMutationType,
 } from './utils';
 
+<<<<<<< HEAD
+=======
+import {
+	CONTROL_MSG as PUBSUB_CONTROL_MSG,
+	ConnectionState,
+	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
+} from '@aws-amplify/api-graphql';
+
+const { isNode } = browserOrNode();
+>>>>>>> c8ffa4ce8 (wip datastore changes)
 const logger = new Logger('DataStore');
 
 const ownSymbol = Symbol('sync');

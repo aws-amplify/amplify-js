@@ -10,7 +10,9 @@
 		"packages/adapter-nextjs",
 		"packages/api",
 		"packages/api-rest",
-		"packages/api-graphql"
+		"packages/api-graphql",
+		"packages/amplify-v6-types-package",
+		"packages/datastore"
 	],
 	"exact": true,
 	"version": "independent",

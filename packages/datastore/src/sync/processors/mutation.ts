@@ -1,17 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import {
 	Category,
-	ConsoleLogger as Logger,
+	Logger,
 	CustomUserAgentDetails,
 	DataStoreAction,
 	jitteredBackoff,
 	NonRetryableError,
 	retry,
 	BackgroundProcessManager,
-} from '@aws-amplify/core';
+	GraphQLAuthModeKeys,
+} from '@aws-amplify/core/internals/utils';
+
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { MutationEvent } from '../';
 import { ModelInstanceCreator } from '../../datastore/datastore';
@@ -312,7 +314,7 @@ class MutationProcessor {
 		modelConstructor: PersistentModelConstructor<PersistentModel>,
 		MutationEvent: PersistentModelConstructor<MutationEvent>,
 		mutationEvent: MutationEvent,
-		authMode: GRAPHQL_AUTH_MODE,
+		authMode: GraphQLAuthModeKeys,
 		onTerminate: Promise<void>
 	): Promise<
 		[GraphQLResult<Record<string, PersistentModel>>, string, SchemaModel]
@@ -679,7 +681,10 @@ export const safeJitteredBackoff: typeof originalJitteredBackoff = (
 	const attemptResult = originalJitteredBackoff(attempt);
 
 	// If this is the last attempt and it is a network error, we retry indefinitively every 5 minutes
-	if (attemptResult === false && error?.message === 'Network Error') {
+	if (
+		attemptResult === false &&
+		((error || {}) as any).message === 'Network Error'
+	) {
 		return MAX_RETRY_DELAY_MS;
 	}
 

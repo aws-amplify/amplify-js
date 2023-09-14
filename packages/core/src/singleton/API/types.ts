@@ -24,8 +24,16 @@ export type APIConfig = {
 };
 
 export type GraphQLAuthMode =
-	| { type: 'apiKey'; apiKey: string }
-	| { type: 'jwt'; token: 'id' | 'access' }
-	| { type: 'iam' }
-	| { type: 'lambda' }
-	| { type: 'custom' };
+	| { type: GraphQLAuthModeKeys.apiKey; apiKey: string }
+	| { type: GraphQLAuthModeKeys.jwt; token: 'id' | 'access' }
+	| { type: GraphQLAuthModeKeys.iam }
+	| { type: GraphQLAuthModeKeys.lambda }
+	| { type: GraphQLAuthModeKeys.custom };
+
+export enum GraphQLAuthModeKeys {
+	apiKey = 'apiKey',
+	jwt = 'jwt',
+	iam = 'iam',
+	lambda = 'lambda',
+	custom = 'custom',
+}

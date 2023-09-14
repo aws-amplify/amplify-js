@@ -48,7 +48,9 @@
 			"packages/adapter-nextjs",
 			"packages/api",
 			"packages/api-graphql",
-			"packages/api-rest"
+			"packages/api-rest",
+			"packages/amplify-v6-types-package",
+			"packages/datastore"
 		],
 		"nohoist": [
 			"**/@types/react-native",
