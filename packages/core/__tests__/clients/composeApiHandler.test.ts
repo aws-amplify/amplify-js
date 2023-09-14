@@ -18,7 +18,7 @@ describe(composeServiceApi.name, () => {
 		jest.clearAllMocks();
 	});
 
-	test('should call transfer handler with resolved config', async () => {
+	test('should call transfer handler with resolved config including default config values', async () => {
 		const mockTransferHandler = jest.fn().mockResolvedValue(defaultResponse);
 		const config = {
 			...defaultConfig,

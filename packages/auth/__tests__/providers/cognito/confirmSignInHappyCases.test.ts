@@ -5,7 +5,6 @@ import { Amplify } from '@aws-amplify/core';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { signIn } from '../../../src/providers/cognito/apis/signIn';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
-import { AuthSignInStep } from '../../../src/types';
 import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { cognitoCredentialsProvider } from '../../../src/providers/cognito/credentialsProvider';
@@ -84,7 +83,7 @@ describe('confirmSignIn API happy path cases', () => {
 		expect(signInResult).toEqual({
 			isSignedIn: false,
 			nextStep: {
-				signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_CODE,
+				signInStep: 'CONFIRM_SIGN_IN_WITH_SMS_CODE',
 				codeDeliveryDetails: {
 					deliveryMedium: 'SMS',
 					destination: '*******9878',
@@ -94,7 +93,7 @@ describe('confirmSignIn API happy path cases', () => {
 		expect(confirmSignInResult).toEqual({
 			isSignedIn: true,
 			nextStep: {
-				signInStep: AuthSignInStep.DONE,
+				signInStep: 'DONE',
 			},
 		});
 
@@ -128,13 +127,13 @@ describe('confirmSignIn API happy path cases', () => {
 		expect(signInResult).toEqual({
 			isSignedIn: false,
 			nextStep: {
-				signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_TOTP_CODE,
+				signInStep: 'CONFIRM_SIGN_IN_WITH_TOTP_CODE',
 			},
 		});
 		expect(confirmSignInResult).toEqual({
 			isSignedIn: true,
 			nextStep: {
-				signInStep: AuthSignInStep.DONE,
+				signInStep: 'DONE',
 			},
 		});
 
@@ -185,7 +184,7 @@ describe('confirmSignIn API happy path cases', () => {
 		expect(signInResult).toEqual({
 			isSignedIn: false,
 			nextStep: {
-				signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_MFA_SELECTION,
+				signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
 				allowedMFATypes: ['SMS', 'TOTP'],
 			},
 		});
@@ -193,7 +192,7 @@ describe('confirmSignIn API happy path cases', () => {
 		expect(confirmSignInResult).toEqual({
 			isSignedIn: false,
 			nextStep: {
-				signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_CODE,
+				signInStep: 'CONFIRM_SIGN_IN_WITH_SMS_CODE',
 				codeDeliveryDetails: {
 					deliveryMedium: 'SMS',
 					destination: '*******9878',

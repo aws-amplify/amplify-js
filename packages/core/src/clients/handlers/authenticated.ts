@@ -11,7 +11,8 @@ import { HttpRequest, HttpResponse } from '../types';
 export const authenticatedHandler = composeTransferHandler<
 	[UserAgentOptions, RetryOptions<HttpResponse>, SigningOptions],
 	HttpRequest,
-	HttpResponse
+	HttpResponse,
+	typeof fetchTransferHandler
 >(fetchTransferHandler, [
 	userAgentMiddleware,
 	retryMiddleware,

@@ -22,12 +22,6 @@ export {
 	fetchUserAttributes,
 	signOut,
 } from './providers/cognito';
-export {
-	AuthResetPasswordStep,
-	AuthSignInStep,
-	AuthSignUpStep,
-	AuthUpdateAttributeStep
-} from './types/enums';
 
 export { AuthError } from './errors/AuthError';
 

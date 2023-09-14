@@ -6,7 +6,6 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import {
 	SignInRequest,
 	AuthSignInResult,
-	AuthSignInStep,
 } from '../../../types';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
@@ -74,7 +73,7 @@ export async function signInWithCustomAuth(
 			await cacheCognitoTokens(AuthenticationResult);
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 

@@ -8,7 +8,6 @@ import {
 } from '../types/errors';
 import {
 	AuthSignInResult,
-	AuthSignInStep,
 	ConfirmSignInRequest,
 } from '../../../types';
 import { CognitoConfirmSignInOptions } from '../types';
@@ -119,7 +118,7 @@ export async function confirmSignIn(
 			await cacheCognitoTokens(AuthenticationResult);
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 
