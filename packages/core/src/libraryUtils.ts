@@ -96,7 +96,6 @@ export {
 	AmplifyError,
 	AmplifyErrorString,
 } from './Util/Errors';
-export { AppState, AsyncStorage, Linking } from './RNComponents';
 export { ErrorParams, AmplifyErrorMap, ServiceError } from './types';
 export {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
