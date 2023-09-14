@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - next/release
+      - invalid-branch
 
 jobs:
   e2e:
