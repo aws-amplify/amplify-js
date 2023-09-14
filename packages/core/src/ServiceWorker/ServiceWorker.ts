@@ -13,7 +13,7 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger } from '../Logger';
-import { browserOrNode } from '../Util/JS';
+import { isBrowser } from '../Util/JS';
 import { Amplify } from '../Amplify';
 import { asserts } from '../Util/errors/AssertError';
 import { AmplifyError } from '../Util/Errors';
@@ -136,7 +136,7 @@ export class ServiceWorkerClass {
 		});
 		this._publicKey = publicKey;
 		return new Promise((resolve, reject) => {
-			if (browserOrNode().isBrowser) {
+			if (isBrowser()) {
 				asserts(this._registration !== undefined, {
 					name: SERVICE_WORKER_EXCEPTION,
 					message: 'Service Worker registration is undefined',
