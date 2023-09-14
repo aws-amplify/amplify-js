@@ -3,7 +3,6 @@ import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { signIn } from '../../../src/providers/cognito/apis/signIn';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
-import { AuthSignInStep } from '../../../src/types';
 import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn';
 import { RespondToAuthChallengeException } from '../../../src/providers/cognito/types/errors';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
@@ -54,7 +53,7 @@ describe('confirmSignIn API error path cases:', () => {
 	});
 
 	test(`confirmSignIn API should throw a validation AuthError when sign-in step is
-     ${AuthSignInStep.CONTINUE_SIGN_IN_WITH_MFA_SELECTION} and challengeResponse is not "SMS" or "TOTP" `, async () => {
+     ${'CONTINUE_SIGN_IN_WITH_MFA_SELECTION'} and challengeResponse is not "SMS" or "TOTP" `, async () => {
 		expect.assertions(2);
 		try {
 			await signIn({ username, password });

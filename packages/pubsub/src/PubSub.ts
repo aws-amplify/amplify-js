@@ -3,11 +3,7 @@
 // import '../Common/Polyfills';
 import Observable from 'zen-observable-ts';
 
-import {
-	Amplify,
-	browserOrNode,
-	ConsoleLogger as Logger,
-} from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { PubSubProvider, ProviderOptions } from './types';
 import { InternalPubSubClass } from './internals';
 
