@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { UploadDataInput, UploadDataOutput } from '../../types';
+import { UploadDataInput, UploadDataOutput, S3Exception } from '../../types';
 import { createUploadTask } from '../../utils';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
@@ -18,9 +18,9 @@ import { getMultipartUploadHandlers } from './multipart';
  * * Maximum object size is 5TB.
  * * Maximum object size if the size cannot be determined before upload is 50GB.
  *
- * @param {UploadDataInput} The input parameters that are passed to the
+ * @param - The input parameters that are passed to the
  * 	uploadData operation.
- * @returns {UploadDataOutput} Cancelable and Resumable task exposing result promise from `result`
+ * @returns A cancelable and resumable task exposing result promise from `result`
  * 	property.
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors.

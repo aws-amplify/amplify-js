@@ -14,16 +14,16 @@ type ListApi = {
 	/**
 	 * List files with given prefix in pages
 	 * pageSize defaulted to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
-	 * @param {ListPaginateInput} The input object
-	 * @return {Promise<ListPaginateOutput>} - Promise resolves to list of keys and metadata with
+	 * @param input - The input object
+	 * @returns A list of keys and metadata with
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
 	(input?: ListPaginateInput): Promise<ListPaginateOutput>;
 	/**
 	 * List all files from S3. You can set `listAll` to true in `options` to get all the files from S3.
-	 * @param {ListAllInput} The input object
-	 * @return {Promise<ListAllOutput>} - Promise resolves to list of keys and metadata for all objects in path
+	 * @param input - The input object
+	 * @returns A list of keys and metadata for all objects in path
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
