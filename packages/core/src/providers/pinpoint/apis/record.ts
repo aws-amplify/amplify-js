@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { v4 as uuid } from 'uuid';
-import { PinpointRecordParameters, PinpointSession } from '../types';
+import { PinpointRecordInput, PinpointSession } from '../types';
 import { getEndpointId } from '../utils';
-import { 
+import {
 	BUFFER_SIZE,
 	FLUSH_INTERVAL,
 	FLUSH_SIZE,
@@ -28,11 +28,11 @@ export const record = async ({
 	identityId,
 	region,
 	userAgentValue,
-}: PinpointRecordParameters): Promise<void> => {
+}: PinpointRecordInput): Promise<void> => {
 	const timestampISOString = new Date().toISOString();
 	const eventId = uuid();
 	let endpointId = await getEndpointId(appId, category);
-  
+
 	// Prepare event buffer if required
 	const buffer = getEventBuffer({
 		appId,
@@ -43,7 +43,7 @@ export const record = async ({
 		identityId,
 		region,
 		resendLimit: RESEND_LIMIT,
-		userAgentValue
+		userAgentValue,
 	});
 
 	// Prepare a Pinpoint endpoint via updateEndpoint if one does not already exist, which will generate and cache an
@@ -64,7 +64,7 @@ export const record = async ({
 	if (!endpointId) {
 		throw new AmplifyError({
 			name: 'ENDPOINT_NOT_CREATED',
-			message: 'Endpoint was not created.'
+			message: 'Endpoint was not created.',
 		});
 	}
 
@@ -77,7 +77,7 @@ export const record = async ({
 			StartTimestamp: timestampISOString,
 		};
 	}
-  
+
 	// Push event to buffer
 	buffer.push({
 		eventId,
@@ -85,6 +85,6 @@ export const record = async ({
 		event,
 		session,
 		timestamp: timestampISOString,
-		resendLimit: RESEND_LIMIT
+		resendLimit: RESEND_LIMIT,
 	});
 };

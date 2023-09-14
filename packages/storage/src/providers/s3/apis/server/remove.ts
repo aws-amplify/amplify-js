@@ -5,16 +5,12 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
-import {
-	StorageOperationRequest,
-	StorageRemoveOptions,
-	StorageRemoveResult,
-} from '../../../../types';
+import { RemoveInput, RemoveOutput } from '../../types';
 import { remove as removeInternal } from '../internal/remove';
 
 export const remove = (
 	contextSpec: AmplifyServer.ContextSpec,
-	req: StorageOperationRequest<StorageRemoveOptions>
-): Promise<StorageRemoveResult> => {
-	return removeInternal(getAmplifyServerContext(contextSpec).amplify, req);
+	input: RemoveInput
+): Promise<RemoveOutput> => {
+	return removeInternal(getAmplifyServerContext(contextSpec).amplify, input);
 };
