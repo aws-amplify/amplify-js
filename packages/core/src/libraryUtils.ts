@@ -7,7 +7,7 @@ utils for use throughout the library.
 */
 // JS utilities
 export {
-	browserOrNode,
+	isBrowser,
 	filenameToContentType,
 	generateRandomString,
 	isEmpty,
@@ -96,7 +96,6 @@ export {
 	AmplifyError,
 	AmplifyErrorString,
 } from './Util/Errors';
-export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export { AppState, AsyncStorage, Linking } from './RNComponents';
 export { ErrorParams, AmplifyErrorMap, ServiceError } from './types';
 export {
