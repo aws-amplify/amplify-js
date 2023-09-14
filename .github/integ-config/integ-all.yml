@@ -457,13 +457,6 @@ tests:
   #   sample_name: [credentials-auth]
   #   spec: credentials-auth
   #   browser: *minimal_browser_list
-  # - test_name: integ_react_auth_2_react_custom_authenticator
-  #   desc: 'React Custom Authenticator'
-  #   framework: react
-  #   category: auth
-  #   sample_name: [amplify-authenticator]
-  #   spec: new-ui-custom-authenticator
-  #   browser: *minimal_browser_list
   # - test_name: integ_react_auth_2_react_authenticator
   #   desc: 'React Custom Authenticator'
   #   framework: react
@@ -541,13 +534,6 @@ tests:
   #   category: auth
   #   sample_name: [authenticator-vue3]
   #   spec: new-ui-authenticator
-  #   browser: *minimal_browser_list
-  # - test_name: integ_vue_auth_vue_custom_authenticator
-  #   desc: 'Vue Custom Authenticator'
-  #   framework: vue
-  #   category: auth
-  #   sample_name: [amplify-authenticator]
-  #   spec: custom-authenticator
   #   browser: *minimal_browser_list
   # - test_name: integ_next_auth_authenticator_and_ssr_page
   #   desc: 'Authenticator and SSR page'
