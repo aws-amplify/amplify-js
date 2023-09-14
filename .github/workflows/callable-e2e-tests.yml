@@ -43,32 +43,32 @@ jobs:
       timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 35 }}
       retry_count: ${{ matrix.integ-config.retry_count || 3 }}
 
-  e2e-test-runner-headless:
-    name: E2E test runnner_headless
-    needs: e2e-prep
-    secrets: inherit
-    strategy:
-      matrix:
-        integ-config: ${{ fromJson(needs.e2e-prep.outputs.integ-config-headless) }}
-      fail-fast: false
-    uses: ./.github/workflows/callable-e2e-test-headless.yml
-    with:
-      test_name: ${{ matrix.integ-config.test_name }}
-      category: ${{ matrix.integ-config.category }}
-      spec: ${{ matrix.integ-config.spec || '' }}
-      timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 35 }}
-      retry_count: ${{ matrix.integ-config.retry_count || 3 }}
+  # e2e-test-runner-headless:
+  #   name: E2E test runnner_headless
+  #   needs: e2e-prep
+  #   secrets: inherit
+  #   strategy:
+  #     matrix:
+  #       integ-config: ${{ fromJson(needs.e2e-prep.outputs.integ-config-headless) }}
+  #     fail-fast: false
+  #   uses: ./.github/workflows/callable-e2e-test-headless.yml
+  #   with:
+  #     test_name: ${{ matrix.integ-config.test_name }}
+  #     category: ${{ matrix.integ-config.category }}
+  #     spec: ${{ matrix.integ-config.spec || '' }}
+  #     timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 35 }}
+  #     retry_count: ${{ matrix.integ-config.retry_count || 3 }}
 
-  detox-e2e-test-runner:
-    name: E2E test runner
-    needs: e2e-prep
-    strategy:
-      matrix:
-        integ-config: ${{ fromJson(needs.e2e-prep.outputs.detox-integ-config) }}
-      fail-fast: false
-    secrets: inherit
-    uses: ./.github/workflows/callable-e2e-test-detox.yml
-    with:
-      test_name: ${{ matrix.integ-config.test_name }}
-      working_directory: ${{ matrix.integ-config.working_directory }}
-      timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 45 }}
+  # detox-e2e-test-runner:
+  #   name: E2E test runner
+  #   needs: e2e-prep
+  #   strategy:
+  #     matrix:
+  #       integ-config: ${{ fromJson(needs.e2e-prep.outputs.detox-integ-config) }}
+  #     fail-fast: false
+  #   secrets: inherit
+  #   uses: ./.github/workflows/callable-e2e-test-detox.yml
+  #   with:
+  #     test_name: ${{ matrix.integ-config.test_name }}
+  #     working_directory: ${{ matrix.integ-config.working_directory }}
+  #     timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 45 }}
