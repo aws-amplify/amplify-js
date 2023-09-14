@@ -29,7 +29,7 @@ export const composeServiceApi = <
 				ServiceClientOptions &
 				Partial<DefaultConfig> &
 				InferEndpointResolverOptionType<DefaultConfig>,
-			keyof DefaultConfig
+			DefaultConfig
 		>,
 		input: Input
 	) => {
@@ -54,8 +54,15 @@ export const composeServiceApi = <
 	};
 };
 
-type OptionalizeKey<T, K extends keyof T> = Omit<T, K> & {
-	[P in K & keyof T]?: T[P];
+type OptionalizeKey<InputType, InputDefaultsType> = {
+	[KeyWithDefaultValue in keyof InputDefaultsType]?: KeyWithDefaultValue extends keyof InputType
+		? InputType[KeyWithDefaultValue]
+		: never;
+} & {
+	[KeyWithoutDefaultValue in keyof Omit<
+		InputType,
+		keyof InputDefaultsType
+	>]: InputType[KeyWithoutDefaultValue];
 };
 
 type InferEndpointResolverOptionType<T> = T extends {
