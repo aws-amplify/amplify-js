@@ -34,6 +34,14 @@ export interface HttpResponse extends Response {
 
 export interface HttpTransferOptions {
 	abortSignal?: AbortSignal;
+	/**
+	 * Cache mode for the request. Note that this is only effective when the underlying HTTP handler is fetch.
+	 * For XHR handler, or Node.js `"http(s)"` module or running on React Native, this option is ignored.
+	 * Instead, you can configure the `Cache-Control` headers to achieve similar effects.
+	 * @default 'default'
+	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Request/cache}
+	 */
+	cache?: RequestCache;
 }
 
 export type HttpTransferHandler = TransferHandler<
