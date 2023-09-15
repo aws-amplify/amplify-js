@@ -9,7 +9,7 @@ import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
-import { isUserAuthenticated } from '../utils/signInHelpers';
+import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 
 import { SignInInput, SignInOutput } from '../types';
 /**
@@ -25,7 +25,7 @@ import { SignInInput, SignInOutput } from '../types';
  */
 export async function signIn(input: SignInInput): Promise<SignInOutput> {
 	const authFlowType = input.options?.serviceOptions?.authFlowType;
-	await isUserAuthenticated();
+	await assertUserNotAuthenticated();
 	switch (authFlowType) {
 		case 'USER_SRP_AUTH':
 			return signInWithSRP(input);

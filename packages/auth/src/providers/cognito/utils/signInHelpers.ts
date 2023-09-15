@@ -634,7 +634,7 @@ export function isMFATypeEnabled(
 	return mfaTypes.includes(mfaType);
 }
 
-export async function isUserAuthenticated() {
+export async function assertUserNotAuthenticated() {
 	let authUser: AuthUser | undefined;
 	try {
 		authUser = await getCurrentUser();
@@ -644,8 +644,8 @@ export async function isUserAuthenticated() {
 		throw new AuthError({
 			name: USER_ALREADY_AUTHENTICATED_EXCEPTION,
 			message:
-				'There is already a signed in user because auth tokens were found.',
-			recoverySuggestion: 'Please call signOut before calling signIn again.',
+				'There is already a signed in user.',
+			recoverySuggestion: 'Call signOut before calling signIn again.',
 		});
 	}
 }

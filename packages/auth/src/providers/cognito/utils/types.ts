@@ -32,9 +32,8 @@ export function assertAuthTokens(
 	if (!tokens || !tokens.accessToken) {
 		throw new AuthError({
 			name: USER_UNAUTHENTICATED_EXCEPTION,
-			message: 'User needs to be authenticated to call this API',
-			recoverySuggestion:
-				'Please try to sign in first before calling this API again',
+			message: 'User needs to be authenticated to call this API.',
+			recoverySuggestion: 'Sign in before calling this API again.',
 		});
 	}
 }
@@ -45,9 +44,8 @@ export function assertIdTokenInAuthTokens(
 	if (!tokens || !tokens.idToken) {
 		throw new AuthError({
 			name: USER_UNAUTHENTICATED_EXCEPTION,
-			message: 'User needs to be authenticated to call this API',
-			recoverySuggestion:
-				'Please try to sign in first before calling this API again',
+			message: 'User needs to be authenticated to call this API.',
+			recoverySuggestion: 'Sign in before calling this API again.',
 		});
 	}
 }
@@ -58,9 +56,8 @@ export function assertAuthTokensWithRefreshToken(
 	if (!tokens || !tokens.accessToken || !tokens.refreshToken) {
 		throw new AuthError({
 			name: USER_UNAUTHENTICATED_EXCEPTION,
-			message: 'User needs to be authenticated to call this API',
-			recoverySuggestion:
-				'Please try to sign in first before calling this API again',
+			message: 'User needs to be authenticated to call this API.',
+			recoverySuggestion: 'Sign in before calling this API again.',
 		});
 	}
 }

@@ -24,7 +24,7 @@ import { AuthError } from '../../../errors/AuthError';
 import { AuthErrorTypes } from '../../../types/Auth';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { authErrorMessages } from '../../../Errors';
-import { isUserAuthenticated } from '../utils/signInHelpers';
+import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInWithRedirectInput } from '../types';
 
 const SELF = '_self';
@@ -39,7 +39,7 @@ const SELF = '_self';
 export async function signInWithRedirect(
 	input?: SignInWithRedirectInput
 ): Promise<void> {
-	await isUserAuthenticated();
+	await assertUserNotAuthenticated();
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
