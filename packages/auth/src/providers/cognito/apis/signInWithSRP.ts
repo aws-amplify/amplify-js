@@ -23,7 +23,6 @@ import { CognitoSignInOptions } from '../types';
 import {
 	SignInRequest,
 	AuthSignInResult,
-	AuthSignInStep,
 } from '../../../types';
 import {
 	setActiveSignInState,
@@ -83,7 +82,7 @@ export async function signInWithSRP(
 			await cacheCognitoTokens(AuthenticationResult);
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 

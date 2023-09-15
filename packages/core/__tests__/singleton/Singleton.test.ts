@@ -3,6 +3,7 @@ import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { AWSCredentialsAndIdentityId } from '../../src/singleton/Auth/types';
 import { TextEncoder, TextDecoder } from 'util';
+import { fetchAuthSession } from '../../src';
 Object.assign(global, { TextDecoder, TextEncoder });
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	? A
@@ -84,6 +85,32 @@ describe('Session tests', () => {
 
 		expect(session.tokens).toBe(undefined);
 		expect(session.credentials).toBe(undefined);
+	});
+
+	test('fetchAuthSession with credentials provider only', async () => {
+		const mockCredentials = {
+			accessKeyId: 'accessKeyValue',
+			secretAccessKey: 'secreatAccessKeyValue',
+		};
+		Amplify.configure(
+			{},
+			{
+				Auth: {
+					credentialsProvider: {
+						getCredentialsAndIdentityId: async () => {
+							return {
+								credentials: mockCredentials,
+							};
+						},
+						clearCredentialsAndIdentityId: () => {},
+					},
+				},
+			}
+		);
+
+		const session = await fetchAuthSession();
+
+		expect(session.credentials).toBe(mockCredentials);
 	});
 
 	test('fetch user after no credentials', async () => {

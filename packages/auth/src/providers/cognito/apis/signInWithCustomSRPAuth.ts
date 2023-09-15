@@ -18,7 +18,6 @@ import {
 import {
 	SignInRequest,
 	AuthSignInResult,
-	AuthSignInStep,
 } from '../../../types';
 import { CognitoSignInOptions } from '../types';
 import {
@@ -78,7 +77,7 @@ export async function signInWithCustomSRPAuth(
 			cleanActiveSignInState();
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 

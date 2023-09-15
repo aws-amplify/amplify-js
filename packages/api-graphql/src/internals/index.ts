@@ -4,3 +4,5 @@ export {
 	InternalGraphQLAPI,
 	InternalGraphQLAPIClass,
 } from './InternalGraphQLAPI';
+
+export { graphql } from './v6';

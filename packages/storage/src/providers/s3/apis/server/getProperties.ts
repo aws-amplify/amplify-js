@@ -5,16 +5,15 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
-import { StorageOperationRequest, StorageOptions } from '../../../../types';
-import { S3GetPropertiesResult } from '../../types';
+import { GetPropertiesInput, GetPropertiesOutput } from '../../types';
 import { getProperties as getPropertiesInternal } from '../internal/getProperties';
 
 export const getProperties = (
 	contextSpec: AmplifyServer.ContextSpec,
-	req: StorageOperationRequest<StorageOptions>
-): Promise<S3GetPropertiesResult> => {
+	input: GetPropertiesInput
+): Promise<GetPropertiesOutput> => {
 	return getPropertiesInternal(
 		getAmplifyServerContext(contextSpec).amplify,
-		req
+		input
 	);
 };

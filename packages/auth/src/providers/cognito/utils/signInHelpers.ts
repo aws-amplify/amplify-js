@@ -16,7 +16,6 @@ import { ClientMetadata, CognitoConfirmSignInOptions } from '../types';
 import {
 	AdditionalInfo,
 	AuthSignInResult,
-	AuthSignInStep,
 	DeliveryMedium,
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
@@ -385,7 +384,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE,
+					signInStep: 'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
 					additionalInfo: challengeParameters as AdditionalInfo,
 				},
 			};
@@ -413,7 +412,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_TOTP_SETUP,
+					signInStep: 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP',
 					totpSetupDetails: getTOTPSetupDetails(secretCode!, username),
 				},
 			};
@@ -421,7 +420,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED,
+					signInStep: 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED',
 					missingAttributes: parseAttributes(
 						challengeParameters.requiredAttributes
 					),
@@ -431,7 +430,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_MFA_SELECTION,
+					signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
 					allowedMFATypes: getMFATypes(
 						parseMFATypes(challengeParameters.MFAS_CAN_CHOOSE)
 					),
@@ -441,7 +440,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_CODE,
+					signInStep: 'CONFIRM_SIGN_IN_WITH_SMS_CODE',
 					codeDeliveryDetails: {
 						deliveryMedium:
 							challengeParameters.CODE_DELIVERY_DELIVERY_MEDIUM as DeliveryMedium,
@@ -453,7 +452,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_TOTP_CODE,
+					signInStep: 'CONFIRM_SIGN_IN_WITH_TOTP_CODE',
 				},
 			};
 		case 'ADMIN_NO_SRP_AUTH':
@@ -496,12 +495,12 @@ export function getSignInResultFromError(
 	if (errorName === InitiateAuthException.PasswordResetRequiredException) {
 		return {
 			isSignedIn: false,
-			nextStep: { signInStep: AuthSignInStep.RESET_PASSWORD },
+			nextStep: { signInStep: 'RESET_PASSWORD' },
 		};
 	} else if (errorName === InitiateAuthException.UserNotConfirmedException) {
 		return {
 			isSignedIn: false,
-			nextStep: { signInStep: AuthSignInStep.CONFIRM_SIGN_UP },
+			nextStep: { signInStep: 'CONFIRM_SIGN_UP' },
 		};
 	}
 }

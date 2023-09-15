@@ -1,5 +1,6 @@
 import { parseAWSExports } from '../src/parseAWSExports';
 
+// TODO: Add API category tests
 describe('Parser', () => {
 	test('aws_mobile_analytics_app_id', () => {
 		const appId = 'app-id';

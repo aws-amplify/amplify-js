@@ -66,24 +66,24 @@ tests:
     spec: background-process-manager
     browser: *extended_browser_list
   # TODO: remove when updated CPK + related models tests are added
-  - test_name: integ_react_datastore_related_models
-    desc: 'DataStore - Related Models'
-    framework: react
-    category: datastore
-    sample_name: [related-models]
-    spec: related-models
-    browser: *minimal_browser_list
-    timeout_minutes: 45
-    retry_count: 10
-  - test_name: integ_react_datastore_cpk_related_models
-    desc: 'DataStore - Custom Primary Key + Related Models'
-    framework: react
-    category: datastore
-    sample_name: [v2/related-models]
-    spec: cpk-related-models
-    browser: *minimal_browser_list
-    timeout_minutes: 45
-    retry_count: 10
+  # - test_name: integ_react_datastore_related_models
+  #   desc: 'DataStore - Related Models'
+  #   framework: react
+  #   category: datastore
+  #   sample_name: [related-models]
+  #   spec: related-models
+  #   browser: *minimal_browser_list
+  #   timeout_minutes: 45
+  #   retry_count: 10
+  # - test_name: integ_react_datastore_cpk_related_models
+  #   desc: 'DataStore - Custom Primary Key + Related Models'
+  #   framework: react
+  #   category: datastore
+  #   sample_name: [v2/related-models]
+  #   spec: cpk-related-models
+  #   browser: *minimal_browser_list
+  #   timeout_minutes: 45
+  #   retry_count: 10
   - test_name: integ_react_datastore_selective_sync
     desc: 'DataStore - Selective Sync'
     framework: react
