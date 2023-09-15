@@ -33,7 +33,7 @@ export {
 	GetUrlOutput,
 } from './providers/s3/types/outputs';
 
-export { TransferProgressEvent, TransferTaskState } from './types';
+export { TransferProgressEvent } from './types';
 
 // TODO[AllanZhengYP]: support isCancelError in Node.js with node-fetch
 export { isCancelError } from './errors/CanceledError';

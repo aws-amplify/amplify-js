@@ -3,7 +3,7 @@
 
 import { Amplify } from '@aws-amplify/core';
 
-import { DownloadDataInput, DownloadDataOutput } from '../types';
+import { DownloadDataInput, DownloadDataOutput, S3Exception } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { createDownloadTask } from '../utils';
@@ -12,9 +12,8 @@ import { getObject } from '../utils/client';
 /**
  * Download S3 object data to memory
  *
- * @param {DownloadDataRequest<S3DownloadDataOptions>} input The parameters that are passed to the
- * 	downloadData operation.
- * @returns {DownloadDataOutput} Cancelable task exposing result promise from `result` property.
+ * @param input - The DownloadDataInput object.
+ * @returns A cancelable task exposing result promise from `result` property.
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors
  *
