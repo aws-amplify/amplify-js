@@ -449,31 +449,27 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 				}
 
 				// Push all successes to results
-				if (response.Successes) {
-					response.Successes.forEach(success => {
-						const { GeofenceId, CreateTime, UpdateTime } = success;
-						results.successes.push({
-							geofenceId: GeofenceId!,
-							createTime: CreateTime,
-							updateTime: UpdateTime,
-						});
+				response.Successes?.forEach(success => {
+					const { GeofenceId, CreateTime, UpdateTime } = success;
+					results.successes.push({
+						geofenceId: GeofenceId!,
+						createTime: CreateTime,
+						updateTime: UpdateTime,
 					});
-				}
+				});
 
 				// Push all errors to results
-				if (response.Errors) {
-					response.Errors.forEach(error => {
-						const { Error, GeofenceId } = error;
-						const { Code, Message } = Error!;
-						results.errors.push({
-							error: {
-								code: Code!,
-								message: Message!,
-							},
-							geofenceId: GeofenceId!,
-						});
+				response.Errors?.forEach(error => {
+					const { Error, GeofenceId } = error;
+					const { Code, Message } = Error!;
+					results.errors.push({
+						error: {
+							code: Code!,
+							message: Message!,
+						},
+						geofenceId: GeofenceId!,
 					});
-				}
+				});
 			})
 		);
 

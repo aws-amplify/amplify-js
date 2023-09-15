@@ -3,7 +3,7 @@
 
 export interface GeoConfig {
 	LocationService?: {
-		region?: string;
+		region: string;
 		maps?: {
 			items: {};
 			default: string;
