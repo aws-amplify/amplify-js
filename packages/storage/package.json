@@ -133,9 +133,9 @@
 			"cases"
 		],
 		"modulePathIgnorePatterns": [
-			"dist",
-			"lib",
-			"lib-esm"
+			"<rootDir>/dist",
+			"<rootDir>/lib",
+			"<rootDir>/lib-esm"
 		],
 		"moduleFileExtensions": [
 			"ts",
