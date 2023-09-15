@@ -660,7 +660,7 @@ tests:
   #   # Firefox doesn't support network state management in cypress
   #   browser: [chrome]
 
-  STORAGE
+  # STORAGE
   - test_name: integ_react_storage
     desc: 'React Storage'
     framework: react
