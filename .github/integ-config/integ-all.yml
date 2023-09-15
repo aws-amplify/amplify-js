@@ -660,28 +660,28 @@ tests:
   #   # Firefox doesn't support network state management in cypress
   #   browser: [chrome]
 
-  # STORAGE
-  # - test_name: integ_react_storage
-  #   desc: 'React Storage'
-  #   framework: react
-  #   category: storage
-  #   sample_name: [storageApp]
-  #   spec: storage
-  #   browser: *minimal_browser_list
-  # - test_name: integ_react_storage_multipart_progress
-  #   desc: 'React Storage Multi-Part Upload with Progress'
-  #   framework: react
-  #   category: storage
-  #   sample_name: [multi-part-upload-with-progress]
-  #   spec: multi-part-upload-with-progress
-  #   browser: *minimal_browser_list
-  # - test_name: integ_react_storage_copy
-  #   desc: 'React Storage Copy'
-  #   framework: react
-  #   category: storage
-  #   sample_name: [multi-part-copy-with-progress]
-  #   spec: multi-part-copy-with-progress
-  #   browser: *minimal_browser_list
+  STORAGE
+  - test_name: integ_react_storage
+    desc: 'React Storage'
+    framework: react
+    category: storage
+    sample_name: [storageApp]
+    spec: storage
+    browser: *minimal_browser_list
+  - test_name: integ_react_storage_multipart_progress
+    desc: 'React Storage Multi-Part Upload with Progress'
+    framework: react
+    category: storage
+    sample_name: [multi-part-upload-with-progress]
+    spec: multi-part-upload-with-progress
+    browser: *minimal_browser_list
+  - test_name: integ_react_storage_copy
+    desc: 'React Storage Copy'
+    framework: react
+    category: storage
+    sample_name: [multi-part-copy]
+    spec: multi-part-copy
+    browser: *minimal_browser_list
 
   # - test_name: integ_duplicate_packages
   #   desc: 'Duplicate Package Errors'
