@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { GetCurrentUserInput, GetCurrentUserOutput } from '../types';
+import { GetCurrentUserOutput } from '../types';
 import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentUser';
 
 /**
@@ -13,8 +13,6 @@ import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentU
  * @throws - {@link InitiateAuthException} - Thrown when the service fails to refresh the tokens.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export const getCurrentUser = async (
-	input?: GetCurrentUserInput
-): Promise<GetCurrentUserOutput> => {
-	return getCurrentUserInternal(Amplify, input);
+export const getCurrentUser = async (): Promise<GetCurrentUserOutput> => {
+	return getCurrentUserInternal(Amplify);
 };

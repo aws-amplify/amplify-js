@@ -52,8 +52,7 @@ export class AuthClass {
 		let userSub: string | undefined;
 
 		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if not available
-		tokens =
-			(await this.authOptions?.tokenProvider?.getTokens(options)) ?? undefined;
+		tokens = await this.getTokens(options);
 
 		if (tokens) {
 			userSub = tokens.accessToken?.payload?.sub;
@@ -92,5 +91,13 @@ export class AuthClass {
 		if (this.authOptions?.credentialsProvider) {
 			return await this.authOptions.credentialsProvider.clearCredentialsAndIdentityId();
 		}
+	}
+
+	async getTokens(
+		options: FetchAuthSessionOptions
+	): Promise<AuthTokens | undefined> {
+		return (
+			(await this.authOptions?.tokenProvider?.getTokens(options)) ?? undefined
+		);
 	}
 }
