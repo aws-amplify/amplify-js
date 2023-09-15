@@ -15,7 +15,6 @@ import {
 	VerifyTOTPSetupOptions,
 } from '../types';
 import {
-	AuthGetCurrentUserInput,
 	AuthConfirmResetPasswordInput,
 	AuthConfirmSignInInput,
 	AuthConfirmSignUpInput,
@@ -30,11 +29,6 @@ import {
 	AuthUpdateUserAttributesInput,
 	AuthVerifyTOTPSetupInput,
 } from '../../../types';
-
-/**
- * Input type for Cognito getCurrentUser API.
- */
-export type GetCurrentUserInput = AuthGetCurrentUserInput;
 
 /**
  * Input type for Cognito confirmResetPassword API.

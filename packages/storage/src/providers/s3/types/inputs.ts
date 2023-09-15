@@ -18,12 +18,18 @@ import {
 	RemoveOptions,
 	DownloadDataOptions,
 	UploadDataOptions,
+	CopyDestinationOptions,
+	CopySourceOptions,
 } from '../types';
 
+// TODO: support use accelerate endpoint option
 /**
  * Input type for S3 copy API.
  */
-export type CopyInput = StorageCopyInput;
+export type CopyInput = StorageCopyInput<
+	CopySourceOptions,
+	CopyDestinationOptions
+>;
 
 /**
  * Input type for S3 getProperties API.

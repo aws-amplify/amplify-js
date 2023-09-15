@@ -137,12 +137,6 @@ export type AuthUpdateUserAttributesInput<
 	options?: { serviceOptions?: ServiceOptions };
 };
 
-/**
- * Constructs a `GetCurrentUser` input.
- * @param recache - whether to recache the user
- */
-export type AuthGetCurrentUserInput = { recache: boolean };
-
 /*
  * Constructs a `verifyUserAttribute` input.
  *

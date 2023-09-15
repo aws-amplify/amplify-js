@@ -24,7 +24,6 @@ export {
 } from './providers/cognito';
 
 export {
-	GetCurrentUserInput,
 	ConfirmResetPasswordInput,
 	ConfirmSignInInput,
 	ConfirmSignUpInput,
