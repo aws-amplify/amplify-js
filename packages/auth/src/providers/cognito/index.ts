@@ -20,7 +20,6 @@ export { signInWithRedirect } from './apis/signInWithRedirect';
 export { fetchUserAttributes } from './apis/fetchUserAttributes';
 export { signOut } from './apis/signOut';
 export {
-	GetCurrentUserInput,
 	ConfirmResetPasswordInput,
 	ConfirmSignInInput,
 	ConfirmSignUpInput,
