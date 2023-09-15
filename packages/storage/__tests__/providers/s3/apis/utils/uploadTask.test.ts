@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { TransferTaskState } from '../../../../../src/types/common';
 import { createUploadTask } from '../../../../../src/providers/s3/utils';
 
 describe('createUploadTask', () => {
@@ -10,7 +9,7 @@ describe('createUploadTask', () => {
 			job: jest.fn().mockResolvedValueOnce('test'),
 			onCancel: jest.fn(),
 		});
-		expect(task.state).toBe(TransferTaskState.IN_PROGRESS);
+		expect(task.state).toBe('IN_PROGRESS');
 		expect(await task.result).toEqual('test');
 		task.pause();
 	});
@@ -21,7 +20,7 @@ describe('createUploadTask', () => {
 			onCancel: jest.fn(),
 		});
 		task.cancel();
-		expect(task.state).toBe(TransferTaskState.CANCELED);
+		expect(task.state).toBe('CANCELED');
 	});
 
 	it('should set overwriting abort error to the onCancel callback', () => {
@@ -32,7 +31,7 @@ describe('createUploadTask', () => {
 		});
 		const customError = new Error('Custom Error');
 		task.cancel(customError);
-		expect(task.state).toBe(TransferTaskState.CANCELED);
+		expect(task.state).toBe('CANCELED');
 		expect(onCancel).toHaveBeenCalledWith(customError);
 	});
 
@@ -47,7 +46,7 @@ describe('createUploadTask', () => {
 			await task.result;
 		} catch (e) {
 			expect(e).toBe(rejectedError);
-			expect(task.state).toBe(TransferTaskState.ERROR);
+			expect(task.state).toBe('ERROR');
 		}
 	});
 
@@ -57,14 +56,10 @@ describe('createUploadTask', () => {
 			onCancel: jest.fn(),
 		});
 		await task.result;
-		expect(task.state).toBe(TransferTaskState.SUCCESS);
+		expect(task.state).toBe('SUCCESS');
 	});
 
-	it.each([
-		TransferTaskState.CANCELED,
-		TransferTaskState.ERROR,
-		TransferTaskState.SUCCESS,
-	])(
+	it.each(['CANCELED', 'ERROR', 'SUCCESS'])(
 		'should not call the onCancel callback if the task is already in status of %s',
 		async state => {
 			const onCancel = jest.fn();
@@ -89,18 +84,13 @@ describe('createUploadTask', () => {
 			onPause,
 			isMultipartUpload: true,
 		});
-		expect(task.state).toBe(TransferTaskState.IN_PROGRESS);
+		expect(task.state).toBe('IN_PROGRESS');
 		task.pause();
 		expect(onPause).toHaveBeenCalled();
-		expect(task.state).toBe(TransferTaskState.PAUSED);
+		expect(task.state).toBe('PAUSED');
 	});
 
-	it.each([
-		TransferTaskState.CANCELED,
-		TransferTaskState.ERROR,
-		TransferTaskState.SUCCESS,
-		TransferTaskState.PAUSED,
-	])(
+	it.each(['CANCELED', 'ERROR', 'SUCCESS', 'PAUSED'])(
 		'should not call the onPause callback if the task is already in status of %s',
 		async state => {
 			const onPause = jest.fn();
@@ -128,18 +118,13 @@ describe('createUploadTask', () => {
 			isMultipartUpload: true,
 		});
 		task.pause();
-		expect(task.state).toBe(TransferTaskState.PAUSED);
+		expect(task.state).toBe('PAUSED');
 		task.resume();
 		expect(onResume).toHaveBeenCalled();
-		expect(task.state).toBe(TransferTaskState.IN_PROGRESS);
+		expect(task.state).toBe('IN_PROGRESS');
 	});
 
-	it.each([
-		TransferTaskState.CANCELED,
-		TransferTaskState.ERROR,
-		TransferTaskState.SUCCESS,
-		TransferTaskState.IN_PROGRESS,
-	])(
+	it.each(['CANCELED', 'ERROR', 'SUCCESS', 'IN_PROGRESS'])(
 		'should not call the onResume callback if the task is already in status of %s',
 		async state => {
 			const onResume = jest.fn();

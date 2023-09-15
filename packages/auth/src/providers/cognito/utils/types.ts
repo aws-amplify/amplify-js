@@ -10,6 +10,7 @@ import {
 
 import { AuthError } from '../../../errors/AuthError';
 import { CognitoAuthTokens } from '../tokenProvider/types';
+import { USER_UNAUTHENTICATED_EXCEPTION } from '../../../errors/constants';
 
 export function isTypeUserPoolConfig(
 	authConfig?: AuthConfig
@@ -30,8 +31,9 @@ export function assertAuthTokens(
 ): asserts tokens is AuthTokens {
 	if (!tokens || !tokens.accessToken) {
 		throw new AuthError({
-			name: 'Invalid Auth Tokens',
-			message: 'No Auth Tokens were found',
+			name: USER_UNAUTHENTICATED_EXCEPTION,
+			message: 'User needs to be authenticated to call this API.',
+			recoverySuggestion: 'Sign in before calling this API again.',
 		});
 	}
 }
@@ -41,8 +43,9 @@ export function assertIdTokenInAuthTokens(
 ): asserts tokens is AuthTokens {
 	if (!tokens || !tokens.idToken) {
 		throw new AuthError({
-			name: 'IdToken not present in Auth Tokens',
-			message: 'No IdToken in Auth Tokens',
+			name: USER_UNAUTHENTICATED_EXCEPTION,
+			message: 'User needs to be authenticated to call this API.',
+			recoverySuggestion: 'Sign in before calling this API again.',
 		});
 	}
 }
@@ -52,8 +55,9 @@ export function assertAuthTokensWithRefreshToken(
 ): asserts tokens is CognitoAuthTokens & { refreshToken: string } {
 	if (!tokens || !tokens.accessToken || !tokens.refreshToken) {
 		throw new AuthError({
-			name: 'Invalid Cognito Auth Tokens',
-			message: 'No Cognito Auth Tokens were found',
+			name: USER_UNAUTHENTICATED_EXCEPTION,
+			message: 'User needs to be authenticated to call this API.',
+			recoverySuggestion: 'Sign in before calling this API again.',
 		});
 	}
 }
