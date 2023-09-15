@@ -20,7 +20,8 @@ export {
 	transferKeyToLowerCase,
 	transferKeyToUpperCase,
 } from './Util/JS';
-
+export { parseAWSExports } from './parseAWSExports';
+export { LegacyConfig } from './singleton/types';
 export {
 	JWT,
 	StrictUnion,
