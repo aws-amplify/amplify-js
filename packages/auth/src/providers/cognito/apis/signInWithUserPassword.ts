@@ -5,11 +5,6 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import {
-	AuthSignInResult,
-	AuthSignInStep,
-	SignInRequest,
-} from '../../../types';
-import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
@@ -21,7 +16,10 @@ import {
 import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
-import { CognitoSignInOptions } from '../types';
+import {
+	SignInWithUserPasswordInput,
+	SignInWithUserPasswordOutput,
+} from '../types';
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
@@ -31,18 +29,17 @@ import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 /**
  * Signs a user in using USER_PASSWORD_AUTH AuthFlowType
  *
- * @param signInRequest - The SignInRequest object
- * @returns AuthSignInResult
+ * @param input - The SignInWithUserPasswordInput object
+ * @returns SignInWithUserPasswordOutput
  * @throws service: {@link InitiateAuthException } - Cognito service error thrown during the sign-in process.
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithUserPassword(
-	signInRequest: SignInRequest<CognitoSignInOptions>
-): Promise<AuthSignInResult> {
-	const { username, password, options } = signInRequest;
+	input: SignInWithUserPasswordInput
+): Promise<SignInWithUserPasswordOutput> {
+	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const metadata = options?.serviceOptions?.clientMetadata;
@@ -79,7 +76,7 @@ export async function signInWithUserPassword(
 			cleanActiveSignInState();
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 

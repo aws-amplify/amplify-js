@@ -12,20 +12,19 @@ import {
 import AuthenticationHelper from './srp/AuthenticationHelper';
 import BigInteger from './srp/BigInteger';
 
-import { ClientMetadata, CognitoConfirmSignInOptions } from '../types';
+import { ClientMetadata, ConfirmSignInOptions } from '../types';
 import {
-	AdditionalInfo,
-	AuthSignInResult,
-	AuthSignInStep,
-	DeliveryMedium,
+	AuthAdditionalInfo,
+	AuthSignInOutput,
+	AuthDeliveryMedium,
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
 import {
 	AuthUser,
 	AuthUserAttribute,
-	MFAType,
-	TOTPSetupDetails,
+	AuthMFAType,
+	AuthTOTPSetupDetails,
 } from '../../../types/models';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -378,7 +377,7 @@ export async function handlePasswordVerifierChallenge(
 export async function getSignInResult(params: {
 	challengeName: ChallengeName;
 	challengeParameters: ChallengeParameters;
-}): Promise<AuthSignInResult> {
+}): Promise<AuthSignInOutput> {
 	const { challengeName, challengeParameters } = params;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -388,8 +387,8 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE,
-					additionalInfo: challengeParameters as AdditionalInfo,
+					signInStep: 'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
+					additionalInfo: challengeParameters as AuthAdditionalInfo,
 				},
 			};
 		case 'MFA_SETUP':
@@ -416,7 +415,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_TOTP_SETUP,
+					signInStep: 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP',
 					totpSetupDetails: getTOTPSetupDetails(secretCode!, username),
 				},
 			};
@@ -424,7 +423,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED,
+					signInStep: 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED',
 					missingAttributes: parseAttributes(
 						challengeParameters.requiredAttributes
 					),
@@ -434,7 +433,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_MFA_SELECTION,
+					signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
 					allowedMFATypes: getMFATypes(
 						parseMFATypes(challengeParameters.MFAS_CAN_CHOOSE)
 					),
@@ -444,10 +443,10 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_CODE,
+					signInStep: 'CONFIRM_SIGN_IN_WITH_SMS_CODE',
 					codeDeliveryDetails: {
 						deliveryMedium:
-							challengeParameters.CODE_DELIVERY_DELIVERY_MEDIUM as DeliveryMedium,
+							challengeParameters.CODE_DELIVERY_DELIVERY_MEDIUM as AuthDeliveryMedium,
 						destination: challengeParameters.CODE_DELIVERY_DESTINATION,
 					},
 				},
@@ -456,7 +455,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_TOTP_CODE,
+					signInStep: 'CONFIRM_SIGN_IN_WITH_TOTP_CODE',
 				},
 			};
 		case 'ADMIN_NO_SRP_AUTH':
@@ -480,7 +479,7 @@ export async function getSignInResult(params: {
 export function getTOTPSetupDetails(
 	secretCode: string,
 	username?: string
-): TOTPSetupDetails {
+): AuthTOTPSetupDetails {
 	return {
 		sharedSecret: secretCode,
 		getSetupUri: (appName, accountName) => {
@@ -495,16 +494,16 @@ export function getTOTPSetupDetails(
 
 export function getSignInResultFromError(
 	errorName: string
-): AuthSignInResult | undefined {
+): AuthSignInOutput | undefined {
 	if (errorName === InitiateAuthException.PasswordResetRequiredException) {
 		return {
 			isSignedIn: false,
-			nextStep: { signInStep: AuthSignInStep.RESET_PASSWORD },
+			nextStep: { signInStep: 'RESET_PASSWORD' },
 		};
 	} else if (errorName === InitiateAuthException.UserNotConfirmedException) {
 		return {
 			isSignedIn: false,
-			nextStep: { signInStep: AuthSignInStep.CONFIRM_SIGN_UP },
+			nextStep: { signInStep: 'CONFIRM_SIGN_UP' },
 		};
 	}
 }
@@ -538,7 +537,7 @@ export async function handleChallengeName(
 	challengeResponse: string,
 	config: CognitoUserPoolConfig,
 	clientMetadata?: ClientMetadata,
-	options?: CognitoConfirmSignInOptions
+	options?: ConfirmSignInOptions
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const userAttributes = options?.userAttributes;
 	const deviceName = options?.friendlyDeviceName;
@@ -610,15 +609,15 @@ export function mapMfaType(mfa: string): CognitoMFAType {
 	return mfaType;
 }
 
-export function getMFAType(type?: string): MFAType | undefined {
+export function getMFAType(type?: string): AuthMFAType | undefined {
 	if (type === 'SMS_MFA') return 'SMS';
 	if (type === 'SOFTWARE_TOKEN_MFA') return 'TOTP';
 	// TODO: log warning for unknown MFA type
 }
 
-export function getMFATypes(types?: string[]): MFAType[] | undefined {
+export function getMFATypes(types?: string[]): AuthMFAType[] | undefined {
 	if (!types) return undefined;
-	return types.map(getMFAType).filter(Boolean) as MFAType[];
+	return types.map(getMFAType).filter(Boolean) as AuthMFAType[];
 }
 export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 	if (!mfa) return [];
@@ -627,7 +626,7 @@ export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 
 export function isMFATypeEnabled(
 	challengeParams: ChallengeParameters,
-	mfaType: MFAType
+	mfaType: AuthMFAType
 ): boolean {
 	const { MFAS_CAN_SETUP } = challengeParams;
 	const mfaTypes = getMFATypes(parseMFATypes(MFAS_CAN_SETUP));
