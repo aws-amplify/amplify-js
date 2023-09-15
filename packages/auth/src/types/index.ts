@@ -34,7 +34,6 @@ export {
 	AuthConfirmSignInInput,
 	AuthUpdatePasswordInput,
 	AuthUpdateUserAttributesInput,
-	AuthGetCurrentUserInput,
 	AuthConfirmUserAttributeInput,
 	AuthVerifyTOTPSetupInput,
 	AuthSignInWithRedirectInput,

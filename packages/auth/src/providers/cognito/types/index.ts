@@ -22,7 +22,6 @@ export {
 } from './options';
 
 export {
-	GetCurrentUserInput,
 	ConfirmResetPasswordInput,
 	ConfirmSignInInput,
 	ConfirmSignUpInput,
