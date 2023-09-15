@@ -17,6 +17,13 @@ import {
 	StorageConfig,
 } from './Storage/types';
 
+export type LegacyConfig = {
+	/**
+	 * @deprecated The field should not be used.
+	 */
+	aws_project_region?: string;
+};
+
 export type ResourcesConfig = {
 	// API?: {};
 	Analytics?: AnalyticsConfig;
