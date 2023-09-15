@@ -9,6 +9,7 @@ import { InitiateAuthException } from '../../../src/providers/cognito/types/erro
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 import { Amplify as AmplifyV6 } from '@aws-amplify/core';
+import { USER_UNAUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 Amplify.configure({
@@ -63,9 +64,7 @@ describe('getUser API error path cases:', () => {
 		} catch (error) {
 			console.log(error);
 			expect(error).toBeInstanceOf(AuthError);
-			// TODO: replace this error name once PR: https://github.com/aws-amplify/amplify-js/pull/12033
-			// is merged
-			expect(error.name).toBe('Invalid Auth Tokens');
+			expect(error.name).toBe(USER_UNAUTHENTICATED_EXCEPTION);
 		}
 	});
 });
