@@ -102,14 +102,73 @@ export type AuthUserPoolConfig = {
 	};
 };
 
+export type AuthStandardAttributeKey =
+	| 'address'
+	| 'birthdate'
+	| 'email'
+	| 'email_verified'
+	| 'family_name'
+	| 'gender'
+	| 'given_name'
+	| 'locale'
+	| 'middle_name'
+	| 'name'
+	| 'nickname'
+	| 'phone_number'
+	| 'phone_number_verified'
+	| 'picture'
+	| 'preferred_username'
+	| 'profile'
+	| 'sub'
+	| 'updated_at'
+	| 'website'
+	| 'zoneinfo';
+
 export type CognitoUserPoolConfig = {
 	userPoolClientId: string;
 	userPoolId: string;
 	signUpVerificationMethod?: 'code' | 'link';
 	loginWith?: {
 		oauth?: OAuthConfig;
+		emailAndPassword?: boolean;
+		phoneAndPassword?: boolean;
+		magicLink?: {
+			phone?: boolean;
+			email?: boolean;
+		};
 	};
+	userAttributes?: Partial<
+		Record<AuthStandardAttributeKey, { required?: boolean }>
+	>;
+	multiFactorAuthentication?: {
+		mode: 'optional' | 'on';
+		useTOTP?: true;
+		useSMS?: true;
+		enableGuestAccess?: boolean;
+	};
+	passwordFormat?: {
+		minLength?: 8;
+		requireLowercase?: true;
+		requireUppercase?: true;
+		requireNumbers?: true;
+		requireSpecialCharacters?: true;
+	};
+	adminCreatedPasswordValidity?: number;
 };
+
+type Enumerate<
+	N extends number,
+	Acc extends number[] = []
+> = Acc['length'] extends N
+	? Acc[number]
+	: Enumerate<N, [...Acc, Acc['length']]>;
+
+type Range<F extends number, T extends number> = Exclude<
+	Enumerate<T>,
+	Enumerate<F>
+>;
+// cognito does not allow a minLength less than 8 or greater than 99
+type CognitoMinLength = Range<8, 100>;
 
 export type OAuthConfig = {
 	domain: string;
