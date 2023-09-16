@@ -38,7 +38,6 @@
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js",
 		"./lib-esm/ClientDevice": "./lib-esm/ClientDevice/reactnative.js",
-		"./lib-esm/RNComponents": "./lib-esm/RNComponents/reactnative.js",
 		"./lib-esm/Cache": "./lib-esm/Cache/reactnative.js"
 	},
 	"repository": {
