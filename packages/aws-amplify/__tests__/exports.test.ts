@@ -9,7 +9,6 @@ describe('aws-amplify', () => {
 			expect(Object.keys(exported)).toMatchInlineSnapshot(`
 			Array [
 			  "Amplify",
-			  "parseAmplifyConfig",
 			]
 		`);
 		});

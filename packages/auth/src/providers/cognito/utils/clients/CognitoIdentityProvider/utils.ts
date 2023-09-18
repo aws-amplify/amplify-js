@@ -21,7 +21,7 @@ export function getRegion(userPoolId?: string): string {
 export function getRegionFromIdentityPoolId(identityPoolId?: string): string {
 	if (!identityPoolId || !identityPoolId.includes(':')) {
 		throw new AuthError({
-			name: 'InvalidIdentityPoolId',
+			name: 'InvalidIdentityPoolIdException',
 			message: 'Invalid identity pool id provided.',
 			recoverySuggestion:
 				'Make sure a valid identityPoolId is given in the config.',
