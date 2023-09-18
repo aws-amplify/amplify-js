@@ -12,18 +12,19 @@ import {
 import AuthenticationHelper from './srp/AuthenticationHelper';
 import BigInteger from './srp/BigInteger';
 
-import { ClientMetadata, CognitoConfirmSignInOptions } from '../types';
+import { ClientMetadata, ConfirmSignInOptions } from '../types';
 import {
-	AdditionalInfo,
-	AuthSignInResult,
-	DeliveryMedium,
+	AuthAdditionalInfo,
+	AuthSignInOutput,
+	AuthDeliveryMedium,
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
 import {
+	AuthUser,
 	AuthUserAttribute,
-	MFAType,
-	TOTPSetupDetails,
+	AuthMFAType,
+	AuthTOTPSetupDetails,
 } from '../../../types/models';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -45,6 +46,8 @@ import {
 	RespondToAuthChallengeCommandOutput,
 } from './clients/CognitoIdentityProvider/types';
 import { getRegion } from './clients/CognitoIdentityProvider/utils';
+import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants';
+import { getCurrentUser } from '../apis/getCurrentUser';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -374,7 +377,7 @@ export async function handlePasswordVerifierChallenge(
 export async function getSignInResult(params: {
 	challengeName: ChallengeName;
 	challengeParameters: ChallengeParameters;
-}): Promise<AuthSignInResult> {
+}): Promise<AuthSignInOutput> {
 	const { challengeName, challengeParameters } = params;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -385,7 +388,7 @@ export async function getSignInResult(params: {
 				isSignedIn: false,
 				nextStep: {
 					signInStep: 'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
-					additionalInfo: challengeParameters as AdditionalInfo,
+					additionalInfo: challengeParameters as AuthAdditionalInfo,
 				},
 			};
 		case 'MFA_SETUP':
@@ -443,7 +446,7 @@ export async function getSignInResult(params: {
 					signInStep: 'CONFIRM_SIGN_IN_WITH_SMS_CODE',
 					codeDeliveryDetails: {
 						deliveryMedium:
-							challengeParameters.CODE_DELIVERY_DELIVERY_MEDIUM as DeliveryMedium,
+							challengeParameters.CODE_DELIVERY_DELIVERY_MEDIUM as AuthDeliveryMedium,
 						destination: challengeParameters.CODE_DELIVERY_DESTINATION,
 					},
 				},
@@ -476,7 +479,7 @@ export async function getSignInResult(params: {
 export function getTOTPSetupDetails(
 	secretCode: string,
 	username?: string
-): TOTPSetupDetails {
+): AuthTOTPSetupDetails {
 	return {
 		sharedSecret: secretCode,
 		getSetupUri: (appName, accountName) => {
@@ -491,7 +494,7 @@ export function getTOTPSetupDetails(
 
 export function getSignInResultFromError(
 	errorName: string
-): AuthSignInResult | undefined {
+): AuthSignInOutput | undefined {
 	if (errorName === InitiateAuthException.PasswordResetRequiredException) {
 		return {
 			isSignedIn: false,
@@ -534,7 +537,7 @@ export async function handleChallengeName(
 	challengeResponse: string,
 	config: CognitoUserPoolConfig,
 	clientMetadata?: ClientMetadata,
-	options?: CognitoConfirmSignInOptions
+	options?: ConfirmSignInOptions
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const userAttributes = options?.userAttributes;
 	const deviceName = options?.friendlyDeviceName;
@@ -606,15 +609,15 @@ export function mapMfaType(mfa: string): CognitoMFAType {
 	return mfaType;
 }
 
-export function getMFAType(type?: string): MFAType | undefined {
+export function getMFAType(type?: string): AuthMFAType | undefined {
 	if (type === 'SMS_MFA') return 'SMS';
 	if (type === 'SOFTWARE_TOKEN_MFA') return 'TOTP';
 	// TODO: log warning for unknown MFA type
 }
 
-export function getMFATypes(types?: string[]): MFAType[] | undefined {
+export function getMFATypes(types?: string[]): AuthMFAType[] | undefined {
 	if (!types) return undefined;
-	return types.map(getMFAType).filter(Boolean) as MFAType[];
+	return types.map(getMFAType).filter(Boolean) as AuthMFAType[];
 }
 export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 	if (!mfa) return [];
@@ -623,10 +626,25 @@ export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 
 export function isMFATypeEnabled(
 	challengeParams: ChallengeParameters,
-	mfaType: MFAType
+	mfaType: AuthMFAType
 ): boolean {
 	const { MFAS_CAN_SETUP } = challengeParams;
 	const mfaTypes = getMFATypes(parseMFATypes(MFAS_CAN_SETUP));
 	if (!mfaTypes) return false;
 	return mfaTypes.includes(mfaType);
+}
+
+export async function assertUserNotAuthenticated() {
+	let authUser: AuthUser | undefined;
+	try {
+		authUser = await getCurrentUser();
+	} catch (error) {}
+
+	if (authUser && authUser.userId && authUser.username) {
+		throw new AuthError({
+			name: USER_ALREADY_AUTHENTICATED_EXCEPTION,
+			message: 'There is already a signed in user.',
+			recoverySuggestion: 'Call signOut before calling signIn again.',
+		});
+	}
 }

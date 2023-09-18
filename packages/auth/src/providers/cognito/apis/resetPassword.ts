@@ -5,13 +5,8 @@ import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import {
-	AuthStandardAttributeKey,
-	DeliveryMedium,
-	ResetPasswordRequest,
-	ResetPasswordResult,
-} from '../../../types';
-import { CognitoResetPasswordOptions, CustomAttribute } from '../types';
+import { AuthDeliveryMedium, AuthStandardAttributeKey } from '../../../types';
+import { ResetPasswordInput, ResetPasswordOutput } from '../types';
 import { forgotPassword } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { ForgotPasswordException } from '../../cognito/types/errors';
@@ -19,28 +14,25 @@ import { ForgotPasswordException } from '../../cognito/types/errors';
 /**
  * Resets a user's password.
  *
- * @param resetPasswordRequest - The ResetPasswordRequest object.
+ * @param input -  The ResetPasswordInput object.
+ * @returns ResetPasswordOutput
  * @throws -{@link ForgotPasswordException }
  * Thrown due to an invalid confirmation code or password.
  * @throws -{@link AuthValidationErrorCode }
  * Thrown due to an empty username.
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
- *
- * @returns ResetPasswordResult
  **/
 export async function resetPassword(
-	resetPasswordRequest: ResetPasswordRequest<CognitoResetPasswordOptions>
-): Promise<ResetPasswordResult<AuthStandardAttributeKey | CustomAttribute>> {
-	const username = resetPasswordRequest.username;
+	input: ResetPasswordInput
+): Promise<ResetPasswordOutput> {
+	const username = input.username;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptyResetPasswordUsername
 	);
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const clientMetadata =
-		resetPasswordRequest.options?.serviceOptions?.clientMetadata;
+	const clientMetadata = input.options?.serviceOptions?.clientMetadata;
 	const res = await forgotPassword(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
@@ -55,7 +47,8 @@ export async function resetPassword(
 		nextStep: {
 			resetPasswordStep: 'CONFIRM_RESET_PASSWORD_WITH_CODE',
 			codeDeliveryDetails: {
-				deliveryMedium: codeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
+				deliveryMedium:
+					codeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
 				destination: codeDeliveryDetails?.Destination as string,
 				attributeName:
 					codeDeliveryDetails?.AttributeName as AuthStandardAttributeKey,

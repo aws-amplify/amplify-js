@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AuthClass } from './Auth';
 import { Hub, AMPLIFY_SYMBOL } from '../Hub';
-import { LibraryOptions, ResourcesConfig } from './types';
+import { LegacyConfig, LibraryOptions, ResourcesConfig } from './types';
+import { parseAWSExports } from '../parseAWSExports';
 
 // TODO(v6): add default AuthTokenStore for each platform
 
@@ -33,12 +34,20 @@ export class AmplifyClass {
 	 * @param libraryOptions - Additional options for customizing the behavior of the library.
 	 */
 	configure(
-		resourcesConfig: ResourcesConfig,
+		resourcesConfig: ResourcesConfig | LegacyConfig,
 		libraryOptions: LibraryOptions = {}
 	): void {
+		let resolvedResourceConfig: ResourcesConfig;
+
+		if (Object.keys(resourcesConfig).some(key => key.startsWith('aws_'))) {
+			resolvedResourceConfig = parseAWSExports(resourcesConfig);
+		} else {
+			resolvedResourceConfig = resourcesConfig as ResourcesConfig;
+		}
+
 		this.resourcesConfig = mergeResourceConfig(
 			this.resourcesConfig,
-			resourcesConfig
+			resolvedResourceConfig
 		);
 
 		this.libraryOptions = mergeLibraryOptions(

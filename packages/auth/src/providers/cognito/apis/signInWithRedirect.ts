@@ -7,10 +7,10 @@ import {
 	assertOAuthConfig,
 	assertTokenProviderConfig,
 	getAmplifyUserAgent,
+	isBrowser,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
 } from '@aws-amplify/core/internals/utils';
-import { SignInWithRedirectRequest } from '../../../types/requests';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { CognitoUserPoolsTokenProvider } from '../tokenProvider';
 import {
@@ -21,40 +21,42 @@ import {
 import { cognitoHostedUIIdentityProviderMap } from '../types/models';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { AuthError } from '../../../errors/AuthError';
-import { AuthErrorTypes } from '../../../types';
+import { AuthErrorTypes } from '../../../types/Auth';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { authErrorMessages } from '../../../Errors';
+import { assertUserNotAuthenticated } from '../utils/signInHelpers';
+import { SignInWithRedirectInput } from '../types';
 
 const SELF = '_self';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
  *
- * @param signInRedirectRequest - The SignInRedirectRequest object, if empty it will redirect to Cognito HostedUI
+ * @param input - The SignInWithRedirectInput object, if empty it will redirect to Cognito HostedUI
  *
  * TODO: add config errors
  */
-export function signInWithRedirect(
-	signInWithRedirectRequest?: SignInWithRedirectRequest
-): void {
+export async function signInWithRedirect(
+	input?: SignInWithRedirectInput
+): Promise<void> {
+	await assertUserNotAuthenticated();
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 	store.setAuthConfig(authConfig);
 	let provider = 'COGNITO'; // Default
 
-	if (typeof signInWithRedirectRequest?.provider === 'string') {
-		provider =
-			cognitoHostedUIIdentityProviderMap[signInWithRedirectRequest.provider];
-	} else if (signInWithRedirectRequest?.provider?.custom) {
-		provider = signInWithRedirectRequest.provider.custom;
+	if (typeof input?.provider === 'string') {
+		provider = cognitoHostedUIIdentityProviderMap[input.provider];
+	} else if (input?.provider?.custom) {
+		provider = input.provider.custom;
 	}
 
 	oauthSignIn({
 		oauthConfig: authConfig.loginWith.oauth,
 		clientId: authConfig.userPoolClientId,
 		provider,
-		customState: signInWithRedirectRequest?.customState,
+		customState: input?.customState,
 	});
 }
 
@@ -394,7 +396,7 @@ function urlListener() {
 	});
 }
 
-urlListener();
+isBrowser() && urlListener();
 
 // This has a reference for listeners that requires to be notified, TokenOrchestrator use this for load tokens
 let resolveInflightPromise = () => {};

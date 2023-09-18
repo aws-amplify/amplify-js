@@ -5,7 +5,7 @@ import { headObject } from '../../../../src/providers/s3/utils/client';
 import { getProperties } from '../../../../src/providers/s3';
 import { Credentials } from '@aws-sdk/types';
 import { Amplify } from '@aws-amplify/core';
-import { StorageOptions } from '../../../../src/types';
+import { GetPropertiesOptions } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -107,7 +107,7 @@ describe('getProperties api', () => {
 				expect(
 					await getProperties({
 						key,
-						options: options as StorageOptions,
+						options: options as GetPropertiesOptions,
 					})
 				).toEqual(expected);
 				expect(headObject).toBeCalledTimes(1);
