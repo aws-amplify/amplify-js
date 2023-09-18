@@ -64,7 +64,6 @@
 	"dependencies": {
 		"@aws-crypto/sha256-js": "5.0.0",
 		"@aws-sdk/types": "3.398.0",
-		"@smithy/types": "^2.3.1",
 		"@smithy/util-hex-encoding": "2.0.0",
 		"tslib": "^2.5.0",
 		"uuid": "^9.0.0",
