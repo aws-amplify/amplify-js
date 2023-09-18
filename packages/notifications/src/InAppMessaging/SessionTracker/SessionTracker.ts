@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { browserOrNode, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import noop from 'lodash/noop';
 import {
 	SessionState,
@@ -11,7 +11,8 @@ import {
 // Per https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
 let hidden: string;
 let visibilityChange: string;
-const { isBrowser } = browserOrNode();
+// TODO(V6): use the utility functoin
+const isBrowser = false;
 
 if (isBrowser && document) {
 	if (typeof document.hidden !== 'undefined') {

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, ConsoleLogger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import isEmpty from 'lodash/isEmpty';
 import {
@@ -27,19 +27,20 @@ export const recordAnalyticsEvent = (
 	event: AWSPinpointMessageEvent,
 	message: InAppMessage
 ) => {
-	if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
-		const { id, metadata } = message;
-		Amplify.Analytics.record({
-			name: event,
-			attributes: {
-				campaign_id: id,
-				delivery_type: DELIVERY_TYPE,
-				treatment_id: metadata?.treatmentId,
-			},
-		});
-	} else {
-		logger.debug('Analytics module is not registered into Amplify');
-	}
+	// TODO(V6) : Add back recording here
+	// if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
+	// 	const { id, metadata } = message;
+	// 	Amplify.Analytics.record({
+	// 		name: event,
+	// 		attributes: {
+	// 			campaign_id: id,
+	// 			delivery_type: DELIVERY_TYPE,
+	// 			treatment_id: metadata?.treatmentId,
+	// 		},
+	// 	});
+	// } else {
+	// 	logger.debug('Analytics module is not registered into Amplify');
+	// }
 };
 
 export const getStartOfDay = (): string => {

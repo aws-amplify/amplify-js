@@ -1,0 +1,7 @@
+{
+	"name": "@aws-amplify/notifications/in-app",
+	"main": "../lib/InAppMessaging/Providers/index.js",
+	"browser": "../lib-esm/InAppMessaging/Providers/index.js",
+	"module": "../lib-esm/InAppMessaging/Providers/index.js",
+	"typings": "../lib-esm/InAppMessaging/Providers/index.d.ts"
+}
