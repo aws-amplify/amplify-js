@@ -560,7 +560,7 @@ tests:
     desc: 'Test events and identifyUser calls for pinpoint'
     framework: react
     category: analytics
-    sample_name: [pintpoint-test]
+    sample_name: [pinpoint-test]
     spec: pinpoint
     # Temp fix:
     browser: *minimal_browser_list
