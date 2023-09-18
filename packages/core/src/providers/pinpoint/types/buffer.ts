@@ -7,7 +7,7 @@ import { PinpointAnalyticsEvent, PinpointSession } from './pinpoint';
 export type EventBufferConfig = {
 	appId: string;
 	bufferSize: number;
-	credentials: AuthSession['credentials'];
+	credentials: Required<AuthSession>['credentials'];
 	identityId: AuthSession['identityId'];
 	flushInterval: number;
 	flushSize: number;

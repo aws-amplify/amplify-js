@@ -6,12 +6,7 @@ import {
 	RespondToAuthChallengeException,
 	AssociateSoftwareTokenException,
 } from '../types/errors';
-import {
-	AuthSignInResult,
-	ConfirmSignInRequest,
-} from '../../../types';
-import { CognitoConfirmSignInOptions } from '../types';
-
+import { ConfirmSignInInput, ConfirmSignInOutput } from '../types';
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
@@ -38,29 +33,22 @@ import {
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
  *
- * @param confirmSignInRequest - The ConfirmSignInRequest object
- *
+ * @param input -  The ConfirmSignInInput object
+ * @returns ConfirmSignInOutput
  * @throws  -{@link VerifySoftwareTokenException }:
  * Thrown due to an invalid MFA token.
- *
  * @throws  -{@link RespondToAuthChallengeException }:
  * Thrown due to an invalid auth challenge response.
- *
  * @throws  -{@link AssociateSoftwareTokenException}:
  * Thrown due to a service error during the MFA setup process.
- *
  * @throws  -{@link AuthValidationErrorCode }:
  * Thrown when `challengeResponse` is not defined.
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
- *
- * @returns AuthSignInResult
- *
  */
 export async function confirmSignIn(
-	confirmSignInRequest: ConfirmSignInRequest<CognitoConfirmSignInOptions>
-): Promise<AuthSignInResult> {
-	const { challengeResponse, options } = confirmSignInRequest;
+	input: ConfirmSignInInput
+): Promise<ConfirmSignInOutput> {
+	const { challengeResponse, options } = input;
 	const { username, challengeName, signInSession } = signInStore.getState();
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
