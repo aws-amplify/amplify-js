@@ -73,7 +73,7 @@ function getAuthRules({
 					!rule.provider ||
 					rule.provider === ModelAttributeAuthProvider.FUNCTION
 				) {
-					authModes.add(GraphQLAuthModeKeys.lambda);
+					authModes.add('lambda');
 				}
 				break;
 			case ModelAttributeAuthAllow.GROUPS:
@@ -81,9 +81,9 @@ function getAuthRules({
 				// We shouldn't attempt User Pool or OIDC if there isn't an authenticated user
 				if (currentUser) {
 					if (rule.provider === ModelAttributeAuthProvider.USER_POOLS) {
-						authModes.add(GraphQLAuthModeKeys.jwt);
+						authModes.add('jwt');
 					} else if (rule.provider === ModelAttributeAuthProvider.OIDC) {
-						authModes.add(GraphQLAuthModeKeys.jwt);
+						authModes.add('jwt');
 					}
 				}
 				break;
@@ -96,9 +96,9 @@ function getAuthRules({
 						!rule.provider ||
 						rule.provider === ModelAttributeAuthProvider.USER_POOLS
 					) {
-						authModes.add(GraphQLAuthModeKeys.jwt);
+						authModes.add('jwt');
 					} else if (rule.provider === ModelAttributeAuthProvider.IAM) {
-						authModes.add(GraphQLAuthModeKeys.iam);
+						authModes.add('iam');
 					}
 				}
 
@@ -106,13 +106,13 @@ function getAuthRules({
 			}
 			case ModelAttributeAuthAllow.PUBLIC: {
 				if (rule.provider === ModelAttributeAuthProvider.IAM) {
-					authModes.add(GraphQLAuthModeKeys.iam);
+					authModes.add('iam');
 				} else if (
 					!rule.provider ||
 					rule.provider === ModelAttributeAuthProvider.API_KEY
 				) {
 					// public with no provider means apiKey
-					authModes.add(GraphQLAuthModeKeys.apiKey);
+					authModes.add('apiKey');
 				}
 				break;
 			}

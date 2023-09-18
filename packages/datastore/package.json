@@ -1,7 +1,6 @@
 {
 	"name": "@aws-amplify/datastore",
 	"version": "5.0.0",
-	"private": true,
 	"description": "AppSyncLocal support for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",

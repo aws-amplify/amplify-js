@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	browserOrNode,
 	Logger,
 	BackgroundProcessManager,
 } from '@aws-amplify/core/internals/utils';
@@ -49,16 +48,12 @@ import {
 	TransformerMutationType,
 } from './utils';
 
-<<<<<<< HEAD
-=======
 import {
 	CONTROL_MSG as PUBSUB_CONTROL_MSG,
 	ConnectionState,
 	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
 } from '@aws-amplify/api-graphql';
 
-const { isNode } = browserOrNode();
->>>>>>> c8ffa4ce8 (wip datastore changes)
 const logger = new Logger('DataStore');
 
 const ownSymbol = Symbol('sync');

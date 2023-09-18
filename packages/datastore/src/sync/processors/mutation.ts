@@ -12,6 +12,7 @@ import {
 	retry,
 	BackgroundProcessManager,
 	GraphQLAuthModeKeys,
+	AmplifyError,
 } from '@aws-amplify/core/internals/utils';
 
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -46,6 +47,7 @@ import {
 	getTokenForCustomAuth,
 } from '../utils';
 import { getMutationErrorType } from './errorMaps';
+import { Amplify } from '@aws-amplify/core';
 
 const MAX_ATTEMPTS = 10;
 
@@ -163,146 +165,154 @@ class MutationProcessor {
 	}
 
 	public async resume(): Promise<void> {
-		await (this.runningProcesses.isOpen &&
-			this.runningProcesses.add(async onTerminate => {
-				if (
-					this.processing ||
-					!this.isReady() ||
-					!this.runningProcesses.isOpen
-				) {
-					return;
-				}
+		// TODO(v6): Check why this doesnt work
+		// await (this.runningProcesses.isOpen &&
+		// 	this.runningProcesses.add(async onTerminate => {
+		// 		if (
+		// 			this.processing ||
+		// 			!this.isReady() ||
+		// 			!this.runningProcesses.isOpen
+		// 		) {
+		// 			return;
+		// 		}
+		if (this.processing) {
+			return;
+		}
+		this.processing = true;
+		let head: MutationEvent;
+		const namespaceName = USER;
 
-				this.processing = true;
-				let head: MutationEvent;
-				const namespaceName = USER;
+		// start to drain outbox
+		while (
+			this.processing &&
+			this.runningProcesses.isOpen &&
+			(head = await this.outbox.peek(this.storage)) !== undefined
+		) {
+			const { model, operation, data, condition } = head;
+			const modelConstructor = this.userClasses[
+				model
+			] as PersistentModelConstructor<MutationEvent>;
+			let result: GraphQLResult<Record<string, PersistentModel>> = undefined!;
+			let opName: string = undefined!;
+			let modelDefinition: SchemaModel = undefined!;
 
-				// start to drain outbox
-				while (
-					this.processing &&
-					this.runningProcesses.isOpen &&
-					(head = await this.outbox.peek(this.storage)) !== undefined
-				) {
-					const { model, operation, data, condition } = head;
-					const modelConstructor = this.userClasses[
-						model
-					] as PersistentModelConstructor<MutationEvent>;
-					let result: GraphQLResult<Record<string, PersistentModel>> =
-						undefined!;
-					let opName: string = undefined!;
-					let modelDefinition: SchemaModel = undefined!;
+			const appSyncConfig = Amplify.getConfig().API?.AppSync;
 
+			if (!appSyncConfig) {
+				throw new AmplifyError({
+					message: 'AppSync not configured',
+					name: 'APINotConfigured',
+					recoverySuggestion: 'Invoke Amplify.configure',
+				});
+			}
+
+			try {
+				const modelAuthModes = await getModelAuthModes({
+					authModeStrategy: this.authModeStrategy,
+					defaultAuthMode: appSyncConfig.defaultAuthMode.type,
+					modelName: model,
+					schema: this.schema,
+				});
+
+				const operationAuthModes = modelAuthModes[operation.toUpperCase()];
+
+				let authModeAttempts = 0;
+				const authModeRetry = async () => {
 					try {
-						const modelAuthModes = await getModelAuthModes({
-							authModeStrategy: this.authModeStrategy,
-							defaultAuthMode:
-								this.amplifyConfig.aws_appsync_authenticationType,
-							modelName: model,
-							schema: this.schema,
-						});
+						logger.debug(
+							`Attempting mutation with authMode: ${operationAuthModes[authModeAttempts]}`
+						);
+						const response = await this.jitteredRetry(
+							namespaceName,
+							model,
+							operation,
+							data,
+							condition,
+							modelConstructor,
+							this.MutationEvent,
+							head,
+							operationAuthModes[authModeAttempts],
+							new Promise<void>(res => res())
+						);
 
-						const operationAuthModes = modelAuthModes[operation.toUpperCase()];
+						logger.debug(
+							`Mutation sent successfully with authMode: ${operationAuthModes[authModeAttempts]}`
+						);
 
-						let authModeAttempts = 0;
-						const authModeRetry = async () => {
-							try {
-								logger.debug(
-									`Attempting mutation with authMode: ${operationAuthModes[authModeAttempts]}`
-								);
-								const response = await this.jitteredRetry(
-									namespaceName,
-									model,
-									operation,
-									data,
-									condition,
-									modelConstructor,
-									this.MutationEvent,
-									head,
-									operationAuthModes[authModeAttempts],
-									onTerminate
-								);
-
-								logger.debug(
-									`Mutation sent successfully with authMode: ${operationAuthModes[authModeAttempts]}`
-								);
-
-								return response;
-							} catch (error) {
-								authModeAttempts++;
-								if (authModeAttempts >= operationAuthModes.length) {
-									logger.debug(
-										`Mutation failed with authMode: ${
-											operationAuthModes[authModeAttempts - 1]
-										}`
-									);
-									try {
-										await this.errorHandler({
-											recoverySuggestion:
-												'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-											localModel: null!,
-											message: error.message,
-											model: modelConstructor.name,
-											operation: opName,
-											errorType: getMutationErrorType(error),
-											process: ProcessName.sync,
-											remoteModel: null!,
-											cause: error,
-										});
-									} catch (e) {
-										logger.error('Mutation error handler failed with:', e);
-									}
-									throw error;
-								}
-								logger.debug(
-									`Mutation failed with authMode: ${
-										operationAuthModes[authModeAttempts - 1]
-									}. Retrying with authMode: ${
-										operationAuthModes[authModeAttempts]
-									}`
-								);
-								return await authModeRetry();
-							}
-						};
-
-						[result, opName, modelDefinition] = await authModeRetry();
+						return response;
 					} catch (error) {
-						if (
-							error.message === 'Offline' ||
-							error.message === 'RetryMutation'
-						) {
-							continue;
+						authModeAttempts++;
+						if (authModeAttempts >= operationAuthModes.length) {
+							logger.debug(
+								`Mutation failed with authMode: ${
+									operationAuthModes[authModeAttempts - 1]
+								}`
+							);
+							try {
+								await this.errorHandler({
+									recoverySuggestion:
+										'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+									localModel: null!,
+									message: error.message,
+									model: modelConstructor.name,
+									operation: opName,
+									errorType: getMutationErrorType(error),
+									process: ProcessName.sync,
+									remoteModel: null!,
+									cause: error,
+								});
+							} catch (e) {
+								logger.error('Mutation error handler failed with:', e);
+							}
+							throw error;
 						}
+						logger.debug(
+							`Mutation failed with authMode: ${
+								operationAuthModes[authModeAttempts - 1]
+							}. Retrying with authMode: ${
+								operationAuthModes[authModeAttempts]
+							}`
+						);
+						return await authModeRetry();
 					}
+				};
 
-					if (result === undefined) {
-						logger.debug('done retrying');
-						await this.storage.runExclusive(async storage => {
-							await this.outbox.dequeue(storage);
-						});
-						continue;
-					}
-
-					const record = result.data![opName!];
-					let hasMore = false;
-
-					await this.storage.runExclusive(async storage => {
-						// using runExclusive to prevent possible race condition
-						// when another record gets enqueued between dequeue and peek
-						await this.outbox.dequeue(storage, record, operation);
-						hasMore = (await this.outbox.peek(storage)) !== undefined;
-					});
-
-					this.observer?.next?.({
-						operation,
-						modelDefinition,
-						model: record,
-						hasMore,
-					});
+				[result, opName, modelDefinition] = await authModeRetry();
+			} catch (error) {
+				if (error.message === 'Offline' || error.message === 'RetryMutation') {
+					continue;
 				}
+			}
 
-				// pauses itself
-				this.pause();
-			}, 'mutation resume loop'));
+			if (result === undefined) {
+				logger.debug('done retrying');
+				await this.storage.runExclusive(async storage => {
+					await this.outbox.dequeue(storage);
+				});
+				continue;
+			}
+
+			const record = result.data![opName!];
+			let hasMore = false;
+
+			await this.storage.runExclusive(async storage => {
+				// using runExclusive to prevent possible race condition
+				// when another record gets enqueued between dequeue and peek
+				await this.outbox.dequeue(storage, record, operation);
+				hasMore = (await this.outbox.peek(storage)) !== undefined;
+			});
+
+			this.observer?.next?.({
+				operation,
+				modelDefinition,
+				model: record,
+				hasMore,
+			});
+		}
+
+		// pauses itself
+		this.pause();
+		// }, 'mutation resume loop'));
 	}
 
 	private async jitteredRetry(

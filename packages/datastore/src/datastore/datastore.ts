@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Hub, Cache } from '@aws-amplify/core';
+import { Amplify, Hub, Cache } from '@aws-amplify/core';
 
 import {
 	Draft,
@@ -106,7 +106,6 @@ import DataStoreConnectivity from '../sync/datastoreConnectivity';
 import {
 	BackgroundProcessManager,
 	Logger,
-	browserOrNode,
 } from '@aws-amplify/core/internals/utils';
 
 setAutoFreeze(true);
@@ -489,7 +488,6 @@ const checkSchemaCodegenVersion = (codegenVersion: string) => {
 	const majorVersion = 3;
 	const minorVersion = 2;
 	let isValid = false;
-
 	try {
 		const versionParts = codegenVersion.split('.');
 		const [major, minor, patch, patchrevision] = versionParts;
@@ -1525,7 +1523,9 @@ class DataStore {
 				await this.storage.init();
 				checkSchemaInitialized();
 				await checkSchemaVersion(this.storage, schema.version);
-				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
+
+				const aws_appsync_graphqlEndpoint =
+					Amplify.getConfig().API?.AppSync?.endpoint;
 
 				if (aws_appsync_graphqlEndpoint) {
 					logger.debug(
@@ -1578,7 +1578,7 @@ class DataStore {
 					logger.warn(
 						"Data won't be synchronized. No GraphQL endpoint configured. Did you forget `Amplify.configure(awsconfig)`?",
 						{
-							config: this.amplifyConfig,
+							config: Amplify.getConfig().API,
 						}
 					);
 
@@ -2727,7 +2727,8 @@ class DataStore {
 			const sessionId = sessionStorage.getItem('datastoreSessionId');
 
 			if (sessionId) {
-				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
+				const aws_appsync_graphqlEndpoint =
+					Amplify.getConfig().API?.AppSync?.endpoint || '';
 
 				const appSyncUrl = aws_appsync_graphqlEndpoint.split('/')[2];
 				const [appSyncId] = appSyncUrl.split('.');
@@ -2741,5 +2742,6 @@ class DataStore {
 }
 
 const instance = new DataStore();
+instance.configure({});
 
 export { DataStore as DataStoreClass, initSchema, instance as DataStore };

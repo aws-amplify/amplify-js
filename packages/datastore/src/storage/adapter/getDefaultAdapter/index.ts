@@ -3,9 +3,9 @@
 import { Adapter } from '..';
 import IndexedDBAdapter from '../IndexedDBAdapter';
 import AsyncStorageAdapter from '../AsyncStorageAdapter';
-import { browserOrNode, isWebWorker } from '@aws-amplify/core/internals/utils';
+import { isWebWorker } from '@aws-amplify/core/internals/utils';
 const getDefaultAdapter: () => Adapter = () => {
-	const { isBrowser } = browserOrNode();
+	const isBrowser = true; // TODO(v6): Update this for SSR
 
 	if ((isBrowser && window.indexedDB) || (isWebWorker() && self.indexedDB)) {
 		return IndexedDBAdapter as Adapter;

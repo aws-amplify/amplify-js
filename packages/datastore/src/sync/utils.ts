@@ -898,7 +898,7 @@ export async function getTokenForCustomAuth(
 	authMode: GraphQLAuthModeKeys,
 	amplifyConfig: Record<string, any> = {}
 ): Promise<string | undefined> {
-	if (authMode === GraphQLAuthModeKeys.lambda) {
+	if (authMode === 'lambda') {
 		const {
 			authProviders: { functionAuthProvider } = { functionAuthProvider: null },
 		} = amplifyConfig;
@@ -914,7 +914,7 @@ export async function getTokenForCustomAuth(
 		} else {
 			// TODO: add docs link once available
 			throw new Error(
-				`You must provide a \`functionAuthProvider\` function to \`DataStore.configure\` when using ${GraphQLAuthModeKeys.lambda}`
+				`You must provide a \`functionAuthProvider\` function to \`DataStore.configure\` when using lambda`
 			);
 		}
 	}

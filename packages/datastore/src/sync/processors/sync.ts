@@ -32,9 +32,10 @@ import {
 	NonRetryableError,
 	BackgroundProcessManager,
 	GraphQLAuthModeKeys,
+	AmplifyError,
 } from '@aws-amplify/core/internals/utils';
 
-import { Hub } from '@aws-amplify/core';
+import { Amplify, Hub } from '@aws-amplify/core';
 
 import { ModelPredicateCreator } from '../../predicates';
 import { getSyncErrorType } from './errorMaps';
@@ -116,9 +117,19 @@ class SyncProcessor {
 			filter,
 		};
 
+		const appSyncConfig = Amplify.getConfig().API?.AppSync;
+
+		if (!appSyncConfig) {
+			throw new AmplifyError({
+				message: 'AppSync not configured',
+				name: 'APINotConfigured',
+				recoverySuggestion: 'Invoke Amplify.configure',
+			});
+		}
+
 		const modelAuthModes = await getModelAuthModes({
 			authModeStrategy: this.authModeStrategy,
-			defaultAuthMode: this.amplifyConfig.aws_appsync_authenticationType,
+			defaultAuthMode: appSyncConfig.defaultAuthMode.type,
 			modelName: modelDefinition.name,
 			schema: this.schema,
 		});
