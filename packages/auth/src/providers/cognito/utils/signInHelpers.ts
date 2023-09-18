@@ -643,7 +643,8 @@ export async function assertUserNotAuthenticated() {
 	if (authUser && authUser.userId && authUser.username) {
 		throw new AuthError({
 			name: USER_ALREADY_AUTHENTICATED_EXCEPTION,
-			message: 'There is already a signed in user.',
+			message:
+				'There is already a signed in user.',
 			recoverySuggestion: 'Call signOut before calling signIn again.',
 		});
 	}

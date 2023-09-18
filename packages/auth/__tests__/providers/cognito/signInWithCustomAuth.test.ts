@@ -16,6 +16,7 @@ import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../src/errors/consta
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
+
 const authConfig = {
 	Cognito: {
 		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
