@@ -18,7 +18,7 @@ export class UniversalStorage implements Storage {
 
 	constructor(context: Context = {}) {
 		this.cookies = context.req
-			? new Cookies(context.req.headers.cookie)
+			? new Cookies(decodeURIComponent(context.req.headers.cookie))
 			: new Cookies();
 
 		Object.assign(this.store, this.cookies.getAll());
