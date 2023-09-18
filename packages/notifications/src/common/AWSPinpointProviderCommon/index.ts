@@ -5,15 +5,14 @@ import {
 	Category,
 	ClientDevice,
 	ConsoleLogger,
-	Credentials,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
 	InAppMessagingAction,
 	PushNotificationAction,
-	StorageHelper,
 	transferKeyToUpperCase,
-	Cache,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/utils';
+import { Cache, fetchAuthSession } from '@aws-amplify/core';
+
 import {
 	Event as AWSPinpointAnalyticsEvent,
 	putEvents,
@@ -44,7 +43,7 @@ export default abstract class AWSPinpointProviderCommon
 	protected logger: ConsoleLogger;
 
 	constructor(logger) {
-		this.config = { storage: new StorageHelper().getStorage() };
+		// this.config = { storage: new StorageHelper().getStorage() };
 		this.clientInfo = ClientDevice.clientInfo() ?? {};
 		this.logger = logger;
 	}
@@ -268,12 +267,12 @@ export default abstract class AWSPinpointProviderCommon
 
 	private getCredentials = async () => {
 		try {
-			const credentials = await Credentials.get();
-			if (!credentials) {
+			const session = await fetchAuthSession();
+			if (!session.credentials) {
 				this.logger.debug('no credentials found');
 				return null;
 			}
-			return Credentials.shear(credentials);
+			return { ...session.credentials, identityId: session.identityId };
 		} catch (err) {
 			this.logger.error('Error getting credentials:', err);
 			return null;

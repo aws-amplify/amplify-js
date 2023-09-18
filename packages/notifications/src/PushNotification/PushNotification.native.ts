@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AppRegistry, NativeEventEmitter } from 'react-native';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import {
 	AmplifyRTNPushNotification,
 	PushNotificationNativeModule,

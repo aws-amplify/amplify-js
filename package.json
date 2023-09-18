@@ -48,7 +48,8 @@
 			"packages/adapter-nextjs",
 			"packages/api",
 			"packages/api-graphql",
-			"packages/api-rest"
+			"packages/api-rest",
+			"packages/notifications"
 		],
 		"nohoist": [
 			"**/@types/react-native",

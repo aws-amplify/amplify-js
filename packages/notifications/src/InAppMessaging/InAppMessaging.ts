@@ -1,13 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	ConsoleLogger as Logger,
-	HubCallback,
-	HubCapsule,
-	Hub,
-	StorageHelper,
-} from '@aws-amplify/core';
+import { HubCallback, HubCapsule, Hub } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import flatten from 'lodash/flatten';
 
 import {
@@ -41,7 +36,8 @@ export default class InAppMessaging implements InAppMessagingInterface {
 	private storageSynced = false;
 
 	constructor() {
-		this.config = { storage: new StorageHelper().getStorage() };
+		// TODO(V6): use functional storageHelper
+		// this.config = { storage: new StorageHelper().getStorage() };
 		this.setConflictHandler(this.defaultConflictHandler);
 	}
 
@@ -225,7 +221,9 @@ export default class InAppMessaging implements InAppMessagingInterface {
 		this.conflictHandler = handler;
 	};
 
-	private analyticsListener: HubCallback = ({ payload }: HubCapsule) => {
+	private analyticsListener: HubCallback = ({
+		payload,
+	}: HubCapsule<any, any>) => {
 		const { event, data } = payload;
 		switch (event) {
 			case 'record': {
