@@ -10,7 +10,8 @@ import {
 	PolygonGeometry,
 	Geofence,
 } from '../src/types';
-import { GeoConfig, parseAWSExports } from '@aws-amplify/core';
+import { GeoConfig } from '@aws-amplify/core';
+import { parseAWSExports } from '@aws-amplify/core/internals/utils';
 
 export const credentials = {
 	accessKeyId: 'accessKeyId',
