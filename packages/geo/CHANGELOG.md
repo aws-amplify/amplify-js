@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.3.5 (2023-09-14)
+
+**Note:** Version bump only for package @aws-amplify/geo
+
 ## 2.3.4 (2023-08-23)
 
 **Note:** Version bump only for package @aws-amplify/geo
