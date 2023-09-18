@@ -1,13 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export enum TransferTaskState {
-	IN_PROGRESS = 'IN_PROGRESS',
-	PAUSED = 'PAUSED',
-	CANCELED = 'CANCELED',
-	SUCCESS = 'SUCCESS',
-	ERROR = 'ERROR',
-}
+export type TransferTaskState =
+	| 'IN_PROGRESS'
+	| 'PAUSED'
+	| 'CANCELED'
+	| 'SUCCESS'
+	| 'ERROR';
 
 export type TransferProgressEvent = {
 	transferredBytes: number;

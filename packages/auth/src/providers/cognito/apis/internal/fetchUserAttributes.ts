@@ -7,15 +7,14 @@ import {
 	fetchAuthSession,
 } from '@aws-amplify/core/internals/utils';
 import { getUser } from '../../utils/clients/CognitoIdentityProvider';
-import { AuthUserAttribute } from '../../../../types';
 import { getRegion } from '../../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../../utils/types';
-import { CognitoUserAttributeKey } from '../../types';
+import { FetchUserAttributesOutput } from '../../types';
 import { toAuthUserAttribute } from '../../utils/apiHelpers';
 
 export const fetchUserAttributes = async (
 	amplify: AmplifyClassV6
-): Promise<AuthUserAttribute<CognitoUserAttributeKey>> => {
+): Promise<FetchUserAttributesOutput> => {
 	const authConfig = amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession(amplify, {

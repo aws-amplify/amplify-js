@@ -67,5 +67,3 @@ export { BrowserStorageCache as Cache }; // Maintain interoperability with React
 
 // Internationalization utilities
 export { I18n } from './I18n';
-
-export { parseAWSExports } from './parseAWSExports';

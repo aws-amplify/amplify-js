@@ -2,9 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';
+import {
+	CopySourceOptions,
+	CopyDestinationOptions,
+} from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -24,6 +28,7 @@ const destinationKey = 'destinationKey';
 const bucket = 'bucket';
 const region = 'region';
 const targetIdentityId = 'targetIdentityId';
+const defaultIdentityId = 'defaultIdentityId';
 const copyResult = { key: destinationKey };
 const credentials: Credentials = {
 	accessKeyId: 'accessKeyId',
@@ -39,72 +44,17 @@ const copyObjectClientBaseParams = {
 	MetadataDirective: 'COPY',
 };
 
-/**
- * bucket is appended at start if it's a sourceKey
- * guest: public/${key}`
- * private: private/${targetIdentityId}/${key}`
- * protected: protected/${targetIdentityId}/${key}`
- */
-const buildClientRequestKey = (
-	key: string,
-	KeyType: 'source' | 'destination',
-	accessLevel: StorageAccessLevel
-) => {
-	const targetIdentityId = 'targetIdentityId';
-	const bucket = 'bucket';
-	const finalAccessLevel = accessLevel == 'guest' ? 'public' : accessLevel;
-	let finalKey = KeyType == 'source' ? `${bucket}/` : '';
-	finalKey += `${finalAccessLevel}/`;
-	finalKey += finalAccessLevel != 'public' ? `${targetIdentityId}/` : '';
-	finalKey += `${key}`;
-	return finalKey;
-};
-
-const interAccessLevelTest = async (
-	sourceAccessLevel,
-	destinationAccessLevel
-) => {
-	expect.assertions(3);
-	const source = {
-		key: sourceKey,
-		accessLevel: sourceAccessLevel,
-	};
-	sourceAccessLevel == 'protected'
-		? (source['targetIdentityId'] = targetIdentityId)
-		: null;
-
-	expect(
-		await copy({
-			source,
-			destination: {
-				key: destinationKey,
-				accessLevel: destinationAccessLevel,
-			},
-		})
-	).toEqual(copyResult);
-	expect(copyObject).toBeCalledTimes(1);
-	expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
-		...copyObjectClientBaseParams,
-		CopySource: buildClientRequestKey(sourceKey, 'source', sourceAccessLevel),
-		Key: buildClientRequestKey(
-			destinationKey,
-			'destination',
-			destinationAccessLevel
-		),
-	});
-};
-
 describe('copy API', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
-			identityId: targetIdentityId,
+			identityId: defaultIdentityId,
 		});
 		mockGetConfig.mockReturnValue({
 			Storage: {
 				S3: {
-					bucket: 'bucket',
-					region: 'region',
+					bucket,
+					region,
 				},
 			},
 		});
@@ -120,40 +70,114 @@ describe('copy API', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-
-		describe('Copy from guest to all access levels', () => {
-			it('Should copy guest -> guest', async () =>
-				await interAccessLevelTest('guest', 'guest'));
-			it('Should copy guest -> private', async () =>
-				await interAccessLevelTest('guest', 'private'));
-			it('Should copy guest -> protected', async () =>
-				await interAccessLevelTest('guest', 'protected'));
-		});
-
-		describe('Copy from private to all access levels', () => {
-			it('Should copy private -> guest', async () =>
-				await interAccessLevelTest('private', 'guest'));
-			it('Should copy private -> private', async () =>
-				await interAccessLevelTest('private', 'private'));
-			it('Should copy private -> protected', async () =>
-				await interAccessLevelTest('private', 'protected'));
-		});
-
-		describe('Copy from protected to all access levels', () => {
-			it('Should copy protected -> guest', async () =>
-				await interAccessLevelTest('protected', 'guest'));
-			it('Should copy protected -> private', async () =>
-				await interAccessLevelTest('protected', 'private'));
-			it('Should copy protected -> protected', async () =>
-				await interAccessLevelTest('protected', 'protected'));
-		});
+		[
+			{
+				source: { accessLevel: 'guest' },
+				destination: { accessLevel: 'guest' },
+				expectedSourceKey: `${bucket}/public/${sourceKey}`,
+				expectedDestinationKey: `public/${destinationKey}`,
+			},
+			{
+				source: { accessLevel: 'guest' },
+				destination: { accessLevel: 'private' },
+				expectedSourceKey: `${bucket}/public/${sourceKey}`,
+				expectedDestinationKey: `private/${defaultIdentityId}/${destinationKey}`,
+			},
+			{
+				source: { accessLevel: 'guest' },
+				destination: { accessLevel: 'protected' },
+				expectedSourceKey: `${bucket}/public/${sourceKey}`,
+				expectedDestinationKey: `protected/${defaultIdentityId}/${destinationKey}`,
+			},
+			{
+				source: { accessLevel: 'private' },
+				destination: { accessLevel: 'guest' },
+				expectedSourceKey: `${bucket}/private/${defaultIdentityId}/${sourceKey}`,
+				expectedDestinationKey: `public/${destinationKey}`,
+			},
+			{
+				source: { accessLevel: 'private' },
+				destination: { accessLevel: 'private' },
+				expectedSourceKey: `${bucket}/private/${defaultIdentityId}/${sourceKey}`,
+				expectedDestinationKey: `private/${defaultIdentityId}/${destinationKey}`,
+			},
+			{
+				source: { accessLevel: 'private' },
+				destination: { accessLevel: 'protected' },
+				expectedSourceKey: `${bucket}/private/${defaultIdentityId}/${sourceKey}`,
+				expectedDestinationKey: `protected/${defaultIdentityId}/${destinationKey}`,
+			},
+			{
+				source: { accessLevel: 'protected' },
+				destination: { accessLevel: 'guest' },
+				expectedSourceKey: `${bucket}/protected/${defaultIdentityId}/${sourceKey}`,
+				expectedDestinationKey: `public/${destinationKey}`,
+			},
+			{
+				source: { accessLevel: 'protected' },
+				destination: { accessLevel: 'private' },
+				expectedSourceKey: `${bucket}/protected/${defaultIdentityId}/${sourceKey}`,
+				expectedDestinationKey: `private/${defaultIdentityId}/${destinationKey}`,
+			},
+			{
+				source: { accessLevel: 'protected' },
+				destination: { accessLevel: 'protected' },
+				expectedSourceKey: `${bucket}/protected/${defaultIdentityId}/${sourceKey}`,
+				expectedDestinationKey: `protected/${defaultIdentityId}/${destinationKey}`,
+			},
+			{
+				source: { accessLevel: 'protected', targetIdentityId },
+				destination: { accessLevel: 'guest' },
+				expectedSourceKey: `${bucket}/protected/${targetIdentityId}/${sourceKey}`,
+				expectedDestinationKey: `public/${destinationKey}`,
+			},
+			{
+				source: { accessLevel: 'protected', targetIdentityId },
+				destination: { accessLevel: 'private' },
+				expectedSourceKey: `${bucket}/protected/${targetIdentityId}/${sourceKey}`,
+				expectedDestinationKey: `private/${defaultIdentityId}/${destinationKey}`,
+			},
+			{
+				source: { accessLevel: 'protected', targetIdentityId },
+				destination: { accessLevel: 'protected' },
+				expectedSourceKey: `${bucket}/protected/${targetIdentityId}/${sourceKey}`,
+				expectedDestinationKey: `protected/${defaultIdentityId}/${destinationKey}`,
+			},
+		].forEach(
+			({ source, destination, expectedSourceKey, expectedDestinationKey }) => {
+				const targetIdentityIdMsg = source?.targetIdentityId
+					? `with targetIdentityId`
+					: '';
+				it(`should copy ${source.accessLevel} ${targetIdentityIdMsg} -> ${destination.accessLevel}`, async () => {
+					expect.assertions(3);
+					expect(
+						await copy({
+							source: {
+								...(source as CopySourceOptions),
+								key: sourceKey,
+							},
+							destination: {
+								...(destination as CopyDestinationOptions),
+								key: destinationKey,
+							},
+						})
+					).toEqual(copyResult);
+					expect(copyObject).toBeCalledTimes(1);
+					expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
+						...copyObjectClientBaseParams,
+						CopySource: expectedSourceKey,
+						Key: expectedDestinationKey,
+					});
+				});
+			}
+		);
 	});
 
 	describe('Error Path Cases:', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		it('Should return a not found error', async () => {
+		it('should return a not found error', async () => {
 			mockCopyObject.mockRejectedValueOnce(
 				Object.assign(new Error(), {
 					$metadata: { httpStatusCode: 404 },

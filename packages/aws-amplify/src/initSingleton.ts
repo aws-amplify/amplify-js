@@ -8,16 +8,31 @@ import {
 	CookieStorage,
 } from '@aws-amplify/core';
 import {
+	LegacyConfig,
+	parseAWSExports,
+} from '@aws-amplify/core/internals/utils';
+import {
 	CognitoUserPoolsTokenProvider,
 	cognitoCredentialsProvider,
 } from './auth/cognito';
 
 export const DefaultAmplify = {
-	configure(resourceConfig: ResourcesConfig, libraryOptions?: LibraryOptions) {
+	configure(
+		resourceConfig: ResourcesConfig | LegacyConfig,
+		libraryOptions?: LibraryOptions
+	) {
+		let resolvedResourceConfig: ResourcesConfig;
+
+		if (Object.keys(resourceConfig).some(key => key.startsWith('aws_'))) {
+			resolvedResourceConfig = parseAWSExports(resourceConfig);
+		} else {
+			resolvedResourceConfig = resourceConfig as ResourcesConfig;
+		}
+
 		// When Auth config is provided but no custom Auth provider defined
 		// use the default Auth Providers
-		if (resourceConfig.Auth && !libraryOptions?.Auth) {
-			CognitoUserPoolsTokenProvider.setAuthConfig(resourceConfig.Auth);
+		if (resolvedResourceConfig.Auth && !libraryOptions?.Auth) {
+			CognitoUserPoolsTokenProvider.setAuthConfig(resolvedResourceConfig.Auth);
 
 			const libraryOptionsWithDefaultAuthProviders: LibraryOptions = {
 				...libraryOptions,
@@ -35,9 +50,12 @@ export const DefaultAmplify = {
 					: LocalStorage
 			);
 
-			Amplify.configure(resourceConfig, libraryOptionsWithDefaultAuthProviders);
+			Amplify.configure(
+				resolvedResourceConfig,
+				libraryOptionsWithDefaultAuthProviders
+			);
 		} else {
-			Amplify.configure(resourceConfig, libraryOptions);
+			Amplify.configure(resolvedResourceConfig, libraryOptions);
 		}
 	},
 	getConfig(): ResourcesConfig {

@@ -5,21 +5,56 @@ import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
 import { AnalyticsValidationErrorCode } from '../../../errors';
 import { getAnalyticsUserAgentString } from '../../../utils/userAgent';
-import { IdentifyUserParameters, UpdateEndpointException } from '../types';
+import { IdentifyUserInput, UpdateEndpointException } from '../types';
 import { resolveConfig, resolveCredentials } from '../utils';
 
 /**
- * Identifies the current user with Pinpoint.
+ * Sends information about a user to Pinpoint. Sending user information allows you to associate a user to their user
+ * profile and activities or actions in your application. Activity can be tracked across devices & platforms by using
+ * the same `userId`.
  *
- * @param {IdentifyUserParameters} params parameters used to construct requests sent to Pinpoint's UpdateEndpoint API.
+ * @param {IdentifyUserParameters} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
+ *  API.
  *
- * @throws An {@link UpdateEndpointException} when the underlying Pinpoint service returns an error.
- * @throws An {@link AnalyticsValidationErrorCode} when API call parameters are invalid.
+ * @throws service: {@link UpdateEndpointException} - Thrown when the underlying Pinpoint service returns an error.
+ * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library
+ *  configuration is incorrect.
+ *
+ * @returns A promise that will resolve when the operation is complete.
+ *
+ * @example
+ * ```ts
+ * // Identify a user with Pinpoint
+ * await identifyUser({
+ *     userId,
+ *     userProfile: {
+ *         attributes: {
+ *             email: [userEmail],
+ *         },
+ *     }
+ * });
+ * ```
+ *
+ * @example
+ * ```ts
+ * // Identify a user with Pinpoint with some additional demographics
+ * await identifyUser({
+ *     userId,
+ *     userProfile: {
+ *         attributes: {
+ *             email: [userEmail],
+ *         },
+ *         demographic: {
+ *             platform: 'ios',
+ *             timezone: 'America/Los_Angeles'
+ *         }
+ *     }
+ * });
  */
 export const identifyUser = async ({
 	userId,
 	userProfile,
-}: IdentifyUserParameters): Promise<void> => {
+}: IdentifyUserInput): Promise<void> => {
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
 	updateEndpoint({

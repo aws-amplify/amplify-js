@@ -19,12 +19,7 @@ import {
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
 } from '../utils/signInHelpers';
-import { CognitoSignInOptions } from '../types';
-import {
-	SignInRequest,
-	AuthSignInResult,
-	AuthSignInStep,
-} from '../../../types';
+import { SignInWithSRPInput, SignInWithSRPOutput } from '../types';
 import {
 	setActiveSignInState,
 	cleanActiveSignInState,
@@ -34,22 +29,21 @@ import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 /**
  * Signs a user in
  *
- * @param signInRequest - The SignInRequest object
- * @returns AuthSignInResult
+ * @param input - The SignInWithSRPInput object
+ * @returns SignInWithSRPOutput
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } - Cognito service errors
  * thrown during the sign-in process.
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithSRP(
-	signInRequest: SignInRequest<CognitoSignInOptions>
-): Promise<AuthSignInResult> {
-	const { username, password } = signInRequest;
+	input: SignInWithSRPInput
+): Promise<SignInWithSRPOutput> {
+	const { username, password } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const clientMetaData = signInRequest.options?.serviceOptions?.clientMetadata;
+	const clientMetaData = input.options?.serviceOptions?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -83,7 +77,7 @@ export async function signInWithSRP(
 			await cacheCognitoTokens(AuthenticationResult);
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 
