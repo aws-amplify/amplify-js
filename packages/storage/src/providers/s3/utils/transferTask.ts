@@ -19,20 +19,16 @@ const createCancellableTask = <Result>({
 	job,
 	onCancel,
 }: CreateCancellableTaskOptions<Result>): CancellableTask<Result> => {
-	const state = TransferTaskState.IN_PROGRESS;
+	const state = 'IN_PROGRESS' as TransferTaskState;
 	let abortErrorOverwriteRecord: Error | undefined = undefined;
 	const cancelableTask = {
 		cancel: (abortErrorOverwrite?: Error) => {
 			abortErrorOverwriteRecord = abortErrorOverwrite;
 			const { state } = cancelableTask;
-			if (
-				state === TransferTaskState.CANCELED ||
-				state === TransferTaskState.ERROR ||
-				state === TransferTaskState.SUCCESS
-			) {
+			if (state === 'CANCELED' || state === 'ERROR' || state === 'SUCCESS') {
 				return;
 			}
-			cancelableTask.state = TransferTaskState.CANCELED;
+			cancelableTask.state = 'CANCELED';
 			onCancel(abortErrorOverwrite);
 		},
 		state,
@@ -41,14 +37,14 @@ const createCancellableTask = <Result>({
 	const wrappedJobPromise = (async () => {
 		try {
 			const result = await job();
-			cancelableTask.state = TransferTaskState.SUCCESS;
+			cancelableTask.state = 'SUCCESS';
 			return result;
 		} catch (e) {
 			if (isCancelError(e)) {
-				cancelableTask.state = TransferTaskState.CANCELED;
+				cancelableTask.state = 'CANCELED';
 				throw abortErrorOverwriteRecord ?? e;
 			}
-			cancelableTask.state = TransferTaskState.ERROR;
+			cancelableTask.state = 'ERROR';
 			throw e;
 		}
 	})();
@@ -83,20 +79,20 @@ export const createUploadTask = <Result>({
 	const uploadTask = Object.assign(cancellableTask, {
 		pause: () => {
 			const { state } = uploadTask;
-			if (!isMultipartUpload || state !== TransferTaskState.IN_PROGRESS) {
+			if (!isMultipartUpload || state !== 'IN_PROGRESS') {
 				return;
 			}
 			// @ts-ignore
-			uploadTask.state = TransferTaskState.PAUSED;
+			uploadTask.state = 'PAUSED';
 			onPause?.();
 		},
 		resume: () => {
 			const { state } = uploadTask;
-			if (!isMultipartUpload || state !== TransferTaskState.PAUSED) {
+			if (!isMultipartUpload || state !== 'PAUSED') {
 				return;
 			}
 			// @ts-ignore
-			uploadTask.state = TransferTaskState.IN_PROGRESS;
+			uploadTask.state = 'IN_PROGRESS';
 			onResume?.();
 		},
 	});

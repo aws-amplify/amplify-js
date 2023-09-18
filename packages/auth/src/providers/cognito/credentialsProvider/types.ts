@@ -9,7 +9,7 @@ export const IdentityIdStorageKeys = {
 
 export interface IdentityIdStore {
 	setAuthConfig(authConfigParam: AuthConfig): void;
-	loadIdentityId(): Promise<Identity | undefined>;
+	loadIdentityId(): Promise<Identity | null>;
 	storeIdentityId(identity: Identity): Promise<void>;
 	clearIdentityId(): Promise<void>;
 }
