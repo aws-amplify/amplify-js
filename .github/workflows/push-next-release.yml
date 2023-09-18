@@ -1,4 +1,4 @@
-name: Push - release from next to next
+name: Push - release from next/release to next
 
 concurrency:
   # group name unique for push to push-main-release
@@ -8,17 +8,17 @@ concurrency:
 on:
   push:
     branches:
-      - next
+      - next/release
 
 jobs:
   e2e:
     secrets: inherit
     uses: ./.github/workflows/callable-release-verification.yml
-  next-release:
-    needs:
-      - e2e
-    secrets: inherit
-    uses: ./.github/workflows/callable-npm-publish-preid.yml
-    with:
-      preid: next
-      allow-protected-preid: true
+  # next-release:
+  #   needs:
+  #     - e2e
+  #   secrets: inherit
+  #   uses: ./.github/workflows/callable-npm-publish-preid.yml
+  #   with:
+  #     preid: next
+  #     allow-protected-preid: true

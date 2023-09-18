@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ResourcesConfig } from 'aws-amplify';
+import { parseAWSExports } from '@aws-amplify/core/internals/utils';
 import { AmplifyServerContextError } from '@aws-amplify/core/internals/adapter-core';
 import getConfig from 'next/config';
 
@@ -28,5 +29,7 @@ export const getAmplifyConfig = (): ResourcesConfig => {
 	const configObject = JSON.parse(configStr);
 
 	// TODO(HuiSF): adds ResourcesConfig validation when it has one.
-	return configObject;
+	return Object.keys(configObject).some(key => key.startsWith('aws_'))
+		? parseAWSExports(configObject)
+		: configObject;
 };

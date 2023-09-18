@@ -56,6 +56,43 @@ describe('initSingleton (DefaultAmplify)', () => {
 	});
 
 	describe('DefaultAmplify.configure()', () => {
+		it('should take the legacy CLI shaped config object for configuring the underlying Amplify Singleton', () => {
+			const mockLegacyConfig = {
+				aws_project_region: 'us-west-2',
+				aws_cognito_identity_pool_id: 'aws_cognito_identity_pool_id',
+				aws_cognito_region: 'aws_cognito_region',
+				aws_user_pools_id: 'aws_user_pools_id',
+				aws_user_pools_web_client_id: 'aws_user_pools_web_client_id',
+				oauth: {},
+				aws_cognito_username_attributes: [],
+				aws_cognito_social_providers: [],
+				aws_cognito_signup_attributes: [],
+				aws_cognito_mfa_configuration: 'OFF',
+				aws_cognito_mfa_types: ['SMS'],
+				aws_cognito_password_protection_settings: {
+					passwordPolicyMinLength: 8,
+					passwordPolicyCharacters: [],
+				},
+				aws_cognito_verification_mechanisms: ['PHONE_NUMBER'],
+			};
+
+			Amplify.configure(mockLegacyConfig);
+
+			expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
+				{
+					Auth: {
+						Cognito: {
+							allowGuestAccess: true,
+							identityPoolId: 'aws_cognito_identity_pool_id',
+							userPoolClientId: 'aws_user_pools_web_client_id',
+							userPoolId: 'aws_user_pools_id',
+						},
+					},
+				},
+				expect.anything()
+			);
+		});
+
 		describe('when ResourcesConfig.Auth is defined', () => {
 			describe('when libraryOptions.Auth is undefined', () => {
 				it('should invoke AmplifySingleton.configure with the default auth providers', () => {

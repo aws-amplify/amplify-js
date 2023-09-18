@@ -9,22 +9,16 @@ import {
 	AuthNextUpdateAttributeStep,
 } from './models';
 
-/**
- * The Result of a Sign In request.
- */
-export type AuthSignInResult<
+export type AuthSignInOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	isSignedIn: boolean;
 	nextStep: AuthNextSignInStep<UserAttributeKey>;
 };
 
-export type AuthSignOutResult = void;
+export type AuthSignOutOutput = void;
 
-/**
- * The Result of a Sign Up request.
- */
-export type AuthSignUpResult<
+export type AuthSignUpOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	isSignUpComplete: boolean;
@@ -32,31 +26,22 @@ export type AuthSignUpResult<
 	userId?: string;
 };
 
-/**
- * The Result of a Reset Password request.
- */
-export type ResetPasswordResult<
+export type AuthResetPasswordOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	isPasswordReset: boolean;
 	nextStep: AuthNextResetPasswordStep<UserAttributeKey>;
 };
 
-/**
- * The Result of a Update User Attribute request.
- */
-export type UpdateUserAttributeResult<
+export type AuthUpdateUserAttributeOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	isUpdated: boolean;
 	nextStep: AuthNextUpdateAttributeStep<UserAttributeKey>;
 };
 
-/**
- * The Result of a Update User Attributes request.
- */
-export type UpdateUserAttributesResult<
+export type AuthUpdateUserAttributesOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
-	[authKey in UserAttributeKey]: UpdateUserAttributeResult<UserAttributeKey>;
+	[authKey in UserAttributeKey]: AuthUpdateUserAttributeOutput<UserAttributeKey>;
 };

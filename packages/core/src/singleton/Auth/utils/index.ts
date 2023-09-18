@@ -63,10 +63,10 @@ export function assertIdentityPooIdConfig(
 ): asserts cognitoConfig is CognitoIdentityPoolConfig {
 	const validConfig = !!cognitoConfig?.identityPoolId;
 	return asserts(validConfig, {
-		name: 'AuthIdentityPoolIdException',
-		message: 'Auth IdentityPoolId not configured',
+		name: 'InvalidIdentityPoolIdException',
+		message: 'Invalid identity pool id provided.',
 		recoverySuggestion:
-			'Make sure to call Amplify.configure in your app with a valid IdentityPoolId',
+			'Make sure a valid identityPoolId is given in the config.',
 	});
 }
 
