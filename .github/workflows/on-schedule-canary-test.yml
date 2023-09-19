@@ -1,8 +1,10 @@
 on:
   # Tests scheduled at 4pm(UTC) / 9am(PDT) everyday
   # default supported timezone is UTC
-  schedule:
-    - cron: '0 16 * * *'
+  pull_request:
+    branches: [fix-canary-engine-failure]
+  push:
+    branches: [fix-canary-engine-failure]
 
 jobs:
   canaries:
