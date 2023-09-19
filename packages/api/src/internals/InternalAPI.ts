@@ -100,7 +100,6 @@ export class InternalAPIClass {
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<any>> | Observable<object> {
-		// ): any {
 		const apiUserAgentDetails: CustomUserAgentDetails = {
 			category: Category.API,
 			action: ApiAction.GraphQl,
