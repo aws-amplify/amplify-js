@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Observable, Subscription } from 'rxjs';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';
@@ -242,7 +242,7 @@ export class AWSAppSyncRealTimeProvider {
 					}
 				};
 
-				let reconnectSubscription: Subscription;
+				let reconnectSubscription: ZenObservable.Subscription;
 
 				// Add an observable to the reconnection list to manage reconnection for this subscription
 				reconnectSubscription = new Observable(observer => {
