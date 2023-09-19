@@ -119,7 +119,7 @@ export class AWSAppSyncRealTimeProvider {
 	private connectionState: ConnectionState;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
-	private connectionStateMonitorSubscription: Subscription;
+	private connectionStateMonitorSubscription: ZenObservable.Subscription;
 
 	constructor(options: AWSAppSyncRealTimeProviderOptions = {}) {
 		// Monitor the connection state and pass changes along to Hub
