@@ -8,7 +8,7 @@ import {
 	GraphQLError,
 	OperationTypeNode,
 } from 'graphql';
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 import { Amplify, Cache, fetchAuthSession } from '@aws-amplify/core';
 import {
 	CustomUserAgentDetails,

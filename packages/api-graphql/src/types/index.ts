@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
-import { Observable } from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 
 import { DocumentType } from '@aws-amplify/api-rest';
 export type GraphQLAuthMode = 'AWS_IAM' | 'COGNITO_USERPOOLS' | 'API_KEY';

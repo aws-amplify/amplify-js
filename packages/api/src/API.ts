@@ -8,7 +8,7 @@ import {
 	GraphQLSubscription,
 } from '@aws-amplify/api-graphql';
 import { graphql as v6graphql } from '@aws-amplify/api-graphql/internals';
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 import { InternalAPIClass } from './internals/InternalAPI';
 
 /**
