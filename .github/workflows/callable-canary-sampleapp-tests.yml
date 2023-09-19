@@ -17,6 +17,9 @@ env:
 jobs:
   build_apps:
     name: Build Sample App Tests
+    strategy:
+      matrix:
+        node-version: [18, 20]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -31,6 +34,8 @@ jobs:
           GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
+        with:
+          node-version: ${{ matrix.node-version }}
 
         # React
       - name: Create react application
