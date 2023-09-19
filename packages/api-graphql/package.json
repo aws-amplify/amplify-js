@@ -58,7 +58,6 @@
     "tslib": "^1.8.0",
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19",
-	"rxjs": "^7.8.1"
   },
   "size-limit": [
     {
