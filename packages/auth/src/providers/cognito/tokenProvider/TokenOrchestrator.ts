@@ -17,12 +17,13 @@ import {
 	CognitoAuthTokens,
 	TokenRefresher,
 } from './types';
+import { assertServiceError } from '../../../errors/utils/assertServiceError';
+import { AuthError } from '../../../errors/AuthError';
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
-	private authConfig: AuthConfig;
-
-	tokenStore: AuthTokenStore;
-	tokenRefresher: TokenRefresher;
+	private authConfig?: AuthConfig;
+	tokenStore?: AuthTokenStore;
+	tokenRefresher?: TokenRefresher;
 	waitForInflightOAuth: () => Promise<void> = async () => {};
 
 	setAuthConfig(authConfig: AuthConfig) {
@@ -38,18 +39,39 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		this.waitForInflightOAuth = waitForInflightOAuth;
 	}
 
+	getTokenStore(): AuthTokenStore {
+		if (!this.tokenStore) {
+			throw new AuthError({
+				name: 'EmptyTokenStoreException',
+				message: 'TokenStore not set',
+			});
+		}
+		return this.tokenStore;
+	}
+
+	getTokenRefresher(): TokenRefresher {
+		if (!this.tokenRefresher) {
+			throw new AuthError({
+				name: 'EmptyTokenRefresherException',
+				message: 'TokenRefresher not set',
+			});
+		}
+		return this.tokenRefresher;
+	}
+
 	async getTokens(
 		options?: FetchAuthSessionOptions
 	): Promise<AuthTokens | null> {
-		let tokens: CognitoAuthTokens;
+		let tokens: CognitoAuthTokens | null;
+
 		try {
-			assertTokenProviderConfig(this.authConfig.Cognito);
+			assertTokenProviderConfig(this.authConfig?.Cognito);
 		} catch (_err) {
 			// Token provider not configured
 			return null;
 		}
 		await this.waitForInflightOAuth();
-		tokens = await this.tokenStore.loadTokens();
+		tokens = await this.getTokenStore().loadTokens();
 
 		if (tokens === null) {
 			return null;
@@ -87,7 +109,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		tokens: CognitoAuthTokens;
 	}): Promise<CognitoAuthTokens | null> {
 		try {
-			const newTokens = await this.tokenRefresher({
+			const newTokens = await this.getTokenRefresher()({
 				tokens,
 				authConfig: this.authConfig,
 			});
@@ -101,7 +123,8 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		}
 	}
 
-	private handleErrors(err: Error) {
+	private handleErrors(err: unknown) {
+		assertServiceError(err);
 		if (err.message !== 'Network error') {
 			// TODO(v6): Check errors on client
 			this.clearTokens();
@@ -119,10 +142,10 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		}
 	}
 	async setTokens({ tokens }: { tokens: CognitoAuthTokens }) {
-		return this.tokenStore.storeTokens(tokens);
+		return this.getTokenStore().storeTokens(tokens);
 	}
 
 	async clearTokens() {
-		return this.tokenStore.clearTokens();
+		return this.getTokenStore().clearTokens();
 	}
 }

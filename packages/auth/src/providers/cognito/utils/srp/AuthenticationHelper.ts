@@ -5,10 +5,10 @@ import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
 import BigInteger from './BigInteger';
 import { toHex, fromHex } from './helpers';
 import WordArray from './WordArray';
+import { toBase64 } from '@smithy/util-base64';
+import { AuthError } from '../../../../errors/AuthError';
 
-import { toBase64 } from '@aws-sdk/util-base64-browser';
-
-type BigInteger = typeof BigInteger & {
+export type BigInteger = typeof BigInteger & {
 	subtract: Function;
 	add: Function;
 	multiply: Function;
@@ -17,8 +17,8 @@ type BigInteger = typeof BigInteger & {
 	equals: Function;
 };
 
-const SHORT_TO_HEX = {};
-const HEX_TO_SHORT = {};
+const SHORT_TO_HEX: Record<string, string> = {};
+const HEX_TO_SHORT: Record<string, number> = {};
 
 for (let i = 0; i < 256; i++) {
 	let encodedByte = i.toString(16).toLowerCase();
@@ -36,7 +36,7 @@ for (let i = 0; i < 256; i++) {
  * @param {number} nBytes
  * @returns {Uint8Array} fixed-length sequence of random bytes
  */
-function randomBytes(nBytes: number):Uint8Array {
+function randomBytes(nBytes: number): Uint8Array {
 	const str = new WordArray().random(nBytes).toString();
 
 	return fromHex(str);
@@ -80,12 +80,12 @@ export default class AuthenticationHelper {
 	smallAValue: BigInteger;
 	infoBits: Uint8Array;
 	poolName: string;
-	largeAValue: BigInteger;
-	randomPassword: string;
-	SaltToHashDevices: string;
-	verifierDevices: string;
-	UHexHash: string;
-	UValue: BigInteger;
+	largeAValue?: BigInteger;
+	randomPassword?: string;
+	SaltToHashDevices?: string;
+	verifierDevices?: string;
+	UHexHash?: string;
+	UValue?: BigInteger;
 	N: BigInteger;
 	g: BigInteger;
 	k: BigInteger;
@@ -94,9 +94,9 @@ export default class AuthenticationHelper {
 	 * @param {string} PoolName Cognito user pool name.
 	 */
 	constructor(PoolName: string) {
-		this.N = new BigInteger(initN, 16);
-		this.g = new BigInteger('2', 16);
-		this.k = new BigInteger(
+		this.N = new (BigInteger as any)(initN, 16);
+		this.g = new (BigInteger as any)('2', 16);
+		this.k = new (BigInteger as any)(
 			this.hexHash(`${this.padHex(this.N)}${this.padHex(this.g)}`),
 			16
 		);
@@ -109,6 +109,23 @@ export default class AuthenticationHelper {
 		this.poolName = PoolName;
 	}
 
+	getLargeA(): BigInteger {
+		if (!this.largeAValue) {
+			throw new AuthError({
+				name: 'EmptyBigIntegerLargeAValue',
+				message: 'largeAValue was not defined',
+			});
+		}
+		return this.largeAValue;
+	}
+	getUValue(): BigInteger {
+		if (!this.UValue)
+			throw new AuthError({
+				name: 'EmptyBigIntegerUValue',
+				message: 'UValue is empty',
+			});
+		return this.UValue;
+	}
 	/**
 	 * @returns {BigInteger} small A, a random number
 	 */
@@ -124,14 +141,17 @@ export default class AuthenticationHelper {
 		if (this.largeAValue) {
 			callback(null, this.largeAValue);
 		} else {
-			this.calculateA(this.smallAValue, (err, largeAValue) => {
-				if (err) {
-					callback(err, null);
-				}
+			this.calculateA(
+				this.smallAValue,
+				(err: unknown, largeAValue: BigInteger) => {
+					if (err) {
+						callback(err, null);
+					}
 
-				this.largeAValue = largeAValue;
-				callback(null, this.largeAValue);
-			});
+					this.largeAValue = largeAValue;
+					callback(null, this.largeAValue);
+				}
+			);
 		}
 	}
 
@@ -145,7 +165,7 @@ export default class AuthenticationHelper {
 
 		const hexRandom = toHex(randomBytes(128));
 
-		const randomBigInt = new BigInteger(hexRandom, 16);
+		const randomBigInt = new (BigInteger as any)(hexRandom, 16);
 
 		// There is no need to do randomBigInt.mod(this.N - 1) as N (3072-bit) is > 128 bytes (1024-bit)
 
@@ -165,13 +185,25 @@ export default class AuthenticationHelper {
 	 * @returns {string} Generated random value included in password hash.
 	 */
 	getRandomPassword(): string {
+		if (!this.randomPassword) {
+			throw new AuthError({
+				name: 'EmptyBigIntegerRandomPassword',
+				message: 'random password is empty',
+			});
+		}
 		return this.randomPassword;
 	}
 
 	/**
 	 * @returns {string} Generated random value included in devices hash.
 	 */
-	getSaltDevices(): string {
+	getSaltToHashDevices(): string {
+		if (!this.SaltToHashDevices) {
+			throw new AuthError({
+				name: 'EmptyBigIntegerSaltToHashDevices',
+				message: 'SaltToHashDevices is empty',
+			});
+		}
 		return this.SaltToHashDevices;
 	}
 
@@ -179,6 +211,12 @@ export default class AuthenticationHelper {
 	 * @returns {string} Value used to verify devices.
 	 */
 	getVerifierDevices(): string {
+		if (!this.verifierDevices) {
+			throw new AuthError({
+				name: 'EmptyBigIntegerVerifierDevices',
+				message: 'verifyDevices is empty',
+			});
+		}
 		return this.verifierDevices;
 	}
 
@@ -201,12 +239,17 @@ export default class AuthenticationHelper {
 		const hexRandom = toHex(randomBytes(16));
 
 		// The random hex will be unambiguously represented as a postive integer
-		this.SaltToHashDevices = this.padHex(new BigInteger(hexRandom, 16));
+		this.SaltToHashDevices = this.padHex(
+			new (BigInteger as any)(hexRandom, 16)
+		);
 
 		this.g.modPow(
-			new BigInteger(this.hexHash(this.SaltToHashDevices + hashedString), 16),
+			new (BigInteger as any)(
+				this.hexHash(this.SaltToHashDevices + hashedString),
+				16
+			),
 			this.N,
-			(err, verifierDevicesNotPadded) => {
+			(err: unknown, verifierDevicesNotPadded: BigInteger) => {
 				if (err) {
 					callback(err, null);
 				}
@@ -226,7 +269,7 @@ export default class AuthenticationHelper {
 	 * @private
 	 */
 	calculateA(a: BigInteger, callback: Function) {
-		this.g.modPow(a, this.N, (err, A) => {
+		this.g.modPow(a, this.N, (err: unknown, A: BigInteger) => {
 			if (err) {
 				callback(err, null);
 			}
@@ -248,7 +291,7 @@ export default class AuthenticationHelper {
 	 */
 	calculateU(A: BigInteger, B: BigInteger): BigInteger {
 		this.UHexHash = this.hexHash(this.padHex(A) + this.padHex(B));
-		const finalU = new BigInteger(this.UHexHash, 16);
+		const finalU = new (BigInteger as any)(this.UHexHash, 16);
 
 		return finalU;
 	}
@@ -329,7 +372,7 @@ export default class AuthenticationHelper {
 			throw new Error('B cannot be zero.');
 		}
 
-		this.UValue = this.calculateU(this.largeAValue, serverBValue);
+		this.UValue = this.calculateU(this.getLargeA(), serverBValue);
 
 		if (this.UValue.equals(BigInteger.ZERO)) {
 			throw new Error('U cannot be zero.');
@@ -338,22 +381,26 @@ export default class AuthenticationHelper {
 		const usernamePassword = `${this.poolName}${username}:${password}`;
 		const usernamePasswordHash = this.hash(usernamePassword);
 
-		const xValue = new BigInteger(
+		const xValue = new (BigInteger as any)(
 			this.hexHash(this.padHex(salt) + usernamePasswordHash),
 			16
 		);
-		this.calculateS(xValue, serverBValue, (err, sValue) => {
-			if (err) {
-				callback(err, null);
+		this.calculateS(
+			xValue,
+			serverBValue,
+			(err: unknown, sValue: BigInteger) => {
+				if (err) {
+					callback(err, null);
+				}
+
+				const hkdf = this.computehkdf(
+					fromHex(this.padHex(sValue)),
+					fromHex(this.padHex(this.getUValue()))
+				);
+
+				callback(null, hkdf);
 			}
-
-			const hkdf = this.computehkdf(
-				fromHex(this.padHex(sValue)),
-				fromHex(this.padHex(this.UValue))
-			);
-
-			callback(null, hkdf);
-		});
+		);
 	}
 
 	/**
@@ -368,16 +415,16 @@ export default class AuthenticationHelper {
 		serverBValue: BigInteger,
 		callback: Function
 	): void {
-		this.g.modPow(xValue, this.N, (err, gModPowXN) => {
+		this.g.modPow(xValue, this.N, (err: unknown, gModPowXN: Function) => {
 			if (err) {
 				callback(err, null);
 			}
 
 			const intValue2 = serverBValue.subtract(this.k.multiply(gModPowXN));
 			intValue2.modPow(
-				this.smallAValue.add(this.UValue.multiply(xValue)),
+				this.smallAValue.add(this.getUValue().multiply(xValue)),
 				this.N,
-				(err2, result) => {
+				(err2: unknown, result: BigInteger) => {
 					if (err2) {
 						callback(err2, null);
 					}
@@ -441,14 +488,14 @@ export default class AuthenticationHelper {
 			/* Flip the bits of the representation */
 			const invertedNibbles = hexStr
 				.split('')
-				.map(x => {
+				.map((x: string) => {
 					const invertedNibble = ~parseInt(x, 16) & 0xf;
 					return '0123456789ABCDEF'.charAt(invertedNibble);
 				})
 				.join('');
 
 			/* After flipping the bits, add one to get the 2's complement representation */
-			const flippedBitsBI = new BigInteger(invertedNibbles, 16).add(
+			const flippedBitsBI = new (BigInteger as any)(invertedNibbles, 16).add(
 				BigInteger.ONE
 			);
 

@@ -38,7 +38,7 @@ class NotificationsClass {
 		logger.debug('configure Notifications', config);
 
 		// Configure sub-categories
-		this.inAppMessaging.configure({ Notifications: this.config });
+		this.inAppMessaging.configure(this.config.InAppMessaging);
 
 		if (this.config.Push) {
 			try {

@@ -38,16 +38,6 @@ export type UserProfile = {
 	metrics?: Record<string, number>;
 };
 
-export interface ICredentials {
-	accessKeyId: string;
-	sessionToken: string;
-	secretAccessKey: string;
-	identityId: string;
-	authenticated: boolean;
-	// Long term creds do not provide an expiration date
-	expiration?: Date;
-}
-
 /**
  * @internal
  */

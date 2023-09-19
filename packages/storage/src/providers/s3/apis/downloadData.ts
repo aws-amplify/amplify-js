@@ -1,32 +1,49 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { S3TransferOptions, S3DownloadDataResult } from '../types';
+import { Amplify } from '@aws-amplify/core';
+
+import { DownloadDataInput, DownloadDataOutput, S3Exception } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { StorageDownloadDataRequest, DownloadTask } from '../../../types';
 import { createDownloadTask } from '../utils';
 import { getObject } from '../utils/client';
 
 /**
  * Download S3 object data to memory
  *
- * @param {StorageDownloadDataRequest<S3TransferOptions>} downloadDataRequest The parameters that are passed to the
- * 	downloadData operation.
- * @returns {DownloadTask<S3DownloadDataResult>} Cancelable task exposing result promise from `result` property.
+ * @param input - The DownloadDataInput object.
+ * @returns A cancelable task exposing result promise from `result` property.
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
  * @throws validation: {@link StorageValidationErrorCode } - Validation errors
- * thrown either username or key are not defined.
  *
- * TODO: add config errors
+ * @example
+ * ```ts
+ * // Download a file from s3 bucket
+ * const { body, eTag } = await downloadData({ key, data: file, options: {
+ *   onProgress, // Optional progress callback.
+ * } }).result;
+ * ```
+ * @example
+ * ```ts
+ * // Cancel a task
+ * const downloadTask = downloadData({ key, data: file });
+ * //...
+ * downloadTask.cancel();
+ * try {
+ * 	await downloadTask.result;
+ * } catch (error) {
+ * 	if(isCancelError(error)) {
+ *    // Handle error thrown by task cancelation.
+ * 	}
+ * }
+ *```
  */
-export const downloadData = (
-	downloadDataRequest: StorageDownloadDataRequest<S3TransferOptions>
-): DownloadTask<S3DownloadDataResult> => {
+export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
 	const abortController = new AbortController();
 
 	const downloadTask = createDownloadTask({
-		job: downloadDataJob(downloadDataRequest, abortController.signal),
+		job: downloadDataJob(input, abortController.signal),
 		onCancel: (abortErrorOverwrite?: Error) => {
 			abortController.abort(abortErrorOverwrite);
 		},
@@ -36,14 +53,12 @@ export const downloadData = (
 
 const downloadDataJob =
 	(
-		{
-			options: downloadDataOptions,
-			key,
-		}: StorageDownloadDataRequest<S3TransferOptions>,
+		{ options: downloadDataOptions, key }: DownloadDataInput,
 		abortSignal: AbortSignal
 	) =>
 	async () => {
 		const { bucket, keyPrefix, s3Config } = await resolveS3ConfigAndInput(
+			Amplify,
 			downloadDataOptions
 		);
 		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths

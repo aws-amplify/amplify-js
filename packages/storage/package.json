@@ -8,10 +8,7 @@
 	"browser": {
 		"./lib-esm/lib-esm/providers/s3/utils/client/runtime/index": "./lib-esm/providers/s3/utils/client/runtime/index.browser.js"
 	},
-	"sideEffects": [
-		"./lib/Storage.js",
-		"./lib-esm/Storage.js"
-	],
+	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
 	},
@@ -36,6 +33,15 @@
 			],
 			"s3": [
 				"./lib-esm/providers/s3/index.d.ts"
+			],
+			"server": [
+				"./lib-esm/server.d.ts"
+			],
+			"internals": [
+				"./lib-esm/lib-esm/internals/index.d.ts"
+			],
+			"s3/server": [
+				"./lib-esm/providers/s3/server.d.ts"
 			]
 		}
 	},
@@ -58,8 +64,8 @@
 		"s3"
 	],
 	"dependencies": {
-		"@aws-sdk/md5-js": "3.6.1",
-		"@aws-sdk/types": "3.6.1",
+		"@smithy/md5-js": "2.0.7",
+		"@aws-sdk/types": "3.398.0",
 		"fast-xml-parser": "^4.2.5",
 		"buffer": "4.9.2",
 		"tslib": "^2.5.0"

@@ -16,12 +16,12 @@ import type {
 } from './types';
 import { defaultConfig } from './base';
 import {
+	buildStorageServiceError,
 	map,
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
-	serializeObjectSsecOptionsToHeaders,
 	validateS3RequiredParameter,
 } from './utils';
 
@@ -30,14 +30,7 @@ const INVALID_PARAMETER_ERROR_MSG =
 
 export type CompleteMultipartUploadInput = Pick<
 	CompleteMultipartUploadCommandInput,
-	| 'Bucket'
-	| 'Key'
-	| 'UploadId'
-	| 'MultipartUpload'
-	| 'SSECustomerAlgorithm'
-	| 'SSECustomerKey'
-	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
+	'Bucket' | 'Key' | 'UploadId' | 'MultipartUpload'
 >;
 
 export type CompleteMultipartUploadOutput = Pick<
@@ -49,8 +42,9 @@ const completeMultipartUploadSerializer = async (
 	input: CompleteMultipartUploadInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	const headers = await serializeObjectSsecOptionsToHeaders(input);
-	headers['content-type'] = 'application/xml';
+	const headers = {
+		'content-type': 'application/xml',
+	};
 	const url = new URL(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
@@ -94,12 +88,11 @@ const serializeCompletedPartList = (input: CompletedPart): string => {
 const parseXmlBodyOrThrow = async (response: HttpResponse): Promise<any> => {
 	const parsed = await parseXmlBody(response); // Handles empty body case
 	if (parsed.Code !== undefined && parsed.Message !== undefined) {
-		const error = await parseXmlError({
+		const error = (await parseXmlError({
 			...response,
 			statusCode: 500, // To workaround the >=300 status code check common to other APIs.
-		});
-		error!.$metadata.httpStatusCode = response.statusCode;
-		throw error;
+		})) as Error;
+		throw buildStorageServiceError(error, response.statusCode);
 	}
 	return parsed;
 };
@@ -108,8 +101,8 @@ const completeMultipartUploadDeserializer = async (
 	response: HttpResponse
 ): Promise<CompleteMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		throw error;
+		const error = (await parseXmlError(response)) as Error;
+		throw buildStorageServiceError(error, response.statusCode);
 	} else {
 		const parsed = await parseXmlBodyOrThrow(response);
 		const contents = map(parsed, {

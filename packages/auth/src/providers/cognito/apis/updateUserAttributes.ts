@@ -6,40 +6,32 @@ import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import {
 	AuthUserAttribute,
-	UpdateUserAttributesRequest,
-	UpdateUserAttributesResult,
-	DeliveryMedium,
+	AuthUpdateUserAttributesOutput,
+	AuthDeliveryMedium,
 } from '../../../types';
 import {
-	CognitoUpdateUserAttributesOptions,
-	CognitoUserAttributeKey,
+	UpdateUserAttributesInput,
+	UpdateUserAttributesOutput,
 } from '../types';
 import { updateUserAttributes as updateUserAttributesClient } from '../utils/clients/CognitoIdentityProvider';
 import { assertAuthTokens } from '../utils/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { toAttributeType } from '../utils/apiHelpers';
 import { CodeDeliveryDetailsType } from '../utils/clients/CognitoIdentityProvider/types';
-import { AuthUpdateAttributeStep } from '../../../types/enums';
 import { UpdateUserAttributesException } from '../types/errors';
 
 /**
  * Updates user's attributes while authenticated.
  *
- * @param updateUserAttributesRequest - The UpdateUserAttributesRequest object
- *
+ * @param input - The UpdateUserAttributesInput object
+ * @returns UpdateUserAttributesOutput
  * @throws - {@link UpdateUserAttributesException}
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
- *
- * @returns UpdateUserAttributesResult
  */
 export const updateUserAttributes = async (
-	updateUserAttributesRequest: UpdateUserAttributesRequest<
-		CognitoUserAttributeKey,
-		CognitoUpdateUserAttributesOptions
-	>
-): Promise<UpdateUserAttributesResult<CognitoUserAttributeKey>> => {
-	const { userAttributes, options } = updateUserAttributesRequest;
+	input: UpdateUserAttributesInput
+): Promise<UpdateUserAttributesOutput> => {
+	const { userAttributes, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const clientMetadata = options?.serviceOptions?.clientMetadata;
 	assertTokenProviderConfig(authConfig);
@@ -62,13 +54,13 @@ export const updateUserAttributes = async (
 
 function getConfirmedAttributes(
 	attributes: AuthUserAttribute
-): UpdateUserAttributesResult {
-	const confirmedAttributes = {} as UpdateUserAttributesResult;
+): AuthUpdateUserAttributesOutput {
+	const confirmedAttributes = {} as AuthUpdateUserAttributesOutput;
 	Object.keys(attributes)?.forEach(key => {
 		confirmedAttributes[key] = {
 			isUpdated: true,
 			nextStep: {
-				updateAttributeStep: AuthUpdateAttributeStep.DONE,
+				updateAttributeStep: 'DONE',
 			},
 		};
 	});
@@ -78,22 +70,22 @@ function getConfirmedAttributes(
 
 function getUnConfirmedAttributes(
 	codeDeliveryDetailsList?: CodeDeliveryDetailsType[]
-): UpdateUserAttributesResult {
-	const unConfirmedAttributes = {} as UpdateUserAttributesResult;
+): AuthUpdateUserAttributesOutput {
+	const unConfirmedAttributes = {} as AuthUpdateUserAttributesOutput;
 	codeDeliveryDetailsList?.forEach(codeDeliveryDetails => {
 		const { AttributeName, DeliveryMedium, Destination } = codeDeliveryDetails;
-		unConfirmedAttributes[AttributeName] = {
-			isUpdated: false,
-			nextStep: {
-				updateAttributeStep:
-					AuthUpdateAttributeStep.CONFIRM_ATTRIBUTE_WITH_CODE,
-				codeDeliveryDetails: {
-					attributeName: AttributeName,
-					deliveryMedium: DeliveryMedium as DeliveryMedium,
-					destination: Destination,
+		if (AttributeName)
+			unConfirmedAttributes[AttributeName] = {
+				isUpdated: false,
+				nextStep: {
+					updateAttributeStep: 'CONFIRM_ATTRIBUTE_WITH_CODE',
+					codeDeliveryDetails: {
+						attributeName: AttributeName,
+						deliveryMedium: DeliveryMedium as AuthDeliveryMedium,
+						destination: Destination,
+					},
 				},
-			},
-		};
+			};
 	});
 	return unConfirmedAttributes;
 }

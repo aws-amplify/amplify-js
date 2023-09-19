@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, AuthConfig, CognitoUserPoolConfig } from '@aws-amplify/core';
+import { Amplify, CognitoUserPoolConfig } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import {
 	getLargeAValue,
@@ -12,19 +12,19 @@ import {
 import AuthenticationHelper from './srp/AuthenticationHelper';
 import BigInteger from './srp/BigInteger';
 
-import { ClientMetadata, CognitoConfirmSignInOptions } from '../types';
+import { ClientMetadata, ConfirmSignInOptions } from '../types';
 import {
-	AdditionalInfo,
-	AuthSignInResult,
-	AuthSignInStep,
-	DeliveryMedium,
+	AuthAdditionalInfo,
+	AuthSignInOutput,
+	AuthDeliveryMedium,
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
 import {
+	AuthUser,
 	AuthUserAttribute,
-	MFAType,
-	TOTPSetupDetails,
+	AuthMFAType,
+	AuthTOTPSetupDetails,
 } from '../../../types/models';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -46,6 +46,8 @@ import {
 	RespondToAuthChallengeCommandOutput,
 } from './clients/CognitoIdentityProvider/types';
 import { getRegion } from './clients/CognitoIdentityProvider/utils';
+import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants';
+import { getCurrentUser } from '../apis/getCurrentUser';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -64,10 +66,9 @@ export async function handleCustomChallenge({
 	clientMetadata,
 	session,
 	username,
+	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const {
-		Cognito: { userPoolId, userPoolClientId },
-	} = Amplify.getConfig().Auth;
+	const { userPoolId, userPoolClientId } = config;
 	const challengeResponses = { USERNAME: username, ANSWER: challengeResponse };
 	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'CUSTOM_CHALLENGE',
@@ -328,9 +329,14 @@ export async function handlePasswordVerifierChallenge(
 	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const userPoolName = userPoolId?.split('_')[1] || '';
-	const serverBValue = new BigInteger(challengeParameters?.SRP_B, 16);
-	const salt = new BigInteger(challengeParameters?.SALT, 16);
+	const serverBValue = new (BigInteger as any)(challengeParameters?.SRP_B, 16);
+	const salt = new (BigInteger as any)(challengeParameters?.SALT, 16);
 	const username = challengeParameters?.USER_ID_FOR_SRP;
+	if (!username)
+		throw new AuthError({
+			name: 'EmptyUserIdForSRPException',
+			message: 'USER_ID_FOR_SRP was not found in challengeParameters',
+		});
 	const hkdf = await getPasswordAuthenticationKey({
 		authenticationHelper,
 		username,
@@ -346,7 +352,7 @@ export async function handlePasswordVerifierChallenge(
 		PASSWORD_CLAIM_SECRET_BLOCK: challengeParameters?.SECRET_BLOCK,
 		TIMESTAMP: dateNow,
 		PASSWORD_CLAIM_SIGNATURE: getSignatureString({
-			username: challengeParameters?.USER_ID_FOR_SRP,
+			username,
 			userPoolName,
 			challengeParameters,
 			dateNow,
@@ -371,18 +377,18 @@ export async function handlePasswordVerifierChallenge(
 export async function getSignInResult(params: {
 	challengeName: ChallengeName;
 	challengeParameters: ChallengeParameters;
-}): Promise<AuthSignInResult> {
+}): Promise<AuthSignInOutput> {
 	const { challengeName, challengeParameters } = params;
-	const {
-		Cognito: { userPoolId },
-	} = Amplify.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	assertTokenProviderConfig(authConfig);
+
 	switch (challengeName) {
 		case 'CUSTOM_CHALLENGE':
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE,
-					additionalInfo: challengeParameters as AdditionalInfo,
+					signInStep: 'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
+					additionalInfo: challengeParameters as AuthAdditionalInfo,
 				},
 			};
 		case 'MFA_SETUP':
@@ -396,7 +402,7 @@ export async function getSignInResult(params: {
 					)}`,
 				});
 			const { Session, SecretCode: secretCode } = await associateSoftwareToken(
-				{ region: getRegion(userPoolId) },
+				{ region: getRegion(authConfig.userPoolId) },
 				{
 					Session: signInSession,
 				}
@@ -409,7 +415,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_TOTP_SETUP,
+					signInStep: 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP',
 					totpSetupDetails: getTOTPSetupDetails(secretCode!, username),
 				},
 			};
@@ -417,7 +423,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED,
+					signInStep: 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED',
 					missingAttributes: parseAttributes(
 						challengeParameters.requiredAttributes
 					),
@@ -427,7 +433,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_MFA_SELECTION,
+					signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
 					allowedMFATypes: getMFATypes(
 						parseMFATypes(challengeParameters.MFAS_CAN_CHOOSE)
 					),
@@ -437,10 +443,10 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_CODE,
+					signInStep: 'CONFIRM_SIGN_IN_WITH_SMS_CODE',
 					codeDeliveryDetails: {
 						deliveryMedium:
-							challengeParameters.CODE_DELIVERY_DELIVERY_MEDIUM as DeliveryMedium,
+							challengeParameters.CODE_DELIVERY_DELIVERY_MEDIUM as AuthDeliveryMedium,
 						destination: challengeParameters.CODE_DELIVERY_DESTINATION,
 					},
 				},
@@ -449,7 +455,7 @@ export async function getSignInResult(params: {
 			return {
 				isSignedIn: false,
 				nextStep: {
-					signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_TOTP_CODE,
+					signInStep: 'CONFIRM_SIGN_IN_WITH_TOTP_CODE',
 				},
 			};
 		case 'ADMIN_NO_SRP_AUTH':
@@ -473,7 +479,7 @@ export async function getSignInResult(params: {
 export function getTOTPSetupDetails(
 	secretCode: string,
 	username?: string
-): TOTPSetupDetails {
+): AuthTOTPSetupDetails {
 	return {
 		sharedSecret: secretCode,
 		getSetupUri: (appName, accountName) => {
@@ -488,16 +494,16 @@ export function getTOTPSetupDetails(
 
 export function getSignInResultFromError(
 	errorName: string
-): AuthSignInResult | undefined {
+): AuthSignInOutput | undefined {
 	if (errorName === InitiateAuthException.PasswordResetRequiredException) {
 		return {
 			isSignedIn: false,
-			nextStep: { signInStep: AuthSignInStep.RESET_PASSWORD },
+			nextStep: { signInStep: 'RESET_PASSWORD' },
 		};
 	} else if (errorName === InitiateAuthException.UserNotConfirmedException) {
 		return {
 			isSignedIn: false,
-			nextStep: { signInStep: AuthSignInStep.CONFIRM_SIGN_UP },
+			nextStep: { signInStep: 'CONFIRM_SIGN_UP' },
 		};
 	}
 }
@@ -516,10 +522,10 @@ export function createAttributes(
 ): Record<string, string> {
 	if (!attributes) return {};
 
-	const newAttributes = {};
+	const newAttributes: Record<string, string> = {};
 
 	Object.entries(attributes).forEach(([key, value]) => {
-		newAttributes[`${USER_ATTRIBUTES}${key}`] = value;
+		if (value) newAttributes[`${USER_ATTRIBUTES}${key}`] = value;
 	});
 	return newAttributes;
 }
@@ -531,7 +537,7 @@ export async function handleChallengeName(
 	challengeResponse: string,
 	config: CognitoUserPoolConfig,
 	clientMetadata?: ClientMetadata,
-	options?: CognitoConfirmSignInOptions
+	options?: ConfirmSignInOptions
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const userAttributes = options?.userAttributes;
 	const deviceName = options?.friendlyDeviceName;
@@ -603,15 +609,15 @@ export function mapMfaType(mfa: string): CognitoMFAType {
 	return mfaType;
 }
 
-export function getMFAType(type?: string): MFAType | undefined {
+export function getMFAType(type?: string): AuthMFAType | undefined {
 	if (type === 'SMS_MFA') return 'SMS';
 	if (type === 'SOFTWARE_TOKEN_MFA') return 'TOTP';
 	// TODO: log warning for unknown MFA type
 }
 
-export function getMFATypes(types?: string[]): MFAType[] | undefined {
+export function getMFATypes(types?: string[]): AuthMFAType[] | undefined {
 	if (!types) return undefined;
-	return types.map(getMFAType).filter(Boolean) as MFAType[];
+	return types.map(getMFAType).filter(Boolean) as AuthMFAType[];
 }
 export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 	if (!mfa) return [];
@@ -620,10 +626,26 @@ export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 
 export function isMFATypeEnabled(
 	challengeParams: ChallengeParameters,
-	mfaType: MFAType
+	mfaType: AuthMFAType
 ): boolean {
 	const { MFAS_CAN_SETUP } = challengeParams;
 	const mfaTypes = getMFATypes(parseMFATypes(MFAS_CAN_SETUP));
 	if (!mfaTypes) return false;
 	return mfaTypes.includes(mfaType);
+}
+
+export async function assertUserNotAuthenticated() {
+	let authUser: AuthUser | undefined;
+	try {
+		authUser = await getCurrentUser();
+	} catch (error) {}
+
+	if (authUser && authUser.userId && authUser.username) {
+		throw new AuthError({
+			name: USER_ALREADY_AUTHENTICATED_EXCEPTION,
+			message:
+				'There is already a signed in user.',
+			recoverySuggestion: 'Call signOut before calling signIn again.',
+		});
+	}
 }

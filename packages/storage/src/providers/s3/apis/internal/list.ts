@@ -1,23 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	StorageListRequest,
-	StorageListAllOptions,
-	StorageListPaginateOptions,
-} from '../../../../types';
-import {
-	S3ListOutputItem,
-	S3ListAllResult,
-	S3ListPaginateResult,
-} from '../../types';
-import {
-	resolveStorageConfig,
-	getKeyWithPrefix,
-	resolveCredentials,
-} from '../../utils';
-import { ResolvedS3Config } from '../../types/options';
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import {
+	ListAllInput,
+	ListPaginateInput,
+	ListAllOutput,
+	ListPaginateOutput,
+	ListOutputItem,
+} from '../../types';
+import { resolveS3ConfigAndInput } from '../../utils';
+import { ResolvedS3Config } from '../../types/options';
 import {
 	listObjectsV2,
 	ListObjectsV2Input,
@@ -26,59 +19,45 @@ import {
 
 const MAX_PAGE_SIZE = 1000;
 
-type ListRequestArgs = {
-	listConfig: ResolvedS3Config;
+type ListInputArgs = {
+	s3Config: ResolvedS3Config;
 	listParams: ListObjectsV2Input;
 	prefix: string;
 };
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	req?:
-		| StorageListRequest<StorageListAllOptions>
-		| StorageListRequest<StorageListPaginateOptions>
-): Promise<S3ListAllResult | S3ListPaginateResult> => {
-	const { identityId, credentials } = await resolveCredentials(amplify);
-	const { defaultAccessLevel, bucket, region } = resolveStorageConfig(amplify);
-	const { path = '', options = {} } = req ?? {};
-	const { accessLevel = defaultAccessLevel, listAll = false } = options;
-
-	// TODO(ashwinkumar6) V6-logger: check if this can be refactored
-	const prefix = getKeyWithPrefix(amplify, {
-		accessLevel,
-		targetIdentityId:
-			options.accessLevel === 'protected'
-				? options.targetIdentityId
-				: identityId,
-	});
-	const finalPath = prefix + path;
-	const listConfig = {
-		region,
-		credentials,
-	};
+	input?: ListAllInput | ListPaginateInput
+): Promise<ListAllOutput | ListPaginateOutput> => {
+	const { options = {}, prefix: path = '' } = input ?? {};
+	const {
+		s3Config,
+		bucket,
+		keyPrefix: prefix,
+	} = await resolveS3ConfigAndInput(amplify, options);
 	const listParams = {
 		Bucket: bucket,
-		Prefix: finalPath,
+		Prefix: `${prefix}${path}`,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 	};
-	return listAll
-		? await _listAll({ listConfig, listParams, prefix })
-		: await _list({ listConfig, listParams, prefix });
+	return options.listAll
+		? await _listAll({ s3Config, listParams, prefix })
+		: await _list({ s3Config, listParams, prefix });
 };
 
 const _listAll = async ({
-	listConfig,
+	s3Config,
 	listParams,
 	prefix,
-}: ListRequestArgs): Promise<S3ListAllResult> => {
+}: ListInputArgs): Promise<ListAllOutput> => {
 	// TODO(ashwinkumar6) V6-logger: pageSize and nextToken aren't required when listing all items
-	const listResult: S3ListOutputItem[] = [];
+	const listResult: ListOutputItem[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
 		const { items: pageResults, nextToken: pageNextToken } = await _list({
 			prefix,
-			listConfig,
+			s3Config,
 			listParams: {
 				...listParams,
 				ContinuationToken: continuationToken,
@@ -95,10 +74,10 @@ const _listAll = async ({
 };
 
 const _list = async ({
-	listConfig,
+	s3Config,
 	listParams,
 	prefix,
-}: ListRequestArgs): Promise<S3ListPaginateResult> => {
+}: ListInputArgs): Promise<ListPaginateOutput> => {
 	const listParamsClone = { ...listParams };
 	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
@@ -106,7 +85,7 @@ const _list = async ({
 	}
 
 	const response: ListObjectsV2Output = await listObjectsV2(
-		listConfig,
+		s3Config,
 		listParamsClone
 	);
 

@@ -8,37 +8,55 @@ import {
 	CookieStorage,
 } from '@aws-amplify/core';
 import {
+	LegacyConfig,
+	parseAWSExports,
+} from '@aws-amplify/core/internals/utils';
+import {
 	CognitoUserPoolsTokenProvider,
 	cognitoCredentialsProvider,
-} from './auth';
+} from './auth/cognito';
 
 export const DefaultAmplify = {
-	configure(resourceConfig: ResourcesConfig, libraryOptions?: LibraryOptions) {
-		CognitoUserPoolsTokenProvider.setAuthConfig(resourceConfig.Auth);
-		cognitoCredentialsProvider.setAuthConfig(resourceConfig.Auth);
-		const defaultLibraryOptions: LibraryOptions = {
-			Auth: {
-				tokenProvider: CognitoUserPoolsTokenProvider,
-				credentialsProvider: cognitoCredentialsProvider,
-			},
-		};
+	configure(
+		resourceConfig: ResourcesConfig | LegacyConfig,
+		libraryOptions?: LibraryOptions
+	) {
+		let resolvedResourceConfig: ResourcesConfig;
 
-		let updatedLibraryOptions = {};
-
-		if (libraryOptions !== undefined) {
-			updatedLibraryOptions = libraryOptions;
+		if (Object.keys(resourceConfig).some(key => key.startsWith('aws_'))) {
+			resolvedResourceConfig = parseAWSExports(resourceConfig);
 		} else {
+			resolvedResourceConfig = resourceConfig as ResourcesConfig;
+		}
+
+		// When Auth config is provided but no custom Auth provider defined
+		// use the default Auth Providers
+		if (resolvedResourceConfig.Auth && !libraryOptions?.Auth) {
+			CognitoUserPoolsTokenProvider.setAuthConfig(resolvedResourceConfig.Auth);
+
+			const libraryOptionsWithDefaultAuthProviders: LibraryOptions = {
+				...libraryOptions,
+				Auth: {
+					tokenProvider: CognitoUserPoolsTokenProvider,
+					credentialsProvider: cognitoCredentialsProvider,
+				},
+			};
+
 			CognitoUserPoolsTokenProvider.setKeyValueStorage(
-				resourceConfig.ssr
+				libraryOptions?.ssr
 					? new CookieStorage({
 							sameSite: 'strict',
 					  })
 					: LocalStorage
 			);
-			updatedLibraryOptions = defaultLibraryOptions;
-		}
 
-		Amplify.configure(resourceConfig, updatedLibraryOptions);
+			Amplify.configure(
+				resolvedResourceConfig,
+				libraryOptionsWithDefaultAuthProviders
+			);
+		} else {
+			Amplify.configure(resolvedResourceConfig, libraryOptions);
+		}
 	},
 	getConfig(): ResourcesConfig {
 		return Amplify.getConfig();

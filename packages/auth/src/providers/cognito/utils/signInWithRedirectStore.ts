@@ -11,7 +11,7 @@ import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 
 export class DefaultOAuthStore implements OAuthStore {
 	keyValueStorage: KeyValueStorageInterface;
-	cognitoConfig: CognitoUserPoolConfig;
+	cognitoConfig?: CognitoUserPoolConfig;
 
 	constructor(keyValueStorage: KeyValueStorageInterface) {
 		this.keyValueStorage = keyValueStorage;
@@ -33,7 +33,7 @@ export class DefaultOAuthStore implements OAuthStore {
 	}
 	async clearOAuthData(): Promise<void> {
 		const name = 'Cognito';
-
+		assertTokenProviderConfig(this.cognitoConfig);
 		const authKeys = createKeysForAuthStorage(
 			name,
 			this.cognitoConfig.userPoolClientId
@@ -41,7 +41,7 @@ export class DefaultOAuthStore implements OAuthStore {
 		await this.clearOAuthInflightData();
 		this.keyValueStorage.removeItem(authKeys.oauthSignIn);
 	}
-	loadOAuthState(): Promise<string> {
+	loadOAuthState(): Promise<string | null> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
@@ -65,7 +65,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		return this.keyValueStorage.setItem(authKeys.oauthState, state);
 	}
-	loadPKCE(): Promise<string> {
+	loadPKCE(): Promise<string | null> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure

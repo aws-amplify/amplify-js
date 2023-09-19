@@ -109,7 +109,7 @@ export default class AWSPinpointProvider
 		return this.config;
 	};
 
-	getInAppMessages = async (userAgentValue?: string) => {
+	getInAppMessages = async () => {
 		if (!this.initialized) {
 			await this.init();
 		}
@@ -127,7 +127,7 @@ export default class AWSPinpointProvider
 			};
 			this.logger.debug('getting in-app messages');
 			const response: GetInAppMessagesOutput = await getInAppMessages(
-				{ credentials, region, userAgentValue },
+				{ credentials, region },
 				input
 			);
 			const { InAppMessageCampaigns: messages } =

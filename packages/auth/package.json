@@ -7,10 +7,8 @@
 	"typings": "./lib-esm/index.d.ts",
 	"react-native": "./lib-esm/index.js",
 	"sideEffects": [
-		"./lib/Auth.js",
-		"./lib-esm/Auth.js",
-    "./lib/providers/cognito/apis/signInWithOAuth.js",
-    "./lib-esm/providers/cognito/apis/signInWithOAuth.js"
+		"./lib/providers/cognito/apis/signInWithOAuth.js",
+		"./lib-esm/providers/cognito/apis/signInWithOAuth.js"
 	],
 	"publishConfig": {
 		"access": "public"
@@ -27,7 +25,7 @@
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint '{src}/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 77.44"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 91.18"
 	},
 	"typesVersions": {
 		">=3.8": {
@@ -36,6 +34,15 @@
 			],
 			"cognito": [
 				"./lib-esm/providers/cognito/index.d.ts"
+			],
+			"cognito/server": [
+				"./lib-esm/providers/cognito/apis/server/index.d.ts"
+			],
+			"server": [
+				"./lib-esm/server.d.ts"
+			],
+			"internals": [
+				"./lib-esm/lib-esm/internals/index.d.ts"
 			]
 		}
 	},
@@ -49,6 +56,11 @@
 			"types": "./lib-esm/providers/cognito/index.d.ts",
 			"import": "./lib-esm/providers/cognito/index.js",
 			"require": "./lib/providers/cognito/index.js"
+		},
+		"./cognito/server": {
+			"types": "./lib-esm/providers/cognito/apis/server/index.d.ts",
+			"import": "./lib-esm/providers/cognito/apis/server/index.js",
+			"require": "./lib/providers/cognito/apis/server/index.js"
 		},
 		"./server": {
 			"types": "./lib-esm/server.d.ts",
@@ -76,10 +88,12 @@
 		"lib",
 		"lib-esm",
 		"src",
-		"internals"
+		"internals",
+		"cognito",
+		"server"
 	],
 	"dependencies": {
-		"@aws-sdk/util-base64-browser": "3.52.0",
+		"@smithy/util-base64": "2.0.0",
 		"tslib": "^2.5.0",
 		"typescript": "5.0.2"
 	},
@@ -87,8 +101,6 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-sdk/client-cognito-identity": "3.54.0",
-		"@aws-sdk/client-cognito-identity-provider": "3.54.0",
 		"@aws-amplify/core": "6.0.0",
 		"@jest/test-sequencer": "^24.9.0"
 	},

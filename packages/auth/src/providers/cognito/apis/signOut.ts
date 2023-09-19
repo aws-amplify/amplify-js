@@ -7,8 +7,7 @@ import {
 	LocalStorage,
 	clearCredentials,
 } from '@aws-amplify/core';
-import { SignOutRequest } from '../../../types/requests';
-import { AuthSignOutResult } from '../../../types/results';
+import { SignOutInput, SignOutOutput } from '../types';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { tokenOrchestrator } from '../tokenProvider';
 import {
@@ -21,24 +20,25 @@ import {
 	revokeToken,
 } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import {
+	assertAuthTokens,
+	assertAuthTokensWithRefreshToken,
+} from '../utils/types';
 
 const SELF = '_self';
 
 /**
  * Signs a user out
  *
- * @param signOutRequest - The SignOutRequest object
- * @returns AuthSignOutResult
- *
+ * @param input - The SignOutInput object
+ * @returns SignOutOutput
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signOut(
-	signOutRequest?: SignOutRequest
-): Promise<AuthSignOutResult> {
+export async function signOut(input?: SignOutInput): Promise<SignOutOutput> {
 	const cognitoConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(cognitoConfig);
 
-	if (signOutRequest?.global) {
+	if (input?.global) {
 		return globalSignOut(cognitoConfig);
 	} else {
 		return clientSignOut(cognitoConfig);
@@ -47,17 +47,16 @@ export async function signOut(
 
 async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 	try {
-		const { refreshToken, accessToken } =
-			await tokenOrchestrator.tokenStore.loadTokens();
-
-		if (isSessionRevocable(accessToken)) {
+		const authTokens = await tokenOrchestrator.getTokenStore().loadTokens();
+		assertAuthTokensWithRefreshToken(authTokens);
+		if (isSessionRevocable(authTokens.accessToken)) {
 			await revokeToken(
 				{
 					region: getRegion(cognitoConfig.userPoolId),
 				},
 				{
 					ClientId: cognitoConfig.userPoolClientId,
-					Token: refreshToken,
+					Token: authTokens.refreshToken,
 				}
 			);
 		}
@@ -72,19 +71,20 @@ async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 	}
 }
 
-async function globalSignOut(cognitoCognfig: CognitoUserPoolConfig) {
+async function globalSignOut(cognitoConfig: CognitoUserPoolConfig) {
 	try {
-		const { accessToken } = await tokenOrchestrator.tokenStore.loadTokens();
+		const tokens = await tokenOrchestrator.getTokenStore().loadTokens();
+		assertAuthTokens(tokens);
 		await globalSignOutClient(
 			{
-				region: getRegion(cognitoCognfig.userPoolId),
+				region: getRegion(cognitoConfig.userPoolId),
 			},
 			{
-				AccessToken: accessToken.toString(),
+				AccessToken: tokens.accessToken.toString(),
 			}
 		);
 
-		await handleOAuthSignOut(cognitoCognfig);
+		await handleOAuthSignOut(cognitoConfig);
 	} catch (err) {
 		// it should not throw
 		// TODO(v6): add logger

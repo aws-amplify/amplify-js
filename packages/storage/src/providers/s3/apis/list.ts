@@ -3,37 +3,35 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	StorageListAllOptions,
-	StorageListPaginateOptions,
-	StorageListRequest,
-} from '../../..';
-import { S3ListAllResult, S3ListPaginateResult } from '../types';
+	ListAllInput,
+	ListPaginateInput,
+	ListAllOutput,
+	ListPaginateOutput,
+} from '../types';
 import { list as listInternal } from './internal/list';
 
-type S3ListApi = {
+type ListApi = {
 	/**
-	 * Lists bucket objects with pagination.
-	 * @param {StorageListRequest<StorageListPaginateOptions>} req - The request object
-	 * @return {Promise<S3ListPaginateResult>} - Promise resolves to list of keys and metadata with
-	 * pageSize defaulting to 1000. Additionally the result will include a nextToken if there are more items to retrieve
+	 * List files with given prefix in pages
+	 * pageSize defaulted to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
+	 * @param input - The ListPaginateInput object.
+	 * @returns A list of keys and metadata with
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
-	(
-		req?: StorageListRequest<StorageListPaginateOptions>
-	): Promise<S3ListPaginateResult>;
+	(input?: ListPaginateInput): Promise<ListPaginateOutput>;
 	/**
-	 * Lists all bucket objects.
-	 * @param {StorageListRequest<StorageListAllOptions>} req - The request object
-	 * @return {Promise<S3ListAllResult>} - Promise resolves to list of keys and metadata for all objects in path
+	 * List all files from S3. You can set `listAll` to true in `options` to get all the files from S3.
+	 * @param input - The ListAllInput object.
+	 * @returns A list of keys and metadata for all objects in path
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
-	(req?: StorageListRequest<StorageListAllOptions>): Promise<S3ListAllResult>;
+	(input?: ListAllInput): Promise<ListAllOutput>;
 };
 
-export const list: S3ListApi = (
-	req
-): Promise<S3ListAllResult | S3ListPaginateResult> => {
-	return listInternal(Amplify, req ?? {});
+export const list: ListApi = (
+	input?: ListAllInput | ListPaginateInput
+): Promise<ListAllOutput | ListPaginateOutput> => {
+	return listInternal(Amplify, input ?? {});
 };

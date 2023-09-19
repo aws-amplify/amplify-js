@@ -58,20 +58,6 @@ tests:
     sample_name: [schema-drift]
     spec: schema-drift
     browser: *minimal_browser_list
-  - test_name: integ_react_datastore_custom_pk_has_one
-    desc: 'DataStore - Custom Primary Key (Has One)'
-    framework: react
-    category: datastore
-    sample_name: [v2/custom-pk-has-one]
-    spec: custom-pk-has-one
-    browser: *minimal_browser_list
-  - test_name: integ_react_datastore_custom_pk_has_many_many_to_many
-    desc: 'DataStore - Custom Primary Key (Has Many / Many to Many)'
-    framework: react
-    category: datastore
-    sample_name: [v2/custom-pk-has-many-many-to-many]
-    spec: custom-pk-has-many-many-to-many
-    browser: *minimal_browser_list
   - test_name: integ_react_datastore_background_process_manager
     desc: 'DataStore - Background Process Manager'
     framework: react
@@ -79,12 +65,22 @@ tests:
     sample_name: [v2/background-process-manager]
     spec: background-process-manager
     browser: *extended_browser_list
+  # TODO: remove when updated CPK + related models tests are added
   - test_name: integ_react_datastore_related_models
     desc: 'DataStore - Related Models'
     framework: react
     category: datastore
     sample_name: [related-models]
     spec: related-models
+    browser: *minimal_browser_list
+    timeout_minutes: 45
+    retry_count: 10
+  - test_name: integ_react_datastore_cpk_related_models
+    desc: 'DataStore - Custom Primary Key + Related Models'
+    framework: react
+    category: datastore
+    sample_name: [v2/related-models]
+    spec: cpk-related-models
     browser: *minimal_browser_list
     timeout_minutes: 45
     retry_count: 10

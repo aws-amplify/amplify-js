@@ -1,53 +1,26 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { S3Exception } from '../../types';
-import {
-	StorageOperationRequest,
-	StorageRemoveOptions,
-	StorageRemoveResult,
-} from '../../../../types';
-import {
-	resolveStorageConfig,
-	getKeyWithPrefix,
-	resolveCredentials,
-} from '../../utils';
-import { StorageValidationErrorCode } from '../../../../errors/types/validation';
-import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import { RemoveInput, RemoveOutput } from '../../types';
+import { resolveS3ConfigAndInput } from '../../utils';
 import { deleteObject } from '../../utils/client';
 
 export const remove = async (
 	amplify: AmplifyClassV6,
-	req: StorageOperationRequest<StorageRemoveOptions>
-): Promise<StorageRemoveResult> => {
-	const { identityId, credentials } = await resolveCredentials(amplify);
-	const { defaultAccessLevel, bucket, region } = resolveStorageConfig(amplify);
-	const { key, options = {} } = req;
-	const { accessLevel = defaultAccessLevel } = options;
-
-	assertValidationError(!!key, StorageValidationErrorCode.NoKey);
-	// TODO(ashwinkumar6) can we refactor getKeyWithPrefix to avoid duplication
-	const finalKey = getKeyWithPrefix(amplify, {
-		accessLevel,
-		targetIdentityId:
-			options.accessLevel === 'protected'
-				? options.targetIdentityId
-				: identityId,
-		key,
-	});
+	input: RemoveInput
+): Promise<RemoveOutput> => {
+	const { key, options = {} } = input;
+	const { s3Config, keyPrefix, bucket } = await resolveS3ConfigAndInput(
+		amplify,
+		options
+	);
 
 	// TODO(ashwinkumar6) V6-logger: debug `remove ${key} from ${finalKey}`
-	await deleteObject(
-		{
-			region,
-			credentials,
-		},
-		{
-			Bucket: bucket,
-			Key: finalKey,
-		}
-	);
+	await deleteObject(s3Config, {
+		Bucket: bucket,
+		Key: `${keyPrefix}${key}`,
+	});
 	return {
 		key,
 	};

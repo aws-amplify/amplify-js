@@ -12,6 +12,7 @@ export {
 	utf8Encode,
 } from '../runtime';
 export {
+	buildStorageServiceError,
 	deserializeBoolean,
 	deserializeMetadata,
 	deserializeNumber,
@@ -23,6 +24,5 @@ export {
 	assignStringVariables,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
-	serializeObjectSsecOptionsToHeaders,
 	validateS3RequiredParameter,
 } from './serializeHelpers';

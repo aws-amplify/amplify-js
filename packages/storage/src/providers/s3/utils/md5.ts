@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Md5 } from '@aws-sdk/md5-js';
+import { Md5 } from '@smithy/md5-js';
 import { toBase64, utf8Encode } from './client/utils';
 
 export const calculateContentMd5 = async (

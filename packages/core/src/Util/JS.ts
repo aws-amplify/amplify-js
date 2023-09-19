@@ -170,19 +170,8 @@ export const isWebWorker = () => {
 	);
 };
 
-export const browserOrNode = () => {
-	const isBrowser =
-		typeof window !== 'undefined' && typeof window.document !== 'undefined';
-	const isNode =
-		typeof process !== 'undefined' &&
-		process.versions != null &&
-		process.versions.node != null;
-
-	return {
-		isBrowser,
-		isNode,
-	};
-};
+export const isBrowser = () =>
+	typeof window !== 'undefined' && typeof window.document !== 'undefined';
 
 /**
  * transfer the first letter of the keys to lowercase

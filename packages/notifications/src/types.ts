@@ -22,11 +22,7 @@ export interface NotificationsProvider {
 	getProviderName(): string;
 
 	// identify the current user with the provider
-	identifyUser(
-		userId: string,
-		userInfo: UserInfo,
-		userAgentValue?: string
-	): Promise<void>;
+	identifyUser(userId: string, userInfo: UserInfo): Promise<void>;
 }
 
 export interface NotificationsConfig {

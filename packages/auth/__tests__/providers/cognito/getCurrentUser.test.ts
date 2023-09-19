@@ -2,18 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from 'aws-amplify';
-import { decodeJWT, fetchAuthSession } from '@aws-amplify/core/internals/utils';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../src/errors/AuthError';
 import { getCurrentUser } from '../../../src/providers/cognito';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-
+import { Amplify as AmplifyV6 } from '@aws-amplify/core';
+import { USER_UNAUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
-jest.mock('@aws-amplify/core/internals/utils', () => ({
-	...jest.requireActual('@aws-amplify/core/internals/utils'),
-	fetchAuthSession: jest.fn(),
-}));
 
 Amplify.configure({
 	Auth: {
@@ -26,27 +23,25 @@ Amplify.configure({
 });
 const mockedAccessToken =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockGetTokensFunction = jest.spyOn(AmplifyV6.Auth, 'getTokens');
 const mockedSub = 'mockedSub';
 const mockedUsername = 'XXXXXXXXXXXXXX';
 
 describe('getUser API happy path cases', () => {
 	beforeEach(() => {
-		mockFetchAuthSession.mockResolvedValue({
-			tokens: {
-				accessToken: decodeJWT(mockedAccessToken),
-				idToken: {
-					payload: {
-						sub: mockedSub,
-						'cognito:username': mockedUsername,
-					},
+		mockGetTokensFunction.mockResolvedValue({
+			accessToken: decodeJWT(mockedAccessToken),
+			idToken: {
+				payload: {
+					sub: mockedSub,
+					'cognito:username': mockedUsername,
 				},
 			},
 		});
 	});
 
 	afterEach(() => {
-		mockFetchAuthSession.mockClear();
+		mockGetTokensFunction.mockClear();
 	});
 
 	test('get current user', async () => {
@@ -56,26 +51,20 @@ describe('getUser API happy path cases', () => {
 });
 
 describe('getUser API error path cases:', () => {
-	test('getUser API should raise service error', async () => {
-		expect.assertions(2);
-		mockFetchAuthSession.mockImplementationOnce(async () => {
-			throw new AuthError({
-				name: InitiateAuthException.InternalErrorException,
-				message: 'error at fetchAuthSession',
-			});
-		});
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(
-				buildMockErrorResponse(InitiateAuthException.InternalErrorException)
-			)
-		);
+	beforeEach(() => {
+		mockGetTokensFunction.mockResolvedValue(null);
+	});
+
+	afterEach(() => {
+		mockGetTokensFunction.mockClear();
+	});
+	test('getUser API should raise a validation error when tokens are not found', async () => {
 		try {
-			await getCurrentUser({
-				recache: true,
-			});
+			const result = await getCurrentUser();
 		} catch (error) {
+			console.log(error);
 			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(InitiateAuthException.InternalErrorException);
+			expect(error.name).toBe(USER_UNAUTHENTICATED_EXCEPTION);
 		}
 	});
 });

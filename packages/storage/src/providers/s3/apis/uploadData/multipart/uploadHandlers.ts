@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+
 import { getDataChunker } from './getDataChunker';
-import { S3UploadOptions } from '../../../types';
+import { UploadDataInput } from '../../../types';
 import { resolveS3ConfigAndInput } from '../../../utils';
-import { StorageUploadDataRequest } from '../../../../../types';
-import { S3Item } from '../../../types/results';
+import { Item as S3Item } from '../../../types/outputs';
 import {
 	DEFAULT_ACCESS_LEVEL,
 	DEFAULT_QUEUE_SIZE,
@@ -16,7 +17,6 @@ import { getConcurrentUploadsProgressTracker } from './progressTracker';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { StorageError } from '../../../../../errors/StorageError';
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { CanceledError } from '../../../../../errors/CanceledError';
 import {
 	Part,
@@ -32,11 +32,7 @@ import {
  * @internal
  */
 export const getMultipartUploadHandlers = (
-	{
-		options: uploadDataOptions,
-		key,
-		data,
-	}: StorageUploadDataRequest<S3UploadOptions>,
+	{ options: uploadDataOptions, key, data }: UploadDataInput,
 	size?: number
 ) => {
 	let resolveCallback: ((value: S3Item) => void) | undefined;
@@ -58,7 +54,10 @@ export const getMultipartUploadHandlers = (
 	let isAbortSignalFromPause: boolean = false;
 
 	const startUpload = async (): Promise<S3Item> => {
-		const resolvedS3Options = await resolveS3ConfigAndInput(uploadDataOptions);
+		const resolvedS3Options = await resolveS3ConfigAndInput(
+			Amplify,
+			uploadDataOptions
+		);
 		s3Config = resolvedS3Options.s3Config;
 		bucket = resolvedS3Options.bucket;
 		keyPrefix = resolvedS3Options.keyPrefix;

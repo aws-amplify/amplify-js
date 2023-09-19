@@ -19,9 +19,11 @@ const mockKeyValueStorage: KeyValueStorageInterface = {
 	clear: jest.fn(),
 };
 const mockAuthConfig: AuthConfig = {
-	identityPoolId: '123',
-	userPoolId: 'abc',
-	userPoolWebClientId: 'def',
+	Cognito: {
+		identityPoolId: '123',
+		userPoolId: 'abc',
+		userPoolClientId: 'def',
+	},
 };
 const MockDefaultTokenStore = DefaultTokenStore as jest.Mock;
 const MockTokenOrchestrator = TokenOrchestrator as jest.Mock;

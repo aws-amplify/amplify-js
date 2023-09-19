@@ -12,12 +12,12 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 import { defaultConfig } from './base';
 import type { UploadPartCommandInput, UploadPartCommandOutput } from './types';
 import {
+	buildStorageServiceError,
 	validateS3RequiredParameter,
 	assignStringVariables,
 	map,
 	parseXmlError,
 	s3TransferHandler,
-	serializeObjectSsecOptionsToHeaders,
 	serializePathnameObjectKey,
 } from './utils';
 
@@ -25,16 +25,7 @@ import {
 // and will be set by browser or fetch polyfill.
 export type UploadPartInput = Pick<
 	UploadPartCommandInput,
-	| 'PartNumber'
-	| 'Body'
-	| 'UploadId'
-	| 'Bucket'
-	| 'Key'
-	| 'ContentMD5'
-	| 'SSECustomerAlgorithm'
-	| 'SSECustomerKey'
-	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
+	'PartNumber' | 'Body' | 'UploadId' | 'Bucket' | 'Key' | 'ContentMD5'
 >;
 
 export type UploadPartOutput = Pick<
@@ -47,7 +38,6 @@ const uploadPartSerializer = async (
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
 	const headers = {
-		...(await serializeObjectSsecOptionsToHeaders(input)),
 		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
 	};
 	headers['content-type'] = 'application/octet-stream';
@@ -72,8 +62,8 @@ const uploadPartDeserializer = async (
 	response: HttpResponse
 ): Promise<UploadPartOutput> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		throw error;
+		const error = (await parseXmlError(response)) as Error;
+		throw buildStorageServiceError(error, response.statusCode);
 	} else {
 		return {
 			...map(response.headers, {

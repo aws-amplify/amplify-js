@@ -4,13 +4,13 @@
 import { Amplify, Hub, LocalStorage, OAuthConfig } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
-	AmplifyError,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
+	getAmplifyUserAgent,
+	isBrowser,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
 } from '@aws-amplify/core/internals/utils';
-import { SignInWithRedirectRequest } from '../../../types/requests';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { CognitoUserPoolsTokenProvider } from '../tokenProvider';
 import {
@@ -21,40 +21,42 @@ import {
 import { cognitoHostedUIIdentityProviderMap } from '../types/models';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { AuthError } from '../../../errors/AuthError';
-import { AuthErrorTypes } from '../../../types';
+import { AuthErrorTypes } from '../../../types/Auth';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { authErrorMessages } from '../../../Errors';
+import { assertUserNotAuthenticated } from '../utils/signInHelpers';
+import { SignInWithRedirectInput } from '../types';
 
 const SELF = '_self';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
  *
- * @param signInRedirectRequest - The SignInRedirectRequest object, if empty it will redirect to Cognito HostedUI
+ * @param input - The SignInWithRedirectInput object, if empty it will redirect to Cognito HostedUI
  *
  * TODO: add config errors
  */
-export function signInWithRedirect(
-	signInWithRedirectRequest?: SignInWithRedirectRequest
-): void {
+export async function signInWithRedirect(
+	input?: SignInWithRedirectInput
+): Promise<void> {
+	await assertUserNotAuthenticated();
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
-
+	store.setAuthConfig(authConfig);
 	let provider = 'COGNITO'; // Default
 
-	if (typeof signInWithRedirectRequest?.provider === 'string') {
-		provider =
-			cognitoHostedUIIdentityProviderMap[signInWithRedirectRequest.provider];
-	} else if (signInWithRedirectRequest?.provider?.custom) {
-		provider = signInWithRedirectRequest.provider.custom;
+	if (typeof input?.provider === 'string') {
+		provider = cognitoHostedUIIdentityProviderMap[input.provider];
+	} else if (input?.provider?.custom) {
+		provider = input.provider.custom;
 	}
 
 	oauthSignIn({
 		oauthConfig: authConfig.loginWith.oauth,
 		clientId: authConfig.userPoolClientId,
 		provider,
-		customState: signInWithRedirectRequest?.customState,
+		customState: input?.customState,
 	});
 }
 
@@ -120,7 +122,7 @@ async function handleCodeFlow({
 	domain,
 }: {
 	currentUrl: string;
-	userAgentValue?: string;
+	userAgentValue: string;
 	clientId: string;
 	redirectUri: string;
 	domain: string;
@@ -176,14 +178,14 @@ async function handleCodeFlow({
 		token_type,
 		expires_in,
 	} = await (
-		(await fetch(oAuthTokenEndpoint, {
+		await fetch(oAuthTokenEndpoint, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 				[USER_AGENT_HEADER]: userAgentValue,
 			},
 			body,
-		})) as any
+		})
 	).json();
 
 	if (error) {
@@ -275,8 +277,8 @@ async function handleAuthResponse({
 	responseType,
 	domain,
 }: {
-	currentUrl?: string;
-	userAgentValue?: string;
+	currentUrl: string;
+	userAgentValue: string;
 	clientId: string;
 	redirectUri: string;
 	responseType: string;
@@ -323,70 +325,78 @@ async function handleAuthResponse({
 
 async function validateStateFromURL(urlParams: URL): Promise<string> {
 	if (!urlParams) {
-		return;
 	}
 	const returnedState = urlParams.searchParams.get('state');
 
-	await validateState(returnedState);
+	validateState(returnedState);
 	return returnedState;
 }
 
-async function validateState(state: string) {
-	const savedState = await store.loadOAuthState();
+function validateState(state?: string | null): asserts state {
+	let savedState: string | undefined | null;
+
+	store.loadOAuthState().then(resp => {
+		savedState = resp;
+	});
 
 	// This is because savedState only exists if the flow was initiated by Amplify
-	if (savedState && savedState !== state) {
-		throw new AmplifyError({
-			name: '',
-			message: '',
-			recoverySuggestion: '',
+	if (savedState && state && savedState !== state) {
+		throw new AuthError({
+			name: AuthErrorTypes.OAuthSignInError,
+			message: 'An error occurred while validating the state',
+			recoverySuggestion: 'Try to initiate an OAuth flow from Amplify',
 		});
+	}
+}
+
+async function parseRedirectURL() {
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	try {
+		assertTokenProviderConfig(authConfig);
+		store.setAuthConfig(authConfig);
+	} catch (_err) {
+		// Token provider not configure nothing to do
+		return;
+	}
+
+	// No OAuth inflight doesnt need to parse the url
+	if (!(await store.loadOAuthInFlight())) {
+		return;
+	}
+	try {
+		assertOAuthConfig(authConfig);
+	} catch (err) {
+		// TODO(v6): this should warn you have signInWithRedirect but is not configured
+		return;
+	}
+
+	try {
+		const url = window.location.href;
+
+		handleAuthResponse({
+			currentUrl: url,
+			clientId: authConfig.userPoolClientId,
+			domain: authConfig.loginWith.oauth.domain,
+			redirectUri: authConfig.loginWith.oauth.redirectSignIn[0],
+			responseType: authConfig.loginWith.oauth.responseType,
+			userAgentValue: getAmplifyUserAgent(),
+		});
+	} catch (err) {
+		// is ok if there is not OAuthConfig
 	}
 }
 
 function urlListener() {
 	// Listen configure to parse url
-	// TODO(v6): what happens if configure gets called multiple times during code exchange
+	parseRedirectURL();
 	Hub.listen('core', async capsule => {
 		if (capsule.payload.event === 'configure') {
-			const authConfig = Amplify.getConfig().Auth?.Cognito;
-			try {
-				assertTokenProviderConfig(authConfig);
-				store.setAuthConfig(authConfig);
-			} catch (_err) {
-				// Token provider not configure nothing to do
-				return;
-			}
-
-			// No OAuth inflight doesnt need to parse the url
-			if (!(await store.loadOAuthInFlight())) {
-				return;
-			}
-			try {
-				assertOAuthConfig(authConfig);
-			} catch (err) {
-				// TODO(v6): this should warn you have signInWithRedirect but is not configured
-				return;
-			}
-
-			try {
-				const url = window.location.href;
-
-				handleAuthResponse({
-					currentUrl: url,
-					clientId: authConfig.userPoolClientId,
-					domain: authConfig.loginWith.oauth.domain,
-					redirectUri: authConfig.loginWith.oauth.redirectSignIn[0],
-					responseType: authConfig.loginWith.oauth.responseType,
-				});
-			} catch (err) {
-				// is ok if there is not OAuthConfig
-			}
+			parseRedirectURL();
 		}
 	});
 }
 
-urlListener();
+isBrowser() && urlListener();
 
 // This has a reference for listeners that requires to be notified, TokenOrchestrator use this for load tokens
 let resolveInflightPromise = () => {};
@@ -408,6 +418,6 @@ CognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
 );
 function clearHistory(redirectUri: string) {
 	if (window && typeof window.history !== 'undefined') {
-		window.history.replaceState({}, null, redirectUri);
+		window.history.replaceState({}, '', redirectUri);
 	}
 }

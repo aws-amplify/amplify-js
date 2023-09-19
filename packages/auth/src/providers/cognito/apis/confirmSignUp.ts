@@ -3,13 +3,7 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
-import {
-	AuthSignUpResult,
-	AuthSignUpStep,
-	AuthStandardAttributeKey,
-	ConfirmSignUpRequest,
-} from '../../../types';
-import { CustomAttribute, CognitoConfirmSignUpOptions } from '../types';
+import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { ConfirmSignUpException } from '../types/errors';
@@ -19,20 +13,18 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 /**
  * Confirms a new user account.
  *
- * @param confirmSignUpRequest - The ConfirmSignUpRequest object.
+ * @param input -  The ConfirmSignUpInput object.
+ * @returns ConfirmSignUpOutput
  * @throws -{@link ConfirmSignUpException }
  * Thrown due to an invalid confirmation code.
  * @throws -{@link AuthValidationErrorCode }
  * Thrown due to an empty confirmation code
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
- *
- * @returns AuthSignUpResult
  */
 export async function confirmSignUp(
-	confirmSignUpRequest: ConfirmSignUpRequest<CognitoConfirmSignUpOptions>
-): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
-	const { username, confirmationCode, options } = confirmSignUpRequest;
+	input: ConfirmSignUpInput
+): Promise<ConfirmSignUpOutput> {
+	const { username, confirmationCode, options } = input;
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -61,7 +53,7 @@ export async function confirmSignUp(
 	return {
 		isSignUpComplete: true,
 		nextStep: {
-			signUpStep: AuthSignUpStep.DONE,
+			signUpStep: 'DONE',
 		},
 	};
 }

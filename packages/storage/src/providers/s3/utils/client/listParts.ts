@@ -15,8 +15,8 @@ import type {
 } from './types';
 import { defaultConfig } from './base';
 import {
+	buildStorageServiceError,
 	emptyArrayGuard,
-	serializeObjectSsecOptionsToHeaders,
 	map,
 	parseXmlBody,
 	parseXmlError,
@@ -28,13 +28,7 @@ import {
 
 export type ListPartsInput = Pick<
 	ListPartsCommandInput,
-	| 'Bucket'
-	| 'Key'
-	| 'UploadId'
-	| 'SSECustomerAlgorithm'
-	| 'SSECustomerKey'
-	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
+	'Bucket' | 'Key' | 'UploadId'
 >;
 
 export type ListPartsOutput = Pick<
@@ -46,7 +40,7 @@ const listPartsSerializer = async (
 	input: ListPartsInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	const headers = await serializeObjectSsecOptionsToHeaders(input);
+	const headers = {};
 	const url = new URL(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
@@ -65,8 +59,8 @@ const listPartsDeserializer = async (
 	response: HttpResponse
 ): Promise<ListPartsOutput> => {
 	if (response.statusCode >= 300) {
-		const error = await parseXmlError(response);
-		throw error;
+		const error = (await parseXmlError(response)) as Error;
+		throw buildStorageServiceError(error, response.statusCode);
 	} else {
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {

@@ -12,6 +12,7 @@ import { defaultConfig } from './base';
 import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
 
 import {
+	buildStorageServiceError,
 	deserializeMetadata,
 	deserializeNumber,
 	deserializeTimestamp,
@@ -19,19 +20,11 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
-	validateS3RequiredParameter
+	validateS3RequiredParameter,
 } from './utils';
 import { StorageError } from '../../../../errors/StorageError';
 
-export type HeadObjectInput = Pick<
-	HeadObjectCommandInput,
-	| 'Bucket'
-	| 'Key'
-	| 'SSECustomerKey'
-	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
-	| 'SSECustomerAlgorithm'
->;
+export type HeadObjectInput = Pick<HeadObjectCommandInput, 'Bucket' | 'Key'>;
 
 export type HeadObjectOutput = Pick<
 	HeadObjectCommandOutput,
@@ -64,7 +57,7 @@ const headObjectDeserializer = async (
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
 		const error = (await parseXmlError(response)) as Error;
-		throw StorageError.fromServiceError(error, response.statusCode);
+		throw buildStorageServiceError(error, response.statusCode);
 	} else {
 		const contents = {
 			...map(response.headers, {

@@ -25,6 +25,5 @@ export const createAWSCredentialsAndIdentityIdProvider = (
 	const credentialsProvider = new CognitoAWSCredentialsAndIdentityIdProvider(
 		new DefaultIdentityIdStore(keyValueStorage)
 	);
-	credentialsProvider.setAuthConfig(authConfig);
 	return credentialsProvider;
 };

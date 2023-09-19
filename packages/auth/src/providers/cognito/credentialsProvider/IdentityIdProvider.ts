@@ -9,6 +9,8 @@ import {
 import { formLoginsMap } from './credentialsProvider';
 import { AuthError } from '../../../errors/AuthError';
 import { IdentityIdStore } from './types';
+import { getRegionFromIdentityPoolId } from '../utils/clients/CognitoIdentityProvider/utils';
+import { Identity } from '@aws-amplify/core';
 
 const logger = new Logger('CognitoIdentityIdProvider');
 
@@ -17,9 +19,9 @@ const logger = new Logger('CognitoIdentityIdProvider');
  *
  * @param tokens - The AuthTokens received after SignIn
  * @returns string
- * @throws internal: {@link AuthError }
+ * @throws configuration excpetions: {@link InvalidIdentityPoolIdException }
  *  - Auth errors that may arise from misconfiguration.
- *
+ * @throws service excpetions: {@link GetIdException }
  */
 export async function cognitoIdentityIdProvider({
 	tokens,
@@ -27,28 +29,29 @@ export async function cognitoIdentityIdProvider({
 	identityIdStore,
 }: {
 	tokens?: AuthTokens;
-	authConfig?: CognitoIdentityPoolConfig;
+	authConfig: CognitoIdentityPoolConfig;
 	identityIdStore: IdentityIdStore;
 }): Promise<string> {
-	if (authConfig) identityIdStore.setAuthConfig({ Cognito: authConfig });
-	let identityId = await identityIdStore.loadIdentityId();
+	identityIdStore.setAuthConfig({ Cognito: authConfig });
 
+	// will return null only if there is no identityId cached or if there is an error retrieving it
+	let identityId: Identity | null = await identityIdStore.loadIdentityId();
+
+	// Tokens are available so return primary identityId
 	if (tokens) {
-		// Tokens are available so return primary identityId
+		// If there is existing primary identityId in-memory return that
 		if (identityId && identityId.type === 'primary') {
 			return identityId.id;
 		} else {
 			const logins = tokens.idToken
 				? formLoginsMap(tokens.idToken.toString())
 				: {};
-			// TODO(V6): reuse previous guest idenityId if present
+
 			const generatedIdentityId = await generateIdentityId(logins, authConfig);
 
 			if (identityId && identityId.id === generatedIdentityId) {
-				// if guestIdentity is found and used by GetCredentialsForIdentity
-				// it will be linked to the logins provided, and disqualified as an unauth identity
 				logger.debug(
-					`The guest identity ${identityId.id} has become the primary identity`
+					`The guest identity ${identityId.id} has become the primary identity.`
 				);
 			}
 			identityId = {
@@ -57,7 +60,7 @@ export async function cognitoIdentityIdProvider({
 			};
 		}
 	} else {
-		// Tokens are avaliable so return guest identityId
+		// If there is existing guest identityId cached return that
 		if (identityId && identityId.type === 'guest') {
 			return identityId.id;
 		} else {
@@ -68,9 +71,8 @@ export async function cognitoIdentityIdProvider({
 		}
 	}
 
-	// Store in-memory or local storage
+	// Store in-memory or local storage depending on guest or primary identityId
 	identityIdStore.storeIdentityId(identityId);
-	logger.debug(`The identity being returned ${identityId.id}`);
 	return identityId.id;
 }
 
@@ -79,20 +81,9 @@ async function generateIdentityId(
 	authConfig: CognitoIdentityPoolConfig
 ): Promise<string> {
 	const identityPoolId = authConfig?.identityPoolId;
-
-	// Access config to obtain IdentityPoolId & region
-	if (!identityPoolId) {
-		throw new AuthError({
-			name: 'IdentityPoolIdConfigException',
-			message: 'No Cognito Identity pool provided',
-			recoverySuggestion: 'Make sure to pass a valid identityPoolId to config.',
-		});
-	}
-	const region = identityPoolId.split(':')[0];
+	const region = getRegionFromIdentityPoolId(identityPoolId);
 
 	// IdentityId is absent so get it using IdentityPoolId with Cognito's GetId API
-	// Region is not needed for this API as suggested by the API spec:
-	// https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetId.html
 	const idResult =
 		// for a first-time user, this will return a brand new identity
 		// for a returning user, this will retrieve the previous identity assocaited with the logins
@@ -109,8 +100,8 @@ async function generateIdentityId(
 		).IdentityId;
 	if (!idResult) {
 		throw new AuthError({
-			name: 'IdentityIdResponseException',
-			message: 'Did not receive an identityId from Cognito identity pool',
+			name: 'GetIdResponseException',
+			message: 'Received undefined response from getId operation',
 			recoverySuggestion:
 				'Make sure to pass a valid identityPoolId in the configuration.',
 		});

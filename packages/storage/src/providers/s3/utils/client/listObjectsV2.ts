@@ -15,6 +15,7 @@ import type {
 import { defaultConfig } from './base';
 import {
 	assignStringVariables,
+	buildStorageServiceError,
 	deserializeBoolean,
 	deserializeNumber,
 	deserializeTimestamp,
@@ -24,7 +25,6 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 } from './utils';
-import { StorageError } from '../../../../errors/StorageError';
 
 export type ListObjectsV2Input = ListObjectsV2CommandInput;
 
@@ -63,7 +63,7 @@ const listObjectsV2Deserializer = async (
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
 		const error = (await parseXmlError(response)) as Error;
-		throw StorageError.fromServiceError(error, response.statusCode);
+		throw buildStorageServiceError(error, response.statusCode);
 	} else {
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {
@@ -78,6 +78,7 @@ const listObjectsV2Deserializer = async (
 			ContinuationToken: 'ContinuationToken',
 			Delimiter: 'Delimiter',
 			EncodingType: 'EncodingType',
+			IsTruncated: ['IsTruncated', deserializeBoolean],
 			KeyCount: ['KeyCount', deserializeNumber],
 			MaxKeys: ['MaxKeys', deserializeNumber],
 			Name: 'Name',

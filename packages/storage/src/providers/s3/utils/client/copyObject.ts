@@ -10,8 +10,8 @@ import {
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
 import { defaultConfig } from './base';
-import { StorageError } from '../../../../errors/StorageError';
 import {
+	buildStorageServiceError,
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
@@ -33,12 +33,6 @@ export type CopyObjectInput = Pick<
 	| 'ContentLanguage'
 	| 'Expires'
 	| 'ACL'
-	| 'ServerSideEncryption'
-	| 'SSECustomerAlgorithm'
-	| 'SSECustomerKey'
-	// TODO(AllanZhengYP): remove in V6.
-	| 'SSECustomerKeyMD5'
-	| 'SSEKMSKeyId'
 	| 'Tagging'
 	| 'Metadata'
 >;
@@ -70,9 +64,8 @@ const copyObjectDeserializer = async (
 	response: HttpResponse
 ): Promise<CopyObjectOutput> => {
 	if (response.statusCode >= 300) {
-		// error is always set when statusCode >= 300
 		const error = (await parseXmlError(response)) as Error;
-		throw StorageError.fromServiceError(error, response.statusCode);
+		throw buildStorageServiceError(error, response.statusCode);
 	} else {
 		await parseXmlBody(response);
 		return {

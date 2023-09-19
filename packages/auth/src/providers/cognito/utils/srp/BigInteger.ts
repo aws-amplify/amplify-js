@@ -1,5 +1,5 @@
 /* tslint:disable */
-
+// @ts-nocheck -> BigInteger is already a vended utility
 // A small implementation of BigInteger based on http://www-cs-students.stanford.edu/~tjw/jsbn/
 //
 // All public methods have been removed except the following:

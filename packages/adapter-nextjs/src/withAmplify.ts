@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ResourcesConfig } from '@aws-amplify/core';
+import { ResourcesConfig } from 'aws-amplify';
+import { LegacyConfig } from 'aws-amplify/internals/adapter-core';
 import { NextConfig } from 'next';
 
 // NOTE: this function is exported from the subpath `/with-amplify`.
@@ -10,18 +11,25 @@ import { NextConfig } from 'next';
 
 /**
  * Merges the `amplifyConfig` into the `nextConfig.env`.
+ *
  * @param nextConfig The next config for a Next.js app.
- * @param amplifyConfig
+ * @param amplifyConfig The Amplify configuration.
+ *
  * @returns The updated `nextConfig`.
  */
 export const withAmplify = (
 	nextConfig: NextConfig,
-	amplifyConfig: ResourcesConfig
+	amplifyConfig: ResourcesConfig | LegacyConfig
 ) => {
+	const configStr = JSON.stringify(amplifyConfig);
 	nextConfig.env = {
 		...nextConfig.env,
-		// TODO(Hui): follow up the validation of the amplifyConfig.
-		amplifyConfig: JSON.stringify(amplifyConfig),
+		amplifyConfig: configStr,
+	};
+
+	nextConfig.serverRuntimeConfig = {
+		...nextConfig.serverRuntimeConfig,
+		amplifyConfig: configStr,
 	};
 
 	return nextConfig;

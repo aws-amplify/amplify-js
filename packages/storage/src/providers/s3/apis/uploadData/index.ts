@@ -1,9 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { S3UploadDataResult, S3UploadOptions } from '../../types';
+import { UploadDataInput, UploadDataOutput, S3Exception } from '../../types';
 import { createUploadTask } from '../../utils';
-import { StorageUploadDataRequest, UploadTask } from '../../../../types';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { DEFAULT_PART_SIZE, MAX_OBJECT_SIZE } from '../../utils/constants';
@@ -19,20 +18,48 @@ import { getMultipartUploadHandlers } from './multipart';
  * * Maximum object size is 5TB.
  * * Maximum object size if the size cannot be determined before upload is 50GB.
  *
- * @param {StorageUploadDataRequest<S3UploadOptions>} uploadDataRequest The parameters that are passed to the
- * 	uploadData operation.
- * @returns {UploadTask<S3UploadDataResult>} Cancelable and Resumable task exposing result promise from `result`
+ * @param input - The UploadDataInput object.
+ * @returns A cancelable and resumable task exposing result promise from `result`
  * 	property.
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
- * @throws validation: {@link StorageValidationErrorCode } - Validation errors
- * thrown either username or key are not defined.
+ * @throws validation: {@link StorageValidationErrorCode } - Validation errors.
  *
- * TODO: add config errors
+ * @example
+ * ```ts
+ * // Upload a file to s3 bucket
+ * await uploadData({ key, data: file, options: {
+ *   onProgress, // Optional progress callback.
+ * } }).result;
+ * ```
+ * @example
+ * ```ts
+ * // Cancel a task
+ * const uploadTask = uploadData({ key, data: file });
+ * //...
+ * uploadTask.cancel();
+ * try {
+ *   await uploadTask.result;
+ * } catch (error) {
+ *   if(isCancelError(error)) {
+ *     // Handle error thrown by task cancelation.
+ *   }
+ * }
+ *```
+ *
+ * @example
+ * ```ts
+ * // Pause and resume a task
+ * const uploadTask = uploadData({ key, data: file });
+ * //...
+ * uploadTask.pause();
+ * //...
+ * uploadTask.resume();
+ * //...
+ * await uploadTask.result;
+ * ```
  */
-export const uploadData = (
-	uploadDataRequest: StorageUploadDataRequest<S3UploadOptions>
-): UploadTask<S3UploadDataResult> => {
-	const { data } = uploadDataRequest;
+export const uploadData = (input: UploadDataInput): UploadDataOutput => {
+	const { data } = input;
 
 	const dataByteLength = byteLength(data);
 	assertValidationError(
@@ -44,18 +71,14 @@ export const uploadData = (
 		const abortController = new AbortController();
 		return createUploadTask({
 			isMultipartUpload: false,
-			job: putObjectJob(
-				uploadDataRequest,
-				abortController.signal,
-				dataByteLength
-			),
+			job: putObjectJob(input, abortController.signal, dataByteLength),
 			onCancel: (abortErrorOverwrite?: Error) => {
 				abortController.abort(abortErrorOverwrite);
 			},
 		});
 	} else {
 		const { multipartUploadJob, onPause, onResume, onCancel } =
-			getMultipartUploadHandlers(uploadDataRequest, dataByteLength);
+			getMultipartUploadHandlers(input, dataByteLength);
 		return createUploadTask({
 			isMultipartUpload: true,
 			job: multipartUploadJob,

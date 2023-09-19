@@ -24,7 +24,6 @@ describe('local sign-in state management tests', () => {
 
 	beforeEach(() => {
 		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-		cognitoCredentialsProvider.setAuthConfig(authConfig);
 	});
 
 	test('local state management should return state after signIn returns a ChallengeName', async () => {

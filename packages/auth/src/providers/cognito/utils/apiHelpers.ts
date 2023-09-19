@@ -24,12 +24,12 @@ export function toAttributeType<T extends Record<string, string | undefined>>(
  * @param attributes - an array of AttributeType objects.
  * @returns AuthUserAttribute object.
  */
-export function toAuthUserAttribute<T extends string>(
+export function toAuthUserAttribute<T extends string = string>(
 	attributes?: AttributeType[]
 ): AuthUserAttribute<T> {
-	const userAttributes: AuthUserAttribute<T> = {};
+	const userAttributes: AuthUserAttribute<string> = {};
 	attributes?.forEach(attribute => {
-		userAttributes[attribute.Name] = attribute.Value;
+		if (attribute.Name) userAttributes[attribute.Name] = attribute.Value;
 	});
 	return userAttributes;
 }

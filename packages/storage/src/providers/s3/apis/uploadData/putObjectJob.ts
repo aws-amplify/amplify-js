@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { S3UploadOptions } from '../../types';
+import { Amplify } from '@aws-amplify/core';
+
+import { UploadDataInput } from '../../types';
 import { calculateContentMd5, resolveS3ConfigAndInput } from '../../utils';
-import { StorageUploadDataRequest } from '../../../../types';
-import { S3Item } from '../../types/results';
+import { Item as S3Item } from '../../types/outputs';
 import { putObject } from '../../utils/client';
 
 /**
@@ -14,17 +15,13 @@ import { putObject } from '../../utils/client';
  */
 export const putObjectJob =
 	(
-		{
-			options: uploadDataOptions,
-			key,
-			data,
-		}: StorageUploadDataRequest<S3UploadOptions>,
+		{ options: uploadDataOptions, key, data }: UploadDataInput,
 		abortSignal: AbortSignal,
 		totalLength?: number
 	) =>
 	async (): Promise<S3Item> => {
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled } =
-			await resolveS3ConfigAndInput(uploadDataOptions);
+			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
 
 		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths
 		const finalKey = keyPrefix + key;

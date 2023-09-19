@@ -17,6 +17,13 @@ import {
 	StorageConfig,
 } from './Storage/types';
 
+export type LegacyConfig = {
+	/**
+	 * @deprecated The field should not be used.
+	 */
+	aws_project_region?: string;
+};
+
 export type ResourcesConfig = {
 	// API?: {};
 	Analytics?: AnalyticsConfig;
@@ -28,12 +35,12 @@ export type ResourcesConfig = {
 	// Notifications?: {};
 	// Predictions?: {};
 	Storage?: StorageConfig;
-	ssr?: boolean;
 };
 
 export type LibraryOptions = {
 	Auth?: LibraryAuthOptions;
 	Storage?: LibraryStorageOptions;
+	ssr?: boolean;
 };
 
 export {

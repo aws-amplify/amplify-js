@@ -18,7 +18,7 @@ const mockTokenProvider = {
 };
 const mockCredentialAndIdentityProvider = {
 	getCredentialsAndIdentityId: jest.fn(),
-	clearCredentials: jest.fn(),
+	clearCredentialsAndIdentityId: jest.fn(),
 };
 const mockContextSpec = {
 	token: { value: Symbol('AmplifyServerContextToken') },

@@ -62,16 +62,12 @@
 		"server"
 	],
 	"dependencies": {
-		"@aws-crypto/sha256-js": "1.2.2",
-		"@aws-sdk/types": "3.6.1",
-		"@aws-sdk/util-hex-encoding": "3.6.1",
-		"@types/node-fetch": "2.6.4",
-		"isomorphic-unfetch": "^3.0.0",
+		"@aws-crypto/sha256-js": "5.0.0",
+		"@aws-sdk/types": "3.398.0",
+		"@smithy/util-hex-encoding": "2.0.0",
 		"tslib": "^2.5.0",
-		"universal-cookie": "^4.0.4",
 		"uuid": "^9.0.0",
 		"zen-observable-ts": "0.8.19",
-		"rxjs": "^7.8.1",
 		"js-cookie": "^2.2.1"
 	},
 	"devDependencies": {
@@ -85,88 +81,64 @@
 	},
 	"size-limit": [
 		{
-			"name": "Core (ServiceWorker)",
-			"path": "./lib-esm/index.js",
-			"import": "{ ServiceWorker }",
-			"limit": "19.6 kB"
-		},
-		{
 			"name": "Core (Hub)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Hub }",
-			"limit": "2.3 kB"
+			"limit": "2.35 kB"
 		},
 		{
 			"name": "Core (I18n)",
 			"path": "./lib-esm/index.js",
 			"import": "{ I18n }",
-			"limit": "6.1 kB"
-		},
-		{
-			"name": "Core (Logger)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Logger }",
-			"limit": "1.3 kB"
-		},
-		{
-			"name": "Core (Credentials)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Credentials }",
-			"limit": "14.1 kB"
-		},
-		{
-			"name": "Core (Signer)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Signer }",
-			"limit": "19.6 kB"
+			"limit": "2.33 kB"
 		},
 		{
 			"name": "Custom clients (fetch handler)",
 			"path": "./lib-esm/clients/handlers/fetch.js",
 			"import": "{ fetchTransferHandler }",
-			"limit": "1.85 kB"
+			"limit": "1.86 kB"
 		},
 		{
 			"name": "Custom clients (unauthenticated handler)",
 			"path": "./lib-esm/clients/handlers/unauthenticated.js",
 			"import": "{ unauthenticatedHandler }",
-			"limit": "2.85 kB"
+			"limit": "2.74 kB"
 		},
 		{
 			"name": "Custom clients (retry middleware)",
 			"path": "./lib-esm/clients/middleware/retry/middleware.js",
 			"import": "{ retryMiddleware }",
-			"limit": "1.35 kB"
+			"limit": "1.45 kB"
 		},
 		{
 			"name": "Custom clients (signing middleware)",
 			"path": "./lib-esm/clients/middleware/signing/middleware.js",
 			"import": "{ signingMiddleware }",
-			"limit": "6.85 kB"
+			"limit": "6.81 kB"
 		},
 		{
 			"name": "Custom clients (request signer)",
 			"path": "./lib-esm/clients/middleware/signing/signer/signatureV4/index.js",
 			"import": "{ signRequest }",
-			"limit": "6.2 kB"
+			"limit": "6.27 kB"
 		},
 		{
 			"name": "Custom clients (url presigner)",
 			"path": "./lib-esm/clients/middleware/signing/signer/signatureV4/index.js",
 			"import": "{ presignUrl }",
-			"limit": "6.3 kB"
+			"limit": "6.4 kB"
 		},
 		{
 			"name": "Cache (default browser storage)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Cache }",
-			"limit": "7.8 kB"
+			"limit": "4.13 kB"
 		},
 		{
 			"name": "Cache (in-memory)",
 			"path": "./lib-esm/index.js",
 			"import": "{ InMemoryCache }",
-			"limit": "7.9 kB"
+			"limit": "4.15 kB"
 		}
 	],
 	"jest": {
