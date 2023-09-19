@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import Observable, { ZenObservable } from 'zen-observable-ts';
+// import Observable, { ZenObservable } from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';

@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ZenObservable } from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 
 export interface SubscriptionObserver<T> {
 	closed: boolean;

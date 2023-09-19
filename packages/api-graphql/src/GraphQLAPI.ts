@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internals';
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 
 export const graphqlOperation = (
 	query,
@@ -32,7 +32,8 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	graphql<T = any>(
 		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
-	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
+		// ): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
+	): any {
 		return super.graphql(options, additionalHeaders);
 	}
 }

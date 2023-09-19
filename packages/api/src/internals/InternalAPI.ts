@@ -18,7 +18,7 @@ import {
 	ConsoleLogger as Logger,
 	CustomUserAgentDetails,
 } from '@aws-amplify/core/internals/utils';
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 
 const logger = new Logger('API');
 /**
@@ -100,6 +100,7 @@ export class InternalAPIClass {
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<any>> | Observable<object> {
+		// ): any {
 		const apiUserAgentDetails: CustomUserAgentDetails = {
 			category: Category.API,
 			action: ApiAction.GraphQl,
