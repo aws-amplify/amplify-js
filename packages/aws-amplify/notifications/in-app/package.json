@@ -1,5 +1,5 @@
 {
-	"name": "aws-amplify/notifications/in-app",
+	"name": "aws-amplify/in-app-messaging",
 	"main": "../../lib/notifications/in-app/index.js",
 	"browser": "../../lib-esm/notifications/in-app/index.js",
 	"module": "../../lib-esm/notifications/in-app/index.js",

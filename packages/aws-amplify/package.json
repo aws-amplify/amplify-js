@@ -72,17 +72,12 @@
 			"import": "./lib-esm/storage/s3/server.js",
 			"require": "./lib/storage/s3/server.js"
 		},
-		"./notifications": {
-			"types": "./lib-esm/notifications/index.d.ts",
-			"import": "./lib-esm/notifications/index.js",
-			"require": "./lib/notifications/index.js"
-		},
-		"./notifications/in-app": {
+		"./in-app-messaging": {
 			"types": "./lib-esm/notifications/in-app/index.d.ts",
 			"import": "./lib-esm/notifications/in-app/index.js",
 			"require": "./lib/notifications/in-app/index.js"
 		},
-		"./notifications/push": {
+		"./push-notifications": {
 			"types": "./lib-esm/notifications/push/index.d.ts",
 			"import": "./lib-esm/notifications/push/index.js",
 			"require": "./lib/notifications/push/index.js"
@@ -135,14 +130,17 @@
 			"storage/s3/server": [
 				"./lib-esm/storage/s3/server.d.ts"
 			],
-			"notifications": [
-				"./lib-esm/notifications/index.d.ts"
-			],
-			"notifications/in-app": [
+			"in-app-messaging": [
 				"./lib-esm/notifications/in-app/index.d.ts"
 			],
-			"notifications/push": [
+			"in-app-messaging/pinpoint": [
+				"./lib-esm/notifications/in-app/pinpoint/index.d.ts"
+			],
+			"push-notifications": [
 				"./lib-esm/notifications/push/index.d.ts"
+			],
+			"push-notifications/pinpoint": [
+				"./lib-esm/notifications/push/pinpoint/index.d.ts"
 			],
 			"internals/adapter-core": [
 				"./lib-esm/adapterCore/index.d.ts"
@@ -192,7 +190,6 @@
 		"@aws-amplify/auth": "6.0.0",
 		"@aws-amplify/core": "6.0.0",
 		"@aws-amplify/storage": "6.0.0",
-		"@aws-amplify/notifications": "1.6.4",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {

@@ -1,5 +1,5 @@
 {
-	"name": "aws-amplify/notifications/push",
+	"name": "aws-amplify/push-notifications",
 	"main": "../../lib/notifications/push/index.js",
 	"browser": "../../lib-esm/notifications/push/index.js",
 	"module": "../../lib-esm/notifications/push/index.js",

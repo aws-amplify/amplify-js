@@ -1,7 +1,0 @@
-{
-	"name": "aws-amplify/notifications",
-	"main": "../lib/notifications/index.js",
-	"browser": "../lib-esm/notifications/index.js",
-	"module": "../lib-esm/notifications/index.js",
-	"typings": "../lib-esm/notifications/index.d.ts"
-}
