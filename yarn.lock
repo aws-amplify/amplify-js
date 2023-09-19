@@ -2398,12 +2398,12 @@
   dependencies:
     tslib "^2.5.0"
 
-"@smithy/md5-js@2.0.5":
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/@smithy/md5-js/-/md5-js-2.0.5.tgz#02173e4e21105819efa8ebaa17eab23d5663f896"
-  integrity sha512-k5EOte/Ye2r7XBVaXv2rhiehk6l3T4uRiPF+pnxKEc+G9Fwd1xAXBDZrtOq1syFPBKBmVfNszG4nevngST7NKg==
+"@smithy/md5-js@2.0.7":
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/@smithy/md5-js/-/md5-js-2.0.7.tgz#4dea27b20b065857f953c74dbaa050003f48a374"
+  integrity sha512-2i2BpXF9pI5D1xekqUsgQ/ohv5+H//G9FlawJrkOJskV18PgJ8LiNbLiskMeYt07yAsSTZR7qtlcAaa/GQLWww==
   dependencies:
-    "@smithy/types" "^2.2.2"
+    "@smithy/types" "^2.3.1"
     "@smithy/util-utf8" "^2.0.0"
     tslib "^2.5.0"
 
@@ -2773,6 +2773,11 @@
   version "20.6.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.6.1.tgz#8b589bba9b2af0128796461a0979764562687e6f"
   integrity sha512-4LcJvuXQlv4lTHnxwyHQZ3uR9Zw2j7m1C9DfuwoTFQQP4Pmu04O6IfLYgMmHoOCt0nosItLLZAH+sOrRE0Bo8g==
+
+"@types/node@^16.11.7":
+  version "16.18.52"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.52.tgz#70c56b55d0d7e15fafa875127e95a92605c59c9b"
+  integrity sha512-sm2aph6cRSsTMFYFgI+RpPLunXO9ClJkpizUVdT7KmGeyfQ14xnjTMT/f3MHcfKqevXqGT6BgVFzW8wcEoDUtA==
 
 "@types/node@^8.9.5":
   version "8.10.66"
@@ -12377,6 +12382,11 @@ typescript-coverage-report@^0.6.4:
     rimraf "^3.0.2"
     semantic-ui-react "^0.88.2"
     type-coverage-core "^2.17.2"
+
+typescript@4.0.x:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.8.tgz#5739105541db80a971fdbd0d56511d1a6f17d37f"
+  integrity sha512-oz1765PN+imfz1MlZzSZPtC/tqcwsCyIYA8L47EkRnRW97ztRk83SzMiWLrnChC0vqoYxSU1fcFUDA5gV/ZiPg==
 
 typescript@5.0.2:
   version "5.0.2"
