@@ -188,7 +188,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ record }",
-			"limit": "20.49 kB"
+			"limit": "20.54 kB"
 		},
 		{
 			"name": "[API] class (AppSync)",
@@ -206,7 +206,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ identifyUser }",
-			"limit": "18.68 kB"
+			"limit": "18.72 kB"
 		},
 		{
 			"name": "[Auth] signUp (Cognito)",
@@ -230,7 +230,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "27.00 kB"
+			"limit": "27.02 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
@@ -248,7 +248,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignIn }",
-			"limit": "16.35 kB"
+			"limit": "16.36 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -290,7 +290,7 @@
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ getCurrentUser }",
-			"limit": "4.65 kB"
+			"limit": "4.67 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
@@ -314,7 +314,7 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn, signOut, fetchAuthSession }",
-			"limit": "27.90 kB"
+			"limit": "27.91 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
@@ -326,13 +326,13 @@
 			"name": "[Storage] copy (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ copy }",
-			"limit": "16.80 kB"
+			"limit": "16.86 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ downloadData }",
-			"limit": "17.60 kB"
+			"limit": "17.64 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
@@ -350,13 +350,13 @@
 			"name": "[Storage] list (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ list }",
-			"limit": "17.4 kB"
+			"limit": "17.45 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ remove }",
-			"limit": "16.70 kB"
+			"limit": "16.73 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
@@ -368,7 +368,7 @@
 			"name": "[Geo] Geo (Location Service)",
 			"path": "./lib-esm/geo/index.js",
 			"import": "{ Geo }",
-			"limit": "47.50 kB"
+			"limit": "48.14 kB"
 		}
 	],
 	"jest": {
