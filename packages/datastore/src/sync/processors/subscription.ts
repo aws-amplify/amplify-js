@@ -11,6 +11,7 @@ import {
 	BackgroundProcessManager,
 	GraphQLAuthModeKeys,
 	AmplifyError,
+	JwtPayload,
 } from '@aws-amplify/core/internals/utils';
 
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -44,7 +45,6 @@ import {
 import { ModelPredicateCreator } from '../../predicates';
 import { validatePredicate } from '../../util';
 import { getSubscriptionErrorType } from './errorMaps';
-import { JwtPayload } from '@aws-amplify/core/internals/utils';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/api-graphql';
 
 const logger = new Logger('DataStore');
@@ -147,7 +147,6 @@ class SubscriptionProcessor {
 		authMode: GraphQLAuthModeKeys
 	): AuthorizationInfo {
 		const rules = getAuthorizationRules(model);
-
 		// Return null if user doesn't have proper credentials for private API with IAM auth
 		const iamPrivateAuth =
 			authMode === 'iam' &&
@@ -201,30 +200,30 @@ class SubscriptionProcessor {
 		// Owner auth needs additional values to be returned in order to create the subscription with
 		// the correct parameters so we are getting the owner value from the OIDC token via the
 		// identityClaim from the auth rule.
+
 		const oidcOwnerAuthRules =
 			authMode === 'jwt'
 				? rules.filter(
-						rule => rule.authStrategy === 'owner' && rule.provider === 'oidc'
+						rule =>
+							rule.authStrategy === 'owner' &&
+							(rule.provider === 'oidc' || rule.provider === 'userPools')
 				  )
 				: [];
 
 		oidcOwnerAuthRules.forEach(ownerAuthRule => {
-			if (oidcTokenPayload) {
-				const ownerValue = oidcTokenPayload[ownerAuthRule.identityClaim];
+			const ownerValue = oidcTokenPayload[ownerAuthRule.identityClaim];
+			const singleOwner =
+				model.fields[ownerAuthRule.ownerField]?.isArray !== true;
+			const isOwnerArgRequired =
+				singleOwner && !ownerAuthRule.areSubscriptionsPublic;
 
-				const singleOwner =
-					model.fields[ownerAuthRule.ownerField]?.isArray !== true;
-				const isOwnerArgRequired =
-					singleOwner && !ownerAuthRule.areSubscriptionsPublic;
-
-				if (typeof ownerValue === 'string') {
-					ownerAuthInfo = {
-						authMode: 'jwt',
-						isOwner: isOwnerArgRequired,
-						ownerField: ownerAuthRule.ownerField,
-						ownerValue,
-					};
-				}
+			if (ownerValue) {
+				ownerAuthInfo = {
+					authMode: 'jwt',
+					isOwner: isOwnerArgRequired,
+					ownerField: ownerAuthRule.ownerField,
+					ownerValue: String(ownerValue),
+				};
 			}
 		});
 

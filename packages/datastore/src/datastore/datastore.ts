@@ -1534,7 +1534,6 @@ class DataStore {
 					);
 
 					this.syncPredicates = await this.processSyncExpressions();
-
 					this.sync = new SyncEngine(
 						schema,
 						namespaceResolver,
