@@ -1,4 +1,5 @@
 import OAuth from '../src/OAuth/OAuth';
+import * as oauthStorage from '../src/OAuth/oauthStorage';
 
 jest.mock('../src/OAuth/oauthStorage', () => {
 	return {
@@ -187,5 +188,83 @@ describe('OAuth', () => {
 				idToken: mockIdToken,
 			});
 		});
+		test('an error is thrown for the code flow when there is an error in the authorization response', async () => {
+			const currentUrl = 'https://test.com';
+			const config = {
+				domain: '',
+				clientID: '',
+				scope: '',
+				redirectUri: '',
+				audience: '',
+				responseType: 'code',
+				returnTo: '',
+				redirectSignIn: currentUrl,
+			};
+			const oAuth = new OAuth({
+				scopes: [],
+				config,
+				cognitoClientId: '',
+			});
+			const mockError = 'mock_error';
+			const mockErrorDescription = 'mock_error_description';
+
+			try {
+				await oAuth.handleAuthResponse(
+					`${currentUrl}?code=12345&error=${mockError}&error_description=${mockErrorDescription}`
+				);
+				fail('error not thrown');
+			} catch (err) {
+				expect(err.message).toBe(mockErrorDescription);
+			}
+		});
+		test('an error is thrown for the code flow when the state is invalid', async () => {
+			const currentUrl = 'https://test.com';
+			const config = {
+				domain: '',
+				clientID: '',
+				scope: '',
+				redirectUri: '',
+				audience: '',
+				responseType: 'code',
+				returnTo: '',
+				redirectSignIn: currentUrl,
+			};
+			(oauthStorage.getState as jest.Mock<any>).mockReturnValueOnce('123');
+			try {
+				const oAuth = new OAuth({
+					scopes: [],
+					config,
+					cognitoClientId: '',
+				});
+				await oAuth.handleAuthResponse(`${currentUrl}?code=12345`);
+				fail('error not thrown');
+			} catch (err) {
+				expect(err.message).toBe('Invalid state in OAuth flow');
+			}
+		});
+	});
+
+	test('an error is thrown when the scopes is not a String Array', async () => {
+		const currentUrl = 'https://test.com';
+		const config = {
+			domain: '',
+			clientID: '',
+			scope: '',
+			redirectUri: '',
+			audience: '',
+			responseType: 'code',
+			returnTo: '',
+			redirectSignIn: currentUrl,
+		};
+		try {
+			new OAuth({
+				scopes: [1, 2, 3] as any,
+				config,
+				cognitoClientId: '',
+			});
+			fail('error not thrown');
+		} catch (err) {
+			expect(err.message).toBe('scopes must be a String Array');
+		}
 	});
 });
