@@ -32,8 +32,7 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	graphql<T = any>(
 		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
-		// ): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
-	): any {
+	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		return super.graphql(options, additionalHeaders);
 	}
 }

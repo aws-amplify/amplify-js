@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-// import Observable, { ZenObservable } from 'zen-observable-ts';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';
@@ -120,7 +119,7 @@ export class AWSAppSyncRealTimeProvider {
 	private connectionState: ConnectionState;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
-	private connectionStateMonitorSubscription: ZenObservable.Subscription;
+	private connectionStateMonitorSubscription: Subscription;
 
 	constructor(options: AWSAppSyncRealTimeProviderOptions = {}) {
 		// Monitor the connection state and pass changes along to Hub
@@ -243,7 +242,7 @@ export class AWSAppSyncRealTimeProvider {
 					}
 				};
 
-				let reconnectSubscription: ZenObservable.Subscription;
+				let reconnectSubscription: Subscription;
 
 				// Add an observable to the reconnection list to manage reconnection for this subscription
 				reconnectSubscription = new Observable(observer => {

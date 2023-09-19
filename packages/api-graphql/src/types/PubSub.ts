@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Observable } from 'rxjs';
+import { Observer } from 'rxjs';
 
 export interface SubscriptionObserver<T> {
 	closed: boolean;
@@ -54,5 +54,4 @@ export enum ConnectionState {
 }
 
 export type PubSubContent = Record<string, unknown> | string;
-export type PubSubContentObserver =
-	ZenObservable.SubscriptionObserver<PubSubContent>;
+export type PubSubContentObserver = Observer<PubSubContent>;
