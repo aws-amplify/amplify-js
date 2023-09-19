@@ -188,7 +188,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ record }",
-			"limit": "20.54 kB"
+			"limit": "20.55 kB"
 		},
 		{
 			"name": "[API] class (AppSync)",
@@ -248,7 +248,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignIn }",
-			"limit": "16.36 kB"
+			"limit": "16.37 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -290,7 +290,7 @@
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ getCurrentUser }",
-			"limit": "4.67 kB"
+			"limit": "4.68 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
@@ -314,7 +314,7 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn, signOut, fetchAuthSession }",
-			"limit": "27.91 kB"
+			"limit": "27.92 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
@@ -326,13 +326,13 @@
 			"name": "[Storage] copy (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ copy }",
-			"limit": "16.86 kB"
+			"limit": "16.87 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ downloadData }",
-			"limit": "17.64 kB"
+			"limit": "17.65 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
@@ -350,7 +350,7 @@
 			"name": "[Storage] list (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ list }",
-			"limit": "17.45 kB"
+			"limit": "17.46 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
