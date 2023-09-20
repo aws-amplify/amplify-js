@@ -16,7 +16,8 @@ class AmplifyRTNWebBrowser: NSObject {
     private let presentationContextProvider = PresentationContextProvider()
     
     private func isUrlValid(url: URL) -> Bool {
-        return url.scheme == "http" || url.scheme == "https"
+        let scheme = url.scheme?.lowercased()
+        return scheme == "http" || scheme == "https"
     }
     
     @objc

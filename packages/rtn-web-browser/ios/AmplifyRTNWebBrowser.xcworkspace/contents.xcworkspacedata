@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/chrfang/Development/amplify-js/packages/rtn-web-browser/ios/AmplifyRTNWebBrowser.xcodeproj">
+      location = "group:AmplifyRTNWebBrowser.xcodeproj">
    </FileRef>
 </Workspace>
