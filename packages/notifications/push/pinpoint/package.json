@@ -1,7 +1,7 @@
 {
 	"name": "@aws-amplify/notifications/push/pinpoint",
-	"main": "../lib/PushNotification/Providers/AWSPinpointProvider/index.js",
-	"browser": "../lib-esm/PushNotification/Providers/AWSPinpointProvider/index.js",
-	"module": "../lib-esm/PushNotification/Providers/AWSPinpointProvider/index.js",
-	"typings": "../lib-esm/PushNotification/Providers/AWSPinpointProvider/index.d.ts"
+	"main": "../lib/PushNotification/providers/pinpoint/index.js",
+	"browser": "../lib-esm/PushNotification/providers/pinpoint/index.js",
+	"module": "../lib-esm/PushNotification/providers/pinpoint/index.js",
+	"typings": "../lib-esm/PushNotification/providers/pinpoint/index.d.ts"
 }

@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { default as Notifications } from './Notifications';
+export { identifyUser as pushNotificationIdentifyUser } from './PushNotification/providers/pinpoint';
+export { identifyUser as inAppMessagingIdentifyUser } from './InAppMessaging/providers/pinpoint';
 
 export { AWSPinpointProviderCommon } from './common';
 export { AWSPinpointUserInfo } from './common/AWSPinpointProviderCommon/types';
