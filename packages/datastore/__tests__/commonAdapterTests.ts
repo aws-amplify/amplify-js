@@ -404,7 +404,7 @@ export function addCommonQueryTests({
 			});
 		});
 
-		it.only('only includes changed fields in mutations', async () => {
+		it('only includes changed fields in mutations', async () => {
 			const profile = await DataStore.save(
 				new Profile({ firstName: 'original first', lastName: 'original last' })
 			);
