@@ -57,11 +57,6 @@
 			"import": "./lib-esm/analytics/pinpoint/index.js",
 			"require": "./lib/analytics/pinpoint/index.js"
 		},
-		"./analytics/kinesis": {
-			"types": "./lib-esm/analytics/kinesis/index.d.ts",
-			"import": "./lib-esm/analytics/kinesis/index.js",
-			"require": "./lib/analytics/kinesis/index.js"
-		},
 		"./storage": {
 			"types": "./lib-esm/storage/index.d.ts",
 			"import": "./lib-esm/storage/index.js",
@@ -127,9 +122,6 @@
 			],
 			"analytics/pinpoint": [
 				"./lib-esm/analytics/pinpoint/index.d.ts"
-			],
-			"analytics/kinesis": [
-				"./lib-esm/analytics/kinesis/index.d.ts"
 			],
 			"storage": [
 				"./lib-esm/storage/index.d.ts"
@@ -203,7 +195,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ record }",
-			"limit": "20.55 kB"
+			"limit": "21.10 kB"
 		},
 		{
 			"name": "[API] class (AppSync)",
@@ -221,7 +213,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ identifyUser }",
-			"limit": "18.72 kB"
+			"limit": "19.30 kB"
 		},
 		{
 			"name": "[Auth] signUp (Cognito)",
@@ -239,19 +231,19 @@
 			"name": "[Auth] confirmResetPassword (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmResetPassword }",
-			"limit": "10.47 kB"
+			"limit": "11.00 kB"
 		},
 		{
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "27.02 kB"
+			"limit": "27.70 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ resendSignUpCode }",
-			"limit": "10.51 kB"
+			"limit": "11.00 kB"
 		},
 		{
 			"name": "[Auth] confirmSignUp (Cognito)",
@@ -263,37 +255,37 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignIn }",
-			"limit": "16.37 kB"
+			"limit": "17.10 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ updateMFAPreference }",
-			"limit": "9.59 kB"
+			"limit": "10.10 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ fetchMFAPreference }",
-			"limit": "9.56 kB"
+			"limit": "10.10 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "10.52 kB"
+			"limit": "11.10 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ updatePassword }",
-			"limit": "10.5 kB"
+			"limit": "11.10 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ setUpTOTP }",
-			"limit": "10.91 kB"
+			"limit": "11.50 kB"
 		},
 		{
 			"name": "[Auth] updateUserAttributes (Cognito)",
@@ -305,37 +297,37 @@
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ getCurrentUser }",
-			"limit": "4.68 kB"
+			"limit": "5.30 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmUserAttribute }",
-			"limit": "10.50 kB"
+			"limit": "11.10 kB"
 		},
 		{
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect }",
-			"limit": "20.18 kB"
+			"limit": "20.90 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ fetchUserAttributes }",
-			"limit": "9.58 kB"
+			"limit": "10.10 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn, signOut, fetchAuthSession }",
-			"limit": "27.92 kB"
+			"limit": "28.70 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "20.60 kB"
+			"limit": "21.30 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
