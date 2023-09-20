@@ -11,9 +11,9 @@ import {
 	InAppMessageLayout,
 	InAppMessageTextAlign,
 	InAppMessagingEvent,
-} from '../../types';
+} from '../../../types';
 
-import { AWSPinpointMessageEvent, MetricsComparator } from './types';
+import { AWSPinpointMessageEvent, MetricsComparator } from '../types/types';
 
 const DELIVERY_TYPE = 'IN_APP_MESSAGE';
 

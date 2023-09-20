@@ -1,7 +1,7 @@
 {
 	"name": "@aws-amplify/notifications/push",
-	"main": "../lib/PushNotification/Providers/index.js",
-	"browser": "../lib-esm/PushNotification/Providers/index.js",
-	"module": "../lib-esm/PushNotification/Providers/index.js",
-	"typings": "../lib-esm/PushNotification/Providers/index.d.ts"
+	"main": "../lib/PushNotification/providers/index.js",
+	"browser": "../lib-esm/PushNotification/providers/index.js",
+	"module": "../lib-esm/PushNotification/providers/index.js",
+	"typings": "../lib-esm/PushNotification/providers/index.d.ts"
 }

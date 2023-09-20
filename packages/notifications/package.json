@@ -37,16 +37,16 @@
 				"./lib-esm/index.d.ts"
 			],
 			"in-app": [
-				"./lib-esm/InAppMessaging/Providers/index.d.ts"
+				"./lib-esm/InAppMessaging/providers/index.d.ts"
 			],
 			"push": [
-				"./lib-esm/PushNotification/Providers/index.d.ts"
+				"./lib-esm/PushNotification/providers/index.d.ts"
 			],
 			"in-app/pinpoint": [
-				"./lib-esm/InAppMessaging/Providers/AWSPinpointProvider/index.d.ts"
+				"./lib-esm/InAppMessaging/providers/pinpoint/index.d.ts"
 			],
 			"push/pinpoint": [
-				"./lib-esm/PushNotification/Providers/AWSPinpointProvider/index.d.ts"
+				"./lib-esm/PushNotification/providers/pinpoint/index.d.ts"
 			]
 		}
 	},
@@ -57,24 +57,24 @@
 			"require": "./lib/index.js"
 		},
 		"./in-app": {
-			"types": "./lib-esm/InAppMessaging/Providers/index.d.ts",
-			"import": "./lib-esm/InAppMessaging/Providers/index.js",
-			"require": "./lib/InAppMessaging/Providers/index.js"
+			"types": "./lib-esm/InAppMessaging/providers/index.d.ts",
+			"import": "./lib-esm/InAppMessaging/providers/index.js",
+			"require": "./lib/InAppMessaging/providers/index.js"
 		},
 		"./push": {
-			"types": "./lib-esm/PushNotification/Providers/index.d.ts",
-			"import": "./lib-esm/PushNotification/Providers/index.js",
-			"require": "./lib/PushNotification/Providers/index.js"
+			"types": "./lib-esm/PushNotification/providers/index.d.ts",
+			"import": "./lib-esm/PushNotification/providers/index.js",
+			"require": "./lib/PushNotification/providers/index.js"
 		},
 		"./in-app/pinpoint": {
-			"types": "./lib-esm/InAppMessaging/Providers/AWSPinpointProvider/index.d.ts",
-			"import": "./lib-esm/InAppMessaging/Providers/AWSPinpointProvider/index.js",
-			"require": "./lib/InAppMessaging/Providers/AWSPinpointProvider/index.js"
+			"types": "./lib-esm/InAppMessaging/providers/pinpoint/index.d.ts",
+			"import": "./lib-esm/InAppMessaging/providers/pinpoint/index.js",
+			"require": "./lib/InAppMessaging/providers/pinpoint/index.js"
 		},
 		"./push/pinpoint": {
-			"types": "./lib-esm/PushNotification/Providers/AWSPinpointProvider/index.d.ts",
-			"import": "./lib-esm/PushNotification/Providers/AWSPinpointProvider/index.js",
-			"require": "./lib/PushNotification/Providers/AWSPinpointProvider/index.js"
+			"types": "./lib-esm/PushNotification/providers/pinpoint/index.d.ts",
+			"import": "./lib-esm/PushNotification/providers/pinpoint/index.js",
+			"require": "./lib/PushNotification/providers/pinpoint/index.js"
 		},
 		"./package.json": "./package.json"
 	},

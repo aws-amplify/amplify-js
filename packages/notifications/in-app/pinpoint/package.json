@@ -1,7 +1,7 @@
 {
 	"name": "@aws-amplify/notifications/in-app/pinpoint",
-	"main": "../lib/InAppMessaging/Providers/AWSPinpointProvider/index.js",
-	"browser": "../lib-esm/InAppMessaging/Providers/AWSPinpointProvider/index.js",
-	"module": "../lib-esm/InAppMessaging/Providers/AWSPinpointProvider/index.js",
-	"typings": "../lib-esm/InAppMessaging/Providers/AWSPinpointProvider/index.d.ts"
+	"main": "../lib/InAppMessaging/providers/pinpoint/index.js",
+	"browser": "../lib-esm/InAppMessaging/providers/pinpoint/index.js",
+	"module": "../lib-esm/InAppMessaging/providers/pinpoint/index.js",
+	"typings": "../lib-esm/InAppMessaging/providers/pinpoint/index.d.ts"
 }
