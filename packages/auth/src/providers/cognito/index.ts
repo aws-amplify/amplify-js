@@ -63,5 +63,5 @@ export {
 	CognitoUserPoolTokenProviderType,
 	TokenOrchestrator,
 	DefaultTokenStore,
-	CognitoUserPoolTokenRefresher,
+	refreshAuthTokens,
 } from './tokenProvider';

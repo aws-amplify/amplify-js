@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, Hub, LocalStorage, OAuthConfig } from '@aws-amplify/core';
+import { Amplify, Hub, defaultStorage, OAuthConfig } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
 	assertOAuthConfig,
@@ -10,6 +10,7 @@ import {
 	isBrowser,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
+	urlSafeDecode,
 } from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { CognitoUserPoolsTokenProvider } from '../tokenProvider';
@@ -60,7 +61,7 @@ export async function signInWithRedirect(
 	});
 }
 
-const store = new DefaultOAuthStore(LocalStorage);
+const store = new DefaultOAuthStore(defaultStorage);
 
 function oauthSignIn({
 	oauthConfig,
@@ -130,8 +131,9 @@ async function handleCodeFlow({
 	/* Convert URL into an object with parameters as keys
 { redirect_uri: 'http://localhost:3000/', response_type: 'code', ...} */
 	const url = new URL(currentUrl);
+	let validatedState: string;
 	try {
-		await validateStateFromURL(url);
+		validatedState = await validateStateFromURL(url);
 	} catch (err) {
 		invokeAndClearPromise();
 		// clear temp values
@@ -216,6 +218,17 @@ async function handleCodeFlow({
 
 	await store.storeOAuthSignIn(true);
 
+	if (isCustomState(validatedState)) {
+		Hub.dispatch(
+			'auth',
+			{
+				event: 'customOAuthState',
+				data: urlSafeDecode(getCustomState(validatedState)),
+			},
+			'Auth',
+			AMPLIFY_SYMBOL
+		);
+	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
 	clearHistory(redirectUri);
 	invokeAndClearPromise();
@@ -249,7 +262,7 @@ async function handleImplicitFlow({
 
 	await store.clearOAuthInflightData();
 	try {
-		await validateState(state);
+		validateState(state);
 	} catch (error) {
 		invokeAndClearPromise();
 		return;
@@ -264,6 +277,17 @@ async function handleImplicitFlow({
 	});
 
 	await store.storeOAuthSignIn(true);
+	if (isCustomState(state)) {
+		Hub.dispatch(
+			'auth',
+			{
+				event: 'customOAuthState',
+				data: urlSafeDecode(getCustomState(state)),
+			},
+			'Auth',
+			AMPLIFY_SYMBOL
+		);
+	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
 	clearHistory(redirectUri);
 	invokeAndClearPromise();
@@ -297,8 +321,7 @@ async function handleAuthResponse({
 				AMPLIFY_SYMBOL
 			);
 			throw new AuthError({
-				message: AuthErrorTypes.OAuthSignInError,
-				underlyingError: error_description,
+				message: error_description ?? '',
 				name: AuthErrorCodes.OAuthSignInError,
 				recoverySuggestion: authErrorMessages.oauthSignInError.log,
 			});
@@ -389,7 +412,7 @@ async function parseRedirectURL() {
 function urlListener() {
 	// Listen configure to parse url
 	parseRedirectURL();
-	Hub.listen('core', async capsule => {
+	Hub.listen('core', capsule => {
 		if (capsule.payload.event === 'configure') {
 			parseRedirectURL();
 		}
@@ -420,4 +443,11 @@ function clearHistory(redirectUri: string) {
 	if (window && typeof window.history !== 'undefined') {
 		window.history.replaceState({}, '', redirectUri);
 	}
+}
+
+function isCustomState(state: string): Boolean {
+	return /-/.test(state);
+}
+function getCustomState(state: string): string {
+	return state.split('-').splice(1).join('-');
 }

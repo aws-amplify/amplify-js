@@ -25,7 +25,7 @@ export const parser = {
 		});
 		parser.addEntity('#xD', '\r');
 		parser.addEntity('#10', '\n');
-		const parsedObj = parser.parse(xmlStr);
+		const parsedObj: any = parser.parse(xmlStr);
 		const textNodeName = '#text';
 		const key = Object.keys(parsedObj)[0];
 		const parsedObjToReturn = parsedObj[key];

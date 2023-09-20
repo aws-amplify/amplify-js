@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { CacheConfig } from '../types';
-import { StorageHelper } from '../../StorageHelper';
+import { getDefaultStorageWithFallback } from '../../storage/utils';
 /**
  * Default cache config
  */
@@ -13,9 +13,7 @@ export const defaultConfig: CacheConfig = {
 	defaultTTL: 259200000, // about 3 days
 	defaultPriority: 5,
 	warningThreshold: 0.8,
-	// the storage helper will check if localStorage exists,
-	// if not, will use a in-memory object instead
-	storage: new StorageHelper().getStorage(),
+	storage: getDefaultStorageWithFallback(),
 };
 
 /**
