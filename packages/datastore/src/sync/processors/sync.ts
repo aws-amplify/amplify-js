@@ -117,19 +117,9 @@ class SyncProcessor {
 			filter,
 		};
 
-		const appSyncConfig = Amplify.getConfig().API?.AppSync;
-
-		if (!appSyncConfig) {
-			throw new AmplifyError({
-				message: 'AppSync not configured',
-				name: 'APINotConfigured',
-				recoverySuggestion: 'Invoke Amplify.configure',
-			});
-		}
-
 		const modelAuthModes = await getModelAuthModes({
 			authModeStrategy: this.authModeStrategy,
-			defaultAuthMode: appSyncConfig.defaultAuthMode.type,
+			defaultAuthMode: this.amplifyConfig.aws_appsync_authenticationType,
 			modelName: modelDefinition.name,
 			schema: this.schema,
 		});

@@ -25,7 +25,7 @@ export type APIConfig = {
 
 export type GraphQLAuthMode =
 	| { type: 'apiKey'; apiKey: string }
-	| { type: 'jwt'; token: 'id' | 'access' }
+	| { type: 'jwt'; token?: 'id' | 'access' }
 	| { type: 'iam' }
 	| { type: 'lambda' }
 	| { type: 'custom' };

@@ -108,7 +108,7 @@
 			"__tests__/connectivityHandling.test.ts",
 			"__tests__/AsyncStorageAdapter.test.ts",
 			"__tests__/mutation.test.ts",
-			"__tests__/IndexedDBAdapter.test.ts"
+			"__tests__/indexeddb.test.ts"
 		],
 		"moduleFileExtensions": [
 			"ts",

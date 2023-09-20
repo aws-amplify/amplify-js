@@ -1524,8 +1524,7 @@ class DataStore {
 				checkSchemaInitialized();
 				await checkSchemaVersion(this.storage, schema.version);
 
-				const aws_appsync_graphqlEndpoint =
-					Amplify.getConfig().API?.AppSync?.endpoint;
+				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
 
 				if (aws_appsync_graphqlEndpoint) {
 					logger.debug(
@@ -1577,7 +1576,7 @@ class DataStore {
 					logger.warn(
 						"Data won't be synchronized. No GraphQL endpoint configured. Did you forget `Amplify.configure(awsconfig)`?",
 						{
-							config: Amplify.getConfig().API,
+							config: this.amplifyConfig,
 						}
 					);
 
@@ -2446,9 +2445,24 @@ class DataStore {
 			...configFromAmplify
 		} = config;
 
+		let apiKey = '';
+		const currentAppSyncConfig = Amplify.getConfig().API?.AppSync;
+		if (currentAppSyncConfig?.defaultAuthMode.type === 'apiKey') {
+			apiKey = currentAppSyncConfig.defaultAuthMode.apiKey;
+		}
+
+		const appSyncConfig = {
+			aws_appsync_graphqlEndpoint: currentAppSyncConfig?.endpoint,
+			aws_appsync_authenticationType:
+				currentAppSyncConfig?.defaultAuthMode.type,
+			aws_appsync_region: currentAppSyncConfig?.region,
+			aws_appsync_apiKey: apiKey,
+		};
+
 		this.amplifyConfig = {
-			...configFromAmplify,
 			...this.amplifyConfig,
+			...configFromAmplify,
+			...(currentAppSyncConfig && appSyncConfig),
 		};
 
 		this.conflictHandler = this.setConflictHandler(config);
@@ -2726,8 +2740,7 @@ class DataStore {
 			const sessionId = sessionStorage.getItem('datastoreSessionId');
 
 			if (sessionId) {
-				const aws_appsync_graphqlEndpoint =
-					Amplify.getConfig().API?.AppSync?.endpoint || '';
+				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
 
 				const appSyncUrl = aws_appsync_graphqlEndpoint.split('/')[2];
 				const [appSyncId] = appSyncUrl.split('.');
@@ -2742,5 +2755,10 @@ class DataStore {
 
 const instance = new DataStore();
 instance.configure({});
+Hub.listen('core', capsule => {
+	if (capsule.payload.event === 'configure') {
+		instance.configure({});
+	}
+});
 
 export { DataStore as DataStoreClass, initSchema, instance as DataStore };

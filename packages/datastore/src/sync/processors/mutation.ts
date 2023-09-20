@@ -47,7 +47,6 @@ import {
 	getTokenForCustomAuth,
 } from '../utils';
 import { getMutationErrorType } from './errorMaps';
-import { Amplify } from '@aws-amplify/core';
 
 const MAX_ATTEMPTS = 10;
 
@@ -193,20 +192,11 @@ class MutationProcessor {
 					let opName: string = undefined!;
 					let modelDefinition: SchemaModel = undefined!;
 
-					const appSyncConfig = Amplify.getConfig().API?.AppSync;
-
-					if (!appSyncConfig) {
-						throw new AmplifyError({
-							message: 'AppSync not configured',
-							name: 'APINotConfigured',
-							recoverySuggestion: 'Invoke Amplify.configure',
-						});
-					}
-
 					try {
 						const modelAuthModes = await getModelAuthModes({
 							authModeStrategy: this.authModeStrategy,
-							defaultAuthMode: appSyncConfig.defaultAuthMode.type,
+							defaultAuthMode:
+								this.amplifyConfig.aws_appsync_authenticationType,
 							modelName: model,
 							schema: this.schema,
 						});
