@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	browserOrNode,
 	ConsoleLogger as Logger,
 	BackgroundProcessManager,
 	Hub,
@@ -53,7 +52,6 @@ import {
 	TransformerMutationType,
 } from './utils';
 
-const { isNode } = browserOrNode();
 const logger = new Logger('DataStore');
 
 const ownSymbol = Symbol('sync');
@@ -249,52 +247,46 @@ export class SyncEngine {
 											[TransformerMutationType, SchemaModel, PersistentModel]
 										>;
 
-										// NOTE: need a way to override this conditional for testing.
-										if (isNode) {
-											logger.warn(
-												'Realtime disabled when in a server-side environment'
-											);
-										} else {
-											this.stopDisruptionListener =
-												this.startDisruptionListener();
-											//#region GraphQL Subscriptions
-											[ctlSubsObservable, dataSubsObservable] =
-												this.subscriptionsProcessor.start();
+										this.stopDisruptionListener =
+											this.startDisruptionListener();
+										//#region GraphQL Subscriptions
+										[ctlSubsObservable, dataSubsObservable] =
+											this.subscriptionsProcessor.start();
 
-											try {
-												await new Promise<void>((resolve, reject) => {
-													onTerminate.then(reject);
-													const ctlSubsSubscription =
-														ctlSubsObservable.subscribe({
-															next: msg => {
-																if (msg === CONTROL_MSG.CONNECTED) {
-																	resolve();
-																}
-															},
-															error: err => {
-																reject(err);
-																const handleDisconnect =
-																	this.disconnectionHandler();
-																handleDisconnect(err);
-															},
-														});
+										try {
+											await new Promise<void>((resolve, reject) => {
+												onTerminate.then(reject);
+												const ctlSubsSubscription = ctlSubsObservable.subscribe(
+													{
+														next: msg => {
+															if (msg === CONTROL_MSG.CONNECTED) {
+																resolve();
+															}
+														},
+														error: err => {
+															reject(err);
+															const handleDisconnect =
+																this.disconnectionHandler();
+															handleDisconnect(err);
+														},
+													}
+												);
 
-													subscriptions.push(ctlSubsSubscription);
-												});
-											} catch (err) {
-												observer.error(err);
-												failedStarting();
-												return;
-											}
-
-											logger.log('Realtime ready');
-
-											observer.next({
-												type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
+												subscriptions.push(ctlSubsSubscription);
 											});
-
-											//#endregion
+										} catch (err) {
+											observer.error(err);
+											failedStarting();
+											return;
 										}
+
+										logger.log('Realtime ready');
+
+										observer.next({
+											type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
+										});
+
+										//#endregion
 
 										//#region Base & Sync queries
 										try {
@@ -376,32 +368,29 @@ export class SyncEngine {
 										//#endregion
 
 										//#region Merge subscriptions buffer
-										// TODO: extract to function
-										if (!isNode) {
-											subscriptions.push(
-												dataSubsObservable!.subscribe(
-													([_transformerMutationType, modelDefinition, item]) =>
-														this.runningProcesses.add(async () => {
-															const modelConstructor = this.userModelClasses[
-																modelDefinition.name
-															] as PersistentModelConstructor<any>;
+										subscriptions.push(
+											dataSubsObservable!.subscribe(
+												([_transformerMutationType, modelDefinition, item]) =>
+													this.runningProcesses.add(async () => {
+														const modelConstructor = this.userModelClasses[
+															modelDefinition.name
+														] as PersistentModelConstructor<any>;
 
-															const model = this.modelInstanceCreator(
-																modelConstructor,
-																item
-															);
+														const model = this.modelInstanceCreator(
+															modelConstructor,
+															item
+														);
 
-															await this.storage.runExclusive(storage =>
-																this.modelMerger.merge(
-																	storage,
-																	model,
-																	modelDefinition
-																)
-															);
-														}, 'subscription dataSubsObservable event')
-												)
-											);
-										}
+														await this.storage.runExclusive(storage =>
+															this.modelMerger.merge(
+																storage,
+																model,
+																modelDefinition
+															)
+														);
+													}, 'subscription dataSubsObservable event')
+											)
+										);
 										//#endregion
 									} else if (!online) {
 										this.online = online;

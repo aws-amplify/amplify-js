@@ -1,23 +1,41 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
+	Amplify,
+	CookieStorage,
 	LibraryOptions,
 	ResourcesConfig,
-	Amplify,
-	LocalStorage,
-	CookieStorage,
+	defaultStorage,
 } from '@aws-amplify/core';
+import {
+	LegacyConfig,
+	parseAWSExports,
+} from '@aws-amplify/core/internals/utils';
 import {
 	CognitoUserPoolsTokenProvider,
 	cognitoCredentialsProvider,
 } from './auth/cognito';
 
 export const DefaultAmplify = {
-	configure(resourceConfig: ResourcesConfig, libraryOptions?: LibraryOptions) {
-		if (resourceConfig.Auth && !libraryOptions) {
-			CognitoUserPoolsTokenProvider.setAuthConfig(resourceConfig.Auth);
+	configure(
+		resourceConfig: ResourcesConfig | LegacyConfig,
+		libraryOptions?: LibraryOptions
+	) {
+		let resolvedResourceConfig: ResourcesConfig;
 
-			const defaultLibraryOptions: LibraryOptions = {
+		if (Object.keys(resourceConfig).some(key => key.startsWith('aws_'))) {
+			resolvedResourceConfig = parseAWSExports(resourceConfig);
+		} else {
+			resolvedResourceConfig = resourceConfig as ResourcesConfig;
+		}
+
+		// When Auth config is provided but no custom Auth provider defined
+		// use the default Auth Providers
+		if (resolvedResourceConfig.Auth && !libraryOptions?.Auth) {
+			CognitoUserPoolsTokenProvider.setAuthConfig(resolvedResourceConfig.Auth);
+
+			const libraryOptionsWithDefaultAuthProviders: LibraryOptions = {
+				...libraryOptions,
 				Auth: {
 					tokenProvider: CognitoUserPoolsTokenProvider,
 					credentialsProvider: cognitoCredentialsProvider,
@@ -25,16 +43,19 @@ export const DefaultAmplify = {
 			};
 
 			CognitoUserPoolsTokenProvider.setKeyValueStorage(
-				resourceConfig.ssr
+				libraryOptions?.ssr
 					? new CookieStorage({
 							sameSite: 'strict',
-					})
-					: LocalStorage
+					  })
+					: defaultStorage
 			);
 
-			Amplify.configure(resourceConfig, defaultLibraryOptions);
+			Amplify.configure(
+				resolvedResourceConfig,
+				libraryOptionsWithDefaultAuthProviders
+			);
 		} else {
-			Amplify.configure(resourceConfig, libraryOptions);
+			Amplify.configure(resolvedResourceConfig, libraryOptions);
 		}
 	},
 	getConfig(): ResourcesConfig {

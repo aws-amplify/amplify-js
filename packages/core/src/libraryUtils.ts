@@ -7,7 +7,7 @@ utils for use throughout the library.
 */
 // JS utilities
 export {
-	browserOrNode,
+	isBrowser,
 	filenameToContentType,
 	generateRandomString,
 	isEmpty,
@@ -20,7 +20,8 @@ export {
 	transferKeyToLowerCase,
 	transferKeyToUpperCase,
 } from './Util/JS';
-
+export { parseAWSExports } from './parseAWSExports';
+export { LegacyConfig } from './singleton/types';
 export {
 	JWT,
 	StrictUnion,
@@ -96,8 +97,6 @@ export {
 	AmplifyError,
 	AmplifyErrorString,
 } from './Util/Errors';
-export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
-export { AppState, AsyncStorage, Linking } from './RNComponents';
 export { ErrorParams, AmplifyErrorMap, ServiceError } from './types';
 export {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,

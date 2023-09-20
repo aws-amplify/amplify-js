@@ -5,7 +5,7 @@ on:
   push:
     branches: ['*']
   pull_request:
-    branches: ['main', 'next']
+    branches: ['main', 'next/main', 'next/release']
   schedule:
     # Run every Tuesday at midnight GMT
     - cron: '0 0 * * 2'

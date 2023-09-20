@@ -61,6 +61,7 @@ export const defaultConfig = {
 	retryDecider: getRetryDecider(parseJsonError),
 	computeDelay: jitteredBackoff,
 	userAgentValue: getAmplifyUserAgent(),
+	cache: 'no-store',
 };
 
 /**

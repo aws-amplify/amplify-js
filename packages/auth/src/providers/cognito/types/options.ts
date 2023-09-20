@@ -5,55 +5,55 @@ import { AuthUserAttribute } from '../../../types';
 import { ClientMetadata, AuthFlowType, ValidationData } from './models';
 
 /**
- * Options specific to a Cognito Confirm Reset Password request.
+ * Options specific to Cognito Confirm Reset Password.
  */
-export type CognitoConfirmResetPasswordOptions = {
+export type ConfirmResetPasswordOptions = {
 	clientMetadata?: ClientMetadata;
 };
 
 /**
- * Options specific to a Cognito Resend Sign Up code request.
+ * Options specific to Cognito Resend Sign Up code.
  */
-export type CognitoResendSignUpCodeOptions = {
+export type ResendSignUpCodeOptions = {
 	clientMetadata?: ClientMetadata;
 };
 
 /**
- * Options specific to a Cognito Reset Password request.
+ * Options specific to Cognito Reset Password.
  */
-export type CognitoResetPasswordOptions = {
+export type ResetPasswordOptions = {
 	clientMetadata?: ClientMetadata;
 };
 
 /**
- * Options specific to a Cognito Sign In request.
+ * Options specific to Cognito Sign In.
  */
-export type CognitoSignInOptions = {
+export type SignInOptions = {
 	authFlowType?: AuthFlowType;
 	clientMetadata?: ClientMetadata;
 };
 
 /**
- * Options specific to a Cognito Sign Up request.
+ * Options specific to Cognito Sign Up.
  */
-export type CognitoSignUpOptions = {
+export type SignUpOptions = {
 	validationData?: ValidationData;
 	clientMetadata?: ClientMetadata;
 	// autoSignIn?: AutoSignInOptions;
 };
 
 /**
- * Options specific to a Cognito Confirm Sign Up request.
+ * Options specific to Cognito Confirm Sign Up.
  */
-export type CognitoConfirmSignUpOptions = {
+export type ConfirmSignUpOptions = {
 	clientMetadata?: ClientMetadata;
 	forceAliasCreation?: boolean;
 };
 
 /**
- * Options specific to a Cognito Confirm Sign In request.
+ * Options specific to Cognito Confirm Sign In.
  */
-export type CognitoConfirmSignInOptions<
+export type ConfirmSignInOptions<
 	UserAttribute extends AuthUserAttribute = AuthUserAttribute
 > = {
 	userAttributes?: UserAttribute;
@@ -62,15 +62,15 @@ export type CognitoConfirmSignInOptions<
 };
 
 /**
- * Options specific to a Cognito Verify TOTP Setup request.
+ * Options specific to Cognito Verify TOTP Setup.
  */
-export type CogntioVerifyTOTPSetupOptions = {
+export type VerifyTOTPSetupOptions = {
 	friendlyDeviceName?: string;
 };
 
 /**
- * Options specific to a Cognito Update User Attributes request.
+ * Options specific to Cognito Update User Attributes.
  */
-export type CognitoUpdateUserAttributesOptions = {
+export type UpdateUserAttributesOptions = {
 	clientMetadata?: ClientMetadata;
 };

@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	AuthTokens,
-	KeyValueStorageInterface,
-	FetchAuthSessionOptions,
-	LocalStorage,
 	AuthConfig,
+	AuthTokens,
+	FetchAuthSessionOptions,
+	KeyValueStorageInterface,
+	defaultStorage,
 } from '@aws-amplify/core';
+import { refreshAuthTokens } from '../utils/refreshAuthTokens';
 import { DefaultTokenStore } from './TokenStore';
 import { TokenOrchestrator } from './TokenOrchestrator';
-import { CognitoUserPoolTokenRefresher } from '../apis/tokenRefresher';
 import { CognitoUserPoolTokenProviderType } from './types';
 
 class CognitoUserPoolsTokenProviderClass
@@ -19,10 +19,10 @@ class CognitoUserPoolsTokenProviderClass
 	tokenOrchestrator: TokenOrchestrator;
 	constructor() {
 		this.authTokenStore = new DefaultTokenStore();
-		this.authTokenStore.setKeyValueStorage(LocalStorage);
+		this.authTokenStore.setKeyValueStorage(defaultStorage);
 		this.tokenOrchestrator = new TokenOrchestrator();
 		this.tokenOrchestrator.setAuthTokenStore(this.authTokenStore);
-		this.tokenOrchestrator.setTokenRefresher(CognitoUserPoolTokenRefresher);
+		this.tokenOrchestrator.setTokenRefresher(refreshAuthTokens);
 	}
 	getTokens(
 		{ forceRefresh }: FetchAuthSessionOptions = { forceRefresh: false }
@@ -50,7 +50,7 @@ export const tokenOrchestrator =
 
 export {
 	CognitoUserPoolTokenProviderType,
-	TokenOrchestrator,
 	DefaultTokenStore,
-	CognitoUserPoolTokenRefresher,
+	TokenOrchestrator,
+	refreshAuthTokens,
 };

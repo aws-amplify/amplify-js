@@ -1,32 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
 import {
-	ConsoleLogger as Logger,
-	Credentials,
-	DateUtils,
-	Signer,
+	AWSCredentialsAndIdentityId,
+	fetchAuthSession,
 } from '@aws-amplify/core';
-
-import { apiOptions, ApiInfo } from './types';
+import { apiOptions } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { parse, format } from 'url';
-
-const logger = new Logger('RestClient');
-
-/**
-* HTTP Client for REST requests. Send and receive JSON data.
-* Sign request with AWS credentials if available
-* Usage:
-<pre>
-const restClient = new RestClient();
-restClient.get('...')
-    .then(function(data) {
-        console.log(data);
-    })
-    .catch(err => console.log(err));
-</pre>
-*/
+import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 export class RestClient {
 	private _options;
 	private _region: string = 'us-east-1'; // this will be updated by endpoint function
@@ -47,29 +28,18 @@ export class RestClient {
 	 *
 	 * For more details, see https://github.com/aws-amplify/amplify-js/pull/3769#issuecomment-552660025
 	 */
-	private _cancelTokenMap: WeakMap<any, CancelTokenSource> = null;
-
-	Credentials = Credentials;
-
+	private _cancelTokenMap: WeakMap<Promise<any>, CancelTokenSource> | null =
+		null;
 	/**
 	 * @param {RestClientOptions} [options] - Instance options
 	 */
 	constructor(options: apiOptions) {
 		this._options = options;
-		logger.debug('API Options', this._options);
 		if (this._cancelTokenMap == null) {
 			this._cancelTokenMap = new WeakMap();
 		}
 	}
 
-	/**
-    * Update AWS credentials
-    * @param {AWSCredentials} credentials - AWS credentials
-    *
-    updateCredentials(credentials: AWSCredentials) {
-        this.options.credentials = credentials;
-    }
-*/
 	/**
 	 * Basic HTTP request. Customizable
 	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
@@ -77,136 +47,126 @@ export class RestClient {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async ajax(urlOrApiInfo: string | ApiInfo, method: string, init) {
-		logger.debug(method, urlOrApiInfo);
+	ajax(url: string, method: string, init) {
+		const source = axios.CancelToken.source();
+		const promise = new Promise(async (res, rej) => {
+			const parsed_url = new URL(url);
 
-		let parsed_url;
-		let url: string;
-		let region: string = 'us-east-1';
-		let service: string = 'execute-api';
-		let custom_header: () => {
-			[key: string]: string;
-		} = undefined;
+			const region: string = init.region || 'us-east-1';
+			const service: string = init.serviceName || 'execute-api';
 
-		if (typeof urlOrApiInfo === 'string') {
-			parsed_url = this._parseUrl(urlOrApiInfo);
-			url = urlOrApiInfo;
-		} else {
-			({ endpoint: url, custom_header, region, service } = urlOrApiInfo);
-			parsed_url = this._parseUrl(urlOrApiInfo.endpoint);
-		}
+			const params = {
+				method,
+				url,
+				host: parsed_url.host,
+				path: parsed_url.pathname,
+				headers: {},
+				data: JSON.stringify(''),
+				responseType: 'json',
+				timeout: 0,
+			};
 
-		const params = {
-			method,
-			url,
-			host: parsed_url.host,
-			path: parsed_url.path,
-			headers: {},
-			data: null,
-			responseType: 'json',
-			timeout: 0,
-			cancelToken: null,
-		};
-
-		const libraryHeaders = {};
-		const initParams = Object.assign({}, init);
-		const isAllResponse = initParams.response;
-		if (initParams.body) {
-			if (
-				typeof FormData === 'function' &&
-				initParams.body instanceof FormData
-			) {
-				libraryHeaders['Content-Type'] = 'multipart/form-data';
-				params.data = initParams.body;
-			} else {
-				libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
-				params.data = JSON.stringify(initParams.body);
-			}
-		}
-		if (initParams.responseType) {
-			params.responseType = initParams.responseType;
-		}
-		if (initParams.withCredentials) {
-			params['withCredentials'] = initParams.withCredentials;
-		}
-		if (initParams.timeout) {
-			params.timeout = initParams.timeout;
-		}
-		if (initParams.cancellableToken) {
-			params.cancelToken = initParams.cancellableToken.token;
-		}
-
-		params['signerServiceInfo'] = initParams.signerServiceInfo;
-
-		// custom_header callback
-		const custom_header_obj =
-			typeof custom_header === 'function' ? await custom_header() : undefined;
-
-		params.headers = {
-			...libraryHeaders,
-			...custom_header_obj,
-			...initParams.headers,
-		};
-
-		// Intentionally discarding search
-		const { search, ...parsedUrl } = parse(url, true, true);
-		params.url = format({
-			...parsedUrl,
-			query: {
-				...parsedUrl.query,
-				...(initParams.queryStringParameters || {}),
-			},
-		});
-
-		// Do not sign the request if client has added 'Authorization' header,
-		// which means custom authorizer.
-		if (typeof params.headers['Authorization'] !== 'undefined') {
-			params.headers = Object.keys(params.headers).reduce((acc, k) => {
-				if (params.headers[k]) {
-					acc[k] = params.headers[k];
+			const libraryHeaders = {};
+			const initParams = Object.assign({}, init);
+			const isAllResponse = initParams.response;
+			if (initParams.body) {
+				if (
+					typeof FormData === 'function' &&
+					initParams.body instanceof FormData
+				) {
+					libraryHeaders['Content-Type'] = 'multipart/form-data';
+					params.data = initParams.body;
+				} else {
+					libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
+					params.data = JSON.stringify(initParams.body);
 				}
-				return acc;
-				// tslint:disable-next-line:align
-			}, {});
-			return this._request(params, isAllResponse);
-		}
+			}
+			if (initParams.responseType) {
+				params.responseType = initParams.responseType;
+			}
+			if (initParams.withCredentials) {
+				params['withCredentials'] = initParams.withCredentials;
+			}
+			if (initParams.timeout) {
+				params.timeout = initParams.timeout;
+			}
 
-		let credentials;
-		try {
-			credentials = await this.Credentials.get();
-		} catch (error) {
-			logger.debug('No credentials available, the request will be unsigned');
-			return this._request(params, isAllResponse);
-		}
-		let signedParams;
-		try {
+			params['signerServiceInfo'] = initParams.signerServiceInfo;
+
+			params.headers = {
+				...libraryHeaders,
+				...initParams.headers,
+			};
+
+			// Intentionally discarding search
+			const { search, ...parsedUrl } = parse(url, true, true);
+			params.url = format({
+				...parsedUrl,
+				query: {
+					...parsedUrl.query,
+					...(initParams.queryStringParameters || {}),
+				},
+			});
+
+			// Do not sign the request if client has added 'Authorization' or x-api-key header,
+			// which means custom authorizer.
+			if (
+				(params.headers['Authorization'] &&
+					typeof params.headers['Authorization'] !== 'undefined') ||
+				(params.headers['X-Api-Key'] &&
+					typeof params.headers['X-Api-Key'] !== 'undefined')
+			) {
+				params.headers = Object.keys(params.headers).reduce((acc, k) => {
+					if (params.headers[k]) {
+						acc[k] = params.headers[k];
+					}
+					return acc;
+					// tslint:disable-next-line:align
+				}, {});
+
+				return res(await this._request(params, isAllResponse));
+			}
+
+			let credentials: AWSCredentialsAndIdentityId;
+
+			try {
+				const session = await fetchAuthSession();
+				if (
+					session.credentials === undefined &&
+					session.identityId === undefined
+				) {
+					throw new Error('No credentials available');
+				}
+				credentials = {
+					credentials: session.credentials,
+					identityId: session.identityId,
+				};
+			} catch (error) {
+				res(await this._request(params, isAllResponse));
+			}
+
+			let signedParams;
+			// before signed PARAMS
 			signedParams = this._sign({ ...params }, credentials, {
 				region,
 				service,
 			});
-			const response = await axios(signedParams);
-			return isAllResponse ? response : response.data;
-		} catch (error) {
-			logger.debug(error);
-			if (DateUtils.isClockSkewError(error)) {
-				const { headers } = error.response;
-				const dateHeader = headers && (headers.date || headers.Date);
-				const responseDate = new Date(dateHeader);
-				const requestDate = DateUtils.getDateFromHeaderString(
-					signedParams.headers['x-amz-date']
+
+			try {
+				res(
+					await this._request({
+						...signedParams,
+						data: signedParams.body,
+						cancelToken: source.token,
+					})
 				);
-
-				// Compare local clock to the server clock
-				if (DateUtils.isClockSkewed(responseDate)) {
-					DateUtils.setClockOffset(
-						responseDate.getTime() - requestDate.getTime()
-					);
-
-					return this.ajax(urlOrApiInfo, method, init);
-				}
+			} catch (error) {
+				rej(error);
 			}
-			throw error;
-		}
+		});
+		this._cancelTokenMap.set(promise, source);
+
+		return promise;
 	}
 
 	/**
@@ -215,7 +175,7 @@ export class RestClient {
 	 * @param {JSON} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	get(urlOrApiInfo: string | ApiInfo, init) {
+	get(urlOrApiInfo: string, init) {
 		return this.ajax(urlOrApiInfo, 'GET', init);
 	}
 
@@ -225,7 +185,7 @@ export class RestClient {
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	put(urlOrApiInfo: string | ApiInfo, init) {
+	put(urlOrApiInfo: string, init) {
 		return this.ajax(urlOrApiInfo, 'PUT', init);
 	}
 
@@ -235,7 +195,7 @@ export class RestClient {
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	patch(urlOrApiInfo: string | ApiInfo, init) {
+	patch(urlOrApiInfo: string, init) {
 		return this.ajax(urlOrApiInfo, 'PATCH', init);
 	}
 
@@ -245,7 +205,7 @@ export class RestClient {
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	post(urlOrApiInfo: string | ApiInfo, init) {
+	post(urlOrApiInfo: string, init) {
 		return this.ajax(urlOrApiInfo, 'POST', init);
 	}
 
@@ -255,7 +215,7 @@ export class RestClient {
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	del(urlOrApiInfo: string | ApiInfo, init) {
+	del(urlOrApiInfo: string, init) {
 		return this.ajax(urlOrApiInfo, 'DELETE', init);
 	}
 
@@ -265,7 +225,7 @@ export class RestClient {
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	head(urlOrApiInfo: string | ApiInfo, init) {
+	head(urlOrApiInfo: string, init) {
 		return this.ajax(urlOrApiInfo, 'HEAD', init);
 	}
 
@@ -275,7 +235,7 @@ export class RestClient {
 	 * @param {string} [message] - A message to include in the cancelation exception
 	 */
 	cancel(request: Promise<any>, message?: string) {
-		const source = this._cancelTokenMap.get(request);
+		const source = this._cancelTokenMap?.get(request);
 		if (source) {
 			source.cancel(message);
 			return true;
@@ -289,7 +249,7 @@ export class RestClient {
 	 * @return if the request has a corresponding cancel token.
 	 */
 	hasCancelToken(request: Promise<any>) {
-		return this._cancelTokenMap.has(request);
+		return this._cancelTokenMap?.has(request);
 	}
 
 	/**
@@ -318,7 +278,7 @@ export class RestClient {
 		promise: Promise<any>,
 		cancelTokenSource: CancelTokenSource
 	) {
-		this._cancelTokenMap.set(promise, cancelTokenSource);
+		this._cancelTokenMap?.set(promise, cancelTokenSource);
 	}
 
 	/**
@@ -359,38 +319,33 @@ export class RestClient {
 
 	/** private methods **/
 
-	private _sign(params, credentials, { service, region }) {
-		const { signerServiceInfo: signerServiceInfoParams, ...otherParams } =
-			params;
-
-		const endpoint_region: string =
-			region || this._region || this._options.region;
-		const endpoint_service: string =
-			service || this._service || this._options.service;
-
-		const creds = {
-			secret_key: credentials.secretAccessKey,
-			access_key: credentials.accessKeyId,
-			session_token: credentials.sessionToken,
-		};
-
-		const endpointInfo = {
-			region: endpoint_region,
-			service: endpoint_service,
-		};
-
-		const signerServiceInfo = Object.assign(
-			endpointInfo,
-			signerServiceInfoParams
+	private _sign(
+		params: {
+			method: string;
+			url: string;
+			host: string;
+			path: string;
+			headers: {};
+			data: BodyInit;
+			responseType: string;
+			timeout: number;
+		},
+		credentialsAndIdentityId: AWSCredentialsAndIdentityId,
+		{ service, region }
+	) {
+		const signed_params = signRequest(
+			{
+				method: params.method,
+				headers: params.headers,
+				url: new URL(params.url),
+				body: params.data,
+			},
+			{
+				credentials: credentialsAndIdentityId.credentials,
+				signingRegion: region,
+				signingService: service,
+			}
 		);
-
-		const signed_params = Signer.sign(otherParams, creds, signerServiceInfo);
-
-		if (signed_params.data) {
-			signed_params.body = signed_params.data;
-		}
-
-		logger.debug('Signed Request: ', signed_params);
 
 		delete signed_params.headers['host'];
 
@@ -401,17 +356,7 @@ export class RestClient {
 		return axios(params)
 			.then(response => (isAllResponse ? response : response.data))
 			.catch(error => {
-				logger.debug(error);
 				throw error;
 			});
-	}
-
-	private _parseUrl(url) {
-		const parts = url.split('/');
-
-		return {
-			host: parts[2],
-			path: '/' + parts.slice(3).join('/'),
-		};
 	}
 }

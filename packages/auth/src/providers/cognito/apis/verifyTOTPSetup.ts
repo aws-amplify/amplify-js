@@ -3,8 +3,7 @@
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { VerifyTOTPSetupRequest } from '../../../types/requests';
-import { CogntioVerifyTOTPSetupOptions } from '../types/options';
+import { VerifyTOTPSetupInput } from '../types';
 import { verifySoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { VerifySoftwareTokenException } from '../types/errors';
 import { Amplify } from '@aws-amplify/core';
@@ -16,22 +15,19 @@ import { assertAuthTokens } from '../utils/types';
 /**
  * Verifies an OTP code retrieved from an associated authentication app.
  *
- * @param verifyTOTPSetupRequest - The VerifyTOTPSetupRequest
- *
+ * @param input - The VerifyTOTPSetupInput
  * @throws  -{@link VerifySoftwareTokenException }:
  * Thrown due to an invalid MFA token.
- *
  * @throws  -{@link AuthValidationErrorCode }:
  * Thrown when `code` is not defined.
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function verifyTOTPSetup(
-	verifyTOTPSetupRequest: VerifyTOTPSetupRequest<CogntioVerifyTOTPSetupOptions>
+	input: VerifyTOTPSetupInput
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const { code, options } = verifyTOTPSetupRequest;
+	const { code, options } = input;
 	assertValidationError(
 		!!code,
 		AuthValidationErrorCode.EmptyVerifyTOTPSetupCode

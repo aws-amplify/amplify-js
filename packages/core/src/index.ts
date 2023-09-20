@@ -51,13 +51,11 @@ export { UserProfile } from './types';
 
 // Storage helpers
 export {
-	StorageHelper,
-	MemoryStorage,
-	LocalStorage,
 	CookieStorage,
-	SessionStorage,
-	MemoryKeyValueStorage,
-} from './StorageHelper';
+	defaultStorage,
+	sessionStorage,
+	sharedInMemoryStorage,
+} from './storage';
 export { KeyValueStorageInterface } from './types';
 
 // Cache exports
@@ -68,5 +66,3 @@ export { BrowserStorageCache as Cache }; // Maintain interoperability with React
 
 // Internationalization utilities
 export { I18n } from './I18n';
-
-export { parseAWSExports } from './parseAWSExports';

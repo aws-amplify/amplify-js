@@ -3,19 +3,20 @@
 
 import { DefaultIdentityIdStore } from './IdentityIdStore';
 import { CognitoAWSCredentialsAndIdentityIdProvider } from './credentialsProvider';
-import { LocalStorage } from '@aws-amplify/core';
+import { defaultStorage } from '@aws-amplify/core';
 
 /**
  * Cognito specific implmentation of the CredentialsProvider interface
  * that manages setting and getting of AWS Credentials.
  *
- * @throws internal: {@link AuthError }
+ * @throws configuration expections: {@link InvalidIdentityPoolIdException }
  *  - Auth errors that may arise from misconfiguration.
+ * @throws service expections: {@link GetCredentialsForIdentityException}, {@link GetIdException}
  *
  */
 export const cognitoCredentialsProvider =
 	new CognitoAWSCredentialsAndIdentityIdProvider(
-		new DefaultIdentityIdStore(LocalStorage)
+		new DefaultIdentityIdStore(defaultStorage)
 	);
 
 export { CognitoAWSCredentialsAndIdentityIdProvider, DefaultIdentityIdStore };

@@ -5,13 +5,15 @@ import { Amplify } from 'aws-amplify';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import { signIn } from '../../../src/providers/cognito/apis/signIn';
+import { signIn, getCurrentUser } from '../../../src/providers/cognito';
 import { signInWithCustomAuth } from '../../../src/providers/cognito/apis/signInWithCustomAuth';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { InitiateAuthCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
+import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
+jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 const authConfig = {
@@ -83,6 +85,24 @@ describe('signIn API happy path cases', () => {
 });
 
 describe('signIn API error path cases:', () => {
+	test('signIn API should throw a validation AuthError when a user is already signed-in', async () => {
+		const mockedGetCurrentUser = getCurrentUser as jest.Mock;
+
+		mockedGetCurrentUser.mockImplementationOnce(async () => {
+			return {
+				username: 'username',
+				userId: 'userId',
+			};
+		});
+
+		try {
+			await signIn({ username: 'username', password: 'password' });
+		} catch (error) {
+			expect(error).toBeInstanceOf(AuthError);
+			expect(error.name).toBe(USER_ALREADY_AUTHENTICATED_EXCEPTION);
+		}
+		mockedGetCurrentUser.mockClear();
+	});
 	test('signIn API should throw a validation AuthError when username is empty', async () => {
 		expect.assertions(2);
 		try {

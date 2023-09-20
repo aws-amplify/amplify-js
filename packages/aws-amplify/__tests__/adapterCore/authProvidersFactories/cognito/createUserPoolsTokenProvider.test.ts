@@ -4,7 +4,7 @@
 import {
 	DefaultTokenStore,
 	TokenOrchestrator,
-	CognitoUserPoolTokenRefresher,
+	refreshAuthTokens,
 } from '@aws-amplify/auth/cognito';
 
 import { AuthConfig, KeyValueStorageInterface } from '@aws-amplify/core';
@@ -19,14 +19,15 @@ const mockKeyValueStorage: KeyValueStorageInterface = {
 	clear: jest.fn(),
 };
 const mockAuthConfig: AuthConfig = {
-	identityPoolId: '123',
-	userPoolId: 'abc',
-	userPoolWebClientId: 'def',
+	Cognito: {
+		identityPoolId: '123',
+		userPoolId: 'abc',
+		userPoolClientId: 'def',
+	},
 };
 const MockDefaultTokenStore = DefaultTokenStore as jest.Mock;
 const MockTokenOrchestrator = TokenOrchestrator as jest.Mock;
-const MockCognitoUserPoolTokenRefresher =
-	CognitoUserPoolTokenRefresher as jest.Mock;
+const mockRefreshAuthTokens = refreshAuthTokens as jest.Mock;
 
 describe('createUserPoolsTokenProvider', () => {
 	beforeEach(() => {
@@ -59,7 +60,7 @@ describe('createUserPoolsTokenProvider', () => {
 		).toHaveBeenCalledWith(mockTokenStoreInstance);
 		expect(
 			mockTokenOrchestratorInstance.setTokenRefresher
-		).toHaveBeenCalledWith(MockCognitoUserPoolTokenRefresher);
+		).toHaveBeenCalledWith(mockRefreshAuthTokens);
 
 		expect(tokenProvider).toBeDefined();
 	});
