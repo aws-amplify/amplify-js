@@ -1,14 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Auth } from '@aws-amplify/auth';
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	Hub,
-	BackgroundProcessManager,
-	Cache,
-} from '@aws-amplify/core';
+import { Amplify, Hub, Cache } from '@aws-amplify/core';
+
 import {
 	Draft,
 	immerable,
@@ -109,6 +103,10 @@ import {
 } from '../predicates/next';
 import { getIdentifierValue } from '../sync/utils';
 import DataStoreConnectivity from '../sync/datastoreConnectivity';
+import {
+	BackgroundProcessManager,
+	Logger,
+} from '@aws-amplify/core/internals/utils';
 
 setAutoFreeze(true);
 enablePatches();
@@ -490,7 +488,6 @@ const checkSchemaCodegenVersion = (codegenVersion: string) => {
 	const majorVersion = 3;
 	const minorVersion = 2;
 	let isValid = false;
-
 	try {
 		const versionParts = codegenVersion.split('.');
 		const [major, minor, patch, patchrevision] = versionParts;
@@ -1381,7 +1378,6 @@ enum DataStoreState {
 // https://github.com/aws-amplify/amplify-js/pull/10477/files#r1007363485
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
-	private Auth = Auth;
 	private InternalAPI = InternalAPI;
 	private Cache = Cache;
 
@@ -1412,9 +1408,7 @@ class DataStore {
 	private storageAdapter!: Adapter;
 	// object that gets passed to descendent classes. Allows us to pass these down by reference
 	private amplifyContext: AmplifyContext = {
-		Auth: this.Auth,
 		InternalAPI: this.InternalAPI,
-		Cache: this.Cache,
 	};
 	private connectivityMonitor?: DataStoreConnectivity;
 
@@ -1529,6 +1523,7 @@ class DataStore {
 				await this.storage.init();
 				checkSchemaInitialized();
 				await checkSchemaVersion(this.storage, schema.version);
+
 				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
 
 				if (aws_appsync_graphqlEndpoint) {
@@ -1538,7 +1533,6 @@ class DataStore {
 					);
 
 					this.syncPredicates = await this.processSyncExpressions();
-
 					this.sync = new SyncEngine(
 						schema,
 						namespaceResolver,
@@ -2421,10 +2415,10 @@ class DataStore {
 					data?.model?.name === model.name
 				) {
 					generateAndEmitSnapshot();
-					Hub.remove('datastore', hubCallback);
+					hubRemove();
 				}
 			};
-			Hub.listen('datastore', hubCallback);
+			const hubRemove = Hub.listen('datastore', hubCallback);
 
 			return this.runningProcesses.addCleaner(async () => {
 				if (handle) {
@@ -2435,9 +2429,7 @@ class DataStore {
 	};
 
 	configure = (config: DataStoreConfig = {}) => {
-		this.amplifyContext.Auth = this.Auth;
 		this.amplifyContext.InternalAPI = this.InternalAPI;
-		this.amplifyContext.Cache = this.Cache;
 
 		const {
 			DataStore: configDataStore,
@@ -2453,9 +2445,24 @@ class DataStore {
 			...configFromAmplify
 		} = config;
 
+		let apiKey = '';
+		const currentAppSyncConfig = Amplify.getConfig().API?.AppSync;
+		if (currentAppSyncConfig?.defaultAuthMode.type === 'apiKey') {
+			apiKey = currentAppSyncConfig.defaultAuthMode.apiKey;
+		}
+
+		const appSyncConfig = {
+			aws_appsync_graphqlEndpoint: currentAppSyncConfig?.endpoint,
+			aws_appsync_authenticationType:
+				currentAppSyncConfig?.defaultAuthMode.type,
+			aws_appsync_region: currentAppSyncConfig?.region,
+			aws_appsync_apiKey: apiKey,
+		};
+
 		this.amplifyConfig = {
-			...configFromAmplify,
 			...this.amplifyConfig,
+			...configFromAmplify,
+			...(currentAppSyncConfig && appSyncConfig),
 		};
 
 		this.conflictHandler = this.setConflictHandler(config);
@@ -2747,6 +2754,11 @@ class DataStore {
 }
 
 const instance = new DataStore();
-Amplify.register(instance);
+instance.configure({});
+Hub.listen('core', capsule => {
+	if (capsule.payload.event === 'configure') {
+		instance.configure({});
+	}
+});
 
 export { DataStore as DataStoreClass, initSchema, instance as DataStore };

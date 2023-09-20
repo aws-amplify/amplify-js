@@ -10,7 +10,8 @@
 		"packages/adapter-nextjs",
 		"packages/api",
 		"packages/api-rest",
-		"packages/api-graphql"
+		"packages/api-graphql",
+		"packages/datastore"
 	],
 	"exact": true,
 	"version": "independent",

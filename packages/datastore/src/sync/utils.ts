@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { GraphQLAuthError } from '@aws-amplify/api';
-import { Logger } from '@aws-amplify/core';
+import { Logger, GraphQLAuthModeKeys } from '@aws-amplify/core/internals/utils';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
@@ -821,16 +820,16 @@ export async function getModelAuthModes({
 	schema,
 }: {
 	authModeStrategy: AuthModeStrategy;
-	defaultAuthMode: GRAPHQL_AUTH_MODE;
+	defaultAuthMode: GraphQLAuthModeKeys;
 	modelName: string;
 	schema: InternalSchema;
 }): Promise<{
-	[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	[key in ModelOperation]: GraphQLAuthModeKeys[];
 }> {
 	const operations = Object.values(ModelOperation);
 
 	const modelAuthModes: {
-		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+		[key in ModelOperation]: GraphQLAuthModeKeys[];
 	} = {
 		CREATE: [],
 		READ: [],
@@ -895,10 +894,10 @@ export function getClientSideAuthError(error) {
 }
 
 export async function getTokenForCustomAuth(
-	authMode: GRAPHQL_AUTH_MODE,
+	authMode: GraphQLAuthModeKeys,
 	amplifyConfig: Record<string, any> = {}
 ): Promise<string | undefined> {
-	if (authMode === GRAPHQL_AUTH_MODE.AWS_LAMBDA) {
+	if (authMode === 'lambda') {
 		const {
 			authProviders: { functionAuthProvider } = { functionAuthProvider: null },
 		} = amplifyConfig;
@@ -914,7 +913,7 @@ export async function getTokenForCustomAuth(
 		} else {
 			// TODO: add docs link once available
 			throw new Error(
-				`You must provide a \`functionAuthProvider\` function to \`DataStore.configure\` when using ${GRAPHQL_AUTH_MODE.AWS_LAMBDA}`
+				'You must provide a `functionAuthProvider` function to `DataStore.configure` when using lambda'
 			);
 		}
 	}
