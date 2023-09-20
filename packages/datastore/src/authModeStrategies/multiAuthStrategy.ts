@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Auth } from '@aws-amplify/auth';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { fetchAuthSession } from '@aws-amplify/core';
 import {
 	AuthModeStrategy,
 	ModelAttributeAuthProperty,
@@ -9,6 +8,7 @@ import {
 	ModelAttributeAuthAllow,
 	AmplifyContext,
 } from '../types';
+import { GraphQLAuthModeKeys } from '@aws-amplify/core/internals/utils';
 
 function getProviderFromRule(
 	rule: ModelAttributeAuthProperty
@@ -63,7 +63,7 @@ function getAuthRules({
 	currentUser: unknown;
 }) {
 	// Using Set to ensure uniqueness
-	const authModes = new Set<GRAPHQL_AUTH_MODE>();
+	const authModes = new Set<GraphQLAuthModeKeys>();
 
 	rules.forEach(rule => {
 		switch (rule.allow) {
@@ -73,7 +73,7 @@ function getAuthRules({
 					!rule.provider ||
 					rule.provider === ModelAttributeAuthProvider.FUNCTION
 				) {
-					authModes.add(GRAPHQL_AUTH_MODE.AWS_LAMBDA);
+					authModes.add('lambda');
 				}
 				break;
 			case ModelAttributeAuthAllow.GROUPS:
@@ -81,9 +81,9 @@ function getAuthRules({
 				// We shouldn't attempt User Pool or OIDC if there isn't an authenticated user
 				if (currentUser) {
 					if (rule.provider === ModelAttributeAuthProvider.USER_POOLS) {
-						authModes.add(GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS);
+						authModes.add('jwt');
 					} else if (rule.provider === ModelAttributeAuthProvider.OIDC) {
-						authModes.add(GRAPHQL_AUTH_MODE.OPENID_CONNECT);
+						authModes.add('jwt');
 					}
 				}
 				break;
@@ -96,9 +96,9 @@ function getAuthRules({
 						!rule.provider ||
 						rule.provider === ModelAttributeAuthProvider.USER_POOLS
 					) {
-						authModes.add(GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS);
+						authModes.add('jwt');
 					} else if (rule.provider === ModelAttributeAuthProvider.IAM) {
-						authModes.add(GRAPHQL_AUTH_MODE.AWS_IAM);
+						authModes.add('iam');
 					}
 				}
 
@@ -106,13 +106,13 @@ function getAuthRules({
 			}
 			case ModelAttributeAuthAllow.PUBLIC: {
 				if (rule.provider === ModelAttributeAuthProvider.IAM) {
-					authModes.add(GRAPHQL_AUTH_MODE.AWS_IAM);
+					authModes.add('iam');
 				} else if (
 					!rule.provider ||
 					rule.provider === ModelAttributeAuthProvider.API_KEY
 				) {
 					// public with no provider means apiKey
-					authModes.add(GRAPHQL_AUTH_MODE.API_KEY);
+					authModes.add('apiKey');
 				}
 				break;
 			}
@@ -140,10 +140,9 @@ export const multiAuthStrategy: (
 ) => AuthModeStrategy =
 	(amplifyContext: AmplifyContext) =>
 	async ({ schema, modelName }) => {
-		amplifyContext.Auth = amplifyContext.Auth || Auth;
 		let currentUser;
 		try {
-			currentUser = await amplifyContext.Auth.currentAuthenticatedUser();
+			currentUser = await fetchAuthSession();
 		} catch (e) {
 			// No current user
 		}

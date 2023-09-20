@@ -9,4 +9,6 @@ export type AuthHubEventData =
 	/** Dispatched when auth tokens are successfully refreshed.*/
 	| { event: 'tokenRefresh' }
 	/** Dispatched when there is an error in the refresh of tokens.*/
-	| { event: 'tokenRefresh_failure' };
+	| { event: 'tokenRefresh_failure' }
+	/** Dispatched when there is a customState passed in the options of the `signInWithRedirect` API.*/
+	| { event: 'customOAuthState'; data: string };

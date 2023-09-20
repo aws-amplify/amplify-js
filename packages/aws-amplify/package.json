@@ -27,6 +27,11 @@
 			"import": "./lib-esm/api/index.js",
 			"require": "./lib/api/index.js"
 		},
+		"./datastore": {
+			"types": "./lib-esm/datastore/index.d.ts",
+			"import": "./lib-esm/datastore/index.js",
+			"require": "./lib/datastore/index.js"
+		},
 		"./auth/cognito": {
 			"types": "./lib-esm/auth/cognito/index.d.ts",
 			"import": "./lib-esm/auth/cognito/index.js",
@@ -90,7 +95,7 @@
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
-		">=3.8": {
+		">=4.0": {
 			"*": [
 				"./lib-esm/index.d.ts"
 			],
@@ -170,7 +175,8 @@
 		"api",
 		"auth",
 		"internals",
-		"storage"
+		"storage",
+		"datastore"
 	],
 	"dependencies": {
 		"@aws-amplify/api": "6.0.0",
@@ -178,6 +184,7 @@
 		"@aws-amplify/auth": "6.0.0",
 		"@aws-amplify/core": "6.0.0",
 		"@aws-amplify/storage": "6.0.0",
+		"@aws-amplify/datastore": "5.0.0",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -302,7 +309,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect }",
-			"limit": "20.1 kB"
+			"limit": "20.15 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
@@ -320,7 +327,7 @@
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "20.50 kB"
+			"limit": "20.60 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",

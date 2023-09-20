@@ -280,9 +280,9 @@ export class InternalGraphQLAPIClass {
 		return this.appSyncRealTime.subscribe({
 			query: print(query as DocumentNode),
 			variables,
-			appSyncGraphqlEndpoint: AppSync.endpoint,
-			region: AppSync.region,
-			authenticationType: AppSync.defaultAuthMode,
+			appSyncGraphqlEndpoint: AppSync?.endpoint,
+			region: AppSync?.region,
+			authenticationType: AppSync?.defaultAuthMode,
 		});
 	}
 }

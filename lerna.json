@@ -11,7 +11,9 @@
 		"packages/geo",
 		"packages/api",
 		"packages/api-rest",
-		"packages/api-graphql"
+		"packages/api-graphql",
+		"packages/datastore",
+		"scripts/tsc-compliance-test"
 	],
 	"exact": true,
 	"version": "independent",

@@ -5,15 +5,14 @@ export { OperationTypeNode } from 'graphql';
 import { Observable } from 'rxjs';
 
 import { DocumentType } from '@aws-amplify/api-rest';
-export type GraphQLAuthMode = 'AWS_IAM' | 'COGNITO_USERPOOLS' | 'API_KEY';
-
+import { GraphQLAuthModeKeys } from '@aws-amplify/core/internals/utils';
+export { CONTROL_MSG, ConnectionState } from './PubSub';
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
  */
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: Record<string, DocumentType>;
-	// authMode?: GraphQLAuthMode;
 	authMode?: string;
 	authToken?: string;
 	/**
@@ -84,7 +83,7 @@ export type GraphqlSubscriptionMessage<T> = {
 
 export interface AWSAppSyncRealTimeProviderOptions {
 	appSyncGraphqlEndpoint?: string;
-	authenticationType?: GraphQLAuthMode;
+	authenticationType?: GraphQLAuthModeKeys;
 	query?: string;
 	variables?: Record<string, unknown>;
 	apiKey?: string;
@@ -123,7 +122,7 @@ export interface GraphQLOptionsV6<
 > {
 	query: TYPED_GQL_STRING | DocumentNode;
 	variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
-	authMode?: GraphQLAuthMode;
+	authMode?: GraphQLAuthModeKeys;
 	authToken?: string;
 	/**
 	 * @deprecated This property should not be used

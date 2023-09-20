@@ -26,6 +26,7 @@ export {
 	JWT,
 	StrictUnion,
 	CognitoIdentityPoolConfig,
+	JwtPayload,
 } from './singleton/Auth/types';
 // Auth utilities
 export {
@@ -35,6 +36,7 @@ export {
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
 export { isTokenExpired } from './singleton/Auth';
+export { GraphQLAuthModeKeys } from './singleton/API/types';
 export { Signer } from './Signer';
 
 // Logging utilities
