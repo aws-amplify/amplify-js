@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internals';
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 
 export const graphqlOperation = (
 	query,

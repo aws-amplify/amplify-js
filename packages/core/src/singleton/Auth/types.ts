@@ -20,7 +20,7 @@ type Json = null | string | number | boolean | Json[] | JsonObject;
 /** JSON Object type */
 type JsonObject = { [name: string]: Json };
 
-type JwtPayload = JwtPayloadStandardFields & JsonObject;
+export type JwtPayload = JwtPayloadStandardFields & JsonObject;
 
 export type JWT = {
 	payload: JwtPayload;

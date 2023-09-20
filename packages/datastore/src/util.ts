@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Buffer } from 'buffer';
 import { monotonicFactory, ULID } from 'ulid';
 import { v4 as uuid } from 'uuid';
 import { produce, applyPatches, Patch } from 'immer';
@@ -33,7 +32,6 @@ import {
 	IndexesType,
 	ModelAssociation,
 } from './types';
-import { WordArray } from 'amazon-cognito-identity-js';
 import { ModelSortPredicateCreator } from './predicates';
 
 export const ID = 'id';
@@ -375,10 +373,11 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 	return safariCompatabilityModeResult;
 };
 
-const randomBytes = (nBytes: number): Buffer => {
-	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
-};
-const prng = () => randomBytes(1).readUInt8(0) / 0xff;
+// TODO(v6): refactor this random number logic  auth -> core
+// const randomBytes = (nBytes: number): Buffer => {
+// 	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
+// };
+const prng = () => 10 / 0xff;
 export function monotonicUlidFactory(seed?: number): ULID {
 	const ulid = monotonicFactory(prng);
 

@@ -8,7 +8,7 @@ import {
 	GraphQLError,
 	OperationTypeNode,
 } from 'graphql';
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 import { Amplify, Cache, fetchAuthSession } from '@aws-amplify/core';
 import {
 	CustomUserAgentDetails,
@@ -280,9 +280,9 @@ export class InternalGraphQLAPIClass {
 		return this.appSyncRealTime.subscribe({
 			query: print(query as DocumentNode),
 			variables,
-			appSyncGraphqlEndpoint: AppSync.endpoint,
-			region: AppSync.region,
-			authenticationType: AppSync.defaultAuthMode,
+			appSyncGraphqlEndpoint: AppSync?.endpoint,
+			region: AppSync?.region,
+			authenticationType: AppSync?.defaultAuthMode,
 		});
 	}
 }

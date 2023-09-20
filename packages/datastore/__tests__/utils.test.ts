@@ -14,7 +14,6 @@ import {
 	countFilterCombinations,
 	repeatedFieldInGroup,
 } from '../src/sync/utils';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { DeferredCallbackResolver } from '../src/util';
 
 describe('DataStore - utils', () => {
@@ -375,43 +374,40 @@ _deleted`;
 
 	describe('getModel', () => {
 		test('handles an array of auth modes', async () => {
-			const authModeStrategy: AuthModeStrategy = () => [
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-			];
+			const authModeStrategy: AuthModeStrategy = () => ['jwt'];
 
 			const authModes = await getModelAuthModes({
 				authModeStrategy,
-				defaultAuthMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				defaultAuthMode: 'jwt',
 				modelName: 'Post',
 				schema: {} as InternalSchema, // schema is only passed directly to the authModeStrategy
 			});
 
 			const expectedAuthModes = {
-				CREATE: ['AMAZON_COGNITO_USER_POOLS'],
-				READ: ['AMAZON_COGNITO_USER_POOLS'],
-				UPDATE: ['AMAZON_COGNITO_USER_POOLS'],
-				DELETE: ['AMAZON_COGNITO_USER_POOLS'],
+				CREATE: ['jwt'],
+				READ: ['jwt'],
+				UPDATE: ['jwt'],
+				DELETE: ['jwt'],
 			};
 
 			expect(authModes).toEqual(expectedAuthModes);
 		});
 
 		test('handles a string auth mode', async () => {
-			const authModeStrategy: AuthModeStrategy = () =>
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
+			const authModeStrategy: AuthModeStrategy = () => 'jwt';
 
 			const authModes = await getModelAuthModes({
 				authModeStrategy,
-				defaultAuthMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				defaultAuthMode: 'jwt',
 				modelName: 'Post',
 				schema: {} as InternalSchema,
 			});
 
 			const expectedAuthModes = {
-				CREATE: ['AMAZON_COGNITO_USER_POOLS'],
-				READ: ['AMAZON_COGNITO_USER_POOLS'],
-				UPDATE: ['AMAZON_COGNITO_USER_POOLS'],
-				DELETE: ['AMAZON_COGNITO_USER_POOLS'],
+				CREATE: ['jwt'],
+				READ: ['jwt'],
+				UPDATE: ['jwt'],
+				DELETE: ['jwt'],
 			};
 
 			expect(authModes).toEqual(expectedAuthModes);
@@ -419,10 +415,10 @@ _deleted`;
 
 		test('falls back to default auth mode', async () => {
 			const expectedAuthModes = {
-				CREATE: ['AMAZON_COGNITO_USER_POOLS'],
-				READ: ['AMAZON_COGNITO_USER_POOLS'],
-				UPDATE: ['AMAZON_COGNITO_USER_POOLS'],
-				DELETE: ['AMAZON_COGNITO_USER_POOLS'],
+				CREATE: ['jwt'],
+				READ: ['jwt'],
+				UPDATE: ['jwt'],
+				DELETE: ['jwt'],
 			};
 
 			// using blocks in order to be able to re-use the same const-declared variables below
@@ -431,7 +427,7 @@ _deleted`;
 
 				const authModes = await getModelAuthModes({
 					authModeStrategy,
-					defaultAuthMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+					defaultAuthMode: 'jwt',
 					modelName: 'Post',
 					schema: {} as InternalSchema,
 				});
@@ -444,7 +440,7 @@ _deleted`;
 
 				const authModes = await getModelAuthModes({
 					authModeStrategy,
-					defaultAuthMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+					defaultAuthMode: 'jwt',
 					modelName: 'Post',
 					schema: {} as InternalSchema,
 				});
@@ -457,7 +453,7 @@ _deleted`;
 
 				const authModes = await getModelAuthModes({
 					authModeStrategy,
-					defaultAuthMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+					defaultAuthMode: 'jwt',
 					modelName: 'Post',
 					schema: {} as InternalSchema,
 				});
