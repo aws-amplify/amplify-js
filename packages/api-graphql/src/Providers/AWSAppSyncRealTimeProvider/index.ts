@@ -196,6 +196,7 @@ export class AWSAppSyncRealTimeProvider {
 			query,
 			variables,
 			authenticationType,
+			additionalHeaders,
 		} = options;
 
 		return new Observable(observer => {
@@ -225,6 +226,7 @@ export class AWSAppSyncRealTimeProvider {
 									region,
 									authenticationType,
 									appSyncGraphqlEndpoint,
+									additionalHeaders,
 								},
 								observer,
 								subscriptionId,
@@ -899,7 +901,7 @@ export class AWSAppSyncRealTimeProvider {
 
 			const { host } = url.parse(appSyncGraphqlEndpoint ?? '');
 
-			logger.debug(`Authenticating with ${authenticationType}`);
+			logger.debug(`Authenticating with ${JSON.stringify(authenticationType)}`);
 			let apiKey;
 			if (authenticationType.type === 'apiKey') {
 				apiKey = authenticationType.apiKey;
@@ -932,7 +934,7 @@ export class AWSAppSyncRealTimeProvider {
 		const session = await fetchAuthSession();
 
 		return {
-			Authorization: session.tokens.accessToken.toString(),
+			Authorization: session?.tokens?.accessToken?.toString(),
 			host,
 		};
 	}
@@ -991,7 +993,7 @@ export class AWSAppSyncRealTimeProvider {
 		host,
 		additionalHeaders,
 	}: AWSAppSyncRealTimeAuthInput) {
-		if (!additionalHeaders || !additionalHeaders['Authorization']) {
+		if (!additionalHeaders?.['Authorization']) {
 			throw new Error('No auth token specified');
 		}
 
