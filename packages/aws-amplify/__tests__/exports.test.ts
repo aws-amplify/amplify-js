@@ -12,7 +12,7 @@ import * as storageS3Exports from '../src/storage/s3';
 
 /**
  * Describes exports from the aws-amplify umbrella package to ensure we're not polluting the export surface.
- * 
+ *
  * Note: These tests will not capture exported types.
  */
 describe('aws-amplify Exports', () => {
@@ -112,7 +112,7 @@ describe('aws-amplify Exports', () => {
 			  "CognitoUserPoolsTokenProvider",
 			  "TokenOrchestrator",
 			  "DefaultTokenStore",
-			  "CognitoUserPoolTokenRefresher",
+			  "refreshAuthTokens",
 			]
 		`);
 		});
