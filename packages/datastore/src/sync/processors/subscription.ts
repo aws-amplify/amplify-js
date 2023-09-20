@@ -456,7 +456,6 @@ class SubscriptionProcessor {
 														this.drainBuffer();
 													},
 													error: async subscriptionError => {
-														debugger;
 														const {
 															error: { errors: [{ message = '' } = {}] } = {
 																errors: [],
@@ -585,16 +584,19 @@ class SubscriptionProcessor {
 										promises.push(
 											(async () => {
 												let boundFunction: any;
-
+												let removeBoundFunctionListener: () => void;
 												await new Promise(res => {
 													subscriptionReadyCallback = res;
 													boundFunction = this.hubQueryCompletionListener.bind(
 														this,
 														res
 													);
-													Hub.listen('api', boundFunction);
+													removeBoundFunctionListener = Hub.listen(
+														'api',
+														boundFunction
+													);
 												});
-												// Hub.remove('api', boundFunction);
+												removeBoundFunctionListener();
 											})()
 										);
 									};

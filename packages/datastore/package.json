@@ -81,17 +81,20 @@
 	"jest": {
 		"globals": {
 			"ts-jest": {
-				"diagnostics": false,
+				"diagnostics": true,
 				"tsConfig": {
 					"lib": [
 						"es5",
 						"es2015",
 						"dom",
 						"esnext.asynciterable",
-						"es2017.object"
+						"es2019"
 					],
+					"target": "es5",
 					"allowJs": true,
-					"noEmitOnError": false
+					"esModuleInterop": true,
+					"strictNullChecks": false,
+					"types": ["@types/jest"]
 				}
 			}
 		},
