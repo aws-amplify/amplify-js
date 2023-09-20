@@ -913,7 +913,7 @@ export async function getTokenForCustomAuth(
 		} else {
 			// TODO: add docs link once available
 			throw new Error(
-				`You must provide a \`functionAuthProvider\` function to \`DataStore.configure\` when using lambda`
+				'You must provide a `functionAuthProvider` function to `DataStore.configure` when using lambda'
 			);
 		}
 	}

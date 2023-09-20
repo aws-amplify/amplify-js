@@ -177,6 +177,7 @@ describe('Sync', () => {
 			});
 		});
 
+		// TODO(v6) Re-enable test
 		it.skip('should throw error if no data is returned', async () => {
 			const rejectResponse = {
 				data: null,
