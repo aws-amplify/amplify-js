@@ -68,9 +68,6 @@
 		"@aws-amplify/core": "6.0.0",
 		"typescript": "5.0.2"
 	},
-	"resolutions": {
-		"tslib": "2.6.2"
-	},
 	"size-limit": [
 		{
 			"name": "Geo (top-level class)",
