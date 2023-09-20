@@ -4,7 +4,7 @@
 		"allowSyntheticDefaultImports": true,
 		"outDir": "./lib/",
 		"target": "es5",
-		"noImplicitAny": false,
+		"noImplicitAny": true,
 		"lib": ["dom", "es2019", "esnext.asynciterable"],
 		"sourceMap": true,
 		"module": "commonjs",
@@ -14,7 +14,8 @@
 		"typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
 		"types": ["node"],
 		"esModuleInterop": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"strict": true
 	},
 	"include": ["src/**/*"],
 	"exclude": ["src/setupTests.ts"]

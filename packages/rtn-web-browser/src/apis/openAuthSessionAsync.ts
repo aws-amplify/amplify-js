@@ -1,13 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AppState, Linking, NativeModules, Platform } from 'react-native';
-import { WebBrowserNativeModule } from '../types';
+import {
+	AppState,
+	Linking,
+	NativeEventSubscription,
+	Platform,
+} from 'react-native';
+import { webBrowserNativeModule } from './webBrowserNativeModule';
 
-const module: WebBrowserNativeModule = NativeModules.AmplifyRTNWebBrowser;
-
-let appStateListener;
-let redirectListener;
+let appStateListener: NativeEventSubscription | undefined;
+let redirectListener: NativeEventSubscription | undefined;
 
 export const openAuthSessionAsync = async (
 	url: string,
@@ -16,7 +19,7 @@ export const openAuthSessionAsync = async (
 	// enforce HTTPS
 	const httpsUrl = url.replace('http://', 'https://');
 	if (Platform.OS === 'ios') {
-		return module.openAuthSessionAsync(httpsUrl);
+		return webBrowserNativeModule.openAuthSessionAsync(httpsUrl);
 	}
 
 	if (Platform.OS === 'android') {
@@ -37,12 +40,14 @@ const openAuthSessionAndroid = async (
 				getAppStatePromise(),
 			]),
 			// open chrome tab
-			module.openAuthSessionAsync(url),
+			webBrowserNativeModule.openAuthSessionAsync(url),
 		]);
 		return redirectUrl;
 	} finally {
-		appStateListener.remove();
-		redirectListener.remove();
+		appStateListener?.remove();
+		redirectListener?.remove();
+		appStateListener = undefined;
+		redirectListener = undefined;
 	}
 };
 
@@ -55,7 +60,8 @@ const getAppStatePromise = (): Promise<null> =>
 			}
 
 			if (nextAppState === 'active') {
-				appStateListener.remove();
+				appStateListener?.remove();
+				appStateListener = undefined;
 				resolve(null);
 			}
 		});

@@ -3,6 +3,7 @@
 
 package com.amazonaws.amplify.rtnwebbrowser
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.util.Patterns
@@ -33,7 +34,8 @@ class WebBrowserModule(
         }
     }
 
-    @ReactMethod
+    @SuppressLint("SuspiciousIndentation")
+		@ReactMethod
     fun openAuthSessionAsync(uriStr: String, promise: Promise) {
         if (!Patterns.WEB_URL.matcher(uriStr).matches()) {
             promise.reject(Throwable("Provided url is invalid"))
@@ -50,7 +52,7 @@ class WebBrowserModule(
         } catch (e: Exception) {
             promise.reject(e)
         }
-		promise.resolve(null)
+				promise.resolve(null)
     }
 
     override fun onHostResume() {

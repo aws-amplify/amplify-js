@@ -1,14 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { NativeModules } from 'react-native';
-import { WebBrowserNativeModule } from './types';
 import { openAuthSessionAsync } from './apis/openAuthSessionAsync';
-
-const module: WebBrowserNativeModule = NativeModules.AmplifyRTNWebBrowser;
+import { webBrowserNativeModule } from './apis/webBrowserNativeModule';
 
 const mergedModule = {
-	...module,
+	...webBrowserNativeModule,
 	openAuthSessionAsync,
 };
 
