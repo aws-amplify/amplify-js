@@ -8,6 +8,9 @@
 		"packages/storage",
 		"packages/aws-amplify",
 		"packages/adapter-nextjs",
+		"packages/api",
+		"packages/api-rest",
+		"packages/api-graphql",
 		"scripts/tsc-compliance-test"
 	],
 	"exact": true,
