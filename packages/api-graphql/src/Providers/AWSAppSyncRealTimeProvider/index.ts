@@ -561,11 +561,11 @@ export class AWSAppSyncRealTimeProvider {
 				subscriptionReadyCallback();
 			}
 			if (startAckTimeoutId) clearTimeout(startAckTimeoutId);
-			// dispatchApiEvent(
-			// 	CONTROL_MSG.SUBSCRIPTION_ACK,
-			// 	{ query, variables },
-			// 	'Connection established for subscription'
-			// );
+			dispatchApiEvent({
+				event: CONTROL_MSG.SUBSCRIPTION_ACK,
+				data: { query, variables },
+				message: 'Connection established for subscription',
+			});
 			const subscriptionState = SUBSCRIPTION_STATUS.CONNECTED;
 			if (observer) {
 				this.subscriptionObserverMap.set(id, {
