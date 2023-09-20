@@ -85,7 +85,7 @@
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
-		">=3.8": {
+		">=4.0": {
 			"*": [
 				"./lib-esm/index.d.ts"
 			],
@@ -299,7 +299,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect }",
-			"limit": "20.1 kB"
+			"limit": "20.15 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
@@ -317,7 +317,7 @@
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "20.50 kB"
+			"limit": "20.60 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
