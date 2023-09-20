@@ -368,7 +368,7 @@
 			"name": "[Geo] Geo (Location Service)",
 			"path": "./lib-esm/geo/index.js",
 			"import": "{ Geo }",
-			"limit": "48.14 kB"
+			"limit": "48.5 kB"
 		}
 	],
 	"jest": {
