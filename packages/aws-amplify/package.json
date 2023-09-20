@@ -75,7 +75,7 @@
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
-		">=3.8": {
+		">=4.0": {
 			"*": [
 				"./lib-esm/index.d.ts"
 			],
