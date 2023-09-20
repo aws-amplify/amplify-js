@@ -106,9 +106,7 @@
 			"__tests__/commonAdapterTests.ts",
 			"__tests__/DataStore.ts",
 			"__tests__/connectivityHandling.test.ts",
-			"__tests__/AsyncStorageAdapter.test.ts",
-			"__tests__/mutation.test.ts",
-			"__tests__/indexeddb.test.ts"
+			"__tests__/mutation.test.ts"
 		],
 		"moduleFileExtensions": [
 			"ts",
