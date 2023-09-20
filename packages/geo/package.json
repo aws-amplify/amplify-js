@@ -31,7 +31,7 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 84.00"
 	},
 	"typesVersions": {
-		">=3.8": {
+		">=4.0": {
 			"*": [
 				"./lib-esm/index.d.ts"
 			],
