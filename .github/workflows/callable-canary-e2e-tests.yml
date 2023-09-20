@@ -57,7 +57,7 @@ jobs:
         with:
           # Minimal depth 2 so we can checkout the commit before possible merge commit.
           fetch-depth: 2
-          path: amplify-js          
+          path: amplify-js
       - name: Setup Node.js 16
         uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0 https://github.com/actions/setup-node/commit/64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c
         with:
@@ -81,8 +81,8 @@ jobs:
         uses: ./amplify-js/.github/actions/setup-samples-staging
         with:
           GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
-      - name: Modify package.json to run against aws-amplify latest 
-        env: 
+      - name: Modify package.json to run against aws-amplify latest
+        env:
           E2E_FRAMEWORK: ${{ inputs.framework }}
           E2E_CATEGORY: ${{ inputs.category }}
           E2E_SAMPLE_NAME: ${{ matrix.sample_name }}
@@ -102,7 +102,7 @@ jobs:
           E2E_RETRY_COUNT: ${{ inputs.retry_count }}
           E2E_TEST_NAME: ${{ inputs.test_name }}
         run: |
-          ../amplify-js/.circleci/retry-yarn-script.sh -s \
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
           "ci:test \
           $E2E_FRAMEWORK \
           $E2E_CATEGORY \
@@ -125,7 +125,7 @@ jobs:
           E2E_RETRY_COUNT: ${{ inputs.retry_count }}
           E2E_TEST_NAME: ${{ inputs.test_name }}
         run: |
-          ../amplify-js/.circleci/retry-yarn-script.sh -s \
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
           "ci:test \
           $E2E_FRAMEWORK \
           $E2E_CATEGORY \

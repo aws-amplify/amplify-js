@@ -47,7 +47,10 @@
 			"packages/storage",
 			"packages/aws-amplify",
 			"packages/adapter-nextjs",
-			"scripts/tsc-compliance-test"
+			"packages/api",
+			"packages/api-graphql",
+			"packages/api-rest",
+			"scripts/tsc-compliance-test"			
 		],
 		"nohoist": [
 			"**/@types/react-native",
@@ -115,7 +118,8 @@
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",
-		"nx": "16.7.0"
+		"nx": "16.7.0",
+		"@smithy/types": "2.1.0"
 	},
 	"jest": {
 		"resetMocks": true,
