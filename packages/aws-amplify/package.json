@@ -165,7 +165,8 @@
 		"api",
 		"auth",
 		"internals",
-		"storage"
+		"storage",
+		"datastore"
 	],
 	"dependencies": {
 		"@aws-amplify/api": "6.0.0",
