@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, Hub, LocalStorage, OAuthConfig } from '@aws-amplify/core';
+import { Amplify, Hub, defaultStorage, OAuthConfig } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
 	assertOAuthConfig,
@@ -61,7 +61,7 @@ export async function signInWithRedirect(
 	});
 }
 
-const store = new DefaultOAuthStore(LocalStorage);
+const store = new DefaultOAuthStore(defaultStorage);
 
 function oauthSignIn({
 	oauthConfig,

@@ -6,7 +6,7 @@ import {
 	createCookieStorageAdapterFromNextServerContext,
 	getAmplifyConfig,
 } from './utils';
-import { MemoryKeyValueStorage } from '@aws-amplify/core';
+import { sharedInMemoryStorage } from '@aws-amplify/core';
 import {
 	createAWSCredentialsAndIdentityIdProvider,
 	createKeyValueStorageFromCookieStorageAdapter,
@@ -75,7 +75,7 @@ export const runWithAmplifyServerContext: NextServer.RunOperationWithContext =
 				// safe to use the singleton `MemoryKeyValueStorage` here, as the
 				// static rendering uses the same unauthenticated role cross-sever.
 				nextServerContext === null
-					? MemoryKeyValueStorage
+					? sharedInMemoryStorage
 					: createKeyValueStorageFromCookieStorageAdapter(
 							createCookieStorageAdapterFromNextServerContext(nextServerContext)
 					  );
