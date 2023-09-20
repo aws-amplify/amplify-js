@@ -1,7 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
 	"version": "6.0.0",
-	"private": true,
 	"description": "Machine learning category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -47,15 +46,16 @@
 	],
 	"dependencies": {
 		"@aws-amplify/storage": "6.0.0",
-		"@aws-sdk/client-comprehend": "3.6.1",
-		"@aws-sdk/client-polly": "3.6.1",
-		"@aws-sdk/client-rekognition": "3.6.1",
-		"@aws-sdk/client-textract": "3.6.1",
-		"@aws-sdk/client-translate": "3.6.1",
-		"@aws-sdk/eventstream-marshaller": "3.6.1",
-		"@aws-sdk/util-utf8-node": "3.6.1",
+		"@aws-sdk/client-comprehend": "3.414.0",
+		"@aws-sdk/client-polly": "3.414.0",
+		"@aws-sdk/client-rekognition": "3.414.0",
+		"@aws-sdk/client-textract": "3.414.0",
+		"@aws-sdk/client-translate": "3.414.0",
+		"@smithy/eventstream-codec": "2.0.9",
+		"@smithy/util-utf8": "2.0.0",
 		"buffer": "4.9.2",
 		"tslib": "^2.5.0",
+		"typescript": "5.0.2",
 		"uuid": "^9.0.0"
 	},
 	"peerDependencies": {
