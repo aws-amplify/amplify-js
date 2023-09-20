@@ -38,7 +38,7 @@ export {
 	AuthVerifyTOTPSetupInput,
 	AuthSignInWithRedirectInput,
 	AuthSignOutInput,
-	AuthSendUserAttributeVerificationCode,
+	AuthSendUserAttributeVerificationCodeInput,
 } from './inputs';
 
 export {

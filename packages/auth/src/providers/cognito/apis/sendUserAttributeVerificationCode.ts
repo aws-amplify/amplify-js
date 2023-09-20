@@ -3,16 +3,15 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
-import { fetchAuthSession } from '../../../';
+import { fetchAuthSession } from '../../..';
 import {
-	AuthCodeDeliveryDetails,
-	AuthStandardAttributeKey,
-	DeliveryMedium,
-	ResendUserAttributeConfirmationCodeRequest,
+	// AuthCodeDeliveryDetails,
+	// AuthStandardAttributeKey,
+	AuthDeliveryMedium,
 } from '../../../types';
 import {
-	CognitoResendUserAttributeConfirmationCodeOptions,
-	CognitoUserAttributeKey,
+	SendUserAttributeVerificationCodeInput,
+	SendUserAttributeVerificationCodeOutput,
 } from '../types';
 import { getUserAttributeVerificationCode } from '../utils/clients/CognitoIdentityProvider';
 import { assertAuthTokens } from '../utils/types';
@@ -22,22 +21,15 @@ import { GetUserAttributeVerificationException } from '../types/errors';
 /**
  * Resends user's confirmation code when updating attributes while authenticated.
  *
- * @param resendUserAttributeConfirmationCodeRequest - The ResendUserAttributeConfirmationCodeRequest object
- *
+ * @param input - The SendUserAttributeVerificationCodeInput object
+ * @returns SendUserAttributeVerificationCodeOutput
  * @throws - {@link GetUserAttributeVerificationException}
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
- *
- * @returns AuthCodeDeliveryDetails
  */
-export const resendUserAttributeConfirmationCode = async (
-	resendUserAttributeConfirmationCodeRequest: ResendUserAttributeConfirmationCodeRequest<
-		CognitoUserAttributeKey,
-		CognitoResendUserAttributeConfirmationCodeOptions
-	>
-): Promise<AuthCodeDeliveryDetails<CognitoUserAttributeKey>> => {
-	const { userAttributeKey, options } =
-		resendUserAttributeConfirmationCodeRequest;
+export const sendUserAttributeVerificationCode = async (
+	input: SendUserAttributeVerificationCodeInput
+): Promise<SendUserAttributeVerificationCodeOutput> => {
+	const { userAttributeKey, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const clientMetadata = options?.serviceOptions?.clientMetadata;
 	assertTokenProviderConfig(authConfig);
@@ -47,8 +39,8 @@ export const resendUserAttributeConfirmationCode = async (
 		{ region: getRegion(authConfig.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
-			AttributeName: userAttributeKey,
 			ClientMetadata: clientMetadata,
+			AttributeName: userAttributeKey,
 		}
 	);
 	const { DeliveryMedium, AttributeName, Destination } = {
@@ -56,7 +48,7 @@ export const resendUserAttributeConfirmationCode = async (
 	};
 	return {
 		destination: Destination,
-		deliveryMedium: DeliveryMedium as DeliveryMedium,
+		deliveryMedium: DeliveryMedium as AuthDeliveryMedium,
 		attributeName: AttributeName,
 	};
 };

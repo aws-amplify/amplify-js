@@ -149,11 +149,11 @@ export type AuthConfirmUserAttributeInput<
 > = { userAttributeKey: UserAttributeKey; confirmationCode: string };
 
 /**
- * Constructs a `resendUserAttributeConfirmationCode` request.
+ * Constructs a `sendUserAttributeVerificationCode` request.
  * @param userAttributeKey - the user attribute key
  * @param options - optional parameters for the Resend Attribute Code process such as the service options.
  */
-export type AuthSendUserAttributeVerificationCode<
+export type AuthSendUserAttributeVerificationCodeInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {

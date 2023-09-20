@@ -3,7 +3,7 @@
 
 import { AuthError } from '../../../src/errors/AuthError';
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import { resendUserAttributeConfirmationCode } from '../../../src/providers/cognito';
+import { sendUserAttributeVerificationCode } from '../../../src/providers/cognito';
 import { GetUserAttributeVerificationException } from '../../../src/providers/cognito/types/errors';
 import * as getUserAttributeVerificationCodeClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { Amplify } from 'aws-amplify';
@@ -58,7 +58,7 @@ describe('resendUserAttributeConfirmationCode API happy path cases', () => {
 	});
 
 	it('Should return a resendUserAttributeConfirmationCodeRequest', async () => {
-		const result = await resendUserAttributeConfirmationCode({
+		const result = await sendUserAttributeVerificationCode({
 			userAttributeKey: 'email',
 			options: {
 				serviceOptions: {
@@ -102,7 +102,7 @@ describe('resendUserAttributeConfirmationCode API error path cases', () => {
 			)
 		);
 		try {
-			await resendUserAttributeConfirmationCode({
+			await sendUserAttributeVerificationCode({
 				userAttributeKey: 'email',
 				options: {
 					serviceOptions: {

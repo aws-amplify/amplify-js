@@ -15,7 +15,7 @@ export { updatePassword } from './apis/updatePassword';
 export { setUpTOTP } from './apis/setUpTOTP';
 export { updateUserAttributes } from './apis/updateUserAttributes';
 export { getCurrentUser } from './apis/getCurrentUser';
-export { resendUserAttributeConfirmationCode } from './apis/resendUserAttributeConfirmationCode';
+export { sendUserAttributeVerificationCode } from './apis/sendUserAttributeVerificationCode';
 export { confirmUserAttribute } from './apis/confirmUserAttribute';
 export { signInWithRedirect } from './apis/signInWithRedirect';
 export { fetchUserAttributes } from './apis/fetchUserAttributes';
@@ -35,6 +35,7 @@ export {
 	UpdatePasswordInput,
 	UpdateUserAttributesInput,
 	VerifyTOTPSetupInput,
+	SendUserAttributeVerificationCodeInput,
 } from './types/inputs';
 
 export {
@@ -50,6 +51,7 @@ export {
 	SignOutOutput,
 	SignUpOutput,
 	UpdateUserAttributesOutput,
+	SendUserAttributeVerificationCodeOutput,
 } from './types/outputs';
 export {
 	cognitoCredentialsProvider,
