@@ -27,6 +27,11 @@
 			"import": "./lib-esm/api/index.js",
 			"require": "./lib/api/index.js"
 		},
+		"./datastore": {
+			"types": "./lib-esm/datastore/index.d.ts",
+			"import": "./lib-esm/datastore/index.js",
+			"require": "./lib/datastore/index.js"
+		},
 		"./auth/cognito": {
 			"types": "./lib-esm/auth/cognito/index.d.ts",
 			"import": "./lib-esm/auth/cognito/index.js",
@@ -168,6 +173,7 @@
 		"@aws-amplify/auth": "6.0.0",
 		"@aws-amplify/core": "6.0.0",
 		"@aws-amplify/storage": "6.0.0",
+		"@aws-amplify/datastore": "5.0.0",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {

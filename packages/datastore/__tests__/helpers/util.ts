@@ -4,7 +4,7 @@ import { initSchema as _initSchema } from '../../src/datastore/datastore';
 import * as schemas from './schemas';
 import { getDataStore } from './datastoreFactory';
 import { FakeGraphQLService } from './fakes';
-import { jitteredExponentialRetry } from '@aws-amplify/core';
+import { jitteredExponentialRetry } from '@aws-amplify/core/internals/utils';
 
 /**
  * Convenience function to wait for a number of ms.

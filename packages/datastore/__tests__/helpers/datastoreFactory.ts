@@ -3,7 +3,7 @@ import {
 	CONTROL_MSG as PUBSUB_CONTROL_MSG,
 	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
 	ConnectionState,
-} from '@aws-amplify/pubsub';
+} from '@aws-amplify/api-graphql';
 import { PersistentModelConstructor } from '../../src';
 import {
 	initSchema as _initSchema,
