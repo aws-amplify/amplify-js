@@ -2,6 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /*
-This file maps exports from `aws-amplify/notifications/pushNotification/pinpoint`. It provides access to the Pinpoint provider of the PushNotification sub-category.
+This file maps exports from `aws-amplify/notifications/push/pinpoint`. It provides access to the Pinpoint provider of the PushNotification sub-category.
 */
 export * from '@aws-amplify/notifications/push/pinpoint';
