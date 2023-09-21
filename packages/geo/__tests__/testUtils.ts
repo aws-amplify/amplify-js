@@ -6,9 +6,10 @@ import {
 } from '@aws-sdk/client-location';
 
 import { validPolygon, validGeometry } from './testData';
+import { Geofence } from '../src/types';
 
 export function createGeofenceInputArray(numberOfGeofences) {
-	const geofences = [];
+	const geofences: Geofence[] = [];
 	for (let i = 0; i < numberOfGeofences; i++) {
 		geofences.push({
 			geofenceId: `validGeofenceId${i}`,
@@ -19,7 +20,7 @@ export function createGeofenceInputArray(numberOfGeofences) {
 }
 
 export function createGeofenceOutputArray(numberOfGeofences) {
-	const geofences = [];
+	const geofences: any[] = [];
 	for (let i = 0; i < numberOfGeofences; i++) {
 		geofences.push({
 			GeofenceId: `validGeofenceId${i}`,
@@ -37,7 +38,7 @@ export function createGeofenceOutputArray(numberOfGeofences) {
 export function mockBatchPutGeofenceCommand(command) {
 	if (command instanceof BatchPutGeofenceCommand) {
 		return {
-			Successes: command.input.Entries.map(geofence => {
+			Successes: command.input.Entries!.map(geofence => {
 				return {
 					CreateTime: '2020-04-01T21:00:00.000Z',
 					UpdateTime: '2020-04-01T21:00:00.000Z',
