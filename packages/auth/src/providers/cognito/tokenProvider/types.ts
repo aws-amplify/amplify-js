@@ -51,6 +51,12 @@ export interface CognitoUserPoolTokenProviderType extends TokenProvider {
 
 export type CognitoAuthTokens = AuthTokens & {
 	refreshToken?: string;
-	NewDeviceMetadata?: string;
+	NewDeviceMetadata?: DeviceMetadata;
 	clockDrift: number;
+};
+
+export type DeviceMetadata = {
+	deviceKey?: string;
+	deviceGroupKey?: string;
+	randomPassword: string;
 };
