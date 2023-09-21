@@ -5,7 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import {
-	AuthUserAttribute,
+	AuthUserAttributes,
 	AuthUpdateUserAttributesOutput,
 	AuthDeliveryMedium,
 } from '../../../types';
@@ -53,7 +53,7 @@ export const updateUserAttributes = async (
 };
 
 function getConfirmedAttributes(
-	attributes: AuthUserAttribute
+	attributes: AuthUserAttributes
 ): AuthUpdateUserAttributesOutput {
 	const confirmedAttributes = {} as AuthUpdateUserAttributesOutput;
 	Object.keys(attributes)?.forEach(key => {
