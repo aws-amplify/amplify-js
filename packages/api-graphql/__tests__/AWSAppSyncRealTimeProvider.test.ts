@@ -11,10 +11,7 @@ jest.mock('@aws-amplify/core', () => ({
 
 import Observable from 'zen-observable-ts';
 import { Reachability } from '@aws-amplify/core/internals/utils';
-import { fetchAuthSession, Cache } from '@aws-amplify/core';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
-import * as Auth from '@aws-amplify/auth';
-import { GraphQLAuthMode } from '@aws-amplify/core/lib-esm/singleton/API/types';
 import { MESSAGE_TYPES } from '../src/Providers/constants';
 import * as constants from '../src/Providers/constants';
 
@@ -26,7 +23,7 @@ import {
 import { ConnectionState as CS } from '../src/types/PubSub';
 
 import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
-import { AuthSession } from '@aws-amplify/core/lib-esm/singleton/Auth/types';
+import { fetchAuthSession } from '@aws-amplify/core';
 
 // Mock all calls to signRequest
 jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
@@ -61,7 +58,7 @@ jest.mock('@aws-amplify/core', () => {
 					accessKeyId: 'test',
 					secretAccessKey: 'test',
 				},
-			} as AuthSession);
+			} as Awaited<ReturnType<typeof fetchAuthSession>>);
 		},
 	};
 });

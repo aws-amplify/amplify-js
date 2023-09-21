@@ -38,7 +38,6 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
-import { GraphQLAuthMode } from '@aws-amplify/core/lib-esm/singleton/API/types';
 
 import {
 	CustomUserAgentDetails,
@@ -48,6 +47,7 @@ import {
 	getAmplifyUserAgent,
 	isNonRetryableError,
 	jitteredExponentialRetry,
+	GraphQLAuthMode,
 } from '@aws-amplify/core/internals/utils';
 import { DocumentType } from '@aws-amplify/api-rest';
 
@@ -197,7 +197,7 @@ export class AWSAppSyncRealTimeProvider {
 			variables,
 			authenticationType,
 			additionalHeaders,
-		} = options;
+		} = options || {};
 
 		return new Observable(observer => {
 			if (!options || !appSyncGraphqlEndpoint) {
@@ -296,7 +296,7 @@ export class AWSAppSyncRealTimeProvider {
 		options: AWSAppSyncRealTimeProviderOptions;
 		observer: PubSubContentObserver;
 		subscriptionId: string;
-		customUserAgentDetails: CustomUserAgentDetails;
+		customUserAgentDetails: CustomUserAgentDetails | undefined;
 	}) {
 		const {
 			appSyncGraphqlEndpoint,
@@ -982,7 +982,7 @@ export class AWSAppSyncRealTimeProvider {
 			},
 			{
 				credentials: creds,
-				signingRegion: endpointInfo.region,
+				signingRegion: endpointInfo.region ?? '',
 				signingService: endpointInfo.service,
 			}
 		);
