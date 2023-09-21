@@ -4,6 +4,4 @@
 /*
 This file maps exports from `aws-amplify/notifications/in-app-messaging/pinpoint`. It provides access to the Pinpoint provider of the InAppMessaging sub-category.
 */
-
-// TODO(V6): this import is not available, needs investigation
-// export * from '@aws-amplify/notifications/in-app-messaging/pinpoint';
+export * from '@aws-amplify/notifications/in-app-messaging/pinpoint';
