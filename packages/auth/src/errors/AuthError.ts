@@ -1,10 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyError, ErrorParams } from '@aws-amplify/core/internals/utils';
+import {
+	AmplifyError,
+	AmplifyErrorParams,
+} from '@aws-amplify/core/internals/utils';
 
 export class AuthError extends AmplifyError {
-	constructor(params: ErrorParams) {
+	constructor(params: AmplifyErrorParams) {
 		super(params);
 
 		// Hack for making the custom error class work when transpiled to es5

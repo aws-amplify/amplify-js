@@ -3,7 +3,6 @@
 import { AuthConfig, KeyValueStorageInterface } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
-	asserts,
 	decodeJWT,
 } from '@aws-amplify/core/internals/utils';
 import {
@@ -13,6 +12,7 @@ import {
 	CognitoAuthTokens,
 } from './types';
 import { AuthError } from '../../../errors/AuthError';
+import { assert, TokenProviderErrorCode } from './errorHelpers';
 
 export class DefaultTokenStore implements AuthTokenStore {
 	private authConfig?: AuthConfig;
@@ -85,11 +85,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		}
 	}
 	async storeTokens(tokens: CognitoAuthTokens): Promise<void> {
-		asserts(!(tokens === undefined), {
-			message: 'Invalid tokens',
-			name: 'InvalidAuthTokens',
-			recoverySuggestion: 'Make sure the tokens are valid',
-		});
+		assert(!(tokens === undefined), TokenProviderErrorCode.InvalidAuthTokens);
 		assertTokenProviderConfig(this.authConfig?.Cognito);
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure

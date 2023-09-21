@@ -23,11 +23,5 @@ export const INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER = hasSymbol
 export const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 // Error exception code constants
-export const AUTH_CONFING_EXCEPTION = 'AuthConfigException';
-export const CACHE_LIST_EXCEPTION = 'CacheListException';
-export const I18N_EXCEPTION = 'I18NException';
-export const SERVICE_WORKER_EXCEPTION = 'ServiceWorkerException';
-export const STORAGE_CACHE_EXCEPTION = 'StorageCacheException';
-export const APPLICATION_ID_EXCEPTION = 'ApplicationIdException';
 export const NO_HUBCALLBACK_PROVIDED_EXCEPTION =
 	'NoHubcallbackProvidedException';
