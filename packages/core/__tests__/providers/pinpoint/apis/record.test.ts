@@ -40,7 +40,7 @@ describe('Pinpoint Provider API: record', () => {
 		mockBufferPush.mockReset();
 		mockGetEventBuffer.mockReturnValue({
 			push: mockBufferPush,
-		})
+		});
 	});
 
 	it('uses an existing enpoint if available', async () => {
@@ -52,16 +52,16 @@ describe('Pinpoint Provider API: record', () => {
 			identityId,
 			region,
 		});
-    
+
 		expect(mockUpdateEndpoint).not.toBeCalled();
 		expect(mockBufferPush).toBeCalledWith(
 			expect.objectContaining({
 				endpointId,
 				event,
 				session: expect.any(Object),
-				timestamp: expect.any(String)
-			}
-		));
+				timestamp: expect.any(String),
+			})
+		);
 	});
 
 	it("prepares an endpoint if one hasn't been setup", async () => {
@@ -75,7 +75,7 @@ describe('Pinpoint Provider API: record', () => {
 			identityId,
 			region,
 		});
-    
+
 		expect(mockUpdateEndpoint).toBeCalledWith({
 			appId,
 			category,
@@ -94,7 +94,7 @@ describe('Pinpoint Provider API: record', () => {
 			identityId,
 			region,
 		});
-    
+
 		expect(mockClientPutEvents).not.toBeCalled();
 	});
 
@@ -121,15 +121,15 @@ describe('Pinpoint Provider API: record', () => {
 			identityId,
 			region,
 		});
-    
+
 		expect(mockBufferPush).toBeCalledWith(
 			expect.objectContaining({
 				endpointId,
 				event,
 				session: expect.any(Object),
-				timestamp: expect.any(String)
-			}
-		));
+				timestamp: expect.any(String),
+			})
+		);
 	});
 
 	it('throws an error if it is unable to determine the endpoint ID', async () => {

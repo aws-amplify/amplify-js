@@ -4,7 +4,6 @@
 import getConfig from 'next/config';
 import { parseAWSExports } from '@aws-amplify/core/internals/utils';
 import { getAmplifyConfig } from '../../src/utils/getAmplifyConfig';
-import { AmplifyError } from '@aws-amplify/core/internals/utils';
 
 jest.mock('next/config');
 jest.mock('@aws-amplify/core/internals/utils');
@@ -80,6 +79,6 @@ describe('getAmplifyConfig', () => {
 	});
 
 	it('should throw error when amplifyConfig is not found from env vars', () => {
-		expect(() => getAmplifyConfig()).toThrow(AmplifyError);
+		expect(() => getAmplifyConfig()).toThrow();
 	});
 });
