@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { PlatformNotSupportedError } from '../Util/Errors';
+import { PlatformNotSupportedError } from '../errors';
 import { KeyValueStorageInterface } from '../types';
 
 /**
@@ -21,7 +21,7 @@ export class KeyValueStorage implements KeyValueStorageInterface {
 	 * @returns {string} value that was set
 	 */
 	async setItem(key: string, value: string) {
-		if (!this.storage) throw PlatformNotSupportedError;
+		if (!this.storage) throw new PlatformNotSupportedError();
 		this.storage.setItem(key, value);
 	}
 
@@ -32,7 +32,7 @@ export class KeyValueStorage implements KeyValueStorageInterface {
 	 * @returns {string} the data item
 	 */
 	async getItem(key: string) {
-		if (!this.storage) throw PlatformNotSupportedError;
+		if (!this.storage) throw new PlatformNotSupportedError();
 		return this.storage.getItem(key);
 	}
 
@@ -42,7 +42,7 @@ export class KeyValueStorage implements KeyValueStorageInterface {
 	 * @returns {string} value - value that was deleted
 	 */
 	async removeItem(key: string) {
-		if (!this.storage) throw PlatformNotSupportedError;
+		if (!this.storage) throw new PlatformNotSupportedError();
 		this.storage.removeItem(key);
 	}
 
@@ -51,7 +51,7 @@ export class KeyValueStorage implements KeyValueStorageInterface {
 	 * @returns {string} nothing
 	 */
 	async clear() {
-		if (!this.storage) throw PlatformNotSupportedError;
+		if (!this.storage) throw new PlatformNotSupportedError();
 		this.storage.clear();
 	}
 }

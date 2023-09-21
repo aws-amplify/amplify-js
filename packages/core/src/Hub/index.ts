@@ -3,7 +3,7 @@
 
 import { ConsoleLogger as Logger } from '../Logger';
 import { NO_HUBCALLBACK_PROVIDED_EXCEPTION } from '../Util/Constants';
-import { AmplifyError } from '../Util/Errors';
+import { AmplifyError } from '../errors';
 import {
 	AmplifyChannel,
 	AmplifyEventData,
