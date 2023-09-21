@@ -147,3 +147,16 @@ export type AuthUpdateUserAttributesInput<
 export type AuthConfirmUserAttributeInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = { userAttributeKey: UserAttributeKey; confirmationCode: string };
+
+/**
+ * Constructs a `sendUserAttributeVerificationCode` request.
+ * @param userAttributeKey - the user attribute key
+ * @param options - optional parameters for the Resend Attribute Code process such as the service options.
+ */
+export type AuthSendUserAttributeVerificationCodeInput<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+> = {
+	userAttributeKey: UserAttributeKey;
+	options?: { serviceOptions?: ServiceOptions };
+};
