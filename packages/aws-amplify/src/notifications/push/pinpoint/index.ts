@@ -4,6 +4,4 @@
 /*
 This file maps exports from `aws-amplify/notifications/pushNotification/pinpoint`. It provides access to the Pinpoint provider of the PushNotification sub-category.
 */
-
-// TODO(V6): this import is not available, needs investigation
-// export * from '@aws-amplify/notifications/push/pinpoint';
+export * from '@aws-amplify/notifications/push/pinpoint';
