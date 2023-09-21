@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/geo/location-service",
+	"main": "../../lib/geo/location-service/index.js",
+	"browser": "../../lib-esm/geo/location-service/index.js",
+	"module": "../../lib-esm/geo/location-service/index.js",
+	"typings": "../../lib-esm/geo/location-service/index.d.ts"
+}

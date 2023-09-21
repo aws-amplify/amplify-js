@@ -29,6 +29,7 @@ export {
 	ResourcesConfig,
 	LibraryOptions,
 	AnalyticsConfig,
+	GeoConfig,
 } from './singleton/types';
 export {
 	Amplify,

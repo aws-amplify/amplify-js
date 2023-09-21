@@ -8,7 +8,10 @@ import {
 	GeofencePolygon,
 	GeofenceInput,
 	PolygonGeometry,
+	Geofence,
 } from '../src/types';
+import { GeoConfig } from '@aws-amplify/core';
+import { parseAWSExports } from '@aws-amplify/core/internals/utils';
 
 export const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -45,6 +48,8 @@ export const awsConfig = {
 	},
 	credentials,
 };
+
+export const awsConfigGeoV4 = parseAWSExports(awsConfig) as GeoConfig;
 
 export const TestPlacePascalCase = {
 	AddressNumber: '123',
@@ -199,7 +204,7 @@ export const geofenceWithTooManyVertices: GeofenceInput = {
 	geometry: { polygon: polygonTooManyVertices },
 };
 
-export const validGeofences = [];
+export const validGeofences: Geofence[] = [];
 for (let i = 0; i < 132; i++) {
 	validGeofences.push({
 		geofenceId: `validGeofenceId${i}`,

@@ -12,6 +12,7 @@ import {
 	GetCredentialsOptions,
 	CognitoIdentityPoolConfig,
 } from './Auth/types';
+import { GeoConfig } from './Geo/types';
 import {
 	LibraryStorageOptions,
 	StorageAccessLevel,
@@ -36,6 +37,7 @@ export type ResourcesConfig = {
 	// Notifications?: {};
 	// Predictions?: {};
 	Storage?: StorageConfig;
+	Geo?: GeoConfig;
 };
 
 export type LibraryOptions = {
@@ -56,4 +58,5 @@ export {
 	StorageConfig,
 	AnalyticsConfig,
 	CognitoIdentityPoolConfig,
+	GeoConfig,
 };
