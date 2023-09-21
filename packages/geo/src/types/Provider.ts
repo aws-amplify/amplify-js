@@ -25,9 +25,6 @@ export interface GeoProvider {
 	// get provider name
 	getProviderName(): string;
 
-	// configure your provider
-	configure(config: object): object;
-
 	// get the available map resources
 	getAvailableMaps(): MapStyle[];
 
