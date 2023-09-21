@@ -195,7 +195,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ record }",
-			"limit": "20.55 kB"
+			"limit": "20.65 kB"
 		},
 		{
 			"name": "[API] class (AppSync)",
@@ -213,7 +213,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ identifyUser }",
-			"limit": "18.72 kB"
+			"limit": "18.8 kB"
 		},
 		{
 			"name": "[Auth] signUp (Cognito)",
@@ -231,19 +231,19 @@
 			"name": "[Auth] confirmResetPassword (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmResetPassword }",
-			"limit": "10.47 kB"
+			"limit": "10.6 kB"
 		},
 		{
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "27.02 kB"
+			"limit":  "17.35 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ resendSignUpCode }",
-			"limit": "10.51 kB"
+			"limit": "10.6 kB"
 		},
 		{
 			"name": "[Auth] confirmSignUp (Cognito)",
@@ -255,37 +255,37 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignIn }",
-			"limit": "16.37 kB"
+			"limit": "16.65 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ updateMFAPreference }",
-			"limit": "9.59 kB"
+			"limit": "9.7 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ fetchMFAPreference }",
-			"limit": "9.56 kB"
+			"limit": "9.7 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "10.52 kB"
+			"limit": "10.65 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ updatePassword }",
-			"limit": "10.5 kB"
+			"limit": "10.65 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ setUpTOTP }",
-			"limit": "10.91 kB"
+			"limit": "11.1 kB"
 		},
 		{
 			"name": "[Auth] updateUserAttributes (Cognito)",
@@ -303,31 +303,31 @@
 			"name": "[Auth] confirmUserAttribute (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmUserAttribute }",
-			"limit": "10.50 kB"
+			"limit": "10.65 kB"
 		},
 		{
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect }",
-			"limit": "20.18 kB"
+			"limit": "20.45 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ fetchUserAttributes }",
-			"limit": "9.58 kB"
+			"limit": "9.65 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn, signOut, fetchAuthSession }",
-			"limit": "27.92 kB"
+			"limit": "28.2 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "20.60 kB"
+			"limit": "20.85 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
