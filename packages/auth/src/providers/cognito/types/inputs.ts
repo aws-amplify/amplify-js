@@ -138,6 +138,6 @@ export type VerifyTOTPSetupInput =
  */
 export type SendUserAttributeVerificationCodeInput =
 	AuthSendUserAttributeVerificationCodeInput<
-		'email' | 'phone_number',
+		UserAttributeKey,
 		SendUserAttributeVerificationCodeOptions
 	>;
