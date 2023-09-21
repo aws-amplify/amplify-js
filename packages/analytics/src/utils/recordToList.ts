@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-const recordToTupleList = <T>(
+export const recordToTupleList = <T>(
 	record: Record<string, T>
 ): Array<[string, T]> => {
 	return Object.keys(record).reduce(

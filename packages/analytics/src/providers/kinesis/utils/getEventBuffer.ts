@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { KinesisBufferEvent, KinesisEventBufferConfig } from '../types';
-import { EventBuffer, IAnalyticsClient } from '../../../utils/EventBuffer';
+import { EventBuffer, IAnalyticsClient } from '../../../utils/eventBuffer';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
+import { groupBy } from '../../../utils/groupBy';
+import { recordToTupleList } from '../../../utils/recordToList';
 
 const eventBufferMap: Record<string, EventBuffer<KinesisBufferEvent>> = {};
 const cachedClients: Record<string, KinesisClient> = {};

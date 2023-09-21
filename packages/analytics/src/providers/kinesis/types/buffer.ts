@@ -3,7 +3,7 @@
 
 import { AuthSession } from '@aws-amplify/core/src/singleton/Auth/types';
 import { KinesisShard } from '@aws-amplify/core/lib/providers/kinesis/types/kinesis';
-import { EventBufferConfig } from '../../../utils/EventBuffer';
+import { EventBufferConfig } from '../../../utils/eventBuffer';
 
 export type KinesisBufferEvent = KinesisShard & {
 	event: Uint8Array;

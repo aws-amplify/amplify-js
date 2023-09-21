@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-const groupBy = <T>(
+export const groupBy = <T>(
 	getGroupId: (x: T) => string,
 	list: T[]
 ): Record<string, T[]> => {
