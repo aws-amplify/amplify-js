@@ -35,6 +35,11 @@ export {
 	assertIdentityPooIdConfig,
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
+export {
+	ApiAuthMode,
+	RestApiEndpoint,
+	GraphQLApiEndpoint,
+} from './singleton/API/types';
 export { isTokenExpired } from './singleton/Auth';
 export { GraphQLAuthModeKeys } from './singleton/API/types';
 export { Signer } from './Signer';

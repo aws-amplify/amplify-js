@@ -1,38 +1,50 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-export type LibraryAPIOptions = {
-	AppSync: {
-		query: string;
-		variables?: object;
-		authMode?: any;
-		authToken?: string;
-		/**
-		 * @deprecated This property should not be used
-		 */
-		userAgentSuffix?: string;
-	};
-	customHeaders: Function;
+
+export type ApiConfig = Record<string, RestApiEndpoint | GraphQLApiEndpoint>;
+
+export type RestApiEndpoint = {
+	endpointType: 'REST';
+	endpoint: string;
+} & AuthModeConfig;
+
+export type GraphQLApiEndpoint = {
+	endpointType: 'GraphQL';
+	// TODO[allanzhengyp]: use template literal types to make sure the graphql path `${string}/graphql`
+	endpoint: string;
+	// TODO[allanzhengyp]: move to library options?
+	modelIntrospectionSchema?: any;
+} & AuthModeConfig;
+
+type AuthModeConfig =
+	| AwsIamAuthModeConfig
+	| ApiKeyAuthModeConfig
+	| OpenIdConnectAuthModeConfig
+	| CognitoUserPoolAuthModeConfig
+	| CustomAuthModeConfig;
+
+export type ApiAuthMode = AuthModeConfig['authorizationType'];
+
+type AwsIamAuthModeConfig = {
+	authorizationType: 'AWS_IAM';
+	region?: string;
+	service?: string;
 };
 
-export type APIConfig = {
-	AppSync?: {
-		defaultAuthMode: GraphQLAuthMode;
-		region: string;
-		endpoint: string;
-		modelIntrospectionSchema?: any;
-	};
+type ApiKeyAuthModeConfig = {
+	authorizationType: 'API_KEY';
+	apiKey: string;
 };
 
-export type GraphQLAuthMode =
-	| { type: 'apiKey'; apiKey: string }
-	| { type: 'jwt'; token?: 'id' | 'access' }
-	| { type: 'iam' }
-	| { type: 'lambda' }
-	| { type: 'custom' };
+type OpenIdConnectAuthModeConfig = {
+	authorizationType: 'OPENID_CONNECT';
+};
 
-export type GraphQLAuthModeKeys =
-	| 'apiKey'
-	| 'jwt'
-	| 'iam'
-	| 'lambda'
-	| 'custom';
+type CognitoUserPoolAuthModeConfig = {
+	// TODO[allanzhengyp]: Currently align with other libraries, rename to COGNITO_USERPOOLS to align with data store?
+	authorizationType: 'AMAZON_COGNITO_USER_POOLS';
+};
+
+type CustomAuthModeConfig = {
+	authorizationType: 'CUSTOM';
+};

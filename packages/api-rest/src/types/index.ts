@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Headers, HttpResponse } from '@aws-amplify/core/lib-esm/clients';
+
 /**
  * RestClient instance options
  */
@@ -32,12 +34,6 @@ export type DocumentType =
 	| DocumentType[]
 	| { [prop: string]: DocumentType };
 
-export type PostOptions = {
-	headers?: Record<string, string>;
-	body: DocumentType;
-	region?: string;
-	serviceName?: string;
-};
 /**
  * AWS credentials needed for RestClient
  */
@@ -64,7 +60,7 @@ export class AWSCredentials {
 
 // TODO: remove this once unauth creds are figured out
 export interface apiOptions {
-	headers: object;
+	headers: Headers;
 	endpoints: object;
 	credentials?: object;
 }
@@ -74,4 +70,35 @@ export type ApiInfo = {
 	region?: string;
 	service?: string;
 	custom_header?: () => { [key: string]: string };
+};
+
+export type GetOperation = Operation<HttpResponse>;
+export type PostOperation = Operation<HttpResponse>;
+export type PutOperation = Operation<HttpResponse>;
+export type PatchOperation = Operation<HttpResponse>;
+export type DeleteOperation = Omit<
+	Operation<Omit<HttpResponse, 'body'>>,
+	'cancel'
+>;
+export type HeadOperation = Omit<
+	Operation<Omit<HttpResponse, 'body'>>,
+	'cancel'
+>;
+
+export type GetOptions = RestApiOptionsBase;
+export type PostOptions = RestApiOptionsBase;
+export type PutOptions = RestApiOptionsBase;
+export type PatchOptions = RestApiOptionsBase;
+export type DeleteOptions = Omit<RestApiOptionsBase, 'body'>;
+export type HeadOptions = Omit<RestApiOptionsBase, 'body'>;
+
+type Operation<Response> = {
+	response: Promise<Response>;
+	cancel: (customCancelError?: Error) => void;
+};
+
+type RestApiOptionsBase = {
+	headers?: Headers;
+	queryParams?: Record<string, string>;
+	body?: DocumentType;
 };
