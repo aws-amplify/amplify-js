@@ -38,7 +38,7 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
-import { GraphQLAuthMode } from '@aws-amplify/core/lib-esm/singleton/API/types';
+import { GraphQLApiEndpoint } from '@aws-amplify/core/lib-esm/singleton/API/types';
 
 import {
 	CustomUserAgentDetails,
@@ -91,8 +91,7 @@ type ParsedMessagePayload = {
 };
 
 export interface AWSAppSyncRealTimeProviderOptions {
-	appSyncGraphqlEndpoint?: string;
-	authenticationType?: GraphQLAuthMode;
+	appSyncGraphqlEndpoint?: GraphQLApiEndpoint;
 	query?: string;
 	variables?: Record<string, DocumentType>;
 	apiKey?: string;
@@ -901,7 +900,7 @@ export class AWSAppSyncRealTimeProvider {
 
 			logger.debug(`Authenticating with ${authenticationType}`);
 			let apiKey;
-			if (authenticationType.type === 'apiKey') {
+			if (authenticationType.authorizationType === 'API_KEY') {
 				apiKey = authenticationType.apiKey;
 			}
 			const result = await handler({

@@ -14,6 +14,7 @@ import {
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
+	GraphQLApiEndpoint,
 } from '@aws-amplify/core/internals/utils';
 import {
 	GraphQLAuthError,
@@ -63,36 +64,39 @@ export class InternalGraphQLAPIClass {
 		return 'InternalGraphQLAPI';
 	}
 
+	private _getGraphqlEndpointConfig() {
+		const config = Amplify.getConfig();
+		return Object.entries(config.API ?? {}).filter(
+			([name, apiConfig]) => apiConfig.endpointType === 'GraphQL'
+		)[0] as [string, GraphQLApiEndpoint];
+	}
+
 	private async _headerBasedAuth(
 		defaultAuthenticationType?,
 		additionalHeaders: { [key: string]: string } = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	) {
-		const config = Amplify.getConfig();
-		const {
-			region: region,
-			endpoint: appSyncGraphqlEndpoint,
-			defaultAuthMode: authenticationType,
-		} = config.API.AppSync;
+		const [, appSyncEndpointConfig] = this._getGraphqlEndpointConfig();
 
 		let headers = {};
 
-		switch (authenticationType.type) {
-			case 'apiKey':
-				if (!authenticationType.apiKey) {
+		switch (appSyncEndpointConfig.authorizationType) {
+			case 'API_KEY':
+				if (!appSyncEndpointConfig.apiKey) {
 					throw new Error(GraphQLAuthError.NO_API_KEY);
 				}
 				headers = {
-					'X-Api-Key': authenticationType.apiKey,
+					'X-Api-Key': appSyncEndpointConfig.apiKey,
 				};
 				break;
-			case 'iam':
+			case 'AWS_IAM':
 				const session = await fetchAuthSession();
 				if (session.credentials === undefined) {
 					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
 				break;
-			case 'jwt':
+			case 'AMAZON_COGNITO_USER_POOLS':
+			case 'OPENID_CONNECT':
 				try {
 					let token;
 
@@ -108,7 +112,8 @@ export class InternalGraphQLAPIClass {
 					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
 				}
 				break;
-			case 'custom':
+			case 'CUSTOM':
+				// TODO[allanzhengyp]: should we throw an error if no authorization header is provided?
 				if (!additionalHeaders.Authorization) {
 					throw new Error(GraphQLAuthError.NO_AUTH_TOKEN);
 				}
@@ -196,9 +201,10 @@ export class InternalGraphQLAPIClass {
 	): Promise<GraphQLResult<T>> {
 		const config = Amplify.getConfig();
 
-		const { region: region, endpoint: appSyncGraphqlEndpoint } =
-			config.API.AppSync;
+		const [apiName, graphqlApiEndpointConfig] =
+			this._getGraphqlEndpointConfig();
 
+		// TODO: clear this?
 		const customGraphqlEndpoint = null;
 		const customEndpointRegion = null;
 
@@ -228,7 +234,7 @@ export class InternalGraphQLAPIClass {
 			variables,
 		};
 
-		const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
+		const endpoint = customGraphqlEndpoint || graphqlApiEndpointConfig.endpoint;
 
 		if (!endpoint) {
 			const error = new GraphQLError('No graphql endpoint provided.');
@@ -241,12 +247,14 @@ export class InternalGraphQLAPIClass {
 
 		let response;
 		try {
-			response = await post(endpoint, {
-				headers,
-				body,
-				region,
-				serviceName: 'appsync',
-			});
+			response = await post({
+				apiName,
+				path: '',
+				options: {
+					headers,
+					body,
+				},
+			}).response;
 		} catch (err) {
 			response = {
 				data: {},
@@ -273,16 +281,18 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
-		const { AppSync } = Amplify.getConfig().API ?? {};
+		const [, appSyncEndpointConfig] = this._getGraphqlEndpointConfig();
 		if (!this.appSyncRealTime) {
 			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
 		}
 		return this.appSyncRealTime.subscribe({
 			query: print(query as DocumentNode),
 			variables,
-			appSyncGraphqlEndpoint: AppSync?.endpoint,
-			region: AppSync?.region,
-			authenticationType: AppSync?.defaultAuthMode,
+			appSyncGraphqlEndpoint: appSyncEndpointConfig,
+			region:
+				appSyncEndpointConfig.authorizationType === 'AWS_IAM'
+					? appSyncEndpointConfig.region
+					: undefined,
 		});
 	}
 }
