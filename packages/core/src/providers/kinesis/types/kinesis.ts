@@ -13,11 +13,11 @@ export type KinesisShard = KinesisStream & {
 export type KinesisEventData = Record<string, unknown> | Uint8Array;
 
 export type KinesisProviderConfig = {
-	AWSKinesis: {
+	Kinesis: {
 		region: string;
-		bufferSize: number;
-		flushSize: number;
-		flushInterval: number;
-		resendLimit: number;
+		bufferSize?: number;
+		flushSize?: number;
+		flushInterval?: number;
+		resendLimit?: number;
 	};
 };

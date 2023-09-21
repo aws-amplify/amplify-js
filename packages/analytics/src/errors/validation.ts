@@ -9,6 +9,7 @@ export enum AnalyticsValidationErrorCode {
 	NoEvent = 'NoEvent',
 	NoEventName = 'NoEventName',
 	NoRegion = 'NoRegion',
+	LargeFlushSize = 'LargeFlushSize',
 }
 
 export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
@@ -27,5 +28,8 @@ export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
 		},
 		[AnalyticsValidationErrorCode.NoRegion]: {
 			message: 'Missing region.',
+		},
+		[AnalyticsValidationErrorCode.LargeFlushSize]: {
+			message: 'FlushSize should smaller than BufferSize',
 		},
 	};

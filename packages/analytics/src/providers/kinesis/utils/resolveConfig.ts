@@ -6,18 +6,26 @@ import {
 	AnalyticsValidationErrorCode,
 	assertValidationError,
 } from '../../../errors';
+import { DEFAULT_KINESIS_CONFIG } from './constants';
 
 export const resolveConfig = () => {
-	const { bufferSize, flushSize, flushInterval, region, resendLimit } =
-		Amplify.getConfig().Analytics?.AWSKinesis ?? {};
-	// TODO: Do we need to validate the flushSize < bufferSize? does flushInterval has a lower bound?
+	const config = Amplify.getConfig().Analytics?.Kinesis;
+	const { region, resendLimit } = config || {};
+	const bufferSize = config?.bufferSize || DEFAULT_KINESIS_CONFIG.bufferSize;
+	const flushSize = config?.flushSize || DEFAULT_KINESIS_CONFIG.flushSize;
+	const flushInterval =
+		config?.flushInterval || DEFAULT_KINESIS_CONFIG.flushInterval;
+
 	assertValidationError(!!region, AnalyticsValidationErrorCode.NoRegion);
-	// TODO: replace with default value
+	assertValidationError(
+		flushSize < bufferSize,
+		AnalyticsValidationErrorCode.LargeFlushSize
+	);
 	return {
 		region,
-		bufferSize: bufferSize ?? 1000,
-		flushSize: flushSize ?? 100,
-		flushInterval: flushInterval ?? 5000,
+		bufferSize,
+		flushSize,
+		flushInterval,
 		resendLimit,
 	};
 };

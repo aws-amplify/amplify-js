@@ -17,7 +17,7 @@ const buildSessionIdentityKey = (args: {
 		.filter(x => !!x && x.length > 0)
 		.join('-');
 
-const submitEvent = async (
+const submitEvents = async (
 	events: KinesisBufferEvent[],
 	client: KinesisClient,
 	resendLimit?: number
@@ -76,7 +76,7 @@ export const getEventBuffer = ({
 			}
 
 			return events => {
-				return submitEvent(
+				return submitEvents(
 					events,
 					cachedClients[sessionIdentityKey],
 					resendLimit
