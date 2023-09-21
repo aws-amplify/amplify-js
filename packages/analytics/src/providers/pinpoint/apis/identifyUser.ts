@@ -17,11 +17,11 @@ import { resolveConfig, resolveCredentials } from '../utils';
  *  API.
  *
  * @throws service: {@link UpdateEndpointException} - Thrown when the underlying Pinpoint service returns an error.
- * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library 
+ * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library
  *  configuration is incorrect.
- * 
+ *
  * @returns A promise that will resolve when the operation is complete.
- * 
+ *
  * @example
  * ```ts
  * // Identify a user with Pinpoint
@@ -34,7 +34,7 @@ import { resolveConfig, resolveCredentials } from '../utils';
  *     }
  * });
  * ```
- * 
+ *
  * @example
  * ```ts
  * // Identify a user with Pinpoint with some additional demographics
@@ -54,15 +54,18 @@ import { resolveConfig, resolveCredentials } from '../utils';
 export const identifyUser = async ({
 	userId,
 	userProfile,
+	options,
 }: IdentifyUserInput): Promise<void> => {
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
+	const { userAttributes } = options?.serviceOptions ?? {};
 	updateEndpoint({
 		appId,
 		category: 'Analytics',
 		credentials,
 		identityId,
 		region,
+		userAttributes,
 		userId,
 		userProfile,
 		userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.UpdateEndpoint),
