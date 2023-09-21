@@ -120,7 +120,9 @@
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",
-		"nx": "16.7.0"
+		"nx": "16.7.0",
+		"@smithy/types": "2.3.3",
+		"@smithy/smithy-client": "2.1.5"
 	},
 	"jest": {
 		"resetMocks": true,
