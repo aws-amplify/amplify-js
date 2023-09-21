@@ -26,7 +26,7 @@
 	},
 	"react-native": "./lib-esm/index.js",
 	"typesVersions": {
-		">=3.8": {
+		">=4.0": {
 			"*": [
 				"./lib-esm/index.d.ts"
 			],
