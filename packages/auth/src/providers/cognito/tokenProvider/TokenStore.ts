@@ -65,9 +65,13 @@ export class DefaultTokenStore implements AuthTokenStore {
 			const refreshToken =
 				(await this.getKeyValueStorage().getItem(authKeys.refreshToken)) ||
 				undefined;
-			const NewDeviceMetadata =
+
+			const deviceMetadata = JSON.parse(
 				(await this.getKeyValueStorage().getItem(authKeys.NewDeviceMetadata)) ||
-				undefined;
+					'{}'
+			);
+			const NewDeviceMetadata =
+				Object.keys(deviceMetadata).length > 0 ? deviceMetadata : undefined;
 
 			const clockDriftString =
 				(await this.getKeyValueStorage().getItem(authKeys.clockDrift)) || '0';
@@ -120,7 +124,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		if (!!tokens.NewDeviceMetadata) {
 			this.getKeyValueStorage().setItem(
 				authKeys.NewDeviceMetadata,
-				tokens.NewDeviceMetadata
+				JSON.stringify(tokens.NewDeviceMetadata)
 			);
 		}
 
@@ -144,7 +148,6 @@ export class DefaultTokenStore implements AuthTokenStore {
 			this.getKeyValueStorage().removeItem(authKeys.idToken),
 			this.getKeyValueStorage().removeItem(authKeys.clockDrift),
 			this.getKeyValueStorage().removeItem(authKeys.refreshToken),
-			this.getKeyValueStorage().removeItem(authKeys.NewDeviceMetadata),
 		]);
 	}
 }

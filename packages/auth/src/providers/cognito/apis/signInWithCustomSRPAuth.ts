@@ -71,7 +71,7 @@ export async function signInWithCustomSRPAuth(
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
-			await cacheCognitoTokens(AuthenticationResult);
+			await cacheCognitoTokens(AuthenticationResult, Amplify);
 			cleanActiveSignInState();
 			return {
 				isSignedIn: true,

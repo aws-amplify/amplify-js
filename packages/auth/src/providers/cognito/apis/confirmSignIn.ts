@@ -103,7 +103,7 @@ export async function confirmSignIn(
 
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
-			await cacheCognitoTokens(AuthenticationResult);
+			await cacheCognitoTokens(AuthenticationResult, Amplify);
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },

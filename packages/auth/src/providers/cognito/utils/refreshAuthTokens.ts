@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CognitoAuthTokens, TokenRefresher } from '../tokenProvider/types';
+import {
+	CognitoAuthTokens,
+	DeviceMetadata,
+	TokenRefresher,
+} from '../tokenProvider/types';
 import { AuthConfig } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
@@ -11,7 +15,8 @@ import { initiateAuth } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokensWithRefreshToken } from '../utils/types';
 import { AuthError } from '../../../errors/AuthError';
-
+import { getNewDeviceMetatada } from './signInHelpers';
+import { Amplify } from '@aws-amplify/core';
 export const refreshAuthTokens: TokenRefresher = async ({
 	tokens,
 	authConfig,
@@ -48,9 +53,14 @@ export const refreshAuthTokens: TokenRefresher = async ({
 	}
 	const clockDrift = iat * 1000 - new Date().getTime();
 	const refreshToken = AuthenticationResult?.RefreshToken;
-	const NewDeviceMetadata = JSON.stringify(
-		AuthenticationResult?.NewDeviceMetadata
-	);
+	let NewDeviceMetadata: undefined | DeviceMetadata;
+	if (AuthenticationResult?.NewDeviceMetadata) {
+		NewDeviceMetadata = await getNewDeviceMetatada(
+			AuthenticationResult?.NewDeviceMetadata,
+			Amplify,
+			AuthenticationResult.AccessToken
+		);
+	}
 
 	return {
 		accessToken,
