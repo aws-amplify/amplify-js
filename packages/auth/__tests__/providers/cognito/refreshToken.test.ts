@@ -1,7 +1,7 @@
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { mockJsonResponse, mockRequestId } from './testUtils/data';
-import { CognitoUserPoolTokenRefresher } from '../../../src/providers/cognito/apis/tokenRefresher';
+import { refreshAuthTokens } from '../../../src/providers/cognito/utils/refreshAuthTokens';
 import { CognitoAuthTokens } from '../../../src/providers/cognito/tokenProvider/types';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
@@ -62,7 +62,7 @@ describe('refresh token tests', () => {
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
 			mockJsonResponse(succeedResponse)
 		);
-		const response = await CognitoUserPoolTokenRefresher({
+		const response = await refreshAuthTokens({
 			tokens: {
 				accessToken: {
 					payload: {},

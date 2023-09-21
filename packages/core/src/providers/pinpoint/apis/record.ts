@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { v4 as uuid } from 'uuid';
-import { PinpointRecordParameters, PinpointSession } from '../types';
+import { PinpointRecordInput, PinpointSession } from '../types';
 import { getEndpointId } from '../utils';
 import {
 	BUFFER_SIZE,
@@ -28,7 +28,7 @@ export const record = async ({
 	identityId,
 	region,
 	userAgentValue,
-}: PinpointRecordParameters): Promise<void> => {
+}: PinpointRecordInput): Promise<void> => {
 	const timestampISOString = new Date().toISOString();
 	const eventId = uuid();
 	let endpointId = await getEndpointId(appId, category);

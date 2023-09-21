@@ -22,7 +22,6 @@ import { assertIdTokenInAuthTokens } from '../utils/types';
 
 const logger = new Logger('CognitoCredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
-
 export class CognitoAWSCredentialsAndIdentityIdProvider
 	implements AWSCredentialsAndIdentityIdProvider
 {
@@ -75,21 +74,13 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			identityIdStore: this._identityIdStore,
 		});
 
-		if (!identityId) {
-			throw new AuthError({
-				name: 'IdentityIdConfigException',
-				message: 'No Cognito Identity Id provided',
-				recoverySuggestion: 'Make sure to pass a valid identityId.',
-			});
-		}
-
+		// Clear cached credentials when forceRefresh is true OR the cache token has changed
 		if (forceRefresh || tokenHasChanged) {
 			this.clearCredentials();
 		}
 		if (!isAuthenticated) {
 			return this.getGuestCredentials(identityId, authConfig.Cognito);
 		} else {
-			// Tokens will always be present if getCredentialsOptions.authenticated is true as dictated by the type
 			assertIdTokenInAuthTokens(tokens);
 			return this.credsForOIDCTokens(authConfig.Cognito, tokens, identityId);
 		}
@@ -99,6 +90,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		identityId: string,
 		authConfig: CognitoIdentityPoolConfig
 	): Promise<AWSCredentialsAndIdentityId> {
+		// Return existing in-memory cached credentials only if it exists, is not past it's lifetime and is unauthenticated credentials
 		if (
 			this._credentialsAndIdentityId &&
 			!this.isPastTTL() &&
@@ -113,12 +105,12 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		// Clear to discard if any authenticated credentials are set and start with a clean slate
 		this.clearCredentials();
 
+		const region = getRegionFromIdentityPoolId(authConfig.identityPoolId);
+
 		// use identityId to obtain guest credentials
 		// save credentials in-memory
 		// No logins params should be passed for guest creds:
 		// https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetCredentialsForIdentity.html
-		const region = getRegionFromIdentityPoolId(authConfig.identityPoolId);
-
 		const clientResult = await getCredentialsForIdentity(
 			{ region },
 			{
@@ -157,7 +149,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			return res;
 		} else {
 			throw new AuthError({
-				name: 'CredentialsException',
+				name: 'CredentialsNotFoundException',
 				message: `Cognito did not respond with either Credentials, AccessKeyId or SecretKey.`,
 			});
 		}
@@ -166,7 +158,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	private async credsForOIDCTokens(
 		authConfig: CognitoIdentityPoolConfig,
 		authTokens: AuthTokens,
-		identityId?: string
+		identityId: string
 	): Promise<AWSCredentialsAndIdentityId> {
 		if (
 			this._credentialsAndIdentityId &&
@@ -174,7 +166,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			this._credentialsAndIdentityId.isAuthenticatedCreds === true
 		) {
 			logger.debug(
-				'returning stored credentials as they neither past TTL nor expired'
+				'returning stored credentials as they neither past TTL nor expired.'
 			);
 			return this._credentialsAndIdentityId;
 		}
@@ -256,7 +248,7 @@ export function formLoginsMap(idToken: string) {
 	if (!issuer) {
 		throw new AuthError({
 			name: 'InvalidIdTokenException',
-			message: 'Invalid Idtoken',
+			message: 'Invalid Idtoken.',
 		});
 	}
 	let domainName: string = issuer.replace(/(^\w+:|^)\/\//, '');

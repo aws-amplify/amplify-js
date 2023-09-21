@@ -10,5 +10,6 @@ import { HttpRequest, HttpResponse } from '../types';
 export const unauthenticatedHandler = composeTransferHandler<
 	[UserAgentOptions, RetryOptions<HttpResponse>],
 	HttpRequest,
-	HttpResponse
+	HttpResponse,
+	typeof fetchTransferHandler
 >(fetchTransferHandler, [userAgentMiddleware, retryMiddleware]);

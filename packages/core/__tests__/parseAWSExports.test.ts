@@ -1,5 +1,6 @@
 import { parseAWSExports } from '../src/parseAWSExports';
 
+// TODO: Add API category tests
 describe('Parser', () => {
 	test('aws_mobile_analytics_app_id', () => {
 		const appId = 'app-id';
@@ -22,6 +23,28 @@ describe('Parser', () => {
 				default: 'geoJsExampleMap1',
 			},
 			search_indices: {
+				items: ['geoJSSearchExample'],
+				default: 'geoJSSearchExample',
+			},
+			region,
+		};
+		const amazonLocationServiceV4 = {
+			maps: {
+				items: {
+					geoJsExampleMap1: {
+						style: 'VectorEsriStreets',
+					},
+					geoJsExampleMap2: {
+						style: 'VectorEsriTopographic',
+					},
+				},
+				default: 'geoJsExampleMap1',
+			},
+			search_indices: {
+				items: ['geoJSSearchExample'],
+				default: 'geoJSSearchExample',
+			},
+			searchIndices: {
 				items: ['geoJSSearchExample'],
 				default: 'geoJSSearchExample',
 			},
@@ -59,7 +82,7 @@ describe('Parser', () => {
 				},
 			},
 			Geo: {
-				AmazonLocationService: amazonLocationService,
+				LocationService: amazonLocationServiceV4,
 			},
 			Storage: {
 				S3: {

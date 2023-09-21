@@ -22,5 +22,4 @@ export {
 	EndpointResolverOptions,
 	ErrorParser,
 	ServiceClientOptions,
-	DefaultConfigOptions,
 } from './aws';

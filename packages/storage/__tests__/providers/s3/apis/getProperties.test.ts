@@ -5,7 +5,7 @@ import { headObject } from '../../../../src/providers/s3/utils/client';
 import { getProperties } from '../../../../src/providers/s3';
 import { Credentials } from '@aws-sdk/types';
 import { Amplify } from '@aws-amplify/core';
-import { StorageOptions } from '../../../../src/types';
+import { GetPropertiesOptions } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -28,13 +28,13 @@ const credentials: Credentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const targetIdentityId = 'targetIdentityId';
-const identityId = 'identityId';
+const defaultIdentityId = 'defaultIdentityId';
 
 describe('getProperties api', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
-			identityId,
+			identityId: defaultIdentityId,
 		});
 		mockGetConfig.mockReturnValue({
 			Storage: {
@@ -73,26 +73,32 @@ describe('getProperties api', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		it.each([
+		[
+			{
+				expectedKey: `public/${key}`,
+			},
 			{
 				options: { accessLevel: 'guest' },
-				expectedKey: 'public/key',
-			},
-			{
-				options: { accessLevel: 'protected', targetIdentityId },
-				expectedKey: 'protected/targetIdentityId/key',
-			},
-			{
-				options: { accessLevel: 'protected' },
-				expectedKey: 'protected/identityId/key',
+				expectedKey: `public/${key}`,
 			},
 			{
 				options: { accessLevel: 'private' },
-				expectedKey: 'private/identityId/key',
+				expectedKey: `private/${defaultIdentityId}/${key}`,
 			},
-		])(
-			'getProperties api with $options.accessLevel',
-			async ({ options, expectedKey }) => {
+			{
+				options: { accessLevel: 'protected' },
+				expectedKey: `protected/${defaultIdentityId}/${key}`,
+			},
+			{
+				options: { accessLevel: 'protected', targetIdentityId },
+				expectedKey: `protected/${targetIdentityId}/${key}`,
+			},
+		].forEach(({ options, expectedKey }) => {
+			const accessLevelMsg = options?.accessLevel ?? 'default';
+			const targetIdentityIdMsg = options?.targetIdentityId
+				? `and targetIdentityId`
+				: '';
+			it(`should getProperties with ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
 					Key: expectedKey,
@@ -101,13 +107,13 @@ describe('getProperties api', () => {
 				expect(
 					await getProperties({
 						key,
-						options: options as StorageOptions,
+						options: options as GetPropertiesOptions,
 					})
 				).toEqual(expected);
 				expect(headObject).toBeCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
-			}
-		);
+			});
+		});
 	});
 
 	describe('getProperties error path', () => {

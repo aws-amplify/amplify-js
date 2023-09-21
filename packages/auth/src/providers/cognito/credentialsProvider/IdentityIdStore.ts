@@ -8,7 +8,6 @@ import {
 } from '@aws-amplify/core';
 import { assertIdentityPoolIdConfig } from '@aws-amplify/core/internals/utils';
 import { IdentityIdStorageKeys, IdentityIdStore } from './types';
-import { AuthError } from '../../../errors/AuthError';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
 import { AuthKeys } from '../tokenProvider/types';
 
@@ -33,18 +32,9 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 		this.keyValueStorage = keyValueStorage;
 	}
 
-	async loadIdentityId(): Promise<Identity | undefined> {
+	async loadIdentityId(): Promise<Identity | null> {
 		assertIdentityPoolIdConfig(this.authConfig?.Cognito);
-		if (this.keyValueStorage === undefined) {
-			throw new AuthError({
-				message: 'No KeyValueStorage available',
-				name: 'KeyValueStorageNotFound',
-				recoverySuggestion:
-					'Make sure to set the keyValueStorage before using this method',
-			});
-		}
 		// TODO(v6): migration logic should be here
-		// Reading V5 tokens old format
 		try {
 			if (!!this._primaryIdentityId) {
 				return {
@@ -61,30 +51,16 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 						type: 'guest',
 					};
 				}
+				return null;
 			}
 		} catch (err) {
 			// TODO(v6): validate partial results with mobile implementation
-			throw new Error(`Error loading identityId from storage: ${err}`);
+			return null;
 		}
 	}
 
 	async storeIdentityId(identity: Identity): Promise<void> {
 		assertIdentityPoolIdConfig(this.authConfig?.Cognito);
-		if (identity === undefined) {
-			throw new AuthError({
-				message: 'Invalid Identity parameter',
-				name: 'InvalidAuthIdentity',
-				recoverySuggestion: 'Make sure a valid Identity object is passed',
-			});
-		}
-		if (this.keyValueStorage === undefined) {
-			throw new AuthError({
-				message: 'No KeyValueStorage available',
-				name: 'KeyValueStorageNotFound',
-				recoverySuggestion:
-					'Make sure to set the keyValueStorage before using this method',
-			});
-		}
 
 		if (identity.type === 'guest') {
 			this.keyValueStorage.setItem(this._authKeys.identityId, identity.id);
@@ -99,9 +75,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 
 	async clearIdentityId(): Promise<void> {
 		this._primaryIdentityId = undefined;
-		await Promise.all([
-			this.keyValueStorage.removeItem(this._authKeys.identityId),
-		]);
+		await this.keyValueStorage.removeItem(this._authKeys.identityId);
 	}
 }
 

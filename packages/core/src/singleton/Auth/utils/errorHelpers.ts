@@ -5,24 +5,13 @@ import { createAssertionFunction } from '../../../errors';
 import { AmplifyErrorMap, AssertionFunction } from '../../../types';
 
 export enum AuthConfigurationErrorCode {
-	AuthConfigException = 'AuthConfigException',
-	AuthIdentityPoolIdException = 'AuthIdentityPoolIdException',
 	AuthTokenConfigException = 'AuthTokenConfigException',
 	AuthUserPoolAndIdentityPoolException = 'AuthUserPoolAndIdentityPoolException',
+	InvalidIdentityPoolIdException = 'InvalidIdentityPoolIdException',
 	OAuthNotConfigureException = 'OAuthNotConfigureException',
 }
 
 const authConfigurationErrorMap: AmplifyErrorMap<AuthConfigurationErrorCode> = {
-	[AuthConfigurationErrorCode.AuthConfigException]: {
-		message: 'AuthConfig is required.',
-		recoverySuggestion:
-			'Make sure to call Amplify.configure in your app with a valid AuthConfig.',
-	},
-	[AuthConfigurationErrorCode.AuthIdentityPoolIdException]: {
-		message: 'Auth IdentityPoolId not configured.',
-		recoverySuggestion:
-			'Make sure to call Amplify.configure in your app with a valid IdentityPoolId.',
-	},
 	[AuthConfigurationErrorCode.AuthTokenConfigException]: {
 		message: 'Auth Token Provider not configured.',
 		recoverySuggestion: 'Make sure to call Amplify.configure in your app.',
@@ -31,6 +20,11 @@ const authConfigurationErrorMap: AmplifyErrorMap<AuthConfigurationErrorCode> = {
 		message: 'Auth UserPool or IdentityPool not configured.',
 		recoverySuggestion:
 			'Make sure to call Amplify.configure in your app with UserPoolId and IdentityPoolId.',
+	},
+	[AuthConfigurationErrorCode.InvalidIdentityPoolIdException]: {
+		message: 'Invalid identity pool id provided.',
+		recoverySuggestion:
+			'Make sure a valid identityPoolId is given in the config.',
 	},
 	[AuthConfigurationErrorCode.OAuthNotConfigureException]: {
 		message: 'oauth param not configured.',

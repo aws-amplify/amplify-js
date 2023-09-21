@@ -7,7 +7,7 @@ utils for use throughout the library.
 */
 // JS utilities
 export {
-	browserOrNode,
+	isBrowser,
 	filenameToContentType,
 	generateRandomString,
 	isEmpty,
@@ -20,11 +20,13 @@ export {
 	transferKeyToLowerCase,
 	transferKeyToUpperCase,
 } from './Util/JS';
-
+export { parseAWSExports } from './parseAWSExports';
+export { LegacyConfig } from './singleton/types';
 export {
 	JWT,
 	StrictUnion,
 	CognitoIdentityPoolConfig,
+	JwtPayload,
 } from './singleton/Auth/types';
 // Auth utilities
 export {
@@ -34,6 +36,7 @@ export {
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
 export { isTokenExpired } from './singleton/Auth';
+export { GraphQLAuthModeKeys } from './singleton/API/types';
 export { Signer } from './Signer';
 
 // Logging utilities
@@ -94,8 +97,6 @@ export {
 	PlatformNotSupportedError,
 	createAssertionFunction,
 } from './errors';
-export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
-export { AppState, AsyncStorage, Linking } from './RNComponents';
 export {
 	AmplifyErrorCode,
 	AmplifyErrorMap,

@@ -6,6 +6,7 @@ import { Amplify } from '@aws-amplify/core';
 import { getObject } from '../../../../src/providers/s3/utils/client';
 import { downloadData } from '../../../../src/providers/s3';
 import { createDownloadTask } from '../../../../src/providers/s3/utils';
+import { DownloadDataOptions } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('../../../../src/providers/s3/utils');
@@ -16,14 +17,17 @@ jest.mock('@aws-amplify/core', () => ({
 			fetchAuthSession: jest.fn(),
 		},
 	},
-	fetchAuthSession: jest.fn(),
 }));
 const credentials: Credentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
 };
-const identityId = 'identityId';
+const key = 'key';
+const bucket = 'bucket';
+const region = 'region';
+const targetIdentityId = 'targetIdentityId';
+const defaultIdentityId = 'defaultIdentityId';
 
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockCreateDownloadTask = createDownloadTask as jest.Mock;
@@ -35,13 +39,13 @@ describe('downloadData', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
-			identityId: identityId,
+			identityId: defaultIdentityId,
 		});
 		mockGetConfig.mockReturnValue({
 			Storage: {
 				S3: {
-					bucket: 'bucket',
-					region: 'region',
+					bucket,
+					region,
 				},
 			},
 		});
@@ -56,38 +60,61 @@ describe('downloadData', () => {
 		expect(downloadData({ key: 'key' })).toBe('downloadTask');
 	});
 
-	it('should supply the correct parameters to getObject API handler', async () => {
-		expect.assertions(2);
-		(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
-		const onProgress = jest.fn();
-		const targetIdentityId = 'targetIdentityId';
-		const accessLevel = 'protected';
-		const key = 'key';
-		downloadData({
-			key,
-			options: {
-				targetIdentityId,
-				accessLevel,
-				useAccelerateEndpoint: true,
-				onProgress,
-			},
+	[
+		{
+			expectedKey: `public/${key}`,
+		},
+		{
+			options: { accessLevel: 'guest' },
+			expectedKey: `public/${key}`,
+		},
+		{
+			options: { accessLevel: 'private' },
+			expectedKey: `private/${defaultIdentityId}/${key}`,
+		},
+		{
+			options: { accessLevel: 'protected' },
+			expectedKey: `protected/${defaultIdentityId}/${key}`,
+		},
+		{
+			options: { accessLevel: 'protected', targetIdentityId },
+			expectedKey: `protected/${targetIdentityId}/${key}`,
+		},
+	].forEach(({ options, expectedKey }) => {
+		const accessLevelMsg = options?.accessLevel ?? 'default';
+		const targetIdentityIdMsg = options?.targetIdentityId
+			? `and targetIdentityId`
+			: '';
+
+		it(`should supply the correct parameters to getObject API handler with ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
+			expect.assertions(2);
+			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
+			const onProgress = jest.fn();
+			downloadData({
+				key,
+				options: {
+					...options,
+					useAccelerateEndpoint: true,
+					onProgress,
+				} as DownloadDataOptions,
+			});
+			const job = mockCreateDownloadTask.mock.calls[0][0].job;
+			await job();
+			expect(getObject).toBeCalledTimes(1);
+			expect(getObject).toHaveBeenCalledWith(
+				{
+					credentials,
+					region,
+					useAccelerateEndpoint: true,
+					onDownloadProgress: onProgress,
+					abortSignal: expect.any(AbortSignal),
+				},
+				{
+					Bucket: bucket,
+					Key: expectedKey,
+				}
+			);
 		});
-		const job = mockCreateDownloadTask.mock.calls[0][0].job;
-		await job();
-		expect(getObject).toBeCalledTimes(1);
-		expect(getObject).toHaveBeenCalledWith(
-			{
-				credentials,
-				region: 'region',
-				useAccelerateEndpoint: true,
-				onDownloadProgress: onProgress,
-				abortSignal: expect.any(AbortSignal),
-			},
-			{
-				Bucket: 'bucket',
-				Key: `${accessLevel}/${targetIdentityId}/${key}`,
-			}
-		);
 	});
 
 	it('should assign the getObject API handler response to the result', async () => {

@@ -61,7 +61,7 @@ export function assertIdentityPoolIdConfig(
 	const validConfig = !!cognitoConfig?.identityPoolId;
 	return assert(
 		validConfig,
-		AuthConfigurationErrorCode.AuthIdentityPoolIdException
+		AuthConfigurationErrorCode.InvalidIdentityPoolIdException
 	);
 }
 

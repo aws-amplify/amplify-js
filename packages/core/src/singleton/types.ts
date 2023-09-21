@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { APIConfig, LibraryAPIOptions } from './API/types';
 import { AnalyticsConfig } from './Analytics/types';
 import {
 	AuthConfig,
@@ -11,14 +12,22 @@ import {
 	GetCredentialsOptions,
 	CognitoIdentityPoolConfig,
 } from './Auth/types';
+import { GeoConfig } from './Geo/types';
 import {
 	LibraryStorageOptions,
 	StorageAccessLevel,
 	StorageConfig,
 } from './Storage/types';
 
+export type LegacyConfig = {
+	/**
+	 * @deprecated The field should not be used.
+	 */
+	aws_project_region?: string;
+};
+
 export type ResourcesConfig = {
-	// API?: {};
+	API?: APIConfig;
 	Analytics?: AnalyticsConfig;
 	Auth?: AuthConfig;
 	// Cache?: CacheConfig;
@@ -28,15 +37,18 @@ export type ResourcesConfig = {
 	// Notifications?: {};
 	// Predictions?: {};
 	Storage?: StorageConfig;
+	Geo?: GeoConfig;
 };
 
 export type LibraryOptions = {
+	API?: LibraryAPIOptions;
 	Auth?: LibraryAuthOptions;
 	Storage?: LibraryStorageOptions;
 	ssr?: boolean;
 };
 
 export {
+	APIConfig,
 	AuthConfig,
 	AuthUserPoolConfig,
 	AuthIdentityPoolConfig,
@@ -46,4 +58,5 @@ export {
 	StorageConfig,
 	AnalyticsConfig,
 	CognitoIdentityPoolConfig,
+	GeoConfig,
 };

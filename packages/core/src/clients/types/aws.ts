@@ -5,7 +5,10 @@ import { MetadataBearer } from '@aws-sdk/types';
 import { Endpoint } from './core';
 import { HttpResponse } from './http';
 
-export type { Credentials, MetadataBearer } from '@aws-sdk/types';
+export type {
+	AwsCredentialIdentity as Credentials,
+	MetadataBearer,
+} from '@aws-sdk/types';
 
 export type SourceData = string | ArrayBuffer | ArrayBufferView;
 
@@ -26,13 +29,3 @@ export interface ServiceClientOptions {
 export type ErrorParser = (
 	response?: HttpResponse
 ) => Promise<(Error & MetadataBearer) | undefined>;
-
-/**
- *  Default config options for the `composeServiceApi`.
- */
-export type DefaultConfigOptions<
-	TransferHandlerOptions extends Record<string, unknown> = Record<
-		string,
-		unknown
-	>
-> = Partial<TransferHandlerOptions & ServiceClientOptions>;

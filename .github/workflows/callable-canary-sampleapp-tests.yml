@@ -8,7 +8,7 @@ on:
         type: boolean
         default: true
 
-env:      
+env:
   AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/amplify-js
   CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
   CYPRESS_GOOGLE_CLIENT_SECRET: ${{ secrets.CYPRESS_GOOGLE_CLIENT_SECRET }}
@@ -18,13 +18,13 @@ jobs:
   build_apps:
     name: Build Sample App Tests
     runs-on: ubuntu-latest
-    steps: 
+    steps:
       - name: Checkout repository
         uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0 https://github.com/actions/checkout/commit/24cb9080177205b6e8c946b17badbe402adc938f
         with:
           # Minimal depth 2 so we can checkout the commit before possible merge commit.
           fetch-depth: 2
-          path: amplify-js  
+          path: amplify-js
       - name: Setup samples staging repository
         uses: ./amplify-js/.github/actions/setup-samples-staging
         with:
@@ -53,18 +53,18 @@ jobs:
         working-directory: amplify-js-samples-staging/samples/react/auth/new-react-app
       - name: Start new application and run test
         run: |
-            ../amplify-js/.circleci/retry-yarn-script.sh -s \
-            "ci:test \
-            react \
-            auth \
-            new-react-app \
-            new-react-app \
-            chrome \
-            dev" \
-            -n 3
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
+          "ci:test \
+          react \
+          auth \
+          new-react-app \
+          new-react-app \
+          chrome \
+          dev" \
+          -n 3
         working-directory: amplify-js-samples-staging
         shell: bash
-      
+
       # Angular
       - name: Install angular CLI
         run: npm install -g @angular/cli
@@ -77,7 +77,7 @@ jobs:
       - name: Copy files from samples staging repo
         run: |
           rm -r ./samples/angular/interactions/new-angular-app  
-          cp -r ./samples/angular/interactions/chatbot-component ./samples/angular/interactions/new-angular-app  
+          cp -r ./samples/angular/interactions/chatbot-component ./samples/angular/interactions/new-angular-app
         working-directory: amplify-js-samples-staging
       - name: Copy test file from samples staging repo
         run: |
@@ -93,15 +93,15 @@ jobs:
         working-directory: amplify-js-samples-staging/samples/angular/interactions/new-angular-app
       - name: Start application and run test
         run: |
-            ../amplify-js/.circleci/retry-yarn-script.sh -s \
-            "ci:test \
-            angular \
-            interactions \
-            new-angular-app \
-            new-angular-app \
-            chrome \
-            dev" \
-            -n 3
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
+          "ci:test \
+          angular \
+          interactions \
+          new-angular-app \
+          new-angular-app \
+          chrome \
+          dev" \
+          -n 3
         working-directory: amplify-js-samples-staging
         shell: bash
 
@@ -115,7 +115,7 @@ jobs:
       - name: Copy files from samples staging repo
         run: |
           rm -r ./samples/next/auth/new-next-app 
-          cp -r ./samples/next/auth/auth-rsc ./samples/next/auth/new-next-app 
+          cp -r ./samples/next/auth/auth-rsc ./samples/next/auth/new-next-app
         working-directory: amplify-js-samples-staging
       - name: Copy test file from samples staging repo
         run: |
@@ -131,21 +131,21 @@ jobs:
         working-directory: amplify-js-samples-staging/samples/next/auth/new-next-app
       - name: Start application and run test
         run: |
-            ../amplify-js/.circleci/retry-yarn-script.sh -s \
-            "ci:test \
-            next \
-            auth \
-            new-next-app \
-            new-next-app \
-            chrome \
-            dev" \
-            -n 3
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
+          "ci:test \
+          next \
+          auth \
+          new-next-app \
+          new-next-app \
+          chrome \
+          dev" \
+          -n 3
         working-directory: amplify-js-samples-staging
         shell: bash
-      
+
         # Vue
       - name: Create Vue application
-        run: | 
+        run: |
           npm init vue@3
         working-directory: amplify-js-samples-staging/samples/vue/auth
       - name: Copy files from samples staging repo
@@ -166,15 +166,15 @@ jobs:
         working-directory: amplify-js-samples-staging/samples/vue/auth/new-vue-app
       - name: Start application and run test
         run: |
-            ../amplify-js/.circleci/retry-yarn-script.sh -s \
-            "ci:test \
-            vue \
-            auth \
-            new-vue-app \
-            new-vue-app \
-            chrome \
-            dev" \
-            -n 3
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
+          "ci:test \
+          vue \
+          auth \
+          new-vue-app \
+          new-vue-app \
+          chrome \
+          dev" \
+          -n 3
         working-directory: amplify-js-samples-staging
         shell: bash
 
@@ -195,7 +195,7 @@ jobs:
       - name: Copy files from samples staging repo
         run: |
           rm -r ./samples/javascript/auth/new-javascript-app 
-          cp -r ./samples/javascript/auth/auth-cdn ./samples/javascript/auth/new-javascript-app 
+          cp -r ./samples/javascript/auth/auth-cdn ./samples/javascript/auth/new-javascript-app
         working-directory: amplify-js-samples-staging
       - name: Copy test file from samples staging repo
         run: |
@@ -208,15 +208,15 @@ jobs:
         env:
           AMPLIFY_DIR: ${{ env.AMPLIFY_DIR }}
         run: |
-            ../amplify-js/.circleci/retry-yarn-script.sh -s \
-            "ci:test \
-            javascript \
-            auth \
-            new-javascript-app \
-            new-javascript-app \
-            chrome \
-            dev \
-            $AMPLIFY_DIR" \
-            -n 3
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
+          "ci:test \
+          javascript \
+          auth \
+          new-javascript-app \
+          new-javascript-app \
+          chrome \
+          dev \
+          $AMPLIFY_DIR" \
+          -n 3
         working-directory: amplify-js-samples-staging
         shell: bash

@@ -20,7 +20,7 @@ type Json = null | string | number | boolean | Json[] | JsonObject;
 /** JSON Object type */
 type JsonObject = { [name: string]: Json };
 
-type JwtPayload = JwtPayloadStandardFields & JsonObject;
+export type JwtPayload = JwtPayloadStandardFields & JsonObject;
 
 export type JWT = {
 	payload: JwtPayload;
@@ -152,14 +152,14 @@ export type GetCredentialsOptions =
 type GetCredentialsAuthenticatedUser = {
 	authenticated: true;
 	forceRefresh?: boolean;
-	authConfig: AuthConfig;
+	authConfig: AuthConfig | undefined;
 	tokens: AuthTokens;
 };
 
 type GetCredentialsUnauthenticatedUser = {
 	authenticated: false;
 	forceRefresh?: boolean;
-	authConfig: AuthConfig;
+	authConfig: AuthConfig | undefined;
 	tokens?: never;
 };
 

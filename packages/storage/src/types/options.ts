@@ -3,17 +3,9 @@
 
 import { StorageAccessLevel } from '@aws-amplify/core';
 
-export type StorageOptions =
-	| { accessLevel?: 'guest' | 'private' }
-	| {
-			accessLevel: 'protected';
-			targetIdentityId?: string;
-	  };
-
-/**
- * The data payload type for upload operation.
- */
-export type StorageUploadSourceOptions = Blob | BufferSource | string | File;
+export type StorageOptions = {
+	accessLevel?: StorageAccessLevel;
+};
 
 export type StorageListAllOptions = StorageOptions & {
 	listAll: true;
@@ -25,13 +17,4 @@ export type StorageListPaginateOptions = StorageOptions & {
 	nextToken?: string;
 };
 
-export type StorageRemoveOptions = Omit<StorageOptions, 'targetIdentityId'>;
-
-export type StorageCopySourceOptions = {
-	key: string;
-} & StorageOptions;
-
-export type StorageCopyDestinationOptions = {
-	key: string;
-	accessLevel?: StorageAccessLevel;
-};
+export type StorageRemoveOptions = StorageOptions;

@@ -38,18 +38,19 @@ export type PinpointAnalyticsEvent = {
 type PinpointCommonParameters = {
 	appId: string;
 	category: SupportedCategory;
-	credentials: AuthSession['credentials'];
+	credentials: Required<AuthSession>['credentials'];
 	identityId?: AuthSession['identityId'];
 	region: string;
 	userAgentValue?: string;
 };
 
-export type PinpointUpdateEndpointParameters = PinpointCommonParameters & PinpointServiceOptions & {
-	channelType?: SupportedChannelType;
-	userId?: string;
-	userProfile?: UserProfile;
-};
+export type PinpointUpdateEndpointInput = PinpointCommonParameters &
+	PinpointServiceOptions & {
+		channelType?: SupportedChannelType;
+		userId?: string;
+		userProfile?: UserProfile;
+	};
 
-export type PinpointRecordParameters = PinpointCommonParameters & {
+export type PinpointRecordInput = PinpointCommonParameters & {
 	event: PinpointAnalyticsEvent;
 };

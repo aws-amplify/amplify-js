@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import Observable, { ZenObservable } from 'zen-observable-ts';
-import { browserOrNode, isWebWorker } from './JS';
+import { isWebWorker } from './JS';
 
 type NetworkStatus = {
 	online: boolean;
@@ -13,10 +13,6 @@ export default class ReachabilityNavigator implements Reachability {
 	> = [];
 
 	networkMonitor(netInfo?: any): Observable<NetworkStatus> {
-		if (browserOrNode().isNode) {
-			return Observable.from([{ online: true }]);
-		}
-
 		const globalObj = isWebWorker() ? self : window;
 
 		return new Observable(observer => {
