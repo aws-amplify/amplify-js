@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { extendedEncodeURIComponent } from '@aws-amplify/core/internals/aws-client-utils';
-import { AmplifyErrorString } from '@aws-amplify/core/internals/utils';
+import { AmplifyErrorCode } from '@aws-amplify/core/internals/utils';
 import { StorageError } from '../../../../../errors/StorageError';
 
 /**
@@ -81,7 +81,7 @@ export function validateS3RequiredParameter(
 ): asserts assertion {
 	if (!assertion) {
 		throw new StorageError({
-			name: AmplifyErrorString.UNKNOWN,
+			name: AmplifyErrorCode.Unknown,
 			message: 'An unknown error has ocurred.',
 			underlyingError: new TypeError(
 				`Expected a non-null value for S3 parameter ${paramName}`

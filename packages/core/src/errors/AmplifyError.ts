@@ -1,19 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ErrorParams } from '../types/errors';
+import { AmplifyErrorParams } from '../types/errors';
 
-export function missingConfig(name: string) {
-	return new Error('Missing config value of ' + name);
-}
-export function invalidParameter(name: string) {
-	return new Error('Invalid parameter value of ' + name);
-}
-
-export enum AmplifyErrorString {
-	UNKNOWN = 'UnknownError',
-	PLATFORM_NOT_SUPPORTED_ERROR = 'PlatformNotSupportedError',
-}
 export class AmplifyError extends Error {
 	underlyingError?: Error | unknown;
 	recoverySuggestion?: string;
@@ -30,7 +19,7 @@ export class AmplifyError extends Error {
 		name,
 		recoverySuggestion,
 		underlyingError,
-	}: ErrorParams) {
+	}: AmplifyErrorParams) {
 		super(message);
 
 		this.name = name;
@@ -43,8 +32,3 @@ export class AmplifyError extends Error {
 		Object.setPrototypeOf(this, AmplifyError.prototype);
 	}
 }
-
-export const PlatformNotSupportedError = new AmplifyError({
-	name: AmplifyErrorString.PLATFORM_NOT_SUPPORTED_ERROR,
-	message: 'Function not supported on current platform',
-});
