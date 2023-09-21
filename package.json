@@ -46,6 +46,7 @@
 			"packages/analytics",
 			"packages/storage",
 			"packages/adapter-nextjs",
+			"packages/geo",
 			"packages/api-rest",
 			"packages/api-graphql",
 			"packages/api",

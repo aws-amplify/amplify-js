@@ -8,6 +8,7 @@
 		"packages/storage",
 		"packages/aws-amplify",
 		"packages/adapter-nextjs",
+		"packages/geo",
 		"packages/api",
 		"packages/api-rest",
 		"packages/api-graphql",
