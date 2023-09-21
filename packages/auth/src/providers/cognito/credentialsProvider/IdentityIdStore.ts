@@ -6,7 +6,7 @@ import {
 	Identity,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
-import { assertIdentityPooIdConfig } from '@aws-amplify/core/internals/utils';
+import { assertIdentityPoolIdConfig } from '@aws-amplify/core/internals/utils';
 import { IdentityIdStorageKeys, IdentityIdStore } from './types';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
 import { AuthKeys } from '../tokenProvider/types';
@@ -19,7 +19,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	_primaryIdentityId: string | undefined;
 	_authKeys: AuthKeys<string> = {};
 	setAuthConfig(authConfigParam: AuthConfig) {
-		assertIdentityPooIdConfig(authConfigParam.Cognito);
+		assertIdentityPoolIdConfig(authConfigParam.Cognito);
 		this.authConfig = authConfigParam;
 		this._authKeys = createKeysForAuthStorage(
 			'Cognito',
@@ -33,7 +33,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	}
 
 	async loadIdentityId(): Promise<Identity | null> {
-		assertIdentityPooIdConfig(this.authConfig?.Cognito);
+		assertIdentityPoolIdConfig(this.authConfig?.Cognito);
 		// TODO(v6): migration logic should be here
 		try {
 			if (!!this._primaryIdentityId) {
@@ -60,7 +60,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	}
 
 	async storeIdentityId(identity: Identity): Promise<void> {
-		assertIdentityPooIdConfig(this.authConfig?.Cognito);
+		assertIdentityPoolIdConfig(this.authConfig?.Cognito);
 
 		if (identity.type === 'guest') {
 			this.keyValueStorage.setItem(this._authKeys.identityId, identity.id);
