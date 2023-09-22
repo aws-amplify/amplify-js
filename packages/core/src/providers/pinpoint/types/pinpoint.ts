@@ -21,6 +21,7 @@ export type PinpointProviderConfig = {
 export type PinpointServiceOptions = {
 	address?: string;
 	optOut?: 'ALL' | 'NONE';
+	userAttributes?: Record<string, string[]>;
 };
 
 export type PinpointSession = {
