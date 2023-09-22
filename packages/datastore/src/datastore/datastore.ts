@@ -1725,10 +1725,8 @@ class DataStore {
 	): Promise<T> => {
 		return this.runningProcesses
 			.add(async () => {
-				debugger;
 				await this.start();
 
-				debugger;
 				if (!this.storage) {
 					throw new Error('No storage to save to');
 				}
