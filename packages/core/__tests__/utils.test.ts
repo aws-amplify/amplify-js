@@ -1,11 +1,15 @@
 'use strict';
 
-import { jitteredExponentialRetry, NonRetryableError } from '../src/Util';
-import ReachabilityNative from '../src/Util/Reachability.native';
-import Reachability from '../src/Util/Reachability';
+import {
+	jitteredExponentialRetry,
+	NonRetryableError,
+	urlSafeDecode,
+	urlSafeEncode,
+} from '../src/utils';
+import { Reachability as ReachabilityNative } from '../src/Reachability/Reachability.native';
+import { Reachability } from '../src/Reachability/Reachability';
 import { ConsoleLogger as Logger } from '../src/Logger';
-import { urlSafeDecode, urlSafeEncode } from '../src/Util/StringUtils';
-import { DateUtils } from '../src/Util/DateUtils';
+import { DateUtils } from '../src/Signer/DateUtils';
 
 Logger.LOG_LEVEL = 'DEBUG';
 
