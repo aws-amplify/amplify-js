@@ -13,6 +13,7 @@
 		"packages/api-rest",
 		"packages/api-graphql",
 		"packages/datastore",
+		"packages/rtn-web-browser",
 		"scripts/tsc-compliance-test"
 	],
 	"exact": true,
