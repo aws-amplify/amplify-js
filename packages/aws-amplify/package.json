@@ -237,7 +237,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "27.681 kB"
+			"limit": "27.682 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
