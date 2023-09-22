@@ -12,7 +12,7 @@ import {
 	Patch,
 } from 'immer';
 import { v4 as uuid4 } from 'uuid';
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { Observable, SubscriptionLike, filter } from 'rxjs';
 import { defaultAuthStrategy, multiAuthStrategy } from '../authModeStrategies';
 import {
 	isPredicatesAll,
@@ -1326,7 +1326,7 @@ async function checkSchemaVersion(
 	});
 }
 
-let syncSubscription: ZenObservable.Subscription;
+let syncSubscription: SubscriptionLike;
 
 function getNamespace(): SchemaNamespace {
 	const namespace: SchemaNamespace = {
@@ -1725,8 +1725,10 @@ class DataStore {
 	): Promise<T> => {
 		return this.runningProcesses
 			.add(async () => {
+				debugger;
 				await this.start();
 
+				debugger;
 				if (!this.storage) {
 					throw new Error('No storage to save to');
 				}
@@ -2117,7 +2119,7 @@ class DataStore {
 		}
 
 		return new Observable<SubscriptionMessage<T>>(observer => {
-			let source: ZenObservable.Subscription;
+			let source: SubscriptionLike;
 
 			this.runningProcesses
 				.add(async () => {
@@ -2126,7 +2128,7 @@ class DataStore {
 					// Filter the events returned by Storage according to namespace,
 					// append original element data, and subscribe to the observable
 					source = this.storage!.observe(modelConstructor)
-						.filter(({ model }) => namespaceResolver(model) === USER)
+						.pipe(filter(({ model }) => namespaceResolver(model) === USER))
 						.subscribe({
 							next: item =>
 								this.runningProcesses.isOpen &&
@@ -2200,7 +2202,7 @@ class DataStore {
 			const items = new Map<string, T>();
 			const itemsChanged = new Map<string, T>();
 			let deletedItemIds: string[] = [];
-			let handle: ZenObservable.Subscription;
+			let handle: SubscriptionLike;
 			// let predicate: ModelPredicate<T> | undefined;
 			let executivePredicate: GroupCondition | undefined;
 
