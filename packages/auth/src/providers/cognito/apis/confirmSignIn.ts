@@ -14,6 +14,7 @@ import {
 } from '../utils/signInStore';
 import { AuthError } from '../../../errors/AuthError';
 import {
+	getNewDeviceMetatada,
 	getSignInResult,
 	getSignInResultFromError,
 	handleChallengeName,
@@ -103,7 +104,14 @@ export async function confirmSignIn(
 
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
-			await cacheCognitoTokens(AuthenticationResult, Amplify);
+			await cacheCognitoTokens({
+				...AuthenticationResult,
+				NewDeviceMetadata: await getNewDeviceMetatada(
+					Amplify,
+					AuthenticationResult.NewDeviceMetadata,
+					AuthenticationResult.AccessToken
+				),
+			});
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },

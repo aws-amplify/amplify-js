@@ -156,15 +156,6 @@ export async function handleSelectMFATypeChallenge({
 	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
 
-function handleDeviceSRPAuthChallenge({
-	challengeResponse,
-	clientMetadata,
-	session,
-	username,
-	config,
-}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	throw new Error('Function not implemented.');
-}
 export async function handleSMSMFAChallenge({
 	challengeResponse,
 	clientMetadata,
@@ -611,14 +602,6 @@ export async function handleChallengeName(
 				username,
 				config,
 			});
-		case 'DEVICE_SRP_AUTH':
-			return handleDeviceSRPAuthChallenge({
-				challengeResponse,
-				clientMetadata,
-				session,
-				username,
-				config,
-			});
 	}
 	// TODO: remove this error message for production apps
 	throw new AuthError({
@@ -685,18 +668,17 @@ export async function assertUserNotAuthenticated() {
  * @returns DeviceMetadata | undefined
  */
 export async function getNewDeviceMetatada(
-	newDeviceMetadata: NewDeviceMetadataType,
 	amplify: AmplifyClassV6,
+	newDeviceMetadata?: NewDeviceMetadataType,
 	accessToken?: string
 ): Promise<DeviceMetadata | undefined> {
 	const config = amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(config);
 	const userPoolName = config.userPoolId.split('_')[1] || '';
 	const authenticationHelper = new AuthenticationHelper(userPoolName);
-	let result: DeviceMetadata | undefined;
+	const deviceKey = newDeviceMetadata?.DeviceKey;
+	const deviceGroupKey = newDeviceMetadata?.DeviceGroupKey;
 
-	const deviceKey = newDeviceMetadata.DeviceKey;
-	const deviceGroupKey = newDeviceMetadata.DeviceGroupKey;
 	return new Promise((resolve, _) => {
 		authenticationHelper.generateHashDevice(
 			deviceGroupKey ?? '',
@@ -722,7 +704,7 @@ export async function getNewDeviceMetatada(
 						{ region: getRegion(config.userPoolId) },
 						{
 							AccessToken: accessToken,
-							DeviceKey: newDeviceMetadata.DeviceKey,
+							DeviceKey: newDeviceMetadata?.DeviceKey,
 							DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
 						}
 					);

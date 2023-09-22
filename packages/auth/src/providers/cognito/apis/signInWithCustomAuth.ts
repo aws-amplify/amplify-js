@@ -8,6 +8,7 @@ import {
 	handleCustomAuthFlowWithoutSRP,
 	getSignInResult,
 	getSignInResultFromError,
+	getNewDeviceMetatada,
 } from '../utils/signInHelpers';
 import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
@@ -68,7 +69,14 @@ export async function signInWithCustomAuth(
 		});
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
-			await cacheCognitoTokens(AuthenticationResult, Amplify);
+			await cacheCognitoTokens({
+				...AuthenticationResult,
+				NewDeviceMetadata: await getNewDeviceMetatada(
+					Amplify,
+					AuthenticationResult.NewDeviceMetadata,
+					AuthenticationResult.AccessToken
+				),
+			});
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },

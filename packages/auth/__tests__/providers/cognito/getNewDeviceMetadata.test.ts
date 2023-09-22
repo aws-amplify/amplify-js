@@ -30,12 +30,12 @@ describe('test getNewDeviceMetadata API', () => {
 		const mockedDeviceKey = 'mockedDeviceKey';
 		const mockedGroupDeviceKey = 'mockedGroupDeviceKey';
 		const deviceMetadata = await getNewDeviceMetatada(
+			Amplify,
 			{
 				DeviceKey: mockedDeviceKey,
 				DeviceGroupKey: mockedGroupDeviceKey,
 			},
-			mockedAccessToken,
-			Amplify
+			mockedAccessToken
 		);
 
 		expect(deviceMetadata?.deviceKey).toBe(mockedDeviceKey);
@@ -63,12 +63,12 @@ describe('test getNewDeviceMetadata API', () => {
 		const mockedDeviceKey = 'mockedDeviceKey';
 		const mockedGroupDeviceKey = 'mockedGroupDeviceKey';
 		const deviceMetadata = await getNewDeviceMetatada(
+			Amplify,
 			{
 				DeviceKey: mockedDeviceKey,
 				DeviceGroupKey: mockedGroupDeviceKey,
 			},
-			mockedAccessToken,
-			Amplify
+			mockedAccessToken
 		);
 
 		expect(deviceMetadata).toBeUndefined();

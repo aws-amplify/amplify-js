@@ -3,13 +3,12 @@
 import { AmplifyError, decodeJWT } from '@aws-amplify/core/internals/utils';
 import { tokenOrchestrator } from '.';
 import { AuthenticationResultType } from '../utils/clients/CognitoIdentityProvider/types';
-import { getNewDeviceMetatada } from '../utils/signInHelpers';
 import { DeviceMetadata } from './types';
-import { AmplifyClassV6 } from '@aws-amplify/core';
 
 export async function cacheCognitoTokens(
-	AuthenticationResult: AuthenticationResultType,
-	amplify: AmplifyClassV6
+	AuthenticationResult: AuthenticationResultType & {
+		NewDeviceMetadata?: DeviceMetadata;
+	}
 ): Promise<void> {
 	if (AuthenticationResult.AccessToken) {
 		const accessToken = decodeJWT(AuthenticationResult.AccessToken);
@@ -26,15 +25,13 @@ export async function cacheCognitoTokens(
 		if (AuthenticationResult.RefreshToken) {
 			refreshToken = AuthenticationResult.RefreshToken;
 		}
-		if (AuthenticationResult.NewDeviceMetadata) {
-			NewDeviceMetadata = await getNewDeviceMetatada(
-				AuthenticationResult.NewDeviceMetadata,
-				amplify,
-				AuthenticationResult.AccessToken
-			);
-		}
+
 		if (AuthenticationResult.IdToken) {
 			idToken = decodeJWT(AuthenticationResult.IdToken);
+		}
+
+		if (AuthenticationResult?.NewDeviceMetadata) {
+			NewDeviceMetadata = AuthenticationResult.NewDeviceMetadata;
 		}
 
 		tokenOrchestrator.setTokens({
@@ -42,7 +39,6 @@ export async function cacheCognitoTokens(
 				accessToken,
 				idToken,
 				refreshToken,
-				NewDeviceMetadata,
 				clockDrift,
 			},
 		});

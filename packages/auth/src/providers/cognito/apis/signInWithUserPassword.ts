@@ -9,6 +9,7 @@ import {
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
 import {
+	getNewDeviceMetatada,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
@@ -72,7 +73,14 @@ export async function signInWithUserPassword(
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
-			await cacheCognitoTokens(AuthenticationResult, Amplify);
+			await cacheCognitoTokens({
+				...AuthenticationResult,
+				NewDeviceMetadata: await getNewDeviceMetatada(
+					Amplify,
+					AuthenticationResult.NewDeviceMetadata,
+					AuthenticationResult.AccessToken
+				),
+			});
 			cleanActiveSignInState();
 			return {
 				isSignedIn: true,

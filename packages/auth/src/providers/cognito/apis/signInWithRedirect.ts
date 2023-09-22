@@ -206,16 +206,13 @@ async function handleCodeFlow({
 
 	await store.clearOAuthInflightData();
 
-	await cacheCognitoTokens(
-		{
-			AccessToken: access_token,
-			IdToken: id_token,
-			RefreshToken: refresh_token,
-			TokenType: token_type,
-			ExpiresIn: expires_in,
-		},
-		Amplify
-	);
+	await cacheCognitoTokens({
+		AccessToken: access_token,
+		IdToken: id_token,
+		RefreshToken: refresh_token,
+		TokenType: token_type,
+		ExpiresIn: expires_in,
+	});
 
 	await store.storeOAuthSignIn(true);
 
@@ -258,16 +255,13 @@ async function handleImplicitFlow({
 		return;
 	}
 
-	await cacheCognitoTokens(
-		{
-			AccessToken: access_token,
-			IdToken: id_token,
-			RefreshToken: undefined,
-			TokenType: token_type,
-			ExpiresIn: expires_in,
-		},
-		Amplify
-	);
+	await cacheCognitoTokens({
+		AccessToken: access_token,
+		IdToken: id_token,
+		RefreshToken: undefined,
+		TokenType: token_type,
+		ExpiresIn: expires_in,
+	});
 
 	await store.storeOAuthSignIn(true);
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
