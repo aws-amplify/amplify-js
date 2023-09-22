@@ -161,7 +161,7 @@ describe('aws-amplify Exports', () => {
 		`);
 		});
 
-		it('should only export expected symbols from the Pinpoint provider', () => {
+		it('should only export expected symbols from the Location Service provider', () => {
 			expect(Object.keys(geoLocationServiceExports)).toMatchInlineSnapshot(`
 			Array [
 			  "AmazonLocationServiceProvider",
