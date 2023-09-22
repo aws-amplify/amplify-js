@@ -1034,30 +1034,6 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						);
 					});
 
-					// test('authenticating with AMAZON_COGNITO_USER_POOLS', async () => {
-					// 	expect.assertions(1);
-
-					// 	jest.spyOn(Auth, 'fetchAuthSession').mockImplementation(() => {
-					// 		return Promise.resolve({
-					// 			token: 'test',
-					// 		} as AuthSession);
-					// 	});
-
-					// 	provider
-					// 		.subscribe({
-					// 			appSyncGraphqlEndpoint: 'ws://localhost:8080',
-					// 			authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-					// 		})
-					// 		.subscribe({ error: () => {} });
-
-					// 	await fakeWebSocketInterface?.readyForUse;
-
-					// 	expect(loggerSpy).toBeCalledWith(
-					// 		'DEBUG',
-					// 		'Authenticating with AMAZON_COGNITO_USER_POOLS'
-					// 	);
-					// });
-
 					test('authenticating with AWS_LAMBDA/custom', async () => {
 						expect.assertions(1);
 

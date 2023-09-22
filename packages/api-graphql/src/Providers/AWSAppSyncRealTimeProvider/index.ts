@@ -920,14 +920,6 @@ export class AWSAppSyncRealTimeProvider {
 		}
 	}
 
-	private async _awsRealTimeCUPHeader({ host }: AWSAppSyncRealTimeAuthInput) {
-		const session = await fetchAuthSession();
-		return {
-			Authorization: session.tokens.accessToken.toString(),
-			host,
-		};
-	}
-
 	private async _awsRealTimeOPENIDHeader({
 		host,
 	}: AWSAppSyncRealTimeAuthInput) {
@@ -982,7 +974,7 @@ export class AWSAppSyncRealTimeProvider {
 			},
 			{
 				credentials: creds,
-				signingRegion: endpointInfo.region ?? '',
+				signingRegion: endpointInfo.region,
 				signingService: endpointInfo.service,
 			}
 		);
