@@ -27,6 +27,11 @@
 			"import": "./lib-esm/api/index.js",
 			"require": "./lib/api/index.js"
 		},
+		"./datastore": {
+			"types": "./lib-esm/datastore/index.d.ts",
+			"import": "./lib-esm/datastore/index.js",
+			"require": "./lib/datastore/index.js"
+		},
 		"./auth/cognito": {
 			"types": "./lib-esm/auth/cognito/index.d.ts",
 			"import": "./lib-esm/auth/cognito/index.js",
@@ -77,10 +82,20 @@
 			"import": "./lib-esm/adapterCore/index.js",
 			"require": "./lib/adapterCore/index.js"
 		},
+		"./geo": {
+			"types": "./lib-esm/geo/index.d.ts",
+			"import": "./lib-esm/geo/index.js",
+			"require": "./lib/geo/index.js"
+		},
+		"./geo/location-service": {
+			"types": "./lib-esm/geo/location-service/index.d.ts",
+			"import": "./lib-esm/geo/location-service/index.js",
+			"require": "./lib/geo/location-service/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
-		">=3.8": {
+		">=4.0": {
 			"*": [
 				"./lib-esm/index.d.ts"
 			],
@@ -160,7 +175,8 @@
 		"api",
 		"auth",
 		"internals",
-		"storage"
+		"storage",
+		"datastore"
 	],
 	"dependencies": {
 		"@aws-amplify/api": "6.0.0",
@@ -168,6 +184,7 @@
 		"@aws-amplify/auth": "6.0.0",
 		"@aws-amplify/core": "6.0.0",
 		"@aws-amplify/storage": "6.0.0",
+		"@aws-amplify/datastore": "5.0.0",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -178,7 +195,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ record }",
-			"limit": "20.49 kB"
+			"limit": "21.10 kB"
 		},
 		{
 			"name": "[API] class (AppSync)",
@@ -196,7 +213,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ identifyUser }",
-			"limit": "18.68 kB"
+			"limit": "19.30 kB"
 		},
 		{
 			"name": "[Auth] signUp (Cognito)",
@@ -214,7 +231,7 @@
 			"name": "[Auth] confirmResetPassword (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmResetPassword }",
-			"limit": "10.47 kB"
+			"limit": "11.00 kB"
 		},
 		{
 			"name": "[Auth] signIn (Cognito)",
@@ -226,7 +243,7 @@
 			"name": "[Auth] resendSignUpCode (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ resendSignUpCode }",
-			"limit": "10.51 kB"
+			"limit": "11.00 kB"
 		},
 		{
 			"name": "[Auth] confirmSignUp (Cognito)",
@@ -244,31 +261,31 @@
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ updateMFAPreference }",
-			"limit": "9.59 kB"
+			"limit": "10.10 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ fetchMFAPreference }",
-			"limit": "9.65 kB"
+			"limit": "10.10 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "10.52 kB"
+			"limit": "11.10 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ updatePassword }",
-			"limit": "10.5 kB"
+			"limit": "11.10 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ setUpTOTP }",
-			"limit": "11.012 kB"
+			"limit": "11.50 kB"
 		},
 		{
 			"name": "[Auth] updateUserAttributes (Cognito)",
@@ -280,25 +297,25 @@
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ getCurrentUser }",
-			"limit": "4.65 kB"
+			"limit": "5.30 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmUserAttribute }",
-			"limit": "10.50 kB"
+			"limit": "11.10 kB"
 		},
 		{
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect }",
-			"limit": "20.27 kB"
+			"limit": "20.90 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ fetchUserAttributes }",
-			"limit": "9.58 kB"
+			"limit": "10.10 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
@@ -310,19 +327,19 @@
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "20.682 kB"
+			"limit": "21.30 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ copy }",
-			"limit": "16.80 kB"
+			"limit": "16.87 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ downloadData }",
-			"limit": "17.60 kB"
+			"limit": "17.65 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
@@ -340,19 +357,25 @@
 			"name": "[Storage] list (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ list }",
-			"limit": "17.4 kB"
+			"limit": "17.46 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ remove }",
-			"limit": "16.70 kB"
+			"limit": "16.73 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ uploadData }",
 			"limit": "23.3 kB"
+		},
+		{
+			"name": "[Geo] Geo (Location Service)",
+			"path": "./lib-esm/geo/index.js",
+			"import": "{ Geo }",
+			"limit": "48.5 kB"
 		}
 	],
 	"jest": {

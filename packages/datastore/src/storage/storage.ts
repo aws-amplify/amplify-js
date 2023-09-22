@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Logger, Mutex } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import PushStream from 'zen-push';
 import { Patch } from 'immer';
@@ -32,6 +31,7 @@ import {
 import { getIdentifierValue } from '../sync/utils';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
+import { Logger, Mutex } from '@aws-amplify/core/internals/utils';
 
 export type StorageSubscriptionMessage<T extends PersistentModel> =
 	InternalSubscriptionMessage<T> & {

@@ -26,15 +26,17 @@ export {
 	JWT,
 	StrictUnion,
 	CognitoIdentityPoolConfig,
+	JwtPayload,
 } from './singleton/Auth/types';
 // Auth utilities
 export {
 	decodeJWT,
 	assertTokenProviderConfig,
-	assertIdentityPooIdConfig,
+	assertIdentityPoolIdConfig,
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
 export { isTokenExpired } from './singleton/Auth';
+export { GraphQLAuthModeKeys } from './singleton/API/types';
 export { Signer } from './Signer';
 
 // Logging utilities
@@ -90,14 +92,18 @@ export {
 	urlSafeDecode,
 	urlSafeEncode,
 } from './Util';
-export { asserts } from './Util/errors/AssertError';
 export {
-	invalidParameter,
-	missingConfig,
 	AmplifyError,
-	AmplifyErrorString,
-} from './Util/Errors';
-export { ErrorParams, AmplifyErrorMap, ServiceError } from './types';
+	PlatformNotSupportedError,
+	createAssertionFunction,
+} from './errors';
+export {
+	AmplifyErrorCode,
+	AmplifyErrorMap,
+	AmplifyErrorParams,
+	AssertionFunction,
+	ServiceError,
+} from './types';
 export {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 	USER_AGENT_HEADER,
