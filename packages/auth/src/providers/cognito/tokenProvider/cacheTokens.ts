@@ -20,7 +20,7 @@ export async function cacheCognitoTokens(
 				: 0;
 		let idToken;
 		let refreshToken: string | undefined;
-		let NewDeviceMetadata: DeviceMetadata | undefined;
+		let deviceMetadata: DeviceMetadata | undefined;
 
 		if (AuthenticationResult.RefreshToken) {
 			refreshToken = AuthenticationResult.RefreshToken;
@@ -31,7 +31,7 @@ export async function cacheCognitoTokens(
 		}
 
 		if (AuthenticationResult?.NewDeviceMetadata) {
-			NewDeviceMetadata = AuthenticationResult.NewDeviceMetadata;
+			deviceMetadata = AuthenticationResult.NewDeviceMetadata;
 		}
 
 		tokenOrchestrator.setTokens({
@@ -40,6 +40,7 @@ export async function cacheCognitoTokens(
 				idToken,
 				refreshToken,
 				clockDrift,
+				deviceMetadata,
 			},
 		});
 	} else {
