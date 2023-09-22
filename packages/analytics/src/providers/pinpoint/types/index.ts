@@ -3,3 +3,4 @@
 
 export { UpdateEndpointException } from './errors';
 export { RecordInput, IdentifyUserInput } from './inputs';
+export { IdentifyUserOptions } from './options';
