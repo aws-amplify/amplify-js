@@ -52,6 +52,7 @@
 			"packages/api",
 			"packages/datastore",
 			"packages/aws-amplify",
+			"packages/rtn-web-browser",
 			"scripts/tsc-compliance-test"
 		],
 		"nohoist": [
