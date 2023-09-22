@@ -35,7 +35,7 @@ class WebBrowserModule(
     }
 
     @SuppressLint("SuspiciousIndentation")
-		@ReactMethod
+    @ReactMethod
     fun openAuthSessionAsync(uriStr: String, promise: Promise) {
         if (!Patterns.WEB_URL.matcher(uriStr).matches()) {
             promise.reject(Throwable("Provided url is invalid"))
@@ -52,7 +52,7 @@ class WebBrowserModule(
         } catch (e: Exception) {
             promise.reject(e)
         }
-				promise.resolve(null)
+        promise.resolve(null)
     }
 
     override fun onHostResume() {
