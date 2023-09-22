@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { EventBuffer } from '../../lib/utils/eventBuffer';
-import { result } from 'lodash';
 
 describe('EventBuffer', () => {
 	type TestEvent = {

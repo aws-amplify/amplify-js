@@ -10,14 +10,17 @@ import { recordToTupleList } from '../../../utils/recordToList';
 const eventBufferMap: Record<string, EventBuffer<KinesisBufferEvent>> = {};
 const cachedClients: Record<string, KinesisClient> = {};
 
-const buildSessionIdentityKey = (args: {
-	region: string;
-	sessionToken?: string;
-	identityId?: string;
-}): string =>
-	[args.region, args.sessionToken, args.identityId]
-		.filter(x => !!x && x.length > 0)
-		.join('-');
+const createKinesisPutRecordsCommand = (
+	streamName: string,
+	events: KinesisBufferEvent[]
+): PutRecordsCommand =>
+	new PutRecordsCommand({
+		StreamName: streamName,
+		Records: events.map(x => ({
+			PartitionKey: x.partitionKey,
+			Data: x.event,
+		})),
+	});
 
 const submitEvents = async (
 	events: KinesisBufferEvent[],
@@ -28,16 +31,7 @@ const submitEvents = async (
 		groupBy(x => x.streamName, events)
 	);
 	const requests = groupedByStreamName
-		.map(
-			([streamName, events]) =>
-				new PutRecordsCommand({
-					StreamName: streamName,
-					Records: events.map(x => ({
-						PartitionKey: x.partitionKey,
-						Data: x.event,
-					})),
-				})
-		)
+		.map(x => createKinesisPutRecordsCommand(...x))
 		.map(command => client.send(command));
 
 	const responses = await Promise.allSettled(requests);
@@ -62,11 +56,9 @@ export const getEventBuffer = ({
 	resendLimit,
 }: KinesisEventBufferConfig): EventBuffer<KinesisBufferEvent> => {
 	const { sessionToken } = credentials;
-	const sessionIdentityKey = buildSessionIdentityKey({
-		region,
-		sessionToken,
-		identityId,
-	});
+	const sessionIdentityKey = [region, sessionToken, identityId]
+		.filter(x => !!x)
+		.join('-');
 
 	if (!eventBufferMap[sessionIdentityKey]) {
 		const getKinesisClient = (): IAnalyticsClient<KinesisBufferEvent> => {
