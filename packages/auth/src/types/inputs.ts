@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthUserAttribute, AuthUserAttributeKey } from './models';
+import { AuthUserAttributes, AuthUserAttributeKey } from './models';
 import { AuthServiceOptions, AuthSignUpOptions } from './options';
 
 export type AuthConfirmResetPasswordInput<
@@ -133,7 +133,7 @@ export type AuthUpdateUserAttributesInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
-	userAttributes: AuthUserAttribute<UserAttributeKey>;
+	userAttributes: AuthUserAttributes<UserAttributeKey>;
 	options?: { serviceOptions?: ServiceOptions };
 };
 
