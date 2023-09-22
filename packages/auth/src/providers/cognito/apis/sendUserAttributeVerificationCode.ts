@@ -4,11 +4,7 @@
 import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../..';
-import {
-	// AuthCodeDeliveryDetails,
-	// AuthStandardAttributeKey,
-	AuthDeliveryMedium,
-} from '../../../types';
+import { AuthDeliveryMedium } from '../../../types';
 import {
 	SendUserAttributeVerificationCodeInput,
 	SendUserAttributeVerificationCodeOutput,
