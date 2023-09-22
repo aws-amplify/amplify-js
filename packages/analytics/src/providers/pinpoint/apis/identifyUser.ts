@@ -28,8 +28,9 @@ import { resolveConfig, resolveCredentials } from '../utils';
  * await identifyUser({
  *     userId,
  *     userProfile: {
- *         attributes: {
- *             email: [userEmail],
+ *         email: [userEmail]
+ *         customProperties: {
+ *             phoneNumber: ['555-555-5555'],
  *         },
  *     }
  * });
@@ -41,8 +42,9 @@ import { resolveConfig, resolveCredentials } from '../utils';
  * await identifyUser({
  *     userId,
  *     userProfile: {
- *         attributes: {
- *             email: [userEmail],
+ *         email: [userEmail]
+ *         customProperties: {
+ *             phoneNumber: ['555-555-5555'],
  *         },
  *         demographic: {
  *             platform: 'ios',
