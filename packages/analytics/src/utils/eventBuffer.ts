@@ -56,7 +56,7 @@ export class EventBuffer<T> {
 	}
 
 	private head(count: number) {
-		return this.list.slice(0, count);
+		return this.list.splice(0, count);
 	}
 
 	private insertAtBeginning(...data: T[]) {
