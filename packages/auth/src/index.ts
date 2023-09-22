@@ -57,11 +57,8 @@ export {
 	SignOutOutput,
 	SignUpOutput,
 	UpdateUserAttributesOutput,
-<<<<<<< Updated upstream
 	SendUserAttributeVerificationCodeOutput,
-=======
 	UpdateUserAttributeOutput,
->>>>>>> Stashed changes
 } from './providers/cognito';
 
 export { AuthError } from './errors/AuthError';

@@ -19,11 +19,8 @@ export {
 	ConfirmSignInOptions,
 	UpdateUserAttributesOptions,
 	VerifyTOTPSetupOptions,
-<<<<<<< Updated upstream
-	SendUserAttributeVerificationCodeOptions,
-=======
 	UpdateUserAttributeOptions,
->>>>>>> Stashed changes
+	SendUserAttributeVerificationCodeOptions,
 } from './options';
 
 export {
@@ -45,11 +42,8 @@ export {
 	UpdatePasswordInput,
 	UpdateUserAttributesInput,
 	VerifyTOTPSetupInput,
-<<<<<<< Updated upstream
-	SendUserAttributeVerificationCodeInput,
-=======
 	UpdateUserAttributeInput,
->>>>>>> Stashed changes
+	SendUserAttributeVerificationCodeInput,
 } from './inputs';
 
 export {
@@ -69,9 +63,6 @@ export {
 	SignOutOutput,
 	SignUpOutput,
 	UpdateUserAttributesOutput,
-<<<<<<< Updated upstream
-	SendUserAttributeVerificationCodeOutput,
-=======
 	UpdateUserAttributeOutput,
->>>>>>> Stashed changes
+	SendUserAttributeVerificationCodeOutput,
 } from './outputs';

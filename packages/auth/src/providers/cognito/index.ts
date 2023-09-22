@@ -53,11 +53,8 @@ export {
 	SignOutOutput,
 	SignUpOutput,
 	UpdateUserAttributesOutput,
-<<<<<<< Updated upstream
-	SendUserAttributeVerificationCodeOutput,
-=======
 	UpdateUserAttributeOutput,
->>>>>>> Stashed changes
+	SendUserAttributeVerificationCodeOutput,
 } from './types/outputs';
 export {
 	cognitoCredentialsProvider,

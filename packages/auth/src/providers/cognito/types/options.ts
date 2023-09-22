@@ -76,14 +76,15 @@ export type UpdateUserAttributesOptions = {
 };
 
 /**
-<<<<<<< Updated upstream
  * Options specific to a Cognito Update User Attributes request.
  */
 export type SendUserAttributeVerificationCodeOptions = {
-=======
+	clientMetadata?: ClientMetadata;
+};
+
+/**
  * Options specific to Cognito Update User Attribute.
  */
 export type UpdateUserAttributeOptions = {
->>>>>>> Stashed changes
 	clientMetadata?: ClientMetadata;
 };
