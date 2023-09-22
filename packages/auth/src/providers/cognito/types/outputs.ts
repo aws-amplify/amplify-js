@@ -102,3 +102,9 @@ export type SignUpOutput = AuthSignUpOutput<
  */
 export type UpdateUserAttributesOutput =
 	AuthUpdateUserAttributesOutput<UserAttributeKey>;
+
+/**
+ * Output type for Cognito sendUserAttributeVerificationCode API.
+ */
+export type SendUserAttributeVerificationCodeOutput =
+	AuthCodeDeliveryDetails<UserAttributeKey>;

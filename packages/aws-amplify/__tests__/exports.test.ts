@@ -81,6 +81,7 @@ describe('aws-amplify Exports', () => {
 			  "signInWithRedirect",
 			  "fetchUserAttributes",
 			  "signOut",
+			  "sendUserAttributeVerificationCode",
 			  "AuthError",
 			  "fetchAuthSession",
 			]
@@ -108,6 +109,7 @@ describe('aws-amplify Exports', () => {
 			  "signInWithRedirect",
 			  "fetchUserAttributes",
 			  "signOut",
+			  "sendUserAttributeVerificationCode",
 			  "cognitoCredentialsProvider",
 			  "CognitoAWSCredentialsAndIdentityIdProvider",
 			  "DefaultIdentityIdStore",
