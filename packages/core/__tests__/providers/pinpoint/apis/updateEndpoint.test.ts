@@ -101,7 +101,12 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 			{ credentials, region },
 			getExpectedInput({
 				address,
-				attributes: userProfile.attributes,
+				attributes: {
+					email: [userProfile.email],
+					name: [userProfile.name],
+					plan: [userProfile.plan],
+					...userProfile.customProperties,
+				},
 				channelType,
 				demographic,
 				location,
