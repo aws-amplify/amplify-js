@@ -13,6 +13,7 @@ import {
 	AuthResetPasswordOutput,
 	AuthSignOutOutput,
 	AuthUpdateUserAttributesOutput,
+	AuthUpdateUserAttributeOutput,
 } from '../../../types';
 import { UserAttributeKey, CustomAttribute } from '../types';
 
@@ -104,7 +105,14 @@ export type UpdateUserAttributesOutput =
 	AuthUpdateUserAttributesOutput<UserAttributeKey>;
 
 /**
+<<<<<<< Updated upstream
  * Output type for Cognito sendUserAttributeVerificationCode API.
  */
 export type SendUserAttributeVerificationCodeOutput =
 	AuthCodeDeliveryDetails<UserAttributeKey>;
+=======
+ * Output type for Cognito updateUserAttribute API.
+ */
+export type UpdateUserAttributeOutput =
+	AuthUpdateUserAttributeOutput<UserAttributeKey>;
+>>>>>>> Stashed changes

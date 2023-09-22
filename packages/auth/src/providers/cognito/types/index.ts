@@ -19,7 +19,11 @@ export {
 	ConfirmSignInOptions,
 	UpdateUserAttributesOptions,
 	VerifyTOTPSetupOptions,
+<<<<<<< Updated upstream
 	SendUserAttributeVerificationCodeOptions,
+=======
+	UpdateUserAttributeOptions,
+>>>>>>> Stashed changes
 } from './options';
 
 export {
@@ -41,7 +45,11 @@ export {
 	UpdatePasswordInput,
 	UpdateUserAttributesInput,
 	VerifyTOTPSetupInput,
+<<<<<<< Updated upstream
 	SendUserAttributeVerificationCodeInput,
+=======
+	UpdateUserAttributeInput,
+>>>>>>> Stashed changes
 } from './inputs';
 
 export {
@@ -61,5 +69,9 @@ export {
 	SignOutOutput,
 	SignUpOutput,
 	UpdateUserAttributesOutput,
+<<<<<<< Updated upstream
 	SendUserAttributeVerificationCodeOutput,
+=======
+	UpdateUserAttributeOutput,
+>>>>>>> Stashed changes
 } from './outputs';

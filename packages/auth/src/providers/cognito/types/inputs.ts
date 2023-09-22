@@ -12,6 +12,7 @@ import {
 	SignInOptions,
 	SignUpOptions,
 	UpdateUserAttributesOptions,
+	UpdateUserAttributeOptions,
 	VerifyTOTPSetupOptions,
 	SendUserAttributeVerificationCodeOptions,
 } from '../types';
@@ -29,6 +30,7 @@ import {
 	AuthSignUpInput,
 	AuthUpdatePasswordInput,
 	AuthUpdateUserAttributesInput,
+	AuthUpdateUserAttributeInput,
 	AuthVerifyTOTPSetupInput,
 	AuthSendUserAttributeVerificationCodeInput,
 } from '../../../types';
@@ -134,6 +136,7 @@ export type VerifyTOTPSetupInput =
 	AuthVerifyTOTPSetupInput<VerifyTOTPSetupOptions>;
 
 /**
+<<<<<<< Updated upstream
  * Input type for Cognito sendUserAttributeVerificationCode API.
  */
 export type SendUserAttributeVerificationCodeInput =
@@ -141,3 +144,11 @@ export type SendUserAttributeVerificationCodeInput =
 		UserAttributeKey,
 		SendUserAttributeVerificationCodeOptions
 	>;
+=======
+ * Input type for Cognito updateUserAttribute API.
+ */
+export type UpdateUserAttributeInput = AuthUpdateUserAttributeInput<
+	UserAttributeKey,
+	UpdateUserAttributeOptions
+>;
+>>>>>>> Stashed changes
