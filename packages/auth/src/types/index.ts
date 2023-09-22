@@ -9,7 +9,7 @@ export {
 	AuthNextSignUpStep,
 	AuthStandardAttributeKey,
 	AuthUserAttributeKey,
-	AuthUserAttribute,
+	AuthUserAttributes,
 	AuthNextResetPasswordStep,
 	AuthNextSignInStep,
 	AuthNextUpdateAttributeStep,
