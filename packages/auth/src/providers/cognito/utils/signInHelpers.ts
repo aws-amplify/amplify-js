@@ -693,7 +693,7 @@ export async function getNewDeviceMetatada(
 				const deviceSecretVerifierConfig = {
 					Salt: toBase64(fromHex(authenticationHelper.getSaltToHashDevices())),
 					PasswordVerifier: toBase64(
-						fromHex(authenticationHelper.getSaltToHashDevices())
+						fromHex(authenticationHelper.getVerifierDevices())
 					),
 				};
 
