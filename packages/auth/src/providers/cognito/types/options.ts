@@ -54,9 +54,9 @@ export type ConfirmSignUpOptions = {
  * Options specific to Cognito Confirm Sign In.
  */
 export type ConfirmSignInOptions<
-	UserAttribute extends AuthUserAttributes = AuthUserAttributes
+	UserAttributes extends AuthUserAttributes = AuthUserAttributes
 > = {
-	userAttributes?: UserAttribute;
+	userAttributes?: UserAttributes;
 	clientMetadata?: ClientMetadata;
 	friendlyDeviceName?: string;
 };
