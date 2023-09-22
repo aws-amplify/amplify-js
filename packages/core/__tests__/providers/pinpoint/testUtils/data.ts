@@ -29,8 +29,11 @@ export const identityId = 'identity-id';
 export const region = 'region';
 export const userId = 'user-id';
 export const userProfile = {
-	attributes: {
+	customProperties: {
 		hobbies: ['biking', 'climbing'],
 	},
+	email: 'email',
+	name: 'name',
+	plan: 'plan',
 };
 export const uuid = 'uuid';
