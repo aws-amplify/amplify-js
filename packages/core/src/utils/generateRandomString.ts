@@ -1,12 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export const generateRandomString = () => {
+export const generateRandomString = (length: number) => {
+	const STATE_CHARSET =
+		'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	let result = '';
-	const chars =
-		'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	for (let i = 32; i > 0; i -= 1) {
-		result += chars[Math.floor(Math.random() * chars.length)];
+
+	for (let i = 0; i < length; i++) {
+		result += STATE_CHARSET.charAt(
+			Math.floor(Math.random() * STATE_CHARSET.length)
+		);
 	}
+
 	return result;
 };
