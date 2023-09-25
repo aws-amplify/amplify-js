@@ -22,7 +22,7 @@ import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
 import {
 	AuthUser,
-	AuthUserAttribute,
+	AuthUserAttributes,
 	AuthMFAType,
 	AuthTOTPSetupDetails,
 } from '../../../types/models';
@@ -57,7 +57,7 @@ type HandleAuthChallengeRequest = {
 	clientMetadata?: ClientMetadata;
 	session?: string;
 	deviceName?: string;
-	requiredAttributes?: AuthUserAttribute;
+	requiredAttributes?: AuthUserAttributes;
 	config: CognitoUserPoolConfig;
 };
 
@@ -518,7 +518,7 @@ export function parseAttributes(attributes: string | undefined): string[] {
 }
 
 export function createAttributes(
-	attributes?: AuthUserAttribute
+	attributes?: AuthUserAttributes
 ): Record<string, string> {
 	if (!attributes) return {};
 

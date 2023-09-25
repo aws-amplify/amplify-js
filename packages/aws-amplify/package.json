@@ -182,6 +182,7 @@
 		"analytics",
 		"api",
 		"auth",
+		"geo",
 		"internals",
 		"storage",
 		"datastore"
