@@ -93,7 +93,6 @@
 		"server"
 	],
 	"dependencies": {
-		"@smithy/util-base64": "2.0.0",
 		"tslib": "^2.5.0",
 		"typescript": "5.0.2"
 	},
@@ -146,7 +145,7 @@
 		],
 		"testSequencer": "./testSequencer.js",
 		"testPathIgnorePatterns": [
-			"__tests__/utils/*",
+			"__tests__/testUtils/*",
 			"__tests__/providers/cognito/testUtils/*",
 			"__tests__/hosted-ui"
 		],

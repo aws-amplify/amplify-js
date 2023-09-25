@@ -23,14 +23,19 @@ export const refreshAuthTokens: TokenRefresher = async ({
 	const region = getRegion(authConfig.Cognito.userPoolId);
 	assertAuthTokensWithRefreshToken(tokens);
 	const refreshTokenString = tokens.refreshToken;
+
+	const AuthParameters: Record<string, string> = {
+		REFRESH_TOKEN: refreshTokenString,
+	};
+	if (tokens.deviceMetadata?.deviceKey) {
+		AuthParameters['DEVICE_KEY'] = tokens.deviceMetadata.deviceKey;
+	}
 	const { AuthenticationResult } = await initiateAuth(
 		{ region },
 		{
 			ClientId: authConfig?.Cognito?.userPoolClientId,
 			AuthFlow: 'REFRESH_TOKEN_AUTH',
-			AuthParameters: {
-				REFRESH_TOKEN: refreshTokenString,
-			},
+			AuthParameters,
 		}
 	);
 
@@ -48,15 +53,11 @@ export const refreshAuthTokens: TokenRefresher = async ({
 	}
 	const clockDrift = iat * 1000 - new Date().getTime();
 	const refreshToken = AuthenticationResult?.RefreshToken;
-	const NewDeviceMetadata = JSON.stringify(
-		AuthenticationResult?.NewDeviceMetadata
-	);
 
 	return {
 		accessToken,
 		idToken,
 		clockDrift,
 		refreshToken,
-		NewDeviceMetadata,
 	};
 };

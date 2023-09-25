@@ -63,19 +63,23 @@
 		"@aws-crypto/sha256-js": "5.0.0",
 		"@aws-sdk/types": "3.398.0",
 		"@smithy/util-hex-encoding": "2.0.0",
+		
 		"js-cookie": "^2.2.1",
 		"tslib": "^2.5.0",
 		"uuid": "^9.0.0",
-		"zen-observable-ts": "0.8.19"
+		"rxjs": "^7.8.1"
 	},
 	"devDependencies": {
 		"@react-native-async-storage/async-storage": "^1.17.12",
 		"@react-native-community/netinfo": "4.7.0",
+		"@types/base-64": "1.0.0",
 		"@types/js-cookie": "^2.2.7",
 		"@types/uuid": "^9.0.0",
+		"base-64": "1.0.0",
 		"find": "^0.2.7",
 		"genversion": "^2.2.0",
 		"react-native": "^0.68.7",
+		"react-native-get-random-values": "1.9.0",
 		"typescript": "5.0.2"
 	},
 	"size-limit": [
