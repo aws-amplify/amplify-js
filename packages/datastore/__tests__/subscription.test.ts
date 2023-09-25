@@ -1,4 +1,4 @@
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 let mockObservable = new Observable(() => {});
 const mockGraphQL = jest.fn(() => mockObservable);
 
