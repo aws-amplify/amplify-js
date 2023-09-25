@@ -3,11 +3,6 @@
 
 // Logging constants
 export const AWS_CLOUDWATCH_CATEGORY = 'Logging';
-export const NO_CREDS_ERROR_STRING = 'No credentials';
-export const RETRY_ERROR_CODES = [
-	'ResourceNotFoundException',
-	'InvalidSequenceTokenException',
-];
 
 /**
  * This Symbol is used to reference an internal-only PubSub provider that
