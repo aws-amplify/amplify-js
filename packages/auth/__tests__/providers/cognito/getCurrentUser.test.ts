@@ -62,7 +62,6 @@ describe('getUser API error path cases:', () => {
 		try {
 			const result = await getCurrentUser();
 		} catch (error) {
-			console.log(error);
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(USER_UNAUTHENTICATED_EXCEPTION);
 		}

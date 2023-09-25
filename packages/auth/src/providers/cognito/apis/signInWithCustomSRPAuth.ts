@@ -10,6 +10,7 @@ import {
 	handleCustomSRPAuthFlow,
 	getSignInResult,
 	getSignInResultFromError,
+	getNewDeviceMetatada,
 } from '../utils/signInHelpers';
 import {
 	InitiateAuthException,
@@ -71,7 +72,14 @@ export async function signInWithCustomSRPAuth(
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
-			await cacheCognitoTokens(AuthenticationResult);
+			await cacheCognitoTokens({
+				...AuthenticationResult,
+				NewDeviceMetadata: await getNewDeviceMetatada(
+					authConfig.userPoolId,
+					AuthenticationResult.NewDeviceMetadata,
+					AuthenticationResult.AccessToken
+				),
+			});
 			cleanActiveSignInState();
 			return {
 				isSignedIn: true,

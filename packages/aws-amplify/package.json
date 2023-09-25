@@ -246,7 +246,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "27.70 kB"
+			"limit": "27.69 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
@@ -264,7 +264,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignIn }",
-			"limit": "17.10 kB"
+			"limit": "26.913 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -329,8 +329,8 @@
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
-			"import": "{ signIn, signOut, fetchAuthSession }",
-			"limit": "28.70 kB"
+			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
+			"limit": "29.56 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
