@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { openAuthSessionAsync } from './apis/openAuthSessionAsync';
-import { webBrowserNativeModule } from './apis/webBrowserNativeModule';
+import { nativeModule } from './nativeModule';
 
 const mergedModule = {
-	...webBrowserNativeModule,
+	...nativeModule,
 	openAuthSessionAsync,
 };
 

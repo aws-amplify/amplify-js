@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NativeModules, Platform } from 'react-native';
-import { WebBrowserNativeModule } from '../types';
+import { WebBrowserNativeModule } from './types';
 
 const LINKING_ERROR =
 	`The package '@aws-amplify/rtn-web-browser' doesn't seem to be linked. Make sure: \n\n` +
@@ -10,7 +10,7 @@ const LINKING_ERROR =
 	'- You rebuilt the app after installing the package\n' +
 	'- You are not using Expo Go\n';
 
-export const webBrowserNativeModule: WebBrowserNativeModule =
+export const nativeModule: WebBrowserNativeModule =
 	NativeModules.AmplifyRTNWebBrowser
 		? NativeModules.AmplifyRTNWebBrowser
 		: new Proxy(
