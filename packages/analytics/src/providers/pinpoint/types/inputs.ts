@@ -8,11 +8,9 @@ import { AnalyticsIdentifyUserInput } from '../../../types';
 /**
  * Input type for Pinpoint record API.
  */
-export type RecordInput = {
-	/**
-	 * An event to send to the default Analytics provider.
-	 */
-	event: PinpointAnalyticsEvent;
-};
+export type RecordInput = PinpointAnalyticsEvent;
 
+/**
+ * Input type for Pinpoint identifyUser API.
+ */
 export type IdentifyUserInput = AnalyticsIdentifyUserInput<IdentifyUserOptions>;
