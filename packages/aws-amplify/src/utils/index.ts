@@ -4,4 +4,4 @@
 /*
 This file maps exports from `aws-amplify/utils`.
 */
-export { Hub } from '@aws-amplify/core';
+export { Hub, I18n } from '@aws-amplify/core';
