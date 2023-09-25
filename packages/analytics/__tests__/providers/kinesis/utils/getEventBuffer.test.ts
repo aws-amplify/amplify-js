@@ -3,30 +3,15 @@
 
 import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEventBuffer';
 import { EventBuffer } from '../../../../src/utils/eventBuffer';
+import {
+	mockBufferConfig,
+	mockConfig,
+	mockCredentialConfig,
+} from '../../../testUtils/mockConstants.test';
 
 jest.mock('../../../../src/utils/eventBuffer');
 
 describe('Kinesis Provider Util: getEventBuffer', () => {
-	const mockBufferConfig = {
-		bufferSize: 10,
-		flushSize: 5,
-		flushInterval: 50,
-	};
-
-	const mockConfig = {
-		...mockBufferConfig,
-		region: 'us-east-1',
-	};
-
-	const mockCredentialConfig = {
-		credentials: {
-			accessKeyId: 'accessKeyId0',
-			secretAccessKey: 'secretAccessKey0',
-			sessionToken: 'sessionToken0',
-		},
-		identityId: 'identity0',
-	};
-
 	const mockEventBuffer = EventBuffer as jest.Mock;
 
 	afterEach(() => {

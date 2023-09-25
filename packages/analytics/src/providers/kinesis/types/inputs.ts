@@ -9,6 +9,4 @@ export type KinesisEvent = {
 	data: KinesisEventData;
 };
 
-export type RecordInput = {
-	event: KinesisEvent;
-};
+export type RecordInput = KinesisEvent;
