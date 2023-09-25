@@ -3,7 +3,7 @@
 
 import { ConsoleLogger as Logger } from '../Logger';
 import { Amplify } from '../singleton';
-import { I18nOptions } from './types';
+import { I18nConfig } from './types';
 
 const logger = new Logger('I18n');
 
@@ -14,7 +14,7 @@ export class I18n {
 	/**
 	 * @private
 	 */
-	_options: I18nOptions | null = null;
+	_options: I18nConfig | null = null;
 
 	/**
 	 * @private

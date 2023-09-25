@@ -4,12 +4,12 @@
 import { I18n as I18nClass } from './I18n';
 
 import { ConsoleLogger as Logger } from '../Logger';
-import { I18nOptions } from './types';
+import { I18nConfig } from './types';
 import { assert, I18nErrorCode } from './errorHelpers';
 
 const logger = new Logger('I18n');
 
-let _config: I18nOptions = { language: null };
+let _config: I18nConfig = { language: null };
 let _i18n: I18nClass | null = null;
 
 /**
