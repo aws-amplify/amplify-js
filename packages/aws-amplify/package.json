@@ -62,11 +62,6 @@
 			"import": "./lib-esm/analytics/kinesis-firehose/index.js",
 			"require": "./lib/analytics/kinesis-firehose/index.js"
 		},
-		"./analytics/personalize": {
-			"types": "./lib-esm/analytics/personalize/index.d.ts",
-			"import": "./lib-esm/analytics/personalize/index.js",
-			"require": "./lib/analytics/personalize/index.js"
-		},
 		"./storage": {
 			"types": "./lib-esm/storage/index.d.ts",
 			"import": "./lib-esm/storage/index.js",
@@ -135,10 +130,6 @@
 			],
 			"analytics/kinesis-firehose": [
 				"./lib-esm/analytics/kinesis-firehose/index.d.ts"
-			],
-			"analytics/personalize": [
-				"./lib-esm/analytics/personalize/index.d.ts"
-
 			],
 			"storage": [
 				"./lib-esm/storage/index.d.ts"
@@ -255,7 +246,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "28.30 kB"
+			"limit": "28.00 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
@@ -327,7 +318,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect }",
-			"limit": "21.5 kB"
+			"limit": "21.50 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
@@ -339,13 +330,13 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "30.20 kB"
+			"limit": "30.00 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "21.90 kB"
+			"limit": "22.00 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
