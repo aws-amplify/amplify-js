@@ -184,6 +184,7 @@
 		"@aws-amplify/analytics": "7.0.0",
 		"@aws-amplify/auth": "6.0.0",
 		"@aws-amplify/core": "6.0.0",
+		"@aws-amplify/geo": "3.0.0",
 		"@aws-amplify/storage": "6.0.0",
 		"@aws-amplify/datastore": "5.0.0",
 		"tslib": "^2.5.0"
