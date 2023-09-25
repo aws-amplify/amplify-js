@@ -22,7 +22,7 @@ type EndpointConfig = {
 export type APIConfig = {
 	REST?: Record<string, EndpointConfig>;
 	AppSync?: {
-		defaultAuthMode: ApiAuthModeKeys;
+		defaultAuthMode: ApiAuthMode;
 		region: string;
 		endpoint: string;
 		modelIntrospectionSchema?: any;
