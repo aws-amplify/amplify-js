@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 import {
 	InternalSchema,
 	ModelInstanceMetadata,

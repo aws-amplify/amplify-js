@@ -1,4 +1,4 @@
-import { urlSafeEncode, urlSafeDecode } from '../src/Util';
+import { urlSafeEncode, urlSafeDecode } from '../src/utils';
 import { TextDecoder, TextEncoder } from 'util';
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
