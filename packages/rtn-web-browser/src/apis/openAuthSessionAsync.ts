@@ -7,7 +7,7 @@ import {
 	NativeEventSubscription,
 	Platform,
 } from 'react-native';
-import { webBrowserNativeModule } from './webBrowserNativeModule';
+import { nativeModule } from '../nativeModule';
 
 let appStateListener: NativeEventSubscription | undefined;
 let redirectListener: NativeEventSubscription | undefined;
@@ -19,7 +19,7 @@ export const openAuthSessionAsync = async (
 	// enforce HTTPS
 	const httpsUrl = url.replace('http://', 'https://');
 	if (Platform.OS === 'ios') {
-		return webBrowserNativeModule.openAuthSessionAsync(httpsUrl);
+		return nativeModule.openAuthSessionAsync(httpsUrl);
 	}
 
 	if (Platform.OS === 'android') {
@@ -40,7 +40,7 @@ const openAuthSessionAndroid = async (
 				getAppStatePromise(),
 			]),
 			// open chrome tab
-			webBrowserNativeModule.openAuthSessionAsync(url),
+			nativeModule.openAuthSessionAsync(url),
 		]);
 		return redirectUrl;
 	} finally {
