@@ -14,25 +14,26 @@ export type LibraryAPIOptions = {
 	customHeaders: Function;
 };
 
+type EndpointConfig = {
+	endpoint: string;
+	defaultAuthMode: ApiAuthMode;
+};
+
 export type APIConfig = {
+	REST?: Record<string, EndpointConfig>;
 	AppSync?: {
-		defaultAuthMode: GraphQLAuthMode;
+		defaultAuthMode: ApiAuthModeKeys;
 		region: string;
 		endpoint: string;
 		modelIntrospectionSchema?: any;
 	};
 };
 
-export type GraphQLAuthMode =
+export type ApiAuthMode =
 	| { type: 'apiKey'; apiKey: string }
 	| { type: 'jwt'; token?: 'id' | 'access' }
-	| { type: 'iam' }
+	| { type: 'iam'; region?: string; service?: string }
 	| { type: 'lambda' }
 	| { type: 'custom' };
 
-export type GraphQLAuthModeKeys =
-	| 'apiKey'
-	| 'jwt'
-	| 'iam'
-	| 'lambda'
-	| 'custom';
+export type ApiAuthModeKeys = 'apiKey' | 'jwt' | 'iam' | 'lambda' | 'custom';

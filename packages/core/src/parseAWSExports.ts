@@ -59,7 +59,7 @@ export const parseAWSExports = (
 				defaultAuthMode: {
 					type: authTypeMapping[aws_appsync_authenticationType],
 					apiKey: aws_appsync_apiKey,
-				},
+				} as any,
 				endpoint: aws_appsync_graphqlEndpoint,
 				region: aws_appsync_region,
 			},
