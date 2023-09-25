@@ -22,6 +22,7 @@ export const updateEndpoint = async ({
 	identityId,
 	optOut,
 	region,
+	userAttributes,
 	userId,
 	userProfile,
 	userAgentValue,
@@ -29,7 +30,15 @@ export const updateEndpoint = async ({
 	const endpointId = await getEndpointId(appId, category);
 	// only generate a new endpoint id if one was not found in cache
 	const createdEndpointId = !endpointId ? uuidv4() : undefined;
-	const { attributes, demographic, location, metrics } = userProfile ?? {};
+	const {
+		customProperties,
+		demographic,
+		email,
+		location,
+		metrics,
+		name,
+		plan,
+	} = userProfile ?? {};
 	const clientInfo = ClientDevice.clientInfo();
 	const mergedDemographic = {
 		appVersion: clientInfo.appVersion,
@@ -39,6 +48,13 @@ export const updateEndpoint = async ({
 		platform: clientInfo.platform,
 		...demographic,
 	};
+	const shouldAddAttributes = email || customProperties || name || plan;
+	const attributes = {
+		...(email && { email: [email] }),
+		...(name && { name: [name] }),
+		...(plan && { plan: [plan] }),
+		...customProperties,
+	};
 	const input: UpdateEndpointInput = {
 		ApplicationId: appId,
 		EndpointId: endpointId ?? createdEndpointId,
@@ -47,7 +63,7 @@ export const updateEndpoint = async ({
 			EffectiveDate: new Date().toISOString(),
 			ChannelType: channelType,
 			Address: address,
-			Attributes: attributes,
+			Attributes: shouldAddAttributes ? attributes : undefined,
 			Demographic: {
 				AppVersion: mergedDemographic.appVersion,
 				Locale: mergedDemographic.locale,
@@ -70,7 +86,7 @@ export const updateEndpoint = async ({
 			OptOut: optOut,
 			User: {
 				UserId: userId ?? identityId,
-				UserAttributes: attributes,
+				UserAttributes: userAttributes,
 			},
 		},
 	};

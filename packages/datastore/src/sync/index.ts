@@ -1,16 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	ConsoleLogger as Logger,
+	Logger,
 	BackgroundProcessManager,
-	Hub,
-} from '@aws-amplify/core';
-import {
-	CONTROL_MSG as PUBSUB_CONTROL_MSG,
-	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
-	ConnectionState,
-} from '@aws-amplify/pubsub';
-import Observable, { ZenObservable } from 'zen-observable-ts';
+} from '@aws-amplify/core/internals/utils';
+import { Hub } from '@aws-amplify/core';
+
+import { filter, Observable, Observer, of, SubscriptionLike } from 'rxjs';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import { ExclusiveStorage as Storage } from '../storage/storage';
@@ -51,6 +47,12 @@ import {
 	predicateToGraphQLCondition,
 	TransformerMutationType,
 } from './utils';
+
+import {
+	CONTROL_MSG as PUBSUB_CONTROL_MSG,
+	ConnectionState,
+	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
+} from '@aws-amplify/api-graphql';
 
 const logger = new Logger('DataStore');
 
@@ -213,7 +215,7 @@ export class SyncEngine {
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			logger.log('starting sync engine...');
 
-			let subscriptions: ZenObservable.Subscription[] = [];
+			let subscriptions: SubscriptionLike[] = [];
 
 			this.runningProcesses.add(async () => {
 				try {
@@ -414,10 +416,12 @@ export class SyncEngine {
 
 				this.storage
 					.observe(null, null, ownSymbol)
-					.filter(({ model }) => {
-						const modelDefinition = this.getModelDefinition(model);
-						return modelDefinition.syncable === true;
-					})
+					.pipe(
+						filter(({ model }) => {
+							const modelDefinition = this.getModelDefinition(model);
+							return modelDefinition.syncable === true;
+						})
+					)
 					.subscribe({
 						next: async ({ opType, model, element, condition }) =>
 							this.runningProcesses.add(async () => {
@@ -529,11 +533,11 @@ export class SyncEngine {
 		ControlMessageType<ControlMessage>
 	> {
 		if (!this.online) {
-			return Observable.of<ControlMessageType<ControlMessage>>();
+			return of<ControlMessageType<ControlMessage>>({} as any); // TODO(v6): fix this
 		}
 
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
-			let syncQueriesSubscription: ZenObservable.Subscription;
+			let syncQueriesSubscription: SubscriptionLike;
 
 			this.runningProcesses.isOpen &&
 				this.runningProcesses.add(async onTerminate => {

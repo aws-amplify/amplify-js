@@ -21,6 +21,7 @@ export type PinpointProviderConfig = {
 export type PinpointServiceOptions = {
 	address?: string;
 	optOut?: 'ALL' | 'NONE';
+	userAttributes?: Record<string, string[]>;
 };
 
 export type PinpointSession = {
@@ -38,7 +39,7 @@ export type PinpointAnalyticsEvent = {
 type PinpointCommonParameters = {
 	appId: string;
 	category: SupportedCategory;
-	credentials: AuthSession['credentials'];
+	credentials: Required<AuthSession>['credentials'];
 	identityId?: AuthSession['identityId'];
 	region: string;
 	userAgentValue?: string;

@@ -6,7 +6,7 @@ import {
 	resolveCredentials,
 } from '../../../../src/providers/pinpoint/utils';
 import { AnalyticsValidationErrorCode } from '../../../../src/errors';
-import { RecordParameters } from '../../../../src/types';
+import { RecordInput } from '../../../../src/providers/pinpoint/types';
 import {
 	appId,
 	identityId,
@@ -38,9 +38,7 @@ describe('Pinpoint API: record', () => {
 	});
 
 	it('invokes the core record implementation', async () => {
-		record({
-			event,
-		});
+		record(event);
 
 		expect(mockResolveCredentials).toBeCalledTimes(1);
 		expect(mockResolveConfig).toBeCalledTimes(1);
@@ -62,9 +60,7 @@ describe('Pinpoint API: record', () => {
 	it('logs an error when credentials can not be fetched', async () => {
 		mockResolveCredentials.mockRejectedValue(new Error('Mock Error'));
 
-		record({
-			event,
-		});
+		record(event);
 
 		await new Promise(process.nextTick);
 
@@ -72,25 +68,11 @@ describe('Pinpoint API: record', () => {
 		expect(loggerWarnSpy).toBeCalledWith(expect.any(String), expect.any(Error));
 	});
 
-	it('throws a validation error when no event is provided', () => {
-		const mockParams = {} as RecordParameters;
-
-		try {
-			record(mockParams);
-		} catch (e) {
-			expect(e.name).toEqual(AnalyticsValidationErrorCode.NoEvent);
-		}
-
-		expect.assertions(1);
-	});
-
 	it('throws a validation error when event does not specify a name', () => {
-		const mockParams = {
-			event: {},
-		};
+		const mockParams = {};
 
 		try {
-			record(mockParams as RecordParameters);
+			record(mockParams as RecordInput);
 		} catch (e) {
 			expect(e.name).toEqual(AnalyticsValidationErrorCode.NoEventName);
 		}

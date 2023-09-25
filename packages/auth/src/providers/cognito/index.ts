@@ -19,6 +19,40 @@ export { confirmUserAttribute } from './apis/confirmUserAttribute';
 export { signInWithRedirect } from './apis/signInWithRedirect';
 export { fetchUserAttributes } from './apis/fetchUserAttributes';
 export { signOut } from './apis/signOut';
+export { sendUserAttributeVerificationCode } from './apis/sendUserAttributeVerificationCode';
+export {
+	ConfirmResetPasswordInput,
+	ConfirmSignInInput,
+	ConfirmSignUpInput,
+	ConfirmUserAttributeInput,
+	ResendSignUpCodeInput,
+	ResetPasswordInput,
+	SignInInput,
+	SignInWithRedirectInput,
+	SignOutInput,
+	SignUpInput,
+	UpdateMFAPreferenceInput,
+	UpdatePasswordInput,
+	UpdateUserAttributesInput,
+	VerifyTOTPSetupInput,
+	SendUserAttributeVerificationCodeInput,
+} from './types/inputs';
+
+export {
+	FetchUserAttributesOutput,
+	GetCurrentUserOutput,
+	ConfirmSignInOutput,
+	ConfirmSignUpOutput,
+	FetchMFAPreferenceOutput,
+	ResendSignUpCodeOutput,
+	ResetPasswordOutput,
+	SetUpTOTPOutput,
+	SignInOutput,
+	SignOutOutput,
+	SignUpOutput,
+	UpdateUserAttributesOutput,
+	SendUserAttributeVerificationCodeOutput,
+} from './types/outputs';
 export {
 	cognitoCredentialsProvider,
 	CognitoAWSCredentialsAndIdentityIdProvider,
@@ -29,5 +63,5 @@ export {
 	CognitoUserPoolTokenProviderType,
 	TokenOrchestrator,
 	DefaultTokenStore,
-	CognitoUserPoolTokenRefresher,
+	refreshAuthTokens,
 } from './tokenProvider';

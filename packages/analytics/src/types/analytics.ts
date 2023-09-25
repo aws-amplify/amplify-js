@@ -13,7 +13,7 @@ export interface EventMetrics {
 	[key: string]: number;
 }
 
-export interface pageViewTrackOpts {
+export interface PageViewTrackOpts {
 	enable: boolean;
 	type?: string;
 	eventName?: string;

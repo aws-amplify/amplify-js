@@ -2,8 +2,8 @@ import {
 	retry,
 	jitteredExponentialRetry,
 	NonRetryableError,
-} from '../src/Util/Retry';
-import { BackgroundProcessManager } from '../src/Util/BackgroundProcessManager';
+} from '../src/utils/retry';
+import { BackgroundProcessManager } from '../src/BackgroundProcessManager';
 
 describe('retry', () => {
 	test('will retry a function until it succeeds', async () => {

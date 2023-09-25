@@ -1,25 +1,22 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// TODO: Remove "./Auth" export
-export * from './Auth';
-
 export {
-	AdditionalInfo,
-	DeliveryMedium,
-	AnyAttribute,
+	AuthAdditionalInfo,
+	AuthDeliveryMedium,
+	AuthAnyAttribute,
 	AuthCodeDeliveryDetails,
 	AuthNextSignUpStep,
 	AuthStandardAttributeKey,
 	AuthUserAttributeKey,
-	AuthUserAttribute,
+	AuthUserAttributes,
 	AuthNextResetPasswordStep,
 	AuthNextSignInStep,
 	AuthNextUpdateAttributeStep,
-	MFAType,
-	AllowedMFATypes,
+	AuthMFAType,
+	AuthAllowedMFATypes,
 	AuthUser,
-	TOTPSetupDetails,
+	AuthTOTPSetupDetails,
 	AuthResetPasswordStep,
 	AuthSignUpStep,
 	AuthUpdateAttributeStep,
@@ -28,24 +25,27 @@ export {
 export { AuthServiceOptions, AuthSignUpOptions } from './options';
 
 export {
-	ConfirmResetPasswordRequest,
-	ResetPasswordRequest,
-	ResendSignUpCodeRequest,
-	SignUpRequest,
-	SignInRequest,
-	ConfirmSignUpRequest,
-	ConfirmSignInRequest,
-	UpdatePasswordRequest,
-	UpdateUserAttributesRequest,
-	GetCurrentUserRequest,
-	ConfirmUserAttributeRequest,
-	VerifyTOTPSetupRequest,
-} from './requests';
+	AuthConfirmResetPasswordInput,
+	AuthResetPasswordInput,
+	AuthResendSignUpCodeInput,
+	AuthSignUpInput,
+	AuthSignInInput,
+	AuthConfirmSignUpInput,
+	AuthConfirmSignInInput,
+	AuthUpdatePasswordInput,
+	AuthUpdateUserAttributesInput,
+	AuthConfirmUserAttributeInput,
+	AuthVerifyTOTPSetupInput,
+	AuthSignInWithRedirectInput,
+	AuthSignOutInput,
+	AuthSendUserAttributeVerificationCodeInput,
+} from './inputs';
 
 export {
-	AuthSignUpResult,
-	AuthSignInResult,
-	ResetPasswordResult,
-	UpdateUserAttributeResult,
-	UpdateUserAttributesResult,
-} from './results';
+	AuthSignUpOutput,
+	AuthSignInOutput,
+	AuthSignOutOutput,
+	AuthResetPasswordOutput,
+	AuthUpdateUserAttributeOutput,
+	AuthUpdateUserAttributesOutput,
+} from './outputs';

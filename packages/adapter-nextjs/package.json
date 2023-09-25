@@ -43,7 +43,7 @@
 		"lib",
 		"lib-esm",
 		"src",
-		"withAmplify"
+		"with-amplify"
 	],
 	"homepage": "https://aws-amplify.github.io/",
 	"jest": {

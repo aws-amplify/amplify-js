@@ -5,8 +5,6 @@ import {
 	StorageOptions,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
-	StorageCopySourceOptions,
-	StorageCopyDestinationOptions,
 } from './options';
 
 export type StorageOperationInput<Options extends StorageOptions> = {
@@ -17,8 +15,10 @@ export type StorageOperationInput<Options extends StorageOptions> = {
 export type StorageGetPropertiesInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
-export type StorageRemoveInput<Options extends StorageOptions> =
-	StorageOperationInput<Options>;
+export type StorageRemoveInput<Options extends StorageOptions> = {
+	key: string;
+	options?: Options;
+};
 
 export type StorageListInput<
 	Options extends StorageListAllOptions | StorageListPaginateOptions
@@ -38,9 +38,12 @@ export type StorageUploadDataInput<Options extends StorageOptions> =
 		data: StorageUploadDataPayload;
 	};
 
-export type StorageCopyInput = {
-	source: StorageCopySourceOptions;
-	destination: StorageCopyDestinationOptions;
+export type StorageCopyInput<
+	SourceOptions extends StorageOptions,
+	DestinationOptions extends StorageOptions
+> = {
+	source: SourceOptions;
+	destination: DestinationOptions;
 };
 
 /**

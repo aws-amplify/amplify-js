@@ -3,10 +3,6 @@
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import {
-	SignInRequest,
-	AuthSignInResult,
-} from '../../../types';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
 	handleCustomAuthFlowWithoutSRP,
@@ -16,7 +12,10 @@ import {
 import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
-import { CognitoSignInOptions } from '../types';
+import {
+	SignInWithCustomAuthInput,
+	SignInWithCustomAuthOutput,
+} from '../types';
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
@@ -30,20 +29,19 @@ import {
 /**
  * Signs a user in using a custom authentication flow without password
  *
- * @param signInRequest - The SignInRequest object
+ * @param input -  The SignInWithCustomAuthInput object
  * @returns AuthSignInResult
  * @throws service: {@link InitiateAuthException } - Cognito service errors thrown during the sign-in process.
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
- *
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * @throws SignInWithCustomAuthOutput - Thrown when the token provider config is invalid.
  */
 export async function signInWithCustomAuth(
-	signInRequest: SignInRequest<CognitoSignInOptions>
-): Promise<AuthSignInResult> {
+	input: SignInWithCustomAuthInput
+): Promise<SignInWithCustomAuthOutput> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const { username, password, options } = signInRequest;
+	const { username, password, options } = input;
 	const metadata = options?.serviceOptions?.clientMetadata;
 	assertValidationError(
 		!!username,

@@ -4,14 +4,14 @@
 /**
  * Additional data that may be returned from Auth APIs.
  */
-export type AdditionalInfo = { [key: string]: string };
+export type AuthAdditionalInfo = { [key: string]: string };
 
-export type AnyAttribute = string & {};
+export type AuthAnyAttribute = string & {};
 
 /**
  * Denotes the medium over which a confirmation code was sent.
  */
-export type DeliveryMedium = 'EMAIL' | 'SMS' | 'PHONE' | 'UNKNOWN';
+export type AuthDeliveryMedium = 'EMAIL' | 'SMS' | 'PHONE' | 'UNKNOWN';
 
 /**
  * Data describing the dispatch of a confirmation code.
@@ -20,7 +20,7 @@ export type AuthCodeDeliveryDetails<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	destination?: string;
-	deliveryMedium?: DeliveryMedium;
+	deliveryMedium?: AuthDeliveryMedium;
 	attributeName?: UserAttributeKey;
 };
 /**
@@ -31,18 +31,18 @@ export type AuthNextResetPasswordStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	resetPasswordStep: AuthResetPasswordStep;
-	additionalInfo?: AdditionalInfo;
+	additionalInfo?: AuthAdditionalInfo;
 	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
 };
 
-export type TOTPSetupDetails = {
+export type AuthTOTPSetupDetails = {
 	sharedSecret: string;
 	getSetupUri: (appName: string, accountName?: string) => URL;
 };
 
-export type MFAType = 'SMS' | 'TOTP';
+export type AuthMFAType = 'SMS' | 'TOTP';
 
-export type AllowedMFATypes = MFAType[];
+export type AuthAllowedMFATypes = AuthMFAType[];
 
 export type ContinueSignInWithTOTPSetup = {
 	/**
@@ -57,7 +57,7 @@ export type ContinueSignInWithTOTPSetup = {
 	 * ```
 	 */
 	signInStep: 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP';
-	totpSetupDetails: TOTPSetupDetails;
+	totpSetupDetails: AuthTOTPSetupDetails;
 };
 export type ConfirmSignInWithTOTPCode = {
 	/**
@@ -85,7 +85,7 @@ export type ContinueSignInWithMFASelection = {
 	 * ```
 	 */
 	signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SELECTION';
-	allowedMFATypes?: AllowedMFATypes;
+	allowedMFATypes?: AuthAllowedMFATypes;
 };
 
 export type ConfirmSignInWithCustomChallenge = {
@@ -99,7 +99,7 @@ export type ConfirmSignInWithCustomChallenge = {
 	 * ```
 	 */
 	signInStep: 'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE';
-	additionalInfo?: AdditionalInfo;
+	additionalInfo?: AuthAdditionalInfo;
 };
 
 export type ConfirmSignInWithNewPasswordRequired<
@@ -207,9 +207,9 @@ export type AuthStandardAttributeKey =
 	| 'zoneinfo';
 
 /**
- * Key/value pairs describing a user attribute.
+ * Key/value pairs describing a user attributes.
  */
-export type AuthUserAttribute<
+export type AuthUserAttributes<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	[Attribute in UserAttributeKey]?: string;
@@ -218,7 +218,7 @@ export type AuthUserAttribute<
 /**
  * A user attribute key type consisting of standard OIDC claims or custom attributes.
  */
-export type AuthUserAttributeKey = AuthStandardAttributeKey | AnyAttribute;
+export type AuthUserAttributeKey = AuthStandardAttributeKey | AuthAnyAttribute;
 
 /**
  * Denotes the next step in the Sign Up process.
@@ -232,7 +232,7 @@ export type AuthNextSignUpStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	signUpStep?: AuthSignUpStep;
-	additionalInfo?: AdditionalInfo;
+	additionalInfo?: AuthAdditionalInfo;
 	codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
 };
 

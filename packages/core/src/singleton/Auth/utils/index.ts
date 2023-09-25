@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { asserts } from '../../../Util/errors/AssertError';
+import { AuthConfigurationErrorCode, assert } from './errorHelpers';
 
 import {
 	AuthConfig,
@@ -30,11 +30,10 @@ export function assertTokenProviderConfig(
 			!!cognitoConfig.userPoolClientId && !!cognitoConfig.userPoolClientId;
 	}
 
-	return asserts(assertionValid, {
-		name: 'AuthTokenConfigException',
-		message: 'Auth Token Provider not configured',
-		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
-	});
+	return assert(
+		assertionValid,
+		AuthConfigurationErrorCode.AuthTokenConfigException
+	);
 }
 
 export function assertOAuthConfig(
@@ -46,15 +45,13 @@ export function assertOAuthConfig(
 		!!cognitoConfig?.loginWith?.oauth?.redirectSignIn &&
 		!!cognitoConfig?.loginWith?.oauth?.responseType;
 
-	return asserts(validOAuthConfig, {
-		name: 'OAuthNotConfigureException',
-		message: 'oauth param not configured',
-		recoverySuggestion:
-			'Make sure to call Amplify.configure with oauth parameter in your app',
-	});
+	return assert(
+		validOAuthConfig,
+		AuthConfigurationErrorCode.OAuthNotConfigureException
+	);
 }
 
-export function assertIdentityPooIdConfig(
+export function assertIdentityPoolIdConfig(
 	cognitoConfig?: StrictUnion<
 		| CognitoUserPoolConfig
 		| CognitoUserPoolAndIdentityPoolConfig
@@ -62,25 +59,21 @@ export function assertIdentityPooIdConfig(
 	>
 ): asserts cognitoConfig is CognitoIdentityPoolConfig {
 	const validConfig = !!cognitoConfig?.identityPoolId;
-	return asserts(validConfig, {
-		name: 'AuthIdentityPoolIdException',
-		message: 'Auth IdentityPoolId not configured',
-		recoverySuggestion:
-			'Make sure to call Amplify.configure in your app with a valid IdentityPoolId',
-	});
+	return assert(
+		validConfig,
+		AuthConfigurationErrorCode.InvalidIdentityPoolIdException
+	);
 }
 
-function assertUserPoolAndIdentityPooConfig(
+function assertUserPoolAndIdentityPoolConfig(
 	authConfig: AuthConfig
 ): asserts authConfig is AuthUserPoolAndIdentityPoolConfig {
 	const validConfig =
 		!!authConfig?.Cognito.identityPoolId && !!authConfig?.Cognito.userPoolId;
-	return asserts(validConfig, {
-		name: 'AuthUserPoolAndIdentityPoolException',
-		message: 'Auth UserPool and IdentityPool not configured',
-		recoverySuggestion:
-			'Make sure to call Amplify.configure in your app with UserPoolId and IdentityPoolId',
-	});
+	return assert(
+		validConfig,
+		AuthConfigurationErrorCode.AuthUserPoolAndIdentityPoolException
+	);
 }
 
 export function decodeJWT(token: string): JWT {

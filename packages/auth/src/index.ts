@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// Default provider APIs & enums
+// Default provider APIs, types & enums
 export {
 	signUp,
 	resetPassword,
@@ -21,6 +21,41 @@ export {
 	signInWithRedirect,
 	fetchUserAttributes,
 	signOut,
+	sendUserAttributeVerificationCode,
+} from './providers/cognito';
+
+export {
+	ConfirmResetPasswordInput,
+	ConfirmSignInInput,
+	ConfirmSignUpInput,
+	ConfirmUserAttributeInput,
+	ResendSignUpCodeInput,
+	ResetPasswordInput,
+	SignInInput,
+	SignInWithRedirectInput,
+	SignOutInput,
+	SignUpInput,
+	UpdateMFAPreferenceInput,
+	UpdatePasswordInput,
+	UpdateUserAttributesInput,
+	VerifyTOTPSetupInput,
+	SendUserAttributeVerificationCodeInput,
+} from './providers/cognito';
+
+export {
+	FetchUserAttributesOutput,
+	GetCurrentUserOutput,
+	ConfirmSignInOutput,
+	ConfirmSignUpOutput,
+	FetchMFAPreferenceOutput,
+	ResendSignUpCodeOutput,
+	ResetPasswordOutput,
+	SetUpTOTPOutput,
+	SignInOutput,
+	SignOutOutput,
+	SignUpOutput,
+	UpdateUserAttributesOutput,
+	SendUserAttributeVerificationCodeOutput,
 } from './providers/cognito';
 
 export { AuthError } from './errors/AuthError';

@@ -12,7 +12,7 @@ import {
 } from '../utils/constants';
 import { updateEndpoint } from './updateEndpoint';
 import { getEventBuffer } from '../utils/getEventBuffer';
-import { AmplifyError } from '../../../libraryUtils';
+import { AmplifyError } from '../../../errors';
 
 // TODO(v6) Refactor when we add support for session tracking & `autoTrack`
 let session: PinpointSession;

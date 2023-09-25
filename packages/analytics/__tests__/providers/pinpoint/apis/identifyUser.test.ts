@@ -3,7 +3,7 @@
 
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
 import { identifyUser } from '../../../../src/providers/pinpoint/apis';
-import { IdentifyUserParameters } from '../../../../src/types';
+import { IdentifyUserInput } from '../../../../src/providers/pinpoint/types';
 import {
 	resolveConfig,
 	resolveCredentials,
@@ -42,21 +42,44 @@ describe('Analytics Pinpoint Provider API: identifyUser', () => {
 	});
 
 	it('passes through parameter along with Analytics boilerplate to core Pinpoint identifyUser API', async () => {
-		const params: IdentifyUserParameters = {
+		const input: IdentifyUserInput = {
 			userId: 'user-id',
 			userProfile: {
-				attributes: {
+				customProperties: {
 					hobbies: ['biking', 'climbing'],
 				},
+				email: 'email',
+				name: 'name',
+				plan: 'plan',
 			},
 		};
-		await identifyUser(params);
+		await identifyUser(input);
 		expect(mockUpdateEndpoint).toBeCalledWith({
-			...params,
+			...input,
 			...credentials,
 			...config,
 			category: 'Analytics',
 			userAgentValue,
+		});
+	});
+
+	it('passes through service options along with Analytics boilerplate to core Pinpoint identifyUser API', async () => {
+		const userAttributes = { hobbies: ['biking', 'climbing'] };
+		const input: IdentifyUserInput = {
+			userId: 'user-id',
+			userProfile: {},
+		};
+		const options: IdentifyUserInput['options'] = {
+			serviceOptions: { userAttributes },
+		};
+		await identifyUser({ ...input, options });
+		expect(mockUpdateEndpoint).toBeCalledWith({
+			...input,
+			...credentials,
+			...config,
+			category: 'Analytics',
+			userAgentValue,
+			userAttributes,
 		});
 	});
 });

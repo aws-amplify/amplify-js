@@ -12,11 +12,19 @@ import {
 	GetCredentialsOptions,
 	CognitoIdentityPoolConfig,
 } from './Auth/types';
+import { GeoConfig } from './Geo/types';
 import {
 	LibraryStorageOptions,
 	StorageAccessLevel,
 	StorageConfig,
 } from './Storage/types';
+
+export type LegacyConfig = {
+	/**
+	 * @deprecated The field should not be used.
+	 */
+	aws_project_region?: string;
+};
 
 export type ResourcesConfig = {
 	API?: APIConfig;
@@ -29,6 +37,7 @@ export type ResourcesConfig = {
 	// Notifications?: {};
 	// Predictions?: {};
 	Storage?: StorageConfig;
+	Geo?: GeoConfig;
 };
 
 export type LibraryOptions = {
@@ -49,4 +58,5 @@ export {
 	StorageConfig,
 	AnalyticsConfig,
 	CognitoIdentityPoolConfig,
+	GeoConfig,
 };
