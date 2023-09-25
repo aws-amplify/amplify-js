@@ -6,7 +6,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { Hub } from '@aws-amplify/core';
 
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { filter, Observable, Observer, of, SubscriptionLike } from 'rxjs';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import { ExclusiveStorage as Storage } from '../storage/storage';
@@ -215,7 +215,7 @@ export class SyncEngine {
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			logger.log('starting sync engine...');
 
-			let subscriptions: ZenObservable.Subscription[] = [];
+			let subscriptions: SubscriptionLike[] = [];
 
 			this.runningProcesses.add(async () => {
 				try {
@@ -416,10 +416,12 @@ export class SyncEngine {
 
 				this.storage
 					.observe(null, null, ownSymbol)
-					.filter(({ model }) => {
-						const modelDefinition = this.getModelDefinition(model);
-						return modelDefinition.syncable === true;
-					})
+					.pipe(
+						filter(({ model }) => {
+							const modelDefinition = this.getModelDefinition(model);
+							return modelDefinition.syncable === true;
+						})
+					)
 					.subscribe({
 						next: async ({ opType, model, element, condition }) =>
 							this.runningProcesses.add(async () => {
@@ -531,11 +533,11 @@ export class SyncEngine {
 		ControlMessageType<ControlMessage>
 	> {
 		if (!this.online) {
-			return Observable.of<ControlMessageType<ControlMessage>>();
+			return of<ControlMessageType<ControlMessage>>({} as any); // TODO(v6): fix this
 		}
 
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
-			let syncQueriesSubscription: ZenObservable.Subscription;
+			let syncQueriesSubscription: SubscriptionLike;
 
 			this.runningProcesses.isOpen &&
 				this.runningProcesses.add(async onTerminate => {

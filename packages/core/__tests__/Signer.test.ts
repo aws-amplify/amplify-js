@@ -3,7 +3,7 @@
 
 import { SignRequestOptions } from '../src/clients/middleware/signing/signer/signatureV4/types';
 import { Signer } from '../src/Signer';
-import { DateUtils } from '../src/Util/DateUtils';
+import { DateUtils } from '../src/Signer/DateUtils';
 import * as getSignatureModule from '../src/clients/middleware/signing/signer/signatureV4/utils/getSignature';
 import {
 	credentials,

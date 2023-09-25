@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger as Logger } from '../Logger';
-import { isBrowser } from '../Util/JS';
+import { isBrowser } from '../utils';
 import { Amplify } from '../Amplify';
 import { AmplifyError } from '../errors';
 import { assert, ServiceWorkerErrorCode } from './errorHelpers';

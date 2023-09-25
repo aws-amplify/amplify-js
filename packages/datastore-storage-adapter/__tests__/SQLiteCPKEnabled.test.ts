@@ -8,7 +8,7 @@
  *
  * Both files should be removed when CPK support is added.
  */
-import Observable from 'zen-observable';
+import { Observable } from 'rxjs';
 import SQLiteAdapter from '../src/SQLiteAdapter/SQLiteAdapter';
 import { testSchema, InnerSQLiteDatabase } from './helpers';
 import { initSchema, DataStore } from '@aws-amplify/datastore';

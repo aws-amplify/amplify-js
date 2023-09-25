@@ -5,21 +5,19 @@
 This file maps top-level exports from `@aws-amplify/core/internals/utils`. These are intended to be internal
 utils for use throughout the library.
 */
-// JS utilities
+// Core utilities
 export {
-	isBrowser,
-	filenameToContentType,
 	generateRandomString,
-	isEmpty,
-	isStrictObject,
-	isTextFile,
+	isBrowser,
+	isNonRetryableError,
 	isWebWorker,
-	makeQuerablePromise,
-	objectLessAttributes,
-	sortByField,
-	transferKeyToLowerCase,
-	transferKeyToUpperCase,
-} from './Util/JS';
+	jitteredBackoff,
+	jitteredExponentialRetry,
+	NonRetryableError,
+	retry,
+	urlSafeDecode,
+	urlSafeEncode,
+} from './utils';
 export { parseAWSExports } from './parseAWSExports';
 export { LegacyConfig } from './singleton/types';
 export {
@@ -43,7 +41,6 @@ export { Signer } from './Signer';
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 
 // Platform & device utils
-import { Platform } from './Platform';
 export { ClientDevice } from './ClientDevice';
 export {
 	Platform,
@@ -66,32 +63,14 @@ export {
 	PushNotificationAction,
 	StorageAction,
 } from './Platform/types';
-export const Constants = {
-	userAgent: Platform.userAgent,
-};
 
 // Service worker
 export { ServiceWorker } from './ServiceWorker';
 
 // Other utilities & constants
-export {
-	AWS_CLOUDWATCH_CATEGORY,
-	BackgroundManagerNotOpenError,
-	BackgroundProcessManager,
-	BackgroundProcessManagerState,
-	DateUtils,
-	Mutex,
-	NO_CREDS_ERROR_STRING,
-	NonRetryableError,
-	RETRY_ERROR_CODES,
-	Reachability,
-	isNonRetryableError,
-	jitteredBackoff,
-	jitteredExponentialRetry,
-	retry,
-	urlSafeDecode,
-	urlSafeEncode,
-} from './Util';
+export { BackgroundProcessManager } from './BackgroundProcessManager';
+export { Mutex } from './Mutex';
+export { Reachability } from './Reachability';
 export {
 	AmplifyError,
 	PlatformNotSupportedError,
@@ -107,6 +86,8 @@ export {
 export {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 	USER_AGENT_HEADER,
-} from './Util/Constants';
+} from './constants';
 export { fetchAuthSession } from './singleton/apis/internal/fetchAuthSession';
 export { AMPLIFY_SYMBOL } from './Hub';
+export { base64Decoder, base64Encoder } from './utils/convert';
+export { getCrypto } from './utils/globalHelpers';
