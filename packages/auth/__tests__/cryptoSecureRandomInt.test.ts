@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import cryptoSecureRandomInt from '../src/providers/cognito/utils/srp/cryptoSecureRandomInt';
+import { cryptoSecureRandomInt } from '../src/providers/cognito/utils/srp/cryptoSecureRandomInt';
 
 describe('cryptoSecureRandomInt test', () => {
 	let windowSpy: any;
