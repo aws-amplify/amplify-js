@@ -5,15 +5,16 @@ export { OperationTypeNode } from 'graphql';
 import { Observable } from 'rxjs';
 
 import { DocumentType } from '@aws-amplify/api-rest';
-import { GraphQLAuthModeKeys } from '@aws-amplify/core/internals/utils';
 export { CONTROL_MSG, ConnectionState } from './PubSub';
+import { GraphQLAuthModeKeys } from '@aws-amplify/core/internals/utils';
+
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
  */
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: Record<string, DocumentType>;
-	authMode?: string;
+	authMode?: GraphQLAuthModeKeys;
 	authToken?: string;
 	/**
 	 * @deprecated This property should not be used

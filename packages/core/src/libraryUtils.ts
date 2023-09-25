@@ -34,7 +34,7 @@ export {
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
 export { isTokenExpired } from './singleton/Auth';
-export { GraphQLAuthModeKeys } from './singleton/API/types';
+export { GraphQLAuthModeKeys, GraphQLAuthMode } from './singleton/API/types';
 export { Signer } from './Signer';
 
 // Logging utilities

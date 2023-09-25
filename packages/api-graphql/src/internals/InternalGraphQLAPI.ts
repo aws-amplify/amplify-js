@@ -23,6 +23,7 @@ import {
 } from '../types';
 import { post } from '@aws-amplify/api-rest';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
+import { translateAuthMode } from '../utils';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -264,12 +265,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private _graphqlSubscribe(
-		{
-			query,
-			variables,
-			authMode: defaultAuthenticationType,
-			authToken,
-		}: GraphQLOptions,
+		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
@@ -277,13 +273,21 @@ export class InternalGraphQLAPIClass {
 		if (!this.appSyncRealTime) {
 			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
 		}
-		return this.appSyncRealTime.subscribe({
-			query: print(query as DocumentNode),
-			variables,
-			appSyncGraphqlEndpoint: AppSync?.endpoint,
-			region: AppSync?.region,
-			authenticationType: AppSync?.defaultAuthMode,
-		});
+		return this.appSyncRealTime.subscribe(
+			{
+				query: print(query as DocumentNode),
+				variables,
+				appSyncGraphqlEndpoint: AppSync?.endpoint,
+				region: AppSync?.region,
+				authenticationType:
+					translateAuthMode(authMode, this._options['aws_appsync_apiKey']) ??
+					AppSync?.defaultAuthMode,
+				additionalHeaders: {
+					...additionalHeaders,
+				},
+			},
+			customUserAgentDetails
+		);
 	}
 }
 

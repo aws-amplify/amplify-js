@@ -10,7 +10,6 @@ import { Hub, fetchAuthSession } from '@aws-amplify/core';
 import {
 	CONTROL_MSG,
 	ConnectionState,
-	PubSubContent,
 	PubSubContentObserver,
 } from '../../types/PubSub';
 
@@ -38,9 +37,8 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
-import { GraphQLAuthMode } from '@aws-amplify/core/lib-esm/singleton/API/types';
-
 import {
+	GraphQLAuthMode,
 	CustomUserAgentDetails,
 	Logger,
 	NonRetryableError,
@@ -189,7 +187,7 @@ export class AWSAppSyncRealTimeProvider {
 	subscribe(
 		options?: AWSAppSyncRealTimeProviderOptions,
 		customUserAgentDetails?: CustomUserAgentDetails
-	): Observable<Record<string, unknown>> {
+	): Observable<any> {
 		const {
 			appSyncGraphqlEndpoint,
 			region,
