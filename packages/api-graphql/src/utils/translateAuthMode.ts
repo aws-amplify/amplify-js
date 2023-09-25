@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import {
 	GraphQLAuthMode,
 	GraphQLAuthModeKeys,
@@ -14,7 +17,7 @@ export function translateAuthMode(
 			if (!apiKey) {
 				throw new Error(GraphQLAuthError.NO_API_KEY);
 			}
-			return { type: 'apiKey', apiKey };
+			return { type: 'apiKey', apiKey: apiKey };
 		}
 		case 'jwt': {
 			return { type: 'jwt', token: 'access' };
