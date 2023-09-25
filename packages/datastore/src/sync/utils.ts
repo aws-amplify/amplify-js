@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLAuthError } from '@aws-amplify/api';
-import { Logger, GraphQLAuthModeKeys } from '@aws-amplify/core/internals/utils';
+import { Logger, ApiAuthModeKeys } from '@aws-amplify/core/internals/utils';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
@@ -820,16 +820,16 @@ export async function getModelAuthModes({
 	schema,
 }: {
 	authModeStrategy: AuthModeStrategy;
-	defaultAuthMode: GraphQLAuthModeKeys;
+	defaultAuthMode: ApiAuthModeKeys;
 	modelName: string;
 	schema: InternalSchema;
 }): Promise<{
-	[key in ModelOperation]: GraphQLAuthModeKeys[];
+	[key in ModelOperation]: ApiAuthModeKeys[];
 }> {
 	const operations = Object.values(ModelOperation);
 
 	const modelAuthModes: {
-		[key in ModelOperation]: GraphQLAuthModeKeys[];
+		[key in ModelOperation]: ApiAuthModeKeys[];
 	} = {
 		CREATE: [],
 		READ: [],
@@ -894,7 +894,7 @@ export function getClientSideAuthError(error) {
 }
 
 export async function getTokenForCustomAuth(
-	authMode: GraphQLAuthModeKeys,
+	authMode: ApiAuthModeKeys,
 	amplifyConfig: Record<string, any> = {}
 ): Promise<string | undefined> {
 	if (authMode === 'lambda') {
