@@ -27,25 +27,19 @@ const logger = new Logger('Analytics');
  * @example
  * ```ts
  * // Send an event to Pinpoint
- * record({
- *     event: {
- * 	       name: eventName,
- *     }
- * })
+ * record({ name: eventName })
  * ```
  *
  * @example
  * ```ts
  * // Send an event to Pinpoint with metrics & custom attributes
  * record({
- *     event: {
- *         name: eventName,
- *         attributes: {
- *             'my-attribute': attributeValue
- *         },
- *         metrics: {
- *             'my-metric': metricValue
- *         }
+ *     name: eventName,
+ *     attributes: {
+ *         'my-attribute': attributeValue
+ *     },
+ *     metrics: {
+ *         'my-metric': metricValue
  *     }
  * })
  * ```
