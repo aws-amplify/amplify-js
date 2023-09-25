@@ -1,4 +1,4 @@
-import { DateUtils } from '../src/Util/DateUtils';
+import { DateUtils } from '../src/Signer/DateUtils';
 
 // Mock Date (https://github.com/facebook/jest/issues/2234#issuecomment-308121037)
 const OriginalDate = Date;

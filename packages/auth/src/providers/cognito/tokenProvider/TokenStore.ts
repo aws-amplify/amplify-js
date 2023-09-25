@@ -65,9 +65,15 @@ export class DefaultTokenStore implements AuthTokenStore {
 			const refreshToken =
 				(await this.getKeyValueStorage().getItem(authKeys.refreshToken)) ||
 				undefined;
-			const NewDeviceMetadata =
-				(await this.getKeyValueStorage().getItem(authKeys.NewDeviceMetadata)) ||
-				undefined;
+
+			const newDeviceMetadata = JSON.parse(
+				(await this.getKeyValueStorage().getItem(authKeys.deviceMetadata)) ||
+					'{}'
+			);
+			const deviceMetadata =
+				Object.keys(newDeviceMetadata).length > 0
+					? newDeviceMetadata
+					: undefined;
 
 			const clockDriftString =
 				(await this.getKeyValueStorage().getItem(authKeys.clockDrift)) || '0';
@@ -77,7 +83,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 				accessToken,
 				idToken,
 				refreshToken,
-				NewDeviceMetadata,
+				deviceMetadata,
 				clockDrift,
 			};
 		} catch (err) {
@@ -113,10 +119,10 @@ export class DefaultTokenStore implements AuthTokenStore {
 			);
 		}
 
-		if (!!tokens.NewDeviceMetadata) {
+		if (!!tokens.deviceMetadata) {
 			this.getKeyValueStorage().setItem(
-				authKeys.NewDeviceMetadata,
-				tokens.NewDeviceMetadata
+				authKeys.deviceMetadata,
+				JSON.stringify(tokens.deviceMetadata)
 			);
 		}
 
@@ -140,7 +146,6 @@ export class DefaultTokenStore implements AuthTokenStore {
 			this.getKeyValueStorage().removeItem(authKeys.idToken),
 			this.getKeyValueStorage().removeItem(authKeys.clockDrift),
 			this.getKeyValueStorage().removeItem(authKeys.refreshToken),
-			this.getKeyValueStorage().removeItem(authKeys.NewDeviceMetadata),
 		]);
 	}
 }

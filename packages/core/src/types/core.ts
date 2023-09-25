@@ -16,7 +16,7 @@ export interface AmplifyConfig {
 }
 
 export type UserProfile = {
-	attributes?: Record<string, string[]>;
+	customProperties?: Record<string, string[]>;
 	demographic?: {
 		appVersion?: string;
 		locale?: string;
@@ -27,6 +27,7 @@ export type UserProfile = {
 		platformVersion?: string;
 		timezone?: string;
 	};
+	email?: string;
 	location?: {
 		city?: string;
 		country?: string;
@@ -36,6 +37,8 @@ export type UserProfile = {
 		region?: string;
 	};
 	metrics?: Record<string, number>;
+	name?: string;
+	plan?: string;
 };
 
 /**

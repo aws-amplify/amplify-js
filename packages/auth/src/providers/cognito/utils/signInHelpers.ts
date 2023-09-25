@@ -1,9 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, CognitoUserPoolConfig } from '@aws-amplify/core';
+import {
+	Amplify,
+	AmplifyClassV6,
+	CognitoUserPoolConfig,
+} from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import {
+	fromHex,
 	getLargeAValue,
 	getNowString,
 	getPasswordAuthenticationKey,
@@ -22,7 +27,7 @@ import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
 import {
 	AuthUser,
-	AuthUserAttribute,
+	AuthUserAttributes,
 	AuthMFAType,
 	AuthTOTPSetupDetails,
 } from '../../../types/models';
@@ -35,6 +40,7 @@ import {
 	respondToAuthChallenge,
 	verifySoftwareToken,
 	associateSoftwareToken,
+	confirmDevice,
 } from './clients/CognitoIdentityProvider';
 import {
 	ChallengeName,
@@ -42,12 +48,15 @@ import {
 	CognitoMFAType,
 	InitiateAuthCommandInput,
 	InitiateAuthCommandOutput,
+	NewDeviceMetadataType,
 	RespondToAuthChallengeCommandInput,
 	RespondToAuthChallengeCommandOutput,
 } from './clients/CognitoIdentityProvider/types';
 import { getRegion } from './clients/CognitoIdentityProvider/utils';
 import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants';
 import { getCurrentUser } from '../apis/getCurrentUser';
+import { toBase64 } from '@smithy/util-base64';
+import { DeviceMetadata } from '../tokenProvider/types';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -57,7 +66,7 @@ type HandleAuthChallengeRequest = {
 	clientMetadata?: ClientMetadata;
 	session?: string;
 	deviceName?: string;
-	requiredAttributes?: AuthUserAttribute;
+	requiredAttributes?: AuthUserAttributes;
 	config: CognitoUserPoolConfig;
 };
 
@@ -518,7 +527,7 @@ export function parseAttributes(attributes: string | undefined): string[] {
 }
 
 export function createAttributes(
-	attributes?: AuthUserAttribute
+	attributes?: AuthUserAttributes
 ): Record<string, string> {
 	if (!attributes) return {};
 
@@ -647,4 +656,68 @@ export async function assertUserNotAuthenticated() {
 			recoverySuggestion: 'Call signOut before calling signIn again.',
 		});
 	}
+}
+
+/**
+ * This function is used to kick off the device management flow.
+ *
+ * If an error is thrown while generating a hash device or calling the `ConfirmDevice`
+ * client, then this API will ignore the error and return undefined. Otherwise the authentication
+ * flow will not complete and the user won't be able to be signed in.
+ *
+ * @returns DeviceMetadata | undefined
+ */
+export async function getNewDeviceMetatada(
+	userPoolId: string,
+	newDeviceMetadata?: NewDeviceMetadataType,
+	accessToken?: string
+): Promise<DeviceMetadata | undefined> {
+	if (!newDeviceMetadata) return undefined;
+	const userPoolName = userPoolId.split('_')[1] || '';
+	const authenticationHelper = new AuthenticationHelper(userPoolName);
+	const deviceKey = newDeviceMetadata?.DeviceKey;
+	const deviceGroupKey = newDeviceMetadata?.DeviceGroupKey;
+
+	return new Promise((resolve, _) => {
+		authenticationHelper.generateHashDevice(
+			deviceGroupKey ?? '',
+			deviceKey ?? '',
+			async (errGenHash: unknown) => {
+				if (errGenHash) {
+					// TODO: log error here
+					resolve(undefined);
+					return;
+				}
+
+				const deviceSecretVerifierConfig = {
+					Salt: toBase64(fromHex(authenticationHelper.getSaltToHashDevices())),
+					PasswordVerifier: toBase64(
+						fromHex(authenticationHelper.getVerifierDevices())
+					),
+				};
+
+				const randomPassword = authenticationHelper.getRandomPassword();
+
+				try {
+					await confirmDevice(
+						{ region: getRegion(userPoolId) },
+						{
+							AccessToken: accessToken,
+							DeviceKey: newDeviceMetadata?.DeviceKey,
+							DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
+						}
+					);
+
+					resolve({
+						deviceKey,
+						deviceGroupKey,
+						randomPassword,
+					});
+				} catch (error) {
+					// TODO: log error here
+					resolve(undefined);
+				}
+			}
+		);
+	});
 }

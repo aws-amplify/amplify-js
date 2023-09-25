@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger as Logger } from '../Logger';
-import { NO_HUBCALLBACK_PROVIDED_EXCEPTION } from '../Util/Constants';
+import { NO_HUBCALLBACK_PROVIDED_EXCEPTION } from '../constants';
 import { AmplifyError } from '../errors';
 import {
 	AmplifyChannel,

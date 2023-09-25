@@ -6,7 +6,6 @@ import { AmplifyErrorMap } from '@aws-amplify/core/internals/utils';
 export enum AnalyticsValidationErrorCode {
 	NoAppId = 'NoAppId',
 	NoCredentials = 'NoCredentials',
-	NoEvent = 'NoEvent',
 	NoEventName = 'NoEventName',
 	NoRegion = 'NoRegion',
 	LargeFlushSize = 'LargeFlushSize',
@@ -22,9 +21,6 @@ export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
 		},
 		[AnalyticsValidationErrorCode.NoCredentials]: {
 			message: 'Credentials should not be empty.',
-		},
-		[AnalyticsValidationErrorCode.NoEvent]: {
-			message: 'An event is required to record.',
 		},
 		[AnalyticsValidationErrorCode.NoEventName]: {
 			message: 'Events must specify a name.',

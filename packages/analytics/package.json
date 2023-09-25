@@ -35,6 +35,9 @@
 			],
 			"kinesis": [
 				"./lib-esm/providers/kinesis/index.d.ts"
+			],
+			"kinesis-firehose": [
+				"./lib-esm/providers/kinesis-firehose/index.d.ts"
 			]
 		}
 	},
@@ -54,6 +57,11 @@
 			"import": "./lib-esm/providers/kinesis/index.js",
 			"require": "./lib/providers/kinesis/index.js"
 		},
+		"./kinesis-firehose": {
+			"types": "./lib-esm/providers/kinesis-firehose/index.d.ts",
+			"import": "./lib-esm/providers/kinesis-firehose/index.js",
+			"require": "./lib/providers/kinesis-firehose/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"repository": {
@@ -71,7 +79,8 @@
 		"lib-esm",
 		"src",
 		"pinpoint",
-		"kinesis"
+		"kinesis",
+		"kinesis-firehose"
 	],
 	"dependencies": {
 		"tslib": "^2.5.0",
@@ -83,6 +92,7 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
 		"@aws-sdk/client-kinesis": "3.398.0",
+		"@aws-sdk/client-firehose": "3.398.0",
 		"@aws-sdk/types": "3.398.0",
 		"@smithy/util-utf8": "2.0.0",
 		"@types/uuid": "^9.0.0",

@@ -17,6 +17,7 @@ export const getExpectedInput = ({
 	location,
 	metrics,
 	optOut,
+	userAttributes,
 	userId,
 }: any) =>
 	expect.objectContaining({
@@ -50,7 +51,7 @@ export const getExpectedInput = ({
 			OptOut: optOut,
 			User: {
 				UserId: userId,
-				UserAttributes: attributes,
+				UserAttributes: userAttributes,
 			},
 		}),
 	});
