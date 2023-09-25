@@ -57,6 +57,11 @@
 			"import": "./lib-esm/analytics/pinpoint/index.js",
 			"require": "./lib/analytics/pinpoint/index.js"
 		},
+		"./analytics/kinesis-firehose": {
+			"types": "./lib-esm/analytics/kinesis-firehose/index.d.ts",
+			"import": "./lib-esm/analytics/kinesis-firehose/index.js",
+			"require": "./lib/analytics/kinesis-firehose/index.js"
+		},
 		"./storage": {
 			"types": "./lib-esm/storage/index.d.ts",
 			"import": "./lib-esm/storage/index.js",
@@ -123,6 +128,9 @@
 			"analytics/pinpoint": [
 				"./lib-esm/analytics/pinpoint/index.d.ts"
 			],
+			"analytics/kinesis-firehose": [
+				"./lib-esm/analytics/kinesis-firehose/index.d.ts"
+			],
 			"storage": [
 				"./lib-esm/storage/index.d.ts"
 			],
@@ -174,6 +182,7 @@
 		"analytics",
 		"api",
 		"auth",
+		"geo",
 		"internals",
 		"storage",
 		"datastore"

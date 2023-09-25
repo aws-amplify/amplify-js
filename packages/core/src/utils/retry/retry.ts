@@ -1,20 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { DelayFunction } from '../types';
-import { ConsoleLogger as Logger } from '../Logger/ConsoleLogger';
+
+import { DelayFunction } from '../../types';
+import { ConsoleLogger as Logger } from '../../Logger/ConsoleLogger';
+import { isNonRetryableError } from './isNonRetryableError';
+
 const logger = new Logger('Util');
-
-export class NonRetryableError extends Error {
-	public readonly nonRetryable = true;
-	constructor(message: string) {
-		super(message);
-	}
-}
-
-export const isNonRetryableError = (obj: any): obj is NonRetryableError => {
-	const key: keyof NonRetryableError = 'nonRetryable';
-	return obj && obj[key];
-};
 
 /**
  * @private
@@ -61,7 +52,6 @@ export async function retry<T>(
 			try {
 				return resolve(await functionToRetry(...args));
 			} catch (err) {
-				
 				lastError = err;
 				logger.debug(`error on ${functionToRetry.name}`, err);
 
@@ -90,33 +80,3 @@ export async function retry<T>(
 		reject(lastError);
 	});
 }
-
-const MAX_DELAY_MS = 5 * 60 * 1000;
-
-/**
- * @private
- * Internal use of Amplify only
- */
-export function jitteredBackoff(
-	maxDelayMs: number = MAX_DELAY_MS
-): DelayFunction {
-	const BASE_TIME_MS = 100;
-	const JITTER_FACTOR = 100;
-
-	return attempt => {
-		const delay = 2 ** attempt * BASE_TIME_MS + JITTER_FACTOR * Math.random();
-		return delay > maxDelayMs ? false : delay;
-	};
-}
-
-/**
- * @private
- * Internal use of Amplify only
- */
-export const jitteredExponentialRetry = <T>(
-	functionToRetry: (...args: any[]) => T,
-	args: any[],
-	maxDelayMs: number = MAX_DELAY_MS,
-	onTerminate?: Promise<void>
-): Promise<T> =>
-	retry(functionToRetry, args, jitteredBackoff(maxDelayMs), onTerminate);

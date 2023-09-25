@@ -11,7 +11,6 @@ import {
 	InAppMessagingAction,
 	PushNotificationAction,
 	StorageHelper,
-	transferKeyToUpperCase,
 	Cache,
 } from '@aws-amplify/core';
 import {
@@ -208,12 +207,12 @@ export default abstract class AWSPinpointProviderCommon
 						Model: model,
 						ModelVersion: version,
 						Platform: platform,
-						...transferKeyToUpperCase({
+						...this.transferKeyToUpperCase({
 							...endpointInfo.demographic,
 							...demographic,
 						}),
 					},
-					Location: transferKeyToUpperCase({
+					Location: this.transferKeyToUpperCase({
 						...endpointInfo.location,
 						...location,
 					}),
@@ -287,5 +286,21 @@ export default abstract class AWSPinpointProviderCommon
 				'One or more of credentials, appId or region is not configured'
 			);
 		}
+	};
+
+	/**
+	 * transfer the first letter of the keys to lowercase
+	 * @param {Object} obj - the object need to be transferred
+	 */
+	private transferKeyToUpperCase = (obj: Record<string, any>) => {
+		const ret: Record<string, any> = {};
+
+		for (const key in obj) {
+			if (obj.hasOwnProperty(key)) {
+				const transferredKey = key[0].toUpperCase() + key.slice(1);
+				ret[transferredKey] = this.transferKeyToUpperCase(obj[key]);
+			}
+		}
+		return ret;
 	};
 }

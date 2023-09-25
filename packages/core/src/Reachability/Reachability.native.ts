@@ -1,16 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import Observable from 'zen-observable-ts';
-import { ConsoleLogger as Logger } from '../Logger';
+import { Observable } from 'rxjs';
 import type NetInfo from '@react-native-community/netinfo';
+import { ConsoleLogger as Logger } from '../Logger';
+import { NetworkStatus } from './types';
 
 const logger = new Logger('Reachability', 'DEBUG');
 
-type NetworkStatus = {
-	online: boolean;
-};
-
-export default class ReachabilityNavigator implements Reachability {
+export class Reachability {
 	networkMonitor(netInfo?: typeof NetInfo): Observable<NetworkStatus> {
 		/**
 		 * Here netinfo refers to @react-native-community/netinfo
@@ -44,8 +41,4 @@ export default class ReachabilityNavigator implements Reachability {
 			};
 		});
 	}
-}
-
-interface Reachability {
-	networkMonitor(netInfo?: typeof NetInfo): Observable<NetworkStatus>;
 }
