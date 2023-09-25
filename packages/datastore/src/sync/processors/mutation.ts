@@ -15,7 +15,7 @@ import {
 	AmplifyError,
 } from '@aws-amplify/core/internals/utils';
 
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { Observable, Observer } from 'rxjs';
 import { MutationEvent } from '../';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ExclusiveStorage as Storage } from '../../storage/storage';
@@ -68,7 +68,7 @@ class MutationProcessor {
 	 * yet started. In this case, `isReady()` will be `false` and `resume()` will exit
 	 * early.
 	 */
-	private observer?: ZenObservable.Observer<MutationProcessorEvent>;
+	private observer?: Observer<MutationProcessorEvent>;
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
 		[TransformerMutationType, string, string][]
