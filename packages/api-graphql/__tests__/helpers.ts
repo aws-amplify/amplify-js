@@ -1,5 +1,5 @@
 import { Hub } from '@aws-amplify/core';
-import Observable from 'zen-observable-ts';
+import { Observable, Observer } from 'rxjs';
 import { CONNECTION_STATE_CHANGE } from '../src/Providers/constants';
 import { ConnectionState as CS } from '../src/types/PubSub';
 import * as constants from '../src/Providers/constants';
@@ -17,7 +17,7 @@ export class HubConnectionListener {
 	observedConnectionStates: CS[] = [];
 	currentConnectionState: CS;
 
-	private connectionStateObservers: ZenObservable.Observer<CS>[] = [];
+	private connectionStateObservers: Observer<CS>[] = [];
 
 	constructor(channel: string) {
 		let closeResolver: (value: PromiseLike<any>) => void;

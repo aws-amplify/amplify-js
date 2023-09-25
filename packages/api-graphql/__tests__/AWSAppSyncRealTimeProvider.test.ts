@@ -9,7 +9,7 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 
-import Observable from 'zen-observable-ts';
+import { Observable, Observer } from 'rxjs';
 import { Reachability } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import { MESSAGE_TYPES } from '../src/Providers/constants';
@@ -112,7 +112,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 				);
 
 				let provider: AWSAppSyncRealTimeProvider;
-				let reachabilityObserver: ZenObservable.Observer<{ online: boolean }>;
+				let reachabilityObserver: Observer<{ online: boolean }>;
 
 				beforeEach(async () => {
 					// Set the network to "online" for these tests
