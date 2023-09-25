@@ -5,6 +5,12 @@ import type { ModelTypes } from '@aws-amplify/types-package-alpha';
 
 type ListArgs = { selectionSet?: string[]; filter?: {} };
 
+const connectionType = {
+	HAS_ONE: 'HAS_ONE',
+	HAS_MANY: 'HAS_MANY',
+	BELONGS_TO: 'BELONGS_TO',
+};
+
 // TODO: this should accept single result to support CRUD methods; create helper for array/list
 export function initializeModel(
 	client: any,
@@ -16,27 +22,104 @@ export function initializeModel(
 	const introModelFields = introModel.fields;
 
 	const modelFields: string[] = Object.entries(introModelFields)
-		.filter(([_, field]: [string, any]) => typeof field.type !== 'string')
+		.filter(([_, field]: [string, any]) => field?.type?.model !== undefined)
 		.map(([fieldName]) => fieldName);
 
 	return result.map(record => {
-		const initialized = {};
+		const initializedRelationalFields = {};
 
 		for (const field of modelFields) {
-			const relatedModel = introModelFields[field].type.model;
-			const connectionField =
-				introModelFields[field].association.associatedWith;
-			// TODO: support sort key
-			const parentPk = introModel.primaryKeyInfo.primaryKeyFieldName;
+			const relatedModelName = introModelFields[field].type.model;
 
-			initialized[field] = async () => {
-				return client.models[relatedModel].list({
-					filter: { [connectionField]: { eq: record[parentPk] } },
-				});
-			};
+			const relatedModel = modelIntrospection.models[relatedModelName];
+
+			const relatedModelPKFieldName =
+				relatedModel.primaryKeyInfo.primaryKeyFieldName;
+
+			const relatedModelSKFieldNames =
+				relatedModel.primaryKeyInfo.sortKeyFieldNames;
+
+			const relationType = introModelFields[field].association.connectionType;
+			const connectionFields =
+				introModelFields[field].association.associatedWith;
+
+			const targetNames =
+				introModelFields[field].association?.targetNames || [];
+
+			switch (relationType) {
+				case connectionType.HAS_ONE:
+				case connectionType.BELONGS_TO:
+					const sortKeyValues = relatedModelSKFieldNames.reduce(
+						(acc, curVal) => {
+							if (record[curVal]) {
+								return (acc[curVal] = record[curVal]);
+							}
+						},
+						{}
+					);
+
+					initializedRelationalFields[field] = () => {
+						if (record[targetNames[0]]) {
+							return client.models[relatedModelName].get({
+								[relatedModelPKFieldName]: record[targetNames[0]],
+								...sortKeyValues,
+							});
+						}
+						return undefined;
+					};
+
+					break;
+				case connectionType.HAS_MANY:
+					const parentPk = introModel.primaryKeyInfo.primaryKeyFieldName;
+					const parentSK = introModel.primaryKeyInfo.sortKeyFieldNames;
+
+					// M:N check - TODO: refactor
+					if (relatedModel.fields[connectionFields[0]]?.type.model) {
+						const relatedTargetNames =
+							relatedModel.fields[connectionFields[0]].association.targetNames;
+
+						const hasManyFilter = relatedTargetNames.map((field, idx) => {
+							if (idx === 0) {
+								return { [field]: { eq: record[parentPk] } };
+							}
+
+							return { [field]: { eq: record[parentSK[idx - 1]] } };
+						});
+
+						initializedRelationalFields[field] = () => {
+							if (record[parentPk]) {
+								return client.models[relatedModelName].list({
+									filter: { and: hasManyFilter },
+								});
+							}
+							return [];
+						};
+						break;
+					}
+
+					const hasManyFilter = connectionFields.map((field, idx) => {
+						if (idx === 0) {
+							return { [field]: { eq: record[parentPk] } };
+						}
+
+						return { [field]: { eq: record[parentSK[idx - 1]] } };
+					});
+
+					initializedRelationalFields[field] = () => {
+						if (record[parentPk]) {
+							return client.models[relatedModelName].list({
+								filter: { and: hasManyFilter },
+							});
+						}
+						return [];
+					};
+					break;
+				default:
+					break;
+			}
 		}
 
-		return { ...record, ...initialized };
+		return { ...record, ...initializedRelationalFields };
 	});
 }
 
@@ -221,7 +304,8 @@ export function generateGraphQLDocument(
 export function buildGraphQLVariables(
 	modelDefinition: any,
 	operation: ModelOperation,
-	arg: any
+	arg: any,
+	modelIntrospection
 ): object {
 	const {
 		fields,
@@ -237,13 +321,17 @@ export function buildGraphQLVariables(
 	// TODO: process input
 	switch (operation) {
 		case 'CREATE':
-			variables = { input: arg };
+			variables = {
+				input: normalizeMutationInput(arg, modelDefinition, modelIntrospection),
+			};
 			break;
 		case 'UPDATE':
 			// readonly fields are not  updated
 			variables = {
 				input: Object.fromEntries(
-					Object.entries(arg).filter(([fieldName]) => {
+					Object.entries(
+						normalizeMutationInput(arg, modelDefinition, modelIntrospection)
+					).filter(([fieldName]) => {
 						const { isReadOnly } = fields[fieldName];
 
 						return !isReadOnly;
@@ -280,4 +368,69 @@ export function buildGraphQLVariables(
 	}
 
 	return variables;
+}
+
+/**
+ * Iterates over mutation input values and resolves any model inputs to their corresponding join fields/values
+ *
+ * @example
+ * ### Usage
+ * ```ts
+ * const result = normalizeMutationInput({ post: post }, model, modelDefinition);
+ * ```
+ * ### Result
+ * ```ts
+ * { postId: "abc123" }
+ * ```
+ *
+ */
+export function normalizeMutationInput(
+	mutationInput: any,
+	model: any,
+	modelDefinition: any
+): Record<string, unknown> {
+	const { fields } = model;
+
+	const normalized = {};
+
+	Object.entries(mutationInput).forEach(([inputFieldName, inputValue]) => {
+		const relatedModelName: string | undefined =
+			fields[inputFieldName]?.type?.model;
+
+		if (relatedModelName) {
+			const association = fields[inputFieldName]?.association;
+			const relatedModelDef = modelDefinition.models[relatedModelName];
+			const relatedModelPkInfo = relatedModelDef.primaryKeyInfo;
+
+			if (association.connectionType === connectionType.HAS_ONE) {
+				association.targetNames.forEach((targetName, idx) => {
+					const associatedFieldName = association.associatedWith[idx];
+					normalized[targetName] = (inputValue as Record<string, unknown>)[
+						associatedFieldName
+					];
+				});
+			}
+
+			if (association.connectionType === connectionType.BELONGS_TO) {
+				association.targetNames.forEach((targetName, idx) => {
+					if (idx === 0) {
+						const associatedFieldName = relatedModelPkInfo.primaryKeyFieldName;
+						normalized[targetName] = (inputValue as Record<string, unknown>)[
+							associatedFieldName
+						];
+					} else {
+						const associatedFieldName =
+							relatedModelPkInfo.sortKeyFieldNames[idx - 1];
+						normalized[targetName] = (inputValue as Record<string, unknown>)[
+							associatedFieldName
+						];
+					}
+				});
+			}
+		} else {
+			normalized[inputFieldName] = inputValue;
+		}
+	});
+
+	return normalized;
 }

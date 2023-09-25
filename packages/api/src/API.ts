@@ -20,11 +20,6 @@ import {
 } from './APIClient';
 import type { ModelTypes } from '@aws-amplify/types-package-alpha';
 
-/*
-	await post.comments()
-		=> await graphql()
-*/
-
 const logger = new Logger('API');
 /**
  * @deprecated
@@ -93,7 +88,12 @@ export class APIClass extends InternalAPIClass {
 								'LIST',
 								args
 							);
-							const variables = buildGraphQLVariables(model, 'LIST', args);
+							const variables = buildGraphQLVariables(
+								model,
+								'LIST',
+								args,
+								modelIntrospection
+							);
 
 							console.log('API list', query, variables);
 
@@ -120,6 +120,8 @@ export class APIClass extends InternalAPIClass {
 											modelIntrospection
 										);
 
+										console.log('initialized', initialized);
+
 										return initialized;
 									}
 								}
@@ -139,7 +141,12 @@ export class APIClass extends InternalAPIClass {
 								name,
 								operation
 							);
-							const variables = buildGraphQLVariables(model, operation, arg);
+							const variables = buildGraphQLVariables(
+								model,
+								operation,
+								arg,
+								modelIntrospection
+							);
 
 							console.log(`API ${operationPrefix}`, query, variables);
 
@@ -177,6 +184,7 @@ export class APIClass extends InternalAPIClass {
 type FilteredKeys<T> = {
 	[P in keyof T]: T[P] extends never ? never : P;
 }[keyof T];
+
 type ExcludeNeverFields<O> = {
 	[K in FilteredKeys<O>]: O[K];
 };

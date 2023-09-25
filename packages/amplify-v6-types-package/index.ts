@@ -47,8 +47,8 @@ type ModelIdentifier<Model extends Record<any, any>> = Prettify<
 // All required fields and relational fields
 type MutationInput<
 	Fields,
-	Model extends Record<any, any>,
-	Relationships = Model['relationships']
+	ModelMeta extends Record<any, any>,
+	Relationships = ModelMeta['relationships']
 > = {
 	[Prop in keyof Fields as Fields[Prop] extends () => {}
 		? never
@@ -106,7 +106,7 @@ export type ModelTypes<
 					}): Promise<Array<Joined<T[K], SS>>>;
 
 					// using this to debug types (surfacing them to the app code for inspection) - not callable at runtime
-					_debug(): Joined<T[K], never>;
+					_debug(): Prettify<MutationInput<T[K], ModelMeta[K]>>;
 			  }
 			: never
 		: never;
