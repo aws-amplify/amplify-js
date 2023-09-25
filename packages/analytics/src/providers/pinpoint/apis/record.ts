@@ -21,9 +21,9 @@ const logger = new Logger('Analytics');
  *
  * @param {RecordInput} params The input object used to construct the request.
  *
- * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library 
+ * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library
  *  configuration is incorrect.
- * 
+ *
  * @example
  * ```ts
  * // Send an event to Pinpoint
@@ -33,7 +33,7 @@ const logger = new Logger('Analytics');
  *     }
  * })
  * ```
- * 
+ *
  * @example
  * ```ts
  * // Send an event to Pinpoint with metrics & custom attributes
@@ -50,11 +50,10 @@ const logger = new Logger('Analytics');
  * })
  * ```
  */
-export const record = ({ event }: RecordInput): void => {
+export const record = (input: RecordInput): void => {
 	const { appId, region } = resolveConfig();
 
-	assertValidationError(!!event, AnalyticsValidationErrorCode.NoEvent);
-	assertValidationError(!!event.name, AnalyticsValidationErrorCode.NoEventName);
+	assertValidationError(!!input.name, AnalyticsValidationErrorCode.NoEventName);
 
 	resolveCredentials()
 		.then(({ credentials, identityId }) => {
@@ -62,7 +61,7 @@ export const record = ({ event }: RecordInput): void => {
 				appId,
 				category: 'Analytics',
 				credentials,
-				event,
+				event: input,
 				identityId,
 				region,
 				userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
