@@ -1,14 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { CompletionObserver, Observable } from 'rxjs';
 import { isWebWorker } from '../libraryUtils';
 import { NetworkStatus } from './types';
 
 export class Reachability {
-	private static _observers: Array<
-		ZenObservable.SubscriptionObserver<NetworkStatus>
-	> = [];
+	private static _observers: Array<CompletionObserver<NetworkStatus>> = [];
 
 	networkMonitor(_?: unknown): Observable<NetworkStatus> {
 		const globalObj = isWebWorker() ? self : window;

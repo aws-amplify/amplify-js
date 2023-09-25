@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { Observable, Observer, SubscriptionLike, map, filter } from 'rxjs';
 import { ConnectionState } from '../types/PubSub';
 import { ReachabilityMonitor } from './ReachabilityMonitor';
 
@@ -50,9 +50,9 @@ export class ConnectionStateMonitor {
 	 */
 	private _linkedConnectionState: LinkedConnectionStates;
 	private _linkedConnectionStateObservable: Observable<LinkedConnectionStates>;
-	private _linkedConnectionStateObserver: ZenObservable.SubscriptionObserver<LinkedConnectionStates>;
-	private _networkMonitoringSubscription?: ZenObservable.Subscription;
-	private _initialNetworkStateSubscription?: ZenObservable.Subscription;
+	private _linkedConnectionStateObserver: Observer<LinkedConnectionStates>;
+	private _networkMonitoringSubscription?: SubscriptionLike;
+	private _initialNetworkStateSubscription?: SubscriptionLike;
 
 	constructor() {
 		this._networkMonitoringSubscription = undefined;
@@ -121,14 +121,18 @@ export class ConnectionStateMonitor {
 
 		// After translating from linked states to ConnectionState, then remove any duplicates
 		return this._linkedConnectionStateObservable
-			.map(value => {
-				return this.connectionStatesTranslator(value);
-			})
-			.filter(current => {
-				const toInclude = current !== previous;
-				previous = current;
-				return toInclude;
-			});
+			.pipe(
+				map(value => {
+					return this.connectionStatesTranslator(value);
+				})
+			)
+			.pipe(
+				filter(current => {
+					const toInclude = current !== previous;
+					previous = current;
+					return toInclude;
+				})
+			);
 	}
 
 	/*
@@ -150,7 +154,7 @@ export class ConnectionStateMonitor {
 
 		this._linkedConnectionState = { ...newSocketStatus };
 
-		this._linkedConnectionStateObserver.next(this._linkedConnectionState);
+		this._linkedConnectionStateObserver?.next(this._linkedConnectionState);
 	}
 
 	/*

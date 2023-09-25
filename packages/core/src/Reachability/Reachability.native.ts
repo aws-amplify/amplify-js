@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 import type NetInfo from '@react-native-community/netinfo';
 import { ConsoleLogger as Logger } from '../Logger';
 import { NetworkStatus } from './types';

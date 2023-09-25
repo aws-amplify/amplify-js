@@ -15,7 +15,7 @@ import {
 	InnerSQLiteDatabase,
 } from './helpers';
 import { SyncEngine } from '@aws-amplify/datastore/lib-esm/sync';
-import Observable from 'zen-observable';
+import { Observable } from 'rxjs';
 import {
 	pause,
 	addCommonQueryTests,
