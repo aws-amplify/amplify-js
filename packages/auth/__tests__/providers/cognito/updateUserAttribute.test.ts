@@ -2,16 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthError } from '../../../src/errors/AuthError';
-import { updateUserAttribute } from '../../../src/providers/cognito';
+import {
+	updateUserAttribute,
+	UpdateUserAttributesOutput,
+} from '../../../src/providers/cognito';
+import * as updateUserAttributesApi from '../../../src/providers/cognito';
 import { UpdateUserAttributesException } from '../../../src/providers/cognito/types/errors';
-import * as updateUserAttributesClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { Amplify } from 'aws-amplify';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import * as authUtils from '../../../src';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-import { UpdateUserAttributesCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { toAttributeType } from '../../../src/providers/cognito/utils/apiHelpers';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 Amplify.configure({
@@ -24,9 +25,9 @@ Amplify.configure({
 	},
 });
 const mockedAccessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+	'test_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
 
-describe('updateUserAttribute  API happy path cases', () => {
+describe('updateUserAttribute API happy path cases', () => {
 	let fetchAuthSessionsSpy;
 	beforeEach(() => {
 		fetchAuthSessionsSpy = jest
@@ -46,23 +47,8 @@ describe('updateUserAttribute  API happy path cases', () => {
 		fetchAuthSessionsSpy.mockClear();
 	});
 
-	test('updateUserAttribute API should return isUpdated and nextStep with not updated attributes', async () => {
-		const updateUserAttributesClientSpy = jest
-			.spyOn(updateUserAttributesClient, 'updateUserAttributes')
-			.mockImplementationOnce(
-				async (): Promise<UpdateUserAttributesCommandOutput> => {
-					return {
-						CodeDeliveryDetailsList: [
-							{
-								AttributeName: 'email',
-								DeliveryMedium: 'EMAIL',
-								Destination: 'mockedEmail',
-							},
-						],
-					} as UpdateUserAttributesCommandOutput;
-				}
-			);
-		const result = await updateUserAttribute({
+	it('should call updateUserAttributes with correct input and should return correct output', async () => {
+		const mockInput = {
 			userAttribute: {
 				attributeKey: 'email',
 				value: 'mockedEmail',
@@ -72,8 +58,8 @@ describe('updateUserAttribute  API happy path cases', () => {
 					clientMetadata: { foo: 'bar' },
 				},
 			},
-		});
-		expect(result).toEqual({
+		};
+		const mockOutput = {
 			isUpdated: false,
 			nextStep: {
 				updateAttributeStep: 'CONFIRM_ATTRIBUTE_WITH_CODE',
@@ -83,55 +69,26 @@ describe('updateUserAttribute  API happy path cases', () => {
 					destination: 'mockedEmail',
 				},
 			},
-		});
-		expect(updateUserAttributesClientSpy).toHaveBeenCalledWith(
-			expect.objectContaining({ region: 'us-west-2' }),
-			expect.objectContaining({
-				AccessToken: mockedAccessToken,
-				UserAttributes: toAttributeType({ email: 'mockedEmail' }),
-				ClientMetadata: { foo: 'bar' },
-			})
-		);
-	});
-
-	test('updateUserAttribute API should return isUpdated and nextStep with updated attributes only', async () => {
-		const updateUserAttributesClientSpy = jest
-			.spyOn(updateUserAttributesClient, 'updateUserAttributes')
-			.mockImplementationOnce(
-				async (): Promise<UpdateUserAttributesCommandOutput> => {
-					return {} as UpdateUserAttributesCommandOutput;
-				}
-			);
-		const result = await updateUserAttribute({
-			userAttribute: {
-				attributeKey: 'name',
-				value: 'mockedName',
+		};
+		const updateUserAttributesSpy = jest
+			.spyOn(updateUserAttributesApi, 'updateUserAttributes')
+			.mockImplementationOnce(async () => {
+				return { email: mockOutput } as UpdateUserAttributesOutput;
+			});
+		const result = await updateUserAttribute(mockInput);
+		expect(result).toEqual(mockOutput);
+		expect(updateUserAttributesSpy).toBeCalledTimes(1);
+		expect(updateUserAttributesSpy).toHaveBeenCalledWith({
+			userAttributes: {
+				[mockInput.userAttribute.attributeKey]: mockInput.userAttribute.value,
 			},
-			options: {
-				serviceOptions: {
-					clientMetadata: { foo: 'bar' },
-				},
-			},
+			options: mockInput.options,
 		});
-		expect(result).toEqual({
-			isUpdated: true,
-			nextStep: {
-				updateAttributeStep: 'DONE',
-			},
-		});
-		expect(updateUserAttributesClientSpy).toHaveBeenCalledWith(
-			expect.objectContaining({ region: 'us-west-2' }),
-			expect.objectContaining({
-				AccessToken: mockedAccessToken,
-				UserAttributes: toAttributeType({ name: 'mockedName' }),
-				ClientMetadata: { foo: 'bar' },
-			})
-		);
 	});
 });
 
 describe('updateUserAttribute  API error path cases:', () => {
-	test('updateUserAttribute API should raise service error', async () => {
+	it('should raise service error', async () => {
 		expect.assertions(2);
 		jest
 			.spyOn(authUtils, 'fetchAuthSession')
