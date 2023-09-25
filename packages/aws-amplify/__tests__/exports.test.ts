@@ -9,8 +9,6 @@ import * as analyticsTopLevelExports from '../src/analytics';
 import * as analyticsPinpointExports from '../src/analytics/pinpoint';
 import * as storageTopLevelExports from '../src/storage';
 import * as storageS3Exports from '../src/storage/s3';
-import * as geoTopLevelExports from '../src/geo';
-import * as geoLocationServiceExports from '../src/geo/location-service';
 
 /**
  * Describes exports from the aws-amplify umbrella package to ensure we're not polluting the export surface.
@@ -149,24 +147,6 @@ describe('aws-amplify Exports', () => {
 			  "getProperties",
 			  "copy",
 			  "getUrl",
-			]
-		`);
-		});
-	});
-
-	describe('Geo exports', () => {
-		it('should only export expected symbols from the top-level', () => {
-			expect(Object.keys(geoTopLevelExports)).toMatchInlineSnapshot(`
-			Array [
-			  "Geo",
-			]
-		`);
-		});
-
-		it('should only export expected symbols from the Location Service provider', () => {
-			expect(Object.keys(geoLocationServiceExports)).toMatchInlineSnapshot(`
-			Array [
-			  "AmazonLocationServiceProvider",
 			]
 		`);
 		});
