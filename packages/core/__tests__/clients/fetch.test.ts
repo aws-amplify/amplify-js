@@ -1,8 +1,3 @@
-const mockUnfetch = jest.fn();
-jest.mock('isomorphic-unfetch', () => {
-	global['fetch'] = mockUnfetch;
-});
-
 import { fetchTransferHandler } from '../../src/clients/handlers/fetch';
 
 describe(fetchTransferHandler.name, () => {
@@ -25,18 +20,32 @@ describe(fetchTransferHandler.name, () => {
 		url: new URL('https://foo.bar'),
 	};
 	const mockPayloadValue = 'payload value';
+	const mockFetch = jest.fn();
+
+	beforeAll(() => {
+		global['fetch'] = mockFetch;
+	});
 
 	beforeEach(() => {
 		jest.clearAllMocks();
-		mockUnfetch.mockResolvedValue(mockFetchResponse);
+		mockFetch.mockResolvedValue(mockFetchResponse);
 	});
 
 	test('should support abort signal', async () => {
 		const signal = new AbortController().signal;
 		await fetchTransferHandler(mockRequest, { abortSignal: signal });
-		expect(mockUnfetch).toBeCalledTimes(1);
-		expect(mockUnfetch.mock.calls[0][1]).toEqual(
+		expect(mockFetch).toBeCalledTimes(1);
+		expect(mockFetch.mock.calls[0][1]).toEqual(
 			expect.objectContaining({ signal })
+		);
+	});
+
+	test('should configure cache', async () => {
+		const cacheMode = 'no-store';
+		await fetchTransferHandler(mockRequest, { cache: cacheMode });
+		expect(mockFetch).toBeCalledTimes(1);
+		expect(mockFetch.mock.calls[0][1]).toEqual(
+			expect.objectContaining({ cache: cacheMode })
 		);
 	});
 
@@ -88,8 +97,8 @@ describe(fetchTransferHandler.name, () => {
 				{ ...mockRequest, method, body: 'Mock Body' },
 				{}
 			);
-			expect(mockUnfetch).toBeCalledTimes(1);
-			expect(mockUnfetch.mock.calls[0][0].body).toBeUndefined();
+			expect(mockFetch).toBeCalledTimes(1);
+			expect(mockFetch.mock.calls[0][0].body).toBeUndefined();
 		}
 	);
 });

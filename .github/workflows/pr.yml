@@ -37,7 +37,7 @@ jobs:
     name: Unit and Bundle tests have passed
     needs:
       - unit-tests
-      # - bundle-size-tests
+      - bundle-size-tests
       - license-test
       - github-actions-test
     runs-on: ubuntu-latest

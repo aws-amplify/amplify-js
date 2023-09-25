@@ -38,8 +38,6 @@
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js",
 		"./lib-esm/ClientDevice": "./lib-esm/ClientDevice/reactnative.js",
-		"./lib-esm/RNComponents": "./lib-esm/RNComponents/reactnative.js",
-		"./lib-esm/StorageHelper": "./lib-esm/StorageHelper/reactnative.js",
 		"./lib-esm/Cache": "./lib-esm/Cache/reactnative.js"
 	},
 	"repository": {
@@ -65,16 +63,15 @@
 		"@aws-crypto/sha256-js": "5.0.0",
 		"@aws-sdk/types": "3.398.0",
 		"@smithy/util-hex-encoding": "2.0.0",
-		"@types/node-fetch": "2.6.4",
-		"isomorphic-unfetch": "^3.0.0",
+		"js-cookie": "^2.2.1",
 		"tslib": "^2.5.0",
 		"uuid": "^9.0.0",
-		"zen-observable-ts": "0.8.19",
-		"js-cookie": "^2.2.1"
+		"zen-observable-ts": "0.8.19"
 	},
 	"devDependencies": {
 		"@react-native-async-storage/async-storage": "^1.17.12",
 		"@react-native-community/netinfo": "4.7.0",
+		"@types/js-cookie": "^2.2.7",
 		"@types/uuid": "^9.0.0",
 		"find": "^0.2.7",
 		"genversion": "^2.2.0",

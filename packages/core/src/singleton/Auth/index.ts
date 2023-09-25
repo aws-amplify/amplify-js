@@ -8,8 +8,6 @@ import {
 	FetchAuthSessionOptions,
 	LibraryAuthOptions,
 } from './types';
-import { asserts } from '../../Util/errors/AssertError';
-import { AUTH_CONFING_EXCEPTION } from '../../Util/Constants';
 
 export function isTokenExpired({
 	expiresAt,
@@ -53,16 +51,8 @@ export class AuthClass {
 		let credentialsAndIdentityId: AWSCredentialsAndIdentityId | undefined;
 		let userSub: string | undefined;
 
-		asserts(!!this.authConfig, {
-			name: AUTH_CONFING_EXCEPTION,
-			message: 'AuthConfig is required',
-			recoverySuggestion:
-				'call Amplify.configure in your app with a valid AuthConfig',
-		});
-
 		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if not available
-		tokens =
-			(await this.authOptions?.tokenProvider?.getTokens(options)) ?? undefined;
+		tokens = await this.getTokens(options);
 
 		if (tokens) {
 			userSub = tokens.accessToken?.payload?.sub;
@@ -77,7 +67,7 @@ export class AuthClass {
 						forceRefresh: options.forceRefresh,
 					}
 				);
-		} else if (this.authConfig.Cognito.allowGuestAccess) {
+		} else {
 			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
 			credentialsAndIdentityId =
 				await this.authOptions?.credentialsProvider?.getCredentialsAndIdentityId(
@@ -101,5 +91,13 @@ export class AuthClass {
 		if (this.authOptions?.credentialsProvider) {
 			return await this.authOptions.credentialsProvider.clearCredentialsAndIdentityId();
 		}
+	}
+
+	async getTokens(
+		options: FetchAuthSessionOptions
+	): Promise<AuthTokens | undefined> {
+		return (
+			(await this.authOptions?.tokenProvider?.getTokens(options)) ?? undefined
+		);
 	}
 }

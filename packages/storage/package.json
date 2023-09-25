@@ -33,6 +33,15 @@
 			],
 			"s3": [
 				"./lib-esm/providers/s3/index.d.ts"
+			],
+			"server": [
+				"./lib-esm/server.d.ts"
+			],
+			"internals": [
+				"./lib-esm/lib-esm/internals/index.d.ts"
+			],
+			"s3/server": [
+				"./lib-esm/providers/s3/server.d.ts"
 			]
 		}
 	},

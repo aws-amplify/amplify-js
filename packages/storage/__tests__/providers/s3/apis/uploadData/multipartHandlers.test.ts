@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials } from '@aws-sdk/types';
-import { Amplify, LocalStorage } from '@aws-amplify/core';
+import { Amplify, defaultStorage } from '@aws-amplify/core';
 import {
 	createMultipartUpload,
 	uploadPart,
@@ -17,41 +17,19 @@ import {
 	StorageValidationErrorCode,
 } from '../../../../../src/errors/types/validation';
 import { UPLOADS_STORAGE_KEY } from '../../../../../src/providers/s3/utils/constants';
-import { getKvStorage } from '../../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage';
 import { byteLength } from '../../../../../src/providers/s3/apis/uploadData/byteLength';
 import { CanceledError } from '../../../../../src/errors/CanceledError';
+import { StorageOptions } from '../../../../../src/types';
 
+jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/providers/s3/utils/client');
-
-jest.mock('@aws-amplify/core', () => ({
-	Amplify: {
-		getConfig: jest.fn(),
-		libraryOptions: {},
-		Auth: {
-			fetchAuthSession: jest.fn(),
-		},
-	},
-}));
-jest.mock(
-	'../../../../../src/providers/s3/apis/uploadData/multipart/uploadCache/kvStorage',
-	() => {
-		const mockGetItem = jest.fn();
-		const mockSetItem = jest.fn();
-		return {
-			getKvStorage: async () => ({
-				getItem: mockGetItem,
-				setItem: mockSetItem,
-			}),
-		};
-	}
-);
 
 const credentials: Credentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
 };
-const identityId = 'identityId';
+const defaultIdentityId = 'defaultIdentityId';
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const bucket = 'bucket';
 const region = 'region';
@@ -142,7 +120,7 @@ describe('getMultipartUploadHandlers', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
-			identityId,
+			identityId: defaultIdentityId,
 		});
 		(Amplify.getConfig as jest.Mock).mockReturnValue({
 			Storage: {
@@ -177,41 +155,61 @@ describe('getMultipartUploadHandlers', () => {
 
 	describe('upload', () => {
 		const getBlob = (size: number) => new Blob(['1'.repeat(size)]);
-		it.each([
-			['file', new File([getBlob(8 * MB)], 'someName')],
-			['blob', getBlob(8 * MB)],
-			['string', '1'.repeat(8 * MB)],
-			['arrayBuffer', new ArrayBuffer(8 * MB)],
-			['arrayBufferView', new Uint8Array(8 * MB)],
-		])(
-			'should upload a %s type body that splits in 2 parts',
-			async (_, twoPartsPayload) => {
-				mockMultipartUploadSuccess();
-				const { multipartUploadJob } = getMultipartUploadHandlers({
-					key: defaultKey,
-					data: twoPartsPayload,
-				});
-				const result = await multipartUploadJob();
-				expect(mockCreateMultipartUpload).toBeCalledWith(
-					expect.objectContaining({
-						credentials,
-						region,
-						abortSignal: expect.any(AbortSignal),
-					}),
-					expect.objectContaining({
-						Bucket: bucket,
-						Key: `public/${defaultKey}`,
-						ContentType: defaultContentType,
-					})
-				);
-				expect(result).toEqual(
-					expect.objectContaining({ key: defaultKey, eTag: 'etag' })
-				);
-				expect(mockCreateMultipartUpload).toBeCalledTimes(1);
-				expect(mockUploadPart).toBeCalledTimes(2);
-				expect(mockCompleteMultipartUpload).toBeCalledTimes(1);
-			}
-		);
+		[
+			{
+				expectedKey: `public/${defaultKey}`,
+			},
+			{
+				options: { accessLevel: 'guest' },
+				expectedKey: `public/${defaultKey}`,
+			},
+			{
+				options: { accessLevel: 'private' },
+				expectedKey: `private/${defaultIdentityId}/${defaultKey}`,
+			},
+			{
+				options: { accessLevel: 'protected' },
+				expectedKey: `protected/${defaultIdentityId}/${defaultKey}`,
+			},
+		].forEach(({ options, expectedKey }) => {
+			const accessLevelMsg = options?.accessLevel ?? 'default';
+			it.each([
+				['file', new File([getBlob(8 * MB)], 'someName')],
+				['blob', getBlob(8 * MB)],
+				['string', '1'.repeat(8 * MB)],
+				['arrayBuffer', new ArrayBuffer(8 * MB)],
+				['arrayBufferView', new Uint8Array(8 * MB)],
+			])(
+				`should upload a %s type body that splits in 2 parts using ${accessLevelMsg} accessLevel`,
+				async (_, twoPartsPayload) => {
+					mockMultipartUploadSuccess();
+					const { multipartUploadJob } = getMultipartUploadHandlers({
+						key: defaultKey,
+						data: twoPartsPayload,
+						options: options as StorageOptions,
+					});
+					const result = await multipartUploadJob();
+					expect(mockCreateMultipartUpload).toBeCalledWith(
+						expect.objectContaining({
+							credentials,
+							region,
+							abortSignal: expect.any(AbortSignal),
+						}),
+						expect.objectContaining({
+							Bucket: bucket,
+							Key: expectedKey,
+							ContentType: defaultContentType,
+						})
+					);
+					expect(result).toEqual(
+						expect.objectContaining({ key: defaultKey, eTag: 'etag' })
+					);
+					expect(mockCreateMultipartUpload).toBeCalledTimes(1);
+					expect(mockUploadPart).toBeCalledTimes(2);
+					expect(mockCompleteMultipartUpload).toBeCalledTimes(1);
+				}
+			);
+		});
 
 		it('should throw if unsupported payload type is provided', async () => {
 			mockMultipartUploadSuccess();
@@ -226,7 +224,7 @@ describe('getMultipartUploadHandlers', () => {
 			);
 		});
 
-		it('should upload a body that exceeds the sie of default part size and parts count', async () => {
+		it('should upload a body that exceeds the size of default part size and parts count', async () => {
 			let buffer: ArrayBuffer;
 			const file = {
 				__proto__: File.prototype,
@@ -329,13 +327,12 @@ describe('getMultipartUploadHandlers', () => {
 	});
 
 	describe('upload caching', () => {
-		let mockLocalStorage: jest.Mocked<typeof LocalStorage>;
-		beforeEach(async () => {
-			mockLocalStorage = (await getKvStorage()) as jest.Mocked<
-				typeof LocalStorage
-			>;
-			mockLocalStorage.getItem.mockReset();
-			mockLocalStorage.setItem.mockReset();
+		const mockDefaultStorage = defaultStorage as jest.Mocked<
+			typeof defaultStorage
+		>;
+		beforeEach(() => {
+			mockDefaultStorage.getItem.mockReset();
+			mockDefaultStorage.setItem.mockReset();
 		});
 
 		it('should send createMultipartUpload request if the upload task is not cached', async () => {
@@ -350,13 +347,13 @@ describe('getMultipartUploadHandlers', () => {
 			);
 			await multipartUploadJob();
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
+			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
 			expect(mockCreateMultipartUpload).toBeCalledTimes(1);
 			expect(mockListParts).not.toBeCalled();
 		});
 
 		it('should send createMultipartUpload request if the upload task is cached but outdated', async () => {
-			mockLocalStorage.getItem.mockResolvedValue(
+			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
 					[defaultCacheKey]: {
 						uploadId: 'uploadId',
@@ -396,8 +393,10 @@ describe('getMultipartUploadHandlers', () => {
 			);
 			await multipartUploadJob();
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
-			const cacheValue = JSON.parse(mockLocalStorage.setItem.mock.calls[0][1]);
+			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
+			const cacheValue = JSON.parse(
+				mockDefaultStorage.setItem.mock.calls[0][1]
+			);
 			expect(Object.keys(cacheValue)).toEqual([
 				expect.stringMatching(
 					// \d{13} is the file lastModified property of a file
@@ -407,7 +406,7 @@ describe('getMultipartUploadHandlers', () => {
 		});
 
 		it('should send listParts request if the upload task is cached', async () => {
-			mockLocalStorage.getItem.mockResolvedValue(
+			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
 					[defaultCacheKey]: {
 						uploadId: 'uploadId',
@@ -447,11 +446,13 @@ describe('getMultipartUploadHandlers', () => {
 			);
 			await multipartUploadJob();
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
-			expect(mockLocalStorage.setItem.mock.calls[0][0]).toEqual(
+			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
+			expect(mockDefaultStorage.setItem.mock.calls[0][0]).toEqual(
 				UPLOADS_STORAGE_KEY
 			);
-			const cacheValue = JSON.parse(mockLocalStorage.setItem.mock.calls[0][1]);
+			const cacheValue = JSON.parse(
+				mockDefaultStorage.setItem.mock.calls[0][1]
+			);
 			expect(Object.keys(cacheValue)).toEqual([
 				expect.stringMatching(
 					/8388608_application\/octet-stream_bucket_public_key/
@@ -472,8 +473,8 @@ describe('getMultipartUploadHandlers', () => {
 			);
 			await multipartUploadJob();
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
-			expect(mockLocalStorage.setItem).toHaveBeenNthCalledWith(
+			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
+			expect(mockDefaultStorage.setItem).toHaveBeenNthCalledWith(
 				2,
 				UPLOADS_STORAGE_KEY,
 				JSON.stringify({})
@@ -495,8 +496,8 @@ describe('getMultipartUploadHandlers', () => {
 			const uploadJobPromise = multipartUploadJob();
 			await uploadJobPromise;
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockLocalStorage.setItem).toBeCalledTimes(2);
-			expect(mockLocalStorage.setItem).toHaveBeenNthCalledWith(
+			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
+			expect(mockDefaultStorage.setItem).toHaveBeenNthCalledWith(
 				2,
 				UPLOADS_STORAGE_KEY,
 				JSON.stringify({})
@@ -591,10 +592,10 @@ describe('getMultipartUploadHandlers', () => {
 		it('should send progress for cached upload parts', async () => {
 			mockMultipartUploadSuccess();
 
-			const mockLocalStorage = (await getKvStorage()) as jest.Mocked<
-				typeof LocalStorage
+			const mockDefaultStorage = defaultStorage as jest.Mocked<
+				typeof defaultStorage
 			>;
-			mockLocalStorage.getItem.mockResolvedValue(
+			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
 					[defaultCacheKey]: {
 						uploadId: 'uploadId',

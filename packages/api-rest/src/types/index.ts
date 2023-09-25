@@ -24,6 +24,20 @@ export class RestClientOptions {
 	}
 }
 
+export type DocumentType =
+	| null
+	| boolean
+	| number
+	| string
+	| DocumentType[]
+	| { [prop: string]: DocumentType };
+
+export type PostOptions = {
+	headers?: Record<string, string>;
+	body: DocumentType;
+	region?: string;
+	serviceName?: string;
+};
 /**
  * AWS credentials needed for RestClient
  */
