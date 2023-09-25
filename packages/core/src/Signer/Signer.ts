@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { DateUtils } from './Util';
+import { DateUtils } from './DateUtils';
 import {
 	presignUrl,
 	signRequest,
 	TOKEN_QUERY_PARAM,
-} from './clients/middleware/signing/signer/signatureV4';
+} from '../clients/middleware/signing/signer/signatureV4';
 
 const IOT_SERVICE_NAME = 'iotdevicegateway';
 // Best practice regex to parse the service and region from an AWS endpoint

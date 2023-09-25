@@ -24,25 +24,9 @@
  * THE SOFTWARE.
  */
 
-interface MutexInterface {
-	acquire(): Promise<MutexInterface.Releaser>;
+import { MutexInterface } from './types';
 
-	runExclusive<T>(callback: MutexInterface.Worker<T>): Promise<T>;
-
-	isLocked(): boolean;
-}
-
-namespace MutexInterface {
-	export interface Releaser {
-		(): void;
-	}
-
-	export interface Worker<T> {
-		(): Promise<T> | T;
-	}
-}
-
-class Mutex implements MutexInterface {
+export class Mutex implements MutexInterface {
 	isLocked(): boolean {
 		return this._pending;
 	}
@@ -92,5 +76,3 @@ class Mutex implements MutexInterface {
 	private _queue: Array<(release: MutexInterface.Releaser) => void> = [];
 	private _pending = false;
 }
-
-export default Mutex;
