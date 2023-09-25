@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
+import { base64Encoder } from '@aws-amplify/core/internals/utils';
 import BigInteger from './BigInteger';
 import { toHex, fromHex } from './helpers';
 import WordArray from './WordArray';
-import { toBase64 } from '@smithy/util-base64';
 import { AuthError } from '../../../../errors/AuthError';
 
 export type BigInteger = typeof BigInteger & {
@@ -178,7 +178,7 @@ export default class AuthenticationHelper {
 	 * @private
 	 */
 	generateRandomString(): string {
-		return toBase64(randomBytes(40));
+		return base64Encoder.convert(randomBytes(40));
 	}
 
 	/**

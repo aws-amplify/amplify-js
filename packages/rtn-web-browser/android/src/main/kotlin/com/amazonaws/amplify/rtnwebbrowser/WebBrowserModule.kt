@@ -34,7 +34,6 @@ class WebBrowserModule(
         }
     }
 
-    @SuppressLint("SuspiciousIndentation")
     @ReactMethod
     fun openAuthSessionAsync(uriStr: String, promise: Promise) {
         if (!Patterns.WEB_URL.matcher(uriStr).matches()) {

@@ -3,7 +3,10 @@
 
 import { Sha256 } from '@aws-crypto/sha256-js';
 import { SourceData } from '@smithy/types';
-import { AuthError } from '../../../../errors/AuthError';
+import {
+	base64Encoder,
+	base64Decoder,
+} from '@aws-amplify/core/internals/utils';
 import AuthenticationHelper, { BigInteger } from './AuthenticationHelper';
 
 export function hash(buf: SourceData) {
@@ -77,47 +80,19 @@ export function toHex(bytes: Uint8Array) {
 	return out;
 }
 
-const getAtob = () => {
-	if (typeof window !== 'undefined' && window.atob) {
-		return window.atob;
-	}
-
-	throw new AuthError({
-		name: 'NoWindowAtobException',
-		message: 'atob not available',
-	});
-};
-
-const getBtoa = () => {
-	if (typeof window !== 'undefined' && window.btoa) {
-		return window.btoa;
-	}
-
-	throw new AuthError({
-		name: 'NoWindowBtoaException',
-		message: 'btoa not available',
-	});
-};
-
 export function _urlB64ToUint8Array(base64String: string) {
 	const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
 	const base64 = (base64String + padding)
 		.replace(/\-/g, '+')
 		.replace(/_/g, '/');
 
-	const rawData = getAtob()(base64);
+	const rawData = base64Decoder.convert(base64);
 	const outputArray = new Uint8Array(rawData.length);
 
 	for (let i = 0; i < rawData.length; ++i) {
 		outputArray[i] = rawData.charCodeAt(i);
 	}
 	return outputArray;
-}
-
-export function _encodeBase64Bytes(bytes: Uint8Array) {
-	return getBtoa()(
-		bytes.reduce((acc, current) => acc + String.fromCharCode(current), '')
-	);
 }
 
 const monthNames = [
@@ -203,7 +178,7 @@ export function getSignatureString({
 	const awsCryptoHash = new Sha256(hkdf);
 	awsCryptoHash.update(bufConcat);
 	const resultFromAWSCrypto = awsCryptoHash.digestSync();
-	const signatureString = _encodeBase64Bytes(resultFromAWSCrypto);
+	const signatureString = base64Encoder.convert(resultFromAWSCrypto);
 	return signatureString;
 }
 
@@ -227,7 +202,7 @@ export function getPasswordAuthenticationKey({
 	password: string;
 	serverBValue: BigInteger;
 	salt: BigInteger;
-}):Promise<SourceData> {
+}): Promise<SourceData> {
 	return new Promise((res, rej) => {
 		authenticationHelper.getPasswordAuthenticationKey(
 			username,
