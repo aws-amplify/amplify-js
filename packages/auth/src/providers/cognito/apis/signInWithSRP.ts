@@ -78,7 +78,7 @@ export async function signInWithSRP(
 			await cacheCognitoTokens({
 				...AuthenticationResult,
 				NewDeviceMetadata: await getNewDeviceMetatada(
-					Amplify,
+					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
 					AuthenticationResult.AccessToken
 				),

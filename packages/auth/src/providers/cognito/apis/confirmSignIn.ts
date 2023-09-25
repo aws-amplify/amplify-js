@@ -107,7 +107,7 @@ export async function confirmSignIn(
 			await cacheCognitoTokens({
 				...AuthenticationResult,
 				NewDeviceMetadata: await getNewDeviceMetatada(
-					Amplify,
+					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
 					AuthenticationResult.AccessToken
 				),

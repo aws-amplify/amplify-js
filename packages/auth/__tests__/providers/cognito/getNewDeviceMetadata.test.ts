@@ -8,11 +8,12 @@ import { ConfirmDeviceCommandOutput } from '../../../src/providers/cognito/utils
 import { Amplify } from '@aws-amplify/core';
 import { getNewDeviceMetatada } from '../../../src/providers/cognito/utils/signInHelpers';
 
+const userPoolId = 'us-west-2_zzzzz';
 Amplify.configure({
 	Auth: {
 		Cognito: {
 			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			userPoolId: 'us-west-2_zzzzz',
+			userPoolId,
 			identityPoolId: 'us-west-2:xxxxxx',
 		},
 	},
@@ -30,7 +31,7 @@ describe('test getNewDeviceMetadata API', () => {
 		const mockedDeviceKey = 'mockedDeviceKey';
 		const mockedGroupDeviceKey = 'mockedGroupDeviceKey';
 		const deviceMetadata = await getNewDeviceMetatada(
-			Amplify,
+			userPoolId,
 			{
 				DeviceKey: mockedDeviceKey,
 				DeviceGroupKey: mockedGroupDeviceKey,
@@ -63,7 +64,7 @@ describe('test getNewDeviceMetadata API', () => {
 		const mockedDeviceKey = 'mockedDeviceKey';
 		const mockedGroupDeviceKey = 'mockedGroupDeviceKey';
 		const deviceMetadata = await getNewDeviceMetatada(
-			Amplify,
+			userPoolId,
 			{
 				DeviceKey: mockedDeviceKey,
 				DeviceGroupKey: mockedGroupDeviceKey,

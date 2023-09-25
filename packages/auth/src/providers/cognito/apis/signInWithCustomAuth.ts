@@ -69,10 +69,11 @@ export async function signInWithCustomAuth(
 		});
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
+
 			await cacheCognitoTokens({
 				...AuthenticationResult,
 				NewDeviceMetadata: await getNewDeviceMetatada(
-					Amplify,
+					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
 					AuthenticationResult.AccessToken
 				),

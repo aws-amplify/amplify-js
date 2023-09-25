@@ -668,13 +668,12 @@ export async function assertUserNotAuthenticated() {
  * @returns DeviceMetadata | undefined
  */
 export async function getNewDeviceMetatada(
-	amplify: AmplifyClassV6,
+	userPoolId: string,
 	newDeviceMetadata?: NewDeviceMetadataType,
 	accessToken?: string
 ): Promise<DeviceMetadata | undefined> {
-	const config = amplify.getConfig().Auth?.Cognito;
-	assertTokenProviderConfig(config);
-	const userPoolName = config.userPoolId.split('_')[1] || '';
+	if (!newDeviceMetadata) return undefined;
+	const userPoolName = userPoolId.split('_')[1] || '';
 	const authenticationHelper = new AuthenticationHelper(userPoolName);
 	const deviceKey = newDeviceMetadata?.DeviceKey;
 	const deviceGroupKey = newDeviceMetadata?.DeviceGroupKey;
@@ -701,7 +700,7 @@ export async function getNewDeviceMetatada(
 
 				try {
 					await confirmDevice(
-						{ region: getRegion(config.userPoolId) },
+						{ region: getRegion(userPoolId) },
 						{
 							AccessToken: accessToken,
 							DeviceKey: newDeviceMetadata?.DeviceKey,
