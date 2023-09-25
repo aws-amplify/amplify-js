@@ -20,12 +20,11 @@ import { AuthError } from '../../../errors/AuthError';
 import { AuthErrorTypes } from '../../../types/Auth';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { authErrorMessages } from '../../../Errors';
+import { openAuthSession } from '../../../utils';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInWithRedirectInput } from '../types';
 import { generateCodeVerifier, generateState } from '../utils/oauth';
 import { getCurrentUser } from './getCurrentUser';
-
-const SELF = '_self';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
@@ -37,11 +36,12 @@ const SELF = '_self';
 export async function signInWithRedirect(
 	input?: SignInWithRedirectInput
 ): Promise<void> {
-	await assertUserNotAuthenticated();
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 	store.setAuthConfig(authConfig);
+	await assertUserNotAuthenticated();
+
 	let provider = 'COGNITO'; // Default
 
 	if (typeof input?.provider === 'string') {
@@ -50,7 +50,7 @@ export async function signInWithRedirect(
 		provider = input.provider.custom;
 	}
 
-	oauthSignIn({
+	return oauthSignIn({
 		oauthConfig: authConfig.loginWith.oauth,
 		clientId: authConfig.userPoolClientId,
 		provider,
@@ -60,7 +60,7 @@ export async function signInWithRedirect(
 
 const store = new DefaultOAuthStore(defaultStorage);
 
-function oauthSignIn({
+async function oauthSignIn({
 	oauthConfig,
 	provider,
 	clientId,
@@ -71,6 +71,7 @@ function oauthSignIn({
 	clientId: string;
 	customState?: string;
 }) {
+	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
 	const randomState = generateState();
 
 	/* encodeURIComponent is not URL safe, use urlSafeEncode instead. Cognito 
@@ -83,20 +84,19 @@ function oauthSignIn({
 		? `${randomState}-${urlSafeEncode(customState)}`
 		: randomState;
 	const { value, method, toCodeChallenge } = generateCodeVerifier(128);
-	const scopesString = oauthConfig.scopes.join(' ');
 
 	store.storeOAuthInFlight(true);
 	store.storeOAuthState(state);
 	store.storePKCE(value);
 
 	const queryString = Object.entries({
-		redirect_uri: oauthConfig.redirectSignIn[0], // TODO(v6): add logic to identity the correct url
-		response_type: oauthConfig.responseType,
+		redirect_uri: redirectSignIn[0], // TODO(v6): add logic to identity the correct url
+		response_type: responseType,
 		client_id: clientId,
 		identity_provider: provider,
-		scope: scopesString,
+		scope: scopes.join(' '),
 		state,
-		...(oauthConfig.responseType === 'code' && {
+		...(responseType === 'code' && {
 			code_challenge: toCodeChallenge(),
 			code_challenge_method: method,
 		}),
@@ -105,8 +105,18 @@ function oauthSignIn({
 		.join('&');
 
 	// TODO(v6): use URL object instead
-	const URL = `https://${oauthConfig.domain}/oauth2/authorize?${queryString}`;
-	window.open(URL, SELF);
+	const oAuthUrl = `https://${domain}/oauth2/authorize?${queryString}`;
+	const { type, url } = (await openAuthSession(oAuthUrl, redirectSignIn)) ?? {};
+	if (type === 'success' && url) {
+		handleAuthResponse({
+			currentUrl: url,
+			clientId,
+			domain,
+			redirectUri: redirectSignIn[0],
+			responseType,
+			userAgentValue: getAmplifyUserAgent(),
+		});
+	}
 }
 
 async function handleCodeFlow({
@@ -152,14 +162,14 @@ async function handleCodeFlow({
 	// 	`Retrieving tokens from ${oAuthTokenEndpoint}`
 	// );
 
-	const code_verifier = await store.loadPKCE();
+	const codeVerifier = await store.loadPKCE();
 
 	const oAuthTokenBody = {
 		grant_type: 'authorization_code',
 		code,
 		client_id: clientId,
 		redirect_uri: redirectUri,
-		...(code_verifier ? { code_verifier } : {}),
+		...(codeVerifier ? { code_verifier: codeVerifier } : {}),
 	};
 
 	const body = Object.entries(oAuthTokenBody)
@@ -246,18 +256,18 @@ async function handleImplicitFlow({
 
 	const url = new URL(currentUrl);
 
-	const { id_token, access_token, state, token_type, expires_in } = (
+	const { idToken, accessToken, state, tokenType, expiresIn } = (
 		url.hash || '#'
 	)
-		.substr(1) // Remove # from returned code
+		.substring(1) // Remove # from returned code
 		.split('&')
 		.map(pairings => pairings.split('='))
 		.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), {
-			id_token: undefined,
-			access_token: undefined,
+			idToken: undefined,
+			accessToken: undefined,
 			state: undefined,
-			token_type: undefined,
-			expires_in: undefined,
+			tokenType: undefined,
+			expiresIn: undefined,
 		});
 
 	await store.clearOAuthInflightData();
@@ -269,11 +279,10 @@ async function handleImplicitFlow({
 	}
 
 	await cacheCognitoTokens({
-		AccessToken: access_token,
-		IdToken: id_token,
-		RefreshToken: undefined,
-		TokenType: token_type,
-		ExpiresIn: expires_in,
+		AccessToken: accessToken,
+		IdToken: idToken,
+		TokenType: tokenType,
+		ExpiresIn: expiresIn,
 	});
 
 	await store.storeOAuthSignIn(true);
@@ -400,14 +409,16 @@ async function parseRedirectURL() {
 	}
 
 	try {
-		const url = window.location.href;
+		const currentUrl = window.location.href;
+		const { loginWith, userPoolClientId } = authConfig;
+		const { domain, redirectSignIn, responseType } = loginWith.oauth;
 
 		handleAuthResponse({
-			currentUrl: url,
-			clientId: authConfig.userPoolClientId,
-			domain: authConfig.loginWith.oauth.domain,
-			redirectUri: authConfig.loginWith.oauth.redirectSignIn[0],
-			responseType: authConfig.loginWith.oauth.responseType,
+			currentUrl,
+			clientId: userPoolClientId,
+			domain,
+			redirectUri: redirectSignIn[0],
+			responseType,
 			userAgentValue: getAmplifyUserAgent(),
 		});
 	} catch (err) {
@@ -434,19 +445,22 @@ const invokeAndClearPromise = () => {
 	resolveInflightPromise();
 	resolveInflightPromise = () => {};
 };
-CognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
-	() =>
-		new Promise(async (res, _rej) => {
-			if (!(await store.loadOAuthInFlight())) {
-				res();
-			} else {
-				resolveInflightPromise = res;
-			}
-			return;
-		})
-);
+
+isBrowser() &&
+	CognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
+		() =>
+			new Promise(async (res, _rej) => {
+				if (!(await store.loadOAuthInFlight())) {
+					res();
+				} else {
+					resolveInflightPromise = res;
+				}
+				return;
+			})
+	);
+
 function clearHistory(redirectUri: string) {
-	if (window && typeof window.history !== 'undefined') {
+	if (typeof window !== 'undefined' && typeof window.history !== 'undefined') {
 		window.history.replaceState({}, '', redirectUri);
 	}
 }
@@ -454,6 +468,7 @@ function clearHistory(redirectUri: string) {
 function isCustomState(state: string): Boolean {
 	return /-/.test(state);
 }
+
 function getCustomState(state: string): string {
 	return state.split('-').splice(1).join('-');
 }

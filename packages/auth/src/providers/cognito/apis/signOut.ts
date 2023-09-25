@@ -8,6 +8,7 @@ import {
 	clearCredentials,
 	defaultStorage,
 } from '@aws-amplify/core';
+import { openAuthSession } from '../../../utils';
 import { SignOutInput, SignOutOutput } from '../types';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { tokenOrchestrator } from '../tokenProvider';
@@ -26,8 +27,6 @@ import {
 	assertAuthTokens,
 	assertAuthTokensWithRefreshToken,
 } from '../utils/types';
-
-const SELF = '_self';
 
 /**
  * Signs a user out
@@ -109,28 +108,25 @@ async function handleOAuthSignOut(cognitoConfig: CognitoUserPoolConfig) {
 	const oauthStore = new DefaultOAuthStore(defaultStorage);
 	oauthStore.setAuthConfig(cognitoConfig);
 	const isOAuthSignIn = await oauthStore.loadOAuthSignIn();
-	oauthStore.clearOAuthData();
+	await oauthStore.clearOAuthData();
 
 	if (isOAuthSignIn) {
 		oAuthSignOutRedirect(cognitoConfig);
 	}
 }
 
-function oAuthSignOutRedirect(authConfig: CognitoUserPoolConfig) {
+async function oAuthSignOutRedirect(authConfig: CognitoUserPoolConfig) {
 	assertOAuthConfig(authConfig);
-	let oAuthLogoutEndpoint =
-		'https://' + authConfig.loginWith.oauth.domain + '/logout?';
 
-	const client_id = authConfig.userPoolClientId;
-
-	const signout_uri = authConfig.loginWith.oauth.redirectSignOut[0];
-
-	oAuthLogoutEndpoint += Object.entries({
-		client_id,
-		logout_uri: encodeURIComponent(signout_uri),
+	const { loginWith, userPoolClientId } = authConfig;
+	const { domain, redirectSignOut } = loginWith.oauth;
+	const signoutUri = redirectSignOut[0];
+	const oAuthLogoutEndpoint = `https://${domain}/logout?${Object.entries({
+		client_id: userPoolClientId,
+		logout_uri: encodeURIComponent(signoutUri),
 	})
 		.map(([k, v]) => `${k}=${v}`)
-		.join('&');
+		.join('&')}`;
 
 	// dispatchAuthEvent(
 	// 	'oAuthSignOut',
@@ -139,7 +135,7 @@ function oAuthSignOutRedirect(authConfig: CognitoUserPoolConfig) {
 	// );
 	// logger.debug(`Signing out from ${oAuthLogoutEndpoint}`);
 
-	window.open(oAuthLogoutEndpoint, SELF);
+	await openAuthSession(oAuthLogoutEndpoint, redirectSignOut);
 }
 
 function isSessionRevocable(token: JWT) {

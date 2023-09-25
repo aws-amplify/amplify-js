@@ -39,7 +39,7 @@ export class DefaultOAuthStore implements OAuthStore {
 			this.cognitoConfig.userPoolClientId
 		);
 		await this.clearOAuthInflightData();
-		this.keyValueStorage.removeItem(authKeys.oauthSignIn);
+		return this.keyValueStorage.removeItem(authKeys.oauthSignIn);
 	}
 	loadOAuthState(): Promise<string | null> {
 		assertTokenProviderConfig(this.cognitoConfig);
