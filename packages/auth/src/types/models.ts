@@ -216,7 +216,7 @@ export type AuthUserAttributes<
 };
 
 /**
- * Key/value pairs describing a user attribute.
+ * The interface of a user attribute.
  */
 export type AuthUserAttribute<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
