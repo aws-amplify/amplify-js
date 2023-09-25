@@ -6,9 +6,9 @@
  * jsdom (which is also the default) Since this is allowed per test file
  * and not per test or describe, we have two tests, one for node and other for browser
  */
-import { isBrowser } from '../src/Util/JS';
+import { isBrowser } from '../src/utils';
 
-describe('JS browserOrNode build test', () => {
+describe('isBrowser build test', () => {
 	// Prevent Jest test resolves Node.js version from the global `process` of the
 	// testing the Node.js process.
 	const originalVersions = process.versions;
@@ -22,7 +22,7 @@ describe('JS browserOrNode build test', () => {
 		global.process.versions = originalVersions;
 	});
 
-	test('when its browser ', () => {
+	test('when it is browser ', () => {
 		expect(isBrowser()).toBe(true);
 	});
 });

@@ -54,8 +54,7 @@
 		"immer": "9.0.6",
 		"ulid": "^2.3.0",
 		"uuid": "^9.0.0",
-		"zen-observable-ts": "0.8.19",
-		"zen-push": "0.2.1"
+		"rxjs": "^7.8.1"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.0.0"

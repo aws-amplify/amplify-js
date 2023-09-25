@@ -5,7 +5,7 @@ import { UserProfile } from '@aws-amplify/core';
 import { AnalyticsServiceOptions } from '.';
 
 /**
- * Constructs an `identifyUser` input.
+ * Input type for `identifyUser`.
  */
 export type AnalyticsIdentifyUserInput<
 	ServiceOptions extends AnalyticsServiceOptions = AnalyticsServiceOptions

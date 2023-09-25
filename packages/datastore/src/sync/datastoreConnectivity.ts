@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { Observable, Observer, SubscriptionLike } from 'rxjs';
 import { ReachabilityMonitor } from './datastoreReachability';
 import { Logger } from '@aws-amplify/core/internals/utils';
 
@@ -15,8 +15,8 @@ type ConnectionStatus = {
 
 export default class DataStoreConnectivity {
 	private connectionStatus: ConnectionStatus;
-	private observer!: ZenObservable.SubscriptionObserver<ConnectionStatus>;
-	private subscription!: ZenObservable.Subscription;
+	private observer!: Observer<ConnectionStatus>;
+	private subscription!: SubscriptionLike;
 	private timeout!: ReturnType<typeof setTimeout>;
 	constructor() {
 		this.connectionStatus = {
