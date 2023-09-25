@@ -39,13 +39,13 @@
 			"in-app-messaging": [
 				"./lib-esm/InAppMessaging/providers/index.d.ts"
 			],
-			"push": [
+			"push-notifications": [
 				"./lib-esm/PushNotification/providers/index.d.ts"
 			],
 			"in-app-messaging/pinpoint": [
 				"./lib-esm/InAppMessaging/providers/pinpoint/index.d.ts"
 			],
-			"push/pinpoint": [
+			"push-notifications/pinpoint": [
 				"./lib-esm/PushNotification/providers/pinpoint/index.d.ts"
 			]
 		}
@@ -61,7 +61,7 @@
 			"import": "./lib-esm/InAppMessaging/providers/index.js",
 			"require": "./lib/InAppMessaging/providers/index.js"
 		},
-		"./push": {
+		"./push-notifications": {
 			"types": "./lib-esm/PushNotification/providers/index.d.ts",
 			"import": "./lib-esm/PushNotification/providers/index.js",
 			"require": "./lib/PushNotification/providers/index.js"
@@ -71,7 +71,7 @@
 			"import": "./lib-esm/InAppMessaging/providers/pinpoint/index.js",
 			"require": "./lib/InAppMessaging/providers/pinpoint/index.js"
 		},
-		"./push/pinpoint": {
+		"./push-notifications/pinpoint": {
 			"types": "./lib-esm/PushNotification/providers/pinpoint/index.d.ts",
 			"import": "./lib-esm/PushNotification/providers/pinpoint/index.js",
 			"require": "./lib/PushNotification/providers/pinpoint/index.js"

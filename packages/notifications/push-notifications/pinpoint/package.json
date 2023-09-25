@@ -1,5 +1,5 @@
 {
-	"name": "@aws-amplify/notifications/push/pinpoint",
+	"name": "@aws-amplify/notifications/push-notifications/pinpoint",
 	"main": "../../lib/PushNotification/providers/pinpoint/index.js",
 	"browser": "../../lib-esm/PushNotification/providers/pinpoint/index.js",
 	"module": "../../lib-esm/PushNotification/providers/pinpoint/index.js",
