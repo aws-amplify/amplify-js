@@ -8,7 +8,7 @@ import {
 	ModelAttributeAuthAllow,
 	AmplifyContext,
 } from '../types';
-import { GraphQLAuthModeKeys } from '@aws-amplify/core/internals/utils';
+import { ApiAuthModeKeys } from '@aws-amplify/core/internals/utils';
 
 function getProviderFromRule(
 	rule: ModelAttributeAuthProperty
@@ -63,7 +63,7 @@ function getAuthRules({
 	currentUser: unknown;
 }) {
 	// Using Set to ensure uniqueness
-	const authModes = new Set<GraphQLAuthModeKeys>();
+	const authModes = new Set<ApiAuthModeKeys>();
 
 	rules.forEach(rule => {
 		switch (rule.allow) {
