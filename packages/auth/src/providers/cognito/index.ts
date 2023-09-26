@@ -20,6 +20,7 @@ export { signInWithRedirect } from './apis/signInWithRedirect';
 export { fetchUserAttributes } from './apis/fetchUserAttributes';
 export { signOut } from './apis/signOut';
 export { sendUserAttributeVerificationCode } from './apis/sendUserAttributeVerificationCode';
+export { deleteUserAttributes } from './apis/deleteUserAttributes';
 export {
 	ConfirmResetPasswordInput,
 	ConfirmSignInInput,
@@ -36,6 +37,7 @@ export {
 	UpdateUserAttributesInput,
 	VerifyTOTPSetupInput,
 	SendUserAttributeVerificationCodeInput,
+	DeleteUserAttributesInput,
 } from './types/inputs';
 
 export {

@@ -103,6 +103,7 @@ export type AuthConfirmSignInInput<
 
 /**
  * Constructs a `VerifyTOTPSetup` input.
+ *
  * @param code - required parameter for verifying the TOTP setup.
  * @param options - optional parameters for the Verify TOTP Setup process such as the service options.
  */
@@ -126,6 +127,7 @@ export type AuthUpdatePasswordInput = {
 
 /**
  * Constructs a `updateUserAttributes` input.
+ *
  * @param userAttributes - the user attributes to be updated
  * @param options - optional parameters for the Update User Attributes process such as the service options.
  */
@@ -137,7 +139,7 @@ export type AuthUpdateUserAttributesInput<
 	options?: { serviceOptions?: ServiceOptions };
 };
 
-/*
+/**
  * Constructs a `verifyUserAttribute` input.
  *
  * @param userAttributeKey - the user attribute key to be verified
@@ -150,6 +152,7 @@ export type AuthConfirmUserAttributeInput<
 
 /**
  * Constructs a `sendUserAttributeVerificationCode` request.
+ *
  * @param userAttributeKey - the user attribute key
  * @param options - optional parameters for the Resend Attribute Code process such as the service options.
  */
@@ -160,3 +163,12 @@ export type AuthSendUserAttributeVerificationCodeInput<
 	userAttributeKey: UserAttributeKey;
 	options?: { serviceOptions?: ServiceOptions };
 };
+
+/**
+ * Constructs a `deleteUserAttributes` input.
+ *
+ * @param userAttributeKeys - the user attribute keys to be deleted
+ */
+export type AuthDeleteUserAttributesInput<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = { userAttributeKeys: UserAttributeKey[] };

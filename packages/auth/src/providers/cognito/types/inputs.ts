@@ -31,6 +31,7 @@ import {
 	AuthUpdateUserAttributesInput,
 	AuthVerifyTOTPSetupInput,
 	AuthSendUserAttributeVerificationCodeInput,
+	AuthDeleteUserAttributesInput,
 } from '../../../types';
 
 /**
@@ -141,3 +142,9 @@ export type SendUserAttributeVerificationCodeInput =
 		UserAttributeKey,
 		SendUserAttributeVerificationCodeOptions
 	>;
+
+/**
+ * Input type for Cognito deleteUserAttributes API.
+ */
+export type DeleteUserAttributesInput =
+	AuthDeleteUserAttributesInput<UserAttributeKey>;

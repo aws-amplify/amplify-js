@@ -43,6 +43,8 @@ import type {
 	UpdateDeviceStatusCommandOutput as UpdateDeviceStatusOutput,
 	ListDevicesCommandInput as ListDevicesInput,
 	ListDevicesCommandOutput as ListDevicesOutput,
+	DeleteUserAttributesCommandInput as DeleteUserAttributesInput,
+	DeleteUserAttributesCommandOutput as DeleteUserAttributesOutput,
 } from './types';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import {
@@ -88,6 +90,7 @@ type ClientOperation =
 	| 'GlobalSignOut'
 	| 'UpdateUserAttributes'
 	| 'VerifyUserAttribute'
+	| 'DeleteUserAttributes'
 	| 'UpdateDeviceStatus'
 	| 'ListDevices'
 	| 'RevokeToken';
@@ -256,5 +259,11 @@ export const listDevices = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ListDevicesInput>('ListDevices'),
 	buildUserPoolDeserializer<ListDevicesOutput>(),
+	defaultConfig
+);
+export const deleteUserAttributes = composeServiceApi(
+	cognitoUserPoolTransferHandler,
+	buildUserPoolSerializer<DeleteUserAttributesInput>('DeleteUserAttributes'),
+	buildUserPoolDeserializer<DeleteUserAttributesOutput>(),
 	defaultConfig
 );
