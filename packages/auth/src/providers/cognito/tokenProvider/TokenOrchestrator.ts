@@ -15,6 +15,7 @@ import {
 	AuthTokenOrchestrator,
 	AuthTokenStore,
 	CognitoAuthTokens,
+	DeviceMetadata,
 	TokenRefresher,
 } from './types';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
@@ -147,5 +148,12 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 
 	async clearTokens() {
 		return this.getTokenStore().clearTokens();
+	}
+
+	getDeviceMetadata(): Promise<DeviceMetadata | null> {
+		return this.getTokenStore().getDeviceMetadata();
+	}
+	clearDeviceMetadata(): Promise<void> {
+		return this.getTokenStore().clearDeviceMetadata();
 	}
 }
