@@ -10,7 +10,7 @@ const mockBrowserOrNode = browserOrNode as jest.Mock;
 const mockAddEventListener = jest.fn();
 const mockRemoveEventListener = jest.fn();
 
-const MODULE_PATH = '../../../src/inAppMessaging/SessionTracker';
+const MODULE_PATH = '../../../src/inAppMessaging/sessionTracker';
 
 describe('SessionTracker', () => {
 	let tracker, SessionTracker;

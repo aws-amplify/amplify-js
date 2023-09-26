@@ -33,7 +33,7 @@ jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('../../../../src/common/eventListeners');
 jest.mock('../../../../src/inAppMessaging/Providers/AWSPinpointProvider/utils');
 jest.mock(
-	'../../../../src/inAppMessaging/SessionTracker/SessionTracker',
+	'../../../../src/inAppMessaging/sessionTracker/SessionTracker',
 	() => ({
 		__esModule: true,
 		default: jest.fn(() => ({
