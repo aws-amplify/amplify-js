@@ -1,5 +1,4 @@
 import * as raw from '../src';
-import * as internals from '../src/internals';
 import { graphql } from '../src/internals/v6';
 import { Amplify } from 'aws-amplify';
 import * as typedQueries from './fixtures/with-types/queries';
@@ -9,8 +8,6 @@ import * as untypedQueries from './fixtures/without-types/queries';
 import * as untypedMutations from './fixtures/without-types/mutations';
 import * as untypedSubscriptions from './fixtures/without-types/subscriptions';
 import { Observable } from 'zen-observable-ts';
-// import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
-// import { InternalPubSub } from '@aws-amplify/pubsub/internals';
 import {
 	expectGet,
 	expectList,
