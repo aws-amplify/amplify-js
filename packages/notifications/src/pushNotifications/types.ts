@@ -15,29 +15,14 @@ export type NotificationsSubCategory = Extract<
 >;
 
 export interface PushNotificationInterface {
-	configure: (config: PushNotificationConfig) => PushNotificationConfig;
-	getModuleName: () => NotificationsSubCategory;
-	getPluggable: (providerName: string) => PushNotificationProvider;
-	addPluggable: (pluggable: PushNotificationProvider) => void;
-	removePluggable: (providerName: string) => void;
 	enable: () => void;
-	identifyUser: (userId: string, userInfo: UserInfo) => Promise<void[]>;
-	getLaunchNotification: () => Promise<PushNotificationMessage>;
+	identifyUser: (userId: string, userInfo: UserInfo) => Promise<void>;
 	getBadgeCount: () => Promise<number>;
 	setBadgeCount: (count: number) => void;
 	getPermissionStatus: () => Promise<PushNotificationPermissionStatus>;
 	requestPermissions: (
 		permissions?: PushNotificationPermissions
 	) => Promise<boolean>;
-	onNotificationReceivedInBackground: (
-		handler: OnPushNotificationMessageHandler
-	) => EventListener<OnPushNotificationMessageHandler>;
-	onNotificationReceivedInForeground: (
-		handler: OnPushNotificationMessageHandler
-	) => EventListener<OnPushNotificationMessageHandler>;
-	onNotificationOpened: (
-		handler: OnPushNotificationMessageHandler
-	) => EventListener<OnPushNotificationMessageHandler>;
 	onTokenReceived: (
 		handler: OnTokenReceivedHandler
 	) => EventListener<OnTokenReceivedHandler>;
