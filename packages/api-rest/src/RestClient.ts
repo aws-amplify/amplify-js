@@ -47,7 +47,7 @@ export class RestClient {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	ajax(url: string, method: string, init) {
+	ajax(url: string, method: string, init: any) {
 		const source = axios.CancelToken.source();
 		const promise = new Promise(async (res, rej) => {
 			const parsed_url = new URL(url);
@@ -66,8 +66,8 @@ export class RestClient {
 				timeout: 0,
 			};
 
-			const libraryHeaders = {};
-			const initParams = Object.assign({}, init);
+			const libraryHeaders: any = {};
+			const initParams: any = Object.assign({}, init);
 			const isAllResponse = initParams.response;
 			if (initParams.body) {
 				if (
