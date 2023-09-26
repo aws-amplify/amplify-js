@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { LoggingProvider, InputLogEvent } from '../types';
-import { AWS_CLOUDWATCH_CATEGORY } from '../Util/Constants';
+import { AWS_CLOUDWATCH_CATEGORY } from '../constants';
 import { Logger } from './logger-interface';
 
 const LOG_LEVELS: Record<string, number> = {
