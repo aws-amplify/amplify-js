@@ -10,11 +10,12 @@ import { DEFAULT_KINESIS_CONFIG } from './constants';
 
 export const resolveConfig = () => {
 	const config = Amplify.getConfig().Analytics?.Kinesis;
-	const { region, resendLimit } = config || {};
+	const { region } = config || {};
 	const bufferSize = config?.bufferSize || DEFAULT_KINESIS_CONFIG.bufferSize;
 	const flushSize = config?.flushSize || DEFAULT_KINESIS_CONFIG.flushSize;
 	const flushInterval =
 		config?.flushInterval || DEFAULT_KINESIS_CONFIG.flushInterval;
+	const resendLimit = config?.resendLimit || DEFAULT_KINESIS_CONFIG.resendLimit;
 
 	assertValidationError(!!region, AnalyticsValidationErrorCode.NoRegion);
 	assertValidationError(

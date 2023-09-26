@@ -11,7 +11,7 @@ describe('Analytics Kinesis Provider Util: resolveConfig', () => {
 		bufferSize: 100,
 		flushSize: 10,
 		flushInterval: 1000,
-		resendLimit: 5,
+		resendLimit: 3,
 	};
 
 	const getConfigSpy = jest.spyOn(Amplify, 'getConfig');

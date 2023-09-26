@@ -5,5 +5,5 @@ export const DEFAULT_KINESIS_CONFIG = {
 	bufferSize: 1_000,
 	flushSize: 100,
 	flushInterval: 5_000,
-	resendLimit: undefined,
+	resendLimit: 5,
 };
