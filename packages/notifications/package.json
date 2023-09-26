@@ -1,7 +1,6 @@
 {
 	"name": "@aws-amplify/notifications",
 	"version": "2.0.0",
-	"private": true,
 	"description": "Notifications category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
