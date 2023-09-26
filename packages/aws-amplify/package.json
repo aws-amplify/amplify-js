@@ -83,14 +83,24 @@
 			"require": "./lib/storage/s3/server.js"
 		},
 		"./in-app-messaging": {
-			"types": "./lib-esm/notifications/in-app/index.d.ts",
-			"import": "./lib-esm/notifications/in-app/index.js",
-			"require": "./lib/notifications/in-app/index.js"
+			"types": "./lib-esm/in-app-messaging/index.d.ts",
+			"import": "./lib-esm/in-app-messaging/index.js",
+			"require": "./lib/in-app-messaging/index.js"
 		},
 		"./push-notifications": {
-			"types": "./lib-esm/notifications/push/index.d.ts",
-			"import": "./lib-esm/notifications/push/index.js",
-			"require": "./lib/notifications/push/index.js"
+			"types": "./lib-esm/push-notifications/index.d.ts",
+			"import": "./lib-esm/push-notifications/index.js",
+			"require": "./lib/push-notifications/index.js"
+		},
+		"./in-app-messaging/pinpoint": {
+			"types": "./lib-esm/in-app-messaging/pinpoint/index.d.ts",
+			"import": "./lib-esm/in-app-messaging/pinpoint/index.js",
+			"require": "./lib/in-app-messaging/pinpoint/index.js"
+		},
+		"./push-notifications/pinpoint": {
+			"types": "./lib-esm/push-notifications/pinpoint/index.d.ts",
+			"import": "./lib-esm/push-notifications/pinpoint/index.js",
+			"require": "./lib/push-notifications/pinpoint/index.js"
 		},
 		"./internals/adapter-core": {
 			"types": "./lib-esm/adapterCore/index.d.ts",
@@ -144,16 +154,16 @@
 				"./lib-esm/storage/s3/server.d.ts"
 			],
 			"in-app-messaging": [
-				"./lib-esm/notifications/in-app/index.d.ts"
+				"./lib-esm/in-app-messaging/index.d.ts"
 			],
 			"in-app-messaging/pinpoint": [
-				"./lib-esm/notifications/in-app/pinpoint/index.d.ts"
+				"./lib-esm/in-app-messaging/pinpoint/index.d.ts"
 			],
 			"push-notifications": [
-				"./lib-esm/notifications/push/index.d.ts"
+				"./lib-esm/push-notifications/index.d.ts"
 			],
 			"push-notifications/pinpoint": [
-				"./lib-esm/notifications/push/pinpoint/index.d.ts"
+				"./lib-esm/push-notifications/pinpoint/index.d.ts"
 			],
 			"internals/adapter-core": [
 				"./lib-esm/adapterCore/index.d.ts"
