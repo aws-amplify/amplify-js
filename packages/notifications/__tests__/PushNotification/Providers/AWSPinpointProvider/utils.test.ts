@@ -3,8 +3,8 @@
 
 import { ConsoleLogger } from '@aws-amplify/core';
 
-import { AWSPinpointMessageEvent } from '../../../../src/PushNotification/Providers/AWSPinpointProvider/types';
-import { getAnalyticsEvent } from '../../../../src/PushNotification/Providers/AWSPinpointProvider/utils';
+import { AWSPinpointMessageEvent } from '../../../../src/pushNotifications/Providers/AWSPinpointProvider/types';
+import { getAnalyticsEvent } from '../../../../src/pushNotifications/Providers/AWSPinpointProvider/utils';
 
 import {
 	androidCampaignData,

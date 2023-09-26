@@ -3,7 +3,7 @@
 
 const navigatorSpy = jest.spyOn(global as any, 'navigator', 'get');
 
-const MODULE_PATH = '../../../src/PushNotification/Platform';
+const MODULE_PATH = '../../../src/pushNotifications/Platform';
 
 describe('Platform', () => {
 	let Platform;

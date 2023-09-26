@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import PushNotification from '../../src/PushNotification';
+import PushNotification from '../../src/pushNotifications';
 
 const notSupportedError = /Function not supported/;
 

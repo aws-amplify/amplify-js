@@ -17,8 +17,8 @@ import {
 import {
 	normalizeNativeMessage,
 	normalizeNativePermissionStatus,
-} from '../../src/PushNotification/utils';
-import { PushNotificationPermissionStatus } from '../../src/PushNotification/types';
+} from '../../src/pushNotifications/utils';
+import { PushNotificationPermissionStatus } from '../../src/pushNotifications/types';
 
 jest.mock('@aws-amplify/core');
 

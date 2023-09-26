@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AppState } from 'react-native';
-import SessionTracker from '../../../src/InAppMessaging/SessionTracker/SessionTracker.native';
+import SessionTracker from '../../../src/inAppMessaging/SessionTracker/SessionTracker.native';
 
 jest.mock('react-native', () => ({
 	AppState: {
