@@ -71,23 +71,11 @@ class PushNotification implements PushNotificationInterface {
 	}
 
 	// TODO(V6): Needs to set config from singleton
-	/**
-	 * Configure PushNotification
-	 * @param {Object} config - PushNotification configuration object
-	 */
 	// configure = (config: PushNotificationConfig = {}): PushNotificationConfig => {
 	// 	this.config = { ...this.config, ...config };
 
 	// 	return this.config;
 	// };
-
-	/**
-	 * Get the name of this module
-	 * @returns {string} name of this module
-	 */
-	getModuleName(): NotificationsSubCategory {
-		return 'PushNotification';
-	}
 
 	enable = (): void => {
 		if (this.isEnabled) {
