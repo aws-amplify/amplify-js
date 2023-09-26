@@ -13,7 +13,10 @@ export const fetchTransferHandler: TransferHandler<
 	HttpRequest,
 	HttpResponse,
 	HttpTransferOptions
-> = async ({ url, method, headers, body }, { abortSignal, cache }) => {
+> = async (
+	{ url, method, headers, body },
+	{ abortSignal, cache, withCrossDomainCredentials }
+) => {
 	let resp: Response;
 	try {
 		resp = await fetch(url, {
@@ -22,6 +25,7 @@ export const fetchTransferHandler: TransferHandler<
 			body: shouldSendBody(method) ? body : undefined,
 			signal: abortSignal,
 			cache,
+			credentials: withCrossDomainCredentials ? 'include' : 'same-origin',
 		});
 	} catch (e) {
 		// TODO: needs to revise error handling in v6
