@@ -9,5 +9,5 @@
 		"moduleResolution": "node",
 		"types": ["node"]
 	},
-	"include": ["ts4_0.ts"]
+	"include": ["ts4_2.ts"]
 }
