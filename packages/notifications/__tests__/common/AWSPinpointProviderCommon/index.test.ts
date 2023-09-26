@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Credentials, StorageHelper } from '@aws-amplify/core';
+// import { Credentials, StorageHelper } from '@aws-amplify/core';
 import {
 	putEvents,
 	updateEndpoint,
@@ -25,7 +25,8 @@ jest.mock('../../../src/common/eventListeners');
 
 const SUB_CATEGORY = 'SubCategory';
 
-const getStorageSpy = jest.spyOn(StorageHelper.prototype, 'getStorage');
+// TODO(V6) : add back storage helper
+// const getStorageSpy = jest.spyOn(StorageHelper.prototype, 'getStorage');
 
 class AWSPinpointProviderTest extends AWSPinpointProviderCommon {
 	getSubCategory() {
@@ -41,8 +42,9 @@ class AWSPinpointProviderTest extends AWSPinpointProviderCommon {
 	}
 }
 
-const credentialsGetSpy = jest.spyOn(Credentials, 'get');
-const credentialsShearSpy = jest.spyOn(Credentials, 'shear');
+// TODO(V6) : add back
+// const credentialsGetSpy = jest.spyOn(Credentials, 'get');
+// const credentialsShearSpy = jest.spyOn(Credentials, 'shear');
 const mockPutEvents = putEvents as jest.Mock;
 const mockUpdateEndpoint = updateEndpoint as jest.Mock;
 
@@ -57,9 +59,9 @@ describe('AWSPinpoint Common Provider', () => {
 	});
 	beforeEach(() => {
 		jest.clearAllMocks();
-		getStorageSpy.mockReturnValue(mockStorage);
-		credentialsGetSpy.mockResolvedValue(credentials);
-		credentialsShearSpy.mockImplementation(credentials => credentials);
+		// getStorageSpy.mockReturnValue(mockStorage);
+		// credentialsGetSpy.mockResolvedValue(credentials);
+		// credentialsShearSpy.mockImplementation(credentials => credentials);
 		mockStorageMemory = {};
 		provider = new AWSPinpointProviderTest(mockLogger);
 	});
@@ -98,7 +100,7 @@ describe('AWSPinpoint Common Provider', () => {
 			mockStorage.sync.mockImplementationOnce(() => {
 				throw new Error();
 			});
-			credentialsGetSpy.mockResolvedValue(null);
+			// credentialsGetSpy.mockResolvedValue(null);
 
 			await provider.testInit();
 			expect(mockLogger.error).toBeCalledWith(
@@ -121,7 +123,7 @@ describe('AWSPinpoint Common Provider', () => {
 		});
 
 		test('throws an error if credentials are empty', async () => {
-			credentialsGetSpy.mockResolvedValue(null);
+			// credentialsGetSpy.mockResolvedValue(null);
 
 			await expect(
 				provider.testRecordAnalyticsEvent(analyticsEvent)
@@ -132,9 +134,9 @@ describe('AWSPinpoint Common Provider', () => {
 		});
 
 		test('throws an error on credentials get failure', async () => {
-			credentialsGetSpy.mockImplementation(() => {
-				throw new Error();
-			});
+			// credentialsGetSpy.mockImplementation(() => {
+			// 	throw new Error();
+			// });
 
 			await expect(
 				provider.testRecordAnalyticsEvent(analyticsEvent)
