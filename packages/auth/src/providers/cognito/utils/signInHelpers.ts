@@ -227,14 +227,21 @@ export async function handleUserPasswordAuthFlow(
 	username: string,
 	password: string,
 	clientMetadata: ClientMetadata | undefined,
-	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig
+	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig,
+	tokenOrchestrator: AuthTokenOrchestrator
 ): Promise<InitiateAuthCommandOutput> {
+	const authParameters: Record<string, string> = {
+		USERNAME: username,
+		PASSWORD: password,
+	};
+	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+
+	if (deviceMetadata && deviceMetadata.deviceKey) {
+		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
+	}
 	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'USER_PASSWORD_AUTH',
-		AuthParameters: {
-			USERNAME: username,
-			PASSWORD: password,
-		},
+		AuthParameters: authParameters,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 	};
