@@ -1,8 +1,6 @@
-import Observable from 'zen-observable-ts';
-import {
-	BackgroundProcessManager,
-	BackgroundProcessManagerState,
-} from '../src/Util/BackgroundProcessManager';
+import { Observable } from 'rxjs';
+import { BackgroundProcessManager } from '../src/BackgroundProcessManager';
+import { BackgroundProcessManagerState } from '../src/BackgroundProcessManager/types';
 
 /**
  * NOTE: Jest's promise rejection assertion uses substring matching.

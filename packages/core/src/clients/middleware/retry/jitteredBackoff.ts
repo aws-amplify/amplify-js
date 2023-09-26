@@ -3,7 +3,7 @@
 
 import type { RetryOptions } from './middleware';
 // TODO: [v6] The separate retry utility is used by Data packages now and will replaced by retry middleware.
-import { jitteredBackoff as jitteredBackoffUtil } from '../../../Util/Retry';
+import { jitteredBackoff as jitteredBackoffUtil } from '../../../utils';
 
 const DEFAULT_MAX_DELAY_MS = 5 * 60 * 1000;
 

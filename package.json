@@ -12,7 +12,7 @@
 		"test:duplicates": "./scripts/duplicates-yarn.sh",
 		"test:license": "license-check-and-add check -f license_config.json",
 		"test:github-actions": "node ./scripts/test-github-actions.js",
-		"test:tsc-compliance": "yarn workspace tsc-compliance-test test:compliance:ts4.0",
+		"test:tsc-compliance": "yarn workspace tsc-compliance-test test:compliance:ts4.2",
 		"coverage": "codecov || exit 0",
 		"docs": "typedoc packages/**/src --name amplify-js --hideGenerator --excludePrivate --ignoreCompilerErrors --mode file --out docs/api --theme docs/amplify-theme/typedoc/ --readme README.md",
 		"build": "lerna run build --stream && yarn test:duplicates",
@@ -52,6 +52,7 @@
 			"packages/api",
 			"packages/datastore",
 			"packages/aws-amplify",
+			"packages/rtn-web-browser",
 			"scripts/tsc-compliance-test"
 		],
 		"nohoist": [

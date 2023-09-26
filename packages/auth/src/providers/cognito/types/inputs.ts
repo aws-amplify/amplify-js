@@ -13,8 +13,10 @@ import {
 	SignUpOptions,
 	UpdateUserAttributesOptions,
 	VerifyTOTPSetupOptions,
+	SendUserAttributeVerificationCodeOptions,
 } from '../types';
 import {
+	AuthStandardAttributeKey,
 	AuthConfirmResetPasswordInput,
 	AuthConfirmSignInInput,
 	AuthConfirmSignUpInput,
@@ -28,6 +30,7 @@ import {
 	AuthUpdatePasswordInput,
 	AuthUpdateUserAttributesInput,
 	AuthVerifyTOTPSetupInput,
+	AuthSendUserAttributeVerificationCodeInput,
 } from '../../../types';
 
 /**
@@ -129,3 +132,12 @@ export type UpdateUserAttributesInput = AuthUpdateUserAttributesInput<
  */
 export type VerifyTOTPSetupInput =
 	AuthVerifyTOTPSetupInput<VerifyTOTPSetupOptions>;
+
+/**
+ * Input type for Cognito sendUserAttributeVerificationCode API.
+ */
+export type SendUserAttributeVerificationCodeInput =
+	AuthSendUserAttributeVerificationCodeInput<
+		UserAttributeKey,
+		SendUserAttributeVerificationCodeOptions
+	>;

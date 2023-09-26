@@ -14,7 +14,7 @@ import {
 	JwtPayload,
 } from '@aws-amplify/core/internals/utils';
 
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { Observable, Observer, SubscriptionLike } from 'rxjs';
 import {
 	InternalSchema,
 	PersistentModel,
@@ -73,7 +73,7 @@ class SubscriptionProcessor {
 	>();
 	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
 		[];
-	private dataObserver!: ZenObservable.Observer<any>;
+	private dataObserver!: Observer<any>;
 
 	private runningProcesses = new BackgroundProcessManager();
 
@@ -255,9 +255,9 @@ class SubscriptionProcessor {
 			// independently, since the auth retry behavior is asynchronous.
 			let subscriptions: {
 				[modelName: string]: {
-					[TransformerMutationType.CREATE]: ZenObservable.Subscription[];
-					[TransformerMutationType.UPDATE]: ZenObservable.Subscription[];
-					[TransformerMutationType.DELETE]: ZenObservable.Subscription[];
+					[TransformerMutationType.CREATE]: SubscriptionLike[];
+					[TransformerMutationType.UPDATE]: SubscriptionLike[];
+					[TransformerMutationType.DELETE]: SubscriptionLike[];
 				};
 			} = {};
 			let oidcTokenPayload: JwtPayload | undefined;
@@ -407,7 +407,6 @@ class SubscriptionProcessor {
 											transformerMutationType
 										].push(
 											queryObservable
-												.filter(() => true) // to make change more readable
 												.subscribe({
 													next: result => {
 														const { data, errors } = result;
