@@ -27,7 +27,7 @@ export const recordAnalyticsEvent = (
 	event: AWSPinpointMessageEvent,
 	message: InAppMessage
 ) => {
-	// TODO(V6) : Add back recording here
+	// TODO(V6) : Add back recording here without validation
 	// if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
 	// 	const { id, metadata } = message;
 	// 	Amplify.Analytics.record({
