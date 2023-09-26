@@ -26,6 +26,7 @@ import {
 	setActiveSignInState,
 } from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+import { tokenOrchestrator } from '../tokenProvider';
 
 /**
  * Signs a user in using USER_PASSWORD_AUTH AuthFlowType
@@ -63,7 +64,8 @@ export async function signInWithUserPassword(
 			username,
 			password,
 			metadata,
-			authConfig
+			authConfig,
+			tokenOrchestrator
 		);
 
 		// sets up local state used during the sign-in process
