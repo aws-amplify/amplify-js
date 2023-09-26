@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InAppMessageInteractionEvent } from '../../InAppMessaging/types';
+import { InAppMessageInteractionEvent } from '../../inAppMessaging/types';
 import { PushNotificationEvent } from '../../pushNotifications/types';
 
 export interface EventListener<EventHandler extends Function> {
