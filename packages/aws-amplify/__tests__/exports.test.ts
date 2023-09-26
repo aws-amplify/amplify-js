@@ -31,6 +31,7 @@ describe('aws-amplify Exports', () => {
 			expect(Object.keys(utilsExports)).toMatchInlineSnapshot(`
 			Array [
 			  "Hub",
+			  "I18n",
 			]
 		`);
 		});
