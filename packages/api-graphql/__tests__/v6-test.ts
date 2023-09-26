@@ -7,7 +7,7 @@ import * as typedSubscriptions from './fixtures/with-types/subscriptions';
 import * as untypedQueries from './fixtures/without-types/queries';
 import * as untypedMutations from './fixtures/without-types/mutations';
 import * as untypedSubscriptions from './fixtures/without-types/subscriptions';
-import { Observable } from 'zen-observable-ts';
+import { from } from 'rxjs';
 import {
 	expectGet,
 	expectList,
@@ -283,7 +283,7 @@ describe('client', () => {
 				},
 			};
 
-			const spy = jest.fn(() => Observable.from([graphqlMessage]));
+			const spy = jest.fn(() => from([graphqlMessage]));
 			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
 
 			const graphqlVariables = {
@@ -301,7 +301,7 @@ describe('client', () => {
 					authMode: 'apiKey',
 				});
 
-			const sub = result.subscribe({
+			result.subscribe({
 				// Customers should normally omit the type. Making it explicit to ensure the test
 				// fails if the returned changes.
 				next(message: GraphqlSubscriptionMessage<OnCreateThreadSubscription>) {
@@ -309,12 +309,10 @@ describe('client', () => {
 					expect(message.data?.onCreateThread).toEqual(
 						graphqlMessage.data.onCreateThread
 					);
-					sub.unsubscribe();
 					done();
 				},
 				error(error) {
 					expect(error).toBeUndefined();
-					sub.unsubscribe();
 					done('bad news!');
 				},
 			});
@@ -552,7 +550,7 @@ describe('client', () => {
 				},
 			};
 
-			const spy = jest.fn(() => Observable.from([graphqlMessage]));
+			const spy = jest.fn(() => from([graphqlMessage]));
 			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
 
 			const graphqlVariables = {
@@ -574,18 +572,16 @@ describe('client', () => {
 			// An `as any` is what customers would likely write without branded queries.
 			const result = rawResult as any;
 
-			const sub = result.subscribe?.({
+			result.subscribe?.({
 				next(message) {
 					expectSub(spy, 'onCreateThread', graphqlVariables);
 					expect(message.data.onCreateThread).toEqual(
 						graphqlMessage.data.onCreateThread
 					);
-					sub.unsubscribe();
 					done();
 				},
 				error(error) {
 					expect(error).toBeUndefined();
-					sub.unsubscribe();
 					done('bad news!');
 				},
 			})!;
@@ -808,7 +804,7 @@ describe('client', () => {
 				},
 			};
 
-			const spy = jest.fn(() => Observable.from([graphqlMessage]));
+			const spy = jest.fn(() => from([graphqlMessage]));
 			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
 
 			const graphqlVariables = {
@@ -826,18 +822,16 @@ describe('client', () => {
 					authMode: 'apiKey',
 				});
 
-			const sub = result.subscribe?.({
+			result.subscribe?.({
 				next(message) {
 					expectSub(spy, 'onCreateThread', graphqlVariables);
 					expect(message.data?.onCreateThread).toEqual(
 						graphqlMessage.data.onCreateThread
 					);
-					sub.unsubscribe();
 					done();
 				},
 				error(error) {
 					expect(error).toBeUndefined();
-					sub.unsubscribe();
 					done('bad news!');
 				},
 			})!;
