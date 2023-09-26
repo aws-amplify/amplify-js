@@ -9,7 +9,7 @@ import {
 	OperationTypeNode,
 } from 'graphql';
 import { Observable } from 'rxjs';
-import { Amplify, Cache, fetchAuthSession } from '@aws-amplify/core';
+import { Cache } from '@aws-amplify/core';
 import {
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
@@ -23,6 +23,7 @@ import {
 } from '../types';
 import { post } from '@aws-amplify/api-rest';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
+import { resolveAuthSession, resolveConfig } from '../utils';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -68,7 +69,7 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders: { [key: string]: string } = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	) {
-		const config = Amplify.getConfig();
+		const config = resolveConfig();
 		const {
 			region: region,
 			endpoint: appSyncGraphqlEndpoint,
@@ -87,7 +88,7 @@ export class InternalGraphQLAPIClass {
 				};
 				break;
 			case 'iam':
-				const session = await fetchAuthSession();
+				const session = await resolveAuthSession();
 				if (session.credentials === undefined) {
 					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
@@ -96,7 +97,7 @@ export class InternalGraphQLAPIClass {
 				try {
 					let token;
 
-					token = (await fetchAuthSession()).tokens?.accessToken.toString();
+					token = (await resolveAuthSession()).tokens?.accessToken.toString();
 
 					if (!token) {
 						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
@@ -194,7 +195,7 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
-		const config = Amplify.getConfig();
+		const config = resolveConfig();
 
 		const { region: region, endpoint: appSyncGraphqlEndpoint } =
 			config.API.AppSync;
@@ -273,16 +274,17 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
-		const { AppSync } = Amplify.getConfig().API ?? {};
+		const config = resolveConfig();
+
 		if (!this.appSyncRealTime) {
 			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
 		}
 		return this.appSyncRealTime.subscribe({
 			query: print(query as DocumentNode),
 			variables,
-			appSyncGraphqlEndpoint: AppSync?.endpoint,
-			region: AppSync?.region,
-			authenticationType: AppSync?.defaultAuthMode,
+			appSyncGraphqlEndpoint: config?.endpoint,
+			region: config?.region,
+			authenticationType: config?.defaultAuthMode,
 		});
 	}
 }

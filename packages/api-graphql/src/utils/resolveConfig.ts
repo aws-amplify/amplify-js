@@ -10,11 +10,11 @@ import { APIValidationErrorCode, assertValidationError } from './errors';
 export const resolveConfig = () => {
 	const { region, defaultAuthMode, endpoint } =
 		Amplify.getConfig().API?.AppSync ?? {};
-	assertValidationError(!!endpoint, APIValidationErrorCode.NoAppId);
-	assertValidationError(!!region, APIValidationErrorCode.NoRegion);
+	assertValidationError(!!endpoint, APIValidationErrorCode.NoEndpoint);
 	assertValidationError(
 		!!defaultAuthMode,
 		APIValidationErrorCode.NoDefaultAuthMode
 	);
+	assertValidationError(!!region, APIValidationErrorCode.NoRegion);
 	return { endpoint, region, defaultAuthMode };
 };
