@@ -16,6 +16,7 @@ export {
 	updatePassword,
 	setUpTOTP,
 	updateUserAttributes,
+	updateUserAttribute,
 	getCurrentUser,
 	confirmUserAttribute,
 	signInWithRedirect,
@@ -38,6 +39,7 @@ export {
 	UpdateMFAPreferenceInput,
 	UpdatePasswordInput,
 	UpdateUserAttributesInput,
+	UpdateUserAttributeInput,
 	VerifyTOTPSetupInput,
 	SendUserAttributeVerificationCodeInput,
 } from './providers/cognito';
@@ -56,6 +58,7 @@ export {
 	SignUpOutput,
 	UpdateUserAttributesOutput,
 	SendUserAttributeVerificationCodeOutput,
+	UpdateUserAttributeOutput,
 } from './providers/cognito';
 
 export { AuthError } from './errors/AuthError';
