@@ -87,16 +87,6 @@
 			"import": "./lib-esm/adapterCore/index.js",
 			"require": "./lib/adapterCore/index.js"
 		},
-		"./geo": {
-			"types": "./lib-esm/geo/index.d.ts",
-			"import": "./lib-esm/geo/index.js",
-			"require": "./lib/geo/index.js"
-		},
-		"./geo/location-service": {
-			"types": "./lib-esm/geo/location-service/index.d.ts",
-			"import": "./lib-esm/geo/location-service/index.js",
-			"require": "./lib/geo/location-service/index.js"
-		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
@@ -182,7 +172,6 @@
 		"analytics",
 		"api",
 		"auth",
-		"geo",
 		"internals",
 		"storage",
 		"datastore"
@@ -379,12 +368,6 @@
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ uploadData }",
 			"limit": "23.3 kB"
-		},
-		{
-			"name": "[Geo] Geo (Location Service)",
-			"path": "./lib-esm/geo/index.js",
-			"import": "{ Geo }",
-			"limit": "48.5 kB"
 		}
 	],
 	"jest": {
