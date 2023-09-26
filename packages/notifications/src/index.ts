@@ -15,7 +15,7 @@ export {
 	InAppMessageTextAlign,
 	InAppMessagingConfig,
 	InAppMessagingEvent,
-} from './InAppMessaging';
+} from './inAppMessaging';
 export {
 	PushNotificationMessage,
 	PushNotificationPermissions,
