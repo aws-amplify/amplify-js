@@ -87,7 +87,7 @@ describe('updateUserAttribute API happy path cases', () => {
 	});
 });
 
-describe('updateUserAttribute  API error path cases:', () => {
+describe('updateUserAttribute API error path cases:', () => {
 	it('should raise service error', async () => {
 		expect.assertions(2);
 		jest
