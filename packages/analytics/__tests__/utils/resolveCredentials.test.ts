@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { fetchAuthSession } from '@aws-amplify/core';
-import { resolveCredentials } from '../../src/utils/resolveCredentials';
+import { resolveCredentials } from '../../src/utils';
 import { AnalyticsError } from '../../src';
 
 jest.mock('@aws-amplify/core');

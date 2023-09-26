@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { groupBy } from '../../src/utils/groupBy';
+import { groupBy } from '../../src/utils';
 
 describe('Generic groupBy util function', () => {
 	type TestType = {

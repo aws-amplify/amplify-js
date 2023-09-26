@@ -3,7 +3,7 @@
 
 import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEventBuffer';
 import { resolveConfig } from '../../../../src/providers/kinesis/utils/resolveConfig';
-import { resolveCredentials } from '../../../../src/utils/resolveCredentials';
+import { resolveCredentials } from '../../../../src/utils';
 import {
 	mockConfig,
 	mockCredentialConfig,
@@ -13,8 +13,8 @@ import { KinesisEvent } from '../../../../src/providers/kinesis/types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/lib-esm/Logger';
 import { AnalyticsValidationErrorCode } from '../../../../src/errors';
 
+jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis/utils/resolveConfig');
-jest.mock('../../../../src/providers/kinesis/utils/resolveCredentials');
 jest.mock('../../../../src/providers/kinesis/utils/getEventBuffer');
 
 describe('Analytics Kinesis API: record', () => {

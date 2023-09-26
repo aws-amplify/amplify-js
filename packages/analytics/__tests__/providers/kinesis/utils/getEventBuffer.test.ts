@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEventBuffer';
-import { EventBuffer } from '../../../../src/utils/eventBuffer';
+import { EventBuffer } from '../../../../src/utils';
 import {
 	mockBufferConfig,
 	mockConfig,

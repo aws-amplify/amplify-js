@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { recordToTupleList } from '../../lib/utils/recordToList';
+import { recordToTupleList } from '../../lib/utils';
 
 describe('Record to tuple list', () => {
 	const testData: Record<string, number> = {
