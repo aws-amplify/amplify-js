@@ -9,11 +9,13 @@ import {
 	userId,
 	userInfo,
 } from '../__mocks__/data';
-import PushNotification from '../src/PushNotification';
+import PushNotification from '../src/pushNotifications';
 
 jest.mock('@aws-amplify/core');
-jest.mock('../src/InAppMessaging', () => jest.fn(() => mockInAppMessaging));
-jest.mock('../src/PushNotification', () => jest.fn(() => mockPushNotification));
+jest.mock('../src/inAppMessaging', () => jest.fn(() => mockInAppMessaging));
+jest.mock('../src/pushNotifications', () =>
+	jest.fn(() => mockPushNotification)
+);
 
 const mockInAppMessaging = {
 	configure: jest.fn(),

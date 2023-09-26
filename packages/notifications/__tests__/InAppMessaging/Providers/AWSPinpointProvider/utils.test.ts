@@ -5,8 +5,8 @@ import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/
 import { Amplify, ConsoleLogger } from '@aws-amplify/core';
 import cloneDeep from 'lodash/cloneDeep';
 
-import { InAppMessagingEvent } from '../../../../src/InAppMessaging';
-import { AWSPinpointMessageEvent } from '../../../../src/InAppMessaging/Providers/AWSPinpointProvider/types';
+import { InAppMessagingEvent } from '../../../../src/inAppMessaging';
+import { AWSPinpointMessageEvent } from '../../../../src/inAppMessaging/Providers/AWSPinpointProvider/types';
 import {
 	clearMemo,
 	extractContent,
@@ -17,7 +17,7 @@ import {
 	matchesEventType,
 	matchesMetrics,
 	recordAnalyticsEvent,
-} from '../../../../src/InAppMessaging/Providers/AWSPinpointProvider/utils';
+} from '../../../../src/inAppMessaging/Providers/AWSPinpointProvider/utils';
 
 import {
 	inAppMessages,

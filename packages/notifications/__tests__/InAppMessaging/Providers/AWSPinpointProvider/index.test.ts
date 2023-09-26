@@ -9,15 +9,15 @@ import { addEventListener } from '../../../../src/common/eventListeners';
 import {
 	InAppMessage,
 	InAppMessageInteractionEvent,
-} from '../../../../src/InAppMessaging';
-import { AWSPinpointProvider } from '../../../../src/InAppMessaging/Providers';
+} from '../../../../src/inAppMessaging';
+import { AWSPinpointProvider } from '../../../../src/inAppMessaging/Providers';
 import {
 	isBeforeEndDate,
 	logger as mockLogger,
 	matchesAttributes,
 	matchesEventType,
 	matchesMetrics,
-} from '../../../../src/InAppMessaging/Providers/AWSPinpointProvider/utils';
+} from '../../../../src/inAppMessaging/Providers/AWSPinpointProvider/utils';
 
 import {
 	awsPinpointConfig,
@@ -31,9 +31,9 @@ import { mockStorage } from '../../../../__mocks__/mocks';
 jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('../../../../src/common/eventListeners');
-jest.mock('../../../../src/InAppMessaging/Providers/AWSPinpointProvider/utils');
+jest.mock('../../../../src/inAppMessaging/Providers/AWSPinpointProvider/utils');
 jest.mock(
-	'../../../../src/InAppMessaging/SessionTracker/SessionTracker',
+	'../../../../src/inAppMessaging/SessionTracker/SessionTracker',
 	() => ({
 		__esModule: true,
 		default: jest.fn(() => ({

@@ -26,11 +26,11 @@ import {
 } from '../../src/common/eventListeners';
 import InAppMessaging, {
 	InAppMessageInteractionEvent,
-} from '../../src/InAppMessaging';
+} from '../../src/inAppMessaging';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../src/common/eventListeners');
-jest.mock('../../src/InAppMessaging/Providers', () => ({
+jest.mock('../../src/inAppMessaging/Providers', () => ({
 	AWSPinpointProvider: () => ({
 		getCategory: jest.fn,
 		getSubCategory: jest.fn,

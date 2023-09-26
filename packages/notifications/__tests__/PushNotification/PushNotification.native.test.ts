@@ -19,9 +19,9 @@ import {
 	notifyEventListeners,
 	notifyEventListenersAndAwaitHandlers,
 } from '../../src/common/eventListeners';
-import PushNotification from '../../src/PushNotification/PushNotification.native';
-import { PushNotificationEvent } from '../../src/PushNotification/types';
-import { normalizeNativeMessage } from '../../src/PushNotification/utils';
+import PushNotification from '../../src/pushNotifications/pushNotifications.native';
+import { PushNotificationEvent } from '../../src/pushNotifications/types';
+import { normalizeNativeMessage } from '../../src/pushNotifications/utils';
 
 jest.mock('react-native', () => ({
 	AppRegistry: {
@@ -43,7 +43,7 @@ jest.mock('@aws-amplify/rtn-push-notification', () => ({
 	},
 }));
 jest.mock('../../src/common/eventListeners');
-jest.mock('../../src/PushNotification/Providers', () => ({
+jest.mock('../../src/pushNotifications/Providers', () => ({
 	AWSPinpointProvider: () => ({
 		getCategory: jest.fn,
 		getSubCategory: jest.fn,
@@ -51,7 +51,7 @@ jest.mock('../../src/PushNotification/Providers', () => ({
 		configure: jest.fn,
 	}),
 }));
-jest.mock('../../src/PushNotification/utils');
+jest.mock('../../src/pushNotifications/utils');
 
 const PROVIDER_NAME = 'PushNotificationProvider';
 const SUBCATEGORY_NAME = 'PushNotification';

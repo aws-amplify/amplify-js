@@ -5,13 +5,13 @@ import { Credentials, StorageHelper } from '@aws-amplify/core';
 import { updateEndpoint } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 
 import { addEventListener } from '../../../../src/common/eventListeners';
-import { Platform } from '../../../../src/PushNotification/Platform';
-import { AWSPinpointProvider } from '../../../../src/PushNotification/Providers';
-import { AWSPinpointMessageEvent } from '../../../../src/PushNotification/Providers/AWSPinpointProvider/types';
+import { Platform } from '../../../../src/pushNotifications/Platform';
+import { AWSPinpointProvider } from '../../../../src/pushNotifications/Providers';
+import { AWSPinpointMessageEvent } from '../../../../src/pushNotifications/Providers/AWSPinpointProvider/types';
 import {
 	logger as mockLogger,
 	getAnalyticsEvent as mockGetAnalyticsEvent,
-} from '../../../../src/PushNotification/Providers/AWSPinpointProvider/utils';
+} from '../../../../src/pushNotifications/Providers/AWSPinpointProvider/utils';
 
 import {
 	awsPinpointConfig,
@@ -26,9 +26,9 @@ import { mockStorage } from '../../../../__mocks__/mocks';
 jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('../../../../src/common/eventListeners');
-jest.mock('../../../../src/PushNotification/Platform');
+jest.mock('../../../../src/pushNotifications/Platform');
 jest.mock(
-	'../../../../src/PushNotification/Providers/AWSPinpointProvider/utils'
+	'../../../../src/pushNotifications/Providers/AWSPinpointProvider/utils'
 );
 
 const getStorageSpy = jest.spyOn(StorageHelper.prototype, 'getStorage');
