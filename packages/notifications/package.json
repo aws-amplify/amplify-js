@@ -97,7 +97,7 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/rtn-push-notification": "1.2.0",
+		"@aws-amplify/rtn-push-notification": "1.1.7",
 		"lodash": "^4.17.21",
 		"uuid": "^9.0.0"
 	},
