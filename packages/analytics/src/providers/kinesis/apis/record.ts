@@ -5,7 +5,7 @@ import { RecordInput } from '../types';
 import { getEventBuffer } from '../utils/getEventBuffer';
 import { resolveConfig } from '../utils/resolveConfig';
 import { KinesisEventData } from '@aws-amplify/core/src/providers/kinesis/types';
-import { resolveCredentials } from '../utils/resolveCredentials';
+import { resolveCredentials } from '../../../utils';
 import { fromUtf8 } from '@smithy/util-utf8';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/lib-esm/Logger';
 import {

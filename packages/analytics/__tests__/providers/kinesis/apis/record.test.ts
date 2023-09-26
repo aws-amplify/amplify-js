@@ -3,7 +3,7 @@
 
 import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEventBuffer';
 import { resolveConfig } from '../../../../src/providers/kinesis/utils/resolveConfig';
-import { resolveCredentials } from '../../../../src/providers/kinesis/utils/resolveCredentials';
+import { resolveCredentials } from '../../../../src/utils/resolveCredentials';
 import {
 	mockConfig,
 	mockCredentialConfig,
