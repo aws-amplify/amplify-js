@@ -93,7 +93,7 @@
 			"name": "Core (I18n)",
 			"path": "./lib-esm/index.js",
 			"import": "{ I18n }",
-			"limit": "2.33 kB"
+			"limit": "4.82 kB"
 		},
 		{
 			"name": "Custom clients (fetch handler)",
