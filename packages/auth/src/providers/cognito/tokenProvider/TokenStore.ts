@@ -19,7 +19,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 	private authConfig?: AuthConfig;
 	keyValueStorage?: KeyValueStorageInterface;
 	private name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-
+	private authKeys: AuthKeys<keyof typeof AuthTokenStorageKeys> | undefined;
 	getKeyValueStorage(): KeyValueStorageInterface {
 		if (!this.keyValueStorage) {
 			throw new AuthError({
@@ -60,7 +60,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 			const refreshToken =
 				(await this.getKeyValueStorage().getItem(
 					this.getAuthKeys().refreshToken
-				)) || undefined;
+				)) ?? undefined;
 
 			const clockDriftString =
 				(await this.getKeyValueStorage().getItem(
@@ -142,11 +142,12 @@ export class DefaultTokenStore implements AuthTokenStore {
 
 	private getAuthKeys(): AuthKeys<keyof typeof AuthTokenStorageKeys> {
 		assertTokenProviderConfig(this.authConfig?.Cognito);
-		const authKeys = createKeysForAuthStorage(
+		if (this.authKeys) return this.authKeys;
+		this.authKeys = createKeysForAuthStorage(
 			this.name,
 			this.authConfig.Cognito.userPoolClientId
 		);
-		return authKeys;
+		return this.authKeys;
 	}
 }
 
