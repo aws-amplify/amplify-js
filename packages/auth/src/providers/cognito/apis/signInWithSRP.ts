@@ -26,6 +26,7 @@ import {
 	cleanActiveSignInState,
 } from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+import { tokenOrchestrator } from '../tokenProvider';
 
 /**
  * Signs a user in
@@ -64,7 +65,8 @@ export async function signInWithSRP(
 			username,
 			password,
 			clientMetaData,
-			authConfig
+			authConfig,
+			tokenOrchestrator
 		);
 
 		// sets up local state used during the sign-in process

@@ -34,6 +34,8 @@ export interface AuthTokenStore {
 	storeTokens(tokens: CognitoAuthTokens): Promise<void>;
 	clearTokens(): Promise<void>;
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
+	getDeviceMetadata(): Promise<DeviceMetadata | null>;
+	clearDeviceMetadata(): Promise<void>;
 }
 
 export interface AuthTokenOrchestrator {
@@ -42,6 +44,8 @@ export interface AuthTokenOrchestrator {
 	getTokens: (options?: FetchAuthSessionOptions) => Promise<AuthTokens | null>;
 	setTokens: ({ tokens }: { tokens: CognitoAuthTokens }) => Promise<void>;
 	clearTokens: () => Promise<void>;
+	getDeviceMetadata(): Promise<DeviceMetadata | null>;
+	clearDeviceMetadata(): Promise<void>;
 }
 
 export interface CognitoUserPoolTokenProviderType extends TokenProvider {
