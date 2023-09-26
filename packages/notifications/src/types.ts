@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InAppMessagingConfig } from './inAppMessaging/types';
+import { InAppMessagingConfig } from './InAppMessaging/types';
 import { PushNotificationConfig } from './pushNotifications/types';
 
 export type NotificationsCategory = 'Notifications';
