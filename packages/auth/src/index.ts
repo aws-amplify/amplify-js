@@ -21,6 +21,7 @@ export {
 	signInWithRedirect,
 	fetchUserAttributes,
 	signOut,
+	sendUserAttributeVerificationCode,
 } from './providers/cognito';
 
 export {
@@ -38,6 +39,7 @@ export {
 	UpdatePasswordInput,
 	UpdateUserAttributesInput,
 	VerifyTOTPSetupInput,
+	SendUserAttributeVerificationCodeInput,
 } from './providers/cognito';
 
 export {
@@ -53,6 +55,7 @@ export {
 	SignOutOutput,
 	SignUpOutput,
 	UpdateUserAttributesOutput,
+	SendUserAttributeVerificationCodeOutput,
 } from './providers/cognito';
 
 export { AuthError } from './errors/AuthError';

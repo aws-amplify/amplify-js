@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, CognitoUserPoolConfig } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	base64Encoder,
+} from '@aws-amplify/core/internals/utils';
 import {
 	fromHex,
 	getLargeAValue,
@@ -23,7 +26,7 @@ import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
 import {
 	AuthUser,
-	AuthUserAttribute,
+	AuthUserAttributes,
 	AuthMFAType,
 	AuthTOTPSetupDetails,
 } from '../../../types/models';
@@ -51,7 +54,6 @@ import {
 import { getRegion } from './clients/CognitoIdentityProvider/utils';
 import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants';
 import { getCurrentUser } from '../apis/getCurrentUser';
-import { toBase64 } from '@smithy/util-base64';
 import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
 
 const USER_ATTRIBUTES = 'userAttributes.';
@@ -62,7 +64,7 @@ type HandleAuthChallengeRequest = {
 	clientMetadata?: ClientMetadata;
 	session?: string;
 	deviceName?: string;
-	requiredAttributes?: AuthUserAttribute;
+	requiredAttributes?: AuthUserAttributes;
 	config: CognitoUserPoolConfig;
 };
 
@@ -554,7 +556,7 @@ export function parseAttributes(attributes: string | undefined): string[] {
 }
 
 export function createAttributes(
-	attributes?: AuthUserAttribute
+	attributes?: AuthUserAttributes
 ): Record<string, string> {
 	if (!attributes) return {};
 
@@ -717,8 +719,10 @@ export async function getNewDeviceMetatada(
 				}
 
 				const deviceSecretVerifierConfig = {
-					Salt: toBase64(fromHex(authenticationHelper.getSaltToHashDevices())),
-					PasswordVerifier: toBase64(
+					Salt: base64Encoder.convert(
+						fromHex(authenticationHelper.getSaltToHashDevices())
+					),
+					PasswordVerifier: base64Encoder.convert(
 						fromHex(authenticationHelper.getVerifierDevices())
 					),
 				};

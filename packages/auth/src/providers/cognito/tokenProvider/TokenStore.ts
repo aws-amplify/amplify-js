@@ -72,7 +72,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 				accessToken,
 				idToken,
 				refreshToken,
-				deviceMetadata: await this.getDeviceMetadata(),
+				deviceMetadata: (await this.getDeviceMetadata()) ?? undefined,
 				clockDrift,
 			};
 		} catch (err) {
@@ -124,14 +124,14 @@ export class DefaultTokenStore implements AuthTokenStore {
 		]);
 	}
 
-	async getDeviceMetadata(): Promise<DeviceMetadata> {
+	async getDeviceMetadata(): Promise<DeviceMetadata | null> {
 		const newDeviceMetadata = JSON.parse(
 			(await this.getKeyValueStorage().getItem(
 				this.getAuthKeys().deviceMetadata
 			)) || '{}'
 		);
 		const deviceMetadata =
-			Object.keys(newDeviceMetadata).length > 0 ? newDeviceMetadata : undefined;
+			Object.keys(newDeviceMetadata).length > 0 ? newDeviceMetadata : null;
 		return deviceMetadata;
 	}
 	async clearDeviceMetadata(): Promise<void> {
@@ -146,7 +146,6 @@ export class DefaultTokenStore implements AuthTokenStore {
 			this.name,
 			this.authConfig.Cognito.userPoolClientId
 		);
-
 		return authKeys;
 	}
 }
