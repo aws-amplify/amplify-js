@@ -30,6 +30,7 @@ import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
+import { tokenOrchestrator } from '../tokenProvider';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -91,6 +92,7 @@ export async function confirmSignIn(
 			signInSession,
 			challengeResponse,
 			authConfig,
+			tokenOrchestrator,
 			clientMetaData,
 			options?.serviceOptions
 		);
