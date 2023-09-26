@@ -87,16 +87,6 @@
 			"import": "./lib-esm/adapterCore/index.js",
 			"require": "./lib/adapterCore/index.js"
 		},
-		"./geo": {
-			"types": "./lib-esm/geo/index.d.ts",
-			"import": "./lib-esm/geo/index.js",
-			"require": "./lib/geo/index.js"
-		},
-		"./geo/location-service": {
-			"types": "./lib-esm/geo/location-service/index.d.ts",
-			"import": "./lib-esm/geo/location-service/index.js",
-			"require": "./lib/geo/location-service/index.js"
-		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
@@ -182,7 +172,6 @@
 		"analytics",
 		"api",
 		"auth",
-		"geo",
 		"internals",
 		"storage",
 		"datastore"
@@ -246,7 +235,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "27.69 kB"
+			"limit": "28.00 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
@@ -264,7 +253,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignIn }",
-			"limit": "26.913 kB"
+			"limit": "27.50 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -318,7 +307,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect }",
-			"limit": "20.90 kB"
+			"limit": "21.50 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
@@ -330,13 +319,13 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "29.56 kB"
+			"limit": "30.00 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "21.30 kB"
+			"limit": "22.00 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
@@ -379,12 +368,6 @@
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ uploadData }",
 			"limit": "23.3 kB"
-		},
-		{
-			"name": "[Geo] Geo (Location Service)",
-			"path": "./lib-esm/geo/index.js",
-			"import": "{ Geo }",
-			"limit": "48.5 kB"
 		}
 	],
 	"jest": {
