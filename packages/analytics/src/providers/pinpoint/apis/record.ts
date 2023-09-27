@@ -51,7 +51,7 @@ export const record = (input: RecordInput): void => {
 	const { appId, region } = resolveConfig();
 
 	if (!isAnalyticsEnabled()) {
-		logger.debug('Analytics is disabled, event dropped.');
+		logger.debug('Analytics is disabled, event will not be recorded.');
 		return;
 	}
 

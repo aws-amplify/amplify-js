@@ -11,10 +11,10 @@ describe('Analytics Category Util: status utils', () => {
 	it('should indicate that Analytics is enabled by default', () => {
 		const status = isAnalyticsEnabled();
 
-		expect(status).toBeTruthy();
+		expect(status).toBe(true);
 	});
 
-	it('correctly toggle the Analytics status', () => {
+	it('correctly toggles the Analytics status', () => {
 		let status = isAnalyticsEnabled();
 		expect(status).toBe(true);
 

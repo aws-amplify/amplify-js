@@ -5,7 +5,7 @@ export {
 	enableAnalytics,
 	disableAnalytics,
 	isAnalyticsEnabled,
-} from './status';
+} from './statusHelpers';
 export {
 	getAnalyticsUserAgent,
 	getAnalyticsUserAgentString,
