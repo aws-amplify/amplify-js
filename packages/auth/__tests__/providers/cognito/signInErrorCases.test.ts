@@ -71,7 +71,6 @@ describe('signIn API error path cases:', () => {
 				password: authAPITestParams.user1.password,
 			});
 		} catch (error) {
-			console.log(error);
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(InitiateAuthException.InvalidParameterException);
 		}
