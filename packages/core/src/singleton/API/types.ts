@@ -37,10 +37,4 @@ export type ApiAuthMode =
 	| { type: 'lambda' }
 	| { type: 'none' };
 
-export type ApiAuthModeKeys =
-	| 'apiKey'
-	| 'oidc'
-	| 'userPool'
-	| 'iam'
-	| 'lambda'
-	| 'none';
+export type ApiAuthModeKeys = ApiAuthMode['type'];
