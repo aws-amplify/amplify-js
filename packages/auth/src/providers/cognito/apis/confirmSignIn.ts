@@ -23,13 +23,14 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, Hub } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
+import { getCurrentUser } from './getCurrentUser';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -111,6 +112,10 @@ export async function confirmSignIn(
 					AuthenticationResult.NewDeviceMetadata,
 					AuthenticationResult.AccessToken
 				),
+			});
+			Hub.dispatch('auth', {
+				event: 'signedIn',
+				data: await getCurrentUser(),
 			});
 			return {
 				isSignedIn: true,
