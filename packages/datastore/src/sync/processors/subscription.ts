@@ -159,7 +159,7 @@ class SubscriptionProcessor {
 		);
 
 		const validGroup =
-			authMode === 'jwt' &&
+			(authMode === 'oidc' || authMode === 'userPool') &&
 			groupAuthRules.find(groupAuthRule => {
 				// validate token against groupClaim
 				if (oidcTokenPayload) {
@@ -192,7 +192,7 @@ class SubscriptionProcessor {
 		// identityClaim from the auth rule.
 
 		const oidcOwnerAuthRules =
-			authMode === 'jwt'
+			(authMode === 'oidc' || authMode === 'userPool')
 				? rules.filter(
 						rule =>
 							rule.authStrategy === 'owner' &&
@@ -209,7 +209,7 @@ class SubscriptionProcessor {
 
 			if (ownerValue) {
 				ownerAuthInfo = {
-					authMode: 'jwt',
+					authMode,
 					isOwner: isOwnerArgRequired,
 					ownerField: ownerAuthRule.ownerField,
 					ownerValue: String(ownerValue),

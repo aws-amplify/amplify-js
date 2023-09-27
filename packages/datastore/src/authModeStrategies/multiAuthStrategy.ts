@@ -81,9 +81,9 @@ function getAuthRules({
 				// We shouldn't attempt User Pool or OIDC if there isn't an authenticated user
 				if (currentUser) {
 					if (rule.provider === ModelAttributeAuthProvider.USER_POOLS) {
-						authModes.add('jwt');
+						authModes.add('userPool');
 					} else if (rule.provider === ModelAttributeAuthProvider.OIDC) {
-						authModes.add('jwt');
+						authModes.add('oidc');
 					}
 				}
 				break;
@@ -96,7 +96,7 @@ function getAuthRules({
 						!rule.provider ||
 						rule.provider === ModelAttributeAuthProvider.USER_POOLS
 					) {
-						authModes.add('jwt');
+						authModes.add('userPool');
 					} else if (rule.provider === ModelAttributeAuthProvider.IAM) {
 						authModes.add('iam');
 					}

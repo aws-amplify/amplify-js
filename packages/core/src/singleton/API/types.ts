@@ -31,9 +31,16 @@ export type APIConfig = {
 
 export type ApiAuthMode =
 	| { type: 'apiKey'; apiKey: string }
-	| { type: 'jwt'; token?: 'id' | 'access' }
+	| { type: 'oidc'; token?: 'id' | 'access' }
+	| { type: 'userPool'; token?: 'id' | 'access' }
 	| { type: 'iam'; region?: string; service?: string }
 	| { type: 'lambda' }
-	| { type: 'custom' };
+	| { type: 'none' };
 
-export type ApiAuthModeKeys = 'apiKey' | 'jwt' | 'iam' | 'lambda' | 'custom';
+export type ApiAuthModeKeys =
+	| 'apiKey'
+	| 'oidc'
+	| 'userPool'
+	| 'iam'
+	| 'lambda'
+	| 'none';
