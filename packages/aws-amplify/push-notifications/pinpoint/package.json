@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/push-notifications/pinpoint",
+	"main": "../../lib/push-notifications/pinpoint/index.js",
+	"browser": "../../lib-esm/push-notifications/pinpoint/index.js",
+	"module": "../../lib-esm/push-notifications/pinpoint/index.js",
+	"typings": "../../lib-esm/push-notifications/pinpoint/index.d.ts"
+}

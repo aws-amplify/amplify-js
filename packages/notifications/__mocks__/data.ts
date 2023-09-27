@@ -5,8 +5,8 @@ import type {
 	Event,
 	InAppMessageCampaign as PinpointInAppMessage,
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
-import { InAppMessage, InAppMessagingEvent } from '../src/InAppMessaging';
-import { PushNotificationMessage } from '../src/PushNotification';
+import { InAppMessage, InAppMessagingEvent } from '../src/inAppMessaging';
+import { PushNotificationMessage } from '../src/pushNotifications';
 import { UserInfo } from '../src';
 import { NotificationsConfig } from '../src';
 
