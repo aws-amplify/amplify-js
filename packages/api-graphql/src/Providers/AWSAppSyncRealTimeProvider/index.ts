@@ -40,11 +40,9 @@ import {
 } from '../../utils/ReconnectionMonitor';
 
 import {
-	CustomUserAgentDetails,
 	Logger,
 	NonRetryableError,
 	USER_AGENT_HEADER,
-	getAmplifyUserAgent,
 	isNonRetryableError,
 	jitteredExponentialRetry,
 	GraphQLAuthMode,
@@ -187,8 +185,7 @@ export class AWSAppSyncRealTimeProvider {
 	}
 
 	subscribe(
-		options?: AWSAppSyncRealTimeProviderOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: AWSAppSyncRealTimeProviderOptions
 	): Observable<Record<string, unknown>> {
 		const {
 			appSyncGraphqlEndpoint,
@@ -230,7 +227,6 @@ export class AWSAppSyncRealTimeProvider {
 								},
 								observer,
 								subscriptionId,
-								customUserAgentDetails,
 							}).catch<any>(err => {
 								logger.debug(
 									`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`
@@ -291,12 +287,10 @@ export class AWSAppSyncRealTimeProvider {
 		options,
 		observer,
 		subscriptionId,
-		customUserAgentDetails,
 	}: {
 		options: AWSAppSyncRealTimeProviderOptions;
 		observer: PubSubContentObserver;
 		subscriptionId: string;
-		customUserAgentDetails: CustomUserAgentDetails | undefined;
 	}) {
 		const {
 			appSyncGraphqlEndpoint,
@@ -338,7 +332,6 @@ export class AWSAppSyncRealTimeProvider {
 			})),
 			...(await graphql_headers()),
 			...additionalHeaders,
-			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 		};
 
 		const subscriptionMessage = {
