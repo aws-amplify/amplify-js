@@ -2,14 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import { signIn } from '../../../src/providers/cognito/apis/signIn';
+import { signIn, getCurrentUser } from '../../../src/providers/cognito';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInStore } from '../../../src/providers/cognito/utils/signInStore';
 import { Amplify } from '@aws-amplify/core';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { cognitoCredentialsProvider } from '../../../src/providers/cognito/credentialsProvider';
 import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
+jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 
+//  getCurrentUser is mocked so Hub is able to dispatch a mocked AuthUser
+// before returning an `AuthSignInResult`
+const mockedGetCurrentUser = getCurrentUser as jest.Mock;
 describe('local sign-in state management tests', () => {
 	const session = '1234234232';
 	const challengeName = 'SMS_MFA';
@@ -76,6 +79,12 @@ describe('local sign-in state management tests', () => {
 			username,
 			password,
 		});
+		mockedGetCurrentUser.mockImplementationOnce(async () => {
+			return {
+				username: 'username',
+				userId: 'userId',
+			};
+		});
 
 		const localSignInState = signInStore.getState();
 
@@ -87,5 +96,6 @@ describe('local sign-in state management tests', () => {
 		});
 
 		handleUserSRPAuthflowSpy.mockClear();
+		mockedGetCurrentUser.mockClear();
 	});
 });
