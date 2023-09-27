@@ -4,35 +4,17 @@
 import { RecordInput } from '../types';
 import { getEventBuffer } from '../utils/getEventBuffer';
 import { resolveConfig } from '../utils/resolveConfig';
-import { KinesisEventData } from '@aws-amplify/core/src/providers/kinesis/types';
 import { resolveCredentials } from '../../../utils';
 import { fromUtf8 } from '@smithy/util-utf8';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/lib-esm/Logger';
-import {
-	AnalyticsValidationErrorCode,
-	assertValidationError,
-} from '../../../errors';
+import { ConsoleLogger } from '@aws-amplify/core/lib/Logger';
 
-const convertToByteArray = (data: KinesisEventData): Uint8Array =>
-	ArrayBuffer.isView(data) ? data : fromUtf8(JSON.stringify(data));
-
-const logger = new Logger('Analytics');
+const logger = new ConsoleLogger('Kinesis');
 
 export const record = ({
 	streamName,
 	partitionKey,
 	data,
 }: RecordInput): void => {
-	assertValidationError(
-		!!streamName,
-		AnalyticsValidationErrorCode.NoStreamName
-	);
-	assertValidationError(
-		!!partitionKey,
-		AnalyticsValidationErrorCode.NoPartitionKey
-	);
-	assertValidationError(!!data, AnalyticsValidationErrorCode.NoData);
-
 	const timestamp = Date.now();
 	const { region, bufferSize, flushSize, flushInterval, resendLimit } =
 		resolveConfig();
@@ -53,7 +35,7 @@ export const record = ({
 				region,
 				streamName,
 				partitionKey,
-				event: convertToByteArray(data),
+				event: ArrayBuffer.isView(data) ? data : fromUtf8(JSON.stringify(data)),
 				timestamp,
 				retryCount: 0,
 			});

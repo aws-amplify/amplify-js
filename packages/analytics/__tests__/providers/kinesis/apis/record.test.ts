@@ -10,8 +10,7 @@ import {
 } from '../../../testUtils/mockConstants.test';
 import { record } from '../../../../src/providers/kinesis';
 import { KinesisEvent } from '../../../../src/providers/kinesis/types';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/lib-esm/Logger';
-import { AnalyticsValidationErrorCode } from '../../../../src/errors';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/lib/Logger';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis/utils/resolveConfig');
@@ -69,50 +68,5 @@ describe('Analytics Kinesis API: record', () => {
 
 		await new Promise(process.nextTick);
 		expect(loggerWarnSpy).toBeCalledWith(expect.any(String), expect.any(Error));
-	});
-
-	it('throws a validation error when event does not specify a streamName field', () => {
-		const mockParams = {
-			...mockEvent,
-			streamName: undefined,
-		};
-
-		try {
-			record(mockParams as KinesisEvent);
-		} catch (e) {
-			expect(e.name).toEqual(AnalyticsValidationErrorCode.NoStreamName);
-		}
-
-		expect.assertions(1);
-	});
-
-	it('throws a validation error when event does not specify a partitionKey field', () => {
-		const mockParams = {
-			...mockEvent,
-			partitionKey: undefined,
-		};
-
-		try {
-			record(mockParams as KinesisEvent);
-		} catch (e) {
-			expect(e.name).toEqual(AnalyticsValidationErrorCode.NoPartitionKey);
-		}
-
-		expect.assertions(1);
-	});
-
-	it('throws a validation error when event does not specify a data field', () => {
-		const mockParams = {
-			...mockEvent,
-			data: undefined,
-		};
-
-		try {
-			record(mockParams as KinesisEvent);
-		} catch (e) {
-			expect(e.name).toEqual(AnalyticsValidationErrorCode.NoData);
-		}
-
-		expect.assertions(1);
 	});
 });

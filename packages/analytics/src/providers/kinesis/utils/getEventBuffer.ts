@@ -10,6 +10,14 @@ import {
 } from '../../../utils';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 
+/**
+ * These Records hold cached event buffers and AWS clients.
+ * The hash key is determined by the region and session,
+ * consisting of a combined value comprising [region, sessionToken, identityId].
+ *
+ * Only one active session should exist at any given moment.
+ * When a new session is initiated, the previous ones should be released.
+ * */
 const eventBufferMap: Record<string, EventBuffer<KinesisBufferEvent>> = {};
 const cachedClients: Record<string, KinesisClient> = {};
 
@@ -19,9 +27,9 @@ const createKinesisPutRecordsCommand = (
 ): PutRecordsCommand =>
 	new PutRecordsCommand({
 		StreamName: streamName,
-		Records: events.map(x => ({
-			PartitionKey: x.partitionKey,
-			Data: x.event,
+		Records: events.map(event => ({
+			PartitionKey: event.partitionKey,
+			Data: event.event,
 		})),
 	});
 
@@ -31,20 +39,22 @@ const submitEvents = async (
 	resendLimit?: number
 ): Promise<KinesisBufferEvent[]> => {
 	const groupedByStreamName = recordToTupleList(
-		groupBy(x => x.streamName, events)
+		groupBy(event => event.streamName, events)
 	);
 	const requests = groupedByStreamName
-		.map(x => createKinesisPutRecordsCommand(...x))
+		.map(tuple => createKinesisPutRecordsCommand(...tuple))
 		.map(command => client.send(command));
 
 	const responses = await Promise.allSettled(requests);
 	const failedEvents = responses
-		.map((x, i) => (x.status === 'rejected' ? groupedByStreamName[i][1] : []))
+		.map((response, i) =>
+			response.status === 'rejected' ? groupedByStreamName[i][1] : []
+		)
 		.flat();
 	return resendLimit
 		? failedEvents
-				.filter(x => x.retryCount >= resendLimit)
-				.map(x => ({ ...x, retryCount: x.retryCount + 1 }))
+				.filter(event => event.retryCount >= resendLimit)
+				.map(event => ({ ...event, retryCount: event.retryCount + 1 }))
 				.sort((a, b) => a.timestamp - b.timestamp)
 		: [];
 };
@@ -72,13 +82,8 @@ export const getEventBuffer = ({
 				});
 			}
 
-			return events => {
-				return submitEvents(
-					events,
-					cachedClients[sessionIdentityKey],
-					resendLimit
-				);
-			};
+			return events =>
+				submitEvents(events, cachedClients[sessionIdentityKey], resendLimit);
 		};
 
 		// create new session

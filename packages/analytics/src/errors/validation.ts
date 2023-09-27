@@ -9,9 +9,6 @@ export enum AnalyticsValidationErrorCode {
 	NoEventName = 'NoEventName',
 	NoRegion = 'NoRegion',
 	LargeFlushSize = 'LargeFlushSize',
-	NoStreamName = 'NoStreamName',
-	NoPartitionKey = 'NoPartitionKey',
-	NoData = 'NoData',
 }
 
 export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
@@ -30,14 +27,5 @@ export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
 		},
 		[AnalyticsValidationErrorCode.LargeFlushSize]: {
 			message: 'FlushSize should smaller than BufferSize',
-		},
-		[AnalyticsValidationErrorCode.NoData]: {
-			message: 'A data field is required to record.',
-		},
-		[AnalyticsValidationErrorCode.NoStreamName]: {
-			message: 'a streamName field is required to record.',
-		},
-		[AnalyticsValidationErrorCode.NoPartitionKey]: {
-			message: 'a partitionKey field is required to record.',
 		},
 	};

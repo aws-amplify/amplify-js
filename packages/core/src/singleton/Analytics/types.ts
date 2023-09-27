@@ -4,6 +4,4 @@
 import { PinpointProviderConfig } from '../../providers/pinpoint/types';
 import { KinesisProviderConfig } from '../../providers/kinesis/types';
 
-export type AnalyticsConfig = Partial<
-	PinpointProviderConfig & KinesisProviderConfig
->;
+export type AnalyticsConfig = PinpointProviderConfig & KinesisProviderConfig;

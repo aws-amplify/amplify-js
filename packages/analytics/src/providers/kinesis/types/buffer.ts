@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthSession } from '@aws-amplify/core/src/singleton/Auth/types';
-import { KinesisShard } from '@aws-amplify/core/lib/providers/kinesis/types/kinesis';
 import { EventBufferConfig } from '../../../utils/eventBuffer';
+import { Credentials } from '@aws-sdk/types';
+import { KinesisShard } from '../../../types';
 
 export type KinesisBufferEvent = KinesisShard & {
 	event: Uint8Array;
@@ -13,8 +13,8 @@ export type KinesisBufferEvent = KinesisShard & {
 
 export type KinesisEventBufferConfig = EventBufferConfig & {
 	region: string;
-	credentials: Required<AuthSession>['credentials'];
-	identityId: AuthSession['identityId'];
+	credentials: Credentials;
+	identityId?: string;
 	resendLimit?: number;
 	userAgentValue?: string;
 };
