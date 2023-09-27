@@ -29,6 +29,7 @@ import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
+import { tokenOrchestrator } from '../tokenProvider';
 
 /**
  * Signs a user in using a custom authentication flow with SRP
@@ -63,7 +64,13 @@ export async function signInWithCustomSRPAuth(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleCustomSRPAuthFlow(username, password, metadata, authConfig);
+		} = await handleCustomSRPAuthFlow(
+			username,
+			password,
+			metadata,
+			authConfig,
+			tokenOrchestrator
+		);
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
