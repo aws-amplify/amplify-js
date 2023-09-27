@@ -91,7 +91,7 @@
 		},
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 		"testPathIgnorePatterns": [
-			"<rootDir>/__tests__/helpers.ts"
+			"<rootDir>/__tests__/helpers.ts",
 			"<rootDir>/__tests__/fixtures/",
 			"<rootDir>/__tests__/utils/"
 		],

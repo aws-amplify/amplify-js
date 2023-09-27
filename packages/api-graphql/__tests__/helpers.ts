@@ -304,7 +304,7 @@ class FakeWebSocket implements WebSocket {
 	extensions: string;
 	onclose: (this: WebSocket, ev: CloseEvent) => any;
 	onerror: (this: WebSocket, ev: Event) => any;
-	onmessage: (this: WebSocket, ev: MessageEvent<any>) => any;
+	onmessage: (this: WebSocket, ev: MessageEvent) => any;
 	onopen: (this: WebSocket, ev: Event) => any;
 	protocol: string;
 	readyState: number;

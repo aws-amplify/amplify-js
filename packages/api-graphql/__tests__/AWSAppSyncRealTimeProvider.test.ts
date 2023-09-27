@@ -58,7 +58,7 @@ jest.mock('@aws-amplify/core', () => {
 					accessKeyId: 'test',
 					secretAccessKey: 'test',
 				},
-			} as Awaited<ReturnType<typeof fetchAuthSession>>);
+			});
 		},
 	};
 });
