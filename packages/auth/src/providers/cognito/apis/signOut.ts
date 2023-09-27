@@ -12,6 +12,7 @@ import { SignOutInput, SignOutOutput } from '../types';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { tokenOrchestrator } from '../tokenProvider';
 import {
+	AMPLIFY_SYMBOL,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
 	JWT,
@@ -45,7 +46,7 @@ export async function signOut(input?: SignOutInput): Promise<SignOutOutput> {
 		await clientSignOut(cognitoConfig);
 	}
 
-	Hub.dispatch('auth', { event: 'signedOut' });
+	Hub.dispatch('auth', { event: 'signedOut' }, 'Auth', AMPLIFY_SYMBOL);
 }
 
 async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {

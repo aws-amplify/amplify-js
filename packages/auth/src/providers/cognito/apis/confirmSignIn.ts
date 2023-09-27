@@ -24,7 +24,10 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { Amplify, Hub } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import {
+	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,
@@ -113,10 +116,15 @@ export async function confirmSignIn(
 					AuthenticationResult.AccessToken
 				),
 			});
-			Hub.dispatch('auth', {
-				event: 'signedIn',
-				data: await getCurrentUser(),
-			});
+			Hub.dispatch(
+				'auth',
+				{
+					event: 'signedIn',
+					data: await getCurrentUser(),
+				},
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },

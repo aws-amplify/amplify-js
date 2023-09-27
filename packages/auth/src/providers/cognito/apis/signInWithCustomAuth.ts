@@ -11,7 +11,10 @@ import {
 	getNewDeviceMetatada,
 } from '../utils/signInHelpers';
 import { Amplify, Hub } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import {
+	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
 import {
 	SignInWithCustomAuthInput,
@@ -85,7 +88,12 @@ export async function signInWithCustomAuth(
 					AuthenticationResult.AccessToken
 				),
 			});
-			Hub.dispatch('auth', { event: 'signedIn', data: await getCurrentUser() });
+			Hub.dispatch(
+				'auth',
+				{ event: 'signedIn', data: await getCurrentUser() },
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },

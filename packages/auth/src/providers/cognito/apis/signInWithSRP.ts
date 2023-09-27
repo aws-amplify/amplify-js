@@ -13,7 +13,10 @@ import {
 	RespondToAuthChallengeException,
 } from '../types/errors';
 import { Amplify, Hub } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import {
+	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 import {
 	getNewDeviceMetatada,
 	getSignInResult,
@@ -86,10 +89,15 @@ export async function signInWithSRP(
 					AuthenticationResult.AccessToken
 				),
 			});
-			Hub.dispatch('auth', {
-				event: 'signedIn',
-				data: await getCurrentUser(),
-			});
+			Hub.dispatch(
+				'auth',
+				{
+					event: 'signedIn',
+					data: await getCurrentUser(),
+				},
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
