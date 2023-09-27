@@ -10,8 +10,11 @@ import {
 	getSignInResultFromError,
 	getNewDeviceMetatada,
 } from '../utils/signInHelpers';
-import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { Amplify, Hub } from '@aws-amplify/core';
+import {
+	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
 import {
 	SignInWithCustomAuthInput,
@@ -27,6 +30,7 @@ import {
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
+import { getCurrentUser } from './getCurrentUser';
 
 /**
  * Signs a user in using a custom authentication flow without password
@@ -84,6 +88,12 @@ export async function signInWithCustomAuth(
 					AuthenticationResult.AccessToken
 				),
 			});
+			Hub.dispatch(
+				'auth',
+				{ event: 'signedIn', data: await getCurrentUser() },
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
