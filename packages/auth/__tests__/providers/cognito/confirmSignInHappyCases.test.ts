@@ -10,7 +10,10 @@ import {
 } from '../../../src/providers/cognito/';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
+import {
+	CognitoUserPoolsTokenProvider,
+	tokenOrchestrator,
+} from '../../../src/providers/cognito/tokenProvider';
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 
 const authConfig = {
@@ -244,14 +247,16 @@ describe('confirmSignIn API happy path cases', () => {
 				serviceOptions: authAPITestParams.configWithClientMetadata,
 			},
 		});
+		const options = authAPITestParams.configWithClientMetadata;
 		expect(handleChallengeNameSpy).toBeCalledWith(
 			username,
 			activeChallengeName,
 			activeSignInSession,
 			challengeResponse,
 			authConfig.Cognito,
+			tokenOrchestrator,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
-			authAPITestParams.configWithClientMetadata
+			options
 		);
 		handleUserSRPAuthFlowSpy.mockClear();
 	});
