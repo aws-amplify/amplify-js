@@ -7,7 +7,17 @@ import { v4 as uuid } from 'uuid';
 import { Buffer } from 'buffer';
 import { Hub, fetchAuthSession } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
-import { ApiAuthMode } from '@aws-amplify/core/internals/utils';
+import {
+	ApiAuthMode,
+	CustomUserAgentDetails,
+	Logger,
+	NonRetryableError,
+	USER_AGENT_HEADER,
+	getAmplifyUserAgent,
+	isNonRetryableError,
+	jitteredExponentialRetry,
+} from '@aws-amplify/core/internals/utils';
+import { DocumentType } from '@aws-amplify/api-rest';
 
 import {
 	CONTROL_MSG,
@@ -36,17 +46,6 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
-
-import {
-	CustomUserAgentDetails,
-	Logger,
-	NonRetryableError,
-	USER_AGENT_HEADER,
-	getAmplifyUserAgent,
-	isNonRetryableError,
-	jitteredExponentialRetry,
-} from '@aws-amplify/core/internals/utils';
-import { DocumentType } from '@aws-amplify/api-rest';
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
