@@ -29,10 +29,12 @@ export type APIConfig = {
 	};
 };
 
+// Future improvement: For iodc and userPool, we could support config allowing users to specify to use access
+// token or id token.
 export type ApiAuthMode =
 	| { type: 'apiKey'; apiKey: string }
-	| { type: 'oidc'; token?: 'id' | 'access' }
-	| { type: 'userPool'; token?: 'id' | 'access' }
+	| { type: 'oidc' }
+	| { type: 'userPool' }
 	| { type: 'iam'; region?: string; service?: string }
 	| { type: 'lambda' }
 	| { type: 'none' };
