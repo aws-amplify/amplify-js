@@ -355,7 +355,7 @@ export async function handleCustomAuthFlowWithoutSRP(
 		{ region: getRegion(userPoolId) },
 		jsonReq
 	);
-	if (response.ChallengeName === 'DEVICE_SRP')
+	if (response.ChallengeName === 'DEVICE_SRP_AUTH')
 		return handleDeviceSRPAuth(
 			username,
 			config,
@@ -420,11 +420,11 @@ async function handleDeviceSRPAuth(
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const userPoolId = config.userPoolId;
 	const clientId = config.userPoolClientId;
-	const userPoolName = userPoolId?.split('_')[1] || '';
-	const authenticationHelper = new AuthenticationHelper(userPoolName);
 	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata();
 	assertDeviceMetadata(deviceMetadata);
-
+	const authenticationHelper = new AuthenticationHelper(
+		deviceMetadata.deviceGroupKey
+	);
 	const challengeResponses: Record<string, string> = {
 		USERNAME: username,
 		SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
@@ -480,7 +480,7 @@ async function handleDevicePasswordVerifier(
 
 	const dateNow = getNowString();
 	const challengeResponses = {
-		USERNAME: challengeParameters.USER_ID_FOR_SRP,
+		USERNAME: (challengeParameters?.USERNAME as string) ?? username,
 		PASSWORD_CLAIM_SECRET_BLOCK: challengeParameters?.SECRET_BLOCK,
 		TIMESTAMP: dateNow,
 		PASSWORD_CLAIM_SIGNATURE: getSignatureString({
