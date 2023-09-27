@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { EventBuffer } from '../../lib/utils';
+import { EventBuffer } from '../../../lib/utils';
 
 describe('EventBuffer', () => {
 	type TestEvent = {

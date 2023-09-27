@@ -9,7 +9,7 @@ import {
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
 
-jest.mock('../../../../src/utils/eventBuffer');
+jest.mock('../../../../src/utils');
 
 describe('Kinesis Provider Util: getEventBuffer', () => {
 	const mockEventBuffer = EventBuffer as jest.Mock;

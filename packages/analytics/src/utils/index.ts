@@ -3,8 +3,11 @@
 
 export { resolveCredentials } from './resolveCredentials';
 export { groupBy } from './groupBy';
-export { EventBuffer, IAnalyticsClient } from './eventBuffer';
-export { recordToTupleList } from './recordToList';
+export {
+	EventBuffer,
+	IAnalyticsClient,
+	EventBufferConfig,
+} from './event-buffer';
 export {
 	getAnalyticsUserAgent,
 	getAnalyticsUserAgentString,

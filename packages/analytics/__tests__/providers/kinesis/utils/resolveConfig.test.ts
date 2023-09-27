@@ -31,6 +31,8 @@ describe('Analytics Kinesis Provider Util: resolveConfig', () => {
 	it('use default config for optional fields', () => {
 		const requiredFields = {
 			region: 'us-east-1',
+			bufferSize: undefined,
+			resendLimit: undefined,
 		};
 		getConfigSpy.mockReturnValue({
 			Analytics: { Kinesis: requiredFields },
@@ -38,7 +40,8 @@ describe('Analytics Kinesis Provider Util: resolveConfig', () => {
 
 		expect(resolveConfig()).toStrictEqual({
 			...DEFAULT_KINESIS_CONFIG,
-			...requiredFields,
+			region: requiredFields.region,
+			resendLimit: requiredFields.resendLimit,
 		});
 	});
 

@@ -2,12 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { KinesisBufferEvent, KinesisEventBufferConfig } from '../types';
-import {
-	EventBuffer,
-	groupBy,
-	IAnalyticsClient,
-	recordToTupleList,
-} from '../../../utils';
+import { EventBuffer, groupBy, IAnalyticsClient } from '../../../utils';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 
 /**
@@ -38,11 +33,13 @@ const submitEvents = async (
 	client: KinesisClient,
 	resendLimit?: number
 ): Promise<KinesisBufferEvent[]> => {
-	const groupedByStreamName = recordToTupleList(
+	const groupedByStreamName = Object.entries(
 		groupBy(event => event.streamName, events)
 	);
 	const requests = groupedByStreamName
-		.map(tuple => createKinesisPutRecordsCommand(...tuple))
+		.map(([streamName, events]) =>
+			createKinesisPutRecordsCommand(streamName, events)
+		)
 		.map(command => client.send(command));
 
 	const responses = await Promise.allSettled(requests);
@@ -53,7 +50,7 @@ const submitEvents = async (
 		.flat();
 	return resendLimit
 		? failedEvents
-				.filter(event => event.retryCount >= resendLimit)
+				.filter(event => event.retryCount < resendLimit)
 				.map(event => ({ ...event, retryCount: event.retryCount + 1 }))
 				.sort((a, b) => a.timestamp - b.timestamp)
 		: [];

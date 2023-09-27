@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { EventBufferConfig } from '../../../utils/eventBuffer';
+import { EventBufferConfig } from '../../../utils';
 import { Credentials } from '@aws-sdk/types';
 import { KinesisShard } from '../../../types';
 

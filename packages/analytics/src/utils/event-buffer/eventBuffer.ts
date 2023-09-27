@@ -2,16 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger } from '@aws-amplify/core/lib/Logger';
-
-export interface IAnalyticsClient<T> {
-	(events: T[]): Promise<T[]>;
-}
-
-export type EventBufferConfig = {
-	flushSize: number;
-	flushInterval: number;
-	bufferSize: number;
-};
+import { EventBufferConfig, IAnalyticsClient } from './';
 
 const logger = new ConsoleLogger('EventBuffer');
 
