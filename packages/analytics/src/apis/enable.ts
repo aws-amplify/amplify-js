@@ -9,4 +9,4 @@ import { enableAnalytics } from '../utils';
  * @note
  * Analytics is enabled by default. You do not need to call this API unless you have disabled Analytics.
  */
-export const enable = () => enableAnalytics();
+export const enable = enableAnalytics;

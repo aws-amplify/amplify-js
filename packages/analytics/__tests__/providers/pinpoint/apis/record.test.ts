@@ -7,7 +7,10 @@ import {
 } from '../../../../src/providers/pinpoint/utils';
 import { AnalyticsValidationErrorCode } from '../../../../src/errors';
 import { RecordInput } from '../../../../src/providers/pinpoint/types';
-import { isAnalyticsEnabled } from '../../../../src/utils';
+import {
+	isAnalyticsEnabled,
+	getAnalyticsUserAgentString,
+} from '../../../../src/utils';
 import {
 	appId,
 	identityId,
@@ -17,14 +20,7 @@ import {
 	config,
 } from './testUtils/data';
 
-jest.mock('../../../../src/utils', () => {
-	const original = jest.requireActual('../../../../src/utils'); // Step 2.
-	return {
-		...original,
-		isAnalyticsEnabled: jest.fn(),
-	};
-});
-
+jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 
@@ -33,6 +29,8 @@ describe('Pinpoint API: record', () => {
 	const mockResolveConfig = resolveConfig as jest.Mock;
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 	const mockIsAnalyticsEnabled = isAnalyticsEnabled as jest.Mock;
+	const mockGetAnalyticsUserAgentString =
+		getAnalyticsUserAgentString as jest.Mock;
 	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
 
 	beforeEach(() => {
@@ -42,6 +40,8 @@ describe('Pinpoint API: record', () => {
 		mockResolveConfig.mockReturnValue(config);
 		mockIsAnalyticsEnabled.mockReset();
 		mockIsAnalyticsEnabled.mockReturnValue(true);
+		mockGetAnalyticsUserAgentString.mockReset();
+		mockGetAnalyticsUserAgentString.mockReturnValue('mock-user-agent');
 		mockResolveCredentials.mockReset();
 		mockResolveCredentials.mockResolvedValue({
 			credentials,
