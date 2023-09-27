@@ -4,6 +4,7 @@
 import {
 	Amplify,
 	CognitoUserPoolConfig,
+	Hub,
 	clearCredentials,
 	defaultStorage,
 } from '@aws-amplify/core';
@@ -39,10 +40,12 @@ export async function signOut(input?: SignOutInput): Promise<SignOutOutput> {
 	assertTokenProviderConfig(cognitoConfig);
 
 	if (input?.global) {
-		return globalSignOut(cognitoConfig);
+		await globalSignOut(cognitoConfig);
 	} else {
-		return clientSignOut(cognitoConfig);
+		await clientSignOut(cognitoConfig);
 	}
+
+	Hub.dispatch('auth', { event: 'signedOut' });
 }
 
 async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
