@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, LocalStorage } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
@@ -10,6 +10,8 @@ import { deleteUser as deleteUserClient } from '../utils/clients/CognitoIdentity
 import { DeleteUserException } from '../types/errors';
 import { DefaultTokenStore } from '../tokenProvider/TokenStore';
 import { tokenOrchestrator } from '../tokenProvider';
+import { signOut } from '..';
+
 /**
  * Deletes a user from the user pool while authenticated.
  *
@@ -17,8 +19,6 @@ import { tokenOrchestrator } from '../tokenProvider';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function deleteUser(): Promise<void> {
-	const tokenStore = new DefaultTokenStore();
-	tokenStore.setKeyValueStorage(LocalStorage);
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
@@ -31,11 +31,6 @@ export async function deleteUser(): Promise<void> {
 			AccessToken: tokens.accessToken.toString(),
 		}
 	);
-
-	// Todo: TokenOrchestrator
-	// 1. create a method to delete only deviceKeys
-	// Todo:
-	// 1. Clean auth tokens
-	// 2. clean creds
-	// 3. clean device keys
+	await signOut();
+	tokenOrchestrator.clearDeviceMetadata();
 }
