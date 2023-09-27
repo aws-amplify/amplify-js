@@ -46,7 +46,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 					region = '',
 					defaults: { type: interpretTypeConfig = '' } = {},
 				} = {},
-			} = Amplify.getConfig().predictions?.interpret || {};
+			} = Amplify.getConfig().Predictions?.interpret || {};
 			const {
 				text: {
 					source: { text = '' } = {},

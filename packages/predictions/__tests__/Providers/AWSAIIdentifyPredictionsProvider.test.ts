@@ -270,7 +270,7 @@ mockFetchAuthSession.mockResolvedValue({
 	identityId,
 });
 mockGetConfig.mockReturnValue({
-	predictions: {
+	Predictions: {
 		identify: options,
 	},
 });
