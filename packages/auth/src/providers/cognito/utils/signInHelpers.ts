@@ -1,12 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify, CognitoUserPoolConfig } from '@aws-amplify/core';
 import {
-	Amplify,
-	AmplifyClassV6,
-	CognitoUserPoolConfig,
-} from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+	assertTokenProviderConfig,
+	base64Encoder,
+} from '@aws-amplify/core/internals/utils';
 import {
 	fromHex,
 	getLargeAValue,
@@ -55,8 +54,7 @@ import {
 import { getRegion } from './clients/CognitoIdentityProvider/utils';
 import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants';
 import { getCurrentUser } from '../apis/getCurrentUser';
-import { toBase64 } from '@smithy/util-base64';
-import { DeviceMetadata } from '../tokenProvider/types';
+import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -229,14 +227,21 @@ export async function handleUserPasswordAuthFlow(
 	username: string,
 	password: string,
 	clientMetadata: ClientMetadata | undefined,
-	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig
+	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig,
+	tokenOrchestrator: AuthTokenOrchestrator
 ): Promise<InitiateAuthCommandOutput> {
+	const authParameters: Record<string, string> = {
+		USERNAME: username,
+		PASSWORD: password,
+	};
+	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+
+	if (deviceMetadata && deviceMetadata.deviceKey) {
+		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
+	}
 	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'USER_PASSWORD_AUTH',
-		AuthParameters: {
-			USERNAME: username,
-			PASSWORD: password,
-		},
+		AuthParameters: authParameters,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 	};
@@ -248,18 +253,25 @@ export async function handleUserSRPAuthFlow(
 	username: string,
 	password: string,
 	clientMetadata: ClientMetadata | undefined,
-	config: CognitoUserPoolConfig
+	config: CognitoUserPoolConfig,
+	tokenOrchestrator: AuthTokenOrchestrator
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const { userPoolId, userPoolClientId } = config;
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = new AuthenticationHelper(userPoolName);
 
+	const authParameters: Record<string, string> = {
+		USERNAME: username,
+		SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
+	};
+	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+
+	if (deviceMetadata && deviceMetadata.deviceKey) {
+		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
+	}
 	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'USER_SRP_AUTH',
-		AuthParameters: {
-			USERNAME: username,
-			SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
-		},
+		AuthParameters: authParameters,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 	};
@@ -273,20 +285,28 @@ export async function handleUserSRPAuthFlow(
 		clientMetadata,
 		session,
 		authenticationHelper,
-		config
+		config,
+		tokenOrchestrator
 	);
 }
 
 export async function handleCustomAuthFlowWithoutSRP(
 	username: string,
 	clientMetadata: ClientMetadata | undefined,
-	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig
+	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig,
+	tokenOrchestrator: AuthTokenOrchestrator
 ): Promise<InitiateAuthCommandOutput> {
+	const authParameters: Record<string, string> = {
+		USERNAME: username,
+	};
+	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+
+	if (deviceMetadata && deviceMetadata.deviceKey) {
+		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
+	}
 	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'CUSTOM_AUTH',
-		AuthParameters: {
-			USERNAME: username,
-		},
+		AuthParameters: authParameters,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 	};
@@ -298,20 +318,29 @@ export async function handleCustomSRPAuthFlow(
 	username: string,
 	password: string,
 	clientMetadata: ClientMetadata | undefined,
-	config: CognitoUserPoolConfig
+	config: CognitoUserPoolConfig,
+	tokenOrchestrator: AuthTokenOrchestrator
 ) {
 	assertTokenProviderConfig(config);
 	const { userPoolId, userPoolClientId } = config;
 
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = new AuthenticationHelper(userPoolName);
+
+	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+
+	const authParameters: Record<string, string> = {
+		USERNAME: username,
+		SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
+		CHALLENGE_NAME: 'SRP_A',
+	};
+	if (deviceMetadata && deviceMetadata.deviceKey) {
+		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
+	}
+
 	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'CUSTOM_AUTH',
-		AuthParameters: {
-			USERNAME: username,
-			SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
-			CHALLENGE_NAME: 'SRP_A',
-		},
+		AuthParameters: authParameters,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 	};
@@ -325,7 +354,8 @@ export async function handleCustomSRPAuthFlow(
 		clientMetadata,
 		session,
 		authenticationHelper,
-		config
+		config,
+		tokenOrchestrator
 	);
 }
 
@@ -335,7 +365,8 @@ export async function handlePasswordVerifierChallenge(
 	clientMetadata: ClientMetadata | undefined,
 	session: string | undefined,
 	authenticationHelper: AuthenticationHelper,
-	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig
+	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig,
+	tokenOrchestrator: AuthTokenOrchestrator
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const serverBValue = new (BigInteger as any)(challengeParameters?.SRP_B, 16);
@@ -368,6 +399,11 @@ export async function handlePasswordVerifierChallenge(
 			hkdf,
 		}),
 	} as { [key: string]: string };
+
+	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+	if (deviceMetadata && deviceMetadata.deviceKey) {
+		challengeResponses['DEVICE_KEY'] = deviceMetadata.deviceKey;
+	}
 
 	const jsonReqResponseChallenge: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'PASSWORD_VERIFIER',
@@ -690,8 +726,10 @@ export async function getNewDeviceMetatada(
 				}
 
 				const deviceSecretVerifierConfig = {
-					Salt: toBase64(fromHex(authenticationHelper.getSaltToHashDevices())),
-					PasswordVerifier: toBase64(
+					Salt: base64Encoder.convert(
+						fromHex(authenticationHelper.getSaltToHashDevices())
+					),
+					PasswordVerifier: base64Encoder.convert(
 						fromHex(authenticationHelper.getVerifierDevices())
 					),
 				};

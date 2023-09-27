@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/analytics/personalize",
+	"main": "../../lib/analytics/personalize/index.js",
+	"browser": "../../lib-esm/analytics/personalize/index.js",
+	"module": "../../lib-esm/analytics/personalize/index.js",
+	"typings": "../../lib-esm/analytics/personalize/index.d.ts"
+}

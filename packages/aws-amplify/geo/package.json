@@ -1,7 +1,0 @@
-{
-	"name": "aws-amplify/geo",
-	"main": "../lib/geo/index.js",
-	"browser": "../lib-esm/geo/index.js",
-	"module": "../lib-esm/geo/index.js",
-	"typings": "../lib-esm/geo/index.d.ts"
-}

@@ -18,6 +18,7 @@ import {
 	StorageAccessLevel,
 	StorageConfig,
 } from './Storage/types';
+import { I18nConfig } from '../I18n/types';
 
 export type LegacyConfig = {
 	/**
@@ -32,7 +33,7 @@ export type ResourcesConfig = {
 	Auth?: AuthConfig;
 	// Cache?: CacheConfig;
 	// DataStore?: {};
-	// I18n?: I18nOptions;
+	I18n?: I18nConfig;
 	// Interactions?: {};
 	// Notifications?: {};
 	// Predictions?: {};

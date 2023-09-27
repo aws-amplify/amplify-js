@@ -89,6 +89,8 @@
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 		"testPathIgnorePatterns": [
 			"__tests__/helpers.ts"
+			"__tests__/fixtures/",
+			"__tests__/utils/"
 		],
 		"moduleFileExtensions": [
 			"ts",
