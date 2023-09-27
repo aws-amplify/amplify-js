@@ -84,49 +84,17 @@ export default class AWSPinpointProvider
 	};
 
 	registerDevice = async (address: string): Promise<void> => {
-		if (!this.initialized) {
-			await this.init();
-		}
-		try {
-			this.config.endpointInfo = {
-				...this.config.endpointInfo,
-				address,
-			};
-			await this.updateEndpoint();
-		} catch (err) {
-			this.logger.error('Error registering device', err);
-			throw err;
-		}
+		throw new Error('WIP');
 	};
 
 	private getChannelType = (): ChannelType => {
-		switch (Platform.OS) {
-			case 'android': {
-				// FCM was previously known as GCM and continues to be the channel type in Pinpoint
-				return 'GCM';
-			}
-			case 'ios': {
-				// If building in debug mode, use the APNs sandbox
-				return global['__DEV__'] ? 'APNS_SANDBOX' : 'APNS';
-			}
-			default: {
-				throw new PlatformNotSupportedError();
-			}
-		}
+		throw new Error('WIP');
 	};
 
 	private recordMessageEvent = async (
 		message: PushNotificationMessage,
 		event: AWSPinpointMessageEvent
 	): Promise<void> => {
-		const analyticsEvent = getAnalyticsEvent(message, event);
-		if (!analyticsEvent) {
-			logger.debug('A notification missing event information was not recorded');
-			return;
-		}
-		if (!this.initialized) {
-			await this.init();
-		}
-		return this.recordAnalyticsEvent(analyticsEvent);
+		throw new Error('WIP');
 	};
 }

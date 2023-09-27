@@ -275,8 +275,7 @@ export default abstract class AWSPinpointProviderCommon
 
 	private getCredentials = async () => {
 		try {
-			const session = await fetchAuthSession({ forceRefresh: false });
-			console.log('session: ', session);
+			const session = await fetchAuthSession();
 			if (!session.credentials) {
 				this.logger.debug('no credentials found');
 				return null;
