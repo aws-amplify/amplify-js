@@ -21,7 +21,7 @@ const authConfig = {
 };
 
 //  getCurrentUser is mocked so Hub is able to dispatch a mocked AuthUser
-// before return an `AuthSignInResult`
+// before returning an `AuthSignInResult`
 const mockedGetCurrentUser = getCurrentUser as jest.Mock;
 
 describe('confirmSignIn API happy path cases', () => {

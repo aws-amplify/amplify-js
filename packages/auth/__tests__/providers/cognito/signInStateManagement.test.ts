@@ -11,7 +11,7 @@ import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/to
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 
 //  getCurrentUser is mocked so Hub is able to dispatch a mocked AuthUser
-// before return an `AuthSignInResult`
+// before returning an `AuthSignInResult`
 const mockedGetCurrentUser = getCurrentUser as jest.Mock;
 describe('local sign-in state management tests', () => {
 	const session = '1234234232';
