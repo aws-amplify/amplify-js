@@ -51,6 +51,7 @@
 			"packages/api-graphql",
 			"packages/api",
 			"packages/datastore",
+			"packages/notifications",
 			"packages/aws-amplify",
 			"packages/rtn-web-browser",
 			"scripts/tsc-compliance-test"
