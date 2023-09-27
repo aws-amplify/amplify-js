@@ -64,6 +64,7 @@ export class InternalAPIClass {
 	 * @return If the request was cancelled
 	 */
 	cancel(request: Promise<any>, message?: string): boolean {
+		// TODO: awaiting REST API implementation - do we check for token?
 		return cancel(request, message);
 	}
 
