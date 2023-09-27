@@ -81,3 +81,10 @@ export type UpdateUserAttributesOptions = {
 export type SendUserAttributeVerificationCodeOptions = {
 	clientMetadata?: ClientMetadata;
 };
+
+/**
+ * Options specific to Cognito Update User Attribute.
+ */
+export type UpdateUserAttributeOptions = {
+	clientMetadata?: ClientMetadata;
+};

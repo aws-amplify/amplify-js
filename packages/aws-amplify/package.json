@@ -82,20 +82,30 @@
 			"import": "./lib-esm/storage/s3/server.js",
 			"require": "./lib/storage/s3/server.js"
 		},
+		"./in-app-messaging": {
+			"types": "./lib-esm/in-app-messaging/index.d.ts",
+			"import": "./lib-esm/in-app-messaging/index.js",
+			"require": "./lib/in-app-messaging/index.js"
+		},
+		"./push-notifications": {
+			"types": "./lib-esm/push-notifications/index.d.ts",
+			"import": "./lib-esm/push-notifications/index.js",
+			"require": "./lib/push-notifications/index.js"
+		},
+		"./in-app-messaging/pinpoint": {
+			"types": "./lib-esm/in-app-messaging/pinpoint/index.d.ts",
+			"import": "./lib-esm/in-app-messaging/pinpoint/index.js",
+			"require": "./lib/in-app-messaging/pinpoint/index.js"
+		},
+		"./push-notifications/pinpoint": {
+			"types": "./lib-esm/push-notifications/pinpoint/index.d.ts",
+			"import": "./lib-esm/push-notifications/pinpoint/index.js",
+			"require": "./lib/push-notifications/pinpoint/index.js"
+		},
 		"./internals/adapter-core": {
 			"types": "./lib-esm/adapterCore/index.d.ts",
 			"import": "./lib-esm/adapterCore/index.js",
 			"require": "./lib/adapterCore/index.js"
-		},
-		"./geo": {
-			"types": "./lib-esm/geo/index.d.ts",
-			"import": "./lib-esm/geo/index.js",
-			"require": "./lib/geo/index.js"
-		},
-		"./geo/location-service": {
-			"types": "./lib-esm/geo/location-service/index.d.ts",
-			"import": "./lib-esm/geo/location-service/index.js",
-			"require": "./lib/geo/location-service/index.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -143,6 +153,18 @@
 			"storage/s3/server": [
 				"./lib-esm/storage/s3/server.d.ts"
 			],
+			"in-app-messaging": [
+				"./lib-esm/in-app-messaging/index.d.ts"
+			],
+			"in-app-messaging/pinpoint": [
+				"./lib-esm/in-app-messaging/pinpoint/index.d.ts"
+			],
+			"push-notifications": [
+				"./lib-esm/push-notifications/index.d.ts"
+			],
+			"push-notifications/pinpoint": [
+				"./lib-esm/push-notifications/pinpoint/index.d.ts"
+			],
 			"internals/adapter-core": [
 				"./lib-esm/adapterCore/index.d.ts"
 			]
@@ -182,7 +204,6 @@
 		"analytics",
 		"api",
 		"auth",
-		"geo",
 		"internals",
 		"storage",
 		"datastore"
@@ -246,7 +267,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "28.0 kB"
+			"limit": "28.00 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
@@ -264,7 +285,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignIn }",
-			"limit": "27.1 kB"
+			"limit": "27.50 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -318,7 +339,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect }",
-			"limit": "21.0 kB"
+			"limit": "21.50 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
@@ -330,13 +351,13 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "29.7 kB"
+			"limit": "30.00 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "21.4 kB"
+			"limit": "22.00 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
@@ -379,12 +400,6 @@
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ uploadData }",
 			"limit": "23.3 kB"
-		},
-		{
-			"name": "[Geo] Geo (Location Service)",
-			"path": "./lib-esm/geo/index.js",
-			"import": "{ Geo }",
-			"limit": "48.5 kB"
 		}
 	],
 	"jest": {

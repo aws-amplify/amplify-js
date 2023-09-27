@@ -14,6 +14,7 @@
 		"packages/api-graphql",
 		"packages/datastore",
 		"packages/rtn-web-browser",
+		"packages/notifications",
 		"scripts/tsc-compliance-test"
 	],
 	"exact": true,

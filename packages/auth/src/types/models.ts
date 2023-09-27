@@ -216,6 +216,16 @@ export type AuthUserAttributes<
 };
 
 /**
+ * The interface of a user attribute.
+ */
+export type AuthUserAttribute<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = {
+	attributeKey: UserAttributeKey;
+	value: string;
+};
+
+/**
  * A user attribute key type consisting of standard OIDC claims or custom attributes.
  */
 export type AuthUserAttributeKey = AuthStandardAttributeKey | AuthAnyAttribute;
