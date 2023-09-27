@@ -188,4 +188,4 @@ export type AuthSendUserAttributeVerificationCodeInput<
  */
 export type AuthDeleteUserAttributesInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
-> = { userAttributeKeys: UserAttributeKey[] };
+> = { userAttributeKeys: [UserAttributeKey, ...UserAttributeKey[]] };
