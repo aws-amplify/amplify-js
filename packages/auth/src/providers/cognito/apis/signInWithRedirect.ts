@@ -23,6 +23,7 @@ import { authErrorMessages } from '../../../Errors';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInWithRedirectInput } from '../types';
 import { generateCodeVerifier, generateState } from '../utils/oauth';
+import { getCurrentUser } from './getCurrentUser';
 
 const SELF = '_self';
 
@@ -223,6 +224,12 @@ async function handleCodeFlow({
 		);
 	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
+	Hub.dispatch(
+		'auth',
+		{ event: 'signedIn', data: await getCurrentUser() },
+		'Auth',
+		AMPLIFY_SYMBOL
+	);
 	clearHistory(redirectUri);
 	invokeAndClearPromise();
 	return;
@@ -282,6 +289,12 @@ async function handleImplicitFlow({
 		);
 	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
+	Hub.dispatch(
+		'auth',
+		{ event: 'signedIn', data: await getCurrentUser() },
+		'Auth',
+		AMPLIFY_SYMBOL
+	);
 	clearHistory(redirectUri);
 	invokeAndClearPromise();
 }
