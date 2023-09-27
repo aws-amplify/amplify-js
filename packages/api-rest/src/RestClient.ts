@@ -4,7 +4,6 @@ import {
 	AWSCredentialsAndIdentityId,
 	fetchAuthSession,
 } from '@aws-amplify/core';
-import { apiOptions } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { parse, format } from 'url';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
@@ -33,7 +32,7 @@ export class RestClient {
 	/**
 	 * @param {RestClientOptions} [options] - Instance options
 	 */
-	constructor(options: apiOptions) {
+	constructor(options: any) {
 		this._options = options;
 		if (this._cancelTokenMap == null) {
 			this._cancelTokenMap = new WeakMap();

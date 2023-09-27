@@ -3,3 +3,5 @@
 
 export { post, cancel, isCancel } from './API';
 export { DocumentType } from './types';
+
+export { isCancelError } from './errors/CanceledError';

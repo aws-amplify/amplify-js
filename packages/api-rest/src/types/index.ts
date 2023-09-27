@@ -2,28 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * RestClient instance options
+ * Type representing a plain JavaScript object that can be serialized to JSON.
  */
-export class RestClientOptions {
-	/** AWS credentials */
-	credentials: AWSCredentials;
-
-	/**
-	 * Lookup key of AWS credentials.
-	 * If credentials not provided then lookup from sessionStorage.
-	 * Default 'awsCredentials'
-	 */
-	credentials_key: string;
-
-	/** Additional headers for all requests send by this client. e.g. user-agent */
-	headers: object;
-
-	constructor() {
-		this.credentials_key = 'awsCredentials';
-		this.headers = {};
-	}
-}
-
 export type DocumentType =
 	| null
 	| boolean
@@ -32,46 +12,59 @@ export type DocumentType =
 	| DocumentType[]
 	| { [prop: string]: DocumentType };
 
-export type PostOptions = {
-	headers?: Record<string, string>;
-	body: DocumentType;
-	region?: string;
-	serviceName?: string;
+// export declare const get: (input: ApiInput<GetOptions>) => GetOperation;
+
+// export declare const del: (input: ApiInput<DeleteOptions>) => DeleteOperation;
+
+// export declare const put: (input: ApiInput<PutOptions>) => PutOperation;
+
+// export declare const patch: (input: ApiInput<PatchOptions>) => PatchOperation;
+
+// export declare const post: (input: ApiInput<PostOptions>) => PostOperation;
+
+// export declare const head: (input: ApiInput<HeadOptions>) => HeadOperation;
+
+export type GetOptions = RestApiOptionsBase;
+export type PostOptions = RestApiOptionsBase;
+export type PutOptions = RestApiOptionsBase;
+export type PatchOptions = RestApiOptionsBase;
+export type DeleteOptions = Omit<RestApiOptionsBase, 'body'>;
+export type HeadOptions = Omit<RestApiOptionsBase, 'body'>;
+
+export type GetOperation = Operation<RestApiResponse>;
+export type PostOperation = Operation<RestApiResponse>;
+export type PutOperation = Operation<RestApiResponse>;
+export type PatchOperation = Operation<RestApiResponse>;
+export type DeleteOperation = Operation<Omit<RestApiResponse, 'body'>>;
+export type HeadOperation = Operation<Omit<RestApiResponse, 'body'>>;
+
+export type RestApiOptionsBase = {
+	headers?: Headers;
+	queryParams?: Record<string, string>;
+	body?: DocumentType | FormData;
+	withCredentials?: boolean;
 };
-/**
- * AWS credentials needed for RestClient
- */
-export class AWSCredentials {
-	/**
-	 * Secret Access Key
-	 *
-	 * [Access Key ID and Secret Access Key]
-	 * (http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
-	 */
-	secretAccessKey: string;
 
-	/**
-	 * Access Key ID
-	 *
-	 * [Access Key ID and Secret Access Key]
-	 * (http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
-	 */
-	accessKeyId: string;
+type Headers = Record<string, string>;
 
-	/** Access Token of current session */
-	sessionToken: string;
+export type Operation<Response> = {
+	response: Promise<Response>;
+	cancel: (abortMessage?: string) => void;
+};
+
+type ResponsePayload = {
+	blob: () => Promise<Blob>;
+	json: () => Promise<any>;
+	text: () => Promise<string>;
+};
+export interface RestApiResponse {
+	body: ResponsePayload;
+	statusCode: number;
+	headers: Headers;
 }
 
-// TODO: remove this once unauth creds are figured out
-export interface apiOptions {
-	headers: object;
-	endpoints: object;
-	credentials?: object;
-}
-
-export type ApiInfo = {
-	endpoint: string;
-	region?: string;
-	service?: string;
-	custom_header?: () => { [key: string]: string };
+type ApiInput<Options> = {
+	apiName: string;
+	path: string;
+	options?: Options;
 };
