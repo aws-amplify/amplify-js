@@ -51,6 +51,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	async getCredentialsAndIdentityId(
 		getCredentialsOptions: GetCredentialsOptions
 	): Promise<AWSCredentialsAndIdentityId | undefined> {
+		console.log('Here 1');
 		const isAuthenticated = getCredentialsOptions.authenticated;
 		const tokens = getCredentialsOptions.tokens;
 		const authConfig = getCredentialsOptions.authConfig;
@@ -60,11 +61,13 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			// No identity pool configured, skipping
 			return;
 		}
+		console.log('Here 2');
 
 		if (!isAuthenticated && !authConfig.Cognito.allowGuestAccess) {
 			// TODO(V6): return partial result like Native platforms
 			return;
 		}
+		console.log('Here 3');
 
 		const forceRefresh = getCredentialsOptions.forceRefresh;
 		const tokenHasChanged = this.hasTokenChanged(tokens);
@@ -90,6 +93,8 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		identityId: string,
 		authConfig: CognitoIdentityPoolConfig
 	): Promise<AWSCredentialsAndIdentityId> {
+		console.log('Guest Here 4');
+
 		// Return existing in-memory cached credentials only if it exists, is not past it's lifetime and is unauthenticated credentials
 		if (
 			this._credentialsAndIdentityId &&

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AppRegistry, NativeEventEmitter } from 'react-native';
-// import { Logger } from '@aws-amplify/core';
+import { Logger } from '@aws-amplify/core/internals/utils';
 import {
 	AmplifyRTNPushNotification,
 	PushNotificationNativeModule,
@@ -17,9 +17,7 @@ import {
 import { UserInfo } from '../types';
 import NotEnabledError from './NotEnabledError';
 import {
-	NotificationsSubCategory,
 	OnTokenReceivedHandler,
-	PushNotificationConfig,
 	PushNotificationEvent,
 	PushNotificationInterface,
 	PushNotificationPermissions,
@@ -33,13 +31,12 @@ import {
 import AWSPinpointProvider from './providers/AWSPinpointProvider';
 import { Amplify } from '@aws-amplify/core';
 
-// const logger = new Logger('Notifications.PushNotification');
+const logger = new Logger('Notifications.PushNotification');
 const RTN_MODULE = '@aws-amplify/rtn-push-notification';
 const BACKGROUND_TASK_TIMEOUT = 25; // seconds
 
 class PushNotification implements PushNotificationInterface {
 	private isEnabled = false;
-	private config: Record<string, any> = {};
 	private nativeEvent: Record<string, string>;
 	private nativeEventEmitter: NativeEventEmitter;
 	private nativeHeadlessTaskKey: string;
@@ -63,23 +60,20 @@ class PushNotification implements PushNotificationInterface {
 				AmplifyRTNPushNotification
 			);
 			this.provider = new AWSPinpointProvider();
-			// this.config = Amplify.getConfig().Notifications
+			// TODO(V6): Add config from singleton
+			const amplifyConfig = Amplify.getConfig();
+			this.provider.configure(amplifyConfig);
 		} catch (err) {
 			err.message = `Unable to find ${RTN_MODULE}. ${err.message}`;
 			throw err;
 		}
 	}
 
-	// TODO(V6): Needs to set config from singleton
-	// configure = (config: PushNotificationConfig = {}): PushNotificationConfig => {
-	// 	this.config = { ...this.config, ...config };
-
-	// 	return this.config;
-	// };
-
 	enable = (): void => {
+		console.log('Enabling push');
+
 		if (this.isEnabled) {
-			// logger.info('Notification listeners have already been enabled');
+			logger.info('Notification listeners have already been enabled');
 			return;
 		}
 		const {
@@ -198,6 +192,7 @@ class PushNotification implements PushNotificationInterface {
 			}
 		);
 		this.isEnabled = true;
+		console.log('Enabled push');
 	};
 
 	identifyUser = (userId: string, userInfo: UserInfo): Promise<void> => {

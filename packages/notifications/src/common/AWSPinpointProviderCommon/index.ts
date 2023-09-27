@@ -36,6 +36,7 @@ export default abstract class AWSPinpointProviderCommon
 	static providerName = 'AWSPinpoint';
 
 	protected clientInfo;
+	protected endpointId;
 	protected config: Record<string, any> = {};
 	protected endpointInitialized = false;
 	protected initialized = false;
@@ -67,6 +68,8 @@ export default abstract class AWSPinpointProviderCommon
 	}
 
 	configure(config = {}): Record<string, any> {
+		// TODO(V6): Add assertions for Pinpoint config
+		console.log('configure in Common: ', config);
 		this.config = { ...this.config, ...config };
 		this.logger.debug(
 			`configure ${this.getProviderName()}${this.getSubCategory()}Provider`,
@@ -88,16 +91,18 @@ export default abstract class AWSPinpointProviderCommon
 	};
 
 	protected init = async (): Promise<void> => {
-		const { endpointId, storage } = this.config;
+		// TODO(V6): endpointId needs to come from config?
+		// const { endpointId, storage } = this.config;
 		const providerName = this.getProviderName();
 		try {
+			// TODO(V6): Check storage of endpointIds
 			// Only run sync() if it's available (i.e. React Native)
-			if (typeof storage.sync === 'function') {
-				await storage.sync();
-			}
+			// if (storage && typeof storage.sync === 'function') {
+			// 	await storage.sync();
+			// }
 			// If an endpoint was not provided via configuration, try to get it from cache
-			if (!endpointId) {
-				this.config.endpointId = await this.getEndpointId();
+			if (!this.endpointId) {
+				this.endpointId = await this.getEndpointId();
 			}
 			this.initialized = true;
 		} catch (err) {
@@ -125,63 +130,65 @@ export default abstract class AWSPinpointProviderCommon
 	protected recordAnalyticsEvent = async (
 		event: AWSPinpointAnalyticsEvent
 	): Promise<void> => {
-		// Update credentials
-		this.config.credentials = await this.getCredentials();
-		// Assert required configuration properties to make `putEvents` request are present
-		this.assertNotEmptyConfiguration();
-		const { appId, credentials, endpointId, region } = this.config;
+		throw new Error('WIP');
+		// // Update credentials
+		// this.config.credentials = await this.getCredentials();
+		// // Assert required configuration properties to make `putEvents` request are present
+		// this.assertNotEmptyConfiguration();
+		// const { appId, credentials, endpointId, region } = this.config;
 
-		try {
-			// Create the PutEvents input
-			const input: PutEventsInput = {
-				ApplicationId: appId,
-				EventsRequest: {
-					BatchItem: {
-						[endpointId]: {
-							Endpoint: {},
-							Events: {
-								[uuid()]: event,
-							},
-						},
-					},
-				},
-			};
-			this.logger.debug('recording analytics event');
-			await putEvents(
-				{ credentials, region, userAgentValue: this.getUserAgentValue() },
-				input
-			);
-		} catch (err) {
-			this.logger.error('Error recording analytics event', err);
-			throw err;
-		}
+		// try {
+		// 	// Create the PutEvents input
+		// 	const input: PutEventsInput = {
+		// 		ApplicationId: appId,
+		// 		EventsRequest: {
+		// 			BatchItem: {
+		// 				[endpointId]: {
+		// 					Endpoint: {},
+		// 					Events: {
+		// 						[uuid()]: event,
+		// 					},
+		// 				},
+		// 			},
+		// 		},
+		// 	};
+		// 	this.logger.debug('recording analytics event');
+		// 	await putEvents(
+		// 		{ credentials, region, userAgentValue: this.getUserAgentValue() },
+		// 		input
+		// 	);
+		// } catch (err) {
+		// 	this.logger.error('Error recording analytics event', err);
+		// 	throw err;
+		// }
 	};
 
 	protected updateEndpoint = async (
 		userId: string = null,
 		userInfo: AWSPinpointUserInfo = null
 	): Promise<void> => {
+		console.log('configure in updateEndpoint: ', this.config);
+
 		const credentials = await this.getCredentials();
-		// Shallow compare to determine if credentials stored here are outdated
-		const credentialsUpdated =
-			!this.config.credentials ||
-			Object.keys(credentials).some(
-				key => credentials[key] !== this.config.credentials[key]
-			);
+		// // Shallow compare to determine if credentials stored here are outdated
+		// const credentialsUpdated =
+		// 	!this.config.credentials ||
+		// 	Object.keys(credentials).some(
+		// 		key => credentials[key] !== this.config.credentials[key]
+		// 	);
 		// If endpoint is already initialized, and nothing else is changing, just early return
 		if (
 			this.endpointInitialized &&
-			!credentialsUpdated &&
+			// !credentialsUpdated &&
 			!userId &&
 			!userInfo
 		) {
 			return;
 		}
-		// Update credentials
-		this.config.credentials = credentials;
+
 		// Assert required configuration properties to make `updateEndpoint` request are present
 		this.assertNotEmptyConfiguration();
-		const { appId, endpointId, endpointInfo = {}, region } = this.config;
+		const { appId, endpointInfo = {}, region } = this.config.Analytics.Pinpoint;
 		try {
 			const { address, attributes, demographic, location, metrics, optOut } =
 				userInfo ?? {};
@@ -190,7 +197,7 @@ export default abstract class AWSPinpointProviderCommon
 			// defaults (if any) obtained from the config
 			const input: UpdateEndpointInput = {
 				ApplicationId: appId,
-				EndpointId: endpointId,
+				EndpointId: this.endpointId,
 				EndpointRequest: {
 					RequestId: uuid(),
 					EffectiveDate: new Date().toISOString(),
@@ -226,19 +233,21 @@ export default abstract class AWSPinpointProviderCommon
 					},
 				},
 			};
+			console.log('UPDATING endpoint');
 			this.logger.debug('updating endpoint');
 			await updateEndpoint(
 				{ credentials, region, userAgentValue: this.getUserAgentValue() },
 				input
 			);
 			this.endpointInitialized = true;
+			console.log('UPDATED endpoint');
 		} catch (err) {
 			throw err;
 		}
 	};
 
 	private getEndpointId = async (): Promise<string> => {
-		const { appId } = this.config;
+		const { appId } = this.config.Analytics.Pinpoint;
 		// Each Pinpoint channel requires its own Endpoint ID
 		// However, Push will share the Analytics endpoint for now so as to not break existing customers
 		const cacheKey =
@@ -266,7 +275,8 @@ export default abstract class AWSPinpointProviderCommon
 
 	private getCredentials = async () => {
 		try {
-			const session = await fetchAuthSession();
+			const session = await fetchAuthSession({ forceRefresh: false });
+			console.log('session: ', session);
 			if (!session.credentials) {
 				this.logger.debug('no credentials found');
 				return null;
@@ -279,8 +289,8 @@ export default abstract class AWSPinpointProviderCommon
 	};
 
 	private assertNotEmptyConfiguration = () => {
-		const { appId, credentials, region } = this.config;
-		if (!appId || !credentials || !region) {
+		const { appId, region } = this.config.Analytics.Pinpoint;
+		if (!appId || !region) {
 			throw new Error(
 				'One or more of credentials, appId or region is not configured'
 			);

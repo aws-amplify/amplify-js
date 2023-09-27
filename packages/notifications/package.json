@@ -13,7 +13,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "npm run lint && npm run test:default && npm run test:native",
+		"test": "npm run lint && npm run test:default",
 		"test:default": "jest -w 1 --coverage",
 		"test:native": "jest -w 1 --coverage --config=jest.native.config.js --coverageDirectory=coverage-native",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",

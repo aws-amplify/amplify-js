@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { UserInfo } from '../../../../types';
+import { pushNotification } from '../../../pushNotificationsClass.native';
 
 export function identifyUser(
 	userId: string,
 	userInfo: UserInfo
 ): Promise<void> {
-	throw new Error('WIP');
+	return pushNotification.identifyUser(userId, userInfo);
 }

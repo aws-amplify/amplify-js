@@ -78,7 +78,13 @@ export class AuthClass {
 					}
 				);
 		}
+		console.log('this.authConfig: ', this.authConfig);
+		console.log(
+			'this.authOptions?.credentialsProvider: ',
+			this.authOptions?.credentialsProvider
+		);
 
+		console.log('credentialsAndIdentityId: ', credentialsAndIdentityId);
 		return {
 			tokens,
 			credentials: credentialsAndIdentityId?.credentials,
