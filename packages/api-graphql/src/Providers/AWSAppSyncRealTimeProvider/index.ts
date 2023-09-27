@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { Observable, SubscriptionLike } from 'rxjs';
 import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';
@@ -119,7 +119,7 @@ export class AWSAppSyncRealTimeProvider {
 	private connectionState: ConnectionState;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
-	private connectionStateMonitorSubscription: ZenObservable.Subscription;
+	private connectionStateMonitorSubscription: SubscriptionLike;
 
 	constructor(options: AWSAppSyncRealTimeProviderOptions = {}) {
 		// Monitor the connection state and pass changes along to Hub
@@ -242,7 +242,7 @@ export class AWSAppSyncRealTimeProvider {
 					}
 				};
 
-				let reconnectSubscription: ZenObservable.Subscription;
+				let reconnectSubscription: SubscriptionLike;
 
 				// Add an observable to the reconnection list to manage reconnection for this subscription
 				reconnectSubscription = new Observable(observer => {
@@ -561,11 +561,11 @@ export class AWSAppSyncRealTimeProvider {
 				subscriptionReadyCallback();
 			}
 			if (startAckTimeoutId) clearTimeout(startAckTimeoutId);
-			// dispatchApiEvent(
-			// 	CONTROL_MSG.SUBSCRIPTION_ACK,
-			// 	{ query, variables },
-			// 	'Connection established for subscription'
-			// );
+			dispatchApiEvent({
+				event: CONTROL_MSG.SUBSCRIPTION_ACK,
+				data: { query, variables },
+				message: 'Connection established for subscription',
+			});
 			const subscriptionState = SUBSCRIPTION_STATUS.CONNECTED;
 			if (observer) {
 				this.subscriptionObserverMap.set(id, {

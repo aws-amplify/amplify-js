@@ -11,7 +11,7 @@ import {
 } from '@aws-amplify/core';
 import {
 	Logger,
-	assertIdentityPooIdConfig,
+	assertIdentityPoolIdConfig,
 	decodeJWT,
 	CognitoIdentityPoolConfig,
 } from '@aws-amplify/core/internals/utils';
@@ -55,7 +55,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		const tokens = getCredentialsOptions.tokens;
 		const authConfig = getCredentialsOptions.authConfig;
 		try {
-			assertIdentityPooIdConfig(authConfig?.Cognito);
+			assertIdentityPoolIdConfig(authConfig?.Cognito);
 		} catch {
 			// No identity pool configured, skipping
 			return;

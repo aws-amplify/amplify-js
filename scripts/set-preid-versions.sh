@@ -39,7 +39,7 @@ fi
 coreVersion=$(jq '.version' $CORE_PACKAGE_JSON | tr -d \")
 echo "$LOG_PREFIX @aws-amplify/core version: $coreVersion"
 
-# Step 3: Set the peer dependency version across the library ahead of publication
+# Step 3: Set the `@aws-amplify/core` peer dependency version across the library ahead of publication
 for packageFile in $PACKAGE_DIR/*/package.json; do
 	peerDepExistsInFile=$(jq '.peerDependencies | has("@aws-amplify/core")' $packageFile)
 
@@ -51,6 +51,23 @@ for packageFile in $PACKAGE_DIR/*/package.json; do
 	then
 		# Set the peer dependency & write back to the package's package.json file
 		jq --arg version "$coreVersion" '.peerDependencies."@aws-amplify/core" = $version' $packageFile > $packageFile.tmp && mv $packageFile.tmp $packageFile
+
+		echo "$LOG_PREFIX Set peer dependency version in: ${packageFile}"
+	fi
+done 
+
+# Step 4: Set the `aws-amplify` peer dependency version across the library ahead of publication
+for packageFile in $PACKAGE_DIR/*/package.json; do
+	peerDepExistsInFile=$(jq '.peerDependencies | has("aws-amplify")' $packageFile)
+
+	# Skip private packages as they won't be published
+	privateFlag=$(jq '.private' $packageFile)
+	[[ "$privateFlag" == "true" ]] && packageIsPrivate=true || packageIsPrivate=false
+  
+	if [ $packageIsPrivate != true ] && [ $peerDepExistsInFile == true ]
+	then
+		# Set the peer dependency & write back to the package's package.json file
+		jq --arg version "$libraryVersion" '.peerDependencies."aws-amplify" = $version' $packageFile > $packageFile.tmp && mv $packageFile.tmp $packageFile
 
 		echo "$LOG_PREFIX Set peer dependency version in: ${packageFile}"
 	fi

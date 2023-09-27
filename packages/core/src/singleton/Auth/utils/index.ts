@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { asserts } from '../../../Util/errors/AssertError';
+import { AuthConfigurationErrorCode, assert } from './errorHelpers';
+import { base64Decoder } from '../../../utils/convert';
 
 import {
 	AuthConfig,
@@ -30,11 +31,10 @@ export function assertTokenProviderConfig(
 			!!cognitoConfig.userPoolClientId && !!cognitoConfig.userPoolClientId;
 	}
 
-	return asserts(assertionValid, {
-		name: 'AuthTokenConfigException',
-		message: 'Auth Token Provider not configured',
-		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
-	});
+	return assert(
+		assertionValid,
+		AuthConfigurationErrorCode.AuthTokenConfigException
+	);
 }
 
 export function assertOAuthConfig(
@@ -46,15 +46,13 @@ export function assertOAuthConfig(
 		!!cognitoConfig?.loginWith?.oauth?.redirectSignIn &&
 		!!cognitoConfig?.loginWith?.oauth?.responseType;
 
-	return asserts(validOAuthConfig, {
-		name: 'OAuthNotConfigureException',
-		message: 'oauth param not configured',
-		recoverySuggestion:
-			'Make sure to call Amplify.configure with oauth parameter in your app',
-	});
+	return assert(
+		validOAuthConfig,
+		AuthConfigurationErrorCode.OAuthNotConfigureException
+	);
 }
 
-export function assertIdentityPooIdConfig(
+export function assertIdentityPoolIdConfig(
 	cognitoConfig?: StrictUnion<
 		| CognitoUserPoolConfig
 		| CognitoUserPoolAndIdentityPoolConfig
@@ -62,37 +60,41 @@ export function assertIdentityPooIdConfig(
 	>
 ): asserts cognitoConfig is CognitoIdentityPoolConfig {
 	const validConfig = !!cognitoConfig?.identityPoolId;
-	return asserts(validConfig, {
-		name: 'InvalidIdentityPoolIdException',
-		message: 'Invalid identity pool id provided.',
-		recoverySuggestion:
-			'Make sure a valid identityPoolId is given in the config.',
-	});
+	return assert(
+		validConfig,
+		AuthConfigurationErrorCode.InvalidIdentityPoolIdException
+	);
 }
 
-function assertUserPoolAndIdentityPooConfig(
+function assertUserPoolAndIdentityPoolConfig(
 	authConfig: AuthConfig
 ): asserts authConfig is AuthUserPoolAndIdentityPoolConfig {
 	const validConfig =
 		!!authConfig?.Cognito.identityPoolId && !!authConfig?.Cognito.userPoolId;
-	return asserts(validConfig, {
-		name: 'AuthUserPoolAndIdentityPoolException',
-		message: 'Auth UserPool and IdentityPool not configured',
-		recoverySuggestion:
-			'Make sure to call Amplify.configure in your app with UserPoolId and IdentityPoolId',
-	});
+	return assert(
+		validConfig,
+		AuthConfigurationErrorCode.AuthUserPoolAndIdentityPoolException
+	);
 }
 
 export function decodeJWT(token: string): JWT {
-	const tokenSplitted = token.split('.');
-	if (tokenSplitted.length !== 3) {
+	const tokenParts = token.split('.');
+
+	if (tokenParts.length !== 3) {
 		throw new Error('Invalid token');
 	}
+
 	try {
-		const payloadStringb64 = tokenSplitted[1];
-		const payloadArrayBuffer = base64ToBytes(payloadStringb64);
-		const decodeString = new TextDecoder().decode(payloadArrayBuffer);
-		const payload = JSON.parse(decodeString);
+		const base64WithUrlSafe = tokenParts[1];
+		const base64 = base64WithUrlSafe.replace(/-/g, '+').replace(/_/g, '/');
+		const jsonStr = decodeURIComponent(
+			base64Decoder
+				.convert(base64)
+				.split('')
+				.map(char => `%${`00${char.charCodeAt(0).toString(16)}`.slice(-2)}`)
+				.join('')
+		);
+		const payload = JSON.parse(jsonStr);
 
 		return {
 			toString: () => token,
@@ -101,9 +103,4 @@ export function decodeJWT(token: string): JWT {
 	} catch (err) {
 		throw new Error('Invalid token payload');
 	}
-}
-
-function base64ToBytes(base64: string): Uint8Array {
-	const binString = atob(base64);
-	return Uint8Array.from(binString, m => m.codePointAt(0) || 0);
 }

@@ -4,7 +4,7 @@
 import { Sha256 } from '@aws-crypto/sha256-js';
 import BigInteger from '../src/providers/cognito/utils/srp/BigInteger';
 import AuthenticationHelper from '../src/providers/cognito/utils/srp/AuthenticationHelper';
-import { promisifyCallback } from './utils/promisifyCallback';
+import { promisifyCallback } from './testUtils/promisifyCallback';
 
 const instance = new AuthenticationHelper('TestPoolName');
 

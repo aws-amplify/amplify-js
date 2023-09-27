@@ -12,9 +12,13 @@ import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
-import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { Amplify, Hub } from '@aws-amplify/core';
 import {
+	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
+import {
+	getNewDeviceMetatada,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
@@ -25,6 +29,8 @@ import {
 	cleanActiveSignInState,
 } from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+import { tokenOrchestrator } from '../tokenProvider';
+import { getCurrentUser } from './getCurrentUser';
 
 /**
  * Signs a user in
@@ -63,7 +69,8 @@ export async function signInWithSRP(
 			username,
 			password,
 			clientMetaData,
-			authConfig
+			authConfig,
+			tokenOrchestrator
 		);
 
 		// sets up local state used during the sign-in process
@@ -74,7 +81,23 @@ export async function signInWithSRP(
 		});
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
-			await cacheCognitoTokens(AuthenticationResult);
+			await cacheCognitoTokens({
+				...AuthenticationResult,
+				NewDeviceMetadata: await getNewDeviceMetatada(
+					authConfig.userPoolId,
+					AuthenticationResult.NewDeviceMetadata,
+					AuthenticationResult.AccessToken
+				),
+			});
+			Hub.dispatch(
+				'auth',
+				{
+					event: 'signedIn',
+					data: await getCurrentUser(),
+				},
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },

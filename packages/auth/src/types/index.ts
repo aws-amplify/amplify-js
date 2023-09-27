@@ -9,6 +9,7 @@ export {
 	AuthNextSignUpStep,
 	AuthStandardAttributeKey,
 	AuthUserAttributeKey,
+	AuthUserAttributes,
 	AuthUserAttribute,
 	AuthNextResetPasswordStep,
 	AuthNextSignInStep,
@@ -34,10 +35,12 @@ export {
 	AuthConfirmSignInInput,
 	AuthUpdatePasswordInput,
 	AuthUpdateUserAttributesInput,
+	AuthUpdateUserAttributeInput,
 	AuthConfirmUserAttributeInput,
 	AuthVerifyTOTPSetupInput,
 	AuthSignInWithRedirectInput,
 	AuthSignOutInput,
+	AuthSendUserAttributeVerificationCodeInput,
 } from './inputs';
 
 export {

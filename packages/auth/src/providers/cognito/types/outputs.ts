@@ -3,7 +3,7 @@
 
 import {
 	AuthMFAType,
-	AuthUserAttribute,
+	AuthUserAttributes,
 	AuthUser,
 	AuthStandardAttributeKey,
 	AuthCodeDeliveryDetails,
@@ -13,6 +13,7 @@ import {
 	AuthResetPasswordOutput,
 	AuthSignOutOutput,
 	AuthUpdateUserAttributesOutput,
+	AuthUpdateUserAttributeOutput,
 } from '../../../types';
 import { UserAttributeKey, CustomAttribute } from '../types';
 
@@ -24,7 +25,7 @@ export type FetchMFAPreferenceOutput = {
 /**
  * Output type for Cognito fetchUserAttributes API.
  */
-export type FetchUserAttributesOutput = AuthUserAttribute<UserAttributeKey>;
+export type FetchUserAttributesOutput = AuthUserAttributes<UserAttributeKey>;
 
 /**
  * Output type for Cognito getCurrentUser API.
@@ -102,3 +103,15 @@ export type SignUpOutput = AuthSignUpOutput<
  */
 export type UpdateUserAttributesOutput =
 	AuthUpdateUserAttributesOutput<UserAttributeKey>;
+
+/**
+ * Output type for Cognito sendUserAttributeVerificationCode API.
+ */
+export type SendUserAttributeVerificationCodeOutput =
+	AuthCodeDeliveryDetails<UserAttributeKey>;
+
+/**
+ * Output type for Cognito updateUserAttribute API.
+ */
+export type UpdateUserAttributeOutput =
+	AuthUpdateUserAttributeOutput<UserAttributeKey>;

@@ -1,8 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { Amplify, Hub } from '@aws-amplify/core';
+import {
+	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
@@ -10,6 +13,7 @@ import {
 	handleCustomSRPAuthFlow,
 	getSignInResult,
 	getSignInResultFromError,
+	getNewDeviceMetatada,
 } from '../utils/signInHelpers';
 import {
 	InitiateAuthException,
@@ -28,6 +32,8 @@ import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
+import { tokenOrchestrator } from '../tokenProvider';
+import { getCurrentUser } from './getCurrentUser';
 
 /**
  * Signs a user in using a custom authentication flow with SRP
@@ -62,7 +68,13 @@ export async function signInWithCustomSRPAuth(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleCustomSRPAuthFlow(username, password, metadata, authConfig);
+		} = await handleCustomSRPAuthFlow(
+			username,
+			password,
+			metadata,
+			authConfig,
+			tokenOrchestrator
+		);
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
@@ -71,8 +83,24 @@ export async function signInWithCustomSRPAuth(
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
-			await cacheCognitoTokens(AuthenticationResult);
+			await cacheCognitoTokens({
+				...AuthenticationResult,
+				NewDeviceMetadata: await getNewDeviceMetatada(
+					authConfig.userPoolId,
+					AuthenticationResult.NewDeviceMetadata,
+					AuthenticationResult.AccessToken
+				),
+			});
 			cleanActiveSignInState();
+			Hub.dispatch(
+				'auth',
+				{
+					event: 'signedIn',
+					data: await getCurrentUser(),
+				},
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
