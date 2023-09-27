@@ -218,7 +218,7 @@ mockFetchAuthSession.mockResolvedValue({
 	identityId,
 });
 mockGetConfig.mockReturnValue({
-	predictions: { interpret: happyConfig },
+	Predictions: { interpret: happyConfig },
 });
 
 const textToTest =

@@ -157,7 +157,7 @@ describe('Predictions convert provider test', () => {
 				identityId,
 			});
 			mockGetConfig.mockReturnValue({
-				predictions: {
+				Predictions: {
 					convert: options,
 				},
 			});
@@ -169,7 +169,7 @@ describe('Predictions convert provider test', () => {
 		test('error case credentials do not exist', () => {
 			mockFetchAuthSession.mockResolvedValue({});
 			mockGetConfig.mockReturnValue({
-				predictions: {
+				Predictions: {
 					convert: options,
 				},
 			});
@@ -184,7 +184,7 @@ describe('Predictions convert provider test', () => {
 				identityId,
 			});
 			mockGetConfig.mockReturnValue({
-				predictions: {
+				Predictions: {
 					convert: options,
 				},
 			});
@@ -208,7 +208,7 @@ describe('Predictions convert provider test', () => {
 				identityId,
 			});
 			mockGetConfig.mockReturnValue({
-				predictions: {
+				Predictions: {
 					convert: options,
 				},
 			});
@@ -230,7 +230,7 @@ describe('Predictions convert provider test', () => {
 		test('error case credentials do not exist', () => {
 			mockFetchAuthSession.mockResolvedValue({});
 			mockGetConfig.mockReturnValue({
-				predictions: {
+				Predictions: {
 					convert: options,
 				},
 			});
@@ -245,7 +245,7 @@ describe('Predictions convert provider test', () => {
 				identityId,
 			});
 			mockGetConfig.mockReturnValue({
-				predictions: {
+				Predictions: {
 					convert: options,
 				},
 			});
@@ -269,7 +269,7 @@ describe('Predictions convert provider test', () => {
 				identityId,
 			});
 			mockGetConfig.mockReturnValue({
-				predictions: {
+				Predictions: {
 					convert: {
 						transcription: {
 							proxy: false,
@@ -298,7 +298,7 @@ describe('Predictions convert provider test', () => {
 				identityId,
 			});
 			mockGetConfig.mockReturnValue({
-				predictions: {
+				Predictions: {
 					convert: {
 						transcription: {
 							region: 'us-west-2',
@@ -327,7 +327,7 @@ describe('Predictions convert provider test', () => {
 				identityId,
 			});
 			mockGetConfig.mockReturnValue({
-				predictions: {
+				Predictions: {
 					convert: options,
 				},
 			});
@@ -353,7 +353,7 @@ describe('Predictions convert provider test', () => {
 				identityId,
 			});
 			mockGetConfig.mockReturnValue({
-				predictions: {
+				Predictions: {
 					convert: {
 						transcription: {
 							region: 'us-west-2',
@@ -395,7 +395,7 @@ describe('Predictions convert provider test', () => {
 				identityId,
 			});
 			mockGetConfig.mockReturnValue({
-				predictions: {
+				Predictions: {
 					convert: options,
 				},
 			});
@@ -420,7 +420,7 @@ describe('Predictions convert provider test', () => {
 				identityId,
 			});
 			mockGetConfig.mockReturnValue({
-				predictions: {
+				Predictions: {
 					convert: options,
 				},
 			});

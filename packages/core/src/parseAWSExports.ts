@@ -38,6 +38,7 @@ export const parseAWSExports = (
 		aws_user_pools_web_client_id,
 		geo,
 		oauth,
+		predictions,
 	} = config;
 	const amplifyConfig: ResourcesConfig = {};
 
@@ -101,6 +102,11 @@ export const parseAWSExports = (
 		(amplifyConfig as any).Geo = amazon_location_service
 			? { AmazonLocationService: amazon_location_service }
 			: { ...geo };
+	}
+
+	// Predictions
+	if (predictions) {
+		amplifyConfig.Predictions = predictions;
 	}
 
 	return amplifyConfig;

@@ -35,7 +35,7 @@ export type ResourcesConfig = {
 	// I18n?: I18nOptions;
 	// Interactions?: {};
 	// Notifications?: {};
-	predictions?: PredictionsConfig;
+	Predictions?: PredictionsConfig;
 	Storage?: StorageConfig;
 };
 

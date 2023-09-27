@@ -56,7 +56,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 				defaults: { sourceLanguage = '', targetLanguage = '' } = {},
 				region = '',
 			} = {},
-		} = Amplify.getConfig().predictions?.convert || {};
+		} = Amplify.getConfig().Predictions?.convert || {};
 
 		if (!region) {
 			return Promise.reject('region not configured for transcription');
@@ -107,7 +107,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		}
 		const {
 			speechGenerator: { defaults: { VoiceId = '' } = {}, region = '' } = {},
-		} = Amplify.getConfig().predictions?.convert || {};
+		} = Amplify.getConfig().Predictions?.convert || {};
 
 		if (!input.textToSpeech.source) {
 			return Promise.reject('Source needs to be provided in the input');
@@ -171,7 +171,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 					defaults: { language: languageCode = '' } = {},
 					region = '',
 				} = {},
-			} = Amplify.getConfig().predictions?.convert || {};
+			} = Amplify.getConfig().Predictions?.convert || {};
 			if (!region) {
 				return Promise.reject('region not configured for transcription');
 			}
