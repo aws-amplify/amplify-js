@@ -7,6 +7,7 @@ import {
 } from '../../../../src/providers/pinpoint/utils';
 import { AnalyticsValidationErrorCode } from '../../../../src/errors';
 import { RecordInput } from '../../../../src/providers/pinpoint/types';
+import { isAnalyticsEnabled } from '../../../../src/utils';
 import {
 	appId,
 	identityId,
@@ -16,6 +17,14 @@ import {
 	config,
 } from './testUtils/data';
 
+jest.mock('../../../../src/utils', () => {
+	const original = jest.requireActual('../../../../src/utils'); // Step 2.
+	return {
+		...original,
+		isAnalyticsEnabled: jest.fn(),
+	};
+});
+
 jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 
@@ -23,6 +32,7 @@ describe('Pinpoint API: record', () => {
 	const mockPinpointRecord = pinpointRecord as jest.Mock;
 	const mockResolveConfig = resolveConfig as jest.Mock;
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
+	const mockIsAnalyticsEnabled = isAnalyticsEnabled as jest.Mock;
 	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
 
 	beforeEach(() => {
@@ -30,6 +40,8 @@ describe('Pinpoint API: record', () => {
 		mockPinpointRecord.mockResolvedValue(undefined);
 		mockResolveConfig.mockReset();
 		mockResolveConfig.mockReturnValue(config);
+		mockIsAnalyticsEnabled.mockReset();
+		mockIsAnalyticsEnabled.mockReturnValue(true);
 		mockResolveCredentials.mockReset();
 		mockResolveCredentials.mockResolvedValue({
 			credentials,
@@ -78,5 +90,15 @@ describe('Pinpoint API: record', () => {
 		}
 
 		expect.assertions(1);
+	});
+
+	it('should not enqueue an event when Analytics has been disable', async () => {
+		mockIsAnalyticsEnabled.mockReturnValue(false);
+
+		record(event);
+
+		await new Promise(process.nextTick);
+
+		expect(mockPinpointRecord).not.toBeCalled();
 	});
 });
