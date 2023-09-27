@@ -46,6 +46,7 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
+import { ApiAuthModeKeys } from '@aws-amplify/core/lib-esm/libraryUtils';
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
@@ -881,12 +882,14 @@ export class AWSAppSyncRealTimeProvider {
 		Record<string, unknown> | undefined
 	> {
 		const headerHandler: {
-			[key: string]: (arg0: AWSAppSyncRealTimeAuthInput) => {};
+			[key in ApiAuthModeKeys]: (arg0: AWSAppSyncRealTimeAuthInput) => {};
 		} = {
 			apiKey: this._awsRealTimeApiKeyHeader.bind(this),
 			iam: this._awsRealTimeIAMHeader.bind(this),
-			jwt: this._awsRealTimeOPENIDHeader.bind(this),
-			custom: this._customAuthHeader,
+			oidc: this._awsAuthTokenHeader.bind(this),
+			userPool: this._awsAuthTokenHeader.bind(this),
+			lambda: this._customAuthHeader,
+			none: this._customAuthHeader,
 		};
 
 		if (!authenticationType || !headerHandler[authenticationType.type]) {
@@ -916,9 +919,7 @@ export class AWSAppSyncRealTimeProvider {
 		}
 	}
 
-	private async _awsRealTimeOPENIDHeader({
-		host,
-	}: AWSAppSyncRealTimeAuthInput) {
+	private async _awsAuthTokenHeader({ host }: AWSAppSyncRealTimeAuthInput) {
 		const session = await fetchAuthSession();
 
 		return {

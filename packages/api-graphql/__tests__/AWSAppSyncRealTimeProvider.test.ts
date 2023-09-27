@@ -1005,7 +1005,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						provider
 							.subscribe({
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
-								authenticationType: { type: 'jwt', token: 'id' },
+								authenticationType: { type: 'oidc' },
 							})
 							.subscribe({ error: () => {} });
 
@@ -1013,7 +1013,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						expect(loggerSpy).toBeCalledWith(
 							'DEBUG',
-							'Authenticating with {"type":"jwt","token":"id"}'
+							'Authenticating with {"type":"oidc"}'
 						);
 					});
 
@@ -1023,14 +1023,14 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						provider
 							.subscribe({
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
-								authenticationType: { type: 'jwt', token: 'id' },
+								authenticationType: { type: 'oidc' },
 							})
 							.subscribe({ error: () => {} });
 
 						await fakeWebSocketInterface?.readyForUse;
 						expect(loggerSpy).toBeCalledWith(
 							'DEBUG',
-							'Authenticating with {"type":"jwt","token":"id"}'
+							'Authenticating with {"type":"oidc"}'
 						);
 					});
 
@@ -1040,7 +1040,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						provider
 							.subscribe({
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
-								authenticationType: { type: 'custom' },
+								authenticationType: { type: 'none' },
 								additionalHeaders: {
 									Authorization: 'test',
 								},
@@ -1051,7 +1051,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						expect(loggerSpy).toBeCalledWith(
 							'DEBUG',
-							'Authenticating with {"type":"custom"}'
+							'Authenticating with {"type":"none"}'
 						);
 					});
 
@@ -1061,7 +1061,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						provider
 							.subscribe({
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
-								authenticationType: { type: 'custom' },
+								authenticationType: { type: 'none' },
 								additionalHeaders: {
 									Authorization: '',
 								},

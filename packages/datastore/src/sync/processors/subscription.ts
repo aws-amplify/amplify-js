@@ -192,7 +192,7 @@ class SubscriptionProcessor {
 		// identityClaim from the auth rule.
 
 		const oidcOwnerAuthRules =
-			(authMode === 'oidc' || authMode === 'userPool')
+			authMode === 'oidc' || authMode === 'userPool'
 				? rules.filter(
 						rule =>
 							rule.authStrategy === 'owner' &&
@@ -406,178 +406,173 @@ class SubscriptionProcessor {
 										subscriptions[modelDefinition.name][
 											transformerMutationType
 										].push(
-											queryObservable
-												.subscribe({
-													next: result => {
-														const { data, errors } = result;
-														if (Array.isArray(errors) && errors.length > 0) {
-															const messages = (<
-																{
-																	message: string;
-																}[]
-															>errors).map(({ message }) => message);
+											queryObservable.subscribe({
+												next: result => {
+													const { data, errors } = result;
+													if (Array.isArray(errors) && errors.length > 0) {
+														const messages = (<
+															{
+																message: string;
+															}[]
+														>errors).map(({ message }) => message);
 
-															logger.warn(
-																`Skipping incoming subscription. Messages: ${messages.join(
-																	'\n'
-																)}`
-															);
+														logger.warn(
+															`Skipping incoming subscription. Messages: ${messages.join(
+																'\n'
+															)}`
+														);
 
-															this.drainBuffer();
-															return;
-														}
-
-														const predicatesGroup =
-															ModelPredicateCreator.getPredicates(
-																this.syncPredicates.get(modelDefinition)!,
-																false
-															);
-
-														// @ts-ignore
-														const { [opName]: record } = data;
-
-														// checking incoming subscription against syncPredicate.
-														// once AppSync implements filters on subscriptions, we'll be
-														// able to set these when establishing the subscription instead.
-														// Until then, we'll need to filter inbound
-														if (
-															this.passesPredicateValidation(
-																record,
-																predicatesGroup!
-															)
-														) {
-															this.pushToBuffer(
-																transformerMutationType,
-																modelDefinition,
-																record
-															);
-														}
 														this.drainBuffer();
-													},
-													error: async subscriptionError => {
-														const {
-															error: { errors: [{ message = '' } = {}] } = {
-																errors: [],
-															},
-														} = subscriptionError;
+														return;
+													}
 
-														const isRTFError =
-															// only attempt catch if a filter variable was added to the subscription query
-															addFilter &&
-															this.catchRTFError(
-																message,
-																modelDefinition,
-																predicatesGroup
+													const predicatesGroup =
+														ModelPredicateCreator.getPredicates(
+															this.syncPredicates.get(modelDefinition)!,
+															false
+														);
+
+													// @ts-ignore
+													const { [opName]: record } = data;
+
+													// checking incoming subscription against syncPredicate.
+													// once AppSync implements filters on subscriptions, we'll be
+													// able to set these when establishing the subscription instead.
+													// Until then, we'll need to filter inbound
+													if (
+														this.passesPredicateValidation(
+															record,
+															predicatesGroup!
+														)
+													) {
+														this.pushToBuffer(
+															transformerMutationType,
+															modelDefinition,
+															record
+														);
+													}
+													this.drainBuffer();
+												},
+												error: async subscriptionError => {
+													const {
+														error: { errors: [{ message = '' } = {}] } = {
+															errors: [],
+														},
+													} = subscriptionError;
+
+													const isRTFError =
+														// only attempt catch if a filter variable was added to the subscription query
+														addFilter &&
+														this.catchRTFError(
+															message,
+															modelDefinition,
+															predicatesGroup
+														);
+
+													// Catch RTF errors
+													if (isRTFError) {
+														// Unsubscribe and clear subscription array for model/operation
+														subscriptions[modelDefinition.name][
+															transformerMutationType
+														].forEach(subscription =>
+															subscription.unsubscribe()
+														);
+
+														subscriptions[modelDefinition.name][
+															transformerMutationType
+														] = [];
+
+														// retry subscription connection without filter
+														subscriptionRetry(operation, false);
+														return;
+													}
+
+													if (
+														message.includes(
+															PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR
+														) ||
+														message.includes(
+															PUBSUB_CONTROL_MSG.CONNECTION_FAILED
+														)
+													) {
+														// Unsubscribe and clear subscription array for model/operation
+														subscriptions[modelDefinition.name][
+															transformerMutationType
+														].forEach(subscription =>
+															subscription.unsubscribe()
+														);
+														subscriptions[modelDefinition.name][
+															transformerMutationType
+														] = [];
+
+														operationAuthModeAttempts[operation]++;
+														if (
+															operationAuthModeAttempts[operation] >=
+															readAuthModes.length
+														) {
+															// last auth mode retry. Continue with error
+															logger.debug(
+																`${operation} subscription failed with authMode: ${
+																	readAuthModes[
+																		operationAuthModeAttempts[operation] - 1
+																	]
+																}`
 															);
-
-														// Catch RTF errors
-														if (isRTFError) {
-															// Unsubscribe and clear subscription array for model/operation
-															subscriptions[modelDefinition.name][
-																transformerMutationType
-															].forEach(subscription =>
-																subscription.unsubscribe()
+														} else {
+															// retry with different auth mode. Do not trigger
+															// observer error or error handler
+															logger.debug(
+																`${operation} subscription failed with authMode: ${
+																	readAuthModes[
+																		operationAuthModeAttempts[operation] - 1
+																	]
+																}. Retrying with authMode: ${
+																	readAuthModes[
+																		operationAuthModeAttempts[operation]
+																	]
+																}`
 															);
-
-															subscriptions[modelDefinition.name][
-																transformerMutationType
-															] = [];
-
-															// retry subscription connection without filter
-															subscriptionRetry(operation, false);
+															subscriptionRetry(operation);
 															return;
 														}
+													}
 
-														if (
-															message.includes(
-																PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR
-															) ||
-															message.includes(
-																PUBSUB_CONTROL_MSG.CONNECTION_FAILED
-															)
-														) {
-															// Unsubscribe and clear subscription array for model/operation
-															subscriptions[modelDefinition.name][
-																transformerMutationType
-															].forEach(subscription =>
-																subscription.unsubscribe()
-															);
-															subscriptions[modelDefinition.name][
-																transformerMutationType
-															] = [];
+													logger.warn('subscriptionError', message);
 
-															operationAuthModeAttempts[operation]++;
-															if (
-																operationAuthModeAttempts[operation] >=
-																readAuthModes.length
-															) {
-																// last auth mode retry. Continue with error
-																logger.debug(
-																	`${operation} subscription failed with authMode: ${
-																		readAuthModes[
-																			operationAuthModeAttempts[operation] - 1
-																		]
-																	}`
-																);
-															} else {
-																// retry with different auth mode. Do not trigger
-																// observer error or error handler
-																logger.debug(
-																	`${operation} subscription failed with authMode: ${
-																		readAuthModes[
-																			operationAuthModeAttempts[operation] - 1
-																		]
-																	}. Retrying with authMode: ${
-																		readAuthModes[
-																			operationAuthModeAttempts[operation]
-																		]
-																	}`
-																);
-																subscriptionRetry(operation);
-																return;
-															}
-														}
+													try {
+														await this.errorHandler({
+															recoverySuggestion:
+																'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+															localModel: null!,
+															message,
+															model: modelDefinition.name,
+															operation,
+															errorType:
+																getSubscriptionErrorType(subscriptionError),
+															process: ProcessName.subscribe,
+															remoteModel: null!,
+															cause: subscriptionError,
+														});
+													} catch (e) {
+														logger.error(
+															'Subscription error handler failed with:',
+															e
+														);
+													}
 
-														logger.warn('subscriptionError', message);
+													if (typeof subscriptionReadyCallback === 'function') {
+														subscriptionReadyCallback();
+													}
 
-														try {
-															await this.errorHandler({
-																recoverySuggestion:
-																	'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-																localModel: null!,
-																message,
-																model: modelDefinition.name,
-																operation,
-																errorType:
-																	getSubscriptionErrorType(subscriptionError),
-																process: ProcessName.subscribe,
-																remoteModel: null!,
-																cause: subscriptionError,
-															});
-														} catch (e) {
-															logger.error(
-																'Subscription error handler failed with:',
-																e
-															);
-														}
-
-														if (
-															typeof subscriptionReadyCallback === 'function'
-														) {
-															subscriptionReadyCallback();
-														}
-
-														if (
-															message.includes('"errorType":"Unauthorized"') ||
-															message.includes(
-																'"errorType":"OperationDisabled"'
-															)
-														) {
-															return;
-														}
-														observer.error(message);
-													},
-												})
+													if (
+														message.includes('"errorType":"Unauthorized"') ||
+														message.includes('"errorType":"OperationDisabled"')
+													) {
+														return;
+													}
+													observer.error(message);
+												},
+											})
 										);
 
 										promises.push(
