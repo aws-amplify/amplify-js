@@ -10,6 +10,7 @@ import {
 	AuthTokenStorageKeys,
 	AuthTokenStore,
 	CognitoAuthTokens,
+	DeviceMetadata,
 } from './types';
 import { AuthError } from '../../../errors/AuthError';
 import { assert, TokenProviderErrorCode } from './errorHelpers';
@@ -17,7 +18,8 @@ import { assert, TokenProviderErrorCode } from './errorHelpers';
 export class DefaultTokenStore implements AuthTokenStore {
 	private authConfig?: AuthConfig;
 	keyValueStorage?: KeyValueStorageInterface;
-
+	private name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
+	private authKeys: AuthKeys<keyof typeof AuthTokenStorageKeys> | undefined;
 	getKeyValueStorage(): KeyValueStorageInterface {
 		if (!this.keyValueStorage) {
 			throw new AuthError({
@@ -29,7 +31,6 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface) {
 		this.keyValueStorage = keyValueStorage;
-		return;
 	}
 	setAuthConfig(authConfig: AuthConfig) {
 		this.authConfig = authConfig;
@@ -38,52 +39,40 @@ export class DefaultTokenStore implements AuthTokenStore {
 	async loadTokens(): Promise<CognitoAuthTokens | null> {
 		// TODO(v6): migration logic should be here
 		// Reading V5 tokens old format
-
-		// Reading V6 tokens
-		assertTokenProviderConfig(this.authConfig?.Cognito);
 		try {
-			const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-			const authKeys = createKeysForAuthStorage(
-				name,
-				this.authConfig.Cognito.userPoolClientId
-			);
-
 			const accessTokenString = await this.getKeyValueStorage().getItem(
-				authKeys.accessToken
+				this.getAuthKeys().accessToken
 			);
 
 			if (!accessTokenString) {
-				throw new Error('No session');
+				throw new AuthError({
+					name: 'NoSessionFoundException',
+					message: 'Auth session was not found. Make sure to call signIn.',
+				});
 			}
 
 			const accessToken = decodeJWT(accessTokenString);
 			const itString = await this.getKeyValueStorage().getItem(
-				authKeys.idToken
+				this.getAuthKeys().idToken
 			);
 			const idToken = itString ? decodeJWT(itString) : undefined;
 
 			const refreshToken =
-				(await this.getKeyValueStorage().getItem(authKeys.refreshToken)) ||
-				undefined;
-
-			const newDeviceMetadata = JSON.parse(
-				(await this.getKeyValueStorage().getItem(authKeys.deviceMetadata)) ||
-					'{}'
-			);
-			const deviceMetadata =
-				Object.keys(newDeviceMetadata).length > 0
-					? newDeviceMetadata
-					: undefined;
+				(await this.getKeyValueStorage().getItem(
+					this.getAuthKeys().refreshToken
+				)) ?? undefined;
 
 			const clockDriftString =
-				(await this.getKeyValueStorage().getItem(authKeys.clockDrift)) || '0';
+				(await this.getKeyValueStorage().getItem(
+					this.getAuthKeys().clockDrift
+				)) || '0';
 			const clockDrift = Number.parseInt(clockDriftString);
 
 			return {
 				accessToken,
 				idToken,
 				refreshToken,
-				deviceMetadata,
+				deviceMetadata: (await this.getDeviceMetadata()) ?? undefined,
 				clockDrift,
 			};
 		} catch (err) {
@@ -91,62 +80,74 @@ export class DefaultTokenStore implements AuthTokenStore {
 		}
 	}
 	async storeTokens(tokens: CognitoAuthTokens): Promise<void> {
-		assert(!(tokens === undefined), TokenProviderErrorCode.InvalidAuthTokens);
-		assertTokenProviderConfig(this.authConfig?.Cognito);
-
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-		const authKeys = createKeysForAuthStorage(
-			name,
-			this.authConfig.Cognito.userPoolClientId
-		);
+		assert(tokens !== undefined, TokenProviderErrorCode.InvalidAuthTokens);
 
 		this.getKeyValueStorage().setItem(
-			authKeys.accessToken,
+			this.getAuthKeys().accessToken,
 			tokens.accessToken.toString()
 		);
 
 		if (!!tokens.idToken) {
 			this.getKeyValueStorage().setItem(
-				authKeys.idToken,
+				this.getAuthKeys().idToken,
 				tokens.idToken.toString()
 			);
 		}
 
 		if (!!tokens.refreshToken) {
 			this.getKeyValueStorage().setItem(
-				authKeys.refreshToken,
+				this.getAuthKeys().refreshToken,
 				tokens.refreshToken
 			);
 		}
 
 		if (!!tokens.deviceMetadata) {
 			this.getKeyValueStorage().setItem(
-				authKeys.deviceMetadata,
+				this.getAuthKeys().deviceMetadata,
 				JSON.stringify(tokens.deviceMetadata)
 			);
 		}
 
 		this.getKeyValueStorage().setItem(
-			authKeys.clockDrift,
+			this.getAuthKeys().clockDrift,
 			`${tokens.clockDrift}`
 		);
 	}
 
 	async clearTokens(): Promise<void> {
-		assertTokenProviderConfig(this.authConfig?.Cognito);
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-		const authKeys = createKeysForAuthStorage(
-			name,
-			this.authConfig.Cognito.userPoolClientId
-		);
-
 		// Not calling clear because it can remove data that is not managed by AuthTokenStore
 		await Promise.all([
-			this.getKeyValueStorage().removeItem(authKeys.accessToken),
-			this.getKeyValueStorage().removeItem(authKeys.idToken),
-			this.getKeyValueStorage().removeItem(authKeys.clockDrift),
-			this.getKeyValueStorage().removeItem(authKeys.refreshToken),
+			this.getKeyValueStorage().removeItem(this.getAuthKeys().accessToken),
+			this.getKeyValueStorage().removeItem(this.getAuthKeys().idToken),
+			this.getKeyValueStorage().removeItem(this.getAuthKeys().clockDrift),
+			this.getKeyValueStorage().removeItem(this.getAuthKeys().refreshToken),
 		]);
+	}
+
+	async getDeviceMetadata(): Promise<DeviceMetadata | null> {
+		const newDeviceMetadata = JSON.parse(
+			(await this.getKeyValueStorage().getItem(
+				this.getAuthKeys().deviceMetadata
+			)) || '{}'
+		);
+		const deviceMetadata =
+			Object.keys(newDeviceMetadata).length > 0 ? newDeviceMetadata : null;
+		return deviceMetadata;
+	}
+	async clearDeviceMetadata(): Promise<void> {
+		await this.getKeyValueStorage().removeItem(
+			this.getAuthKeys().deviceMetadata
+		);
+	}
+
+	private getAuthKeys(): AuthKeys<keyof typeof AuthTokenStorageKeys> {
+		assertTokenProviderConfig(this.authConfig?.Cognito);
+		if (this.authKeys) return this.authKeys;
+		this.authKeys = createKeysForAuthStorage(
+			this.name,
+			this.authConfig.Cognito.userPoolClientId
+		);
+		return this.authKeys;
 	}
 }
 
