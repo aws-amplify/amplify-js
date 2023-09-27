@@ -40,7 +40,8 @@ type HandlerConfigs = {
 };
 
 /**
- * @param amplify Amplify instance to to resolve credentials and tokens. Should use different instance in client-side and SSR
+ * @param amplify Amplify instance to to resolve credentials and tokens. Should use different instance in client-side
+ *   and SSR
  * @param options Options accepted from public API options when calling the handlers.
  * @param configs Configs to configure internal behaviors.
  */
