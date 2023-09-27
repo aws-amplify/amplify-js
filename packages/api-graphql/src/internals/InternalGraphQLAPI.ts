@@ -70,12 +70,11 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders: { [key: string]: string } = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	) {
-		const config = resolveConfig();
 		const {
 			region: region,
 			endpoint: appSyncGraphqlEndpoint,
 			defaultAuthMode: authenticationType,
-		} = config.API.AppSync;
+		} = resolveConfig();
 
 		let headers = {};
 
@@ -196,10 +195,8 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
-		const config = resolveConfig();
-
 		const { region: region, endpoint: appSyncGraphqlEndpoint } =
-			config.API.AppSync;
+			resolveConfig();
 
 		const customGraphqlEndpoint = null;
 		const customEndpointRegion = null;
