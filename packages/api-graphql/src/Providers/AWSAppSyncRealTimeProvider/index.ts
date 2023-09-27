@@ -192,7 +192,8 @@ export class AWSAppSyncRealTimeProvider {
 			query,
 			variables,
 			authenticationType,
-		} = options;
+			additionalHeaders,
+		} = options || {};
 
 		return new Observable(observer => {
 			if (!options || !appSyncGraphqlEndpoint) {
@@ -221,6 +222,7 @@ export class AWSAppSyncRealTimeProvider {
 									region,
 									authenticationType,
 									appSyncGraphqlEndpoint,
+									additionalHeaders,
 								},
 								observer,
 								subscriptionId,
@@ -290,7 +292,7 @@ export class AWSAppSyncRealTimeProvider {
 		options: AWSAppSyncRealTimeProviderOptions;
 		observer: PubSubContentObserver;
 		subscriptionId: string;
-		customUserAgentDetails: CustomUserAgentDetails;
+		customUserAgentDetails: CustomUserAgentDetails | undefined;
 	}) {
 		const {
 			appSyncGraphqlEndpoint,
@@ -895,7 +897,7 @@ export class AWSAppSyncRealTimeProvider {
 
 			const { host } = url.parse(appSyncGraphqlEndpoint ?? '');
 
-			logger.debug(`Authenticating with ${authenticationType}`);
+			logger.debug(`Authenticating with ${JSON.stringify(authenticationType)}`);
 			let apiKey;
 			if (authenticationType.type === 'apiKey') {
 				apiKey = authenticationType.apiKey;
@@ -914,21 +916,13 @@ export class AWSAppSyncRealTimeProvider {
 		}
 	}
 
-	private async _awsRealTimeCUPHeader({ host }: AWSAppSyncRealTimeAuthInput) {
-		const session = await fetchAuthSession();
-		return {
-			Authorization: session.tokens.accessToken.toString(),
-			host,
-		};
-	}
-
 	private async _awsRealTimeOPENIDHeader({
 		host,
 	}: AWSAppSyncRealTimeAuthInput) {
 		const session = await fetchAuthSession();
 
 		return {
-			Authorization: session.tokens.accessToken.toString(),
+			Authorization: session?.tokens?.accessToken?.toString(),
 			host,
 		};
 	}
@@ -987,7 +981,7 @@ export class AWSAppSyncRealTimeProvider {
 		host,
 		additionalHeaders,
 	}: AWSAppSyncRealTimeAuthInput) {
-		if (!additionalHeaders || !additionalHeaders['Authorization']) {
+		if (!additionalHeaders?.['Authorization']) {
 			throw new Error('No auth token specified');
 		}
 
