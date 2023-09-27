@@ -78,15 +78,23 @@ function assertUserPoolAndIdentityPoolConfig(
 }
 
 export function decodeJWT(token: string): JWT {
-	const tokenSplitted = token.split('.');
-	if (tokenSplitted.length !== 3) {
+	const tokenParts = token.split('.');
+
+	if (tokenParts.length !== 3) {
 		throw new Error('Invalid token');
 	}
+
 	try {
-		const payloadStringb64 = tokenSplitted[1];
-		const payloadArrayBuffer = base64ToBytes(payloadStringb64);
-		const decodeString = new TextDecoder().decode(payloadArrayBuffer);
-		const payload = JSON.parse(decodeString);
+		const base64WithUrlSafe = tokenParts[1];
+		const base64 = base64WithUrlSafe.replace(/-/g, '+').replace(/_/g, '/');
+		const jsonStr = decodeURIComponent(
+			base64Decoder
+				.convert(base64)
+				.split('')
+				.map(char => `%${`00${char.charCodeAt(0).toString(16)}`.slice(-2)}`)
+				.join('')
+		);
+		const payload = JSON.parse(jsonStr);
 
 		return {
 			toString: () => token,
@@ -95,9 +103,4 @@ export function decodeJWT(token: string): JWT {
 	} catch (err) {
 		throw new Error('Invalid token payload');
 	}
-}
-
-function base64ToBytes(base64: string): Uint8Array {
-	const binString = base64Decoder.convert(base64);
-	return Uint8Array.from(binString, m => m.codePointAt(0) || 0);
 }
