@@ -19,6 +19,8 @@ export {
 	ConfirmSignInOptions,
 	UpdateUserAttributesOptions,
 	VerifyTOTPSetupOptions,
+	UpdateUserAttributeOptions,
+	SendUserAttributeVerificationCodeOptions,
 } from './options';
 
 export {
@@ -40,6 +42,8 @@ export {
 	UpdatePasswordInput,
 	UpdateUserAttributesInput,
 	VerifyTOTPSetupInput,
+	UpdateUserAttributeInput,
+	SendUserAttributeVerificationCodeInput,
 } from './inputs';
 
 export {
@@ -59,4 +63,6 @@ export {
 	SignOutOutput,
 	SignUpOutput,
 	UpdateUserAttributesOutput,
+	UpdateUserAttributeOutput,
+	SendUserAttributeVerificationCodeOutput,
 } from './outputs';

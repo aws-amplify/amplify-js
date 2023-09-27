@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/analytics/kinesis",
+	"main": "../../lib/analytics/kinesis/index.js",
+	"browser": "../../lib-esm/analytics/kinesis/index.js",
+	"module": "../../lib-esm/analytics/kinesis/index.js",
+	"typings": "../../lib-esm/analytics/kinesis/index.d.ts"
+}

@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Logger, Mutex } from '@aws-amplify/core';
-import Observable, { ZenObservable } from 'zen-observable-ts';
-import PushStream from 'zen-push';
+import { Observable, filter, map, Subject } from 'rxjs';
 import { Patch } from 'immer';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
@@ -32,6 +30,7 @@ import {
 import { getIdentifierValue } from '../sync/utils';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
+import { Logger, Mutex } from '@aws-amplify/core/internals/utils';
 
 export type StorageSubscriptionMessage<T extends PersistentModel> =
 	InternalSubscriptionMessage<T> & {
@@ -44,10 +43,8 @@ export type Storage = InstanceType<typeof StorageClass>;
 const logger = new Logger('DataStore');
 class StorageClass implements StorageFacade {
 	private initialized: Promise<void> | undefined;
-	private readonly pushStream: {
-		observable: Observable<StorageSubscriptionMessage<PersistentModel>>;
-	} & Required<
-		ZenObservable.Observer<StorageSubscriptionMessage<PersistentModel>>
+	private readonly pushStream: Subject<
+		StorageSubscriptionMessage<PersistentModel>
 	>;
 
 	constructor(
@@ -62,7 +59,7 @@ class StorageClass implements StorageFacade {
 		private readonly sessionId?: string
 	) {
 		this.adapter = this.adapter || getDefaultAdapter();
-		this.pushStream = new PushStream();
+		this.pushStream = new Subject();
 	}
 
 	static getNamespace() {
@@ -285,26 +282,33 @@ class StorageClass implements StorageFacade {
 			(predicate && ModelPredicateCreator.getPredicates(predicate, false)) ||
 			{};
 
-		let result = this.pushStream.observable
-			.filter(({ mutator }) => {
-				return !skipOwn || mutator !== skipOwn;
-			})
-			.map(
-				({ mutator: _mutator, ...message }) => message as SubscriptionMessage<T>
+		let result = this.pushStream
+			.pipe(
+				filter(({ mutator }) => {
+					return !skipOwn || mutator !== skipOwn;
+				})
+			)
+			.pipe(
+				map(
+					({ mutator: _mutator, ...message }) =>
+						message as SubscriptionMessage<T>
+				)
 			);
 
 		if (!listenToAll) {
-			result = result.filter(({ model, element }) => {
-				if (modelConstructor !== model) {
-					return false;
-				}
+			result = result.pipe(
+				filter(({ model, element }) => {
+					if (modelConstructor !== model) {
+						return false;
+					}
 
-				if (!!predicates && !!type) {
-					return validatePredicate(element, type, predicates);
-				}
+					if (!!predicates && !!type) {
+						return validatePredicate(element, type, predicates);
+					}
 
-				return true;
-			});
+					return true;
+				})
+			);
 		}
 
 		return result;

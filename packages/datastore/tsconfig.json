@@ -1,31 +1,10 @@
-//WARNING: If you are manually specifying files to compile then the tsconfig.json is completely ignored, you must use command line flags
 {
+	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
-		"outDir": "./lib/",
-		"target": "es5",
+		"importHelpers": false,
+		"strict": false,
 		"noImplicitAny": false,
-		"lib": [
-			"es5",
-			"es2015",
-			"dom",
-			"esnext.asynciterable",
-			"es2017.object",
-			"es2018.asynciterable",
-			"es2018.asyncgenerator",
-			"es2019.object"
-		],
-		"sourceMap": true,
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"allowJs": false,
-		"declaration": true,
-		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true,
-		"strictNullChecks": true,
-		"downlevelIteration": true,
-		"typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
-		// temporary fix
-		"types": ["node", "lodash", "jest"]
+		"skipLibCheck": true
 	},
-	"include": ["src/**/*"]
+	"include": ["./src"]
 }

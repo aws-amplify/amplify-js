@@ -207,12 +207,22 @@ export type AuthStandardAttributeKey =
 	| 'zoneinfo';
 
 /**
- * Key/value pairs describing a user attribute.
+ * Key/value pairs describing a user attributes.
+ */
+export type AuthUserAttributes<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = {
+	[Attribute in UserAttributeKey]?: string;
+};
+
+/**
+ * The interface of a user attribute.
  */
 export type AuthUserAttribute<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
-	[Attribute in UserAttributeKey]?: string;
+	attributeKey: UserAttributeKey;
+	value: string;
 };
 
 /**

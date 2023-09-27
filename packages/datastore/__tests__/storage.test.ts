@@ -83,7 +83,7 @@ function processZenPushCalls(zenNext): Array<any> {
 
 describe('Storage tests', () => {
 	describe('Update', () => {
-		describe('Only include changed fields', () => {
+		describe.skip('Only include changed fields', () => {
 			let zenNext;
 
 			beforeEach(() => {

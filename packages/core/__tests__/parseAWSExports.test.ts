@@ -28,6 +28,28 @@ describe('Parser', () => {
 			},
 			region,
 		};
+		const amazonLocationServiceV4 = {
+			maps: {
+				items: {
+					geoJsExampleMap1: {
+						style: 'VectorEsriStreets',
+					},
+					geoJsExampleMap2: {
+						style: 'VectorEsriTopographic',
+					},
+				},
+				default: 'geoJsExampleMap1',
+			},
+			search_indices: {
+				items: ['geoJSSearchExample'],
+				default: 'geoJSSearchExample',
+			},
+			searchIndices: {
+				items: ['geoJSSearchExample'],
+				default: 'geoJSSearchExample',
+			},
+			region,
+		};
 		expect(
 			parseAWSExports({
 				aws_cognito_identity_pool_id: identityPoolId,
@@ -60,7 +82,7 @@ describe('Parser', () => {
 				},
 			},
 			Geo: {
-				AmazonLocationService: amazonLocationService,
+				LocationService: amazonLocationServiceV4,
 			},
 			Storage: {
 				S3: {

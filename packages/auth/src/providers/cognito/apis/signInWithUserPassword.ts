@@ -9,12 +9,16 @@ import {
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
 import {
+	getNewDeviceMetatada,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
 } from '../utils/signInHelpers';
-import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { Amplify, Hub } from '@aws-amplify/core';
+import {
+	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
 import {
 	SignInWithUserPasswordInput,
@@ -25,6 +29,8 @@ import {
 	setActiveSignInState,
 } from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+import { tokenOrchestrator } from '../tokenProvider';
+import { getCurrentUser } from './getCurrentUser';
 
 /**
  * Signs a user in using USER_PASSWORD_AUTH AuthFlowType
@@ -62,7 +68,8 @@ export async function signInWithUserPassword(
 			username,
 			password,
 			metadata,
-			authConfig
+			authConfig,
+			tokenOrchestrator
 		);
 
 		// sets up local state used during the sign-in process
@@ -72,8 +79,24 @@ export async function signInWithUserPassword(
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
-			await cacheCognitoTokens(AuthenticationResult);
+			await cacheCognitoTokens({
+				...AuthenticationResult,
+				NewDeviceMetadata: await getNewDeviceMetatada(
+					authConfig.userPoolId,
+					AuthenticationResult.NewDeviceMetadata,
+					AuthenticationResult.AccessToken
+				),
+			});
 			cleanActiveSignInState();
+			Hub.dispatch(
+				'auth',
+				{
+					event: 'signedIn',
+					data: await getCurrentUser(),
+				},
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },

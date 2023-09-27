@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { AsyncStorageStatic } from '@react-native-async-storage/async-storage';
-import { AmplifyError } from '../libraryUtils';
+import { AmplifyError } from '../errors';
 import { KeyValueStorageInterface } from '../types';
 
 const ASYNC_STORAGE_MODULE = '@react-native-async-storage/async-storage';

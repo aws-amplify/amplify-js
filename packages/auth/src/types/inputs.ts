@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthUserAttribute, AuthUserAttributeKey } from './models';
+import {
+	AuthUserAttributes,
+	AuthUserAttribute,
+	AuthUserAttributeKey,
+} from './models';
 import { AuthServiceOptions, AuthSignUpOptions } from './options';
 
 export type AuthConfirmResetPasswordInput<
@@ -133,7 +137,20 @@ export type AuthUpdateUserAttributesInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
-	userAttributes: AuthUserAttribute<UserAttributeKey>;
+	userAttributes: AuthUserAttributes<UserAttributeKey>;
+	options?: { serviceOptions?: ServiceOptions };
+};
+
+/**
+ * Constructs a `updateUserAttributes` input.
+ * @param userAttributes - the user attribute to be updated
+ * @param options - optional parameters for the Update User Attributes process such as the service options.
+ */
+export type AuthUpdateUserAttributeInput<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+> = {
+	userAttribute: AuthUserAttribute<UserAttributeKey>;
 	options?: { serviceOptions?: ServiceOptions };
 };
 
@@ -147,3 +164,16 @@ export type AuthUpdateUserAttributesInput<
 export type AuthConfirmUserAttributeInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = { userAttributeKey: UserAttributeKey; confirmationCode: string };
+
+/**
+ * Constructs a `sendUserAttributeVerificationCode` request.
+ * @param userAttributeKey - the user attribute key
+ * @param options - optional parameters for the Resend Attribute Code process such as the service options.
+ */
+export type AuthSendUserAttributeVerificationCodeInput<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+> = {
+	userAttributeKey: UserAttributeKey;
+	options?: { serviceOptions?: ServiceOptions };
+};

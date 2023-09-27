@@ -16,16 +16,23 @@ export type LibraryAPIOptions = {
 
 export type APIConfig = {
 	AppSync?: {
-		defaultAuthMode?: GraphQLAuthMode;
-		region?: string;
-		endpoint?: string;
+		defaultAuthMode: GraphQLAuthMode;
+		region: string;
+		endpoint: string;
 		modelIntrospectionSchema?: any;
 	};
 };
 
 export type GraphQLAuthMode =
 	| { type: 'apiKey'; apiKey: string }
-	| { type: 'jwt'; token: 'id' | 'access' }
+	| { type: 'jwt'; token?: 'id' | 'access' }
 	| { type: 'iam' }
 	| { type: 'lambda' }
 	| { type: 'custom' };
+
+export type GraphQLAuthModeKeys =
+	| 'apiKey'
+	| 'jwt'
+	| 'iam'
+	| 'lambda'
+	| 'custom';

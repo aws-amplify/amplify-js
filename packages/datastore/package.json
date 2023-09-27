@@ -1,7 +1,6 @@
 {
 	"name": "@aws-amplify/datastore",
 	"version": "5.0.0",
-	"private": true,
 	"description": "AppSyncLocal support for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -20,10 +19,10 @@
 		"test": "npm run lint && jest -w 1 --coverage",
 		"test:size": "size-limit",
 		"build-with-test": "npm test && npm run build",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "rimraf lib-esm && node ./build es6 --watch",
+		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
+		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
+		"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
 		"build": "yarn clean && yarn build:esm && npm run build:cjs",
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
@@ -50,15 +49,12 @@
 	"dependencies": {
 		"@aws-amplify/api": "6.0.0",
 		"@aws-amplify/auth": "6.0.0",
-		"@aws-amplify/pubsub": "6.0.0",
-		"amazon-cognito-identity-js": "6.4.0",
 		"buffer": "4.9.2",
 		"idb": "5.0.6",
 		"immer": "9.0.6",
 		"ulid": "^2.3.0",
 		"uuid": "^9.0.0",
-		"zen-observable-ts": "0.8.19",
-		"zen-push": "0.2.1"
+		"rxjs": "^7.8.1"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.0.0"
@@ -70,7 +66,8 @@
 		"@types/uuid-validate": "^0.0.1",
 		"dexie": "3.2.2",
 		"dexie-export-import": "1.0.3",
-		"fake-indexeddb": "3.0.0"
+		"fake-indexeddb": "3.0.0",
+		"typescript": "5.0.2"
 	},
 	"size-limit": [
 		{
@@ -95,8 +92,8 @@
 					"target": "es5",
 					"allowJs": true,
 					"esModuleInterop": true,
-					"downlevelIteration": true,
-					"strictNullChecks": true
+					"strictNullChecks": false,
+					"types": ["@types/jest"]
 				}
 			}
 		},
@@ -108,7 +105,10 @@
 			"__tests__/model.ts",
 			"__tests__/schema.ts",
 			"__tests__/helpers/",
-			"__tests__/commonAdapterTests.ts"
+			"__tests__/commonAdapterTests.ts",
+			"__tests__/DataStore.ts",
+			"__tests__/connectivityHandling.test.ts",
+			"__tests__/mutation.test.ts"
 		],
 		"moduleFileExtensions": [
 			"ts",

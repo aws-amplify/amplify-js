@@ -14,11 +14,11 @@ jobs:
   e2e:
     secrets: inherit
     uses: ./.github/workflows/callable-release-verification.yml
-  # next-release:
-  #   needs:
-  #     - e2e
-  #   secrets: inherit
-  #   uses: ./.github/workflows/callable-npm-publish-preid.yml
-  #   with:
-  #     preid: next
-  #     allow-protected-preid: true
+  next-release:
+    needs:
+      - e2e
+    secrets: inherit
+    uses: ./.github/workflows/callable-npm-publish-preid.yml
+    with:
+      preid: next
+      allow-protected-preid: true

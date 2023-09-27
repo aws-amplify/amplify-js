@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ErrorParams } from '@aws-amplify/core/internals/utils';
+import { AmplifyErrorParams } from '@aws-amplify/core/internals/utils';
 import { StorageError } from './StorageError';
 
 /**
@@ -11,7 +11,7 @@ import { StorageError } from './StorageError';
  * @internal
  */
 export class CanceledError extends StorageError {
-	constructor(params: ErrorParams) {
+	constructor(params: AmplifyErrorParams) {
 		super(params);
 
 		// TODO: Delete the following 2 lines after we change the build target to >= es2015

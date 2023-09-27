@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthUserAttribute } from '../../../types';
+import { AuthUserAttributes } from '../../../types';
 import { ClientMetadata, AuthFlowType, ValidationData } from './models';
 
 /**
@@ -54,9 +54,9 @@ export type ConfirmSignUpOptions = {
  * Options specific to Cognito Confirm Sign In.
  */
 export type ConfirmSignInOptions<
-	UserAttribute extends AuthUserAttribute = AuthUserAttribute
+	UserAttributes extends AuthUserAttributes = AuthUserAttributes
 > = {
-	userAttributes?: UserAttribute;
+	userAttributes?: UserAttributes;
 	clientMetadata?: ClientMetadata;
 	friendlyDeviceName?: string;
 };
@@ -72,5 +72,19 @@ export type VerifyTOTPSetupOptions = {
  * Options specific to Cognito Update User Attributes.
  */
 export type UpdateUserAttributesOptions = {
+	clientMetadata?: ClientMetadata;
+};
+
+/**
+ * Options specific to a Cognito Update User Attributes request.
+ */
+export type SendUserAttributeVerificationCodeOptions = {
+	clientMetadata?: ClientMetadata;
+};
+
+/**
+ * Options specific to Cognito Update User Attribute.
+ */
+export type UpdateUserAttributeOptions = {
 	clientMetadata?: ClientMetadata;
 };
