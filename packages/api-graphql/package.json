@@ -112,10 +112,11 @@
 			}
 		},
 		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist",
-			"lib",
-			"lib-esm"
+			"<rootDir>/node_modules/",
+			"<rootDir>/dist",
+			"<rootDir>/lib",
+			"<rootDir>/lib-esm",
+			"<rootDir>/__tests__"
 		]
 	}
 }
