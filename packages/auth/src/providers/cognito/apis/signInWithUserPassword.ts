@@ -14,7 +14,7 @@ import {
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
 } from '../utils/signInHelpers';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, Hub } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
 import {
@@ -27,6 +27,7 @@ import {
 } from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
+import { getCurrentUser } from './getCurrentUser';
 
 /**
  * Signs a user in using USER_PASSWORD_AUTH AuthFlowType
@@ -84,6 +85,10 @@ export async function signInWithUserPassword(
 				),
 			});
 			cleanActiveSignInState();
+			Hub.dispatch('auth', {
+				event: 'signedIn',
+				data: await getCurrentUser(),
+			});
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },

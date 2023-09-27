@@ -12,7 +12,7 @@ import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, Hub } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import {
 	getNewDeviceMetatada,
@@ -27,6 +27,7 @@ import {
 } from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
+import { getCurrentUser } from './getCurrentUser';
 
 /**
  * Signs a user in
@@ -84,6 +85,10 @@ export async function signInWithSRP(
 					AuthenticationResult.NewDeviceMetadata,
 					AuthenticationResult.AccessToken
 				),
+			});
+			Hub.dispatch('auth', {
+				event: 'signedIn',
+				data: await getCurrentUser(),
 			});
 			return {
 				isSignedIn: true,
