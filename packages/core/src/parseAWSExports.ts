@@ -38,6 +38,7 @@ export const parseAWSExports = (
 		aws_user_pools_web_client_id,
 		geo,
 		oauth,
+		aws_cloud_logic_custom,
 	} = config;
 	const amplifyConfig: ResourcesConfig = {};
 
@@ -107,6 +108,30 @@ export const parseAWSExports = (
 					},
 			  }
 			: { ...geo };
+	}
+
+	// REST API
+	if (aws_cloud_logic_custom) {
+		amplifyConfig.API = {
+			...amplifyConfig.API,
+			REST: (aws_cloud_logic_custom as any[]).reduce(
+				(acc, api: Record<string, any>) => {
+					const { name, endpoint, region, service } = api;
+					return {
+						...acc,
+						[name]: {
+							endpoint,
+							defaultAuthMode: {
+								type: authTypeMapping.AWS_IAM,
+								...(service ? { service } : undefined),
+								...(region ? { region } : undefined),
+							},
+						},
+					};
+				},
+				{}
+			),
+		};
 	}
 
 	return amplifyConfig;

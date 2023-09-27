@@ -50,6 +50,16 @@ describe('Parser', () => {
 			},
 			region,
 		};
+		const restEndpoint1 = {
+			name: 'api1',
+			endpoint: 'https://api1.com',
+			region: 'us-east-1',
+		};
+		const restEndpoint2 = {
+			name: 'api2',
+			endpoint: 'https://api2.com',
+			region: 'us-west-2',
+		};
 		expect(
 			parseAWSExports({
 				aws_cognito_identity_pool_id: identityPoolId,
@@ -64,6 +74,7 @@ describe('Parser', () => {
 				geo: {
 					amazon_location_service: amazonLocationService,
 				},
+				aws_cloud_logic_custom: [restEndpoint1, restEndpoint2],
 			})
 		).toStrictEqual({
 			Analytics: {
@@ -89,6 +100,24 @@ describe('Parser', () => {
 					bucket,
 					region,
 					dangerouslyConnectToHttpEndpointForTesting: undefined,
+				},
+			},
+			API: {
+				REST: {
+					api1: {
+						endpoint: 'https://api1.com',
+						defaultAuthMode: {
+							type: 'iam',
+							region: 'us-east-1',
+						},
+					},
+					api2: {
+						endpoint: 'https://api2.com',
+						defaultAuthMode: {
+							type: 'iam',
+							region: 'us-west-2',
+						},
+					},
 				},
 			},
 		});

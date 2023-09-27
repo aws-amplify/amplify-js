@@ -6,16 +6,14 @@ import * as url from 'url';
 import { v4 as uuid } from 'uuid';
 import { Buffer } from 'buffer';
 import { Hub, fetchAuthSession } from '@aws-amplify/core';
+import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
+import { ApiAuthMode } from '@aws-amplify/core/internals/utils';
 
 import {
 	CONTROL_MSG,
 	ConnectionState,
-	PubSubContent,
 	PubSubContentObserver,
 } from '../../types/PubSub';
-
-import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
-
 import {
 	AMPLIFY_SYMBOL,
 	AWS_APPSYNC_REALTIME_HEADERS,
@@ -38,7 +36,6 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
-import { ApiAuthMode } from '@aws-amplify/core/lib-esm/singleton/API/types';
 
 import {
 	CustomUserAgentDetails,
