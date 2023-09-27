@@ -17,7 +17,7 @@ export type AuthHubEventData =
 	| { event: 'tokenRefresh_failure' }
 	/** Dispatched when there is a customState passed in the options of the `signInWithRedirect` API.*/
 	| { event: 'customOAuthState'; data: string }
-	/** Dispatched after the user calls the `signIn` API successfully.*/
+	/** Dispatched after the user calls the `signIn` or `confirmSignIn` API successfully.*/
 	| { event: 'signedIn'; data: AuthUser }
 	/** Dispatched after the user calls the `signOut` API successfully.*/
 	| { event: 'signedOut' };
