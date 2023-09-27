@@ -5,4 +5,4 @@ export {
 	InternalGraphQLAPIClass,
 } from './InternalGraphQLAPI';
 
-export { graphql } from './v6';
+export { graphql, cancel, isCancel } from './v6';

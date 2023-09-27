@@ -103,4 +103,12 @@ export function graphql<
 	return result as any;
 }
 
+export function cancel(request: any) {
+	GraphQLAPI.cancel(request);
+}
+
+export function isCancel(error: any) {
+	return GraphQLAPI.isCancel(error);
+}
+
 export { GraphQLOptionsV6, GraphQLResponseV6 };
