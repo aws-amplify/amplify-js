@@ -7,4 +7,5 @@ export {
 	RecordInput,
 	IdentifyUserInput,
 } from './providers/pinpoint';
+export { enable, disable } from './apis';
 export { AnalyticsError } from './errors';

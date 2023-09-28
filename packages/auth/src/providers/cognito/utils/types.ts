@@ -9,8 +9,11 @@ import {
 } from '@aws-amplify/core';
 
 import { AuthError } from '../../../errors/AuthError';
-import { CognitoAuthTokens } from '../tokenProvider/types';
-import { USER_UNAUTHENTICATED_EXCEPTION } from '../../../errors/constants';
+import { CognitoAuthTokens, DeviceMetadata } from '../tokenProvider/types';
+import {
+	DEVICE_METADATA_NOT_FOUND_EXCEPTION,
+	USER_UNAUTHENTICATED_EXCEPTION,
+} from '../../../errors/constants';
 
 export function isTypeUserPoolConfig(
 	authConfig?: AuthConfig
@@ -58,6 +61,28 @@ export function assertAuthTokensWithRefreshToken(
 			name: USER_UNAUTHENTICATED_EXCEPTION,
 			message: 'User needs to be authenticated to call this API.',
 			recoverySuggestion: 'Sign in before calling this API again.',
+		});
+	}
+}
+type NonNullableDeviceMetadata = DeviceMetadata & {
+	deviceKey: string;
+	deviceGroupKey: string;
+};
+export function assertDeviceMetadata(
+	deviceMetadata?: DeviceMetadata | null
+): asserts deviceMetadata is NonNullableDeviceMetadata {
+	if (
+		!deviceMetadata ||
+		!deviceMetadata.deviceKey ||
+		!deviceMetadata.deviceGroupKey ||
+		!deviceMetadata.randomPassword
+	) {
+		throw new AuthError({
+			name: DEVICE_METADATA_NOT_FOUND_EXCEPTION,
+			message:
+				'Either deviceKey, deviceGroupKey or secretPassword were not found during the sign-in process.',
+			recoverySuggestion:
+				'Make sure to not clear storage after calling the signIn API.',
 		});
 	}
 }
