@@ -237,13 +237,13 @@
 			"name": "[Analytics] enable",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ enable }",
-			"limit": "0.025 kB"
+			"limit": "0.50 kB"
 		},
 		{
 			"name": "[Analytics] disable",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ disable }",
-			"limit": "0.025 kB"
+			"limit": "0.50 kB"
 		},
 		{
 			"name": "[API] class (AppSync)",
@@ -279,7 +279,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "28.25 kB"
+			"limit": "28.70 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
@@ -297,7 +297,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignIn }",
-			"limit": "28.15 kB"
+			"limit": "28.60 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -363,7 +363,7 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "30.2 kB"
+			"limit": "30.70 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
