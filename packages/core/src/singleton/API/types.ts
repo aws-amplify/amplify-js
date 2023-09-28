@@ -8,13 +8,10 @@ export type LibraryAPIOptions = {
 		// custom headers for given GraphQL service. Will be applied to all operations.
 		headers?: () => Promise<Headers>;
 	};
-	REST?: Record<
-		string,
-		{
-			// custom headers for given REST service. Will be applied to all operations.
-			headers?: () => Promise<Headers>;
-		}
-	>;
+	REST?: {
+		// custom headers for given REST service. Will be applied to all operations.
+		headers?: (options: { apiName: string }) => Promise<Headers>;
+	};
 };
 
 type GraphQLEndpointConfig = {
@@ -27,7 +24,7 @@ type GraphQLEndpointConfig = {
 	 */
 	region?: string;
 	/**
-	 * Option API key string. Required only if the auth mode is 'apiKey'.
+	 * Optional API key string. Required only if the auth mode is 'apiKey'.
 	 */
 	apiKey?: string;
 	/**
