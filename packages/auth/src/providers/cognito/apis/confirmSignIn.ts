@@ -33,6 +33,7 @@ import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
+import { tokenOrchestrator } from '../tokenProvider';
 import { getCurrentUser } from './getCurrentUser';
 
 /**
@@ -95,6 +96,7 @@ export async function confirmSignIn(
 			signInSession,
 			challengeResponse,
 			authConfig,
+			tokenOrchestrator,
 			clientMetaData,
 			options?.serviceOptions
 		);
