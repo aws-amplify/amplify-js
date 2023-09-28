@@ -35,7 +35,8 @@
 		"**/BigInteger.ts",
 		"**/vendor",
 		"**/__tests__",
-		"**/__mocks__"
+		"**/__mocks__",
+		"**/Gemfile"
 	],
 	"ignoreFile": ".gitignore",
 	"license": "license_header.txt",
