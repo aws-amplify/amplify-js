@@ -14,6 +14,11 @@ export const createCancellableOperation = (
 ): Operation<HttpResponse> => {
 	const abortController = new AbortController();
 	const { signal } = abortController;
+
+	// Abort message is not widely support enough across runtimes and and browsers, so we track
+	// it ourselves instead of calling `abortController.abort(abortMessage)`.
+	let abortErrorMessage: string | undefined;
+
 	const job = async () => {
 		try {
 			const response = await handler(signal);
@@ -25,7 +30,7 @@ export const createCancellableOperation = (
 			if (error.name === 'AbortError' && signal.aborted === true) {
 				throw new CanceledError({
 					name: error.name,
-					message: signal.reason,
+					message: abortErrorMessage ?? error.message,
 					underlyingError: error,
 				});
 			}
@@ -36,7 +41,11 @@ export const createCancellableOperation = (
 		}
 	};
 	const cancel = (abortMessage?: string) => {
-		abortController.abort(abortMessage);
+		if (signal.aborted === true) {
+			return;
+		}
+		abortErrorMessage = abortMessage;
+		abortController.abort();
 	};
 	return { response: job(), cancel };
 };

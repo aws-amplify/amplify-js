@@ -1,8 +1,8 @@
 {
 	"name": "@aws-amplify/api-rest/internals/post",
-	"types": "../../lib-esm/graphQlPost.d.ts",
-	"main": "../../lib/graphQlPost.js",
-	"module": "../../lib-esm/graphQlPost.js",
-	"react-native": "../../lib-esm/graphQlPost.js",
+	"types": "../../lib-esm/internalPost.d.ts",
+	"main": "../../lib/internalPost.js",
+	"module": "../../lib-esm/internalPost.js",
+	"react-native": "../../lib-esm/internalPost.js",
 	"sideEffects": false
 }

@@ -20,8 +20,7 @@ export class CanceledError extends RestApiError {
 }
 
 /**
- * Check if an error is caused by user calling `cancel()` on a upload/download task. If an overwriting error is
- * supplied to `task.cancel(errorOverwrite)`, this function will return `false`.
+ * Check if an error is caused by user calling `cancel()` REST API.
  */
 export const isCancelError = (error: unknown): boolean =>
 	!!error && error instanceof CanceledError;

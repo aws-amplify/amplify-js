@@ -1,24 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6 } from '@aws-amplify/core';
-import { ApiAuthMode } from '@aws-amplify/core/internals/utils';
 import {
 	HttpRequest,
-	fetchTransferHandler,
-	signingMiddleware,
-	retryMiddleware,
-	RetryOptions,
-	HttpResponse,
-	SigningOptions,
-	Middleware,
 	unauthenticatedHandler,
 	Headers,
 	getRetryDecider,
 	jitteredBackoff,
-	userAgentMiddleware,
-	UserAgentOptions,
+	authenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import { DocumentType } from '../types';
 import {
@@ -27,51 +17,67 @@ import {
 	parseUrl,
 	resolveCredentials,
 } from '../utils';
-import { RestApiValidationErrorCode, assertValidationError } from '../errors';
+import { normalizeHeaders } from '../utils/normalizeHeaders';
 
-interface HandlerOptions extends Omit<HttpRequest, 'body' | 'headers'> {
+type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	body?: DocumentType | FormData;
 	headers?: Headers;
 	withCredentials?: boolean;
-}
+};
 
-type HandlerConfigs = {
-	defaultAuthMode: ApiAuthMode;
+type SigningServiceInfo = {
+	service?: string;
+	region?: string;
 };
 
 /**
+ * Make REST API call with best-effort IAM auth.
  * @param amplify Amplify instance to to resolve credentials and tokens. Should use different instance in client-side
  *   and SSR
  * @param options Options accepted from public API options when calling the handlers.
- * @param configs Configs to configure internal behaviors.
+ * @param signingServiceInfo Internal-only options for graphql client to overwrite the IAM signing service and region.
+ *   MUST ONLY be used by internal post method consumed by GraphQL when auth mode is IAM. Otherwise IAM auth may not be
+ *   used.
+ *
+ * @internal
  */
 export const transferHandler = (
 	amplify: AmplifyClassV6,
 	options: HandlerOptions,
-	configs: HandlerConfigs
+	signingServiceInfo?: SigningServiceInfo
 ) =>
-	createCancellableOperation(abortSignal => {
-		return transferHandlerJob(amplify, options, {
-			...configs,
-			abortSignal,
-		});
-	});
+	createCancellableOperation(abortSignal =>
+		transferHandlerJob(
+			amplify,
+			{
+				...options,
+				abortSignal,
+			},
+			signingServiceInfo
+		)
+	);
 
 const transferHandlerJob = async (
 	amplify: AmplifyClassV6,
-	options: HandlerOptions,
-	configs: HandlerConfigs & { abortSignal: AbortSignal }
+	options: HandlerOptions & { abortSignal: AbortSignal },
+	signingServiceInfo?: SigningServiceInfo
 ) => {
-	const { url, method, headers, body, withCredentials } = options;
-	const { defaultAuthMode, abortSignal } = configs;
-	const resolvedBody =
-		body instanceof FormData ? body : JSON.stringify(body ?? '');
+	const { url, method, headers, body, withCredentials, abortSignal } = options;
+	const resolvedBody = body
+		? body instanceof FormData
+			? body
+			: JSON.stringify(body ?? '')
+		: undefined;
 	const resolvedHeaders: Headers = {
-		'content-type':
-			body instanceof FormData
-				? 'multipart/form-data'
-				: 'application/json; charset=UTF-8',
-		...headers,
+		...normalizeHeaders(headers),
+		...(resolvedBody
+			? {
+					'content-type':
+						body instanceof FormData
+							? 'multipart/form-data'
+							: 'application/json; charset=UTF-8',
+			  }
+			: {}),
 	};
 	const request = {
 		url,
@@ -85,102 +91,29 @@ const transferHandlerJob = async (
 		withCrossDomainCredentials: withCredentials,
 		abortSignal,
 	};
-	const optionalSigningHandler = composeOptionalSigningHandler();
-	switch (defaultAuthMode.type) {
-		case 'iam':
-			const credentials = await resolveCredentials(amplify);
-			const signingInfoFromUrl = parseUrl(url);
-			const signingService =
-				defaultAuthMode.service ?? signingInfoFromUrl.service;
-			const signingRegion = defaultAuthMode.region ?? signingInfoFromUrl.region;
 
-			return await optionalSigningHandler(request, {
-				...baseOptions,
-				credentials,
-				region: signingRegion,
-				service: signingService,
-			});
-
-		case 'apiKey':
-			const { apiKey: apiKeyFromConfig } = defaultAuthMode;
-
-			const apiKey = apiKeyFromConfig ?? headers['x-api-key'];
-			assertValidationError(!!apiKey, RestApiValidationErrorCode.NoApiKey);
-			return await unauthenticatedHandler(
-				{
-					...request,
-					headers: {
-						'x-api-key': apiKey,
-						...request.headers,
-					},
-				},
-				{
-					...baseOptions,
-				}
-			);
-		case 'lambda':
-			assertValidationError(
-				!!request.headers.authorization,
-				RestApiValidationErrorCode.NoAuthHeader
-			);
-			return await unauthenticatedHandler(request, {
-				...baseOptions,
-			});
-		case 'oidc':
-		case 'userPool':
-			// TODO: confirm default to access token.
-			const { token = 'access' } = defaultAuthMode;
-			const {
-				tokens: { accessToken, idToken },
-			} = await amplify.Auth.fetchAuthSession();
-			const tokenToUse = token === 'access' ? accessToken : idToken;
-			assertValidationError(
-				!!tokenToUse,
-				RestApiValidationErrorCode.NoAuthToken
-			);
-			return await unauthenticatedHandler(
-				{
-					...request,
-					headers: {
-						...request.headers,
-						authorization: tokenToUse.toString(),
-					},
-				},
-				{
-					...baseOptions,
-				}
-			);
-		case 'none':
-			return await unauthenticatedHandler(request, {
-				...baseOptions,
-			});
-		default:
-			break;
+	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
+	if (isIamAuthApplicable) {
+		const signingInfoFromUrl = parseUrl(url);
+		const signingService =
+			signingServiceInfo?.service ?? signingInfoFromUrl.service;
+		const signingRegion =
+			signingServiceInfo?.region ?? signingInfoFromUrl.region;
+		const credentials = await resolveCredentials(amplify);
+		return await authenticatedHandler(request, {
+			...baseOptions,
+			credentials,
+			region: signingRegion,
+			service: signingService,
+		});
+	} else {
+		return await unauthenticatedHandler(request, {
+			...baseOptions,
+		});
 	}
 };
 
-const composeOptionalSigningHandler = () => {
-	const hasAuthHeader = (request: HttpRequest) =>
-		!request.headers.authorization && !request.headers.Authorization;
-	const optionalSigningMiddleware: Middleware<HttpRequest, HttpResponse, {}> = (
-		options: SigningOptions
-	) => {
-		const signingHandler = signingMiddleware(options);
-		return next => (request: HttpRequest) => {
-			if (!hasAuthHeader(request)) {
-				return signingHandler(next)(request);
-			}
-			return next(request);
-		};
-	};
-	return composeTransferHandler<
-		[UserAgentOptions, RetryOptions<HttpResponse>, SigningOptions],
-		HttpRequest,
-		HttpResponse,
-		typeof fetchTransferHandler
-	>(fetchTransferHandler, [
-		userAgentMiddleware,
-		retryMiddleware,
-		optionalSigningMiddleware,
-	]);
-};
+const iamAuthApplicable = (
+	{ headers }: HttpRequest,
+	signingServiceInfo?: SigningServiceInfo
+) => !headers.authorization && !headers['x-api-key'] && !!signingServiceInfo;

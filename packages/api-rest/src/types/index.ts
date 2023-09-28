@@ -12,18 +12,6 @@ export type DocumentType =
 	| DocumentType[]
 	| { [prop: string]: DocumentType };
 
-// export declare const get: (input: ApiInput<GetOptions>) => GetOperation;
-
-// export declare const del: (input: ApiInput<DeleteOptions>) => DeleteOperation;
-
-// export declare const put: (input: ApiInput<PutOptions>) => PutOperation;
-
-// export declare const patch: (input: ApiInput<PatchOptions>) => PatchOperation;
-
-// export declare const post: (input: ApiInput<PostOptions>) => PostOperation;
-
-// export declare const head: (input: ApiInput<HeadOptions>) => HeadOperation;
-
 export type GetOptions = RestApiOptionsBase;
 export type PostOptions = RestApiOptionsBase;
 export type PutOptions = RestApiOptionsBase;
@@ -38,15 +26,31 @@ export type PatchOperation = Operation<RestApiResponse>;
 export type DeleteOperation = Operation<Omit<RestApiResponse, 'body'>>;
 export type HeadOperation = Operation<Omit<RestApiResponse, 'body'>>;
 
-export type RestApiOptionsBase = {
+type RestApiOptionsBase = {
 	headers?: Headers;
 	queryParams?: Record<string, string>;
 	body?: DocumentType | FormData;
+	/**
+	 * Option controls whether or not cross-site Access-Control requests should be made using credentials
+	 * such as cookies, authorization headers or TLS client certificates. It has no effect on same-origin requests.
+	 * If set to `true`, the request will include credentials such as cookies, authorization headers, TLS
+	 * client certificates, and so on. Moreover the response cookies will also be set.
+	 * If set to `false`, the cross-site request will not include credentials, and the response cookies from a different
+	 * domain will be ignored.
+	 *
+	 * @default false
+	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials}
+	 */
 	withCredentials?: boolean;
 };
 
 type Headers = Record<string, string>;
 
+/**
+ * Type representing an operation that can be cancelled.
+ *
+ * @internal
+ */
 export type Operation<Response> = {
 	response: Promise<Response>;
 	cancel: (abortMessage?: string) => void;
@@ -54,17 +58,49 @@ export type Operation<Response> = {
 
 type ResponsePayload = {
 	blob: () => Promise<Blob>;
-	json: () => Promise<any>;
+	json: () => Promise<DocumentType>;
 	text: () => Promise<string>;
 };
+
+/**
+ * Basic response type of REST API.
+ *
+ * @internal
+ */
 export interface RestApiResponse {
 	body: ResponsePayload;
 	statusCode: number;
 	headers: Headers;
 }
 
-type ApiInput<Options> = {
+/**
+ * Input type of REST API.
+ * @internal
+ */
+export type ApiInput<Options> = {
 	apiName: string;
 	path: string;
 	options?: Options;
+};
+
+/**
+ * Input type to invoke REST POST API from GraphQl client.
+ * @internal
+ */
+export type InternalPostInput = {
+	// Resolved GraphQl endpoint url
+	url: URL;
+	options?: RestApiOptionsBase & {
+		/**
+		 * Internal-only option for GraphQL client to provide the IAM signing service and region.
+		 * * If auth mode is 'iam', you MUST set this value.
+		 * * If auth mode is 'none', you MUST NOT set this value;
+		 * * If auth mode is 'apiKey' or 'oidc' or 'lambda' or 'userPool' because associated
+		 *   headers are provided, this value is ignored.
+		 */
+		signingServiceInfo?: {
+			service?: string;
+			region?: string;
+		};
+	};
 };
