@@ -10,7 +10,11 @@ import {
 } from 'graphql';
 import { Observable } from 'rxjs';
 import { Amplify, Cache, fetchAuthSession } from '@aws-amplify/core';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
+import {
+	CustomUserAgentDetails,
+	ConsoleLogger as Logger,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core/internals/utils';
 import {
 	GraphQLAuthError,
 	GraphQLResult,
@@ -60,7 +64,8 @@ export class InternalGraphQLAPIClass {
 
 	private async _headerBasedAuth(
 		defaultAuthenticationType?,
-		additionalHeaders: { [key: string]: string } = {}
+		additionalHeaders: { [key: string]: string } = {},
+		customUserAgentDetails?: CustomUserAgentDetails
 	) {
 		const config = Amplify.getConfig();
 		const {
@@ -142,7 +147,8 @@ export class InternalGraphQLAPIClass {
 	 */
 	graphql<T = any>(
 		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string }
+		additionalHeaders?: { [key: string]: string },
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
 			typeof paramQuery === 'string'
@@ -167,11 +173,16 @@ export class InternalGraphQLAPIClass {
 			case 'mutation':
 				const responsePromise = this._graphql<T>(
 					{ query, variables, authMode },
-					headers
+					headers,
+					customUserAgentDetails
 				);
 				return responsePromise;
 			case 'subscription':
-				return this._graphqlSubscribe({ query, variables, authMode }, headers);
+				return this._graphqlSubscribe(
+					{ query, variables, authMode },
+					headers,
+					customUserAgentDetails
+				);
 			default:
 				throw new Error(`invalid operation type: ${operationType}`);
 		}
@@ -179,7 +190,8 @@ export class InternalGraphQLAPIClass {
 
 	private async _graphql<T = any>(
 		{ query, variables, authMode }: GraphQLOptions,
-		additionalHeaders = {}
+		additionalHeaders = {},
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
 		const config = Amplify.getConfig();
 
@@ -191,12 +203,23 @@ export class InternalGraphQLAPIClass {
 
 		const headers = {
 			...(!customGraphqlEndpoint &&
-				(await this._headerBasedAuth(authMode, additionalHeaders))),
+				(await this._headerBasedAuth(
+					authMode,
+					additionalHeaders,
+					customUserAgentDetails
+				))),
 			...(customGraphqlEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(authMode, additionalHeaders)
+					? await this._headerBasedAuth(
+							authMode,
+							additionalHeaders,
+							customUserAgentDetails
+					  )
 					: { Authorization: null })),
 			...additionalHeaders,
+			...(!customGraphqlEndpoint && {
+				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
+			}),
 		};
 
 		const body = {
@@ -284,7 +307,8 @@ export class InternalGraphQLAPIClass {
 			authMode: defaultAuthenticationType,
 			authToken,
 		}: GraphQLOptions,
-		additionalHeaders = {}
+		additionalHeaders = {},
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
 		const { AppSync } = Amplify.getConfig().API ?? {};
 		if (!this.appSyncRealTime) {

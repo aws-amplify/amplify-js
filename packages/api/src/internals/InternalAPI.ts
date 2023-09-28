@@ -16,6 +16,7 @@ import {
 	ApiAction,
 	Category,
 	ConsoleLogger as Logger,
+	CustomUserAgentDetails,
 } from '@aws-amplify/core/internals/utils';
 import { Observable } from 'rxjs';
 
@@ -85,7 +86,8 @@ export class InternalAPIClass {
 	 */
 	graphql<T>(
 		options: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string }
+		additionalHeaders?: { [key: string]: string },
+		customUserAgentDetails?: CustomUserAgentDetails
 	): T extends GraphQLQuery<T>
 		? Promise<GraphQLResult<T>>
 		: T extends GraphQLSubscription<T>
@@ -96,9 +98,20 @@ export class InternalAPIClass {
 		: Promise<GraphQLResult<any>> | Observable<object>;
 	graphql<T = any>(
 		options: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string }
+		additionalHeaders?: { [key: string]: string },
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<any>> | Observable<object> {
-		return this._graphqlApi.graphql(options, additionalHeaders);
+		const apiUserAgentDetails: CustomUserAgentDetails = {
+			category: Category.API,
+			action: ApiAction.GraphQl,
+			...customUserAgentDetails,
+		};
+
+		return this._graphqlApi.graphql(
+			options,
+			additionalHeaders,
+			apiUserAgentDetails
+		);
 	}
 }
 

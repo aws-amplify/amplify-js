@@ -18,6 +18,7 @@ export interface GraphQLOptions {
 	/**
 	 * @deprecated This property should not be used
 	 */
+	userAgentSuffix?: string;
 }
 
 export interface GraphQLResult<T = object> {
@@ -126,6 +127,7 @@ export interface GraphQLOptionsV6<
 	/**
 	 * @deprecated This property should not be used
 	 */
+	userAgentSuffix?: string;
 }
 
 /**
