@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { default as Notifications } from './Notifications';
-
 export { AWSPinpointProviderCommon } from './common';
 export { AWSPinpointUserInfo } from './common/AWSPinpointProviderCommon/types';
 export {
@@ -17,10 +15,10 @@ export {
 	InAppMessageTextAlign,
 	InAppMessagingConfig,
 	InAppMessagingEvent,
-} from './InAppMessaging';
+} from './inAppMessaging';
 export {
 	PushNotificationMessage,
 	PushNotificationPermissions,
 	PushNotificationPermissionStatus,
-} from './PushNotification/types';
+} from './pushNotifications/types';
 export { NotificationsConfig, UserInfo } from './types';

@@ -51,8 +51,11 @@
 			"packages/api-graphql",
 			"packages/api",
 			"packages/datastore",
+			"packages/notifications",
 			"packages/aws-amplify",
 			"packages/rtn-web-browser",
+			"packages/react-native",
+			"packages/react-native/example",
 			"scripts/tsc-compliance-test"
 		],
 		"nohoist": [

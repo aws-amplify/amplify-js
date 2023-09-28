@@ -49,6 +49,7 @@ export class InternalGraphQLAPIClass {
 	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
 	Cache = Cache;
+	private _api = { post };
 
 	/**
 	 * Initialize GraphQL API with AWS configuration
@@ -241,7 +242,7 @@ export class InternalGraphQLAPIClass {
 
 		let response;
 		try {
-			response = await post(endpoint, {
+			response = await this._api.post(endpoint, {
 				headers,
 				body,
 				region,

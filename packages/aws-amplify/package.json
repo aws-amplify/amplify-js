@@ -82,6 +82,26 @@
 			"import": "./lib-esm/storage/s3/server.js",
 			"require": "./lib/storage/s3/server.js"
 		},
+		"./in-app-messaging": {
+			"types": "./lib-esm/in-app-messaging/index.d.ts",
+			"import": "./lib-esm/in-app-messaging/index.js",
+			"require": "./lib/in-app-messaging/index.js"
+		},
+		"./push-notifications": {
+			"types": "./lib-esm/push-notifications/index.d.ts",
+			"import": "./lib-esm/push-notifications/index.js",
+			"require": "./lib/push-notifications/index.js"
+		},
+		"./in-app-messaging/pinpoint": {
+			"types": "./lib-esm/in-app-messaging/pinpoint/index.d.ts",
+			"import": "./lib-esm/in-app-messaging/pinpoint/index.js",
+			"require": "./lib/in-app-messaging/pinpoint/index.js"
+		},
+		"./push-notifications/pinpoint": {
+			"types": "./lib-esm/push-notifications/pinpoint/index.d.ts",
+			"import": "./lib-esm/push-notifications/pinpoint/index.js",
+			"require": "./lib/push-notifications/pinpoint/index.js"
+		},
 		"./internals/adapter-core": {
 			"types": "./lib-esm/adapterCore/index.d.ts",
 			"import": "./lib-esm/adapterCore/index.js",
@@ -132,6 +152,18 @@
 			],
 			"storage/s3/server": [
 				"./lib-esm/storage/s3/server.d.ts"
+			],
+			"in-app-messaging": [
+				"./lib-esm/in-app-messaging/index.d.ts"
+			],
+			"in-app-messaging/pinpoint": [
+				"./lib-esm/in-app-messaging/pinpoint/index.d.ts"
+			],
+			"push-notifications": [
+				"./lib-esm/push-notifications/index.d.ts"
+			],
+			"push-notifications/pinpoint": [
+				"./lib-esm/push-notifications/pinpoint/index.d.ts"
 			],
 			"internals/adapter-core": [
 				"./lib-esm/adapterCore/index.d.ts"
@@ -196,6 +228,24 @@
 			"limit": "21.10 kB"
 		},
 		{
+			"name": "[Analytics] identifyUser (Pinpoint)",
+			"path": "./lib-esm/analytics/index.js",
+			"import": "{ identifyUser }",
+			"limit": "19.30 kB"
+		},
+		{
+			"name": "[Analytics] enable",
+			"path": "./lib-esm/analytics/index.js",
+			"import": "{ enable }",
+			"limit": "0.025 kB"
+		},
+		{
+			"name": "[Analytics] disable",
+			"path": "./lib-esm/analytics/index.js",
+			"import": "{ disable }",
+			"limit": "0.025 kB"
+		},
+		{
 			"name": "[API] class (AppSync)",
 			"path": "./lib-esm/api/index.js",
 			"import": "{ API }",
@@ -206,12 +256,6 @@
 			"path": "./lib-esm/api/index.js",
 			"import": "{ generateClient }",
 			"limit": "70.00 kB"
-		},
-		{
-			"name": "[Analytics] identifyUser (Pinpoint)",
-			"path": "./lib-esm/analytics/index.js",
-			"import": "{ identifyUser }",
-			"limit": "19.30 kB"
 		},
 		{
 			"name": "[Auth] signUp (Cognito)",
@@ -235,7 +279,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "28.00 kB"
+			"limit": "28.25 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
@@ -253,7 +297,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignIn }",
-			"limit": "27.50 kB"
+			"limit": "28.15 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -319,7 +363,7 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "30.00 kB"
+			"limit": "30.2 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",

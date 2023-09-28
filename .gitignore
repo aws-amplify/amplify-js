@@ -22,11 +22,25 @@ dual-publish-tmp
 ### Version file - core build artifact
 packages/core/src/Platform/version.ts
 
-### Gradle ###
-.gradle/
+# BUCK
+buck-out/
+\.buckd/
+android/app/libs
+android/keystores/debug.keystore
+
+# Android/IJ
+#
+.classpath
+.cxx
+.gradle
+.idea
+.project
+.settings
 local.properties
+android.iml
 
 ### Xcode ###
+build/
 xcuserdata/
 *.xcodeproj/*
 !*.xcodeproj/project.pbxproj
@@ -40,3 +54,12 @@ xcuserdata/
 coverage/
 coverage-native/
 coverage-ts/
+
+# macOS
+.DS_Store
+
+#examples
+**/example/ios/Pods
+**/example/ios/Podfile.lock
+**/example/.bundle
+**/example/yarn.lock
