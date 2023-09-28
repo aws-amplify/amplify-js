@@ -160,6 +160,12 @@ declare namespace DeleteUserRequest {
 	 */
 	const filterSensitiveLog: (obj: DeleteUserRequest) => any;
 }
+declare namespace DeleteUserResponse {
+	/**
+	 * @internal
+	 */
+	const filterSensitiveLog: (obj: DeleteUserResponse) => any;
+}
 declare namespace DeviceSecretVerifierConfigType {
 	/**
 	 * @internal
@@ -698,7 +704,9 @@ export interface ConfirmSignUpRequest {
  */
 export interface ConfirmSignUpResponse {}
 export interface DeleteUserCommandInput extends DeleteUserRequest {}
-export interface DeleteUserCommandOutput extends __MetadataBearer {}
+export interface DeleteUserCommandOutput
+	extends DeleteUserResponse,
+		__MetadataBearer {}
 /**
  * <p>Represents the request to delete a user.</p>
  */
@@ -708,6 +716,7 @@ export interface DeleteUserRequest {
 	 */
 	AccessToken: string | undefined;
 }
+export interface DeleteUserResponse {}
 /**
  * <p>The device verifier against which it is authenticated.</p>
  */
