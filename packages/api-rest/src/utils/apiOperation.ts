@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HttpResponse } from '@aws-amplify/core/internals/aws-client-utils';
-import { CanceledError, RestApiError } from '../errors';
+import { CancelledError, RestApiError } from '../errors';
 import { Operation } from '../types';
 import { parseRestApiServiceError } from './serviceError';
 
@@ -28,7 +28,7 @@ export const createCancellableOperation = (
 			return response;
 		} catch (error) {
 			if (error.name === 'AbortError' && signal.aborted === true) {
-				throw new CanceledError({
+				throw new CancelledError({
 					name: error.name,
 					message: abortErrorMessage ?? error.message,
 					underlyingError: error,

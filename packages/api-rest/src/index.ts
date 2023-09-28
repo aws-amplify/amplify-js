@@ -3,4 +3,4 @@
 
 export { DocumentType } from './types';
 
-export { isCancelError } from './errors/CanceledError';
+export { isCancelError } from './errors/CancelledError';

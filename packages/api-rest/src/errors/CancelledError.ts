@@ -5,17 +5,17 @@ import { AmplifyErrorParams } from '@aws-amplify/core/internals/utils';
 import { RestApiError } from './RestApiError';
 
 /**
- * Internal-only class for CanceledError.
+ * Internal-only class for CancelledError.
  *
  * @internal
  */
-export class CanceledError extends RestApiError {
+export class CancelledError extends RestApiError {
 	constructor(params: AmplifyErrorParams) {
 		super(params);
 
 		// TODO: Delete the following 2 lines after we change the build target to >= es2015
-		this.constructor = CanceledError;
-		Object.setPrototypeOf(this, CanceledError.prototype);
+		this.constructor = CancelledError;
+		Object.setPrototypeOf(this, CancelledError.prototype);
 	}
 }
 
@@ -23,4 +23,4 @@ export class CanceledError extends RestApiError {
  * Check if an error is caused by user calling `cancel()` REST API.
  */
 export const isCancelError = (error: unknown): boolean =>
-	!!error && error instanceof CanceledError;
+	!!error && error instanceof CancelledError;
