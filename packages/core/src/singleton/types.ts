@@ -19,6 +19,7 @@ import {
 	StorageConfig,
 } from './Storage/types';
 import { I18nConfig } from '../I18n/types';
+import { NotificationsConfig } from './Notifications/types';
 
 export type LegacyConfig = {
 	/**
@@ -35,7 +36,7 @@ export type ResourcesConfig = {
 	// DataStore?: {};
 	I18n?: I18nConfig;
 	// Interactions?: {};
-	// Notifications?: {};
+	Notifications?: NotificationsConfig;
 	// Predictions?: {};
 	Storage?: StorageConfig;
 	Geo?: GeoConfig;

@@ -3,3 +3,4 @@
 
 export * from './apis';
 export { PinpointAnalyticsEvent, PinpointServiceOptions } from './types';
+export { getEndpointId } from './utils';
