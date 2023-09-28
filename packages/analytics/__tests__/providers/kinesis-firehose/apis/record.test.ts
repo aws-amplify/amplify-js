@@ -1,25 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEventBuffer';
-import { resolveConfig } from '../../../../src/providers/kinesis/utils/resolveConfig';
+import {
+	getEventBuffer,
+	resolveConfig,
+} from '../../../../src/providers/kinesis-firehose/utils';
 import { resolveCredentials } from '../../../../src/utils';
 import {
 	mockConfig,
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
-import { record } from '../../../../src/providers/kinesis';
+import { record } from '../../../../src/providers/kinesis-firehose';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/lib/Logger';
-import { RecordInput as KinesisRecordInput } from '../../../../src/providers/kinesis/types';
+import { RecordInput as KinesisFirehoseRecordInput } from '../../../../src/providers/kinesis-firehose/types';
 
 jest.mock('../../../../src/utils');
-jest.mock('../../../../src/providers/kinesis/utils/resolveConfig');
-jest.mock('../../../../src/providers/kinesis/utils/getEventBuffer');
+jest.mock('../../../../src/providers/kinesis-firehose/utils');
 
-describe('Analytics Kinesis API: record', () => {
-	const mockEvent: KinesisRecordInput = {
+describe('Analytics KinesisFirehose API: record', () => {
+	const mockEvent: KinesisFirehoseRecordInput = {
 		streamName: 'stream0',
-		partitionKey: 'partition0',
 		data: new Uint8Array([0x01, 0x02, 0xff]),
 	};
 
@@ -54,7 +54,6 @@ describe('Analytics Kinesis API: record', () => {
 			expect.objectContaining({
 				region: mockConfig.region,
 				streamName: mockEvent.streamName,
-				partitionKey: mockEvent.partitionKey,
 				event: mockEvent.data,
 				retryCount: 0,
 			})
