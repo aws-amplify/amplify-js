@@ -24,6 +24,8 @@ import {
 import { post, isCancel, cancel } from '@aws-amplify/api-rest';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 
+const USER_AGENT_HEADER = 'x-amz-user-agent';
+
 const logger = new Logger('GraphQLAPI');
 
 export const graphqlOperation = (
