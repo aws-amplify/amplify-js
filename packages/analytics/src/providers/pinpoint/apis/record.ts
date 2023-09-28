@@ -10,7 +10,10 @@ import {
 	AnalyticsValidationErrorCode,
 	assertValidationError,
 } from '../../../errors';
-import { getAnalyticsUserAgentString } from '../../../utils/userAgent';
+import {
+	getAnalyticsUserAgentString,
+	isAnalyticsEnabled,
+} from '../../../utils';
 import { RecordInput } from '../types';
 import { resolveConfig, resolveCredentials } from '../utils';
 
@@ -46,6 +49,11 @@ const logger = new Logger('Analytics');
  */
 export const record = (input: RecordInput): void => {
 	const { appId, region } = resolveConfig();
+
+	if (!isAnalyticsEnabled()) {
+		logger.debug('Analytics is disabled, event will not be recorded.');
+		return;
+	}
 
 	assertValidationError(!!input.name, AnalyticsValidationErrorCode.NoEventName);
 

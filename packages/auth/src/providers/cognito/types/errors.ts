@@ -78,6 +78,18 @@ export enum ConfirmSignUpException {
 	UserNotFoundException = 'UserNotFoundException',
 }
 
+export enum DeleteUserAttributesException {
+	ForbiddenException = 'ForbiddenException',
+	InternalErrorException = 'InternalErrorException',
+	InvalidParameterException = 'InvalidParameterException',
+	NotAuthorizedException = 'NotAuthorizedException',
+	PasswordResetRequiredException = 'PasswordResetRequiredException',
+	ResourceNotFoundException = 'ResourceNotFoundException',
+	TooManyRequestsException = 'TooManyRequestsException',
+	UserNotConfirmedException = 'UserNotConfirmedException',
+	UserNotFoundException = 'UserNotFoundException',
+}
+
 export enum DeleteUserException {
 	ForbiddenException = 'ForbiddenException',
 	InternalErrorException = 'InternalErrorException',
