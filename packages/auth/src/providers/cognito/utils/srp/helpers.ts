@@ -7,7 +7,10 @@ import {
 	base64Encoder,
 	base64Decoder,
 } from '@aws-amplify/core/internals/utils';
-import AuthenticationHelper, { BigInteger } from './AuthenticationHelper';
+import AuthenticationHelper from './AuthenticationHelper';
+import BigInteger from './BigInteger';
+
+type BigInteger = typeof BigInteger;
 
 export function hash(buf: SourceData) {
 	const awsCryptoHash = new Sha256();

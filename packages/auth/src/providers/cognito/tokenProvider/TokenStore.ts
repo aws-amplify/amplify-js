@@ -151,7 +151,10 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 }
 
-const createKeysForAuthStorage = (provider: string, identifier: string) => {
+export const createKeysForAuthStorage = (
+	provider: string,
+	identifier: string
+) => {
 	return getAuthStorageKeys(AuthTokenStorageKeys)(
 		`com.amplify.${provider}`,
 		identifier

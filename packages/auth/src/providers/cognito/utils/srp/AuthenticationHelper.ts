@@ -8,14 +8,7 @@ import { toHex, fromHex } from './helpers';
 import WordArray from './WordArray';
 import { AuthError } from '../../../../errors/AuthError';
 
-export type BigInteger = typeof BigInteger & {
-	subtract: Function;
-	add: Function;
-	multiply: Function;
-	mod: Function;
-	modPow: Function;
-	equals: Function;
-};
+type BigInteger = typeof BigInteger;
 
 const SHORT_TO_HEX: Record<string, string> = {};
 const HEX_TO_SHORT: Record<string, number> = {};
@@ -94,9 +87,9 @@ export default class AuthenticationHelper {
 	 * @param {string} PoolName Cognito user pool name.
 	 */
 	constructor(PoolName: string) {
-		this.N = new (BigInteger as any)(initN, 16);
-		this.g = new (BigInteger as any)('2', 16);
-		this.k = new (BigInteger as any)(
+		this.N = new BigInteger(initN, 16);
+		this.g = new BigInteger('2', 16);
+		this.k = new BigInteger(
 			this.hexHash(`${this.padHex(this.N)}${this.padHex(this.g)}`),
 			16
 		);
@@ -129,7 +122,7 @@ export default class AuthenticationHelper {
 	/**
 	 * @returns {BigInteger} small A, a random number
 	 */
-	getSmallAValue() {
+	getSmallAValue(): BigInteger {
 		return this.smallAValue;
 	}
 
@@ -165,7 +158,7 @@ export default class AuthenticationHelper {
 
 		const hexRandom = toHex(randomBytes(128));
 
-		const randomBigInt = new (BigInteger as any)(hexRandom, 16);
+		const randomBigInt = new BigInteger(hexRandom, 16);
 
 		// There is no need to do randomBigInt.mod(this.N - 1) as N (3072-bit) is > 128 bytes (1024-bit)
 
@@ -239,15 +232,10 @@ export default class AuthenticationHelper {
 		const hexRandom = toHex(randomBytes(16));
 
 		// The random hex will be unambiguously represented as a postive integer
-		this.SaltToHashDevices = this.padHex(
-			new (BigInteger as any)(hexRandom, 16)
-		);
+		this.SaltToHashDevices = this.padHex(new BigInteger(hexRandom, 16));
 
 		this.g.modPow(
-			new (BigInteger as any)(
-				this.hexHash(this.SaltToHashDevices + hashedString),
-				16
-			),
+			new BigInteger(this.hexHash(this.SaltToHashDevices + hashedString), 16),
 			this.N,
 			(err: unknown, verifierDevicesNotPadded: BigInteger) => {
 				if (err) {
@@ -291,7 +279,7 @@ export default class AuthenticationHelper {
 	 */
 	calculateU(A: BigInteger, B: BigInteger): BigInteger {
 		this.UHexHash = this.hexHash(this.padHex(A) + this.padHex(B));
-		const finalU = new (BigInteger as any)(this.UHexHash, 16);
+		const finalU = new BigInteger(this.UHexHash, 16);
 
 		return finalU;
 	}
@@ -381,7 +369,7 @@ export default class AuthenticationHelper {
 		const usernamePassword = `${this.poolName}${username}:${password}`;
 		const usernamePasswordHash = this.hash(usernamePassword);
 
-		const xValue = new (BigInteger as any)(
+		const xValue = new BigInteger(
 			this.hexHash(this.padHex(salt) + usernamePasswordHash),
 			16
 		);
@@ -473,10 +461,10 @@ export default class AuthenticationHelper {
 			throw new Error('Not a BigInteger');
 		}
 
-		const isNegative = (bigInt as any).compareTo(BigInteger.ZERO) < 0;
+		const isNegative = bigInt.compareTo(BigInteger.ZERO) < 0;
 
 		/* Get a hex string for abs(bigInt) */
-		let hexStr = (bigInt as any).abs().toString(16);
+		let hexStr = bigInt.abs().toString(16);
 
 		/* Pad hex to even length if needed */
 		hexStr = hexStr.length % 2 !== 0 ? `0${hexStr}` : hexStr;
@@ -495,7 +483,7 @@ export default class AuthenticationHelper {
 				.join('');
 
 			/* After flipping the bits, add one to get the 2's complement representation */
-			const flippedBitsBI = new (BigInteger as any)(invertedNibbles, 16).add(
+			const flippedBitsBI = new BigInteger(invertedNibbles, 16).add(
 				BigInteger.ONE
 			);
 
