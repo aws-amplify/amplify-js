@@ -43,6 +43,8 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "record",
 			  "identifyUser",
+			  "enable",
+			  "disable",
 			  "AnalyticsError",
 			]
 		`);

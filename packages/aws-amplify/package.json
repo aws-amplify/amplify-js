@@ -228,6 +228,24 @@
 			"limit": "21.10 kB"
 		},
 		{
+			"name": "[Analytics] identifyUser (Pinpoint)",
+			"path": "./lib-esm/analytics/index.js",
+			"import": "{ identifyUser }",
+			"limit": "19.30 kB"
+		},
+		{
+			"name": "[Analytics] enable",
+			"path": "./lib-esm/analytics/index.js",
+			"import": "{ enable }",
+			"limit": "0.025 kB"
+		},
+		{
+			"name": "[Analytics] disable",
+			"path": "./lib-esm/analytics/index.js",
+			"import": "{ disable }",
+			"limit": "0.025 kB"
+		},
+		{
 			"name": "[API] class (AppSync)",
 			"path": "./lib-esm/api/index.js",
 			"import": "{ API }",
@@ -238,12 +256,6 @@
 			"path": "./lib-esm/api/index.js",
 			"import": "{ generateClient }",
 			"limit": "70.00 kB"
-		},
-		{
-			"name": "[Analytics] identifyUser (Pinpoint)",
-			"path": "./lib-esm/analytics/index.js",
-			"import": "{ identifyUser }",
-			"limit": "19.30 kB"
 		},
 		{
 			"name": "[Auth] signUp (Cognito)",
