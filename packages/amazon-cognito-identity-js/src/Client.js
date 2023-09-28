@@ -32,43 +32,33 @@ export default class Client {
 	 * @param {object} params Input parameters
 	 * @returns Promise<object>
 	 */
-	promisifyRequest(operation, params, userAgentValue) {
+	promisifyRequest(operation, params) {
 		return new Promise((resolve, reject) => {
-			this.request(
-				operation,
-				params,
-				(err, data) => {
-					if (err) {
-						reject(
-							new CognitoError(err.message, err.code, err.name, err.statusCode)
-						);
-					} else {
-						resolve(data);
-					}
-				},
-				userAgentValue
-			);
+			this.request(operation, params, (err, data) => {
+				if (err) {
+					reject(
+						new CognitoError(err.message, err.code, err.name, err.statusCode)
+					);
+				} else {
+					resolve(data);
+				}
+			});
 		});
 	}
 
-	requestWithRetry(operation, params, callback, userAgentValue) {
+	requestWithRetry(operation, params, callback) {
 		const MAX_DELAY_IN_MILLIS = 5 * 1000;
 
 		jitteredExponentialRetry(
 			p =>
 				new Promise((res, rej) => {
-					this.request(
-						operation,
-						p,
-						(error, result) => {
-							if (error) {
-								rej(error);
-							} else {
-								res(result);
-							}
-						},
-						userAgentValue
-					);
+					this.request(operation, p, (error, result) => {
+						if (error) {
+							rej(error);
+						} else {
+							res(result);
+						}
+					});
 				}),
 			[params],
 			MAX_DELAY_IN_MILLIS
@@ -83,14 +73,13 @@ export default class Client {
 	 * @param {string} operation API operation
 	 * @param {object} params Input parameters
 	 * @param {function} callback Callback called when a response is returned
-	 * @param {string} userAgentValue Optional string containing custom user agent value
 	 * @returns {void}
 	 */
-	request(operation, params, callback, userAgentValue) {
+	request(operation, params, callback) {
 		const headers = {
 			'Content-Type': 'application/x-amz-json-1.1',
 			'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
-			'X-Amz-User-Agent': userAgentValue || getAmplifyUserAgent(),
+			'X-Amz-User-Agent': getAmplifyUserAgent(),
 			'Cache-Control': 'no-store',
 		};
 

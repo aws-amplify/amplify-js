@@ -18,7 +18,7 @@ import {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import { InternalPubSub } from '@aws-amplify/pubsub/internals';
-import { InternalAuth } from '@aws-amplify/auth/internals';
+import { Auth } from '@aws-amplify/auth';
 import { Cache } from '@aws-amplify/cache';
 import {
 	GraphQLAuthError,
@@ -51,7 +51,7 @@ export class InternalGraphQLAPIClass {
 	private _options;
 	private _api = null;
 
-	InternalAuth = InternalAuth;
+	Auth = Auth;
 	Cache = Cache;
 	Credentials = Credentials;
 
@@ -119,8 +119,7 @@ export class InternalGraphQLAPIClass {
 
 	private async _headerBasedAuth(
 		defaultAuthenticationType?,
-		additionalHeaders: { [key: string]: string } = {},
-		customUserAgentDetails?: CustomUserAgentDetails
+		additionalHeaders: { [key: string]: string } = {}
 	) {
 		const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
 			this._options;
@@ -152,10 +151,7 @@ export class InternalGraphQLAPIClass {
 					if (federatedInfo) {
 						token = federatedInfo.token;
 					} else {
-						const currentUser = await InternalAuth.currentAuthenticatedUser(
-							undefined,
-							customUserAgentDetails
-						);
+						const currentUser = await Auth.currentAuthenticatedUser();
 						if (currentUser) {
 							token = currentUser.token;
 						}
@@ -172,9 +168,7 @@ export class InternalGraphQLAPIClass {
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
 				try {
-					const session = await this.InternalAuth.currentSession(
-						customUserAgentDetails
-					);
+					const session = await this.Auth.currentSession();
 					headers = {
 						Authorization: session.getAccessToken().getJwtToken(),
 					};
@@ -291,18 +285,10 @@ export class InternalGraphQLAPIClass {
 
 		const headers = {
 			...(!customGraphqlEndpoint &&
-				(await this._headerBasedAuth(
-					authMode,
-					additionalHeaders,
-					customUserAgentDetails
-				))),
+				(await this._headerBasedAuth(authMode, additionalHeaders))),
 			...(customGraphqlEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(
-							authMode,
-							additionalHeaders,
-							customUserAgentDetails
-					  )
+					? await this._headerBasedAuth(authMode, additionalHeaders)
 					: { Authorization: null })),
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,

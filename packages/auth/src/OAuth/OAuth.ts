@@ -117,7 +117,7 @@ export default class OAuth {
 		this._urlOpener(URL, redirectSignIn);
 	}
 
-	private async _handleCodeFlow(currentUrl: string, userAgentValue?: string) {
+	private async _handleCodeFlow(currentUrl: string) {
 		/* Convert URL into an object with parameters as keys
     { redirect_uri: 'http://localhost:3000/', response_type: 'code', ...} */
 		const { code } = (parse(currentUrl).query || '')
@@ -169,12 +169,17 @@ export default class OAuth {
 			.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
 			.join('&');
 
+		const customUserAgentDetails: CustomUserAgentDetails = {
+			category: Category.Auth,
+			action: AuthAction.FederatedSignIn,
+		};
+
 		const { access_token, refresh_token, id_token, error } = await (
 			(await fetch(oAuthTokenEndpoint, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
-					[USER_AGENT_HEADER]: userAgentValue,
+					[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 				},
 				body,
 			})) as any
@@ -212,10 +217,7 @@ export default class OAuth {
 		};
 	}
 
-	public async handleAuthResponse(
-		currentUrl?: string,
-		userAgentValue?: string
-	) {
+	public async handleAuthResponse(currentUrl?: string) {
 		try {
 			const urlParams = currentUrl
 				? ({
@@ -242,10 +244,7 @@ export default class OAuth {
 				`Starting ${this._config.responseType} flow with ${currentUrl}`
 			);
 			if (this._config.responseType === 'code') {
-				return {
-					...(await this._handleCodeFlow(currentUrl, userAgentValue)),
-					state,
-				};
+				return { ...(await this._handleCodeFlow(currentUrl)), state };
 			} else {
 				return { ...(await this._handleImplicitFlow(currentUrl)), state };
 			}

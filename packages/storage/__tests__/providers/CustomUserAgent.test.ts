@@ -7,8 +7,6 @@ import { AWSS3Provider as StorageProvider } from '../../src/providers/AWSS3Provi
 import { StorageOptions } from '../../src';
 import { headObject, getObject } from '../../src/AwsClients/S3';
 import { presignUrl } from '@aws-amplify/core/internals/aws-client-utils';
-import { InternalStorageClass } from '../../src/internals/InternalStorage';
-import { getStorageUserAgentValue } from '../../src/common/StorageUtils';
 
 jest.mock('../../src/AwsClients/S3');
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
@@ -32,8 +30,7 @@ const options: StorageOptions = {
 	level: 'public',
 };
 
-let provider: StorageProvider;
-let storage: InternalStorageClass;
+let storage: StorageProvider;
 
 const originalLoadS3Config = utils.loadS3Config;
 // @ts-ignore
@@ -45,15 +42,8 @@ describe('Each Storage call should create a client with the right StorageAction'
 		jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 			return Promise.resolve(credentials);
 		});
-
-		provider = new StorageProvider();
-		provider.configure(options);
-
-		storage = new InternalStorageClass();
-		storage.configure();
-
-		storage.addPluggable(provider);
-
+		storage = new StorageProvider();
+		storage.configure(options);
 		mockHeadObject.mockResolvedValue({
 			ContentLength: '100',
 			ContentType: 'text/plain',
@@ -65,28 +55,23 @@ describe('Each Storage call should create a client with the right StorageAction'
 
 	afterEach(() => {
 		jest.clearAllMocks();
-		jest.resetAllMocks();
 	});
 
 	test('getUrl', async () => {
-		provider.get = jest.fn(provider.get);
-
 		await storage.get('test');
-		expect(provider.get).toBeCalledWith(
-			'test',
-			expect.anything(),
-			getStorageUserAgentValue(StorageAction.Get)
+		expect(utils.loadS3Config).toBeCalledWith(
+			expect.objectContaining({
+				storageAction: StorageAction.Get,
+			})
 		);
 	});
 
 	test('getProperties', async () => {
-		provider.getProperties = jest.fn(provider.getProperties);
-
 		await storage.getProperties('test');
-		expect(provider.getProperties).toBeCalledWith(
-			'test',
-			undefined,
-			getStorageUserAgentValue(StorageAction.GetProperties)
+		expect(utils.loadS3Config).toBeCalledWith(
+			expect.objectContaining({
+				storageAction: StorageAction.GetProperties,
+			})
 		);
 	});
 
@@ -98,59 +83,47 @@ describe('Each Storage call should create a client with the right StorageAction'
 			},
 		});
 
-		provider.get = jest.fn(provider.get);
-
 		await storage.get('test', { download: true });
-		expect(provider.get).toBeCalledWith(
-			'test',
-			expect.anything(),
-			getStorageUserAgentValue(StorageAction.Get)
+		expect(utils.loadS3Config).toBeCalledWith(
+			expect.objectContaining({
+				storageAction: StorageAction.Get,
+			})
 		);
 	});
 
 	test('uploadData', async () => {
-		provider.put = jest.fn(provider.put);
-
 		await storage.put('test', 'testData');
-		expect(provider.put).toBeCalledWith(
-			'test',
-			'testData',
-			expect.anything(),
-			getStorageUserAgentValue(StorageAction.Put)
+		expect(utils.loadS3Config).toBeCalledWith(
+			expect.objectContaining({
+				storageAction: StorageAction.Put,
+			})
 		);
 	});
 
 	test('copy', async () => {
-		provider.copy = jest.fn(provider.copy);
-
 		await storage.copy({ key: 'testSrc' }, { key: 'testDest' });
-		expect(provider.copy).toBeCalledWith(
-			{ key: 'testSrc' },
-			{ key: 'testDest' },
-			expect.anything(),
-			getStorageUserAgentValue(StorageAction.Copy)
+		expect(utils.loadS3Config).toBeCalledWith(
+			expect.objectContaining({
+				storageAction: StorageAction.Copy,
+			})
 		);
 	});
 
 	test('list', async () => {
-		provider.list = jest.fn(provider.list);
-
 		await storage.list('');
-		expect(provider.list).toBeCalledWith(
-			'',
-			undefined,
-			getStorageUserAgentValue(StorageAction.List)
+		expect(utils.loadS3Config).toBeCalledWith(
+			expect.objectContaining({
+				storageAction: StorageAction.List,
+			})
 		);
 	});
 
 	test('remove', async () => {
-		provider.remove = jest.fn(provider.remove);
-
 		await storage.remove('test');
-		expect(provider.remove).toBeCalledWith(
-			'test',
-			undefined,
-			getStorageUserAgentValue(StorageAction.Remove)
+		expect(utils.loadS3Config).toBeCalledWith(
+			expect.objectContaining({
+				storageAction: StorageAction.Remove,
+			})
 		);
 	});
 });

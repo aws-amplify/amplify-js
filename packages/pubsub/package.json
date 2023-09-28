@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pubsub",
-  "version": "5.5.2",
+  "version": "5.5.5",
   "description": "Pubsub category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -50,9 +50,9 @@
     "internals"
   ],
   "dependencies": {
-    "@aws-amplify/auth": "5.6.2",
-    "@aws-amplify/cache": "5.1.8",
-    "@aws-amplify/core": "5.8.2",
+    "@aws-amplify/auth": "5.6.5",
+    "@aws-amplify/cache": "5.1.11",
+    "@aws-amplify/core": "5.8.5",
     "buffer": "4.9.2",
     "graphql": "15.8.0",
     "tslib": "^1.8.0",
@@ -65,13 +65,13 @@
       "name": "PubSub (IoT provider)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, PubSub, AWSIoTProvider }",
-      "limit": "82.2 kB"
+      "limit": "81.39 kB"
     },
     {
       "name": "PubSub (Mqtt provider)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, PubSub, MqttOverWSProvider }",
-      "limit": "82.07 kB"
+      "limit": "81.26 kB"
     }
   ],
   "jest": {

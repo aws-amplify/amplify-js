@@ -69,26 +69,40 @@ describe('S3ClientUtils tests', () => {
 	});
 
 	test('createS3Client test', async () => {
-		expect.assertions(3);
+		expect.assertions(4);
 		const s3Config = loadS3Config({
 			region: 'us-west-2',
 			useAccelerateEndpoint: true,
+			storageAction: StorageAction.Get,
 			credentials,
 		});
+		expect(s3Config.userAgentValue).toEqual(
+			getAmplifyUserAgent({
+				category: Category.Storage,
+				action: StorageAction.Get,
+			})
+		);
 		expect(s3Config.region).toEqual('us-west-2');
 		expect(s3Config.useAccelerateEndpoint).toBe(true);
 		expect(await s3Config.credentials()).toBe(credentials);
 	});
 
 	test('createS3Client injects credentials provider', async () => {
-		expect.assertions(3);
+		expect.assertions(4);
 		jest
 			.spyOn(Credentials, 'get')
 			.mockImplementationOnce(() => Promise.resolve(credentials));
 		const s3Config = loadS3Config({
 			region: 'us-west-2',
 			useAccelerateEndpoint: true,
+			storageAction: StorageAction.Get,
 		});
+		expect(s3Config.userAgentValue).toEqual(
+			getAmplifyUserAgent({
+				category: Category.Storage,
+				action: StorageAction.Get,
+			})
+		);
 		expect(s3Config.region).toEqual('us-west-2');
 		expect(s3Config.useAccelerateEndpoint).toBe(true);
 		expect(await s3Config.credentials()).toEqual(credentials);
@@ -98,6 +112,7 @@ describe('S3ClientUtils tests', () => {
 		const s3Config = loadS3Config({
 			region: 'us-west-2',
 			dangerouslyConnectToHttpEndpointForTesting: true,
+			storageAction: StorageAction.Get,
 		});
 		expect(s3Config).toMatchObject({
 			customEndpoint: 'http://localhost:20005',

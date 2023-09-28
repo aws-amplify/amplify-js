@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "5.9.2",
+  "version": "5.9.5",
   "description": "Storage category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -43,11 +43,10 @@
   "files": [
     "lib",
     "lib-esm",
-    "src",
-    "internals"
+    "src"
   ],
   "dependencies": {
-    "@aws-amplify/core": "5.8.2",
+    "@aws-amplify/core": "5.8.5",
     "@aws-sdk/md5-js": "3.6.1",
     "@aws-sdk/types": "3.6.1",
     "buffer": "4.9.2",

@@ -2,16 +2,14 @@ import OAuth from '../src/OAuth/OAuth';
 import * as oauthStorage from '../src/OAuth/oauthStorage';
 import {
 	CookieStorage,
+	CognitoUserPool,
+	CognitoUser,
 	CognitoUserSession,
 	CognitoIdToken,
 	CognitoAccessToken,
 	NodeCallback,
 	ISignUpResult,
 } from 'amazon-cognito-identity-js';
-import {
-	InternalCognitoUser,
-	InternalCognitoUserPool,
-} from 'amazon-cognito-identity-js/internals';
 
 const MAX_DEVICES: number = 60;
 
@@ -71,186 +69,15 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserSession', () => {
 	return CognitoUserSession;
 });
 
-jest.mock('amazon-cognito-identity-js/internals', () => {
-	// prettier-ignore
-	const InternalCognitoUser = function() {
-		// mock private member
-		this.signInUserSession = null;
+jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
+	const CognitoUserPool = () => {};
+
+	CognitoUserPool.prototype.CognitoUserPool = options => {
+		CognitoUserPool.prototype.options = options;
+		return CognitoUserPool;
 	};
 
-	InternalCognitoUser.prototype.InternalCognitoUser = options => {
-		InternalCognitoUser.prototype.options = options;
-		return InternalCognitoUser;
-	};
-
-	InternalCognitoUser.prototype.getSession = callback => {
-		// throw 3;
-		callback(null, 'session');
-	};
-
-	InternalCognitoUser.prototype.getUserAttributes = callback => {
-		callback(null, 'attributes');
-	};
-
-	InternalCognitoUser.prototype.getAttributeVerificationCode = (
-		attr,
-		callback
-	) => {
-		callback.onSuccess('success');
-	};
-
-	InternalCognitoUser.prototype.verifyAttribute = (attr, code, callback) => {
-		callback.onSuccess('success');
-	};
-
-	InternalCognitoUser.prototype.authenticateUser = (
-		authenticationDetails,
-		callback
-	) => {
-		callback.onSuccess('session');
-	};
-
-	InternalCognitoUser.prototype.sendMFACode = (code, callback) => {
-		callback.onSuccess('session');
-	};
-
-	InternalCognitoUser.prototype.resendConfirmationCode = callback => {
-		callback(null, {
-			CodeDeliveryDetails: {
-				AttributeName: 'email',
-				DeliveryMedium: 'EMAIL',
-				Destination: 'amplify@*****.com',
-			},
-		});
-	};
-
-	InternalCognitoUser.prototype.changePassword = (
-		oldPassword,
-		newPassword,
-		callback
-	) => {
-		callback(null, 'SUCCESS');
-	};
-
-	InternalCognitoUser.prototype.forgotPassword = callback => {
-		callback.onSuccess();
-	};
-
-	InternalCognitoUser.prototype.confirmPassword = (
-		code,
-		password,
-		callback
-	) => {
-		callback.onSuccess();
-	};
-
-	InternalCognitoUser.prototype.signOut = callback => {
-		if (callback && typeof callback === 'function') {
-			callback();
-		}
-	};
-
-	InternalCognitoUser.prototype.globalSignOut = callback => {
-		callback.onSuccess();
-	};
-
-	InternalCognitoUser.prototype.confirmRegistration = (
-		confirmationCode,
-		forceAliasCreation,
-		callback
-	) => {
-		callback(null, 'Success');
-	};
-
-	InternalCognitoUser.prototype.completeNewPasswordChallenge = (
-		password,
-		requiredAttributes,
-		callback
-	) => {
-		callback.onSuccess('session');
-	};
-
-	InternalCognitoUser.prototype.updateAttributes = (
-		attributeList,
-		callback
-	) => {
-		callback(null, 'SUCCESS');
-	};
-	InternalCognitoUser.prototype.deleteAttributes = (
-		attributeList,
-		callback
-	) => {
-		callback(null, 'SUCCESS');
-	};
-	InternalCognitoUser.prototype.deleteUser = (callback, {}) => {
-		callback(null, 'SUCCESS');
-	};
-
-	InternalCognitoUser.prototype.setAuthenticationFlowType = type => {};
-
-	InternalCognitoUser.prototype.initiateAuth = (
-		authenticationDetails,
-		callback
-	) => {
-		callback.customChallenge('challengeParam');
-	};
-
-	InternalCognitoUser.prototype.sendCustomChallengeAnswer = (
-		challengeAnswer,
-		callback
-	) => {
-		callback.onSuccess('session');
-	};
-
-	InternalCognitoUser.prototype.refreshSession = (refreshToken, callback) => {
-		callback(null, 'session');
-	};
-
-	InternalCognitoUser.prototype.getUsername = () => {
-		return 'username';
-	};
-
-	InternalCognitoUser.prototype.getUserData = callback => {
-		callback(null, 'data');
-	};
-
-	InternalCognitoUser.prototype.setUserMfaPreference = (
-		smsMfaSettings,
-		softwareTokenMfaSettings,
-		callback
-	) => {
-		callback(null, 'success');
-	};
-
-	InternalCognitoUser.prototype.getCachedDeviceKeyAndPassword = () => {
-		return 'success';
-	};
-	InternalCognitoUser.prototype.setDeviceStatusRemembered = callback => {
-		callback.onSuccess('success');
-	};
-	InternalCognitoUser.prototype.forgetDevice = callback => {
-		callback.onSuccess('success');
-	};
-	InternalCognitoUser.prototype.listDevices = (
-		limit,
-		paginationToken,
-		callback
-	) => {
-		callback.onSuccess('success');
-	};
-	// prettier-ignore
-	InternalCognitoUser.prototype.getSignInUserSession = function() {
-		return this.signInUserSession;
-	};
-
-	const InternalCognitoUserPool = () => {};
-
-	InternalCognitoUserPool.prototype.InternalCognitoUserPool = options => {
-		InternalCognitoUserPool.prototype.options = options;
-		return InternalCognitoUserPool;
-	};
-
-	InternalCognitoUserPool.prototype.getCurrentUser = () => {
+	CognitoUserPool.prototype.getCurrentUser = () => {
 		return {
 			username: 'username',
 			attributes: { email: 'test@test.com' },
@@ -268,23 +95,171 @@ jest.mock('amazon-cognito-identity-js/internals', () => {
 		};
 	};
 
-	InternalCognitoUserPool.prototype.signUp = (
+	CognitoUserPool.prototype.signUp = (
 		username,
 		password,
 		signUpAttributeList,
 		validationData,
 		callback,
-		clientMetadata,
-		customUserAgentDetails?
+		clientMetadata
 	) => {
 		callback(null, 'signUpResult');
 	};
 
-	return {
-		...jest.requireActual('amazon-cognito-identity-js/internals'),
-		InternalCognitoUser,
-		InternalCognitoUserPool,
+	return CognitoUserPool;
+});
+
+jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
+	const CognitoUser = function cognitoUser() {
+		// mock private member
+		this.signInUserSession = null;
 	};
+
+	CognitoUser.prototype.CognitoUser = options => {
+		CognitoUser.prototype.options = options;
+		return CognitoUser;
+	};
+
+	CognitoUser.prototype.getSession = callback => {
+		// throw 3;
+		callback(null, 'session');
+	};
+
+	CognitoUser.prototype.getUserAttributes = callback => {
+		callback(null, 'attributes');
+	};
+
+	CognitoUser.prototype.getAttributeVerificationCode = (attr, callback) => {
+		callback.onSuccess('success');
+	};
+
+	CognitoUser.prototype.verifyAttribute = (attr, code, callback) => {
+		callback.onSuccess('success');
+	};
+
+	CognitoUser.prototype.authenticateUser = (
+		authenticationDetails,
+		callback
+	) => {
+		callback.onSuccess('session');
+	};
+
+	CognitoUser.prototype.sendMFACode = (code, callback) => {
+		callback.onSuccess('session');
+	};
+
+	CognitoUser.prototype.resendConfirmationCode = callback => {
+		callback(null, {
+			CodeDeliveryDetails: {
+				AttributeName: 'email',
+				DeliveryMedium: 'EMAIL',
+				Destination: 'amplify@*****.com',
+			},
+		});
+	};
+
+	CognitoUser.prototype.changePassword = (
+		oldPassword,
+		newPassword,
+		callback
+	) => {
+		callback(null, 'SUCCESS');
+	};
+
+	CognitoUser.prototype.forgotPassword = callback => {
+		callback.onSuccess();
+	};
+
+	CognitoUser.prototype.confirmPassword = (code, password, callback) => {
+		callback.onSuccess();
+	};
+
+	CognitoUser.prototype.signOut = callback => {
+		if (callback && typeof callback === 'function') {
+			callback();
+		}
+	};
+
+	CognitoUser.prototype.globalSignOut = callback => {
+		callback.onSuccess();
+	};
+
+	CognitoUser.prototype.confirmRegistration = (
+		confirmationCode,
+		forceAliasCreation,
+		callback
+	) => {
+		callback(null, 'Success');
+	};
+
+	CognitoUser.prototype.completeNewPasswordChallenge = (
+		password,
+		requiredAttributes,
+		callback
+	) => {
+		callback.onSuccess('session');
+	};
+
+	CognitoUser.prototype.updateAttributes = (attributeList, callback) => {
+		callback(null, 'SUCCESS');
+	};
+	CognitoUser.prototype.deleteAttributes = (attributeList, callback) => {
+		callback(null, 'SUCCESS');
+	};
+	CognitoUser.prototype.deleteUser = (callback, {}) => {
+		callback(null, 'SUCCESS');
+	};
+
+	CognitoUser.prototype.setAuthenticationFlowType = type => {};
+
+	CognitoUser.prototype.initiateAuth = (authenticationDetails, callback) => {
+		callback.customChallenge('challengeParam');
+	};
+
+	CognitoUser.prototype.sendCustomChallengeAnswer = (
+		challengeAnswer,
+		callback
+	) => {
+		callback.onSuccess('session');
+	};
+
+	CognitoUser.prototype.refreshSession = (refreshToken, callback) => {
+		callback(null, 'session');
+	};
+
+	CognitoUser.prototype.getUsername = () => {
+		return 'username';
+	};
+
+	CognitoUser.prototype.getUserData = callback => {
+		callback(null, 'data');
+	};
+
+	CognitoUser.prototype.setUserMfaPreference = (
+		smsMfaSettings,
+		softwareTokenMfaSettings,
+		callback
+	) => {
+		callback(null, 'success');
+	};
+
+	CognitoUser.prototype.getCachedDeviceKeyAndPassword = () => {
+		return 'success';
+	};
+	CognitoUser.prototype.setDeviceStatusRemembered = callback => {
+		callback.onSuccess('success');
+	};
+	CognitoUser.prototype.forgetDevice = callback => {
+		callback.onSuccess('success');
+	};
+	CognitoUser.prototype.listDevices = (limit, paginationToken, callback) => {
+		callback.onSuccess('success');
+	};
+	CognitoUser.prototype.getSignInUserSession = function getSignInUserSession() {
+		return this.signInUserSession;
+	};
+
+	return CognitoUser;
 });
 
 const createMockLocalStorage = () =>
@@ -306,12 +281,10 @@ const createMockLocalStorage = () =>
 
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
-import { InternalAuthClass } from '../src/internals/InternalAuth';
-import { AuthAction, Credentials, StorageHelper, Hub } from '@aws-amplify/core';
+import { Credentials, StorageHelper, Hub } from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
 import { mockDeviceArray, transformedMockData } from './mockData';
-import { getAuthUserAgentDetails, getAuthUserAgentValue } from '../src/utils';
 
 const authOptions: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
@@ -368,7 +341,7 @@ const authOptionsWithNoUserPoolId: AuthOptions = {
 	mandatorySignIn: false,
 };
 
-const userPool = new InternalCognitoUserPool({
+const userPool = new CognitoUserPool({
 	UserPoolId: authOptions.userPoolId,
 	ClientId: authOptions.userPoolWebClientId,
 });
@@ -404,7 +377,7 @@ const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 describe('auth unit test', () => {
 	describe('signUp', () => {
 		test('happy case with object attr', async () => {
-			const spyon = jest.spyOn(InternalCognitoUserPool.prototype, 'signUp');
+			const spyon = jest.spyOn(CognitoUserPool.prototype, 'signUp');
 			const auth = new Auth(authOptions);
 
 			const attrs = {
@@ -422,7 +395,7 @@ describe('auth unit test', () => {
 		});
 
 		test('happy case clientMetadata default', async () => {
-			const spyon = jest.spyOn(InternalCognitoUserPool.prototype, 'signUp');
+			const spyon = jest.spyOn(CognitoUserPool.prototype, 'signUp');
 			const auth = new Auth(authOptionsWithClientMetadata);
 
 			const attrs = {
@@ -436,7 +409,7 @@ describe('auth unit test', () => {
 			};
 			await auth.signUp(attrs);
 
-			expect(await InternalCognitoUserPool.prototype.signUp).toBeCalledWith(
+			expect(await CognitoUserPool.prototype.signUp).toBeCalledWith(
 				attrs.username,
 				attrs.password,
 				[
@@ -446,14 +419,13 @@ describe('auth unit test', () => {
 				],
 				null,
 				jasmine.any(Function),
-				{ foo: 'bar' },
-				getAuthUserAgentValue(AuthAction.SignUp)
+				{ foo: 'bar' }
 			);
 			spyon.mockClear();
 		});
 
 		test('happy case clientMetadata parameter', async () => {
-			const spyon = jest.spyOn(InternalCognitoUserPool.prototype, 'signUp');
+			const spyon = jest.spyOn(CognitoUserPool.prototype, 'signUp');
 			const auth = new Auth(authOptionsWithClientMetadata);
 
 			const attrs = {
@@ -470,7 +442,7 @@ describe('auth unit test', () => {
 			};
 			await auth.signUp(attrs);
 
-			expect(await InternalCognitoUserPool.prototype.signUp).toBeCalledWith(
+			expect(await CognitoUserPool.prototype.signUp).toBeCalledWith(
 				attrs.username,
 				attrs.password,
 				[
@@ -480,8 +452,7 @@ describe('auth unit test', () => {
 				],
 				null,
 				jasmine.any(Function),
-				{ custom: 'value' },
-				getAuthUserAgentValue(AuthAction.SignUp)
+				{ custom: 'value' }
 			);
 			spyon.mockClear();
 		});
@@ -504,7 +475,7 @@ describe('auth unit test', () => {
 
 		test('callback error', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'signUp')
+				.spyOn(CognitoUserPool.prototype, 'signUp')
 				.mockImplementationOnce(
 					(
 						username,
@@ -600,7 +571,7 @@ describe('auth unit test', () => {
 	describe('autoSignInAfterSignUp', () => {
 		test('happy case auto confirm', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'signUp')
+				.spyOn(CognitoUserPool.prototype, 'signUp')
 				.mockImplementationOnce(
 					(
 						username,
@@ -613,10 +584,7 @@ describe('auth unit test', () => {
 						callback(null, signUpResult);
 					}
 				);
-			const signInSpyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'authenticateUser'
-			);
+			const signInSpyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
 			const auth = new Auth(authOptions);
 			const attrs = {
 				username: 'username',
@@ -635,15 +603,12 @@ describe('auth unit test', () => {
 		});
 
 		test('happy case confirmation code', async () => {
-			const spyon = jest.spyOn(InternalCognitoUserPool.prototype, 'signUp');
+			const spyon = jest.spyOn(CognitoUserPool.prototype, 'signUp');
 			const confirmSpyon = jest.spyOn(
-				InternalCognitoUser.prototype,
+				CognitoUser.prototype,
 				'confirmRegistration'
 			);
-			const signInSpyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'authenticateUser'
-			);
+			const signInSpyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
 			const auth = new Auth(authOptions);
 			const attrs = {
 				username: 'username',
@@ -665,11 +630,8 @@ describe('auth unit test', () => {
 
 		test('happy case confirmation link', async () => {
 			jest.useFakeTimers();
-			const spyon = jest.spyOn(InternalCognitoUserPool.prototype, 'signUp');
-			const signInSpyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'authenticateUser'
-			);
+			const spyon = jest.spyOn(CognitoUserPool.prototype, 'signUp');
+			const signInSpyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
 			const auth = new Auth(authOptionConfirmationLink);
 			const attrs = {
 				username: 'username',
@@ -689,18 +651,15 @@ describe('auth unit test', () => {
 		});
 
 		test('fail confirmation code', async () => {
-			const spyon = jest.spyOn(InternalCognitoUserPool.prototype, 'signUp');
+			const spyon = jest.spyOn(CognitoUserPool.prototype, 'signUp');
 			const confirmSpyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'confirmRegistration')
+				.spyOn(CognitoUser.prototype, 'confirmRegistration')
 				.mockImplementationOnce(
 					(confirmationCode, forceAliasCreation, callback) => {
 						callback('err', null);
 					}
 				);
-			const signInSpyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'authenticateUser'
-			);
+			const signInSpyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
 			const auth = new Auth(authOptions);
 			const attrs = {
 				username: 'username',
@@ -727,10 +686,7 @@ describe('auth unit test', () => {
 
 	describe('confirmSignUp', () => {
 		test('happy case', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'confirmRegistration'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'confirmRegistration');
 			const auth = new Auth(authOptions);
 
 			expect.assertions(1);
@@ -740,10 +696,7 @@ describe('auth unit test', () => {
 		});
 
 		test('with options', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'confirmRegistration'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'confirmRegistration');
 			const auth = new Auth(authOptions);
 
 			expect.assertions(1);
@@ -757,34 +710,25 @@ describe('auth unit test', () => {
 		});
 
 		test('happy case clientMetadata default', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'confirmRegistration'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'confirmRegistration');
 			const auth = new Auth(authOptionsWithClientMetadata);
 			const code = 'code';
 
 			await auth.confirmSignUp('username', code);
 
-			expect(
-				await InternalCognitoUser.prototype.confirmRegistration
-			).toBeCalledWith(
+			expect(await CognitoUser.prototype.confirmRegistration).toBeCalledWith(
 				code,
 				jasmine.any(Boolean),
 				jasmine.any(Function),
 				{
 					foo: 'bar',
-				},
-				getAuthUserAgentValue(AuthAction.ConfirmSignUp)
+				}
 			);
 			spyon.mockClear();
 		});
 
 		test('happy case clientMetadata parameter', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'confirmRegistration'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'confirmRegistration');
 			const auth = new Auth(authOptionsWithClientMetadata);
 			const code = 'code';
 
@@ -792,23 +736,20 @@ describe('auth unit test', () => {
 				clientMetadata: { custom: 'value' },
 			});
 
-			expect(
-				await InternalCognitoUser.prototype.confirmRegistration
-			).toBeCalledWith(
+			expect(await CognitoUser.prototype.confirmRegistration).toBeCalledWith(
 				code,
 				jasmine.any(Boolean),
 				jasmine.any(Function),
 				{
 					custom: 'value',
-				},
-				getAuthUserAgentValue(AuthAction.ConfirmSignUp)
+				}
 			);
 			spyon.mockClear();
 		});
 
 		test('callback err', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'confirmRegistration')
+				.spyOn(CognitoUser.prototype, 'confirmRegistration')
 				.mockImplementationOnce(
 					(confirmationCode, forceAliasCreation, callback) => {
 						callback('err', null);
@@ -871,10 +812,7 @@ describe('auth unit test', () => {
 
 	describe('resendSignUp', () => {
 		test('happy case', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'resendConfirmationCode'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'resendConfirmationCode');
 			const auth = new Auth(authOptions);
 
 			expect.assertions(1);
@@ -890,46 +828,34 @@ describe('auth unit test', () => {
 		});
 
 		test('happy case clientMetadata default', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'resendConfirmationCode'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'resendConfirmationCode');
 			const auth = new Auth(authOptionsWithClientMetadata);
 
 			await auth.resendSignUp('username');
 
-			expect(
-				await InternalCognitoUser.prototype.resendConfirmationCode
-			).toBeCalledWith(
+			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
 				jasmine.any(Function),
-				{ foo: 'bar' },
-				getAuthUserAgentValue(AuthAction.ResendSignUp)
+				{ foo: 'bar' }
 			);
 			spyon.mockClear();
 		});
 
 		test('happy case clientMetadata parameter', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'resendConfirmationCode'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'resendConfirmationCode');
 			const auth = new Auth(authOptionsWithClientMetadata);
 
 			await auth.resendSignUp('username', { custom: 'value' });
 
-			expect(
-				await InternalCognitoUser.prototype.resendConfirmationCode
-			).toBeCalledWith(
+			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
 				jasmine.any(Function),
-				{ custom: 'value' },
-				getAuthUserAgentValue(AuthAction.ResendSignUp)
+				{ custom: 'value' }
 			);
 			spyon.mockClear();
 		});
 
 		test('callback err', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'resendConfirmationCode')
+				.spyOn(CognitoUser.prototype, 'resendConfirmationCode')
 				.mockImplementationOnce(callback => {
 					callback(new Error('err'), null);
 				});
@@ -1025,19 +951,19 @@ describe('auth unit test', () => {
 	describe('signIn', () => {
 		test('happy case with password', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'authenticateUser')
+				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((authenticationDetails, callback) => {
 					callback.onSuccess(session);
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(auth, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return Promise.resolve(user);
 				});
@@ -1051,17 +977,12 @@ describe('auth unit test', () => {
 		});
 
 		test('happy case clientMetadata default', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'authenticateUser'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
 			const auth = new Auth(authOptionsWithClientMetadata);
 
 			await auth.signIn('username', 'password');
 
-			expect(
-				await InternalCognitoUser.prototype.authenticateUser
-			).toBeCalledWith(
+			expect(await CognitoUser.prototype.authenticateUser).toBeCalledWith(
 				{
 					username: 'username',
 					password: 'password',
@@ -1069,24 +990,18 @@ describe('auth unit test', () => {
 					clientMetadata: { foo: 'bar' },
 					authParameters: {},
 				},
-				authCallbacks,
-				getAuthUserAgentValue(AuthAction.SignIn)
+				authCallbacks
 			);
 			spyon.mockClear();
 		});
 
 		test('happy case clientMetadata parameter', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'authenticateUser'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
 			const auth = new Auth(authOptionsWithClientMetadata);
 
 			await auth.signIn('username', 'password', { custom: 'value' });
 
-			expect(
-				await InternalCognitoUser.prototype.authenticateUser
-			).toBeCalledWith(
+			expect(await CognitoUser.prototype.authenticateUser).toBeCalledWith(
 				{
 					username: 'username',
 					password: 'password',
@@ -1094,14 +1009,13 @@ describe('auth unit test', () => {
 					clientMetadata: { custom: 'value' },
 					authParameters: {},
 				},
-				authCallbacks,
-				getAuthUserAgentValue(AuthAction.SignIn)
+				authCallbacks
 			);
 			spyon.mockClear();
 		});
 
 		test('happy case validationData parameter', async () => {
-			const spyon = jest.spyOn(InternalCognitoUserPool.prototype, 'signUp');
+			const spyon = jest.spyOn(CognitoUserPool.prototype, 'signUp');
 			const auth = new Auth(authOptionsWithClientMetadata);
 
 			const attrs: SignUpParams = {
@@ -1135,27 +1049,26 @@ describe('auth unit test', () => {
 					{ Name: 'test', Value: '123' },
 				],
 				jasmine.any(Function),
-				{ custom: 'value' },
-				getAuthUserAgentValue(AuthAction.SignUp)
+				{ custom: 'value' }
 			);
 			spyon.mockClear();
 		});
 
 		test('throw error if failed to call currentUserPoolUser after signing in', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'authenticateUser')
+				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((authenticationDetails, callback) => {
 					callback.onSuccess(session);
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(auth, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return Promise.reject('User is disabled.');
 				});
@@ -1173,7 +1086,7 @@ describe('auth unit test', () => {
 
 		test('happy case using cookie storage', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'authenticateUser')
+				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((_authenticationDetails, callback) => {
 					callback.onSuccess(session);
 				});
@@ -1182,14 +1095,14 @@ describe('auth unit test', () => {
 				...authOptions,
 				cookieStorage: { domain: '.example.com' },
 			});
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 				Storage: new CookieStorage({ domain: '.yourdomain.com' }),
 			});
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(auth, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return Promise.resolve(user);
 				});
@@ -1203,7 +1116,7 @@ describe('auth unit test', () => {
 
 		test('onFailure', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'authenticateUser')
+				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((authenticationDetails, callback) => {
 					callback.onFailure('err');
 				});
@@ -1222,12 +1135,12 @@ describe('auth unit test', () => {
 
 		test('mfaRequired', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'authenticateUser')
+				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((authenticationDetails, callback) => {
 					callback.mfaRequired('SELECT_MFA_TYPE', 'challengeParam');
 				});
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1246,12 +1159,12 @@ describe('auth unit test', () => {
 
 		test('mfaSetup', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'authenticateUser')
+				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((authenticationDetails, callback) => {
 					callback.mfaSetup('MFA_SETUP', 'challengeParam');
 				});
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1270,12 +1183,12 @@ describe('auth unit test', () => {
 
 		test('totpRequired', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'authenticateUser')
+				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((authenticationDetails, callback) => {
 					callback.totpRequired('SOFTWARE_TOKEN_MFA', 'challengeParam');
 				});
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1294,12 +1207,12 @@ describe('auth unit test', () => {
 
 		test('selectMFAType', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'authenticateUser')
+				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((authenticationDetails, callback) => {
 					callback.selectMFAType('SELECT_MFA_TYPE', 'challengeParam');
 				});
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1318,12 +1231,12 @@ describe('auth unit test', () => {
 
 		test('newPasswordRequired', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'authenticateUser')
+				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((authenticationDetails, callback) => {
 					callback.newPasswordRequired('userAttributes', 'requiredAttributes');
 				});
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1345,18 +1258,15 @@ describe('auth unit test', () => {
 
 		test('customChallenge', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'authenticateUser')
+				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((authenticationDetails, callback) => {
 					callback.customChallenge('challengeParam');
 				});
 			const spyon2 = jest
-				.spyOn(
-					InternalCognitoUser.prototype as any,
-					'setAuthenticationFlowType'
-				)
+				.spyOn(CognitoUser.prototype as any, 'setAuthenticationFlowType')
 				.mockImplementationOnce(type => {});
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1374,10 +1284,7 @@ describe('auth unit test', () => {
 		});
 
 		test('no userPool', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'authenticateUser'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
 
 			// @ts-ignore
 			const auth = new Auth(authOptionsWithNoUserPoolId);
@@ -1393,10 +1300,7 @@ describe('auth unit test', () => {
 		});
 
 		test('no username', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'authenticateUser'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
 			const auth = new Auth(authOptions);
 
 			expect.assertions(1);
@@ -1413,12 +1317,12 @@ describe('auth unit test', () => {
 	describe('confirmSignIn', () => {
 		test('happy case', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'sendMFACode')
+				.spyOn(CognitoUser.prototype, 'sendMFACode')
 				.mockImplementationOnce((code, callback) => {
 					callback.onSuccess(session);
 				});
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1431,13 +1335,13 @@ describe('auth unit test', () => {
 
 		test('happy case attributes are appended', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'sendMFACode')
+				.spyOn(CognitoUser.prototype, 'sendMFACode')
 				.mockImplementationOnce((code, callback) => {
 					callback.onSuccess(session);
 				});
 			const hubSpy = jest.spyOn(Hub, 'dispatch');
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1458,9 +1362,9 @@ describe('auth unit test', () => {
 		});
 
 		test('happy case clientMetadata default', async () => {
-			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'sendMFACode');
+			const spyon = jest.spyOn(CognitoUser.prototype, 'sendMFACode');
 			const auth = new Auth(authOptionsWithClientMetadata);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1468,23 +1372,22 @@ describe('auth unit test', () => {
 
 			await auth.confirmSignIn(user, code);
 
-			expect(await InternalCognitoUser.prototype.sendMFACode).toBeCalledWith(
+			expect(await CognitoUser.prototype.sendMFACode).toBeCalledWith(
 				code,
 				{
 					onSuccess: jasmine.any(Function),
 					onFailure: jasmine.any(Function),
 				},
 				undefined,
-				{ foo: 'bar' },
-				getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+				{ foo: 'bar' }
 			);
 			spyon.mockClear();
 		});
 
 		test('happy case clientMetadata parameter', async () => {
-			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'sendMFACode');
+			const spyon = jest.spyOn(CognitoUser.prototype, 'sendMFACode');
 			const auth = new Auth(authOptionsWithClientMetadata);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1492,15 +1395,14 @@ describe('auth unit test', () => {
 
 			await auth.confirmSignIn(user, code, 'SMS_MFA', { custom: 'value' });
 
-			expect(await InternalCognitoUser.prototype.sendMFACode).toBeCalledWith(
+			expect(await CognitoUser.prototype.sendMFACode).toBeCalledWith(
 				code,
 				{
 					onSuccess: jasmine.any(Function),
 					onFailure: jasmine.any(Function),
 				},
 				'SMS_MFA',
-				{ custom: 'value' },
-				getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+				{ custom: 'value' }
 			);
 			spyon.mockClear();
 		});
@@ -1508,18 +1410,18 @@ describe('auth unit test', () => {
 		test('currentUserPoolUser fails but hub event still dispatches', async () => {
 			const auth = new Auth(authOptions);
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'sendMFACode')
+				.spyOn(CognitoUser.prototype, 'sendMFACode')
 				.mockImplementationOnce((code, callback) => {
 					callback.onSuccess(session);
 				});
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(auth, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return Promise.reject('Could not get current user.');
 				});
 			const hubSpy = jest.spyOn(Hub, 'dispatch');
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1540,12 +1442,12 @@ describe('auth unit test', () => {
 
 		test('onFailure', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'sendMFACode')
+				.spyOn(CognitoUser.prototype, 'sendMFACode')
 				.mockImplementationOnce((code, callback) => {
 					callback.onFailure('err');
 				});
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1560,10 +1462,10 @@ describe('auth unit test', () => {
 		});
 
 		test('no code', async () => {
-			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'sendMFACode');
+			const spyon = jest.spyOn(CognitoUser.prototype, 'sendMFACode');
 			const auth = new Auth(authOptions);
 
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1582,13 +1484,13 @@ describe('auth unit test', () => {
 	describe('completeNewPassword', () => {
 		test('happy case', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'completeNewPasswordChallenge')
+				.spyOn(CognitoUser.prototype, 'completeNewPasswordChallenge')
 				.mockImplementationOnce((password, requiredAttributes, callback) => {
 					callback.onSuccess(session);
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1603,11 +1505,11 @@ describe('auth unit test', () => {
 
 		test('happy case clientMetadata default', async () => {
 			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
+				CognitoUser.prototype,
 				'completeNewPasswordChallenge'
 			);
 			const auth = new Auth(authOptionsWithClientMetadata);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1615,7 +1517,7 @@ describe('auth unit test', () => {
 			await auth.completeNewPassword(user, 'password', {});
 
 			expect(
-				await InternalCognitoUser.prototype.completeNewPasswordChallenge
+				await CognitoUser.prototype.completeNewPasswordChallenge
 			).toBeCalledWith(
 				'password',
 				{},
@@ -1626,19 +1528,18 @@ describe('auth unit test', () => {
 					mfaSetup: jasmine.any(Function),
 					totpRequired: jasmine.any(Function),
 				},
-				{ foo: 'bar' },
-				getAuthUserAgentValue(AuthAction.CompleteNewPassword)
+				{ foo: 'bar' }
 			);
 			spyon.mockClear();
 		});
 
 		test('happy case clientMetadata default', async () => {
 			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
+				CognitoUser.prototype,
 				'completeNewPasswordChallenge'
 			);
 			const auth = new Auth(authOptionsWithClientMetadata);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1646,7 +1547,7 @@ describe('auth unit test', () => {
 			await auth.completeNewPassword(user, 'password', {}, { custom: 'value' });
 
 			expect(
-				await InternalCognitoUser.prototype.completeNewPasswordChallenge
+				await CognitoUser.prototype.completeNewPasswordChallenge
 			).toBeCalledWith(
 				'password',
 				{},
@@ -1657,21 +1558,20 @@ describe('auth unit test', () => {
 					mfaSetup: jasmine.any(Function),
 					totpRequired: jasmine.any(Function),
 				},
-				{ custom: 'value' },
-				getAuthUserAgentValue(AuthAction.CompleteNewPassword)
+				{ custom: 'value' }
 			);
 			spyon.mockClear();
 		});
 
 		test('on Failure', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'completeNewPasswordChallenge')
+				.spyOn(CognitoUser.prototype, 'completeNewPasswordChallenge')
 				.mockImplementationOnce((password, requiredAttributes, callback) => {
 					callback.onFailure('err');
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1688,13 +1588,13 @@ describe('auth unit test', () => {
 
 		test('mfaRequired', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'completeNewPasswordChallenge')
+				.spyOn(CognitoUser.prototype, 'completeNewPasswordChallenge')
 				.mockImplementationOnce((password, requiredAttributes, callback) => {
 					callback.mfaRequired('SMS_MFA', 'challengeParam');
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1707,13 +1607,13 @@ describe('auth unit test', () => {
 
 		test('mfaSetup', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'completeNewPasswordChallenge')
+				.spyOn(CognitoUser.prototype, 'completeNewPasswordChallenge')
 				.mockImplementationOnce((password, requiredAttributes, callback) => {
 					callback.mfaSetup('MFA_SETUP', 'challengeParam');
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1726,7 +1626,7 @@ describe('auth unit test', () => {
 
 		test('no password', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1746,20 +1646,17 @@ describe('auth unit test', () => {
 	describe('userAttributes', () => {
 		test('happy case', async () => {
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_userSession')
+				.spyOn(Auth.prototype, 'userSession')
 				.mockImplementationOnce(user => {
 					return new Promise((res: any, rej) => {
 						res('session');
 					});
 				});
 
-			const spyon2 = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'getUserAttributes'
-			);
+			const spyon2 = jest.spyOn(CognitoUser.prototype, 'getUserAttributes');
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1773,7 +1670,7 @@ describe('auth unit test', () => {
 
 		test('get userattributes failed', async () => {
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_userSession')
+				.spyOn(Auth.prototype, 'userSession')
 				.mockImplementationOnce(user => {
 					return new Promise((res: any, rej) => {
 						res('session');
@@ -1781,13 +1678,13 @@ describe('auth unit test', () => {
 				});
 
 			const spyon2 = jest
-				.spyOn(InternalCognitoUser.prototype, 'getUserAttributes')
+				.spyOn(CognitoUser.prototype, 'getUserAttributes')
 				.mockImplementationOnce(callback => {
 					callback(new Error('err'));
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1811,19 +1708,19 @@ describe('auth unit test', () => {
 		});
 		test('happy case', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(auth, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return Promise.resolve(user);
 				});
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_userSession')
+				.spyOn(Auth.prototype, 'userSession')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(session);
@@ -1839,19 +1736,19 @@ describe('auth unit test', () => {
 		test('no current session', async () => {
 			const auth = new Auth(authOptions);
 
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(auth, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return Promise.resolve(user);
 				});
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_userSession')
+				.spyOn(auth, 'userSession')
 				.mockImplementationOnce(() => {
 					return Promise.reject('cannot get the session');
 				});
@@ -1871,7 +1768,7 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptions);
 
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(auth, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return Promise.reject('no current user');
 				});
@@ -1906,13 +1803,13 @@ describe('auth unit test', () => {
 	describe('currentAuthenticatedUser', () => {
 		test('happy case with source userpool', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(Auth.prototype, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(user);
@@ -1943,7 +1840,7 @@ describe('auth unit test', () => {
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1961,13 +1858,13 @@ describe('auth unit test', () => {
 	describe('userSession test', () => {
 		test('happy case', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
+				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementationOnce((callback: any) => {
 					callback(null, session);
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -1981,21 +1878,17 @@ describe('auth unit test', () => {
 		test('debouncer happy case', async () => {
 			const concurrency = 10;
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
-
-				.mockImplementationOnce(
-					// prettier-ignore
-					function(callback: any) {
+				.spyOn(CognitoUser.prototype, 'getSession')
+				.mockImplementationOnce(function getSession(callback: any) {
 					this.signInUserSession = session;
 					callback(null, session);
-				}
-				);
+				});
 			expect.assertions(2 * concurrency + 1);
 
 			const auth = new Auth(authOptions);
 
 			const promiseArr = Array.from({ length: concurrency }, async () => {
-				const user = new InternalCognitoUser({
+				const user = new CognitoUser({
 					Username: 'username',
 					Pool: userPool,
 				});
@@ -2013,13 +1906,13 @@ describe('auth unit test', () => {
 
 		test('callback error', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
+				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementationOnce((callback: any) => {
 					callback('err', null);
 				});
@@ -2038,14 +1931,14 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptions);
 
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
+				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementationOnce((callback: any) => {
 					callback('err', null);
 				});
 			expect.assertions(2);
 			try {
 				const promiseArr = Array.from({ length: 10 }, async () => {
-					const user = new InternalCognitoUser({
+					const user = new CognitoUser({
 						Username: 'username',
 						Pool: userPool,
 					});
@@ -2074,12 +1967,12 @@ describe('auth unit test', () => {
 
 		test('refresh token revoked case', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 			jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementationOnce(() => user);
 			const getSessionSpy = jest
 				.spyOn(user, 'getSession')
@@ -2110,16 +2003,16 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptions);
 			const credentialsClearSpy = jest.spyOn(Credentials, 'clear');
 			const hubSpy = jest.spyOn(Hub, 'dispatch');
-			let user: InternalCognitoUser | null = null;
+			let user: CognitoUser | null = null;
 			const getSessionSpy = jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
+				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementationOnce((callback: any) => {
 					callback(new Error('Refresh Token has been revoked'), null);
 				});
 			const userSignoutSpy = jest.fn();
 			expect.assertions(5);
 			const promiseArr = Array.from({ length: 10 }, async () => {
-				user = new InternalCognitoUser({
+				user = new CognitoUser({
 					Username: 'username',
 					Pool: userPool,
 				});
@@ -2194,7 +2087,7 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptions);
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentSession')
+				.spyOn(auth, 'currentSession')
 				.mockImplementationOnce(() => {
 					return Promise.resolve('session' as any);
 				});
@@ -2228,7 +2121,7 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptions);
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentSession')
+				.spyOn(auth, 'currentSession')
 				.mockImplementationOnce(() => {
 					return Promise.reject('err' as any);
 				});
@@ -2262,7 +2155,7 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptions);
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentSession')
+				.spyOn(auth, 'currentSession')
 				.mockImplementationOnce(() => {
 					return Promise.resolve('session') as any;
 				});
@@ -2297,12 +2190,12 @@ describe('auth unit test', () => {
 	describe('verifyUserAttribute test', () => {
 		test('happy case', async () => {
 			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
+				CognitoUser.prototype,
 				'getAttributeVerificationCode'
 			);
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -2316,13 +2209,13 @@ describe('auth unit test', () => {
 
 		test('onFailure', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'getAttributeVerificationCode')
+				.spyOn(CognitoUser.prototype, 'getAttributeVerificationCode')
 				.mockImplementationOnce((attr, callback) => {
 					callback.onFailure('err' as any);
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -2340,13 +2233,10 @@ describe('auth unit test', () => {
 
 	describe('verifyUserAttributeSubmit', () => {
 		test('happy case', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'verifyAttribute'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'verifyAttribute');
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -2361,13 +2251,13 @@ describe('auth unit test', () => {
 
 		test('onFailure', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'verifyAttribute')
+				.spyOn(CognitoUser.prototype, 'verifyAttribute')
 				.mockImplementationOnce((attr, code, callback) => {
 					callback.onFailure('err' as any);
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -2384,7 +2274,7 @@ describe('auth unit test', () => {
 
 		test('code empty', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -2403,13 +2293,13 @@ describe('auth unit test', () => {
 	describe('verifyCurrentUserAttribute test', () => {
 		test('happy case', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(Auth.prototype, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(user);
@@ -2417,7 +2307,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_verifyUserAttribute')
+				.spyOn(Auth.prototype, 'verifyUserAttribute')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res();
@@ -2427,17 +2317,8 @@ describe('auth unit test', () => {
 			await auth.verifyCurrentUserAttribute('attr');
 
 			expect.assertions(2);
-			console.log('??', spyon.mock.calls);
-			expect(spyon).toBeCalledWith(
-				undefined,
-				getAuthUserAgentDetails(AuthAction.VerifyCurrentUserAttribute)
-			);
-			expect(spyon2).toBeCalledWith(
-				user,
-				'attr',
-				undefined,
-				getAuthUserAgentDetails(AuthAction.VerifyCurrentUserAttribute)
-			);
+			expect(spyon).toBeCalled();
+			expect(spyon2).toBeCalledWith(user, 'attr');
 
 			spyon.mockClear();
 			spyon2.mockClear();
@@ -2447,13 +2328,13 @@ describe('auth unit test', () => {
 	describe('verifyCurrentUserAttributeSubmit test', () => {
 		test('happy case', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(Auth.prototype, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(user);
@@ -2461,7 +2342,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_verifyUserAttributeSubmit')
+				.spyOn(Auth.prototype, 'verifyUserAttributeSubmit')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res();
@@ -2471,16 +2352,8 @@ describe('auth unit test', () => {
 			await auth.verifyCurrentUserAttributeSubmit('attr', 'code');
 
 			expect.assertions(2);
-			expect(spyon).toBeCalledWith(
-				undefined,
-				getAuthUserAgentDetails(AuthAction.VerifyCurrentUserAttributeSubmit)
-			);
-			expect(spyon2).toBeCalledWith(
-				user,
-				'attr',
-				'code',
-				getAuthUserAgentDetails(AuthAction.VerifyCurrentUserAttributeSubmit)
-			);
+			expect(spyon).toBeCalled();
+			expect(spyon2).toBeCalledWith(user, 'attr', 'code');
 
 			spyon.mockClear();
 			spyon2.mockClear();
@@ -2503,7 +2376,7 @@ describe('auth unit test', () => {
 		test('happy case', async () => {
 			const auth = new Auth(authOptions);
 
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -2514,7 +2387,7 @@ describe('auth unit test', () => {
 					return Promise.resolve();
 				});
 			const spyon2 = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementationOnce(() => {
 					return user;
 				});
@@ -2531,7 +2404,7 @@ describe('auth unit test', () => {
 
 		test('happy case for source userpool', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -2541,18 +2414,18 @@ describe('auth unit test', () => {
 			};
 
 			const spyonAuth = jest
-				.spyOn(InternalAuthClass.prototype, 'currentUserCredentials')
+				.spyOn(Auth.prototype, 'currentUserCredentials')
 				.mockImplementationOnce(() => {
 					return new Promise((resolve, reject) => {
 						resolve();
 					});
 				});
 			const spyon = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementationOnce(() => {
 					return user;
 				});
-			const spyon2 = jest.spyOn(InternalCognitoUser.prototype, 'signOut');
+			const spyon2 = jest.spyOn(CognitoUser.prototype, 'signOut');
 			// @ts-ignore
 
 			await auth.signOut();
@@ -2567,7 +2440,7 @@ describe('auth unit test', () => {
 
 		test('happy case for globalSignOut', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -2578,11 +2451,11 @@ describe('auth unit test', () => {
 					return Promise.resolve();
 				});
 			const spyon = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementationOnce(() => {
 					return user;
 				});
-			const spyon2 = jest.spyOn(InternalCognitoUser.prototype, 'globalSignOut');
+			const spyon2 = jest.spyOn(CognitoUser.prototype, 'globalSignOut');
 
 			await auth.signOut({ global: true });
 
@@ -2605,7 +2478,7 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptions);
 
 			const spyon = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementationOnce(() => {
 					return null;
 				});
@@ -2624,7 +2497,7 @@ describe('auth unit test', () => {
 	describe('changePassword', () => {
 		test('happy case', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -2632,7 +2505,7 @@ describe('auth unit test', () => {
 			const newPassword = 'newPassword1.';
 
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_userSession')
+				.spyOn(Auth.prototype, 'userSession')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(session);
@@ -2648,9 +2521,9 @@ describe('auth unit test', () => {
 		});
 
 		test('happy case clientMetadata default', async () => {
-			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'changePassword');
+			const spyon = jest.spyOn(CognitoUser.prototype, 'changePassword');
 			const auth = new Auth(authOptionsWithClientMetadata);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -2659,22 +2532,21 @@ describe('auth unit test', () => {
 
 			await auth.changePassword(user, oldPassword, newPassword);
 
-			expect(await InternalCognitoUser.prototype.changePassword).toBeCalledWith(
+			expect(await CognitoUser.prototype.changePassword).toBeCalledWith(
 				oldPassword,
 				newPassword,
 				jasmine.any(Function),
 				{
 					foo: 'bar',
-				},
-				getAuthUserAgentValue(AuthAction.ChangePassword)
+				}
 			);
 			spyon.mockClear();
 		});
 
 		test('happy case clientMetadata parameter', async () => {
-			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'changePassword');
+			const spyon = jest.spyOn(CognitoUser.prototype, 'changePassword');
 			const auth = new Auth(authOptionsWithClientMetadata);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -2685,14 +2557,13 @@ describe('auth unit test', () => {
 				custom: 'value',
 			});
 
-			expect(await InternalCognitoUser.prototype.changePassword).toBeCalledWith(
+			expect(await CognitoUser.prototype.changePassword).toBeCalledWith(
 				oldPassword,
 				newPassword,
 				jasmine.any(Function),
 				{
 					custom: 'value',
-				},
-				getAuthUserAgentValue(AuthAction.ChangePassword)
+				}
 			);
 			spyon.mockClear();
 		});
@@ -2700,7 +2571,7 @@ describe('auth unit test', () => {
 
 	describe('forgotPassword', () => {
 		test('happy case', async () => {
-			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'forgotPassword');
+			const spyon = jest.spyOn(CognitoUser.prototype, 'forgotPassword');
 
 			const auth = new Auth(authOptions);
 
@@ -2711,44 +2582,42 @@ describe('auth unit test', () => {
 		});
 
 		test('happy case clientMetadata default', async () => {
-			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'forgotPassword');
+			const spyon = jest.spyOn(CognitoUser.prototype, 'forgotPassword');
 			const auth = new Auth(authOptionsWithClientMetadata);
 
 			await auth.forgotPassword('username');
 
-			expect(await InternalCognitoUser.prototype.forgotPassword).toBeCalledWith(
+			expect(await CognitoUser.prototype.forgotPassword).toBeCalledWith(
 				{
 					inputVerificationCode: jasmine.any(Function),
 					onFailure: jasmine.any(Function),
 					onSuccess: jasmine.any(Function),
 				},
-				{ foo: 'bar' },
-				getAuthUserAgentValue(AuthAction.ForgotPassword)
+				{ foo: 'bar' }
 			);
 			spyon.mockClear();
 		});
 
 		test('happy case clientMetadata parameter', async () => {
-			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'forgotPassword');
+			const spyon = jest.spyOn(CognitoUser.prototype, 'forgotPassword');
 			const auth = new Auth(authOptionsWithClientMetadata);
 
 			await auth.forgotPassword('username', { custom: 'value' });
 
-			expect(await InternalCognitoUser.prototype.forgotPassword).toBeCalledWith(
+			expect(await CognitoUser.prototype.forgotPassword).toBeCalledWith(
 				{
 					inputVerificationCode: jasmine.any(Function),
 					onFailure: jasmine.any(Function),
 					onSuccess: jasmine.any(Function),
 				},
-				{ custom: 'value' },
-				getAuthUserAgentValue(AuthAction.ForgotPassword)
+				{ custom: 'value' }
 			);
 			spyon.mockClear();
 		});
 
 		test('onFailure', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'forgotPassword')
+				.spyOn(CognitoUser.prototype, 'forgotPassword')
 				.mockImplementationOnce(callback => {
 					callback.onFailure(new Error('err'));
 				});
@@ -2767,7 +2636,7 @@ describe('auth unit test', () => {
 
 		test('inputVerificationCode', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'forgotPassword')
+				.spyOn(CognitoUser.prototype, 'forgotPassword')
 				.mockImplementationOnce(callback => {
 					callback.inputVerificationCode('data');
 				});
@@ -2781,7 +2650,7 @@ describe('auth unit test', () => {
 		});
 
 		test('no user pool id', async () => {
-			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'forgotPassword');
+			const spyon = jest.spyOn(CognitoUser.prototype, 'forgotPassword');
 
 			const auth = new Auth(authOptionsWithNoUserPoolId);
 			const errorMessage = new NoUserPoolError(
@@ -2800,7 +2669,7 @@ describe('auth unit test', () => {
 		});
 
 		test('no username', async () => {
-			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'forgotPassword');
+			const spyon = jest.spyOn(CognitoUser.prototype, 'forgotPassword');
 
 			const auth = new Auth(authOptions);
 
@@ -2816,10 +2685,7 @@ describe('auth unit test', () => {
 
 	describe('forgotPasswordSubmit', () => {
 		test('happy case', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'confirmPassword'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'confirmPassword');
 
 			const auth = new Auth(authOptions);
 
@@ -2832,10 +2698,7 @@ describe('auth unit test', () => {
 		});
 
 		test('happy case', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'confirmPassword'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'confirmPassword');
 
 			const auth = new Auth(authOptions);
 
@@ -2846,7 +2709,7 @@ describe('auth unit test', () => {
 		});
 
 		test('happy case clientMetadata default', async () => {
-			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'forgotPassword');
+			const spyon = jest.spyOn(CognitoUser.prototype, 'forgotPassword');
 			const auth = new Auth(authOptionsWithClientMetadata);
 			const username = 'username';
 			const code = 'code';
@@ -2854,23 +2717,20 @@ describe('auth unit test', () => {
 
 			await auth.forgotPasswordSubmit(username, code, password);
 
-			expect(
-				await InternalCognitoUser.prototype.confirmPassword
-			).toBeCalledWith(
+			expect(await CognitoUser.prototype.confirmPassword).toBeCalledWith(
 				code,
 				password,
 				{
 					onFailure: jasmine.any(Function),
 					onSuccess: jasmine.any(Function),
 				},
-				{ foo: 'bar' },
-				getAuthUserAgentValue(AuthAction.ForgotPasswordSubmit)
+				{ foo: 'bar' }
 			);
 			spyon.mockClear();
 		});
 
 		test('happy case clientMetadata parameter', async () => {
-			const spyon = jest.spyOn(InternalCognitoUser.prototype, 'forgotPassword');
+			const spyon = jest.spyOn(CognitoUser.prototype, 'forgotPassword');
 			const auth = new Auth(authOptionsWithClientMetadata);
 			const username = 'username';
 			const code = 'code';
@@ -2880,24 +2740,21 @@ describe('auth unit test', () => {
 				custom: 'value',
 			});
 
-			expect(
-				await InternalCognitoUser.prototype.confirmPassword
-			).toBeCalledWith(
+			expect(await CognitoUser.prototype.confirmPassword).toBeCalledWith(
 				code,
 				password,
 				{
 					onFailure: jasmine.any(Function),
 					onSuccess: jasmine.any(Function),
 				},
-				{ custom: 'value' },
-				getAuthUserAgentValue(AuthAction.ForgotPasswordSubmit)
+				{ custom: 'value' }
 			);
 			spyon.mockClear();
 		});
 
 		test('confirmPassword failed', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'confirmPassword')
+				.spyOn(CognitoUser.prototype, 'confirmPassword')
 				.mockImplementationOnce((code, password, callback) => {
 					callback.onFailure(new Error('err'));
 				});
@@ -2972,13 +2829,13 @@ describe('auth unit test', () => {
 	describe('currentUserInfo test', () => {
 		test('happy case with aws or userpool source', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(Auth.prototype, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(user);
@@ -2986,7 +2843,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_userAttributes')
+				.spyOn(Auth.prototype, 'userAttributes')
 				.mockImplementationOnce(() => {
 					auth['credentials'] = {
 						IdentityPoolId: 'identityPoolId',
@@ -3039,13 +2896,13 @@ describe('auth unit test', () => {
 
 		test('return empty object if error happens', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(Auth.prototype, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res({
@@ -3055,7 +2912,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_userAttributes')
+				.spyOn(Auth.prototype, 'userAttributes')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						rej('err');
@@ -3063,7 +2920,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon3 = jest
-				.spyOn(InternalAuthClass.prototype, 'currentCredentials')
+				.spyOn(Auth.prototype, 'currentCredentials')
 				.mockImplementationOnce(() => {
 					return Promise.resolve({
 						IdentityPoolId: 'identityPoolId',
@@ -3088,14 +2945,14 @@ describe('auth unit test', () => {
 
 		test('no current userpool user', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 			auth['credentials_source'] = 'aws';
 
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(Auth.prototype, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(null);
@@ -3117,7 +2974,7 @@ describe('auth unit test', () => {
 
 		test('federated user', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -3140,7 +2997,7 @@ describe('auth unit test', () => {
 		test('happy case', async () => {
 			const auth = new Auth(authOptions);
 
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -3152,7 +3009,7 @@ describe('auth unit test', () => {
 			};
 
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_userSession')
+				.spyOn(Auth.prototype, 'userSession')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						res(session);
@@ -3166,49 +3023,37 @@ describe('auth unit test', () => {
 		});
 
 		test('happy case clientMetadata default', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'updateAttributes'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes');
 			const auth = new Auth(authOptionsWithClientMetadata);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			await auth.updateUserAttributes(user, {});
 
-			expect(
-				await InternalCognitoUser.prototype.updateAttributes
-			).toBeCalledWith(
+			expect(await CognitoUser.prototype.updateAttributes).toBeCalledWith(
 				[],
 				jasmine.any(Function),
-				{ foo: 'bar' },
-				getAuthUserAgentValue(AuthAction.UpdateUserAttributes)
+				{ foo: 'bar' }
 			);
 			spyon.mockClear();
 		});
 
 		test('happy case clientMetadata parameter', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'updateAttributes'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes');
 			const auth = new Auth(authOptionsWithClientMetadata);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			await auth.updateUserAttributes(user, {}, { custom: 'value' });
 
-			expect(
-				await InternalCognitoUser.prototype.updateAttributes
-			).toBeCalledWith(
+			expect(await CognitoUser.prototype.updateAttributes).toBeCalledWith(
 				[],
 				jasmine.any(Function),
-				{ custom: 'value' },
-				getAuthUserAgentValue(AuthAction.UpdateUserAttributes)
+				{ custom: 'value' }
 			);
 			spyon.mockClear();
 		});
@@ -3216,14 +3061,14 @@ describe('auth unit test', () => {
 		test('error hub event', async done => {
 			expect.assertions(3);
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'updateAttributes')
+				.spyOn(CognitoUser.prototype, 'updateAttributes')
 				.mockImplementationOnce((attrs, callback: any) => {
 					callback(new Error('Error'), null, null);
 				});
 
 			const auth = new Auth(authOptions);
 
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -3266,13 +3111,13 @@ describe('auth unit test', () => {
 				],
 			};
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'updateAttributes')
+				.spyOn(CognitoUser.prototype, 'updateAttributes')
 				.mockImplementationOnce((attrs, callback: any) => {
 					callback(null, 'SUCCESS', codeDeliverDetailsResult);
 				});
 			const auth = new Auth(authOptions);
 
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -3316,7 +3161,7 @@ describe('auth unit test', () => {
 		test('happy case', async () => {
 			const auth = new Auth(authOptions);
 
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -3324,7 +3169,7 @@ describe('auth unit test', () => {
 			const attributeNames = ['email', 'phone_number'];
 
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_userSession')
+				.spyOn(Auth.prototype, 'userSession')
 				.mockImplementationOnce(() => {
 					return new Promise(res => {
 						res(session);
@@ -3340,24 +3185,18 @@ describe('auth unit test', () => {
 		});
 
 		test('happy case to call with expected attributes', async () => {
-			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'deleteAttributes'
-			);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'deleteAttributes');
 			const auth = new Auth(authOptionsWithClientMetadata);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			await auth.deleteUserAttributes(user, ['email', 'phone_number']);
 
-			expect(
-				await InternalCognitoUser.prototype.deleteAttributes
-			).toBeCalledWith(
+			expect(await CognitoUser.prototype.deleteAttributes).toBeCalledWith(
 				['email', 'phone_number'],
-				jasmine.any(Function),
-				getAuthUserAgentValue(AuthAction.DeleteUserAttributes)
+				jasmine.any(Function)
 			);
 			spyon.mockClear();
 		});
@@ -3370,23 +3209,23 @@ describe('auth unit test', () => {
 		beforeEach(() => {
 			jest.clearAllMocks();
 			auth = new Auth(authOptions);
-			user = new InternalCognitoUser({
+			user = new CognitoUser({
 				Username: 'raz',
 				Pool: userPool,
 			});
-			userPool = new InternalCognitoUserPool({
+			userPool = new CognitoUserPool({
 				UserPoolId: authOptions.userPoolId,
 				ClientId: authOptions.userPoolWebClientId,
 			});
 		});
 		test('Happy path should delete a user', async () => {
 			const spy1 = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return user;
 				});
 			const spy2 = jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
+				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementation((callback: any) => {
 					return callback(null, session);
 				});
@@ -3410,7 +3249,7 @@ describe('auth unit test', () => {
 
 		test('no user should throw error', async () => {
 			const spy1 = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return null;
 				});
@@ -3425,12 +3264,12 @@ describe('auth unit test', () => {
 
 		test('no session should throw error', async () => {
 			const spy1 = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return user;
 				});
 			const spy2 = jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
+				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementation((callback: any) => {
 					return callback(new Error('no session'), null);
 				});
@@ -3444,7 +3283,7 @@ describe('auth unit test', () => {
 
 		test('getSession call fail should signout user', async () => {
 			jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return user;
 				});
@@ -3474,17 +3313,17 @@ describe('auth unit test', () => {
 
 		test('cognito deleteUser call fails...', async () => {
 			const spy1 = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return user;
 				});
 			const spy2 = jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
+				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementation((callback: any) => {
 					return callback(null, session);
 				});
 			const spy3 = jest
-				.spyOn(InternalCognitoUser.prototype, 'deleteUser')
+				.spyOn(CognitoUser.prototype, 'deleteUser')
 				.mockImplementationOnce((callback: any) => {
 					return callback(new Error('Cognito deleteUser error'), null);
 				});
@@ -3577,7 +3416,7 @@ describe('auth unit test', () => {
 					return Promise.resolve('cred' as any);
 				});
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentAuthenticatedUser')
+				.spyOn(Auth.prototype, 'currentAuthenticatedUser')
 				.mockImplementation(() => {
 					if (!user) return Promise.reject('error');
 					else return Promise.resolve(user);
@@ -3651,7 +3490,7 @@ describe('auth unit test', () => {
 					return Promise.resolve('cred' as any);
 				});
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentAuthenticatedUser')
+				.spyOn(Auth.prototype, 'currentAuthenticatedUser')
 				.mockImplementation(() => {
 					if (!user) return Promise.reject('error');
 					else return Promise.resolve(user);
@@ -3677,12 +3516,20 @@ describe('auth unit test', () => {
 	describe('handleAuthResponse test', () => {
 		beforeAll(() => {
 			jest
-				.spyOn(InternalAuthClass.prototype, 'currentAuthenticatedUser')
+				.spyOn(Auth.prototype, 'currentAuthenticatedUser')
 				.mockImplementation(() => {
 					throw new Error('no user logged in');
 				});
 
-			jest.spyOn(StorageHelper.prototype, 'getStorage');
+			jest
+				.spyOn(StorageHelper.prototype, 'getStorage')
+				.mockImplementation(() => {
+					return {
+						setItem() {
+							return null;
+						},
+					};
+				});
 		});
 
 		test('User Pools Code Flow', async () => {
@@ -3741,7 +3588,7 @@ describe('auth unit test', () => {
 			(oauthStorage.getState as jest.Mock<any>).mockReturnValueOnce(state);
 			await (auth as any)._handleAuthResponse(url);
 
-			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url, undefined);
+			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
 			expect(replaceStateSpy).toHaveBeenCalledWith(
 				{},
 				null,
@@ -3806,7 +3653,7 @@ describe('auth unit test', () => {
 
 			await (auth as any)._handleAuthResponse(url);
 
-			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url, undefined);
+			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
 			expect(replaceStateSpy).toHaveBeenCalledWith(
 				{},
 				null,
@@ -3870,7 +3717,7 @@ describe('auth unit test', () => {
 			}?code=${code}`;
 			await (auth as any)._handleAuthResponse(url);
 
-			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url, undefined);
+			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
 			expect(replaceStateSpy).toHaveBeenCalledWith(
 				{},
 				null,
@@ -3882,7 +3729,7 @@ describe('auth unit test', () => {
 	describe('verifiedContact test', () => {
 		test('happy case with unverified', async () => {
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_userAttributes')
+				.spyOn(Auth.prototype, 'userAttributes')
 				.mockImplementationOnce(() => {
 					return new Promise((res: any, rej) => {
 						res([
@@ -3899,7 +3746,7 @@ describe('auth unit test', () => {
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -3914,7 +3761,7 @@ describe('auth unit test', () => {
 
 		test('happy case with verified', async () => {
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_userAttributes')
+				.spyOn(Auth.prototype, 'userAttributes')
 				.mockImplementationOnce(() => {
 					return new Promise((res: any, rej) => {
 						res([
@@ -3939,7 +3786,7 @@ describe('auth unit test', () => {
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -3954,7 +3801,7 @@ describe('auth unit test', () => {
 
 		test('happy case with verified as strings', async () => {
 			const spyon = jest
-				.spyOn(InternalAuthClass.prototype as any, '_userAttributes')
+				.spyOn(Auth.prototype, 'userAttributes')
 				.mockImplementationOnce(() => {
 					return new Promise((res: any, rej) => {
 						res([
@@ -3979,7 +3826,7 @@ describe('auth unit test', () => {
 				});
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -4000,24 +3847,24 @@ describe('auth unit test', () => {
 
 		test('happy case', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return user;
 				});
 			const spyon2 = jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
+				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementation((callback: any) => {
 					return callback(null, session);
 				});
 
 			const spyon3 = jest
-				.spyOn(InternalCognitoUser.prototype, 'getUserData')
+				.spyOn(CognitoUser.prototype, 'getUserData')
 				.mockImplementationOnce((callback: any) => {
 					const data = {
 						PreferredMfaSetting: 'SMS',
@@ -4051,13 +3898,13 @@ describe('auth unit test', () => {
 
 		test('no current user', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return null;
 				});
@@ -4073,7 +3920,7 @@ describe('auth unit test', () => {
 
 		test('No userPool in config', async () => {
 			const auth = new Auth(authOptionsWithNoUserPoolId);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -4090,23 +3937,23 @@ describe('auth unit test', () => {
 
 		test('get session error', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return user;
 				});
 			const spyon2 = jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
+				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementation((callback: any) => {
 					return callback('err', null);
 				});
 
-			const spyon3 = jest.spyOn(InternalCognitoUser.prototype, 'getUserData');
+			const spyon3 = jest.spyOn(CognitoUser.prototype, 'getUserData');
 
 			expect.assertions(2);
 			try {
@@ -4119,12 +3966,12 @@ describe('auth unit test', () => {
 
 		test('get session error - refresh token revoked should signout user', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 			jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return user;
 				});
@@ -4158,30 +4005,27 @@ describe('auth unit test', () => {
 				.mockImplementation(createMockLocalStorage);
 
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return user;
 				});
 			jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
+				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementation((callback: any) => {
 					return callback(null, session);
 				});
 			jest
-				.spyOn(InternalCognitoUser.prototype, 'getUserData')
+				.spyOn(CognitoUser.prototype, 'getUserData')
 				.mockImplementationOnce((callback: any) => {
 					callback(new Error('User is disabled.'), null);
 				});
-			const userSignoutSpy = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'signOut'
-			);
+			const userSignoutSpy = jest.spyOn(CognitoUser.prototype, 'signOut');
 
 			jest
 				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
@@ -4220,30 +4064,27 @@ describe('auth unit test', () => {
 			});
 
 			const auth = new Auth(authOptionsWithHostedUIConfig);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return user;
 				});
 			jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
+				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementation((callback: any) => {
 					return callback(null, session);
 				});
 			jest
-				.spyOn(InternalCognitoUser.prototype, 'getUserData')
+				.spyOn(CognitoUser.prototype, 'getUserData')
 				.mockImplementationOnce((callback: any) => {
 					callback(new Error('User is disabled.'), null);
 				});
-			const userSignoutSpy = jest.spyOn(
-				InternalCognitoUser.prototype,
-				'signOut'
-			);
+			const userSignoutSpy = jest.spyOn(CognitoUser.prototype, 'signOut');
 
 			jest
 				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
@@ -4264,23 +4105,23 @@ describe('auth unit test', () => {
 
 		test('bypass the error if the user is not deleted or disabled', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return user;
 				});
 			const spyon2 = jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
+				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementation((callback: any) => {
 					return callback(null, session);
 				});
 			const spyon3 = jest
-				.spyOn(InternalCognitoUser.prototype, 'getUserData')
+				.spyOn(CognitoUser.prototype, 'getUserData')
 				.mockImplementationOnce((callback: any) => {
 					callback(
 						{
@@ -4309,24 +4150,24 @@ describe('auth unit test', () => {
 
 		test('directly return the user if no permission(scope) to get the user data', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 
 			const spyon = jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return user;
 				});
 			const spyon2 = jest
-				.spyOn(InternalCognitoUser.prototype, 'getSession')
+				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementation((callback: any) => {
 					return callback(null, session);
 				});
 
 			const spyon3 = jest
-				.spyOn(InternalCognitoUser.prototype, 'getUserData')
+				.spyOn(CognitoUser.prototype, 'getUserData')
 				.mockImplementationOnce((callback: any) => {
 					const data = {
 						PreferredMfaSetting: 'SMS',
@@ -4356,17 +4197,17 @@ describe('auth unit test', () => {
 	describe('sendCustomChallengeAnswer', () => {
 		test('happy case', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'sendCustomChallengeAnswer')
+				.spyOn(CognitoUser.prototype, 'sendCustomChallengeAnswer')
 				.mockImplementationOnce((challengeResponses, callback) => {
 					callback.onSuccess(session);
 				});
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 			const userAfterCustomChallengeAnswer = Object.assign(
-				new InternalCognitoUser({
+				new CognitoUser({
 					Username: 'username',
 					Pool: userPool,
 				}),
@@ -4377,7 +4218,7 @@ describe('auth unit test', () => {
 			);
 
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(auth, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return Promise.resolve(user);
 				});
@@ -4398,15 +4239,15 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptionsWithClientMetadata);
 
 			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
+				CognitoUser.prototype,
 				'sendCustomChallengeAnswer'
 			);
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(auth, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return Promise.resolve(user);
 				});
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -4414,13 +4255,8 @@ describe('auth unit test', () => {
 			await auth.sendCustomChallengeAnswer(user, 'answer');
 
 			expect(
-				await InternalCognitoUser.prototype.sendCustomChallengeAnswer
-			).toBeCalledWith(
-				'answer',
-				authCallbacks,
-				{ foo: 'bar' },
-				getAuthUserAgentValue(AuthAction.SendCustomChallengeAnswer)
-			);
+				await CognitoUser.prototype.sendCustomChallengeAnswer
+			).toBeCalledWith('answer', authCallbacks, { foo: 'bar' });
 			spyon.mockClear();
 		});
 
@@ -4428,15 +4264,15 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptionsWithClientMetadata);
 
 			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
+				CognitoUser.prototype,
 				'sendCustomChallengeAnswer'
 			);
 			const spyon2 = jest
-				.spyOn(InternalAuthClass.prototype as any, '_currentUserPoolUser')
+				.spyOn(auth, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
 					return Promise.resolve(user);
 				});
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -4444,29 +4280,24 @@ describe('auth unit test', () => {
 			await auth.sendCustomChallengeAnswer(user, 'answer', { custom: 'value' });
 
 			expect(
-				await InternalCognitoUser.prototype.sendCustomChallengeAnswer
-			).toBeCalledWith(
-				'answer',
-				authCallbacks,
-				{ custom: 'value' },
-				getAuthUserAgentValue(AuthAction.SendCustomChallengeAnswer)
-			);
+				await CognitoUser.prototype.sendCustomChallengeAnswer
+			).toBeCalledWith('answer', authCallbacks, { custom: 'value' });
 			spyon.mockClear();
 		});
 
 		test('customChallenge', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'sendCustomChallengeAnswer')
+				.spyOn(CognitoUser.prototype, 'sendCustomChallengeAnswer')
 				.mockImplementationOnce((challengeResponses, callback) => {
 					callback.customChallenge('challengeParam');
 				});
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 			const userAfterCustomChallengeAnswer = Object.assign(
-				new InternalCognitoUser({
+				new CognitoUser({
 					Username: 'username',
 					Pool: userPool,
 				}),
@@ -4489,14 +4320,14 @@ describe('auth unit test', () => {
 
 		test('onFailure', async () => {
 			const spyon = jest
-				.spyOn(InternalCognitoUser.prototype, 'sendCustomChallengeAnswer')
+				.spyOn(CognitoUser.prototype, 'sendCustomChallengeAnswer')
 				.mockImplementationOnce((challengeResponses, callback) => {
 					callback.onFailure('err');
 				});
 
 			const auth = new Auth(authOptions);
 			const userAfterCustomChallengeAnswer = Object.assign(
-				new InternalCognitoUser({
+				new CognitoUser({
 					Username: 'username',
 					Pool: userPool,
 				}),
@@ -4521,13 +4352,13 @@ describe('auth unit test', () => {
 
 		test('no userPool', async () => {
 			const spyon = jest.spyOn(
-				InternalCognitoUser.prototype,
+				CognitoUser.prototype,
 				'sendCustomChallengeAnswer'
 			);
 
 			const auth = new Auth(authOptionsWithNoUserPoolId);
 			const userAfterCustomChallengeAnswer = Object.assign(
-				new InternalCognitoUser({
+				new CognitoUser({
 					Username: 'username',
 					Pool: userPool,
 				}),
@@ -4566,7 +4397,6 @@ describe('auth unit test', () => {
 	describe('Device Tracking', () => {
 		test('remember device happy path', async () => {
 			const auth = new Auth(authOptions);
-
 			const spyon = jest
 				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
 				.mockImplementationOnce(() => {
@@ -4580,7 +4410,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyOnCognito = jest
-				.spyOn(InternalCognitoUser.prototype, 'setDeviceStatusRemembered')
+				.spyOn(CognitoUser.prototype, 'setDeviceStatusRemembered')
 				.mockImplementationOnce(
 					(obj: {
 						onSuccess: (success: string) => void;
@@ -4614,7 +4444,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyOnCognito = jest
-				.spyOn(InternalCognitoUser.prototype, 'forgetDevice')
+				.spyOn(CognitoUser.prototype, 'forgetDevice')
 				.mockImplementationOnce(
 					(obj: {
 						onSuccess: (success: string) => void;
@@ -4649,7 +4479,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyOnCognito = jest
-				.spyOn(InternalCognitoUser.prototype, 'listDevices')
+				.spyOn(CognitoUser.prototype, 'listDevices')
 				.mockImplementationOnce(
 					(
 						MAX_DEVICES,
@@ -4688,7 +4518,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyOnCognito = jest
-				.spyOn(InternalCognitoUser.prototype, 'listDevices')
+				.spyOn(CognitoUser.prototype, 'listDevices')
 				.mockImplementationOnce(
 					(
 						MAX_DEVICES,
@@ -4729,7 +4559,7 @@ describe('auth unit test', () => {
 
 		test('happy path', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -4748,7 +4578,7 @@ describe('auth unit test', () => {
 
 		test('should allow bypassCache', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -4762,25 +4592,19 @@ describe('auth unit test', () => {
 				});
 			const res = await auth.getPreferredMFA(user, { bypassCache: true });
 			expect(res).toEqual('SMS');
-			expect(getUserDataSpy).toHaveBeenCalledWith(
-				expect.any(Function),
-				{
-					bypassCache: true,
-				},
-				getAuthUserAgentValue(AuthAction.GetPreferredMFA)
-			);
+			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
+				bypassCache: true,
+			});
 		});
 
 		test('get user data error because user is deleted, disabled or token has been revoked', async () => {
 			const auth = new Auth(authOptions);
-			console.log('mock class definition', InternalCognitoUser);
-			console.log('auth class def', Auth);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 			jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => user);
 			const getUserDataSpy = jest
 				.spyOn(user, 'getUserData')
@@ -4796,13 +4620,9 @@ describe('auth unit test', () => {
 			await expect(
 				auth.getPreferredMFA(user, { bypassCache: true })
 			).rejects.toThrow('Access Token has been revoked');
-			expect(getUserDataSpy).toHaveBeenCalledWith(
-				expect.any(Function),
-				{
-					bypassCache: true,
-				},
-				getAuthUserAgentValue(AuthAction.GetPreferredMFA)
-			);
+			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
+				bypassCache: true,
+			});
 			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
 			expect(credentialsClearSpy).toHaveBeenCalledTimes(1);
 			expect(hubSpy).toHaveBeenCalledWith(
@@ -4828,7 +4648,7 @@ describe('auth unit test', () => {
 
 		it('happy path', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
@@ -4845,16 +4665,11 @@ describe('auth unit test', () => {
 			expect(setUserMfaPreferenceSpy).toHaveBeenCalledWith(
 				null,
 				{ Enabled: true, PreferredMfa: true },
-				expect.any(Function),
-				getAuthUserAgentValue(AuthAction.SetPreferredMFA)
+				expect.any(Function)
 			);
-			expect(getUserDataSpy).toHaveBeenCalledWith(
-				expect.any(Function),
-				{
-					bypassCache: true,
-				},
-				getAuthUserAgentValue(AuthAction.SetPreferredMFA)
-			);
+			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
+				bypassCache: true,
+			});
 			// once at the beginning, once after calling setUserMfaPreference
 			expect(getUserDataSpy).toHaveBeenCalledTimes(2);
 			expect(res).toStrictEqual('success');
@@ -4862,12 +4677,12 @@ describe('auth unit test', () => {
 
 		test('get user data error because user is deleted, disabled or token has been revoked', async () => {
 			const auth = new Auth(authOptions);
-			const user = new InternalCognitoUser({
+			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
 			});
 			jest
-				.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementationOnce(() => user);
 			const getUserDataSpy = jest
 				.spyOn(user, 'getUserData')
@@ -4882,13 +4697,9 @@ describe('auth unit test', () => {
 			await expect(
 				auth.setPreferredMFA(user, 'SOFTWARE_TOKEN_MFA')
 			).rejects.toThrow('Access Token has been revoked');
-			expect(getUserDataSpy).toHaveBeenCalledWith(
-				expect.any(Function),
-				{
-					bypassCache: true,
-				},
-				getAuthUserAgentValue(AuthAction.SetPreferredMFA)
-			);
+			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
+				bypassCache: true,
+			});
 			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
 			expect(credentialsClearSpy).toHaveBeenCalledTimes(1);
 			expect(hubSpy).toHaveBeenCalledWith(

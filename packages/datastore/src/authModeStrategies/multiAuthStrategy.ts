@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { InternalAuth } from '@aws-amplify/auth/internals';
+import { Auth } from '@aws-amplify/auth';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import {
 	AuthModeStrategy,
@@ -9,7 +9,6 @@ import {
 	ModelAttributeAuthAllow,
 	AmplifyContext,
 } from '../types';
-import { Category, DataStoreAction } from '@aws-amplify/core';
 
 function getProviderFromRule(
 	rule: ModelAttributeAuthProperty
@@ -140,14 +139,11 @@ export const multiAuthStrategy: (
 	amplifyContext: AmplifyContext
 ) => AuthModeStrategy =
 	(amplifyContext: AmplifyContext) =>
-	async ({ schema, modelName, customUserAgentDetails }) => {
-		amplifyContext.InternalAuth = amplifyContext.InternalAuth || InternalAuth;
+	async ({ schema, modelName }) => {
+		amplifyContext.Auth = amplifyContext.Auth || Auth;
 		let currentUser;
 		try {
-			currentUser = await amplifyContext.InternalAuth.currentAuthenticatedUser(
-				undefined,
-				customUserAgentDetails
-			);
+			currentUser = await amplifyContext.Auth.currentAuthenticatedUser();
 		} catch (e) {
 			// No current user
 		}

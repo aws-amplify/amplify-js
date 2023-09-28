@@ -74,13 +74,14 @@ interface S3InputConfig {
 	useAccelerateEndpoint?: boolean;
 	abortSignal?: AbortSignal;
 	emitter?: EventEmitter;
-	userAgentValue?: string;
+	storageAction: StorageAction;
 	dangerouslyConnectToHttpEndpointForTesting?: boolean;
 }
 
 export interface S3ResolvedConfig
 	extends Omit<S3InputConfig, 'region' | 'credentials'> {
 	region: string;
+	userAgentValue?: string;
 	credentials: () => Promise<AwsCredentials>;
 	customEndpoint?: string;
 	forcePathStyle?: boolean;
@@ -90,7 +91,7 @@ export interface S3ResolvedConfig
  * A function that persists the s3 configs, so we don't need to
  * assign each config parameter for every s3 API call.
  *
- * @internal
+ * @inernal
  */
 export const loadS3Config = (config: S3InputConfig): S3ResolvedConfig => {
 	if (!config.region) {
@@ -103,6 +104,10 @@ export const loadS3Config = (config: S3InputConfig): S3ResolvedConfig => {
 		credentials: config.credentials
 			? () => Promise.resolve(config.credentials!)
 			: credentialsProvider,
+		userAgentValue: getAmplifyUserAgent({
+			category: Category.Storage,
+			action: config.storageAction,
+		}),
 		...(config.dangerouslyConnectToHttpEndpointForTesting
 			? {
 					customEndpoint: localTestingStorageEndpoint,

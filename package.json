@@ -31,7 +31,6 @@
 		"publish:next": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=next --preid=next${PREID_HASH_SUFFIX} --exact --no-verify-access",
 		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes --no-verify-access",
-		"publish:api-v6-models": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=api-v6-models --preid=api-v6-models --exact --no-verify-access",
 		"publish:verdaccio-api-v6-models": "lerna publish --no-push --canary minor --force-publish \"*\" --yes --dist-tag=api-v6-models --preid=api-v6-models --exact --no-verify-access",
 		"ts-coverage": "lerna run ts-coverage"
 	},

@@ -8,7 +8,6 @@ import { ICredentials } from '@aws-amplify/core';
 import {
 	StorageProvider,
 	StorageProviderApi,
-	StorageProviderApiOptionsIndexMap,
 	AWSS3Provider,
 	StorageProviderWithCopy,
 	S3ProviderGetOuput,
@@ -29,12 +28,8 @@ type Tail<T extends any[]> = ((...t: T) => void) extends (
 
 type Last<T extends any[]> = T[Exclude<keyof T, keyof Tail<T>>];
 
-// Utility type to extract the config parameter type of a function
-// Uses position of params per API to determine which parameter to target
-type ConfigParameter<
-	F extends (...args: any) => any,
-	U extends StorageProviderApi
-> = Parameters<F>[StorageProviderApiOptionsIndexMap[U]];
+// Utility type to extract the last parameter type of a function
+type LastParameter<F extends (...args: any) => any> = Last<Parameters<F>>;
 
 export interface StorageOptions {
 	credentials?: ICredentials;
@@ -82,20 +77,20 @@ type StorageOperationConfig<
 		| StorageProviderWithGetProperties,
 	U extends StorageProviderApi
 > = ReturnType<T['getProviderName']> extends 'AWSS3'
-	? ConfigParameter<AWSS3Provider[U], U> // check if it has 'copy' function because 'copy' is optional
+	? LastParameter<AWSS3Provider[U]> // check if it has 'copy' function because 'copy' is optional
 	: T extends StorageProviderWithGetProperties & StorageProviderWithCopy
-	? ConfigParameter<T[U], U> & {
+	? LastParameter<T[U]> & {
 			provider: ReturnType<T['getProviderName']>;
 	  }
 	: T extends StorageProviderWithCopy
-	? ConfigParameter<T[Exclude<U, 'getProperties'>], U> & {
+	? LastParameter<T[Exclude<U, 'getProperties'>]> & {
 			provider: ReturnType<T['getProviderName']>;
 	  }
 	: T extends StorageProviderWithGetProperties
-	? ConfigParameter<T[Exclude<U, 'copy'>], U> & {
+	? LastParameter<T[Exclude<U, 'copy'>]> & {
 			provider: ReturnType<T['getProviderName']>;
 	  }
-	: ConfigParameter<T[Exclude<U, 'copy' | 'getProperties'>], U> & {
+	: LastParameter<T[Exclude<U, 'copy' | 'getProperties'>]> & {
 			provider: ReturnType<T['getProviderName']>;
 	  };
 

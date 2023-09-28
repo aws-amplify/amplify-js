@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "5.6.2",
+  "version": "5.6.5",
   "description": "Auth category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -43,12 +43,11 @@
   "files": [
     "lib",
     "lib-esm",
-    "src",
-    "internals"
+    "src"
   ],
   "dependencies": {
-    "@aws-amplify/core": "5.8.2",
-    "amazon-cognito-identity-js": "6.3.3",
+    "@aws-amplify/core": "5.8.5",
+    "amazon-cognito-identity-js": "6.3.6",
     "buffer": "4.9.2",
     "tslib": "^1.8.0",
     "url": "0.11.0"

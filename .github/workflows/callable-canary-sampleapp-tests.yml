@@ -53,7 +53,7 @@ jobs:
         working-directory: amplify-js-samples-staging/samples/react/auth/new-react-app
       - name: Start new application and run test
         run: |
-          ../amplify-js/.circleci/retry-yarn-script.sh -s \
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
           "ci:test \
           react \
           auth \
@@ -93,7 +93,7 @@ jobs:
         working-directory: amplify-js-samples-staging/samples/angular/interactions/new-angular-app
       - name: Start application and run test
         run: |
-          ../amplify-js/.circleci/retry-yarn-script.sh -s \
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
           "ci:test \
           angular \
           interactions \
@@ -131,7 +131,7 @@ jobs:
         working-directory: amplify-js-samples-staging/samples/next/auth/new-next-app
       - name: Start application and run test
         run: |
-          ../amplify-js/.circleci/retry-yarn-script.sh -s \
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
           "ci:test \
           next \
           auth \
@@ -166,7 +166,7 @@ jobs:
         working-directory: amplify-js-samples-staging/samples/vue/auth/new-vue-app
       - name: Start application and run test
         run: |
-          ../amplify-js/.circleci/retry-yarn-script.sh -s \
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
           "ci:test \
           vue \
           auth \
@@ -208,7 +208,7 @@ jobs:
         env:
           AMPLIFY_DIR: ${{ env.AMPLIFY_DIR }}
         run: |
-          ../amplify-js/.circleci/retry-yarn-script.sh -s \
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
           "ci:test \
           javascript \
           auth \

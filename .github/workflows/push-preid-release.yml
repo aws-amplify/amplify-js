@@ -9,7 +9,7 @@ on:
   push:
     branches:
       # Change this to your branch name where "example-preid" corresponds to the preid you want your changes released on
-      - api-v6
+      - api-v6-models
       - feat/example-preid-branch/main
 
 jobs:
@@ -37,4 +37,4 @@ jobs:
     #   if your branch doesn't follow this pattern, you can override it here for your branch.
     with:
       # preid: ${{ needs.parse-preid.outputs.preid }}
-      preid: api-v6
+      preid: api-v6-models

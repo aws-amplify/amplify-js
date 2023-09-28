@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 7.0.7 (2023-09-14)
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+## 7.0.6 (2023-08-23)
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+## 7.0.5 (2023-08-22)
+
+**Note:** Version bump only for package aws-amplify-react-native
+
 ## 7.0.4 (2023-08-17)
 
 **Note:** Version bump only for package aws-amplify-react-native

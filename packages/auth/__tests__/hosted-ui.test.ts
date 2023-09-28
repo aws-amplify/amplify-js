@@ -1,21 +1,20 @@
 import {
 	CognitoUser,
+	CognitoUserPool,
 	CognitoUserSession,
 	CognitoAccessToken,
 	CognitoIdToken,
 } from 'amazon-cognito-identity-js';
 
-import { InternalCognitoUserPool } from 'amazon-cognito-identity-js/internals';
+jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
+	const CognitoUserPool = () => {};
 
-jest.mock('amazon-cognito-identity-js/internals', () => {
-	const InternalCognitoUserPool = () => {};
-
-	InternalCognitoUserPool.prototype.InternalCognitoUserPool = options => {
-		InternalCognitoUserPool.prototype.options = options;
-		return InternalCognitoUserPool;
+	CognitoUserPool.prototype.CognitoUserPool = options => {
+		CognitoUserPool.prototype.options = options;
+		return CognitoUserPool;
 	};
 
-	InternalCognitoUserPool.prototype.getCurrentUser = () => {
+	CognitoUserPool.prototype.getCurrentUser = () => {
 		return {
 			username: 'username',
 			getSession: callback => {
@@ -31,7 +30,7 @@ jest.mock('amazon-cognito-identity-js/internals', () => {
 		};
 	};
 
-	InternalCognitoUserPool.prototype.signUp = (
+	CognitoUserPool.prototype.signUp = (
 		username,
 		password,
 		signUpAttributeList,
@@ -42,10 +41,7 @@ jest.mock('amazon-cognito-identity-js/internals', () => {
 		callback(null, 'signUpResult');
 	};
 
-	return {
-		...jest.requireActual('amazon-cognito-identity-js/internals'),
-		InternalCognitoUserPool,
-	};
+	return CognitoUserPool;
 });
 
 jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
@@ -184,7 +180,7 @@ const authOptionsWithOAuth: AuthOptions = {
 	},
 };
 
-const userPool = new InternalCognitoUserPool({
+const userPool = new CognitoUserPool({
 	UserPoolId: authOptionsWithOAuth.userPoolId,
 	ClientId: authOptionsWithOAuth.userPoolWebClientId,
 });
@@ -213,7 +209,7 @@ describe('Hosted UI tests', () => {
 			Pool: userPool,
 		});
 		const spyonGetCurrentUser = jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
 			});
@@ -290,7 +286,7 @@ describe('Hosted UI tests', () => {
 		});
 
 		jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
 			});
@@ -344,7 +340,7 @@ describe('Hosted UI tests', () => {
 		});
 
 		jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
 			});
@@ -398,7 +394,7 @@ describe('Hosted UI tests', () => {
 		});
 
 		jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
 			});
@@ -444,7 +440,7 @@ describe('Hosted UI tests', () => {
 		});
 
 		jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
 			});
@@ -504,7 +500,7 @@ describe('Hosted UI tests', () => {
 		});
 
 		jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
 			});
@@ -551,7 +547,7 @@ describe('Hosted UI tests', () => {
 		});
 
 		jest
-			.spyOn(InternalCognitoUserPool.prototype, 'getCurrentUser')
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
 			});
