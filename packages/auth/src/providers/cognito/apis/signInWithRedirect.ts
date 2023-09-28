@@ -106,7 +106,8 @@ async function oauthSignIn({
 
 	// TODO(v6): use URL object instead
 	const oAuthUrl = `https://${domain}/oauth2/authorize?${queryString}`;
-	const { type, url } = (await openAuthSession(oAuthUrl, redirectSignIn)) ?? {};
+	const { type, error, url } =
+		(await openAuthSession(oAuthUrl, redirectSignIn)) ?? {};
 	if (type === 'success' && url) {
 		handleAuthResponse({
 			currentUrl: url,
@@ -116,6 +117,9 @@ async function oauthSignIn({
 			responseType,
 			userAgentValue: getAmplifyUserAgent(),
 		});
+	}
+	if (type === 'error') {
+		handleFailure(String(error));
 	}
 }
 
@@ -196,18 +200,7 @@ async function handleCodeFlow({
 
 	if (error) {
 		invokeAndClearPromise();
-
-		Hub.dispatch(
-			'auth',
-			{ event: 'signInWithRedirect_failure' },
-			'Auth',
-			AMPLIFY_SYMBOL
-		);
-		throw new AuthError({
-			message: error,
-			name: AuthErrorCodes.OAuthSignInError,
-			recoverySuggestion: authErrorMessages.oauthSignInError.log,
-		});
+		handleFailure(error);
 	}
 
 	await store.clearOAuthInflightData();
@@ -220,29 +213,7 @@ async function handleCodeFlow({
 		ExpiresIn: expires_in,
 	});
 
-	await store.storeOAuthSignIn(true);
-
-	if (isCustomState(validatedState)) {
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'customOAuthState',
-				data: urlSafeDecode(getCustomState(validatedState)),
-			},
-			'Auth',
-			AMPLIFY_SYMBOL
-		);
-	}
-	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
-	Hub.dispatch(
-		'auth',
-		{ event: 'signedIn', data: await getCurrentUser() },
-		'Auth',
-		AMPLIFY_SYMBOL
-	);
-	clearHistory(redirectUri);
-	invokeAndClearPromise();
-	return;
+	return completeFlow({ redirectUri, state: validatedState });
 }
 
 async function handleImplicitFlow({
@@ -285,6 +256,16 @@ async function handleImplicitFlow({
 		ExpiresIn: expiresIn,
 	});
 
+	return completeFlow({ redirectUri, state });
+}
+
+async function completeFlow({
+	redirectUri,
+	state,
+}: {
+	redirectUri: string;
+	state: string;
+}) {
 	await store.storeOAuthSignIn(true);
 	if (isCustomState(state)) {
 		Hub.dispatch(
@@ -326,20 +307,10 @@ async function handleAuthResponse({
 	try {
 		const urlParams = new URL(currentUrl);
 		const error = urlParams.searchParams.get('error');
-		const error_description = urlParams.searchParams.get('error_description');
+		const errorMessage = urlParams.searchParams.get('error_description');
 
 		if (error) {
-			Hub.dispatch(
-				'auth',
-				{ event: 'signInWithRedirect_failure' },
-				'Auth',
-				AMPLIFY_SYMBOL
-			);
-			throw new AuthError({
-				message: error_description ?? '',
-				name: AuthErrorCodes.OAuthSignInError,
-				recoverySuggestion: authErrorMessages.oauthSignInError.log,
-			});
+			handleFailure(errorMessage);
 		}
 
 		if (responseType === 'code') {
@@ -385,6 +356,20 @@ function validateState(state?: string | null): asserts state {
 			recoverySuggestion: 'Try to initiate an OAuth flow from Amplify',
 		});
 	}
+}
+
+function handleFailure(errorMessage: string | null) {
+	Hub.dispatch(
+		'auth',
+		{ event: 'signInWithRedirect_failure' },
+		'Auth',
+		AMPLIFY_SYMBOL
+	);
+	throw new AuthError({
+		message: errorMessage ?? '',
+		name: AuthErrorCodes.OAuthSignInError,
+		recoverySuggestion: authErrorMessages.oauthSignInError.log,
+	});
 }
 
 async function parseRedirectURL() {

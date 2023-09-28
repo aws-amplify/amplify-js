@@ -33,7 +33,7 @@ export const openAuthSession: OpenAuthSession = async (
 			return { type: 'canceled' };
 		}
 		return { type: 'success', url: redirectUrl };
-	} catch (err) {
-		return { type: 'unknown' };
+	} catch (error) {
+		return { type: 'error', error };
 	}
 };

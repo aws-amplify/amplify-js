@@ -36,10 +36,11 @@ describe('openAuthSession (native)', () => {
 		});
 	});
 
-	it('returns an unknown result type', async () => {
+	it('returns an error result type', async () => {
 		mockOpenAuthSessionAsync.mockRejectedValue(new Error());
 		expect(await openAuthSession(url, [redirectUrl])).toStrictEqual({
-			type: 'unknown',
+			type: 'error',
+			error: expect.any(Error),
 		});
 	});
 });
