@@ -46,7 +46,6 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
-import { ApiAuthModeKeys } from '@aws-amplify/core/lib-esm/libraryUtils';
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
@@ -194,6 +193,7 @@ export class AWSAppSyncRealTimeProvider {
 			variables,
 			authenticationType,
 			additionalHeaders,
+			apiKey,
 		} = options || {};
 
 		return new Observable(observer => {
@@ -224,6 +224,7 @@ export class AWSAppSyncRealTimeProvider {
 									authenticationType,
 									appSyncGraphqlEndpoint,
 									additionalHeaders,
+									apiKey,
 								},
 								observer,
 								subscriptionId,
@@ -872,6 +873,7 @@ export class AWSAppSyncRealTimeProvider {
 	}
 
 	private async _awsRealTimeHeaderBasedAuth({
+		apiKey,
 		authenticationType,
 		payload,
 		canonicalUri,
@@ -882,7 +884,7 @@ export class AWSAppSyncRealTimeProvider {
 		Record<string, unknown> | undefined
 	> {
 		const headerHandler: {
-			[key in ApiAuthModeKeys]: (arg0: AWSAppSyncRealTimeAuthInput) => {};
+			[key in ApiAuthMode]: (arg0: AWSAppSyncRealTimeAuthInput) => {};
 		} = {
 			apiKey: this._awsRealTimeApiKeyHeader.bind(this),
 			iam: this._awsRealTimeIAMHeader.bind(this),
@@ -892,24 +894,24 @@ export class AWSAppSyncRealTimeProvider {
 			none: this._customAuthHeader,
 		};
 
-		if (!authenticationType || !headerHandler[authenticationType.type]) {
+		if (!authenticationType || !headerHandler[authenticationType]) {
 			logger.debug(`Authentication type ${authenticationType} not supported`);
 			return undefined;
 		} else {
-			const handler = headerHandler[authenticationType.type];
+			const handler = headerHandler[authenticationType];
 
 			const { host } = url.parse(appSyncGraphqlEndpoint ?? '');
 
 			logger.debug(`Authenticating with ${JSON.stringify(authenticationType)}`);
-			let apiKey;
-			if (authenticationType.type === 'apiKey') {
-				apiKey = authenticationType.apiKey;
+			let resolvedApiKey;
+			if (authenticationType === 'apiKey') {
+				resolvedApiKey = apiKey;
 			}
 			const result = await handler({
 				payload,
 				canonicalUri,
 				appSyncGraphqlEndpoint,
-				apiKey,
+				apiKey: resolvedApiKey,
 				region,
 				host,
 				additionalHeaders,
