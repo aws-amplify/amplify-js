@@ -17,7 +17,7 @@ import {
 import { PredicateAll } from './predicates';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import { Adapter } from './storage/adapter';
-import { ApiAuthModeKeys } from '@aws-amplify/core/internals/utils';
+import { ApiAuthMode } from '@aws-amplify/core/internals/utils';
 
 export type Scalar<T> = T extends Array<infer InnerType> ? InnerType : T;
 
@@ -960,8 +960,8 @@ export enum AuthModeStrategyType {
 }
 
 export type AuthModeStrategyReturn =
-	| ApiAuthModeKeys
-	| ApiAuthModeKeys[]
+	| ApiAuthMode
+	| ApiAuthMode[]
 	| undefined
 	| null;
 
@@ -985,7 +985,7 @@ export enum ModelOperation {
 export type ModelAuthModes = Record<
 	string,
 	{
-		[Property in ModelOperation]: ApiAuthModeKeys[];
+		[Property in ModelOperation]: ApiAuthMode[];
 	}
 >;
 

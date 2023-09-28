@@ -9,7 +9,7 @@ import {
 	CustomUserAgentDetails,
 	DataStoreAction,
 	BackgroundProcessManager,
-	ApiAuthModeKeys,
+	ApiAuthMode,
 	AmplifyError,
 	JwtPayload,
 } from '@aws-amplify/core/internals/utils';
@@ -60,7 +60,7 @@ export enum USER_CREDENTIALS {
 }
 
 type AuthorizationInfo = {
-	authMode: ApiAuthModeKeys;
+	authMode: ApiAuthMode;
 	isOwner: boolean;
 	ownerField?: string;
 	ownerValue?: string;
@@ -97,13 +97,13 @@ class SubscriptionProcessor {
 		transformerMutationType: TransformerMutationType,
 		userCredentials: USER_CREDENTIALS,
 		oidcTokenPayload: JwtPayload | undefined,
-		authMode: ApiAuthModeKeys,
+		authMode: ApiAuthMode,
 		filterArg: boolean = false
 	): {
 		opType: TransformerMutationType;
 		opName: string;
 		query: string;
-		authMode: ApiAuthModeKeys;
+		authMode: ApiAuthMode;
 		isOwner: boolean;
 		ownerField?: string;
 		ownerValue?: string;
@@ -132,9 +132,9 @@ class SubscriptionProcessor {
 	private getAuthorizationInfo(
 		model: SchemaModel,
 		userCredentials: USER_CREDENTIALS,
-		defaultAuthType: ApiAuthModeKeys,
+		defaultAuthType: ApiAuthMode,
 		oidcTokenPayload: JwtPayload | undefined,
-		authMode: ApiAuthModeKeys
+		authMode: ApiAuthMode
 	): AuthorizationInfo {
 		const rules = getAuthorizationRules(model);
 		// Return null if user doesn't have proper credentials for private API with IAM auth
