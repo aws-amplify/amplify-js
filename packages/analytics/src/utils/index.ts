@@ -9,6 +9,11 @@ export {
 	EventBufferConfig,
 } from './eventBuffer';
 export {
+	enableAnalytics,
+	disableAnalytics,
+	isAnalyticsEnabled,
+} from './statusHelpers';
+export {
 	getAnalyticsUserAgent,
 	getAnalyticsUserAgentString,
 } from './userAgent';
