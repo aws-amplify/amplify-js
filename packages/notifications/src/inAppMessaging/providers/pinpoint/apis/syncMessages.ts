@@ -14,9 +14,9 @@ import {
 	resolveConfig,
 	resolveCredentials,
 	getInAppMessagingUserAgentString,
-	INAPP_STORAGE_KEY_SUFFIX,
+	STORAGE_KEY_SUFFIX,
 	PINPOINT_KEY_PREFIX,
-	UPDATEENDPOINT_CATEGORY,
+	CATEGORY,
 	CHANNEL_TYPE,
 } from '../utils';
 import {
@@ -26,27 +26,38 @@ import {
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import {
 	InAppMessagingValidationErrorCode,
+	assertServiceError,
 	assertValidationError,
 } from '../../../errors';
 
-const logger = new Logger('Notifications.InAppMessaging.syncMessages');
-
 /**
- * Get the map resources that are currently available through the provider
- * @param {string} provider
- * @returns - Array of available map resources
+ * Fetch and persist messages from Pinpoint campaigns.
+ * Calling this API is necessary to trigger InApp messages on the device.
+ *
+ * @throws service exceptions - Thrown when the underlying Pinpoint service returns an error.
+ * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters or library
+ *  configuration is incorrect.
+ *
+ * @returns A promise that will resolve when the operation is complete.
+ *
+ * @example
+ * ```ts
+ * // Sync InApp messages with Pinpoint and device.
+ * await syncMessages();
+ *
+ * ```
  */
 export async function syncMessages(): Promise<void> {
+	const messages = await fetchInAppMessages();
+	if (messages.length === 0) {
+		return;
+	}
 	try {
-		const messages = await fetchInAppMessages();
-		if (messages.length === 0) {
-			return;
-		}
-		const key = `${PINPOINT_KEY_PREFIX}${INAPP_STORAGE_KEY_SUFFIX}`;
+		const key = `${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`;
 		await defaultStorage.setItem(key, JSON.stringify(messages));
-	} catch (err) {
-		logger.error('Failed to sync messages', err);
-		throw err;
+	} catch (error) {
+		assertServiceError(error);
+		throw error;
 	}
 }
 
@@ -54,14 +65,14 @@ async function fetchInAppMessages() {
 	try {
 		const { credentials, identityId } = await resolveCredentials();
 		const { appId, region } = resolveConfig();
-		let endpointId = await getEndpointId(appId, UPDATEENDPOINT_CATEGORY);
+		let endpointId = await getEndpointId(appId, CATEGORY);
 
 		// Prepare a Pinpoint endpoint via updateEndpoint if one does not already exist, which will generate and cache an
 		// endpoint ID between calls
 		if (!endpointId) {
 			await updateEndpoint({
 				appId,
-				category: UPDATEENDPOINT_CATEGORY,
+				category: CATEGORY,
 				channelType: CHANNEL_TYPE,
 				credentials,
 				identityId,
@@ -72,7 +83,7 @@ async function fetchInAppMessages() {
 				),
 			});
 
-			endpointId = await getEndpointId(appId, UPDATEENDPOINT_CATEGORY);
+			endpointId = await getEndpointId(appId, CATEGORY);
 		}
 
 		assertValidationError(
@@ -90,8 +101,8 @@ async function fetchInAppMessages() {
 		);
 		const { InAppMessageCampaigns: messages } = response.InAppMessagesResponse;
 		return messages;
-	} catch (err) {
-		logger.error('Error getting in-app messages', err);
-		throw err;
+	} catch (error) {
+		assertServiceError(error);
+		throw error;
 	}
 }
