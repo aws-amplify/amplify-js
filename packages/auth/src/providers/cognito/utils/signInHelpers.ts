@@ -474,8 +474,8 @@ async function handleDevicePasswordVerifier(
 	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata();
 	assertDeviceMetadata(deviceMetadata);
 
-	const serverBValue = new (BigInteger as any)(challengeParameters?.SRP_B, 16);
-	const salt = new (BigInteger as any)(challengeParameters?.SALT, 16);
+	const serverBValue = new BigInteger(challengeParameters?.SRP_B, 16);
+	const salt = new BigInteger(challengeParameters?.SALT, 16);
 	const deviceKey = deviceMetadata.deviceKey;
 	const deviceGroupKey = deviceMetadata.deviceGroupKey;
 	const hkdf = await getPasswordAuthenticationKey({
