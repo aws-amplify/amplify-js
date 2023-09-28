@@ -8,6 +8,7 @@ export enum AnalyticsValidationErrorCode {
 	NoCredentials = 'NoCredentials',
 	NoEventName = 'NoEventName',
 	NoRegion = 'NoRegion',
+	NoTrackingId = 'NoTrackingId',
 	InvalidFlushSize = 'InvalidFlushSize',
 }
 
@@ -26,6 +27,10 @@ export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
 			message: 'Missing region.',
 		},
 		[AnalyticsValidationErrorCode.InvalidFlushSize]: {
-			message: 'Invalid FlushSize, it should smaller than BufferSize',
+			message: 'Invalid FlushSize, it should be smaller than BufferSize',
+		},
+		[AnalyticsValidationErrorCode.NoTrackingId]: {
+			message:
+				'a trackingId field is required for using AmazonPersonalize provider',
 		},
 	};
