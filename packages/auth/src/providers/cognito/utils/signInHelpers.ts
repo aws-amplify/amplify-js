@@ -70,6 +70,14 @@ type HandleAuthChallengeRequest = {
 	tokenOrchestrator?: AuthTokenOrchestrator;
 };
 
+type HandleDeviceSRPInput = {
+	username: string;
+	config: CognitoUserPoolConfig;
+	clientMetadata: ClientMetadata | undefined;
+	session: string | undefined;
+	tokenOrchestrator?: AuthTokenOrchestrator;
+};
+
 export async function handleCustomChallenge({
 	challengeResponse,
 	clientMetadata,
@@ -103,13 +111,13 @@ export async function handleCustomChallenge({
 	);
 
 	if (response.ChallengeName === 'DEVICE_SRP_AUTH')
-		return handleDeviceSRPAuth(
+		return handleDeviceSRPAuth({
 			username,
 			config,
 			clientMetadata,
-			response.Session,
-			tokenOrchestrator
-		);
+			session: response.Session,
+			tokenOrchestrator,
+		});
 	return response;
 }
 
@@ -278,13 +286,13 @@ export async function handleUserPasswordAuthFlow(
 	);
 
 	if (response.ChallengeName === 'DEVICE_SRP_AUTH')
-		return handleDeviceSRPAuth(
+		return handleDeviceSRPAuth({
 			username,
 			config,
 			clientMetadata,
-			response.Session,
-			tokenOrchestrator
-		);
+			session: response.Session,
+			tokenOrchestrator,
+		});
 	return response;
 }
 
@@ -356,13 +364,13 @@ export async function handleCustomAuthFlowWithoutSRP(
 		jsonReq
 	);
 	if (response.ChallengeName === 'DEVICE_SRP_AUTH')
-		return handleDeviceSRPAuth(
+		return handleDeviceSRPAuth({
 			username,
 			config,
 			clientMetadata,
-			response.Session,
-			tokenOrchestrator
-		);
+			session: response.Session,
+			tokenOrchestrator,
+		});
 	return response;
 }
 
@@ -411,13 +419,13 @@ export async function handleCustomSRPAuthFlow(
 	);
 }
 
-async function handleDeviceSRPAuth(
-	username: string,
-	config: CognitoUserPoolConfig,
-	clientMetadata: ClientMetadata | undefined,
-	session: string | undefined,
-	tokenOrchestrator?: AuthTokenOrchestrator
-): Promise<RespondToAuthChallengeCommandOutput> {
+async function handleDeviceSRPAuth({
+	username,
+	config,
+	clientMetadata,
+	session,
+	tokenOrchestrator,
+}: HandleDeviceSRPInput): Promise<RespondToAuthChallengeCommandOutput> {
 	const userPoolId = config.userPoolId;
 	const clientId = config.userPoolClientId;
 	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata();
@@ -568,13 +576,13 @@ export async function handlePasswordVerifierChallenge(
 	);
 
 	if (response.ChallengeName === 'DEVICE_SRP_AUTH')
-		return handleDeviceSRPAuth(
+		return handleDeviceSRPAuth({
 			username,
 			config,
 			clientMetadata,
-			response.Session,
-			tokenOrchestrator
-		);
+			session: response.Session,
+			tokenOrchestrator,
+		});
 	return response;
 }
 
