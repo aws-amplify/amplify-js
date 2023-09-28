@@ -44,6 +44,7 @@ export {
 	VerifyTOTPSetupInput,
 	UpdateUserAttributeInput,
 	SendUserAttributeVerificationCodeInput,
+	DeleteUserAttributesInput,
 } from './inputs';
 
 export {
