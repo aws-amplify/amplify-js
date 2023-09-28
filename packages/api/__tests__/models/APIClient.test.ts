@@ -1,4 +1,4 @@
-import { normalizeMutationInput, initializeModel } from '../../src/ApiClient';
+import { normalizeMutationInput, initializeModel } from '../../src/APIClient';
 import modelIntroSchema from '../assets/model-introspection';
 
 describe('APIClient', () => {
