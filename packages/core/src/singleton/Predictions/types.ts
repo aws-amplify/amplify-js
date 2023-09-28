@@ -3,7 +3,7 @@
 
 // Defaults for ConvertConfig
 type SpeechGeneratorDefaults = {
-	VoiceId?: string;
+	voiceId?: string;
 };
 type TranscriptionDefaults = {
 	language?: string;
