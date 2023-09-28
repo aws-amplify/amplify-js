@@ -6,7 +6,10 @@ import { ResourcesConfig } from './singleton/types';
 const authTypeMapping: Record<any, any> = {
 	API_KEY: 'apiKey',
 	AWS_IAM: 'iam',
-	AMAZON_COGNITO_USER_POOLS: 'jwt',
+	AMAZON_COGNITO_USER_POOLS: 'userPool',
+	OPENID_CONNECT: 'oidc',
+	NONE: 'none',
+	LAMBDA: 'lambda',
 };
 
 /**
@@ -56,13 +59,11 @@ export const parseAWSExports = (
 	// API
 	if (aws_appsync_graphqlEndpoint) {
 		amplifyConfig.API = {
-			AppSync: {
-				defaultAuthMode: {
-					type: authTypeMapping[aws_appsync_authenticationType],
-					apiKey: aws_appsync_apiKey,
-				} as any,
+			GraphQL: {
 				endpoint: aws_appsync_graphqlEndpoint,
+				apiKey: aws_appsync_apiKey,
 				region: aws_appsync_region,
+				defaultAuthMode: authTypeMapping[aws_appsync_authenticationType],
 			},
 		};
 	}
@@ -121,11 +122,8 @@ export const parseAWSExports = (
 						...acc,
 						[name]: {
 							endpoint,
-							defaultAuthMode: {
-								type: authTypeMapping.AWS_IAM,
-								...(service ? { service } : undefined),
-								...(region ? { region } : undefined),
-							},
+							...(service ? { service } : undefined),
+							...(region ? { region } : undefined),
 						},
 					};
 				},

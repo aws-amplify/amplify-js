@@ -1,42 +1,79 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
+import { Headers } from '../../clients';
+
 export type LibraryAPIOptions = {
-	AppSync: {
-		query: string;
-		variables?: object;
-		authMode?: any;
-		authToken?: string;
-		/**
-		 * @deprecated This property should not be used
-		 */
-		userAgentSuffix?: string;
+	GraphQL?: {
+		// custom headers for given GraphQL service. Will be applied to all operations.
+		headers?: () => Promise<Headers>;
 	};
-	customHeaders: Function;
+	REST?: Record<
+		string,
+		{
+			// custom headers for given REST service. Will be applied to all operations.
+			headers?: () => Promise<Headers>;
+		}
+	>;
 };
 
-type EndpointConfig = {
+type GraphQLEndpointConfig = {
+	/**
+	 * Required GraphQL endpoint, must be a valid URL string.
+	 */
 	endpoint: string;
+	/**
+	 * Optional region string used to sign the request. Required only if the auth mode is 'iam'.
+	 */
+	region?: string;
+	/**
+	 * Option API key string. Required only if the auth mode is 'apiKey'.
+	 */
+	apiKey?: string;
+	/**
+	 * Endpoint to custom GraphQL API.
+	 */
+	customEndpoint?: string;
+	/**
+	 * Optional region string used to sign the request to `customEndpoint`. Effective only if `customEndpoint` is
+	 * specified, and the auth mode is 'iam'.
+	 */
+	customEndpointRegion?: string;
+	/**
+	 * Default auth mode for all the API calls to given service.
+	 */
 	defaultAuthMode: ApiAuthMode;
 };
 
-export type APIConfig = {
-	REST?: Record<string, EndpointConfig>;
-	AppSync?: {
-		defaultAuthMode: ApiAuthMode;
-		region: string;
-		endpoint: string;
-		modelIntrospectionSchema?: any;
-	};
+type RESTEndpointConfig = {
+	/**
+	 * Required REST endpoint, must be a valid URL string.
+	 */
+	endpoint: string;
+	/**
+	 * Optional region string used to sign the request with IAM credentials. If Omitted, region will be extracted from
+	 * the endpoint.
+	 *
+	 * @default 'us-east-1'
+	 */
+	region?: string;
+	/**
+	 * Optional service name string to sign the request with IAM credentials.
+	 *
+	 * @default 'execute-api'
+	 */
+	service?: string;
 };
 
-// Future improvement: For iodc and userPool, we could support config allowing users to specify to use access
-// token or id token.
-export type ApiAuthMode =
-	| { type: 'apiKey'; apiKey: string }
-	| { type: 'oidc' }
-	| { type: 'userPool' }
-	| { type: 'iam'; region?: string; service?: string }
-	| { type: 'lambda' }
-	| { type: 'none' };
+export type APIConfig = {
+	REST?: Record<string, RESTEndpointConfig>;
+	GraphQL?: GraphQLEndpointConfig;
+};
 
-export type ApiAuthModeKeys = ApiAuthMode['type'];
+export type ApiAuthMode =
+	| 'apiKey'
+	| 'oidc'
+	| 'userPool'
+	| 'iam'
+	| 'lambda'
+	| 'none';

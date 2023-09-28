@@ -1,3 +1,4 @@
+import internal from 'stream';
 import { parseAWSExports } from '../src/parseAWSExports';
 
 // TODO: Add API category tests
@@ -59,7 +60,10 @@ describe('Parser', () => {
 			name: 'api2',
 			endpoint: 'https://api2.com',
 			region: 'us-west-2',
+			service: 'lambda',
 		};
+		const appsyncEndpoint = 'https://123.appsync-api.com';
+		const apiKey = 'api-key';
 		expect(
 			parseAWSExports({
 				aws_cognito_identity_pool_id: identityPoolId,
@@ -75,6 +79,10 @@ describe('Parser', () => {
 					amazon_location_service: amazonLocationService,
 				},
 				aws_cloud_logic_custom: [restEndpoint1, restEndpoint2],
+				aws_appsync_graphqlEndpoint: appsyncEndpoint,
+				aws_appsync_apiKey: apiKey,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
 			})
 		).toStrictEqual({
 			Analytics: {
@@ -106,18 +114,19 @@ describe('Parser', () => {
 				REST: {
 					api1: {
 						endpoint: 'https://api1.com',
-						defaultAuthMode: {
-							type: 'iam',
-							region: 'us-east-1',
-						},
+						region: 'us-east-1',
 					},
 					api2: {
 						endpoint: 'https://api2.com',
-						defaultAuthMode: {
-							type: 'iam',
-							region: 'us-west-2',
-						},
+						region: 'us-west-2',
+						service: 'lambda',
 					},
+				},
+				GraphQL: {
+					endpoint: appsyncEndpoint,
+					apiKey,
+					region,
+					defaultAuthMode: 'userPool',
 				},
 			},
 		});
