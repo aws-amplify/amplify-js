@@ -69,7 +69,9 @@
 	"jest": {
 		"globals": {
 			"ts-jest": {
-				"diagnostics": false,
+				"diagnostics": {
+					"pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
+				},
 				"tsConfig": {
 					"lib": [
 						"es5",
@@ -79,7 +81,8 @@
 						"es2017.object"
 					],
 					"allowJs": true,
-					"noEmitOnError": false
+					"noEmitOnError": false,
+					"types": ["@types/jest"]
 				}
 			}
 		},
@@ -87,6 +90,11 @@
 			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
 		},
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"testPathIgnorePatterns": [
+			"<rootDir>/__tests__/helpers.ts",
+			"<rootDir>/__tests__/fixtures/",
+			"<rootDir>/__tests__/utils/"
+		],
 		"moduleFileExtensions": [
 			"ts",
 			"tsx",
@@ -105,10 +113,11 @@
 			}
 		},
 		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist",
-			"lib",
-			"lib-esm"
+			"<rootDir>/node_modules/",
+			"<rootDir>/dist",
+			"<rootDir>/lib",
+			"<rootDir>/lib-esm",
+			"<rootDir>/__tests__"
 		]
 	}
 }
