@@ -103,7 +103,7 @@ export class I18n {
 	 * @param {Object} vocabularies - Object that has language as key,
 	 *                                vocabularies of each language as value
 	 */
-	static putVocabularies(vocabularies: Record<string, string>) {
+	static putVocabularies(vocabularies: Record<string, Record<string, string>>) {
 		I18n.checkConfig();
 		assert(!!_i18n, I18nErrorCode.NotConfigured);
 
