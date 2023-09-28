@@ -242,7 +242,7 @@ export class InternalGraphQLAPIClass {
 
 		let response;
 		try {
-			const { body: responsePayload } = await post({
+			const { body: responsePayload } = await this._api.post({
 				url: new URL(endpoint),
 				options: {
 					headers,
