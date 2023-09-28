@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { HttpResponse } from '@aws-amplify/core/lib-esm/clients';
+import { HttpResponse } from '@aws-amplify/core/internals/aws-client-utils';
 import { CanceledError, RestApiError } from '../errors';
 import { Operation } from '../types';
 import { parseRestApiServiceError } from './serviceError';
