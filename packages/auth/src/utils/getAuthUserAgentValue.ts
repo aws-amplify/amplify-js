@@ -8,20 +8,12 @@ import {
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
 
-export function getAuthUserAgentValue(
+export const getAuthUserAgentValue = (
 	action: AuthAction,
 	customUserAgentDetails?: CustomUserAgentDetails
-) {
-	return getAmplifyUserAgent({
+) =>
+	getAmplifyUserAgent({
 		category: Category.Auth,
 		action,
 		...customUserAgentDetails,
 	});
-}
-
-export function getAuthUserAgentDetails(
-	action: AuthAction,
-	customUserAgentDetails?: CustomUserAgentDetails
-): CustomUserAgentDetails {
-	return { category: Category.Auth, action, ...customUserAgentDetails };
-}
