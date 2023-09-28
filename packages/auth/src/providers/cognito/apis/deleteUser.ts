@@ -6,9 +6,8 @@ import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
-import { deleteUser as deleteUserClient } from '../utils/clients/CognitoIdentityProvider';
+import { deleteUser as serviceDeleteUser } from '../utils/clients/CognitoIdentityProvider';
 import { DeleteUserException } from '../types/errors';
-import { DefaultTokenStore } from '../tokenProvider/TokenStore';
 import { tokenOrchestrator } from '../tokenProvider';
 import { signOut } from '..';
 
@@ -22,15 +21,15 @@ export async function deleteUser(): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
-	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	const { tokens } = await fetchAuthSession();
 	assertAuthTokens(tokens);
 
-	await deleteUserClient(
+	await serviceDeleteUser(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
 		}
 	);
 	await signOut();
-	tokenOrchestrator.clearDeviceMetadata();
+	await tokenOrchestrator.clearDeviceMetadata();
 }
