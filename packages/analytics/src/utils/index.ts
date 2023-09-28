@@ -7,7 +7,7 @@ export {
 	EventBuffer,
 	IAnalyticsClient,
 	EventBufferConfig,
-} from './event-buffer';
+} from './eventBuffer';
 export {
 	getAnalyticsUserAgent,
 	getAnalyticsUserAgentString,
