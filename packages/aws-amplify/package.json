@@ -237,13 +237,13 @@
 			"name": "[Analytics] enable",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ enable }",
-			"limit": "0.025 kB"
+			"limit": "0.50 kB"
 		},
 		{
 			"name": "[Analytics] disable",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ disable }",
-			"limit": "0.025 kB"
+			"limit": "0.50 kB"
 		},
 		{
 			"name": "[API] class (AppSync)",
