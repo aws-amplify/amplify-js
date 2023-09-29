@@ -39,7 +39,7 @@ class AmplifyRTNWebBrowser: NSObject {
             callbackURLScheme: nil,
             completionHandler: { url, error in
                 if (error as? ASWebAuthenticationSessionError)?.code == .canceledLogin {
-                    reject("ERROR", "user canceled auth session", error)
+                    resolve(nil)
                     return
                 }
                 if error != nil {

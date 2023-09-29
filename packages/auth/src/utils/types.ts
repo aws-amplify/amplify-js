@@ -6,10 +6,11 @@ export type OpenAuthSession = (
 	redirectSchemes: string[]
 ) => Promise<OpenAuthSessionResult> | void;
 
-type OpenAuthSessionResultType = 'canceled' | 'success' | 'unknown';
+type OpenAuthSessionResultType = 'canceled' | 'success' | 'error';
 
 export type OpenAuthSessionResult = {
 	type: OpenAuthSessionResultType;
+	error?: unknown;
 	url?: string;
 };
 
