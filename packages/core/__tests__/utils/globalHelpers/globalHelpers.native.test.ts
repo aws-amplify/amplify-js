@@ -1,34 +1,37 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { loadGetRandomValues } from '@aws-amplify/react-native';
 import { decode, encode } from 'base-64';
-import { omit } from 'lodash';
-import { AmplifyError } from '../../../src/errors';
 import {
 	getAtob,
 	getBtoa,
 	getCrypto,
 } from '../../../src/utils/globalHelpers/index.native';
 
-// react-native-get-random-values package doesn't export anything but writes
-// global.crypto
-jest.mock('react-native-get-random-values', () => {});
-jest.mock('base-64');
+const mockCrypto = {
+	getRandomValues: jest.fn(),
+};
 
-const mockDecode = decode as jest.Mock;
-const mockEncode = encode as jest.Mock;
-
-describe('getGlobal (native)', () => {
-	const mockCrypto = {
-		getRandomValues: jest.fn(),
-	};
-
-	beforeAll(() => {
-		// mock the behavior of the react-native-get-random-values package
+jest.mock('react-native');
+jest.mock('@aws-amplify/react-native', () => ({
+	loadGetRandomValues: jest.fn(() => {
 		Object.defineProperty(global, 'crypto', {
 			value: mockCrypto,
 			writable: true,
 		});
+	}),
+}));
+jest.mock('base-64');
+
+const mockDecode = decode as jest.Mock;
+const mockEncode = encode as jest.Mock;
+const mockLoadGetRandomValues = loadGetRandomValues as jest.Mock;
+
+describe('getGlobal (native)', () => {
+	beforeAll(() => {
+		// mock the behavior of loading the react-native-get-random-values package
+		mockLoadGetRandomValues();
 	});
 
 	describe('getCrypto()', () => {
