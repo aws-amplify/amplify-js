@@ -5,3 +5,4 @@ export { createCancellableOperation } from './createCancellableOperation';
 export { resolveCredentials } from './resolveCredentials';
 export { parseUrl } from './parseUrl';
 export { parseRestApiServiceError } from './serviceError';
+export { resolveApiUrl } from './resolveApiUrl';
