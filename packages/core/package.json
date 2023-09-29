@@ -56,7 +56,6 @@
 		"src",
 		"typings.d.ts",
 		"internals",
-		"polyfills",
 		"server"
 	],
 	"dependencies": {

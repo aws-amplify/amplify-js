@@ -24,13 +24,13 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
 	},
 	"dependencies": {
-		"base-64": "1.0.0",
-		"buffer": "6.0.3"
+		"base-64": "^1.0.0",
+		"buffer": "^6.0.3",
+		"react-native-url-polyfill": "^2.0.0"
 	},
 	"peerDependencies": {
 		"react-native": ">=0.70",
-		"react-native-get-random-values": ">=1.9.0",
-		"react-native-url-polyfill": ">=2.0.0"
+		"react-native-get-random-values": ">=1.9.0"
 	},
 	"devDependencies": {
 		"@react-native-async-storage/async-storage": "^1.17.12",

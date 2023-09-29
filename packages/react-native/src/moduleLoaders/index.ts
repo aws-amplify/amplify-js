@@ -4,3 +4,5 @@
 export { loadAsyncStorage } from './loadAsyncStorage';
 export { loadNetInfo } from './loadNetInfo';
 export { loadBuffer } from './loadBuffer';
+export { loadUrlPolyfill } from './loadUrlPolyfill';
+export { loadGetRandomValues } from './loadGetRandomValues';
