@@ -31,10 +31,6 @@ import {
 	OnCreateThreadSubscription,
 } from './fixtures/with-types/API';
 
-process.on('unhandledRejection', err => {
-	console.error(err);
-});
-
 const serverManagedFields = {
 	id: 'some-id',
 	owner: 'wirejobviously',
