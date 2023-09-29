@@ -1,12 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import type { DocumentNode } from 'graphql';
 
 import { Headers } from '../../clients';
 
 export type LibraryAPIOptions = {
 	GraphQL?: {
 		// custom headers for given GraphQL service. Will be applied to all operations.
-		headers?: () => Promise<Headers>;
+		headers?: (options: {
+			query: DocumentNode;
+			variables: Record<string, DocumentType>;
+		}) => Promise<Headers>;
 	};
 	REST?: {
 		// custom headers for given REST service. Will be applied to all operations.
@@ -74,3 +78,14 @@ export type APIAuthMode =
 	| 'iam'
 	| 'lambda'
 	| 'none';
+
+/**
+ * Type representing a plain JavaScript object that can be serialized to JSON.
+ */
+export type DocumentType =
+	| null
+	| boolean
+	| number
+	| string
+	| DocumentType[]
+	| { [prop: string]: DocumentType };

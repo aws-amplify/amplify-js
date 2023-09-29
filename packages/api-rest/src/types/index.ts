@@ -1,17 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-/**
- * Type representing a plain JavaScript object that can be serialized to JSON.
- */
-export type DocumentType =
-	| null
-	| boolean
-	| number
-	| string
-	| DocumentType[]
-	| { [prop: string]: DocumentType };
-
 export type GetOptions = RestApiOptionsBase;
 export type PostOptions = RestApiOptionsBase;
 export type PutOptions = RestApiOptionsBase;

@@ -4,8 +4,7 @@ import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { Observable } from 'rxjs';
 
-import { DocumentType } from '@aws-amplify/api-rest';
-import { APIAuthMode } from '@aws-amplify/core/internals/utils';
+import { APIAuthMode, DocumentType } from '@aws-amplify/core/internals/utils';
 export { CONTROL_MSG, ConnectionState } from './PubSub';
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.

@@ -16,8 +16,8 @@ import {
 	getAmplifyUserAgent,
 	isNonRetryableError,
 	jitteredExponentialRetry,
+	DocumentType,
 } from '@aws-amplify/core/internals/utils';
-import { DocumentType } from '@aws-amplify/api-rest';
 
 import {
 	CONTROL_MSG,
