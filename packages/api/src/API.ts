@@ -10,7 +10,7 @@ import {
 import {
 	graphql as v6graphql,
 	cancel as v6cancel,
-	isCancel as v6isCancel,
+	isCancelError as v6isCancelError,
 } from '@aws-amplify/api-graphql/internals';
 import { Observable } from 'rxjs';
 import { InternalAPIClass } from './internals/InternalAPI';
@@ -57,7 +57,7 @@ export class APIClass extends InternalAPIClass {
 		const client: V6Client<any> = {
 			graphql: v6graphql,
 			cancel: v6cancel,
-			isCancel: v6isCancel,
+			isCancelError: v6isCancelError,
 		};
 
 		return client as V6Client<T>;
@@ -75,7 +75,7 @@ type ExcludeNeverFields<O> = {
 declare type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	graphql: typeof v6graphql;
 	cancel: typeof v6cancel;
-	isCancel: typeof v6isCancel;
+	isCancelError: typeof v6isCancelError;
 }>;
 
 export const API = new APIClass(null);

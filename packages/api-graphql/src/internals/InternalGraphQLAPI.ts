@@ -62,7 +62,7 @@ export class InternalGraphQLAPIClass {
 	 * 4. Clients can either wait for the promise to fulfill or call `API.cancel(promise)` to cancel the request.
 	 * 5. If `client.cancel(promise)` is called, then the corresponding cancel token is retrieved from the map below.
 	 * 6. Promise returned to the client will be in rejected state with the error provided during cancel.
-	 * 7. Clients can check if the error is because of cancelling by calling `client.isCancel(error)`.
+	 * 7. Clients can check if the error is because of cancelling by calling `client.isCancelError(error)`.
 	 */
 	private _cancelTokenMap: WeakMap<Promise<any>, Promise<any>> = new WeakMap();
 
@@ -260,7 +260,7 @@ export class InternalGraphQLAPIClass {
 
 		let response;
 		try {
-			const { body: responsePayload } = this._api.post({
+			const postPromise = this._api.post({
 				url: new URL(endpoint),
 				options: {
 					headers,
@@ -273,12 +273,12 @@ export class InternalGraphQLAPIClass {
 			});
 
 			const result = new Promise(async (res, rej) => {
+				const { body: responsePayload } = await postPromise;
 				const postResult = await responsePayload.json();
-
 				res({ data: postResult });
 			});
 
-			this._cancelTokenMap.set(result, responsePayload);
+			this._cancelTokenMap.set(result, postPromise);
 
 			response = await result;
 		} catch (err) {
