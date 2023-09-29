@@ -118,6 +118,20 @@ const buildUserPoolDeserializer = <Output>(): ((
 	};
 };
 
+const buildDeleteDeserializer = <Output>(): ((
+	response: HttpResponse
+) => Promise<Output>) => {
+	return async (response: HttpResponse): Promise<Output> => {
+		if (response.statusCode >= 300) {
+			const error = await parseJsonError(response);
+			assertServiceError(error);
+			throw new AuthError({ name: error.name, message: error.message });
+		} else {
+			return undefined as any;
+		}
+	};
+};
+
 export const initiateAuth = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<InitiateAuthInput>('InitiateAuth'),
@@ -216,11 +230,10 @@ export const forgetDevice = composeServiceApi(
 	buildUserPoolDeserializer<ForgetDeviceOutput>(),
 	defaultConfig
 );
-
 export const deleteUser = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<DeleteUserInput>('DeleteUser'),
-	buildUserPoolDeserializer<DeleteUserOutput>(),
+	buildDeleteDeserializer<DeleteUserOutput>(),
 	defaultConfig
 );
 export const getUserAttributeVerificationCode = composeServiceApi(
