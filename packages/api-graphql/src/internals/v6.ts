@@ -103,9 +103,12 @@ export function graphql<
 	return result as any;
 }
 
-const cancel = GraphQLAPI.cancel;
-const isCancel = GraphQLAPI.isCancel;
+export function cancel(promise: Promise<any>, message?: string): Promise<any> {
+	return GraphQLAPI.cancel(promise, message);
+}
 
-export { cancel, isCancel };
+export function isCancel(error: any): any {
+	return GraphQLAPI.isCancel(error);
+}
 
 export { GraphQLOptionsV6, GraphQLResponseV6 };

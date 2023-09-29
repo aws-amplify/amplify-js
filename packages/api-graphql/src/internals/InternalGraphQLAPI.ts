@@ -56,12 +56,21 @@ export class InternalGraphQLAPIClass {
 	private _api = { post };
 
 	/**
+	 * TODO
+	 */
+	// tokens = new WeakMap<graphqlResponseType, postResponseType>();
+	private _cancelTokenMap: WeakMap<Promise<any>, Promise<any>> = new WeakMap();
+
+	/**
 	 * Initialize GraphQL API with AWS configuration
 	 * @param {Object} options - Configuration object for API
 	 */
 	constructor(options) {
 		this._options = options;
 		logger.debug('API Options', this._options);
+		// if (this._cancelTokenMap == null) {
+		// 	this._cancelTokenMap = new WeakMap();
+		// }
 	}
 
 	public getModuleName() {
@@ -246,12 +255,25 @@ export class InternalGraphQLAPIClass {
 
 		let response;
 		try {
-			response = await this._api.post(endpoint, {
+			// response = await this._api.post(endpoint, {
+			// 	headers,
+			// 	body,
+			// 	region,
+			// 	serviceName: 'appsync',
+			// });
+			const postPromise = this._api.post(endpoint, {
 				headers,
 				body,
 				region,
 				serviceName: 'appsync',
 			});
+			const result = new Promise(async (res, rej) => {
+				const postResult = await postPromise;
+
+				res({ data: postResult });
+			});
+			this._cancelTokenMap.set(result, postPromise);
+			return result;
 		} catch (err) {
 			// If the exception is because user intentionally
 			// cancelled the request, do not modify the exception
@@ -281,7 +303,7 @@ export class InternalGraphQLAPIClass {
 	 * @param {any} error - Any error
 	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
 	 */
-	isCancel(error) {
+	isCancel(error: any): any {
 		// TODO: awaiting final implementation:
 		return isCancelREST(error);
 	}
@@ -291,9 +313,9 @@ export class InternalGraphQLAPIClass {
 	 * @param {any} request - request to cancel
 	 * @return {boolean} - A boolean indicating if the request was cancelled
 	 */
-	cancel(request: Promise<any>, message?: string) {
+	cancel(request: Promise<any>, message?: string): any {
 		// TODO: awaiting final implementation:
-		return cancelREST(request, message);
+		return cancelREST(this._cancelTokenMap.get(request), message);
 	}
 
 	private _graphqlSubscribe(
