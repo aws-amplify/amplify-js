@@ -313,7 +313,7 @@ export class InternalGraphQLAPIClass {
 	 * @param {any} request - request to cancel
 	 * @return {boolean} - A boolean indicating if the request was cancelled
 	 */
-	cancel(request: Promise<any>, message?: string): Promise<any> {
+	cancel(request: Promise<any>, message?: string): boolean {
 		// TODO: awaiting final implementation:
 		return cancelREST(this._cancelTokenMap.get(request), message);
 	}

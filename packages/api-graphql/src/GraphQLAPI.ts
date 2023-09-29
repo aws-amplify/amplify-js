@@ -50,7 +50,7 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	 * @param {any} request - request to cancel
 	 * @return {boolean} - A boolean indicating if the request was cancelled
 	 */
-	cancel(request: Promise<any>, message?: string): Promise<any> {
+	cancel(request: Promise<any>, message?: string): boolean {
 		return super.cancel(request, message);
 	}
 }

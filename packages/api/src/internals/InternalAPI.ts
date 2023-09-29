@@ -58,6 +58,7 @@ export class InternalAPIClass {
 	isCancelError(error: any): boolean {
 		return isCancelError(error);
 	}
+
 	/**
 	 * Cancels an inflight request for either a GraphQL request or a Rest API request.
 	 * @param request - request to cancel
