@@ -3,13 +3,18 @@
 
 import { RecordInput } from '../types';
 import { getEventBuffer, resolveConfig } from '../utils';
-import { resolveCredentials } from '../../../utils';
+import { isAnalyticsEnabled, resolveCredentials } from '../../../utils';
 import { fromUtf8 } from '@smithy/util-utf8';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/lib/Logger';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 
 const logger = new Logger('KinesisFirehose');
 
 export const record = ({ streamName, data }: RecordInput): void => {
+	if (!isAnalyticsEnabled()) {
+		logger.debug('Analytics is disabled, event will not be recorded.');
+		return;
+	}
+
 	const timestamp = Date.now();
 	const { region, bufferSize, flushSize, flushInterval, resendLimit } =
 		resolveConfig();

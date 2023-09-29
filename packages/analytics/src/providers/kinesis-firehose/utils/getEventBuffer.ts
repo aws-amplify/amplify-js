@@ -11,6 +11,14 @@ import {
 	KinesisFirehoseEventBufferConfig,
 } from '../types';
 
+/**
+ * These Records hold cached event buffers and AWS clients.
+ * The hash key is determined by the region and session,
+ * consisting of a combined value comprising [region, sessionToken, identityId].
+ *
+ * Only one active session should exist at any given moment.
+ * When a new session is initiated, the previous ones should be released.
+ * */
 const eventBufferMap: Record<
 	string,
 	EventBuffer<KinesisFirehoseBufferEvent>

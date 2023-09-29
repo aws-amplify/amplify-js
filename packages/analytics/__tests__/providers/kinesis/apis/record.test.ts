@@ -3,13 +3,13 @@
 
 import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEventBuffer';
 import { resolveConfig } from '../../../../src/providers/kinesis/utils/resolveConfig';
-import { resolveCredentials } from '../../../../src/utils';
+import { isAnalyticsEnabled, resolveCredentials } from '../../../../src/utils';
 import {
 	mockConfig,
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
 import { record } from '../../../../src/providers/kinesis';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/lib/Logger';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import { RecordInput as KinesisRecordInput } from '../../../../src/providers/kinesis/types';
 
 jest.mock('../../../../src/utils');
@@ -17,7 +17,7 @@ jest.mock('../../../../src/providers/kinesis/utils/resolveConfig');
 jest.mock('../../../../src/providers/kinesis/utils/getEventBuffer');
 
 describe('Analytics Kinesis API: record', () => {
-	const mockEvent: KinesisRecordInput = {
+	const mockRecordInput: KinesisRecordInput = {
 		streamName: 'stream0',
 		partitionKey: 'partition0',
 		data: new Uint8Array([0x01, 0x02, 0xff]),
@@ -26,10 +26,13 @@ describe('Analytics Kinesis API: record', () => {
 	const mockResolveConfig = resolveConfig as jest.Mock;
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 	const mockGetEventBuffer = getEventBuffer as jest.Mock;
+	const mockIsAnalyticsEnabled = isAnalyticsEnabled as jest.Mock;
 	const mockAppend = jest.fn();
 	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
+	const loggerDebugSpy = jest.spyOn(Logger.prototype, 'debug');
 
 	beforeEach(() => {
+		mockIsAnalyticsEnabled.mockReturnValue(true);
 		mockResolveConfig.mockReturnValue(mockConfig);
 		mockResolveCredentials.mockReturnValue(
 			Promise.resolve(mockCredentialConfig)
@@ -44,18 +47,19 @@ describe('Analytics Kinesis API: record', () => {
 		mockResolveCredentials.mockReset();
 		mockAppend.mockReset();
 		mockGetEventBuffer.mockReset();
+		mockIsAnalyticsEnabled.mockReset();
 	});
 
 	it('append to event buffer if record provided', async () => {
-		record(mockEvent);
+		record(mockRecordInput);
 		await new Promise(process.nextTick);
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
 		expect(mockAppend).toBeCalledWith(
 			expect.objectContaining({
 				region: mockConfig.region,
-				streamName: mockEvent.streamName,
-				partitionKey: mockEvent.partitionKey,
-				event: mockEvent.data,
+				streamName: mockRecordInput.streamName,
+				partitionKey: mockRecordInput.partitionKey,
+				event: mockRecordInput.data,
 				retryCount: 0,
 			})
 		);
@@ -64,9 +68,18 @@ describe('Analytics Kinesis API: record', () => {
 	it('logs an error when credentials can not be fetched', async () => {
 		mockResolveCredentials.mockRejectedValue(new Error('Mock Error'));
 
-		record(mockEvent);
+		record(mockRecordInput);
 
 		await new Promise(process.nextTick);
 		expect(loggerWarnSpy).toBeCalledWith(expect.any(String), expect.any(Error));
+	});
+
+	it('logs and skip the event recoding if Analytics plugin is not enabled', async () => {
+		mockIsAnalyticsEnabled.mockReturnValue(false);
+		record(mockRecordInput);
+		await new Promise(process.nextTick);
+		expect(loggerDebugSpy).toBeCalledWith(expect.any(String));
+		expect(mockGetEventBuffer).not.toBeCalled();
+		expect(mockAppend).not.toBeCalled();
 	});
 });
