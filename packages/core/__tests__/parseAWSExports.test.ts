@@ -1,4 +1,3 @@
-import internal from 'stream';
 import { parseAWSExports } from '../src/parseAWSExports';
 
 // TODO: Add API category tests

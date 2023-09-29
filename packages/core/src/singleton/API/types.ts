@@ -14,7 +14,7 @@ export type LibraryAPIOptions = {
 	};
 };
 
-type GraphQLEndpointConfig = {
+type APIGraphQLConfig = {
 	/**
 	 * Required GraphQL endpoint, must be a valid URL string.
 	 */
@@ -28,7 +28,7 @@ type GraphQLEndpointConfig = {
 	 */
 	apiKey?: string;
 	/**
-	 * Endpoint to custom GraphQL API.
+	 * Custom domain endpoint for GraphQL API.
 	 */
 	customEndpoint?: string;
 	/**
@@ -42,7 +42,7 @@ type GraphQLEndpointConfig = {
 	defaultAuthMode: ApiAuthMode;
 };
 
-type RESTEndpointConfig = {
+type APIRestConfig = {
 	/**
 	 * Required REST endpoint, must be a valid URL string.
 	 */
@@ -63,8 +63,8 @@ type RESTEndpointConfig = {
 };
 
 export type APIConfig = {
-	REST?: Record<string, RESTEndpointConfig>;
-	GraphQL?: GraphQLEndpointConfig;
+	REST?: Record<string, APIRestConfig>;
+	GraphQL?: APIGraphQLConfig;
 };
 
 export type ApiAuthMode =
