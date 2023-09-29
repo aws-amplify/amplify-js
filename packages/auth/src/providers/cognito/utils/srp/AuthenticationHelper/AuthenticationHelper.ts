@@ -3,11 +3,13 @@
 
 import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
 import { base64Encoder } from '@aws-amplify/core/internals/utils';
-import BigInteger from './BigInteger';
-import { toHex, fromHex } from './helpers';
-import WordArray from './WordArray';
-import { AuthError } from '../../../../errors/AuthError';
+import { BigInteger } from '../BigInteger';
+import { toHex, fromHex } from '../helpers';
+import WordArray from '../WordArray';
+import { AuthError } from '../../../../../errors/AuthError';
+import { textEncoder } from '../../textEncoder';
 
+// Prevent infer the BigInteger type the lib.dom.d
 type BigInteger = typeof BigInteger;
 
 const SHORT_TO_HEX: Record<string, string> = {};
@@ -69,7 +71,7 @@ const newPasswordRequiredChallengeUserAttributePrefix = 'userAttributes.';
 
 /** @class */
 export default class AuthenticationHelper {
-	encoder = new TextEncoder();
+	encoder = textEncoder;
 	smallAValue: BigInteger;
 	infoBits: Uint8Array;
 	poolName: string;
@@ -97,7 +99,7 @@ export default class AuthenticationHelper {
 		this.smallAValue = this.generateRandomSmallA();
 		this.getLargeAValue(() => {});
 
-		this.infoBits = this.encoder.encode('Caldera Derived Key');
+		this.infoBits = this.encoder.convert('Caldera Derived Key');
 
 		this.poolName = PoolName;
 	}
@@ -317,7 +319,7 @@ export default class AuthenticationHelper {
 	 * @private
 	 */
 	computehkdf(ikm: Uint8Array, salt: Uint8Array): Uint8Array {
-		const stringOne = this.encoder.encode(String.fromCharCode(1));
+		const stringOne = this.encoder.convert(String.fromCharCode(1));
 		const bufConcat = new Uint8Array(
 			this.infoBits.byteLength + stringOne.byteLength
 		);

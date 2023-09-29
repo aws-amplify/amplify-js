@@ -13,8 +13,8 @@ import {
 	getPasswordAuthenticationKey,
 	getSignatureString,
 } from './srp/helpers';
-import AuthenticationHelper from './srp/AuthenticationHelper';
-import BigInteger from './srp/BigInteger';
+import { AuthenticationHelper } from './srp/AuthenticationHelper/';
+import { BigInteger } from './srp/BigInteger';
 
 import { ClientMetadata, ConfirmSignInOptions } from '../types';
 import {

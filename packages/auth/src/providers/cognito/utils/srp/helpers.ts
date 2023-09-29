@@ -7,10 +7,9 @@ import {
 	base64Encoder,
 	base64Decoder,
 } from '@aws-amplify/core/internals/utils';
-import AuthenticationHelper from './AuthenticationHelper';
-import BigInteger from './BigInteger';
-
-type BigInteger = typeof BigInteger;
+import { AuthenticationHelper } from './AuthenticationHelper';
+import { textEncoder } from '../textEncoder';
+import { BigIntegerInterface } from './BigInteger/types';
 
 export function hash(buf: SourceData) {
 	const awsCryptoHash = new Sha256();
@@ -157,12 +156,12 @@ export function getSignatureString({
 	dateNow: string;
 	hkdf: SourceData;
 }): string {
-	const encoder = new TextEncoder();
+	const encoder = textEncoder;
 
-	const bufUPIDaToB = encoder.encode(userPoolName);
-	const bufUNaToB = encoder.encode(username);
+	const bufUPIDaToB = encoder.convert(userPoolName);
+	const bufUNaToB = encoder.convert(username);
 	const bufSBaToB = _urlB64ToUint8Array(challengeParameters.SECRET_BLOCK);
-	const bufDNaToB = encoder.encode(dateNow);
+	const bufDNaToB = encoder.convert(dateNow);
 
 	const bufConcat = new Uint8Array(
 		bufUPIDaToB.byteLength +
@@ -187,9 +186,11 @@ export function getSignatureString({
 
 export function getLargeAValue(authenticationHelper: AuthenticationHelper) {
 	return new Promise(res => {
-		authenticationHelper.getLargeAValue((err: unknown, aValue: BigInteger) => {
-			res(aValue);
-		});
+		authenticationHelper.getLargeAValue(
+			(err: unknown, aValue: BigIntegerInterface) => {
+				res(aValue);
+			}
+		);
 	});
 }
 
@@ -203,8 +204,8 @@ export function getPasswordAuthenticationKey({
 	authenticationHelper: AuthenticationHelper;
 	username: string;
 	password: string;
-	serverBValue: BigInteger;
-	salt: BigInteger;
+	serverBValue: BigIntegerInterface;
+	salt: BigIntegerInterface;
 }): Promise<SourceData> {
 	return new Promise((res, rej) => {
 		authenticationHelper.getPasswordAuthenticationKey(
