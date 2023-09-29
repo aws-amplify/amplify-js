@@ -8,7 +8,7 @@ import {
 	ModelAttributeAuthAllow,
 	AmplifyContext,
 } from '../types';
-import { ApiAuthMode } from '@aws-amplify/core/internals/utils';
+import { APIAuthMode } from '@aws-amplify/core/internals/utils';
 
 function getProviderFromRule(
 	rule: ModelAttributeAuthProperty
@@ -63,7 +63,7 @@ function getAuthRules({
 	currentUser: unknown;
 }) {
 	// Using Set to ensure uniqueness
-	const authModes = new Set<ApiAuthMode>();
+	const authModes = new Set<APIAuthMode>();
 
 	rules.forEach(rule => {
 		switch (rule.allow) {

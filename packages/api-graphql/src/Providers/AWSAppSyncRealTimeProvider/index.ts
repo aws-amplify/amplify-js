@@ -8,7 +8,7 @@ import { Buffer } from 'buffer';
 import { Hub, fetchAuthSession } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
-	ApiAuthMode,
+	APIAuthMode,
 	CustomUserAgentDetails,
 	Logger,
 	NonRetryableError,
@@ -88,7 +88,7 @@ type ParsedMessagePayload = {
 
 export interface AWSAppSyncRealTimeProviderOptions {
 	appSyncGraphqlEndpoint?: string;
-	authenticationType?: ApiAuthMode;
+	authenticationType?: APIAuthMode;
 	query?: string;
 	variables?: Record<string, DocumentType>;
 	apiKey?: string;
@@ -884,7 +884,7 @@ export class AWSAppSyncRealTimeProvider {
 		Record<string, unknown> | undefined
 	> {
 		const headerHandler: {
-			[key in ApiAuthMode]: (arg0: AWSAppSyncRealTimeAuthInput) => {};
+			[key in APIAuthMode]: (arg0: AWSAppSyncRealTimeAuthInput) => {};
 		} = {
 			apiKey: this._awsRealTimeApiKeyHeader.bind(this),
 			iam: this._awsRealTimeIAMHeader.bind(this),

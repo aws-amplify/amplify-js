@@ -34,7 +34,7 @@ export {
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
 export { isTokenExpired } from './singleton/Auth';
-export { ApiAuthMode } from './singleton/API/types';
+export { APIAuthMode } from './singleton/API/types';
 export { Signer } from './Signer';
 
 // Logging utilities

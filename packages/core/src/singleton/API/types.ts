@@ -39,7 +39,7 @@ type APIGraphQLConfig = {
 	/**
 	 * Default auth mode for all the API calls to given service.
 	 */
-	defaultAuthMode: ApiAuthMode;
+	defaultAuthMode: APIAuthMode;
 };
 
 type APIRestConfig = {
@@ -67,7 +67,7 @@ export type APIConfig = {
 	GraphQL?: APIGraphQLConfig;
 };
 
-export type ApiAuthMode =
+export type APIAuthMode =
 	| 'apiKey'
 	| 'oidc'
 	| 'userPool'

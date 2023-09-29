@@ -31,7 +31,7 @@ import {
 	DataStoreAction,
 	NonRetryableError,
 	BackgroundProcessManager,
-	ApiAuthMode,
+	APIAuthMode,
 	AmplifyError,
 } from '@aws-amplify/core/internals/utils';
 
@@ -204,7 +204,7 @@ class SyncProcessor {
 		variables: { limit: number; lastSync: number; nextToken: string };
 		opName: string;
 		modelDefinition: SchemaModel;
-		authMode: ApiAuthMode;
+		authMode: APIAuthMode;
 		onTerminate: Promise<void>;
 	}): Promise<
 		GraphQLResult<{
