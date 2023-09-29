@@ -40,6 +40,7 @@ export {
 	AuthSignInWithRedirectInput,
 	AuthSignOutInput,
 	AuthSendUserAttributeVerificationCodeInput,
+	AuthDeleteUserAttributesInput,
 } from './inputs';
 
 export {

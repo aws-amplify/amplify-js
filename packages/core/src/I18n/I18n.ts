@@ -134,7 +134,7 @@ export class I18n {
 	 * @param {Object} vocabularies - Object that has language as key,
 	 *                                vocabularies of each language as value
 	 */
-	putVocabularies(vocabularies: Record<string, any>) {
+	putVocabularies(vocabularies: Record<string, Record<string, string>>) {
 		Object.keys(vocabularies).map(key => {
 			this.putVocabulariesForLanguage(key, vocabularies[key]);
 		});
