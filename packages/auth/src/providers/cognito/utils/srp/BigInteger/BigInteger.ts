@@ -17,7 +17,9 @@
 //   divide
 //   modPow
 
-export default BigInteger as BigInteger;
+import { BigIntegerInterface } from './types';
+
+export default BigInteger as BigIntegerInterface;
 
 type BNP = { s: number; t: number };
 /*
@@ -51,22 +53,7 @@ type BNP = { s: number; t: number };
  * and disclaimer.
  */
 
-interface BigIntegerInterface {
-	subtract: Function;
-	add: Function;
-	multiply: Function;
-	mod: Function;
-	modPow: Function;
-	equals: Function;
-	ONE: any;
-	ZERO: any;
-	abs: Function;
-	compareTo: Function;
-}
 // (public) Constructor
-interface BigInteger extends BigIntegerInterface {
-	new (a?: any, b?: any): BigInteger;
-}
 function BigInteger(a?: any, b?: any) {
 	if (a != null) this.fromString(a, b);
 }
