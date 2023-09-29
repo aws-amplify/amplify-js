@@ -21,7 +21,11 @@ import {
 	GraphQLOperation,
 	GraphQLOptions,
 } from '../types';
-import { post, isCancel, cancel } from '@aws-amplify/api-rest';
+import {
+	post,
+	isCancel as isCancelREST,
+	cancel as cancelREST,
+} from '@aws-amplify/api-rest';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
@@ -49,7 +53,7 @@ export class InternalGraphQLAPIClass {
 	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
 	Cache = Cache;
-	private _api = { cancel, isCancel, post };
+	private _api = { post };
 
 	/**
 	 * Initialize GraphQL API with AWS configuration
@@ -254,7 +258,7 @@ export class InternalGraphQLAPIClass {
 			// so that clients can identify the exception correctly.
 
 			// TODO: awaiting final implementation:
-			if (this._api.isCancel(err)) {
+			if (isCancelREST(err)) {
 				throw err;
 			}
 			response = {
@@ -279,7 +283,7 @@ export class InternalGraphQLAPIClass {
 	 */
 	isCancel(error) {
 		// TODO: awaiting final implementation:
-		return this._api.isCancel(error);
+		return isCancelREST(error);
 	}
 
 	/**
@@ -289,18 +293,8 @@ export class InternalGraphQLAPIClass {
 	 */
 	cancel(request: Promise<any>, message?: string) {
 		// TODO: awaiting final implementation:
-		return this._api.cancel(request, message);
+		return cancelREST(request, message);
 	}
-
-	/**
-	 * Check if the request has a corresponding cancel token in the WeakMap.
-	 * @params request - The request promise
-	 * @return if the request has a corresponding cancel token.
-	 */
-	// hasCancelToken(request: Promise<any>) {
-	// 	// TODO: awaiting final implementation:
-	// 	return this._api.hasCancelToken(request);
-	// }
 
 	private _graphqlSubscribe(
 		{

@@ -35,6 +35,24 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		return super.graphql(options, additionalHeaders);
 	}
+
+	/**
+	 * Checks to see if an error thrown is from an api request cancellation
+	 * @param {any} error - Any error
+	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
+	 */
+	isCancel(error) {
+		return super.cancel(error);
+	}
+
+	/**
+	 * Cancels an inflight request. Only applicable for graphql queries and mutations
+	 * @param {any} request - request to cancel
+	 * @return {boolean} - A boolean indicating if the request was cancelled
+	 */
+	cancel(request: Promise<any>, message?: string) {
+		return super.cancel(request, message);
+	}
 }
 
 export const GraphQLAPI = new GraphQLAPIClass(null);
