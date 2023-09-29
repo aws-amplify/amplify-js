@@ -24,25 +24,12 @@ export async function deleteUser(): Promise<void> {
 	const { tokens } = await fetchAuthSession();
 	assertAuthTokens(tokens);
 
-	try {
-		await serviceDeleteUser(
-			{ region: getRegion(authConfig.userPoolId) },
-			{
-				AccessToken: tokens.accessToken.toString(),
-			}
-		);
-	} catch (error) {
-		if (
-			error instanceof SyntaxError &&
-			error.message === 'Unexpected end of JSON input'
-		) {
-			// TODO: fix this error and remove try/catch block
-			// this error is caused when parsing empty client response.
-			// Swallow error as a workaround
-		} else {
-			throw error;
+	await serviceDeleteUser(
+		{ region: getRegion(authConfig.userPoolId) },
+		{
+			AccessToken: tokens.accessToken.toString(),
 		}
-	}
+	);
 	await signOut();
 	await tokenOrchestrator.clearDeviceMetadata();
 }
