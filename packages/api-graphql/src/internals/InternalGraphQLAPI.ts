@@ -21,11 +21,8 @@ import {
 	GraphQLOperation,
 	GraphQLOptions,
 } from '../types';
-import {
-	post,
-	isCancel as isCancelREST,
-	cancel as cancelREST,
-} from '@aws-amplify/api-rest/internals';
+import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
+import { post, cancel as cancelREST } from '@aws-amplify/api-rest/internals';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
@@ -289,8 +286,7 @@ export class InternalGraphQLAPIClass {
 			// cancelled the request, do not modify the exception
 			// so that clients can identify the exception correctly.
 
-			// TODO: awaiting final implementation:
-			if (isCancelREST(err)) {
+			if (isCancelErrorREST(err)) {
 				throw err;
 			}
 			response = {
@@ -314,8 +310,7 @@ export class InternalGraphQLAPIClass {
 	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
 	 */
 	isCancelError(error: any): boolean {
-		// TODO: awaiting final implementation:
-		return isCancelREST(error);
+		return isCancelErrorREST(error);
 	}
 
 	/**
