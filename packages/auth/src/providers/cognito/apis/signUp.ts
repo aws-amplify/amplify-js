@@ -35,7 +35,8 @@ const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	const signUpVerificationMethod = authConfig?.signUpVerificationMethod;
+	const signUpVerificationMethod =
+		authConfig?.signUpVerificationMethod ?? 'code';
 	const clientMetadata = input.options?.serviceOptions?.clientMetadata;
 	assertTokenProviderConfig(authConfig);
 	assertValidationError(
