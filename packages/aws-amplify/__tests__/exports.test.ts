@@ -10,6 +10,7 @@ import * as analyticsPinpointExports from '../src/analytics/pinpoint';
 import * as inAppMessagingTopLevelExports from '../src/in-app-messaging';
 import * as inAppMessagingPinpointTopLevelExports from '../src/in-app-messaging/pinpoint';
 import * as analyticsKinesisExports from '../src/analytics/kinesis';
+import * as analyticsKinesisFirehoseExports from '../src/analytics/kinesis-firehose';
 import * as storageTopLevelExports from '../src/storage';
 import * as storageS3Exports from '../src/storage/s3';
 
@@ -64,6 +65,15 @@ describe('aws-amplify Exports', () => {
 
 		it('should only export expected symbols from the Kinesis provider', () => {
 			expect(Object.keys(analyticsKinesisExports)).toMatchInlineSnapshot(`
+			Array [
+			  "record",
+			]
+			`);
+		});
+
+		it('should only export expected symbols from the Kinesis Firehose provider', () => {
+			expect(Object.keys(analyticsKinesisFirehoseExports))
+				.toMatchInlineSnapshot(`
 			Array [
 			  "record",
 			]

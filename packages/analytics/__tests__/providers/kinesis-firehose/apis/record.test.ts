@@ -1,32 +1,32 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEventBuffer';
-import { resolveConfig } from '../../../../src/providers/kinesis/utils/resolveConfig';
+import {
+	getEventBuffer,
+	resolveConfig,
+} from '../../../../src/providers/kinesis-firehose/utils';
 import { isAnalyticsEnabled, resolveCredentials } from '../../../../src/utils';
 import {
 	mockConfig,
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
-import { record } from '../../../../src/providers/kinesis';
+import { record } from '../../../../src/providers/kinesis-firehose';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
-import { RecordInput as KinesisRecordInput } from '../../../../src/providers/kinesis/types';
+import { RecordInput as KinesisFirehoseRecordInput } from '../../../../src/providers/kinesis-firehose/types';
 
 jest.mock('../../../../src/utils');
-jest.mock('../../../../src/providers/kinesis/utils/resolveConfig');
-jest.mock('../../../../src/providers/kinesis/utils/getEventBuffer');
+jest.mock('../../../../src/providers/kinesis-firehose/utils');
 
-describe('Analytics Kinesis API: record', () => {
-	const mockRecordInput: KinesisRecordInput = {
+describe('Analytics KinesisFirehose API: record', () => {
+	const mockRecordInput: KinesisFirehoseRecordInput = {
 		streamName: 'stream0',
-		partitionKey: 'partition0',
 		data: new Uint8Array([0x01, 0x02, 0xff]),
 	};
 
 	const mockResolveConfig = resolveConfig as jest.Mock;
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
-	const mockGetEventBuffer = getEventBuffer as jest.Mock;
 	const mockIsAnalyticsEnabled = isAnalyticsEnabled as jest.Mock;
+	const mockGetEventBuffer = getEventBuffer as jest.Mock;
 	const mockAppend = jest.fn();
 	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
 	const loggerDebugSpy = jest.spyOn(Logger.prototype, 'debug');
@@ -58,7 +58,6 @@ describe('Analytics Kinesis API: record', () => {
 			expect.objectContaining({
 				region: mockConfig.region,
 				streamName: mockRecordInput.streamName,
-				partitionKey: mockRecordInput.partitionKey,
 				event: mockRecordInput.data,
 				retryCount: 0,
 			})
