@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignInOutput } from '../providers/cognito';
+
 /**
  * Additional data that may be returned from Auth APIs.
  */
@@ -231,22 +233,6 @@ export type AuthUserAttribute<
 export type AuthUserAttributeKey = AuthStandardAttributeKey | AuthAnyAttribute;
 
 /**
- * Denotes the next step in the Sign Up process.
- */
-export type AuthSignUpStep = 'CONFIRM_SIGN_UP' | 'DONE';
-
-/**
- * Data encapsulating the next step in the Sign Up process
- */
-export type AuthNextSignUpStep<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
-> = {
-	signUpStep?: AuthSignUpStep;
-	additionalInfo?: AuthAdditionalInfo;
-	codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
-};
-
-/**
  * Denotes the next step in the Update User Attribute process.
  */
 export type AuthUpdateAttributeStep =
@@ -259,7 +245,40 @@ export type AuthUpdateAttributeStep =
 	 * Auth update attribute step indicates that the attribute is updated.
 	 */
 	| 'DONE';
+/**
+ * Data encapsulating the next step in the Sign Up process
+ */
+export type AuthNextSignUpStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> =
+	| ConfirmSignUpSignUpStep<UserAttributeKey>
+	| AutoSignInWithLinkSignUpStep<UserAttributeKey>
+	| AutoSignInSignUpStep
+	| DoneSignUpStep;
 
+export type AutoSignInSignUpStep = {
+	signUpStep: 'AUTO_SIGN_IN';
+	nextSignInStep: AuthNextSignInStep;
+};
+
+export type DoneSignUpStep = {
+	signUpStep: 'DONE';
+};
+
+export type ConfirmSignUpSignUpStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = {
+	signUpStep: 'CONFIRM_SIGN_UP';
+	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
+};
+
+type AutoSignInWithLinkSignUpStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = {
+	signUpStep: 'AUTO_SIGN_IN_WITH_LINK';
+	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
+	fetchSignInOutput: () => Promise<SignInOutput>;
+};
 export type AuthNextUpdateAttributeStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {

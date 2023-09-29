@@ -16,11 +16,13 @@ import {
 import AuthenticationHelper from './srp/AuthenticationHelper';
 import BigInteger from './srp/BigInteger';
 
-import { ClientMetadata, ConfirmSignInOptions } from '../types';
+import { ClientMetadata, ConfirmSignInOptions, SignInOptions } from '../types';
 import {
 	AuthAdditionalInfo,
 	AuthSignInOutput,
 	AuthDeliveryMedium,
+	AuthSignUpOutput,
+	AuthSignInInput,
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
