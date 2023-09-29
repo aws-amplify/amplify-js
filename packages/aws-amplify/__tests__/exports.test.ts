@@ -74,8 +74,8 @@ describe('aws-amplify Exports', () => {
 			expect(Object.keys(analyticsKinesisFirehoseExports))
 				.toMatchInlineSnapshot(`
 			Array [
-				"record",
-				]
+			  "record",
+			]
 			`);
 		});
 

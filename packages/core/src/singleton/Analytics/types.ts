@@ -7,5 +7,6 @@ import { KinesisFirehoseProviderConfig } from '../../providers/kinesis-firehose/
 import { PersonalizeProviderConfig } from '../../providers/personalize/types';
 
 export type AnalyticsConfig = PinpointProviderConfig &
-	KinesisProviderConfig & KinesisFirehoseProviderConfig &
+	KinesisProviderConfig &
+	KinesisFirehoseProviderConfig &
 	PersonalizeProviderConfig;

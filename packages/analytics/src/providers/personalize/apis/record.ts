@@ -3,17 +3,18 @@
 
 import { RecordInput } from '../types';
 import {
+	autoTrackMedia,
 	getEventBuffer,
 	resolveCachedSession,
 	resolveConfig,
 	updateCachedSession,
 } from '../utils';
-import { resolveCredentials } from '../../../utils';
-import { ConsoleLogger } from '@aws-amplify/core/lib/Logger';
-import { autoTrackMedia } from '../utils/autoTrackMedia';
-
-const IDENTIFY_EVENT_TYPE = 'Identify';
-const MEDIA_AUTO_TRACK_EVENT_TYPE = 'MediaAutoTrack';
+import { isAnalyticsEnabled, resolveCredentials } from '../../../utils';
+import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import {
+	IDENTIFY_EVENT_TYPE,
+	MEDIA_AUTO_TRACK_EVENT_TYPE,
+} from '../utils/constants';
 
 const logger = new ConsoleLogger('Personalize');
 
@@ -23,6 +24,11 @@ export const record = ({
 	eventType,
 	properties,
 }: RecordInput): void => {
+	if (!isAnalyticsEnabled()) {
+		logger.debug('Analytics is disabled, event will not be recorded.');
+		return;
+	}
+
 	const { region, trackingId, bufferSize, flushSize, flushInterval } =
 		resolveConfig();
 	resolveCredentials()

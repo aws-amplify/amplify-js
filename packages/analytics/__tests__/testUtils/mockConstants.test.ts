@@ -7,9 +7,16 @@ export const mockBufferConfig = {
 	flushInterval: 50,
 };
 
-export const mockConfig = {
+export const mockKinesisConfig = {
 	...mockBufferConfig,
 	region: 'us-east-1',
+};
+
+export const mockPersonalizeConfig = {
+	...mockBufferConfig,
+	bufferSize: mockBufferConfig.flushSize + 1,
+	region: 'us-east-1',
+	trackingId: 'trackingId0',
 };
 
 export const mockCredentialConfig = {

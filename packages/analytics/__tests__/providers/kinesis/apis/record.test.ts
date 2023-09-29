@@ -5,7 +5,7 @@ import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEvent
 import { resolveConfig } from '../../../../src/providers/kinesis/utils/resolveConfig';
 import { isAnalyticsEnabled, resolveCredentials } from '../../../../src/utils';
 import {
-	mockConfig,
+	mockKinesisConfig,
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
 import { record } from '../../../../src/providers/kinesis';
@@ -33,7 +33,7 @@ describe('Analytics Kinesis API: record', () => {
 
 	beforeEach(() => {
 		mockIsAnalyticsEnabled.mockReturnValue(true);
-		mockResolveConfig.mockReturnValue(mockConfig);
+		mockResolveConfig.mockReturnValue(mockKinesisConfig);
 		mockResolveCredentials.mockReturnValue(
 			Promise.resolve(mockCredentialConfig)
 		);
@@ -56,7 +56,7 @@ describe('Analytics Kinesis API: record', () => {
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
 		expect(mockAppend).toBeCalledWith(
 			expect.objectContaining({
-				region: mockConfig.region,
+				region: mockKinesisConfig.region,
 				streamName: mockRecordInput.streamName,
 				partitionKey: mockRecordInput.partitionKey,
 				event: mockRecordInput.data,
