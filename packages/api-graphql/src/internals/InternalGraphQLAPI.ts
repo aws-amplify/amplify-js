@@ -21,7 +21,7 @@ import {
 	GraphQLOperation,
 	GraphQLOptions,
 } from '../types';
-import { post } from '@aws-amplify/api-rest/internals/post';
+import { post } from '@aws-amplify/api-rest/internals';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';

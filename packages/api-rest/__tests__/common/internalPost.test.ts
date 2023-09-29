@@ -8,7 +8,7 @@ import {
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { post, cancel } from '../../src/internal/post';
+import { post, cancel } from '../../src/common/internalPost';
 import { RestApiError, isCancelError } from '../../src/errors';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');

@@ -11,7 +11,7 @@ import {
 } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
 import { isCancelError } from '@aws-amplify/api-rest';
-import { cancel } from '@aws-amplify/api-rest/internals/post';
+import { cancel } from '@aws-amplify/api-rest/internals';
 import { Cache } from '@aws-amplify/core';
 import {
 	ApiAction,

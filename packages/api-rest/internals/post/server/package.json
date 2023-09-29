@@ -1,8 +1,0 @@
-{
-	"name": "@aws-amplify/api-rest/internals/post/server",
-	"types": "../../../lib-esm/server/internalPost.d.ts",
-	"main": "../../../lib/server/internalPost.js",
-	"module": "../../../lib-esm/server/internalPost.js",
-	"react-native": "../../../lib-esm/server/internalPost.js",
-	"sideEffects": false
-}
