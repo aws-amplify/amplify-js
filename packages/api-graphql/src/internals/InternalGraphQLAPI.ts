@@ -25,7 +25,7 @@ import {
 	post,
 	isCancel as isCancelREST,
 	cancel as cancelREST,
-} from '@aws-amplify/api-rest';
+} from '@aws-amplify/api-rest/internals';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
@@ -263,25 +263,27 @@ export class InternalGraphQLAPIClass {
 
 		let response;
 		try {
-			// response = await this._api.post(endpoint, {
-			// 	headers,
-			// 	body,
-			// 	region,
-			// 	serviceName: 'appsync',
-			// });
-			const postPromise = this._api.post(endpoint, {
-				headers,
-				body,
-				region,
-				serviceName: 'appsync',
+			const { body: responsePayload } = this._api.post({
+				url: new URL(endpoint),
+				options: {
+					headers,
+					body,
+					signingServiceInfo: {
+						service: 'appsync',
+						region,
+					},
+				},
 			});
+
 			const result = new Promise(async (res, rej) => {
-				const postResult = await postPromise;
+				const postResult = await responsePayload.json();
 
 				res({ data: postResult });
 			});
-			this._cancelTokenMap.set(result, postPromise);
-			return result;
+
+			this._cancelTokenMap.set(result, responsePayload);
+
+			response = await result;
 		} catch (err) {
 			// If the exception is because user intentionally
 			// cancelled the request, do not modify the exception

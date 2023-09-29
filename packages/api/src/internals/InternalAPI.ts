@@ -10,7 +10,12 @@ import {
 	GraphQLSubscription,
 } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
+<<<<<<< HEAD
 import { cancel, isCancelError } from '@aws-amplify/api-rest';
+=======
+import { isCancelError } from '@aws-amplify/api-rest';
+import { cancel } from '@aws-amplify/api-rest/internals';
+>>>>>>> next/main
 import { Cache } from '@aws-amplify/core';
 import {
 	ApiAction,
