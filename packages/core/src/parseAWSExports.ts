@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { ConsoleLogger as Logger } from './Logger';
 import { OAuthConfig } from './singleton/Auth/types';
 import { ResourcesConfig } from './singleton/types';
+
+const logger = new Logger('parseAWSExports');
 
 const authTypeMapping: Record<any, any> = {
 	API_KEY: 'apiKey',
@@ -55,15 +58,20 @@ export const parseAWSExports = (
 		};
 	}
 
-	// TODO: Need to support all API configurations
 	// API
 	if (aws_appsync_graphqlEndpoint) {
+		const defaultAuthMode = authTypeMapping[aws_appsync_authenticationType];
+		if (!defaultAuthMode) {
+			logger.debug(
+				`Invalid authentication type ${aws_appsync_authenticationType}. Falling back to IAM.`
+			);
+		}
 		amplifyConfig.API = {
 			GraphQL: {
 				endpoint: aws_appsync_graphqlEndpoint,
 				apiKey: aws_appsync_apiKey,
 				region: aws_appsync_region,
-				defaultAuthMode: authTypeMapping[aws_appsync_authenticationType],
+				defaultAuthMode: defaultAuthMode ?? 'iam',
 			},
 		};
 	}
