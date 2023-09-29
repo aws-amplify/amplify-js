@@ -280,7 +280,7 @@ export class InternalGraphQLAPIClass {
 
 			this._cancelTokenMap.set(result, postPromise);
 
-			response = await result;
+			response = result;
 		} catch (err) {
 			// If the exception is because user intentionally
 			// cancelled the request, do not modify the exception
