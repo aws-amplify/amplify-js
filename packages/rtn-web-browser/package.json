@@ -27,7 +27,7 @@
 		"@types/react-native": "0.70.0",
 		"react-native": "0.72.3",
 		"typescript": "5.1.6"
-	  },
+	},
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js"
 	},

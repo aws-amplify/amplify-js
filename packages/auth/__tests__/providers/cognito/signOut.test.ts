@@ -2,9 +2,12 @@ import { Amplify } from '@aws-amplify/core';
 import { signOut } from '../../../src/providers/cognito';
 import * as TokenProvider from '../../../src/providers/cognito/tokenProvider';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { DefaultOAuthStore } from '../../../src/providers/cognito/utils/signInWithRedirectStore';
+import { openAuthSession } from '../../../src/utils';
+
+jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('../../../src/utils');
 
 const mockedAccessToken =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJvcmlnaW5fanRpIjoiYXNjIn0.4X9nPnldRthcZwi9b0y3rvNn1jvzHnkgJjeEmzmq5VQ';
@@ -222,9 +225,9 @@ describe('signOut tests with oauth', () => {
 	let tokenOrchestratorSpy;
 	let globalSignOutSpy;
 	let revokeTokenSpy;
-	let windowOpenSpy;
 	let clearCredentialsSpy;
 	let oauthStoreSpy;
+	const mockOpenAuthSession = openAuthSession as jest.Mock;
 
 	beforeEach(() => {
 		Amplify.configure(
@@ -265,8 +268,6 @@ describe('signOut tests with oauth', () => {
 			.mockImplementation(async () => {
 				return true;
 			});
-
-		windowOpenSpy = jest.spyOn(window, 'open').mockImplementation();
 
 		revokeTokenSpy = jest
 			.spyOn(clients, 'revokeToken')
@@ -313,9 +314,9 @@ describe('signOut tests with oauth', () => {
 		expect(globalSignOutSpy).not.toHaveBeenCalled();
 		expect(tokenOrchestratorSpy).toBeCalled();
 		expect(tokenStoreSpy).toBeCalled();
-		expect(windowOpenSpy).toBeCalledWith(
+		expect(mockOpenAuthSession).toBeCalledWith(
 			'https://https://amazonaws.com/logout?client_id=111111-aaaaa-42d8-891d-ee81a1549398&logout_uri=http%3A%2F%2Flocalhost%3A3000%2F',
-			'_self'
+			['http://localhost:3000/']
 		);
 		expect(clearCredentialsSpy).toBeCalled();
 	});
@@ -334,9 +335,9 @@ describe('signOut tests with oauth', () => {
 
 		expect(tokenOrchestratorSpy).toBeCalled();
 		expect(tokenStoreSpy).toBeCalled();
-		expect(windowOpenSpy).toBeCalledWith(
+		expect(mockOpenAuthSession).toBeCalledWith(
 			'https://https://amazonaws.com/logout?client_id=111111-aaaaa-42d8-891d-ee81a1549398&logout_uri=http%3A%2F%2Flocalhost%3A3000%2F',
-			'_self'
+			['http://localhost:3000/']
 		);
 		expect(clearCredentialsSpy).toBeCalled();
 	});
