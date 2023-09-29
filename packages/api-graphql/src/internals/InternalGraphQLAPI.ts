@@ -9,7 +9,7 @@ import {
 	OperationTypeNode,
 } from 'graphql';
 import { Observable } from 'rxjs';
-import { Cache } from '@aws-amplify/core';
+import { Cache, fetchAuthSession } from '@aws-amplify/core';
 import {
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
@@ -23,7 +23,7 @@ import {
 } from '../types';
 import { post } from '@aws-amplify/api-rest';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
-import { resolveAuthSession, resolveConfig } from '../utils';
+import { resolveConfig } from '../utils';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -88,7 +88,7 @@ export class InternalGraphQLAPIClass {
 				};
 				break;
 			case 'iam':
-				const session = await resolveAuthSession();
+				const session = await fetchAuthSession();
 				if (session.credentials === undefined) {
 					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
@@ -97,7 +97,7 @@ export class InternalGraphQLAPIClass {
 				try {
 					let token;
 
-					token = (await resolveAuthSession()).tokens?.accessToken.toString();
+					token = (await fetchAuthSession()).tokens?.accessToken.toString();
 
 					if (!token) {
 						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
