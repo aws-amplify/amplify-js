@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthStandardAttributeKey } from '../../../types';
+import {
+	AuthStandardAttributeKey,
+	AuthVerifiableAttributeKey,
+} from '../../../types';
 import { AuthProvider } from '../../../types/inputs';
 
 /**
@@ -32,6 +35,11 @@ export type ClientMetadata = {
  * The user attribute types available for Cognito.
  */
 export type UserAttributeKey = AuthStandardAttributeKey | CustomAttribute;
+
+/**
+ * The user attribute types available for Cognito.
+ */
+export type VerifiableUserAttributeKey = AuthVerifiableAttributeKey;
 
 /**
  * Cognito custom attribute type
