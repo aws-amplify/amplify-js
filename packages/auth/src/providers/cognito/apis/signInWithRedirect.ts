@@ -55,6 +55,7 @@ export async function signInWithRedirect(
 		clientId: authConfig.userPoolClientId,
 		provider,
 		customState: input?.customState,
+		preferPrivateSession: input?.options?.preferPrivateSession,
 	});
 }
 
@@ -65,11 +66,13 @@ async function oauthSignIn({
 	provider,
 	clientId,
 	customState,
+	preferPrivateSession,
 }: {
 	oauthConfig: OAuthConfig;
 	provider: string;
 	clientId: string;
 	customState?: string;
+	preferPrivateSession?: boolean;
 }) {
 	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
 	const randomState = generateState();
@@ -107,7 +110,8 @@ async function oauthSignIn({
 	// TODO(v6): use URL object instead
 	const oAuthUrl = `https://${domain}/oauth2/authorize?${queryString}`;
 	const { type, error, url } =
-		(await openAuthSession(oAuthUrl, redirectSignIn)) ?? {};
+		(await openAuthSession(oAuthUrl, redirectSignIn, preferPrivateSession)) ??
+		{};
 	if (type === 'success' && url) {
 		// ensure the code exchange completion resolves the signInWithRedirect
 		// returned promise in react-native
@@ -118,6 +122,7 @@ async function oauthSignIn({
 			redirectUri: redirectSignIn[0],
 			responseType,
 			userAgentValue: getAmplifyUserAgent(),
+			preferPrivateSession,
 		});
 	}
 	if (type === 'error') {
@@ -131,12 +136,14 @@ async function handleCodeFlow({
 	clientId,
 	redirectUri,
 	domain,
+	preferPrivateSession,
 }: {
 	currentUrl: string;
 	userAgentValue: string;
 	clientId: string;
 	redirectUri: string;
 	domain: string;
+	preferPrivateSession?: boolean;
 }) {
 	/* Convert URL into an object with parameters as keys
 { redirect_uri: 'http://localhost:3000/', response_type: 'code', ...} */
@@ -215,15 +222,21 @@ async function handleCodeFlow({
 		ExpiresIn: expires_in,
 	});
 
-	return completeFlow({ redirectUri, state: validatedState });
+	return completeFlow({
+		redirectUri,
+		state: validatedState,
+		preferPrivateSession,
+	});
 }
 
 async function handleImplicitFlow({
 	currentUrl,
 	redirectUri,
+	preferPrivateSession,
 }: {
 	currentUrl: string;
 	redirectUri: string;
+	preferPrivateSession?: boolean;
 }) {
 	// hash is `null` if `#` doesn't exist on URL
 
@@ -258,17 +271,19 @@ async function handleImplicitFlow({
 		ExpiresIn: expiresIn,
 	});
 
-	return completeFlow({ redirectUri, state });
+	return completeFlow({ redirectUri, state, preferPrivateSession });
 }
 
 async function completeFlow({
 	redirectUri,
 	state,
+	preferPrivateSession,
 }: {
+	preferPrivateSession?: boolean;
 	redirectUri: string;
 	state: string;
 }) {
-	await store.storeOAuthSignIn(true);
+	await store.storeOAuthSignIn(true, preferPrivateSession);
 	if (isCustomState(state)) {
 		Hub.dispatch(
 			'auth',
@@ -298,6 +313,7 @@ async function handleAuthResponse({
 	redirectUri,
 	responseType,
 	domain,
+	preferPrivateSession,
 }: {
 	currentUrl: string;
 	userAgentValue: string;
@@ -305,6 +321,7 @@ async function handleAuthResponse({
 	redirectUri: string;
 	responseType: string;
 	domain: string;
+	preferPrivateSession?: boolean;
 }) {
 	try {
 		const urlParams = new URL(currentUrl);
@@ -322,11 +339,13 @@ async function handleAuthResponse({
 				clientId,
 				redirectUri,
 				domain,
+				preferPrivateSession,
 			});
 		} else {
 			return await handleImplicitFlow({
 				currentUrl,
 				redirectUri,
+				preferPrivateSession,
 			});
 		}
 	} catch (e) {

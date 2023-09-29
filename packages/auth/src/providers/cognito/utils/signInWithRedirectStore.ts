@@ -124,7 +124,10 @@ export class DefaultOAuthStore implements OAuthStore {
 		);
 	}
 
-	async loadOAuthSignIn(): Promise<boolean> {
+	async loadOAuthSignIn(): Promise<{
+		isOAuthSignIn: boolean;
+		preferPrivateSession: boolean;
+	}> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
@@ -134,14 +137,20 @@ export class DefaultOAuthStore implements OAuthStore {
 			this.cognitoConfig.userPoolClientId
 		);
 
-		const isOAuthSignIn = await this.keyValueStorage.getItem(
-			authKeys.oauthSignIn
-		);
+		const [isOAuthSignIn, preferPrivateSession] =
+			(await this.keyValueStorage.getItem(authKeys.oauthSignIn))?.split(',') ??
+			[];
 
-		return isOAuthSignIn === 'true';
+		return {
+			isOAuthSignIn: isOAuthSignIn === 'true',
+			preferPrivateSession: preferPrivateSession === 'true',
+		};
 	}
 
-	async storeOAuthSignIn(oauthSignIn: boolean): Promise<void> {
+	async storeOAuthSignIn(
+		oauthSignIn: boolean,
+		preferPrivateSession: boolean = false
+	): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
 		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
@@ -153,7 +162,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		return await this.keyValueStorage.setItem(
 			authKeys.oauthSignIn,
-			`${oauthSignIn}`
+			`${oauthSignIn},${preferPrivateSession}`
 		);
 	}
 }

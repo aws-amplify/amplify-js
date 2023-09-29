@@ -265,9 +265,10 @@ describe('signOut tests with oauth', () => {
 		);
 		oauthStoreSpy = jest
 			.spyOn(DefaultOAuthStore.prototype, 'loadOAuthSignIn')
-			.mockImplementation(async () => {
-				return true;
-			});
+			.mockImplementation(async () => ({
+				isOAuthSignIn: true,
+				preferPrivateSession: false,
+			}));
 
 		revokeTokenSpy = jest
 			.spyOn(clients, 'revokeToken')
@@ -316,7 +317,8 @@ describe('signOut tests with oauth', () => {
 		expect(tokenStoreSpy).toBeCalled();
 		expect(mockOpenAuthSession).toBeCalledWith(
 			'https://https://amazonaws.com/logout?client_id=111111-aaaaa-42d8-891d-ee81a1549398&logout_uri=http%3A%2F%2Flocalhost%3A3000%2F',
-			['http://localhost:3000/']
+			['http://localhost:3000/'],
+			false
 		);
 		expect(clearCredentialsSpy).toBeCalled();
 	});
@@ -337,7 +339,8 @@ describe('signOut tests with oauth', () => {
 		expect(tokenStoreSpy).toBeCalled();
 		expect(mockOpenAuthSession).toBeCalledWith(
 			'https://https://amazonaws.com/logout?client_id=111111-aaaaa-42d8-891d-ee81a1549398&logout_uri=http%3A%2F%2Flocalhost%3A3000%2F',
-			['http://localhost:3000/']
+			['http://localhost:3000/'],
+			false
 		);
 		expect(clearCredentialsSpy).toBeCalled();
 	});
