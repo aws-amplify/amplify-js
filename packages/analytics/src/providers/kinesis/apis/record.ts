@@ -4,9 +4,9 @@
 import { RecordInput } from '../types';
 import { getEventBuffer } from '../utils/getEventBuffer';
 import { resolveConfig } from '../utils/resolveConfig';
-import { resolveCredentials } from '../../../utils';
+import { isAnalyticsEnabled, resolveCredentials } from '../../../utils';
 import { fromUtf8 } from '@smithy/util-utf8';
-import { ConsoleLogger } from '@aws-amplify/core/lib/Logger';
+import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
 
 const logger = new ConsoleLogger('Kinesis');
 
@@ -15,6 +15,11 @@ export const record = ({
 	partitionKey,
 	data,
 }: RecordInput): void => {
+	if (!isAnalyticsEnabled()) {
+		logger.debug('Analytics is disabled, event will not be recorded.');
+		return;
+	}
+
 	const timestamp = Date.now();
 	const { region, bufferSize, flushSize, flushInterval, resendLimit } =
 		resolveConfig();
