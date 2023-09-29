@@ -1,18 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import type { AsyncStorageStatic } from '@react-native-async-storage/async-storage';
-import { AmplifyError } from '../errors';
+import { loadAsyncStorage } from '@aws-amplify/react-native';
 import { KeyValueStorageInterface } from '../types';
 
-const ASYNC_STORAGE_MODULE = '@react-native-async-storage/async-storage';
 const MEMORY_KEY_PREFIX = '@MemoryStorage:';
 
 /**
  * @internal
  */
 export class DefaultStorage implements KeyValueStorageInterface {
-	private asyncStorage?: AsyncStorageStatic;
+	private asyncStorage: ReturnType<typeof loadAsyncStorage>;
+
+	constructor() {
+		this.asyncStorage = loadAsyncStorage();
+	}
 
 	/**
 	 * This is used to set a specific item in storage
@@ -21,7 +23,6 @@ export class DefaultStorage implements KeyValueStorageInterface {
 	 * @returns {string} value that was set
 	 */
 	setItem(key: string, value: string) {
-		this.assertModule(this.asyncStorage);
 		return this.asyncStorage.setItem(`${MEMORY_KEY_PREFIX}${key}`, value);
 	}
 
@@ -32,7 +33,6 @@ export class DefaultStorage implements KeyValueStorageInterface {
 	 * @returns {string} the data item
 	 */
 	getItem(key: string) {
-		this.assertModule(this.asyncStorage);
 		return this.asyncStorage.getItem(`${MEMORY_KEY_PREFIX}${key}`);
 	}
 
@@ -42,7 +42,6 @@ export class DefaultStorage implements KeyValueStorageInterface {
 	 * @returns {string} value - value that was deleted
 	 */
 	removeItem(key: string): Promise<void> {
-		this.assertModule(this.asyncStorage);
 		return this.asyncStorage.removeItem(`${MEMORY_KEY_PREFIX}${key}`);
 	}
 
@@ -51,28 +50,9 @@ export class DefaultStorage implements KeyValueStorageInterface {
 	 * @returns {string} nothing
 	 */
 	async clear(): Promise<void> {
-		this.assertModule(this.asyncStorage);
 		const allKeys = await this.asyncStorage.getAllKeys();
 		return this.asyncStorage.multiRemove(
 			allKeys.filter(key => key.startsWith(MEMORY_KEY_PREFIX))
 		);
-	}
-
-	private assertModule(
-		asyncStorage?: AsyncStorageStatic
-	): asserts asyncStorage {
-		if (!!asyncStorage) {
-			return;
-		}
-		try {
-			this.asyncStorage = require(ASYNC_STORAGE_MODULE)
-				.default as AsyncStorageStatic;
-		} catch (err) {
-			throw new AmplifyError({
-				name: 'NativeModuleException',
-				message: `Unable to find ${ASYNC_STORAGE_MODULE}`,
-				recoverySuggestion: `Make sure to install ${ASYNC_STORAGE_MODULE}`,
-			});
-		}
 	}
 }
