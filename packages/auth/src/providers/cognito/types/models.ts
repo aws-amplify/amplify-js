@@ -37,7 +37,7 @@ export type ClientMetadata = {
 export type UserAttributeKey = AuthStandardAttributeKey | CustomAttribute;
 
 /**
- * The user attribute types available for Cognito.
+ * Verifiable user attribute types available for Cognito.
  */
 export type VerifiableUserAttributeKey = AuthVerifiableAttributeKey;
 
