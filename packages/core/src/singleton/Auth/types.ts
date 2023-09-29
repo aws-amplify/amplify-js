@@ -87,6 +87,7 @@ export type AuthIdentityPoolConfig = {
 		userPoolClientId?: never;
 		userPoolId?: never;
 		loginWith?: never;
+		signUpVerificationMethod?: never;
 	};
 };
 

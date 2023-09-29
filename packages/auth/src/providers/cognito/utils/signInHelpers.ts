@@ -16,11 +16,13 @@ import {
 import AuthenticationHelper from './srp/AuthenticationHelper';
 import BigInteger from './srp/BigInteger';
 
-import { ClientMetadata, ConfirmSignInOptions } from '../types';
+import { ClientMetadata, ConfirmSignInOptions, SignInOptions } from '../types';
 import {
 	AuthAdditionalInfo,
 	AuthSignInOutput,
 	AuthDeliveryMedium,
+	AuthSignUpOutput,
+	AuthSignInInput,
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
@@ -55,6 +57,7 @@ import { getRegion } from './clients/CognitoIdentityProvider/utils';
 import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants';
 import { getCurrentUser } from '../apis/getCurrentUser';
 import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
+import { signIn } from '../apis/signIn';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
