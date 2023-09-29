@@ -104,7 +104,8 @@ export function graphql<
 }
 
 const cancel = GraphQLAPI.cancel;
+const isCancel = GraphQLAPI.isCancel;
 
-export { cancel };
+export { cancel, isCancel };
 
 export { GraphQLOptionsV6, GraphQLResponseV6 };
