@@ -103,4 +103,8 @@ export function graphql<
 	return result as any;
 }
 
+const cancel = GraphQLAPI.cancel;
+
+export { cancel };
+
 export { GraphQLOptionsV6, GraphQLResponseV6 };
