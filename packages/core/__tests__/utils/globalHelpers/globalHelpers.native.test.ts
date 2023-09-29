@@ -31,8 +31,6 @@ describe('getGlobal (native)', () => {
 		});
 	});
 
-	afterAll;
-
 	describe('getCrypto()', () => {
 		it('returns the polyfill crypto from react-native-get-random-values', () => {
 			expect(getCrypto()).toEqual(mockCrypto);
