@@ -21,7 +21,7 @@ import {
 	GraphQLOperation,
 	GraphQLOptions,
 } from '../types';
-import { post } from '@aws-amplify/api-rest';
+import { post } from '@aws-amplify/api-rest/internals';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
@@ -242,12 +242,18 @@ export class InternalGraphQLAPIClass {
 
 		let response;
 		try {
-			response = await this._api.post(endpoint, {
-				headers,
-				body,
-				region,
-				serviceName: 'appsync',
+			const { body: responsePayload } = await this._api.post({
+				url: new URL(endpoint),
+				options: {
+					headers,
+					body,
+					signingServiceInfo: {
+						service: 'appsync',
+						region,
+					},
+				},
 			});
+			response = await responsePayload.json();
 		} catch (err) {
 			response = {
 				data: {},
