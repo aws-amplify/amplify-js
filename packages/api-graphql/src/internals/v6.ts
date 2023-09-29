@@ -107,8 +107,8 @@ export function cancel(promise: Promise<any>, message?: string): Promise<any> {
 	return GraphQLAPI.cancel(promise, message);
 }
 
-export function isCancel(error: any): any {
-	return GraphQLAPI.isCancel(error);
+export function isCancelError(error: any): boolean {
+	return GraphQLAPI.isCancelError(error);
 }
 
 export { GraphQLOptionsV6, GraphQLResponseV6 };

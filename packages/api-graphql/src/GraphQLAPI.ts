@@ -41,8 +41,8 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	 * @param {any} error - Any error
 	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
 	 */
-	isCancel(error: any): any {
-		return super.cancel(error);
+	isCancelError(error: any): boolean {
+		return super.isCancelError(error);
 	}
 
 	/**
@@ -50,7 +50,7 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	 * @param {any} request - request to cancel
 	 * @return {boolean} - A boolean indicating if the request was cancelled
 	 */
-	cancel(request: Promise<any>, message?: string): any {
+	cancel(request: Promise<any>, message?: string): Promise<any> {
 		return super.cancel(request, message);
 	}
 }

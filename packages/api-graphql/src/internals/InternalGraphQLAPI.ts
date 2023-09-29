@@ -303,7 +303,7 @@ export class InternalGraphQLAPIClass {
 	 * @param {any} error - Any error
 	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
 	 */
-	isCancel(error: any): any {
+	isCancelError(error: any): boolean {
 		// TODO: awaiting final implementation:
 		return isCancelREST(error);
 	}
@@ -313,7 +313,7 @@ export class InternalGraphQLAPIClass {
 	 * @param {any} request - request to cancel
 	 * @return {boolean} - A boolean indicating if the request was cancelled
 	 */
-	cancel(request: Promise<any>, message?: string): any {
+	cancel(request: Promise<any>, message?: string): Promise<any> {
 		// TODO: awaiting final implementation:
 		return cancelREST(this._cancelTokenMap.get(request), message);
 	}
