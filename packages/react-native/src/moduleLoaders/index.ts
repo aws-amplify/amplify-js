@@ -3,3 +3,4 @@
 
 export { loadAsyncStorage } from './loadAsyncStorage';
 export { loadNetInfo } from './loadNetInfo';
+export { loadBuffer } from './loadBuffer';

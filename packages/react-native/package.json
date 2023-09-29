@@ -24,7 +24,8 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
 	},
 	"dependencies": {
-		"base-64": "1.0.0"
+		"base-64": "1.0.0",
+		"buffer": "6.0.3"
 	},
 	"peerDependencies": {
 		"react-native": ">=0.70",
