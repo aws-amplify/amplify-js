@@ -107,6 +107,11 @@
 			"import": "./lib-esm/adapterCore/index.js",
 			"require": "./lib/adapterCore/index.js"
 		},
+		"./internals/user-agent": {
+			"types": "./lib-esm/userAgent/index.d.ts",
+			"import": "./lib-esm/userAgent/index.js",
+			"require": "./lib/userAgent/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
@@ -167,6 +172,9 @@
 			],
 			"internals/adapter-core": [
 				"./lib-esm/adapterCore/index.d.ts"
+			],
+			"./internals/user-agent": [
+				"./lib-esm/userAgent/index.d.ts"
 			]
 		}
 	},

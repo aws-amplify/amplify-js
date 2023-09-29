@@ -40,7 +40,7 @@ export { Signer } from './Signer';
 // Logging utilities
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 
-// Platform & device utils
+// Platform & user-agent utilities
 export { ClientDevice } from './ClientDevice';
 export {
 	Platform,
@@ -63,6 +63,7 @@ export {
 	PushNotificationAction,
 	StorageAction,
 } from './Platform/types';
+export { setCustomUserAgent } from './Platform/customUserAgent';
 
 // Service worker
 export { ServiceWorker } from './ServiceWorker';

@@ -158,3 +158,27 @@ export type CustomUserAgentDetails =
 	| UserAgentDetailsWithCategory<Category.PubSub>
 	| UserAgentDetailsWithCategory<Category.PushNotification>
 	| UserAgentDetailsWithCategory<Category.Storage>;
+
+/**
+ * Defines types related to custom user agent state from internal consumers.
+ */
+export type CategoryUserAgentStateMap = Record<
+	string,
+	{ refCount: number; additionalDetails: AdditionalDetails }
+>;
+export type CustomUserAgentStateMap = Record<string, CategoryUserAgentStateMap>;
+
+export type AdditionalDetails = [[string, string?]];
+
+export type SetCustomUserAgentInput = (
+	| {
+			category: Category.Storage;
+			apis: StorageAction[];
+	  }
+	| {
+			category: Category.Auth;
+			apis: AuthAction[];
+	  }
+) & {
+	additionalDetails: AdditionalDetails;
+};

@@ -39,6 +39,8 @@ export const getAmplifyUserAgentObject = ({
 	}
 	userAgent.push(['framework', detectFramework()]);
 
+	// TODO Load and append any custom user-agent state
+
 	return userAgent;
 };
 
