@@ -59,7 +59,7 @@ export type Thread = {
 	__typename: 'Thread';
 	id: string;
 	topic?: string | null;
-	comments?: ModelCommentConnection | null;
+	comments: ModelCommentConnection | null;
 	createdAt?: string | null;
 	updatedAt: string;
 	owner?: string | null;
@@ -67,7 +67,7 @@ export type Thread = {
 
 export type ModelCommentConnection = {
 	__typename: 'ModelCommentConnection';
-	items: Array<Comment | null>;
+	items?: Array<Comment | null>;
 	nextToken?: string | null;
 };
 

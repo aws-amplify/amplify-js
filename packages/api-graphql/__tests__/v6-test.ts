@@ -879,6 +879,11 @@ describe('client', () => {
 		});
 	});
 
+	/**
+	 * This section ensures our v6 types don't *regress* from the v5 experience.
+	 * It should be mostly-identical to the "type-tagged graphql" section, but perhaps
+	 * with a few fewer conditional accessor
+	 */
 	describe('v6-type-tagged graphql', () => {
 		test('create', async () => {
 			const threadToCreate = { topic: 'a very engaging discussion topic' };
@@ -1134,6 +1139,160 @@ describe('client', () => {
 					expect(message.data?.onCreateThread).toEqual(
 						graphqlMessage.data.onCreateThread
 					);
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+		});
+	});
+
+	describe('v6-type-tagged graphql type enhancements', () => {
+		test('create response matches base type', async () => {
+			// we make sure that our result fix the definition of the result from the op.
+			// strictly speaking, we don't need to literally define an object here. it's
+			// defined for demonstrative purposes.
+			const resultObject: V6Models.CreateCommentMutation = {
+				createComment: {
+					__typename: 'Comment',
+					...serverManagedFields,
+					body: 'comment body',
+					thread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+					},
+					threadCommentsId: 'some id',
+				},
+			};
+
+			const spy = jest.fn(() => from([resultObject]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			const result = await client.graphql({
+				query: v6typedMutations.createComment,
+			});
+
+			// we make sure the result can be assigned to the base type without type errors.
+			const v6Comment: V6Models.Comment = result.data?.createComment!;
+		});
+
+		test('update response matches base type', async () => {
+			// we make sure that our result fix the definition of the result from the op.
+			// strictly speaking, we don't need to literally define an object here. it's
+			// defined for demonstrative purposes.
+			const resultObject: V6Models.UpdateCommentMutation = {
+				updateComment: {
+					__typename: 'Comment',
+					...serverManagedFields,
+					body: 'comment body',
+					thread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+					},
+					threadCommentsId: 'some id',
+				},
+			};
+
+			const spy = jest.fn(() => from([resultObject]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			const result = await client.graphql({
+				query: v6typedMutations.updateComment,
+			});
+
+			// we make sure the result can be assigned to the base type without type errors.
+			const v6Comment: V6Models.Comment = result.data?.updateComment!;
+		});
+
+		test('get response matches base type', async () => {
+			// we make sure that our result fix the definition of the result from the op.
+			// strictly speaking, we don't need to literally define an object here. it's
+			// defined for demonstrative purposes.
+			const resultObject: V6Models.GetCommentQuery = {
+				getComment: {
+					__typename: 'Comment',
+					...serverManagedFields,
+					body: 'comment body',
+					thread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+					},
+					threadCommentsId: 'some id',
+				},
+			};
+
+			const spy = jest.fn(() => from([resultObject]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			const result = await client.graphql({
+				query: v6typedQueries.getComment,
+			});
+
+			// we make sure the result can be assigned to the base type without type errors.
+			const v6Comment: V6Models.Comment = result.data?.getComment!;
+		});
+
+		test('list response matches base type', async () => {
+			// we make sure that our result fix the definition of the result from the op.
+			// strictly speaking, we don't need to literally define an object here. it's
+			// defined for demonstrative purposes.
+			const resultObject: V6Models.ListCommentsQuery = {
+				listComments: {
+					__typename: 'ModelCommentConnection',
+					items: [
+						{
+							__typename: 'Comment',
+							...serverManagedFields,
+							body: 'comment body',
+							thread: {
+								__typename: 'Thread',
+								...serverManagedFields,
+							},
+							threadCommentsId: 'some id',
+						},
+					],
+				},
+			};
+
+			const spy = jest.fn(() => from([resultObject]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			const result = await client.graphql({
+				query: v6typedQueries.listComments,
+			});
+
+			// we make sure the result can be assigned to the base type without type errors.
+			const v6Comments: V6Models.Comment[] = result.data?.listComments?.items!;
+		});
+
+		test('subscription message matches base type', async done => {
+			const responseObject: V6Models.OnCreateCommentSubscription = {
+				onCreateComment: {
+					__typename: 'Comment',
+					...serverManagedFields,
+					body: 'a body',
+					threadCommentsId: 'asdf',
+					thread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+					},
+				},
+			};
+
+			const spy = jest.fn(() => from([responseObject]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			const result = client.graphql({
+				query: v6typedSubscriptions.onCreateComment,
+			});
+
+			result.subscribe({
+				// Customers should normally omit the type. Making it explicit to ensure the test
+				// fails if the returned changes.
+				next(message) {
+					const v6Comment: V6Models.Comment = message.data?.onCreateComment!;
 					done();
 				},
 				error(error) {
