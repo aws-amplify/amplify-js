@@ -6,6 +6,7 @@
 @interface RCT_EXTERN_MODULE(AmplifyRTNWebBrowser, NSObject)
 
 RCT_EXTERN_METHOD(openAuthSessionAsync:(NSString*)url
+                  redirectUrlStr:(NSString*)redirectUrlStr
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 
