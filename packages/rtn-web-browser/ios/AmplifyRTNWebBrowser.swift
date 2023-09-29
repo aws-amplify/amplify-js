@@ -22,10 +22,16 @@ class AmplifyRTNWebBrowser: NSObject {
     
     @objc
     func openAuthSessionAsync(_ urlStr: String,
+                              redirectUrlStr: String,
                               resolve: @escaping RCTPromiseResolveBlock,
                               reject: @escaping RCTPromiseRejectBlock) {
         guard let url = URL(string: urlStr) else {
             reject("ERROR", "provided url is invalid", nil)
+            return
+        }
+        
+        guard let redirectUrl = URL(string: redirectUrlStr) else {
+            reject("ERROR", "provided redirectUrl is invalid", nil)
             return
         }
         
@@ -36,10 +42,10 @@ class AmplifyRTNWebBrowser: NSObject {
         
         let authSession = ASWebAuthenticationSession(
             url: url,
-            callbackURLScheme: nil,
+            callbackURLScheme: redirectUrl.scheme,
             completionHandler: { url, error in
                 if (error as? ASWebAuthenticationSessionError)?.code == .canceledLogin {
-                    reject("ERROR", "user canceled auth session", error)
+                    resolve(nil)
                     return
                 }
                 if error != nil {

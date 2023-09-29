@@ -14,28 +14,33 @@ let redirectListener: NativeEventSubscription | undefined;
 
 export const openAuthSessionAsync = async (
 	url: string,
-	redirectSchemes: string[]
+	redirectUrls: string[]
 ) => {
 	// enforce HTTPS
 	const httpsUrl = url.replace('http://', 'https://');
 	if (Platform.OS === 'ios') {
-		return nativeModule.openAuthSessionAsync(httpsUrl);
+		return openAuthSessionIOS(httpsUrl, redirectUrls);
 	}
 
 	if (Platform.OS === 'android') {
-		return openAuthSessionAndroid(httpsUrl, redirectSchemes);
+		return openAuthSessionAndroid(httpsUrl, redirectUrls);
 	}
 };
 
-const openAuthSessionAndroid = async (
-	url: string,
-	redirectSchemes: string[]
-) => {
+const openAuthSessionIOS = async (url: string, redirectUrls: string[]) => {
+	const redirectUrl = redirectUrls.find(
+		// take the first non-web url as the deeplink
+		item => !item.startsWith('https://') && !item.startsWith('http://')
+	);
+	return nativeModule.openAuthSessionAsync(url, redirectUrl);
+};
+
+const openAuthSessionAndroid = async (url: string, redirectUrls: string[]) => {
 	try {
 		const [redirectUrl] = await Promise.all([
 			Promise.race([
 				// wait for app to redirect, resulting in a redirectUrl
-				getRedirectPromise(redirectSchemes),
+				getRedirectPromise(redirectUrls),
 				// wait for app to return some other way, resulting in null
 				getAppStatePromise(),
 			]),
@@ -67,10 +72,10 @@ const getAppStatePromise = (): Promise<null> =>
 		});
 	});
 
-const getRedirectPromise = (redirectSchemes: string[]): Promise<string> =>
+const getRedirectPromise = (redirectUrls: string[]): Promise<string> =>
 	new Promise(resolve => {
 		redirectListener = Linking.addEventListener('url', event => {
-			if (redirectSchemes.some(scheme => event.url.startsWith(scheme))) {
+			if (redirectUrls.some(url => event.url.startsWith(url))) {
 				resolve(event.url);
 			}
 		});

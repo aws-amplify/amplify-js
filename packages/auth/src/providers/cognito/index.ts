@@ -22,6 +22,7 @@ export { fetchUserAttributes } from './apis/fetchUserAttributes';
 export { signOut } from './apis/signOut';
 export { sendUserAttributeVerificationCode } from './apis/sendUserAttributeVerificationCode';
 export { deleteUserAttributes } from './apis/deleteUserAttributes';
+export { deleteUser } from './apis/deleteUser';
 export {
 	ConfirmResetPasswordInput,
 	ConfirmSignInInput,
