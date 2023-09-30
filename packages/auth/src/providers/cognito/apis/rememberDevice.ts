@@ -14,7 +14,7 @@ import { UpdateDeviceStatusException } from '../../cognito/types/errors';
  * Marks device as remembered while authenticated.
  *
  * @throws - {@link UpdateDeviceStatusException} - Cognito service errors thrown when
- * setting device status to remembered.
+ * setting device status to remembered using an invalid device key.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function rememberDevice(): Promise<void> {

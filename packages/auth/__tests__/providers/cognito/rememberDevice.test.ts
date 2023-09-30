@@ -64,7 +64,7 @@ describe('rememberDevice API happy path cases', () => {
 		updateDeviceStatusClientSpy.mockClear();
 	});
 
-	it('Should remember ', async () => {
+	it('should call updateDeviceStatus client with correct request', async () => {
 		expect.assertions(2);
 		await rememberDevice();
 		expect(updateDeviceStatusClientSpy).toHaveBeenCalledWith(
