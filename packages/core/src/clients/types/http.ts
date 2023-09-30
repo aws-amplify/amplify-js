@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Request, Response, TransferHandler } from './core';
+import type { fetchTransferHandler } from '../handlers/fetch';
 
 /**
  * Use basic Record interface to workaround fetch Header class not available in Node.js
@@ -42,6 +43,23 @@ export interface HttpTransferOptions {
 	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Request/cache}
 	 */
 	cache?: RequestCache;
+
+	/**
+	 * Internal-only option controls whether or not cross-site Access-Control requests should be made using credentials
+	 * such as cookies, authorization headers or TLS client certificates. It has no effect on same-origin requests.
+	 * If set to `true`, the request will include credentials such as cookies, authorization headers, TLS
+	 * client certificates, and so on. Moreover the response cookies will also be set.
+	 * If set to `false`, the cross-site request will not include credentials, and the response cookies from a different
+	 * domain will be ignored.
+	 *
+	 * This option is only conformed by {@link fetchTransferHandler | fetchTransferHandler	}
+	 *
+	 * @default 'same-origin'
+	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials}
+	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials}
+	 * @internal
+	 */
+	withCrossDomainCredentials?: boolean;
 }
 
 export type HttpTransferHandler = TransferHandler<
