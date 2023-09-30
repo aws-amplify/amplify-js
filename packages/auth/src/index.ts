@@ -25,6 +25,7 @@ export {
 	sendUserAttributeVerificationCode,
 	deleteUserAttributes,
 	deleteUser,
+	forgetDevice,
 } from './providers/cognito';
 
 export {
