@@ -34,4 +34,5 @@ export async function forgetDevice(): Promise<void> {
 			DeviceKey: deviceMetadata.deviceKey,
 		}
 	);
+	await tokenOrchestrator.clearDeviceMetadata();
 }

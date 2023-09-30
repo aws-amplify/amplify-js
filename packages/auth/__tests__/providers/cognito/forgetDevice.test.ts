@@ -34,7 +34,8 @@ const mockDeviceMetadata: DeviceMetadata = {
 describe('forgetDevice API happy path cases', () => {
 	let fetchAuthSessionsSpy;
 	let forgetDeviceStatusClientSpy;
-	let tokenOrchestratorSpy;
+	let getDeviceMetadataSpy;
+	let clearDeviceMetadataSpy;
 	beforeEach(() => {
 		fetchAuthSessionsSpy = jest
 			.spyOn(authUtils, 'fetchAuthSession')
@@ -54,15 +55,19 @@ describe('forgetDevice API happy path cases', () => {
 					$metadata: {},
 				};
 			});
-		tokenOrchestratorSpy = jest
+		getDeviceMetadataSpy = jest
 			.spyOn(TokenProvider.tokenOrchestrator, 'getDeviceMetadata')
 			.mockImplementation(async () => mockDeviceMetadata);
+		clearDeviceMetadataSpy = jest
+			.spyOn(TokenProvider.tokenOrchestrator, 'clearDeviceMetadata')
+			.mockImplementation(async () => {});
 	});
 
 	afterEach(() => {
 		fetchAuthSessionsSpy.mockClear();
 		forgetDeviceStatusClientSpy.mockClear();
-		tokenOrchestratorSpy.mockClear();
+		getDeviceMetadataSpy.mockClear();
+		clearDeviceMetadataSpy.mockClear();
 	});
 
 	it('should call forgetDevice client with correct request', async () => {
@@ -76,6 +81,7 @@ describe('forgetDevice API happy path cases', () => {
 			})
 		);
 		expect(forgetDeviceStatusClientSpy).toBeCalledTimes(1);
+		expect(clearDeviceMetadataSpy).toBeCalled();
 	});
 });
 
