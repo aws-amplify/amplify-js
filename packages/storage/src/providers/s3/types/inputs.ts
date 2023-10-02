@@ -58,11 +58,11 @@ export type ListPaginateInput = StorageListInput<ListPaginateOptions>;
 export type RemoveInput = StorageRemoveInput<RemoveOptions>;
 
 /**
- * Input type for S3 downloadData API.
+ * Input type for S3 download API.
  */
 export type DownloadInput = StorageDownloadInput<DownloadOptions>;
 
 /**
- * Input type for S3 uploadData API.
+ * Input type for S3 upload API.
  */
 export type UploadInput = StorageUploadInput<UploadOptions>;

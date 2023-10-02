@@ -3,7 +3,7 @@
 
 import { Amplify } from '@aws-amplify/core';
 
-import { UploadDataInput } from '../../types';
+import { UploadInput } from '../../types';
 import { calculateContentMd5, resolveS3ConfigAndInput } from '../../utils';
 import { Item as S3Item } from '../../types/outputs';
 import { putObject } from '../../utils/client';
@@ -15,13 +15,13 @@ import { putObject } from '../../utils/client';
  */
 export const putObjectJob =
 	(
-		{ options: uploadDataOptions, key, data }: UploadDataInput,
+		{ options: uploadOptions, key, data }: UploadInput,
 		abortSignal: AbortSignal,
 		totalLength?: number
 	) =>
 	async (): Promise<S3Item> => {
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled } =
-			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
+			await resolveS3ConfigAndInput(Amplify, uploadOptions);
 
 		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths
 		const finalKey = keyPrefix + key;
@@ -31,7 +31,7 @@ export const putObjectJob =
 			contentType = 'application/octet-stream',
 			metadata,
 			onProgress,
-		} = uploadDataOptions ?? {};
+		} = uploadOptions ?? {};
 
 		const { ETag: eTag, VersionId: versionId } = await putObject(
 			{

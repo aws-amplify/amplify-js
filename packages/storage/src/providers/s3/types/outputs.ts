@@ -30,7 +30,7 @@ export interface Item extends StorageItem {
 export type ListOutputItem = Omit<StorageItem, 'metadata'>;
 
 /**
- * Output type for S3 downloadData API.
+ * Output type for S3 download API.
  */
 export type DownloadOutput = DownloadTask<StorageDownloadOutput<Item>>;
 
@@ -40,7 +40,7 @@ export type DownloadOutput = DownloadTask<StorageDownloadOutput<Item>>;
 export type GetUrlOutput = StorageGetUrlOutput;
 
 /**
- * Output type for S3 uploadData API.
+ * Output type for S3 upload API.
  */
 export type UploadOutput = UploadTask<Item>;
 

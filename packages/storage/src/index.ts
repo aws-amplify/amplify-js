@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export {
-	uploadData,
-	downloadData,
+	upload,
+	download,
 	remove,
 	list,
 	getProperties,

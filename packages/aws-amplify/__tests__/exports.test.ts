@@ -135,8 +135,8 @@ describe('aws-amplify Exports', () => {
 		it('should only export expected symbols from the top-level', () => {
 			expect(Object.keys(storageTopLevelExports)).toMatchInlineSnapshot(`
 			Array [
-			  "uploadData",
-			  "downloadData",
+			  "upload",
+			  "download",
 			  "remove",
 			  "list",
 			  "getProperties",
@@ -151,8 +151,8 @@ describe('aws-amplify Exports', () => {
 		it('should only export expected symbols from the S3 provider', () => {
 			expect(Object.keys(storageS3Exports)).toMatchInlineSnapshot(`
 			Array [
-			  "uploadData",
-			  "downloadData",
+			  "upload",
+			  "download",
 			  "remove",
 			  "list",
 			  "getProperties",

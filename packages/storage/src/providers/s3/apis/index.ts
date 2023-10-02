@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { uploadData } from './uploadData';
-export { downloadData } from './downloadData';
+export { upload } from './upload';
+export { download } from './download';
 export { remove } from './remove';
 export { list } from './list';
 export { getProperties } from './getProperties';

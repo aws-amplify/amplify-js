@@ -3,7 +3,7 @@
 
 import { Amplify } from '@aws-amplify/core';
 
-import { DownloadDataInput, DownloadDataOutput, S3Exception } from '../types';
+import { DownloadInput, DownloadOutput, S3Exception } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { createDownloadTask } from '../utils';
@@ -20,14 +20,14 @@ import { getObject } from '../utils/client';
  * @example
  * ```ts
  * // Download a file from s3 bucket
- * const { body, eTag } = await downloadData({ key, data: file, options: {
+ * const { body, eTag } = await download({ key, data: file, options: {
  *   onProgress, // Optional progress callback.
  * } }).result;
  * ```
  * @example
  * ```ts
  * // Cancel a task
- * const downloadTask = downloadData({ key, data: file });
+ * const downloadTask = download({ key, data: file });
  * //...
  * downloadTask.cancel();
  * try {
@@ -39,7 +39,7 @@ import { getObject } from '../utils/client';
  * }
  *```
  */
-export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
+export const download = (input: DownloadInput): DownloadOutput => {
 	const abortController = new AbortController();
 
 	const downloadTask = createDownloadTask({
@@ -53,7 +53,7 @@ export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
 
 const downloadDataJob =
 	(
-		{ options: downloadDataOptions, key }: DownloadDataInput,
+		{ options: downloadDataOptions, key }: DownloadInput,
 		abortSignal: AbortSignal
 	) =>
 	async () => {

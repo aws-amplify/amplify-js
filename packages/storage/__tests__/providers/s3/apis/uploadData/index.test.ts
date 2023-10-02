@@ -1,19 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { uploadData } from '../../../../../src/providers/s3/apis';
+import { upload } from '../../../../../src/providers/s3/apis';
 import { MAX_OBJECT_SIZE } from '../../../../../src/providers/s3/utils/constants';
 import { createUploadTask } from '../../../../../src/providers/s3/utils';
 import {
 	validationErrorMap,
 	StorageValidationErrorCode,
 } from '../../../../../src/errors/types/validation';
-import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
-import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';
+import { putObjectJob } from '../../../../../src/providers/s3/apis/upload/putObjectJob';
+import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/upload/multipart';
 
 jest.mock('../../../../../src/providers/s3/utils/');
-jest.mock('../../../../../src/providers/s3/apis/uploadData/putObjectJob');
-jest.mock('../../../../../src/providers/s3/apis/uploadData/multipart');
+jest.mock('../../../../../src/providers/s3/apis/upload/putObjectJob');
+jest.mock('../../../../../src/providers/s3/apis/upload/multipart');
 
 const mockCreateUploadTask = createUploadTask as jest.Mock;
 const mockPutObjectJob = putObjectJob as jest.Mock;
@@ -26,7 +26,7 @@ const mockGetMultipartUploadHandlers = (
 	onCancel: jest.fn(),
 });
 
-describe('uploadData', () => {
+describe('upload', () => {
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
@@ -34,7 +34,7 @@ describe('uploadData', () => {
 	describe('validation', () => {
 		it('should throw if data size is too big', async () => {
 			expect(() =>
-				uploadData({
+				upload({
 					key: 'key',
 					data: { size: MAX_OBJECT_SIZE + 1 } as any,
 				})
@@ -46,7 +46,7 @@ describe('uploadData', () => {
 		});
 
 		it('should NOT throw if data size is unknown', async () => {
-			uploadData({
+			upload({
 				key: 'key',
 				data: {} as any,
 			});
@@ -59,7 +59,7 @@ describe('uploadData', () => {
 	describe('use putObject', () => {
 		const smallData = { size: 5 * 1024 * 1024 } as any;
 		it('should use putObject if data size is <= 5MB', async () => {
-			uploadData({
+			upload({
 				key: 'key',
 				data: smallData,
 			});
@@ -70,7 +70,7 @@ describe('uploadData', () => {
 		it('should use uploadTask', async () => {
 			mockPutObjectJob.mockReturnValueOnce('putObjectJob');
 			mockCreateUploadTask.mockReturnValueOnce('uploadTask');
-			const task = uploadData({
+			const task = upload({
 				key: 'key',
 				data: smallData,
 			});
@@ -88,7 +88,7 @@ describe('uploadData', () => {
 	describe('use multipartUpload', () => {
 		const biggerData = { size: 5 * 1024 * 1024 + 1 } as any;
 		it('should use multipartUpload if data size is > 5MB', async () => {
-			uploadData({
+			upload({
 				key: 'key',
 				data: biggerData,
 			});
@@ -98,7 +98,7 @@ describe('uploadData', () => {
 
 		it('should use uploadTask', async () => {
 			mockCreateUploadTask.mockReturnValueOnce('uploadTask');
-			const task = uploadData({
+			const task = upload({
 				key: 'key',
 				data: biggerData,
 			});
@@ -115,7 +115,7 @@ describe('uploadData', () => {
 		});
 
 		it('should call getMultipartUploadHandlers', async () => {
-			uploadData({
+			upload({
 				key: 'key',
 				data: biggerData,
 			});

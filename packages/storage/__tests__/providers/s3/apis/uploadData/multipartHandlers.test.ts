@@ -11,13 +11,13 @@ import {
 	listParts,
 	headObject,
 } from '../../../../../src/providers/s3/utils/client';
-import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';
+import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/upload/multipart';
 import {
 	validationErrorMap,
 	StorageValidationErrorCode,
 } from '../../../../../src/errors/types/validation';
 import { UPLOADS_STORAGE_KEY } from '../../../../../src/providers/s3/utils/constants';
-import { byteLength } from '../../../../../src/providers/s3/apis/uploadData/byteLength';
+import { byteLength } from '../../../../../src/providers/s3/apis/upload/byteLength';
 import { CanceledError } from '../../../../../src/errors/CanceledError';
 import { StorageOptions } from '../../../../../src/types';
 

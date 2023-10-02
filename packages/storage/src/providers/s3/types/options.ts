@@ -28,7 +28,7 @@ type WriteOptions = {
 };
 
 /**
- * Transfer-related options type for S3 downloadData, uploadData APIs.
+ * Transfer-related options type for S3 download, upload APIs.
  */
 type TransferOptions = {
 	/**
@@ -79,7 +79,7 @@ export type GetUrlOptions = ReadOptions &
 	};
 
 /**
- * Input options type for S3 downloadData API.
+ * Input options type for S3 download API.
  */
 export type DownloadOptions = ReadOptions & CommonOptions & TransferOptions;
 

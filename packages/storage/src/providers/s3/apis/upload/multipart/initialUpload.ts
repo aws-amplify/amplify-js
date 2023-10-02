@@ -9,12 +9,12 @@ import {
 	getUploadsCacheKey,
 } from './uploadCache';
 import { ResolvedS3Config } from '../../../types/options';
-import { StorageUploadDataPayload } from '../../../../../types';
+import { StorageUploadPayload } from '../../../../../types';
 import { Part, createMultipartUpload } from '../../../utils/client';
 
 type LoadOrCreateMultipartUploadOptions = {
 	s3Config: ResolvedS3Config;
-	data: StorageUploadDataPayload;
+	data: StorageUploadPayload;
 	bucket: string;
 	accessLevel: StorageAccessLevel;
 	keyPrefix: string;

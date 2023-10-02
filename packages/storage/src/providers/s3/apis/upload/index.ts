@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { UploadDataInput, UploadDataOutput, S3Exception } from '../../types';
+import { UploadInput, UploadOutput, S3Exception } from '../../types';
 import { createUploadTask } from '../../utils';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
@@ -18,7 +18,7 @@ import { getMultipartUploadHandlers } from './multipart';
  * * Maximum object size is 5TB.
  * * Maximum object size if the size cannot be determined before upload is 50GB.
  *
- * @param input - The UploadDataInput object.
+ * @param input - The UploadInput object.
  * @returns A cancelable and resumable task exposing result promise from `result`
  * 	property.
  * @throws service: {@link S3Exception} - thrown when checking for existence of the object
@@ -27,14 +27,14 @@ import { getMultipartUploadHandlers } from './multipart';
  * @example
  * ```ts
  * // Upload a file to s3 bucket
- * await uploadData({ key, data: file, options: {
+ * await upload({ key, data: file, options: {
  *   onProgress, // Optional progress callback.
  * } }).result;
  * ```
  * @example
  * ```ts
  * // Cancel a task
- * const uploadTask = uploadData({ key, data: file });
+ * const uploadTask = upload({ key, data: file });
  * //...
  * uploadTask.cancel();
  * try {
@@ -49,7 +49,7 @@ import { getMultipartUploadHandlers } from './multipart';
  * @example
  * ```ts
  * // Pause and resume a task
- * const uploadTask = uploadData({ key, data: file });
+ * const uploadTask = upload({ key, data: file });
  * //...
  * uploadTask.pause();
  * //...
@@ -58,7 +58,7 @@ import { getMultipartUploadHandlers } from './multipart';
  * await uploadTask.result;
  * ```
  */
-export const uploadData = (input: UploadDataInput): UploadDataOutput => {
+export const upload = (input: UploadInput): UploadOutput => {
 	const { data } = input;
 
 	const dataByteLength = byteLength(data);

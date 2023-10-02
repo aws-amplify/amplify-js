@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StorageUploadDataPayload } from '../../../../../types';
+import { StorageUploadPayload } from '../../../../../types';
 import {
 	StorageValidationErrorCode,
 	validationErrorMap,
@@ -16,7 +16,7 @@ export type PartToUpload = {
 };
 
 export const getDataChunker = (
-	data: StorageUploadDataPayload,
+	data: StorageUploadPayload,
 	totalSize?: number
 ) => {
 	const partSize = calculatePartSize(totalSize);

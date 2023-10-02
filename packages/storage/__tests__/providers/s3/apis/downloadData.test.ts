@@ -4,7 +4,7 @@
 import { Credentials } from '@aws-sdk/types';
 import { Amplify } from '@aws-amplify/core';
 import { getObject } from '../../../../src/providers/s3/utils/client';
-import { downloadData } from '../../../../src/providers/s3';
+import { download } from '../../../../src/providers/s3';
 import { createDownloadTask } from '../../../../src/providers/s3/utils';
 import { DownloadDataOptions } from '../../../../src/providers/s3/types';
 
@@ -34,8 +34,8 @@ const mockCreateDownloadTask = createDownloadTask as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 
 // TODO: test validation errors
-// TODO: test downloadData from guest, private, protected access level respectively.
-describe('downloadData', () => {
+// TODO: test download from guest, private, protected access level respectively.
+describe('download', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -57,7 +57,7 @@ describe('downloadData', () => {
 	});
 
 	it('should return a download task', async () => {
-		expect(downloadData({ key: 'key' })).toBe('downloadTask');
+		expect(download({ key: 'key' })).toBe('downloadTask');
 	});
 
 	[
@@ -90,7 +90,7 @@ describe('downloadData', () => {
 			expect.assertions(2);
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
 			const onProgress = jest.fn();
-			downloadData({
+			download({
 				key,
 				options: {
 					...options,
@@ -136,7 +136,7 @@ describe('downloadData', () => {
 			VersionId: versionId,
 			ContentType: contentType,
 		});
-		downloadData({ key });
+		download({ key });
 		const job = mockCreateDownloadTask.mock.calls[0][0].job;
 		const result = await job();
 		expect(getObject).toBeCalledTimes(1);
