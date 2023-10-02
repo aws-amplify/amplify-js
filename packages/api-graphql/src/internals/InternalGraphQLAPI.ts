@@ -260,6 +260,7 @@ export class InternalGraphQLAPIClass {
 
 		let response;
 		try {
+			debugger;
 			const postPromise = this._api.post({
 				url: new URL(endpoint),
 				options: {
@@ -272,7 +273,10 @@ export class InternalGraphQLAPIClass {
 				},
 			});
 
+			debugger;
+
 			const result = new Promise(async (res, rej) => {
+				debugger;
 				const { body: responsePayload } = await postPromise;
 				const postResult = await responsePayload.json();
 				res({ data: postResult });
@@ -319,7 +323,7 @@ export class InternalGraphQLAPIClass {
 	 * @return {boolean} - A boolean indicating if the request was cancelled
 	 */
 	cancel(request: Promise<any>, message?: string): boolean {
-		// TODO: awaiting final implementation:
+		debugger;
 		return cancelREST(this._cancelTokenMap.get(request), message);
 	}
 

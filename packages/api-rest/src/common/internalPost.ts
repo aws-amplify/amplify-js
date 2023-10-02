@@ -18,6 +18,7 @@ export const post = (
 	amplify: AmplifyClassV6,
 	{ url, options }: InternalPostInput
 ): Promise<RestApiResponse> => {
+	debugger;
 	const { response, cancel } = transferHandler(
 		amplify,
 		{
@@ -31,6 +32,7 @@ export const post = (
 		cancelTokenMap.delete(responseWithCleanUp);
 	});
 	cancelTokenMap.set(responseWithCleanUp, cancel);
+	debugger;
 	return responseWithCleanUp;
 };
 
@@ -42,10 +44,13 @@ export const cancel = (
 	promise: Promise<RestApiResponse>,
 	message?: string
 ): boolean => {
+	debugger;
 	const cancelFn = cancelTokenMap.get(promise);
 	if (cancelFn) {
+		debugger;
 		cancelFn(message);
 		return true;
 	}
+	debugger;
 	return false;
 };
