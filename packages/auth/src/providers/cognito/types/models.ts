@@ -3,6 +3,7 @@
 
 import { AuthStandardAttributeKey } from '../../../types';
 import { AuthProvider } from '../../../types/inputs';
+import { SignInOutput, SignUpOutput } from './outputs';
 
 /**
  * Cognito supported AuthFlowTypes that may be passed as part of the Sign In request.
@@ -52,3 +53,16 @@ export type MFAPreference =
 	| 'DISABLED'
 	| 'PREFERRED'
 	| 'NOT_PREFERRED';
+
+export type AutoSignInEventData =
+	| {
+			event: 'confirmSignUp';
+			data: SignUpOutput;
+	  }
+	| {
+			event: 'autoSignIn';
+			data: {
+				error?: unknown;
+				output?: SignInOutput;
+			};
+	  };

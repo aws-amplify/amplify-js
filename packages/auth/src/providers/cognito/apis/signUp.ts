@@ -20,6 +20,8 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { toAttributeType } from '../utils/apiHelpers';
 import { signIn } from './signIn';
 import { AuthError } from '../../../errors/AuthError';
+import { AutoSignInCallback } from '../../../types/models';
+import { AutoSignInEventData } from '../types/models';
 
 const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 /**
@@ -65,185 +67,123 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			serviceOptions: signInServiceOptions,
 		},
 	};
-	return new Promise(async (resolve, reject) => {
-		try {
-			const { UserConfirmed, CodeDeliveryDetails, UserSub } =
-				await signUpClient(
-					{ region: getRegion(authConfig.userPoolId) },
-					{
-						Username: username,
-						Password: password,
-						UserAttributes: attributes,
-						ClientMetadata: clientMetadata,
-						ValidationData: validationData,
-						ClientId: authConfig.userPoolClientId,
-					}
-				);
-			if (UserConfirmed && !signInServiceOptions) {
-				resolve({
-					isSignUpComplete: true,
-					nextStep: {
-						signUpStep: 'DONE',
-					},
-				});
-			} else if (!UserConfirmed && !signInServiceOptions) {
-				resolve({
-					isSignUpComplete: false,
-					nextStep: {
-						signUpStep: 'CONFIRM_SIGN_UP',
-						codeDeliveryDetails: {
-							deliveryMedium:
-								CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
-							destination: CodeDeliveryDetails?.Destination as string,
-							attributeName:
-								CodeDeliveryDetails?.AttributeName as UserAttributeKey,
-						},
-					},
-					userId: UserSub,
-				});
-			} else if (UserConfirmed && signInServiceOptions) {
-				await handleAutoSignIn({
-					userId: UserSub,
-					signInInput,
-					resolve,
-					reject,
-				});
-			} else if (
-				!UserConfirmed &&
-				signInServiceOptions &&
-				signUpVerificationMethod &&
-				signUpVerificationMethod === 'code'
-			) {
-				localStorage.setItem('amplify-auto-sign-in', 'true');
-				handleCodeAutoSignIn(signInInput);
-				resolve({
-					isSignUpComplete: false,
-					nextStep: {
-						signUpStep: 'CONFIRM_SIGN_UP',
-						codeDeliveryDetails: {
-							deliveryMedium:
-								CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
-							destination: CodeDeliveryDetails?.Destination as string,
-							attributeName:
-								CodeDeliveryDetails?.AttributeName as UserAttributeKey,
-						},
-					},
-					userId: UserSub,
-				});
-			} else if (
-				!UserConfirmed &&
-				signInServiceOptions &&
-				signUpVerificationMethod &&
-				signUpVerificationMethod === 'link'
-			) {
-				localStorage.setItem('amplify-auto-sign-in', 'true');
 
-				resolve({
-					isSignUpComplete: false,
-					nextStep: {
-						signUpStep: 'AUTO_SIGN_IN_WITH_LINK',
-						codeDeliveryDetails: {
-							deliveryMedium:
-								CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
-							destination: CodeDeliveryDetails?.Destination as string,
-							attributeName:
-								CodeDeliveryDetails?.AttributeName as UserAttributeKey,
-						},
-						fetchSignInOutput: () =>
-							new Promise((resolve, reject) => {
-								handleLinkAutoSignIn({
-									signInInput,
-									resolve,
-									reject,
-								});
-							}),
-					},
-					userId: UserSub,
-				});
-			}
-		} catch (e) {
-			reject(e);
+	const { UserConfirmed, CodeDeliveryDetails, UserSub } = await signUpClient(
+		{ region: getRegion(authConfig.userPoolId) },
+		{
+			Username: username,
+			Password: password,
+			UserAttributes: attributes,
+			ClientMetadata: clientMetadata,
+			ValidationData: validationData,
+			ClientId: authConfig.userPoolClientId,
 		}
-	});
-}
+	);
 
-function handleLinkAutoSignIn({
-	signInInput,
-	resolve,
-	reject,
-}: AutoSignInViaLinkParams) {
-	localStorage.setItem('amplify-polling-started', 'true');
-	const start = Date.now();
-	const autoSignInPollingIntervalId = setInterval(async () => {
-		if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_MS) {
-			clearInterval(autoSignInPollingIntervalId);
-			reject(
-				new AuthError({
-					name: 'AutoSignInError',
-					message: 'error while autoSignIn via link',
-				})
-			);
-			localStorage.removeItem('amplify-auto-sign-in');
-		} else {
-			try {
-				const output = await signIn(signInInput);
-				if (output.nextStep.signInStep !== 'CONFIRM_SIGN_UP') {
-					clearInterval(autoSignInPollingIntervalId);
-					resolve(output);
-				}
-			} catch (error) {
-				// TODO: log error
-			}
-		}
-	}, 5000);
-}
-type RejectPromise = (reason?: unknown) => void;
-type SignInResolvePromise = (
-	value: SignInOutput | PromiseLike<SignInOutput>
-) => void;
-type SignUpResolvePromise = (
-	value: SignUpOutput | PromiseLike<SignUpOutput>
-) => void;
-type AutoSignInParams = {
-	signInInput: SignInInput;
-	userId?: string;
-	resolve: SignUpResolvePromise;
-	reject: RejectPromise;
-};
-type AutoSignInViaLinkParams = {
-	signInInput: SignInInput;
-	resolve: SignInResolvePromise;
-	reject: RejectPromise;
-};
-export type AutoSignInEventData =
-	| {
-			event: 'confirmSignUp';
-			data: { response?: SignUpOutput };
-	  }
-	| {
-			event: 'autoSignIn';
-			data: { response?: SignInOutput; error?: unknown };
-	  };
-
-async function handleAutoSignIn({
-	signInInput,
-	userId,
-	resolve,
-	reject,
-}: AutoSignInParams) {
-	try {
-		const output = await signIn(signInInput);
-		resolve({
+	if (UserConfirmed && signInServiceOptions) {
+		return {
 			isSignUpComplete: true,
-			userId,
 			nextStep: {
-				signUpStep: 'AUTO_SIGN_IN',
-				nextSignInStep: output.nextStep,
+				signUpStep: 'DONE',
+				autoSignIn: async () => signIn(signInInput),
 			},
-		});
-	} catch (error) {
-		reject(error);
+		};
+	} else if (
+		!UserConfirmed &&
+		signInServiceOptions &&
+		signUpVerificationMethod &&
+		signUpVerificationMethod === 'code'
+	) {
+		localStorage.setItem('amplify-auto-sign-in', 'true');
+		handleCodeAutoSignIn(signInInput);
+		return {
+			isSignUpComplete: false,
+			nextStep: {
+				signUpStep: 'CONFIRM_SIGN_UP',
+				codeDeliveryDetails: {
+					deliveryMedium:
+						CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
+					destination: CodeDeliveryDetails?.Destination as string,
+					attributeName: CodeDeliveryDetails?.AttributeName as UserAttributeKey,
+				},
+			},
+			userId: UserSub,
+		};
+	} else if (
+		!UserConfirmed &&
+		signInServiceOptions &&
+		signUpVerificationMethod &&
+		signUpVerificationMethod === 'link'
+	) {
+		localStorage.setItem('amplify-auto-sign-in', 'true');
+
+		return {
+			isSignUpComplete: false,
+			nextStep: {
+				signUpStep: 'CONFIRM_SIGN_UP',
+				codeDeliveryDetails: {
+					deliveryMedium:
+						CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
+					destination: CodeDeliveryDetails?.Destination as string,
+					attributeName: CodeDeliveryDetails?.AttributeName as UserAttributeKey,
+				},
+
+				autoSignIn: getAutoSignOutput(signInInput),
+			},
+			userId: UserSub,
+		};
 	}
+
+	return {
+		isSignUpComplete: false,
+		nextStep: {
+			signUpStep: 'CONFIRM_SIGN_UP',
+			codeDeliveryDetails: {
+				deliveryMedium:
+					CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
+				destination: CodeDeliveryDetails?.Destination as string,
+				attributeName: CodeDeliveryDetails?.AttributeName as UserAttributeKey,
+			},
+		},
+		userId: UserSub,
+	};
+}
+
+function getAutoSignOutput(signInInput: SignInInput): AutoSignInCallback {
+	return async () => {
+		return new Promise<SignInOutput>(async (resolve, reject) => {
+			const start = Date.now();
+			let signInOutput: SignInOutput;
+			const autoSignInPollingIntervalId = setInterval(async () => {
+				if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_MS) {
+					clearInterval(autoSignInPollingIntervalId);
+					localStorage.removeItem('amplify-auto-sign-in');
+
+					reject(
+						new AuthError({
+							name: 'AutoSignInError',
+							message: 'the account was not confirmed on time.',
+						})
+					);
+				} else {
+					try {
+						if (signInOutput) return;
+						const output = await signIn(signInInput);
+						if (output.nextStep.signInStep !== 'CONFIRM_SIGN_UP') {
+							signInOutput = output;
+							resolve(signInOutput);
+							clearInterval(autoSignInPollingIntervalId);
+							localStorage.removeItem('amplify-auto-sign-in');
+						}
+					} catch (error) {
+						clearInterval(autoSignInPollingIntervalId);
+						localStorage.removeItem('amplify-auto-sign-in');
+						reject(error);
+					}
+				}
+			}, 5000);
+		});
+	};
 }
 
 function handleCodeAutoSignIn(signInInput: SignInInput) {
@@ -252,23 +192,23 @@ function handleCodeAutoSignIn(signInInput: SignInInput) {
 		async ({ payload }) => {
 			switch (payload.event) {
 				case 'confirmSignUp': {
-					const response = payload.data.response;
+					const response = payload.data;
+					let signInError: unknown;
+					let signInOutput: SignInOutput | undefined;
 					if (response?.isSignUpComplete) {
 						try {
-							const output = await signIn(signInInput);
-
-							Hub.dispatch<AutoSignInEventData>('auth-internal', {
-								event: 'autoSignIn',
-								data: { response: output },
-							});
-							stopHubListener();
+							signInOutput = await signIn(signInInput);
 						} catch (error) {
-							Hub.dispatch<AutoSignInEventData>('auth-internal', {
-								event: 'autoSignIn',
-								data: { error },
-							});
-							stopHubListener();
+							signInError = error;
 						}
+						Hub.dispatch<AutoSignInEventData>('auth-internal', {
+							event: 'autoSignIn',
+							data: {
+								error: signInError,
+								output: signInOutput,
+							},
+						});
+						stopHubListener();
 					}
 				}
 			}

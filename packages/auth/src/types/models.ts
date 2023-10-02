@@ -250,19 +250,12 @@ export type AuthUpdateAttributeStep =
  */
 export type AuthNextSignUpStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
-> =
-	| ConfirmSignUpSignUpStep<UserAttributeKey>
-	| AutoSignInWithLinkSignUpStep<UserAttributeKey>
-	| AutoSignInSignUpStep
-	| DoneSignUpStep;
+> = ConfirmSignUpSignUpStep<UserAttributeKey> | DoneSignUpStep;
 
-export type AutoSignInSignUpStep = {
-	signUpStep: 'AUTO_SIGN_IN';
-	nextSignInStep: AuthNextSignInStep;
-};
-
+export type AutoSignInCallback = () => Promise<SignInOutput>;
 export type DoneSignUpStep = {
 	signUpStep: 'DONE';
+	autoSignIn?: AutoSignInCallback;
 };
 
 export type ConfirmSignUpSignUpStep<
@@ -270,15 +263,9 @@ export type ConfirmSignUpSignUpStep<
 > = {
 	signUpStep: 'CONFIRM_SIGN_UP';
 	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
+	autoSignIn?: AutoSignInCallback;
 };
 
-type AutoSignInWithLinkSignUpStep<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
-> = {
-	signUpStep: 'AUTO_SIGN_IN_WITH_LINK';
-	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
-	fetchSignInOutput: () => Promise<SignInOutput>;
-};
 export type AuthNextUpdateAttributeStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
