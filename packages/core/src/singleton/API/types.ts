@@ -1,14 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import type { DocumentNode } from 'graphql';
-
 import { Headers } from '../../clients';
 
 export type LibraryAPIOptions = {
 	GraphQL?: {
 		// custom headers for given GraphQL service. Will be applied to all operations.
 		headers?: (options: {
-			query: DocumentNode;
+			query: string;
 			variables: Record<string, DocumentType>;
 		}) => Promise<Headers>;
 	};
