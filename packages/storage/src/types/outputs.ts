@@ -28,7 +28,7 @@ export type StorageItem = {
 	metadata?: Record<string, string>;
 };
 
-export type StorageDownloadDataOutput<T extends StorageItem> = T & {
+export type StorageDownloadOutput<T extends StorageItem> = T & {
 	body: ResponseBodyMixin;
 };
 

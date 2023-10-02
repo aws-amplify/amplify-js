@@ -3,19 +3,19 @@
 
 export {
 	GetUrlOptions,
-	UploadDataOptions,
+	UploadOptions,
 	GetPropertiesOptions,
 	ListAllOptions,
 	ListPaginateOptions,
 	RemoveOptions,
-	DownloadDataOptions,
+	DownloadOptions,
 	CopyDestinationOptions,
 	CopySourceOptions,
 } from './options';
 export {
-	DownloadDataOutput,
+	DownloadOutput,
 	GetUrlOutput,
-	UploadDataOutput,
+	UploadOutput,
 	ListOutputItem,
 	ListAllOutput,
 	ListPaginateOutput,
@@ -30,7 +30,7 @@ export {
 	ListAllInput,
 	ListPaginateInput,
 	RemoveInput,
-	DownloadDataInput,
-	UploadDataInput,
+	DownloadInput,
+	UploadInput,
 } from './inputs';
 export { S3Exception } from './errors';

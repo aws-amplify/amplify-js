@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	StorageDownloadDataOutput,
+	StorageDownloadOutput,
 	StorageGetUrlOutput,
 	StorageItem,
 	StorageListOutput,
@@ -32,7 +32,7 @@ export type ListOutputItem = Omit<StorageItem, 'metadata'>;
 /**
  * Output type for S3 downloadData API.
  */
-export type DownloadDataOutput = DownloadTask<StorageDownloadDataOutput<Item>>;
+export type DownloadOutput = DownloadTask<StorageDownloadOutput<Item>>;
 
 /**
  * Output type for S3 getUrl API.
@@ -42,7 +42,7 @@ export type GetUrlOutput = StorageGetUrlOutput;
 /**
  * Output type for S3 uploadData API.
  */
-export type UploadDataOutput = UploadTask<Item>;
+export type UploadOutput = UploadTask<Item>;
 
 /**
  * Output type for S3 getProperties API.

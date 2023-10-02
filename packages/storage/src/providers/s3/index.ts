@@ -12,8 +12,8 @@ export {
 } from './apis';
 
 export {
-	UploadDataInput,
-	DownloadDataInput,
+	UploadInput,
+	DownloadInput,
 	RemoveInput,
 	ListAllInput,
 	ListPaginateInput,
@@ -23,8 +23,8 @@ export {
 } from './types/inputs';
 
 export {
-	UploadDataOutput,
-	DownloadDataOutput,
+	UploadOutput,
+	DownloadOutput,
 	RemoveOutput,
 	ListAllOutput,
 	ListPaginateOutput,

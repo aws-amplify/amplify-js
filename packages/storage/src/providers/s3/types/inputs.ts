@@ -7,8 +7,8 @@ import {
 	StorageGetUrlInput,
 	StorageListInput,
 	StorageRemoveInput,
-	StorageDownloadDataInput,
-	StorageUploadDataInput,
+	StorageDownloadInput,
+	StorageUploadInput,
 } from '../../../types';
 import {
 	GetPropertiesOptions,
@@ -16,8 +16,8 @@ import {
 	ListAllOptions,
 	ListPaginateOptions,
 	RemoveOptions,
-	DownloadDataOptions,
-	UploadDataOptions,
+	DownloadOptions,
+	UploadOptions,
 	CopyDestinationOptions,
 	CopySourceOptions,
 } from '../types';
@@ -60,9 +60,9 @@ export type RemoveInput = StorageRemoveInput<RemoveOptions>;
 /**
  * Input type for S3 downloadData API.
  */
-export type DownloadDataInput = StorageDownloadDataInput<DownloadDataOptions>;
+export type DownloadInput = StorageDownloadInput<DownloadOptions>;
 
 /**
  * Input type for S3 uploadData API.
  */
-export type UploadDataInput = StorageUploadDataInput<UploadDataOptions>;
+export type UploadInput = StorageUploadInput<UploadOptions>;

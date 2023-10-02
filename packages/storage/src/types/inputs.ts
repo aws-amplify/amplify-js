@@ -30,12 +30,12 @@ export type StorageListInput<
 export type StorageGetUrlInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
-export type StorageDownloadDataInput<Options extends StorageOptions> =
+export type StorageDownloadInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
-export type StorageUploadDataInput<Options extends StorageOptions> =
+export type StorageUploadInput<Options extends StorageOptions> =
 	StorageOperationInput<Options> & {
-		data: StorageUploadDataPayload;
+		data: StorageUploadPayload;
 	};
 
 export type StorageCopyInput<
@@ -49,4 +49,4 @@ export type StorageCopyInput<
 /**
  * The data payload type for upload operation.
  */
-export type StorageUploadDataPayload = Blob | BufferSource | string | File;
+export type StorageUploadPayload = Blob | BufferSource | string | File;

@@ -12,11 +12,11 @@ export {
 	StorageListInput,
 	StorageGetPropertiesInput,
 	StorageRemoveInput,
-	StorageDownloadDataInput,
-	StorageUploadDataInput,
+	StorageDownloadInput,
+	StorageUploadInput,
 	StorageCopyInput,
 	StorageGetUrlInput,
-	StorageUploadDataPayload,
+	StorageUploadPayload,
 } from './inputs';
 export {
 	StorageOptions,
@@ -27,7 +27,7 @@ export {
 export {
 	StorageItem,
 	StorageListOutput,
-	StorageDownloadDataOutput,
+	StorageDownloadOutput,
 	StorageGetUrlOutput,
 	StorageUploadOutput,
 } from './outputs';
