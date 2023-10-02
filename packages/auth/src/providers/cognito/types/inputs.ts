@@ -7,6 +7,7 @@ import {
 	ConfirmSignInOptions,
 	ConfirmSignUpOptions,
 	UserAttributeKey,
+	VerifiableUserAttributeKey,
 	ResendSignUpCodeOptions,
 	ResetPasswordOptions,
 	SignInOptions,
@@ -17,7 +18,6 @@ import {
 	SendUserAttributeVerificationCodeOptions,
 } from '../types';
 import {
-	AuthStandardAttributeKey,
 	AuthConfirmResetPasswordInput,
 	AuthConfirmSignInInput,
 	AuthConfirmSignUpInput,
@@ -141,7 +141,7 @@ export type VerifyTOTPSetupInput =
  */
 export type SendUserAttributeVerificationCodeInput =
 	AuthSendUserAttributeVerificationCodeInput<
-		UserAttributeKey,
+		VerifiableUserAttributeKey,
 		SendUserAttributeVerificationCodeOptions
 	>;
 
