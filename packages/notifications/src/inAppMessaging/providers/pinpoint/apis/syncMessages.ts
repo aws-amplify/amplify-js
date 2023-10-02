@@ -1,10 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	InAppMessagingAction,
-	ConsoleLogger as Logger,
-} from '@aws-amplify/core/internals/utils';
+import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
 import {
 	updateEndpoint,
 	getEndpointId,
@@ -77,9 +74,8 @@ async function fetchInAppMessages() {
 				credentials,
 				identityId,
 				region,
-				// TODO(V6): Update InAppMessagingAction.None
 				userAgentValue: getInAppMessagingUserAgentString(
-					InAppMessagingAction.None
+					InAppMessagingAction.SyncMessages
 				),
 			});
 

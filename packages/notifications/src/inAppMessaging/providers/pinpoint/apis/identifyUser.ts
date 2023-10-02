@@ -32,7 +32,7 @@ import { IdentifyUserInput } from '../types';
  * await identifyUser({
  *     userId,
  *     userProfile: {
- *         email: [userEmail]
+ *         email: 'userEmail@example.com'
  *         customProperties: {
  *             phoneNumber: ['555-555-5555'],
  *         },
@@ -46,7 +46,7 @@ import { IdentifyUserInput } from '../types';
  * await identifyUser({
  *     userId,
  *     userProfile: {
- *         email: [userEmail]
+ *         email: 'userEmail@example.com'
  *         customProperties: {
  *             phoneNumber: ['555-555-5555'],
  *         },
@@ -74,6 +74,8 @@ export const identifyUser = async ({
 		userAttributes,
 		userId,
 		userProfile,
-		userAgentValue: getInAppMessagingUserAgentString(InAppMessagingAction.None),
+		userAgentValue: getInAppMessagingUserAgentString(
+			InAppMessagingAction.UpdateEndpoint
+		),
 	});
 };

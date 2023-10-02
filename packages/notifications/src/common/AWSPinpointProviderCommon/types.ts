@@ -3,12 +3,12 @@
 
 import { UserInfo } from '../../types';
 
-export interface AWSPinpointProviderConfig {
+export interface PinpointProviderConfig {
 	appId: string;
 	region: string;
 }
 
-export interface AWSPinpointUserInfo extends UserInfo {
+export interface PinpointUserInfo extends UserInfo {
 	address?: string;
 	optOut?: 'ALL' | 'NONE';
 }

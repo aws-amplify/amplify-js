@@ -15,7 +15,7 @@ import { IdentifyUserInput } from '../../../../../src/inAppMessaging/providers/p
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../../src/inAppMessaging/providers/pinpoint/utils');
 
-describe('Analytics Pinpoint Provider API: identifyUser', () => {
+describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 	const credentials = {
 		credentials: {
 			accessKeyId: 'access-key-id',

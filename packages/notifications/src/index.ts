@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { AWSPinpointProviderCommon } from './common';
-export { AWSPinpointUserInfo } from './common/AWSPinpointProviderCommon/types';
+export { PinpointUserInfo } from './common/AWSPinpointProviderCommon/types';
 export {
 	PushNotificationMessage,
 	PushNotificationPermissions,
