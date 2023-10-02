@@ -78,13 +78,13 @@ export class InternalGraphQLAPIClass {
 
 		let headers = {};
 
-		switch (authenticationType.type) {
+		switch (defaultAuthMode) {
 			case 'apiKey':
-				if (!authenticationType.apiKey) {
+				if (!apiKey) {
 					throw new Error(GraphQLAuthError.NO_API_KEY);
 				}
 				headers = {
-					'X-Api-Key': authenticationType.apiKey,
+					'X-Api-Key': apiKey,
 				};
 				break;
 			case 'iam':
@@ -93,7 +93,8 @@ export class InternalGraphQLAPIClass {
 					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
 				break;
-			case 'jwt':
+			case 'oidc':
+			case 'userPool':
 				try {
 					let token;
 
@@ -109,13 +110,15 @@ export class InternalGraphQLAPIClass {
 					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
 				}
 				break;
-			case 'custom':
+			case 'lambda':
 				if (!additionalHeaders.Authorization) {
 					throw new Error(GraphQLAuthError.NO_AUTH_TOKEN);
 				}
 				headers = {
 					Authorization: additionalHeaders.Authorization,
 				};
+				break;
+			case 'none':
 				break;
 			default:
 				headers = {

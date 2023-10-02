@@ -9,8 +9,8 @@ import {
 	jitteredBackoff,
 	authenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
+import { DocumentType } from '@aws-amplify/core/internals/utils';
 
-import { DocumentType } from '../types';
 import {
 	createCancellableOperation,
 	parseRestApiServiceError,
