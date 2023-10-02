@@ -21,6 +21,10 @@ export function createCancellableOperation(
 export function createCancellableOperation(
 	handler: (signal: AbortSignal) => Promise<HttpResponse>
 ): Promise<HttpResponse>;
+
+/**
+ * @internal
+ */
 export function createCancellableOperation(
 	handler: (signal?: AbortSignal) => Promise<HttpResponse>,
 	abortController?: AbortController

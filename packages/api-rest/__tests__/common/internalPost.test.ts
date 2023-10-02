@@ -57,7 +57,6 @@ describe('internal post', () => {
 					region: 'us-east-1',
 				},
 			},
-			abortController: new AbortController(),
 		});
 		expect(mockAuthenticatedHandler).toBeCalledWith(
 			{
@@ -77,7 +76,6 @@ describe('internal post', () => {
 					service: 'lambda',
 				},
 			},
-			abortController: new AbortController(),
 		});
 		expect(mockAuthenticatedHandler).toBeCalledWith(
 			{
@@ -94,7 +92,6 @@ describe('internal post', () => {
 			options: {
 				signingServiceInfo: {},
 			},
-			abortController: new AbortController(),
 		});
 		expect(mockAuthenticatedHandler).toBeCalledWith(
 			{
@@ -113,7 +110,6 @@ describe('internal post', () => {
 				body: { foo: 'bar' },
 				signingServiceInfo: {},
 			},
-			abortController: new AbortController(),
 		});
 		expect(mockAuthenticatedHandler).toBeCalledWith(
 			{
@@ -136,7 +132,6 @@ describe('internal post', () => {
 				body: formData,
 				signingServiceInfo: {},
 			},
-			abortController: new AbortController(),
 		});
 		expect(mockAuthenticatedHandler).toBeCalledWith(
 			{
@@ -154,7 +149,6 @@ describe('internal post', () => {
 	it('should call unauthenticatedHandler without signingServiceInfo', async () => {
 		await post(mockAmplifyInstance, {
 			url: apiGatewayUrl,
-			abortController: new AbortController(),
 		});
 		expect(mockUnauthenticatedHandler).toBeCalledWith(
 			{
@@ -175,7 +169,6 @@ describe('internal post', () => {
 				},
 				signingServiceInfo: {},
 			},
-			abortController: new AbortController(),
 		});
 		expect(mockUnauthenticatedHandler).toBeCalledWith(
 			expect.objectContaining({
@@ -197,7 +190,6 @@ describe('internal post', () => {
 				},
 				signingServiceInfo: {},
 			},
-			abortController: new AbortController(),
 		});
 		expect(mockUnauthenticatedHandler).toBeCalledWith(
 			expect.objectContaining({
@@ -265,7 +257,6 @@ describe('internal post', () => {
 		try {
 			await post(mockAmplifyInstance, {
 				url: apiGatewayUrl,
-				abortController: new AbortController(),
 			});
 			fail('should throw RestApiError');
 		} catch (error) {

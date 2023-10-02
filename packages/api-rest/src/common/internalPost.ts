@@ -16,6 +16,7 @@ export const post = (
 	amplify: AmplifyClassV6,
 	{ url, options, abortController }: InternalPostInput
 ): Promise<RestApiResponse> => {
+	const controller = abortController ?? new AbortController();
 	const responsePromise = createCancellableOperation(async () => {
 		const response = transferHandler(
 			amplify,
@@ -23,12 +24,12 @@ export const post = (
 				url,
 				method: 'POST',
 				...options,
-				abortSignal: abortController.signal,
+				abortSignal: controller.signal,
 			},
 			options?.signingServiceInfo
 		);
 		return response;
-	}, abortController);
+	}, controller);
 
 	const responseWithCleanUp = responsePromise.finally(() => {
 		cancelTokenMap.delete(responseWithCleanUp);
@@ -39,6 +40,7 @@ export const post = (
 /**
  * Cancels a request given the promise returned by `post`.
  * If the request is already completed, this function does nothing.
+ * It MUST be used after `updateRequestToBeCancellable` is called.
  */
 export const cancel = (
 	promise: Promise<RestApiResponse>,
@@ -57,6 +59,9 @@ export const cancel = (
 	return false;
 };
 
+/**
+ * MUST be used to make a promise including internal `post` API call cancellable.
+ */
 export const updateRequestToBeCancellable = (
 	promise: Promise<any>,
 	controller: AbortController
