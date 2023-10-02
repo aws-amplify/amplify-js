@@ -7,6 +7,7 @@ components.
 */
 export {
 	setCustomUserAgent,
+	SetCustomUserAgentInput,
 	Category,
 	AuthAction,
 	GeoAction,

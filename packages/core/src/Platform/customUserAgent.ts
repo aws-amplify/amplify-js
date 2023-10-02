@@ -7,14 +7,7 @@ import {
 	SetCustomUserAgentInput,
 } from './types';
 
-/**
- * Maintains custom user-agent state set by external consumers.
- *
- * `refCount` tracks how many consumers have set state for a particular API to avoid it being cleared before all
- * consumers are done using it.
- *
- * Category -> API Code -> Custom State
- */
+// Maintains custom user-agent state set by external consumers.
 const customUserAgentState: CustomUserAgentStateMap = {};
 
 /**
@@ -36,7 +29,7 @@ export const setCustomUserAgent = (
 	// Save custom user-agent state & increment reference counter
 	customUserAgentState[input.category] = Object.assign(
 		customUserAgentState[input.category] || {},
-		input.apis.reduce(
+		input.apis.reduce<CategoryUserAgentStateMap>(
 			(acc, api) => ({
 				...acc,
 				[api]: {
@@ -44,7 +37,7 @@ export const setCustomUserAgent = (
 					additionalDetails: input.additionalDetails,
 				},
 			}),
-			{} as CategoryUserAgentStateMap
+			{}
 		)
 	);
 

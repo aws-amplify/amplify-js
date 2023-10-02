@@ -62,6 +62,7 @@ export {
 	PubSubAction,
 	PushNotificationAction,
 	StorageAction,
+	SetCustomUserAgentInput,
 } from './Platform/types';
 export { setCustomUserAgent } from './Platform/customUserAgent';
 

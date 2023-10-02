@@ -141,10 +141,12 @@ type UserAgentDetailsWithCategory<T extends Category> =
 		action: T extends keyof ActionMap ? ActionMap[T] : never;
 	};
 
+// TODO Remove or refactor?
 type CustomUserAgentDetailsBase = {
 	framework?: Framework;
 };
 
+// TODO Remove or refactor?
 export type CustomUserAgentDetails =
 	| (CustomUserAgentDetailsBase & { category?: never; action?: never })
 	| UserAgentDetailsWithCategory<Category.API>
@@ -160,7 +162,10 @@ export type CustomUserAgentDetails =
 	| UserAgentDetailsWithCategory<Category.Storage>;
 
 /**
- * Defines types related to custom user agent state from internal consumers.
+ * `refCount` tracks how many consumers have set state for a particular API to avoid it being cleared before all
+ * consumers are done using it.
+ *
+ * Category -> API Code -> Custom State
  */
 export type CategoryUserAgentStateMap = Record<
 	string,
@@ -170,15 +175,31 @@ export type CustomUserAgentStateMap = Record<string, CategoryUserAgentStateMap>;
 
 export type AdditionalDetails = [[string, string?]];
 
+type StorageUserAgentInput = {
+	category: Category.Storage;
+	apis: StorageAction[];
+};
+
+type AuthUserAgentInput = {
+	category: Category.Auth;
+	apis: AuthAction[];
+};
+
+type InAppMessagingUserAgentInput = {
+	category: Category.InAppMessaging;
+	apis: InAppMessagingAction[];
+};
+
+type GeoUserAgentInput = {
+	category: Category.Geo;
+	apis: GeoAction[];
+};
+
 export type SetCustomUserAgentInput = (
-	| {
-			category: Category.Storage;
-			apis: StorageAction[];
-	  }
-	| {
-			category: Category.Auth;
-			apis: AuthAction[];
-	  }
+	| StorageUserAgentInput
+	| AuthUserAgentInput
+	| InAppMessagingUserAgentInput
+	| GeoUserAgentInput
 ) & {
 	additionalDetails: AdditionalDetails;
 };
