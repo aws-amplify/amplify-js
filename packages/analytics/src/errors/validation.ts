@@ -8,6 +8,7 @@ export enum AnalyticsValidationErrorCode {
 	NoCredentials = 'NoCredentials',
 	NoEventName = 'NoEventName',
 	NoRegion = 'NoRegion',
+	InvalidTracker = 'InvalidTracker',
 }
 
 export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
@@ -23,5 +24,8 @@ export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
 		},
 		[AnalyticsValidationErrorCode.NoRegion]: {
 			message: 'Missing region.',
+		},
+		[AnalyticsValidationErrorCode.InvalidTracker]: {
+			message: 'Invalid tracker type specified.',
 		},
 	};

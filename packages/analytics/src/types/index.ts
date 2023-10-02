@@ -3,4 +3,7 @@
 
 export { AnalyticsServiceOptions } from './options';
 
-export { AnalyticsIdentifyUserInput } from './inputs';
+export {
+	AnalyticsConfigureAutoTrackInput,
+	AnalyticsIdentifyUserInput,
+} from './inputs';
