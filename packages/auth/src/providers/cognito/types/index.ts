@@ -6,6 +6,7 @@ export {
 	ValidationData,
 	AuthFlowType,
 	UserAttributeKey,
+	VerifiableUserAttributeKey,
 	MFAPreference,
 } from './models';
 
