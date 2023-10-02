@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import './polyfill';
+
 export { signUp } from './apis/signUp';
 export { resetPassword } from './apis/resetPassword';
 export { confirmResetPassword } from './apis/confirmResetPassword';

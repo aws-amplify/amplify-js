@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import BigInteger from "../src/providers/cognito/utils/srp/BigInteger";
+import { BigInteger } from '../src/providers/cognito/utils/srp/BigInteger';
 
 describe('BigInteger', () => {
 	describe('.toString(radix)', () => {
