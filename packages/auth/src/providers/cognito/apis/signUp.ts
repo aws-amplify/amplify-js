@@ -79,14 +79,8 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			ClientId: authConfig.userPoolClientId,
 		}
 	);
-	if (UserConfirmed && !signInServiceOptions) {
-		return {
-			isSignUpComplete: true,
-			nextStep: {
-				signUpStep: 'DONE',
-			},
-		};
-	} else if (UserConfirmed && signInServiceOptions) {
+
+	if (UserConfirmed && signInServiceOptions) {
 		return {
 			isSignUpComplete: true,
 			nextStep: {
