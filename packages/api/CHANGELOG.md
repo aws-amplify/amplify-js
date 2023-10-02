@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 5.4.5 (2023-09-14)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## 5.4.4 (2023-08-23)
+
+**Note:** Version bump only for package @aws-amplify/api
+
 ## 5.4.3 (2023-08-22)
 
 **Note:** Version bump only for package @aws-amplify/api
