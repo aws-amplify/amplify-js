@@ -31,7 +31,7 @@ describe(fetchTransferHandler.name, () => {
 		mockFetch.mockResolvedValue(mockFetchResponse);
 	});
 
-	test('should support abort signal', async () => {
+	it('should support abort signal', async () => {
 		const signal = new AbortController().signal;
 		await fetchTransferHandler(mockRequest, { abortSignal: signal });
 		expect(mockFetch).toBeCalledTimes(1);
@@ -40,7 +40,7 @@ describe(fetchTransferHandler.name, () => {
 		);
 	});
 
-	test('should configure cache', async () => {
+	it('should configure cache', async () => {
 		const cacheMode = 'no-store';
 		await fetchTransferHandler(mockRequest, { cache: cacheMode });
 		expect(mockFetch).toBeCalledTimes(1);
@@ -49,7 +49,25 @@ describe(fetchTransferHandler.name, () => {
 		);
 	});
 
-	test('should support headers', async () => {
+	it('should set credentials options to "include" if cross domain credentials is set', async () => {
+		await fetchTransferHandler(mockRequest, {
+			withCrossDomainCredentials: true,
+		});
+		expect(mockFetch).toBeCalledTimes(1);
+		expect(mockFetch.mock.calls[0][1]).toEqual(
+			expect.objectContaining({ credentials: 'include' })
+		);
+	});
+
+	it('should set credentials options to "same-origin" if cross domain credentials is not set', async () => {
+		await fetchTransferHandler(mockRequest, {});
+		expect(mockFetch).toBeCalledTimes(1);
+		expect(mockFetch.mock.calls[0][1]).toEqual(
+			expect.objectContaining({ credentials: 'same-origin' })
+		);
+	});
+
+	it('should support headers', async () => {
 		mockFetchResponse.headers.forEach.mockImplementation((cb: any) => {
 			cb('foo', 'bar');
 		});
@@ -57,7 +75,7 @@ describe(fetchTransferHandler.name, () => {
 		expect(headers).toEqual({ bar: 'foo' });
 	});
 
-	test('should support text() in response.body with caching', async () => {
+	it('should support text() in response.body with caching', async () => {
 		mockBody.text.mockResolvedValue(mockPayloadValue);
 		const { body } = await fetchTransferHandler(mockRequest, {});
 		if (!body) {
@@ -68,7 +86,7 @@ describe(fetchTransferHandler.name, () => {
 		expect(mockBody.text).toBeCalledTimes(1); // test caching
 	});
 
-	test('should support blob() in response.body with caching', async () => {
+	it('should support blob() in response.body with caching', async () => {
 		mockBody.blob.mockResolvedValue(mockPayloadValue);
 		const { body } = await fetchTransferHandler(mockRequest, {});
 		if (!body) {
@@ -79,7 +97,7 @@ describe(fetchTransferHandler.name, () => {
 		expect(mockBody.blob).toBeCalledTimes(1); // test caching
 	});
 
-	test('should support json() in response.body with caching', async () => {
+	it('should support json() in response.body with caching', async () => {
 		mockBody.json.mockResolvedValue(mockPayloadValue);
 		const { body } = await fetchTransferHandler(mockRequest, {});
 		if (!body) {

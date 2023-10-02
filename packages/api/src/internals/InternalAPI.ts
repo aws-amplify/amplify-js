@@ -10,7 +10,8 @@ import {
 	GraphQLSubscription,
 } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
-import { cancel, isCancel } from '@aws-amplify/api-rest';
+import { isCancelError } from '@aws-amplify/api-rest';
+import { cancel } from '@aws-amplify/api-rest/internals';
 import { Cache } from '@aws-amplify/core';
 import {
 	ApiAction,
@@ -56,7 +57,7 @@ export class InternalAPIClass {
 	 * @return If the error was from an api request cancellation
 	 */
 	isCancel(error: any): boolean {
-		return isCancel(error);
+		return isCancelError(error);
 	}
 	/**
 	 * Cancels an inflight request for either a GraphQL request or a Rest API request.
