@@ -3,7 +3,6 @@
 
 import { AuthStandardAttributeKey } from '../../../types';
 import { AuthProvider } from '../../../types/inputs';
-import { AutoSignInOutput } from '../../../types/models';
 import { SignInOutput, SignUpOutput } from './outputs';
 
 /**
