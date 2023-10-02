@@ -93,7 +93,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt'],
+				result: ['userPool'],
 			});
 
 			await testMultiAuthStrategy({
@@ -108,7 +108,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt'],
+				result: ['oidc'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -122,7 +122,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt'],
+				result: ['userPool'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -136,7 +136,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt'],
+				result: ['oidc'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -150,7 +150,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt'],
+				result: ['userPool'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -163,7 +163,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt'],
+				result: ['userPool'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -232,7 +232,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt'],
+				result: ['userPool'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -246,7 +246,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt'],
+				result: ['userPool', 'oidc'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -259,7 +259,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt'],
+				result: ['userPool', 'oidc'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -273,7 +273,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt', 'iam'],
+				result: ['userPool', 'iam'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -287,7 +287,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt', 'iam'],
+				result: ['userPool', 'iam'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -301,7 +301,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt', 'apiKey'],
+				result: ['userPool', 'apiKey'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -315,7 +315,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt', 'iam'],
+				result: ['userPool', 'iam'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -328,7 +328,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt', 'iam'],
+				result: ['userPool', 'iam'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -346,7 +346,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt', 'iam', 'apiKey'],
+				result: ['userPool', 'iam', 'apiKey'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -364,7 +364,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt', 'iam', 'apiKey'],
+				result: ['userPool', 'iam', 'apiKey'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -383,7 +383,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['lambda', 'jwt', 'iam', 'apiKey'],
+				result: ['lambda', 'userPool', 'iam', 'apiKey'],
 			});
 
 			await testMultiAuthStrategy({
@@ -406,7 +406,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['jwt', 'iam', 'apiKey'],
+				result: ['userPool', 'iam', 'apiKey'],
 			});
 			await testMultiAuthStrategy({
 				authRules,

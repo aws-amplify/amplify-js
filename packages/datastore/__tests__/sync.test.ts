@@ -43,7 +43,7 @@ const defaultQuery = `query {
 const defaultVariables = {};
 const defaultOpName = 'syncPosts';
 const defaultModelDefinition = { name: 'Post' };
-const defaultAuthMode = 'jwt';
+const defaultAuthMode = 'userPool';
 
 describe('Sync', () => {
 	describe('jitteredRetry', () => {

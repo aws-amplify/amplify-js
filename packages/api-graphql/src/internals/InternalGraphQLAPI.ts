@@ -73,18 +73,19 @@ export class InternalGraphQLAPIClass {
 		const {
 			region: region,
 			endpoint: appSyncGraphqlEndpoint,
-			defaultAuthMode: authenticationType,
-		} = config.API.AppSync;
+			apiKey,
+			defaultAuthMode,
+		} = config.API.GraphQL;
 
 		let headers = {};
 
-		switch (authenticationType.type) {
+		switch (defaultAuthMode) {
 			case 'apiKey':
-				if (!authenticationType.apiKey) {
+				if (!apiKey) {
 					throw new Error(GraphQLAuthError.NO_API_KEY);
 				}
 				headers = {
-					'X-Api-Key': authenticationType.apiKey,
+					'X-Api-Key': apiKey,
 				};
 				break;
 			case 'iam':
@@ -93,7 +94,8 @@ export class InternalGraphQLAPIClass {
 					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
 				break;
-			case 'jwt':
+			case 'oidc':
+			case 'userPool':
 				try {
 					let token;
 
@@ -109,13 +111,15 @@ export class InternalGraphQLAPIClass {
 					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
 				}
 				break;
-			case 'custom':
+			case 'lambda':
 				if (!additionalHeaders.Authorization) {
 					throw new Error(GraphQLAuthError.NO_AUTH_TOKEN);
 				}
 				headers = {
 					Authorization: additionalHeaders.Authorization,
 				};
+				break;
+			case 'none':
 				break;
 			default:
 				headers = {
@@ -198,7 +202,7 @@ export class InternalGraphQLAPIClass {
 		const config = Amplify.getConfig();
 
 		const { region: region, endpoint: appSyncGraphqlEndpoint } =
-			config.API.AppSync;
+			config.API.GraphQL;
 
 		const customGraphqlEndpoint = null;
 		const customEndpointRegion = null;
@@ -280,16 +284,17 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
-		const { AppSync } = Amplify.getConfig().API ?? {};
+		const { GraphQL } = Amplify.getConfig().API ?? {};
 		if (!this.appSyncRealTime) {
 			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
 		}
 		return this.appSyncRealTime.subscribe({
 			query: print(query as DocumentNode),
 			variables,
-			appSyncGraphqlEndpoint: AppSync?.endpoint,
-			region: AppSync?.region,
-			authenticationType: AppSync?.defaultAuthMode,
+			appSyncGraphqlEndpoint: GraphQL?.endpoint,
+			region: GraphQL?.region,
+			authenticationType: GraphQL?.defaultAuthMode,
+			apiKey: GraphQL?.apiKey,
 		});
 	}
 }
