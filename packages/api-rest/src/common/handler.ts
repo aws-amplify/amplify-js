@@ -41,23 +41,7 @@ type SigningServiceInfo = {
  *
  * @internal
  */
-export const transferHandler = (
-	amplify: AmplifyClassV6,
-	options: HandlerOptions,
-	signingServiceInfo?: SigningServiceInfo
-) =>
-	createCancellableOperation(abortSignal =>
-		transferHandlerJob(
-			amplify,
-			{
-				...options,
-				abortSignal,
-			},
-			signingServiceInfo
-		)
-	);
-
-const transferHandlerJob = async (
+export const transferHandler = async (
 	amplify: AmplifyClassV6,
 	options: HandlerOptions & { abortSignal: AbortSignal },
 	signingServiceInfo?: SigningServiceInfo

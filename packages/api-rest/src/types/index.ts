@@ -93,4 +93,10 @@ export type InternalPostInput = {
 			region?: string;
 		};
 	};
+	/**
+	 * The abort controller to cancel the in-flight POST request.
+	 * The same controller reference needs to be used to call `updateRequestToBeCancellable()` to make a promise
+	 * with internal post call cancellable.
+	 */
+	abortController: AbortController;
 };
