@@ -18,7 +18,7 @@ import {
 	ApiInput,
 	RestApiOptionsBase,
 } from '../types';
-import { resolveApiUrl } from '../utils';
+import { resolveApiUrl, createCancellableOperation } from '../utils';
 import { transferHandler } from './handler';
 
 const publicHandler = (
@@ -27,23 +27,25 @@ const publicHandler = (
 	method: string
 ) => {
 	const { apiName, options: apiOptions } = options;
-	const url = resolveApiUrl(amplify, apiName);
-	const getOptions = async () => {
-		const headers = await amplify.libraryOptions?.API?.REST?.headers({
-			apiName,
-		});
-		return {
+	const url = resolveApiUrl(amplify, apiName, apiOptions?.queryParams);
+	return createCancellableOperation(async abortSignal => {
+		const libraryOptionsHeaders =
+			await amplify.libraryOptions?.API?.REST?.headers({
+				apiName,
+			});
+		const { headers: invocationHeaders = {} } = apiOptions;
+		return transferHandler(amplify, {
 			url,
 			method,
 			headers: {
-				...headers,
-				...apiOptions?.headers,
+				// custom headers from library options should be overwritten by invocation headers.
+				...libraryOptionsHeaders,
+				...invocationHeaders,
 			},
 			body: apiOptions?.body,
-			queryParams: apiOptions?.queryParams,
-		};
-	};
-	return transferHandler(amplify, getOptions());
+			abortSignal,
+		});
+	});
 };
 
 export const get = (amplify: AmplifyClassV6, input: GetInput): GetOperation =>
