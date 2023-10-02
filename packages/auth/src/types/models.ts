@@ -187,7 +187,6 @@ export type AuthNextSignInStep<
 export type AuthStandardAttributeKey =
 	| 'address'
 	| 'birthdate'
-	| 'email'
 	| 'email_verified'
 	| 'family_name'
 	| 'gender'
@@ -196,7 +195,6 @@ export type AuthStandardAttributeKey =
 	| 'middle_name'
 	| 'name'
 	| 'nickname'
-	| 'phone_number'
 	| 'phone_number_verified'
 	| 'picture'
 	| 'preferred_username'
@@ -204,7 +202,10 @@ export type AuthStandardAttributeKey =
 	| 'sub'
 	| 'updated_at'
 	| 'website'
-	| 'zoneinfo';
+	| 'zoneinfo'
+	| AuthVerifiableAttributeKey;
+
+export type AuthVerifiableAttributeKey = 'email' | 'phone_number';
 
 /**
  * Key/value pairs describing a user attributes.
