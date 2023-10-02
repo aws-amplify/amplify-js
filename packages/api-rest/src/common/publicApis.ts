@@ -1,30 +1,73 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { transferHandler } from './handler';
+import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
-	GetOptions,
+	GetInput,
 	GetOperation,
-	PostOptions,
+	PostInput,
 	PostOperation,
-	PutOptions,
+	PutInput,
 	PutOperation,
-	DeleteOptions,
+	DeleteInput,
 	DeleteOperation,
-	HeadOptions,
+	HeadInput,
 	HeadOperation,
-	PatchOptions,
+	PatchInput,
 	PatchOperation,
+	ApiInput,
+	RestApiOptionsBase,
 } from '../types';
+import { resolveApiUrl } from '../utils';
+import { transferHandler } from './handler';
 
-export const get = (input: GetOptions): GetOperation => {};
+const publicHandler = (
+	amplify: AmplifyClassV6,
+	options: ApiInput<RestApiOptionsBase>,
+	method: string
+) => {
+	const { apiName, options: apiOptions } = options;
+	const url = resolveApiUrl(amplify, apiName);
+	const getOptions = async () => {
+		const headers = await amplify.libraryOptions?.API?.REST?.headers({
+			apiName,
+		});
+		return {
+			url,
+			method,
+			headers: {
+				...headers,
+				...apiOptions?.headers,
+			},
+			body: apiOptions?.body,
+			queryParams: apiOptions?.queryParams,
+		};
+	};
+	return transferHandler(amplify, getOptions());
+};
 
-export const post = (input: PostOptions): PostOperation => {};
+export const get = (amplify: AmplifyClassV6, input: GetInput): GetOperation =>
+	publicHandler(amplify, input, 'GET');
 
-export const put = (input: PutOptions): PutOperation => {};
+export const post = (
+	amplify: AmplifyClassV6,
+	input: PostInput
+): PostOperation => publicHandler(amplify, input, 'POST');
 
-export const del = (input: DeleteOptions): DeleteOperation => {};
+export const put = (amplify: AmplifyClassV6, input: PutInput): PutOperation =>
+	publicHandler(amplify, input, 'PUT');
 
-export const head = (input: HeadOptions): HeadOperation => {};
+export const del = (
+	amplify: AmplifyClassV6,
+	input: DeleteInput
+): DeleteOperation => publicHandler(amplify, input, 'DELETE');
 
-export const patch = (input: PatchOptions): PatchOperation => {};
+export const head = (
+	amplify: AmplifyClassV6,
+	input: HeadInput
+): HeadOperation => publicHandler(amplify, input, 'HEAD');
+
+export const patch = (
+	amplify: AmplifyClassV6,
+	input: PatchInput
+): PatchOperation => publicHandler(amplify, input, 'PATCH');
