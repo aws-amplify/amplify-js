@@ -21,14 +21,14 @@ export const parseUrl = (url: URL) => {
 		// @see: https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-call-api.html
 		return {
 			service,
-			region,
+			region: region ?? DEFAULT_IAM_SIGNING_REGION,
 		};
 	} else if (service === 'appsync-api') {
 		// AppSync endpoint is internally supported because GraphQL operation will send request using POST handler.
 		// example: https://xxxx.appsync-api.us-east-1.amazonaws.com/graphql
 		return {
 			service: 'appsync',
-			region,
+			region: region ?? DEFAULT_IAM_SIGNING_REGION,
 		};
 	} else {
 		return {

@@ -5,10 +5,16 @@ import { AmplifyErrorMap } from '@aws-amplify/core/internals/utils';
 
 export enum RestApiValidationErrorCode {
 	NoCredentials = 'NoCredentials',
+	InvalidApiName = 'InvalidApiName',
 }
 
 export const validationErrorMap: AmplifyErrorMap<RestApiValidationErrorCode> = {
 	[RestApiValidationErrorCode.NoCredentials]: {
 		message: 'Credentials should not be empty.',
+	},
+	[RestApiValidationErrorCode.InvalidApiName]: {
+		message: 'API name is invalid.',
+		recoverySuggestion:
+			'Please check if the API name matches the one in your configuration or `aws-exports.js`',
 	},
 };

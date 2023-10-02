@@ -12,7 +12,6 @@ import {
 import { DocumentType } from '@aws-amplify/core/internals/utils';
 
 import {
-	createCancellableOperation,
 	parseRestApiServiceError,
 	parseUrl,
 	resolveCredentials,
@@ -35,9 +34,8 @@ type SigningServiceInfo = {
  * @param amplify Amplify instance to to resolve credentials and tokens. Should use different instance in client-side
  *   and SSR
  * @param options Options accepted from public API options when calling the handlers.
- * @param signingServiceInfo Internal-only options for graphql client to overwrite the IAM signing service and region.
- *   MUST ONLY be used by internal post method consumed by GraphQL when auth mode is IAM. Otherwise IAM auth may not be
- *   used.
+ * @param signingServiceInfo Internal-only options enable IAM auth as well as to to overwrite the IAM signing service
+ *   and region. If specified, and NONE of API Key header or Auth header is present, IAM auth will be used.
  *
  * @internal
  */

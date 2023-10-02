@@ -70,8 +70,17 @@ export interface RestApiResponse {
  * @internal
  */
 export type ApiInput<Options> = {
+	/**
+	 * Name of the REST API configured in Amplify singleton.
+	 */
 	apiName: string;
+	/**
+	 * Path of the REST API.
+	 */
 	path: string;
+	/**
+	 * Options to overwrite the REST API call behavior.
+	 */
 	options?: Options;
 };
 

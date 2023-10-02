@@ -18,7 +18,12 @@ import {
 	ApiInput,
 	RestApiOptionsBase,
 } from '../types';
-import { resolveApiUrl, createCancellableOperation } from '../utils';
+import {
+	resolveApiUrl,
+	createCancellableOperation,
+	parseUrl,
+	logger,
+} from '../utils';
 import { transferHandler } from './handler';
 
 const publicHandler = (
@@ -34,17 +39,29 @@ const publicHandler = (
 				apiName,
 			});
 		const { headers: invocationHeaders = {} } = apiOptions;
-		return transferHandler(amplify, {
-			url,
+		const headers = {
+			// custom headers from invocation options should precede library options
+			...libraryOptionsHeaders,
+			...invocationHeaders,
+		};
+		const signingServiceInfo = parseUrl(url);
+		logger.debug(
 			method,
-			headers: {
-				// custom headers from library options should be overwritten by invocation headers.
-				...libraryOptionsHeaders,
-				...invocationHeaders,
+			url,
+			headers,
+			`IAM signing options: ${JSON.stringify(signingServiceInfo)}`
+		);
+		return transferHandler(
+			amplify,
+			{
+				url,
+				method,
+				headers,
+				body: apiOptions?.body,
+				abortSignal,
 			},
-			body: apiOptions?.body,
-			abortSignal,
-		});
+			signingServiceInfo
+		);
 	});
 };
 

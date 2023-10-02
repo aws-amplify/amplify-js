@@ -5,6 +5,7 @@ import { HttpResponse } from '@aws-amplify/core/internals/aws-client-utils';
 import { CancelledError, RestApiError } from '../errors';
 import { Operation } from '../types';
 import { parseRestApiServiceError } from './serviceError';
+import { logger } from '.';
 
 /**
  * Create a cancellable operation conforming to the internal POST API interface.
@@ -20,7 +21,7 @@ export function createCancellableOperation(
  */
 export function createCancellableOperation(
 	handler: (signal: AbortSignal) => Promise<HttpResponse>
-): Promise<HttpResponse>;
+): Operation<HttpResponse>;
 
 /**
  * @internal
@@ -44,16 +45,20 @@ export function createCancellableOperation(
 			return response;
 		} catch (error) {
 			if (error.name === 'AbortError' || signal?.aborted === true) {
-				throw new CancelledError({
+				const cancelledError = new CancelledError({
 					name: error.name,
 					message: signal.reason ?? error.message,
 					underlyingError: error,
 				});
+				logger.debug(error);
+				throw cancelledError;
 			}
-			throw new RestApiError({
+			const restApiError = new RestApiError({
 				...error,
 				underlyingError: error,
 			});
+			logger.debug(restApiError);
+			throw restApiError;
 		}
 	};
 
