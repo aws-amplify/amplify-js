@@ -8,7 +8,11 @@ import {
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { post, cancel } from '../../src/common/internalPost';
+import {
+	post,
+	cancel,
+	updateRequestToBeCancellable,
+} from '../../src/common/internalPost';
 import { RestApiError, isCancelError } from '../../src/errors';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
@@ -53,6 +57,7 @@ describe('internal post', () => {
 					region: 'us-east-1',
 				},
 			},
+			abortController: new AbortController(),
 		});
 		expect(mockAuthenticatedHandler).toBeCalledWith(
 			{
@@ -72,6 +77,7 @@ describe('internal post', () => {
 					service: 'lambda',
 				},
 			},
+			abortController: new AbortController(),
 		});
 		expect(mockAuthenticatedHandler).toBeCalledWith(
 			{
@@ -88,6 +94,7 @@ describe('internal post', () => {
 			options: {
 				signingServiceInfo: {},
 			},
+			abortController: new AbortController(),
 		});
 		expect(mockAuthenticatedHandler).toBeCalledWith(
 			{
@@ -106,6 +113,7 @@ describe('internal post', () => {
 				body: { foo: 'bar' },
 				signingServiceInfo: {},
 			},
+			abortController: new AbortController(),
 		});
 		expect(mockAuthenticatedHandler).toBeCalledWith(
 			{
@@ -128,6 +136,7 @@ describe('internal post', () => {
 				body: formData,
 				signingServiceInfo: {},
 			},
+			abortController: new AbortController(),
 		});
 		expect(mockAuthenticatedHandler).toBeCalledWith(
 			{
@@ -145,6 +154,7 @@ describe('internal post', () => {
 	it('should call unauthenticatedHandler without signingServiceInfo', async () => {
 		await post(mockAmplifyInstance, {
 			url: apiGatewayUrl,
+			abortController: new AbortController(),
 		});
 		expect(mockUnauthenticatedHandler).toBeCalledWith(
 			{
@@ -165,6 +175,7 @@ describe('internal post', () => {
 				},
 				signingServiceInfo: {},
 			},
+			abortController: new AbortController(),
 		});
 		expect(mockUnauthenticatedHandler).toBeCalledWith(
 			expect.objectContaining({
@@ -186,6 +197,7 @@ describe('internal post', () => {
 				},
 				signingServiceInfo: {},
 			},
+			abortController: new AbortController(),
 		});
 		expect(mockUnauthenticatedHandler).toBeCalledWith(
 			expect.objectContaining({
@@ -207,13 +219,15 @@ describe('internal post', () => {
 				underLyingHandlerReject = reject;
 			})
 		);
+		const abortController = new AbortController();
 		const promise = post(mockAmplifyInstance, {
 			url: apiGatewayUrl,
+			abortController,
 		});
+		updateRequestToBeCancellable(promise, abortController);
 
 		// mock abort behavior
-		const abortSignal = mockUnauthenticatedHandler.mock.calls[0][1]
-			.abortSignal as AbortSignal;
+		const abortSignal = abortController.signal;
 		abortSignal.addEventListener('abort', () => {
 			const mockAbortError = new Error('AbortError');
 			mockAbortError.name = 'AbortError';
@@ -251,6 +265,7 @@ describe('internal post', () => {
 		try {
 			await post(mockAmplifyInstance, {
 				url: apiGatewayUrl,
+				abortController: new AbortController(),
 			});
 			fail('should throw RestApiError');
 		} catch (error) {

@@ -39,7 +39,7 @@ export function createCancellableOperation(
 			}
 			return response;
 		} catch (error) {
-			if (error.name === 'AbortError' && signal?.aborted === true) {
+			if (error.name === 'AbortError' || signal?.aborted === true) {
 				throw new CancelledError({
 					name: error.name,
 					message: signal.reason ?? error.message,

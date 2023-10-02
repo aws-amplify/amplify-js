@@ -28,4 +28,4 @@ export const post = (
 	return internalPost(getAmplifyServerContext(contextSpec).amplify, input);
 };
 
-export { cancel } from '../common/internalPost';
+export { cancel, updateRequestToBeCancellable } from '../common/internalPost';

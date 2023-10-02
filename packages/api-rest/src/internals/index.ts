@@ -22,4 +22,4 @@ export const post = (input: InternalPostInput) => {
 	return internalPost(Amplify, input);
 };
 
-export { cancel } from '../common/internalPost';
+export { cancel, updateRequestToBeCancellable } from '../common/internalPost';

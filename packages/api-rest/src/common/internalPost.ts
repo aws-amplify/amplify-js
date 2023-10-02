@@ -2,13 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
-import { HttpResponse } from '@aws-amplify/core/lib-esm/clients';
 
 import { InternalPostInput, RestApiResponse } from '../types';
 import { transferHandler } from './handler';
 import { createCancellableOperation } from '../utils';
 
-const cancelTokenMap = new WeakMap<Promise<RestApiResponse>, AbortController>();
+const cancelTokenMap = new WeakMap<Promise<any>, AbortController>();
 
 /**
  * @internal
@@ -59,7 +58,7 @@ export const cancel = (
 };
 
 export const updateRequestToBeCancellable = (
-	promise: Promise<HttpResponse>,
+	promise: Promise<any>,
 	controller: AbortController
 ) => {
 	cancelTokenMap.set(promise, controller);
