@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export interface BigIntegerInterface {
-	new (a?: any, b?: any): BigIntegerInterface;
+export interface AuthBigInteger {
+	new (a?: any, b?: any): AuthBigInteger;
 	subtract: Function;
 	add: Function;
 	multiply: Function;
