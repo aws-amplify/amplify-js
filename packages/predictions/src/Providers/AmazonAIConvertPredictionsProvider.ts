@@ -106,13 +106,16 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			return Promise.reject('No credentials');
 		}
 		const {
-			speechGenerator: { defaults: { VoiceId = '' } = {}, region = '' } = {},
+			speechGenerator: {
+				defaults: { voiceId: defaultVoiceId = '' } = {},
+				region = '',
+			} = {},
 		} = Amplify.getConfig().Predictions?.convert || {};
 
 		if (!input.textToSpeech.source) {
 			return Promise.reject('Source needs to be provided in the input');
 		}
-		const voiceId = input.textToSpeech.voiceId || VoiceId;
+		const voiceId = input.textToSpeech.voiceId || defaultVoiceId;
 		if (!region) {
 			return Promise.reject(
 				'Region was undefined. Did you enable speech generator using amplify CLI?'
