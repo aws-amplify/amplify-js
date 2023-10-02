@@ -1,9 +1,9 @@
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
 	Category,
-	Credentials,
 	PredictionsAction,
 	getAmplifyUserAgentObject,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/utils';
 import {
 	ComprehendClient,
 	DetectSyntaxCommand,
@@ -12,6 +12,16 @@ import {
 	DetectKeyPhrasesCommand,
 	DetectSentimentCommand,
 } from '@aws-sdk/client-comprehend';
+
+const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+const mockGetConfig = Amplify.getConfig as jest.Mock;
+
+jest.mock('@aws-amplify/core', () => ({
+	fetchAuthSession: jest.fn(),
+	Amplify: {
+		getConfig: jest.fn(),
+	},
+}));
 
 ComprehendClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof DetectEntitiesCommand) {
@@ -200,12 +210,15 @@ const credentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
-	identityId: 'identityId',
-	authenticated: true,
 };
+const identityId = 'identityId';
 
-jest.spyOn(Credentials, 'get').mockImplementation(() => {
-	return Promise.resolve(credentials);
+mockFetchAuthSession.mockResolvedValue({
+	credentials,
+	identityId,
+});
+mockGetConfig.mockReturnValue({
+	Predictions: { interpret: happyConfig },
 });
 
 const textToTest =
@@ -218,8 +231,6 @@ describe('Predictions interpret provider test', () => {
 	describe('interpretText tests', () => {
 		test('happy case credentials exist detectEntities', async () => {
 			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
-			predictionsProvider.configure(happyConfig);
-
 			const detectEntitiesSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 			expect.assertions(2);
 
@@ -249,8 +260,6 @@ describe('Predictions interpret provider test', () => {
 
 		test('happy case credentials exists detectDominantLanguage', async () => {
 			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
-			predictionsProvider.configure(happyConfig);
-
 			const dominantLanguageSpy = jest.spyOn(
 				ComprehendClient.prototype,
 				'send'
@@ -282,8 +291,6 @@ describe('Predictions interpret provider test', () => {
 
 		test('happy case credentials exists detect sentiment', async () => {
 			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
-			predictionsProvider.configure(happyConfig);
-
 			const sentimentSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 
 			expect.assertions(2);
@@ -320,8 +327,6 @@ describe('Predictions interpret provider test', () => {
 
 		test('happy case credentials exists detect syntax', async () => {
 			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
-			predictionsProvider.configure(happyConfig);
-
 			const syntaxSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 
 			expect.assertions(2);
@@ -368,8 +373,6 @@ describe('Predictions interpret provider test', () => {
 
 		test('happy case credentials exists detect key phrases', async () => {
 			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
-			predictionsProvider.configure(happyConfig);
-
 			const keyPhrasesSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 
 			expect.assertions(2);
@@ -404,7 +407,6 @@ describe('Predictions interpret provider test', () => {
 
 		test("happy case credentials type: 'ALL'", async () => {
 			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
-			predictionsProvider.configure(happyConfig);
 			await expect(
 				predictionsProvider.interpret({
 					text: {
@@ -480,7 +482,6 @@ describe('Predictions interpret provider test', () => {
 		test('interpret initializes a client with the correct custom user agent', async () => {
 			jest.spyOn(ComprehendClient.prototype, 'send');
 			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
-			predictionsProvider.configure(happyConfig);
 			await predictionsProvider.interpret({
 				text: {
 					source: {

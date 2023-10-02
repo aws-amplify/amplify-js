@@ -2,13 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /* tslint:disable:max-line-length */
 
-/**
- * Base types
- */
-export interface PredictionsOptions {
-	[key: string]: any;
-}
-
 export interface ProviderOptions {
 	providerName?: string;
 }
@@ -121,7 +114,7 @@ export interface TextToSpeechOutput {
 
 export interface StorageSource {
 	key: string;
-	level?: 'public' | 'private' | 'protected';
+	level?: 'guest' | 'private' | 'protected';
 	identityId?: string;
 }
 

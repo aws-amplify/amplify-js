@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	PredictionsOptions,
 	TranslateTextInput,
 	TranslateTextOutput,
 	TextToSpeechInput,
@@ -24,27 +23,14 @@ import {
 	AbstractInterpretPredictionsProvider,
 	AbstractPredictionsProvider,
 } from './types/Providers';
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 
 const logger = new Logger('Predictions');
 
 export class PredictionsClass {
-	private _options: PredictionsOptions;
-
-	private _convertPluggables: AbstractConvertPredictionsProvider[];
-	private _identifyPluggables: AbstractIdentifyPredictionsProvider[];
-	private _interpretPluggables: AbstractInterpretPredictionsProvider[];
-
-	/**
-	 * Initialize Predictions with AWS configurations
-	 * @param {PredictionsOptions} options - Configuration object for Predictions
-	 */
-	constructor(options: PredictionsOptions) {
-		this._options = options;
-		this._convertPluggables = [];
-		this._identifyPluggables = [];
-		this._interpretPluggables = [];
-	}
+	private _convertPluggables: AbstractConvertPredictionsProvider[] = [];
+	private _identifyPluggables: AbstractIdentifyPredictionsProvider[] = [];
+	private _interpretPluggables: AbstractInterpretPredictionsProvider[] = [];
 
 	public getModuleName() {
 		return 'Predictions';
@@ -72,9 +58,6 @@ export class PredictionsClass {
 		if (this.implementsInterpretPluggable(pluggable)) {
 			this._interpretPluggables.push(pluggable);
 			pluggableAdded = true;
-		}
-		if (pluggableAdded) {
-			this.configurePluggable(pluggable);
 		}
 	}
 
@@ -107,21 +90,6 @@ export class PredictionsClass {
 			pluggable => pluggable.getProviderName() !== providerName
 		);
 		return;
-	}
-
-	/**
-	 * To make both top level providers and category level providers work with same interface and configuration
-	 * this method duplicates Predictions config into parent level config (for top level provider) and
-	 * category level config (such as convert, identify etc) and pass both to each provider.
-	 */
-	configure(options: PredictionsOptions) {
-		let predictionsConfig = options ? options.predictions || options : {};
-		predictionsConfig = { ...predictionsConfig, ...options };
-		this._options = Object.assign({}, this._options, predictionsConfig);
-		logger.debug('configure Predictions', this._options);
-		this.getAllProviders().forEach(pluggable =>
-			this.configurePluggable(pluggable)
-		);
 	}
 
 	public interpret(
@@ -219,15 +187,6 @@ export class PredictionsClass {
 		];
 	}
 
-	private configurePluggable(pluggable: AbstractPredictionsProvider) {
-		const categoryConfig = Object.assign(
-			{},
-			this._options['predictions'], // Parent predictions config for the top level provider
-			this._options[pluggable.getCategory().toLowerCase()] // Actual category level config
-		);
-		pluggable.configure(categoryConfig);
-	}
-
 	private implementsConvertPluggable(
 		obj: any
 	): obj is AbstractConvertPredictionsProvider {
@@ -247,5 +206,4 @@ export class PredictionsClass {
 	}
 }
 
-export const Predictions = new PredictionsClass({});
-Amplify.register(Predictions);
+export const Predictions = new PredictionsClass();

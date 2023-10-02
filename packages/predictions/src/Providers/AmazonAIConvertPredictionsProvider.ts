@@ -15,14 +15,15 @@ import {
 	SpeechToTextOutput,
 	isBytesSource,
 } from '../types';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	Credentials,
 	ConsoleLogger as Logger,
 	Signer,
 	getAmplifyUserAgentObject,
 	Category,
 	PredictionsAction,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/utils';
+
 import {
 	EventStreamMarshaller,
 	MessageHeaderValue,
@@ -55,13 +56,13 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 				defaults: { sourceLanguage = '', targetLanguage = '' } = {},
 				region = '',
 			} = {},
-		} = this._config;
+		} = Amplify.getConfig().Predictions?.convert || {};
 
 		if (!region) {
 			return Promise.reject('region not configured for transcription');
 		}
 
-		const credentials = await Credentials.get();
+		const { credentials } = await fetchAuthSession();
 		if (!credentials) {
 			return Promise.reject('No credentials');
 		}
@@ -100,18 +101,21 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 	protected async convertTextToSpeech(
 		input: TextToSpeechInput
 	): Promise<TextToSpeechOutput> {
-		const credentials = await Credentials.get();
+		const { credentials } = await fetchAuthSession();
 		if (!credentials) {
 			return Promise.reject('No credentials');
 		}
 		const {
-			speechGenerator: { defaults: { VoiceId = '' } = {}, region = '' } = {},
-		} = this._config;
+			speechGenerator: {
+				defaults: { voiceId: defaultVoiceId = '' } = {},
+				region = '',
+			} = {},
+		} = Amplify.getConfig().Predictions?.convert || {};
 
 		if (!input.textToSpeech.source) {
 			return Promise.reject('Source needs to be provided in the input');
 		}
-		const voiceId = input.textToSpeech.voiceId || VoiceId;
+		const voiceId = input.textToSpeech.voiceId || defaultVoiceId;
 		if (!region) {
 			return Promise.reject(
 				'Region was undefined. Did you enable speech generator using amplify CLI?'
@@ -161,7 +165,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 	): Promise<SpeechToTextOutput> {
 		try {
 			logger.debug('starting transcription..');
-			const credentials = await Credentials.get();
+			const { credentials } = await fetchAuthSession();
 			if (!credentials) {
 				return Promise.reject('No credentials');
 			}
@@ -170,7 +174,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 					defaults: { language: languageCode = '' } = {},
 					region = '',
 				} = {},
-			} = this._config;
+			} = Amplify.getConfig().Predictions?.convert || {};
 			if (!region) {
 				return Promise.reject('region not configured for transcription');
 			}

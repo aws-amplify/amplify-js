@@ -12,7 +12,7 @@ import {
 	IdentifyLabelsOutput,
 	IdentifyEntitiesOutput,
 } from '../Predictions';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 const logger = new Logger('AbstractIdentifyPredictionsProvider');
 
 export abstract class AbstractIdentifyPredictionsProvider extends AbstractPredictionsProvider {

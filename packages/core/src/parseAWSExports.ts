@@ -38,6 +38,7 @@ export const parseAWSExports = (
 		aws_user_pools_web_client_id,
 		geo,
 		oauth,
+		predictions,
 	} = config;
 	const amplifyConfig: ResourcesConfig = {};
 
@@ -107,6 +108,24 @@ export const parseAWSExports = (
 					},
 			  }
 			: { ...geo };
+	}
+
+	// Predictions
+	if (predictions) {
+		const predictionsConfig = { ...predictions };
+
+		const { convert } = predictionsConfig || {};
+		if (convert?.speechGenerator?.defaults) {
+			// map VoiceId to voiceId in convert.speechGenerator.defaults
+			const { VoiceId: voiceId } =
+				predictionsConfig.convert.speechGenerator.defaults;
+			convert.speechGenerator.defaults = {
+				voiceId,
+				...convert.speechGenerator.defaults,
+			};
+			delete convert.speechGenerator.defaults.VoiceId;
+		}
+		amplifyConfig.Predictions = predictionsConfig;
 	}
 
 	return amplifyConfig;
