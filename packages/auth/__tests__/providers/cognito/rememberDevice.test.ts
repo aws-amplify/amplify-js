@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthError } from '../../../src/errors/AuthError';
-import { forgetDevice } from '../../../src/providers/cognito';
-import { ForgetDeviceException } from '../../../src/providers/cognito/types/errors';
+import { rememberDevice } from '../../../src/providers/cognito';
+import { UpdateDeviceStatusException } from '../../../src/providers/cognito/types/errors';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import * as TokenProvider from '../../../src/providers/cognito/tokenProvider';
 import { DeviceMetadata } from '../../../src/providers/cognito/tokenProvider/types';
@@ -31,11 +31,10 @@ const mockDeviceMetadata: DeviceMetadata = {
 	randomPassword: 'randomPassword',
 };
 
-describe('forgetDevice API happy path cases', () => {
+describe('rememberDevice API happy path cases', () => {
 	let fetchAuthSessionsSpy;
-	let forgetDeviceStatusClientSpy;
-	let getDeviceMetadataSpy;
-	let clearDeviceMetadataSpy;
+	let updateDeviceStatusClientSpy;
+	let tokenOrchestratorSpy;
 	beforeEach(() => {
 		fetchAuthSessionsSpy = jest
 			.spyOn(authUtils, 'fetchAuthSession')
@@ -48,44 +47,39 @@ describe('forgetDevice API happy path cases', () => {
 					};
 				}
 			);
-		forgetDeviceStatusClientSpy = jest
-			.spyOn(clients, 'forgetDevice')
+		updateDeviceStatusClientSpy = jest
+			.spyOn(clients, 'updateDeviceStatus')
 			.mockImplementationOnce(async () => {
 				return {
 					$metadata: {},
 				};
 			});
-		getDeviceMetadataSpy = jest
+		tokenOrchestratorSpy = jest
 			.spyOn(TokenProvider.tokenOrchestrator, 'getDeviceMetadata')
 			.mockImplementation(async () => mockDeviceMetadata);
-		clearDeviceMetadataSpy = jest
-			.spyOn(TokenProvider.tokenOrchestrator, 'clearDeviceMetadata')
-			.mockImplementation(async () => {});
 	});
 
 	afterEach(() => {
 		fetchAuthSessionsSpy.mockClear();
-		forgetDeviceStatusClientSpy.mockClear();
-		getDeviceMetadataSpy.mockClear();
-		clearDeviceMetadataSpy.mockClear();
+		updateDeviceStatusClientSpy.mockClear();
 	});
 
-	it('should call forgetDevice client with correct request', async () => {
-		expect.assertions(3);
-		await forgetDevice();
-		expect(forgetDeviceStatusClientSpy).toHaveBeenCalledWith(
+	it('should call updateDeviceStatus client with correct request', async () => {
+		expect.assertions(2);
+		await rememberDevice();
+		expect(updateDeviceStatusClientSpy).toHaveBeenCalledWith(
 			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({
 				AccessToken: mockedAccessToken,
 				DeviceKey: mockDeviceMetadata.deviceKey,
+				DeviceRememberedStatus: 'remembered',
 			})
 		);
-		expect(forgetDeviceStatusClientSpy).toBeCalledTimes(1);
-		expect(clearDeviceMetadataSpy).toBeCalled();
+		expect(updateDeviceStatusClientSpy).toBeCalledTimes(1);
 	});
 });
 
-describe('forgetDevice API error path cases', () => {
+describe('rememberDevice API error path cases', () => {
 	it('should raise service error', async () => {
 		expect.assertions(2);
 		jest
@@ -101,14 +95,18 @@ describe('forgetDevice API error path cases', () => {
 			);
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
 			mockJsonResponse(
-				buildMockErrorResponse(ForgetDeviceException.InvalidParameterException)
+				buildMockErrorResponse(
+					UpdateDeviceStatusException.InvalidParameterException
+				)
 			)
 		);
 		try {
-			await forgetDevice();
+			await rememberDevice();
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(ForgetDeviceException.InvalidParameterException);
+			expect(error.name).toBe(
+				UpdateDeviceStatusException.InvalidParameterException
+			);
 		}
 	});
 });
