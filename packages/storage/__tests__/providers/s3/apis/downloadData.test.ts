@@ -6,7 +6,7 @@ import { Amplify } from '@aws-amplify/core';
 import { getObject } from '../../../../src/providers/s3/utils/client';
 import { download } from '../../../../src/providers/s3';
 import { createDownloadTask } from '../../../../src/providers/s3/utils';
-import { DownloadDataOptions } from '../../../../src/providers/s3/types';
+import { DownloadOptions } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('../../../../src/providers/s3/utils');
@@ -96,7 +96,7 @@ describe('download', () => {
 					...options,
 					useAccelerateEndpoint: true,
 					onProgress,
-				} as DownloadDataOptions,
+				} as DownloadOptions,
 			});
 			const job = mockCreateDownloadTask.mock.calls[0][0].job;
 			await job();
