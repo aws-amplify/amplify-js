@@ -80,9 +80,9 @@ export class HubClass {
 		ampSymbol?: Symbol
 	): void;
 
-	dispatch<EventData extends EventDataMap>(
+	dispatch(
 		channel: string,
-		payload: HubPayload<EventData>,
+		payload: EventDataMap,
 		source?: string,
 		ampSymbol?: Symbol
 	): void;
