@@ -6,13 +6,14 @@ import { TrackerType, TrackerAttributes } from '../../../types/trackers';
 import {
 	updateProviderTrackers,
 	validateTrackerConfiguration,
-} from '../../../utils/trackerHelpers';
+} from '../../../utils';
 import { ConfigureAutoTrackInput } from '../types';
 import { record } from './record';
 
 // Configured Tracker instances for Pinpoint
 let configuredTrackers: Partial<Record<TrackerType, object>> = {};
 
+// TODO Add more inline documentation & examples
 /**
  * Configures automatic event tracking for Pinpoint.
  *
@@ -38,6 +39,12 @@ export const configureAutoTrack = (input: ConfigureAutoTrackInput): void => {
 		});
 	};
 
-	// Initialize or update trackers
-	updateProviderTrackers(input, configuredTrackers, emitTrackingEvent);
+	// Initialize or update this provider's trackers
+	updateProviderTrackers(
+		input.type,
+		input.enable,
+		emitTrackingEvent,
+		configuredTrackers,
+		input.options
+	);
 };

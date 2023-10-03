@@ -3,7 +3,7 @@
 
 import { TrackerInterface } from '../types/trackers';
 
-class EventRacker implements TrackerInterface {
+export class EventTracker implements TrackerInterface {
 	public configure() {}
 
 	public cleanup() {}

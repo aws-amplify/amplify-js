@@ -10,3 +10,5 @@ export {
 	getAnalyticsUserAgent,
 	getAnalyticsUserAgentString,
 } from './userAgent';
+export { updateProviderTrackers } from './trackerHelpers';
+export { validateTrackerConfiguration } from './trackerConfigHelpers';

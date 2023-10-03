@@ -1,23 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AnalyticsValidationErrorCode, assertValidationError } from '../errors';
-import { AnalyticsConfigureAutoTrackInput } from '../types';
-import { TrackerType, TrackerAttributes } from '../types/trackers';
-
-/**
- * Validates a tracker
- */
-export const validateTrackerConfiguration = (
-	input: AnalyticsConfigureAutoTrackInput
-) => {
-	assertValidationError(
-		input.type === 'event' ||
-			input.type === 'pageView' ||
-			input.type === 'session',
-		AnalyticsValidationErrorCode.InvalidTracker
-	);
-};
+import {
+	EventTrackingOpts,
+	PageViewTrackingOpts,
+	SessionTrackingOpts,
+	TrackerType,
+	TrackerAttributes,
+} from '../types/trackers';
 
 /**
  * Updates a provider's trackers as appropriate for the provided auto-track configuration.
@@ -26,20 +16,25 @@ export const validateTrackerConfiguration = (
  * This utility will mutate the provider's configured trackers via `providerTrackers`.
  */
 export const updateProviderTrackers = (
-	input: AnalyticsConfigureAutoTrackInput,
-	providerTrackers: Partial<Record<TrackerType, object>>,
+	trackerType: TrackerType,
+	enabled: boolean,
 	providerEventRecorder: (
 		eventName: string,
 		attributes: TrackerAttributes
-	) => void
+	) => void,
+	providerTrackers: Partial<Record<TrackerType, object>>,
+	trackerOptions?:
+		| EventTrackingOpts
+		| PageViewTrackingOpts
+		| SessionTrackingOpts
 ) => {
-	const currentTracker = providerTrackers[input.type];
+	const currentTracker = providerTrackers[trackerType];
 
-	if (!input.enable) {
+	if (!enabled) {
 		// Tracker was disabled, clean it up
 		if (currentTracker) {
 			// TODO call currentTracker.cleanup();
-			delete providerTrackers[input.type];
+			delete providerTrackers[trackerType];
 		}
 
 		return;

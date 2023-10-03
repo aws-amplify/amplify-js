@@ -9,6 +9,7 @@ export enum AnalyticsValidationErrorCode {
 	NoEventName = 'NoEventName',
 	NoRegion = 'NoRegion',
 	InvalidTracker = 'InvalidTracker',
+	UnsupportedPlatform = 'UnsupportedPlatform',
 }
 
 export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
@@ -27,5 +28,8 @@ export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
 		},
 		[AnalyticsValidationErrorCode.InvalidTracker]: {
 			message: 'Invalid tracker type specified.',
+		},
+		[AnalyticsValidationErrorCode.UnsupportedPlatform]: {
+			message: 'Only session tracking is supported on React Native.',
 		},
 	};

@@ -38,4 +38,17 @@ export type AnalyticsIdentifyUserInput<
  */
 export type AnalyticsConfigureAutoTrackInput = {
 	enable: boolean;
-} & (SessionTrackingOpts | PageViewTrackingOpts | EventTrackingOpts);
+} & (
+	| {
+			type: 'session';
+			options?: SessionTrackingOpts;
+	  }
+	| {
+			type: 'pageView';
+			options?: PageViewTrackingOpts;
+	  }
+	| {
+			type: 'event';
+			options?: EventTrackingOpts;
+	  }
+);

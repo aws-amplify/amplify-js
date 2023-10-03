@@ -3,7 +3,7 @@
 
 import { TrackerInterface } from '../types/trackers';
 
-class SessionTracker implements TrackerInterface {
+export class SessionTracker implements TrackerInterface {
 	public configure() {}
 
 	public cleanup() {}

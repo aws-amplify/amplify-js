@@ -3,7 +3,7 @@
 
 import { TrackerInterface } from '../types/trackers';
 
-class PageViewTracker implements TrackerInterface {
+export class PageViewTracker implements TrackerInterface {
 	public configure() {}
 
 	public cleanup() {}
