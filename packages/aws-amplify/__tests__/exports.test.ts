@@ -87,6 +87,7 @@ describe('aws-amplify Exports', () => {
 			expect(Object.keys(analyticsPersonalizeExports)).toMatchInlineSnapshot(`
 			Array [
 			  "record",
+			  "flushEvents",
 			]
 			`);
 		});
