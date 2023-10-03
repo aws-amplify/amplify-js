@@ -82,7 +82,7 @@ export class HubClass {
 
 	dispatch(
 		channel: string,
-		payload: EventDataMap,
+		payload: HubPayload,
 		source?: string,
 		ampSymbol?: Symbol
 	): void;
