@@ -21,7 +21,12 @@ import {
 	GraphQLOperation,
 	GraphQLOptions,
 } from '../types';
-import { post } from '@aws-amplify/api-rest/internals';
+import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
+import {
+	post,
+	cancel as cancelREST,
+	updateRequestToBeCancellable,
+} from '@aws-amplify/api-rest/internals';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 import { resolveConfig } from '../utils';
 
@@ -50,7 +55,7 @@ export class InternalGraphQLAPIClass {
 	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
 	Cache = Cache;
-	private _api = { post };
+	private _api = { post, updateRequestToBeCancellable };
 
 	/**
 	 * Initialize GraphQL API with AWS configuration
@@ -176,10 +181,16 @@ export class InternalGraphQLAPIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
+				const abortController = new AbortController();
 				const responsePromise = this._graphql<T>(
 					{ query, variables, authMode },
 					headers,
+					abortController,
 					customUserAgentDetails
+				);
+				this._api.updateRequestToBeCancellable(
+					responsePromise,
+					abortController
 				);
 				return responsePromise;
 			case 'subscription':
@@ -196,6 +207,7 @@ export class InternalGraphQLAPIClass {
 	private async _graphql<T = any>(
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
+		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
 		const { region: region, endpoint: appSyncGraphqlEndpoint } =
@@ -243,7 +255,7 @@ export class InternalGraphQLAPIClass {
 
 		let response;
 		try {
-			const { body: responsePayload } = await this._api.post({
+			const { body: responseBody } = await this._api.post({
 				url: new URL(endpoint),
 				options: {
 					headers,
@@ -253,9 +265,20 @@ export class InternalGraphQLAPIClass {
 						region,
 					},
 				},
+				abortController,
 			});
-			response = await responsePayload.json();
+
+			const result = { data: await responseBody.json() };
+
+			response = result;
 		} catch (err) {
+			// If the exception is because user intentionally
+			// cancelled the request, do not modify the exception
+			// so that clients can identify the exception correctly.
+			if (isCancelErrorREST(err)) {
+				throw err;
+			}
+
 			response = {
 				data: {},
 				errors: [new GraphQLError(err.message, null, null, null, null, err)],
@@ -269,6 +292,24 @@ export class InternalGraphQLAPIClass {
 		}
 
 		return response;
+	}
+
+	/**
+	 * Checks to see if an error thrown is from an api request cancellation
+	 * @param {any} error - Any error
+	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
+	 */
+	isCancelError(error: any): boolean {
+		return isCancelErrorREST(error);
+	}
+
+	/**
+	 * Cancels an inflight request. Only applicable for graphql queries and mutations
+	 * @param {any} request - request to cancel
+	 * @returns - A boolean indicating if the request was cancelled
+	 */
+	cancel(request: Promise<any>, message?: string): boolean {
+		return cancelREST(request, message);
 	}
 
 	private _graphqlSubscribe(

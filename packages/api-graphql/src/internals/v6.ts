@@ -103,4 +103,22 @@ export function graphql<
 	return result as any;
 }
 
+/**
+ * Cancels an inflight request. Only applicable for graphql queries and mutations
+ * @param {any} request - request to cancel
+ * @returns - A boolean indicating if the request was cancelled
+ */
+export function cancel(promise: Promise<any>, message?: string): boolean {
+	return GraphQLAPI.cancel(promise, message);
+}
+
+/**
+ * Checks to see if an error thrown is from an api request cancellation
+ * @param {any} error - Any error
+ * @returns - A boolean indicating if the error was from an api request cancellation
+ */
+export function isCancelError(error: any): boolean {
+	return GraphQLAPI.isCancelError(error);
+}
+
 export { GraphQLOptionsV6, GraphQLResponseV6 };
