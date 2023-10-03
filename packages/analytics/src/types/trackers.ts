@@ -14,7 +14,7 @@ export type PageViewTrackingOpts = {
 
 export type EventTrackingOpts = {
 	attributes?: TrackerAttributes;
-	events?: DOMEvents[];
+	events?: DOMEvent[];
 	selectorPrefix?: string;
 };
 
@@ -27,7 +27,7 @@ export type TrackerEventRecorder = (
 	attributes: TrackerAttributes
 ) => void;
 
-export type DOMEvents = keyof GlobalEventHandlersEventMap;
+export type DOMEvent = keyof GlobalEventHandlersEventMap;
 
 export interface TrackerInterface {
 	configure(eventRecorder: TrackerEventRecorder, options?: object): void;
