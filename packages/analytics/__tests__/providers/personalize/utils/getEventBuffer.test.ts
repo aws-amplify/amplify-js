@@ -1,16 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getEventBuffer } from '../../../../src/providers/kinesis-firehose/utils';
 import { EventBuffer } from '../../../../src/utils';
 import {
 	mockBufferConfig,
-	mockCredentialConfig, mockKinesisConfig,
+	mockKinesisConfig,
+	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
+import { getEventBuffer } from '../../../../src/providers/personalize/utils';
 
 jest.mock('../../../../src/utils');
 
-describe('KinesisFirehose Provider Util: getEventBuffer', () => {
+describe('Personalize Provider Util: getEventBuffer', () => {
 	const mockEventBuffer = EventBuffer as jest.Mock;
 
 	afterEach(() => {
