@@ -7,9 +7,6 @@ import * as typedSubscriptions from './fixtures/with-types/subscriptions';
 import * as untypedQueries from './fixtures/without-types/queries';
 import * as untypedMutations from './fixtures/without-types/mutations';
 import * as untypedSubscriptions from './fixtures/without-types/subscriptions';
-import * as v6typedQueries from './fixtures/with-v6-codegen-types/queries';
-import * as v6typedMutations from './fixtures/with-v6-codegen-types/mutations';
-import * as v6typedSubscriptions from './fixtures/with-v6-codegen-types/subscriptions';
 import { from } from 'rxjs';
 import {
 	expectGet,
@@ -24,6 +21,7 @@ import {
 	GraphqlSubscriptionMessage,
 	GraphQLQuery,
 	GraphQLSubscription,
+	DeeplyPartial,
 } from '../src/types';
 
 import {
@@ -33,9 +31,9 @@ import {
 	GetThreadQuery,
 	ListThreadsQuery,
 	OnCreateThreadSubscription,
+	Thread,
+	Comment,
 } from './fixtures/with-types/API';
-
-import * as V6Models from './fixtures/with-v6-codegen-types/API';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -315,6 +313,212 @@ describe('client', () => {
 					expect(message.data?.onCreateThread).toEqual(
 						graphqlMessage.data.onCreateThread
 					);
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+		});
+	});
+
+	describe('type-tagged graphql with util type adapter', () => {
+		test('create', async () => {
+			const threadToCreate = { topic: 'a very engaging discussion topic' };
+
+			const graphqlResponse = {
+				data: {
+					createThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToCreate,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(() => graphqlResponse);
+
+			// Customers should normally omit the type. Making it explicit to ensure the test
+			// fails if the returned changes.
+			const thread: DeeplyPartial<Thread> = (
+				await client.graphql({
+					query: typedMutations.createThread,
+					authMode: 'apiKey',
+					variables: {
+						input: threadToCreate,
+					},
+				})
+			).data.createThread;
+		});
+
+		test('update', async () => {
+			const threadToUpdate = {
+				id: 'abc',
+				topic: 'a new (but still very stimulating) topic',
+			};
+
+			const graphqlResponse = {
+				data: {
+					updateThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToUpdate,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(() => graphqlResponse);
+
+			// Customers should normally omit the type. Making it explicit to ensure the test
+			// fails if the returned changes.
+			const thread: DeeplyPartial<Thread> = (
+				await client.graphql({
+					query: typedMutations.updateThread,
+					variables: {
+						input: threadToUpdate,
+					},
+					authMode: 'apiKey',
+				})
+			).data.updateThread;
+		});
+
+		test('delete', async () => {
+			const threadToDelete = { id: 'abc' };
+
+			const graphqlResponse = {
+				data: {
+					deleteThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToDelete,
+						topic: 'not a very interesting topic (hence the deletion)',
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(() => graphqlResponse);
+
+			const thread: DeeplyPartial<Thread> = (
+				await client.graphql({
+					query: typedMutations.deleteThread,
+					variables: {
+						input: threadToDelete,
+					},
+					authMode: 'apiKey',
+				})
+			).data.deleteThread;
+		});
+
+		test('get', async () => {
+			const threadToGet = {
+				id: 'some-thread-id',
+				topic: 'something reasonably interesting',
+			};
+
+			const graphqlVariables = { id: 'some-thread-id' };
+
+			const graphqlResponse = {
+				data: {
+					getThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToGet,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(() => graphqlResponse);
+
+			const thread: DeeplyPartial<Thread> = (
+				await client.graphql({
+					query: typedQueries.getThread,
+					variables: graphqlVariables,
+					authMode: 'apiKey',
+				})
+			).data.getThread!;
+		});
+
+		test('list', async () => {
+			const threadsToList = [
+				{
+					__typename: 'Thread',
+					...serverManagedFields,
+					topic: 'really cool stuff',
+				},
+			];
+
+			const graphqlVariables = {
+				filter: {
+					topic: { contains: 'really cool stuff' },
+				},
+				nextToken: null,
+			};
+
+			const graphqlResponse = {
+				data: {
+					listThreads: {
+						items: threadsToList,
+						nextToken: null,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(() => graphqlResponse);
+
+			const threads: DeeplyPartial<Thread>[] = (
+				await client.graphql({
+					query: typedQueries.listThreads,
+					variables: graphqlVariables,
+					authMode: 'apiKey',
+				})
+			).data.listThreads;
+		});
+
+		test('subscribe', done => {
+			const threadToSend = {
+				__typename: 'Thread',
+				...serverManagedFields,
+				topic: 'really cool stuff',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onCreateThread: threadToSend,
+				},
+			};
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			const graphqlVariables = {
+				filter: {
+					topic: { contains: 'really cool stuff' },
+				},
+			};
+
+			const result = client.graphql({
+				query: typedSubscriptions.onCreateThread,
+				variables: graphqlVariables,
+				authMode: 'apiKey',
+			});
+
+			const threads: DeeplyPartial<Thread>[] = [];
+			// const threads: Thread[] = [];
+
+			result.subscribe({
+				next(message) {
+					threads.push(message.data.onCreateThread);
 					done();
 				},
 				error(error) {
@@ -876,430 +1080,6 @@ describe('client', () => {
 			});
 
 			// Nothing to assert. Test is just intended to fail if types misalign.
-		});
-	});
-
-	/**
-	 * This section ensures our v6 types don't *regress* from the v5 experience.
-	 * It should be mostly-identical to the "type-tagged graphql" section, but perhaps
-	 * with a few fewer conditional accessor
-	 */
-	describe('v6-type-tagged graphql', () => {
-		test('create', async () => {
-			const threadToCreate = { topic: 'a very engaging discussion topic' };
-
-			const graphqlResponse = {
-				data: {
-					createThread: {
-						__typename: 'Thread',
-						...serverManagedFields,
-						...threadToCreate,
-					},
-				},
-			};
-
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
-
-			// Customers should normally omit the type. Making it explicit to ensure the test
-			// fails if the returned changes.
-			const result: GraphQLResult<V6Models.CreateThreadMutation> =
-				await client.graphql({
-					query: v6typedMutations.createThread,
-					authMode: 'apiKey',
-					variables: {
-						input: threadToCreate,
-					},
-				});
-
-			// Customers should normally omit the type. Making it explicit to ensure the test
-			// fails if the returned changes.
-			const thread: V6Models.CreateThreadMutation['createThread'] =
-				result.data?.createThread;
-			const errors = result.errors;
-
-			expectMutation(spy, 'createThread', threadToCreate);
-			expect(errors).toBe(undefined);
-			expect(thread).toEqual(graphqlResponse.data.createThread);
-		});
-
-		test('update', async () => {
-			const threadToUpdate = {
-				id: 'abc',
-				topic: 'a new (but still very stimulating) topic',
-			};
-
-			const graphqlResponse = {
-				data: {
-					updateThread: {
-						__typename: 'Thread',
-						...serverManagedFields,
-						...threadToUpdate,
-					},
-				},
-			};
-
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
-
-			// Customers should normally omit the type. Making it explicit to ensure the test
-			// fails if the returned changes.
-			const result: GraphQLResult<V6Models.UpdateThreadMutation> =
-				await client.graphql({
-					query: v6typedMutations.updateThread,
-					variables: {
-						input: threadToUpdate,
-					},
-					authMode: 'apiKey',
-				});
-
-			// Customers should normally omit the type. Making it explicit to ensure the test
-			// fails if the returned changes.
-			const thread: V6Models.UpdateThreadMutation['updateThread'] =
-				result.data?.updateThread;
-			const errors = result.errors;
-
-			expectMutation(spy, 'updateThread', threadToUpdate);
-			expect(errors).toBe(undefined);
-			expect(thread).toEqual(graphqlResponse.data.updateThread);
-		});
-
-		test('delete', async () => {
-			const threadToDelete = { id: 'abc' };
-
-			const graphqlResponse = {
-				data: {
-					deleteThread: {
-						__typename: 'Thread',
-						...serverManagedFields,
-						...threadToDelete,
-						topic: 'not a very interesting topic (hence the deletion)',
-					},
-				},
-			};
-
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
-
-			// Customers should normally omit the type. Making it explicit to ensure the test
-			// fails if the returned changes.
-			const result: GraphQLResult<V6Models.DeleteThreadMutation> =
-				await client.graphql({
-					query: v6typedMutations.deleteThread,
-					variables: {
-						input: threadToDelete,
-					},
-					authMode: 'apiKey',
-				});
-
-			// Customers should normally omit the type. Making it explicit to ensure the test
-			// fails if the returned changes.
-			const thread: V6Models.DeleteThreadMutation['deleteThread'] =
-				result.data?.deleteThread;
-			const errors = result.errors;
-
-			expectMutation(spy, 'deleteThread', threadToDelete);
-			expect(errors).toBe(undefined);
-			expect(thread).toEqual(graphqlResponse.data.deleteThread);
-		});
-
-		test('get', async () => {
-			const threadToGet = {
-				id: 'some-thread-id',
-				topic: 'something reasonably interesting',
-			};
-
-			const graphqlVariables = { id: 'some-thread-id' };
-
-			const graphqlResponse = {
-				data: {
-					getThread: {
-						__typename: 'Thread',
-						...serverManagedFields,
-						...threadToGet,
-					},
-				},
-			};
-
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
-
-			// Customers should normally omit the type. Making it explicit to ensure the test
-			// fails if the returned changes.
-			const result: GraphQLResult<V6Models.GetThreadQuery> =
-				await client.graphql({
-					query: v6typedQueries.getThread,
-					variables: graphqlVariables,
-					authMode: 'apiKey',
-				});
-
-			// Customers should normally omit the type. Making it explicit to ensure the test
-			// fails if the returned changes.
-			const thread: V6Models.GetThreadQuery['getThread'] =
-				result.data?.getThread;
-			const errors = result.errors;
-
-			expectGet(spy, 'getThread', graphqlVariables);
-			expect(errors).toBe(undefined);
-			expect(thread).toEqual(graphqlResponse.data.getThread);
-		});
-
-		test('list', async () => {
-			const threadsToList = [
-				{
-					__typename: 'Thread',
-					...serverManagedFields,
-					topic: 'really cool stuff',
-				},
-			];
-
-			const graphqlVariables = {
-				filter: {
-					topic: { contains: 'really cool stuff' },
-				},
-				nextToken: null,
-			};
-
-			const graphqlResponse = {
-				data: {
-					listThreads: {
-						items: threadsToList,
-						nextToken: null,
-					},
-				},
-			};
-
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
-
-			// Customers should normally omit the type. Making it explicit to ensure the test
-			// fails if the returned changes.
-			const result: GraphQLResult<V6Models.ListThreadsQuery> =
-				await client.graphql({
-					query: v6typedQueries.listThreads,
-					variables: graphqlVariables,
-					authMode: 'apiKey',
-				});
-
-			// Customers should normally omit the type. Making it explicit to ensure the test
-			// fails if the returned changes.
-			const listThreads: V6Models.ListThreadsQuery['listThreads'] =
-				result.data?.listThreads;
-			const { items, nextToken } = listThreads || {};
-			const errors = result.errors;
-
-			expectList(spy, 'listThreads', graphqlVariables);
-			expect(errors).toBe(undefined);
-			expect(items).toEqual(graphqlResponse.data.listThreads.items);
-		});
-
-		test('subscribe', done => {
-			const threadToSend = {
-				__typename: 'Thread',
-				...serverManagedFields,
-				topic: 'really cool stuff',
-			};
-
-			const graphqlMessage = {
-				data: {
-					onCreateThread: threadToSend,
-				},
-			};
-
-			const spy = jest.fn(() => from([graphqlMessage]));
-			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
-
-			const graphqlVariables = {
-				filter: {
-					topic: { contains: 'really cool stuff' },
-				},
-			};
-
-			// Customers should normally omit the type. Making it explicit to ensure the test
-			// fails if the returned changes.
-			const result: GraphqlSubscriptionResult<V6Models.OnCreateThreadSubscription> =
-				client.graphql({
-					query: v6typedSubscriptions.onCreateThread,
-					variables: graphqlVariables,
-					authMode: 'apiKey',
-				});
-
-			result.subscribe({
-				// Customers should normally omit the type. Making it explicit to ensure the test
-				// fails if the returned changes.
-				next(
-					message: GraphqlSubscriptionMessage<V6Models.OnCreateThreadSubscription>
-				) {
-					expectSub(spy, 'onCreateThread', graphqlVariables);
-					expect(message.data?.onCreateThread).toEqual(
-						graphqlMessage.data.onCreateThread
-					);
-					done();
-				},
-				error(error) {
-					expect(error).toBeUndefined();
-					done('bad news!');
-				},
-			});
-		});
-	});
-
-	describe('v6-type-tagged graphql type enhancements', () => {
-		test('create response matches base type', async () => {
-			// we make sure that our result fix the definition of the result from the op.
-			// strictly speaking, we don't need to literally define an object here. it's
-			// defined for demonstrative purposes.
-			const resultObject: V6Models.CreateCommentMutation = {
-				createComment: {
-					__typename: 'Comment',
-					...serverManagedFields,
-					body: 'comment body',
-					thread: {
-						__typename: 'Thread',
-						...serverManagedFields,
-					},
-					threadCommentsId: 'some id',
-				},
-			};
-
-			const spy = jest.fn(() => from([resultObject]));
-			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
-
-			const result = await client.graphql({
-				query: v6typedMutations.createComment,
-			});
-
-			// we make sure the result can be assigned to the base type without type errors.
-			const v6Comment: V6Models.Comment = result.data?.createComment!;
-		});
-
-		test('update response matches base type', async () => {
-			// we make sure that our result fix the definition of the result from the op.
-			// strictly speaking, we don't need to literally define an object here. it's
-			// defined for demonstrative purposes.
-			const resultObject: V6Models.UpdateCommentMutation = {
-				updateComment: {
-					__typename: 'Comment',
-					...serverManagedFields,
-					body: 'comment body',
-					thread: {
-						__typename: 'Thread',
-						...serverManagedFields,
-					},
-					threadCommentsId: 'some id',
-				},
-			};
-
-			const spy = jest.fn(() => from([resultObject]));
-			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
-
-			const result = await client.graphql({
-				query: v6typedMutations.updateComment,
-			});
-
-			// we make sure the result can be assigned to the base type without type errors.
-			const v6Comment: V6Models.Comment = result.data?.updateComment!;
-		});
-
-		test('get response matches base type', async () => {
-			// we make sure that our result fix the definition of the result from the op.
-			// strictly speaking, we don't need to literally define an object here. it's
-			// defined for demonstrative purposes.
-			const resultObject: V6Models.GetCommentQuery = {
-				getComment: {
-					__typename: 'Comment',
-					...serverManagedFields,
-					body: 'comment body',
-					thread: {
-						__typename: 'Thread',
-						...serverManagedFields,
-					},
-					threadCommentsId: 'some id',
-				},
-			};
-
-			const spy = jest.fn(() => from([resultObject]));
-			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
-
-			const result = await client.graphql({
-				query: v6typedQueries.getComment,
-			});
-
-			// we make sure the result can be assigned to the base type without type errors.
-			const v6Comment: V6Models.Comment = result.data?.getComment!;
-		});
-
-		test('list response matches base type', async () => {
-			// we make sure that our result fix the definition of the result from the op.
-			// strictly speaking, we don't need to literally define an object here. it's
-			// defined for demonstrative purposes.
-			const resultObject: V6Models.ListCommentsQuery = {
-				listComments: {
-					__typename: 'ModelCommentConnection',
-					items: [
-						{
-							__typename: 'Comment',
-							...serverManagedFields,
-							body: 'comment body',
-							thread: {
-								__typename: 'Thread',
-								...serverManagedFields,
-							},
-							threadCommentsId: 'some id',
-						},
-					],
-				},
-			};
-
-			const spy = jest.fn(() => from([resultObject]));
-			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
-
-			const result = await client.graphql({
-				query: v6typedQueries.listComments,
-			});
-
-			// we make sure the result can be assigned to the base type without type errors.
-			const v6Comments: V6Models.Comment[] = result.data?.listComments?.items!;
-		});
-
-		test('subscription message matches base type', async done => {
-			const responseObject: V6Models.OnCreateCommentSubscription = {
-				onCreateComment: {
-					__typename: 'Comment',
-					...serverManagedFields,
-					body: 'a body',
-					threadCommentsId: 'asdf',
-					thread: {
-						__typename: 'Thread',
-						...serverManagedFields,
-					},
-				},
-			};
-
-			const spy = jest.fn(() => from([responseObject]));
-			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
-
-			const result = client.graphql({
-				query: v6typedSubscriptions.onCreateComment,
-			});
-
-			result.subscribe({
-				// Customers should normally omit the type. Making it explicit to ensure the test
-				// fails if the returned changes.
-				next(message) {
-					const v6Comment: V6Models.Comment = message.data?.onCreateComment!;
-					done();
-				},
-				error(error) {
-					expect(error).toBeUndefined();
-					done('bad news!');
-				},
-			});
 		});
 	});
 });

@@ -3,7 +3,8 @@
 	"compilerOptions": {
 		"importHelpers": true,
 		"strict": false,
-		"noImplicitAny": false,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
 		"skipLibCheck": true
 	},
 	"include": ["./src"]
