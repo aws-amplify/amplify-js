@@ -70,6 +70,6 @@ export const identifyUser = async ({
 		userAttributes,
 		userId,
 		userProfile,
-		userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.UpdateEndpoint),
+		userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.IdentifyUser),
 	});
 };

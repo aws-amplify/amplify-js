@@ -115,7 +115,7 @@ export default abstract class AWSPinpointProviderCommon
 		} else {
 			customUserAgentDetails = {
 				category: Category.InAppMessaging,
-				action: InAppMessagingAction.UpdateEndpoint,
+				action: InAppMessagingAction.IdentifyUser,
 			};
 		}
 

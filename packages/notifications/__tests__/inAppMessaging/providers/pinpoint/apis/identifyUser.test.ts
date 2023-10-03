@@ -7,6 +7,7 @@ import {
 	resolveConfig,
 	getInAppMessagingUserAgentString,
 	CATEGORY,
+	CHANNEL_TYPE,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
 
@@ -42,7 +43,7 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 		mockUpdateEndpoint.mockClear();
 	});
 
-	it('passes through parameter along with Analytics boilerplate to core Pinpoint identifyUser API', async () => {
+	it('passes through parameters to core Pinpoint updateEndpoint API', async () => {
 		const input: IdentifyUserInput = {
 			userId: 'user-id',
 			userProfile: {
@@ -59,25 +60,32 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 			...input,
 			...credentials,
 			...config,
+			channelType: CHANNEL_TYPE,
 			category: CATEGORY,
 			userAgentValue,
 		});
 	});
 
-	it('passes through service options along with Analytics boilerplate to core Pinpoint identifyUser API', async () => {
+	it('passes through service options along with input and other params to core Pinpoint updateEndpoint API', async () => {
 		const userAttributes = { hobbies: ['biking', 'climbing'] };
 		const input: IdentifyUserInput = {
 			userId: 'user-id',
 			userProfile: {},
 		};
 		const options: IdentifyUserInput['options'] = {
-			serviceOptions: { userAttributes },
+			serviceOptions: {
+				address: 'test-address',
+				optOut: 'NONE',
+				userAttributes,
+			},
 		};
 		await identifyUser({ ...input, options });
 		expect(mockUpdateEndpoint).toBeCalledWith({
 			...input,
+			...options.serviceOptions,
 			...credentials,
 			...config,
+			channelType: CHANNEL_TYPE,
 			category: CATEGORY,
 			userAgentValue,
 			userAttributes,

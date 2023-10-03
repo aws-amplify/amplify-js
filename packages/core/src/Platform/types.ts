@@ -41,7 +41,7 @@ export enum Category {
 
 export enum AnalyticsAction {
 	Record = '1',
-	UpdateEndpoint = '2',
+	IdentifyUser = '2',
 }
 export enum ApiAction {
 	GraphQl = '1',
@@ -97,7 +97,7 @@ export enum GeoAction {
 }
 export enum InAppMessagingAction {
 	SyncMessages = '1',
-	UpdateEndpoint = '2',
+	IdentifyUser = '2',
 }
 export enum InteractionsAction {
 	None = '0',

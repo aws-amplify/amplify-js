@@ -6,6 +6,7 @@ import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
 import { InAppMessagingValidationErrorCode } from '../../../errors';
 import {
 	CATEGORY,
+	CHANNEL_TYPE,
 	getInAppMessagingUserAgentString,
 	resolveConfig,
 	resolveCredentials,
@@ -42,7 +43,7 @@ import { IdentifyUserInput } from '../types';
  *
  * @example
  * ```ts
- * // Identify a user with Pinpoint with some additional demographics
+ * // Identify a user with Pinpoint specific options
  * await identifyUser({
  *     userId,
  *     userProfile: {
@@ -54,7 +55,16 @@ import { IdentifyUserInput } from '../types';
  *             platform: 'ios',
  *             timezone: 'America/Los_Angeles'
  *         }
- *     }
+ *     },
+ *     options: {
+ *         serviceOptions: {
+ *             address: 'device-address',
+ *             optOut: 'NONE',
+ * 			   userAttributes: {
+ * 			      interests: ['food']
+ * 			   },
+ *         },
+ *     },
  * });
  */
 export const identifyUser = async ({
@@ -64,8 +74,11 @@ export const identifyUser = async ({
 }: IdentifyUserInput): Promise<void> => {
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
-	const { userAttributes } = options?.serviceOptions ?? {};
+	const { address, optOut, userAttributes } = options?.serviceOptions ?? {};
 	updateEndpoint({
+		address,
+		channelType: CHANNEL_TYPE,
+		optOut,
 		appId,
 		category: CATEGORY,
 		credentials,
@@ -75,7 +88,7 @@ export const identifyUser = async ({
 		userId,
 		userProfile,
 		userAgentValue: getInAppMessagingUserAgentString(
-			InAppMessagingAction.UpdateEndpoint
+			InAppMessagingAction.IdentifyUser
 		),
 	});
 };
