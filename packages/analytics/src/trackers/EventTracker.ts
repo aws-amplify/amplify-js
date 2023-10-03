@@ -63,6 +63,17 @@ export class EventTracker implements TrackerInterface {
 	}
 
 	private handleDocEvent(event: Event) {
+		/**
+		 * Example DOM element:
+		 *
+		 * ```
+		 * <button
+		 *   data-amplify-analytics-on="click"
+		 *   data-amplify-analytics-name="click"
+		 *   data-amplify-analytics-attrs="attr1:attr1_value,attr2:attr2_value"
+		 * />
+		 * ```
+		 */
 		const triggerSelector = `['${this.options.selectorPrefix}on]`;
 		const attrSelector = `[${this.options.selectorPrefix}attrs]`;
 		const eventNameSelector = `[${this.options.selectorPrefix}name]`;
@@ -104,7 +115,7 @@ export class EventTracker implements TrackerInterface {
 					elementAttributes
 				);
 
-				logger.debug('Recording automatically tracked event', {
+				logger.debug('Recording automatically tracked DOM event', {
 					eventName,
 					attributes,
 				});
