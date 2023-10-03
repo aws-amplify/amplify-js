@@ -258,6 +258,12 @@
 			"limit": "70.00 kB"
 		},
 		{
+			"name": "[API] REST API handlers",
+			"path": "./lib-esm/api/index.js",
+			"import": "{ get, post, put, del, patch, head, isCancelError }",
+			"limit": "13.63 kB"
+		},
+		{
 			"name": "[Auth] signUp (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signUp }",
