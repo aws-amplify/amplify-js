@@ -3,7 +3,7 @@
 
 import { fetchDevices } from '../../../src/providers/cognito';
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import { AmplifyV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import * as cogIdentityProviderClients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import {
 	ListDevicesCommandInput,
@@ -11,8 +11,8 @@ import {
 } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { deviceManagementAPIConstants } from './testUtils/deviceManagementAPIConstants';
 
-const fetchAuthSessionSpy = jest.spyOn(AmplifyV6.Auth, 'fetchAuthSession');
-const configSpy = jest.spyOn(AmplifyV6, 'getConfig');
+const fetchAuthSessionSpy = jest.spyOn(Amplify.Auth, 'fetchAuthSession');
+const configSpy = jest.spyOn(Amplify, 'getConfig');
 const listDevicesSpy = jest.spyOn(cogIdentityProviderClients, 'listDevices');
 
 describe('fetchDevices API Happy Path Cases:', () => {

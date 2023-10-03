@@ -1,16 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6, fetchAuthSession } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { fetchAuthSession } from '../../../';
+import { FetchDevicesOutput } from '../types';
 import { listDevices } from '../utils/clients/CognitoIdentityProvider';
-import { AuthError } from '../../../errors/AuthError';
-import {
-	DeviceType,
-	ListDevicesCommandInput,
-} from '../utils/clients/CognitoIdentityProvider/types';
-import { AWSAuthDevice } from '../../../types/models';
+import { DeviceType } from '../utils/clients/CognitoIdentityProvider/types';
 import { assertAuthTokens } from '../utils/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { ListDevicesException } from '../types/errors';
 
 // Cognito Documentation for max device
 // tslint:disable-next-line:max-line-length
@@ -20,58 +19,63 @@ const MAX_DEVICES = 60;
 /**
  * Fetch devices associated with an authenticated user
  *
- * @returns {AWSAuthDevice[]}
- * @throws validation: {@link InvalidAuthTokens}
- * @throws validation: {@link ListDevicesException}
- *
- * @throws {@link PasswordResetRequiredException}
- *
- * @throws {@link NotAuthorizedException}
+ * @returns FetchDevicesOutput
+ * @throws {@link ListDevicesException}
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function fetchDevices(): Promise<AWSAuthDevice[]> {
-	const session = await fetchAuthSession({});
-	assertAuthTokens(session.tokens);
+export async function fetchDevices(): Promise<FetchDevicesOutput> {
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	assertTokenProviderConfig(authConfig);
 
-	const requestParams: ListDevicesCommandInput = {
-		AccessToken: session.tokens.accessToken.toString(),
-		Limit: MAX_DEVICES,
-	};
+	const { tokens } = await fetchAuthSession();
+	assertAuthTokens(tokens);
 
-	const authConfig = AmplifyV6.getConfig().Auth;
-	const region = getRegion(authConfig?.userPoolId);
+	const response = await listDevices(
+		{ region: getRegion(authConfig.userPoolId) },
+		{
+			AccessToken: tokens.accessToken.toString(),
+			Limit: MAX_DEVICES,
+		}
+	);
+	return _fetchDevices(response.Devices ?? []);
+}
 
-	const res = await listDevices({ region }, requestParams);
-	const devices: DeviceType[] = res.Devices ?? [];
-
-	return devices.map(device => {
-		if (device.DeviceKey && device.DeviceAttributes) {
-			let deviceName: string | undefined;
-			const deviceInfo: AWSAuthDevice = {
-				deviceId: device.DeviceKey,
-				deviceName: '',
-				attributes: device.DeviceAttributes.reduce((attrs, { Name, Value }) => {
+const _fetchDevices = async (
+	devices: DeviceType[]
+): Promise<FetchDevicesOutput> => {
+	return devices.map(
+		({
+			DeviceKey: id = '',
+			DeviceAttributes = [],
+			DeviceCreateDate,
+			DeviceLastModifiedDate,
+			DeviceLastAuthenticatedDate,
+		}) => {
+			let name: string | undefined;
+			const attributes = DeviceAttributes.reduce(
+				(attrs: any, { Name, Value }) => {
 					if (!!Name && !!Value) {
-						if (Name === 'device_name') deviceName = Value;
+						if (Name === 'device_name') name = Value;
 						attrs[Name] = Value;
 					}
 					return attrs;
-				}, {}),
+				},
+				{}
+			);
+			return {
+				id,
+				name,
+				attributes,
+				createDate: DeviceCreateDate
+					? new Date(DeviceCreateDate * 1000)
+					: undefined,
+				lastModifiedDate: DeviceLastModifiedDate
+					? new Date(DeviceLastModifiedDate * 1000)
+					: undefined,
+				lastAuthenticatedDate: DeviceLastAuthenticatedDate
+					? new Date(DeviceLastAuthenticatedDate * 1000)
+					: undefined,
 			};
-			if (!!deviceName) {
-				deviceInfo.deviceName = deviceName;
-			}
-			if (device.DeviceCreateDate)
-				deviceInfo.createDate = device.DeviceCreateDate;
-			if (device.DeviceLastAuthenticatedDate)
-				deviceInfo.lastAuthenticatedDate = device.DeviceLastAuthenticatedDate;
-			if (device.DeviceLastModifiedDate)
-				deviceInfo.lastModifiedDate = device.DeviceLastModifiedDate;
-			return deviceInfo;
-		} else {
-			throw new AuthError({
-				name: 'ListDevicesException',
-				message: `DeviceKey or DeviceAttributes was undefined`,
-			});
 		}
-	});
-}
+	);
+};

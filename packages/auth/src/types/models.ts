@@ -276,18 +276,10 @@ export type AuthUser = {
 	userId: string;
 };
 
-// TODO(V6): Decide which type to keep, this or the IAuthDevice
-export type AuthDevice = {
-	deviceId: string;
-	deviceName: string;
-};
-
 /**
- * Holds the device specific information aong with it's id and name.
+ * The AuthDevice object contains id and name of the device.
  */
-export interface AWSAuthDevice extends AuthDevice {
-	attributes: Record<string, string>;
-	createDate?: Date;
-	lastAuthenticatedDate?: Date;
-	lastModifiedDate?: Date;
-}
+export type AuthDevice = {
+	id: string;
+	name?: string;
+};

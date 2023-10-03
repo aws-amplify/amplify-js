@@ -8,6 +8,7 @@ export {
 	UserAttributeKey,
 	VerifiableUserAttributeKey,
 	MFAPreference,
+	AWSAuthDevice,
 } from './models';
 
 export {
@@ -67,4 +68,5 @@ export {
 	UpdateUserAttributesOutput,
 	UpdateUserAttributeOutput,
 	SendUserAttributeVerificationCodeOutput,
+	FetchDevicesOutput,
 } from './outputs';

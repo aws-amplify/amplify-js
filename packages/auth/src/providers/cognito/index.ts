@@ -15,7 +15,6 @@ export { fetchMFAPreference } from './apis/fetchMFAPreference';
 export { verifyTOTPSetup } from './apis/verifyTOTPSetup';
 export { updatePassword } from './apis/updatePassword';
 export { setUpTOTP } from './apis/setUpTOTP';
-export { fetchDevices } from './apis/fetchDevices';
 export { updateUserAttributes } from './apis/updateUserAttributes';
 export { updateUserAttribute } from './apis/updateUserAttribute';
 export { getCurrentUser } from './apis/getCurrentUser';
@@ -27,6 +26,7 @@ export { sendUserAttributeVerificationCode } from './apis/sendUserAttributeVerif
 export { deleteUserAttributes } from './apis/deleteUserAttributes';
 export { deleteUser } from './apis/deleteUser';
 export { rememberDevice } from './apis/rememberDevice';
+export { fetchDevices } from './apis/fetchDevices';
 export {
 	ConfirmResetPasswordInput,
 	ConfirmSignInInput,
@@ -62,6 +62,7 @@ export {
 	UpdateUserAttributesOutput,
 	UpdateUserAttributeOutput,
 	SendUserAttributeVerificationCodeOutput,
+	FetchDevicesOutput,
 } from './types/outputs';
 export {
 	cognitoCredentialsProvider,
