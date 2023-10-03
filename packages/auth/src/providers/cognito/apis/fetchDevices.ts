@@ -9,6 +9,7 @@ import { listDevices } from '../utils/clients/CognitoIdentityProvider';
 import { DeviceType } from '../utils/clients/CognitoIdentityProvider/types';
 import { assertAuthTokens } from '../utils/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { rememberDevice } from '..';
 import { ListDevicesException } from '../types/errors';
 
 // Cognito Documentation for max device
@@ -17,7 +18,8 @@ import { ListDevicesException } from '../types/errors';
 const MAX_DEVICES = 60;
 
 /**
- * Fetches devices that have been registered using {@link registerDevice} for an authenticated user.
+ * Fetches devices that have been remembered using {@link rememberDevice}
+ * for an authenticated user.
  *
  * @returns FetchDevicesOutput
  * @throws {@link ListDevicesException}
@@ -37,10 +39,10 @@ export async function fetchDevices(): Promise<FetchDevicesOutput> {
 			Limit: MAX_DEVICES,
 		}
 	);
-	return _fetchDevices(response.Devices ?? []);
+	return parseDevicesResponse(response.Devices ?? []);
 }
 
-const _fetchDevices = async (
+const parseDevicesResponse = async (
 	devices: DeviceType[]
 ): Promise<FetchDevicesOutput> => {
 	return devices.map(
@@ -54,7 +56,7 @@ const _fetchDevices = async (
 			let name: string | undefined;
 			const attributes = DeviceAttributes.reduce(
 				(attrs: any, { Name, Value }) => {
-					if (!!Name && !!Value) {
+					if (Name && Value) {
 						if (Name === 'device_name') name = Value;
 						attrs[Name] = Value;
 					}
