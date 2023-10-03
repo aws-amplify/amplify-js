@@ -76,6 +76,7 @@ describe('aws-amplify Exports', () => {
 				.toMatchInlineSnapshot(`
 			Array [
 			  "record",
+			  "flushEvents",
 			]
 			`);
 		});
