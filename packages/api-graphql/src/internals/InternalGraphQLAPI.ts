@@ -22,7 +22,11 @@ import {
 	GraphQLOptions,
 } from '../types';
 import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
-import { post, cancel as cancelREST } from '@aws-amplify/api-rest/internals';
+import {
+	post,
+	cancel as cancelREST,
+	updateRequestToBeCancellable,
+} from '@aws-amplify/api-rest/internals';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
@@ -50,7 +54,7 @@ export class InternalGraphQLAPIClass {
 	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
 	Cache = Cache;
-	private _api = { post };
+	private _api = { post, updateRequestToBeCancellable };
 
 	/**
 	 * This weak map provides functionality to let clients cancel in-flight
@@ -64,7 +68,7 @@ export class InternalGraphQLAPIClass {
 	 * 6. Promise returned to the client will be in rejected state with the error provided during cancel.
 	 * 7. Clients can check if the error is because of cancelling by calling `client.isCancelError(error)`.
 	 */
-	private _cancelTokenMap: WeakMap<Promise<any>, Promise<any>> = new WeakMap();
+	// private _cancelTokenMap: WeakMap<Promise<any>, Promise<any>> = new WeakMap();
 
 	/**
 	 * Initialize GraphQL API with AWS configuration
@@ -195,10 +199,16 @@ export class InternalGraphQLAPIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
+				const abortController = new AbortController();
 				const responsePromise = this._graphql<T>(
 					{ query, variables, authMode },
 					headers,
+					abortController,
 					customUserAgentDetails
+				);
+				this._api.updateRequestToBeCancellable(
+					responsePromise,
+					abortController
 				);
 				return responsePromise;
 			case 'subscription':
@@ -215,6 +225,7 @@ export class InternalGraphQLAPIClass {
 	private async _graphql<T = any>(
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
+		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
 		const config = Amplify.getConfig();
@@ -264,8 +275,7 @@ export class InternalGraphQLAPIClass {
 
 		let response;
 		try {
-			debugger;
-			const postPromise = this._api.post({
+			const { body: responseBody } = await this._api.post({
 				url: new URL(endpoint),
 				options: {
 					headers,
@@ -275,18 +285,10 @@ export class InternalGraphQLAPIClass {
 						region,
 					},
 				},
+				abortController,
 			});
 
-			debugger;
-
-			const result = new Promise(async (res, rej) => {
-				debugger;
-				const { body: responsePayload } = await postPromise;
-				const postResult = await responsePayload.json();
-				res({ data: postResult });
-			});
-
-			this._cancelTokenMap.set(result, postPromise);
+			const result = { data: await responseBody.json() };
 
 			response = result;
 		} catch (err) {
@@ -327,8 +329,7 @@ export class InternalGraphQLAPIClass {
 	 * @return {boolean} - A boolean indicating if the request was cancelled
 	 */
 	cancel(request: Promise<any>, message?: string): boolean {
-		debugger;
-		return cancelREST(this._cancelTokenMap.get(request), message);
+		return cancelREST(request, message);
 	}
 
 	private _graphqlSubscribe(

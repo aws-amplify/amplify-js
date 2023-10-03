@@ -56,7 +56,6 @@ export const cancel = (
 		}
 		return true;
 	}
-	debugger;
 	return false;
 };
 
