@@ -17,7 +17,7 @@ import { ListDevicesException } from '../types/errors';
 const MAX_DEVICES = 60;
 
 /**
- * Fetch devices associated with an authenticated user
+ * Fetches devices that have been registered using {@link registerDevice} for an authenticated user.
  *
  * @returns FetchDevicesOutput
  * @throws {@link ListDevicesException}
