@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import '@aws-amplify/core/polyfills/URL'; // TODO: [v6] install react-native-url-polyfill separately
+import { loadUrlPolyfill } from '@aws-amplify/react-native';
+
+loadUrlPolyfill();
 
 export { SERVICE_NAME } from './base';
 export {
