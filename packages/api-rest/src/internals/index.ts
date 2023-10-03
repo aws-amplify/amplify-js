@@ -16,10 +16,13 @@ import { InternalPostInput } from '../types';
  * * If auth mode is 'apiKey', you MUST set 'x-api-key' custom header.
  * * If auth mode is 'oidc' or 'lambda' or 'userPool', you MUST set 'authorization' header.
  *
+ * To make the internal post cancellable, you must also call `updateRequestToBeCancellable()` with the promise from
+ * internal post call and the abort controller supplied to the internal post call.
+ *
  * @internal
  */
 export const post = (input: InternalPostInput) => {
 	return internalPost(Amplify, input);
 };
 
-export { cancel } from '../common/internalPost';
+export { cancel, updateRequestToBeCancellable } from '../common/internalPost';

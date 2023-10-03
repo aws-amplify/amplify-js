@@ -8,7 +8,11 @@ import {
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { post, cancel } from '../../src/common/internalPost';
+import {
+	post,
+	cancel,
+	updateRequestToBeCancellable,
+} from '../../src/common/internalPost';
 import { RestApiError, isCancelError } from '../../src/errors';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
@@ -207,13 +211,15 @@ describe('internal post', () => {
 				underLyingHandlerReject = reject;
 			})
 		);
+		const abortController = new AbortController();
 		const promise = post(mockAmplifyInstance, {
 			url: apiGatewayUrl,
+			abortController,
 		});
+		updateRequestToBeCancellable(promise, abortController);
 
 		// mock abort behavior
-		const abortSignal = mockUnauthenticatedHandler.mock.calls[0][1]
-			.abortSignal as AbortSignal;
+		const abortSignal = abortController.signal;
 		abortSignal.addEventListener('abort', () => {
 			const mockAbortError = new Error('AbortError');
 			mockAbortError.name = 'AbortError';
