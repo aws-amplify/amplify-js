@@ -81,7 +81,7 @@ export class HubClass {
 	): void;
 
 	dispatch<EventData extends EventDataMap>(
-		channel: EventData,
+		channel: string,
 		payload: HubPayload<EventData>,
 		source?: string,
 		ampSymbol?: Symbol
