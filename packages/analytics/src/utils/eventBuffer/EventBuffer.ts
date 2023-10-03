@@ -46,6 +46,10 @@ export class EventBuffer<T> {
 		}
 	}
 
+	public get length() {
+		return this.list.length;
+	}
+
 	private head(count: number) {
 		return this.list.splice(0, count);
 	}
