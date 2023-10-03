@@ -1,6 +1,6 @@
 {
 	"linterOptions": {
-		"exclude": ["src/AwsClients/S3/types.ts"]
+		"exclude": ["src/providers/s3/utils/client/types.ts"]
 	},
 	"defaultSeverity": "error",
 	"plugins": ["prettier"],
@@ -15,7 +15,6 @@
 				"ignore-pattern": "//"
 			}
 		],
-		"no-empty-interface": true,
 		"no-var-keyword": true,
 		"object-literal-shorthand": true,
 		"no-eval": true,

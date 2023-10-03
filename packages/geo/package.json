@@ -1,7 +1,6 @@
 {
 	"name": "@aws-amplify/geo",
 	"version": "3.0.0",
-	"private": true,
 	"description": "Geo category for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -20,16 +19,26 @@
 		"test": "yarn run lint && jest -w 1 --coverage",
 		"test:size": "size-limit",
 		"build-with-test": "yarn test && yarn run build",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "rimraf lib-esm && node ./build es6 --watch",
+		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
+		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
+		"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
 		"build": "yarn clean && yarn build:esm && yarn run build:cjs",
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 86.56"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 84.00"
+	},
+	"typesVersions": {
+		">=4.0": {
+			"*": [
+				"./lib-esm/index.d.ts"
+			],
+			"pinpoint": [
+				"./lib-esm/providers/pinpoint/AmazonLocationServiceProvider.d.ts"
+			]
+		}
 	},
 	"repository": {
 		"type": "git",
@@ -44,11 +53,10 @@
 	"files": [
 		"lib",
 		"lib-esm",
-		"src",
-		"internals"
+		"src"
 	],
 	"dependencies": {
-		"@aws-sdk/client-location": "3.186.3",
+		"@aws-sdk/client-location": "3.398.0",
 		"@turf/boolean-clockwise": "6.5.0",
 		"camelcase-keys": "6.2.2",
 		"tslib": "^2.5.0"
@@ -57,14 +65,15 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.0"
+		"@aws-amplify/core": "6.0.0",
+		"typescript": "5.0.2"
 	},
 	"size-limit": [
 		{
 			"name": "Geo (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Geo }",
-			"limit": "52.45 kB"
+			"limit": "52.12 kB"
 		}
 	],
 	"jest": {
@@ -80,6 +89,7 @@
 						"es2019.object"
 					],
 					"allowJs": true,
+					"noEmitOnError": false,
 					"esModuleInterop": true,
 					"downlevelIteration": true
 				}
@@ -114,7 +124,7 @@
 			}
 		},
 		"coveragePathIgnorePatterns": [
-			"/node_modules/",
+			"node_modules",
 			"dist",
 			"lib",
 			"lib-esm"

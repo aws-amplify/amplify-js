@@ -1,16 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { loadAsyncStorage } from '@aws-amplify/react-native';
 import { ConsoleLogger as Logger } from '../Logger';
 import { StorageCache } from './StorageCache';
 import { defaultConfig, getCurrTime } from './Utils';
 import { CacheConfig, CacheItem, CacheItemOptions, ICache } from './types';
-import { STORAGE_CACHE_EXCEPTION } from '../constants';
-import { asserts } from '../Util/errors/AssertError';
 import { getCurrSizeKey } from './Utils/CacheUtils';
+import { assert, CacheErrorCode } from './Utils/errorHelpers';
 
 const logger = new Logger('AsyncStorageCache');
+const AsyncStorage = loadAsyncStorage();
+
 /*
  * Customized cache which based on the AsyncStorage with LRU implemented
  */
@@ -79,10 +80,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 */
 	async _isExpired(key: string) {
 		const text = await AsyncStorage.getItem(key);
-		asserts(text !== null, {
-			name: STORAGE_CACHE_EXCEPTION,
-			message: `Item not found in the storage by the key: ${key}.`,
-		});
+		assert(text !== null, CacheErrorCode.NoCacheItem, `Key: ${key}`);
 		const item = JSON.parse(text);
 		if (getCurrTime() >= item.expires) {
 			return true;
@@ -98,10 +96,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 	 */
 	async _removeItem(prefixedKey: string, size?: number) {
 		const config = await AsyncStorage.getItem(prefixedKey);
-		asserts(!!config, {
-			name: STORAGE_CACHE_EXCEPTION,
-			message: `Item not found in the storage by the key: ${prefixedKey}.`,
-		});
+		assert(!!config, CacheErrorCode.NoCacheItem, `Key: ${prefixedKey}`);
 		const itemSize = size ?? JSON.parse(config).byteSize;
 		// first try to update the current size of the cache
 		await this._decreaseCurSizeInBytes(itemSize);

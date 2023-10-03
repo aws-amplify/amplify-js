@@ -12,45 +12,44 @@ import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { Amplify, Hub } from '@aws-amplify/core';
 import {
+	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
+import {
+	getNewDeviceMetatada,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
 } from '../utils/signInHelpers';
-import { CognitoSignInOptions } from '../types';
-import {
-	SignInRequest,
-	AuthSignInResult,
-	AuthSignInStep,
-} from '../../../types';
+import { SignInWithSRPInput, SignInWithSRPOutput } from '../types';
 import {
 	setActiveSignInState,
 	cleanActiveSignInState,
 } from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+import { tokenOrchestrator } from '../tokenProvider';
+import { getCurrentUser } from './getCurrentUser';
 
 /**
  * Signs a user in
  *
- * @param signInRequest - The SignInRequest object
- * @returns AuthSignInResult
+ * @param input - The SignInWithSRPInput object
+ * @returns SignInWithSRPOutput
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } - Cognito service errors
  * thrown during the sign-in process.
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithSRP(
-	signInRequest: SignInRequest<CognitoSignInOptions>
-): Promise<AuthSignInResult> {
-	const { username, password } = signInRequest;
-	const authConfig = AmplifyV6.getConfig().Auth;
+	input: SignInWithSRPInput
+): Promise<SignInWithSRPOutput> {
+	const { username, password } = input;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const clientMetaData =
-		signInRequest.options?.serviceOptions?.clientMetadata ||
-		authConfig.clientMetadata;
+	const clientMetaData = input.options?.serviceOptions?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -70,7 +69,8 @@ export async function signInWithSRP(
 			username,
 			password,
 			clientMetaData,
-			authConfig
+			authConfig,
+			tokenOrchestrator
 		);
 
 		// sets up local state used during the sign-in process
@@ -81,10 +81,26 @@ export async function signInWithSRP(
 		});
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
-			await cacheCognitoTokens(AuthenticationResult);
+			await cacheCognitoTokens({
+				...AuthenticationResult,
+				NewDeviceMetadata: await getNewDeviceMetatada(
+					authConfig.userPoolId,
+					AuthenticationResult.NewDeviceMetadata,
+					AuthenticationResult.AccessToken
+				),
+			});
+			Hub.dispatch(
+				'auth',
+				{
+					event: 'signedIn',
+					data: await getCurrentUser(),
+				},
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 

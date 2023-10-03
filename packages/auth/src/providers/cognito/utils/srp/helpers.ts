@@ -2,8 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Sha256 } from '@aws-crypto/sha256-js';
+import { SourceData } from '@smithy/types';
+import {
+	base64Encoder,
+	base64Decoder,
+} from '@aws-amplify/core/internals/utils';
+import { AuthenticationHelper } from './AuthenticationHelper';
+import { textEncoder } from '../textEncoder';
+import { BigIntegerInterface } from './BigInteger/types';
 
-export function hash(buf) {
+export function hash(buf: SourceData) {
 	const awsCryptoHash = new Sha256();
 	awsCryptoHash.update(buf);
 
@@ -18,12 +26,12 @@ export function hash(buf) {
  * @returns {String} Hex-encoded hash.
  * @private
  */
-export function hexHash(hexStr) {
+export function hexHash(hexStr: string) {
 	return hash(fromHex(hexStr));
 }
 
-const SHORT_TO_HEX = {};
-const HEX_TO_SHORT = {};
+const SHORT_TO_HEX: Record<string, string> = {};
+const HEX_TO_SHORT: Record<string, number> = {};
 
 for (let i = 0; i < 256; i++) {
 	let encodedByte = i.toString(16).toLowerCase();
@@ -65,7 +73,7 @@ export function fromHex(encoded: string) {
  *
  * @param bytes The binary data to encode
  */
-export function toHex(bytes) {
+export function toHex(bytes: Uint8Array) {
 	let out = '';
 	for (let i = 0; i < bytes.byteLength; i++) {
 		out += SHORT_TO_HEX[bytes[i]];
@@ -74,45 +82,19 @@ export function toHex(bytes) {
 	return out;
 }
 
-const getAtob = () => {
-	let atob;
-
-	if (typeof window !== 'undefined' && window.atob) {
-		atob = window.atob;
-	}
-
-	return atob;
-};
-
-const getBtoa = () => {
-	let btoa;
-
-	if (typeof window !== 'undefined' && window.btoa) {
-		btoa = window.btoa;
-	}
-
-	return btoa;
-};
-
-export function _urlB64ToUint8Array(base64String) {
+export function _urlB64ToUint8Array(base64String: string) {
 	const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
 	const base64 = (base64String + padding)
 		.replace(/\-/g, '+')
 		.replace(/_/g, '/');
 
-	const rawData = getAtob()(base64);
+	const rawData = base64Decoder.convert(base64);
 	const outputArray = new Uint8Array(rawData.length);
 
 	for (let i = 0; i < rawData.length; ++i) {
 		outputArray[i] = rawData.charCodeAt(i);
 	}
 	return outputArray;
-}
-
-export function _encodeBase64Bytes(bytes) {
-	return getBtoa()(
-		bytes.reduce((acc, current) => acc + String.fromCharCode(current), '')
-	);
 }
 
 const monthNames = [
@@ -167,13 +149,19 @@ export function getSignatureString({
 	challengeParameters,
 	dateNow,
 	hkdf,
+}: {
+	userPoolName: string;
+	username: string;
+	challengeParameters: Record<string, any>;
+	dateNow: string;
+	hkdf: SourceData;
 }): string {
-	const encoder = new TextEncoder();
+	const encoder = textEncoder;
 
-	const bufUPIDaToB = encoder.encode(userPoolName);
-	const bufUNaToB = encoder.encode(username);
+	const bufUPIDaToB = encoder.convert(userPoolName);
+	const bufUNaToB = encoder.convert(username);
 	const bufSBaToB = _urlB64ToUint8Array(challengeParameters.SECRET_BLOCK);
-	const bufDNaToB = encoder.encode(dateNow);
+	const bufDNaToB = encoder.convert(dateNow);
 
 	const bufConcat = new Uint8Array(
 		bufUPIDaToB.byteLength +
@@ -192,15 +180,17 @@ export function getSignatureString({
 	const awsCryptoHash = new Sha256(hkdf);
 	awsCryptoHash.update(bufConcat);
 	const resultFromAWSCrypto = awsCryptoHash.digestSync();
-	const signatureString = _encodeBase64Bytes(resultFromAWSCrypto);
+	const signatureString = base64Encoder.convert(resultFromAWSCrypto);
 	return signatureString;
 }
 
-export function getLargeAValue(authenticationHelper) {
+export function getLargeAValue(authenticationHelper: AuthenticationHelper) {
 	return new Promise(res => {
-		authenticationHelper.getLargeAValue((err, aValue) => {
-			res(aValue);
-		});
+		authenticationHelper.getLargeAValue(
+			(err: unknown, aValue: BigIntegerInterface) => {
+				res(aValue);
+			}
+		);
 	});
 }
 
@@ -210,14 +200,20 @@ export function getPasswordAuthenticationKey({
 	password,
 	serverBValue,
 	salt,
-}) {
+}: {
+	authenticationHelper: AuthenticationHelper;
+	username: string;
+	password: string;
+	serverBValue: BigIntegerInterface;
+	salt: BigIntegerInterface;
+}): Promise<SourceData> {
 	return new Promise((res, rej) => {
 		authenticationHelper.getPasswordAuthenticationKey(
 			username,
 			password,
 			serverBValue,
 			salt,
-			(err, hkdf) => {
+			(err: unknown, hkdf: SourceData) => {
 				if (err) {
 					return rej(err);
 				}

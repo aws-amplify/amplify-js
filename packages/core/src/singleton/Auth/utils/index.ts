@@ -1,63 +1,101 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Buffer } from 'buffer';
-import { asserts } from '../../../Util/errors/AssertError';
+import { AuthConfigurationErrorCode, assert } from './errorHelpers';
+import { base64Decoder } from '../../../utils/convert';
+
 import {
 	AuthConfig,
-	IdentityPoolConfig,
 	JWT,
-	UserPoolConfig,
-	UserPoolConfigAndIdentityPoolConfig,
+	AuthUserPoolAndIdentityPoolConfig,
+	CognitoUserPoolWithOAuthConfig,
+	CognitoUserPoolConfig,
+	CognitoUserPoolAndIdentityPoolConfig,
+	CognitoIdentityPoolConfig,
+	StrictUnion,
 } from '../types';
 
 export function assertTokenProviderConfig(
-	authConfig?: AuthConfig
-): asserts authConfig is UserPoolConfig {
+	cognitoConfig?: StrictUnion<
+		| CognitoUserPoolConfig
+		| CognitoUserPoolAndIdentityPoolConfig
+		| CognitoIdentityPoolConfig
+	>
+): asserts cognitoConfig is
+	| CognitoUserPoolAndIdentityPoolConfig
+	| CognitoUserPoolConfig {
+	let assertionValid = true; // assume valid until otherwise proveed
+	if (!cognitoConfig) {
+		assertionValid = false;
+	} else {
+		assertionValid =
+			!!cognitoConfig.userPoolId && !!cognitoConfig.userPoolClientId;
+	}
+
+	return assert(
+		assertionValid,
+		AuthConfigurationErrorCode.AuthTokenConfigException
+	);
+}
+
+export function assertOAuthConfig(
+	cognitoConfig?: CognitoUserPoolConfig | CognitoUserPoolAndIdentityPoolConfig
+): asserts cognitoConfig is CognitoUserPoolWithOAuthConfig {
+	const validOAuthConfig =
+		!!cognitoConfig?.loginWith?.oauth?.domain &&
+		!!cognitoConfig?.loginWith?.oauth?.redirectSignOut &&
+		!!cognitoConfig?.loginWith?.oauth?.redirectSignIn &&
+		!!cognitoConfig?.loginWith?.oauth?.responseType;
+
+	return assert(
+		validOAuthConfig,
+		AuthConfigurationErrorCode.OAuthNotConfigureException
+	);
+}
+
+export function assertIdentityPoolIdConfig(
+	cognitoConfig?: StrictUnion<
+		| CognitoUserPoolConfig
+		| CognitoUserPoolAndIdentityPoolConfig
+		| CognitoIdentityPoolConfig
+	>
+): asserts cognitoConfig is CognitoIdentityPoolConfig {
+	const validConfig = !!cognitoConfig?.identityPoolId;
+	return assert(
+		validConfig,
+		AuthConfigurationErrorCode.InvalidIdentityPoolIdException
+	);
+}
+
+function assertUserPoolAndIdentityPoolConfig(
+	authConfig: AuthConfig
+): asserts authConfig is AuthUserPoolAndIdentityPoolConfig {
 	const validConfig =
-		!!authConfig?.userPoolId && !!authConfig?.userPoolWebClientId;
-	return asserts(validConfig, {
-		name: 'AuthTokenConfigException',
-		message: 'Auth Token Provider not configured',
-		recoverySuggestion: 'Make sure to call Amplify.configure in your app',
-	});
-}
-
-export function assertIdentityPooIdConfig(
-	authConfig: AuthConfig
-): asserts authConfig is IdentityPoolConfig {
-	const validConfig = !!authConfig?.identityPoolId;
-	return asserts(validConfig, {
-		name: 'AuthIdentityPoolIdException',
-		message: 'Auth IdentityPoolId not configured',
-		recoverySuggestion:
-			'Make sure to call Amplify.configure in your app with a valid IdentityPoolId',
-	});
-}
-
-export function assertUserPoolAndIdentityPooConfig(
-	authConfig: AuthConfig
-): asserts authConfig is UserPoolConfigAndIdentityPoolConfig {
-	const validConfig = !!authConfig?.identityPoolId && !!authConfig?.userPoolId;
-	return asserts(validConfig, {
-		name: 'AuthUserPoolAndIdentityPoolException',
-		message: 'Auth UserPool and IdentityPool not configured',
-		recoverySuggestion:
-			'Make sure to call Amplify.configure in your app with UserPoolId and IdentityPoolId',
-	});
+		!!authConfig?.Cognito.identityPoolId && !!authConfig?.Cognito.userPoolId;
+	return assert(
+		validConfig,
+		AuthConfigurationErrorCode.AuthUserPoolAndIdentityPoolException
+	);
 }
 
 export function decodeJWT(token: string): JWT {
-	const tokenSplitted = token.split('.');
-	if (tokenSplitted.length !== 3) {
+	const tokenParts = token.split('.');
+
+	if (tokenParts.length !== 3) {
 		throw new Error('Invalid token');
 	}
 
-	const payloadString = tokenSplitted[1];
-	const payload = JSON.parse(
-		Buffer.from(payloadString, 'base64').toString('utf8')
-	);
-
 	try {
+		const base64WithUrlSafe = tokenParts[1];
+		const base64 = base64WithUrlSafe.replace(/-/g, '+').replace(/_/g, '/');
+		const jsonStr = decodeURIComponent(
+			base64Decoder
+				.convert(base64)
+				.split('')
+				.map(char => `%${`00${char.charCodeAt(0).toString(16)}`.slice(-2)}`)
+				.join('')
+		);
+		const payload = JSON.parse(jsonStr);
+
 		return {
 			toString: () => token,
 			payload,

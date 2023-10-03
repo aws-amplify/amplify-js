@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 6.3.5 (2023-08-23)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+## 6.3.4 (2023-08-22)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+## 6.3.3 (2023-08-17)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
 ## 6.3.2 (2023-08-10)
 
 **Note:** Version bump only for package amazon-cognito-identity-js

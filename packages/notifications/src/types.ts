@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InAppMessagingConfig } from './InAppMessaging/types';
-import { PushNotificationConfig } from './PushNotification/types';
+import { InAppMessagingConfig } from './inAppMessaging/types';
+import { PushNotificationConfig } from './pushNotifications/types';
 
 export type NotificationsCategory = 'Notifications';
 
@@ -22,11 +22,7 @@ export interface NotificationsProvider {
 	getProviderName(): string;
 
 	// identify the current user with the provider
-	identifyUser(
-		userId: string,
-		userInfo: UserInfo,
-		userAgentValue?: string
-	): Promise<void>;
+	identifyUser(userId: string, userInfo: UserInfo): Promise<void>;
 }
 
 export interface NotificationsConfig {

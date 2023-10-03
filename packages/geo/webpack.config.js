@@ -2,7 +2,7 @@ module.exports = {
 	entry: {
 		'aws-amplify-geo.min': './lib-esm/index.js',
 	},
-	externals: [{ '@aws-amplify/core': 'aws_amplify_core' }],
+	externals: ['react-native', { '@aws-amplify/core': 'aws_amplify_core' }],
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',
@@ -20,8 +20,6 @@ module.exports = {
 	mode: 'production',
 	module: {
 		rules: [
-			// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-			//{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
 			{
 				test: /\.js?$/,
 				exclude: /node_modules/,

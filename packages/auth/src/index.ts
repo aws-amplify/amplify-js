@@ -1,42 +1,70 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// TODO: remove Auth and AuthClass imports/exports
-// import { Auth } from './Auth';
-// tslint:disable-next-line no-duplicate-imports
-// import type { AuthClass } from './Auth';
-import {
-	CognitoHostedUIIdentityProvider,
-	SignUpParams,
-	GRAPHQL_AUTH_MODE,
-} from './types/Auth';
-// import {
-// 	CognitoUser,
-// 	CookieStorage,
-// 	appendToCognitoUserAgent,
-// } from 'amazon-cognito-identity-js';
-import { AuthErrorStrings } from './common/AuthErrorStrings';
-
-/**
- * @deprecated use named import
- */
-// export default Auth;
+// Default provider APIs, types & enums
 export {
-	// Auth,
-	// CognitoUser,
-	// CookieStorage,
-	CognitoHostedUIIdentityProvider,
-	SignUpParams,
-	// appendToCognitoUserAgent,
-	AuthErrorStrings,
-	GRAPHQL_AUTH_MODE,
-};
-// export type { AuthClass };
+	signUp,
+	resetPassword,
+	confirmResetPassword,
+	signIn,
+	resendSignUpCode,
+	confirmSignUp,
+	confirmSignIn,
+	updateMFAPreference,
+	fetchMFAPreference,
+	verifyTOTPSetup,
+	updatePassword,
+	setUpTOTP,
+	updateUserAttributes,
+	updateUserAttribute,
+	getCurrentUser,
+	confirmUserAttribute,
+	signInWithRedirect,
+	fetchUserAttributes,
+	signOut,
+	sendUserAttributeVerificationCode,
+	deleteUserAttributes,
+	deleteUser,
+	rememberDevice,
+} from './providers/cognito';
 
-// Provider specific types
-export * from './providers/cognito';
+export {
+	ConfirmResetPasswordInput,
+	ConfirmSignInInput,
+	ConfirmSignUpInput,
+	ConfirmUserAttributeInput,
+	ResendSignUpCodeInput,
+	ResetPasswordInput,
+	SignInInput,
+	SignInWithRedirectInput,
+	SignOutInput,
+	SignUpInput,
+	UpdateMFAPreferenceInput,
+	UpdatePasswordInput,
+	UpdateUserAttributesInput,
+	UpdateUserAttributeInput,
+	VerifyTOTPSetupInput,
+	SendUserAttributeVerificationCodeInput,
+	DeleteUserAttributesInput,
+} from './providers/cognito';
 
-// Category specific types
-export * from './types';
+export {
+	FetchUserAttributesOutput,
+	GetCurrentUserOutput,
+	ConfirmSignInOutput,
+	ConfirmSignUpOutput,
+	FetchMFAPreferenceOutput,
+	ResendSignUpCodeOutput,
+	ResetPasswordOutput,
+	SetUpTOTPOutput,
+	SignInOutput,
+	SignOutOutput,
+	SignUpOutput,
+	UpdateUserAttributesOutput,
+	SendUserAttributeVerificationCodeOutput,
+	UpdateUserAttributeOutput,
+} from './providers/cognito';
+
+export { AuthError } from './errors/AuthError';
 
 export { fetchAuthSession } from '@aws-amplify/core';

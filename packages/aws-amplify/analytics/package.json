@@ -1,7 +1,7 @@
 {
-  "name": "aws-amplify/analytics",
-  "main": "../lib/analytics/index.js",
-  "browser": "../lib-esm/analytics/index.js",
-  "module": "../lib-esm/analytics/index.js",
-  "typings": "../lib-esm/analytics/index.d.ts"
+	"name": "aws-amplify/analytics",
+	"main": "../lib/analytics/index.js",
+	"browser": "../lib-esm/analytics/index.js",
+	"module": "../lib-esm/analytics/index.js",
+	"typings": "../lib-esm/analytics/index.d.ts"
 }

@@ -1,0 +1,10 @@
+{
+	"name": "@aws-amplify/storage/src/providers/s3/utils/client/runtime",
+	"main": "../../../../../../lib/providers/s3/utils/client/runtime/index.js",
+	"browser": {
+		"./index.js": "../../../../../../lib-esm/providers/s3/utils/client/runtime/index.browser.js",
+		"fast-xml-parser": false,
+		"buffer": false
+	},
+	"module": "../../../../../../lib-esm/providers/s3/utils/client/runtime/index.browser.js"
+}

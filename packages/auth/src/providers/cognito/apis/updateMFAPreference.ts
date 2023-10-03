@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
-import { UpdateMFAPreferenceRequest } from '../types';
+import { UpdateMFAPreferenceInput } from '../types';
 import { SetUserMFAPreferenceException } from '../types/errors';
 import { MFAPreference } from '../types/models';
 import { setUserMFAPreference } from '../utils/clients/CognitoIdentityProvider';
@@ -14,18 +15,15 @@ import { assertAuthTokens } from '../utils/types';
 /**
  * Updates the MFA preference of the user.
  *
- * @param updateMFAPreferenceRequest - The request object to update MFA preference.
- *
+ * @param input - The UpdateMFAPreferenceInput object.
  * @throws -{@link SetUserMFAPreferenceException } - Service error thrown when the MFA preference cannot be updated.
- *
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function updateMFAPreference(
-	updateMFAPreferenceRequest: UpdateMFAPreferenceRequest
+	input: UpdateMFAPreferenceInput
 ): Promise<void> {
-	const { sms, totp } = updateMFAPreferenceRequest;
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const { sms, totp } = input;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);

@@ -1,4 +1,4 @@
-import Observable from 'zen-observable-ts';
+import { Observable, of } from 'rxjs';
 import { ModelInit, __modelMeta__ } from '../../../src/types';
 import {
 	DataStore as DS,
@@ -23,7 +23,7 @@ export const DataStore: typeof DS = (() => {
 					return () => new Proxy({}, {});
 				case 'observe':
 				case 'observeQuery':
-					return () => Observable.of();
+					return () => of({});
 			}
 		},
 	}) as unknown as typeof DS;

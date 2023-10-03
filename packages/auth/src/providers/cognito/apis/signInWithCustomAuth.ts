@@ -3,20 +3,23 @@
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import {
-	SignInRequest,
-	AuthSignInResult,
-	AuthSignInStep,
-} from '../../../types';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
 	handleCustomAuthFlowWithoutSRP,
 	getSignInResult,
 	getSignInResultFromError,
+	getNewDeviceMetatada,
 } from '../utils/signInHelpers';
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { Amplify, Hub } from '@aws-amplify/core';
+import {
+	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
-import { CognitoSignInOptions } from '../types';
+import {
+	SignInWithCustomAuthInput,
+	SignInWithCustomAuthOutput,
+} from '../types';
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
@@ -26,26 +29,26 @@ import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
+import { tokenOrchestrator } from '../tokenProvider';
+import { getCurrentUser } from './getCurrentUser';
 
 /**
  * Signs a user in using a custom authentication flow without password
  *
- * @param signInRequest - The SignInRequest object
+ * @param input -  The SignInWithCustomAuthInput object
  * @returns AuthSignInResult
  * @throws service: {@link InitiateAuthException } - Cognito service errors thrown during the sign-in process.
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
- *
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * @throws SignInWithCustomAuthOutput - Thrown when the token provider config is invalid.
  */
 export async function signInWithCustomAuth(
-	signInRequest: SignInRequest<CognitoSignInOptions>
-): Promise<AuthSignInResult> {
-	const authConfig = AmplifyV6.getConfig().Auth;
+	input: SignInWithCustomAuthInput
+): Promise<SignInWithCustomAuthOutput> {
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const { username, password, options } = signInRequest;
-	const metadata =
-		options?.serviceOptions?.clientMetadata || authConfig?.clientMetadata;
+	const { username, password, options } = input;
+	const metadata = options?.serviceOptions?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -61,7 +64,12 @@ export async function signInWithCustomAuth(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleCustomAuthFlowWithoutSRP(username, metadata, authConfig);
+		} = await handleCustomAuthFlowWithoutSRP(
+			username,
+			metadata,
+			authConfig,
+			tokenOrchestrator
+		);
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
@@ -71,10 +79,24 @@ export async function signInWithCustomAuth(
 		});
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
-			await cacheCognitoTokens(AuthenticationResult);
+
+			await cacheCognitoTokens({
+				...AuthenticationResult,
+				NewDeviceMetadata: await getNewDeviceMetatada(
+					authConfig.userPoolId,
+					AuthenticationResult.NewDeviceMetadata,
+					AuthenticationResult.AccessToken
+				),
+			});
+			Hub.dispatch(
+				'auth',
+				{ event: 'signedIn', data: await getCurrentUser() },
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 

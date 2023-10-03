@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import cryptoSecureRandomInt from './cryptoSecureRandomInt';
+import { cryptoSecureRandomInt } from './cryptoSecureRandomInt';
 
 /**
  * Hex encoding strategy.
@@ -27,10 +27,10 @@ function hexStringify(wordArray: WordArray): string {
 }
 
 export default class WordArray {
-	words = [];
+	words: number[] = [];
 	sigBytes: number;
 
-	constructor(words?, sigBytes?) {
+	constructor(words?: number[], sigBytes?: number) {
 		let Words = words;
 		Words = this.words = Words || [];
 

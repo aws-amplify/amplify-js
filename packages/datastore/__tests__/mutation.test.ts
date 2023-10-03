@@ -1,4 +1,5 @@
 const mockRestPost = jest.fn();
+import { Amplify } from '@aws-amplify/core';
 import {
 	MutationProcessor,
 	safeJitteredBackoff,
@@ -22,7 +23,7 @@ import {
 	CustomUserAgentDetails,
 	DataStoreAction,
 	getAmplifyUserAgent,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/utils';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
@@ -291,7 +292,7 @@ jest.mock('@aws-amplify/api/internals', () => {
 		'@aws-amplify/api-graphql/internals'
 	);
 	const internalGraphqlInstance = new InternalGraphQLAPIClass(null);
-	internalGraphqlInstance.configure(awsconfig);
+	Amplify.configure(awsconfig);
 
 	const actualInternalAPIModule = jest.requireActual(
 		'@aws-amplify/api/internals'
@@ -311,12 +312,12 @@ jest.mock('@aws-amplify/api/internals', () => {
 // endlessly in the mutation processor and so that we can expect the thrown result in our test
 // should throw a Network Error
 let mockRetry;
-jest.mock('@aws-amplify/core', () => {
+jest.mock('@aws-amplify/core/internals/utils', () => {
 	mockRetry = jest.fn().mockImplementation(async (fn, args) => {
 		await fn(...args);
 	});
 	return {
-		...jest.requireActual('@aws-amplify/core'),
+		...jest.requireActual('@aws-amplify/core/internals/utils'),
 		retry: mockRetry,
 	};
 });

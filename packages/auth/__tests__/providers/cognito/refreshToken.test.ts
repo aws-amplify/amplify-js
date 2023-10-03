@@ -1,7 +1,7 @@
-import { decodeJWT } from '@aws-amplify/core';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { mockJsonResponse, mockRequestId } from './testUtils/data';
-import { CognitoUserPoolTokenRefresher } from '../../../src/providers/cognito/apis/tokenRefresher';
+import { refreshAuthTokens } from '../../../src/providers/cognito/utils/refreshAuthTokens';
 import { CognitoAuthTokens } from '../../../src/providers/cognito/tokenProvider/types';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
@@ -48,7 +48,7 @@ describe('refresh token tests', () => {
 				'cache-control': 'no-store',
 				'content-type': 'application/x-amz-json-1.1',
 				'x-amz-target': 'AWSCognitoIdentityProviderService.InitiateAuth',
-				'x-amz-user-agent': 'aws-amplify/6.0.0 framework/0',
+				'x-amz-user-agent': expect.any(String),
 			}),
 			body: JSON.stringify({
 				ClientId: 'aaaaaaaaaaaa',
@@ -62,7 +62,7 @@ describe('refresh token tests', () => {
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
 			mockJsonResponse(succeedResponse)
 		);
-		const response = await CognitoUserPoolTokenRefresher({
+		const response = await refreshAuthTokens({
 			tokens: {
 				accessToken: {
 					payload: {},
@@ -71,8 +71,10 @@ describe('refresh token tests', () => {
 				refreshToken: 'refreshtoken',
 			},
 			authConfig: {
-				userPoolId: 'us-east-1_aaaaaaa',
-				userPoolWebClientId: 'aaaaaaaaaaaa',
+				Cognito: {
+					userPoolId: 'us-east-1_aaaaaaa',
+					userPoolClientId: 'aaaaaaaaaaaa',
+				},
 			},
 		});
 

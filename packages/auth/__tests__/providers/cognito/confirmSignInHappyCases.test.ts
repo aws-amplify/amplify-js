@@ -1,30 +1,40 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6 as Amplify } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import { signIn } from '../../../src/providers/cognito/apis/signIn';
+import {
+	signIn,
+	confirmSignIn,
+	getCurrentUser,
+} from '../../../src/providers/cognito/';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
-import { AuthSignInStep } from '../../../src/types';
-import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import {
+	CognitoUserPoolsTokenProvider,
+	tokenOrchestrator,
+} from '../../../src/providers/cognito/tokenProvider';
+jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 
 const authConfig = {
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
 
-const authConfigWithMetadata = {
-	...authAPITestParams.configWithClientMetadata,
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
-};
+//  getCurrentUser is mocked so Hub is able to dispatch a mocked AuthUser
+// before returning an `AuthSignInResult`
+const mockedGetCurrentUser = getCurrentUser as jest.Mock;
 
 describe('confirmSignIn API happy path cases', () => {
 	let handleChallengeNameSpy;
 	const username = authAPITestParams.user1.username;
 	const password = authAPITestParams.user1.password;
+
 	beforeEach(async () => {
+		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+
 		handleChallengeNameSpy = jest
 			.spyOn(signInHelpers, 'handleChallengeName')
 			.mockImplementation(
@@ -71,13 +81,20 @@ describe('confirmSignIn API happy path cases', () => {
 		const signInResult = await signIn({ username, password });
 
 		const smsCode = '123456';
+
+		mockedGetCurrentUser.mockImplementationOnce(async () => {
+			return {
+				username: 'username',
+				userId: 'userId',
+			};
+		});
 		const confirmSignInResult = await confirmSignIn({
 			challengeResponse: smsCode,
 		});
 		expect(signInResult).toEqual({
 			isSignedIn: false,
 			nextStep: {
-				signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_CODE,
+				signInStep: 'CONFIRM_SIGN_IN_WITH_SMS_CODE',
 				codeDeliveryDetails: {
 					deliveryMedium: 'SMS',
 					destination: '*******9878',
@@ -87,7 +104,7 @@ describe('confirmSignIn API happy path cases', () => {
 		expect(confirmSignInResult).toEqual({
 			isSignedIn: true,
 			nextStep: {
-				signInStep: AuthSignInStep.DONE,
+				signInStep: 'DONE',
 			},
 		});
 
@@ -95,6 +112,7 @@ describe('confirmSignIn API happy path cases', () => {
 
 		expect(handleUserSRPAuthflowSpy).toBeCalledTimes(1);
 		handleUserSRPAuthflowSpy.mockClear();
+		mockedGetCurrentUser.mockClear();
 	});
 
 	test(`confirmSignIn tests MFA_SETUP challengeName`, async () => {
@@ -121,13 +139,13 @@ describe('confirmSignIn API happy path cases', () => {
 		expect(signInResult).toEqual({
 			isSignedIn: false,
 			nextStep: {
-				signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_TOTP_CODE,
+				signInStep: 'CONFIRM_SIGN_IN_WITH_TOTP_CODE',
 			},
 		});
 		expect(confirmSignInResult).toEqual({
 			isSignedIn: true,
 			nextStep: {
-				signInStep: AuthSignInStep.DONE,
+				signInStep: 'DONE',
 			},
 		});
 
@@ -178,7 +196,7 @@ describe('confirmSignIn API happy path cases', () => {
 		expect(signInResult).toEqual({
 			isSignedIn: false,
 			nextStep: {
-				signInStep: AuthSignInStep.CONTINUE_SIGN_IN_WITH_MFA_SELECTION,
+				signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
 				allowedMFATypes: ['SMS', 'TOTP'],
 			},
 		});
@@ -186,7 +204,7 @@ describe('confirmSignIn API happy path cases', () => {
 		expect(confirmSignInResult).toEqual({
 			isSignedIn: false,
 			nextStep: {
-				signInStep: AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_CODE,
+				signInStep: 'CONFIRM_SIGN_IN_WITH_SMS_CODE',
 				codeDeliveryDetails: {
 					deliveryMedium: 'SMS',
 					destination: '*******9878',
@@ -229,51 +247,16 @@ describe('confirmSignIn API happy path cases', () => {
 				serviceOptions: authAPITestParams.configWithClientMetadata,
 			},
 		});
+		const options = authAPITestParams.configWithClientMetadata;
 		expect(handleChallengeNameSpy).toBeCalledWith(
 			username,
 			activeChallengeName,
 			activeSignInSession,
 			challengeResponse,
-			authConfig,
+			authConfig.Cognito,
+			tokenOrchestrator,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
-			authAPITestParams.configWithClientMetadata
-		);
-		handleUserSRPAuthFlowSpy.mockClear();
-	});
-
-	test('handleChallengeName should be called with clientMetadata from config', async () => {
-		Amplify.configure({
-			Auth: authConfigWithMetadata,
-		});
-		const activeSignInSession = '1234234232';
-		const activeChallengeName = 'SMS_MFA';
-		const handleUserSRPAuthFlowSpy = jest
-			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
-			.mockImplementationOnce(
-				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
-					ChallengeName: 'SMS_MFA',
-					Session: '1234234232',
-					$metadata: {},
-					ChallengeParameters: {
-						CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
-						CODE_DELIVERY_DESTINATION: '*******9878',
-					},
-				})
-			);
-		await signIn({ username, password });
-
-		const challengeResponse = '123456';
-		await confirmSignIn({
-			challengeResponse,
-		});
-		expect(handleChallengeNameSpy).toBeCalledWith(
-			username,
-			activeChallengeName,
-			activeSignInSession,
-			challengeResponse,
-			authConfigWithMetadata,
-			authAPITestParams.configWithClientMetadata.clientMetadata,
-			undefined
+			options
 		);
 		handleUserSRPAuthFlowSpy.mockClear();
 	});

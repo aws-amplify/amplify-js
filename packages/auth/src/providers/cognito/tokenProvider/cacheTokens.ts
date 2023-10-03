@@ -1,13 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyError, decodeJWT } from '@aws-amplify/core';
-
+import { AmplifyError, decodeJWT } from '@aws-amplify/core/internals/utils';
 import { tokenOrchestrator } from '.';
-
 import { AuthenticationResultType } from '../utils/clients/CognitoIdentityProvider/types';
+import { DeviceMetadata } from './types';
 
 export async function cacheCognitoTokens(
-	AuthenticationResult: AuthenticationResultType
+	AuthenticationResult: AuthenticationResultType & {
+		NewDeviceMetadata?: DeviceMetadata;
+	}
 ): Promise<void> {
 	if (AuthenticationResult.AccessToken) {
 		const accessToken = decodeJWT(AuthenticationResult.AccessToken);
@@ -18,19 +19,19 @@ export async function cacheCognitoTokens(
 				? accessTokenIssuedAtInMillis - currentTime
 				: 0;
 		let idToken;
-		let refreshToken: string;
-		let NewDeviceMetadata: string;
+		let refreshToken: string | undefined;
+		let deviceMetadata: DeviceMetadata | undefined;
 
 		if (AuthenticationResult.RefreshToken) {
 			refreshToken = AuthenticationResult.RefreshToken;
 		}
-		if (AuthenticationResult.NewDeviceMetadata) {
-			NewDeviceMetadata = JSON.stringify(
-				AuthenticationResult.NewDeviceMetadata
-			);
-		}
+
 		if (AuthenticationResult.IdToken) {
 			idToken = decodeJWT(AuthenticationResult.IdToken);
+		}
+
+		if (AuthenticationResult?.NewDeviceMetadata) {
+			deviceMetadata = AuthenticationResult.NewDeviceMetadata;
 		}
 
 		tokenOrchestrator.setTokens({
@@ -38,8 +39,8 @@ export async function cacheCognitoTokens(
 				accessToken,
 				idToken,
 				refreshToken,
-				NewDeviceMetadata,
 				clockDrift,
+				deviceMetadata,
 			},
 		});
 	} else {

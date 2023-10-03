@@ -5,15 +5,13 @@ import {
 	Category,
 	ClientDevice,
 	ConsoleLogger,
-	Credentials,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
 	InAppMessagingAction,
 	PushNotificationAction,
-	StorageHelper,
-	transferKeyToUpperCase,
-	Cache,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/utils';
+import { Cache, fetchAuthSession } from '@aws-amplify/core';
+
 import {
 	Event as AWSPinpointAnalyticsEvent,
 	putEvents,
@@ -44,7 +42,7 @@ export default abstract class AWSPinpointProviderCommon
 	protected logger: ConsoleLogger;
 
 	constructor(logger) {
-		this.config = { storage: new StorageHelper().getStorage() };
+		// this.config = { storage: new StorageHelper().getStorage() };
 		this.clientInfo = ClientDevice.clientInfo() ?? {};
 		this.logger = logger;
 	}
@@ -77,16 +75,12 @@ export default abstract class AWSPinpointProviderCommon
 		return this.config;
 	}
 
-	identifyUser = async (
-		userId: string,
-		userInfo: UserInfo,
-		userAgentValue?: string
-	): Promise<void> => {
+	identifyUser = async (userId: string, userInfo: UserInfo): Promise<void> => {
 		if (!this.initialized) {
 			await this.init();
 		}
 		try {
-			await this.updateEndpoint(userId, userInfo, userAgentValue);
+			await this.updateEndpoint(userId, userInfo);
 		} catch (err) {
 			this.logger.error('Error identifying user', err);
 			throw err;
@@ -165,8 +159,7 @@ export default abstract class AWSPinpointProviderCommon
 
 	protected updateEndpoint = async (
 		userId: string = null,
-		userInfo: AWSPinpointUserInfo = null,
-		userAgentValue?: string
+		userInfo: AWSPinpointUserInfo = null
 	): Promise<void> => {
 		const credentials = await this.getCredentials();
 		// Shallow compare to determine if credentials stored here are outdated
@@ -213,12 +206,12 @@ export default abstract class AWSPinpointProviderCommon
 						Model: model,
 						ModelVersion: version,
 						Platform: platform,
-						...transferKeyToUpperCase({
+						...this.transferKeyToUpperCase({
 							...endpointInfo.demographic,
 							...demographic,
 						}),
 					},
-					Location: transferKeyToUpperCase({
+					Location: this.transferKeyToUpperCase({
 						...endpointInfo.location,
 						...location,
 					}),
@@ -235,11 +228,7 @@ export default abstract class AWSPinpointProviderCommon
 			};
 			this.logger.debug('updating endpoint');
 			await updateEndpoint(
-				{
-					credentials,
-					region,
-					userAgentValue: userAgentValue || this.getUserAgentValue(),
-				},
+				{ credentials, region, userAgentValue: this.getUserAgentValue() },
 				input
 			);
 			this.endpointInitialized = true;
@@ -277,12 +266,12 @@ export default abstract class AWSPinpointProviderCommon
 
 	private getCredentials = async () => {
 		try {
-			const credentials = await Credentials.get();
-			if (!credentials) {
+			const session = await fetchAuthSession();
+			if (!session.credentials) {
 				this.logger.debug('no credentials found');
 				return null;
 			}
-			return Credentials.shear(credentials);
+			return { ...session.credentials, identityId: session.identityId };
 		} catch (err) {
 			this.logger.error('Error getting credentials:', err);
 			return null;
@@ -296,5 +285,21 @@ export default abstract class AWSPinpointProviderCommon
 				'One or more of credentials, appId or region is not configured'
 			);
 		}
+	};
+
+	/**
+	 * transfer the first letter of the keys to lowercase
+	 * @param {Object} obj - the object need to be transferred
+	 */
+	private transferKeyToUpperCase = (obj: Record<string, any>) => {
+		const ret: Record<string, any> = {};
+
+		for (const key in obj) {
+			if (obj.hasOwnProperty(key)) {
+				const transferredKey = key[0].toUpperCase() + key.slice(1);
+				ret[transferredKey] = this.transferKeyToUpperCase(obj[key]);
+			}
+		}
+		return ret;
 	};
 }

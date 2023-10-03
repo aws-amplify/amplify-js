@@ -121,7 +121,6 @@ export interface AwsCognitoOAuthOpts {
 	redirectSignOut: string;
 	responseType: string;
 	options?: object;
-	urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
 }
 
 export function isCognitoHostedOpts(
@@ -138,7 +137,6 @@ export interface Auth0OAuthOpts {
 	audience: string;
 	responseType: string;
 	returnTo: string;
-	urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
 }
 
 // Replacing to fix typings
@@ -188,6 +186,7 @@ export enum AuthErrorTypes {
 	DeviceConfig = 'deviceConfig',
 	NetworkError = 'networkError',
 	AutoSignInError = 'autoSignInError',
+	OAuthSignInError = 'oauthSignInError',
 }
 
 export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };

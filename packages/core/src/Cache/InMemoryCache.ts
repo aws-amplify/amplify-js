@@ -1,14 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CacheList, defaultConfig, getCurrTime, CacheObject } from './Utils';
+import { CacheList, getCurrTime, CacheObject } from './Utils';
 
 import { StorageCache } from './StorageCache';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '../Logger';
-import { asserts } from '../Util/errors/AssertError';
-import { STORAGE_CACHE_EXCEPTION } from '../constants';
 import { getCurrSizeKey } from './Utils/CacheUtils';
+import { assert, CacheErrorCode } from './Utils/errorHelpers';
 
 const logger = new Logger('InMemoryCache');
 
@@ -74,10 +73,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 	private _isExpired(key: string): boolean {
 		const text: string | null = CacheObject.getItem(key);
 
-		asserts(text !== null, {
-			name: STORAGE_CACHE_EXCEPTION,
-			message: 'item from storage is null',
-		});
+		assert(text !== null, CacheErrorCode.NoCacheItem, `Key: ${key}`);
 		const item: CacheItem = JSON.parse(text);
 		if (getCurrTime() >= item.expires) {
 			return true;
@@ -96,10 +92,7 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 		this.cacheList[listIdx].removeItem(prefixedKey);
 		// decrease the current size of the cache
 		const item = CacheObject.getItem(prefixedKey);
-		asserts(item !== null, {
-			name: STORAGE_CACHE_EXCEPTION,
-			message: 'item from storage is null',
-		});
+		assert(item !== null, CacheErrorCode.NoCacheItem, `Key: ${prefixedKey}`);
 		this._decreaseCurSizeInBytes(JSON.parse(item).byteSize);
 		// finally remove the item from memory
 		CacheObject.removeItem(prefixedKey);

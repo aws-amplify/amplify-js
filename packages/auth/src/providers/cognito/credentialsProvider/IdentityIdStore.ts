@@ -5,48 +5,37 @@ import {
 	AuthConfig,
 	Identity,
 	KeyValueStorageInterface,
-	assertIdentityPooIdConfig,
 } from '@aws-amplify/core';
-import { IdentityIdStorageKeys } from './types';
-import { AuthError } from '../../../errors/AuthError';
+import { assertIdentityPoolIdConfig } from '@aws-amplify/core/internals/utils';
+import { IdentityIdStorageKeys, IdentityIdStore } from './types';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
+import { AuthKeys } from '../tokenProvider/types';
 
-export class DefaultIdentityIdStore {
+export class DefaultIdentityIdStore implements IdentityIdStore {
 	keyValueStorage: KeyValueStorageInterface;
-	authConfig: AuthConfig;
+	authConfig?: AuthConfig;
 
 	// Used as in-memory storage
 	_primaryIdentityId: string | undefined;
-
+	_authKeys: AuthKeys<string> = {};
 	setAuthConfig(authConfigParam: AuthConfig) {
+		assertIdentityPoolIdConfig(authConfigParam.Cognito);
 		this.authConfig = authConfigParam;
+		this._authKeys = createKeysForAuthStorage(
+			'Cognito',
+			authConfigParam.Cognito.identityPoolId
+		);
 		return;
 	}
 
 	constructor(keyValueStorage: KeyValueStorageInterface) {
 		this.keyValueStorage = keyValueStorage;
-		return;
 	}
 
-	async loadIdentityId(): Promise<Identity | undefined> {
-		assertIdentityPooIdConfig(this.authConfig);
-		if (this.keyValueStorage === undefined) {
-			throw new AuthError({
-				message: 'No KeyValueStorage available',
-				name: 'KeyValueStorageNotFound',
-				recoverySuggestion:
-					'Make sure to set the keyValueStorage before using this method',
-			});
-		}
+	async loadIdentityId(): Promise<Identity | null> {
+		assertIdentityPoolIdConfig(this.authConfig?.Cognito);
 		// TODO(v6): migration logic should be here
-		// Reading V5 tokens old format
 		try {
-			const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-			const authKeys = createKeysForAuthStorage(
-				name,
-				this.authConfig.identityPoolId
-			);
-
 			if (!!this._primaryIdentityId) {
 				return {
 					id: this._primaryIdentityId,
@@ -54,7 +43,7 @@ export class DefaultIdentityIdStore {
 				};
 			} else {
 				const storedIdentityId = await this.keyValueStorage.getItem(
-					authKeys.identityId
+					this._authKeys.identityId
 				);
 				if (!!storedIdentityId) {
 					return {
@@ -62,58 +51,31 @@ export class DefaultIdentityIdStore {
 						type: 'guest',
 					};
 				}
+				return null;
 			}
 		} catch (err) {
 			// TODO(v6): validate partial results with mobile implementation
-			throw new Error(`Error loading identityId from storage: ${err}`);
+			return null;
 		}
 	}
 
 	async storeIdentityId(identity: Identity): Promise<void> {
-		assertIdentityPooIdConfig(this.authConfig);
-		if (identity === undefined) {
-			throw new AuthError({
-				message: 'Invalid Identity parameter',
-				name: 'InvalidAuthIdentity',
-				recoverySuggestion: 'Make sure a valid Identity object is passed',
-			});
-		}
-		if (this.keyValueStorage === undefined) {
-			throw new AuthError({
-				message: 'No KeyValueStorage available',
-				name: 'KeyValueStorageNotFound',
-				recoverySuggestion:
-					'Make sure to set the keyValueStorage before using this method',
-			});
-		}
+		assertIdentityPoolIdConfig(this.authConfig?.Cognito);
 
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-		const authKeys = createKeysForAuthStorage(
-			name,
-			this.authConfig.identityPoolId
-		);
 		if (identity.type === 'guest') {
-			this.keyValueStorage.setItem(authKeys.identityId, identity.id);
+			this.keyValueStorage.setItem(this._authKeys.identityId, identity.id);
 			// Clear in-memory storage of primary identityId
 			this._primaryIdentityId = undefined;
 		} else {
 			this._primaryIdentityId = identity.id;
 			// Clear locally stored guest id
-			this.keyValueStorage.clear();
+			this.keyValueStorage.removeItem(this._authKeys.identityId);
 		}
 	}
 
 	async clearIdentityId(): Promise<void> {
-		assertIdentityPooIdConfig(this.authConfig);
-
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-		const authKeys = createKeysForAuthStorage(
-			name,
-			this.authConfig.identityPoolId
-		);
-
 		this._primaryIdentityId = undefined;
-		await Promise.all([this.keyValueStorage.removeItem(authKeys.identityId)]);
+		await this.keyValueStorage.removeItem(this._authKeys.identityId);
 	}
 }
 

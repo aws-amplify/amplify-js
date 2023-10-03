@@ -1,90 +1,103 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { cognitoIdentityIdProvider, setIdentityId } from './IdentityIdProvider';
+import { cognitoIdentityIdProvider } from './IdentityIdProvider';
 import {
-	Logger,
 	AuthTokens,
-	AmplifyV6,
 	AWSCredentialsAndIdentityIdProvider,
 	AWSCredentialsAndIdentityId,
-	UserPoolConfigAndIdentityPoolConfig,
 	getCredentialsForIdentity,
 	GetCredentialsOptions,
 } from '@aws-amplify/core';
+import {
+	Logger,
+	assertIdentityPoolIdConfig,
+	decodeJWT,
+	CognitoIdentityPoolConfig,
+} from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../errors/AuthError';
+import { IdentityIdStore } from './types';
+import { getRegionFromIdentityPoolId } from '../utils/clients/CognitoIdentityProvider/utils';
+import { assertIdTokenInAuthTokens } from '../utils/types';
 
 const logger = new Logger('CognitoCredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
-
 export class CognitoAWSCredentialsAndIdentityIdProvider
 	implements AWSCredentialsAndIdentityIdProvider
 {
+	constructor(identityIdStore: IdentityIdStore) {
+		this._identityIdStore = identityIdStore;
+	}
+
+	private _identityIdStore: IdentityIdStore;
+
 	private _credentialsAndIdentityId?: AWSCredentialsAndIdentityId & {
 		isAuthenticatedCreds: boolean;
+		associatedIdToken?: string;
 	};
-	private _nextCredentialsRefresh: number;
-	// TODO(V6): find what needs to happen to locally stored identityId
-	// TODO(V6): export clear crecentials to singleton
+	private _nextCredentialsRefresh: number = 0;
+
+	async clearCredentialsAndIdentityId(): Promise<void> {
+		logger.debug('Clearing out credentials and identityId');
+		this._credentialsAndIdentityId = undefined;
+		await this._identityIdStore.clearIdentityId();
+	}
+
 	async clearCredentials(): Promise<void> {
-		logger.debug('Clearing out credentials');
+		logger.debug('Clearing out in-memory credentials');
 		this._credentialsAndIdentityId = undefined;
 	}
 
 	async getCredentialsAndIdentityId(
 		getCredentialsOptions: GetCredentialsOptions
-	): Promise<AWSCredentialsAndIdentityId> {
+	): Promise<AWSCredentialsAndIdentityId | undefined> {
 		const isAuthenticated = getCredentialsOptions.authenticated;
 		const tokens = getCredentialsOptions.tokens;
-		const authConfig =
-			getCredentialsOptions.authConfig as UserPoolConfigAndIdentityPoolConfig;
-		const forceRefresh = getCredentialsOptions.forceRefresh;
-		// TODO(V6): Listen to changes to AuthTokens and update the credentials
-		const identityId = await cognitoIdentityIdProvider({ tokens, authConfig });
-
-		if (!identityId) {
-			throw new AuthError({
-				name: 'IdentityIdConfigException',
-				message: 'No Cognito Identity Id provided',
-				recoverySuggestion: 'Make sure to pass a valid identityId.',
-			});
+		const authConfig = getCredentialsOptions.authConfig;
+		try {
+			assertIdentityPoolIdConfig(authConfig?.Cognito);
+		} catch {
+			// No identity pool configured, skipping
+			return;
 		}
 
-		if (forceRefresh) {
+		if (!isAuthenticated && !authConfig.Cognito.allowGuestAccess) {
+			// TODO(V6): return partial result like Native platforms
+			return;
+		}
+
+		const forceRefresh = getCredentialsOptions.forceRefresh;
+		const tokenHasChanged = this.hasTokenChanged(tokens);
+		const identityId = await cognitoIdentityIdProvider({
+			tokens,
+			authConfig: authConfig.Cognito,
+			identityIdStore: this._identityIdStore,
+		});
+
+		// Clear cached credentials when forceRefresh is true OR the cache token has changed
+		if (forceRefresh || tokenHasChanged) {
 			this.clearCredentials();
 		}
-
-		// check eligibility for guest credentials
-		// - if there is error fetching tokens
-		// - if user is not signed in
 		if (!isAuthenticated) {
-			// Check if mandatory sign-in is enabled
-			if (authConfig.isMandatorySignInEnabled) {
-				// TODO(V6): confirm if this needs to throw or log
-				throw new AuthError({
-					name: 'AuthConfigException',
-					message:
-						'Cannot get guest credentials when mandatory signin is enabled',
-					recoverySuggestion: 'Make sure mandatory signin is disabled.',
-				});
-			}
-			return await this.getGuestCredentials(identityId, authConfig);
+			return this.getGuestCredentials(identityId, authConfig.Cognito);
 		} else {
-			return await this.credsForOIDCTokens(authConfig, tokens, identityId);
+			assertIdTokenInAuthTokens(tokens);
+			return this.credsForOIDCTokens(authConfig.Cognito, tokens, identityId);
 		}
 	}
 
 	private async getGuestCredentials(
 		identityId: string,
-		authConfig: UserPoolConfigAndIdentityPoolConfig
+		authConfig: CognitoIdentityPoolConfig
 	): Promise<AWSCredentialsAndIdentityId> {
+		// Return existing in-memory cached credentials only if it exists, is not past it's lifetime and is unauthenticated credentials
 		if (
 			this._credentialsAndIdentityId &&
 			!this.isPastTTL() &&
 			this._credentialsAndIdentityId.isAuthenticatedCreds === false
 		) {
 			logger.info(
-				'returning stored credentials as they neither past TTL nor expired'
+				'returning stored credentials as they neither past TTL nor expired.'
 			);
 			return this._credentialsAndIdentityId;
 		}
@@ -92,14 +105,12 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		// Clear to discard if any authenticated credentials are set and start with a clean slate
 		this.clearCredentials();
 
+		const region = getRegionFromIdentityPoolId(authConfig.identityPoolId);
+
 		// use identityId to obtain guest credentials
 		// save credentials in-memory
 		// No logins params should be passed for guest creds:
 		// https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetCredentialsForIdentity.html
-
-		const region = authConfig.identityPoolId.split(':')[0];
-
-		// TODO(V6): When unauth role is diabled and crdentials are absent, we need to return null not throw an error
 		const clientResult = await getCredentialsForIdentity(
 			{ region },
 			{
@@ -120,11 +131,12 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					sessionToken: clientResult.Credentials.SessionToken,
 					expiration: clientResult.Credentials.Expiration,
 				},
+				identityId,
 			};
 			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
 				res.identityId = identityIdRes;
-				setIdentityId({
+				this._identityIdStore.storeIdentityId({
 					id: identityIdRes,
 					type: 'guest',
 				});
@@ -137,16 +149,16 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			return res;
 		} else {
 			throw new AuthError({
-				name: 'CredentialsException',
-				message: `Error getting credentials.`,
+				name: 'CredentialsNotFoundException',
+				message: `Cognito did not respond with either Credentials, AccessKeyId or SecretKey.`,
 			});
 		}
 	}
 
 	private async credsForOIDCTokens(
-		authConfig: UserPoolConfigAndIdentityPoolConfig,
+		authConfig: CognitoIdentityPoolConfig,
 		authTokens: AuthTokens,
-		identityId?: string
+		identityId: string
 	): Promise<AWSCredentialsAndIdentityId> {
 		if (
 			this._credentialsAndIdentityId &&
@@ -154,7 +166,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			this._credentialsAndIdentityId.isAuthenticatedCreds === true
 		) {
 			logger.debug(
-				'returning stored credentials as they neither past TTL nor expired'
+				'returning stored credentials as they neither past TTL nor expired.'
 			);
 			return this._credentialsAndIdentityId;
 		}
@@ -162,21 +174,12 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		// Clear to discard if any unauthenticated credentials are set and start with a clean slate
 		this.clearCredentials();
 
-		// TODO(V6): oidcProvider should come from config, TBD
 		const logins = authTokens.idToken
-			? formLoginsMap(authTokens.idToken.toString(), 'COGNITO')
+			? formLoginsMap(authTokens.idToken.toString())
 			: {};
-		const identityPoolId = authConfig.identityPoolId;
-		if (!identityPoolId) {
-			logger.debug('identityPoolId is not found in the config');
-			throw new AuthError({
-				name: 'AuthConfigException',
-				message: 'Cannot get credentials without an identityPoolId',
-				recoverySuggestion:
-					'Make sure a valid identityPoolId is given in the config.',
-			});
-		}
-		const region = identityPoolId.split(':')[0];
+
+		const region = getRegionFromIdentityPoolId(authConfig.identityPoolId);
+
 		const clientResult = await getCredentialsForIdentity(
 			{ region },
 			{
@@ -195,19 +198,22 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					accessKeyId: clientResult.Credentials.AccessKeyId,
 					secretAccessKey: clientResult.Credentials.SecretKey,
 					sessionToken: clientResult.Credentials.SessionToken,
-					// TODO(V6): Fixed expiration now + 50 mins
 					expiration: clientResult.Credentials.Expiration,
 				},
+				identityId,
 			};
 			// Store the credentials in-memory along with the expiration
 			this._credentialsAndIdentityId = {
 				...res,
 				isAuthenticatedCreds: true,
+				associatedIdToken: authTokens.idToken?.toString(),
 			};
+			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
+
 			const identityIdRes = clientResult.IdentityId;
 			if (identityIdRes) {
 				res.identityId = identityIdRes;
-				setIdentityId({
+				this._identityIdStore.storeIdentityId({
 					id: identityIdRes,
 					type: 'primary',
 				});
@@ -216,69 +222,37 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		} else {
 			throw new AuthError({
 				name: 'CredentialsException',
-				message: `Error getting credentials.`,
+				message: `Cognito did not respond with either Credentials, AccessKeyId or SecretKey.`,
 			});
 		}
 	}
-
-	// TODO(V6): Make sure this check is not needed, it is present in v5
-	// private _isExpired(credentials: Credentials): boolean {
-	// 	const ts = Date.now();
-
-	// 	/* returns date object.
-	// 		https://github.com/aws/aws-sdk-js-v3/blob/v1.0.0-beta.1/packages/types/src/credentials.ts#L26
-	// 	*/
-	// 	const { expiration } = credentials;
-	// 	// TODO(V6): when  there is no expiration should we consider it not expired?
-	// 	if (!expiration) return false;
-	// 	const expDate = new Date(Number.parseInt(expiration.toString()) * 1000);
-	// 	const isExp = expDate.getTime() <= ts;
-	// 	logger.debug('are the credentials expired?', isExp);
-	// 	return isExp;
-	// }
 
 	private isPastTTL(): boolean {
 		return this._nextCredentialsRefresh === undefined
 			? true
 			: this._nextCredentialsRefresh <= Date.now();
 	}
+	private hasTokenChanged(tokens?: AuthTokens): boolean {
+		return (
+			!!tokens &&
+			!!this._credentialsAndIdentityId?.associatedIdToken &&
+			tokens.idToken?.toString() !==
+				this._credentialsAndIdentityId.associatedIdToken
+		);
+	}
 }
 
-export function formLoginsMap(idToken: string, oidcProvider: string) {
-	const authConfig = AmplifyV6.getConfig().Auth;
-	const userPoolId = authConfig?.userPoolId;
-	const res = {};
-	if (!userPoolId) {
-		logger.debug('userPoolId is not found in the config');
+export function formLoginsMap(idToken: string) {
+	const issuer = decodeJWT(idToken).payload.iss;
+	const res: Record<string, string> = {};
+	if (!issuer) {
 		throw new AuthError({
-			name: 'AuthConfigException',
-			message: 'Cannot get credentials without an userPoolId',
-			recoverySuggestion:
-				'Make sure a valid userPoolId is given in the config.',
+			name: 'InvalidIdTokenException',
+			message: 'Invalid Idtoken.',
 		});
 	}
+	let domainName: string = issuer.replace(/(^\w+:|^)\/\//, '');
 
-	const region = userPoolId.split('_')[0];
-	if (!region) {
-		logger.debug('region is not configured for getting the credentials');
-		throw new AuthError({
-			name: 'AuthConfigException',
-			message: 'Cannot get credentials without a region',
-			recoverySuggestion: 'Make sure a valid region is given in the config.',
-		});
-	}
-	let domainName: string = '';
-	if (oidcProvider === 'COGNITO') {
-		domainName = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
-	} else {
-		// TODO: Support custom OIDC providers
-		throw new AuthError({
-			name: 'AuthConfigException',
-			message: 'OIDC provider not supported',
-			recoverySuggestion:
-				'Currently only COGNITO as OIDC provider is supported',
-		});
-	}
 	res[domainName] = idToken;
 	return res;
 }

@@ -13,7 +13,7 @@ jest.mock('@aws-amplify/core', () => ({
 }));
 
 import Observable from 'zen-observable-ts';
-import { Reachability } from '@aws-amplify/core';
+import { Reachability } from '@aws-amplify/core/internals/utils';
 import {
 	ConnectionStateMonitor,
 	CONNECTION_CHANGE,

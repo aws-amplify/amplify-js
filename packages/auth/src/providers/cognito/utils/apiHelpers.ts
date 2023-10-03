@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AuthUserAttributes } from '../../../types';
 import { AttributeType } from './clients/CognitoIdentityProvider/types';
 
 /**
@@ -15,4 +16,20 @@ export function toAttributeType<T extends Record<string, string | undefined>>(
 		Name: key,
 		Value: value,
 	}));
+}
+
+/**
+ * Transforms an array of AttributeType objects into a user attributes object.
+ *
+ * @param attributes - an array of AttributeType objects.
+ * @returns AuthUserAttributes object.
+ */
+export function toAuthUserAttribute<T extends string = string>(
+	attributes?: AttributeType[]
+): AuthUserAttributes<T> {
+	const userAttributes: AuthUserAttributes<string> = {};
+	attributes?.forEach(attribute => {
+		if (attribute.Name) userAttributes[attribute.Name] = attribute.Value;
+	});
+	return userAttributes;
 }

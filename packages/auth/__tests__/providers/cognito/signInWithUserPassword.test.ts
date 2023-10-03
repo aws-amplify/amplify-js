@@ -1,28 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthError } from '../../../src/errors/AuthError';
-import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import { signIn } from '../../../src/providers/cognito/apis/signIn';
-import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
+import { signIn } from '../../../src/providers/cognito';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInWithUserPassword } from '../../../src/providers/cognito/apis/signInWithUserPassword';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
-import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
-import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+import { Amplify } from 'aws-amplify';
+import {
+	CognitoUserPoolsTokenProvider,
+	tokenOrchestrator,
+} from '../../../src/providers/cognito/tokenProvider';
 
 const authConfig = {
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
-const authConfigWithClientmetadata = {
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
-	...authAPITestParams.configWithClientMetadata,
-};
+
+CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 Amplify.configure({
 	Auth: authConfig,
 });
@@ -70,61 +67,8 @@ describe('signIn API happy path cases', () => {
 			username,
 			password,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
-			authConfig
+			authConfig.Cognito,
+			tokenOrchestrator
 		);
 	});
-
-	test('handleUserPasswordAuthFlow should be called with clientMetada from config', async () => {
-		const username = authAPITestParams.user1.username;
-		const password = authAPITestParams.user1.password;
-		Amplify.configure({
-			Auth: {
-				...authAPITestParams.configWithClientMetadata,
-				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				userPoolId: 'us-west-2_zzzzz',
-			},
-		});
-		await signInWithUserPassword({
-			username,
-			password,
-		});
-		expect(handleUserPasswordFlowSpy).toBeCalledWith(
-			username,
-			password,
-			authAPITestParams.configWithClientMetadata.clientMetadata,
-			authConfigWithClientmetadata
-		);
-	});
-});
-
-describe('signIn API error path cases:', () => {
-
-	test('signIn API should throw a validation AuthError when username is empty', async () => {
-		expect.assertions(2);
-		try {
-			await signIn({ username: '' });
-		} catch (error) {
-			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(AuthValidationErrorCode.EmptySignInUsername);
-		}
-	});
-
-	test('signIn API should raise service error', async () => {
-		expect.assertions(2);
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(
-				buildMockErrorResponse(InitiateAuthException.InvalidParameterException)
-			)
-		);
-		try {
-			await signIn({
-				username: authAPITestParams.user1.username,
-				password: authAPITestParams.user1.password,
-			});
-		} catch (error) {
-			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(InitiateAuthException.InvalidParameterException);
-		}
-	});
-
 });

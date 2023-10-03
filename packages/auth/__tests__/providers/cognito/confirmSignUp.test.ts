@@ -2,21 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { confirmSignUp } from '../../../src/providers/cognito';
-import { AuthSignUpStep } from '../../../src/types';
 import * as confirmSignUpClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { ConfirmSignUpException } from '../../../src/providers/cognito/types/errors';
-import { AmplifyV6 as Amplify } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { ConfirmSignUpCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 const authConfig = {
-	userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-	userPoolId: 'us-west-2_zzzzz',
+	Cognito: {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: 'us-west-2_zzzzz',
+	},
 };
 
 describe('confirmSignUp API Happy Path Cases:', () => {
@@ -44,7 +45,7 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 		expect(result).toEqual({
 			isSignUpComplete: true,
 			nextStep: {
-				signUpStep: AuthSignUpStep.DONE,
+				signUpStep: 'DONE',
 			},
 		});
 		expect(confirmSignUpClientSpy).toHaveBeenCalledWith(
@@ -95,31 +96,6 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({
 				ClientMetadata: clientMetadata,
-				ConfirmationCode: confirmationCode,
-				Username: user1.username,
-				ForceAliasCreation: undefined,
-				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			})
-		);
-	});
-
-	test('confirmSignUp API input should contain clientMetadata from config', async () => {
-		Amplify.configure({
-			Auth: {
-				userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				userPoolId: 'us-west-2_zzzzz',
-				...authAPITestParams.configWithClientMetadata,
-			},
-		});
-		await confirmSignUp({
-			username: user1.username,
-			confirmationCode,
-		});
-		expect(confirmSignUpClientSpy).toHaveBeenCalledWith(
-			expect.objectContaining({ region: 'us-west-2' }),
-			expect.objectContaining({
-				ClientMetadata:
-					authAPITestParams.configWithClientMetadata.clientMetadata,
 				ConfirmationCode: confirmationCode,
 				Username: user1.username,
 				ForceAliasCreation: undefined,

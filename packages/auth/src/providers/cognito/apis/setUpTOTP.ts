@@ -1,17 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyV6 as Amplify,
-	assertTokenProviderConfig,
-} from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { AuthError } from '../../../errors/AuthError';
-import { TOTPSetupDetails } from '../../../types/models';
 import {
 	SETUP_TOTP_EXCEPTION,
 	AssociateSoftwareTokenException,
 } from '../types/errors';
+import { SetUpTOTPOutput } from '../types';
 import { getTOTPSetupDetails } from '../utils/signInHelpers';
 import { associateSoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
@@ -20,16 +18,13 @@ import { assertAuthTokens } from '../utils/types';
 /**
  * Sets up TOTP for the user.
  *
+ * @returns SetUpTOTPOutput
  * @throws -{@link AssociateSoftwareTokenException}
  * Thrown if a service occurs while setting up TOTP.
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
- *
- * @returns TOTPSetupDetails
- *
  **/
-export async function setUpTOTP(): Promise<TOTPSetupDetails> {
-	const authConfig = Amplify.getConfig().Auth;
+export async function setUpTOTP(): Promise<SetUpTOTPOutput> {
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);

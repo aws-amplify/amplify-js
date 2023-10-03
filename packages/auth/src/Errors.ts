@@ -3,8 +3,8 @@
 
 // TODO: delete this module when the Auth class is removed.
 
-import { AuthErrorMessages, AuthErrorTypes } from './types';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { AuthErrorMessages, AuthErrorTypes } from './types/Auth';
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import { AuthErrorStrings } from './common/AuthErrorStrings';
 
 const logger = new Logger('AuthError');
@@ -41,6 +41,10 @@ export class NoUserPoolError extends AuthError {
 }
 
 export const authErrorMessages: AuthErrorMessages = {
+	oauthSignInError: {
+		message: AuthErrorStrings.OAUTH_ERROR,
+		log: 'Make sure Cognito Hosted UI has been configured correctly',
+	},
 	noConfig: {
 		message: AuthErrorStrings.DEFAULT_MSG,
 		log: `

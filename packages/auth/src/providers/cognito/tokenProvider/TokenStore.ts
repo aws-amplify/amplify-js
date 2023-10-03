@@ -1,75 +1,78 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { AuthConfig, KeyValueStorageInterface } from '@aws-amplify/core';
 import {
-	AmplifyV6,
-	KeyValueStorageInterface,
 	assertTokenProviderConfig,
-	asserts,
 	decodeJWT,
-} from '@aws-amplify/core';
+} from '@aws-amplify/core/internals/utils';
 import {
 	AuthKeys,
 	AuthTokenStorageKeys,
 	AuthTokenStore,
 	CognitoAuthTokens,
+	DeviceMetadata,
 } from './types';
+import { AuthError } from '../../../errors/AuthError';
+import { assert, TokenProviderErrorCode } from './errorHelpers';
 
 export class DefaultTokenStore implements AuthTokenStore {
-	constructor() {}
-	keyValueStorage: KeyValueStorageInterface;
-
+	private authConfig?: AuthConfig;
+	keyValueStorage?: KeyValueStorageInterface;
+	private name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
+	private authKeys: AuthKeys<keyof typeof AuthTokenStorageKeys> | undefined;
+	getKeyValueStorage(): KeyValueStorageInterface {
+		if (!this.keyValueStorage) {
+			throw new AuthError({
+				name: 'KeyValueStorageNotFoundException',
+				message: 'KeyValueStorage was not found in TokenStore',
+			});
+		}
+		return this.keyValueStorage;
+	}
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface) {
 		this.keyValueStorage = keyValueStorage;
-		return;
+	}
+	setAuthConfig(authConfig: AuthConfig) {
+		this.authConfig = authConfig;
 	}
 
 	async loadTokens(): Promise<CognitoAuthTokens | null> {
-		const authConfig = AmplifyV6.getConfig().Auth;
-		try {
-			assertTokenProviderConfig(authConfig);
-		} catch (err) {
-			return null;
-		}
-
 		// TODO(v6): migration logic should be here
 		// Reading V5 tokens old format
-
-		// Reading V6 tokens
 		try {
-			const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-			const authKeys = createKeysForAuthStorage(
-				name,
-				authConfig.userPoolWebClientId
-			);
-
-			const accessTokenString = await this.keyValueStorage.getItem(
-				authKeys.accessToken
+			const accessTokenString = await this.getKeyValueStorage().getItem(
+				this.getAuthKeys().accessToken
 			);
 
 			if (!accessTokenString) {
-				throw new Error('No session');
+				throw new AuthError({
+					name: 'NoSessionFoundException',
+					message: 'Auth session was not found. Make sure to call signIn.',
+				});
 			}
 
 			const accessToken = decodeJWT(accessTokenString);
-			const itString = await this.keyValueStorage.getItem(authKeys.idToken);
+			const itString = await this.getKeyValueStorage().getItem(
+				this.getAuthKeys().idToken
+			);
 			const idToken = itString ? decodeJWT(itString) : undefined;
 
-			const refreshToken = await this.keyValueStorage.getItem(
-				authKeys.refreshToken
-			);
-			const NewDeviceMetadata = await this.keyValueStorage.getItem(
-				authKeys.NewDeviceMetadata
-			);
+			const refreshToken =
+				(await this.getKeyValueStorage().getItem(
+					this.getAuthKeys().refreshToken
+				)) ?? undefined;
 
 			const clockDriftString =
-				(await this.keyValueStorage.getItem(authKeys.clockDrift)) || '0';
+				(await this.getKeyValueStorage().getItem(
+					this.getAuthKeys().clockDrift
+				)) || '0';
 			const clockDrift = Number.parseInt(clockDriftString);
 
 			return {
 				accessToken,
 				idToken,
 				refreshToken,
-				NewDeviceMetadata,
+				deviceMetadata: (await this.getDeviceMetadata()) ?? undefined,
 				clockDrift,
 			};
 		} catch (err) {
@@ -77,65 +80,81 @@ export class DefaultTokenStore implements AuthTokenStore {
 		}
 	}
 	async storeTokens(tokens: CognitoAuthTokens): Promise<void> {
-		const authConfig = AmplifyV6.getConfig().Auth;
-		assertTokenProviderConfig(authConfig);
-		asserts(!(tokens === undefined), {
-			message: 'Invalid tokens',
-			name: 'InvalidAuthTokens',
-			recoverySuggestion: 'Make sure the tokens are valid',
-		});
+		assert(tokens !== undefined, TokenProviderErrorCode.InvalidAuthTokens);
 
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-		const authKeys = createKeysForAuthStorage(
-			name,
-			authConfig.userPoolWebClientId
-		);
-
-		this.keyValueStorage.setItem(
-			authKeys.accessToken,
+		this.getKeyValueStorage().setItem(
+			this.getAuthKeys().accessToken,
 			tokens.accessToken.toString()
 		);
 
 		if (!!tokens.idToken) {
-			this.keyValueStorage.setItem(authKeys.idToken, tokens.idToken.toString());
-		}
-
-		if (!!tokens.refreshToken) {
-			this.keyValueStorage.setItem(authKeys.refreshToken, tokens.refreshToken);
-		}
-
-		if (!!tokens.NewDeviceMetadata) {
-			this.keyValueStorage.setItem(
-				authKeys.NewDeviceMetadata,
-				tokens.NewDeviceMetadata
+			this.getKeyValueStorage().setItem(
+				this.getAuthKeys().idToken,
+				tokens.idToken.toString()
 			);
 		}
 
-		this.keyValueStorage.setItem(authKeys.clockDrift, `${tokens.clockDrift}`);
+		if (!!tokens.refreshToken) {
+			this.getKeyValueStorage().setItem(
+				this.getAuthKeys().refreshToken,
+				tokens.refreshToken
+			);
+		}
+
+		if (!!tokens.deviceMetadata) {
+			this.getKeyValueStorage().setItem(
+				this.getAuthKeys().deviceMetadata,
+				JSON.stringify(tokens.deviceMetadata)
+			);
+		}
+
+		this.getKeyValueStorage().setItem(
+			this.getAuthKeys().clockDrift,
+			`${tokens.clockDrift}`
+		);
 	}
 
 	async clearTokens(): Promise<void> {
-		const authConfig = AmplifyV6.getConfig().Auth;
-		assertTokenProviderConfig(authConfig);
-
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-		const authKeys = createKeysForAuthStorage(
-			name,
-			authConfig.userPoolWebClientId
-		);
-
 		// Not calling clear because it can remove data that is not managed by AuthTokenStore
 		await Promise.all([
-			this.keyValueStorage.removeItem(authKeys.accessToken),
-			this.keyValueStorage.removeItem(authKeys.idToken),
-			this.keyValueStorage.removeItem(authKeys.clockDrift),
-			this.keyValueStorage.removeItem(authKeys.refreshToken),
-			this.keyValueStorage.removeItem(authKeys.NewDeviceMetadata),
+			this.getKeyValueStorage().removeItem(this.getAuthKeys().accessToken),
+			this.getKeyValueStorage().removeItem(this.getAuthKeys().idToken),
+			this.getKeyValueStorage().removeItem(this.getAuthKeys().clockDrift),
+			this.getKeyValueStorage().removeItem(this.getAuthKeys().refreshToken),
 		]);
+	}
+
+	async getDeviceMetadata(): Promise<DeviceMetadata | null> {
+		const newDeviceMetadata = JSON.parse(
+			(await this.getKeyValueStorage().getItem(
+				this.getAuthKeys().deviceMetadata
+			)) || '{}'
+		);
+		const deviceMetadata =
+			Object.keys(newDeviceMetadata).length > 0 ? newDeviceMetadata : null;
+		return deviceMetadata;
+	}
+	async clearDeviceMetadata(): Promise<void> {
+		await this.getKeyValueStorage().removeItem(
+			this.getAuthKeys().deviceMetadata
+		);
+	}
+
+	private getAuthKeys(): AuthKeys<keyof typeof AuthTokenStorageKeys> {
+		assertTokenProviderConfig(this.authConfig?.Cognito);
+		if (this.authKeys) return this.authKeys;
+		this.authKeys = createKeysForAuthStorage(
+			this.name,
+			this.authConfig.Cognito.userPoolClientId
+		);
+		return this.authKeys;
 	}
 }
 
-const createKeysForAuthStorage = (provider: string, identifier: string) => {
+export const createKeysForAuthStorage = (
+	provider: string,
+	identifier: string
+) => {
 	return getAuthStorageKeys(AuthTokenStorageKeys)(
 		`com.amplify.${provider}`,
 		identifier

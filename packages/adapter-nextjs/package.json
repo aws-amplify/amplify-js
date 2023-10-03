@@ -1,0 +1,111 @@
+{
+	"author": "Amazon Web Services",
+	"name": "@aws-amplify/adapter-nextjs",
+	"description": "The adapter for the supporting of using Amplify APIs in Next.js.",
+	"peerDependencies": {
+		"aws-amplify": "^6.0.0",
+		"next": ">=13.4.0 <14.0.0"
+	},
+	"dependencies": {
+		"cookie": "0.5.0",
+		"server-only": "^0.0.1"
+	},
+	"devDependencies": {
+		"@types/cookie": "0.5.1",
+		"@types/node": "^20.3.1",
+		"@types/react": "^18.2.13",
+		"@types/react-dom": "^18.2.6",
+		"aws-amplify": "6.0.0",
+		"jest-fetch-mock": "3.0.3",
+		"next": ">= 13.4.0 < 14.0.0",
+		"typescript": "5.1.6"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"bugs": {
+		"url": "https://github.com/aws/aws-amplify/issues"
+	},
+	"exports": {
+		".": {
+			"types": "./lib-esm/index.d.ts",
+			"import": "./lib-esm/index.js",
+			"require": "./lib/index.js"
+		},
+		"./with-amplify": {
+			"types": "./lib-esm/withAmplify.d.ts",
+			"import": "./lib-esm/withAmplify.js",
+			"require": "./lib/withAmplify.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"lib",
+		"lib-esm",
+		"src",
+		"with-amplify"
+	],
+	"homepage": "https://aws-amplify.github.io/",
+	"jest": {
+		"coveragePathIgnorePatterns": [
+			"/node_modules/",
+			"dist",
+			"lib",
+			"lib-esm"
+		],
+		"coverageThreshold": {
+			"global": {
+				"branches": 100,
+				"functions": 100,
+				"lines": 100,
+				"statements": 100
+			}
+		},
+		"globals": {
+			"ts-jest": {
+				"diagnostics": {
+					"pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
+				},
+				"tsConfig": false
+			}
+		},
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"json",
+			"jsx"
+		],
+		"testEnvironment": "node",
+		"testPathIgnorePatterns": [
+			"xmlParser-fixture.ts",
+			"testUtils",
+			"cases"
+		],
+		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"testURL": "http://localhost/",
+		"transform": {
+			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+		}
+	},
+	"license": "Apache-2.0",
+	"main": "./lib/index.js",
+	"module": "./lib-esm/index.js",
+	"sideEffects": false,
+	"scripts": {
+		"build": "npm run clean && npm run build:esm && npm run build:cjs",
+		"build-with-test": "npm test && npm run build",
+		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib",
+		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
+		"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
+		"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
+		"clean": "npm run clean:size && rimraf lib-esm lib",
+		"clean:size": "rimraf dual-publish-tmp tmp*",
+		"format": "echo \"Not implemented\"",
+		"lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
+		"test": "npm run lint && jest -w 1 --coverage",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
+	},
+	"typings": "./lib-esm/index.d.ts",
+	"version": "0.0.1"
+}

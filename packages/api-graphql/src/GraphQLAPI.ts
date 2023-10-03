@@ -1,9 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify } from '@aws-amplify/core';
 import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internals';
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 
 export const graphqlOperation = (
 	query,
@@ -39,4 +38,3 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 }
 
 export const GraphQLAPI = new GraphQLAPIClass(null);
-Amplify.register(GraphQLAPI);

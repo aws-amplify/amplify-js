@@ -1,37 +1,64 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
+	Amplify,
+	CookieStorage,
 	LibraryOptions,
 	ResourcesConfig,
-	AmplifyV6,
-	LocalStorage,
+	defaultStorage,
 } from '@aws-amplify/core';
+import {
+	LegacyConfig,
+	parseAWSExports,
+} from '@aws-amplify/core/internals/utils';
 import {
 	CognitoUserPoolsTokenProvider,
 	cognitoCredentialsProvider,
-} from './auth';
+} from './auth/cognito';
 
-export const DefaultAmplifyV6 = {
-	configure(resourceConfig: ResourcesConfig, libraryOptions?: LibraryOptions) {
-		const defaultLibraryOptions: LibraryOptions = {
-			Auth: {
-				tokenProvider: CognitoUserPoolsTokenProvider,
-				credentialsProvider: cognitoCredentialsProvider,
-			},
-		};
+export const DefaultAmplify = {
+	configure(
+		resourceConfig: ResourcesConfig | LegacyConfig,
+		libraryOptions?: LibraryOptions
+	) {
+		let resolvedResourceConfig: ResourcesConfig;
 
-		let updatedLibraryOptions = {};
-
-		if (libraryOptions !== undefined) {
-			updatedLibraryOptions = libraryOptions;
+		if (Object.keys(resourceConfig).some(key => key.startsWith('aws_'))) {
+			resolvedResourceConfig = parseAWSExports(resourceConfig);
 		} else {
-			CognitoUserPoolsTokenProvider.setKeyValueStorage(LocalStorage);
-			updatedLibraryOptions = defaultLibraryOptions;
+			resolvedResourceConfig = resourceConfig as ResourcesConfig;
 		}
 
-		AmplifyV6.configure(resourceConfig, updatedLibraryOptions);
+		// When Auth config is provided but no custom Auth provider defined
+		// use the default Auth Providers
+		if (resolvedResourceConfig.Auth && !libraryOptions?.Auth) {
+			CognitoUserPoolsTokenProvider.setAuthConfig(resolvedResourceConfig.Auth);
+
+			const libraryOptionsWithDefaultAuthProviders: LibraryOptions = {
+				...libraryOptions,
+				Auth: {
+					tokenProvider: CognitoUserPoolsTokenProvider,
+					credentialsProvider: cognitoCredentialsProvider,
+				},
+			};
+
+			CognitoUserPoolsTokenProvider.setKeyValueStorage(
+				libraryOptions?.ssr
+					? new CookieStorage({
+							sameSite: 'strict',
+					  })
+					: defaultStorage
+			);
+
+			Amplify.configure(
+				resolvedResourceConfig,
+				libraryOptionsWithDefaultAuthProviders
+			);
+		} else {
+			Amplify.configure(resolvedResourceConfig, libraryOptions);
+		}
 	},
 	getConfig(): ResourcesConfig {
-		return AmplifyV6.getConfig();
+		return Amplify.getConfig();
 	},
 };

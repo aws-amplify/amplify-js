@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import './polyfill';
+
 export { signUp } from './apis/signUp';
 export { resetPassword } from './apis/resetPassword';
 export { confirmResetPassword } from './apis/confirmResetPassword';
@@ -15,5 +17,61 @@ export { updatePassword } from './apis/updatePassword';
 export { setUpTOTP } from './apis/setUpTOTP';
 export { fetchDevices } from './apis/fetchDevices';
 export { updateUserAttributes } from './apis/updateUserAttributes';
-export { cognitoCredentialsProvider } from './credentialsProvider';
-export { CognitoUserPoolsTokenProvider } from './tokenProvider';
+export { updateUserAttribute } from './apis/updateUserAttribute';
+export { getCurrentUser } from './apis/getCurrentUser';
+export { confirmUserAttribute } from './apis/confirmUserAttribute';
+export { signInWithRedirect } from './apis/signInWithRedirect';
+export { fetchUserAttributes } from './apis/fetchUserAttributes';
+export { signOut } from './apis/signOut';
+export { sendUserAttributeVerificationCode } from './apis/sendUserAttributeVerificationCode';
+export { deleteUserAttributes } from './apis/deleteUserAttributes';
+export { deleteUser } from './apis/deleteUser';
+export { rememberDevice } from './apis/rememberDevice';
+export {
+	ConfirmResetPasswordInput,
+	ConfirmSignInInput,
+	ConfirmSignUpInput,
+	ConfirmUserAttributeInput,
+	ResendSignUpCodeInput,
+	ResetPasswordInput,
+	SignInInput,
+	SignInWithRedirectInput,
+	SignOutInput,
+	SignUpInput,
+	UpdateMFAPreferenceInput,
+	UpdatePasswordInput,
+	UpdateUserAttributesInput,
+	UpdateUserAttributeInput,
+	VerifyTOTPSetupInput,
+	SendUserAttributeVerificationCodeInput,
+	DeleteUserAttributesInput,
+} from './types/inputs';
+
+export {
+	FetchUserAttributesOutput,
+	GetCurrentUserOutput,
+	ConfirmSignInOutput,
+	ConfirmSignUpOutput,
+	FetchMFAPreferenceOutput,
+	ResendSignUpCodeOutput,
+	ResetPasswordOutput,
+	SetUpTOTPOutput,
+	SignInOutput,
+	SignOutOutput,
+	SignUpOutput,
+	UpdateUserAttributesOutput,
+	UpdateUserAttributeOutput,
+	SendUserAttributeVerificationCodeOutput,
+} from './types/outputs';
+export {
+	cognitoCredentialsProvider,
+	CognitoAWSCredentialsAndIdentityIdProvider,
+	DefaultIdentityIdStore,
+} from './credentialsProvider';
+export {
+	CognitoUserPoolsTokenProvider,
+	CognitoUserPoolTokenProviderType,
+	TokenOrchestrator,
+	DefaultTokenStore,
+	refreshAuthTokens,
+} from './tokenProvider';

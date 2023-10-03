@@ -6,7 +6,6 @@ import {
 	ModelOperation,
 } from '../src/types';
 import { NAMESPACES } from '../src/util';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 
 describe('Auth Strategies', () => {
 	describe('multiAuthStrategy', () => {
@@ -79,13 +78,13 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AWS_LAMBDA'],
+				result: ['lambda'],
 			});
 
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: false,
-				result: ['AWS_LAMBDA'],
+				result: ['lambda'],
 			});
 		});
 
@@ -94,7 +93,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS'],
+				result: ['userPool'],
 			});
 
 			await testMultiAuthStrategy({
@@ -109,7 +108,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['OPENID_CONNECT'],
+				result: ['oidc'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -123,7 +122,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS'],
+				result: ['userPool'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -137,7 +136,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['OPENID_CONNECT'],
+				result: ['oidc'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -151,7 +150,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS'],
+				result: ['userPool'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -164,7 +163,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS'],
+				result: ['userPool'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -178,7 +177,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AWS_IAM'],
+				result: ['iam'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -192,12 +191,12 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AWS_IAM'],
+				result: ['iam'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: false,
-				result: ['AWS_IAM'],
+				result: ['iam'],
 			});
 		});
 
@@ -206,25 +205,25 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['API_KEY'],
+				result: ['apiKey'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: false,
-				result: ['API_KEY'],
+				result: ['apiKey'],
 			});
 
-			// public with no provider implies that the provider is API_KEY
+			// public with no provider implies that the provider is apiKey
 			authRules = [rules.publicAPIKeyImplicit];
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['API_KEY'],
+				result: ['apiKey'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: false,
-				result: ['API_KEY'],
+				result: ['apiKey'],
 			});
 		});
 
@@ -233,7 +232,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS'],
+				result: ['userPool'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -247,7 +246,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS', 'OPENID_CONNECT'],
+				result: ['userPool', 'oidc'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -260,7 +259,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS', 'OPENID_CONNECT'],
+				result: ['userPool', 'oidc'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -274,7 +273,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS', 'AWS_IAM'],
+				result: ['userPool', 'iam'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -288,12 +287,12 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS', 'AWS_IAM'],
+				result: ['userPool', 'iam'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: false,
-				result: ['AWS_IAM'],
+				result: ['iam'],
 			});
 		});
 
@@ -302,12 +301,12 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS', 'API_KEY'],
+				result: ['userPool', 'apiKey'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: false,
-				result: ['API_KEY'],
+				result: ['apiKey'],
 			});
 		});
 
@@ -316,7 +315,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS', 'AWS_IAM'],
+				result: ['userPool', 'iam'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -329,7 +328,7 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS', 'AWS_IAM'],
+				result: ['userPool', 'iam'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
@@ -347,12 +346,12 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS', 'AWS_IAM', 'API_KEY'],
+				result: ['userPool', 'iam', 'apiKey'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: false,
-				result: ['API_KEY'],
+				result: ['apiKey'],
 			});
 		});
 
@@ -365,12 +364,12 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS', 'AWS_IAM', 'API_KEY'],
+				result: ['userPool', 'iam', 'apiKey'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: false,
-				result: ['AWS_IAM', 'API_KEY'],
+				result: ['iam', 'apiKey'],
 			});
 		});
 
@@ -384,18 +383,13 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: [
-					'AWS_LAMBDA',
-					'AMAZON_COGNITO_USER_POOLS',
-					'AWS_IAM',
-					'API_KEY',
-				],
+				result: ['lambda', 'userPool', 'iam', 'apiKey'],
 			});
 
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: false,
-				result: ['AWS_LAMBDA', 'AWS_IAM', 'API_KEY'],
+				result: ['lambda', 'iam', 'apiKey'],
 			});
 		});
 
@@ -412,12 +406,12 @@ describe('Auth Strategies', () => {
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: true,
-				result: ['AMAZON_COGNITO_USER_POOLS', 'AWS_IAM', 'API_KEY'],
+				result: ['userPool', 'iam', 'apiKey'],
 			});
 			await testMultiAuthStrategy({
 				authRules,
 				hasAuthenticatedUser: false,
-				result: ['API_KEY'],
+				result: ['apiKey'],
 			});
 		});
 	});
@@ -540,18 +534,14 @@ function mockCurrentUser({
 }: {
 	hasAuthenticatedUser: boolean;
 }) {
-	jest.mock('@aws-amplify/auth', () => ({
-		Auth: {
-			currentAuthenticatedUser: () => {
-				return new Promise((res, rej) => {
-					if (hasAuthenticatedUser) {
-						res(hasAuthenticatedUser);
-					} else {
-						rej(hasAuthenticatedUser);
-					}
-				});
-			},
+	jest.mock('@aws-amplify/core', () => ({
+		async fetchAuthSession(): Promise<{}> {
+			if (hasAuthenticatedUser) {
+				return hasAuthenticatedUser;
+			} else {
+				throw new Error();
+			}
+			return {};
 		},
-		GRAPHQL_AUTH_MODE,
 	}));
 }

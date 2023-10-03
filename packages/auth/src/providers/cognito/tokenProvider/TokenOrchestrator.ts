@@ -1,37 +1,78 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	AmplifyV6,
-	isTokenExpired,
 	AuthTokens,
 	FetchAuthSessionOptions,
+	AuthConfig,
+	Hub,
 } from '@aws-amplify/core';
+import {
+	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+	isTokenExpired,
+} from '@aws-amplify/core/internals/utils';
 import {
 	AuthTokenOrchestrator,
 	AuthTokenStore,
 	CognitoAuthTokens,
+	DeviceMetadata,
 	TokenRefresher,
 } from './types';
-import { tokenOrchestrator } from '.';
+import { assertServiceError } from '../../../errors/utils/assertServiceError';
+import { AuthError } from '../../../errors/AuthError';
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
-	tokenStore: AuthTokenStore;
-	tokenRefresher: TokenRefresher;
+	private authConfig?: AuthConfig;
+	tokenStore?: AuthTokenStore;
+	tokenRefresher?: TokenRefresher;
+	waitForInflightOAuth: () => Promise<void> = async () => {};
 
+	setAuthConfig(authConfig: AuthConfig) {
+		this.authConfig = authConfig;
+	}
 	setTokenRefresher(tokenRefresher: TokenRefresher) {
 		this.tokenRefresher = tokenRefresher;
 	}
 	setAuthTokenStore(tokenStore: AuthTokenStore) {
 		this.tokenStore = tokenStore;
 	}
+	setWaitForInflightOAuth(waitForInflightOAuth: () => Promise<void>) {
+		this.waitForInflightOAuth = waitForInflightOAuth;
+	}
+
+	getTokenStore(): AuthTokenStore {
+		if (!this.tokenStore) {
+			throw new AuthError({
+				name: 'EmptyTokenStoreException',
+				message: 'TokenStore not set',
+			});
+		}
+		return this.tokenStore;
+	}
+
+	getTokenRefresher(): TokenRefresher {
+		if (!this.tokenRefresher) {
+			throw new AuthError({
+				name: 'EmptyTokenRefresherException',
+				message: 'TokenRefresher not set',
+			});
+		}
+		return this.tokenRefresher;
+	}
 
 	async getTokens(
 		options?: FetchAuthSessionOptions
 	): Promise<AuthTokens | null> {
-		let tokens: CognitoAuthTokens;
+		let tokens: CognitoAuthTokens | null;
 
-		// TODO(v6): add wait for inflight OAuth in case there is one
-		tokens = await this.tokenStore.loadTokens();
+		try {
+			assertTokenProviderConfig(this.authConfig?.Cognito);
+		} catch (_err) {
+			// Token provider not configured
+			return null;
+		}
+		await this.waitForInflightOAuth();
+		tokens = await this.getTokenStore().loadTokens();
 
 		if (tokens === null) {
 			return null;
@@ -69,36 +110,50 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		tokens: CognitoAuthTokens;
 	}): Promise<CognitoAuthTokens | null> {
 		try {
-			const authConfig = AmplifyV6.getConfig().Auth;
-
-			const newTokens = await this.tokenRefresher({
+			const newTokens = await this.getTokenRefresher()({
 				tokens,
-				authConfig,
+				authConfig: this.authConfig,
 			});
 
-			tokenOrchestrator.setTokens({ tokens: newTokens });
+			this.setTokens({ tokens: newTokens });
+			Hub.dispatch('auth', { event: 'tokenRefresh' }, 'Auth', AMPLIFY_SYMBOL);
+
 			return newTokens;
 		} catch (err) {
 			return this.handleErrors(err);
 		}
 	}
 
-	private handleErrors(err: Error) {
+	private handleErrors(err: unknown) {
+		assertServiceError(err);
 		if (err.message !== 'Network error') {
 			// TODO(v6): Check errors on client
-			tokenOrchestrator.clearTokens();
+			this.clearTokens();
 		}
 		if (err.name.startsWith('NotAuthorizedException')) {
 			return null;
 		} else {
+			Hub.dispatch(
+				'auth',
+				{ event: 'tokenRefresh_failure' },
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			throw err;
 		}
 	}
 	async setTokens({ tokens }: { tokens: CognitoAuthTokens }) {
-		return this.tokenStore.storeTokens(tokens);
+		return this.getTokenStore().storeTokens(tokens);
 	}
 
 	async clearTokens() {
-		return this.tokenStore.clearTokens();
+		return this.getTokenStore().clearTokens();
+	}
+
+	getDeviceMetadata(): Promise<DeviceMetadata | null> {
+		return this.getTokenStore().getDeviceMetadata();
+	}
+	clearDeviceMetadata(): Promise<void> {
+		return this.getTokenStore().clearDeviceMetadata();
 	}
 }

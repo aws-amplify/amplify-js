@@ -2,21 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger as Logger } from '../Logger';
-import { AmplifyV6 } from '../singleton';
-import { I18nOptions } from './types';
+import { Amplify } from '../singleton';
+import { I18nConfig } from './types';
 
 const logger = new Logger('I18n');
 
 /**
  * Language translation utility.
- * 
- * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
  */
 export class I18n {
 	/**
 	 * @private
 	 */
-	_options: I18nOptions | null = null;
+	_options: I18nConfig | null = null;
 
 	/**
 	 * @private
@@ -32,19 +30,15 @@ export class I18n {
 	 * @constructor
 	 * Initialize with configurations
 	 * @param {Object} options
-	 * 
-	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	constructor() {}
 
 	/**
 	 * Sets the default language from the configuration when required.
-	 * 
-	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	setDefaultLanguage() {
 		if (!this._lang) {
-			const i18nConfig = AmplifyV6.getConfig().I18n;
+			const i18nConfig = Amplify.getConfig().I18n;
 			this._lang = i18nConfig?.language;
 		}
 
@@ -65,8 +59,6 @@ export class I18n {
 	 * @method
 	 * Explicitly setting language
 	 * @param {String} lang
-	 * 
-	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	setLanguage(lang: string) {
 		this._lang = lang;
@@ -77,8 +69,6 @@ export class I18n {
 	 * Get value
 	 * @param {String} key
 	 * @param {String} defVal - Default value
-	 * 
-	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	get(key: string, defVal: string | undefined = undefined) {
 		if (!this._lang) {
@@ -107,8 +97,6 @@ export class I18n {
 	 * @param {String} key
 	 * @param {String} language - Specified langurage to be used
 	 * @param {String} defVal - Default value
-	 * 
-	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	getByLanguage(key: string, language: string, defVal: string | null = null) {
 		if (!language) {
@@ -128,8 +116,6 @@ export class I18n {
 	 * Add vocabularies for one language
 	 * @param {String} language - Language of the dictionary
 	 * @param {Object} vocabularies - Object that has key-value as dictionary entry
-	 * 
-	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
 	putVocabulariesForLanguage(
 		language: string,
@@ -147,10 +133,8 @@ export class I18n {
 	 * Add vocabularies for one language
 	 * @param {Object} vocabularies - Object that has language as key,
 	 *                                vocabularies of each language as value
-	 * 
-	 * @deprecated The I18n utility is on a deprecation path and will be removed in a future version of Amplify.
 	 */
-	putVocabularies(vocabularies: Record<string, any>) {
+	putVocabularies(vocabularies: Record<string, Record<string, string>>) {
 		Object.keys(vocabularies).map(key => {
 			this.putVocabulariesForLanguage(key, vocabularies[key]);
 		});

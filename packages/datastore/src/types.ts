@@ -15,11 +15,9 @@ import {
 	extractPrimaryKeyFieldNames,
 } from './util';
 import { PredicateAll } from './predicates';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
-import { Auth } from '@aws-amplify/auth';
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Cache } from '@aws-amplify/core';
 import { Adapter } from './storage/adapter';
+import { APIAuthMode } from '@aws-amplify/core/internals/utils';
 
 export type Scalar<T> = T extends Array<infer InnerType> ? InnerType : T;
 
@@ -962,8 +960,8 @@ export enum AuthModeStrategyType {
 }
 
 export type AuthModeStrategyReturn =
-	| GRAPHQL_AUTH_MODE
-	| GRAPHQL_AUTH_MODE[]
+	| APIAuthMode
+	| APIAuthMode[]
 	| undefined
 	| null;
 
@@ -987,7 +985,7 @@ export enum ModelOperation {
 export type ModelAuthModes = Record<
 	string,
 	{
-		[Property in ModelOperation]: GRAPHQL_AUTH_MODE[];
+		[Property in ModelOperation]: APIAuthMode[];
 	}
 >;
 
@@ -1102,9 +1100,7 @@ export enum LimitTimerRaceResolvedValues {
 //#endregion
 
 export type AmplifyContext = {
-	Auth: typeof Auth;
 	InternalAPI: typeof InternalAPI;
-	Cache: typeof Cache;
 };
 
 // #region V5 predicate types

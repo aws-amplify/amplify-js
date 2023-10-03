@@ -1,137 +1,37 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
 import {
-	ListObjectsV2Input,
-	ListObjectsV2Output,
-	listObjectsV2,
-} from '../../../AwsClients/S3';
-import {
-	StorageConfig,
-	StorageListRequest,
-	StorageListAllOptions,
-	StorageListPaginateOptions,
-} from '../../../types';
-import {
-	S3ListOutputItem,
-	S3Exception,
-	S3ListAllResult,
-	S3ListPaginateResult,
+	ListAllInput,
+	ListPaginateInput,
+	ListAllOutput,
+	ListPaginateOutput,
 } from '../types';
-import {
-	resolveStorageConfig,
-	getKeyWithPrefix,
-	resolveCredentials,
-} from '../utils';
-import { StorageValidationErrorCode } from '../../../errors/types/validation';
+import { list as listInternal } from './internal/list';
 
-const MAX_PAGE_SIZE = 1000;
-
-type S3ListApi = {
+type ListApi = {
 	/**
-	 * Lists all bucket objects.
-	 * @param {StorageListRequest<StorageListAllOptions>} req - The request object
-	 * @return {Promise<S3ListAllResult>} - Promise resolves to list of keys and metadata for all objects in path
-	 * @throws service: {@link S3Exception} - S3 service errors thrown while getting properties
-	 * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
+	 * List files with given prefix in pages
+	 * pageSize defaulted to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
+	 * @param input - The ListPaginateInput object.
+	 * @returns A list of keys and metadata with
+	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
+	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
-	(req: StorageListRequest<StorageListAllOptions>): Promise<S3ListAllResult>;
+	(input?: ListPaginateInput): Promise<ListPaginateOutput>;
 	/**
-	 * List bucket objects with pagination
-	 * @param {StorageListRequest<StorageListPaginateOptions>} req - The request object
-	 * @return {Promise<S3ListPaginateResult>} - Promise resolves to list of keys and metadata for all objects in path
-	 * additionally the result will include a nextToken if there are more items to retrieve
-	 * @throws service: {@link S3Exception} - S3 service errors thrown while getting properties
-	 * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
+	 * List all files from S3. You can set `listAll` to true in `options` to get all the files from S3.
+	 * @param input - The ListAllInput object.
+	 * @returns A list of keys and metadata for all objects in path
+	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
+	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
-	(
-		req: StorageListRequest<StorageListPaginateOptions>
-	): Promise<S3ListPaginateResult>;
+	(input?: ListAllInput): Promise<ListAllOutput>;
 };
 
-// TODO(ashwinkumar6) add unit test for list API
-export const list: S3ListApi = async (
-	req:
-		| StorageListRequest<StorageListAllOptions>
-		| StorageListRequest<StorageListPaginateOptions>
-): Promise<S3ListAllResult | S3ListPaginateResult> => {
-	const { identityId, credentials } = await resolveCredentials();
-	const { defaultAccessLevel, bucket, region } = resolveStorageConfig();
-	const { path = '', options = {} } = req;
-	const { accessLevel = defaultAccessLevel, listAll } = options;
-
-	// TODO(ashwinkumar6) V6-logger: check if this can be refactored
-	const finalPath = getKeyWithPrefix({
-		accessLevel,
-		targetIdentityId:
-			options.accessLevel === 'protected'
-				? options.targetIdentityId
-				: identityId,
-		key: path,
-	});
-
-	const listConfig = {
-		region,
-		credentials,
-	};
-	const listParams = {
-		Bucket: bucket,
-		Prefix: finalPath,
-		MaxKeys: options?.listAll ? undefined : options?.pageSize,
-		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
-	};
-	  return listAll
-		? await _listAll(listConfig, listParams)
-		: await _list(listConfig, listParams);
-};
-
-const _listAll = async (
-	listConfig: StorageConfig,
-	listParams: ListObjectsV2Input
-): Promise<S3ListAllResult> => {
-	// TODO(ashwinkumar6) V6-logger: pageSize and nextToken aren't required when listing all items
-	const listResult: S3ListOutputItem[] = [];
-	let continuationToken = listParams.ContinuationToken;
-	do {
-		const { items: pageResults, nextToken: pageNextToken } = await _list(
-			listConfig,
-			{
-				...listParams,
-				ContinuationToken: continuationToken,
-				MaxKeys: MAX_PAGE_SIZE,
-			}
-		);
-		listResult.push(...pageResults);
-		continuationToken = pageNextToken;
-	} while (continuationToken);
-
-	return {
-		items: listResult,
-	};
-};
-
-const _list = async (
-	listConfig: StorageConfig,
-	listParams: ListObjectsV2Input
-): Promise<S3ListPaginateResult> => {
-	const listParamsClone = { ...listParams };
-	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
-		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
-		// TODO(ashwinkumar6) V6-logger: defaulting pageSize to ${MAX_PAGE_SIZE}.
-	}
-
-	const response: ListObjectsV2Output = await listObjectsV2(
-		listConfig,
-		listParamsClone
-	);
-	const listResult = response!.Contents!.map(item => ({
-		key: item.Key!.substring(listParamsClone.Prefix!.length),
-		eTag: item.ETag,
-		lastModified: item.LastModified,
-		size: item.Size,
-	}));
-	return {
-		items: listResult,
-		nextToken: response.NextContinuationToken,
-	};
+export const list: ListApi = (
+	input?: ListAllInput | ListPaginateInput
+): Promise<ListAllOutput | ListPaginateOutput> => {
+	return listInternal(Amplify, input ?? {});
 };

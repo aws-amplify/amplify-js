@@ -4,8 +4,8 @@
 // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 {
 	"version": "0.2.0",
-    "configurations": [
-        {
+	"configurations": [
+		{
 			"name": "debug tests",
 			"type": "node",
 			"request": "launch",
@@ -24,5 +24,5 @@
 			"console": "integratedTerminal",
 			"internalConsoleOptions": "neverOpen"
 		}
-    ]
+	]
 }

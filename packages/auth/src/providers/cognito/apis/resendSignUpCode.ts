@@ -1,51 +1,41 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
-import {
-	AuthCodeDeliveryDetails,
-	AuthStandardAttributeKey,
-	DeliveryMedium,
-	ResendSignUpCodeRequest,
-} from '../../../types';
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { AuthStandardAttributeKey, AuthDeliveryMedium } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import {
-	CognitoResendSignUpCodeOptions,
-	CognitoUserAttributeKey,
-} from '../types';
+import { ResendSignUpCodeInput, ResendSignUpCodeOutput } from '../types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { resendConfirmationCode } from '../utils/clients/CognitoIdentityProvider';
 
 /**
  * Resend the confirmation code while signing up
  *
- * @param resendRequest - The resendRequest object
- * @returns AuthCodeDeliveryDetails
+ * @param input -  The ResendSignUpCodeInput object
+ * @returns ResendSignUpCodeOutput
  * @throws service: {@link ResendConfirmationException } - Cognito service errors thrown when resending the code.
  * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username are not defined.
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function resendSignUpCode(
-	resendRequest: ResendSignUpCodeRequest<CognitoResendSignUpCodeOptions>
-): Promise<AuthCodeDeliveryDetails<CognitoUserAttributeKey>> {
-	const username = resendRequest.username;
+	input: ResendSignUpCodeInput
+): Promise<ResendSignUpCodeOutput> {
+	const username = input.username;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
 	);
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const clientMetadata =
-		resendRequest.options?.serviceOptions?.clientMetadata ??
-		authConfig.clientMetadata;
+	const clientMetadata = input.options?.serviceOptions?.clientMetadata;
 	const { CodeDeliveryDetails } = await resendConfirmationCode(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
 			Username: username,
 			ClientMetadata: clientMetadata,
-			ClientId: authConfig.userPoolWebClientId,
+			ClientId: authConfig.userPoolClientId,
 		}
 	);
 	const { DeliveryMedium, AttributeName, Destination } = {
@@ -53,7 +43,7 @@ export async function resendSignUpCode(
 	};
 	return {
 		destination: Destination as string,
-		deliveryMedium: DeliveryMedium as DeliveryMedium,
+		deliveryMedium: DeliveryMedium as AuthDeliveryMedium,
 		attributeName: AttributeName
 			? (AttributeName as AuthStandardAttributeKey)
 			: undefined,

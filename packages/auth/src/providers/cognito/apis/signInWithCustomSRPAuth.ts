@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { Amplify, Hub } from '@aws-amplify/core';
+import {
+	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
@@ -9,17 +13,16 @@ import {
 	handleCustomSRPAuthFlow,
 	getSignInResult,
 	getSignInResultFromError,
+	getNewDeviceMetatada,
 } from '../utils/signInHelpers';
 import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
 import {
-	SignInRequest,
-	AuthSignInResult,
-	AuthSignInStep,
-} from '../../../types';
-import { CognitoSignInOptions } from '../types';
+	SignInWithCustomSRPAuthInput,
+	SignInWithCustomSRPAuthOutput,
+} from '../types';
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
@@ -29,27 +32,27 @@ import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
+import { tokenOrchestrator } from '../tokenProvider';
+import { getCurrentUser } from './getCurrentUser';
 
 /**
  * Signs a user in using a custom authentication flow with SRP
  *
- * @param signInRequest - The SignInRequest object
- * @returns AuthSignInResult
+ * @param input -  The SignInWithCustomSRPAuthInput object
+ * @returns SignInWithCustomSRPAuthOutput
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } - Cognito
  * service errors thrown during the sign-in process.
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
  *  are not defined.
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithCustomSRPAuth(
-	signInRequest: SignInRequest<CognitoSignInOptions>
-): Promise<AuthSignInResult> {
-	const { username, password, options } = signInRequest;
-	const authConfig = AmplifyV6.getConfig().Auth;
+	input: SignInWithCustomSRPAuthInput
+): Promise<SignInWithCustomSRPAuthOutput> {
+	const { username, password, options } = input;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const metadata =
-		options?.serviceOptions?.clientMetadata || authConfig.clientMetadata;
+	const metadata = options?.serviceOptions?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -65,7 +68,13 @@ export async function signInWithCustomSRPAuth(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleCustomSRPAuthFlow(username, password, metadata, authConfig);
+		} = await handleCustomSRPAuthFlow(
+			username,
+			password,
+			metadata,
+			authConfig,
+			tokenOrchestrator
+		);
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
@@ -74,11 +83,27 @@ export async function signInWithCustomSRPAuth(
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
-			await cacheCognitoTokens(AuthenticationResult);
+			await cacheCognitoTokens({
+				...AuthenticationResult,
+				NewDeviceMetadata: await getNewDeviceMetatada(
+					authConfig.userPoolId,
+					AuthenticationResult.NewDeviceMetadata,
+					AuthenticationResult.AccessToken
+				),
+			});
 			cleanActiveSignInState();
+			Hub.dispatch(
+				'auth',
+				{
+					event: 'signedIn',
+					data: await getCurrentUser(),
+				},
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 

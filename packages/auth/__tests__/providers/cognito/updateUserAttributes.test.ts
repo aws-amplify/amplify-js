@@ -3,25 +3,24 @@
 
 import { AuthError } from '../../../src/errors/AuthError';
 import { updateUserAttributes } from '../../../src/providers/cognito';
-import {
-	UpdateUserAttributesException,
-} from '../../../src/providers/cognito/types/errors';
+import { UpdateUserAttributesException } from '../../../src/providers/cognito/types/errors';
 import * as updateUserAttributesClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
-import { decodeJWT } from '@aws-amplify/core';
+import { Amplify } from 'aws-amplify';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import * as authUtils from '../../../src';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 import { UpdateUserAttributesCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { toAttributeType } from '../../../src/providers/cognito/utils/apiHelpers';
-import { AuthUpdateAttributeStep } from '../../../src/types/enums';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 Amplify.configure({
 	Auth: {
-		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-		userPoolId: 'us-west-2_zzzzz',
-		identityPoolId: 'us-west-2:xxxxxx',
+		Cognito: {
+			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+			identityPoolId: 'us-west-2:xxxxxx',
+		},
 	},
 });
 const mockedAccessToken =
@@ -86,22 +85,21 @@ describe('updateUserAttributes  API happy path cases', () => {
 		expect(result.address).toEqual({
 			isUpdated: true,
 			nextStep: {
-				updateAttributeStep: AuthUpdateAttributeStep.DONE,
+				updateAttributeStep: 'DONE',
 			},
 		});
 
 		expect(result.name).toEqual({
 			isUpdated: true,
 			nextStep: {
-				updateAttributeStep: AuthUpdateAttributeStep.DONE,
+				updateAttributeStep: 'DONE',
 			},
 		});
 
 		expect(result.email).toEqual({
 			isUpdated: false,
 			nextStep: {
-				updateAttributeStep:
-					AuthUpdateAttributeStep.CONFIRM_ATTRIBUTE_WITH_CODE,
+				updateAttributeStep: 'CONFIRM_ATTRIBUTE_WITH_CODE',
 				codeDeliveryDetails: {
 					attributeName: 'email',
 					deliveryMedium: 'EMAIL',
@@ -113,8 +111,7 @@ describe('updateUserAttributes  API happy path cases', () => {
 		expect(result.phone_number).toEqual({
 			isUpdated: false,
 			nextStep: {
-				updateAttributeStep:
-					AuthUpdateAttributeStep.CONFIRM_ATTRIBUTE_WITH_CODE,
+				updateAttributeStep: 'CONFIRM_ATTRIBUTE_WITH_CODE',
 				codeDeliveryDetails: {
 					attributeName: 'phone_number',
 					deliveryMedium: 'SMS',
@@ -157,14 +154,14 @@ describe('updateUserAttributes  API happy path cases', () => {
 		expect(result.address).toEqual({
 			isUpdated: true,
 			nextStep: {
-				updateAttributeStep: AuthUpdateAttributeStep.DONE,
+				updateAttributeStep: 'DONE',
 			},
 		});
 
 		expect(result.name).toEqual({
 			isUpdated: true,
 			nextStep: {
-				updateAttributeStep: AuthUpdateAttributeStep.DONE,
+				updateAttributeStep: 'DONE',
 			},
 		});
 
@@ -215,8 +212,7 @@ describe('updateUserAttributes  API happy path cases', () => {
 		expect(result.email).toEqual({
 			isUpdated: false,
 			nextStep: {
-				updateAttributeStep:
-					AuthUpdateAttributeStep.CONFIRM_ATTRIBUTE_WITH_CODE,
+				updateAttributeStep: 'CONFIRM_ATTRIBUTE_WITH_CODE',
 				codeDeliveryDetails: {
 					attributeName: 'email',
 					deliveryMedium: 'EMAIL',
@@ -228,8 +224,7 @@ describe('updateUserAttributes  API happy path cases', () => {
 		expect(result.phone_number).toEqual({
 			isUpdated: false,
 			nextStep: {
-				updateAttributeStep:
-					AuthUpdateAttributeStep.CONFIRM_ATTRIBUTE_WITH_CODE,
+				updateAttributeStep: 'CONFIRM_ATTRIBUTE_WITH_CODE',
 				codeDeliveryDetails: {
 					attributeName: 'phone_number',
 					deliveryMedium: 'SMS',

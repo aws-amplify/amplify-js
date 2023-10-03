@@ -5,6 +5,8 @@ module.exports = {
 			'./lib-esm/utils/index.js',
 			'./lib-esm/auth/index.js',
 			'./lib-esm/auth/cognito/index.js',
+			'./lib-esm/storage/index.js',
+			'./lib-esm/storage/s3/index.js',
 		],
 	},
 	output: {
@@ -25,8 +27,6 @@ module.exports = {
 	mode: 'production',
 	module: {
 		rules: [
-			// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-			//{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
 			{
 				test: /\.js?$/,
 				exclude: /node_modules/,

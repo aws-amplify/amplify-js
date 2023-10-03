@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Sha256 } from '@aws-crypto/sha256-js';
-import BigInteger from '../src/providers/cognito/utils/srp/BigInteger';
-import AuthenticationHelper from '../src/providers/cognito/utils/srp/AuthenticationHelper';
-import { promisifyCallback } from './utils/promisifyCallback';
+import { BigInteger } from '../src/providers/cognito/utils/srp/BigInteger';
+import { AuthenticationHelper } from '../src/providers/cognito/utils/srp/AuthenticationHelper';
+import { promisifyCallback } from './testUtils/promisifyCallback';
+
 const instance = new AuthenticationHelper('TestPoolName');
 
 const bigIntError = new Error('BigInteger Error');
@@ -561,16 +562,18 @@ describe('Getters for AuthHelper class', () => {
 		expect(instance.getSmallAValue()).toBe(instance.smallAValue);
 	});
 
-	test('getRandomPassword() should match instance variable', () => {
-		expect(instance.getRandomPassword()).toBe(instance.randomPassword);
+	test('getRandomPassword() should throw as it was not previously defined', () => {
+		expect(() => instance.getRandomPassword()).toThrow();
 	});
 
-	test('getSaltDevices() should match instance variable SaltDevices', () => {
-		expect(instance.getSaltDevices()).toBe(instance.SaltToHashDevices);
+	test('getSaltDevices() should throw as it was not previously defined', () => {
+		expect(() => {
+			(instance as any).getSaltDevices();
+		}).toThrow();
 	});
 
-	test('getVerifierDevices() should match instance variable verifierDevices', () => {
-		expect(instance.getVerifierDevices()).toBe(instance.verifierDevices);
+	test('getVerifierDevices() should throw as it was not previously defined', () => {
+		expect(() => instance.getVerifierDevices()).toThrow();
 	});
 
 	test('Constant prefix for new password challenge', () => {
@@ -586,7 +589,7 @@ describe('getLargeAValue()', () => {
 		jest.clearAllMocks();
 	});
 
-	instance.largeAValue = null;
+	instance.largeAValue = undefined;
 	test('happy path should callback with a calculateA bigInt', async () => {
 		const result = await promisifyCallback(instance, 'getLargeAValue');
 		expect(result).toEqual(instance.largeAValue);
@@ -599,7 +602,7 @@ describe('getLargeAValue()', () => {
 		});
 	});
 	test('mock an error from calculate A', async () => {
-		instance.largeAValue = null;
+		instance.largeAValue = undefined;
 		jest
 			.spyOn(AuthenticationHelper.prototype, 'calculateA')
 			.mockImplementationOnce((...[, callback]) => {
@@ -643,8 +646,10 @@ describe('generateHashDevice()', () => {
 	test('happy path for generate hash devices should instantiate the verifierDevices of the instance', async () => {
 		const deviceGroupKey = instance.generateRandomString();
 		const username = instance.generateRandomString();
-
-		expect(instance.getVerifierDevices()).toEqual(undefined);
+		// should throw as it is not defined
+		expect(() => {
+			instance.getVerifierDevices();
+		}).toThrow();
 		await promisifyCallback(
 			instance,
 			'generateHashDevice',
@@ -659,7 +664,7 @@ describe('generateHashDevice()', () => {
 
 		jest
 			.spyOn(BigInteger.prototype, 'modPow')
-			.mockImplementationOnce((...args:any) => {
+			.mockImplementationOnce((...args: any) => {
 				args[2](bigIntError, null);
 			});
 		await promisifyCallback(
@@ -685,7 +690,7 @@ describe('calculateA()', () => {
 	});
 
 	test('Calculate A happy path', async () => {
-		const result= await promisifyCallback(
+		const result = await promisifyCallback(
 			instance,
 			'calculateA',
 			instance.smallAValue
@@ -697,9 +702,11 @@ describe('calculateA()', () => {
 	test('calculateA gets an error from g.modPow', async () => {
 		jest
 			.spyOn(BigInteger.prototype, 'modPow')
-			.mockImplementationOnce((...[, , callback]:[unknown, unknown, Function]) => {
-				callback(bigIntError, null);
-			});
+			.mockImplementationOnce(
+				(...[, , callback]: [unknown, unknown, Function]) => {
+					callback(bigIntError, null);
+				}
+			);
 
 		await promisifyCallback(instance, 'calculateA', instance.smallAValue).catch(
 			e => {
@@ -711,9 +718,11 @@ describe('calculateA()', () => {
 	test('A mod N equals BigInt 0 should throw an illegal parameter error', async () => {
 		jest
 			.spyOn(BigInteger.prototype, 'modPow')
-			.mockImplementationOnce((...[, , callback]:[unknown, unknown, Function]) => {
-				callback(null, BigInteger.ZERO);
-			});
+			.mockImplementationOnce(
+				(...[, , callback]: [unknown, unknown, Function]) => {
+					callback(null, BigInteger.ZERO);
+				}
+			);
 
 		await promisifyCallback(instance, 'calculateA', instance.smallAValue).catch(
 			e => {
@@ -866,7 +875,7 @@ describe('calculateS()', () => {
 	test('modPow throws an error ', async () => {
 		jest
 			.spyOn(BigInteger.prototype, 'modPow')
-			.mockImplementationOnce((...args:any) => {
+			.mockImplementationOnce((...args: any) => {
 				args[2](bigIntError, null);
 			});
 
@@ -881,12 +890,12 @@ describe('calculateS()', () => {
 		// need to mock a working modPow to then fail in the second mock
 		jest
 			.spyOn(BigInteger.prototype, 'modPow')
-			.mockImplementationOnce((...args:any) => {
+			.mockImplementationOnce((...args: any) => {
 				args[2](null, new BigInteger('deadbeef', 16));
 			});
 		jest
 			.spyOn(BigInteger.prototype, 'modPow')
-			.mockImplementationOnce((...args:any) => {
+			.mockImplementationOnce((...args: any) => {
 				args[2](bigIntError, null);
 			});
 

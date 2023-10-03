@@ -33,13 +33,17 @@ jobs:
   github-actions-test:
     needs: prebuild
     uses: ./.github/workflows/callable-test-github-actions.yml
+  tsc-compliance-test:
+    needs: prebuild
+    uses: ./.github/workflows/callable-test-tsc-compliance.yml
   all-unit-tests-pass:
     name: Unit and Bundle tests have passed
     needs:
       - unit-tests
-      # - bundle-size-tests
+      - bundle-size-tests
       - license-test
       - github-actions-test
+      - tsc-compliance-test
     runs-on: ubuntu-latest
     # This is a bit of a hack - Branch protections depend upon selected
     #   workflows that run on hardware, not parents of many callable workflows.

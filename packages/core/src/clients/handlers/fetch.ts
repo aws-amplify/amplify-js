@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import 'isomorphic-unfetch'; // TODO: remove this dependency in v6
 import { HttpRequest, HttpResponse, HttpTransferOptions } from '../types/http';
 import { TransferHandler } from '../types/core';
 import { withMemoization } from '../utils/memoization';
@@ -9,11 +8,15 @@ import { withMemoization } from '../utils/memoization';
 const shouldSendBody = (method: string) =>
 	!['HEAD', 'GET', 'DELETE'].includes(method.toUpperCase());
 
+// TODO[AllanZhengYP]: we need to provide isCanceledError utility
 export const fetchTransferHandler: TransferHandler<
 	HttpRequest,
 	HttpResponse,
 	HttpTransferOptions
-> = async ({ url, method, headers, body }, { abortSignal }) => {
+> = async (
+	{ url, method, headers, body },
+	{ abortSignal, cache, withCrossDomainCredentials }
+) => {
 	let resp: Response;
 	try {
 		resp = await fetch(url, {
@@ -21,6 +24,8 @@ export const fetchTransferHandler: TransferHandler<
 			headers,
 			body: shouldSendBody(method) ? body : undefined,
 			signal: abortSignal,
+			cache,
+			credentials: withCrossDomainCredentials ? 'include' : 'same-origin',
 		});
 	} catch (e) {
 		// TODO: needs to revise error handling in v6

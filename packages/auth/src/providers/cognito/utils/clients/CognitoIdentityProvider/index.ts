@@ -43,6 +43,8 @@ import type {
 	UpdateDeviceStatusCommandOutput as UpdateDeviceStatusOutput,
 	ListDevicesCommandInput as ListDevicesInput,
 	ListDevicesCommandOutput as ListDevicesOutput,
+	DeleteUserAttributesCommandInput as DeleteUserAttributesInput,
+	DeleteUserAttributesCommandOutput as DeleteUserAttributesOutput,
 } from './types';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import {
@@ -60,6 +62,13 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { assertServiceError } from '../../../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../../../errors/AuthError';
+
+type RevokeTokenInput = {
+	Token: string;
+	ClientId: string;
+};
+
+type RevokeTokenOutput = {};
 
 type ClientOperation =
 	| 'SignUp'
@@ -81,8 +90,10 @@ type ClientOperation =
 	| 'GlobalSignOut'
 	| 'UpdateUserAttributes'
 	| 'VerifyUserAttribute'
+	| 'DeleteUserAttributes'
 	| 'UpdateDeviceStatus'
-	| 'ListDevices';
+	| 'ListDevices'
+	| 'RevokeToken';
 
 const buildUserPoolSerializer =
 	<Input>(operation: ClientOperation) =>
@@ -96,7 +107,6 @@ const buildUserPoolDeserializer = <Output>(): ((
 	response: HttpResponse
 ) => Promise<Output>) => {
 	return async (response: HttpResponse): Promise<Output> => {
-	
 		if (response.statusCode >= 300) {
 			const error = await parseJsonError(response);
 			assertServiceError(error);
@@ -108,10 +118,31 @@ const buildUserPoolDeserializer = <Output>(): ((
 	};
 };
 
+const buildDeleteDeserializer = <Output>(): ((
+	response: HttpResponse
+) => Promise<Output>) => {
+	return async (response: HttpResponse): Promise<Output> => {
+		if (response.statusCode >= 300) {
+			const error = await parseJsonError(response);
+			assertServiceError(error);
+			throw new AuthError({ name: error.name, message: error.message });
+		} else {
+			return undefined as any;
+		}
+	};
+};
+
 export const initiateAuth = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<InitiateAuthInput>('InitiateAuth'),
 	buildUserPoolDeserializer<InitiateAuthOutput>(),
+	defaultConfig
+);
+
+export const revokeToken = composeServiceApi(
+	cognitoUserPoolTransferHandler,
+	buildUserPoolSerializer<RevokeTokenInput>('RevokeToken'),
+	buildUserPoolDeserializer<RevokeTokenOutput>(),
 	defaultConfig
 );
 
@@ -199,11 +230,10 @@ export const forgetDevice = composeServiceApi(
 	buildUserPoolDeserializer<ForgetDeviceOutput>(),
 	defaultConfig
 );
-
 export const deleteUser = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<DeleteUserInput>('DeleteUser'),
-	buildUserPoolDeserializer<DeleteUserOutput>(),
+	buildDeleteDeserializer<DeleteUserOutput>(),
 	defaultConfig
 );
 export const getUserAttributeVerificationCode = composeServiceApi(
@@ -242,5 +272,11 @@ export const listDevices = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ListDevicesInput>('ListDevices'),
 	buildUserPoolDeserializer<ListDevicesOutput>(),
+	defaultConfig
+);
+export const deleteUserAttributes = composeServiceApi(
+	cognitoUserPoolTransferHandler,
+	buildUserPoolSerializer<DeleteUserAttributesInput>('DeleteUserAttributes'),
+	buildUserPoolDeserializer<DeleteUserAttributesOutput>(),
 	defaultConfig
 );

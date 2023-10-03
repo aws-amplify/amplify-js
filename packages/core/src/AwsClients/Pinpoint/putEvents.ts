@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { asserts } from '../../Util/errors/AssertError';
 import { authenticatedHandler } from '../../clients/handlers/authenticated';
 import { composeServiceApi } from '../../clients/internal/composeServiceApi';
 import { extendedEncodeURIComponent } from '../../clients/middleware/signing/utils/extendedEncodeURIComponent';
@@ -11,8 +10,8 @@ import {
 	parseMetadata,
 } from '../../clients/serde';
 import { Endpoint, HttpRequest, HttpResponse } from '../../clients/types';
-import { APPLICATION_ID_EXCEPTION } from '../../constants';
 import { defaultConfig, getSharedHeaders } from './base';
+import { assert, PinpointValidationErrorCode } from './errorHelpers';
 import type {
 	PutEventsCommandInput as PutEventsInput,
 	PutEventsCommandOutput as PutEventsOutput,
@@ -24,10 +23,7 @@ const putEventsSerializer = (
 	{ ApplicationId, EventsRequest }: PutEventsInput,
 	endpoint: Endpoint
 ): HttpRequest => {
-	asserts(!!ApplicationId, {
-		name: APPLICATION_ID_EXCEPTION,
-		message: 'ApplicationId is required for putEvents',
-	});
+	assert(!!ApplicationId, PinpointValidationErrorCode.NoAppId);
 	const headers = getSharedHeaders();
 	const url = new URL(endpoint.url);
 	url.pathname = `v1/apps/${extendedEncodeURIComponent(ApplicationId)}/events`;

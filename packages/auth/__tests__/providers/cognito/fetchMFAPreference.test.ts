@@ -8,16 +8,18 @@ import { GetUserException } from '../../../src/providers/cognito/types/errors';
 import { GetUserCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-import { AmplifyV6 as Amplify } from 'aws-amplify';
-import { decodeJWT } from '@aws-amplify/core';
+import { Amplify } from 'aws-amplify';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import * as authUtils from '../../../src';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 Amplify.configure({
 	Auth: {
-		userPoolWebClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-		userPoolId: 'us-west-2_zzzzz',
-		identityPoolId: 'us-west-2:xxxxxx',
+		Cognito: {
+			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+			identityPoolId: 'us-west-2:xxxxxx',
+		},
 	},
 });
 const mockedAccessToken =
@@ -70,7 +72,6 @@ describe('fetchMFAPreference Happy Path Cases:', () => {
 });
 
 describe('fetchMFAPreference Error Path Cases:', () => {
-	
 	test('fetchMFAPreference should expect a service error', async () => {
 		expect.assertions(2);
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
@@ -78,19 +79,18 @@ describe('fetchMFAPreference Error Path Cases:', () => {
 				buildMockErrorResponse(GetUserException.InvalidParameterException)
 			)
 		);
-		 jest
-		.spyOn(authUtils, 'fetchAuthSession')
-		.mockImplementationOnce(
-			async (): Promise<{ tokens: { accessToken: any } }> => {
-				return {
-					tokens: {
-						accessToken: decodeJWT(mockedAccessToken),
-					},
-				};
-			}
-		);
+		jest
+			.spyOn(authUtils, 'fetchAuthSession')
+			.mockImplementationOnce(
+				async (): Promise<{ tokens: { accessToken: any } }> => {
+					return {
+						tokens: {
+							accessToken: decodeJWT(mockedAccessToken),
+						},
+					};
+				}
+			);
 		try {
-
 			await fetchMFAPreference();
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);

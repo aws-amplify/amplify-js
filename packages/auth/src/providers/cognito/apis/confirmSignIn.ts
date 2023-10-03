@@ -6,13 +6,7 @@ import {
 	RespondToAuthChallengeException,
 	AssociateSoftwareTokenException,
 } from '../types/errors';
-import {
-	AuthSignInResult,
-	AuthSignInStep,
-	ConfirmSignInRequest,
-} from '../../../types';
-import { CognitoConfirmSignInOptions } from '../types';
-
+import { ConfirmSignInInput, ConfirmSignInOutput } from '../types';
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
@@ -20,6 +14,7 @@ import {
 } from '../utils/signInStore';
 import { AuthError } from '../../../errors/AuthError';
 import {
+	getNewDeviceMetatada,
 	getSignInResult,
 	getSignInResultFromError,
 	handleChallengeName,
@@ -28,46 +23,44 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
-import { AmplifyV6, assertTokenProviderConfig } from '@aws-amplify/core';
+import { Amplify, Hub } from '@aws-amplify/core';
+import {
+	AMPLIFY_SYMBOL,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
+import { tokenOrchestrator } from '../tokenProvider';
+import { getCurrentUser } from './getCurrentUser';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
  *
- * @param confirmSignInRequest - The ConfirmSignInRequest object
- *
+ * @param input -  The ConfirmSignInInput object
+ * @returns ConfirmSignInOutput
  * @throws  -{@link VerifySoftwareTokenException }:
  * Thrown due to an invalid MFA token.
- *
  * @throws  -{@link RespondToAuthChallengeException }:
  * Thrown due to an invalid auth challenge response.
- *
  * @throws  -{@link AssociateSoftwareTokenException}:
  * Thrown due to a service error during the MFA setup process.
- *
  * @throws  -{@link AuthValidationErrorCode }:
  * Thrown when `challengeResponse` is not defined.
- *
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
- *
- * @returns AuthSignInResult
- *
  */
 export async function confirmSignIn(
-	confirmSignInRequest: ConfirmSignInRequest<CognitoConfirmSignInOptions>
-): Promise<AuthSignInResult> {
-	const { challengeResponse, options } = confirmSignInRequest;
+	input: ConfirmSignInInput
+): Promise<ConfirmSignInOutput> {
+	const { challengeResponse, options } = input;
 	const { username, challengeName, signInSession } = signInStore.getState();
 
-	const authConfig = AmplifyV6.getConfig().Auth;
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
-	const clientMetaData =
-		options?.serviceOptions?.clientMetadata || authConfig?.clientMetadata;
+	const clientMetaData = options?.serviceOptions?.clientMetadata;
 
 	assertValidationError(
 		!!challengeResponse,
@@ -103,6 +96,7 @@ export async function confirmSignIn(
 			signInSession,
 			challengeResponse,
 			authConfig,
+			tokenOrchestrator,
 			clientMetaData,
 			options?.serviceOptions
 		);
@@ -116,10 +110,26 @@ export async function confirmSignIn(
 
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
-			await cacheCognitoTokens(AuthenticationResult);
+			await cacheCognitoTokens({
+				...AuthenticationResult,
+				NewDeviceMetadata: await getNewDeviceMetatada(
+					authConfig.userPoolId,
+					AuthenticationResult.NewDeviceMetadata,
+					AuthenticationResult.AccessToken
+				),
+			});
+			Hub.dispatch(
+				'auth',
+				{
+					event: 'signedIn',
+					data: await getCurrentUser(),
+				},
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 			return {
 				isSignedIn: true,
-				nextStep: { signInStep: AuthSignInStep.DONE },
+				nextStep: { signInStep: 'DONE' },
 			};
 		}
 
