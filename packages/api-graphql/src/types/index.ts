@@ -63,80 +63,32 @@ export type DeeplyPartial<T> = T extends {}
 	  }
 	: T;
 
-type RelatedList<T, TYPENAME> = {
+type PagedList<T, TYPENAME> = {
 	__typename: TYPENAME;
-	nextToken?: string | null;
+	nextToken?: string | null | undefined;
 	items: Array<T>;
 };
 
-type WithRelatedListsFixed<T> = {
-	[K in keyof T]: Exclude<T[K], undefined | null> extends RelatedList<
-		infer IT,
-		infer NAME
-	>
-		? RelatedList<Exclude<IT, null>, NAME>
-		: T[K];
-};
+type WithListsFixed<T> = T extends PagedList<infer IT, infer NAME>
+	? PagedList<Exclude<IT, null | undefined>, NAME>
+	: T extends {}
+	? {
+			[K in keyof T]: WithListsFixed<T[K]>;
+	  }
+	: T;
 
 type NeverEmpty<T> = {
-	[K in keyof T]-?: WithRelatedListsFixed<Exclude<T[K], undefined | null>>;
+	[K in keyof T]-?: Exclude<WithListsFixed<T[K]>, undefined | null>;
 };
 
-type T = NeverEmpty<GetThreadQuery>;
-
-const x = {} as T;
-const t = (x.getThread.comments?.items || [])[0];
-
-const y = {} as GetThreadQuery;
-const z = (y.getThread?.comments?.items || [])[0];
-
-type DeleteCommentMutation = {
-	deleteComment?: {
-		__typename: 'Comment';
-		id: string;
-		owner?: string | null;
-		body: string;
-		thread: {
-			__typename: 'Thread';
-			id: string;
-			topic?: string | null;
-			comments?: {
-				__typename: 'ModelCommentConnection';
-				nextToken?: string | null;
-			} | null;
-			createdAt?: string | null;
-			updatedAt: string;
-			owner?: string | null;
-		};
-		createdAt?: string | null;
-		updatedAt: string;
-		threadCommentsId?: string | null;
-	} | null;
-};
-
-export type GetThreadQuery = {
-	getThread?: {
-		__typename: 'Thread';
-		id: string;
-		topic?: string | null;
-		comments?: {
-			__typename: 'ModelCommentConnection';
-			items: Array<{
-				__typename: 'Comment';
-				id: string;
-				owner?: string | null;
-				body: string;
-				createdAt?: string | null;
-				updatedAt: string;
-				threadCommentsId?: string | null;
-			} | null>;
-			nextToken?: string | null;
-		} | null;
-		createdAt?: string | null;
-		updatedAt: string;
-		owner?: string | null;
-	} | null;
-};
+type FixedQueryResult<T> = Exclude<
+	T[keyof T],
+	null | undefined
+> extends PagedList<any, any>
+	? {
+			[K in keyof T]-?: WithListsFixed<Exclude<T[K], null | undefined>>;
+	  }
+	: T;
 
 /**
  * The return value from a `graphql({query})` call when `query` is a subscription.
@@ -267,7 +219,7 @@ export type GraphQLResponseV6<
 	FALLBACK_TYPE = unknown,
 	TYPED_GQL_STRING extends string = string
 > = TYPED_GQL_STRING extends GeneratedQuery<infer IN, infer QUERY_OUT>
-	? Promise<GraphQLResult<QUERY_OUT>>
+	? Promise<GraphQLResult<FixedQueryResult<QUERY_OUT>>>
 	: TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer MUTATION_OUT>
 	? Promise<GraphQLResult<NeverEmpty<MUTATION_OUT>>>
 	: TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer SUB_OUT>

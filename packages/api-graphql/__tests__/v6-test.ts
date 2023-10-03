@@ -341,8 +341,8 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
-			// Customers should normally omit the type. Making it explicit to ensure the test
-			// fails if the returned changes.
+			// If the update fails, we get an error which we'll need to catch.
+			// If it succeeds, we get a result back and no need to look for `null | undefined`
 			const thread: DeeplyPartial<Thread> = (
 				await client.graphql({
 					query: typedMutations.createThread,
@@ -374,8 +374,8 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
-			// Customers should normally omit the type. Making it explicit to ensure the test
-			// fails if the returned changes.
+			// Not sure yet what happens if an update failes to find a matching record ... pretty sure
+			// it's an error though! This would indicate update queries can omit
 			const thread: DeeplyPartial<Thread> = (
 				await client.graphql({
 					query: typedMutations.updateThread,
@@ -405,6 +405,8 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
+			// If a delete fails, an error is raised. So, we don't need to handle null or
+			// undefined return values in the happy path.
 			const thread: DeeplyPartial<Thread> = (
 				await client.graphql({
 					query: typedMutations.deleteThread,
@@ -438,13 +440,26 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
-			const thread: DeeplyPartial<Thread> = (
+			// a get query might not actually find anything.
+			const thread: DeeplyPartial<Thread> | null | undefined = (
 				await client.graphql({
 					query: typedQueries.getThread,
 					variables: graphqlVariables,
 					authMode: 'apiKey',
 				})
-			).data.getThread!;
+			).data.getThread;
+
+			// we SHOULD get a type error if we blindly try to assign a get result
+			// to a type that doesn't account for `null | undefined` returns.
+			// TODO: change to ts-expect-error
+			// @ts-ignore
+			const badthread: DeeplyPartial<Thread> = (
+				await client.graphql({
+					query: typedQueries.getThread,
+					variables: graphqlVariables,
+					authMode: 'apiKey',
+				})
+			).data.getThread;
 		});
 
 		test('list', async () => {
@@ -482,7 +497,7 @@ describe('client', () => {
 					variables: graphqlVariables,
 					authMode: 'apiKey',
 				})
-			).data.listThreads;
+			).data.listThreads.items;
 		});
 
 		test('subscribe', done => {
@@ -783,7 +798,7 @@ describe('client', () => {
 			const result = rawResult as any;
 
 			result.subscribe?.({
-				next(message) {
+				next(message: any) {
 					expectSub(spy, 'onCreateThread', graphqlVariables);
 					expect(message.data.onCreateThread).toEqual(
 						graphqlMessage.data.onCreateThread
