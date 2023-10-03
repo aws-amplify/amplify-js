@@ -4,4 +4,5 @@
 export { InAppMessagingServiceOptions } from './options';
 export { InAppMessagingIdentifyUserInput } from './inputs';
 export { InAppMessagingConfig } from './config';
-export { InAppMessageInteractionEvent } from './event';
+export { InAppMessageInteractionEvent, InAppMessagingEvent } from './event';
+export { InAppMessage } from './message';
