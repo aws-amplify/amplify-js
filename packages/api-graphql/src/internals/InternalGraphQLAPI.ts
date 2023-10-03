@@ -11,6 +11,7 @@ import {
 import { Observable } from 'rxjs';
 import { Amplify, Cache, fetchAuthSession } from '@aws-amplify/core';
 import {
+	APIAuthMode,
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
@@ -65,6 +66,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private async _headerBasedAuth(
+		authMode: APIAuthMode,
 		additionalHeaders: { [key: string]: string } = {}
 	) {
 		const config = Amplify.getConfig();
@@ -75,9 +77,10 @@ export class InternalGraphQLAPIClass {
 			defaultAuthMode,
 		} = config.API.GraphQL;
 
+		const authenticationType = authMode || defaultAuthMode || 'iam';
 		let headers = {};
 
-		switch (defaultAuthMode) {
+		switch (authenticationType) {
 			case 'apiKey':
 				if (!apiKey) {
 					throw new Error(GraphQLAuthError.NO_API_KEY);
@@ -207,10 +210,10 @@ export class InternalGraphQLAPIClass {
 
 		const headers = {
 			...(!customGraphqlEndpoint &&
-				(await this._headerBasedAuth(additionalHeaders))),
+				(await this._headerBasedAuth(authMode, additionalHeaders))),
 			...(customGraphqlEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(additionalHeaders)
+					? await this._headerBasedAuth(authMode, additionalHeaders)
 					: { Authorization: null })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
