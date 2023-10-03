@@ -9,6 +9,16 @@ import {
 	validationErrorMap,
 } from '../errors';
 
+/**
+ * Resolve the REST API request URL by:
+ * 1. Lading the REST API endpoint from the Amplify configuration with corresponding API name.
+ * 2. Appending the path to the endpoint.
+ * 3. Merge the query parameters from path and the queryParameter argument which is taken from the public REST API
+ *   options.
+ * 4. Validating the resulting URL string.
+ *
+ * @internal
+ */
 export const resolveApiUrl = (
 	amplify: AmplifyClassV6,
 	apiName: string,

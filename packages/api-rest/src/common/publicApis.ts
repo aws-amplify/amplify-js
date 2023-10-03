@@ -30,10 +30,15 @@ const publicHandler = (
 	amplify: AmplifyClassV6,
 	options: ApiInput<RestApiOptionsBase>,
 	method: string
-) => {
-	const { apiName, options: apiOptions = {}, path: apiPath } = options;
-	const url = resolveApiUrl(amplify, apiName, apiPath, apiOptions?.queryParams);
-	return createCancellableOperation(async abortSignal => {
+) =>
+	createCancellableOperation(async abortSignal => {
+		const { apiName, options: apiOptions = {}, path: apiPath } = options;
+		const url = resolveApiUrl(
+			amplify,
+			apiName,
+			apiPath,
+			apiOptions?.queryParams
+		);
 		const libraryOptionsHeaders =
 			await amplify.libraryOptions?.API?.REST?.headers({
 				apiName,
@@ -66,7 +71,6 @@ const publicHandler = (
 			signingServiceInfo
 		);
 	});
-};
 
 export const get = (amplify: AmplifyClassV6, input: GetInput): GetOperation =>
 	publicHandler(amplify, input, 'GET');

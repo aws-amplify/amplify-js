@@ -35,7 +35,8 @@ export function createCancellableOperation(
 		handler: (signal?: AbortSignal) => Promise<HttpResponse>
 	): handler is () => Promise<HttpResponse> => !!abortController;
 	// For creating a cancellable operation for public REST APIs, we need to create an AbortController
-	// internally.
+	// internally. Whereas for internal POST APIs, we need to accept in the AbortController from the
+	// callers.
 	const controller = isInternalPost(handler)
 		? abortController
 		: new AbortController();

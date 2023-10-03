@@ -9,8 +9,8 @@ import {
 } from './constants';
 
 /**
- * Infer the signing service and region from the given URL. It supports raw API Gateway endpoint and AppSync endpoint.
- * Custom domain is not supported.
+ * Infer the signing service and region from the given URL, and for REST API only, from the Amplify configuration.
+ * It supports raw API Gateway endpoint and AppSync endpoint.
  *
  * @internal
  */

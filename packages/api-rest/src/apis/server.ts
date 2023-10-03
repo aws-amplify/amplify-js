@@ -29,7 +29,7 @@ import {
 } from '../types';
 
 /**
- * GET HTTP request
+ * GET HTTP request (server-side)
  */
 export const get = (
 	contextSpec: AmplifyServer.ContextSpec,
@@ -38,7 +38,7 @@ export const get = (
 	commonGet(getAmplifyServerContext(contextSpec).amplify, input);
 
 /**
- * POST HTTP request
+ * POST HTTP request (server-side)
  */
 export const post = (
 	contextSpec: AmplifyServer.ContextSpec,
@@ -47,7 +47,7 @@ export const post = (
 	commonPost(getAmplifyServerContext(contextSpec).amplify, input);
 
 /**
- * PUT HTTP request
+ * PUT HTTP request (server-side)
  */
 export const put = (
 	contextSpec: AmplifyServer.ContextSpec,
@@ -56,7 +56,7 @@ export const put = (
 	commonPut(getAmplifyServerContext(contextSpec).amplify, input);
 
 /**
- * DELETE HTTP request
+ * DELETE HTTP request (server-side)
  */
 export const del = (
 	contextSpec: AmplifyServer.ContextSpec,
@@ -65,7 +65,7 @@ export const del = (
 	commonDel(getAmplifyServerContext(contextSpec).amplify, input);
 
 /**
- * HEAD HTTP request
+ * HEAD HTTP request (server-side)
  */
 export const head = (
 	contextSpec: AmplifyServer.ContextSpec,
@@ -74,7 +74,7 @@ export const head = (
 	commonHead(getAmplifyServerContext(contextSpec).amplify, input);
 
 /**
- * PATCH HTTP request
+ * PATCH HTTP request (server-side)
  */
 export const patch = (
 	contextSpec: AmplifyServer.ContextSpec,

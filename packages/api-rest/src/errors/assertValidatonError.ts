@@ -15,8 +15,6 @@ export function assertValidationError(
 	const { message, recoverySuggestion } = validationErrorMap[name];
 
 	if (!assertion) {
-		const error = new RestApiError({ name, message, recoverySuggestion });
-		logger.debug(error);
-		throw error;
+		throw new RestApiError({ name, message, recoverySuggestion });
 	}
 }

@@ -7,6 +7,17 @@ import { InternalPostInput, RestApiResponse } from '../types';
 import { transferHandler } from './handler';
 import { createCancellableOperation } from '../utils';
 
+/**
+ * This weak map provides functionality to cancel a request given the promise containing the `post` request.
+ *
+ * 1. For every GraphQL POST request, an abort controller is created and supplied to the request.
+ * 2. The promise fulfilled by GraphGL POST request is then mapped to that abort controller.
+ * 3. The promise is returned to the external caller.
+ * 4. The caller can either wait for the promise to fulfill or call `cancel(promise)` to cancel the request.
+ * 5. If `cancel(promise)` is called, then the corresponding abort controller is retrieved from the map below.
+ * 6. GraphQL POST request will be rejected with the error message provided during cancel.
+ * 7. Caller can check if the error is because of cancelling by calling `isCancelError(error)`.
+ */
 const cancelTokenMap = new WeakMap<Promise<any>, AbortController>();
 
 /**

@@ -13,8 +13,5 @@ export class RestApiError extends AmplifyError {
 		// TODO: Delete the following 2 lines after we change the build target to >= es2015
 		this.constructor = RestApiError;
 		Object.setPrototypeOf(this, RestApiError.prototype);
-
-		this.name = params.name;
-		this.message = params.message;
 	}
 }
