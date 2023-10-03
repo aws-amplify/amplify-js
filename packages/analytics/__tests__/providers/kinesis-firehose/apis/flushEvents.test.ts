@@ -7,7 +7,7 @@ import {
 } from '../../../../src/providers/kinesis-firehose/utils';
 import { resolveCredentials } from '../../../../src/utils';
 import {
-	mockConfig,
+	mockKinesisConfig,
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
 import { flushEvents } from '../../../../src/providers/kinesis-firehose/apis';
@@ -24,7 +24,7 @@ describe('Analytics Kinesis Firehose API: flushEvents', () => {
 	const loggerWarnSpy = jest.spyOn(ConsoleLogger.prototype, 'warn');
 
 	beforeEach(() => {
-		mockResolveConfig.mockReturnValue(mockConfig);
+		mockResolveConfig.mockReturnValue(mockKinesisConfig);
 		mockResolveCredentials.mockReturnValue(
 			Promise.resolve(mockCredentialConfig)
 		);
@@ -48,7 +48,7 @@ describe('Analytics Kinesis Firehose API: flushEvents', () => {
 		expect(mockGetEventBuffer).toHaveBeenNthCalledWith(
 			1,
 			expect.objectContaining({
-				...mockConfig,
+				...mockKinesisConfig,
 				...mockCredentialConfig,
 			})
 		);

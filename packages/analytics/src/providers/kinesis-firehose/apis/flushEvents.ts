@@ -7,6 +7,13 @@ import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
 
 const logger = new ConsoleLogger('KinesisFirehose');
 
+/**
+ * Flushes all buffered Kinesis events to the service.
+ *
+ * @note
+ * This API will make a best-effort attempt to flush events from the buffer. Events recorded immediately after invoking
+ * this API may not be included in the flush.
+ */
 export const flushEvents = () => {
 	const { region, flushSize, flushInterval, bufferSize, resendLimit } =
 		resolveConfig();
