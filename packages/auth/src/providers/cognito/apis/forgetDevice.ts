@@ -20,9 +20,7 @@ import { ForgetDeviceException } from '../../cognito/types/errors';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function forgetDevice(input?: ForgetDeviceInput): Promise<void> {
-	const { device } = input ?? {};
-	const { id: externalDeviceKey } = device ?? {};
-
+	const { device: { id: externalDeviceKey } = { id: undefined } } = input ?? {};
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
