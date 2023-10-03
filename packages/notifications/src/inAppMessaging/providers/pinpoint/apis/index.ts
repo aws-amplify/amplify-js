@@ -3,3 +3,4 @@
 
 export { identifyUser } from './identifyUser';
 export { syncMessages } from './syncMessages';
+export { dispatchEvent } from './dispatchEvent';

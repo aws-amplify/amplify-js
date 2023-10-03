@@ -4,3 +4,10 @@
 export { UpdateEndpointException } from './errors';
 export { IdentifyUserInput } from './inputs';
 export { IdentifyUserOptions } from './options';
+export {
+	PinpointMessageEvent,
+	MetricsComparator,
+	InAppMessageCounts,
+	InAppMessageCountMap,
+	DailyInAppMessageCounter,
+} from './types';

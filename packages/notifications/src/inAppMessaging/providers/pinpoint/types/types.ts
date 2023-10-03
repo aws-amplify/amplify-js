@@ -19,7 +19,7 @@ export type MetricsComparator = (
 	eventVal: number
 ) => boolean;
 
-export enum AWSPinpointMessageEvent {
+export enum PinpointMessageEvent {
 	MESSAGE_DISPLAYED = '_inapp.message_displayed',
 	MESSAGE_DISMISSED = '_inapp.message_dismissed',
 	MESSAGE_ACTION_TAKEN = '_inapp.message_clicked',
