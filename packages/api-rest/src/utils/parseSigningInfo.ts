@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	APIG_HOSTNAME_PATTERN,
 	DEFAULT_IAM_SIGNING_REGION,
@@ -13,7 +14,19 @@ import {
  *
  * @internal
  */
-export const parseUrl = (url: URL) => {
+export const parseSigningInfo = (
+	url: URL,
+	restApiOptions?: {
+		amplify: AmplifyClassV6;
+		apiName: string;
+	}
+) => {
+	const {
+		service: signingService = DEFAULT_REST_IAM_SIGNING_SERVICE,
+		region: signingRegion = DEFAULT_IAM_SIGNING_REGION,
+	} =
+		restApiOptions?.amplify.getConfig()?.API?.REST?.[restApiOptions?.apiName] ??
+		{};
 	const { hostname } = url;
 	const [, service, region] = APIG_HOSTNAME_PATTERN.exec(hostname) ?? [];
 	if (service === DEFAULT_REST_IAM_SIGNING_SERVICE) {
@@ -21,19 +34,19 @@ export const parseUrl = (url: URL) => {
 		// @see: https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-call-api.html
 		return {
 			service,
-			region: region ?? DEFAULT_IAM_SIGNING_REGION,
+			region: region ?? signingRegion,
 		};
 	} else if (service === 'appsync-api') {
 		// AppSync endpoint is internally supported because GraphQL operation will send request using POST handler.
 		// example: https://xxxx.appsync-api.us-east-1.amazonaws.com/graphql
 		return {
 			service: 'appsync',
-			region: region ?? DEFAULT_IAM_SIGNING_REGION,
+			region: region ?? signingRegion,
 		};
 	} else {
 		return {
-			service: DEFAULT_REST_IAM_SIGNING_SERVICE,
-			region: DEFAULT_IAM_SIGNING_REGION,
+			service: signingService,
+			region: signingRegion,
 		};
 	}
 };

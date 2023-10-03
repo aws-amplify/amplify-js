@@ -13,7 +13,7 @@ import { DocumentType } from '@aws-amplify/core/internals/utils';
 
 import {
 	parseRestApiServiceError,
-	parseUrl,
+	parseSigningInfo,
 	resolveCredentials,
 } from '../utils';
 import { normalizeHeaders } from '../utils/normalizeHeaders';
@@ -76,7 +76,7 @@ export const transferHandler = async (
 
 	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
 	if (isIamAuthApplicable) {
-		const signingInfoFromUrl = parseUrl(url);
+		const signingInfoFromUrl = parseSigningInfo(url);
 		const signingService =
 			signingServiceInfo?.service ?? signingInfoFromUrl.service;
 		const signingRegion =

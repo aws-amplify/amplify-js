@@ -39,7 +39,11 @@ const successResponse = {
 const apiGatewayUrl = new URL(
 	'https://123.execute-api.us-west-2.amazonaws.com'
 );
-const credentials = {};
+const credentials = {
+	accessKeyId: 'accessKeyId',
+	sessionToken: 'sessionToken',
+	secretAccessKey: 'secretAccessKey',
+};
 
 describe('internal post', () => {
 	beforeEach(() => {

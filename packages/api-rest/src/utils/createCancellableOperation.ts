@@ -5,7 +5,7 @@ import { HttpResponse } from '@aws-amplify/core/internals/aws-client-utils';
 import { CancelledError, RestApiError } from '../errors';
 import { Operation } from '../types';
 import { parseRestApiServiceError } from './serviceError';
-import { logger } from '.';
+import { logger } from './logger';
 
 /**
  * Create a cancellable operation conforming to the internal POST API interface.
@@ -15,6 +15,7 @@ export function createCancellableOperation(
 	handler: () => Promise<HttpResponse>,
 	abortController: AbortController
 ): Promise<HttpResponse>;
+
 /**
  * Create a cancellable operation conforming to the external REST API interface.
  * @internal
@@ -33,14 +34,19 @@ export function createCancellableOperation(
 	const isInternalPost = (
 		handler: (signal?: AbortSignal) => Promise<HttpResponse>
 	): handler is () => Promise<HttpResponse> => !!abortController;
-	const signal = abortController?.signal;
+	// For creating a cancellable operation for public REST APIs, we need to create an AbortController
+	// internally.
+	const controller = isInternalPost(handler)
+		? abortController
+		: new AbortController();
+	const signal = controller.signal;
 	const job = async () => {
 		try {
 			const response = await (isInternalPost(handler)
 				? handler()
 				: handler(signal));
 			if (response.statusCode >= 300) {
-				throw parseRestApiServiceError(response)!;
+				throw await parseRestApiServiceError(response)!;
 			}
 			return response;
 		} catch (error) {
@@ -53,12 +59,8 @@ export function createCancellableOperation(
 				logger.debug(error);
 				throw cancelledError;
 			}
-			const restApiError = new RestApiError({
-				...error,
-				underlyingError: error,
-			});
-			logger.debug(restApiError);
-			throw restApiError;
+			logger.debug(error);
+			throw error;
 		}
 	};
 
@@ -69,7 +71,7 @@ export function createCancellableOperation(
 			if (signal?.aborted === true) {
 				return;
 			}
-			abortController?.abort(abortMessage);
+			controller?.abort(abortMessage);
 			// Abort reason is not widely support enough across runtimes and and browsers, so we set it
 			// if it is not already set.
 			if (signal?.reason !== abortMessage) {

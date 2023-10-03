@@ -21,8 +21,8 @@ import {
 import {
 	resolveApiUrl,
 	createCancellableOperation,
-	parseUrl,
 	logger,
+	parseSigningInfo,
 } from '../utils';
 import { transferHandler } from './handler';
 
@@ -31,8 +31,8 @@ const publicHandler = (
 	options: ApiInput<RestApiOptionsBase>,
 	method: string
 ) => {
-	const { apiName, options: apiOptions } = options;
-	const url = resolveApiUrl(amplify, apiName, apiOptions?.queryParams);
+	const { apiName, options: apiOptions = {}, path: apiPath } = options;
+	const url = resolveApiUrl(amplify, apiName, apiPath, apiOptions?.queryParams);
 	return createCancellableOperation(async abortSignal => {
 		const libraryOptionsHeaders =
 			await amplify.libraryOptions?.API?.REST?.headers({
@@ -44,7 +44,10 @@ const publicHandler = (
 			...libraryOptionsHeaders,
 			...invocationHeaders,
 		};
-		const signingServiceInfo = parseUrl(url);
+		const signingServiceInfo = parseSigningInfo(url, {
+			amplify,
+			apiName,
+		});
 		logger.debug(
 			method,
 			url,
@@ -54,10 +57,10 @@ const publicHandler = (
 		return transferHandler(
 			amplify,
 			{
+				...apiOptions,
 				url,
 				method,
 				headers,
-				body: apiOptions?.body,
 				abortSignal,
 			},
 			signingServiceInfo

@@ -12,13 +12,20 @@ import {
 export const resolveApiUrl = (
 	amplify: AmplifyClassV6,
 	apiName: string,
+	path: string,
 	queryParams?: Record<string, string>
 ): URL => {
-	const urlStr = amplify.libraryOptions?.API?.REST?.[apiName]?.endpoint;
-	assertValidationError(urlStr, RestApiValidationErrorCode.InvalidApiName);
+	const urlStr = amplify.getConfig()?.API?.REST?.[apiName]?.endpoint;
+	assertValidationError(!!urlStr, RestApiValidationErrorCode.InvalidApiName);
 	try {
-		const url = new URL(urlStr);
-		url.search = new URLSearchParams(queryParams).toString();
+		const url = new URL(urlStr + path);
+		if (queryParams) {
+			const mergedQueryParams = new URLSearchParams(url.searchParams);
+			Object.entries(queryParams).forEach(([key, value]) => {
+				mergedQueryParams.set(key, value);
+			});
+			url.search = new URLSearchParams(mergedQueryParams).toString();
+		}
 		return url;
 	} catch (error) {
 		throw new RestApiError({
