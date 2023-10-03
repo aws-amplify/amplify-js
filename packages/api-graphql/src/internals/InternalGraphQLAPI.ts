@@ -57,29 +57,12 @@ export class InternalGraphQLAPIClass {
 	private _api = { post, updateRequestToBeCancellable };
 
 	/**
-	 * This weak map provides functionality to let clients cancel in-flight
-	 * REST API requets.
-	 *
-	 * 1. For every request, a unique cancel token is generated.
-	 * 2. Promise for fulfilling the request is then mapped to that unique cancel token.
-	 * 3. The promise is returned to the client.
-	 * 4. Clients can either wait for the promise to fulfill or call `API.cancel(promise)` to cancel the request.
-	 * 5. If `client.cancel(promise)` is called, then the corresponding cancel token is retrieved from the map below.
-	 * 6. Promise returned to the client will be in rejected state with the error provided during cancel.
-	 * 7. Clients can check if the error is because of cancelling by calling `client.isCancelError(error)`.
-	 */
-	// private _cancelTokenMap: WeakMap<Promise<any>, Promise<any>> = new WeakMap();
-
-	/**
 	 * Initialize GraphQL API with AWS configuration
 	 * @param {Object} options - Configuration object for API
 	 */
 	constructor(options) {
 		this._options = options;
 		logger.debug('API Options', this._options);
-		// if (this._cancelTokenMap == null) {
-		// 	this._cancelTokenMap = new WeakMap();
-		// }
 	}
 
 	public getModuleName() {
