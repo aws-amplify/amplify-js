@@ -5,7 +5,7 @@ import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEvent
 import { EventBuffer } from '../../../../src/utils';
 import {
 	mockBufferConfig,
-	mockConfig,
+	mockKinesisConfig,
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
 
@@ -20,7 +20,7 @@ describe('Kinesis Provider Util: getEventBuffer', () => {
 
 	it("create a buffer if one doesn't exist", () => {
 		const testBuffer = getEventBuffer({
-			...mockConfig,
+			...mockKinesisConfig,
 			...mockCredentialConfig,
 		});
 
@@ -33,11 +33,11 @@ describe('Kinesis Provider Util: getEventBuffer', () => {
 
 	it('returns an existing buffer instance', () => {
 		const testBuffer1 = getEventBuffer({
-			...mockConfig,
+			...mockKinesisConfig,
 			...mockCredentialConfig,
 		});
 		const testBuffer2 = getEventBuffer({
-			...mockConfig,
+			...mockKinesisConfig,
 			...mockCredentialConfig,
 		});
 		expect(testBuffer1).toBe(testBuffer2);
@@ -45,11 +45,11 @@ describe('Kinesis Provider Util: getEventBuffer', () => {
 
 	it('release other buffers & creates a new one if credential has changed', () => {
 		const testBuffer1 = getEventBuffer({
-			...mockConfig,
+			...mockKinesisConfig,
 			...mockCredentialConfig,
 		});
 		const testBuffer2 = getEventBuffer({
-			...mockConfig,
+			...mockKinesisConfig,
 			...mockCredentialConfig,
 			identityId: 'identityId2',
 		});
