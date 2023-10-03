@@ -8,31 +8,43 @@ import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { tokenOrchestrator } from '../tokenProvider';
+import { ForgetDeviceInput } from '../types';
 import { ForgetDeviceException } from '../../cognito/types/errors';
 
 /**
  * Forget a remembered device while authenticated.
  *
+ * @param input - The ForgetDeviceInput object.
  * @throws - {@link ForgetDeviceException} - Cognito service errors thrown when
  * forgetting device with invalid device key
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function forgetDevice(): Promise<void> {
+export async function forgetDevice(input?: ForgetDeviceInput): Promise<void> {
+	const { device } = input ?? {};
+	const { id: externalDeviceKey } = device ?? {};
+
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
 	const { tokens } = await fetchAuthSession();
 	assertAuthTokens(tokens);
 
-	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata();
-	assertDeviceMetadata(deviceMetadata);
+	let deviceKey;
+	if (externalDeviceKey) {
+		deviceKey = externalDeviceKey;
+	} else {
+		const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+		assertDeviceMetadata(deviceMetadata);
+		deviceKey = deviceMetadata.deviceKey;
+	}
 
 	await serviceForgetDevice(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
-			DeviceKey: deviceMetadata.deviceKey,
+			DeviceKey: deviceKey,
 		}
 	);
-	await tokenOrchestrator.clearDeviceMetadata();
+
+	if (!externalDeviceKey) await tokenOrchestrator.clearDeviceMetadata();
 }

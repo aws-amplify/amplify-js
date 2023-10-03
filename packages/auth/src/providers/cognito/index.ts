@@ -43,6 +43,7 @@ export {
 	VerifyTOTPSetupInput,
 	SendUserAttributeVerificationCodeInput,
 	DeleteUserAttributesInput,
+	ForgetDeviceInput,
 } from './types/inputs';
 
 export {

@@ -70,7 +70,7 @@ describe('forgetDevice API happy path cases', () => {
 		clearDeviceMetadataSpy.mockClear();
 	});
 
-	it('should call forgetDevice client with correct request', async () => {
+	it('should forget current device and clear it`s device tokens', async () => {
 		expect.assertions(3);
 		await forgetDevice();
 		expect(forgetDeviceStatusClientSpy).toHaveBeenCalledWith(
@@ -82,6 +82,25 @@ describe('forgetDevice API happy path cases', () => {
 		);
 		expect(forgetDeviceStatusClientSpy).toBeCalledTimes(1);
 		expect(clearDeviceMetadataSpy).toBeCalled();
+	});
+
+	it('should forget external device', async () => {
+		expect.assertions(3);
+		await forgetDevice({
+			device: {
+				id: 'externalDeviceKey',
+			},
+		});
+		expect(forgetDeviceStatusClientSpy).toHaveBeenCalledWith(
+			expect.objectContaining({ region: 'us-west-2' }),
+			expect.objectContaining({
+				AccessToken: mockedAccessToken,
+				DeviceKey: 'externalDeviceKey',
+			})
+		);
+		expect(forgetDeviceStatusClientSpy).toBeCalledTimes(1);
+		// don't clear current device's keys
+		expect(clearDeviceMetadataSpy).toBeCalledTimes(0);
 	});
 });
 

@@ -47,6 +47,7 @@ export {
 	VerifyTOTPSetupInput,
 	SendUserAttributeVerificationCodeInput,
 	DeleteUserAttributesInput,
+	ForgetDeviceInput,
 } from './providers/cognito';
 
 export {
