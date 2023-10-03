@@ -30,7 +30,6 @@ export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
 			message: 'Invalid FlushSize, it should be smaller than BufferSize',
 		},
 		[AnalyticsValidationErrorCode.NoTrackingId]: {
-			message:
-				'a trackingId field is required for using AmazonPersonalize provider',
+			message: 'A trackingId is required to use Amazon Personalize',
 		},
 	};

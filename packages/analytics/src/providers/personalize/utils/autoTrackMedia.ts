@@ -57,11 +57,13 @@ const startIframeAutoTracking = (
 	scriptElement.src = 'https://www.youtube.com/iframe_api';
 	document.body.append(scriptElement);
 
-	setInterval(() => {
+	const timer = setInterval(() => {
 		if (isPlaying && player) {
 			recordEvent(EVENT_TYPE.TIME_WATCHED, mediaProperties());
 		}
 	}, 3_000);
+
+	element.addEventListener('unload', () => clearInterval(timer));
 
 	// @ts-ignore
 	window.onYouTubeIframeAPIReady = () => {
@@ -108,12 +110,14 @@ const startHTMLMediaAutoTracking = (
 		eventValue: Number((element.currentTime / element.duration).toFixed(4)),
 	});
 
-	// TODO: don't we need to clear the interval here?
-	setInterval(() => {
+	const timer = setInterval(() => {
 		if (isPlaying) {
 			recordEvent(EVENT_TYPE.TIME_WATCHED, mediaProperties());
 		}
 	}, 3_000);
+
+	element.addEventListener('unload', () => clearInterval(timer));
+
 	element.addEventListener(HTML5_MEDIA_EVENT.PLAY, () => {
 		isPlaying = true;
 		recordEvent(EVENT_TYPE.PLAY, mediaProperties());
