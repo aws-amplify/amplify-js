@@ -13,7 +13,6 @@ import { rememberDevice } from '..';
 import { ListDevicesException } from '../types/errors';
 
 // Cognito Documentation for max device
-// tslint:disable-next-line:max-line-length
 // https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
 const MAX_DEVICES = 60;
 
