@@ -1,12 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { ConsoleLogger as Logger } from './Logger';
 import { OAuthConfig } from './singleton/Auth/types';
 import { ResourcesConfig } from './singleton/types';
+
+const logger = new Logger('parseAWSExports');
 
 const authTypeMapping: Record<any, any> = {
 	API_KEY: 'apiKey',
 	AWS_IAM: 'iam',
-	AMAZON_COGNITO_USER_POOLS: 'jwt',
+	AMAZON_COGNITO_USER_POOLS: 'userPool',
+	OPENID_CONNECT: 'oidc',
+	NONE: 'none',
+	LAMBDA: 'lambda',
 };
 
 /**
@@ -38,6 +44,7 @@ export const parseAWSExports = (
 		aws_user_pools_web_client_id,
 		geo,
 		oauth,
+		aws_cloud_logic_custom,
 	} = config;
 	const amplifyConfig: ResourcesConfig = {};
 
@@ -51,17 +58,20 @@ export const parseAWSExports = (
 		};
 	}
 
-	// TODO: Need to support all API configurations
 	// API
 	if (aws_appsync_graphqlEndpoint) {
+		const defaultAuthMode = authTypeMapping[aws_appsync_authenticationType];
+		if (!defaultAuthMode) {
+			logger.debug(
+				`Invalid authentication type ${aws_appsync_authenticationType}. Falling back to IAM.`
+			);
+		}
 		amplifyConfig.API = {
-			AppSync: {
-				defaultAuthMode: {
-					type: authTypeMapping[aws_appsync_authenticationType],
-					apiKey: aws_appsync_apiKey,
-				},
+			GraphQL: {
 				endpoint: aws_appsync_graphqlEndpoint,
+				apiKey: aws_appsync_apiKey,
 				region: aws_appsync_region,
+				defaultAuthMode: defaultAuthMode ?? 'iam',
 			},
 		};
 	}
@@ -107,6 +117,27 @@ export const parseAWSExports = (
 					},
 			  }
 			: { ...geo };
+	}
+
+	// REST API
+	if (aws_cloud_logic_custom) {
+		amplifyConfig.API = {
+			...amplifyConfig.API,
+			REST: (aws_cloud_logic_custom as any[]).reduce(
+				(acc, api: Record<string, any>) => {
+					const { name, endpoint, region, service } = api;
+					return {
+						...acc,
+						[name]: {
+							endpoint,
+							...(service ? { service } : undefined),
+							...(region ? { region } : undefined),
+						},
+					};
+				},
+				{}
+			),
+		};
 	}
 
 	return amplifyConfig;

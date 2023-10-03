@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Sha256 } from '@aws-crypto/sha256-js';
-import BigInteger from '../src/providers/cognito/utils/srp/BigInteger';
-import AuthenticationHelper from '../src/providers/cognito/utils/srp/AuthenticationHelper';
+import { BigInteger } from '../src/providers/cognito/utils/srp/BigInteger';
+import { AuthenticationHelper } from '../src/providers/cognito/utils/srp/AuthenticationHelper';
 import { promisifyCallback } from './testUtils/promisifyCallback';
 
 const instance = new AuthenticationHelper('TestPoolName');
@@ -568,7 +568,7 @@ describe('Getters for AuthHelper class', () => {
 
 	test('getSaltDevices() should throw as it was not previously defined', () => {
 		expect(() => {
-			instance.getSaltDevices();
+			(instance as any).getSaltDevices();
 		}).toThrow();
 	});
 
@@ -589,7 +589,7 @@ describe('getLargeAValue()', () => {
 		jest.clearAllMocks();
 	});
 
-	instance.largeAValue = null;
+	instance.largeAValue = undefined;
 	test('happy path should callback with a calculateA bigInt', async () => {
 		const result = await promisifyCallback(instance, 'getLargeAValue');
 		expect(result).toEqual(instance.largeAValue);
@@ -602,7 +602,7 @@ describe('getLargeAValue()', () => {
 		});
 	});
 	test('mock an error from calculate A', async () => {
-		instance.largeAValue = null;
+		instance.largeAValue = undefined;
 		jest
 			.spyOn(AuthenticationHelper.prototype, 'calculateA')
 			.mockImplementationOnce((...[, callback]) => {

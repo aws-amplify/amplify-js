@@ -48,7 +48,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'jwt',
+			authMode: 'userPool',
 			isOwner: true,
 			ownerField: 'owner',
 			ownerValue: 'user1',
@@ -59,9 +59,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				'jwt',
+				'userPool',
 				accessTokenPayload,
-				'jwt'
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -78,7 +78,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'jwt',
+			authMode: 'userPool',
 			isOwner: true,
 			ownerField: 'owner',
 			ownerValue: 'user1',
@@ -89,9 +89,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				'jwt',
+				'userPool',
 				accessTokenPayload,
-				'jwt'
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -108,7 +108,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'jwt',
+			authMode: 'userPool',
 			isOwner: false,
 			ownerField: 'owner',
 			ownerValue: 'user1',
@@ -119,9 +119,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				'jwt',
+				'userPool',
 				accessTokenPayload,
-				'jwt'
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -145,7 +145,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules, modelProperties);
 
 		const authInfo = {
-			authMode: 'jwt',
+			authMode: 'userPool',
 			isOwner: false,
 			ownerField: 'owner',
 			ownerValue: 'user1',
@@ -156,9 +156,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				'jwt',
+				'userPool',
 				accessTokenPayload,
-				'jwt'
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -184,7 +184,7 @@ describe('sync engine subscription module', () => {
 		};
 
 		const authInfo = {
-			authMode: 'jwt',
+			authMode: 'userPool',
 			isOwner: true,
 			ownerField: 'customOwner',
 			ownerValue: 'user1',
@@ -195,9 +195,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				'jwt',
+				'userPool',
 				accessTokenPayload,
-				'jwt'
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -228,7 +228,7 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				'jwt', // default auth mode
+				'userPool', // default auth mode
 				accessTokenPayload,
 				'iam'
 			)
@@ -248,7 +248,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'jwt',
+			authMode: 'userPool',
 			isOwner: false,
 		};
 
@@ -257,9 +257,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				'jwt',
+				'userPool',
 				accessTokenPayload,
-				'jwt'
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -282,7 +282,7 @@ describe('sync engine subscription module', () => {
 			'custom:groups': '["mygroup"]',
 		};
 		const authInfo = {
-			authMode: 'jwt',
+			authMode: 'userPool',
 			isOwner: false,
 		};
 
@@ -291,9 +291,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				'jwt',
+				'userPool',
 				tokenPayload,
-				'jwt'
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -316,7 +316,7 @@ describe('sync engine subscription module', () => {
 			'custom:group': '"mygroup"',
 		};
 		const authInfo = {
-			authMode: 'jwt',
+			authMode: 'userPool',
 			isOwner: false,
 		};
 
@@ -325,9 +325,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				'jwt',
+				'userPool',
 				tokenPayload,
-				'jwt'
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -350,7 +350,7 @@ describe('sync engine subscription module', () => {
 			'custom:group': 'mygroup',
 		};
 		const authInfo = {
-			authMode: 'jwt',
+			authMode: 'userPool',
 			isOwner: false,
 		};
 
@@ -359,9 +359,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				'jwt',
+				'userPool',
 				tokenPayload,
-				'jwt'
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -495,7 +495,7 @@ describe('sync engine subscription module', () => {
 			email: 'user1@user.com',
 		};
 		const authInfo = {
-			authMode: 'jwt',
+			authMode: 'oidc',
 			isOwner: true,
 			ownerField: 'sub',
 			ownerValue: 'user1',
@@ -506,9 +506,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				'jwt',
+				'oidc',
 				oidcTokenPayload, // No Cognito token,
-				'jwt'
+				'oidc'
 			)
 		).toEqual(authInfo);
 	});
@@ -532,7 +532,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'jwt',
+			authMode: 'userPool',
 			isOwner: true,
 			ownerField: 'owner',
 			ownerValue: 'user1',
@@ -543,9 +543,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				'jwt',
+				'userPool',
 				accessTokenPayload,
-				'jwt'
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -687,7 +687,7 @@ describe('error handler', () => {
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 			},
-			() => ['apiKey', 'jwt'],
+			() => ['apiKey', 'userPool'],
 			errorHandler
 		);
 
