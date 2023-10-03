@@ -70,6 +70,7 @@ async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 		// TODO(v6): add logger message
 	} finally {
 		tokenOrchestrator.clearTokens();
+		tokenOrchestrator.clearDeviceMetadata();
 		await clearCredentials();
 	}
 }
@@ -93,6 +94,7 @@ async function globalSignOut(cognitoConfig: CognitoUserPoolConfig) {
 		// TODO(v6): add logger
 	} finally {
 		tokenOrchestrator.clearTokens();
+		tokenOrchestrator.clearDeviceMetadata();
 		await clearCredentials();
 	}
 }

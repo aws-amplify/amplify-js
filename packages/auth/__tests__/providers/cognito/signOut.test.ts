@@ -15,9 +15,10 @@ const mockRefreshToken = 'abcdefghijk';
 
 describe('signOut tests no oauth happy path', () => {
 	let tokenStoreSpy;
-	let tokenOrchestratorSpy;
+	let clearTokensSpy;
 	let globalSignOutSpy;
 	let revokeTokenSpy;
+	let clearDeviceMetadataSpy;
 
 	beforeEach(() => {
 		Amplify.configure(
@@ -53,8 +54,12 @@ describe('signOut tests no oauth happy path', () => {
 				};
 			});
 
-		tokenOrchestratorSpy = jest
+		clearTokensSpy = jest
 			.spyOn(TokenProvider.tokenOrchestrator, 'clearTokens')
+			.mockImplementation(async () => {});
+
+		clearDeviceMetadataSpy = jest
+			.spyOn(TokenProvider.tokenOrchestrator, 'clearDeviceMetadata')
 			.mockImplementation(async () => {});
 
 		globalSignOutSpy = jest
@@ -78,7 +83,8 @@ describe('signOut tests no oauth happy path', () => {
 			}
 		);
 		expect(globalSignOutSpy).not.toHaveBeenCalled();
-		expect(tokenOrchestratorSpy).toBeCalled();
+		expect(clearTokensSpy).toBeCalled();
+		expect(clearDeviceMetadataSpy).toBeCalled();
 		expect(tokenStoreSpy).toBeCalled();
 	});
 
@@ -94,7 +100,8 @@ describe('signOut tests no oauth happy path', () => {
 			}
 		);
 
-		expect(tokenOrchestratorSpy).toBeCalled();
+		expect(clearTokensSpy).toBeCalled();
+		expect(clearDeviceMetadataSpy).toBeCalled();
 		expect(tokenStoreSpy).toBeCalled();
 	});
 
