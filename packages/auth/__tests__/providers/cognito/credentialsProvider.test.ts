@@ -88,7 +88,7 @@ describe('Guest Credentials', () => {
 		test('Should call identityIdClient with no logins to obtain guest creds', async () => {
 			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: false,
-				authConfig: authAPITestParams.validAuthConfig.Auth!,
+				authConfig: validAuthConfig.Auth!,
 			});
 			expect(res?.credentials.accessKeyId).toEqual(
 				authAPITestParams.CredentialsForIdentityIdResult.Credentials.AccessKeyId
@@ -106,12 +106,12 @@ describe('Guest Credentials', () => {
 		test('in-memory guest creds are returned if not expired and not past TTL', async () => {
 			await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: false,
-				authConfig: authAPITestParams.validAuthConfig.Auth!,
+				authConfig: validAuthConfig.Auth!,
 			});
 			expect(credentialsForIdentityIdSpy).toBeCalledTimes(1);
 			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: false,
-				authConfig: authAPITestParams.validAuthConfig.Auth!,
+				authConfig: validAuthConfig.Auth!,
 			});
 			expect(res?.credentials.accessKeyId).toEqual(
 				authAPITestParams.CredentialsForIdentityIdResult.Credentials.AccessKeyId
@@ -179,7 +179,7 @@ describe('Primary Credentials', () => {
 		test('Should call identityIdClient with the logins map to obtain primary creds', async () => {
 			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: true,
-				authConfig: authAPITestParams.validAuthConfig.Auth!,
+				authConfig: validAuthConfig.Auth!,
 				tokens: authAPITestParams.ValidAuthTokens,
 			});
 			expect(res.credentials.accessKeyId).toEqual(
@@ -191,7 +191,7 @@ describe('Primary Credentials', () => {
 		test('in-memory primary creds are returned if not expired and not past TTL', async () => {
 			await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: true,
-				authConfig: authAPITestParams.validAuthConfig.Auth!,
+				authConfig: validAuthConfig.Auth!,
 				tokens: authAPITestParams.ValidAuthTokens,
 			});
 			expect(credentialsForIdentityIdSpy).toBeCalledWith(
@@ -204,7 +204,7 @@ describe('Primary Credentials', () => {
 
 			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: true,
-				authConfig: authAPITestParams.validAuthConfig.Auth!,
+				authConfig: validAuthConfig.Auth!,
 				tokens: authAPITestParams.ValidAuthTokens,
 			});
 			expect(res.credentials.accessKeyId).toEqual(
@@ -289,7 +289,7 @@ describe('Primary Credentials', () => {
 			expect(
 				cognitoCredentialsProvider.getCredentialsAndIdentityId({
 					authenticated: true,
-					authConfig: authAPITestParams.validAuthConfig.Auth!,
+					authConfig: validAuthConfig.Auth!,
 					tokens: authAPITestParams.ValidAuthTokens,
 				})
 			).rejects.toThrow(AuthError);

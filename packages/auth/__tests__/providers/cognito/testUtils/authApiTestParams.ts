@@ -4,27 +4,6 @@
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { AuthSignInResult } from '../../../../src/types';
 
-type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
-	? A
-	: never;
-const validAuthConfig: ArgumentTypes<typeof AmplifyV6.configure>[0] = {
-	Auth: {
-		userPoolId: 'us-east-1_test-id',
-		identityPoolId: 'us-east:1_test-id',
-		userPoolWebClientId: 'test-id',
-	},
-};
-const mandatorySignInEnabledConfig: ArgumentTypes<
-	typeof AmplifyV6.configure
->[0] = {
-	Auth: {
-		userPoolId: 'us-east-1_test-id',
-		identityPoolId: 'us-east:1_test-id',
-		userPoolWebClientId: 'test-id',
-		isMandatorySignInEnabled: true,
-	},
-};
-
 export const authAPITestParams = {
 	user1: {
 		username: 'user1',
@@ -214,8 +193,7 @@ export const authAPITestParams = {
 	},
 	GuestIdentityId: { id: 'guest-identity-id', type: 'guest' },
 	PrimaryIdentityId: { id: 'primary-identity-id', type: 'primary' },
-	validAuthConfig: { ...validAuthConfig },
-	mandatorySignInEnabledConfig: { ...mandatorySignInEnabledConfig },
+
 	signInResultWithCustomAuth: () => {
 		return {
 			isSignedIn: false,
