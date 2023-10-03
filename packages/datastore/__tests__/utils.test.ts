@@ -374,40 +374,40 @@ _deleted`;
 
 	describe('getModel', () => {
 		test('handles an array of auth modes', async () => {
-			const authModeStrategy: AuthModeStrategy = () => ['jwt'];
+			const authModeStrategy: AuthModeStrategy = () => ['oidc'];
 
 			const authModes = await getModelAuthModes({
 				authModeStrategy,
-				defaultAuthMode: 'jwt',
+				defaultAuthMode: 'oidc',
 				modelName: 'Post',
 				schema: {} as InternalSchema, // schema is only passed directly to the authModeStrategy
 			});
 
 			const expectedAuthModes = {
-				CREATE: ['jwt'],
-				READ: ['jwt'],
-				UPDATE: ['jwt'],
-				DELETE: ['jwt'],
+				CREATE: ['oidc'],
+				READ: ['oidc'],
+				UPDATE: ['oidc'],
+				DELETE: ['oidc'],
 			};
 
 			expect(authModes).toEqual(expectedAuthModes);
 		});
 
 		test('handles a string auth mode', async () => {
-			const authModeStrategy: AuthModeStrategy = () => 'jwt';
+			const authModeStrategy: AuthModeStrategy = () => 'oidc';
 
 			const authModes = await getModelAuthModes({
 				authModeStrategy,
-				defaultAuthMode: 'jwt',
+				defaultAuthMode: 'oidc',
 				modelName: 'Post',
 				schema: {} as InternalSchema,
 			});
 
 			const expectedAuthModes = {
-				CREATE: ['jwt'],
-				READ: ['jwt'],
-				UPDATE: ['jwt'],
-				DELETE: ['jwt'],
+				CREATE: ['oidc'],
+				READ: ['oidc'],
+				UPDATE: ['oidc'],
+				DELETE: ['oidc'],
 			};
 
 			expect(authModes).toEqual(expectedAuthModes);
@@ -415,10 +415,10 @@ _deleted`;
 
 		test('falls back to default auth mode', async () => {
 			const expectedAuthModes = {
-				CREATE: ['jwt'],
-				READ: ['jwt'],
-				UPDATE: ['jwt'],
-				DELETE: ['jwt'],
+				CREATE: ['oidc'],
+				READ: ['oidc'],
+				UPDATE: ['oidc'],
+				DELETE: ['oidc'],
 			};
 
 			// using blocks in order to be able to re-use the same const-declared variables below
@@ -427,7 +427,7 @@ _deleted`;
 
 				const authModes = await getModelAuthModes({
 					authModeStrategy,
-					defaultAuthMode: 'jwt',
+					defaultAuthMode: 'oidc',
 					modelName: 'Post',
 					schema: {} as InternalSchema,
 				});
@@ -440,7 +440,7 @@ _deleted`;
 
 				const authModes = await getModelAuthModes({
 					authModeStrategy,
-					defaultAuthMode: 'jwt',
+					defaultAuthMode: 'oidc',
 					modelName: 'Post',
 					schema: {} as InternalSchema,
 				});
@@ -453,7 +453,7 @@ _deleted`;
 
 				const authModes = await getModelAuthModes({
 					authModeStrategy,
-					defaultAuthMode: 'jwt',
+					defaultAuthMode: 'oidc',
 					modelName: 'Post',
 					schema: {} as InternalSchema,
 				});

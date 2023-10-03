@@ -9,8 +9,8 @@ import {
 	jitteredBackoff,
 	authenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
+import { DocumentType } from '@aws-amplify/core/internals/utils';
 
-import { DocumentType } from '../types';
 import {
 	createCancellableOperation,
 	parseRestApiServiceError,
@@ -41,23 +41,7 @@ type SigningServiceInfo = {
  *
  * @internal
  */
-export const transferHandler = (
-	amplify: AmplifyClassV6,
-	options: HandlerOptions,
-	signingServiceInfo?: SigningServiceInfo
-) =>
-	createCancellableOperation(abortSignal =>
-		transferHandlerJob(
-			amplify,
-			{
-				...options,
-				abortSignal,
-			},
-			signingServiceInfo
-		)
-	);
-
-const transferHandlerJob = async (
+export const transferHandler = async (
 	amplify: AmplifyClassV6,
 	options: HandlerOptions & { abortSignal: AbortSignal },
 	signingServiceInfo?: SigningServiceInfo

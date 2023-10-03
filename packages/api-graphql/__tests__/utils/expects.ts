@@ -94,10 +94,8 @@ export function expectSub(
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
-			authenticationType: {
-				apiKey: 'FAKE-KEY',
-				type: 'apiKey',
-			},
+			authenticationType: 'apiKey',
+			apiKey: 'FAKE-KEY',
 			appSyncGraphqlEndpoint: 'https://localhost/graphql',
 			query: expect.stringContaining(
 				`${opName}(filter: $filter, owner: $owner)`

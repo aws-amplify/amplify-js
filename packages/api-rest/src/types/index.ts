@@ -1,16 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
-/**
- * Type representing a plain JavaScript object that can be serialized to JSON.
- */
-export type DocumentType =
-	| null
-	| boolean
-	| number
-	| string
-	| DocumentType[]
-	| { [prop: string]: DocumentType };
+import { DocumentType } from '@aws-amplify/core/internals/utils';
 
 export type GetOptions = RestApiOptionsBase;
 export type PostOptions = RestApiOptionsBase;
@@ -103,4 +93,11 @@ export type InternalPostInput = {
 			region?: string;
 		};
 	};
+	/**
+	 * The abort controller to cancel the in-flight POST request.
+	 * Required if you want to make the internal post request cancellable. To make the internal post cancellable, you
+	 * must also call `updateRequestToBeCancellable()` with the promise from internal post call and the abort
+	 * controller.
+	 */
+	abortController?: AbortController;
 };

@@ -45,11 +45,9 @@ describe('client', () => {
 	beforeEach(() => {
 		Amplify.configure({
 			API: {
-				AppSync: {
-					defaultAuthMode: {
-						type: 'apiKey',
-						apiKey: 'FAKE-KEY',
-					},
+				GraphQL: {
+					defaultAuthMode: 'apiKey',
+					apiKey: 'FAKE-KEY',
 					endpoint: 'https://localhost/graphql',
 					region: 'local-host-h4x',
 				},
