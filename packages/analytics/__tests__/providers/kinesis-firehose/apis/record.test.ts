@@ -7,7 +7,7 @@ import {
 } from '../../../../src/providers/kinesis-firehose/utils';
 import { isAnalyticsEnabled, resolveCredentials } from '../../../../src/utils';
 import {
-	mockConfig,
+	mockKinesisConfig,
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
 import { record } from '../../../../src/providers/kinesis-firehose';
@@ -33,7 +33,7 @@ describe('Analytics KinesisFirehose API: record', () => {
 
 	beforeEach(() => {
 		mockIsAnalyticsEnabled.mockReturnValue(true);
-		mockResolveConfig.mockReturnValue(mockConfig);
+		mockResolveConfig.mockReturnValue(mockKinesisConfig);
 		mockResolveCredentials.mockReturnValue(
 			Promise.resolve(mockCredentialConfig)
 		);
@@ -56,7 +56,7 @@ describe('Analytics KinesisFirehose API: record', () => {
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
 		expect(mockAppend).toBeCalledWith(
 			expect.objectContaining({
-				region: mockConfig.region,
+				region: mockKinesisConfig.region,
 				streamName: mockRecordInput.streamName,
 				event: mockRecordInput.data,
 				retryCount: 0,
