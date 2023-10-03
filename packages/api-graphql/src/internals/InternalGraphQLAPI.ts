@@ -309,7 +309,7 @@ export class InternalGraphQLAPIClass {
 	/**
 	 * Cancels an inflight request. Only applicable for graphql queries and mutations
 	 * @param {any} request - request to cancel
-	 * @return {boolean} - A boolean indicating if the request was cancelled
+	 * @returns - A boolean indicating if the request was cancelled
 	 */
 	cancel(request: Promise<any>, message?: string): boolean {
 		return cancelREST(request, message);
