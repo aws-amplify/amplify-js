@@ -8,6 +8,7 @@ export {
 	AuthCodeDeliveryDetails,
 	AuthNextSignUpStep,
 	AuthStandardAttributeKey,
+	AuthVerifiableAttributeKey,
 	AuthUserAttributeKey,
 	AuthUserAttributes,
 	AuthUserAttribute,
@@ -41,6 +42,7 @@ export {
 	AuthSignInWithRedirectInput,
 	AuthSignOutInput,
 	AuthSendUserAttributeVerificationCodeInput,
+	AuthDeleteUserAttributesInput,
 } from './inputs';
 
 export {

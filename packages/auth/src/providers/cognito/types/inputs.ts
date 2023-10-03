@@ -7,6 +7,7 @@ import {
 	ConfirmSignInOptions,
 	ConfirmSignUpOptions,
 	UserAttributeKey,
+	VerifiableUserAttributeKey,
 	ResendSignUpCodeOptions,
 	ResetPasswordOptions,
 	SignInOptions,
@@ -17,7 +18,6 @@ import {
 	SendUserAttributeVerificationCodeOptions,
 } from '../types';
 import {
-	AuthStandardAttributeKey,
 	AuthConfirmResetPasswordInput,
 	AuthConfirmSignInInput,
 	AuthConfirmSignUpInput,
@@ -33,6 +33,7 @@ import {
 	AuthUpdateUserAttributeInput,
 	AuthVerifyTOTPSetupInput,
 	AuthSendUserAttributeVerificationCodeInput,
+	AuthDeleteUserAttributesInput,
 } from '../../../types';
 
 /**
@@ -140,7 +141,7 @@ export type VerifyTOTPSetupInput =
  */
 export type SendUserAttributeVerificationCodeInput =
 	AuthSendUserAttributeVerificationCodeInput<
-		UserAttributeKey,
+		VerifiableUserAttributeKey,
 		SendUserAttributeVerificationCodeOptions
 	>;
 
@@ -151,3 +152,9 @@ export type UpdateUserAttributeInput = AuthUpdateUserAttributeInput<
 	UserAttributeKey,
 	UpdateUserAttributeOptions
 >;
+
+/**
+ * Input type for Cognito deleteUserAttributes API.
+ */
+export type DeleteUserAttributesInput =
+	AuthDeleteUserAttributesInput<UserAttributeKey>;

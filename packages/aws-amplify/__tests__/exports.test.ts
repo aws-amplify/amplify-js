@@ -43,6 +43,8 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "record",
 			  "identifyUser",
+			  "enable",
+			  "disable",
 			  "AnalyticsError",
 			]
 		`);
@@ -82,6 +84,9 @@ describe('aws-amplify Exports', () => {
 			  "fetchUserAttributes",
 			  "signOut",
 			  "sendUserAttributeVerificationCode",
+			  "deleteUserAttributes",
+			  "deleteUser",
+			  "rememberDevice",
 			  "AuthError",
 			  "fetchAuthSession",
 			]
@@ -111,6 +116,9 @@ describe('aws-amplify Exports', () => {
 			  "fetchUserAttributes",
 			  "signOut",
 			  "sendUserAttributeVerificationCode",
+			  "deleteUserAttributes",
+			  "deleteUser",
+			  "rememberDevice",
 			  "cognitoCredentialsProvider",
 			  "CognitoAWSCredentialsAndIdentityIdProvider",
 			  "DefaultIdentityIdStore",

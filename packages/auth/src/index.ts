@@ -23,6 +23,9 @@ export {
 	fetchUserAttributes,
 	signOut,
 	sendUserAttributeVerificationCode,
+	deleteUserAttributes,
+	deleteUser,
+	rememberDevice,
 } from './providers/cognito';
 
 export {
@@ -42,6 +45,7 @@ export {
 	UpdateUserAttributeInput,
 	VerifyTOTPSetupInput,
 	SendUserAttributeVerificationCodeInput,
+	DeleteUserAttributesInput,
 } from './providers/cognito';
 
 export {
