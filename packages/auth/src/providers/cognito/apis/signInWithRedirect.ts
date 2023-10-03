@@ -109,7 +109,9 @@ async function oauthSignIn({
 	const { type, error, url } =
 		(await openAuthSession(oAuthUrl, redirectSignIn)) ?? {};
 	if (type === 'success' && url) {
-		handleAuthResponse({
+		// ensure the code exchange completion resolves the signInWithRedirect
+		// returned promise in react-native
+		await handleAuthResponse({
 			currentUrl: url,
 			clientId,
 			domain,
