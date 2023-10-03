@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	EventTrackingOpts,
-	PageViewTrackingOpts,
-	SessionTrackingOpts,
-	TrackerType,
 	TrackerAttributes,
+	TrackerEventRecorder,
+	TrackerInterface,
+	TrackerType,
 } from '../types/trackers';
+import { EventTracker, PageViewTracker, SessionTracker } from '../trackers';
+import { ConfigureAutoTrackInput } from '../providers/pinpoint';
 
 /**
  * Updates a provider's trackers as appropriate for the provided auto-track configuration.
@@ -16,33 +17,43 @@ import {
  * This utility will mutate the provider's configured trackers via `providerTrackers`.
  */
 export const updateProviderTrackers = (
-	trackerType: TrackerType,
-	enabled: boolean,
-	providerEventRecorder: (
-		eventName: string,
-		attributes: TrackerAttributes
-	) => void,
-	providerTrackers: Partial<Record<TrackerType, object>>,
-	trackerOptions?:
-		| EventTrackingOpts
-		| PageViewTrackingOpts
-		| SessionTrackingOpts
+	input: ConfigureAutoTrackInput,
+	providerEventRecorder: TrackerEventRecorder,
+	providerTrackers: Partial<Record<TrackerType, TrackerInterface>>
 ) => {
+	const trackerType = input.type;
 	const currentTracker = providerTrackers[trackerType];
 
-	if (!enabled) {
-		// Tracker was disabled, clean it up
+	// Check if the tracker was disabled & should be cleaned up
+	if (!input.enable) {
 		if (currentTracker) {
-			// TODO call currentTracker.cleanup();
+			currentTracker.cleanup();
 			delete providerTrackers[trackerType];
 		}
 
 		return;
 	}
 
+	// Re-configure the existing tracker, or create & configure an instance if it doesn't exist yet
 	if (currentTracker) {
-		// Re-configure the existing tracker instance
+		currentTracker.configure(providerEventRecorder, input.options);
 	} else {
-		// Create a new tracker instance
+		let trackerInstance;
+
+		if (trackerType === 'event') {
+			trackerInstance = new EventTracker(providerEventRecorder, input.options);
+		} else if (trackerType === 'pageView') {
+			trackerInstance = new PageViewTracker(
+				providerEventRecorder,
+				input.options
+			);
+		} else if (trackerType === 'session') {
+			trackerInstance = new SessionTracker(
+				providerEventRecorder,
+				input.options
+			);
+		}
+
+		providerTrackers[trackerType] = trackerInstance;
 	}
 };

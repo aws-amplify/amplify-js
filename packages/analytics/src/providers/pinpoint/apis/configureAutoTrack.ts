@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AnalyticsValidationErrorCode } from '../../../errors';
-import { TrackerType, TrackerAttributes } from '../../../types/trackers';
+import {
+	TrackerType,
+	TrackerAttributes,
+	TrackerInterface,
+} from '../../../types/trackers';
 import {
 	updateProviderTrackers,
 	validateTrackerConfiguration,
@@ -11,7 +15,7 @@ import { ConfigureAutoTrackInput } from '../types';
 import { record } from './record';
 
 // Configured Tracker instances for Pinpoint
-let configuredTrackers: Partial<Record<TrackerType, object>> = {};
+let configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
 
 // TODO Add more inline documentation & examples
 /**
@@ -26,7 +30,7 @@ let configuredTrackers: Partial<Record<TrackerType, object>> = {};
 export const configureAutoTrack = (input: ConfigureAutoTrackInput): void => {
 	validateTrackerConfiguration(input);
 
-	// TODO Check global session tracking config
+	// TODO Check global session tracking config?
 
 	// Callback that will emit an appropriate event to Pinpoint when required by the Tracker
 	const emitTrackingEvent = (
@@ -40,11 +44,5 @@ export const configureAutoTrack = (input: ConfigureAutoTrackInput): void => {
 	};
 
 	// Initialize or update this provider's trackers
-	updateProviderTrackers(
-		input.type,
-		input.enable,
-		emitTrackingEvent,
-		configuredTrackers,
-		input.options
-	);
+	updateProviderTrackers(input, emitTrackingEvent, configuredTrackers);
 };

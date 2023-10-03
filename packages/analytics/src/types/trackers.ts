@@ -22,9 +22,14 @@ export type TrackerType = 'event' | 'pageView' | 'session';
 
 export type TrackerAttributes = Record<string, string>;
 
+export type TrackerEventRecorder = (
+	eventName: string,
+	attributes: TrackerAttributes
+) => void;
+
 export type DOMEvents = keyof GlobalEventHandlersEventMap;
 
 export interface TrackerInterface {
-	configure(): void;
+	configure(eventRecorder: TrackerEventRecorder, options?: object): void;
 	cleanup(): void;
 }

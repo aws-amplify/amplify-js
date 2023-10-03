@@ -1,10 +1,22 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { TrackerInterface } from '../types/trackers';
+import {
+	PageViewTrackingOpts,
+	TrackerEventRecorder,
+	TrackerInterface,
+} from '../types/trackers';
 
 export class PageViewTracker implements TrackerInterface {
-	public configure() {}
+	constructor(
+		eventRecorder: TrackerEventRecorder,
+		options?: PageViewTrackingOpts
+	) {}
+
+	public configure(
+		eventRecorder: TrackerEventRecorder,
+		options?: PageViewTrackingOpts
+	) {}
 
 	public cleanup() {}
 }
