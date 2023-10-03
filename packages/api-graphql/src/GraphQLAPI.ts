@@ -38,8 +38,8 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 
 	/**
 	 * Checks to see if an error thrown is from an api request cancellation
-	 * @param {any} error - Any error
-	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
+	 * @param error - Any error
+	 * @returns A boolean indicating if the error was from an api request cancellation
 	 */
 	isCancelError(error: any): boolean {
 		return super.isCancelError(error);
@@ -47,8 +47,8 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 
 	/**
 	 * Cancels an inflight request. Only applicable for graphql queries and mutations
-	 * @param {any} request - request to cancel
-	 * @return {boolean} - A boolean indicating if the request was cancelled
+	 * @param request - a promise of the request to cancel
+	 * @returns A boolean indicating if the error was from an api request cancellation
 	 */
 	cancel(request: Promise<any>, message?: string): boolean {
 		return super.cancel(request, message);
