@@ -8,6 +8,10 @@ import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
 
 const logger = new ConsoleLogger('Kinesis');
 
+/**
+ * This API attempts to flush all the events cached in the active buffer.
+ * Since it operates asynchronously, there is no guarantee that the most recently recorded event will be flushed.
+ * */
 export const flushEvents = () => {
 	const { region, flushSize, flushInterval, bufferSize, resendLimit } =
 		resolveConfig();
