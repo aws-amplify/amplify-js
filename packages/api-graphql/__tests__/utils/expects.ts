@@ -72,7 +72,6 @@ export function expectList(
 		url: new URL('https://localhost/graphql'),
 		options: expect.objectContaining({
 			headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
-			signingServiceInfo: expect.objectContaining({ service: 'appsync' }),
 			body: expect.objectContaining({
 				query: expect.stringContaining(
 					`${opName}(filter: $filter, limit: $limit, nextToken: $nextToken)`
