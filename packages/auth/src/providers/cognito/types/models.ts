@@ -64,7 +64,7 @@ export type MFAPreference =
 	| 'NOT_PREFERRED';
 
 /**
- * Holds the device specific information aong with it's id and name.
+ * Holds the device specific information along with it's id and name.
  */
 export type AWSAuthDevice = AuthDevice & {
 	attributes: AuthUserAttribute<UserAttributeKey>;
