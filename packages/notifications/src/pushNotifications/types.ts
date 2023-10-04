@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { EventListener } from '../common';
-import { AWSPinpointProviderConfig } from '../common/AWSPinpointProviderCommon/types';
+import { PinpointProviderConfig } from '../common/AWSPinpointProviderCommon/types';
 import {
 	NotificationsProvider,
 	NotificationsSubCategory as NotificationsSubCategories,
@@ -52,7 +52,7 @@ export interface PushNotificationProvider extends NotificationsProvider {
 }
 
 export interface PushNotificationConfig {
-	AWSPinpoint?: AWSPinpointProviderConfig;
+	Pinpoint?: PinpointProviderConfig;
 }
 
 export interface PushNotificationMessage {
@@ -97,13 +97,12 @@ export type OnPushNotificationMessageHandler = (
 	message: PushNotificationMessage
 ) => any;
 
-export const enum PushNotificationEvent {
-	BACKGROUND_MESSAGE_RECEIVED,
-	FOREGROUND_MESSAGE_RECEIVED,
-	LAUNCH_NOTIFICATION_OPENED,
-	NOTIFICATION_OPENED,
-	TOKEN_RECEIVED,
-}
+export type PushNotificationEvent =
+	| 'backgroundMessageReceived'
+	| 'foregroundMessageReceived'
+	| 'launchNotificationsOpened'
+	| 'notificationOpened'
+	| 'tokenReceived';
 
 export interface NormalizedValues {
 	body?: string;

@@ -28,7 +28,7 @@ import { resolveConfig, resolveCredentials } from '../utils';
  * await identifyUser({
  *     userId,
  *     userProfile: {
- *         email: [userEmail]
+ *         email: 'userEmail@example.com'
  *         customProperties: {
  *             phoneNumber: ['555-555-5555'],
  *         },
@@ -42,7 +42,7 @@ import { resolveConfig, resolveCredentials } from '../utils';
  * await identifyUser({
  *     userId,
  *     userProfile: {
- *         email: [userEmail]
+ *         email: 'userEmail@example.com'
  *         customProperties: {
  *             phoneNumber: ['555-555-5555'],
  *         },
@@ -70,6 +70,6 @@ export const identifyUser = async ({
 		userAttributes,
 		userId,
 		userProfile,
-		userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.UpdateEndpoint),
+		userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.IdentifyUser),
 	});
 };
