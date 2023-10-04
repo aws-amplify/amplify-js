@@ -9,6 +9,7 @@ import * as analyticsTopLevelExports from '../src/analytics';
 import * as analyticsPinpointExports from '../src/analytics/pinpoint';
 import * as storageTopLevelExports from '../src/storage';
 import * as storageS3Exports from '../src/storage/s3';
+import * as apiTopLevelExports from '../src/api';
 
 /**
  * Describes exports from the aws-amplify umbrella package to ensure we're not polluting the export surface.
@@ -32,6 +33,17 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "Hub",
 			  "I18n",
+			]
+		`);
+		});
+	});
+
+	describe('API exports', () => {
+		it('should only export expected symbols from the top level', () => {
+			expect(Object.keys(apiTopLevelExports)).toMatchInlineSnapshot(`
+			Array [
+			  "GraphQLAuthError",
+			  "generateClient",
 			]
 		`);
 		});
