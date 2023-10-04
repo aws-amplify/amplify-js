@@ -826,7 +826,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse,
+						json: () => graphqlResponse.data,
 					},
 				});
 
