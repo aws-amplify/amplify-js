@@ -57,6 +57,11 @@
 			"import": "./lib-esm/analytics/pinpoint/index.js",
 			"require": "./lib/analytics/pinpoint/index.js"
 		},
+		"./analytics/kinesis": {
+			"types": "./lib-esm/analytics/kinesis/index.d.ts",
+			"import": "./lib-esm/analytics/kinesis/index.js",
+			"require": "./lib/analytics/kinesis/index.js"
+		},
 		"./analytics/kinesis-firehose": {
 			"types": "./lib-esm/analytics/kinesis-firehose/index.d.ts",
 			"import": "./lib-esm/analytics/kinesis-firehose/index.js",
