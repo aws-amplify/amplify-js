@@ -18,7 +18,7 @@ import {
 	graphQLOperationsInfo,
 	ModelOperation,
 } from './APIClient';
-import type { ModelTypes } from '@aws-amplify/types-package-alpha';
+import type { ModelTypes } from '@aws-amplify/amplify-api-next-types-alpha';
 
 const logger = new Logger('API');
 /**

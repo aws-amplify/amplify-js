@@ -1,8 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
-import type { ModelTypes } from '@aws-amplify/types-package-alpha';
-
 type ListArgs = { selectionSet?: string[]; filter?: {} };
 
 const connectionType = {
