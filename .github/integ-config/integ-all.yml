@@ -549,29 +549,6 @@ tests:
     sample_name: [amplify-authenticator]
     spec: custom-authenticator
     browser: *minimal_browser_list
-  - test_name: integ_next_auth_authenticator_and_ssr_page
-    desc: 'Authenticator and SSR page'
-    framework: next
-    category: auth
-    sample_name: [auth-ssr]
-    spec: auth-ssr
-    browser: *minimal_browser_list
-  - test_name: integ_next_auth_authenticator_and_rsc_page
-    desc: 'Authenticator and RSC page'
-    framework: next
-    category: auth
-    sample_name: [auth-rsc]
-    spec: auth-rsc
-    browser: [chrome]
-    timeout_minutes: 45
-    retry_count: 10
-  - test_name: integ_next_auth_nextjs_auth_custom_implementation_with_ssr
-    desc: 'NextJS Auth Custom Implementation with SSR'
-    framework: next
-    category: auth
-    sample_name: [custom-auth-ssr]
-    spec: authenticator
-    browser: *minimal_browser_list
   - test_name: integ_node_amazon_cognito_identity_js
     desc: 'amazon-cognito-identity-js'
     framework: node
