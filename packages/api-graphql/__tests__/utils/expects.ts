@@ -101,6 +101,7 @@ export function expectSub(
 				`${opName}(filter: $filter, owner: $owner)`
 			),
 			variables: expect.objectContaining(item),
-		})
+		}),
+		undefined
 	);
 }
