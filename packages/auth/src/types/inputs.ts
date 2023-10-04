@@ -5,6 +5,7 @@ import {
 	AuthUserAttributes,
 	AuthUserAttribute,
 	AuthUserAttributeKey,
+	AuthDevice,
 } from './models';
 import { AuthServiceOptions, AuthSignUpOptions } from './options';
 
@@ -189,3 +190,12 @@ export type AuthSendUserAttributeVerificationCodeInput<
 export type AuthDeleteUserAttributesInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = { userAttributeKeys: [UserAttributeKey, ...UserAttributeKey[]] };
+
+/**
+ * Constructs a `forgetDevice` input.
+ *
+ * @param device - optional parameter to forget an external device
+ */
+export type AuthForgetDeviceInput = {
+	device?: AuthDevice;
+};

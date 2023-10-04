@@ -17,9 +17,9 @@
 //   divide
 //   modPow
 
-import { BigIntegerInterface } from './types';
+import { AuthBigInteger } from './types';
 
-export default BigInteger as BigIntegerInterface;
+export default BigInteger as AuthBigInteger;
 
 type BNP = { s: number; t: number };
 /*

@@ -357,7 +357,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockImplementation(() => ({
+					body: {
+						json: () => graphqlResponse,
+					},
+				}));
 
 			// If the update fails, we get an error which we'll need to catch.
 			// If it succeeds, we get a result back and no need to look for `null | undefined`
@@ -390,7 +394,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockImplementation(() => ({
+					body: {
+						json: () => graphqlResponse,
+					},
+				}));
 
 			// Not sure yet what happens if an update failes to find a matching record ... pretty sure
 			// it's an error though! This would indicate update queries can omit
@@ -421,7 +429,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockImplementation(() => ({
+					body: {
+						json: () => graphqlResponse,
+					},
+				}));
 
 			// If a delete fails, an error is raised. So, we don't need to handle null or
 			// undefined return values in the happy path.
@@ -456,7 +468,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockImplementation(() => ({
+					body: {
+						json: () => graphqlResponse,
+					},
+				}));
 
 			// a get query might not actually find anything.
 			const thread: DeeplyPartial<Thread> | null | undefined = (
@@ -507,7 +523,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockImplementation(() => ({
+					body: {
+						json: () => graphqlResponse,
+					},
+				}));
 
 			// If a list query succeeds, we always get a list back, even if it's empty.
 			// and there are no empty values.

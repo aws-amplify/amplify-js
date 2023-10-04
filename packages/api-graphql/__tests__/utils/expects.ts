@@ -12,6 +12,7 @@ export function expectMutation(
 	item: Record<string, any>
 ) {
 	expect(spy).toHaveBeenCalledWith({
+		abortController: expect.any(AbortController),
 		url: new URL('https://localhost/graphql'),
 		options: expect.objectContaining({
 			headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
@@ -41,6 +42,7 @@ export function expectGet(
 	item: Record<string, any>
 ) {
 	expect(spy).toHaveBeenCalledWith({
+		abortController: expect.any(AbortController),
 		url: new URL('https://localhost/graphql'),
 		options: expect.objectContaining({
 			headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
@@ -66,6 +68,7 @@ export function expectList(
 	item: Record<string, any>
 ) {
 	expect(spy).toHaveBeenCalledWith({
+		abortController: expect.any(AbortController),
 		url: new URL('https://localhost/graphql'),
 		options: expect.objectContaining({
 			headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
@@ -101,6 +104,7 @@ export function expectSub(
 				`${opName}(filter: $filter, owner: $owner)`
 			),
 			variables: expect.objectContaining(item),
-		})
+		}),
+		undefined
 	);
 }
