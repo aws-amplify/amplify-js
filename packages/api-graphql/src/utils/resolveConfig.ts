@@ -10,6 +10,7 @@ import { APIValidationErrorCode, assertValidationError } from './errors';
 export const resolveConfig = () => {
 	const { region, defaultAuthMode, endpoint, apiKey } =
 		Amplify.getConfig().API?.GraphQL ?? {};
+
 	/**
 	 * TODO: validate that headers are a function:
 	 * https://github.com/aws-amplify/amplify-js/blob/main/packages/api-graphql/src/internals/InternalGraphQLAPI.ts#L88-L93
@@ -21,6 +22,6 @@ export const resolveConfig = () => {
 		!!defaultAuthMode,
 		APIValidationErrorCode.NoDefaultAuthMode
 	);
-	assertValidationError(!!region, APIValidationErrorCode.NoRegion);
+
 	return { endpoint, region, defaultAuthMode, apiKey };
 };
