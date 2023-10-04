@@ -62,12 +62,24 @@ export type DeeplyPartial<T> = T extends {}
 	  }
 	: T;
 
+/**
+ * Describes a paged list result from AppSync, which can either
+ * live at the top query or property (e.g., related model) level.
+ */
 type PagedList<T, TYPENAME> = {
 	__typename: TYPENAME;
 	nextToken?: string | null | undefined;
 	items: Array<T>;
 };
 
+/**
+ * Recursively looks through a result type and removes nulls and
+ * and undefined from `PagedList` types.
+ *
+ * Although a graphql response might contain empty values in an
+ * array, this will only be the case when we also have errors,
+ * which will then be *thrown*.
+ */
 type WithListsFixed<T> = T extends PagedList<infer IT, infer NAME>
 	? PagedList<Exclude<IT, null | undefined>, NAME>
 	: T extends {}
@@ -76,10 +88,20 @@ type WithListsFixed<T> = T extends PagedList<infer IT, infer NAME>
 	  }
 	: T;
 
+/**
+ * Returns an updated response type to always return a value.
+ */
 type NeverEmpty<T> = {
 	[K in keyof T]-?: Exclude<WithListsFixed<T[K]>, undefined | null>;
 };
 
+/**
+ * Replaces all list result types in a query result with types to exclude
+ * nulls and undefined from list member unions.
+ *
+ * If empty members are present, there will also be errors present,
+ * and the response will instead be *thrown*.
+ */
 type FixedQueryResult<T> = Exclude<
 	T[keyof T],
 	null | undefined

@@ -509,6 +509,8 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => graphqlResponse);
 
+			// If a list query succeeds, we always get a list back, even if it's empty.
+			// and there are no empty values.
 			const threads: DeeplyPartial<Thread>[] = (
 				await client.graphql({
 					query: typedQueries.listThreads,
@@ -547,7 +549,6 @@ describe('client', () => {
 			});
 
 			const threads: DeeplyPartial<Thread>[] = [];
-			// const threads: Thread[] = [];
 
 			result.subscribe({
 				next(message) {

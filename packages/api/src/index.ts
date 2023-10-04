@@ -8,7 +8,7 @@ import { API } from './API';
 
 export { GraphQLAuthError } from '@aws-amplify/api-graphql';
 
-export type { GraphQLResult } from '@aws-amplify/api-graphql';
+export type { GraphQLResult, DeeplyPartial } from '@aws-amplify/api-graphql';
 
 const generateClient = API.generateClient;
 

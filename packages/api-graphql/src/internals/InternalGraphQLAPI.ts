@@ -75,7 +75,7 @@ export class InternalGraphQLAPIClass {
 			endpoint: appSyncGraphqlEndpoint,
 			apiKey,
 			defaultAuthMode,
-		} = config.API.GraphQL;
+		} = config.API?.GraphQL || {};
 
 		let headers = {};
 
@@ -202,7 +202,7 @@ export class InternalGraphQLAPIClass {
 		const config = Amplify.getConfig();
 
 		const { region: region, endpoint: appSyncGraphqlEndpoint } =
-			config.API.GraphQL;
+			config.API?.GraphQL || {};
 
 		const customGraphqlEndpoint = null;
 		const customEndpointRegion = null;
@@ -214,14 +214,15 @@ export class InternalGraphQLAPIClass {
 					additionalHeaders,
 					customUserAgentDetails
 				))),
-			...(customGraphqlEndpoint &&
+			...((customGraphqlEndpoint &&
 				(customEndpointRegion
 					? await this._headerBasedAuth(
 							authMode,
 							additionalHeaders,
 							customUserAgentDetails
 					  )
-					: { Authorization: null })),
+					: { Authorization: null })) ||
+				{}),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
@@ -230,7 +231,7 @@ export class InternalGraphQLAPIClass {
 
 		const body = {
 			query: print(query as DocumentNode),
-			variables,
+			variables: variables || null,
 		};
 
 		const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
