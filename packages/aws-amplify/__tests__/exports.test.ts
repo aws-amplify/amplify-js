@@ -7,6 +7,8 @@ import * as authTopLevelExports from '../src/auth';
 import * as authCognitoExports from '../src/auth/cognito';
 import * as analyticsTopLevelExports from '../src/analytics';
 import * as analyticsPinpointExports from '../src/analytics/pinpoint';
+import * as inAppMessagingTopLevelExports from '../src/in-app-messaging';
+import * as inAppMessagingPinpointTopLevelExports from '../src/in-app-messaging/pinpoint';
 import * as storageTopLevelExports from '../src/storage';
 import * as storageS3Exports from '../src/storage/s3';
 
@@ -60,6 +62,27 @@ describe('aws-amplify Exports', () => {
 		});
 	});
 
+	describe('InAppMessaging exports', () => {
+		it('should only export expected symbols from the top-level', () => {
+			expect(Object.keys(inAppMessagingTopLevelExports)).toMatchInlineSnapshot(`
+			Array [
+			  "identifyUser",
+			  "syncMessages",
+			]
+		`);
+		});
+
+		it('should only export expected symbols from the Pinpoint provider', () => {
+			expect(Object.keys(inAppMessagingPinpointTopLevelExports))
+				.toMatchInlineSnapshot(`
+			Array [
+			  "identifyUser",
+			  "syncMessages",
+			]
+		`);
+		});
+	});
+
 	describe('Auth exports', () => {
 		it('should only export expected symbols from the top-level', () => {
 			expect(Object.keys(authTopLevelExports)).toMatchInlineSnapshot(`
@@ -88,6 +111,7 @@ describe('aws-amplify Exports', () => {
 			  "deleteUser",
 			  "rememberDevice",
 			  "forgetDevice",
+			  "fetchDevices",
 			  "AuthError",
 			  "fetchAuthSession",
 			]
@@ -121,6 +145,7 @@ describe('aws-amplify Exports', () => {
 			  "deleteUser",
 			  "rememberDevice",
 			  "forgetDevice",
+			  "fetchDevices",
 			  "cognitoCredentialsProvider",
 			  "CognitoAWSCredentialsAndIdentityIdProvider",
 			  "DefaultIdentityIdStore",

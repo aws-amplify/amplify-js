@@ -22,6 +22,7 @@ export {
 	AuthResetPasswordStep,
 	AuthSignUpStep,
 	AuthUpdateAttributeStep,
+	AuthDevice,
 } from './models';
 
 export { AuthServiceOptions, AuthSignUpOptions } from './options';
