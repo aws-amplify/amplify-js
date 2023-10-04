@@ -26,7 +26,7 @@ export const AuthTokenStorageKeys = {
 	oidcProvider: 'oidcProvider',
 	clockDrift: 'clockDrift',
 	refreshToken: 'refreshToken',
-	deviceMetadata: 'deviceMetadata',
+	deviceMetadata: 'deviceKey',
 };
 
 export interface AuthTokenStore {
