@@ -78,7 +78,8 @@ export class InternalGraphQLAPIClass {
 		const {
 			region: region,
 			endpoint: appSyncGraphqlEndpoint,
-			defaultAuthMode: authenticationType,
+			apiKey,
+			defaultAuthMode,
 		} = resolveConfig();
 
 		let headers = {};
@@ -333,6 +334,7 @@ export class InternalGraphQLAPIClass {
 			appSyncGraphqlEndpoint: config?.endpoint,
 			region: config?.region,
 			authenticationType: config?.defaultAuthMode,
+			apiKey: config?.apiKey,
 		});
 	}
 }
