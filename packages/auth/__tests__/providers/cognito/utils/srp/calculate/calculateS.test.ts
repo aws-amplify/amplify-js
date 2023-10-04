@@ -74,38 +74,3 @@ describe('calculateS', () => {
 		).rejects.toThrow();
 	});
 });
-
-// 	it('modPow throws an error ', async () => {
-// 		jest
-// 			.spyOn(BigInteger.prototype, 'modPow')
-// 			.mockImplementationOnce((...args: any) => {
-// 				args[2](bigIntError, null);
-// 			});
-
-// 		await promisifyCallback(instance, 'calculateS', xValue, serverValue).catch(
-// 			e => {
-// 				expect(e).toEqual(bigIntError);
-// 			}
-// 		);
-// 	});
-
-// 	it('second modPow throws an error ', async () => {
-// 		// need to mock a working modPow to then fail in the second mock
-// 		jest
-// 			.spyOn(BigInteger.prototype, 'modPow')
-// 			.mockImplementationOnce((...args: any) => {
-// 				args[2](null, new BigInteger('deadbeef', 16));
-// 			});
-// 		jest
-// 			.spyOn(BigInteger.prototype, 'modPow')
-// 			.mockImplementationOnce((...args: any) => {
-// 				args[2](bigIntError, null);
-// 			});
-
-// 		await promisifyCallback(instance, 'calculateS', xValue, serverValue).catch(
-// 			e => {
-// 				expect(e).toEqual(bigIntError);
-// 			}
-// 		);
-// 	});
-// });
