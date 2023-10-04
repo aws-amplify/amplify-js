@@ -64,6 +64,7 @@ export const getEventBuffer = ({
 	credentials,
 	identityId,
 	resendLimit,
+	userAgentValue,
 }: KinesisEventBufferConfig): EventBuffer<KinesisBufferEvent> => {
 	const { sessionToken } = credentials;
 	const sessionIdentityKey = [region, sessionToken, identityId]
@@ -76,6 +77,7 @@ export const getEventBuffer = ({
 				cachedClients[sessionIdentityKey] = new KinesisClient({
 					credentials,
 					region,
+					customUserAgent: userAgentValue,
 				});
 			}
 

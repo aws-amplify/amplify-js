@@ -8,7 +8,11 @@ import {
 import { config, credentials, identityId } from './testUtils/data';
 import { flushEvents } from '../../../../src/providers/pinpoint';
 import { flushEvents as pinpointFlushEvents } from '@aws-amplify/core/internals/providers/pinpoint';
-import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import {
+	AnalyticsAction,
+	ConsoleLogger,
+} from '@aws-amplify/core/internals/utils';
+import { getAnalyticsUserAgentString } from '../../../../src/utils';
 
 jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
@@ -46,7 +50,8 @@ describe('Pinpoint API: flushEvents', () => {
 			config.appId,
 			config.region,
 			credentials,
-			identityId
+			identityId,
+			getAnalyticsUserAgentString(AnalyticsAction.Record)
 		);
 	});
 
