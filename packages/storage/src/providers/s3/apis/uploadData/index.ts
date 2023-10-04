@@ -26,7 +26,7 @@ import { getMultipartUploadHandlers } from './multipart';
  *
  * @example
  * ```ts
- * // Upload a data to s3 bucket
+ * // Upload data to s3 bucket
  * await uploadData({ key, data, options: {
  *   onProgress, // Optional progress callback.
  * } }).result;
