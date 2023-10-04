@@ -17,13 +17,13 @@ import {
 	PatchOperation,
 	ApiInput,
 	RestApiOptionsBase,
-} from '../types';
+} from '../../types';
 import {
 	resolveApiUrl,
 	createCancellableOperation,
 	logger,
 	parseSigningInfo,
-} from '../utils';
+} from '../../utils';
 import { transferHandler } from './handler';
 
 const publicHandler = (

@@ -15,8 +15,8 @@ import {
 	parseRestApiServiceError,
 	parseSigningInfo,
 	resolveCredentials,
-} from '../utils';
-import { normalizeHeaders } from '../utils/normalizeHeaders';
+} from '../../utils';
+import { normalizeHeaders } from '../../utils/normalizeHeaders';
 
 type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	body?: DocumentType | FormData;

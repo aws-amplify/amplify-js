@@ -12,8 +12,8 @@ import {
 	post,
 	cancel,
 	updateRequestToBeCancellable,
-} from '../../src/common/internalPost';
-import { RestApiError, isCancelError } from '../../src/errors';
+} from '../../../src/apis/common/internalPost';
+import { RestApiError, isCancelError } from '../../../src/errors';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 

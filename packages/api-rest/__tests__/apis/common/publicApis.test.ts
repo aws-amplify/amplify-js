@@ -7,13 +7,20 @@ import {
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { get, post, put, del, head, patch } from '../../src/common/publicApis';
+import {
+	get,
+	post,
+	put,
+	del,
+	head,
+	patch,
+} from '../../../src/apis/common/publicApis';
 import {
 	RestApiError,
 	isCancelError,
 	validationErrorMap,
 	RestApiValidationErrorCode,
-} from '../../src/errors';
+} from '../../../src/errors';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 

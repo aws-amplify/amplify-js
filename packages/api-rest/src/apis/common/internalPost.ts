@@ -3,9 +3,9 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 
-import { InternalPostInput, RestApiResponse } from '../types';
+import { InternalPostInput, RestApiResponse } from '../../types';
 import { transferHandler } from './handler';
-import { createCancellableOperation } from '../utils';
+import { createCancellableOperation } from '../../utils';
 
 /**
  * This weak map provides functionality to cancel a request given the promise containing the `post` request.

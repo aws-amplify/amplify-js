@@ -12,7 +12,7 @@ import {
 	del as commonDel,
 	head as commonHead,
 	patch as commonPatch,
-} from '../common/publicApis';
+} from './common/publicApis';
 import {
 	DeleteInput,
 	DeleteOperation,

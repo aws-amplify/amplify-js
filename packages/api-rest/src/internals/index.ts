@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Amplify } from '@aws-amplify/core';
 
-import { post as internalPost } from '../common/internalPost';
+import { post as internalPost } from '../apis/common/internalPost';
 import { InternalPostInput } from '../types';
 
 /**
@@ -25,4 +25,7 @@ export const post = (input: InternalPostInput) => {
 	return internalPost(Amplify, input);
 };
 
-export { cancel, updateRequestToBeCancellable } from '../common/internalPost';
+export {
+	cancel,
+	updateRequestToBeCancellable,
+} from '../apis/common/internalPost';

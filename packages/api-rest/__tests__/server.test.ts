@@ -11,9 +11,9 @@ import {
 	del as commonDel,
 	patch as commonPatch,
 	head as commonHead,
-} from '../src/common/publicApis';
+} from '../src/apis/common/publicApis';
 
-jest.mock('../src/common/publicApis');
+jest.mock('../src/apis/common/publicApis');
 jest.mock('@aws-amplify/core/internals/adapter-core');
 
 const input = {
