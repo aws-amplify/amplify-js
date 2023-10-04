@@ -11,7 +11,7 @@ import {
 
 /**
  * Resolve the REST API request URL by:
- * 1. Lading the REST API endpoint from the Amplify configuration with corresponding API name.
+ * 1. Loading the REST API endpoint from the Amplify configuration with corresponding API name.
  * 2. Appending the path to the endpoint.
  * 3. Merge the query parameters from path and the queryParameter argument which is taken from the public REST API
  *   options.
