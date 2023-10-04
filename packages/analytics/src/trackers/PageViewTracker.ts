@@ -97,6 +97,7 @@ export class PageViewTracker implements TrackerInterface {
 				},
 			});
 
+			// TODO Make this work with multiple providers at once somehow
 			window.history.pushState = this.pushStateProxy.proxy;
 			window.history.replaceState = this.replaceStateProxy.proxy;
 			window.addEventListener('popstate', this.handleLocationChange);
