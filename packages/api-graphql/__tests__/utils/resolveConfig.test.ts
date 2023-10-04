@@ -6,7 +6,7 @@ import { resolveConfig } from '../../src/utils';
 import { GraphQLAuthModeKeys } from '@aws-amplify/core/internals/utils';
 
 describe('GraphQL API Util: resolveConfig', () => {
-	const AppSyncConfig = {
+	const GraphQLConfig = {
 		defaultAuthMode: {
 			type: 'apiKey' as GraphQLAuthModeKeys,
 			apiKey: '0123456789',
@@ -24,15 +24,15 @@ describe('GraphQL API Util: resolveConfig', () => {
 
 	it('returns required config', () => {
 		getConfigSpy.mockReturnValue({
-			API: { AppSync: AppSyncConfig },
+			API: { GraphQL: GraphQLConfig },
 		});
-		expect(resolveConfig()).toStrictEqual(AppSyncConfig);
+		expect(resolveConfig()).toStrictEqual(GraphQLConfig);
 	});
 
 	it('throws if endpoint is missing', () => {
 		getConfigSpy.mockReturnValue({
 			API: {
-				AppSync: { ...AppSyncConfig, endpoint: undefined } as any,
+				GraphQL: { ...GraphQLConfig, endpoint: undefined } as any,
 			},
 		});
 		expect(resolveConfig).toThrow();
@@ -41,7 +41,7 @@ describe('GraphQL API Util: resolveConfig', () => {
 	it('throws if defaultAuthMode is missing', () => {
 		getConfigSpy.mockReturnValue({
 			API: {
-				AppSync: { ...AppSyncConfig, defaultAuthMode: undefined } as any,
+				GraphQL: { ...GraphQLConfig, defaultAuthMode: undefined } as any,
 			},
 		});
 		expect(resolveConfig).toThrow();
@@ -50,7 +50,7 @@ describe('GraphQL API Util: resolveConfig', () => {
 	it('throws if region is missing', () => {
 		getConfigSpy.mockReturnValue({
 			API: {
-				AppSync: { ...AppSyncConfig, region: undefined } as any,
+				GraphQL: { ...GraphQLConfig, region: undefined } as any,
 			},
 		});
 		expect(resolveConfig).toThrow();
