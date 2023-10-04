@@ -97,6 +97,7 @@ export function expectSub(
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
+			// abortController: expect.any(AbortController),
 			authenticationType: 'apiKey',
 			apiKey: 'FAKE-KEY',
 			appSyncGraphqlEndpoint: 'https://localhost/graphql',
