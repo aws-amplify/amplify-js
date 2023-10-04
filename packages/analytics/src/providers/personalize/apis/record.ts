@@ -9,8 +9,15 @@ import {
 	resolveConfig,
 	updateCachedSession,
 } from '../utils';
-import { isAnalyticsEnabled, resolveCredentials } from '../../../utils';
-import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import {
+	getAnalyticsUserAgentString,
+	isAnalyticsEnabled,
+	resolveCredentials,
+} from '../../../utils';
+import {
+	AnalyticsAction,
+	ConsoleLogger,
+} from '@aws-amplify/core/internals/utils';
 import {
 	IDENTIFY_EVENT_TYPE,
 	MEDIA_AUTO_TRACK_EVENT_TYPE,
@@ -56,6 +63,7 @@ export const record = ({
 				bufferSize,
 				credentials,
 				identityId,
+				userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
 			});
 
 			if (eventType === MEDIA_AUTO_TRACK_EVENT_TYPE) {

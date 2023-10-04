@@ -2,9 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { resolveConfig } from '../utils/resolveConfig';
-import { resolveCredentials } from '../../../utils';
+import {
+	getAnalyticsUserAgentString,
+	resolveCredentials,
+} from '../../../utils';
 import { getEventBuffer } from '../utils/getEventBuffer';
-import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import {
+	AnalyticsAction,
+	ConsoleLogger,
+} from '@aws-amplify/core/internals/utils';
 
 const logger = new ConsoleLogger('Kinesis');
 
@@ -28,6 +34,7 @@ export const flushEvents = () => {
 				credentials,
 				identityId,
 				resendLimit,
+				userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
 			})
 		)
 		.then(eventBuffer => eventBuffer.flushAll())

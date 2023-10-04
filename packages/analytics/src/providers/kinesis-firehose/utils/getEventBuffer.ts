@@ -73,6 +73,7 @@ export const getEventBuffer = ({
 	flushSize,
 	flushInterval,
 	resendLimit,
+	userAgentValue,
 }: KinesisFirehoseEventBufferConfig): EventBuffer<KinesisFirehoseBufferEvent> => {
 	const { sessionToken } = credentials;
 	const sessionIdentityKey = [region, sessionToken, identityId]
@@ -85,6 +86,7 @@ export const getEventBuffer = ({
 				cachedClients[sessionIdentityKey] = new FirehoseClient({
 					region,
 					credentials,
+					customUserAgent: userAgentValue,
 				});
 			}
 

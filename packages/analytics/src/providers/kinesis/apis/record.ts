@@ -4,9 +4,16 @@
 import { RecordInput } from '../types';
 import { getEventBuffer } from '../utils/getEventBuffer';
 import { resolveConfig } from '../utils/resolveConfig';
-import { isAnalyticsEnabled, resolveCredentials } from '../../../utils';
+import {
+	getAnalyticsUserAgentString,
+	isAnalyticsEnabled,
+	resolveCredentials,
+} from '../../../utils';
 import { fromUtf8 } from '@smithy/util-utf8';
-import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import {
+	AnalyticsAction,
+	ConsoleLogger,
+} from '@aws-amplify/core/internals/utils';
 
 const logger = new ConsoleLogger('Kinesis');
 
@@ -34,6 +41,7 @@ export const record = ({
 				credentials,
 				identityId,
 				resendLimit,
+				userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
 			});
 
 			buffer.append({

@@ -14,7 +14,8 @@ export const flushEvents = (
 	appId: string,
 	region: string,
 	credentials: Credentials,
-	identityId?: string
+	identityId?: string,
+	userAgentValue?: string
 ) => {
 	getEventBuffer({
 		appId,
@@ -25,5 +26,6 @@ export const flushEvents = (
 		identityId,
 		region,
 		resendLimit: RESEND_LIMIT,
+		userAgentValue,
 	}).flushAll();
 };
