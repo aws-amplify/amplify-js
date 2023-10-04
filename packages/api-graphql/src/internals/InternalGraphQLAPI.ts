@@ -212,9 +212,12 @@ export class InternalGraphQLAPIClass {
 		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
-		const { region: region, endpoint: appSyncGraphqlEndpoint, customEndpoint,
-			customEndpointRegion, } =
-			resolveConfig();
+		const {
+			region: region,
+			endpoint: appSyncGraphqlEndpoint,
+			customEndpoint,
+			customEndpointRegion,
+		} = resolveConfig();
 
 		// TODO: options not yet supported by core package
 		// const libraryOptions = Amplify.libraryOptions?.API?.GraphQL ?? {};
@@ -222,10 +225,7 @@ export class InternalGraphQLAPIClass {
 		// TODO: graphql_headers
 		const headers = {
 			...(!customEndpoint &&
-				(await this._headerBasedAuth(
-					authMode,
-					additionalHeaders,
-				))),
+				(await this._headerBasedAuth(authMode, additionalHeaders))),
 			...(customEndpoint &&
 				(customEndpointRegion
 					? await this._headerBasedAuth(authMode, additionalHeaders)
@@ -318,13 +318,8 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
-<<<<<<< HEAD
-		// TODO: graphql_headers?
-		const { GraphQL } = Amplify.getConfig().API ?? {};
-=======
 		const config = resolveConfig();
 
->>>>>>> api-v6-utils
 		if (!this.appSyncRealTime) {
 			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
 		}

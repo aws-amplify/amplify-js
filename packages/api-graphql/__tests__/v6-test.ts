@@ -78,7 +78,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockImplementation(() => ({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				}));
 
@@ -123,7 +123,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -166,7 +166,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -213,7 +213,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -264,7 +264,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -355,7 +355,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -402,7 +402,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -447,7 +447,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -496,7 +496,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -550,7 +550,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -644,7 +644,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -688,7 +688,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -729,7 +729,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -775,7 +775,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -826,7 +826,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
@@ -917,7 +917,7 @@ describe('client', () => {
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
 				.mockReturnValue({
 					body: {
-						json: () => graphqlResponse.data,
+						json: () => graphqlResponse,
 					},
 				});
 
