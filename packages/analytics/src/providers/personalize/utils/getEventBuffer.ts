@@ -68,6 +68,7 @@ export const getEventBuffer = ({
 	bufferSize,
 	credentials,
 	identityId,
+	userAgentValue,
 }: PersonalizeBufferConfig): EventBuffer<PersonalizeBufferEvent> => {
 	const { sessionToken } = credentials;
 	const sessionIdentityKey = [region, sessionToken, identityId]
@@ -80,6 +81,7 @@ export const getEventBuffer = ({
 				cachedClients[sessionIdentityKey] = new PersonalizeEventsClient({
 					region,
 					credentials,
+					customUserAgent: userAgentValue,
 				});
 			}
 			return events => submitEvents(events, cachedClients[sessionIdentityKey]);

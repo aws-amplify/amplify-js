@@ -3,9 +3,16 @@
 
 import { RecordInput } from '../types';
 import { getEventBuffer, resolveConfig } from '../utils';
-import { isAnalyticsEnabled, resolveCredentials } from '../../../utils';
+import {
+	getAnalyticsUserAgentString,
+	isAnalyticsEnabled,
+	resolveCredentials,
+} from '../../../utils';
 import { fromUtf8 } from '@smithy/util-utf8';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
+import {
+	AnalyticsAction,
+	ConsoleLogger as Logger,
+} from '@aws-amplify/core/internals/utils';
 
 const logger = new Logger('KinesisFirehose');
 
@@ -29,6 +36,7 @@ export const record = ({ streamName, data }: RecordInput): void => {
 				flushSize,
 				flushInterval,
 				resendLimit,
+				userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
 			});
 
 			buffer.append({
