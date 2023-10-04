@@ -27,11 +27,6 @@ export const resolveConfig = () => {
 		!(!customEndpoint && customEndpointRegion),
 		APIValidationErrorCode.NoCustomEndpoint
 	);
-	assertValidationError(
-		!!defaultAuthMode,
-		APIValidationErrorCode.NoDefaultAuthMode
-	);
-	assertValidationError(!!region, APIValidationErrorCode.NoRegion);
 
 	return {
 		apiKey,
