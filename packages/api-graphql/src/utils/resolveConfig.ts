@@ -9,7 +9,7 @@ import { APIValidationErrorCode, assertValidationError } from './errors';
  */
 export const resolveConfig = () => {
 	const { region, defaultAuthMode, endpoint } =
-		Amplify.getConfig().API?.AppSync ?? {};
+		Amplify.getConfig().API?.GraphQL ?? {};
 	assertValidationError(!!endpoint, APIValidationErrorCode.NoAppId);
 	assertValidationError(!!region, APIValidationErrorCode.NoRegion);
 	assertValidationError(

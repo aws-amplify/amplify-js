@@ -11,9 +11,9 @@ export function expectMutation(
 	opName: string,
 	item: Record<string, any>
 ) {
-	expect(spy).toHaveBeenCalledWith(
-		'https://localhost/graphql',
-		expect.objectContaining({
+	expect(spy).toHaveBeenCalledWith({
+		url: new URL('https://localhost/graphql'),
+		options: expect.objectContaining({
 			headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
 			body: expect.objectContaining({
 				query: expect.stringContaining(
@@ -23,8 +23,8 @@ export function expectMutation(
 					input: expect.objectContaining(item),
 				}),
 			}),
-		})
-	);
+		}),
+	});
 }
 
 /**
@@ -40,16 +40,16 @@ export function expectGet(
 	opName: string,
 	item: Record<string, any>
 ) {
-	expect(spy).toHaveBeenCalledWith(
-		'https://localhost/graphql',
-		expect.objectContaining({
+	expect(spy).toHaveBeenCalledWith({
+		url: new URL('https://localhost/graphql'),
+		options: expect.objectContaining({
 			headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
 			body: expect.objectContaining({
 				query: expect.stringContaining(`${opName}(id: $id)`),
 				variables: expect.objectContaining(item),
 			}),
-		})
-	);
+		}),
+	});
 }
 
 /**
@@ -65,9 +65,9 @@ export function expectList(
 	opName: string,
 	item: Record<string, any>
 ) {
-	expect(spy).toHaveBeenCalledWith(
-		'https://localhost/graphql',
-		expect.objectContaining({
+	expect(spy).toHaveBeenCalledWith({
+		url: new URL('https://localhost/graphql'),
+		options: expect.objectContaining({
 			headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
 			body: expect.objectContaining({
 				query: expect.stringContaining(
@@ -75,8 +75,8 @@ export function expectList(
 				),
 				variables: expect.objectContaining(item),
 			}),
-		})
-	);
+		}),
+	});
 }
 
 /**
@@ -94,15 +94,14 @@ export function expectSub(
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
-			authenticationType: {
-				apiKey: 'FAKE-KEY',
-				type: 'apiKey',
-			},
+			authenticationType: 'apiKey',
+			apiKey: 'FAKE-KEY',
 			appSyncGraphqlEndpoint: 'https://localhost/graphql',
 			query: expect.stringContaining(
 				`${opName}(filter: $filter, owner: $owner)`
 			),
 			variables: expect.objectContaining(item),
-		})
+		}),
+		undefined
 	);
 }

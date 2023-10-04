@@ -72,6 +72,7 @@ export class HubClass {
 	 * @param ampSymbol - Symbol used to determine if the event is dispatched internally on a protected channel
 	 *
 	 */
+
 	dispatch<Channel extends AmplifyChannel>(
 		channel: Channel,
 		payload: HubPayload<AmplifyEventData[Channel]>,

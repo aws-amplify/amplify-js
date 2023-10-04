@@ -9,7 +9,7 @@ import {
 	CustomUserAgentDetails,
 	DataStoreAction,
 	BackgroundProcessManager,
-	GraphQLAuthModeKeys,
+	APIAuthMode,
 	AmplifyError,
 	JwtPayload,
 } from '@aws-amplify/core/internals/utils';
@@ -60,7 +60,7 @@ export enum USER_CREDENTIALS {
 }
 
 type AuthorizationInfo = {
-	authMode: GraphQLAuthModeKeys;
+	authMode: APIAuthMode;
 	isOwner: boolean;
 	ownerField?: string;
 	ownerValue?: string;
@@ -97,13 +97,13 @@ class SubscriptionProcessor {
 		transformerMutationType: TransformerMutationType,
 		userCredentials: USER_CREDENTIALS,
 		oidcTokenPayload: JwtPayload | undefined,
-		authMode: GraphQLAuthModeKeys,
+		authMode: APIAuthMode,
 		filterArg: boolean = false
 	): {
 		opType: TransformerMutationType;
 		opName: string;
 		query: string;
-		authMode: GraphQLAuthModeKeys;
+		authMode: APIAuthMode;
 		isOwner: boolean;
 		ownerField?: string;
 		ownerValue?: string;
@@ -132,9 +132,9 @@ class SubscriptionProcessor {
 	private getAuthorizationInfo(
 		model: SchemaModel,
 		userCredentials: USER_CREDENTIALS,
-		defaultAuthType: GraphQLAuthModeKeys,
+		defaultAuthType: APIAuthMode,
 		oidcTokenPayload: JwtPayload | undefined,
-		authMode: GraphQLAuthModeKeys
+		authMode: APIAuthMode
 	): AuthorizationInfo {
 		const rules = getAuthorizationRules(model);
 		// Return null if user doesn't have proper credentials for private API with IAM auth
@@ -159,7 +159,7 @@ class SubscriptionProcessor {
 		);
 
 		const validGroup =
-			authMode === 'jwt' &&
+			(authMode === 'oidc' || authMode === 'userPool') &&
 			groupAuthRules.find(groupAuthRule => {
 				// validate token against groupClaim
 				if (oidcTokenPayload) {
@@ -192,7 +192,7 @@ class SubscriptionProcessor {
 		// identityClaim from the auth rule.
 
 		const oidcOwnerAuthRules =
-			authMode === 'jwt'
+			authMode === 'oidc' || authMode === 'userPool'
 				? rules.filter(
 						rule =>
 							rule.authStrategy === 'owner' &&
@@ -209,7 +209,7 @@ class SubscriptionProcessor {
 
 			if (ownerValue) {
 				ownerAuthInfo = {
-					authMode: 'jwt',
+					authMode,
 					isOwner: isOwnerArgRequired,
 					ownerField: ownerAuthRule.ownerField,
 					ownerValue: String(ownerValue),

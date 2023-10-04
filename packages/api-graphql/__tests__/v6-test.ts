@@ -45,11 +45,9 @@ describe('client', () => {
 	beforeEach(() => {
 		Amplify.configure({
 			API: {
-				AppSync: {
-					defaultAuthMode: {
-						type: 'apiKey',
-						apiKey: 'FAKE-KEY',
-					},
+				GraphQL: {
+					defaultAuthMode: 'apiKey',
+					apiKey: 'FAKE-KEY',
 					endpoint: 'https://localhost/graphql',
 					region: 'local-host-h4x',
 				},
@@ -78,7 +76,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockImplementation(() => ({
+					body: {
+						json: () => graphqlResponse,
+					},
+				}));
 
 			// Customers should normally omit the type. Making it explicit to ensure the test
 			// fails if the returned changes.
@@ -119,7 +121,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers should normally omit the type. Making it explicit to ensure the test
 			// fails if the returned changes.
@@ -158,7 +164,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers should normally omit the type. Making it explicit to ensure the test
 			// fails if the returned changes.
@@ -201,7 +211,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers should normally omit the type. Making it explicit to ensure the test
 			// fails if the returned changes.
@@ -248,7 +262,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers should normally omit the type. Making it explicit to ensure the test
 			// fails if the returned changes.
@@ -335,7 +353,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers would not specify these types. They're shown to demonstrate
 			// the return type for the test.
@@ -378,7 +400,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers would not specify these types. They're shown to demonstrate
 			// the return type for the test.
@@ -419,7 +445,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers would not specify these types. They're shown to demonstrate
 			// the return type for the test.
@@ -464,7 +494,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers would not specify these types. They're shown to demonstrate
 			// the return type for the test.
@@ -514,7 +548,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers would not specify these types. They're shown to demonstrate
 			// the return type for the test.
@@ -604,7 +642,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers would not likely annotate the types in both places. They are provided
 			// in both places to trigger type errors if the right-hand side changes.
@@ -644,7 +686,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers would not likely annotate the types in both places. They are provided
 			// in both places to trigger type errors if the right-hand side changes.
@@ -668,7 +714,6 @@ describe('client', () => {
 
 		test('delete', async () => {
 			const threadToDelete = { id: 'abc' };
-
 			const graphqlResponse = {
 				data: {
 					deleteThread: {
@@ -682,7 +727,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers would not likely annotate the types in both places. They are provided
 			// in both places to trigger type errors if the right-hand side changes.
@@ -724,7 +773,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers would not likely annotate the types in both places. They are provided
 			// in both places to trigger type errors if the right-hand side changes.
@@ -771,7 +824,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customers would not likely annotate the types in both places. They are provided
 			// in both places to trigger type errors if the right-hand side changes.
@@ -858,7 +915,11 @@ describe('client', () => {
 
 			const spy = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockImplementation(() => graphqlResponse);
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			// Customer would probably not explicitly add `MyType["result"]` in their code.
 			// But to ensure the test fails if graphql() returns the wrong type, it's explcit here:
