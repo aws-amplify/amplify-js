@@ -27,7 +27,7 @@ import {
 	NotificationsProvider,
 	UserInfo,
 } from '../../types';
-import { AWSPinpointUserInfo } from './types';
+import { PinpointUserInfo } from './types';
 
 export default abstract class AWSPinpointProviderCommon
 	implements NotificationsProvider
@@ -115,7 +115,7 @@ export default abstract class AWSPinpointProviderCommon
 		} else {
 			customUserAgentDetails = {
 				category: Category.InAppMessaging,
-				action: InAppMessagingAction.None,
+				action: InAppMessagingAction.IdentifyUser,
 			};
 		}
 
@@ -159,7 +159,7 @@ export default abstract class AWSPinpointProviderCommon
 
 	protected updateEndpoint = async (
 		userId: string = null,
-		userInfo: AWSPinpointUserInfo = null
+		userInfo: PinpointUserInfo = null
 	): Promise<void> => {
 		const credentials = await this.getCredentials();
 		// Shallow compare to determine if credentials stored here are outdated
