@@ -5,6 +5,7 @@ export {
 	record,
 	identifyUser,
 	configureAutoTrack,
+	flushEvents,
 	RecordInput,
 	IdentifyUserInput,
 	ConfigureAutoTrackInput,

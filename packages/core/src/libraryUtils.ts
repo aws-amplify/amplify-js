@@ -34,7 +34,7 @@ export {
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
 export { isTokenExpired } from './singleton/Auth';
-export { GraphQLAuthMode, GraphQLAuthModeKeys } from './singleton/API/types';
+export { APIAuthMode, DocumentType } from './singleton/API/types';
 export { Signer } from './Signer';
 
 // Logging utilities
@@ -91,3 +91,6 @@ export { fetchAuthSession } from './singleton/apis/internal/fetchAuthSession';
 export { AMPLIFY_SYMBOL } from './Hub';
 export { base64Decoder, base64Encoder } from './utils/convert';
 export { getCrypto } from './utils/globalHelpers';
+
+// Hub
+export { HubClass } from './Hub';

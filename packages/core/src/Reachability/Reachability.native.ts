@@ -1,14 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Observable } from 'rxjs';
-import type NetInfo from '@react-native-community/netinfo';
+import { loadNetInfo } from '@aws-amplify/react-native';
 import { ConsoleLogger as Logger } from '../Logger';
 import { NetworkStatus } from './types';
 
 const logger = new Logger('Reachability', 'DEBUG');
 
 export class Reachability {
-	networkMonitor(netInfo?: typeof NetInfo): Observable<NetworkStatus> {
+	networkMonitor(
+		netInfo?: ReturnType<typeof loadNetInfo>
+	): Observable<NetworkStatus> {
 		/**
 		 * Here netinfo refers to @react-native-community/netinfo
 		 * This is needed in React Native to enable network detection
