@@ -5,7 +5,6 @@ import { AmplifyErrorMap } from '@aws-amplify/core/internals/utils';
 
 export enum APIValidationErrorCode {
 	NoAuthSession = 'NoAuthSession',
-	NoDefaultAuthMode = 'NoDefaultAuthMode',
 	NoEndpoint = 'NoEndpoint',
 	NoRegion = 'NoRegion',
 	NoCustomEndpoint = 'NoCustomEndpoint',
@@ -14,9 +13,6 @@ export enum APIValidationErrorCode {
 export const validationErrorMap: AmplifyErrorMap<APIValidationErrorCode> = {
 	[APIValidationErrorCode.NoAuthSession]: {
 		message: 'Auth session should not be empty.',
-	},
-	[APIValidationErrorCode.NoDefaultAuthMode]: {
-		message: 'Missing default auth mode',
 	},
 	[APIValidationErrorCode.NoEndpoint]: {
 		message: 'Missing endpoint',
