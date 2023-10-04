@@ -21,7 +21,7 @@ import {
 	GraphqlSubscriptionMessage,
 	GraphQLQuery,
 	GraphQLSubscription,
-	DeeplyPartial,
+	GraphQLReturnType,
 } from '../src/types';
 
 import {
@@ -365,7 +365,7 @@ describe('client', () => {
 
 			// If the update fails, we get an error which we'll need to catch.
 			// If it succeeds, we get a result back and no need to look for `null | undefined`
-			const thread: DeeplyPartial<Thread> = (
+			const thread: GraphQLReturnType<Thread> = (
 				await client.graphql({
 					query: typedMutations.createThread,
 					authMode: 'apiKey',
@@ -402,7 +402,7 @@ describe('client', () => {
 
 			// Not sure yet what happens if an update failes to find a matching record ... pretty sure
 			// it's an error though! This would indicate update queries can omit
-			const thread: DeeplyPartial<Thread> = (
+			const thread: GraphQLReturnType<Thread> = (
 				await client.graphql({
 					query: typedMutations.updateThread,
 					variables: {
@@ -437,7 +437,7 @@ describe('client', () => {
 
 			// If a delete fails, an error is raised. So, we don't need to handle null or
 			// undefined return values in the happy path.
-			const thread: DeeplyPartial<Thread> = (
+			const thread: GraphQLReturnType<Thread> = (
 				await client.graphql({
 					query: typedMutations.deleteThread,
 					variables: {
@@ -475,7 +475,7 @@ describe('client', () => {
 				}));
 
 			// a get query might not actually find anything.
-			const thread: DeeplyPartial<Thread> | null | undefined = (
+			const thread: GraphQLReturnType<Thread> | null | undefined = (
 				await client.graphql({
 					query: typedQueries.getThread,
 					variables: graphqlVariables,
@@ -487,7 +487,7 @@ describe('client', () => {
 			// to a type that doesn't account for `null | undefined` returns.
 			// TODO: change to ts-expect-error
 			// @ts-ignore
-			const badthread: DeeplyPartial<Thread> = (
+			const badthread: GraphQLReturnType<Thread> = (
 				await client.graphql({
 					query: typedQueries.getThread,
 					variables: graphqlVariables,
@@ -531,7 +531,7 @@ describe('client', () => {
 
 			// If a list query succeeds, we always get a list back, even if it's empty.
 			// and there are no empty values.
-			const threads: DeeplyPartial<Thread>[] = (
+			const threads: GraphQLReturnType<Thread>[] = (
 				await client.graphql({
 					query: typedQueries.listThreads,
 					variables: graphqlVariables,
@@ -568,7 +568,7 @@ describe('client', () => {
 				authMode: 'apiKey',
 			});
 
-			const threads: DeeplyPartial<Thread>[] = [];
+			const threads: GraphQLReturnType<Thread>[] = [];
 
 			result.subscribe({
 				next(message) {
