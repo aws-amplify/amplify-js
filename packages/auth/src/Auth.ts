@@ -1964,7 +1964,9 @@ export class AuthClass {
 				})
 				.catch(() => {
 					logger.debug('getting guest credentials');
-					return this.Credentials.set(null, 'guest');
+					return this.Credentials.set(null, 'guest').catch(error => {
+						throw error;
+					});
 				});
 		}
 	}

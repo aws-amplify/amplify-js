@@ -347,7 +347,7 @@ export class CredentialsClass {
 
 					return this._loadCredentials(credentials, 'guest', false, null);
 				} else {
-					return e;
+					throw e;
 				}
 			});
 	}
