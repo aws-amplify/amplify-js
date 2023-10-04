@@ -8,10 +8,17 @@ import {
 } from '../types/trackers';
 
 export class SessionTracker implements TrackerInterface {
+	private options: SessionTrackingOpts;
+	private eventRecoder: TrackerEventRecorder;
+
 	constructor(
 		eventRecorder: TrackerEventRecorder,
 		options?: SessionTrackingOpts
-	) {}
+	) {
+		this.options = {};
+		this.eventRecoder = eventRecorder;
+
+	}
 
 	public configure(
 		eventRecorder: TrackerEventRecorder,
