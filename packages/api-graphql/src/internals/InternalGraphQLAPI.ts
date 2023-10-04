@@ -220,12 +220,13 @@ export class InternalGraphQLAPIClass {
 		const customGraphqlEndpoint = null;
 		const customEndpointRegion = null;
 
+		// TODO: Figure what we need to do to remove `!`'s.
 		const headers = {
 			...(!customGraphqlEndpoint &&
-				(await this._headerBasedAuth(authMode, additionalHeaders))),
+				(await this._headerBasedAuth(authMode!, additionalHeaders))),
 			...((customGraphqlEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(authMode, additionalHeaders)
+					? await this._headerBasedAuth(authMode!, additionalHeaders)
 					: { Authorization: null })) ||
 				{}),
 			...additionalHeaders,
