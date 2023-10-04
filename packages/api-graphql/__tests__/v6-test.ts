@@ -575,7 +575,7 @@ describe('client', () => {
 			expect(items).toEqual(graphqlResponse.data.listThreads.items);
 		});
 
-		test.skip('subscribe', done => {
+		test('subscribe', done => {
 			const threadToSend = {
 				__typename: 'Thread',
 				...serverManagedFields,
@@ -848,7 +848,7 @@ describe('client', () => {
 			expect(items).toEqual(graphqlResponse.data.listThreads.items);
 		});
 
-		test.skip('subscribe', done => {
+		test('subscribe', done => {
 			const threadToSend = {
 				__typename: 'Thread',
 				...serverManagedFields,
