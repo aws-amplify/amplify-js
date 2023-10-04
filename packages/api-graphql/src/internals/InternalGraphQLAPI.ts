@@ -11,6 +11,7 @@ import {
 import { Observable } from 'rxjs';
 import { Amplify, Cache, fetchAuthSession } from '@aws-amplify/core';
 import {
+	APIAuthMode,
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
@@ -70,9 +71,8 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private async _headerBasedAuth(
-		defaultAuthenticationType?,
-		additionalHeaders: { [key: string]: string } = {},
-		customUserAgentDetails?: CustomUserAgentDetails
+		authMode: APIAuthMode,
+		additionalHeaders: { [key: string]: string } = {}
 	) {
 		const config = Amplify.getConfig();
 		const {
@@ -82,9 +82,10 @@ export class InternalGraphQLAPIClass {
 			defaultAuthMode,
 		} = config.API.GraphQL;
 
+		const authenticationType = authMode || defaultAuthMode || 'iam';
 		let headers = {};
 
-		switch (defaultAuthMode) {
+		switch (authenticationType) {
 			case 'apiKey':
 				if (!apiKey) {
 					throw new Error(GraphQLAuthError.NO_API_KEY);
@@ -221,18 +222,10 @@ export class InternalGraphQLAPIClass {
 
 		const headers = {
 			...(!customGraphqlEndpoint &&
-				(await this._headerBasedAuth(
-					authMode,
-					additionalHeaders,
-					customUserAgentDetails
-				))),
+				(await this._headerBasedAuth(authMode, additionalHeaders))),
 			...(customGraphqlEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(
-							authMode,
-							additionalHeaders,
-							customUserAgentDetails
-					  )
+					? await this._headerBasedAuth(authMode, additionalHeaders)
 					: { Authorization: null })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
@@ -316,12 +309,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private _graphqlSubscribe(
-		{
-			query,
-			variables,
-			authMode: defaultAuthenticationType,
-			authToken,
-		}: GraphQLOptions,
+		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
@@ -329,14 +317,18 @@ export class InternalGraphQLAPIClass {
 		if (!this.appSyncRealTime) {
 			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
 		}
-		return this.appSyncRealTime.subscribe({
-			query: print(query as DocumentNode),
-			variables,
-			appSyncGraphqlEndpoint: GraphQL?.endpoint,
-			region: GraphQL?.region,
-			authenticationType: GraphQL?.defaultAuthMode,
-			apiKey: GraphQL?.apiKey,
-		});
+		return this.appSyncRealTime.subscribe(
+			{
+				query: print(query as DocumentNode),
+				variables,
+				appSyncGraphqlEndpoint: GraphQL?.endpoint,
+				region: GraphQL?.region,
+				authenticationType: authMode ?? GraphQL?.defaultAuthMode,
+				apiKey: GraphQL?.apiKey,
+				additionalHeaders,
+			},
+			customUserAgentDetails
+		);
 	}
 }
 

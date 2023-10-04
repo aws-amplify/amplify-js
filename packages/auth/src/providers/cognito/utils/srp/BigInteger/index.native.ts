@@ -4,20 +4,20 @@
 import { computeModPow } from '@aws-amplify/react-native';
 
 import BigInteger from './BigInteger';
-import { BigIntegerInterface } from './types';
+import { AuthBigInteger } from './types';
 
 BigInteger.prototype.modPow = function modPow(
-	e: BigIntegerInterface,
-	m: BigIntegerInterface,
+	e: AuthBigInteger,
+	m: AuthBigInteger,
 	callback: Function
 ) {
 	computeModPow({
-		base: (this as unknown as BigIntegerInterface).toString(16),
+		base: (this as unknown as AuthBigInteger).toString(16),
 		exponent: e.toString(16),
 		divisor: m.toString(16),
 	})
-		.then(result => callback(null, new BigInteger(result, 16)))
-		.catch(error => callback(new Error(error), null));
+		.then((result: any) => callback(null, new BigInteger(result, 16)))
+		.catch((error: any) => callback(new Error(error), null));
 };
 
 export { BigInteger };
