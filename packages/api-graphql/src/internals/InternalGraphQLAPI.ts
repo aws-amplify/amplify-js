@@ -213,23 +213,25 @@ export class InternalGraphQLAPIClass {
 	): Promise<GraphQLResult<T>> {
 		const config = Amplify.getConfig();
 
-		// TODO: include latest config values:
-		const { region: region, endpoint: appSyncGraphqlEndpoint } =
-			config.API.GraphQL;
+		const {
+			region: region,
+			endpoint: appSyncGraphqlEndpoint,
+			customEndpoint,
+			customEndpointRegion,
+		} = config.API.GraphQL;
 
 		// TODO: options not yet supported by core package
-		const customGraphqlEndpoint = null;
-		const customEndpointRegion = null;
+		// const libraryOptions = Amplify.libraryOptions?.API?.GraphQL ?? {};
 
 		// TODO: graphql_headers
 		const headers = {
-			...(!customGraphqlEndpoint &&
+			...(!customEndpoint &&
 				(await this._headerBasedAuth(
 					authMode,
 					additionalHeaders,
 					customUserAgentDetails
 				))),
-			...(customGraphqlEndpoint &&
+			...(customEndpoint &&
 				(customEndpointRegion
 					? await this._headerBasedAuth(
 							authMode,
@@ -238,7 +240,7 @@ export class InternalGraphQLAPIClass {
 					  )
 					: { Authorization: null })),
 			...additionalHeaders,
-			...(!customGraphqlEndpoint && {
+			...(!customEndpoint && {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 			}),
 		};
@@ -248,15 +250,12 @@ export class InternalGraphQLAPIClass {
 			variables,
 		};
 
-		/**
-		 * TODO: validate once core package has required options config
-		 */
 		const signingServiceInfo = {
 			service: !customEndpointRegion ? 'appsync' : 'execute-api',
 			region: !customEndpointRegion ? region : customEndpointRegion,
 		};
 
-		const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
+		const endpoint = customEndpoint || appSyncGraphqlEndpoint;
 
 		if (!endpoint) {
 			const error = new GraphQLError('No graphql endpoint provided.');
