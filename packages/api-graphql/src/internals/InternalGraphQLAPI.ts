@@ -264,7 +264,7 @@ export class InternalGraphQLAPIClass {
 				abortController,
 			});
 
-			const result = { data: await responseBody.json() };
+			const result = { data: await responseBody.json()?.['data'] };
 
 			response = result;
 		} catch (err) {
