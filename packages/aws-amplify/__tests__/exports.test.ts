@@ -9,6 +9,9 @@ import * as analyticsTopLevelExports from '../src/analytics';
 import * as analyticsPinpointExports from '../src/analytics/pinpoint';
 import * as inAppMessagingTopLevelExports from '../src/in-app-messaging';
 import * as inAppMessagingPinpointTopLevelExports from '../src/in-app-messaging/pinpoint';
+import * as analyticsKinesisExports from '../src/analytics/kinesis';
+import * as analyticsKinesisFirehoseExports from '../src/analytics/kinesis-firehose';
+import * as analyticsPersonalizeExports from '../src/analytics/personalize';
 import * as storageTopLevelExports from '../src/storage';
 import * as storageS3Exports from '../src/storage/s3';
 
@@ -45,6 +48,7 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "record",
 			  "identifyUser",
+			  "flushEvents",
 			  "enable",
 			  "disable",
 			  "AnalyticsError",
@@ -57,8 +61,37 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "record",
 			  "identifyUser",
+			  "flushEvents",
 			]
 		`);
+		});
+
+		it('should only export expected symbols from the Kinesis provider', () => {
+			expect(Object.keys(analyticsKinesisExports)).toMatchInlineSnapshot(`
+			Array [
+			  "record",
+			  "flushEvents",
+			]
+			`);
+		});
+
+		it('should only export expected symbols from the Kinesis Firehose provider', () => {
+			expect(Object.keys(analyticsKinesisFirehoseExports))
+				.toMatchInlineSnapshot(`
+			Array [
+			  "record",
+			  "flushEvents",
+			]
+			`);
+		});
+
+		it('should only export expected symbols from the Personalize provider', () => {
+			expect(Object.keys(analyticsPersonalizeExports)).toMatchInlineSnapshot(`
+			Array [
+			  "record",
+			  "flushEvents",
+			]
+			`);
 		});
 	});
 
