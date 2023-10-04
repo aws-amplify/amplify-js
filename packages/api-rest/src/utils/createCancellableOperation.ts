@@ -28,33 +28,40 @@ export function createCancellableOperation(
  * @internal
  */
 export function createCancellableOperation(
-	handler: (signal?: AbortSignal) => Promise<HttpResponse>,
+	handler:
+		| ((signal: AbortSignal) => Promise<HttpResponse>)
+		| (() => Promise<HttpResponse>),
 	abortController?: AbortController
 ): Operation<HttpResponse> | Promise<HttpResponse> {
 	const isInternalPost = (
-		handler: (signal?: AbortSignal) => Promise<HttpResponse>
+		handler:
+			| ((signal: AbortSignal) => Promise<HttpResponse>)
+			| (() => Promise<HttpResponse>)
 	): handler is () => Promise<HttpResponse> => !!abortController;
+
 	// For creating a cancellable operation for public REST APIs, we need to create an AbortController
 	// internally. Whereas for internal POST APIs, we need to accept in the AbortController from the
 	// callers.
-	const controller = isInternalPost(handler)
-		? abortController
-		: new AbortController();
-	const signal = controller.signal;
+	const publicApisAbortController = new AbortController();
+	const publicApisAbortSignal = publicApisAbortController.signal;
+	const internalPostAbortSignal = abortController?.signal;
+
 	const job = async () => {
 		try {
 			const response = await (isInternalPost(handler)
 				? handler()
-				: handler(signal));
+				: handler(publicApisAbortSignal));
+
 			if (response.statusCode >= 300) {
 				throw await parseRestApiServiceError(response)!;
 			}
 			return response;
-		} catch (error) {
-			if (error.name === 'AbortError' || signal?.aborted === true) {
+		} catch (error: any) {
+			const abortSignal = internalPostAbortSignal ?? publicApisAbortSignal;
+			if (error.name === 'AbortError' || abortSignal?.aborted === true) {
 				const cancelledError = new CancelledError({
 					name: error.name,
-					message: signal.reason ?? error.message,
+					message: abortSignal.reason ?? error.message,
 					underlyingError: error,
 				});
 				logger.debug(error);
@@ -69,15 +76,18 @@ export function createCancellableOperation(
 		return job();
 	} else {
 		const cancel = (abortMessage?: string) => {
-			if (signal?.aborted === true) {
+			if (publicApisAbortSignal.aborted === true) {
 				return;
 			}
-			controller?.abort(abortMessage);
+			publicApisAbortController.abort(abortMessage);
 			// Abort reason is not widely support enough across runtimes and and browsers, so we set it
 			// if it is not already set.
-			if (signal?.reason !== abortMessage) {
-				// @ts-expect-error reason is a readonly property
-				signal['reason'] = abortMessage;
+			if (publicApisAbortSignal.reason !== abortMessage) {
+				type AbortSignalWithReasonSupport = Omit<AbortSignal, 'reason'> & {
+					reason?: string;
+				};
+				(publicApisAbortSignal as AbortSignalWithReasonSupport)['reason'] =
+					abortMessage;
 			}
 		};
 		return { response: job(), cancel };

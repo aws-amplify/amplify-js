@@ -15,6 +15,6 @@ export const validationErrorMap: AmplifyErrorMap<RestApiValidationErrorCode> = {
 	[RestApiValidationErrorCode.InvalidApiName]: {
 		message: 'API name is invalid.',
 		recoverySuggestion:
-			'Please check if the API name matches the one in your configuration or `aws-exports.js`',
+			'Check if the API name matches the one in your configuration or `aws-exports.js`',
 	},
 };

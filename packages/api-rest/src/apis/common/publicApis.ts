@@ -40,7 +40,7 @@ const publicHandler = (
 			apiOptions?.queryParams
 		);
 		const libraryOptionsHeaders =
-			await amplify.libraryOptions?.API?.REST?.headers({
+			await amplify.libraryOptions?.API?.REST?.headers?.({
 				apiName,
 			});
 		const { headers: invocationHeaders = {} } = apiOptions;

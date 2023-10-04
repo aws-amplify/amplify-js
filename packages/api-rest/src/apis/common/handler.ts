@@ -17,6 +17,7 @@ import {
 	resolveCredentials,
 } from '../../utils';
 import { normalizeHeaders } from '../../utils/normalizeHeaders';
+import { RestApiResponse } from '../../types';
 
 type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	body?: DocumentType | FormData;
@@ -43,7 +44,7 @@ export const transferHandler = async (
 	amplify: AmplifyClassV6,
 	options: HandlerOptions & { abortSignal: AbortSignal },
 	signingServiceInfo?: SigningServiceInfo
-) => {
+): Promise<RestApiResponse> => {
 	const { url, method, headers, body, withCredentials, abortSignal } = options;
 	const resolvedBody = body
 		? body instanceof FormData
