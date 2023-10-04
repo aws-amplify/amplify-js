@@ -27,22 +27,18 @@ export async function forgetDevice(input?: ForgetDeviceInput): Promise<void> {
 	const { tokens } = await fetchAuthSession();
 	assertAuthTokens(tokens);
 
-	let deviceKey;
-	if (externalDeviceKey) {
-		deviceKey = externalDeviceKey;
-	} else {
-		const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
-		assertDeviceMetadata(deviceMetadata);
-		deviceKey = deviceMetadata.deviceKey;
-	}
+	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+	const currentDeviceKey = deviceMetadata?.deviceKey;
+	if (!externalDeviceKey) assertDeviceMetadata(deviceMetadata);
 
 	await serviceForgetDevice(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
 			AccessToken: tokens.accessToken.toString(),
-			DeviceKey: deviceKey,
+			DeviceKey: externalDeviceKey ?? currentDeviceKey,
 		}
 	);
 
-	if (!externalDeviceKey) await tokenOrchestrator.clearDeviceMetadata();
+	if (!externalDeviceKey || externalDeviceKey === currentDeviceKey)
+		await tokenOrchestrator.clearDeviceMetadata();
 }
