@@ -3,13 +3,20 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { APIValidationErrorCode, assertValidationError } from './errors';
+import { assert } from 'console';
 
 /**
  * @internal
  */
 export const resolveConfig = () => {
-	const { region, defaultAuthMode, endpoint, apiKey } =
-		Amplify.getConfig().API?.GraphQL ?? {};
+	const {
+		region,
+		defaultAuthMode,
+		endpoint,
+		apiKey,
+		customEndpoint,
+		customEndpointRegion,
+	} = Amplify.getConfig().API?.GraphQL ?? {};
 
 	/**
 	 * TODO: validate that headers are a function:
@@ -22,6 +29,19 @@ export const resolveConfig = () => {
 		!!defaultAuthMode,
 		APIValidationErrorCode.NoDefaultAuthMode
 	);
+	assertValidationError(
+		!(!customEndpoint && customEndpointRegion),
+		APIValidationErrorCode.NoCustomEndpoint
+	);
 
 	return { endpoint, region, defaultAuthMode, apiKey };
+};
+
+/**
+ * @internal
+ */
+export const resolveLibraryOptions = () => {
+	const apiLibraryOptions = Amplify.libraryOptions?.API?.GraphQL;
+	const headers = apiLibraryOptions?.headers;
+	return { headers };
 };

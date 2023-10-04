@@ -8,6 +8,7 @@ export enum APIValidationErrorCode {
 	NoDefaultAuthMode = 'NoDefaultAuthMode',
 	NoEndpoint = 'NoEndpoint',
 	NoRegion = 'NoRegion',
+	NoCustomEndpoint = 'NoCustomEndpoint',
 }
 
 export const validationErrorMap: AmplifyErrorMap<APIValidationErrorCode> = {
@@ -22,5 +23,8 @@ export const validationErrorMap: AmplifyErrorMap<APIValidationErrorCode> = {
 	},
 	[APIValidationErrorCode.NoRegion]: {
 		message: 'Missing region.',
+	},
+	[APIValidationErrorCode.NoCustomEndpoint]: {
+		message: 'Custom endpoint region is present without custom endpoint.',
 	},
 };
