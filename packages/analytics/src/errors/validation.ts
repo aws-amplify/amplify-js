@@ -8,13 +8,10 @@ export enum AnalyticsValidationErrorCode {
 	NoCredentials = 'NoCredentials',
 	NoEventName = 'NoEventName',
 	NoRegion = 'NoRegion',
-<<<<<<< HEAD
 	InvalidTracker = 'InvalidTracker',
 	UnsupportedPlatform = 'UnsupportedPlatform',
-=======
 	NoTrackingId = 'NoTrackingId',
 	InvalidFlushSize = 'InvalidFlushSize',
->>>>>>> next/main
 }
 
 export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
@@ -31,18 +28,16 @@ export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
 		[AnalyticsValidationErrorCode.NoRegion]: {
 			message: 'Missing region.',
 		},
-<<<<<<< HEAD
 		[AnalyticsValidationErrorCode.InvalidTracker]: {
 			message: 'Invalid tracker type specified.',
 		},
 		[AnalyticsValidationErrorCode.UnsupportedPlatform]: {
 			message: 'Only session tracking is supported on React Native.',
-=======
+		},
 		[AnalyticsValidationErrorCode.InvalidFlushSize]: {
 			message: 'Invalid FlushSize, it should be smaller than BufferSize',
 		},
 		[AnalyticsValidationErrorCode.NoTrackingId]: {
 			message: 'A trackingId is required to use Amazon Personalize',
->>>>>>> next/main
 		},
 	};
