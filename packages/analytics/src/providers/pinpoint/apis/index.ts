@@ -3,3 +3,4 @@
 
 export { record } from './record';
 export { identifyUser } from './identifyUser';
+export { flushEvents } from './flushEvents';
