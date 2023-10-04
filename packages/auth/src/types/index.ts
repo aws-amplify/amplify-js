@@ -44,6 +44,7 @@ export {
 	AuthSignOutInput,
 	AuthSendUserAttributeVerificationCodeInput,
 	AuthDeleteUserAttributesInput,
+	AuthForgetDeviceInput,
 } from './inputs';
 
 export {
