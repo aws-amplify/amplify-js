@@ -3,19 +3,18 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { APIValidationErrorCode, assertValidationError } from './errors';
-import { assert } from 'console';
 
 /**
  * @internal
  */
 export const resolveConfig = () => {
 	const {
-		region,
-		defaultAuthMode,
-		endpoint,
 		apiKey,
 		customEndpoint,
 		customEndpointRegion,
+		defaultAuthMode,
+		endpoint,
+		region,
 	} = Amplify.getConfig().API?.GraphQL ?? {};
 
 	/**
@@ -24,24 +23,22 @@ export const resolveConfig = () => {
 	 * Awaiting merged PR for Amplify core config.
 	 */
 	assertValidationError(!!endpoint, APIValidationErrorCode.NoEndpoint);
-	assertValidationError(!!region, APIValidationErrorCode.NoRegion);
-	assertValidationError(
-		!!defaultAuthMode,
-		APIValidationErrorCode.NoDefaultAuthMode
-	);
 	assertValidationError(
 		!(!customEndpoint && customEndpointRegion),
 		APIValidationErrorCode.NoCustomEndpoint
 	);
+	assertValidationError(
+		!!defaultAuthMode,
+		APIValidationErrorCode.NoDefaultAuthMode
+	);
+	assertValidationError(!!region, APIValidationErrorCode.NoRegion);
 
-	return { endpoint, region, defaultAuthMode, apiKey };
-};
-
-/**
- * @internal
- */
-export const resolveLibraryOptions = () => {
-	const apiLibraryOptions = Amplify.libraryOptions?.API?.GraphQL;
-	const headers = apiLibraryOptions?.headers;
-	return { headers };
+	return {
+		apiKey,
+		customEndpoint,
+		customEndpointRegion,
+		defaultAuthMode,
+		endpoint,
+		region,
+	};
 };
