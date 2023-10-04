@@ -65,6 +65,10 @@ export class PinpointEventBuffer {
 		return this._config.identityId !== identityId;
 	}
 
+	public flushAll() {
+		this._putEvents(this._buffer.splice(0, this._buffer.length));
+	}
+
 	private _startLoop() {
 		if (this._interval) {
 			clearInterval(this._interval);
