@@ -1,14 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, Hub } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { AuthDeliveryMedium } from '../../../types';
 import {
 	UserAttributeKey,
 	SignUpInput,
 	SignUpOutput,
-	SignInOutput,
 	SignInInput,
 } from '../types';
 import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
@@ -19,11 +18,14 @@ import { AttributeType } from '../utils/clients/CognitoIdentityProvider/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { toAttributeType } from '../utils/apiHelpers';
 import { signIn } from './signIn';
-import { AuthError } from '../../../errors/AuthError';
-import { AutoSignInCallback } from '../../../types/models';
-import { AutoSignInEventData } from '../types/models';
+import {
+	getAutoSignOutputWithLink,
+	handleCodeAutoSignIn,
+	isAutoSignInStarted,
+	setAutoSignInStarted,
+	isSignUpComplete,
+} from '../utils/signUpHelpers';
 
-const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 /**
  * Creates a user
  *
@@ -49,7 +51,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		!!password,
 		AuthValidationErrorCode.EmptySignUpPassword
 	);
-	// TODO: implement autoSignIn
+
 	let validationData: AttributeType[] | undefined;
 	let attributes: AttributeType[] | undefined;
 
@@ -60,15 +62,21 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		attributes = toAttributeType(options?.userAttributes);
 	}
 	const signInServiceOptions = options?.serviceOptions?.autoSignIn;
+
 	const signInInput: SignInInput = {
 		username,
 		password,
 		options: {
-			serviceOptions: signInServiceOptions,
+			serviceOptions:
+				typeof signInServiceOptions !== 'boolean'
+					? signInServiceOptions
+					: undefined,
 		},
 	};
-
-	const { UserConfirmed, CodeDeliveryDetails, UserSub } = await signUpClient(
+	if (signInServiceOptions) {
+		setAutoSignInStarted(true);
+	}
+	const clientOutput = await signUpClient(
 		{ region: getRegion(authConfig.userPoolId) },
 		{
 			Username: username,
@@ -79,44 +87,34 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			ClientId: authConfig.userPoolClientId,
 		}
 	);
+	const { UserSub, CodeDeliveryDetails } = clientOutput;
 
-	if (UserConfirmed && signInServiceOptions) {
+	if (isSignUpComplete(clientOutput) && isAutoSignInStarted()) {
 		return {
 			isSignUpComplete: true,
 			nextStep: {
 				signUpStep: 'DONE',
-				autoSignIn: async () => signIn(signInInput),
+				fetchSignInOutput: async () => signIn(signInInput),
+			},
+		};
+	} else if (isSignUpComplete(clientOutput) && !isAutoSignInStarted()) {
+		return {
+			isSignUpComplete: true,
+			nextStep: {
+				signUpStep: 'DONE',
 			},
 		};
 	} else if (
-		!UserConfirmed &&
-		signInServiceOptions &&
-		signUpVerificationMethod &&
+		!isSignUpComplete(clientOutput) &&
+		isAutoSignInStarted() &&
 		signUpVerificationMethod === 'code'
 	) {
-		localStorage.setItem('amplify-auto-sign-in', 'true');
 		handleCodeAutoSignIn(signInInput);
-		return {
-			isSignUpComplete: false,
-			nextStep: {
-				signUpStep: 'CONFIRM_SIGN_UP',
-				codeDeliveryDetails: {
-					deliveryMedium:
-						CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
-					destination: CodeDeliveryDetails?.Destination as string,
-					attributeName: CodeDeliveryDetails?.AttributeName as UserAttributeKey,
-				},
-			},
-			userId: UserSub,
-		};
 	} else if (
-		!UserConfirmed &&
-		signInServiceOptions &&
-		signUpVerificationMethod &&
+		!isSignUpComplete(clientOutput) &&
+		isAutoSignInStarted() &&
 		signUpVerificationMethod === 'link'
 	) {
-		localStorage.setItem('amplify-auto-sign-in', 'true');
-
 		return {
 			isSignUpComplete: false,
 			nextStep: {
@@ -128,7 +126,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 					attributeName: CodeDeliveryDetails?.AttributeName as UserAttributeKey,
 				},
 
-				autoSignIn: getAutoSignOutput(signInInput),
+				fetchSignInOutput: getAutoSignOutputWithLink(signInInput),
 			},
 			userId: UserSub,
 		};
@@ -147,71 +145,4 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		},
 		userId: UserSub,
 	};
-}
-
-function getAutoSignOutput(signInInput: SignInInput): AutoSignInCallback {
-	return async () => {
-		return new Promise<SignInOutput>(async (resolve, reject) => {
-			const start = Date.now();
-			let signInOutput: SignInOutput;
-			const autoSignInPollingIntervalId = setInterval(async () => {
-				if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_MS) {
-					clearInterval(autoSignInPollingIntervalId);
-					localStorage.removeItem('amplify-auto-sign-in');
-
-					reject(
-						new AuthError({
-							name: 'AutoSignInError',
-							message: 'the account was not confirmed on time.',
-						})
-					);
-				} else {
-					try {
-						if (signInOutput) return;
-						const output = await signIn(signInInput);
-						if (output.nextStep.signInStep !== 'CONFIRM_SIGN_UP') {
-							signInOutput = output;
-							resolve(signInOutput);
-							clearInterval(autoSignInPollingIntervalId);
-							localStorage.removeItem('amplify-auto-sign-in');
-						}
-					} catch (error) {
-						clearInterval(autoSignInPollingIntervalId);
-						localStorage.removeItem('amplify-auto-sign-in');
-						reject(error);
-					}
-				}
-			}, 5000);
-		});
-	};
-}
-
-function handleCodeAutoSignIn(signInInput: SignInInput) {
-	const stopHubListener = Hub.listen<AutoSignInEventData>(
-		'auth-internal',
-		async ({ payload }) => {
-			switch (payload.event) {
-				case 'confirmSignUp': {
-					const response = payload.data;
-					let signInError: unknown;
-					let signInOutput: SignInOutput | undefined;
-					if (response?.isSignUpComplete) {
-						try {
-							signInOutput = await signIn(signInInput);
-						} catch (error) {
-							signInError = error;
-						}
-						Hub.dispatch<AutoSignInEventData>('auth-internal', {
-							event: 'autoSignIn',
-							data: {
-								error: signInError,
-								output: signInOutput,
-							},
-						});
-						stopHubListener();
-					}
-				}
-			}
-		}
-	);
 }

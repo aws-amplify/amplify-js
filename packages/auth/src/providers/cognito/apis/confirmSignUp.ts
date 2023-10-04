@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, Hub } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
@@ -10,6 +10,11 @@ import { ConfirmSignUpException } from '../types/errors';
 import { confirmSignUp as confirmSignUpClient } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { AutoSignInEventData } from '../types/models';
+import {
+	HubInternal,
+	isAutoSignInStarted,
+	setAutoSignInStarted,
+} from '../utils/signUpHelpers';
 
 /**
  * Confirms a new user account.
@@ -59,15 +64,10 @@ export async function confirmSignUp(
 					signUpStep: 'DONE',
 				},
 			};
-			const autoSignIn = localStorage.getItem('amplify-auto-sign-in');
-			if (!autoSignIn) return resolve(signUpOut);
 
-			Hub.dispatch<AutoSignInEventData>('auth-internal', {
-				event: 'confirmSignUp',
-				data: signUpOut,
-			});
+			if (!isAutoSignInStarted()) return resolve(signUpOut);
 
-			const stopListener = Hub.listen<AutoSignInEventData>(
+			const stopListener = HubInternal.listen<AutoSignInEventData>(
 				'auth-internal',
 				({ payload }) => {
 					switch (payload.event) {
@@ -76,21 +76,26 @@ export async function confirmSignUp(
 								isSignUpComplete: true,
 								nextStep: {
 									signUpStep: 'DONE',
-									autoSignIn: async () => {
+									fetchSignInOutput: async () => {
 										const output = payload.data.output;
 										const error = payload.data.error;
 										if (!output && error) {
 											throw error;
 										}
-										return output!;
+										return output;
 									},
 								},
 							});
-							localStorage.removeItem('amplify-auto-sign-in');
+							setAutoSignInStarted(false);
 							stopListener();
 					}
 				}
 			);
+
+			HubInternal.dispatch('auth-internal', {
+				event: 'confirmSignUp',
+				data: signUpOut,
+			});
 		} catch (error) {
 			reject(error);
 		}

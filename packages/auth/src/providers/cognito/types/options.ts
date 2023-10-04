@@ -39,7 +39,7 @@ export type SignInOptions = {
 export type SignUpOptions = {
 	validationData?: ValidationData;
 	clientMetadata?: ClientMetadata;
-	autoSignIn?: SignInOptions;
+	autoSignIn?: SignInOptions | true;
 };
 
 /**

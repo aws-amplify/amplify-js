@@ -91,3 +91,6 @@ export { fetchAuthSession } from './singleton/apis/internal/fetchAuthSession';
 export { AMPLIFY_SYMBOL } from './Hub';
 export { base64Decoder, base64Encoder } from './utils/convert';
 export { getCrypto } from './utils/globalHelpers';
+
+// Hub
+export { HubClass } from './Hub';

@@ -63,6 +63,6 @@ export type AutoSignInEventData =
 			event: 'autoSignIn';
 			data: {
 				error?: unknown;
-				output?: SignInOutput;
+				output: SignInOutput;
 			};
 	  };
