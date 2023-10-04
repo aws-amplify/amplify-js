@@ -46,6 +46,7 @@ import {
  */
 export async function syncMessages(): Promise<void> {
 	const messages = await fetchInAppMessages();
+	console.log('SyncedMEssages: ', messages);
 	if (messages.length === 0) {
 		return;
 	}

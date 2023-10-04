@@ -11,11 +11,13 @@ import { notifyEventListeners } from '../../../../common';
 export async function dispatchEvent(event: InAppMessagingEvent): Promise<void> {
 	const key = `${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`;
 	const cachedMessages = await defaultStorage.getItem(key);
+	console.log('Cached messages: ', cachedMessages);
 	// TODO(V6): Add assertion that the cachedMessages are desired shape
 	const messages: InAppMessage[] = await processInAppMessages(
 		cachedMessages ? JSON.parse(cachedMessages) : [],
 		event
 	);
+	console.log('Pro messages: ', messages);
 
 	const flattenedMessages = flatten(messages);
 
