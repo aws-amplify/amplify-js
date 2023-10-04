@@ -63,7 +63,6 @@ describe('fetchDevices API happy path cases', () => {
 	});
 
 	it('should fetch devices and parse client response correctly with and without device name', async () => {
-		// expect.assertions(3);
 		const deviceName = {
 			Name: 'device_name',
 			Value: 'test-device-name',
