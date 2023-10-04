@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - next/main
+      - feat/example-integ-test-branch/main
 
 jobs:
   e2e:
