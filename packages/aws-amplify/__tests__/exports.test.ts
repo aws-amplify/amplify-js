@@ -87,6 +87,7 @@ describe('aws-amplify Exports', () => {
 			  "deleteUserAttributes",
 			  "deleteUser",
 			  "rememberDevice",
+			  "forgetDevice",
 			  "AuthError",
 			  "fetchAuthSession",
 			]
@@ -119,6 +120,7 @@ describe('aws-amplify Exports', () => {
 			  "deleteUserAttributes",
 			  "deleteUser",
 			  "rememberDevice",
+			  "forgetDevice",
 			  "cognitoCredentialsProvider",
 			  "CognitoAWSCredentialsAndIdentityIdProvider",
 			  "DefaultIdentityIdStore",

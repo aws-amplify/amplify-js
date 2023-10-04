@@ -46,6 +46,7 @@ export {
 	UpdateUserAttributeInput,
 	SendUserAttributeVerificationCodeInput,
 	DeleteUserAttributesInput,
+	ForgetDeviceInput,
 } from './inputs';
 
 export {
