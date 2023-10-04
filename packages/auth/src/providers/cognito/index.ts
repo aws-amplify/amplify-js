@@ -26,6 +26,7 @@ export { sendUserAttributeVerificationCode } from './apis/sendUserAttributeVerif
 export { deleteUserAttributes } from './apis/deleteUserAttributes';
 export { deleteUser } from './apis/deleteUser';
 export { rememberDevice } from './apis/rememberDevice';
+export { forgetDevice } from './apis/forgetDevice';
 export {
 	ConfirmResetPasswordInput,
 	ConfirmSignInInput,
@@ -44,6 +45,7 @@ export {
 	VerifyTOTPSetupInput,
 	SendUserAttributeVerificationCodeInput,
 	DeleteUserAttributesInput,
+	ForgetDeviceInput,
 } from './types/inputs';
 
 export {
