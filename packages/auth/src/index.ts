@@ -27,6 +27,7 @@ export {
 	deleteUser,
 	rememberDevice,
 	forgetDevice,
+	fetchDevices,
 } from './providers/cognito';
 
 export {
@@ -65,6 +66,7 @@ export {
 	UpdateUserAttributesOutput,
 	SendUserAttributeVerificationCodeOutput,
 	UpdateUserAttributeOutput,
+	FetchDevicesOutput,
 } from './providers/cognito';
 
 export { AuthError } from './errors/AuthError';

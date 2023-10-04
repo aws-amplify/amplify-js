@@ -27,6 +27,7 @@ export { deleteUserAttributes } from './apis/deleteUserAttributes';
 export { deleteUser } from './apis/deleteUser';
 export { rememberDevice } from './apis/rememberDevice';
 export { forgetDevice } from './apis/forgetDevice';
+export { fetchDevices } from './apis/fetchDevices';
 export {
 	ConfirmResetPasswordInput,
 	ConfirmSignInInput,
@@ -63,6 +64,7 @@ export {
 	UpdateUserAttributesOutput,
 	UpdateUserAttributeOutput,
 	SendUserAttributeVerificationCodeOutput,
+	FetchDevicesOutput,
 } from './types/outputs';
 export {
 	cognitoCredentialsProvider,
