@@ -213,12 +213,15 @@ export class InternalGraphQLAPIClass {
 	): Promise<GraphQLResult<T>> {
 		const config = Amplify.getConfig();
 
+		// TODO: include latest config values:
 		const { region: region, endpoint: appSyncGraphqlEndpoint } =
 			config.API.GraphQL;
 
+		// TODO: options not yet supported by core package
 		const customGraphqlEndpoint = null;
 		const customEndpointRegion = null;
 
+		// TODO: graphql_headers
 		const headers = {
 			...(!customGraphqlEndpoint &&
 				(await this._headerBasedAuth(
@@ -245,6 +248,14 @@ export class InternalGraphQLAPIClass {
 			variables,
 		};
 
+		/**
+		 * TODO: validate once core package has required options config
+		 */
+		const signingServiceInfo = {
+			service: !customEndpointRegion ? 'appsync' : 'execute-api',
+			region: !customEndpointRegion ? region : customEndpointRegion,
+		};
+
 		const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
 
 		if (!endpoint) {
@@ -263,10 +274,7 @@ export class InternalGraphQLAPIClass {
 				options: {
 					headers,
 					body,
-					signingServiceInfo: {
-						service: 'appsync',
-						region,
-					},
+					signingServiceInfo,
 				},
 				abortController,
 			});
@@ -325,6 +333,7 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
+		// TODO: graphql_headers?
 		const { GraphQL } = Amplify.getConfig().API ?? {};
 		if (!this.appSyncRealTime) {
 			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
