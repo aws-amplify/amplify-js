@@ -18,7 +18,7 @@ const MAX_DEVICES = 60;
 
 /**
  * Fetches devices that have been remembered using {@link rememberDevice}
- * for an authenticated user.
+ * for the currently authenticated user.
  *
  * @returns FetchDevicesOutput
  * @throws {@link ListDevicesException}
