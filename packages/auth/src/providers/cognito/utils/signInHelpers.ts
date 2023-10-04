@@ -6,15 +6,14 @@ import {
 	assertTokenProviderConfig,
 	base64Encoder,
 } from '@aws-amplify/core/internals/utils';
-import {
-	fromHex,
-	getLargeAValue,
-	getNowString,
-	getPasswordAuthenticationKey,
-	getSignatureString,
-} from './srp/helpers';
-import { AuthenticationHelper } from './srp/AuthenticationHelper/';
+import { AuthenticationHelper } from './srp/AuthenticationHelper';
 import { BigInteger } from './srp/BigInteger';
+import {
+	getAuthenticationHelper,
+	getBytesFromHex,
+	getNowString,
+	getSignatureString,
+} from './srp';
 
 import { ClientMetadata, ConfirmSignInOptions } from '../types';
 import {
@@ -305,11 +304,11 @@ export async function handleUserSRPAuthFlow(
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const { userPoolId, userPoolClientId } = config;
 	const userPoolName = userPoolId?.split('_')[1] || '';
-	const authenticationHelper = new AuthenticationHelper(userPoolName);
+	const authenticationHelper = await getAuthenticationHelper(userPoolName);
 
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
-		SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
+		SRP_A: authenticationHelper.A.toString(16),
 	};
 	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
 
@@ -385,13 +384,13 @@ export async function handleCustomSRPAuthFlow(
 	const { userPoolId, userPoolClientId } = config;
 
 	const userPoolName = userPoolId?.split('_')[1] || '';
-	const authenticationHelper = new AuthenticationHelper(userPoolName);
+	const authenticationHelper = await getAuthenticationHelper(userPoolName);
 
 	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
 
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
-		SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
+		SRP_A: authenticationHelper.A.toString(16),
 		CHALLENGE_NAME: 'SRP_A',
 	};
 	if (deviceMetadata && deviceMetadata.deviceKey) {
@@ -430,12 +429,12 @@ async function handleDeviceSRPAuth({
 	const clientId = config.userPoolClientId;
 	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata();
 	assertDeviceMetadata(deviceMetadata);
-	const authenticationHelper = new AuthenticationHelper(
+	const authenticationHelper = await getAuthenticationHelper(
 		deviceMetadata.deviceGroupKey
 	);
 	const challengeResponses: Record<string, string> = {
 		USERNAME: username,
-		SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
+		SRP_A: authenticationHelper.A.toString(16),
 		DEVICE_KEY: deviceMetadata.deviceKey,
 	};
 
@@ -478,8 +477,7 @@ async function handleDevicePasswordVerifier(
 	const salt = new BigInteger(challengeParameters?.SALT, 16);
 	const deviceKey = deviceMetadata.deviceKey;
 	const deviceGroupKey = deviceMetadata.deviceGroupKey;
-	const hkdf = await getPasswordAuthenticationKey({
-		authenticationHelper,
+	const hkdf = await authenticationHelper.getPasswordAuthenticationKey({
 		username: deviceMetadata.deviceKey,
 		password: deviceMetadata.randomPassword,
 		serverBValue,
@@ -534,8 +532,7 @@ export async function handlePasswordVerifierChallenge(
 			name: 'EmptyUserIdForSRPException',
 			message: 'USER_ID_FOR_SRP was not found in challengeParameters',
 		});
-	const hkdf = await getPasswordAuthenticationKey({
-		authenticationHelper,
+	const hkdf = await authenticationHelper.getPasswordAuthenticationKey({
 		username,
 		password,
 		serverBValue,
@@ -879,52 +876,47 @@ export async function getNewDeviceMetatada(
 ): Promise<DeviceMetadata | undefined> {
 	if (!newDeviceMetadata) return undefined;
 	const userPoolName = userPoolId.split('_')[1] || '';
-	const authenticationHelper = new AuthenticationHelper(userPoolName);
+	const authenticationHelper = await getAuthenticationHelper(userPoolName);
 	const deviceKey = newDeviceMetadata?.DeviceKey;
 	const deviceGroupKey = newDeviceMetadata?.DeviceGroupKey;
 
-	return new Promise((resolve, _) => {
-		authenticationHelper.generateHashDevice(
+	try {
+		await authenticationHelper.generateHashDevice(
 			deviceGroupKey ?? '',
-			deviceKey ?? '',
-			async (errGenHash: unknown) => {
-				if (errGenHash) {
-					// TODO: log error here
-					resolve(undefined);
-					return;
-				}
+			deviceKey ?? ''
+		);
+	} catch (errGenHash) {
+		// TODO: log error here
+		return undefined;
+	}
 
-				const deviceSecretVerifierConfig = {
-					Salt: base64Encoder.convert(
-						fromHex(authenticationHelper.getSaltToHashDevices())
-					),
-					PasswordVerifier: base64Encoder.convert(
-						fromHex(authenticationHelper.getVerifierDevices())
-					),
-				};
+	const deviceSecretVerifierConfig = {
+		Salt: base64Encoder.convert(
+			getBytesFromHex(authenticationHelper.getSaltToHashDevices())
+		),
+		PasswordVerifier: base64Encoder.convert(
+			getBytesFromHex(authenticationHelper.getVerifierDevices())
+		),
+	};
+	const randomPassword = authenticationHelper.getRandomPassword();
 
-				const randomPassword = authenticationHelper.getRandomPassword();
-
-				try {
-					await confirmDevice(
-						{ region: getRegion(userPoolId) },
-						{
-							AccessToken: accessToken,
-							DeviceKey: newDeviceMetadata?.DeviceKey,
-							DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
-						}
-					);
-
-					resolve({
-						deviceKey,
-						deviceGroupKey,
-						randomPassword,
-					});
-				} catch (error) {
-					// TODO: log error here
-					resolve(undefined);
-				}
+	try {
+		await confirmDevice(
+			{ region: getRegion(userPoolId) },
+			{
+				AccessToken: accessToken,
+				DeviceKey: newDeviceMetadata?.DeviceKey,
+				DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
 			}
 		);
-	});
+
+		return {
+			deviceKey,
+			deviceGroupKey,
+			randomPassword,
+		};
+	} catch (error) {
+		// TODO: log error here
+		return undefined;
+	}
 }
