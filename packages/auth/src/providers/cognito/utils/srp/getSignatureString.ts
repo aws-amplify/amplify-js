@@ -7,6 +7,7 @@ import {
 	base64Decoder,
 	base64Encoder,
 } from '@aws-amplify/core/internals/utils';
+import { textEncoder } from '../textEncoder';
 
 export const getSignatureString = ({
 	userPoolName,
@@ -21,12 +22,10 @@ export const getSignatureString = ({
 	dateNow: string;
 	hkdf: SourceData;
 }): string => {
-	const encoder = new TextEncoder();
-
-	const bufUPIDaToB = encoder.encode(userPoolName);
-	const bufUNaToB = encoder.encode(username);
+	const bufUPIDaToB = textEncoder.convert(userPoolName);
+	const bufUNaToB = textEncoder.convert(username);
 	const bufSBaToB = urlB64ToUint8Array(challengeParameters.SECRET_BLOCK);
-	const bufDNaToB = encoder.encode(dateNow);
+	const bufDNaToB = textEncoder.convert(dateNow);
 
 	const bufConcat = new Uint8Array(
 		bufUPIDaToB.byteLength +
