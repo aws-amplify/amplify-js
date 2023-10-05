@@ -24,6 +24,7 @@ import {
 	GraphqlSubscriptionMessage,
 	GraphQLQuery,
 	GraphQLSubscription,
+	GraphQLAuthError,
 } from '../src/types';
 import {
 	CreateThreadMutation,
@@ -1121,6 +1122,7 @@ describe('API test', () => {
 			});
 		});
 
+		// TODO: see below:
 		test.skip('multi-auth default case api-key, OIDC as auth mode, but no federatedSign', async () => {
 			// expect.assertions(1);
 
@@ -1201,12 +1203,10 @@ describe('API test', () => {
 					variables: graphqlVariables,
 					authMode: 'oidc',
 				})
-			).rejects.toEqual({
-				data: {},
-				errors: [new GraphQLError('')],
-			});
+			).rejects.toThrowError('No current user');
 		});
 
+		// TODO: we actually get the response, here:
 		test.skip('multi-auth using CUP as auth mode, but no userpool', async () => {
 			// expect.assertions(1);
 
@@ -1272,36 +1272,95 @@ describe('API test', () => {
 					variables: graphqlVariables,
 					authMode: 'userPool',
 				})
-				// ).rejects.toEqual({ data: {}, errors: [new Error('No current user')] });
-			).rejects.toEqual({
-				data: {},
-				errors: [new GraphQLError('')],
-			});
+			).rejects.toThrow();
 		});
 
-		// test('multi-auth using AWS_LAMBDA as auth mode, but no auth token specified', async () => {
-		// 	expect.assertions(1);
+		it('AWS_LAMBDA as auth mode, but no auth token specified', async () => {
+			// expect.assertions(1);
 
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+			// // const api = new API(config);
+			// const client = generateClient();
+			// const url = 'https://appsync.amazonaws.com',
+			// 	region = 'us-east-2',
+			// 	variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'AWS_IAM',
-		// 	});
+			// api.configure({
+			// 	aws_appsync_graphqlEndpoint: url,
+			// 	aws_appsync_region: region,
+			// 	aws_appsync_authenticationType: 'AWS_IAM',
+			// });
 
-		// 	await expect(
-		// 		api.graphql({
-		// 			query: GetEvent,
-		// 			variables,
-		// 			authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
-		// 		})
-		// 	).rejects.toThrowError(GraphQLAuthError.NO_AUTH_TOKEN);
-		// });
+			// await expect(
+			// 	api.graphql({
+			// 		query: GetEvent,
+			// 		variables,
+			// 		authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
+			// 	})
+			// ).rejects.toThrowError(GraphQLAuthError.NO_AUTH_TOKEN);
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'lambda',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
+					},
+				},
+			});
+
+			const threadToGet = {
+				id: 'some-thread-id',
+				topic: 'something reasonably interesting',
+			};
+
+			const graphqlVariables = { id: 'some-thread-id' };
+
+			const graphqlResponse = {
+				data: {
+					getThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToGet,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
+
+			// TODO: this throws an error, but not caught here...
+			await expect(
+				client.graphql({
+					query: typedQueries.getThread,
+					variables: graphqlVariables,
+					authMode: 'lambda',
+				})
+			).rejects.toThrowError(GraphQLAuthError.NO_AUTH_TOKEN);
+
+			// // Customers should normally omit the type. Making it explicit to ensure the test
+			// // fails if the returned changes.
+			// const thread: GetThreadQuery['getThread'] = result.data?.getThread;
+			// const errors = result.errors;
+
+			// // expectGet(spy, 'getThread', graphqlVariables);
+			// // expect(errors).toBe(undefined);
+			// // expect(thread).toEqual(graphqlResponse.data.getThread);
+			// expect(spy).toHaveBeenCalledWith({
+			// 	abortController: expect.any(AbortController),
+			// 	url: new URL('https://localhost/graphql'),
+			// 	options: expect.objectContaining({
+			// 		headers: expect.objectContaining({ Authorization: 'myAuthToken' }),
+			// 		// body: expect.objectContaining({
+			// 		// 	query: expect.stringContaining(`${opName}(id: $id)`),
+			// 		// 	variables: expect.objectContaining(item),
+			// 		// }),
+			// 	}),
+			// });
+		});
 
 		// test('multi-auth using API_KEY as auth mode, but no api-key configured', async () => {
 		// 	expect.assertions(1);
