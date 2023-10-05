@@ -160,10 +160,7 @@ async function handleCodeFlow({
 	}
 	const code = url.searchParams.get('code');
 
-	const currentUrlPathname = url.pathname ?? '/';
-	const redirectUriPathname = new URL(redirectUri).pathname ?? '/';
-
-	if (!code || currentUrlPathname !== redirectUriPathname) {
+	if (!code) {
 		return;
 	}
 
