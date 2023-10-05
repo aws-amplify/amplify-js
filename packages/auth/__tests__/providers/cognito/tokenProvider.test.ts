@@ -78,6 +78,57 @@ describe('Loading tokens', () => {
 		expect(result?.deviceMetadata?.randomPassword).toBe('random-password');
 		expect(result?.deviceMetadata?.deviceKey).toBe('device-key');
 	});
+
+	test('load device tokens from store', async () => {
+		const tokenStore = new DefaultTokenStore();
+		const memoryStorage = new MemoryStorage();
+		const userPoolClientId = 'userPoolClientId';
+		const userSub1 = 'user1@email.com';
+		const userSub1Encoded = 'user1%40email.com';
+		const userSub2 = 'user2@email.com';
+
+		memoryStorage.setItem(
+			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1Encoded}.deviceKey`,
+			'user1-device-key'
+		);
+		memoryStorage.setItem(
+			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1Encoded}.deviceGroupKey`,
+			'user1-device-group-key'
+		);
+		memoryStorage.setItem(
+			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1Encoded}.randomPasswordKey`,
+			'user1-random-password'
+		);
+		memoryStorage.setItem(
+			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceKey`,
+			'user2-device-key'
+		);
+		memoryStorage.setItem(
+			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceGroupKey`,
+			'user2-device-group-key'
+		);
+		memoryStorage.setItem(
+			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.randomPasswordKey`,
+			'user2-random-password'
+		);
+
+		tokenStore.setKeyValueStorage(memoryStorage);
+		tokenStore.setAuthConfig({
+			Cognito: {
+				userPoolId: 'us-east-1:1111111',
+				userPoolClientId,
+			},
+		});
+		const user1DeviceMetadata = await tokenStore.getDeviceMetadata(userSub1);
+		expect(user1DeviceMetadata?.randomPassword).toBe('user1-random-password');
+		expect(user1DeviceMetadata?.deviceGroupKey).toBe('user1-device-group-key');
+		expect(user1DeviceMetadata?.deviceKey).toBe('user1-device-key');
+
+		const user2DeviceMetadata = await tokenStore.getDeviceMetadata(userSub2);
+		expect(user2DeviceMetadata?.randomPassword).toBe('user2-random-password');
+		expect(user2DeviceMetadata?.deviceGroupKey).toBe('user2-device-group-key');
+		expect(user2DeviceMetadata?.deviceKey).toBe('user2-device-key');
+	});
 });
 
 describe('saving tokens', () => {

@@ -145,8 +145,8 @@ export class DefaultTokenStore implements AuthTokenStore {
 		]);
 	}
 
-	async getDeviceMetadata(): Promise<DeviceMetadata | null> {
-		const authKeys = await this.getAuthKeys();
+	async getDeviceMetadata(username?: string): Promise<DeviceMetadata | null> {
+		const authKeys = await this.getDeviceAuthKeys(username);
 		const deviceKey = await this.getKeyValueStorage().getItem(
 			authKeys.deviceKey
 		);
@@ -165,8 +165,8 @@ export class DefaultTokenStore implements AuthTokenStore {
 			  }
 			: null;
 	}
-	async clearDeviceMetadata(): Promise<void> {
-		const authKeys = await this.getAuthKeys();
+	async clearDeviceMetadata(username?: string): Promise<void> {
+		const authKeys = await this.getDeviceAuthKeys(username);
 		await Promise.all([
 			this.getKeyValueStorage().removeItem(authKeys.deviceKey),
 			this.getKeyValueStorage().removeItem(authKeys.deviceGroupKey),
@@ -174,15 +174,33 @@ export class DefaultTokenStore implements AuthTokenStore {
 		]);
 	}
 
-	private async getAuthKeys(): Promise<
-		AuthKeys<keyof typeof AuthTokenStorageKeys>
-	> {
+	private async getAuthKeys(
+		username?: string
+	): Promise<AuthKeys<keyof typeof AuthTokenStorageKeys>> {
 		assertTokenProviderConfig(this.authConfig?.Cognito);
-		const lastAuthUser = await this.getLastAuthUser();
+		const lastAuthUser = username ?? (await this.getLastAuthUser());
 		return createKeysForAuthStorage(
 			this.name,
 			`${this.authConfig.Cognito.userPoolClientId}.${lastAuthUser}`
 		);
+	}
+	private async getDeviceAuthKeys(
+		username?: string
+	): Promise<AuthKeys<keyof typeof AuthTokenStorageKeys>> {
+		let authKeys: AuthKeys<keyof typeof AuthTokenStorageKeys>;
+		if (username) {
+			const authEncodedKeys = await this.getAuthKeys(
+				encodeURIComponent(username)
+			);
+			const authNonEncodedKeys = await this.getAuthKeys(username);
+			const isEncodedKeysPresent = !!(await this.getKeyValueStorage().getItem(
+				authEncodedKeys.randomPasswordKey
+			));
+			authKeys = isEncodedKeysPresent ? authEncodedKeys : authNonEncodedKeys;
+		} else {
+			authKeys = await this.getAuthKeys();
+		}
+		return authKeys;
 	}
 
 	private getLastAuthUserKey() {
