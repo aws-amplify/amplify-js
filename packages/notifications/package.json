@@ -5,10 +5,7 @@
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
-	"sideEffects": [
-		"./lib/Notifications.js",
-		"./lib-esm/Notifications.js"
-	],
+	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
 	},
@@ -96,7 +93,6 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/rtn-push-notification": "1.1.7",
 		"lodash": "^4.17.21",
 		"uuid": "^9.0.0"
 	},

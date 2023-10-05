@@ -21,7 +21,9 @@ import {
 	GraphqlSubscriptionMessage,
 	GraphQLQuery,
 	GraphQLSubscription,
+	GraphQLReturnType,
 } from '../src/types';
+
 import {
 	CreateThreadMutation,
 	UpdateThreadMutation,
@@ -29,6 +31,8 @@ import {
 	GetThreadQuery,
 	ListThreadsQuery,
 	OnCreateThreadSubscription,
+	Thread,
+	Comment,
 } from './fixtures/with-types/API';
 
 const serverManagedFields = {
@@ -337,6 +341,248 @@ describe('client', () => {
 		});
 	});
 
+	describe('type-tagged graphql with util type adapter', () => {
+		test('create', async () => {
+			const threadToCreate = { topic: 'a very engaging discussion topic' };
+
+			const graphqlResponse = {
+				data: {
+					createThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToCreate,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(() => ({
+					body: {
+						json: () => graphqlResponse,
+					},
+				}));
+
+			// If the update fails, we get an error which we'll need to catch.
+			// If it succeeds, we get a result back and no need to look for `null | undefined`
+			const thread: GraphQLReturnType<Thread> = (
+				await client.graphql({
+					query: typedMutations.createThread,
+					authMode: 'apiKey',
+					variables: {
+						input: threadToCreate,
+					},
+				})
+			).data.createThread;
+		});
+
+		test('update', async () => {
+			const threadToUpdate = {
+				id: 'abc',
+				topic: 'a new (but still very stimulating) topic',
+			};
+
+			const graphqlResponse = {
+				data: {
+					updateThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToUpdate,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(() => ({
+					body: {
+						json: () => graphqlResponse,
+					},
+				}));
+
+			// Not sure yet what happens if an update failes to find a matching record ... pretty sure
+			// it's an error though! This would indicate update queries can omit
+			const thread: GraphQLReturnType<Thread> = (
+				await client.graphql({
+					query: typedMutations.updateThread,
+					variables: {
+						input: threadToUpdate,
+					},
+					authMode: 'apiKey',
+				})
+			).data.updateThread;
+		});
+
+		test('delete', async () => {
+			const threadToDelete = { id: 'abc' };
+
+			const graphqlResponse = {
+				data: {
+					deleteThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToDelete,
+						topic: 'not a very interesting topic (hence the deletion)',
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(() => ({
+					body: {
+						json: () => graphqlResponse,
+					},
+				}));
+
+			// If a delete fails, an error is raised. So, we don't need to handle null or
+			// undefined return values in the happy path.
+			const thread: GraphQLReturnType<Thread> = (
+				await client.graphql({
+					query: typedMutations.deleteThread,
+					variables: {
+						input: threadToDelete,
+					},
+					authMode: 'apiKey',
+				})
+			).data.deleteThread;
+		});
+
+		test('get', async () => {
+			const threadToGet = {
+				id: 'some-thread-id',
+				topic: 'something reasonably interesting',
+			};
+
+			const graphqlVariables = { id: 'some-thread-id' };
+
+			const graphqlResponse = {
+				data: {
+					getThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToGet,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(() => ({
+					body: {
+						json: () => graphqlResponse,
+					},
+				}));
+
+			// a get query might not actually find anything.
+			const thread: GraphQLReturnType<Thread> | null | undefined = (
+				await client.graphql({
+					query: typedQueries.getThread,
+					variables: graphqlVariables,
+					authMode: 'apiKey',
+				})
+			).data.getThread;
+
+			// we SHOULD get a type error if we blindly try to assign a get result
+			// to a type that doesn't account for `null | undefined` returns.
+			// TODO: change to ts-expect-error
+			// @ts-ignore
+			const badthread: GraphQLReturnType<Thread> = (
+				await client.graphql({
+					query: typedQueries.getThread,
+					variables: graphqlVariables,
+					authMode: 'apiKey',
+				})
+			).data.getThread;
+		});
+
+		test('list', async () => {
+			const threadsToList = [
+				{
+					__typename: 'Thread',
+					...serverManagedFields,
+					topic: 'really cool stuff',
+				},
+			];
+
+			const graphqlVariables = {
+				filter: {
+					topic: { contains: 'really cool stuff' },
+				},
+				nextToken: null,
+			};
+
+			const graphqlResponse = {
+				data: {
+					listThreads: {
+						items: threadsToList,
+						nextToken: null,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(() => ({
+					body: {
+						json: () => graphqlResponse,
+					},
+				}));
+
+			// If a list query succeeds, we always get a list back, even if it's empty.
+			// and there are no empty values.
+			const threads: GraphQLReturnType<Thread>[] = (
+				await client.graphql({
+					query: typedQueries.listThreads,
+					variables: graphqlVariables,
+					authMode: 'apiKey',
+				})
+			).data.listThreads.items;
+		});
+
+		test('subscribe', done => {
+			const threadToSend = {
+				__typename: 'Thread',
+				...serverManagedFields,
+				topic: 'really cool stuff',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onCreateThread: threadToSend,
+				},
+			};
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			const graphqlVariables = {
+				filter: {
+					topic: { contains: 'really cool stuff' },
+				},
+			};
+
+			const result = client.graphql({
+				query: typedSubscriptions.onCreateThread,
+				variables: graphqlVariables,
+				authMode: 'apiKey',
+			});
+
+			const threads: GraphQLReturnType<Thread>[] = [];
+
+			result.subscribe({
+				next(message) {
+					threads.push(message.data.onCreateThread);
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+		});
+	});
+
 	describe('un-tagged graphql, with as any casts', () => {
 		test('create', async () => {
 			const threadToCreate = { topic: 'a very engaging discussion topic' };
@@ -611,7 +857,7 @@ describe('client', () => {
 			const result = rawResult as any;
 
 			result.subscribe?.({
-				next(message) {
+				next(message: any) {
 					expectSub(spy, 'onCreateThread', graphqlVariables);
 					expect(message.data.onCreateThread).toEqual(
 						graphqlMessage.data.onCreateThread
