@@ -2,6 +2,7 @@ import * as raw from '../src';
 import { graphql, cancel } from '../src/internals/v6';
 // import { Amplify } from '@aws-amplify/core';
 import { Amplify } from '@aws-amplify/core';
+import { GraphQLError } from 'graphql';
 // import { fetchAuthSession } from '@aws-amplify/core';
 import * as typedQueries from './fixtures/with-types/queries';
 import * as typedMutations from './fixtures/with-types/mutations';
@@ -1120,7 +1121,6 @@ describe('API test', () => {
 			});
 		});
 
-		// TODO: investigate
 		test.skip('multi-auth default case api-key, OIDC as auth mode, but no federatedSign', async () => {
 			// expect.assertions(1);
 
@@ -1194,39 +1194,90 @@ describe('API test', () => {
 					},
 				});
 
+			// TODO: how to make this fail without `Cache`?
 			await expect(
 				client.graphql({
 					query: typedQueries.getThread,
 					variables: graphqlVariables,
 					authMode: 'oidc',
 				})
-			).rejects.toThrowError('No current user');
+			).rejects.toEqual({
+				data: {},
+				errors: [new GraphQLError('')],
+			});
 		});
 
-		// test('multi-auth using CUP as auth mode, but no userpool', async () => {
-		// 	expect.assertions(1);
+		test.skip('multi-auth using CUP as auth mode, but no userpool', async () => {
+			// expect.assertions(1);
 
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
-		// 		apiKey = 'secret-api-key';
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'API_KEY',
-		// 		aws_appsync_apiKey: apiKey,
-		// 	});
+			// // const api = new API(config);
+			// const client = generateClient();
+			// const url = 'https://appsync.amazonaws.com',
+			// 	region = 'us-east-2',
+			// 	variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
+			// 	apiKey = 'secret-api-key';
+			// api.configure({
+			// 	aws_appsync_graphqlEndpoint: url,
+			// 	aws_appsync_region: region,
+			// 	aws_appsync_authenticationType: 'API_KEY',
+			// 	aws_appsync_apiKey: apiKey,
+			// });
 
-		// 	await expect(
-		// 		api.graphql({
-		// 			query: GetEvent,
-		// 			variables,
-		// 			authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-		// 		})
-		// 	).rejects.toThrow();
-		// });
+			// await expect(
+			// 	api.graphql({
+			// 		query: GetEvent,
+			// 		variables,
+			// 		authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+			// 	})
+			// ).rejects.toThrow();
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'apiKey',
+						apiKey: 'FAKE-KEY',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
+					},
+				},
+			});
+
+			const threadToGet = {
+				id: 'some-thread-id',
+				topic: 'something reasonably interesting',
+			};
+
+			const graphqlVariables = { id: 'some-thread-id' };
+
+			const graphqlResponse = {
+				data: {
+					getThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToGet,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
+
+			await expect(
+				client.graphql({
+					query: typedQueries.getThread,
+					variables: graphqlVariables,
+					authMode: 'userPool',
+				})
+				// ).rejects.toEqual({ data: {}, errors: [new Error('No current user')] });
+			).rejects.toEqual({
+				data: {},
+				errors: [new GraphQLError('')],
+			});
+		});
 
 		// test('multi-auth using AWS_LAMBDA as auth mode, but no auth token specified', async () => {
 		// 	expect.assertions(1);
