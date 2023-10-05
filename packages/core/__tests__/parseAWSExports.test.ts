@@ -83,6 +83,14 @@ describe('Parser', () => {
 				aws_appsync_apiKey: apiKey,
 				aws_appsync_region: region,
 				aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+				Notifications: {
+					InAppMessaging: {
+						AWSPinpoint: {
+							appId: appId,
+							region: region,
+						},
+					},
+				},
 			})
 		).toStrictEqual({
 			Analytics: {
@@ -127,6 +135,14 @@ describe('Parser', () => {
 					apiKey,
 					region,
 					defaultAuthMode: 'userPool',
+				},
+			},
+			Notifications: {
+				InAppMessaging: {
+					Pinpoint: {
+						appId,
+						region,
+					},
 				},
 			},
 		});
