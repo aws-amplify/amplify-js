@@ -222,23 +222,33 @@ export class InternalGraphQLAPIClass {
 
 		const { headers: customHeaders } = resolveLibraryOptions();
 
-		const body = {
-			query: print(query as DocumentNode),
-			variables,
-		};
+		let customHeadersOptions;
+
+		// TODO: make this cleaner
+		if (customHeaders && variables) {
+			customHeadersOptions = {
+				query: print(query as DocumentNode),
+				variables,
+			};
+		}
 
 		const headers = {
 			...(!customEndpoint &&
-				(await this._headerBasedAuth(authMode, additionalHeaders))),
+				(await this._headerBasedAuth(authMode!, additionalHeaders))),
 			...(customEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(authMode, additionalHeaders)
+					? await this._headerBasedAuth(authMode!, additionalHeaders)
 					: { Authorization: null })),
-			...(customHeaders && (await customHeaders(body))),
+			...(customHeaders && (await customHeaders(customHeadersOptions))),
 			...additionalHeaders,
 			...(!customEndpoint && {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 			}),
+		};
+
+		const body = {
+			query: print(query as DocumentNode),
+			variables,
 		};
 
 		const signingServiceInfo = {
@@ -262,7 +272,11 @@ export class InternalGraphQLAPIClass {
 			const { body: responseBody } = await this._api.post({
 				url: new URL(endpoint),
 				options: {
+					// TODO
+					// @ts-ignore
 					headers,
+					// TODO
+					// @ts-ignore
 					body,
 					signingServiceInfo,
 				},
