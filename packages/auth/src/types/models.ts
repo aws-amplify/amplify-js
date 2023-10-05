@@ -275,3 +275,11 @@ export type AuthUser = {
 	username: string;
 	userId: string;
 };
+
+/**
+ * The AuthDevice object contains id and name of the device.
+ */
+export type AuthDevice = {
+	id: string;
+	name?: string;
+};

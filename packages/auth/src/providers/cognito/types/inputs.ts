@@ -34,6 +34,7 @@ import {
 	AuthVerifyTOTPSetupInput,
 	AuthSendUserAttributeVerificationCodeInput,
 	AuthDeleteUserAttributesInput,
+	AuthForgetDeviceInput,
 } from '../../../types';
 
 /**
@@ -158,3 +159,8 @@ export type UpdateUserAttributeInput = AuthUpdateUserAttributeInput<
  */
 export type DeleteUserAttributesInput =
 	AuthDeleteUserAttributesInput<UserAttributeKey>;
+
+/**
+ * Input type for Cognito forgetDevice API.
+ */
+export type ForgetDeviceInput = AuthForgetDeviceInput;

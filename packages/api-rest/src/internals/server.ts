@@ -5,7 +5,7 @@ import {
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
 
-import { post as internalPost } from '../common/internalPost';
+import { post as internalPost } from '../apis/common/internalPost';
 import { InternalPostInput } from '../types';
 
 /**
@@ -31,4 +31,7 @@ export const post = (
 	return internalPost(getAmplifyServerContext(contextSpec).amplify, input);
 };
 
-export { cancel, updateRequestToBeCancellable } from '../common/internalPost';
+export {
+	cancel,
+	updateRequestToBeCancellable,
+} from '../apis/common/internalPost';

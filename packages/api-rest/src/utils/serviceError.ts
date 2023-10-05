@@ -14,7 +14,7 @@ import { RestApiError } from '../errors';
  */
 export const buildRestApiServiceError = (error: Error): RestApiError => {
 	const restApiError = new RestApiError({
-		name: error.name,
+		name: error?.name,
 		message: error.message,
 		underlyingError: error,
 	});
@@ -23,11 +23,13 @@ export const buildRestApiServiceError = (error: Error): RestApiError => {
 
 export const parseRestApiServiceError = async (
 	response?: HttpResponse
-): Promise<RestApiError & MetadataBearer> => {
+): Promise<(RestApiError & MetadataBearer) | undefined> => {
 	const parsedError = await parseJsonError(response);
-	return parsedError
-		? Object.assign(buildRestApiServiceError(parsedError), {
-				$metadata: parsedError.$metadata,
-		  })
-		: undefined;
+	if (!parsedError) {
+		// Response is not an error.
+		return;
+	}
+	return Object.assign(buildRestApiServiceError(parsedError), {
+		$metadata: parsedError.$metadata,
+	});
 };
