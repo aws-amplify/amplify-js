@@ -104,12 +104,13 @@ export enum PushNotificationAction {
 	None = '0',
 }
 export enum StorageAction {
-	Put = '1',
-	Get = '2',
+	UploadData = '1',
+	DownloadData = '2',
 	List = '3',
 	Copy = '4',
 	Remove = '5',
 	GetProperties = '6',
+	GetUrl = '7'
 }
 
 type ActionMap = {

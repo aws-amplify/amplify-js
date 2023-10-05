@@ -301,7 +301,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "28.30 kB"
+			"limit": "28.62 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
@@ -319,19 +319,19 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignIn }",
-			"limit": "28.20 kB"
+			"limit": "28.54 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ updateMFAPreference }",
-			"limit": "10.10 kB"
+			"limit": "10.17 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ fetchMFAPreference }",
-			"limit": "10.10 kB"
+			"limit": "10.16 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
@@ -349,7 +349,7 @@
 			"name": "[Auth] setUpTOTP (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ setUpTOTP }",
-			"limit": "11.50 kB"
+			"limit": "12.01 kB"
 		},
 		{
 			"name": "[Auth] updateUserAttributes (Cognito)",
@@ -373,7 +373,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect }",
-			"limit": "21.50 kB"
+			"limit": "21.71 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
@@ -385,13 +385,13 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "30.30 kB"
+			"limit": "30.61 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "22.00 kB"
+			"limit": "22.17 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
@@ -409,31 +409,31 @@
 			"name": "[Storage] getProperties (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ getProperties }",
-			"limit": "16.90 kB"
+			"limit": "16.95 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ getUrl }",
-			"limit": "18.30 kB"
+			"limit": "18.39 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ list }",
-			"limit": "17.46 kB"
+			"limit": "17.47 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ remove }",
-			"limit": "16.73 kB"
+			"limit": "16.79 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ uploadData }",
-			"limit": "23.3 kB"
+			"limit": "23.59 kB"
 		}
 	],
 	"jest": {

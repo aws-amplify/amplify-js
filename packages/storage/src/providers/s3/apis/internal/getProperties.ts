@@ -2,13 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import { StorageAction } from '@aws-amplify/core/internals/utils';
 import { GetPropertiesInput, GetPropertiesOutput } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { headObject } from '../../utils/client';
+import { getStorageUserAgentValue } from '../../utils/userAgent';
 
 export const getProperties = async function (
 	amplify: AmplifyClassV6,
-	input: GetPropertiesInput
+	input: GetPropertiesInput,
+	action?: StorageAction
 ): Promise<GetPropertiesOutput> {
 	const { key, options } = input;
 	const { s3Config, bucket, keyPrefix } = await resolveS3ConfigAndInput(
@@ -16,10 +19,16 @@ export const getProperties = async function (
 		options
 	);
 
-	const response = await headObject(s3Config, {
-		Bucket: bucket,
-		Key: `${keyPrefix}${key}`,
-	});
+	const response = await headObject(
+		{
+			...s3Config, 
+			userAgentValue: getStorageUserAgentValue(action || StorageAction.GetProperties)
+		}, 
+		{
+			Bucket: bucket,
+			Key: `${keyPrefix}${key}`,
+		}
+	);
 	return {
 		key,
 		contentType: response.ContentType,
