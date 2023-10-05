@@ -26,15 +26,15 @@ import { getMultipartUploadHandlers } from './multipart';
  *
  * @example
  * ```ts
- * // Upload a file to s3 bucket
- * await uploadData({ key, data: file, options: {
+ * // Upload data to s3 bucket
+ * await uploadData({ key, data, options: {
  *   onProgress, // Optional progress callback.
  * } }).result;
  * ```
  * @example
  * ```ts
  * // Cancel a task
- * const uploadTask = uploadData({ key, data: file });
+ * const uploadTask = uploadData({ key, data });
  * //...
  * uploadTask.cancel();
  * try {
@@ -49,7 +49,7 @@ import { getMultipartUploadHandlers } from './multipart';
  * @example
  * ```ts
  * // Pause and resume a task
- * const uploadTask = uploadData({ key, data: file });
+ * const uploadTask = uploadData({ key, data });
  * //...
  * uploadTask.pause();
  * //...
