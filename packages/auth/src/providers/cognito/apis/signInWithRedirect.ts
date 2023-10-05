@@ -160,8 +160,8 @@ async function handleCodeFlow({
 	}
 	const code = url.searchParams.get('code');
 
-	const currentUrlPathname = url.pathname || '/';
-	const redirectUriPathname = new URL(redirectUri).pathname || '/';
+	const currentUrlPathname = url.pathname ?? '/';
+	const redirectUriPathname = new URL(redirectUri).pathname ?? '/';
 
 	if (!code || currentUrlPathname !== redirectUriPathname) {
 		return;
@@ -216,7 +216,7 @@ async function handleCodeFlow({
 	await store.clearOAuthInflightData();
 
 	const username =
-		(access_token && decodeJWT(access_token).payload.username) || 'username';
+		(access_token && decodeJWT(access_token).payload.username) ?? 'username';
 
 	await cacheCognitoTokens({
 		username,
@@ -248,7 +248,7 @@ async function handleImplicitFlow({
 	const url = new URL(currentUrl);
 
 	const { idToken, accessToken, state, tokenType, expiresIn } = (
-		url.hash || '#'
+		url.hash ?? '#'
 	)
 		.substring(1) // Remove # from returned code
 		.split('&')
@@ -270,7 +270,7 @@ async function handleImplicitFlow({
 	}
 
 	const username =
-		(accessToken && decodeJWT(accessToken).payload.username) || 'username';
+		(accessToken && decodeJWT(accessToken).payload.username) ?? 'username';
 
 	await cacheCognitoTokens({
 		username,
