@@ -222,6 +222,11 @@ export class InternalGraphQLAPIClass {
 
 		const { headers: customHeaders } = resolveLibraryOptions();
 
+		const body = {
+			query: print(query as DocumentNode),
+			variables,
+		};
+
 		const headers = {
 			...(!customEndpoint &&
 				(await this._headerBasedAuth(authMode, additionalHeaders))),
@@ -229,16 +234,11 @@ export class InternalGraphQLAPIClass {
 				(customEndpointRegion
 					? await this._headerBasedAuth(authMode, additionalHeaders)
 					: { Authorization: null })),
-			...customHeaders({ query, variables }),
+			...(customHeaders && (await customHeaders(body))),
 			...additionalHeaders,
 			...(!customEndpoint && {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 			}),
-		};
-
-		const body = {
-			query: print(query as DocumentNode),
-			variables,
 		};
 
 		const signingServiceInfo = {
