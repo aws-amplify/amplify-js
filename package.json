@@ -31,7 +31,6 @@
 		"publish:main": "lerna publish --canary --force-publish --dist-tag=unstable --preid=unstable${PREID_HASH_SUFFIX} --yes",
 		"publish:release": "lerna publish --conventional-commits --message 'chore(release): Publish [ci skip]' --yes",
 		"publish:verdaccio": "lerna publish --canary --force-publish --no-push --dist-tag=unstable --preid=unstable --yes",
-		"unpublish:verdaccio": "lerna exec -- npm unpublish --force",
 		"ts-coverage": "lerna run ts-coverage",
 		"prepare": "./scripts/set-preid-versions.sh"
 	},
