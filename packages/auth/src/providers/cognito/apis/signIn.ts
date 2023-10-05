@@ -10,8 +10,9 @@ import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
-
 import { SignInInput, SignInOutput } from '../types';
+import { tokenOrchestrator } from '../tokenProvider';
+import { AuthError } from '../../../errors/AuthError';
 /**
  * Signs a user in
  *
@@ -24,18 +25,41 @@ import { SignInInput, SignInOutput } from '../types';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signIn(input: SignInInput): Promise<SignInOutput> {
-	const authFlowType = input.options?.serviceOptions?.authFlowType;
 	await assertUserNotAuthenticated();
-	switch (authFlowType) {
-		case 'USER_SRP_AUTH':
-			return signInWithSRP(input);
-		case 'USER_PASSWORD_AUTH':
-			return signInWithUserPassword(input);
-		case 'CUSTOM_WITHOUT_SRP':
-			return signInWithCustomAuth(input);
-		case 'CUSTOM_WITH_SRP':
-			return signInWithCustomSRPAuth(input);
-		default:
-			return signInWithSRP(input);
+	try {
+		console.log('input', input);
+		return await _signIn(input);
+	} catch (error) {
+		if (error instanceof AuthError && (await shouldRetrySignIn(error))) {
+			await tokenOrchestrator.clearDeviceMetadata();
+			return await _signIn(input);
+		} else {
+			throw error;
+		}
 	}
 }
+
+async function _signIn(input: SignInInput): Promise<SignInOutput> {
+	const authFlowType = input.options?.serviceOptions?.authFlowType;
+	switch (authFlowType) {
+		case 'USER_SRP_AUTH':
+			return await signInWithSRP(input);
+		case 'USER_PASSWORD_AUTH':
+			return await signInWithUserPassword(input);
+		case 'CUSTOM_WITHOUT_SRP':
+			return await signInWithCustomAuth(input);
+		case 'CUSTOM_WITH_SRP':
+			return await signInWithCustomSRPAuth(input);
+		default:
+			return await signInWithSRP(input);
+	}
+}
+
+const shouldRetrySignIn = async (error: AuthError) => {
+	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+	return (
+		deviceMetadata?.deviceKey &&
+		error.name === RespondToAuthChallengeException.ResourceNotFoundException &&
+		error.message === 'Device does not exist.'
+	);
+};
