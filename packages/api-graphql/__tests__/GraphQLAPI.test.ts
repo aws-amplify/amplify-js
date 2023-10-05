@@ -1241,30 +1241,30 @@ describe('API test', () => {
 				},
 			});
 
-			const threadToGet = {
-				id: 'some-thread-id',
-				topic: 'something reasonably interesting',
-			};
+			// const threadToGet = {
+			// 	id: 'some-thread-id',
+			// 	topic: 'something reasonably interesting',
+			// };
 
 			const graphqlVariables = { id: 'some-thread-id' };
 
-			const graphqlResponse = {
-				data: {
-					getThread: {
-						__typename: 'Thread',
-						...serverManagedFields,
-						...threadToGet,
-					},
-				},
-			};
+			// const graphqlResponse = {
+			// 	data: {
+			// 		getThread: {
+			// 			__typename: 'Thread',
+			// 			...serverManagedFields,
+			// 			...threadToGet,
+			// 		},
+			// 	},
+			// };
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			// const spy = jest
+			// 	.spyOn((raw.GraphQLAPI as any)._api, 'post')
+			// 	.mockReturnValue({
+			// 		body: {
+			// 			json: () => graphqlResponse,
+			// 		},
+			// 	});
 
 			await expect(
 				client.graphql({
@@ -1276,27 +1276,6 @@ describe('API test', () => {
 		});
 
 		it('AWS_LAMBDA as auth mode, but no auth token specified', async () => {
-			// expect.assertions(1);
-
-			// // const api = new API(config);
-			// const client = generateClient();
-			// const url = 'https://appsync.amazonaws.com',
-			// 	region = 'us-east-2',
-			// 	variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
-
-			// api.configure({
-			// 	aws_appsync_graphqlEndpoint: url,
-			// 	aws_appsync_region: region,
-			// 	aws_appsync_authenticationType: 'AWS_IAM',
-			// });
-
-			// await expect(
-			// 	api.graphql({
-			// 		query: GetEvent,
-			// 		variables,
-			// 		authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
-			// 	})
-			// ).rejects.toThrowError(GraphQLAuthError.NO_AUTH_TOKEN);
 			Amplify.configure({
 				API: {
 					GraphQL: {
@@ -1307,32 +1286,8 @@ describe('API test', () => {
 				},
 			});
 
-			const threadToGet = {
-				id: 'some-thread-id',
-				topic: 'something reasonably interesting',
-			};
-
 			const graphqlVariables = { id: 'some-thread-id' };
 
-			const graphqlResponse = {
-				data: {
-					getThread: {
-						__typename: 'Thread',
-						...serverManagedFields,
-						...threadToGet,
-					},
-				},
-			};
-
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
-
-			// TODO: this throws an error, but not caught here...
 			await expect(
 				client.graphql({
 					query: typedQueries.getThread,
@@ -1340,61 +1295,56 @@ describe('API test', () => {
 					authMode: 'lambda',
 				})
 			).rejects.toThrowError(GraphQLAuthError.NO_AUTH_TOKEN);
-
-			// // Customers should normally omit the type. Making it explicit to ensure the test
-			// // fails if the returned changes.
-			// const thread: GetThreadQuery['getThread'] = result.data?.getThread;
-			// const errors = result.errors;
-
-			// // expectGet(spy, 'getThread', graphqlVariables);
-			// // expect(errors).toBe(undefined);
-			// // expect(thread).toEqual(graphqlResponse.data.getThread);
-			// expect(spy).toHaveBeenCalledWith({
-			// 	abortController: expect.any(AbortController),
-			// 	url: new URL('https://localhost/graphql'),
-			// 	options: expect.objectContaining({
-			// 		headers: expect.objectContaining({ Authorization: 'myAuthToken' }),
-			// 		// body: expect.objectContaining({
-			// 		// 	query: expect.stringContaining(`${opName}(id: $id)`),
-			// 		// 	variables: expect.objectContaining(item),
-			// 		// }),
-			// 	}),
-			// });
 		});
 
-		// test('multi-auth using API_KEY as auth mode, but no api-key configured', async () => {
-		// 	expect.assertions(1);
+		test('multi-auth using API_KEY as auth mode, but no api-key configured', async () => {
+			// expect.assertions(1);
+			// const cache_config = {
+			// 	capacityInBytes: 3000,
+			// 	itemMaxSize: 800,
+			// 	defaultTTL: 3000000,
+			// 	defaultPriority: 5,
+			// 	warningThreshold: 0.8,
+			// 	storage: window.localStorage,
+			// };
+			// Cache.configure(cache_config);
+			// // const api = new API(config);
+			// const client = generateClient();
+			// const url = 'https://appsync.amazonaws.com',
+			// 	region = 'us-east-2',
+			// 	variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+			// api.configure({
+			// 	aws_appsync_graphqlEndpoint: url,
+			// 	aws_appsync_region: region,
+			// 	aws_appsync_authenticationType: 'AWS_IAM',
+			// });
+			// await expect(
+			// 	api.graphql({
+			// 		query: GetEvent,
+			// 		variables,
+			// 		authMode: GRAPHQL_AUTH_MODE.API_KEY,
+			// 	})
+			// ).rejects.toThrowError('No api-key configured');
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'iam',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
+					},
+				},
+			});
 
-		// 	const cache_config = {
-		// 		capacityInBytes: 3000,
-		// 		itemMaxSize: 800,
-		// 		defaultTTL: 3000000,
-		// 		defaultPriority: 5,
-		// 		warningThreshold: 0.8,
-		// 		storage: window.localStorage,
-		// 	};
+			const graphqlVariables = { id: 'some-thread-id' };
 
-		// 	Cache.configure(cache_config);
-
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'AWS_IAM',
-		// 	});
-
-		// 	await expect(
-		// 		api.graphql({
-		// 			query: GetEvent,
-		// 			variables,
-		// 			authMode: GRAPHQL_AUTH_MODE.API_KEY,
-		// 		})
-		// 	).rejects.toThrowError('No api-key configured');
-		// });
+			await expect(
+				client.graphql({
+					query: typedQueries.getThread,
+					variables: graphqlVariables,
+					authMode: 'apiKey',
+				})
+			).rejects.toThrowError(GraphQLAuthError.NO_API_KEY);
+		});
 
 		// test('multi-auth using AWS_IAM as auth mode, but no credentials', async () => {
 		// 	expect.assertions(1);
