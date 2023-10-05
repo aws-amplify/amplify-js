@@ -4,16 +4,14 @@
 import { AmplifyErrorMap } from '@aws-amplify/core/internals/utils';
 
 export enum PredictionsValidationErrorCode {
+	InvalidSource = 'InvalidSource',
 	NoCredentials = 'NoCredentials',
-	NoIdentityId = 'NoIdentityId',
-	NoKey = 'NoKey',
-	NoSourceKey = 'NoSourceKey',
-	NoDestinationKey = 'NoDestinationKey',
-	NoBucket = 'NoBucket',
+	NoLanguage = 'NoLanguage',
 	NoRegion = 'NoRegion',
-	UrlExpirationMaxLimitExceed = 'UrlExpirationMaxLimitExceed',
-	ObjectIsTooLarge = 'ObjectIsTooLarge',
-	InvalidUploadSource = 'InvalidUploadSource',
+	NoSource = 'NoSource',
+	NoSourceLanguage = 'NoSourceLanguage',
+	NoTargetLanguage = 'NoTargetLanguage',
+	NoVoiceId = 'NoVoiceId',
 }
 
 export const validationErrorMap: AmplifyErrorMap<PredictionsValidationErrorCode> =
@@ -21,33 +19,25 @@ export const validationErrorMap: AmplifyErrorMap<PredictionsValidationErrorCode>
 		[PredictionsValidationErrorCode.NoCredentials]: {
 			message: 'Credentials should not be empty.',
 		},
-		[PredictionsValidationErrorCode.NoIdentityId]: {
-			message:
-				'Missing identity ID when accessing objects in protected or private access level.',
-		},
-		[PredictionsValidationErrorCode.NoKey]: {
-			message: 'Missing key in api call.',
-		},
-		[PredictionsValidationErrorCode.NoSourceKey]: {
-			message: 'Missing source key in copy api call.',
-		},
-		[PredictionsValidationErrorCode.NoDestinationKey]: {
-			message: 'Missing destination key in copy api call.',
-		},
-		[PredictionsValidationErrorCode.NoBucket]: {
-			message: 'Missing bucket name while accessing object.',
+		[PredictionsValidationErrorCode.NoLanguage]: {
+			message: 'Missing language.',
 		},
 		[PredictionsValidationErrorCode.NoRegion]: {
-			message: 'Missing region while accessing object.',
+			message: 'Missing region.',
 		},
-		[PredictionsValidationErrorCode.UrlExpirationMaxLimitExceed]: {
-			message: 'Url Expiration can not be greater than 7 Days.',
+		[PredictionsValidationErrorCode.NoSource]: {
+			message: 'Missing source.',
 		},
-		[PredictionsValidationErrorCode.ObjectIsTooLarge]: {
-			message: 'Object size cannot not be greater than 5TB.',
+		[PredictionsValidationErrorCode.NoSourceLanguage]: {
+			message: 'Missing source language for translation.',
 		},
-		[PredictionsValidationErrorCode.InvalidUploadSource]: {
-			message:
-				'Upload source type can only be a `Blob`, `File`, `ArrayBuffer`, or `string`.',
+		[PredictionsValidationErrorCode.NoTargetLanguage]: {
+			message: 'Missing target language for translation.',
+		},
+		[PredictionsValidationErrorCode.NoVoiceId]: {
+			message: 'Missing voice id.',
+		},
+		[PredictionsValidationErrorCode.InvalidSource]: {
+			message: 'Source type not supported.',
 		},
 	};

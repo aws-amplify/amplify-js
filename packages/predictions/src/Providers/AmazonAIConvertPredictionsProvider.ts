@@ -30,6 +30,8 @@ import {
 } from '@smithy/eventstream-codec';
 import { fromUtf8, toUtf8 } from '@smithy/util-utf8';
 import { Buffer } from 'buffer';
+import { assertValidationError } from '../errors/utils/assertValidationError';
+import { PredictionsValidationErrorCode } from '../errors/types/validation';
 
 const logger = new Logger('AmazonAIConvertPredictionsProvider');
 const eventBuilder = new EventStreamCodec(toUtf8, fromUtf8);
@@ -51,28 +53,32 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		input: TranslateTextInput
 	): Promise<TranslateTextOutput> {
 		logger.debug('Starting translation');
-		const {
-			translateText: {
-				defaults: { sourceLanguage = '', targetLanguage = '' } = {},
-				region = '',
-			} = {},
-		} = Amplify.getConfig().Predictions?.convert || {};
 
-		if (!region) {
-			return Promise.reject('region not configured for transcription');
-		}
+		const { translateText } = Amplify.getConfig().Predictions?.convert || {};
+		assertValidationError(
+			!!translateText.region,
+			PredictionsValidationErrorCode.NoRegion
+		);
+		const { defaults, region } = translateText;
 
 		const { credentials } = await fetchAuthSession();
-		if (!credentials) {
-			return Promise.reject('No credentials');
-		}
+		assertValidationError(
+			!!credentials,
+			PredictionsValidationErrorCode.NoCredentials
+		);
+		const { sourceLanguage, targetLanguage } = defaults;
 		const sourceLanguageCode =
 			input.translateText.source.language || sourceLanguage;
 		const targetLanguageCode =
 			input.translateText.targetLanguage || targetLanguage;
-		if (!sourceLanguageCode || !targetLanguageCode) {
-			return Promise.reject('Please provide both source and target language');
-		}
+		assertValidationError(
+			!!sourceLanguageCode,
+			PredictionsValidationErrorCode.NoSourceLanguage
+		);
+		assertValidationError(
+			!!targetLanguageCode,
+			PredictionsValidationErrorCode.NoTargetLanguage
+		);
 
 		this.translateClient = new TranslateClient({
 			region,
@@ -102,29 +108,29 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		input: TextToSpeechInput
 	): Promise<TextToSpeechOutput> {
 		const { credentials } = await fetchAuthSession();
-		if (!credentials) {
-			return Promise.reject('No credentials');
-		}
-		const {
-			speechGenerator: {
-				defaults: { voiceId: defaultVoiceId = '' } = {},
-				region = '',
-			} = {},
-		} = Amplify.getConfig().Predictions?.convert || {};
+		assertValidationError(
+			!!credentials,
+			PredictionsValidationErrorCode.NoCredentials
+		);
+		assertValidationError(
+			!!input.textToSpeech.source,
+			PredictionsValidationErrorCode.NoSource
+		);
 
-		if (!input.textToSpeech.source) {
-			return Promise.reject('Source needs to be provided in the input');
-		}
+		const { speechGenerator } = Amplify.getConfig().Predictions?.convert || {};
+		assertValidationError(
+			!!speechGenerator?.region,
+			PredictionsValidationErrorCode.NoRegion
+		);
+
+		const { defaults, region } = speechGenerator;
+		assertValidationError(
+			!!defaults?.voiceId,
+			PredictionsValidationErrorCode.NoVoiceId
+		);
+
+		const { voiceId: defaultVoiceId } = defaults;
 		const voiceId = input.textToSpeech.voiceId || defaultVoiceId;
-		if (!region) {
-			return Promise.reject(
-				'Region was undefined. Did you enable speech generator using amplify CLI?'
-			);
-		}
-
-		if (!voiceId) {
-			return Promise.reject('VoiceId was undefined.');
-		}
 
 		this.pollyClient = new PollyClient({
 			region,
@@ -166,53 +172,51 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		try {
 			logger.debug('starting transcription..');
 			const { credentials } = await fetchAuthSession();
-			if (!credentials) {
-				return Promise.reject('No credentials');
-			}
-			const {
-				transcription: {
-					defaults: { language: languageCode = '' } = {},
-					region = '',
-				} = {},
-			} = Amplify.getConfig().Predictions?.convert || {};
-			if (!region) {
-				return Promise.reject('region not configured for transcription');
-			}
-			if (!languageCode) {
-				return Promise.reject(
-					'languageCode not configured or provided for transcription'
-				);
-			}
-			const {
-				transcription: { source, language = languageCode },
-			} = input;
+			assertValidationError(
+				!!credentials,
+				PredictionsValidationErrorCode.NoCredentials
+			);
 
-			if (isBytesSource(source)) {
-				const connection = await this.openConnectionWithTranscribe({
-					credentials,
-					region,
+			const { transcription } = Amplify.getConfig().Predictions?.convert || {};
+			assertValidationError(
+				!!transcription?.region,
+				PredictionsValidationErrorCode.NoRegion
+			);
+
+			const { defaults, region } = transcription;
+			const language = input.transcription.language || defaults?.language;
+
+			assertValidationError(
+				!!language,
+				PredictionsValidationErrorCode.NoLanguage
+			);
+
+			const source = input.transcription.source;
+			assertValidationError(
+				isBytesSource(source),
+				PredictionsValidationErrorCode.InvalidSource
+			);
+
+			const connection = await this.openConnectionWithTranscribe({
+				credentials,
+				region,
+				languageCode: language,
+			});
+
+			try {
+				const fullText = await this.sendDataToTranscribe({
+					connection,
+					raw: source.bytes,
 					languageCode: language,
 				});
-
-				try {
-					const fullText = await this.sendDataToTranscribe({
-						connection,
-						raw: source.bytes,
-						languageCode: language,
-					});
-					return {
-						transcription: {
-							fullText,
-						},
-					};
-				} catch (err) {
-					return Promise.reject(err);
-				}
+				return {
+					transcription: {
+						fullText,
+					},
+				};
+			} catch (err) {
+				return Promise.reject(err);
 			}
-
-			return Promise.reject(
-				'Source types other than byte source are not supported.'
-			);
 		} catch (err) {
 			return Promise.reject(err.name + ': ' + err.message);
 		}

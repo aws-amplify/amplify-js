@@ -5,7 +5,7 @@ import {
 	PredictionsValidationErrorCode,
 	validationErrorMap,
 } from '../types/validation';
-import { PredictionsError } from '../StorageError';
+import { PredictionsError } from '../PredictionsError';
 
 export function assertValidationError(
 	assertion: boolean,
