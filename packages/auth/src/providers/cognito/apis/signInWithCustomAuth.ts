@@ -81,6 +81,7 @@ export async function signInWithCustomAuth(
 			cleanActiveSignInState();
 
 			await cacheCognitoTokens({
+				username,
 				...AuthenticationResult,
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
