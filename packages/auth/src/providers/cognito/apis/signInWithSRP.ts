@@ -82,6 +82,7 @@ export async function signInWithSRP(
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
 			await cacheCognitoTokens({
+				username,
 				...AuthenticationResult,
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,

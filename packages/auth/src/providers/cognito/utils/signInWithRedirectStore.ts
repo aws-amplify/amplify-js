@@ -9,6 +9,9 @@ import { OAuthStorageKeys, OAuthStore } from './types';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 
+const V5_HOSTED_UI_KEY = 'amplify-signin-with-hostedUI';
+
+const name = 'CognitoIdentityServiceProvider';
 export class DefaultOAuthStore implements OAuthStore {
 	keyValueStorage: KeyValueStorageInterface;
 	cognitoConfig?: CognitoUserPoolConfig;
@@ -18,8 +21,6 @@ export class DefaultOAuthStore implements OAuthStore {
 	}
 	async clearOAuthInflightData(): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
-
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 
 		const authKeys = createKeysForAuthStorage(
 			name,
@@ -32,19 +33,17 @@ export class DefaultOAuthStore implements OAuthStore {
 		]);
 	}
 	async clearOAuthData(): Promise<void> {
-		const name = 'Cognito';
 		assertTokenProviderConfig(this.cognitoConfig);
 		const authKeys = createKeysForAuthStorage(
 			name,
 			this.cognitoConfig.userPoolClientId
 		);
 		await this.clearOAuthInflightData();
+		await this.keyValueStorage.removeItem(V5_HOSTED_UI_KEY); // remove in case a customer migrated an App from v5 to v6
 		return this.keyValueStorage.removeItem(authKeys.oauthSignIn);
 	}
 	loadOAuthState(): Promise<string | null> {
 		assertTokenProviderConfig(this.cognitoConfig);
-
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 
 		const authKeys = createKeysForAuthStorage(
 			name,
@@ -56,8 +55,6 @@ export class DefaultOAuthStore implements OAuthStore {
 	storeOAuthState(state: string): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-
 		const authKeys = createKeysForAuthStorage(
 			name,
 			this.cognitoConfig.userPoolClientId
@@ -68,8 +65,6 @@ export class DefaultOAuthStore implements OAuthStore {
 	loadPKCE(): Promise<string | null> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-
 		const authKeys = createKeysForAuthStorage(
 			name,
 			this.cognitoConfig.userPoolClientId
@@ -79,8 +74,6 @@ export class DefaultOAuthStore implements OAuthStore {
 	}
 	storePKCE(pkce: string): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
-
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 
 		const authKeys = createKeysForAuthStorage(
 			name,
@@ -96,8 +89,6 @@ export class DefaultOAuthStore implements OAuthStore {
 	async loadOAuthInFlight(): Promise<boolean> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-
 		const authKeys = createKeysForAuthStorage(
 			name,
 			this.cognitoConfig.userPoolClientId
@@ -110,9 +101,6 @@ export class DefaultOAuthStore implements OAuthStore {
 
 	async storeOAuthInFlight(inflight: boolean): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
-
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-
 		const authKeys = createKeysForAuthStorage(
 			name,
 			this.cognitoConfig.userPoolClientId
@@ -130,11 +118,13 @@ export class DefaultOAuthStore implements OAuthStore {
 	}> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-
 		const authKeys = createKeysForAuthStorage(
 			name,
 			this.cognitoConfig.userPoolClientId
+		);
+
+		const isLegacyHostedUISignIn = await this.keyValueStorage.getItem(
+			V5_HOSTED_UI_KEY
 		);
 
 		const [isOAuthSignIn, preferPrivateSession] =
@@ -142,7 +132,8 @@ export class DefaultOAuthStore implements OAuthStore {
 			[];
 
 		return {
-			isOAuthSignIn: isOAuthSignIn === 'true',
+			isOAuthSignIn:
+				isOAuthSignIn === 'true' || isLegacyHostedUISignIn === 'true',
 			preferPrivateSession: preferPrivateSession === 'true',
 		};
 	}
@@ -152,8 +143,6 @@ export class DefaultOAuthStore implements OAuthStore {
 		preferPrivateSession: boolean = false
 	): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
-
-		const name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
 
 		const authKeys = createKeysForAuthStorage(
 			name,
@@ -168,8 +157,5 @@ export class DefaultOAuthStore implements OAuthStore {
 }
 
 const createKeysForAuthStorage = (provider: string, identifier: string) => {
-	return getAuthStorageKeys(OAuthStorageKeys)(
-		`com.amplify.${provider}`,
-		identifier
-	);
+	return getAuthStorageKeys(OAuthStorageKeys)(provider, identifier);
 };

@@ -26,7 +26,9 @@ export const AuthTokenStorageKeys = {
 	oidcProvider: 'oidcProvider',
 	clockDrift: 'clockDrift',
 	refreshToken: 'refreshToken',
-	deviceMetadata: 'deviceMetadata',
+	deviceKey: 'deviceKey',
+	randomPasswordKey: 'randomPasswordKey',
+	deviceGroupKey: 'deviceGroupKey',
 };
 
 export interface AuthTokenStore {
@@ -57,6 +59,7 @@ export type CognitoAuthTokens = AuthTokens & {
 	refreshToken?: string;
 	deviceMetadata?: DeviceMetadata;
 	clockDrift: number;
+	username: string;
 };
 
 export type DeviceMetadata = {
