@@ -83,6 +83,7 @@
 					],
 					"allowJs": true,
 					"noEmitOnError": false,
+					"strictNullChecks": true,
 					"types": ["@types/jest"]
 				}
 			}
