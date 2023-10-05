@@ -160,6 +160,10 @@ async function handleCodeFlow({
 	}
 	const code = url.searchParams.get('code');
 
+	if (!code) {
+		return;
+	}
+
 	const oAuthTokenEndpoint = 'https://' + domain + '/oauth2/token';
 
 	// TODO(v6): check hub events
