@@ -59,5 +59,6 @@ export const refreshAuthTokens: TokenRefresher = async ({
 		idToken,
 		clockDrift,
 		refreshToken,
+		username: `${accessToken.payload.username}`,
 	};
 };
