@@ -27,19 +27,18 @@ import { AuthError } from '../../../errors/AuthError';
 export async function signIn(input: SignInInput): Promise<SignInOutput> {
 	await assertUserNotAuthenticated();
 	try {
-		console.log('input', input);
-		return await _signIn(input);
+		return await handleSignIn(input);
 	} catch (error) {
-		if (error instanceof AuthError && (await shouldRetrySignIn(error))) {
+		if (error instanceof AuthError && (await isRetrySignInRequired(error))) {
 			await tokenOrchestrator.clearDeviceMetadata();
-			return await _signIn(input);
+			return await handleSignIn(input);
 		} else {
 			throw error;
 		}
 	}
 }
 
-async function _signIn(input: SignInInput): Promise<SignInOutput> {
+async function handleSignIn(input: SignInInput): Promise<SignInOutput> {
 	const authFlowType = input.options?.serviceOptions?.authFlowType;
 	switch (authFlowType) {
 		case 'USER_SRP_AUTH':
@@ -55,7 +54,7 @@ async function _signIn(input: SignInInput): Promise<SignInOutput> {
 	}
 }
 
-const shouldRetrySignIn = async (error: AuthError) => {
+const isRetrySignInRequired = async (error: AuthError) => {
 	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
 	return (
 		deviceMetadata?.deviceKey &&
