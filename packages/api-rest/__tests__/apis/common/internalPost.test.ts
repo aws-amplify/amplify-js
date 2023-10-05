@@ -12,8 +12,8 @@ import {
 	post,
 	cancel,
 	updateRequestToBeCancellable,
-} from '../../src/common/internalPost';
-import { RestApiError, isCancelError } from '../../src/errors';
+} from '../../../src/apis/common/internalPost';
+import { RestApiError, isCancelError } from '../../../src/errors';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 
@@ -39,7 +39,11 @@ const successResponse = {
 const apiGatewayUrl = new URL(
 	'https://123.execute-api.us-west-2.amazonaws.com'
 );
-const credentials = {};
+const credentials = {
+	accessKeyId: 'accessKeyId',
+	sessionToken: 'sessionToken',
+	secretAccessKey: 'secretAccessKey',
+};
 
 describe('internal post', () => {
 	beforeEach(() => {

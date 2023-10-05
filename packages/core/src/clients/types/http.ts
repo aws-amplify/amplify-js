@@ -25,7 +25,7 @@ export interface HttpRequest extends Request {
 export type ResponseBodyMixin = Pick<Body, 'blob' | 'json' | 'text'>;
 
 export interface HttpResponse extends Response {
-	body: (ResponseBodyMixin & ReadableStream) | ResponseBodyMixin | null;
+	body: (ResponseBodyMixin & ReadableStream) | ResponseBodyMixin;
 	statusCode: number;
 	/**
 	 * @see {@link HttpRequest.headers}
