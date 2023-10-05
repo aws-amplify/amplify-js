@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { isCancelError } from './errors/CancelledError';
-export { get, post, put, del, head, patch } from './apis';
+export { get, post, put, del, head, patch } from './apis/server';

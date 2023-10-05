@@ -13,3 +13,13 @@ export type { GraphQLResult } from '@aws-amplify/api-graphql';
 const generateClient = API.generateClient;
 
 export { generateClient };
+
+export {
+	get,
+	put,
+	post,
+	del,
+	head,
+	patch,
+	isCancelError,
+} from '@aws-amplify/api-rest';
