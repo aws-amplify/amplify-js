@@ -157,5 +157,5 @@ export class DefaultOAuthStore implements OAuthStore {
 }
 
 const createKeysForAuthStorage = (provider: string, identifier: string) => {
-	return getAuthStorageKeys(OAuthStorageKeys)(provider, `${identifier}.oauth`);
+	return getAuthStorageKeys(OAuthStorageKeys)(provider, `${identifier}`);
 };
