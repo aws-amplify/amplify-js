@@ -44,6 +44,7 @@
 			"packages/core",
 			"packages/auth",
 			"packages/analytics",
+			"packages/predictions",
 			"packages/storage",
 			"packages/adapter-nextjs",
 			"packages/geo",

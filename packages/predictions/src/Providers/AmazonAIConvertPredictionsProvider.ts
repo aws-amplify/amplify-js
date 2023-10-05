@@ -25,14 +25,14 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 import {
-	EventStreamMarshaller,
+	EventStreamCodec,
 	MessageHeaderValue,
-} from '@aws-sdk/eventstream-marshaller';
-import { fromUtf8, toUtf8 } from '@aws-sdk/util-utf8-node';
+} from '@smithy/eventstream-codec';
+import { fromUtf8, toUtf8 } from '@smithy/util-utf8';
 import { Buffer } from 'buffer';
 
 const logger = new Logger('AmazonAIConvertPredictionsProvider');
-const eventBuilder = new EventStreamMarshaller(toUtf8, fromUtf8);
+const eventBuilder = new EventStreamCodec(toUtf8, fromUtf8);
 
 const LANGUAGES_CODE_IN_8KHZ = ['fr-FR', 'en-AU', 'en-GB', 'fr-CA'];
 
@@ -220,9 +220,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 
 	public static serializeDataFromTranscribe(message) {
 		let decodedMessage = '';
-		const transcribeMessage = eventBuilder.unmarshall(
-			Buffer.from(message.data)
-		);
+		const transcribeMessage = eventBuilder.decode(Buffer.from(message.data));
 		const transcribeMessageJson = JSON.parse(toUtf8(transcribeMessage.body));
 		if (transcribeMessage.headers[':message-type'].value === 'exception') {
 			logger.debug(
@@ -305,7 +303,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 
 			// sending end frame
 			const endFrameEventMessage = this.getAudioEventMessage(Buffer.from([]));
-			const endFrameBinary = eventBuilder.marshall(endFrameEventMessage);
+			const endFrameBinary = eventBuilder.encode(endFrameEventMessage);
 			connection.send(endFrameBinary);
 		});
 	}
@@ -321,7 +319,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		const audioEventMessage = this.getAudioEventMessage(
 			Buffer.from(pcmEncodedBuffer)
 		);
-		const binary = eventBuilder.marshall(audioEventMessage);
+		const binary = eventBuilder.encode(audioEventMessage);
 		connection.send(binary);
 	}
 
