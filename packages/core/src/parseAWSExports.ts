@@ -66,8 +66,8 @@ export const parseAWSExports = (
 			amplifyConfig.Notifications = {
 				InAppMessaging: {
 					Pinpoint: {
-						appId: appId,
-						region: region,
+						appId,
+						region,
 					},
 				},
 			};
