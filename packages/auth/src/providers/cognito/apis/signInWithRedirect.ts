@@ -160,13 +160,6 @@ async function handleCodeFlow({
 	}
 	const code = url.searchParams.get('code');
 
-	const currentUrlPathname = url.pathname ?? '/';
-	const redirectUriPathname = new URL(redirectUri).pathname ?? '/';
-
-	if (!code || currentUrlPathname !== redirectUriPathname) {
-		return;
-	}
-
 	const oAuthTokenEndpoint = 'https://' + domain + '/oauth2/token';
 
 	// TODO(v6): check hub events
