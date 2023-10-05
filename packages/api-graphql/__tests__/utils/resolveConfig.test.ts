@@ -3,12 +3,12 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { resolveConfig } from '../../src/utils';
-import { GraphQLAuthModeKeys } from '@aws-amplify/core/internals/utils';
+import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 
 describe('GraphQL API Util: resolveConfig', () => {
 	const GraphQLConfig = {
 		defaultAuthMode: {
-			type: 'apiKey' as GraphQLAuthModeKeys,
+			type: 'apiKey' as GraphQLAuthMode,
 			apiKey: '0123456789',
 		},
 		region: 'us-west-2',

@@ -15,7 +15,7 @@ export { CONTROL_MSG, ConnectionState } from './PubSub';
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: Record<string, DocumentType>;
-	authMode?: APIAuthMode;
+	authMode?: GraphQLAuthMode;
 	authToken?: string;
 	/**
 	 * @deprecated This property should not be used

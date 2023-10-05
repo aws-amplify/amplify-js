@@ -11,7 +11,7 @@ import {
 import { Observable } from 'rxjs';
 import { Cache, fetchAuthSession } from '@aws-amplify/core';
 import {
-	APIAuthMode,
+	GraphQLAuthMode,
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
@@ -56,7 +56,7 @@ export class InternalGraphQLAPIClass {
 	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
 	Cache = Cache;
-	private _api = { post, updateRequestToBeCancellable };
+	private _api = { post, cancelREST, updateRequestToBeCancellable };
 
 	/**
 	 * Initialize GraphQL API with AWS configuration
@@ -72,7 +72,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private async _headerBasedAuth(
-		authMode: APIAuthMode,
+		authMode: GraphQLAuthMode,
 		additionalHeaders: { [key: string]: string } = {}
 	) {
 		const {
@@ -107,6 +107,7 @@ export class InternalGraphQLAPIClass {
 
 					token = (await fetchAuthSession()).tokens?.accessToken.toString();
 
+					// debugger;
 					if (!token) {
 						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
 					}
@@ -310,7 +311,7 @@ export class InternalGraphQLAPIClass {
 	 * @returns - A boolean indicating if the request was cancelled
 	 */
 	cancel(request: Promise<any>, message?: string): boolean {
-		return cancelREST(request, message);
+		return this._api.cancelREST(request, message);
 	}
 
 	private _graphqlSubscribe(
