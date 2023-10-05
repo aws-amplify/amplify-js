@@ -28,10 +28,10 @@
 			"require": "./lib/api/index.js"
 		},
 		"./api/server": {
-            "types": "./lib-esm/api/server.d.ts",
+			"types": "./lib-esm/api/server.d.ts",
 			"import": "./lib-esm/api/server.js",
 			"require": "./lib/api/server.js"
-        },
+		},
 		"./datastore": {
 			"types": "./lib-esm/datastore/index.d.ts",
 			"import": "./lib-esm/datastore/index.js",
@@ -133,8 +133,8 @@
 				"./lib-esm/api/index.d.ts"
 			],
 			"api/server": [
-                "./lib-esm/api/server.d.ts"
-            ],
+				"./lib-esm/api/server.d.ts"
+			],
 			"utils": [
 				"./lib-esm/utils/index.d.ts"
 			],
