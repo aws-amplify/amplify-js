@@ -222,7 +222,9 @@
 		"auth",
 		"internals",
 		"storage",
-		"datastore"
+		"datastore",
+		"in-app-messaging",
+		"push-notifications"
 	],
 	"dependencies": {
 		"@aws-amplify/api": "6.0.0",
@@ -231,6 +233,7 @@
 		"@aws-amplify/core": "6.0.0",
 		"@aws-amplify/storage": "6.0.0",
 		"@aws-amplify/datastore": "5.0.0",
+		"@aws-amplify/notifications": "2.0.0",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
