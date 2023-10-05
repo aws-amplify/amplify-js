@@ -11,6 +11,7 @@ import {
 import { Observable } from 'rxjs';
 import { Amplify, Cache, fetchAuthSession } from '@aws-amplify/core';
 import {
+	APIAuthMode,
 	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
@@ -21,7 +22,12 @@ import {
 	GraphQLOperation,
 	GraphQLOptions,
 } from '../types';
-import { post } from '@aws-amplify/api-rest/internals';
+import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
+import {
+	post,
+	cancel as cancelREST,
+	updateRequestToBeCancellable,
+} from '@aws-amplify/api-rest/internals';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
@@ -49,7 +55,7 @@ export class InternalGraphQLAPIClass {
 	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
 	Cache = Cache;
-	private _api = { post };
+	private _api = { post, updateRequestToBeCancellable };
 
 	/**
 	 * Initialize GraphQL API with AWS configuration
@@ -65,9 +71,8 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private async _headerBasedAuth(
-		defaultAuthenticationType?,
-		additionalHeaders: { [key: string]: string } = {},
-		customUserAgentDetails?: CustomUserAgentDetails
+		authMode: APIAuthMode,
+		additionalHeaders: { [key: string]: string } = {}
 	) {
 		const config = Amplify.getConfig();
 		const {
@@ -77,9 +82,10 @@ export class InternalGraphQLAPIClass {
 			defaultAuthMode,
 		} = config.API.GraphQL;
 
+		const authenticationType = authMode || defaultAuthMode || 'iam';
 		let headers = {};
 
-		switch (defaultAuthMode) {
+		switch (authenticationType) {
 			case 'apiKey':
 				if (!apiKey) {
 					throw new Error(GraphQLAuthError.NO_API_KEY);
@@ -177,10 +183,16 @@ export class InternalGraphQLAPIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
+				const abortController = new AbortController();
 				const responsePromise = this._graphql<T>(
 					{ query, variables, authMode },
 					headers,
+					abortController,
 					customUserAgentDetails
+				);
+				this._api.updateRequestToBeCancellable(
+					responsePromise,
+					abortController
 				);
 				return responsePromise;
 			case 'subscription':
@@ -197,6 +209,7 @@ export class InternalGraphQLAPIClass {
 	private async _graphql<T = any>(
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
+		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
 		const config = Amplify.getConfig();
@@ -209,18 +222,10 @@ export class InternalGraphQLAPIClass {
 
 		const headers = {
 			...(!customGraphqlEndpoint &&
-				(await this._headerBasedAuth(
-					authMode,
-					additionalHeaders,
-					customUserAgentDetails
-				))),
+				(await this._headerBasedAuth(authMode, additionalHeaders))),
 			...(customGraphqlEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(
-							authMode,
-							additionalHeaders,
-							customUserAgentDetails
-					  )
+					? await this._headerBasedAuth(authMode, additionalHeaders)
 					: { Authorization: null })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
@@ -246,7 +251,7 @@ export class InternalGraphQLAPIClass {
 
 		let response;
 		try {
-			const { body: responsePayload } = await this._api.post({
+			const { body: responseBody } = await this._api.post({
 				url: new URL(endpoint),
 				options: {
 					headers,
@@ -256,9 +261,20 @@ export class InternalGraphQLAPIClass {
 						region,
 					},
 				},
+				abortController,
 			});
-			response = await responsePayload.json();
+
+			const result = await responseBody.json();
+
+			response = result;
 		} catch (err) {
+			// If the exception is because user intentionally
+			// cancelled the request, do not modify the exception
+			// so that clients can identify the exception correctly.
+			if (isCancelErrorREST(err)) {
+				throw err;
+			}
+
 			response = {
 				data: {},
 				errors: [new GraphQLError(err.message, null, null, null, null, err)],
@@ -274,13 +290,26 @@ export class InternalGraphQLAPIClass {
 		return response;
 	}
 
+	/**
+	 * Checks to see if an error thrown is from an api request cancellation
+	 * @param {any} error - Any error
+	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
+	 */
+	isCancelError(error: any): boolean {
+		return isCancelErrorREST(error);
+	}
+
+	/**
+	 * Cancels an inflight request. Only applicable for graphql queries and mutations
+	 * @param {any} request - request to cancel
+	 * @returns - A boolean indicating if the request was cancelled
+	 */
+	cancel(request: Promise<any>, message?: string): boolean {
+		return cancelREST(request, message);
+	}
+
 	private _graphqlSubscribe(
-		{
-			query,
-			variables,
-			authMode: defaultAuthenticationType,
-			authToken,
-		}: GraphQLOptions,
+		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
@@ -288,14 +317,18 @@ export class InternalGraphQLAPIClass {
 		if (!this.appSyncRealTime) {
 			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
 		}
-		return this.appSyncRealTime.subscribe({
-			query: print(query as DocumentNode),
-			variables,
-			appSyncGraphqlEndpoint: GraphQL?.endpoint,
-			region: GraphQL?.region,
-			authenticationType: GraphQL?.defaultAuthMode,
-			apiKey: GraphQL?.apiKey,
-		});
+		return this.appSyncRealTime.subscribe(
+			{
+				query: print(query as DocumentNode),
+				variables,
+				appSyncGraphqlEndpoint: GraphQL?.endpoint,
+				region: GraphQL?.region,
+				authenticationType: authMode ?? GraphQL?.defaultAuthMode,
+				apiKey: GraphQL?.apiKey,
+				additionalHeaders,
+			},
+			customUserAgentDetails
+		);
 	}
 }
 

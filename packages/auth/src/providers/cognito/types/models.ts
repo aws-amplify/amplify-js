@@ -4,6 +4,8 @@
 import {
 	AuthStandardAttributeKey,
 	AuthVerifiableAttributeKey,
+	AuthUserAttribute,
+	AuthDevice,
 } from '../../../types';
 import { AuthProvider } from '../../../types/inputs';
 
@@ -60,3 +62,13 @@ export type MFAPreference =
 	| 'DISABLED'
 	| 'PREFERRED'
 	| 'NOT_PREFERRED';
+
+/**
+ * Holds the device specific information along with it's id and name.
+ */
+export type AWSAuthDevice = AuthDevice & {
+	attributes: AuthUserAttribute<UserAttributeKey>;
+	createDate?: Date;
+	lastAuthenticatedDate?: Date;
+	lastModifiedDate?: Date;
+};

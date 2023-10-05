@@ -118,7 +118,7 @@ const buildUserPoolDeserializer = <Output>(): ((
 	};
 };
 
-const buildDeleteDeserializer = <Output>(): ((
+const handleEmptyResponseDeserializer = <Output>(): ((
 	response: HttpResponse
 ) => Promise<Output>) => {
 	return async (response: HttpResponse): Promise<Output> => {
@@ -227,13 +227,13 @@ export const confirmDevice = composeServiceApi(
 export const forgetDevice = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ForgetDeviceInput>('ForgetDevice'),
-	buildUserPoolDeserializer<ForgetDeviceOutput>(),
+	handleEmptyResponseDeserializer<ForgetDeviceOutput>(),
 	defaultConfig
 );
 export const deleteUser = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<DeleteUserInput>('DeleteUser'),
-	buildDeleteDeserializer<DeleteUserOutput>(),
+	handleEmptyResponseDeserializer<DeleteUserOutput>(),
 	defaultConfig
 );
 export const getUserAttributeVerificationCode = composeServiceApi(
