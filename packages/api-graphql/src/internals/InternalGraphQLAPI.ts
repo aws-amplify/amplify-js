@@ -80,7 +80,7 @@ export class InternalGraphQLAPIClass {
 			endpoint: appSyncGraphqlEndpoint,
 			apiKey,
 			defaultAuthMode,
-		} = config.API.GraphQL;
+		} = config.API?.GraphQL || {};
 
 		const authenticationType = authMode || defaultAuthMode || 'iam';
 		let headers = {};
@@ -215,18 +215,20 @@ export class InternalGraphQLAPIClass {
 		const config = Amplify.getConfig();
 
 		const { region: region, endpoint: appSyncGraphqlEndpoint } =
-			config.API.GraphQL;
+			config.API?.GraphQL || {};
 
 		const customGraphqlEndpoint = null;
 		const customEndpointRegion = null;
 
+		// TODO: Figure what we need to do to remove `!`'s.
 		const headers = {
 			...(!customGraphqlEndpoint &&
-				(await this._headerBasedAuth(authMode, additionalHeaders))),
-			...(customGraphqlEndpoint &&
+				(await this._headerBasedAuth(authMode!, additionalHeaders))),
+			...((customGraphqlEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(authMode, additionalHeaders)
-					: { Authorization: null })),
+					? await this._headerBasedAuth(authMode!, additionalHeaders)
+					: { Authorization: null })) ||
+				{}),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
@@ -235,7 +237,7 @@ export class InternalGraphQLAPIClass {
 
 		const body = {
 			query: print(query as DocumentNode),
-			variables,
+			variables: variables || null,
 		};
 
 		const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
