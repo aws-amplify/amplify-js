@@ -46,25 +46,23 @@ const serverManagedFields = {
 jest.mock('@aws-amplify/core', () => {
 	const originalModule = jest.requireActual('@aws-amplify/core');
 
-	//Mock the default export and named export 'foo'
 	return {
 		__esModule: true,
 		...originalModule,
-		// default: jest.fn(() => 'mocked baz'),
 		fetchAuthSession: jest.fn(() => {
 			// debugger;
 			return {
 				tokens: {
 					accessToken: {
 						// TODO: rename
-						toString: () => 'test',
+						toString: () => 'mock-access-token',
 					},
 				},
 				credentials: {
 					// TODO: rename
-					accessKeyId: 'test',
+					accessKeyId: 'mock-access-key-id',
 					// TODO: rename
-					secretAccessKey: 'test',
+					secretAccessKey: 'mock-secret-access-key',
 				},
 			};
 		}),
@@ -230,7 +228,7 @@ afterEach(() => {
 });
 
 describe('API test', () => {
-	// `generateClient()` is only exported from top-level API category.
+	// NOTE: `generateClient()` is only exported from top-level API category.
 	const client = { graphql, cancel };
 	// beforeEach(() => {
 	// cancelMock = jest.fn();
@@ -389,7 +387,9 @@ describe('API test', () => {
 				abortController: expect.any(AbortController),
 				url: new URL('https://localhost/graphql'),
 				options: expect.objectContaining({
-					headers: expect.objectContaining({ Authorization: 'test' }),
+					headers: expect.objectContaining({
+						Authorization: 'mock-access-token',
+					}),
 					// body: expect.objectContaining({
 					// 	query: expect.stringContaining(`${opName}(id: $id)`),
 					// 	variables: expect.objectContaining(item),
@@ -1110,7 +1110,7 @@ describe('API test', () => {
 				url: new URL('https://localhost/graphql'),
 				options: expect.objectContaining({
 					headers: expect.objectContaining({
-						Authorization: 'test',
+						Authorization: 'mock-access-token',
 					}),
 					// body: expect.objectContaining({
 					// 	query: expect.stringContaining(`${opName}(id: $id)`),
@@ -1120,43 +1120,88 @@ describe('API test', () => {
 			});
 		});
 
-		// test('multi-auth using OIDC as auth mode, but no federatedSign', async () => {
-		// 	expect.assertions(1);
+		// TODO: investigate
+		test.skip('multi-auth default case api-key, OIDC as auth mode, but no federatedSign', async () => {
+			// expect.assertions(1);
 
-		// 	const cache_config = {
-		// 		capacityInBytes: 3000,
-		// 		itemMaxSize: 800,
-		// 		defaultTTL: 3000000,
-		// 		defaultPriority: 5,
-		// 		warningThreshold: 0.8,
-		// 		storage: window.localStorage,
-		// 	};
+			// const cache_config = {
+			// 	capacityInBytes: 3000,
+			// 	itemMaxSize: 800,
+			// 	defaultTTL: 3000000,
+			// 	defaultPriority: 5,
+			// 	warningThreshold: 0.8,
+			// 	storage: window.localStorage,
+			// };
 
-		// 	Cache.configure(cache_config);
+			// Cache.configure(cache_config);
 
-		// 	jest.spyOn(Cache, 'getItem').mockReturnValue(null);
+			// jest.spyOn(Cache, 'getItem').mockReturnValue(null);
 
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
-		// 		apiKey = 'secret-api-key';
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'API_KEY',
-		// 		aws_appsync_apiKey: apiKey,
-		// 	});
+			// const api = new API(config);
+			// const client = generateClient();
+			// const url = 'https://appsync.amazonaws.com',
+			// 	region = 'us-east-2',
+			// 	variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
+			// 	apiKey = 'secret-api-key';
+			// api.configure({
+			// 	aws_appsync_graphqlEndpoint: url,
+			// 	aws_appsync_region: region,
+			// 	aws_appsync_authenticationType: 'API_KEY',
+			// 	aws_appsync_apiKey: apiKey,
+			// });
 
-		// 	await expect(
-		// 		api.graphql({
-		// 			query: GetEvent,
-		// 			variables,
-		// 			authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-		// 		})
-		// 	).rejects.toThrowError('No current user');
-		// });
+			// await expect(
+			// 	api.graphql({
+			// 		query: GetEvent,
+			// 		variables,
+			// 		authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
+			// 	})
+			// ).rejects.toThrowError('No current user');
+
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'apiKey',
+						apiKey: 'FAKE-KEY',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
+					},
+				},
+			});
+
+			const threadToGet = {
+				id: 'some-thread-id',
+				topic: 'something reasonably interesting',
+			};
+
+			const graphqlVariables = { id: 'some-thread-id' };
+
+			const graphqlResponse = {
+				data: {
+					getThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToGet,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
+
+			await expect(
+				client.graphql({
+					query: typedQueries.getThread,
+					variables: graphqlVariables,
+					authMode: 'oidc',
+				})
+			).rejects.toThrowError('No current user');
+		});
 
 		// test('multi-auth using CUP as auth mode, but no userpool', async () => {
 		// 	expect.assertions(1);
