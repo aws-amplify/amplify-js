@@ -2,3 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { resolveConfig } from './resolveConfig';
+export { resolveLibraryOptions } from './resolveLibraryOptions';

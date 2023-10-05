@@ -29,7 +29,7 @@ import {
 	updateRequestToBeCancellable,
 } from '@aws-amplify/api-rest/internals';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
-import { resolveConfig } from '../utils';
+import { resolveConfig, resolveLibraryOptions } from '../utils';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -220,10 +220,8 @@ export class InternalGraphQLAPIClass {
 			customEndpointRegion,
 		} = resolveConfig();
 
-		// TODO: options not yet supported by core package
-		// const libraryOptions = Amplify.libraryOptions?.API?.GraphQL ?? {};
+		const { headers: customHeaders } = resolveLibraryOptions();
 
-		// TODO: graphql_headers
 		const headers = {
 			...(!customEndpoint &&
 				(await this._headerBasedAuth(authMode, additionalHeaders))),
@@ -231,6 +229,7 @@ export class InternalGraphQLAPIClass {
 				(customEndpointRegion
 					? await this._headerBasedAuth(authMode, additionalHeaders)
 					: { Authorization: null })),
+			...customHeaders({ query, variables }),
 			...additionalHeaders,
 			...(!customEndpoint && {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
