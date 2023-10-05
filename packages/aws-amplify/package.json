@@ -57,10 +57,20 @@
 			"import": "./lib-esm/analytics/pinpoint/index.js",
 			"require": "./lib/analytics/pinpoint/index.js"
 		},
+		"./analytics/kinesis": {
+			"types": "./lib-esm/analytics/kinesis/index.d.ts",
+			"import": "./lib-esm/analytics/kinesis/index.js",
+			"require": "./lib/analytics/kinesis/index.js"
+		},
 		"./analytics/kinesis-firehose": {
 			"types": "./lib-esm/analytics/kinesis-firehose/index.d.ts",
 			"import": "./lib-esm/analytics/kinesis-firehose/index.js",
 			"require": "./lib/analytics/kinesis-firehose/index.js"
+		},
+		"./analytics/personalize": {
+			"types": "./lib-esm/analytics/personalize/index.d.ts",
+			"import": "./lib-esm/analytics/personalize/index.js",
+			"require": "./lib/analytics/personalize/index.js"
 		},
 		"./storage": {
 			"types": "./lib-esm/storage/index.d.ts",
@@ -138,8 +148,14 @@
 			"analytics/pinpoint": [
 				"./lib-esm/analytics/pinpoint/index.d.ts"
 			],
+			"analytics/kinesis": [
+				"./lib-esm/analytics/kinesis/index.d.ts"
+			],
 			"analytics/kinesis-firehose": [
 				"./lib-esm/analytics/kinesis-firehose/index.d.ts"
+			],
+			"analytics/personalize": [
+				"./lib-esm/analytics/personalize/index.d.ts"
 			],
 			"storage": [
 				"./lib-esm/storage/index.d.ts"
@@ -237,13 +253,13 @@
 			"name": "[Analytics] enable",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ enable }",
-			"limit": "0.025 kB"
+			"limit": "0.50 kB"
 		},
 		{
 			"name": "[Analytics] disable",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ disable }",
-			"limit": "0.025 kB"
+			"limit": "0.50 kB"
 		},
 		{
 			"name": "[API] class (AppSync)",
@@ -267,13 +283,13 @@
 			"name": "[Auth] signUp (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signUp }",
-			"limit": "10.92 kB"
+			"limit": "11.50 kB"
 		},
 		{
 			"name": "[Auth] resetPassword (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ resetPassword }",
-			"limit": "10.72 kB"
+			"limit": "11.30 kB"
 		},
 		{
 			"name": "[Auth] confirmResetPassword (Cognito)",
@@ -297,7 +313,7 @@
 			"name": "[Auth] confirmSignUp (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignUp }",
-			"limit": "10.71 kB"
+			"limit": "11.30 kB"
 		},
 		{
 			"name": "[Auth] confirmSignIn (Cognito)",
@@ -339,7 +355,7 @@
 			"name": "[Auth] updateUserAttributes (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ updateUserAttributes }",
-			"limit": "10 kB"
+			"limit": "10.50 kB"
 		},
 		{
 			"name": "[Auth] getCurrentUser (Cognito)",
