@@ -3,10 +3,10 @@
 
 import { Amplify, Hub, defaultStorage, OAuthConfig } from '@aws-amplify/core';
 import {
+	AuthAction,
 	AMPLIFY_SYMBOL,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
-	getAmplifyUserAgent,
 	isBrowser,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
@@ -20,7 +20,7 @@ import { AuthError } from '../../../errors/AuthError';
 import { AuthErrorTypes } from '../../../types/Auth';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { authErrorMessages } from '../../../Errors';
-import { openAuthSession } from '../../../utils';
+import { getAuthUserAgentValue, openAuthSession } from '../../../utils';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInWithRedirectInput } from '../types';
 import { generateCodeVerifier, generateState } from '../utils/oauth';
@@ -117,7 +117,7 @@ async function oauthSignIn({
 			domain,
 			redirectUri: redirectSignIn[0],
 			responseType,
-			userAgentValue: getAmplifyUserAgent(),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignInWithRedirect),
 		});
 	}
 	if (type === 'error') {
@@ -406,7 +406,7 @@ async function parseRedirectURL() {
 			domain,
 			redirectUri: redirectSignIn[0],
 			responseType,
-			userAgentValue: getAmplifyUserAgent(),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignInWithRedirect),
 		});
 	} catch (err) {
 		// is ok if there is not OAuthConfig

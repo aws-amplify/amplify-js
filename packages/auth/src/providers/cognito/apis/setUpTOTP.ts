@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { AuthError } from '../../../errors/AuthError';
 import {
@@ -14,6 +14,7 @@ import { getTOTPSetupDetails } from '../utils/signInHelpers';
 import { associateSoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
+import { getAuthUserAgentValue } from '../../../utils';
 
 /**
  * Sets up TOTP for the user.
@@ -30,7 +31,10 @@ export async function setUpTOTP(): Promise<SetUpTOTPOutput> {
 	assertAuthTokens(tokens);
 	const username = tokens.idToken?.payload['cognito:username'] ?? '';
 	const { SecretCode } = await associateSoftwareToken(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ 
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SetUpTOTP)
+		},
 		{
 			AccessToken: tokens.accessToken.toString(),
 		}
