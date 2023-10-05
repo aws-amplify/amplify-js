@@ -23,6 +23,7 @@ class AmplifyRTNWebBrowser: NSObject {
     @objc
     func openAuthSessionAsync(_ urlStr: String,
                               redirectUrlStr: String,
+                              prefersEphemeralSession: Bool,
                               resolve: @escaping RCTPromiseResolveBlock,
                               reject: @escaping RCTPromiseRejectBlock) {
         guard let url = URL(string: urlStr) else {
@@ -56,7 +57,7 @@ class AmplifyRTNWebBrowser: NSObject {
             })
         webBrowserAuthSession = authSession
         authSession.presentationContextProvider = presentationContextProvider
-        authSession.prefersEphemeralWebBrowserSession = true
+        authSession.prefersEphemeralWebBrowserSession = prefersEphemeralSession
         
         DispatchQueue.main.async {
             authSession.start()
