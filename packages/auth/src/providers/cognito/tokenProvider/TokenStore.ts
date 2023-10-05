@@ -62,7 +62,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 				undefined;
 
 			const clockDriftString =
-				(await this.getKeyValueStorage().getItem(authKeys.clockDrift)) || '0';
+				(await this.getKeyValueStorage().getItem(authKeys.clockDrift)) ?? '0';
 			const clockDrift = Number.parseInt(clockDriftString);
 
 			return {
@@ -71,6 +71,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 				refreshToken,
 				deviceMetadata: (await this.getDeviceMetadata()) ?? undefined,
 				clockDrift,
+				username: decodeURIComponent(await this.getLastAuthUser()),
 			};
 		} catch (err) {
 			return null;
@@ -78,7 +79,10 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 	async storeTokens(tokens: CognitoAuthTokens): Promise<void> {
 		assert(tokens !== undefined, TokenProviderErrorCode.InvalidAuthTokens);
-		const lastAuthUser = tokens.accessToken?.payload?.sub || 'user';
+		await this.clearTokens();
+
+		const lastAuthUser =
+			(tokens.username && encodeURIComponent(tokens.username)) ?? 'username';
 		await this.getKeyValueStorage().setItem(
 			this.getLastAuthUserKey(),
 			lastAuthUser
@@ -104,9 +108,22 @@ export class DefaultTokenStore implements AuthTokenStore {
 		}
 
 		if (!!tokens.deviceMetadata) {
+			if (tokens.deviceMetadata.deviceKey) {
+				await this.getKeyValueStorage().setItem(
+					authKeys.deviceKey,
+					tokens.deviceMetadata.deviceKey
+				);
+			}
+			if (tokens.deviceMetadata.deviceGroupKey) {
+				await this.getKeyValueStorage().setItem(
+					authKeys.deviceGroupKey,
+					tokens.deviceMetadata.deviceGroupKey
+				);
+			}
+
 			await this.getKeyValueStorage().setItem(
-				authKeys.deviceMetadata,
-				JSON.stringify(tokens.deviceMetadata)
+				authKeys.randomPasswordKey,
+				tokens.deviceMetadata.randomPassword
 			);
 		}
 
@@ -130,16 +147,31 @@ export class DefaultTokenStore implements AuthTokenStore {
 
 	async getDeviceMetadata(): Promise<DeviceMetadata | null> {
 		const authKeys = await this.getAuthKeys();
-		const newDeviceMetadata = JSON.parse(
-			(await this.getKeyValueStorage().getItem(authKeys.deviceMetadata)) || '{}'
+		const deviceKey = await this.getKeyValueStorage().getItem(
+			authKeys.deviceKey
 		);
-		const deviceMetadata =
-			Object.keys(newDeviceMetadata).length > 0 ? newDeviceMetadata : null;
-		return deviceMetadata;
+		const deviceGroupKey = await this.getKeyValueStorage().getItem(
+			authKeys.deviceGroupKey
+		);
+		const randomPassword = await this.getKeyValueStorage().getItem(
+			authKeys.randomPasswordKey
+		);
+
+		return !!randomPassword
+			? {
+					deviceKey: deviceKey ?? undefined,
+					deviceGroupKey: deviceGroupKey ?? undefined,
+					randomPassword,
+			  }
+			: null;
 	}
 	async clearDeviceMetadata(): Promise<void> {
 		const authKeys = await this.getAuthKeys();
-		await this.getKeyValueStorage().removeItem(authKeys.deviceMetadata);
+		await Promise.all([
+			this.getKeyValueStorage().removeItem(authKeys.deviceKey),
+			this.getKeyValueStorage().removeItem(authKeys.deviceGroupKey),
+			this.getKeyValueStorage().removeItem(authKeys.randomPasswordKey),
+		]);
 	}
 
 	private async getAuthKeys(): Promise<
@@ -161,8 +193,8 @@ export class DefaultTokenStore implements AuthTokenStore {
 
 	private async getLastAuthUser(): Promise<string> {
 		const lastAuthUser =
-			(await this.getKeyValueStorage().getItem(this.getLastAuthUserKey())) ||
-			'user';
+			(await this.getKeyValueStorage().getItem(this.getLastAuthUserKey())) ??
+			'username';
 
 		return lastAuthUser;
 	}

@@ -11,6 +11,7 @@ import {
 	urlSafeEncode,
 	USER_AGENT_HEADER,
 	urlSafeDecode,
+	decodeJWT,
 } from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { CognitoUserPoolsTokenProvider } from '../tokenProvider';
@@ -214,7 +215,11 @@ async function handleCodeFlow({
 
 	await store.clearOAuthInflightData();
 
+	const username =
+		(access_token && decodeJWT(access_token).payload.username) || 'username';
+
 	await cacheCognitoTokens({
+		username,
 		AccessToken: access_token,
 		IdToken: id_token,
 		RefreshToken: refresh_token,
@@ -264,7 +269,11 @@ async function handleImplicitFlow({
 		return;
 	}
 
+	const username =
+		(accessToken && decodeJWT(accessToken).payload.username) || 'username';
+
 	await cacheCognitoTokens({
+		username,
 		AccessToken: accessToken,
 		IdToken: idToken,
 		TokenType: tokenType,

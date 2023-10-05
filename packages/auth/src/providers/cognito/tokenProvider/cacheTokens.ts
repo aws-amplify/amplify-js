@@ -8,6 +8,7 @@ import { DeviceMetadata } from './types';
 export async function cacheCognitoTokens(
 	AuthenticationResult: AuthenticationResultType & {
 		NewDeviceMetadata?: DeviceMetadata;
+		username: string;
 	}
 ): Promise<void> {
 	if (AuthenticationResult.AccessToken) {
@@ -34,13 +35,14 @@ export async function cacheCognitoTokens(
 			deviceMetadata = AuthenticationResult.NewDeviceMetadata;
 		}
 
-		tokenOrchestrator.setTokens({
+		await tokenOrchestrator.setTokens({
 			tokens: {
 				accessToken,
 				idToken,
 				refreshToken,
 				clockDrift,
 				deviceMetadata,
+				username: AuthenticationResult.username,
 			},
 		});
 	} else {
