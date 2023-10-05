@@ -20,7 +20,10 @@ export class CancelledError extends RestApiError {
 }
 
 /**
- * Check if an error is caused by user calling `cancel()` REST API.
+ * Check if an error is caused by user calling `cancel()` in REST API.
+ *
+ * @note This function works **ONLY** for errors thrown by REST API. For GraphQL APIs, use `client.isCancelError(error)`
+ *   instead. `client` is generated from  `generateClient()` API from `aws-amplify/api`.
  */
 export const isCancelError = (error: unknown): boolean =>
 	!!error && error instanceof CancelledError;
