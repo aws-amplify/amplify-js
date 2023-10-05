@@ -150,10 +150,10 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		return this.getTokenStore().clearTokens();
 	}
 
-	getDeviceMetadata(): Promise<DeviceMetadata | null> {
-		return this.getTokenStore().getDeviceMetadata();
+	getDeviceMetadata(username?: string): Promise<DeviceMetadata | null> {
+		return this.getTokenStore().getDeviceMetadata(username);
 	}
-	clearDeviceMetadata(): Promise<void> {
-		return this.getTokenStore().clearDeviceMetadata();
+	clearDeviceMetadata(username?: string): Promise<void> {
+		return this.getTokenStore().clearDeviceMetadata(username);
 	}
 }
