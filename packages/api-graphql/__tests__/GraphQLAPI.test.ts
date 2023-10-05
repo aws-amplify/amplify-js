@@ -395,6 +395,7 @@ describe('API test', () => {
 			});
 		});
 
+		// TODO?
 		// test('happy-case-query-oidc with auth storage federated token', async () => {
 		// 	const spyonCredentials = jest
 		// 		.spyOn(Credentials, 'get')
@@ -480,53 +481,117 @@ describe('API test', () => {
 		// 	spyonAuth.mockClear();
 		// });
 
-		// test('happy case query with AWS_LAMBDA', async () => {
-		// 	expect.assertions(1);
+		test('happy case query with AWS_LAMBDA', async () => {
+			// expect.assertions(1);
 
-		// 	const spyon = jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockReturnValue(Promise.resolve({}));
+			// const spyon = jest
+			// 	.spyOn(RestClient.prototype, 'post')
+			// 	.mockReturnValue(Promise.resolve({}));
 
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com';
-		// 	const region = 'us-east-2';
-		// 	const variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+			// const api = new API(config);
+			// const client = generateClient();
+			// const url = 'https://appsync.amazonaws.com';
+			// const region = 'us-east-2';
+			// const variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'AWS_LAMBDA',
-		// 	});
+			// api.configure({
+			// 	aws_appsync_graphqlEndpoint: url,
+			// 	aws_appsync_region: region,
+			// 	aws_appsync_authenticationType: 'AWS_LAMBDA',
+			// });
 
-		// 	const headers = {
-		// 		// 'x-amz-user-agent': expectedUserAgentFrameworkOnly,
-		// 		Authorization: 'myAuthToken',
-		// 	};
+			// const headers = {
+			// 	// 'x-amz-user-agent': expectedUserAgentFrameworkOnly,
+			// 	Authorization: 'myAuthToken',
+			// };
 
-		// 	const body = {
-		// 		query: getEventQuery,
-		// 		variables,
-		// 	};
+			// const body = {
+			// 	query: getEventQuery,
+			// 	variables,
+			// };
 
-		// 	const init = {
-		// 		headers,
-		// 		body,
-		// 		signerServiceInfo: {
-		// 			service: 'appsync',
-		// 			region,
-		// 		},
-		// 		cancellableToken: mockCancellableToken,
-		// 	};
+			// const init = {
+			// 	headers,
+			// 	body,
+			// 	signerServiceInfo: {
+			// 		service: 'appsync',
+			// 		region,
+			// 	},
+			// 	cancellableToken: mockCancellableToken,
+			// };
 
-		// 	await api.graphql({
-		// 		query: GetEvent,
-		// 		variables,
-		// 		authToken: 'myAuthToken',
-		// 	});
+			// await api.graphql({
+			// 	query: GetEvent,
+			// 	variables,
+			// 	authToken: 'myAuthToken',
+			// });
 
-		// 	expect(spyon).toBeCalledWith(url, init);
-		// });
+			// expect(spyon).toBeCalledWith(url, init);
+
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'lambda',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
+					},
+				},
+			});
+
+			const threadToGet = {
+				id: 'some-thread-id',
+				topic: 'something reasonably interesting',
+			};
+
+			const graphqlVariables = { id: 'some-thread-id' };
+
+			const graphqlResponse = {
+				data: {
+					getThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToGet,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
+
+			// Customers should normally omit the type. Making it explicit to ensure the test
+			// fails if the returned changes.
+			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
+				query: typedQueries.getThread,
+				variables: graphqlVariables,
+				authMode: 'lambda',
+				authToken: 'myAuthToken',
+			});
+
+			// Customers should normally omit the type. Making it explicit to ensure the test
+			// fails if the returned changes.
+			const thread: GetThreadQuery['getThread'] = result.data?.getThread;
+			const errors = result.errors;
+
+			// expectGet(spy, 'getThread', graphqlVariables);
+			// expect(errors).toBe(undefined);
+			// expect(thread).toEqual(graphqlResponse.data.getThread);
+			expect(spy).toHaveBeenCalledWith({
+				abortController: expect.any(AbortController),
+				url: new URL('https://localhost/graphql'),
+				options: expect.objectContaining({
+					headers: expect.objectContaining({ Authorization: 'myAuthToken' }),
+					// body: expect.objectContaining({
+					// 	query: expect.stringContaining(`${opName}(id: $id)`),
+					// 	variables: expect.objectContaining(item),
+					// }),
+				}),
+			});
+		});
 
 		// test('additional headers with AWS_LAMBDA', async () => {
 		// 	expect.assertions(1);
