@@ -9,7 +9,11 @@ describe('API generateClient', () => {
 			.mockResolvedValue('grapqhqlResponse' as any);
 		const client = generateClient();
 		expect(await client.graphql({ query: 'query' })).toBe('grapqhqlResponse');
-		expect(spy).toBeCalledWith({ query: 'query' }, undefined);
+		expect(spy).toBeCalledWith(
+			{ Auth: {}, libraryOptions: {}, resourcesConfig: {} },
+			{ query: 'query' },
+			undefined
+		);
 	});
 
 	describe('client.cancel', () => {
