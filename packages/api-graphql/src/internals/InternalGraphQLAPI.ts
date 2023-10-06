@@ -227,6 +227,7 @@ export class InternalGraphQLAPIClass {
 			customEndpointRegion,
 		} = resolveConfig();
 
+		// Retrieve library options from Amplify configuration
 		const { headers: customHeaders } = resolveLibraryOptions();
 
 		let customHeadersOptions;
@@ -243,13 +244,17 @@ export class InternalGraphQLAPIClass {
 		const headers = {
 			...(!customEndpoint &&
 				(await this._headerBasedAuth(amplify, authMode!, additionalHeaders))),
+			// Custom endpoint headers:
 			...((customEndpoint &&
 				(customEndpointRegion
 					? await this._headerBasedAuth(amplify, authMode!, additionalHeaders)
 					: { Authorization: null })) ||
 				{}),
+			// Custom headers included in Amplify configuration:
 			...(customHeaders && (await customHeaders(customHeadersOptions))),
+			// Headers from individual calls to `graphql`:
 			...additionalHeaders,
+			// User agent headers:
 			...(!customEndpoint && {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 			}),

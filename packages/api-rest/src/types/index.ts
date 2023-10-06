@@ -37,7 +37,7 @@ export type RestApiOptionsBase = {
 	withCredentials?: boolean;
 };
 
-type Headers = Record<string, string>;
+type Headers = Record<any, any>;
 
 /**
  * Type representing an operation that can be cancelled.
