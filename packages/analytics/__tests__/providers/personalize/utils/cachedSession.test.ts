@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Cache, BrowserStorageCache } from '@aws-amplify/core';
+import { Cache } from '@aws-amplify/core';
 import { isBrowser } from '@aws-amplify/core/internals/utils';
 import {
 	resolveCachedSession,
@@ -14,7 +14,7 @@ jest.mock('@aws-amplify/core/internals/utils');
 describe('Analytics service provider Personalize utils: cachedSession', () => {
 	const sessionIdCacheKey = '_awsct_sid.personalize';
 	const userIdCacheKey = '_awsct_uid.personalize';
-	const mockCache = Cache as jest.Mocked<typeof BrowserStorageCache>;
+	const mockCache = Cache as jest.Mocked<typeof Cache>;
 	const mockIsBrowser = isBrowser as jest.Mock;
 
 	const mockSession = {
@@ -38,14 +38,14 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 		mockCache.setItem.mockReset();
 	});
 
-	it('resolve cached session from Cache', () => {
-		const result = resolveCachedSession('trackingId0');
+	it('resolve cached session from Cache', async () => {
+		const result = await resolveCachedSession();
 		expect(result).toStrictEqual(mockSession);
 	});
 
-	it('create a new session if there is no cache', () => {
-		mockCache.getItem.mockImplementation(() => undefined);
-		const result = resolveCachedSession('trackingId0');
+	it('create a new session if there is no cache', async () => {
+		mockCache.getItem.mockImplementation(async () => undefined);
+		const result = await resolveCachedSession();
 		expect(result.sessionId).not.toBe(mockSession.sessionId);
 		expect(result.sessionId.length).toBeGreaterThan(0);
 		expect(result.userId).toBe(undefined);

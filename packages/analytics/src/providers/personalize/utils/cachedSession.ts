@@ -27,14 +27,16 @@ const setCache = (key: string, value: unknown) => {
 	});
 };
 
-export const resolveCachedSession = (trackingId: string) => {
-	let sessionId: string | undefined = getCache(PERSONALIZE_CACHE_SESSIONID);
+export const resolveCachedSession = async () => {
+	let sessionId: string | undefined = await getCache(
+		PERSONALIZE_CACHE_SESSIONID
+	);
 	if (!sessionId) {
 		sessionId = uuid();
 		setCache(PERSONALIZE_CACHE_SESSIONID, sessionId);
 	}
 
-	const userId: string | undefined = getCache(PERSONALIZE_CACHE_USERID);
+	const userId: string | undefined = await getCache(PERSONALIZE_CACHE_USERID);
 
 	return {
 		sessionId,

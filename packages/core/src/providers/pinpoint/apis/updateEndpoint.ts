@@ -93,6 +93,6 @@ export const updateEndpoint = async ({
 	await clientUpdateEndpoint({ credentials, region, userAgentValue }, input);
 	// if we had to create an endpoint id, we need to now cache it
 	if (!!createdEndpointId) {
-		cacheEndpointId(appId, category, createdEndpointId);
+		return cacheEndpointId(appId, category, createdEndpointId);
 	}
 };
