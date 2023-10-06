@@ -107,15 +107,19 @@ async function handleOAuthSignOut(cognitoConfig: CognitoUserPoolConfig) {
 
 	const oauthStore = new DefaultOAuthStore(defaultStorage);
 	oauthStore.setAuthConfig(cognitoConfig);
-	const isOAuthSignIn = await oauthStore.loadOAuthSignIn();
+	const { isOAuthSignIn, preferPrivateSession } =
+		await oauthStore.loadOAuthSignIn();
 	await oauthStore.clearOAuthData();
 
 	if (isOAuthSignIn) {
-		oAuthSignOutRedirect(cognitoConfig);
+		oAuthSignOutRedirect(cognitoConfig, preferPrivateSession);
 	}
 }
 
-async function oAuthSignOutRedirect(authConfig: CognitoUserPoolConfig) {
+async function oAuthSignOutRedirect(
+	authConfig: CognitoUserPoolConfig,
+	preferPrivateSession: boolean
+) {
 	assertOAuthConfig(authConfig);
 
 	const { loginWith, userPoolClientId } = authConfig;
@@ -135,7 +139,11 @@ async function oAuthSignOutRedirect(authConfig: CognitoUserPoolConfig) {
 	// );
 	// logger.debug(`Signing out from ${oAuthLogoutEndpoint}`);
 
-	await openAuthSession(oAuthLogoutEndpoint, redirectSignOut);
+	await openAuthSession(
+		oAuthLogoutEndpoint,
+		redirectSignOut,
+		preferPrivateSession
+	);
 }
 
 function isSessionRevocable(token: JWT) {

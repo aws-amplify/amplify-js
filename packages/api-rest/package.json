@@ -44,7 +44,9 @@
 	"files": [
 		"lib",
 		"lib-esm",
-		"src"
+		"src",
+		"internals",
+		"server"
 	],
 	"dependencies": {
 		"tslib": "^2.5.0"
