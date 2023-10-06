@@ -4,7 +4,7 @@ import { Amplify } from '@aws-amplify/core';
 import * as typedQueries from './fixtures/with-types/queries';
 import { expectGet } from './utils/expects';
 
-import { GraphQLResult, GraphQLAuthError } from '../src/types';
+import { GraphQLResult, GraphQLAuthError, V6Client } from '../src/types';
 import { GetThreadQuery } from './fixtures/with-types/API';
 
 const serverManagedFields = {
@@ -45,7 +45,7 @@ afterEach(() => {
 
 describe('API test', () => {
 	// NOTE: `generateClient()` is only exported from top-level API category.
-	const client = { graphql, cancel };
+	const client = { graphql, cancel } as V6Clientw;
 
 	afterEach(() => {
 		jest.clearAllMocks();
