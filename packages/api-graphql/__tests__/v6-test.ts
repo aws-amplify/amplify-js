@@ -16,12 +16,14 @@ import {
 } from './utils/expects';
 
 import {
+	__amplify,
 	GraphQLResult,
 	GraphqlSubscriptionResult,
 	GraphqlSubscriptionMessage,
 	GraphQLQuery,
 	GraphQLSubscription,
 	GraphQLReturnType,
+	V6Client,
 } from '../src/types';
 
 import {
@@ -44,7 +46,10 @@ const serverManagedFields = {
 
 describe('client', () => {
 	// `generateClient()` is only exported from top-level API category.
-	const client = { graphql };
+	const client = {
+		[__amplify]: Amplify,
+		graphql,
+	} as V6Client;
 
 	beforeEach(() => {
 		Amplify.configure({

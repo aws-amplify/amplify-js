@@ -14,7 +14,6 @@
 		"test:default": "jest -w 1 --coverage",
 		"test:native": "jest -w 1 --coverage --config=jest.native.config.js --coverageDirectory=coverage-native",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
-		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm test && tsc && webpack",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "node ./build es6",
