@@ -230,14 +230,6 @@ export class InternalGraphQLAPIClass {
 
 		let customHeadersOptions;
 
-		// TODO: update type:
-		if (customHeaders && variables) {
-			customHeadersOptions = {
-				query: print(query as DocumentNode),
-				variables,
-			};
-		}
-
 		// TODO: Figure what we need to do to remove `!`'s.
 		const headers = {
 			...(!customEndpoint &&
@@ -254,7 +246,13 @@ export class InternalGraphQLAPIClass {
 					: {})) ||
 				{}),
 			// Custom headers included in Amplify configuration:
-			...(customHeaders && (await customHeaders(customHeadersOptions))),
+			...(customHeaders &&
+				(await customHeaders(
+					(customHeadersOptions = {
+						query: print(query as DocumentNode),
+						variables,
+					})
+				))),
 			// Headers from individual calls to `graphql`:
 			...additionalHeaders,
 			// User agent headers:
