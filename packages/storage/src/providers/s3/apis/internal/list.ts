@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import { StorageAction } from '@aws-amplify/core/internals/utils';
 import {
 	ListAllInput,
 	ListPaginateInput,
@@ -16,6 +17,7 @@ import {
 	ListObjectsV2Input,
 	ListObjectsV2Output,
 } from '../../utils/client';
+import { getStorageUserAgentValue } from '../../utils/userAgent';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -85,7 +87,10 @@ const _list = async ({
 	}
 
 	const response: ListObjectsV2Output = await listObjectsV2(
-		s3Config,
+		{
+			...s3Config, 
+			userAgentValue: getStorageUserAgentValue(StorageAction.List)
+		},
 		listParamsClone
 	);
 

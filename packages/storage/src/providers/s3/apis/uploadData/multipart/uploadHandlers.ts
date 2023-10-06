@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { getDataChunker } from './getDataChunker';
 import { UploadDataInput } from '../../../types';
@@ -24,6 +25,7 @@ import {
 	completeMultipartUpload,
 	headObject,
 } from '../../../utils/client';
+import { getStorageUserAgentValue } from '../../../utils/userAgent';
 
 /**
  * Create closure hiding the multipart upload implementation details and expose the upload job and control functions(
@@ -148,6 +150,7 @@ export const getMultipartUploadHandlers = (
 			{
 				...s3Config,
 				abortSignal: abortController.signal,
+				userAgentValue: getStorageUserAgentValue(StorageAction.UploadData)
 			},
 			{
 				Bucket: bucket,

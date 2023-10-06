@@ -6,7 +6,7 @@ import {
 	getInAppMessages,
 	GetInAppMessagesInput,
 	GetInAppMessagesOutput,
-} from '../../../src/AwsClients/Pinpoint';
+} from '../../../src/awsClients/pinpoint';
 import {
 	mockApplicationId,
 	mockEndpointId,
