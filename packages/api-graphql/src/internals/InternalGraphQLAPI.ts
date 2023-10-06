@@ -110,7 +110,6 @@ export class InternalGraphQLAPIClass {
 						await amplify.Auth.fetchAuthSession()
 					).tokens?.accessToken.toString();
 
-					// debugger;
 					if (!token) {
 						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
 					}
@@ -132,9 +131,8 @@ export class InternalGraphQLAPIClass {
 			case 'none':
 				break;
 			default:
-				headers = {
-					Authorization: null,
-				};
+				{
+				}
 				break;
 		}
 
@@ -272,14 +270,21 @@ export class InternalGraphQLAPIClass {
 
 		let signingServiceInfo;
 
-		// Also check auth mode, here:
 		/**
-		 * If there is a custom endpoint but no region, or the auth mode is not
-		 * a recognized auth mode, we do not send the signing service info to
-		 * the REST API, meaning it will not sign the request.
+		 * We do not send the signing service info to the REST API under the
+		 * following conditions (i.e. it will not sign the request):
+		 *   - there is a custom endpoint but no region
+		 *   - the auth mode is `none`, or `apiKey`
+		 *   - the auth mode is a type other than the types listed below
 		 */
-		if (customEndpoint && !customEndpointRegion) {
-			signingServiceInfo = {};
+		if (
+			(customEndpoint && !customEndpointRegion) ||
+			(authMode !== 'oidc' &&
+				authMode !== 'userPool' &&
+				authMode !== 'iam' &&
+				authMode !== 'lambda')
+		) {
+			signingServiceInfo = null;
 		} else {
 			signingServiceInfo = {
 				service: !customEndpointRegion ? 'appsync' : 'execute-api',
