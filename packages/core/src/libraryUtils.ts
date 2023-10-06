@@ -41,7 +41,6 @@ export { Signer } from './Signer';
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 
 // Platform & device utils
-export { ClientDevice } from './ClientDevice';
 export {
 	Platform,
 	getAmplifyUserAgentObject,

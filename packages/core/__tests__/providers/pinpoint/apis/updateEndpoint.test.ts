@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { v4 } from 'uuid';
-import { ClientDevice } from '../../../../src/ClientDevice';
-import { updateEndpoint as clientUpdateEndpoint } from '../../../../src/awsClients/pinpoint';
+import { getClientInfo } from '../../../../src/utils/getClientInfo';
+import { updateEndpoint as clientUpdateEndpoint } from '../../../../src/AwsClients/Pinpoint';
 import {
 	cacheEndpointId,
 	getEndpointId,
@@ -25,6 +25,7 @@ import { getExpectedInput } from './testUtils/getExpectedInput';
 jest.mock('uuid');
 jest.mock('../../../../src/awsClients/pinpoint');
 jest.mock('../../../../src/providers/pinpoint/utils');
+jest.mock('../../../../src/utils/getClientInfo');
 
 describe('Pinpoint Provider API: updateEndpoint', () => {
 	const createdEndpointId = 'created-endpoint';
@@ -38,24 +39,26 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 		platformVersion: 'user-platform-version',
 		timezone: 'user-timezone',
 	};
-	// create spies
-	const clientInfoSpy = jest.spyOn(ClientDevice, 'clientInfo');
 	// assert mocks
 	const mockCacheEndpointId = cacheEndpointId as jest.Mock;
 	const mockClientUpdateEndpoint = clientUpdateEndpoint as jest.Mock;
+	const mockGetClientInfo = getClientInfo as jest.Mock;
 	const mockGetEndpointId = getEndpointId as jest.Mock;
 	const mockUuid = v4 as jest.Mock;
 
 	beforeAll(() => {
 		mockUuid.mockReturnValue(uuid);
-		clientInfoSpy.mockReturnValue(clientDemographic as any);
+		mockGetClientInfo.mockReturnValue(clientDemographic);
 	});
 
 	beforeEach(() => {
+		mockGetEndpointId.mockReturnValue(endpointId);
+	});
+
+	afterEach(() => {
 		mockCacheEndpointId.mockClear();
 		mockClientUpdateEndpoint.mockClear();
 		mockGetEndpointId.mockReset();
-		mockGetEndpointId.mockReturnValue(endpointId);
 	});
 
 	it('calls the service API with a baseline input', async () => {
