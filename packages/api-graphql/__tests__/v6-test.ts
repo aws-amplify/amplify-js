@@ -230,7 +230,7 @@ describe('client', () => {
 			// fails if the returned changes.
 			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
 				query: typedQueries.getThread,
-				variables: { id: 'some-thread-id' },
+				variables: graphqlVariables,
 				authMode: 'apiKey',
 			});
 
