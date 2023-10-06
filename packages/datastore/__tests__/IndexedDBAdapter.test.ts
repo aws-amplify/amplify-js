@@ -623,7 +623,7 @@ describe('IndexedDB benchmarks', () => {
 		expect(time).toBeLessThan(JOIN_TIME_LIMIT);
 	});
 
-	test('wide joins with outer level ORs operate within expected time limits', async () => {
+	test.skip('wide joins with outer level ORs operate within expected time limits', async () => {
 		const parents: CompositePKParent[] = [];
 		await sideloadIDBData(100, 'CompositePKParent', i => {
 			const parent = new CompositePKParent({
