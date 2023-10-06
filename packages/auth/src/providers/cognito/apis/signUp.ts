@@ -102,7 +102,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		return {
 			isSignUpComplete: true,
 			nextStep: {
-				signUpStep: 'AUTO_SIGN_IN',
+				signUpStep: 'COMPLETE_AUTO_SIGN_IN',
 			},
 		};
 	} else if (isSignUpComplete(clientOutput) && !isAutoSignInStarted()) {
@@ -127,7 +127,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		return {
 			isSignUpComplete: false,
 			nextStep: {
-				signUpStep: 'AUTO_SIGN_IN',
+				signUpStep: 'COMPLETE_AUTO_SIGN_IN',
 				codeDeliveryDetails: {
 					deliveryMedium:
 						CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,

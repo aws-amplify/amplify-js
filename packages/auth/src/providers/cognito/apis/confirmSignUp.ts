@@ -90,7 +90,7 @@ export async function confirmSignUp(
 							resolve({
 								isSignUpComplete: true,
 								nextStep: {
-									signUpStep: 'AUTO_SIGN_IN',
+									signUpStep: 'COMPLETE_AUTO_SIGN_IN',
 								},
 							});
 							setAutoSignInStarted(false);
