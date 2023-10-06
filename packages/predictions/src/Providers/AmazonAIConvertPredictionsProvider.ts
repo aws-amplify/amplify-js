@@ -123,14 +123,11 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			PredictionsValidationErrorCode.NoRegion
 		);
 
-		const { defaults, region } = speechGenerator;
-		assertValidationError(
-			!!defaults?.voiceId,
-			PredictionsValidationErrorCode.NoVoiceId
-		);
+		const { defaults = {}, region } = speechGenerator;
 
 		const { voiceId: defaultVoiceId } = defaults;
 		const voiceId = input.textToSpeech.voiceId || defaultVoiceId;
+		assertValidationError(!!voiceId, PredictionsValidationErrorCode.NoVoiceId);
 
 		this.pollyClient = new PollyClient({
 			region,
