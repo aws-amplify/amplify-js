@@ -776,9 +776,14 @@ const initializeInstance = <T extends PersistentModel>(
 	const modelValidator = validateModelFields(modelDefinition);
 	Object.entries(init).forEach(([k, v]) => {
 		const parsedValue = castInstanceType(modelDefinition, k, v);
-
 		modelValidator(k, parsedValue);
-		(<any>draft)[k] = parsedValue;
+
+		// so that explicitly-set undefined fields aren't part of the draft
+		// and therefore sent to appsync as explicit null's. AppSync doesn't like explicit null's
+		// on [most?] optional fields.
+		if (parsedValue !== undefined) {
+			(<any>draft)[k] = parsedValue;
+		}
 	});
 };
 

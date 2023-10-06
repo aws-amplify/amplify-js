@@ -176,9 +176,12 @@ describe('DataStore sync engine', () => {
 			}
 		});
 
+		// TODO: Need to revisit this and determine why it's necessary. In general, AppSync does
+		// NOT appear to accept `null` fields on create. Need to understand in what cases it accepts
+		// them and ensure DataStore field omission logic follows suit.
 		test('includes explicit null fields from mutation on create', async () => {
 			// make sure our test model still meets requirements to make this test valid.
-			expect(schema.models.Model.fields.optionalField1.isRequired).toBe(false);
+			expect(schema.models.Model.fields.metadata.isRequired).toBe(false);
 
 			await DataStore.save(
 				new Model({
@@ -198,6 +201,30 @@ describe('DataStore sync engine', () => {
 				.map(req => req.variables.input);
 
 			expect(mutation.metadata).toEqual(null);
+		});
+
+		test('omits explicit undefined fields from mutation on create', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.Model.fields.metadata.isRequired).toBe(false);
+
+			await DataStore.save(
+				new Model({
+					field1: 'whatever and ever',
+					dateCreated: new Date().toISOString(),
+					metadata: undefined,
+				})
+			);
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Model')!;
+			expect(table.size).toEqual(1);
+
+			const [mutation] = graphqlService.requests
+				.filter(r => r.operation === 'mutation' && r.tableName === 'Model')
+				.map(req => req.variables.input);
+
+			expect(mutation.metadata).toEqual(undefined);
 		});
 
 		test('omits all unchanged fields from mutation on update', async () => {
