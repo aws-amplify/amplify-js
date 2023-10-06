@@ -232,7 +232,6 @@ export class InternalGraphQLAPIClass {
 
 		let customHeadersOptions;
 
-		// TODO: make this cleaner
 		if (customHeaders && variables) {
 			customHeadersOptions = {
 				query: print(query as DocumentNode),
