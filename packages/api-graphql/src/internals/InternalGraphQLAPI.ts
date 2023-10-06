@@ -226,7 +226,8 @@ export class InternalGraphQLAPIClass {
 		} = resolveConfig(amplify);
 
 		// Retrieve library options from Amplify configuration
-		const { headers: customHeaders } = resolveLibraryOptions(amplify);
+		const { headers: customHeaders, withCredentials } =
+			resolveLibraryOptions(amplify);
 
 		let customHeadersOptions;
 
@@ -309,6 +310,7 @@ export class InternalGraphQLAPIClass {
 					headers,
 					body,
 					signingServiceInfo,
+					withCredentials,
 				},
 				abortController,
 			});

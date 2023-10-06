@@ -9,6 +9,7 @@ export type LibraryAPIOptions = {
 			query: string;
 			variables?: Record<string, DocumentType>;
 		}) => Promise<Headers>;
+		withCredentials: boolean;
 	};
 	REST?: {
 		// custom headers for given REST service. Will be applied to all operations.
