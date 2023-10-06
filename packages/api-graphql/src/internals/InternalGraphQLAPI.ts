@@ -81,7 +81,7 @@ export class InternalGraphQLAPIClass {
 			endpoint: appSyncGraphqlEndpoint,
 			apiKey,
 			defaultAuthMode,
-		} = resolveConfig();
+		} = resolveConfig(amplify);
 
 		const authenticationType = authMode || defaultAuthMode || 'iam';
 		let headers = {};
@@ -225,13 +225,14 @@ export class InternalGraphQLAPIClass {
 			endpoint: appSyncGraphqlEndpoint,
 			customEndpoint,
 			customEndpointRegion,
-		} = resolveConfig();
+		} = resolveConfig(amplify);
 
 		// Retrieve library options from Amplify configuration
-		const { headers: customHeaders } = resolveLibraryOptions();
+		const { headers: customHeaders } = resolveLibraryOptions(amplify);
 
 		let customHeadersOptions;
 
+		// TODO: update type:
 		if (customHeaders && variables) {
 			customHeadersOptions = {
 				query: print(query as DocumentNode),
@@ -243,11 +244,16 @@ export class InternalGraphQLAPIClass {
 		const headers = {
 			...(!customEndpoint &&
 				(await this._headerBasedAuth(amplify, authMode!, additionalHeaders))),
-			// Custom endpoint headers:
+			/**
+			 * Custom endpoint headers.
+			 * If there is both a custom endpoint and custom region present, we get the headers.
+			 * If there is a custom endpoint but no region, we return an empty object.
+			 * If neither are present, we return an empty object.
+			 */
 			...((customEndpoint &&
 				(customEndpointRegion
 					? await this._headerBasedAuth(amplify, authMode!, additionalHeaders)
-					: { Authorization: null })) ||
+					: {})) ||
 				{}),
 			// Custom headers included in Amplify configuration:
 			...(customHeaders && (await customHeaders(customHeadersOptions))),
@@ -264,10 +270,22 @@ export class InternalGraphQLAPIClass {
 			variables: variables || null,
 		};
 
-		const signingServiceInfo = {
-			service: !customEndpointRegion ? 'appsync' : 'execute-api',
-			region: !customEndpointRegion ? region : customEndpointRegion,
-		};
+		let signingServiceInfo;
+
+		// Also check auth mode, here:
+		/**
+		 * If there is a custom endpoint but no region, or the auth mode is not
+		 * a recognized auth mode, we do not send the signing service info to
+		 * the REST API, meaning it will not sign the request.
+		 */
+		if (customEndpoint && !customEndpointRegion) {
+			signingServiceInfo = {};
+		} else {
+			signingServiceInfo = {
+				service: !customEndpointRegion ? 'appsync' : 'execute-api',
+				region: !customEndpointRegion ? region : customEndpointRegion,
+			};
+		}
 
 		const endpoint = customEndpoint || appSyncGraphqlEndpoint;
 
@@ -342,7 +360,7 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
-		const config = resolveConfig();
+		const config = resolveConfig(amplify);
 
 		if (!this.appSyncRealTime) {
 			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
