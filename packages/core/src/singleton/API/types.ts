@@ -7,7 +7,7 @@ export type LibraryAPIOptions = {
 		// custom headers for given GraphQL service. Will be applied to all operations.
 		headers?: (options: {
 			query: string;
-			variables: Record<string, DocumentType>;
+			variables?: Record<string, DocumentType>;
 		}) => Promise<Headers>;
 	};
 	REST?: {
