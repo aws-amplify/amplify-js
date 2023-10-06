@@ -55,6 +55,8 @@ import {
 	categorizeRekognitionBlocks,
 	categorizeTextractBlocks,
 } from './IdentifyTextUtils';
+import { assertValidationError } from '../errors/utils/assertValidationError';
+import { PredictionsValidationErrorCode } from '../errors/types/validation';
 
 export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredictionsProvider {
 	private rekognitionClient: RekognitionClient;
@@ -133,13 +135,16 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		input: IdentifyTextInput
 	): Promise<IdentifyTextOutput> {
 		const { credentials } = await fetchAuthSession();
-		if (!credentials) return Promise.reject('No credentials');
-		const {
-			identifyText: {
-				region = '',
-				defaults: { format: configFormat = 'PLAIN' } = {},
-			} = {},
-		} = Amplify.getConfig().Predictions?.identify || {};
+		assertValidationError(
+			!!credentials,
+			PredictionsValidationErrorCode.NoCredentials
+		);
+
+		const { identifyText = {} } =
+			Amplify.getConfig().Predictions?.identify || {};
+		const { region = '', defaults = {} } = identifyText;
+		const { format: configFormat = 'PLAIN' } = defaults;
+
 		this.rekognitionClient = new RekognitionClient({
 			region,
 			credentials,
@@ -235,13 +240,16 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 	): Promise<IdentifyLabelsOutput> {
 		try {
 			const { credentials } = await fetchAuthSession();
-			if (!credentials) return Promise.reject('No credentials');
-			const {
-				identifyLabels: {
-					region = '',
-					defaults: { type = 'LABELS' } = {},
-				} = {},
-			} = Amplify.getConfig().Predictions?.identify || {};
+			assertValidationError(
+				!!credentials,
+				PredictionsValidationErrorCode.NoCredentials
+			);
+
+			const { identifyLabels } =
+				Amplify.getConfig().Predictions?.identify || {};
+			const { region = '', defaults } = identifyLabels || {};
+			const { type = 'LABELS' } = defaults || {};
+
 			this.rekognitionClient = new RekognitionClient({
 				region,
 				credentials,
@@ -255,7 +263,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				.catch(err => {
 					return Promise.reject(err);
 				});
-			const param = { Image: inputImage };
+			const param = { Image: inputImage! };
 			const servicePromises = [];
 
 			// get default argument
@@ -348,7 +356,11 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		input: IdentifyEntitiesInput
 	): Promise<IdentifyEntitiesOutput> {
 		const { credentials } = await fetchAuthSession();
-		if (!credentials) return Promise.reject('No credentials');
+		assertValidationError(
+			!!credentials,
+			PredictionsValidationErrorCode.NoCredentials
+		);
+
 		const {
 			identifyEntities: {
 				region = '',
