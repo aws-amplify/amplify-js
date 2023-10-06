@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { FetchDevicesOutput } from '../types';
 import { listDevices } from '../utils/clients/CognitoIdentityProvider';
@@ -10,7 +10,7 @@ import { DeviceType } from '../utils/clients/CognitoIdentityProvider/types';
 import { assertAuthTokens } from '../utils/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { rememberDevice } from '..';
-import { ListDevicesException } from '../types/errors';
+import { getAuthUserAgentValue } from '../../../utils';
 
 // Cognito Documentation for max device
 // https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
@@ -32,7 +32,10 @@ export async function fetchDevices(): Promise<FetchDevicesOutput> {
 	assertAuthTokens(tokens);
 
 	const response = await listDevices(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ 
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.FetchDevices)
+		},
 		{
 			AccessToken: tokens.accessToken.toString(),
 			Limit: MAX_DEVICES,

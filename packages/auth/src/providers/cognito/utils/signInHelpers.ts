@@ -3,6 +3,7 @@
 
 import { Amplify, CognitoUserPoolConfig } from '@aws-amplify/core';
 import {
+	AuthAction,
 	assertTokenProviderConfig,
 	base64Encoder,
 } from '@aws-amplify/core/internals/utils';
@@ -55,6 +56,7 @@ import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants'
 import { getCurrentUser } from '../apis/getCurrentUser';
 import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
 import { assertDeviceMetadata } from './types';
+import { getAuthUserAgentValue } from '../../../utils';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -105,7 +107,10 @@ export async function handleCustomChallenge({
 	};
 
 	const response = await respondToAuthChallenge(
-		{ region: getRegion(userPoolId) },
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+		},
 		jsonReq
 	);
 
@@ -134,7 +139,10 @@ export async function handleMFASetupChallenge({
 	};
 
 	const { Session } = await verifySoftwareToken(
-		{ region: getRegion(userPoolId) },
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+		},
 		{
 			UserCode: challengeResponse,
 			Session: session,
@@ -183,7 +191,13 @@ export async function handleSelectMFATypeChallenge({
 		ClientId: userPoolClientId,
 	};
 
-	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+	return respondToAuthChallenge(
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+		}, 
+		jsonReq
+	);
 }
 
 export async function handleSMSMFAChallenge({
@@ -206,7 +220,13 @@ export async function handleSMSMFAChallenge({
 		ClientId: userPoolClientId,
 	};
 
-	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+	return respondToAuthChallenge(
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+		}, 
+		jsonReq
+	);
 }
 export async function handleSoftwareTokenMFAChallenge({
 	challengeResponse,
@@ -227,7 +247,13 @@ export async function handleSoftwareTokenMFAChallenge({
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 	};
-	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+	return respondToAuthChallenge(
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+		}, 
+		jsonReq
+	);
 }
 export async function handleCompleteNewPasswordChallenge({
 	challengeResponse,
@@ -252,7 +278,13 @@ export async function handleCompleteNewPasswordChallenge({
 		ClientId: userPoolClientId,
 	};
 
-	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+	return respondToAuthChallenge(
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+		}, 
+		jsonReq
+	);
 }
 
 export async function handleUserPasswordAuthFlow(
@@ -280,7 +312,10 @@ export async function handleUserPasswordAuthFlow(
 	};
 
 	const response = await initiateAuth(
-		{ region: getRegion(userPoolId) },
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn)
+		},
 		jsonReq
 	);
 
@@ -322,7 +357,13 @@ export async function handleUserSRPAuthFlow(
 		ClientId: userPoolClientId,
 	};
 
-	const resp = await initiateAuth({ region: getRegion(userPoolId) }, jsonReq);
+	const resp = await initiateAuth(
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn)
+		}, 
+		jsonReq
+	);
 	const { ChallengeParameters: challengeParameters, Session: session } = resp;
 
 	return handlePasswordVerifierChallenge(
@@ -359,7 +400,10 @@ export async function handleCustomAuthFlowWithoutSRP(
 	};
 
 	const response = await initiateAuth(
-		{ region: getRegion(userPoolId) },
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn)
+		},
 		jsonReq
 	);
 	if (response.ChallengeName === 'DEVICE_SRP_AUTH')
@@ -405,7 +449,13 @@ export async function handleCustomSRPAuthFlow(
 	};
 
 	const { ChallengeParameters: challengeParameters, Session: session } =
-		await initiateAuth({ region: getRegion(userPoolId) }, jsonReq);
+		await initiateAuth(
+			{ 
+				region: getRegion(userPoolId),
+				userAgentValue: getAuthUserAgentValue(AuthAction.SignIn)
+			}, 
+			jsonReq
+		);
 
 	return handlePasswordVerifierChallenge(
 		password,
