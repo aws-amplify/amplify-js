@@ -102,6 +102,8 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "identifyUser",
 			  "syncMessages",
+			  "dispatchEvent",
+			  "setConflictHandler",
 			]
 		`);
 		});
@@ -112,6 +114,8 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "identifyUser",
 			  "syncMessages",
+			  "dispatchEvent",
+			  "setConflictHandler",
 			]
 		`);
 		});
@@ -123,6 +127,8 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "identifyUser",
 			  "syncMessages",
+			  "dispatchEvent",
+			  "setConflictHandler",
 			]
 		`);
 		});
@@ -133,6 +139,8 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "identifyUser",
 			  "syncMessages",
+			  "dispatchEvent",
+			  "setConflictHandler",
 			]
 		`);
 		});
