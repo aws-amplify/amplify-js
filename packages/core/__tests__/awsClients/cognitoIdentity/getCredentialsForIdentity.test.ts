@@ -7,7 +7,7 @@ import {
 	getCredentialsForIdentity,
 	GetCredentialsForIdentityInput,
 	GetCredentialsForIdentityOutput,
-} from '../../../src/AwsClients/CognitoIdentity';
+} from '../../../src/awsClients/cognitoIdentity';
 import {
 	cognitoIdentityHandlerOptions,
 	mockCredentials,
