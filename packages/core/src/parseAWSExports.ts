@@ -34,6 +34,9 @@ export const parseAWSExports = (
 		aws_appsync_region,
 		aws_cognito_identity_pool_id,
 		aws_cognito_sign_up_verification_method,
+		aws_cognito_mfa_configuration,
+		aws_cognito_mfa_types,
+		aws_cognito_password_protection_settings,
 		aws_mandatory_sign_in,
 		aws_mobile_analytics_app_id,
 		aws_mobile_analytics_app_region,
@@ -93,6 +96,18 @@ export const parseAWSExports = (
 	}
 
 	// Auth
+	const mfaConfig = aws_cognito_mfa_configuration ? {
+		mode: aws_cognito_mfa_configuration && aws_cognito_mfa_configuration.toLowerCase(),
+		totpEnabled: aws_cognito_mfa_types?.includes('SMS') ?? false,
+		smsEnabled: aws_cognito_mfa_types?.includes('TOTP') ?? false
+	} : undefined;
+	const passwordRestrictionsConfig = aws_cognito_password_protection_settings ? {
+		minLength: aws_cognito_password_protection_settings.passwordPolicyMinLength,
+		requireLowercase: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_LOWERCASE'),
+		requireUppercase: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_UPPERCASE'),
+		requireNumbers: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_NUMBERS'),
+		requireSpecialCharacters: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_SYMBOLS'),
+	} : undefined;
 	if (aws_cognito_identity_pool_id || aws_user_pools_id) {
 		amplifyConfig.Auth = {
 			Cognito: {
@@ -101,6 +116,8 @@ export const parseAWSExports = (
 				signUpVerificationMethod: aws_cognito_sign_up_verification_method,
 				userPoolClientId: aws_user_pools_web_client_id,
 				userPoolId: aws_user_pools_id,
+				mfa: mfaConfig,
+				passwordRestrictions: passwordRestrictionsConfig,
 				...(oauth &&
 					Object.keys(oauth).length > 0 && {
 						loginWith: getOAuthConfig(oauth),

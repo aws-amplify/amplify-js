@@ -70,6 +70,29 @@ export type AuthTokens = {
 	accessToken: JWT;
 };
 
+export type AuthStandardAttributeKey =
+	| 'address'
+	| 'birthdate'
+	| 'email_verified'
+	| 'family_name'
+	| 'gender'
+	| 'given_name'
+	| 'locale'
+	| 'middle_name'
+	| 'name'
+	| 'nickname'
+	| 'phone_number_verified'
+	| 'picture'
+	| 'preferred_username'
+	| 'profile'
+	| 'sub'
+	| 'updated_at'
+	| 'website'
+	| 'zoneinfo'
+	| AuthVerifiableAttributeKey;
+
+export type AuthVerifiableAttributeKey = 'email' | 'phone_number';
+
 export type AuthConfig = StrictUnion<
 	| AuthIdentityPoolConfig
 	| AuthUserPoolConfig
@@ -108,6 +131,24 @@ export type CognitoUserPoolConfig = {
 	signUpVerificationMethod?: 'code' | 'link';
 	loginWith?: {
 		oauth?: OAuthConfig;
+		username?: boolean;
+		email?: boolean;
+		phoneNumber?: boolean;
+	};
+	userAttributes?: Partial<
+		Record<AuthStandardAttributeKey, { required?: boolean }>
+	>;
+	mfa?: {
+		mode: 'on' | 'off' | 'optional';
+		useTOTP?: boolean;
+		useSMS?: boolean;
+	};
+	passwordRestrictions?: {
+		minLength?: number;
+		requireLowercase?: boolean;
+		requireUppercase?: boolean;
+		requireNumbers?: boolean;
+		requireSpecialCharacters?: boolean;
 	};
 };
 
