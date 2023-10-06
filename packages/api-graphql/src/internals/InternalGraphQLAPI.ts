@@ -281,11 +281,7 @@ export class InternalGraphQLAPIClass {
 			const { body: responseBody } = await this._api.post({
 				url: new URL(endpoint),
 				options: {
-					// TODO
-					// @ts-ignore
 					headers,
-					// TODO
-					// @ts-ignore
 					body,
 					signingServiceInfo,
 				},
