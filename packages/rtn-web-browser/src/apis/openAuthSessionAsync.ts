@@ -14,12 +14,13 @@ let redirectListener: NativeEventSubscription | undefined;
 
 export const openAuthSessionAsync = async (
 	url: string,
-	redirectUrls: string[]
+	redirectUrls: string[],
+	prefersEphemeralSession?: boolean
 ) => {
 	// enforce HTTPS
 	const httpsUrl = url.replace('http://', 'https://');
 	if (Platform.OS === 'ios') {
-		return openAuthSessionIOS(httpsUrl, redirectUrls);
+		return openAuthSessionIOS(httpsUrl, redirectUrls, prefersEphemeralSession);
 	}
 
 	if (Platform.OS === 'android') {
@@ -27,12 +28,20 @@ export const openAuthSessionAsync = async (
 	}
 };
 
-const openAuthSessionIOS = async (url: string, redirectUrls: string[]) => {
+const openAuthSessionIOS = async (
+	url: string,
+	redirectUrls: string[],
+	prefersEphemeralSession: boolean = false
+) => {
 	const redirectUrl = redirectUrls.find(
 		// take the first non-web url as the deeplink
 		item => !item.startsWith('https://') && !item.startsWith('http://')
 	);
-	return nativeModule.openAuthSessionAsync(url, redirectUrl);
+	return nativeModule.openAuthSessionAsync(
+		url,
+		redirectUrl,
+		prefersEphemeralSession
+	);
 };
 
 const openAuthSessionAndroid = async (url: string, redirectUrls: string[]) => {

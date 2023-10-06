@@ -27,6 +27,11 @@
 			"import": "./lib-esm/api/index.js",
 			"require": "./lib/api/index.js"
 		},
+		"./api/server": {
+			"types": "./lib-esm/api/server.d.ts",
+			"import": "./lib-esm/api/server.js",
+			"require": "./lib/api/server.js"
+		},
 		"./datastore": {
 			"types": "./lib-esm/datastore/index.d.ts",
 			"import": "./lib-esm/datastore/index.js",
@@ -127,6 +132,9 @@
 			"api": [
 				"./lib-esm/api/index.d.ts"
 			],
+			"api/server": [
+				"./lib-esm/api/server.d.ts"
+			],
 			"utils": [
 				"./lib-esm/utils/index.d.ts"
 			],
@@ -222,7 +230,9 @@
 		"auth",
 		"internals",
 		"storage",
-		"datastore"
+		"datastore",
+		"in-app-messaging",
+		"push-notifications"
 	],
 	"dependencies": {
 		"@aws-amplify/api": "6.0.0",
@@ -231,6 +241,7 @@
 		"@aws-amplify/core": "6.0.0",
 		"@aws-amplify/storage": "6.0.0",
 		"@aws-amplify/datastore": "5.0.0",
+		"@aws-amplify/notifications": "2.0.0",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {

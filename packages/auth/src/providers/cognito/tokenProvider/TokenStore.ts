@@ -18,8 +18,7 @@ import { assert, TokenProviderErrorCode } from './errorHelpers';
 export class DefaultTokenStore implements AuthTokenStore {
 	private authConfig?: AuthConfig;
 	keyValueStorage?: KeyValueStorageInterface;
-	private name = 'Cognito'; // TODO(v6): update after API review for Amplify.configure
-	private authKeys: AuthKeys<keyof typeof AuthTokenStorageKeys> | undefined;
+	private name = 'CognitoIdentityServiceProvider'; // To be backwards compatible with V5, no migration needed
 	getKeyValueStorage(): KeyValueStorageInterface {
 		if (!this.keyValueStorage) {
 			throw new AuthError({
@@ -40,8 +39,9 @@ export class DefaultTokenStore implements AuthTokenStore {
 		// TODO(v6): migration logic should be here
 		// Reading V5 tokens old format
 		try {
+			const authKeys = await this.getAuthKeys();
 			const accessTokenString = await this.getKeyValueStorage().getItem(
-				this.getAuthKeys().accessToken
+				authKeys.accessToken
 			);
 
 			if (!accessTokenString) {
@@ -53,19 +53,16 @@ export class DefaultTokenStore implements AuthTokenStore {
 
 			const accessToken = decodeJWT(accessTokenString);
 			const itString = await this.getKeyValueStorage().getItem(
-				this.getAuthKeys().idToken
+				authKeys.idToken
 			);
 			const idToken = itString ? decodeJWT(itString) : undefined;
 
 			const refreshToken =
-				(await this.getKeyValueStorage().getItem(
-					this.getAuthKeys().refreshToken
-				)) ?? undefined;
+				(await this.getKeyValueStorage().getItem(authKeys.refreshToken)) ??
+				undefined;
 
 			const clockDriftString =
-				(await this.getKeyValueStorage().getItem(
-					this.getAuthKeys().clockDrift
-				)) || '0';
+				(await this.getKeyValueStorage().getItem(authKeys.clockDrift)) ?? '0';
 			const clockDrift = Number.parseInt(clockDriftString);
 
 			return {
@@ -74,6 +71,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 				refreshToken,
 				deviceMetadata: (await this.getDeviceMetadata()) ?? undefined,
 				clockDrift,
+				username: decodeURIComponent(await this.getLastAuthUser()),
 			};
 		} catch (err) {
 			return null;
@@ -81,73 +79,142 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 	async storeTokens(tokens: CognitoAuthTokens): Promise<void> {
 		assert(tokens !== undefined, TokenProviderErrorCode.InvalidAuthTokens);
+		await this.clearTokens();
 
-		this.getKeyValueStorage().setItem(
-			this.getAuthKeys().accessToken,
+		const lastAuthUser =
+			(tokens.username && encodeURIComponent(tokens.username)) ?? 'username';
+		await this.getKeyValueStorage().setItem(
+			this.getLastAuthUserKey(),
+			lastAuthUser
+		);
+		const authKeys = await this.getAuthKeys();
+		await this.getKeyValueStorage().setItem(
+			authKeys.accessToken,
 			tokens.accessToken.toString()
 		);
 
 		if (!!tokens.idToken) {
-			this.getKeyValueStorage().setItem(
-				this.getAuthKeys().idToken,
+			await this.getKeyValueStorage().setItem(
+				authKeys.idToken,
 				tokens.idToken.toString()
 			);
 		}
 
 		if (!!tokens.refreshToken) {
-			this.getKeyValueStorage().setItem(
-				this.getAuthKeys().refreshToken,
+			await this.getKeyValueStorage().setItem(
+				authKeys.refreshToken,
 				tokens.refreshToken
 			);
 		}
 
 		if (!!tokens.deviceMetadata) {
-			this.getKeyValueStorage().setItem(
-				this.getAuthKeys().deviceMetadata,
-				JSON.stringify(tokens.deviceMetadata)
+			if (tokens.deviceMetadata.deviceKey) {
+				await this.getKeyValueStorage().setItem(
+					authKeys.deviceKey,
+					tokens.deviceMetadata.deviceKey
+				);
+			}
+			if (tokens.deviceMetadata.deviceGroupKey) {
+				await this.getKeyValueStorage().setItem(
+					authKeys.deviceGroupKey,
+					tokens.deviceMetadata.deviceGroupKey
+				);
+			}
+
+			await this.getKeyValueStorage().setItem(
+				authKeys.randomPasswordKey,
+				tokens.deviceMetadata.randomPassword
 			);
 		}
 
-		this.getKeyValueStorage().setItem(
-			this.getAuthKeys().clockDrift,
+		await this.getKeyValueStorage().setItem(
+			authKeys.clockDrift,
 			`${tokens.clockDrift}`
 		);
 	}
 
 	async clearTokens(): Promise<void> {
+		const authKeys = await this.getAuthKeys();
 		// Not calling clear because it can remove data that is not managed by AuthTokenStore
 		await Promise.all([
-			this.getKeyValueStorage().removeItem(this.getAuthKeys().accessToken),
-			this.getKeyValueStorage().removeItem(this.getAuthKeys().idToken),
-			this.getKeyValueStorage().removeItem(this.getAuthKeys().clockDrift),
-			this.getKeyValueStorage().removeItem(this.getAuthKeys().refreshToken),
+			this.getKeyValueStorage().removeItem(authKeys.accessToken),
+			this.getKeyValueStorage().removeItem(authKeys.idToken),
+			this.getKeyValueStorage().removeItem(authKeys.clockDrift),
+			this.getKeyValueStorage().removeItem(authKeys.refreshToken),
+			this.getKeyValueStorage().removeItem(this.getLastAuthUserKey()),
 		]);
 	}
 
-	async getDeviceMetadata(): Promise<DeviceMetadata | null> {
-		const newDeviceMetadata = JSON.parse(
-			(await this.getKeyValueStorage().getItem(
-				this.getAuthKeys().deviceMetadata
-			)) || '{}'
+	async getDeviceMetadata(username?: string): Promise<DeviceMetadata | null> {
+		const authKeys = await this.getDeviceAuthKeys(username);
+		const deviceKey = await this.getKeyValueStorage().getItem(
+			authKeys.deviceKey
 		);
-		const deviceMetadata =
-			Object.keys(newDeviceMetadata).length > 0 ? newDeviceMetadata : null;
-		return deviceMetadata;
+		const deviceGroupKey = await this.getKeyValueStorage().getItem(
+			authKeys.deviceGroupKey
+		);
+		const randomPassword = await this.getKeyValueStorage().getItem(
+			authKeys.randomPasswordKey
+		);
+
+		return !!randomPassword
+			? {
+					deviceKey: deviceKey ?? undefined,
+					deviceGroupKey: deviceGroupKey ?? undefined,
+					randomPassword,
+			  }
+			: null;
 	}
-	async clearDeviceMetadata(): Promise<void> {
-		await this.getKeyValueStorage().removeItem(
-			this.getAuthKeys().deviceMetadata
-		);
+	async clearDeviceMetadata(username?: string): Promise<void> {
+		const authKeys = await this.getDeviceAuthKeys(username);
+		await Promise.all([
+			this.getKeyValueStorage().removeItem(authKeys.deviceKey),
+			this.getKeyValueStorage().removeItem(authKeys.deviceGroupKey),
+			this.getKeyValueStorage().removeItem(authKeys.randomPasswordKey),
+		]);
 	}
 
-	private getAuthKeys(): AuthKeys<keyof typeof AuthTokenStorageKeys> {
+	private async getAuthKeys(
+		username?: string
+	): Promise<AuthKeys<keyof typeof AuthTokenStorageKeys>> {
 		assertTokenProviderConfig(this.authConfig?.Cognito);
-		if (this.authKeys) return this.authKeys;
-		this.authKeys = createKeysForAuthStorage(
+		const lastAuthUser = username ?? (await this.getLastAuthUser());
+		return createKeysForAuthStorage(
 			this.name,
-			this.authConfig.Cognito.userPoolClientId
+			`${this.authConfig.Cognito.userPoolClientId}.${lastAuthUser}`
 		);
-		return this.authKeys;
+	}
+	private async getDeviceAuthKeys(
+		username?: string
+	): Promise<AuthKeys<keyof typeof AuthTokenStorageKeys>> {
+		let authKeys: AuthKeys<keyof typeof AuthTokenStorageKeys>;
+		if (username) {
+			const authEncodedKeys = await this.getAuthKeys(
+				encodeURIComponent(username)
+			);
+			const authNonEncodedKeys = await this.getAuthKeys(username);
+			const isEncodedKeysPresent = !!(await this.getKeyValueStorage().getItem(
+				authEncodedKeys.randomPasswordKey
+			));
+			authKeys = isEncodedKeysPresent ? authEncodedKeys : authNonEncodedKeys;
+		} else {
+			authKeys = await this.getAuthKeys();
+		}
+		return authKeys;
+	}
+
+	private getLastAuthUserKey() {
+		assertTokenProviderConfig(this.authConfig?.Cognito);
+		const identifier = this.authConfig.Cognito.userPoolClientId;
+		return `${this.name}.${identifier}.LastAuthUser`;
+	}
+
+	private async getLastAuthUser(): Promise<string> {
+		const lastAuthUser =
+			(await this.getKeyValueStorage().getItem(this.getLastAuthUserKey())) ??
+			'username';
+
+		return lastAuthUser;
 	}
 }
 
@@ -155,10 +222,7 @@ export const createKeysForAuthStorage = (
 	provider: string,
 	identifier: string
 ) => {
-	return getAuthStorageKeys(AuthTokenStorageKeys)(
-		`com.amplify.${provider}`,
-		identifier
-	);
+	return getAuthStorageKeys(AuthTokenStorageKeys)(`${provider}`, identifier);
 };
 
 export function getAuthStorageKeys<T extends Record<string, string>>(

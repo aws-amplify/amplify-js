@@ -4,6 +4,7 @@
 	"description": "Storage category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
+	"react-native": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
 	"browser": {
 		"./lib-esm/lib-esm/providers/s3/utils/client/runtime/index": "./lib-esm/providers/s3/utils/client/runtime/index.browser.js"
