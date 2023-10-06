@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { UpdateMFAPreferenceInput } from '../types';
 import { SetUserMFAPreferenceException } from '../types/errors';
@@ -11,6 +11,7 @@ import { setUserMFAPreference } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { CognitoMFASettings } from '../utils/clients/CognitoIdentityProvider/types';
 import { assertAuthTokens } from '../utils/types';
+import { getAuthUserAgentValue } from '../../../utils';
 
 /**
  * Updates the MFA preference of the user.
@@ -28,7 +29,10 @@ export async function updateMFAPreference(
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	await setUserMFAPreference(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ 
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.UpdateMFAPreference)
+		},
 		{
 			AccessToken: tokens.accessToken.toString(),
 			SMSMfaSettings: getMFASettings(sms),
