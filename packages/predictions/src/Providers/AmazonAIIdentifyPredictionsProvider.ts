@@ -89,7 +89,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 					.then(value => {
 						const parser =
 							/https:\/\/([a-zA-Z0-9%\-_.]+)\.s3\.[A-Za-z0-9%\-._~]+\/([a-zA-Z0-9%\-._~/]+)\?/;
-						const parsedURL = value.url.toString().match(parser) || '';
+						const parsedURL = value.url.toString().match(parser) ?? '';
 						if (parsedURL.length < 3) rej('Invalid S3 key was given.');
 						res({
 							S3Object: {
@@ -141,7 +141,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		);
 
 		const { identifyText = {} } =
-			Amplify.getConfig().Predictions?.identify || {};
+			Amplify.getConfig().Predictions?.identify ?? {};
 		const { region = '', defaults = {} } = identifyText;
 		const { format: configFormat = 'PLAIN' } = defaults;
 
@@ -164,7 +164,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		}
 
 		// get default value if format isn't specified in the input.
-		const format = input.text.format || configFormat;
+		const format = input.text.format ?? configFormat;
 		const featureTypes: FeatureTypes = []; // structures we want to analyze (e.g. [TABLES, FORMS]).
 		if (format === 'FORM' || format === 'ALL') featureTypes.push('FORMS');
 		if (format === 'TABLE' || format === 'ALL') featureTypes.push('TABLES');
@@ -245,10 +245,10 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				PredictionsValidationErrorCode.NoCredentials
 			);
 
-			const { identifyLabels } =
-				Amplify.getConfig().Predictions?.identify || {};
-			const { region = '', defaults } = identifyLabels || {};
-			const { type = 'LABELS' } = defaults || {};
+			const { identifyLabels = {} } =
+				Amplify.getConfig().Predictions?.identify ?? {};
+			const { region = '', defaults = {} } = identifyLabels;
+			const { type = 'LABELS' } = defaults;
 
 			this.rekognitionClient = new RekognitionClient({
 				region,
@@ -267,7 +267,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			const servicePromises = [];
 
 			// get default argument
-			const entityType = input.labels.type || type;
+			const entityType = input.labels.type ?? type;
 			if (entityType === 'LABELS' || entityType === 'ALL') {
 				servicePromises.push(this.detectLabels(param));
 			}
@@ -370,7 +370,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 					maxEntities: maxFacesConfig = 50,
 				} = {},
 			} = {},
-		} = Amplify.getConfig().Predictions?.identify || {};
+		} = Amplify.getConfig().Predictions?.identify ?? {};
 		// default arguments
 
 		this.rekognitionClient = new RekognitionClient({

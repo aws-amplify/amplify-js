@@ -54,23 +54,25 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 	): Promise<TranslateTextOutput> {
 		logger.debug('Starting translation');
 
-		const { translateText } = Amplify.getConfig().Predictions?.convert || {};
+		const { translateText = {} } =
+			Amplify.getConfig().Predictions?.convert ?? {};
 		assertValidationError(
 			!!translateText.region,
 			PredictionsValidationErrorCode.NoRegion
 		);
-		const { defaults, region } = translateText;
+		const { defaults = {}, region } = translateText;
 
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			PredictionsValidationErrorCode.NoCredentials
 		);
+
 		const { sourceLanguage, targetLanguage } = defaults;
 		const sourceLanguageCode =
-			input.translateText.source.language || sourceLanguage;
+			input.translateText.source.language ?? sourceLanguage;
 		const targetLanguageCode =
-			input.translateText.targetLanguage || targetLanguage;
+			input.translateText.targetLanguage ?? targetLanguage;
 		assertValidationError(
 			!!sourceLanguageCode,
 			PredictionsValidationErrorCode.NoSourceLanguage
@@ -117,7 +119,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			PredictionsValidationErrorCode.NoSource
 		);
 
-		const { speechGenerator } = Amplify.getConfig().Predictions?.convert || {};
+		const { speechGenerator } = Amplify.getConfig().Predictions?.convert ?? {};
 		assertValidationError(
 			!!speechGenerator?.region,
 			PredictionsValidationErrorCode.NoRegion
@@ -126,7 +128,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		const { defaults = {}, region } = speechGenerator;
 
 		const { voiceId: defaultVoiceId } = defaults;
-		const voiceId = input.textToSpeech.voiceId || defaultVoiceId;
+		const voiceId = input.textToSpeech.voiceId ?? defaultVoiceId;
 		assertValidationError(!!voiceId, PredictionsValidationErrorCode.NoVoiceId);
 
 		this.pollyClient = new PollyClient({
@@ -174,14 +176,14 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 				PredictionsValidationErrorCode.NoCredentials
 			);
 
-			const { transcription } = Amplify.getConfig().Predictions?.convert || {};
+			const { transcription } = Amplify.getConfig().Predictions?.convert ?? {};
 			assertValidationError(
 				!!transcription?.region,
 				PredictionsValidationErrorCode.NoRegion
 			);
 
 			const { defaults, region } = transcription;
-			const language = input.transcription.language || defaults?.language;
+			const language = input.transcription.language ?? defaults?.language;
 
 			assertValidationError(
 				!!language,
