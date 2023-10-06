@@ -22,7 +22,7 @@ export const getProperties = async function (
 	const response = await headObject(
 		{
 			...s3Config, 
-			userAgentValue: getStorageUserAgentValue(action || StorageAction.GetProperties)
+			userAgentValue: getStorageUserAgentValue(action ?? StorageAction.GetProperties)
 		}, 
 		{
 			Bucket: bucket,
