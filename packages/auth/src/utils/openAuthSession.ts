@@ -3,7 +3,7 @@
 
 import { OpenAuthSession } from './types';
 
-export const openAuthSession: OpenAuthSession = (url: string) => {
+export const openAuthSession: OpenAuthSession = async (url: string) => {
 	if (!window?.location) {
 		return;
 	}

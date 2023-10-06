@@ -9,7 +9,7 @@ import {
 	OperationTypeNode,
 } from 'graphql';
 import { Observable } from 'rxjs';
-import { Cache, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	GraphQLAuthMode,
 	CustomUserAgentDetails,
@@ -55,7 +55,6 @@ export class InternalGraphQLAPIClass {
 	private _options;
 	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
-	Cache = Cache;
 	private _api = { post, cancelREST, updateRequestToBeCancellable };
 
 	/**
@@ -72,9 +71,11 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private async _headerBasedAuth(
+		amplify: AmplifyClassV6,
 		authMode: GraphQLAuthMode,
 		additionalHeaders: { [key: string]: string } = {}
 	) {
+		const config = amplify.getConfig();
 		const {
 			region: region,
 			endpoint: appSyncGraphqlEndpoint,
@@ -95,7 +96,7 @@ export class InternalGraphQLAPIClass {
 				};
 				break;
 			case 'iam':
-				const session = await fetchAuthSession();
+				const session = await amplify.Auth.fetchAuthSession();
 				if (session.credentials === undefined) {
 					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
@@ -105,7 +106,9 @@ export class InternalGraphQLAPIClass {
 				try {
 					let token;
 
-					token = (await fetchAuthSession()).tokens?.accessToken.toString();
+					token = (
+						await amplify.Auth.fetchAuthSession()
+					).tokens?.accessToken.toString();
 
 					// debugger;
 					if (!token) {
@@ -159,6 +162,7 @@ export class InternalGraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
+		amplify: AmplifyClassV6,
 		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
@@ -186,6 +190,7 @@ export class InternalGraphQLAPIClass {
 			case 'mutation':
 				const abortController = new AbortController();
 				const responsePromise = this._graphql<T>(
+					amplify,
 					{ query, variables, authMode },
 					headers,
 					abortController,
@@ -198,6 +203,7 @@ export class InternalGraphQLAPIClass {
 				return responsePromise;
 			case 'subscription':
 				return this._graphqlSubscribe(
+					amplify,
 					{ query, variables, authMode },
 					headers,
 					customUserAgentDetails
@@ -208,6 +214,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private async _graphql<T = any>(
+		amplify: AmplifyClassV6,
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
 		abortController: AbortController,
@@ -232,13 +239,15 @@ export class InternalGraphQLAPIClass {
 			};
 		}
 
+		// TODO: Figure what we need to do to remove `!`'s.
 		const headers = {
 			...(!customEndpoint &&
-				(await this._headerBasedAuth(authMode!, additionalHeaders))),
-			...(customEndpoint &&
+				(await this._headerBasedAuth(amplify, authMode!, additionalHeaders))),
+			...((customEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(authMode!, additionalHeaders)
-					: { Authorization: null })),
+					? await this._headerBasedAuth(amplify, authMode!, additionalHeaders)
+					: { Authorization: null })) ||
+				{}),
 			...(customHeaders && (await customHeaders(customHeadersOptions))),
 			...additionalHeaders,
 			...(!customEndpoint && {
@@ -248,7 +257,7 @@ export class InternalGraphQLAPIClass {
 
 		const body = {
 			query: print(query as DocumentNode),
-			variables,
+			variables: variables || null,
 		};
 
 		const signingServiceInfo = {
@@ -328,6 +337,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private _graphqlSubscribe(
+		amplify: AmplifyClassV6,
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails

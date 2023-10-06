@@ -84,6 +84,7 @@ export async function signInWithCustomSRPAuth(
 		});
 		if (AuthenticationResult) {
 			await cacheCognitoTokens({
+				username,
 				...AuthenticationResult,
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,

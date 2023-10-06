@@ -972,8 +972,9 @@ export class AWSAppSyncRealTimeProvider {
 				body: request.data,
 			},
 			{
-				credentials: creds,
-				signingRegion: endpointInfo.region,
+				// TODO: What do we need to do to remove these !'s?
+				credentials: creds!,
+				signingRegion: endpointInfo.region!,
 				signingService: endpointInfo.service,
 			}
 		);

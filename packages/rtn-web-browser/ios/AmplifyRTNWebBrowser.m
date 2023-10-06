@@ -7,6 +7,7 @@
 
 RCT_EXTERN_METHOD(openAuthSessionAsync:(NSString*)url
                   redirectUrlStr:(NSString*)redirectUrlStr
+                  prefersEphemeralSession:(BOOL)prefersEphemeralSession
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 

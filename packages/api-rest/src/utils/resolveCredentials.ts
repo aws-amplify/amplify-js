@@ -10,7 +10,7 @@ import { RestApiValidationErrorCode, assertValidationError } from '../errors';
 export const resolveCredentials = async (amplify: AmplifyClassV6) => {
 	const { credentials } = await amplify.Auth.fetchAuthSession();
 	assertValidationError(
-		!!credentials,
+		!!credentials && !!credentials.accessKeyId && !!credentials.secretAccessKey,
 		RestApiValidationErrorCode.NoCredentials
 	);
 	return credentials;
