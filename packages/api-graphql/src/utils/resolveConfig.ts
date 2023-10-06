@@ -17,11 +17,6 @@ export const resolveConfig = () => {
 		region,
 	} = Amplify.getConfig().API?.GraphQL ?? {};
 
-	/**
-	 * TODO: validate that headers are a function:
-	 * https://github.com/aws-amplify/amplify-js/blob/main/packages/api-graphql/src/internals/InternalGraphQLAPI.ts#L88-L93
-	 * Awaiting merged PR for Amplify core config.
-	 */
 	assertValidationError(!!endpoint, APIValidationErrorCode.NoEndpoint);
 	assertValidationError(
 		!(!customEndpoint && customEndpointRegion),
