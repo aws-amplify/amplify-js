@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { AuthDeliveryMedium } from '../../../types';
 import {
 	UserAttributeKey,
@@ -26,6 +29,7 @@ import {
 	autoSignInWhenUserIsConfirmedWithLink,
 } from '../utils/signUpHelpers';
 import { setAutoSignIn } from './autoSignIn';
+import { getAuthUserAgentValue } from '../../../utils';
 
 /**
  * Creates a user
@@ -78,7 +82,10 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		setAutoSignInStarted(true);
 	}
 	const clientOutput = await signUpClient(
-		{ region: getRegion(authConfig.userPoolId) },
+		{
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignUp),
+		},
 		{
 			Username: username,
 			Password: password,

@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -16,7 +19,8 @@ import {
 	isAutoSignInStarted,
 	setAutoSignInStarted,
 } from '../utils/signUpHelpers';
-import { resetAutoSignIn, setAutoSignIn } from './autoSignIn';
+import { setAutoSignIn } from './autoSignIn';
+import { getAuthUserAgentValue } from '../../../utils';
 
 /**
  * Confirms a new user account.
@@ -47,7 +51,10 @@ export async function confirmSignUp(
 	);
 
 	await confirmSignUpClient(
-		{ region: getRegion(authConfig.userPoolId) },
+		{
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignUp),
+		},
 		{
 			Username: username,
 			ConfirmationCode: confirmationCode,

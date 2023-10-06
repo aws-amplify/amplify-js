@@ -7,7 +7,7 @@ import {
 	putEvents,
 	PutEventsInput,
 	PutEventsOutput,
-} from '../../../AwsClients/Pinpoint';
+} from '../../../awsClients/pinpoint';
 import {
 	EventBufferConfig,
 	BufferedEvent,
@@ -63,6 +63,10 @@ export class PinpointEventBuffer {
 
 	public identityHasChanged(identityId: AuthSession['identityId']) {
 		return this._config.identityId !== identityId;
+	}
+
+	public flushAll() {
+		this._putEvents(this._buffer.splice(0, this._buffer.length));
 	}
 
 	private _startLoop() {

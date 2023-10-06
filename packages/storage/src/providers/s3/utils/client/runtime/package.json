@@ -1,8 +1,13 @@
 {
 	"name": "@aws-amplify/storage/src/providers/s3/utils/client/runtime",
 	"main": "../../../../../../lib/providers/s3/utils/client/runtime/index.js",
+	"react-native": {
+		"./": "../../../../../../lib-esm/providers/s3/utils/client/runtime/index.native.js",
+		"fast-xml-parser": "fast-xml-parser",
+		"buffer": "buffer"
+	},
 	"browser": {
-		"./index.js": "../../../../../../lib-esm/providers/s3/utils/client/runtime/index.browser.js",
+		"./": "../../../../../../lib-esm/providers/s3/utils/client/runtime/index.browser.js",
 		"fast-xml-parser": false,
 		"buffer": false
 	},

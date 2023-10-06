@@ -80,12 +80,12 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		const idTokenExpired =
 			!!tokens?.idToken &&
 			isTokenExpired({
-				expiresAt: (tokens.idToken?.payload?.exp || 0) * 1000,
-				clockDrift: tokens.clockDrift || 0,
+				expiresAt: (tokens.idToken?.payload?.exp ?? 0) * 1000,
+				clockDrift: tokens.clockDrift ?? 0,
 			});
 		const accessTokenExpired = isTokenExpired({
-			expiresAt: (tokens.accessToken?.payload?.exp || 0) * 1000,
-			clockDrift: tokens.clockDrift || 0,
+			expiresAt: (tokens.accessToken?.payload?.exp ?? 0) * 1000,
+			clockDrift: tokens.clockDrift ?? 0,
 		});
 
 		if (options?.forceRefresh || idTokenExpired || accessTokenExpired) {
@@ -150,10 +150,10 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		return this.getTokenStore().clearTokens();
 	}
 
-	getDeviceMetadata(): Promise<DeviceMetadata | null> {
-		return this.getTokenStore().getDeviceMetadata();
+	getDeviceMetadata(username?: string): Promise<DeviceMetadata | null> {
+		return this.getTokenStore().getDeviceMetadata(username);
 	}
-	clearDeviceMetadata(): Promise<void> {
-		return this.getTokenStore().clearDeviceMetadata();
+	clearDeviceMetadata(username?: string): Promise<void> {
+		return this.getTokenStore().clearDeviceMetadata(username);
 	}
 }

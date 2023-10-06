@@ -7,10 +7,11 @@ import { UpdatePasswordInput } from '../types';
 import { changePassword } from '../utils/clients/CognitoIdentityProvider';
 import { ChangePasswordException } from '../../cognito/types/errors';
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
+import { getAuthUserAgentValue } from '../../../utils';
 
 /**
  * Updates user's password while authenticated.
@@ -38,7 +39,10 @@ export async function updatePassword(
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	await changePassword(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ 
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.UpdatePassword)
+		},
 		{
 			AccessToken: tokens.accessToken.toString(),
 			PreviousPassword: oldPassword,

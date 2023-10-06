@@ -1,3 +1,4 @@
+import { Hub } from '@aws-amplify/core';
 import { record as pinpointRecord } from '@aws-amplify/core/internals/providers/pinpoint';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import { record } from '../../../../src/providers/pinpoint';
@@ -20,33 +21,41 @@ import {
 	config,
 } from './testUtils/data';
 
+jest.mock('@aws-amplify/core');
+jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/pinpoint/utils');
-jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 
 describe('Pinpoint API: record', () => {
+	// create spies
+	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
+	// create mocks
 	const mockPinpointRecord = pinpointRecord as jest.Mock;
 	const mockResolveConfig = resolveConfig as jest.Mock;
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 	const mockIsAnalyticsEnabled = isAnalyticsEnabled as jest.Mock;
 	const mockGetAnalyticsUserAgentString =
 		getAnalyticsUserAgentString as jest.Mock;
-	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
+	const mockHubDispatch = Hub.dispatch as jest.Mock;
 
 	beforeEach(() => {
-		mockPinpointRecord.mockReset();
 		mockPinpointRecord.mockResolvedValue(undefined);
-		mockResolveConfig.mockReset();
 		mockResolveConfig.mockReturnValue(config);
-		mockIsAnalyticsEnabled.mockReset();
 		mockIsAnalyticsEnabled.mockReturnValue(true);
-		mockGetAnalyticsUserAgentString.mockReset();
 		mockGetAnalyticsUserAgentString.mockReturnValue('mock-user-agent');
-		mockResolveCredentials.mockReset();
 		mockResolveCredentials.mockResolvedValue({
 			credentials,
 			identityId,
 		});
+	});
+
+	afterEach(() => {
+		mockPinpointRecord.mockReset();
+		mockResolveConfig.mockReset();
+		mockIsAnalyticsEnabled.mockReset();
+		mockGetAnalyticsUserAgentString.mockReset();
+		mockResolveCredentials.mockReset();
+		mockHubDispatch.mockClear();
 	});
 
 	it('invokes the core record implementation', async () => {
@@ -100,5 +109,18 @@ describe('Pinpoint API: record', () => {
 		await new Promise(process.nextTick);
 
 		expect(mockPinpointRecord).not.toBeCalled();
+	});
+
+	it('should dispatch a Hub event', async () => {
+		record(event);
+
+		await new Promise(process.nextTick);
+
+		expect(mockHubDispatch).toBeCalledWith(
+			'analytics',
+			{ event: 'record', data: event, message: 'Recording Analytics event' },
+			'Analytics',
+			expect.anything()
+		);
 	});
 });

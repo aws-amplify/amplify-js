@@ -44,18 +44,19 @@
 	"files": [
 		"lib",
 		"lib-esm",
-		"src"
+		"src",
+		"internals",
+		"server"
 	],
 	"dependencies": {
-		"axios": "0.26.0",
-		"tslib": "^2.5.0",
-		"url": "0.11.0"
+		"tslib": "^2.5.0"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
+		"@aws-amplify/react-native": "^1.0.0",
 		"typescript": "5.0.2"
 	},
 	"size-limit": [

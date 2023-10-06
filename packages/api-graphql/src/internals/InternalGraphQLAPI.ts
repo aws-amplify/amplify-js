@@ -9,7 +9,7 @@ import {
 	OperationTypeNode,
 } from 'graphql';
 import { Observable } from 'rxjs';
-import { Amplify, Cache, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	APIAuthMode,
 	CustomUserAgentDetails,
@@ -54,7 +54,6 @@ export class InternalGraphQLAPIClass {
 	private _options;
 	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
-	Cache = Cache;
 	private _api = { post, updateRequestToBeCancellable };
 
 	/**
@@ -71,16 +70,17 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private async _headerBasedAuth(
+		amplify: AmplifyClassV6,
 		authMode: APIAuthMode,
 		additionalHeaders: { [key: string]: string } = {}
 	) {
-		const config = Amplify.getConfig();
+		const config = amplify.getConfig();
 		const {
 			region: region,
 			endpoint: appSyncGraphqlEndpoint,
 			apiKey,
 			defaultAuthMode,
-		} = config.API.GraphQL;
+		} = config.API?.GraphQL || {};
 
 		const authenticationType = authMode || defaultAuthMode || 'iam';
 		let headers = {};
@@ -95,7 +95,7 @@ export class InternalGraphQLAPIClass {
 				};
 				break;
 			case 'iam':
-				const session = await fetchAuthSession();
+				const session = await amplify.Auth.fetchAuthSession();
 				if (session.credentials === undefined) {
 					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
@@ -105,7 +105,9 @@ export class InternalGraphQLAPIClass {
 				try {
 					let token;
 
-					token = (await fetchAuthSession()).tokens?.accessToken.toString();
+					token = (
+						await amplify.Auth.fetchAuthSession()
+					).tokens?.accessToken.toString();
 
 					if (!token) {
 						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
@@ -158,6 +160,7 @@ export class InternalGraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
+		amplify: AmplifyClassV6,
 		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
@@ -185,6 +188,7 @@ export class InternalGraphQLAPIClass {
 			case 'mutation':
 				const abortController = new AbortController();
 				const responsePromise = this._graphql<T>(
+					amplify,
 					{ query, variables, authMode },
 					headers,
 					abortController,
@@ -197,6 +201,7 @@ export class InternalGraphQLAPIClass {
 				return responsePromise;
 			case 'subscription':
 				return this._graphqlSubscribe(
+					amplify,
 					{ query, variables, authMode },
 					headers,
 					customUserAgentDetails
@@ -207,26 +212,29 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private async _graphql<T = any>(
+		amplify: AmplifyClassV6,
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
 		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
-		const config = Amplify.getConfig();
+		const config = amplify.getConfig();
 
 		const { region: region, endpoint: appSyncGraphqlEndpoint } =
-			config.API.GraphQL;
+			config.API?.GraphQL || {};
 
 		const customGraphqlEndpoint = null;
 		const customEndpointRegion = null;
 
+		// TODO: Figure what we need to do to remove `!`'s.
 		const headers = {
 			...(!customGraphqlEndpoint &&
-				(await this._headerBasedAuth(authMode, additionalHeaders))),
-			...(customGraphqlEndpoint &&
+				(await this._headerBasedAuth(amplify, authMode!, additionalHeaders))),
+			...((customGraphqlEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(authMode, additionalHeaders)
-					: { Authorization: null })),
+					? await this._headerBasedAuth(amplify, authMode!, additionalHeaders)
+					: { Authorization: null })) ||
+				{}),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
@@ -235,7 +243,7 @@ export class InternalGraphQLAPIClass {
 
 		const body = {
 			query: print(query as DocumentNode),
-			variables,
+			variables: variables || null,
 		};
 
 		const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
@@ -264,7 +272,7 @@ export class InternalGraphQLAPIClass {
 				abortController,
 			});
 
-			const result = { data: await responseBody.json() };
+			const result = await responseBody.json();
 
 			response = result;
 		} catch (err) {
@@ -309,11 +317,12 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private _graphqlSubscribe(
+		amplify: AmplifyClassV6,
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
-		const { GraphQL } = Amplify.getConfig().API ?? {};
+		const { GraphQL } = amplify.getConfig().API ?? {};
 		if (!this.appSyncRealTime) {
 			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
 		}

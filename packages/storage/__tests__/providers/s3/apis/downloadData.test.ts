@@ -108,6 +108,7 @@ describe('downloadData', () => {
 					useAccelerateEndpoint: true,
 					onDownloadProgress: onProgress,
 					abortSignal: expect.any(AbortSignal),
+					userAgentValue: expect.any(String)
 				},
 				{
 					Bucket: bucket,

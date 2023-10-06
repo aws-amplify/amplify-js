@@ -81,6 +81,7 @@ export async function signInWithUserPassword(
 		if (AuthenticationResult) {
 			await cacheCognitoTokens({
 				...AuthenticationResult,
+				username,
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
