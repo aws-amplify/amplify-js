@@ -63,7 +63,10 @@ describe('fetchMFAPreference Happy Path Cases:', () => {
 		expect(resp).toEqual({ preferred: 'SMS', enabled: ['SMS', 'TOTP'] });
 		expect(getUserClientSpy).toHaveBeenCalledTimes(1);
 		expect(getUserClientSpy).toHaveBeenCalledWith(
-			{ region: 'us-west-2' },
+			{ 
+				region: 'us-west-2',
+				userAgentValue: expect.any(String)
+			},
 			{
 				AccessToken: mockedAccessToken,
 			}
