@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import { StorageAction } from '@aws-amplify/core/internals/utils';
 import { CopyInput, CopyOutput } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import { copyObject } from '../../utils/client';
+import { getStorageUserAgentValue } from '../../utils/userAgent';
 
 export const copy = async (
 	amplify: AmplifyClassV6,
@@ -35,12 +37,18 @@ export const copy = async (
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
 	// TODO(ashwinkumar6) V6-logger: debug `copying ${finalSrcKey} to ${finalDestKey}`
-	await copyObject(s3Config, {
-		Bucket: bucket,
-		CopySource: `${bucket}/${sourceKeyPrefix}${sourceKey}`,
-		Key: `${destinationKeyPrefix}${destinationKey}`,
-		MetadataDirective: 'COPY', // Copies over metadata like contentType as well
-	});
+	await copyObject(
+		{
+			...s3Config, 
+			userAgentValue: getStorageUserAgentValue(StorageAction.Copy)
+		}, 
+		{
+			Bucket: bucket,
+			CopySource: `${bucket}/${sourceKeyPrefix}${sourceKey}`,
+			Key: `${destinationKeyPrefix}${destinationKey}`,
+			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
+		}
+	);
 
 	return {
 		key: destinationKey,

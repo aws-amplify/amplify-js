@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
+import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { UploadDataInput } from '../../types';
 import { calculateContentMd5, resolveS3ConfigAndInput } from '../../utils';
 import { Item as S3Item } from '../../types/outputs';
 import { putObject } from '../../utils/client';
+import { getStorageUserAgentValue } from '../../utils/userAgent';
 
 /**
  * Get a function the returns a promise to call putObject API to S3.
@@ -38,6 +40,7 @@ export const putObjectJob =
 				...s3Config,
 				abortSignal,
 				onUploadProgress: onProgress,
+				userAgentValue: getStorageUserAgentValue(StorageAction.UploadData)
 			},
 			{
 				Bucket: bucket,

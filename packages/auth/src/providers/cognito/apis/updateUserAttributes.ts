@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import {
 	AuthUserAttributes,
@@ -19,6 +19,7 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { toAttributeType } from '../utils/apiHelpers';
 import { CodeDeliveryDetailsType } from '../utils/clients/CognitoIdentityProvider/types';
 import { UpdateUserAttributesException } from '../types/errors';
+import { getAuthUserAgentValue } from '../../../utils';
 
 /**
  * Updates user's attributes while authenticated.
@@ -38,7 +39,10 @@ export const updateUserAttributes = async (
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const { CodeDeliveryDetailsList } = await updateUserAttributesClient(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ 
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.UpdateUserAttributes)
+		},
 		{
 			AccessToken: tokens.accessToken.toString(),
 			ClientMetadata: clientMetadata,
