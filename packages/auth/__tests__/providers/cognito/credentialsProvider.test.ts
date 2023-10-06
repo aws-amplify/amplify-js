@@ -20,7 +20,7 @@ jest.mock('@aws-amplify/core', () => ({
 	getCredentialsForIdentity: jest.fn(),
 }));
 
-jest.mock('@aws-amplify/core/lib/AwsClients/CognitoIdentity');
+jest.mock('@aws-amplify/core/lib/awsClients/cognitoIdentity');
 
 jest.mock(
 	'./../../../src/providers/cognito/credentialsProvider/IdentityIdProvider',
