@@ -106,19 +106,5 @@
 		"@babel/plugin-proposal-private-methods": "^7.0.0",
 		"@babel/plugin-proposal-private-property-in-object": "^7.0.0",
 		"metro-react-native-babel-preset": "^0.66.2"
-	},
-	"size-limit": [
-		{
-			"name": "Notifications (top-level class)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Notifications }",
-			"limit": "29.95 kB"
-		},
-		{
-			"name": "Notifications (with Analytics)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Notifications, Analytics }",
-			"limit": "29.95 kB"
-		}
-	]
+	}
 }

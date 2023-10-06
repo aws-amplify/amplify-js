@@ -63,14 +63,6 @@
 		"@aws-amplify/api-rest": "4.0.0",
 		"tslib": "^2.6.1"
 	},
-	"size-limit": [
-		{
-			"name": "API (top-level class)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, API }",
-			"limit": "93.82 kB"
-		}
-	],
 	"jest": {
 		"globals": {
 			"ts-jest": {
