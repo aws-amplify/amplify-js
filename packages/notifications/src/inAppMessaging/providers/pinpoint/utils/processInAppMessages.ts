@@ -21,13 +21,12 @@ const MESSAGE_DAILY_COUNT_KEY = 'pinpointProvider_inAppMessages_dailyCount';
 const MESSAGE_TOTAL_COUNT_KEY = 'pinpointProvider_inAppMessages_totalCount';
 const logger = new ConsoleLogger('InAppMessaging.processInAppMessages');
 
-let sessionMessageCountMap: InAppMessageCountMap = {};
+const sessionMessageCountMap: InAppMessageCountMap = {};
 
 export async function processInAppMessages(
 	messages: PinpointInAppMessage[],
 	event: InAppMessagingEvent
 ): Promise<InAppMessage[]> {
-	console.log('event: ', event);
 	let highestPrioritySeen: number;
 	let acc: PinpointInAppMessage[] = [];
 	for (let index = 0; index < messages.length; index++) {
@@ -38,20 +37,14 @@ export async function processInAppMessages(
 			matchesMetrics(message, event) &&
 			isBeforeEndDate(message) &&
 			(await isBelowCap(message));
-		console.log('messageQualifies: ', messageQualifies);
 		// filter all qualifying messages returning only those that are of (relative) highest priority
 		if (messageQualifies) {
-			console.log('highestPrioritySeen: ', highestPrioritySeen);
-
 			// have not yet encountered message with priority
 			if (!highestPrioritySeen) {
-				console.log('message.Priority: ', message.Priority);
-
 				// this message has priority, so reset the accumulator with this message only
 				if (message.Priority) {
 					highestPrioritySeen = message.Priority;
 					acc = [message];
-					break;
 				} else {
 					// this message also has no priority, so just add this message to accumulator
 					acc.push(message);
@@ -62,7 +55,6 @@ export async function processInAppMessages(
 				if (message.Priority < highestPrioritySeen) {
 					highestPrioritySeen = message.Priority;
 					acc = [message];
-					break;
 					// this message has the same priority, so just add this message to accumulator
 				} else if (message.Priority === highestPrioritySeen) {
 					acc.push(message);
@@ -70,8 +62,6 @@ export async function processInAppMessages(
 			}
 		}
 	}
-
-	console.log('acc: ', acc);
 	return normalizeMessages(acc);
 }
 
@@ -97,9 +87,9 @@ async function isBelowCap({
 		CampaignId
 	);
 	return (
-		(!SessionCap || sessionCount < SessionCap) &&
-		(!DailyCap || dailyCount < DailyCap) &&
-		(!TotalCap || totalCount < TotalCap)
+		(!SessionCap ?? sessionCount < SessionCap) &&
+		(!DailyCap ?? dailyCount < DailyCap) &&
+		(!TotalCap ?? totalCount < TotalCap)
 	);
 }
 

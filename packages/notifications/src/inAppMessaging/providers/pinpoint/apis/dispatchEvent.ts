@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import {
 	PINPOINT_KEY_PREFIX,
 	STORAGE_KEY_SUFFIX,
@@ -7,25 +10,36 @@ import { InAppMessage, InAppMessagingEvent } from '../../../types';
 import flatten from 'lodash/flatten';
 import { defaultStorage } from '@aws-amplify/core';
 import { notifyEventListeners } from '../../../../common';
+import { assertServiceError } from '../../../errors';
+import { InAppMessageConflictHandler } from '../types';
+
+let conflictHandler: InAppMessageConflictHandler = defaultConflictHandler;
+
+export function internalSetConflictHandler(
+	handler: InAppMessageConflictHandler
+): void {
+	conflictHandler = handler;
+}
 
 export async function dispatchEvent(event: InAppMessagingEvent): Promise<void> {
-	const key = `${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`;
-	const cachedMessages = await defaultStorage.getItem(key);
-	console.log('Cached messages: ', cachedMessages);
-	// TODO(V6): Add assertion that the cachedMessages are desired shape
-	const messages: InAppMessage[] = await processInAppMessages(
-		cachedMessages ? JSON.parse(cachedMessages) : [],
-		event
-	);
-	console.log('Pro messages: ', messages);
-
-	const flattenedMessages = flatten(messages);
-
-	if (flattenedMessages.length) {
-		notifyEventListeners(
-			'messageReceived',
-			defaultConflictHandler(flattenedMessages)
+	try {
+		const key = `${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`;
+		const cachedMessages = await defaultStorage.getItem(key);
+		const messages: InAppMessage[] = await processInAppMessages(
+			cachedMessages ? JSON.parse(cachedMessages) : [],
+			event
 		);
+		const flattenedMessages = flatten(messages);
+
+		if (flattenedMessages.length > 0) {
+			notifyEventListeners(
+				'messageReceived',
+				conflictHandler(flattenedMessages)
+			);
+		}
+	} catch (error) {
+		assertServiceError(error);
+		throw error;
 	}
 }
 

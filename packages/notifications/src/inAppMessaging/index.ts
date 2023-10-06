@@ -5,4 +5,5 @@ export {
 	identifyUser,
 	syncMessages,
 	dispatchEvent,
+	setConflictHandler,
 } from './providers/pinpoint';
