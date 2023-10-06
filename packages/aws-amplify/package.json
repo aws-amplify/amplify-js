@@ -288,7 +288,7 @@
 			"name": "[API] REST API handlers",
 			"path": "./lib-esm/api/index.js",
 			"import": "{ get, post, put, del, patch, head, isCancelError }",
-			"limit": "13.63 kB"
+			"limit": "13.66 kB"
 		},
 		{
 			"name": "[Auth] signUp (Cognito)",
@@ -312,7 +312,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "28.30 kB"
+			"limit": "28.84 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
@@ -330,7 +330,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignIn }",
-			"limit": "28.20 kB"
+			"limit": "28.69 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -384,7 +384,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect }",
-			"limit": "21.50 kB"
+			"limit": "22.20 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
@@ -396,13 +396,13 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "30.30 kB"
+			"limit": "31.03 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "22.00 kB"
+			"limit": "22.67 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
