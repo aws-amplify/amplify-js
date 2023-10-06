@@ -745,15 +745,15 @@ export interface DeviceType {
 	/**
 	 * <p>The creation date of the device.</p>
 	 */
-	DeviceCreateDate?: Date;
+	DeviceCreateDate?: number;
 	/**
 	 * <p>The last modified date of the device.</p>
 	 */
-	DeviceLastModifiedDate?: Date;
+	DeviceLastModifiedDate?: number;
 	/**
 	 * <p>The date when the device was last authenticated.</p>
 	 */
-	DeviceLastAuthenticatedDate?: Date;
+	DeviceLastAuthenticatedDate?: number;
 }
 export interface ForgetDeviceCommandInput extends ForgetDeviceRequest {}
 export interface ForgetDeviceCommandOutput extends __MetadataBearer {}
