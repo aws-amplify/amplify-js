@@ -1,37 +1,11 @@
 import * as raw from '../src';
 import { graphql, cancel } from '../src/internals/v6';
 import { Amplify } from '@aws-amplify/core';
-import { GraphQLError } from 'graphql';
 import * as typedQueries from './fixtures/with-types/queries';
-import * as typedMutations from './fixtures/with-types/mutations';
-import * as typedSubscriptions from './fixtures/with-types/subscriptions';
-import * as untypedQueries from './fixtures/without-types/queries';
-import * as untypedMutations from './fixtures/without-types/mutations';
-import * as untypedSubscriptions from './fixtures/without-types/subscriptions';
-import { from } from 'rxjs';
-import {
-	expectGet,
-	expectList,
-	expectMutation,
-	expectSub,
-} from './utils/expects';
+import { expectGet } from './utils/expects';
 
-import {
-	GraphQLResult,
-	GraphqlSubscriptionResult,
-	GraphqlSubscriptionMessage,
-	GraphQLQuery,
-	GraphQLSubscription,
-	GraphQLAuthError,
-} from '../src/types';
-import {
-	CreateThreadMutation,
-	UpdateThreadMutation,
-	DeleteThreadMutation,
-	GetThreadQuery,
-	ListThreadsQuery,
-	OnCreateThreadSubscription,
-} from './fixtures/with-types/API';
+import { GraphQLResult, GraphQLAuthError } from '../src/types';
+import { GetThreadQuery } from './fixtures/with-types/API';
 
 const serverManagedFields = {
 	id: 'some-id',
