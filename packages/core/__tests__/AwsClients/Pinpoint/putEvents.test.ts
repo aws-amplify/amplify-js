@@ -6,7 +6,7 @@ import {
 	putEvents,
 	PutEventsInput,
 	PutEventsOutput,
-} from '../../../src/AwsClients/Pinpoint';
+} from '../../../src/awsClients/pinpoint';
 import {
 	mockApplicationId,
 	mockEventsRequest,

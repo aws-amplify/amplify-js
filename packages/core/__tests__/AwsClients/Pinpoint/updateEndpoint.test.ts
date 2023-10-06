@@ -6,7 +6,7 @@ import {
 	updateEndpoint,
 	UpdateEndpointInput,
 	UpdateEndpointOutput,
-} from '../../../src/AwsClients/Pinpoint';
+} from '../../../src/awsClients/pinpoint';
 import {
 	mockApplicationId,
 	mockEndpointId,

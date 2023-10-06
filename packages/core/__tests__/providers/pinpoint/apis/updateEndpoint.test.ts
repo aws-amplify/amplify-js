@@ -3,7 +3,7 @@
 
 import { v4 } from 'uuid';
 import { ClientDevice } from '../../../../src/ClientDevice';
-import { updateEndpoint as clientUpdateEndpoint } from '../../../../src/AwsClients/Pinpoint';
+import { updateEndpoint as clientUpdateEndpoint } from '../../../../src/awsClients/pinpoint';
 import {
 	cacheEndpointId,
 	getEndpointId,
@@ -23,7 +23,7 @@ import {
 import { getExpectedInput } from './testUtils/getExpectedInput';
 
 jest.mock('uuid');
-jest.mock('../../../../src/AwsClients/Pinpoint');
+jest.mock('../../../../src/awsClients/pinpoint');
 jest.mock('../../../../src/providers/pinpoint/utils');
 
 describe('Pinpoint Provider API: updateEndpoint', () => {
