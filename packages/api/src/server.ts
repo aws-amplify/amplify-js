@@ -25,14 +25,12 @@ export type {
 export function generateClient<T extends Record<any, any> = never>(
 	contextSpec: AmplifyServer.ContextSpec
 ): V6Client<T> {
-	const client: V6Client<any> = {
+	return {
 		[__amplify]: getAmplifyServerContext(contextSpec).amplify,
 		graphql,
 		cancel,
 		isCancelError,
 	};
-
-	return client as V6Client<T>;
 }
 
 export {

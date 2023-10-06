@@ -14,12 +14,10 @@ import { Amplify } from '@aws-amplify/core';
 export function generateClient<
 	T extends Record<any, any> = never
 >(): V6Client<T> {
-	const client: V6Client<any> = {
+	return {
 		[__amplify]: Amplify,
 		graphql: v6graphql,
 		cancel: v6cancel,
 		isCancelError: v6isCancelError,
 	};
-
-	return client as V6Client<T>;
 }
