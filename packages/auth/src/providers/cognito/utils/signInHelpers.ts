@@ -15,7 +15,12 @@ import {
 	getSignatureString,
 } from './srp';
 
-import { ClientMetadata, ConfirmSignInOptions, SignInOptions } from '../types';
+import {
+	ClientMetadata,
+	ConfirmSignInOptions,
+	SignInInput,
+	SignInOptions,
+} from '../types';
 import {
 	AuthAdditionalInfo,
 	AuthSignInOutput,
@@ -57,6 +62,8 @@ import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants'
 import { getCurrentUser } from '../apis/getCurrentUser';
 import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
 import { assertDeviceMetadata } from './types';
+import { resetAutoSignIn } from '../apis/autoSignIn';
+import { signIn } from '../apis/signIn';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 

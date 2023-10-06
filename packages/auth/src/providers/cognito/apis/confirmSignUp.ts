@@ -12,9 +12,11 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { AutoSignInEventData } from '../types/models';
 import {
 	HubInternal,
+	autoSignInWhenUserIsConfirmedWithCode,
 	isAutoSignInStarted,
 	setAutoSignInStarted,
 } from '../utils/signUpHelpers';
+import { resetAutoSignIn, setAutoSignIn } from './autoSignIn';
 
 /**
  * Confirms a new user account.
@@ -72,18 +74,16 @@ export async function confirmSignUp(
 				({ payload }) => {
 					switch (payload.event) {
 						case 'autoSignIn':
+							setAutoSignIn(
+								autoSignInWhenUserIsConfirmedWithCode(
+									payload.data.output,
+									payload.data.error
+								)
+							);
 							resolve({
 								isSignUpComplete: true,
 								nextStep: {
-									signUpStep: 'DONE',
-									fetchSignInOutput: async () => {
-										const output = payload.data.output;
-										const error = payload.data.error;
-										if (!output && error) {
-											throw error;
-										}
-										return output;
-									},
+									signUpStep: 'AUTO_SIGN_IN',
 								},
 							});
 							setAutoSignInStarted(false);

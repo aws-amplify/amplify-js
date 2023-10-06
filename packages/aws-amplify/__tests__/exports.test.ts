@@ -114,6 +114,7 @@ describe('aws-amplify Exports', () => {
 			  "fetchDevices",
 			  "AuthError",
 			  "fetchAuthSession",
+			  "autoSignIn",
 			]
 		`);
 		});
@@ -153,6 +154,7 @@ describe('aws-amplify Exports', () => {
 			  "TokenOrchestrator",
 			  "DefaultTokenStore",
 			  "refreshAuthTokens",
+			   "autoSignIn"
 			]
 		`);
 		});

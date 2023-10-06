@@ -17,14 +17,15 @@ import { SignUpException } from '../types/errors';
 import { AttributeType } from '../utils/clients/CognitoIdentityProvider/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { toAttributeType } from '../utils/apiHelpers';
-import { signIn } from './signIn';
 import {
-	getAutoSignOutputWithLink,
 	handleCodeAutoSignIn,
 	isAutoSignInStarted,
 	setAutoSignInStarted,
 	isSignUpComplete,
+	autoSignInWhenUserIsConfirmed,
+	autoSignInWhenUserIsConfirmedWithLink,
 } from '../utils/signUpHelpers';
+import { setAutoSignIn } from './autoSignIn';
 
 /**
  * Creates a user
@@ -90,11 +91,11 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	const { UserSub, CodeDeliveryDetails } = clientOutput;
 
 	if (isSignUpComplete(clientOutput) && isAutoSignInStarted()) {
+		setAutoSignIn(autoSignInWhenUserIsConfirmed(signInInput));
 		return {
 			isSignUpComplete: true,
 			nextStep: {
-				signUpStep: 'DONE',
-				fetchSignInOutput: async () => signIn(signInInput),
+				signUpStep: 'AUTO_SIGN_IN',
 			},
 		};
 	} else if (isSignUpComplete(clientOutput) && !isAutoSignInStarted()) {
@@ -115,18 +116,17 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		isAutoSignInStarted() &&
 		signUpVerificationMethod === 'link'
 	) {
+		setAutoSignIn(autoSignInWhenUserIsConfirmedWithLink(signInInput));
 		return {
 			isSignUpComplete: false,
 			nextStep: {
-				signUpStep: 'CONFIRM_SIGN_UP',
+				signUpStep: 'AUTO_SIGN_IN',
 				codeDeliveryDetails: {
 					deliveryMedium:
 						CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
 					destination: CodeDeliveryDetails?.Destination as string,
 					attributeName: CodeDeliveryDetails?.AttributeName as UserAttributeKey,
 				},
-
-				fetchSignInOutput: getAutoSignOutputWithLink(signInInput),
 			},
 			userId: UserSub,
 		};
