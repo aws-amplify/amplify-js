@@ -8,4 +8,3 @@ export {
 	notifyEventListenersAndAwaitHandlers,
 } from './eventListeners';
 export { EventListener, EventType } from './eventListeners/types';
-export { AMPLIFY_SYMBOL } from './types/constants';

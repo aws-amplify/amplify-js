@@ -5,6 +5,7 @@ import { Hub } from '@aws-amplify/core';
 import {
 	ConsoleLogger,
 	InAppMessagingAction,
+	AMPLIFY_SYMBOL,
 } from '@aws-amplify/core/internals/utils';
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import isEmpty from 'lodash/isEmpty';
@@ -17,7 +18,6 @@ import {
 	InAppMessagingEvent,
 } from '../../../types';
 import { MetricsComparator, PinpointMessageEvent } from '../types';
-import { AMPLIFY_SYMBOL } from '../../../../common';
 import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
 import { resolveConfig } from './resolveConfig';
 import { resolveCredentials } from './resolveCredentials';
