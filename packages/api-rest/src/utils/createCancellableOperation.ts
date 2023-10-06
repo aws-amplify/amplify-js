@@ -82,7 +82,7 @@ export function createCancellableOperation(
 			publicApisAbortController.abort(abortMessage);
 			// Abort reason is not widely support enough across runtimes and and browsers, so we set it
 			// if it is not already set.
-			if (publicApisAbortSignal.reason !== abortMessage) {
+			if (abortMessage && publicApisAbortSignal.reason !== abortMessage) {
 				type AbortSignalWithReasonSupport = Omit<AbortSignal, 'reason'> & {
 					reason?: string;
 				};
