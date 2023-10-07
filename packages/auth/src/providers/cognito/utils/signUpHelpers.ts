@@ -8,7 +8,7 @@ import { AutoSignInEventData } from '../types/models';
 import { AutoSignInCallback } from '../../../types/models';
 import { AuthError } from '../../../errors/AuthError';
 import { SignUpCommandOutput } from './clients/CognitoIdentityProvider/types';
-import { resetAutoSignIn } from '../apis/autoSignIn';
+import { resetAutoSignIn, setAutoSignIn } from '../apis/autoSignIn';
 
 const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 
@@ -21,21 +21,11 @@ export function handleCodeAutoSignIn(signInInput: SignInInput) {
 			switch (payload.event) {
 				case 'confirmSignUp': {
 					const response = payload.data;
-					let signInError: unknown;
-					let signInOutput: SignInOutput | undefined;
 					if (response?.isSignUpComplete) {
-						try {
-							signInOutput = await signIn(signInInput);
-						} catch (error) {
-							signInError = error;
-						}
 						HubInternal.dispatch('auth-internal', {
 							event: 'autoSignIn',
-							data: {
-								error: signInError,
-								output: signInOutput,
-							},
 						});
+						setAutoSignIn(autoSignInWithCode(signInInput));
 						stopHubListener();
 					}
 				}
@@ -112,9 +102,8 @@ function handleAutoSignInWithLink(
 	}, 5000);
 }
 const debouncedAutoSignInWithLink = debounce(handleAutoSignInWithLink, 300);
-const debouncedAutoSignInWithCode = debounce(handleAutoSignInWithCode, 300);
-const debouncedAutoSignUserConfirmed = debounce(
-	handleAutoSignInUserConfirmed,
+const debouncedAutoSignWithCodeOrUserConfirmed = debounce(
+	handleAutoSignInWithCodeOrUserConfirmed,
 	300
 );
 
@@ -140,7 +129,7 @@ export function autoSignInWhenUserIsConfirmedWithLink(
 		});
 	};
 }
-async function handleAutoSignInUserConfirmed(
+async function handleAutoSignInWithCodeOrUserConfirmed(
 	signInInput: SignInInput,
 	resolve: Function,
 	reject: Function
@@ -154,36 +143,13 @@ async function handleAutoSignInUserConfirmed(
 		resetAutoSignIn();
 	}
 }
-async function handleAutoSignInWithCode(
-	signInInput: SignInOutput,
-	error: unknown,
-	resolve: Function,
-	reject: Function
-) {
-	if (!signInInput && error) {
-		reject(error);
-		resetAutoSignIn();
-	}
-	resolve(signInInput);
-	resetAutoSignIn();
-}
-export function autoSignInWhenUserIsConfirmed(
-	signInInput: SignInInput
-): AutoSignInCallback {
+
+function autoSignInWithCode(signInInput: SignInInput): AutoSignInCallback {
 	return async () => {
 		return new Promise<SignInOutput>(async (resolve, reject) => {
-			debouncedAutoSignUserConfirmed([signInInput, resolve, reject]);
+			debouncedAutoSignWithCodeOrUserConfirmed([signInInput, resolve, reject]);
 		});
 	};
 }
 
-export function autoSignInWhenUserIsConfirmedWithCode(
-	signInOutput: SignInOutput,
-	error?: unknown
-): AutoSignInCallback {
-	return async () => {
-		return new Promise<SignInOutput>(async (resolve, reject) => {
-			debouncedAutoSignInWithCode([signInOutput, error, resolve, reject]);
-		});
-	};
-}
+export const autoSignInUserConfirmed = autoSignInWithCode;

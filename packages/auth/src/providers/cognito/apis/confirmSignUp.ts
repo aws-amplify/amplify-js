@@ -15,7 +15,6 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { AutoSignInEventData } from '../types/models';
 import {
 	HubInternal,
-	autoSignInWhenUserIsConfirmedWithCode,
 	isAutoSignInStarted,
 	setAutoSignInStarted,
 } from '../utils/signUpHelpers';
@@ -81,12 +80,6 @@ export async function confirmSignUp(
 				({ payload }) => {
 					switch (payload.event) {
 						case 'autoSignIn':
-							setAutoSignIn(
-								autoSignInWhenUserIsConfirmedWithCode(
-									payload.data.output,
-									payload.data.error
-								)
-							);
 							resolve({
 								isSignUpComplete: true,
 								nextStep: {

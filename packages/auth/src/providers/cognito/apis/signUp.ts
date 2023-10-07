@@ -25,7 +25,7 @@ import {
 	isAutoSignInStarted,
 	setAutoSignInStarted,
 	isSignUpComplete,
-	autoSignInWhenUserIsConfirmed,
+	autoSignInUserConfirmed,
 	autoSignInWhenUserIsConfirmedWithLink,
 } from '../utils/signUpHelpers';
 import { setAutoSignIn } from './autoSignIn';
@@ -98,7 +98,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	const { UserSub, CodeDeliveryDetails } = clientOutput;
 
 	if (isSignUpComplete(clientOutput) && isAutoSignInStarted()) {
-		setAutoSignIn(autoSignInWhenUserIsConfirmed(signInInput));
+		setAutoSignIn(autoSignInUserConfirmed(signInInput));
 		return {
 			isSignUpComplete: true,
 			nextStep: {
