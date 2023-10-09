@@ -16,9 +16,9 @@ import { AutoSignInEventData } from '../types/models';
 import {
 	HubInternal,
 	isAutoSignInStarted,
+	isAutoSignInUserUsingConfirmSignUp,
 	setAutoSignInStarted,
 } from '../utils/signUpHelpers';
-import { setAutoSignIn } from './autoSignIn';
 import { getAuthUserAgentValue } from '../../../utils';
 
 /**
@@ -73,7 +73,12 @@ export async function confirmSignUp(
 				},
 			};
 
-			if (!isAutoSignInStarted()) return resolve(signUpOut);
+			if (
+				!isAutoSignInStarted() ||
+				!isAutoSignInUserUsingConfirmSignUp(username)
+			) {
+				return resolve(signUpOut);
+			}
 
 			const stopListener = HubInternal.listen<AutoSignInEventData>(
 				'auth-internal',

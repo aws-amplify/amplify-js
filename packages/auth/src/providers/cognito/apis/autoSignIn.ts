@@ -102,10 +102,19 @@ async function handleSignUpStep( step: SignUpOutput["nextStep"]) {
  */
 export let autoSignIn: AutoSignInCallback = initialAutoSignIn;
 
+/**
+ * Sets the context of autoSignIn at run time.
+ * @internal
+ */
 export function setAutoSignIn(callback: AutoSignInCallback) {
 	autoSignIn = callback;
 }
 
+/**
+ * Resets the context
+ *
+ * @internal
+ */
 export function resetAutoSignIn() {
 	autoSignIn = initialAutoSignIn;
 }

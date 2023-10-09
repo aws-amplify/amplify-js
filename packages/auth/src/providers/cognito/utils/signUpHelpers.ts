@@ -72,9 +72,9 @@ function handleAutoSignInWithLink(
 ) {
 	const start = Date.now();
 	const autoSignInPollingIntervalId = setInterval(async () => {
-		const currentTime = Date.now() - start;
+		const elapsedTime = Date.now() - start;
 		const maxTime = MAX_AUTOSIGNIN_POLLING_MS;
-		if (currentTime > maxTime) {
+		if (elapsedTime > maxTime) {
 			clearInterval(autoSignInPollingIntervalId);
 			setAutoSignInStarted(false);
 			reject(
@@ -114,10 +114,22 @@ const debouncedAutoSignWithCodeOrUserConfirmed = debounce(
 
 let autoSignInStarted: boolean = false;
 
+let usernameUsedForAutoSignIn: string | undefined;
+
+export function setUsernameUsedForAutoSignIn(username?: string) {
+	usernameUsedForAutoSignIn = username;
+}
+export function isAutoSignInUserUsingConfirmSignUp(username: string) {
+	return usernameUsedForAutoSignIn === username;
+}
+
 export function isAutoSignInStarted(): boolean {
 	return autoSignInStarted;
 }
 export function setAutoSignInStarted(value: boolean) {
+	if (value === false) {
+		setUsernameUsedForAutoSignIn(undefined);
+	}
 	autoSignInStarted = value;
 }
 

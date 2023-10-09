@@ -26,6 +26,7 @@ import {
 	isSignUpComplete,
 	autoSignInUserConfirmed,
 	autoSignInWhenUserIsConfirmedWithLink,
+	setUsernameUsedForAutoSignIn,
 } from '../utils/signUpHelpers';
 import { setAutoSignIn } from './autoSignIn';
 import { getAuthUserAgentValue } from '../../../utils';
@@ -72,6 +73,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		signInInput['password'] = password;
 	}
 	if (signInServiceOptions || autoSignIn === true) {
+		setUsernameUsedForAutoSignIn(username);
 		setAutoSignInStarted(true);
 	}
 	const clientOutput = await signUpClient(
