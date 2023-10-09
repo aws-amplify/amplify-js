@@ -48,13 +48,6 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 				PredictionsValidationErrorCode.NoCredentials
 			);
 
-			// const {
-			// 	text: {
-			// 		source: { text = '' } = {},
-			// 		type: interpretType = interpretTypeConfig,
-			// 	} = {},
-			// } = ({} = input);
-
 			const { interpretText = {} } =
 				Amplify.getConfig().Predictions?.interpret ?? {};
 			const { region = '', defaults = {} } = interpretText;
