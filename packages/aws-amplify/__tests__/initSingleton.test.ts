@@ -86,24 +86,25 @@ describe('initSingleton (DefaultAmplify)', () => {
 							identityPoolId: 'aws_cognito_identity_pool_id',
 							loginWith: {
 								email: false,
-								phoneNumber: false,
+								phone: false,
+								username: true,
 							},
 							mfa: {
 								smsEnabled: true,
 								status: 'off',
 								totpEnabled: false,
 							},
-							passwordRestrictions: {
+							passwordFormat: {
 								minLength: 8,
 								requireLowercase: false,
 								requireNumbers: false,
 								requireSpecialCharacters: false,
 								requireUppercase: false,
 							},
-							signUpAttributes: [
+							userAttributes: [
 								{
 									phone_number: {
-										required: false,
+										required: true,
 									},
 								},
 							],

@@ -84,7 +84,7 @@ describe('Parser', () => {
 					]
 				},
 				aws_cognito_verification_mechanisms: [
-					'PHONE_NUMBER', 'EMAIL'
+					'EMAIL'
 				],
 				aws_mandatory_sign_in: 'enable',
 				aws_mobile_analytics_app_id: appId,
@@ -123,33 +123,34 @@ describe('Parser', () => {
 					allowGuestAccess: false,
 					loginWith: {
 						email: false,
-						phoneNumber: true
+						phone: true,
+						username: false
 					},
 					mfa: {
 						smsEnabled: true,
 						status: 'off',
 						totpEnabled: true,
 					},
-					passwordRestrictions: {
+					passwordFormat: {
 						minLength: 8,
 						requireLowercase: false,
 						requireNumbers: true,
 						requireSpecialCharacters: true,
 						requireUppercase: true
 					},
-					signUpAttributes: [
+					signUpVerificationMethod,
+					userAttributes: [
 						{
-							"phone_number": {
+							'email': {
 								required: true
 							},
 						},
 						{
-							"email": {
-								required: false
+							'phone_number': {
+								required: true
 							}
 						}
 					],
-					signUpVerificationMethod,
 					userPoolId,
 					userPoolClientId,
 				},

@@ -93,7 +93,7 @@ export type AuthStandardAttributeKey =
 
 export type AuthVerifiableAttributeKey = 'email' | 'phone_number';
 
-export type AuthConfigUserAttributes = Partial<Record<AuthStandardAttributeKey, { required?: boolean }>>;
+export type AuthConfigUserAttributes = Partial<Record<AuthStandardAttributeKey, { required: boolean }>>;
 
 export type AuthConfig = StrictUnion<
 	| AuthIdentityPoolConfig
@@ -112,10 +112,10 @@ export type AuthIdentityPoolConfig = {
 		userPoolClientId?: never;
 		userPoolId?: never;
 		loginWith?: never;
-		signUpAttributes?: never;
+		userAttributes?: never;
 		mfa?: never;
-		passwordRestrictions?: never;
-		dangerouslyConnectToHttpEndpointForTesting?: never;
+		passwordFormat?: never;
+		endpoint?: never;
 	};
 };
 
@@ -137,28 +137,24 @@ export type CognitoUserPoolConfig = {
 	signUpVerificationMethod?: 'code' | 'link';
 	loginWith?: {
 		oauth?: OAuthConfig;
+		username?: boolean;
 		email?: boolean;
-		phoneNumber?: boolean;
+		phone?: boolean;
 	};
-	signUpAttributes?: AuthConfigUserAttributes;
+	userAttributes?: AuthConfigUserAttributes;
 	mfa?: {
 		status?: 'on' | 'off' | 'optional';
-		useTOTP?: boolean;
-		useSMS?: boolean;
+		totpEnabled?: boolean;
+		smsEnabled?: boolean;
 	};
-	passwordRestrictions?: {
+	passwordFormat?: {
 		minLength?: number;
 		requireLowercase?: boolean;
 		requireUppercase?: boolean;
 		requireNumbers?: boolean;
 		requireSpecialCharacters?: boolean;
 	};
-	/**
-	 * Internal-only configuration for testing purpose. You should not use this.
-	 *
-	 * @internal
-	 */
-	dangerouslyConnectToHttpEndpointForTesting?: string;
+	endpoint?: string;
 };
 
 export type OAuthConfig = {
