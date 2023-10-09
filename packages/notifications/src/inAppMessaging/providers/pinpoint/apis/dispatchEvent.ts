@@ -6,28 +6,42 @@ import {
 	STORAGE_KEY_SUFFIX,
 	processInAppMessages,
 } from '../utils';
-import { InAppMessage, InAppMessagingEvent } from '../../../types';
+import { InAppMessage } from '../../../types';
 import flatten from 'lodash/flatten';
 import { defaultStorage } from '@aws-amplify/core';
 import { notifyEventListeners } from '../../../../common';
 import { assertServiceError } from '../../../errors';
-import { InAppMessageConflictHandler } from '../types';
+import { DisptachEventInput } from '../types';
+import { syncMessages } from './syncMessages';
+import { conflictHandler, setConflictHandler } from './setConflictHandler';
 
-let conflictHandler: InAppMessageConflictHandler = defaultConflictHandler;
-
-export function internalSetConflictHandler(
-	handler: InAppMessageConflictHandler
-): void {
-	conflictHandler = handler;
-}
-
-export async function dispatchEvent(event: InAppMessagingEvent): Promise<void> {
+/**
+ * Trigges an InApp message to be displayed. Use this after the messages have been synced to the devices using
+ * {@link syncMessages}. Based on the messages synced and the event passed to this API, it triggers the display
+ * of the InApp message that meets the criteria. To change the conflict handler, use the {@link setConflictHandler} API.
+ *
+ * @param DisptachEventInput The input object that holds the event to be dispatched.
+ *
+ * @throws service exceptions - Thrown when the underlying Pinpoint service returns an error.
+ *
+ * @returns A promise that will resolve when the operation is complete.
+ *
+ * @example
+ * ```ts
+ * // Sync message before disptaching an event
+ * await syncMessages();
+ *
+ * // Dispatch an event
+ * await dispatchEvent({ name: "test_event" });
+ * ```
+ */
+export async function dispatchEvent(input: DisptachEventInput): Promise<void> {
 	try {
 		const key = `${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`;
 		const cachedMessages = await defaultStorage.getItem(key);
 		const messages: InAppMessage[] = await processInAppMessages(
 			cachedMessages ? JSON.parse(cachedMessages) : [],
-			event
+			input.event
 		);
 		const flattenedMessages = flatten(messages);
 
@@ -41,29 +55,4 @@ export async function dispatchEvent(event: InAppMessagingEvent): Promise<void> {
 		assertServiceError(error);
 		throw error;
 	}
-}
-
-function defaultConflictHandler(messages: InAppMessage[]): InAppMessage {
-	// default behavior is to return the message closest to expiry
-	// this function assumes that messages processed by providers already filters out expired messages
-	const sorted = messages.sort((a, b) => {
-		const endDateA = a.metadata?.endDate;
-		const endDateB = b.metadata?.endDate;
-		// if both message end dates are falsy or have the same date string, treat them as equal
-		if (endDateA === endDateB) {
-			return 0;
-		}
-		// if only message A has an end date, treat it as closer to expiry
-		if (endDateA && !endDateB) {
-			return -1;
-		}
-		// if only message B has an end date, treat it as closer to expiry
-		if (!endDateA && endDateB) {
-			return 1;
-		}
-		// otherwise, compare them
-		return new Date(endDateA) < new Date(endDateB) ? -1 : 1;
-	});
-	// always return the top sorted
-	return sorted[0];
 }
