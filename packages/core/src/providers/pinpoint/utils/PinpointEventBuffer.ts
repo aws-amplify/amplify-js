@@ -7,7 +7,7 @@ import {
 	putEvents,
 	PutEventsInput,
 	PutEventsOutput,
-} from '../../../AwsClients/Pinpoint';
+} from '../../../awsClients/pinpoint';
 import {
 	EventBufferConfig,
 	BufferedEvent,

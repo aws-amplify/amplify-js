@@ -23,7 +23,7 @@ const corePackageSrcClientsPath = join(
 	'packages',
 	'core',
 	'src',
-	'AwsClients'
+	'awsClients'
 );
 
 const storagePackageSrcClientsPath = join(
