@@ -100,51 +100,51 @@ export const parseAWSExports = (
 
 	// Auth
 	const mfaConfig = aws_cognito_mfa_configuration ? {
-		mode: aws_cognito_mfa_configuration && aws_cognito_mfa_configuration.toLowerCase(),
-		totpEnabled: aws_cognito_mfa_types?.includes('SMS') ?? false,
-		smsEnabled: aws_cognito_mfa_types?.includes('TOTP') ?? false
+		status: aws_cognito_mfa_configuration && aws_cognito_mfa_configuration.toLowerCase(),
+		totpEnabled: aws_cognito_mfa_types?.includes('TOTP') ?? false,
+		smsEnabled: aws_cognito_mfa_types?.includes('SMS') ?? false
 	} : undefined;
 	const passwordRestrictionsConfig = aws_cognito_password_protection_settings ? {
 		minLength: aws_cognito_password_protection_settings.passwordPolicyMinLength,
-		requireLowercase: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_LOWERCASE') ?? false,
-		requireUppercase: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_UPPERCASE') ?? false,
-		requireNumbers: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_NUMBERS') ?? false,
-		requireSpecialCharacters: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_SYMBOLS') ?? false,
+		requireLowercase: 
+			aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_LOWERCASE') ?? false,
+		requireUppercase: 
+			aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_UPPERCASE') ?? false,
+		requireNumbers: 
+			aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_NUMBERS') ?? false,
+		requireSpecialCharacters: 
+			aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_SYMBOLS') ?? false,
 	} : undefined;
-	const userAttributesConfig = Array.from(
+	const mergedUserAttributes = Array.from(
 		new Set([
-			...(aws_cognito_verification_mechanisms?.map((s: string) => (
-				{
-					[s.toLowerCase()]: {}
-				}
-			)) ?? []),
-			...(aws_cognito_signup_attributes?.map((s: string) => (
-				{
-					[s.toLowerCase()]: { required: true }
-				}
-			)) ?? [])
+			...(aws_cognito_verification_mechanisms ?? []),
+			...(aws_cognito_signup_attributes ?? [])
 		])
-	) as unknown as AuthConfigUserAttributes;
+	);
+	const signUpAttributesConfig = mergedUserAttributes.map((s: string) => ({
+		[s.toLowerCase()]: {
+			required: aws_cognito_signup_attributes?.includes(s) ?? false
+		}
+	})) as unknown as AuthConfigUserAttributes;
 	if (aws_cognito_identity_pool_id || aws_user_pools_id) {
 		amplifyConfig.Auth = {
 			Cognito: {
 				identityPoolId: aws_cognito_identity_pool_id,
 				allowGuestAccess: aws_mandatory_sign_in !== 'enable',
 				signUpVerificationMethod: aws_cognito_sign_up_verification_method,
-				signUpAttributes: userAttributesConfig,
+				signUpAttributes: signUpAttributesConfig,
 				userPoolClientId: aws_user_pools_web_client_id,
 				userPoolId: aws_user_pools_id,
 				mfa: mfaConfig,
 				passwordRestrictions: passwordRestrictionsConfig,
 				loginWith: {
-					username: aws_cognito_username_attributes?.includes('USERNAME') ?? false,
 					email: aws_cognito_username_attributes?.includes('EMAIL') ?? false,
 					phoneNumber: aws_cognito_username_attributes?.includes('PHONE_NUMBER') ?? false,
 					...(oauth &&
 						Object.keys(oauth).length > 0 && {
 							oauth: getOAuthConfig(oauth),
 						}),
-				}
+				},
 			},
 		};
 	}

@@ -68,6 +68,24 @@ describe('Parser', () => {
 			parseAWSExports({
 				aws_cognito_identity_pool_id: identityPoolId,
 				aws_cognito_sign_up_verification_method: signUpVerificationMethod,
+				aws_cognito_username_attributes: ['PHONE_NUMBER'],
+				aws_cognito_signup_attributes: ['PHONE_NUMBER'],
+				aws_cognito_mfa_configuration: 'OFF',
+				aws_cognito_mfa_types: [
+					'SMS', 
+					'TOTP'
+				],
+				aws_cognito_password_protection_settings: {
+					passwordPolicyMinLength: 8,
+					passwordPolicyCharacters: [
+						'REQUIRES_SYMBOLS', 
+						'REQUIRES_UPPERCASE', 
+						'REQUIRES_NUMBERS'
+					]
+				},
+				aws_cognito_verification_mechanisms: [
+					'PHONE_NUMBER', 'EMAIL'
+				],
 				aws_mandatory_sign_in: 'enable',
 				aws_mobile_analytics_app_id: appId,
 				aws_mobile_analytics_app_region: region,
@@ -103,6 +121,34 @@ describe('Parser', () => {
 				Cognito: {
 					identityPoolId,
 					allowGuestAccess: false,
+					loginWith: {
+						email: false,
+						phoneNumber: true
+					},
+					mfa: {
+						smsEnabled: true,
+						status: 'off',
+						totpEnabled: true,
+					},
+					passwordRestrictions: {
+						minLength: 8,
+						requireLowercase: false,
+						requireNumbers: true,
+						requireSpecialCharacters: true,
+						requireUppercase: true
+					},
+					signUpAttributes: [
+						{
+							"phone_number": {
+								required: true
+							},
+						},
+						{
+							"email": {
+								required: false
+							}
+						}
+					],
 					signUpVerificationMethod,
 					userPoolId,
 					userPoolClientId,

@@ -112,6 +112,10 @@ export type AuthIdentityPoolConfig = {
 		userPoolClientId?: never;
 		userPoolId?: never;
 		loginWith?: never;
+		signUpAttributes?: never;
+		mfa?: never;
+		passwordRestrictions?: never;
+		dangerouslyConnectToHttpEndpointForTesting?: never;
 	};
 };
 
@@ -133,13 +137,12 @@ export type CognitoUserPoolConfig = {
 	signUpVerificationMethod?: 'code' | 'link';
 	loginWith?: {
 		oauth?: OAuthConfig;
-		username?: boolean;
 		email?: boolean;
 		phoneNumber?: boolean;
 	};
 	signUpAttributes?: AuthConfigUserAttributes;
 	mfa?: {
-		mode: 'on' | 'off' | 'optional';
+		status?: 'on' | 'off' | 'optional';
 		useTOTP?: boolean;
 		useSMS?: boolean;
 	};
