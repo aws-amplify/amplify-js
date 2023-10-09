@@ -6,7 +6,6 @@ import {
 	PredictionsAction,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
-import { AbstractInterpretPredictionsProvider } from '../types/Providers';
 
 import {
 	InterpretTextInput,
@@ -16,7 +15,7 @@ import {
 	TextSentiment,
 	TextSyntax,
 	KeyPhrases,
-	InterpretTextOthers,
+	isInterpretTextInput,
 } from '../types';
 import {
 	ComprehendClient,
@@ -29,15 +28,21 @@ import {
 import { assertValidationError } from '../errors/utils/assertValidationError';
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
 
-export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredictionsProvider {
+export class AmazonAIInterpretPredictionsProvider {
 	private comprehendClient: ComprehendClient;
 
-	constructor() {
-		super();
+	getCategory(): string {
+		return 'Interpret';
 	}
 
 	getProviderName() {
 		return 'AmazonAIInterpretPredictionsProvider';
+	}
+
+	interpret(input: InterpretTextInput): Promise<InterpretTextOutput> {
+		if (isInterpretTextInput(input)) {
+			return this.interpretText(input);
+		}
 	}
 
 	interpretText(input: InterpretTextInput): Promise<InterpretTextOutput> {
