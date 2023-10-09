@@ -60,7 +60,7 @@ export const identifyUser = async ({
 }: IdentifyUserInput): Promise<void> => {
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
-	const { userAttributes } = options?.serviceOptions ?? {};
+	const { userAttributes } = options ?? {};
 	updateEndpoint({
 		appId,
 		category: 'Analytics',
