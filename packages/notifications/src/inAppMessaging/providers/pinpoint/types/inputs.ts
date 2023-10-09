@@ -16,9 +16,9 @@ export type IdentifyUserInput =
 /**
  * Input type for Pinpoint dispatchEvent API.
  */
-export type DisptachEventInput = { event: InAppMessagingEvent };
+export type DisptachEventInput = InAppMessagingEvent;
 
 /**
  * Input type for Pinpoint SetConflictHandler API.
  */
-export type SetConflictHandlerInput = { handler: InAppMessageConflictHandler };
+export type SetConflictHandlerInput = InAppMessageConflictHandler;

@@ -41,7 +41,7 @@ export async function dispatchEvent(input: DisptachEventInput): Promise<void> {
 		const cachedMessages = await defaultStorage.getItem(key);
 		const messages: InAppMessage[] = await processInAppMessages(
 			cachedMessages ? JSON.parse(cachedMessages) : [],
-			input.event
+			input
 		);
 		const flattenedMessages = flatten(messages);
 

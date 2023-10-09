@@ -32,7 +32,7 @@ import { InAppMessageConflictHandler, SetConflictHandlerInput } from '../types';
  * ```
  */
 export function setConflictHandler(input: SetConflictHandlerInput): void {
-	conflictHandler = input.handler;
+	conflictHandler = input;
 }
 
 export let conflictHandler: InAppMessageConflictHandler =
