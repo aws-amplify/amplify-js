@@ -55,6 +55,7 @@ import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants'
 import { getCurrentUser } from '../apis/getCurrentUser';
 import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
 import { assertDeviceMetadata } from './types';
+import { TokenOrchestrator } from '../tokenProvider';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -104,9 +105,15 @@ export async function handleCustomChallenge({
 		ClientId: userPoolClientId,
 	};
 
-	const response = await respondToAuthChallenge(
-		{ region: getRegion(userPoolId) },
-		jsonReq
+	const response = await retryOnResourceNotFoundException(
+		respondToAuthChallenge,
+		[
+			{
+				region: getRegion(userPoolId),
+			},
+			jsonReq,
+		],
+		tokenOrchestrator?.clearDeviceMetadata
 	);
 
 	if (response.ChallengeName === 'DEVICE_SRP_AUTH')
@@ -278,7 +285,7 @@ export async function handleUserPasswordAuthFlow(
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 	};
-
+	// TODO: add the retry here
 	const response = await initiateAuth(
 		{ region: getRegion(userPoolId) },
 		jsonReq
@@ -918,5 +925,26 @@ export async function getNewDeviceMetatada(
 	} catch (error) {
 		// TODO: log error here
 		return undefined;
+	}
+}
+
+async function retryOnResourceNotFoundException<
+	F extends (...args: any[]) => any
+>(
+	func: F,
+	args: Parameters<F>,
+	clearDeviceMetadata?: Function
+): Promise<ReturnType<F>> {
+	try {
+		const output = await func(...args);
+		return output;
+	} catch (error) {
+		if (
+			error instanceof AuthError &&
+			error.name === 'ResourceNotFoundException'
+		) {
+			return await func(args);
+		}
+		throw error;
 	}
 }
