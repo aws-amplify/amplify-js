@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
 import { AuthDeliveryMedium } from '../../../types';
 import { UserAttributeKey, SignUpInput, SignUpOutput } from '../types';
 import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
@@ -12,6 +12,7 @@ import { SignUpException } from '../types/errors';
 import { AttributeType } from '../utils/clients/CognitoIdentityProvider/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { toAttributeType } from '../utils/apiHelpers';
+import { getAuthUserAgentValue } from '../../../utils';
 
 /**
  * Creates a user
@@ -48,7 +49,10 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	}
 
 	const res = await signUpClient(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ 
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignUp)
+		},
 		{
 			Username: username,
 			Password: password,

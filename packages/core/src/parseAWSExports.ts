@@ -45,6 +45,7 @@ export const parseAWSExports = (
 		geo,
 		oauth,
 		aws_cloud_logic_custom,
+		Notifications,
 	} = config;
 	const amplifyConfig: ResourcesConfig = {};
 
@@ -56,6 +57,21 @@ export const parseAWSExports = (
 				region: aws_mobile_analytics_app_region,
 			},
 		};
+	}
+
+	// Notifications
+	if (Notifications) {
+		if (Notifications.InAppMessaging?.AWSPinpoint) {
+			const { appId, region } = Notifications.InAppMessaging.AWSPinpoint;
+			amplifyConfig.Notifications = {
+				InAppMessaging: {
+					Pinpoint: {
+						appId,
+						region,
+					},
+				},
+			};
+		}
 	}
 
 	// API

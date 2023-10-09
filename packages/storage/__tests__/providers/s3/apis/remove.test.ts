@@ -32,6 +32,7 @@ const credentials: Credentials = {
 const deleteObjectClientConfig = {
 	credentials,
 	region,
+	userAgentValue: expect.any(String)
 };
 
 describe('remove API', () => {

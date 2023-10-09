@@ -4,11 +4,12 @@
 import { updateDeviceStatus } from '../utils/clients/CognitoIdentityProvider';
 import { Amplify } from '@aws-amplify/core';
 import { assertAuthTokens, assertDeviceMetadata } from '../utils/types';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { tokenOrchestrator } from '../tokenProvider';
 import { UpdateDeviceStatusException } from '../../cognito/types/errors';
+import { getAuthUserAgentValue } from '../../../utils';
 
 /**
  * Marks device as remembered while authenticated.
@@ -28,7 +29,10 @@ export async function rememberDevice(): Promise<void> {
 	assertDeviceMetadata(deviceMetadata);
 
 	await updateDeviceStatus(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ 
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.RememberDevice)
+		},
 		{
 			AccessToken: tokens.accessToken.toString(),
 			DeviceKey: deviceMetadata.deviceKey,
