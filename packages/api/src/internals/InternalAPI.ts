@@ -10,7 +10,7 @@ import {
 	GraphQLSubscription,
 } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
-import { Cache } from '@aws-amplify/core';
+import { Amplify, Cache } from '@aws-amplify/core';
 import {
 	ApiAction,
 	Category,
@@ -18,6 +18,15 @@ import {
 	CustomUserAgentDetails,
 } from '@aws-amplify/core/internals/utils';
 import { Observable } from 'rxjs';
+
+/**
+ * NOTE!
+ *
+ * This is used only by DataStore.
+ *
+ * This can probably be pruned and/or removed. Just leaving it as much of the same
+ * state as possible for V6 to reduce number of potentially impactful changes to DataStore.
+ */
 
 const logger = new Logger('API');
 /**
@@ -88,6 +97,7 @@ export class InternalAPIClass {
 		};
 
 		return this._graphqlApi.graphql(
+			Amplify,
 			options,
 			additionalHeaders,
 			apiUserAgentDetails

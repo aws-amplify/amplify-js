@@ -12,6 +12,7 @@ import {
 	DEFAULT_PRESIGN_EXPIRATION,
 	MAX_URL_EXPIRATION,
 } from '../../utils/constants';
+import { StorageAction } from '@aws-amplify/core/lib-esm/libraryUtils';
 
 export const getUrl = async function (
 	amplify: AmplifyClassV6,
@@ -20,7 +21,7 @@ export const getUrl = async function (
 	const { key, options } = input;
 
 	if (options?.validateObjectExistence) {
-		await getProperties(amplify, { key, options });
+		await getProperties(amplify, { key, options }, StorageAction.GetUrl);
 	}
 
 	const { s3Config, keyPrefix, bucket } = await resolveS3ConfigAndInput(

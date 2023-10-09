@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import { StorageAction } from '@aws-amplify/core/internals/utils';
 import { RemoveInput, RemoveOutput } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { deleteObject } from '../../utils/client';
+import { getStorageUserAgentValue } from '../../utils/userAgent';
 
 export const remove = async (
 	amplify: AmplifyClassV6,
@@ -17,10 +19,16 @@ export const remove = async (
 	);
 
 	// TODO(ashwinkumar6) V6-logger: debug `remove ${key} from ${finalKey}`
-	await deleteObject(s3Config, {
-		Bucket: bucket,
-		Key: `${keyPrefix}${key}`,
-	});
+	await deleteObject(
+		{
+			...s3Config, 
+			userAgentValue: getStorageUserAgentValue(StorageAction.Remove)
+		},
+		{
+			Bucket: bucket,
+			Key: `${keyPrefix}${key}`
+		}
+	);
 	return {
 		key,
 	};

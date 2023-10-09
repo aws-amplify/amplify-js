@@ -60,7 +60,10 @@ describe('setUpTOTP API happy path cases', () => {
 	test('setUpTOTP API should call the UserPoolClient and should return a TOTPSetupDetails', async () => {
 		const result = await setUpTOTP();
 		expect(associateSoftwareTokenClientSpy).toHaveBeenCalledWith(
-			{ region: 'us-west-2' },
+			{ 
+				region: 'us-west-2',
+				userAgentValue: expect.any(String)
+			},
 			{
 				AccessToken: mockedAccessToken,
 			}
