@@ -992,6 +992,11 @@ export async function getNewDeviceMetatada(
 	}
 }
 
+/**
+ * It will retry the function if the error is a `ResourceNotFoundException` and
+ * will clean the device keys stored in the storage mechanism.
+ *
+ */
 export async function retryOnResourceNotFoundException<
 	F extends (...args: any[]) => any
 >(
