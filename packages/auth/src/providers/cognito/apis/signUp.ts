@@ -45,7 +45,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signUpVerificationMethod =
 		authConfig?.signUpVerificationMethod ?? 'code';
-	const { clientMetadata, validationData } =
+	const { clientMetadata, validationData, autoSignIn } =
 		input.options?.serviceOptions ?? {};
 	assertTokenProviderConfig(authConfig);
 	assertValidationError(
@@ -58,9 +58,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	);
 
 	const signInServiceOptions =
-		typeof options?.serviceOptions?.autoSignIn !== 'boolean'
-			? options?.serviceOptions?.autoSignIn
-			: undefined;
+		typeof autoSignIn !== 'boolean' ? autoSignIn : undefined;
 
 	const signInInput: SignInInput = {
 		username,
@@ -73,7 +71,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	if (signInServiceOptions?.authFlowType !== 'CUSTOM_WITHOUT_SRP') {
 		signInInput['password'] = password;
 	}
-	if (signInServiceOptions) {
+	if (signInServiceOptions || autoSignIn === true) {
 		setAutoSignInStarted(true);
 	}
 	const clientOutput = await signUpClient(
