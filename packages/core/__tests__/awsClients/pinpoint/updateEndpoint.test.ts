@@ -3,13 +3,14 @@
 
 import { fetchTransferHandler } from '../../../src/clients/handlers/fetch';
 import {
-	putEvents,
-	PutEventsInput,
-	PutEventsOutput,
-} from '../../../src/AwsClients/Pinpoint';
+	updateEndpoint,
+	UpdateEndpointInput,
+	UpdateEndpointOutput,
+} from '../../../src/awsClients/pinpoint';
 import {
 	mockApplicationId,
-	mockEventsRequest,
+	mockEndpointId,
+	mockEndpointRequest,
 	mockFailureResponse,
 	mockJsonResponse,
 	mockRequestId,
@@ -18,20 +19,24 @@ import {
 
 jest.mock('../../../src/clients/handlers/fetch');
 
-// API reference: https://docs.aws.amazon.com/pinpoint/latest/apireference/apps-application-id-events.html#PutEvents
-describe('Pinpoint - putEvents', () => {
-	const EventsResponse = { Results: {} };
-	const params: PutEventsInput = {
+// API reference: https://docs.aws.amazon.com/pinpoint/latest/apireference/apps-application-id-endpoints-endpoint-id.html#UpdateEndpoint
+describe('Pinpoint - updateEndpoint', () => {
+	const MessageBody = {
+		Message: 'success',
+		RequestID: mockRequestId,
+	};
+	const params: UpdateEndpointInput = {
 		ApplicationId: mockApplicationId,
-		EventsRequest: mockEventsRequest,
+		EndpointId: mockEndpointId,
+		EndpointRequest: mockEndpointRequest,
 	};
 
 	test('happy case', async () => {
 		const expectedRequest = expect.objectContaining({
 			url: expect.objectContaining({
-				href: `https://pinpoint.us-east-1.amazonaws.com/v1/apps/${mockApplicationId}/events`,
+				href: `https://pinpoint.us-east-1.amazonaws.com/v1/apps/${mockApplicationId}/endpoints/${mockEndpointId}`,
 			}),
-			method: 'POST',
+			method: 'PUT',
 			headers: expect.objectContaining({
 				authorization: expect.stringContaining('Signature'),
 				'content-type': 'application/json',
@@ -39,17 +44,17 @@ describe('Pinpoint - putEvents', () => {
 				'x-amz-date': expect.stringMatching(/^\d{8}T\d{6}Z/),
 				'x-amz-user-agent': expect.stringContaining('aws-amplify'),
 			}),
-			body: JSON.stringify(mockEventsRequest),
+			body: JSON.stringify(mockEndpointRequest),
 		});
 		const successfulResponse = {
 			status: 200,
 			headers: {
 				'x-amzn-requestid': mockRequestId,
 			},
-			body: { ...EventsResponse },
+			body: { ...MessageBody },
 		};
-		const expectedOutput: PutEventsOutput = {
-			EventsResponse,
+		const expectedOutput: UpdateEndpointOutput = {
+			MessageBody,
 			$metadata: expect.objectContaining({
 				attempts: 1,
 				requestId: mockRequestId,
@@ -59,7 +64,7 @@ describe('Pinpoint - putEvents', () => {
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
 			mockJsonResponse(successfulResponse)
 		);
-		const response = await putEvents(pinpointHandlerOptions, params);
+		const response = await updateEndpoint(pinpointHandlerOptions, params);
 		expect(response).toEqual(expectedOutput);
 		expect(fetchTransferHandler).toBeCalledWith(
 			expectedRequest,
@@ -77,7 +82,7 @@ describe('Pinpoint - putEvents', () => {
 		);
 		expect.assertions(1);
 		try {
-			await putEvents(pinpointHandlerOptions, params);
+			await updateEndpoint(pinpointHandlerOptions, params);
 			fail('test should fail');
 		} catch (e) {
 			expect(e).toEqual(expect.objectContaining(expectedError));

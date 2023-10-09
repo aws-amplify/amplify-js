@@ -7,7 +7,7 @@ import {
 	getId,
 	GetIdInput,
 	GetIdOutput,
-} from '../../../src/AwsClients/CognitoIdentity';
+} from '../../../src/awsClients/cognitoIdentity';
 import {
 	cognitoIdentityHandlerOptions,
 	mockIdentityId,
