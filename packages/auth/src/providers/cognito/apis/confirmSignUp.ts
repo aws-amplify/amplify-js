@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -29,7 +32,7 @@ export async function confirmSignUp(
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const clientMetadata = options?.serviceOptions?.clientMetadata;
+	const clientMetadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptyConfirmSignUpUsername
@@ -40,15 +43,15 @@ export async function confirmSignUp(
 	);
 
 	await confirmSignUpClient(
-		{ 
+		{
 			region: getRegion(authConfig.userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignUp)
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignUp),
 		},
 		{
 			Username: username,
 			ConfirmationCode: confirmationCode,
 			ClientMetadata: clientMetadata,
-			ForceAliasCreation: options?.serviceOptions?.forceAliasCreation,
+			ForceAliasCreation: options?.forceAliasCreation,
 			ClientId: authConfig.userPoolClientId,
 			// TODO: handle UserContextData
 		}

@@ -44,9 +44,7 @@ describe('ResetPassword API happy path cases', () => {
 		await resetPassword({
 			username: 'username',
 			options: {
-				serviceOptions: {
-					clientMetadata: { foo: 'foo' },
-				},
+				clientMetadata: { foo: 'foo' },
 			},
 		});
 		expect(resetPasswordSpy).toHaveBeenCalledWith(

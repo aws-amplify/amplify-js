@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { ConfirmResetPasswordInput } from '../types';
@@ -41,12 +44,12 @@ export async function confirmResetPassword(
 		!!code,
 		AuthValidationErrorCode.EmptyConfirmResetPasswordConfirmationCode
 	);
-	const metadata = input.options?.serviceOptions?.clientMetadata;
+	const metadata = input.options?.clientMetadata;
 
 	await confirmForgotPassword(
-		{ 
-			region: getRegion(authConfig.userPoolId), 
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmResetPassword)
+		{
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmResetPassword),
 		},
 		{
 			Username: username,

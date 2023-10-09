@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { AuthStandardAttributeKey, AuthDeliveryMedium } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -30,11 +33,11 @@ export async function resendSignUpCode(
 	);
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const clientMetadata = input.options?.serviceOptions?.clientMetadata;
+	const clientMetadata = input.options?.clientMetadata;
 	const { CodeDeliveryDetails } = await resendConfirmationCode(
-		{ 
+		{
 			region: getRegion(authConfig.userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ResendSignUpCode)
+			userAgentValue: getAuthUserAgentValue(AuthAction.ResendSignUpCode),
 		},
 		{
 			Username: username,

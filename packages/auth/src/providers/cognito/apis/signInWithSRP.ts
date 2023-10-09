@@ -49,7 +49,7 @@ export async function signInWithSRP(
 	const { username, password } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const clientMetaData = input.options?.serviceOptions?.clientMetadata;
+	const clientMetaData = input.options?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername

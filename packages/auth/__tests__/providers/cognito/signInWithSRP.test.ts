@@ -45,9 +45,7 @@ describe('signIn API happy path cases', () => {
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 			options: {
-				serviceOptions: {
-					authFlowType: 'USER_SRP_AUTH',
-				},
+				authFlowType: 'USER_SRP_AUTH',
 			},
 		});
 		expect(result).toEqual(authAPITestParams.signInResult());
@@ -78,9 +76,7 @@ describe('signIn API happy path cases', () => {
 		await signInWithSRP({
 			username,
 			password,
-			options: {
-				serviceOptions: authAPITestParams.configWithClientMetadata,
-			},
+			options: authAPITestParams.configWithClientMetadata,
 		});
 		expect(handleUserSRPAuthflowSpy).toBeCalledWith(
 			username,

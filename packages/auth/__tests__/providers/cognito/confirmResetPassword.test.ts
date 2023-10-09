@@ -48,9 +48,7 @@ describe('ConfirmResetPassword API happy path cases', () => {
 			newPassword: 'password',
 			confirmationCode: 'code',
 			options: {
-				serviceOptions: {
-					clientMetadata: { fooo: 'fooo' },
-				},
+				clientMetadata: { fooo: 'fooo' },
 			},
 		});
 		expect(confirmForgotPasswordSpy).toHaveBeenCalledWith(

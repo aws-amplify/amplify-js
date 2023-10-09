@@ -44,9 +44,7 @@ describe('signIn API happy path cases', () => {
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 			options: {
-				serviceOptions: {
-					authFlowType: 'USER_PASSWORD_AUTH',
-				},
+				authFlowType: 'USER_PASSWORD_AUTH',
 			},
 		});
 		expect(result).toEqual(authAPITestParams.signInResult());
@@ -59,9 +57,7 @@ describe('signIn API happy path cases', () => {
 		await signInWithUserPassword({
 			username,
 			password,
-			options: {
-				serviceOptions: authAPITestParams.configWithClientMetadata,
-			},
+			options: authAPITestParams.configWithClientMetadata,
 		});
 		expect(handleUserPasswordFlowSpy).toBeCalledWith(
 			username,

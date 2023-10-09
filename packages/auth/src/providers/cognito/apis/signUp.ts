@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { AuthDeliveryMedium } from '../../../types';
 import { UserAttributeKey, SignUpInput, SignUpOutput } from '../types';
 import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
@@ -27,7 +30,7 @@ import { getAuthUserAgentValue } from '../../../utils';
 export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	const clientMetadata = input.options?.serviceOptions?.clientMetadata;
+	const clientMetadata = input.options?.clientMetadata;
 	assertTokenProviderConfig(authConfig);
 	assertValidationError(
 		!!username,
@@ -41,17 +44,17 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	let validationData: AttributeType[] | undefined;
 	let attributes: AttributeType[] | undefined;
 
-	if (options?.serviceOptions?.validationData) {
-		validationData = toAttributeType(options?.serviceOptions?.validationData);
+	if (options?.validationData) {
+		validationData = toAttributeType(options?.validationData);
 	}
 	if (options?.userAttributes) {
 		attributes = toAttributeType(options?.userAttributes);
 	}
 
 	const res = await signUpClient(
-		{ 
+		{
 			region: getRegion(authConfig.userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.SignUp)
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignUp),
 		},
 		{
 			Username: username,

@@ -48,7 +48,7 @@ export async function signInWithCustomAuth(
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { username, password, options } = input;
-	const metadata = options?.serviceOptions?.clientMetadata;
+	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername

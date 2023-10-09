@@ -19,9 +19,6 @@ export type AuthSignUpOptions<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
 	userAttributes: AuthUserAttributes<UserAttributeKey>;
-	serviceOptions?: ServiceOptions;
-};
+} & ServiceOptions;
 
-export type SignInWithWebUIOptions<ServiceOptions> = {
-	serviceOptions?: ServiceOptions;
-};
+export type SignInWithWebUIOptions<ServiceOptions> = ServiceOptions;
