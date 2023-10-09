@@ -5,7 +5,8 @@ import { InAppMessage } from '../../../types';
 import { InAppMessageConflictHandler, SetConflictHandlerInput } from '../types';
 
 /**
- * Set a conflict handler that will be used to resolve conflicts that emerge when matching the event to the synced messages.
+ * Set a conflict handler that will be used to resolve conflicts that emerge
+ * when matching the event to the synced messages.
  * This setting is not persisted across restarts and hence needs to be called before dipatching an event.
  *
  * @param SetConflictHandlerInput: The input object that holds the conflict handler to be used.
