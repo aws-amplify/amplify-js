@@ -17,7 +17,6 @@ import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { SignUpException } from '../types/errors';
-import { AttributeType } from '../utils/clients/CognitoIdentityProvider/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { toAttributeType } from '../utils/apiHelpers';
 import {
@@ -46,7 +45,8 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signUpVerificationMethod =
 		authConfig?.signUpVerificationMethod ?? 'code';
-	const clientMetadata = input.options?.serviceOptions?.clientMetadata;
+	const { clientMetadata, validationData } =
+		input.options?.serviceOptions ?? {};
 	assertTokenProviderConfig(authConfig);
 	assertValidationError(
 		!!username,
@@ -57,27 +57,22 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		AuthValidationErrorCode.EmptySignUpPassword
 	);
 
-	let validationData: AttributeType[] | undefined;
-	let attributes: AttributeType[] | undefined;
-
-	if (options?.serviceOptions?.validationData) {
-		validationData = toAttributeType(options?.serviceOptions?.validationData);
-	}
-	if (options?.userAttributes) {
-		attributes = toAttributeType(options?.userAttributes);
-	}
-	const signInServiceOptions = options?.serviceOptions?.autoSignIn;
+	const signInServiceOptions =
+		typeof options?.serviceOptions?.autoSignIn !== 'boolean'
+			? options?.serviceOptions?.autoSignIn
+			: undefined;
 
 	const signInInput: SignInInput = {
 		username,
-		password,
 		options: {
-			serviceOptions:
-				typeof signInServiceOptions !== 'boolean'
-					? signInServiceOptions
-					: undefined,
+			serviceOptions: signInServiceOptions,
 		},
 	};
+
+	// if the authFlowType is 'CUSTOM_WITHOUT_SRP' then we don't include the password
+	if (signInServiceOptions?.authFlowType !== 'CUSTOM_WITHOUT_SRP') {
+		signInInput['password'] = password;
+	}
 	if (signInServiceOptions) {
 		setAutoSignInStarted(true);
 	}
@@ -89,9 +84,10 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		{
 			Username: username,
 			Password: password,
-			UserAttributes: attributes,
+			UserAttributes:
+				options?.userAttributes && toAttributeType(options?.userAttributes),
 			ClientMetadata: clientMetadata,
-			ValidationData: validationData,
+			ValidationData: validationData && toAttributeType(validationData),
 			ClientId: authConfig.userPoolClientId,
 		}
 	);

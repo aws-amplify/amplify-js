@@ -9,6 +9,7 @@ import { AutoSignInCallback } from '../../../types/models';
 import { AuthError } from '../../../errors/AuthError';
 import { SignUpCommandOutput } from './clients/CognitoIdentityProvider/types';
 import { resetAutoSignIn, setAutoSignIn } from '../apis/autoSignIn';
+import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
 
 const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 
@@ -38,6 +39,7 @@ export function handleCodeAutoSignIn(signInInput: SignInInput) {
 		stopHubListener();
 		setAutoSignInStarted(false);
 		clearTimeout(timeOutId);
+		resetAutoSignIn();
 	}, MAX_AUTOSIGNIN_POLLING_MS);
 }
 
@@ -47,15 +49,16 @@ export function handleCodeAutoSignIn(signInInput: SignInInput) {
 // useEffect hook on every mount.
 // https://github.com/facebook/react/issues/24502
 // https://legacy.reactjs.org/docs/strict-mode.html#ensuring-reusable-state
+type TimeOutOutput = ReturnType<typeof setTimeout>;
 function debounce<F extends (...args: any[]) => any>(fun: F, delay: number) {
-	let timer: NodeJS.Timer | undefined;
+	let timer: TimeOutOutput | undefined;
 	return function (
 		args: F extends (...args: infer A) => any ? A : never
 	): void {
 		if (!timer) {
 			fun(...args);
 		}
-		clearTimeout(timer as NodeJS.Timer);
+		clearTimeout(timer as TimeOutOutput);
 		timer = setTimeout(() => {
 			timer = undefined;
 		}, delay);
@@ -76,8 +79,10 @@ function handleAutoSignInWithLink(
 			setAutoSignInStarted(false);
 			reject(
 				new AuthError({
-					name: 'AutoSignInError',
-					message: 'the account was not confirmed on time.',
+					name: AUTO_SIGN_IN_EXCEPTION,
+					message: 'The account was not confirmed on time.',
+					recoverySuggestion:
+						'Try to verify your account by clicking the link sent your email or phone and then login manually.',
 				})
 			);
 			resetAutoSignIn();
