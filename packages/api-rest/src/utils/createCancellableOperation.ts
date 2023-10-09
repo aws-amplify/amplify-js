@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HttpResponse } from '@aws-amplify/core/internals/aws-client-utils';
-import { CancelledError, RestApiError } from '../errors';
+import { CanceledError } from '../errors';
 import { Operation } from '../types';
 import { parseRestApiServiceError } from './serviceError';
 import { logger } from './logger';
@@ -59,13 +59,12 @@ export function createCancellableOperation(
 		} catch (error: any) {
 			const abortSignal = internalPostAbortSignal ?? publicApisAbortSignal;
 			if (error.name === 'AbortError' || abortSignal?.aborted === true) {
-				const cancelledError = new CancelledError({
-					name: error.name,
-					message: abortSignal.reason ?? error.message,
+				const canceledError = new CanceledError({
+					...(abortSignal.reason ? { message: abortSignal.reason } : undefined),
 					underlyingError: error,
 				});
 				logger.debug(error);
-				throw cancelledError;
+				throw canceledError;
 			}
 			logger.debug(error);
 			throw error;
@@ -82,7 +81,7 @@ export function createCancellableOperation(
 			publicApisAbortController.abort(abortMessage);
 			// Abort reason is not widely support enough across runtimes and and browsers, so we set it
 			// if it is not already set.
-			if (publicApisAbortSignal.reason !== abortMessage) {
+			if (abortMessage && publicApisAbortSignal.reason !== abortMessage) {
 				type AbortSignalWithReasonSupport = Omit<AbortSignal, 'reason'> & {
 					reason?: string;
 				};
