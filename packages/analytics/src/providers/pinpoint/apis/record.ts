@@ -1,7 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Hub } from '@aws-amplify/core';
 import {
+	AMPLIFY_SYMBOL,
 	AnalyticsAction,
 	ConsoleLogger as Logger,
 } from '@aws-amplify/core/internals/utils';
@@ -59,6 +61,12 @@ export const record = (input: RecordInput): void => {
 
 	resolveCredentials()
 		.then(({ credentials, identityId }) => {
+			Hub.dispatch(
+				'analytics',
+				{ event: 'record', data: input, message: 'Recording Analytics event' },
+				'Analytics',
+				AMPLIFY_SYMBOL
+			);
 			recordCore({
 				appId,
 				category: 'Analytics',
