@@ -62,7 +62,8 @@ export const recordAnalyticsEvent = (
 				event: {
 					name: event,
 					attributes: {
-						campaign_id: id,
+						// only include campaign_id field if we have one
+						...(id && { campaign_id: id }),
 						delivery_type: DELIVERY_TYPE,
 						treatment_id: metadata?.treatmentId,
 					},
@@ -90,19 +91,19 @@ export const matchesEventType = (
 	{ CampaignId, Schedule }: PinpointInAppMessage,
 	{ name: eventType }: InAppMessagingEvent
 ) => {
-	const { EventType } = Schedule?.EventFilter?.Dimensions;
+	const { EventType } = Schedule?.EventFilter?.Dimensions ?? {};
 	const memoKey = `${CampaignId}:${eventType}`;
 	if (!eventNameMemo.hasOwnProperty(memoKey)) {
-		eventNameMemo[memoKey] = !!EventType?.Values.includes(eventType);
+		eventNameMemo[memoKey] = !!EventType?.Values?.includes(eventType);
 	}
 	return eventNameMemo[memoKey];
 };
 
 export const matchesAttributes = (
 	{ CampaignId, Schedule }: PinpointInAppMessage,
-	{ attributes }: InAppMessagingEvent
+	{ attributes = {} }: InAppMessagingEvent
 ): boolean => {
-	const { Attributes } = Schedule?.EventFilter?.Dimensions;
+	const { Attributes } = Schedule?.EventFilter?.Dimensions ?? {};
 	if (isEmpty(Attributes)) {
 		// if message does not have attributes defined it does not matter what attributes are on the event
 		return true;
@@ -113,18 +114,20 @@ export const matchesAttributes = (
 	}
 	const memoKey = `${CampaignId}:${JSON.stringify(attributes)}`;
 	if (!eventAttributesMemo.hasOwnProperty(memoKey)) {
-		eventAttributesMemo[memoKey] = Object.entries(Attributes).every(
-			([key, { Values }]) => Values.includes(attributes[key])
-		);
+		eventAttributesMemo[memoKey] =
+			!Attributes ||
+			Object.entries(Attributes).every(([key, { Values }]) =>
+				Values?.includes(attributes[key])
+			);
 	}
 	return eventAttributesMemo[memoKey];
 };
 
 export const matchesMetrics = (
 	{ CampaignId, Schedule }: PinpointInAppMessage,
-	{ metrics }: InAppMessagingEvent
+	{ metrics = {} }: InAppMessagingEvent
 ): boolean => {
-	const { Metrics } = Schedule?.EventFilter?.Dimensions;
+	const { Metrics } = Schedule?.EventFilter?.Dimensions ?? {};
 	if (isEmpty(Metrics)) {
 		// if message does not have metrics defined it does not matter what metrics are on the event
 		return true;
@@ -135,18 +138,20 @@ export const matchesMetrics = (
 	}
 	const memoKey = `${CampaignId}:${JSON.stringify(metrics)}`;
 	if (!eventMetricsMemo.hasOwnProperty(memoKey)) {
-		eventMetricsMemo[memoKey] = Object.entries(Metrics).every(
-			([key, { ComparisonOperator, Value }]) => {
+		eventMetricsMemo[memoKey] =
+			!Metrics ||
+			Object.entries(Metrics).every(([key, { ComparisonOperator, Value }]) => {
 				const compare = getComparator(ComparisonOperator);
 				// if there is some unknown comparison operator, treat as a comparison failure
-				return compare ? compare(Value, metrics[key]) : false;
-			}
-		);
+				return compare && !!Value ? compare(Value, metrics[key]) : false;
+			});
 	}
 	return eventMetricsMemo[memoKey];
 };
 
-export const getComparator = (operator: string): MetricsComparator => {
+export const getComparator = (
+	operator?: string
+): MetricsComparator | undefined => {
 	switch (operator) {
 		case 'EQUAL':
 			return (metricsVal, eventVal) => metricsVal === eventVal;
@@ -159,7 +164,7 @@ export const getComparator = (operator: string): MetricsComparator => {
 		case 'LESS_THAN_OR_EQUAL':
 			return (metricsVal, eventVal) => metricsVal >= eventVal;
 		default:
-			return null;
+			return undefined;
 	}
 };
 
@@ -236,9 +241,9 @@ export const clearMemo = () => {
 // - 1. the usage of MOBILE_FEED and OVERLAYS as values for message layouts are not leaked
 //      outside the Pinpoint provider
 // - 2. Amplify correctly handles the legacy layout values from Pinpoint after they are updated
-export const interpretLayout = (
-	layout: PinpointInAppMessage['InAppMessage']['Layout']
-): InAppMessageLayout => {
+
+// TODO(V6): Add exact type as PinpointInAppMessage['InAppMessage']['Layout']
+export const interpretLayout = (layout: string): InAppMessageLayout => {
 	if (layout === 'MOBILE_FEED') {
 		return 'MODAL';
 	}
@@ -280,7 +285,7 @@ export const extractContent = ({
 					style: {
 						color: HeaderConfig.TextColor,
 						textAlign:
-							HeaderConfig.Alignment.toLowerCase() as InAppMessageTextAlign,
+							HeaderConfig.Alignment?.toLowerCase() as InAppMessageTextAlign,
 					},
 				};
 			}
@@ -290,7 +295,7 @@ export const extractContent = ({
 					style: {
 						color: BodyConfig.TextColor,
 						textAlign:
-							BodyConfig.Alignment.toLowerCase() as InAppMessageTextAlign,
+							BodyConfig.Alignment?.toLowerCase() as InAppMessageTextAlign,
 					},
 				};
 			}

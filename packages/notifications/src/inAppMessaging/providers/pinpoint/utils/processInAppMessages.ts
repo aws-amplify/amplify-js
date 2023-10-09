@@ -30,7 +30,7 @@ export async function processInAppMessages(
 	messages: PinpointInAppMessage[],
 	event: InAppMessagingEvent
 ): Promise<InAppMessage[]> {
-	let highestPrioritySeen: number;
+	let highestPrioritySeen: number | undefined;
 	let acc: PinpointInAppMessage[] = [];
 	for (let index = 0; index < messages.length; index++) {
 		const message = messages[index];
@@ -71,12 +71,16 @@ export async function processInAppMessages(
 function normalizeMessages(messages: PinpointInAppMessage[]): InAppMessage[] {
 	return messages.map(message => {
 		const { CampaignId, InAppMessage } = message;
-		return {
+		const normalizedMesssage = {
 			id: CampaignId,
 			content: extractContent(message),
-			layout: interpretLayout(InAppMessage.Layout),
+			// Only populate this field if we have a Layout field in the message
+			layout: InAppMessage?.Layout
+				? interpretLayout(InAppMessage.Layout)
+				: undefined,
 			metadata: extractMetadata(message),
 		};
+		return normalizedMesssage;
 	});
 }
 
@@ -90,24 +94,36 @@ async function isBelowCap({
 		CampaignId
 	);
 	return (
-		(!SessionCap ?? sessionCount < SessionCap) &&
-		(!DailyCap ?? dailyCount < DailyCap) &&
-		(!TotalCap ?? totalCount < TotalCap)
+		(!SessionCap || sessionCount < SessionCap) &&
+		(!DailyCap || dailyCount < DailyCap) &&
+		(!TotalCap || totalCount < TotalCap)
 	);
 }
 
 async function getMessageCounts(
-	messageId: string
+	messageId?: string
 ): Promise<InAppMessageCounts> {
+	let messageCounts = {
+		sessionCount: 0,
+		dailyCount: 0,
+		totalCount: 0,
+	};
 	try {
-		return {
-			sessionCount: getSessionCount(messageId),
-			dailyCount: await getDailyCount(),
-			totalCount: await getTotalCount(messageId),
-		};
+		// only return true counts if there is a messageId else default to 0
+		if (messageId)
+			messageCounts = {
+				sessionCount: getSessionCount(messageId),
+				dailyCount: await getDailyCount(),
+				totalCount: await getTotalCount(messageId),
+			};
 	} catch (err) {
 		logger.error('Failed to get message counts from storage', err);
+
+		// If there are no cached counts or there is an error,
+		// we default to 0 allowing all the messages to be eligible
+		return messageCounts;
 	}
+	return messageCounts;
 }
 
 function getSessionCount(messageId: string): number {

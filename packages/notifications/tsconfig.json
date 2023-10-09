@@ -15,7 +15,8 @@
 		"types": ["jest", "node"],
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
-		"jsx": "react-native"
+		"jsx": "react-native",
+		"strict": true
 	},
 	"include": ["src/**/*"],
 	"exclude": ["src/setupTests.ts"]

@@ -20,9 +20,6 @@ export interface NotificationsProvider {
 
 	// return the name of you provider
 	getProviderName(): string;
-
-	// identify the current user with the provider
-	identifyUser(userId: string, userInfo: UserInfo): Promise<void>;
 }
 
 export interface NotificationsConfig {

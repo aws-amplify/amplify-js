@@ -15,7 +15,7 @@ import {
 let hidden: string;
 let visibilityChange: string;
 
-if (isBrowser && document) {
+if (isBrowser() && document) {
 	if (typeof document.hidden !== 'undefined') {
 		hidden = 'hidden';
 		visibilityChange = 'visibilitychange';
@@ -38,7 +38,7 @@ export default class SessionTracker implements SessionTrackerInterface {
 	}
 
 	start = (): SessionState => {
-		if (isBrowser) {
+		if (isBrowser()) {
 			document?.addEventListener(
 				visibilityChange,
 				this.visibilityChangeHandler
@@ -48,7 +48,7 @@ export default class SessionTracker implements SessionTrackerInterface {
 	};
 
 	end = (): SessionState => {
-		if (isBrowser) {
+		if (isBrowser()) {
 			document?.removeEventListener(
 				visibilityChange,
 				this.visibilityChangeHandler
@@ -58,7 +58,7 @@ export default class SessionTracker implements SessionTrackerInterface {
 	};
 
 	private getSessionState = (): SessionState => {
-		if (isBrowser && document && !document[hidden]) {
+		if (isBrowser() && document && !document[hidden]) {
 			return 'started';
 		}
 		// If, for any reason, document is undefined the session will never start

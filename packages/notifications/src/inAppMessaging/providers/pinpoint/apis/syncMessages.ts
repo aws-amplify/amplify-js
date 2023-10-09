@@ -46,7 +46,7 @@ import {
  */
 export async function syncMessages(): Promise<void> {
 	const messages = await fetchInAppMessages();
-	if (messages.length === 0) {
+	if (!messages || messages.length === 0) {
 		return;
 	}
 	try {
@@ -95,7 +95,8 @@ async function fetchInAppMessages() {
 			{ credentials, region },
 			input
 		);
-		const { InAppMessageCampaigns: messages } = response.InAppMessagesResponse;
+		const { InAppMessageCampaigns: messages } =
+			response.InAppMessagesResponse ?? {};
 		return messages;
 	} catch (error) {
 		assertServiceError(error);

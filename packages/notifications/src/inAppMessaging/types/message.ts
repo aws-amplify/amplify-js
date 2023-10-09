@@ -18,12 +18,12 @@ interface InAppMessageContainer {
 }
 
 interface InAppMessageHeader {
-	content: string;
+	content: string | undefined;
 	style?: InAppMessageStyle;
 }
 
 interface InAppMessageBody {
-	content: string;
+	content: string | undefined;
 	style?: InAppMessageStyle;
 }
 
@@ -32,7 +32,7 @@ export interface InAppMessageImage {
 }
 
 export interface InAppMessageButton {
-	title: string;
+	title: string | undefined;
 	action: InAppMessageAction;
 	url?: string;
 	style?: InAppMessageStyle;
@@ -55,8 +55,8 @@ export interface InAppMessageContent {
 }
 
 export interface InAppMessage {
-	id: string;
-	layout: InAppMessageLayout;
+	id: string | undefined;
+	layout: InAppMessageLayout | undefined;
 	content: InAppMessageContent[];
 	metadata?: any;
 }

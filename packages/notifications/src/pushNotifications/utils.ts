@@ -14,7 +14,7 @@ const URL_ACTION = 'url';
 
 export const normalizeNativePermissionStatus = (
 	nativeStatus?
-): PushNotificationPermissionStatus => {
+): PushNotificationPermissionStatus | undefined => {
 	switch (nativeStatus) {
 		case 'ShouldRequest':
 			return PushNotificationPermissionStatus.SHOULD_REQUEST;
@@ -26,13 +26,15 @@ export const normalizeNativePermissionStatus = (
 			return PushNotificationPermissionStatus.GRANTED;
 		case 'Denied':
 			return PushNotificationPermissionStatus.DENIED;
+		default:
+			return undefined;
 	}
 };
 
 export const normalizeNativeMessage = (
 	nativeMessage?
 ): PushNotificationMessage | null => {
-	let normalized: NormalizedValues;
+	let normalized: NormalizedValues | undefined;
 	if (nativeMessage?.aps) {
 		normalized = normalizeApnsMessage(nativeMessage);
 	}
@@ -75,6 +77,7 @@ const getApnsAction = (
 	if (action[DEEP_LINK_ACTION]) {
 		return { deeplinkUrl: action[DEEP_LINK_ACTION] };
 	}
+	return {};
 };
 
 const getFcmAction = (
@@ -86,6 +89,7 @@ const getFcmAction = (
 	if (action[DEEP_LINK_ACTION]) {
 		return { deeplinkUrl: action[DEEP_LINK_ACTION] };
 	}
+	return {};
 };
 
 const getApnsOptions = ({
