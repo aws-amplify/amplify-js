@@ -35,6 +35,10 @@ import {
 	DetectDocumentTextCommand,
 	AnalyzeDocumentCommand,
 } from '@aws-sdk/client-textract';
+import {
+	PredictionsValidationErrorCode,
+	validationErrorMap,
+} from '../../src/errors/types/validation';
 
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
@@ -320,8 +324,10 @@ describe('Predictions identify provider test', () => {
 			test('error case no credentials', () => {
 				mockFetchAuthSession.mockResolvedValueOnce({});
 
-				expect(predictionsProvider.identify(detectTextInput)).rejects.toMatch(
-					'No credentials'
+				expect(predictionsProvider.identify(detectTextInput)).rejects.toThrow(
+					expect.objectContaining(
+						validationErrorMap[PredictionsValidationErrorCode.NoCredentials]
+					)
 				);
 			});
 
@@ -405,8 +411,10 @@ describe('Predictions identify provider test', () => {
 			test('error case credentials do not exist', () => {
 				mockFetchAuthSession.mockResolvedValueOnce({});
 
-				expect(predictionsProvider.identify(detectLabelInput)).rejects.toMatch(
-					'No credentials'
+				expect(predictionsProvider.identify(detectLabelInput)).rejects.toThrow(
+					expect.objectContaining(
+						validationErrorMap[PredictionsValidationErrorCode.NoCredentials]
+					)
 				);
 			});
 			test('error case credentials exist but service fails', () => {
@@ -510,8 +518,10 @@ describe('Predictions identify provider test', () => {
 			test('error case credentials do not exist', () => {
 				mockFetchAuthSession.mockResolvedValueOnce({});
 
-				expect(predictionsProvider.identify(detectFacesInput)).rejects.toMatch(
-					'No credentials'
+				expect(predictionsProvider.identify(detectFacesInput)).rejects.toThrow(
+					expect.objectContaining(
+						validationErrorMap[PredictionsValidationErrorCode.NoCredentials]
+					)
 				);
 			});
 
