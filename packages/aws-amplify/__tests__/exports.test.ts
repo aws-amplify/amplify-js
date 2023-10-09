@@ -146,9 +146,9 @@ describe('aws-amplify Exports', () => {
 			  "rememberDevice",
 			  "forgetDevice",
 			  "fetchDevices",
+			  "autoSignIn",
 			  "AuthError",
 			  "fetchAuthSession",
-			  "autoSignIn",
 			]
 		`);
 		});
@@ -181,6 +181,7 @@ describe('aws-amplify Exports', () => {
 			  "rememberDevice",
 			  "forgetDevice",
 			  "fetchDevices",
+			  "autoSignIn",
 			  "cognitoCredentialsProvider",
 			  "CognitoAWSCredentialsAndIdentityIdProvider",
 			  "DefaultIdentityIdStore",
@@ -188,7 +189,6 @@ describe('aws-amplify Exports', () => {
 			  "TokenOrchestrator",
 			  "DefaultTokenStore",
 			  "refreshAuthTokens",
-			   "autoSignIn"
 			]
 		`);
 		});
