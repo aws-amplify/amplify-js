@@ -48,8 +48,15 @@ describe('aws-amplify Exports', () => {
 		it('should only export expected symbols from the top level', () => {
 			expect(Object.keys(apiTopLevelExports)).toMatchInlineSnapshot(`
 			Array [
-			  "GraphQLAuthError",
 			  "generateClient",
+			  "GraphQLAuthError",
+			  "get",
+			  "put",
+			  "post",
+			  "del",
+			  "head",
+			  "patch",
+			  "isCancelError",
 			]
 		`);
 		});
@@ -231,24 +238,6 @@ describe('aws-amplify Exports', () => {
 			  "getProperties",
 			  "copy",
 			  "getUrl",
-			]
-		`);
-		});
-	});
-
-	describe('API exports', () => {
-		it('should only export expected symbols from the top-level', () => {
-			expect(Object.keys(apiTopLevelExports)).toMatchInlineSnapshot(`
-			Array [
-			  "generateClient",
-			  "GraphQLAuthError",
-			  "get",
-			  "put",
-			  "post",
-			  "del",
-			  "head",
-			  "patch",
-			  "isCancelError",
 			]
 		`);
 		});
