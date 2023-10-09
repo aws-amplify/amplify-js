@@ -45,7 +45,7 @@ afterEach(() => {
 
 describe('API test', () => {
 	// NOTE: `generateClient()` is only exported from top-level API category.
-	const client = { graphql, cancel } as V6Clientw;
+	const client = { graphql, cancel } as V6Client;
 
 	afterEach(() => {
 		jest.clearAllMocks();
