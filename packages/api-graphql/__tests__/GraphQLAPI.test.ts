@@ -1,10 +1,16 @@
 import * as raw from '../src';
 import { graphql, cancel } from '../src/internals/v6';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify } from 'aws-amplify';
+import { Amplify as AmplifyCore } from '@aws-amplify/core';
 import * as typedQueries from './fixtures/with-types/queries';
 import { expectGet } from './utils/expects';
 
-import { GraphQLResult, GraphQLAuthError, V6Client } from '../src/types';
+import {
+	__amplify,
+	GraphQLResult,
+	GraphQLAuthError,
+	V6Client,
+} from '../src/types';
 import { GetThreadQuery } from './fixtures/with-types/API';
 
 const serverManagedFields = {
@@ -15,38 +21,50 @@ const serverManagedFields = {
 };
 
 /**
- * Partial mock of the Amplify core module - only mock fetchAuthSession
+ * `generateClient()` is only exported from top-level API category, so we create
+ * the equivalent of the generated client below. First we need to create a
+ * partial mock of the Amplify core module for the pretend generated client:
  */
-jest.mock('@aws-amplify/core', () => {
-	const originalModule = jest.requireActual('@aws-amplify/core');
+let amplify;
 
-	return {
+jest.mock('aws-amplify', () => {
+	const originalModule = jest.requireActual('aws-amplify');
+
+	const mockedModule = {
 		__esModule: true,
 		...originalModule,
-		fetchAuthSession: jest.fn(() => {
-			return {
-				tokens: {
-					accessToken: {
-						toString: () => 'mock-access-token',
-					},
-				},
-				credentials: {
-					accessKeyId: 'mock-access-key-id',
-					secretAccessKey: 'mock-secret-access-key',
-				},
-			};
-		}),
+		Amplify: {
+			...originalModule.Amplify,
+			Auth: {
+				...originalModule.Amplify.Auth,
+				fetchAuthSession: jest.fn(() => {
+					return {
+						tokens: {
+							accessToken: {
+								toString: () => 'mock-access-token',
+							},
+						},
+						credentials: {
+							accessKeyId: 'mock-access-key-id',
+							secretAccessKey: 'mock-secret-access-key',
+						},
+					};
+				}),
+			},
+		},
 	};
+
+	amplify = mockedModule.Amplify;
+	return mockedModule;
 });
+
+const client = { [__amplify]: amplify, graphql, cancel } as V6Client;
 
 afterEach(() => {
 	jest.restoreAllMocks();
 });
 
 describe('API test', () => {
-	// NOTE: `generateClient()` is only exported from top-level API category.
-	const client = { graphql, cancel } as V6Client;
-
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
@@ -170,6 +188,7 @@ describe('API test', () => {
 
 			expect(errors).toBe(undefined);
 			expect(thread).toEqual(graphqlResponse.data.getThread);
+
 			expect(spy).toHaveBeenCalledWith({
 				abortController: expect.any(AbortController),
 				url: new URL('https://localhost/graphql'),
@@ -439,10 +458,7 @@ describe('API test', () => {
 				url: new URL('https://localhost/graphql'),
 				options: expect.objectContaining({
 					headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
-					signingServiceInfo: expect.objectContaining({
-						region: 'local-host-h4x',
-						service: 'appsync',
-					}),
+					signingServiceInfo: null,
 				}),
 			});
 		});
@@ -1101,6 +1117,17 @@ describe('API test', () => {
 		// });
 
 		test('happy case query with additionalHeaders', async () => {
+			/**
+			 * Create a new client with unmocked Amplify imported from `core`.
+			 * This is necessary to preserve the `libraryOptions` on the singleton
+			 * (in this test case, headers passed via configuration options).
+			 */
+			const optionsClient = {
+				[__amplify]: AmplifyCore,
+				graphql,
+				cancel,
+			} as V6Client;
+
 			Amplify.configure(
 				{
 					API: {
@@ -1155,7 +1182,7 @@ describe('API test', () => {
 				someHeaderSetAtConfigThatWillBeOverridden: 'expectedValue',
 			};
 
-			const result: GraphQLResult<GetThreadQuery> = await client.graphql(
+			const result: GraphQLResult<GetThreadQuery> = await optionsClient.graphql(
 				{
 					query: typedQueries.getThread,
 					variables: graphqlVariables,
@@ -1177,10 +1204,7 @@ describe('API test', () => {
 						someHeaderSetAtConfigThatWillBeOverridden: 'expectedValue',
 						someOtherHeaderSetAtConfig: 'expectedValue',
 					}),
-					signingServiceInfo: expect.objectContaining({
-						region: 'local-host-h4x',
-						service: 'appsync',
-					}),
+					signingServiceInfo: null,
 				}),
 			});
 		});

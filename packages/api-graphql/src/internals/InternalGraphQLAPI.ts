@@ -229,8 +229,6 @@ export class InternalGraphQLAPIClass {
 		const { headers: customHeaders, withCredentials } =
 			resolveLibraryOptions(amplify);
 
-		let customHeadersOptions;
-
 		// TODO: Figure what we need to do to remove `!`'s.
 		const headers = {
 			...(!customEndpoint &&
@@ -246,14 +244,12 @@ export class InternalGraphQLAPIClass {
 					? await this._headerBasedAuth(amplify, authMode!, additionalHeaders)
 					: {})) ||
 				{}),
-			// Custom headers included in Amplify configuration:
+			// Custom headers included in Amplify configuration options:
 			...(customHeaders &&
-				(await customHeaders(
-					(customHeadersOptions = {
-						query: print(query as DocumentNode),
-						variables,
-					})
-				))),
+				(await customHeaders({
+					query: print(query as DocumentNode),
+					variables,
+				}))),
 			// Headers from individual calls to `graphql`:
 			...additionalHeaders,
 			// User agent headers:
