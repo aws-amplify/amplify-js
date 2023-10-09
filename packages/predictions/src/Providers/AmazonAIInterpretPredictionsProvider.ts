@@ -16,6 +16,7 @@ import {
 	TextSentiment,
 	TextSyntax,
 	KeyPhrases,
+	InterpretTextOthers,
 } from '../types';
 import {
 	ComprehendClient,
@@ -25,6 +26,8 @@ import {
 	DetectKeyPhrasesCommand,
 	DetectSentimentCommand,
 } from '@aws-sdk/client-comprehend';
+import { assertValidationError } from '../errors/utils/assertValidationError';
+import { PredictionsValidationErrorCode } from '../errors/types/validation';
 
 export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredictionsProvider {
 	private comprehendClient: ComprehendClient;
@@ -40,22 +43,26 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 	interpretText(input: InterpretTextInput): Promise<InterpretTextOutput> {
 		return new Promise(async (res, rej) => {
 			const { credentials } = await fetchAuthSession();
-			if (!credentials) return rej('No credentials');
-			const {
-				interpretText: {
-					region = '',
-					defaults: { type: interpretTypeConfig = '' } = {},
-				} = {},
-			} = Amplify.getConfig().Predictions?.interpret || {};
-			const {
-				text: {
-					source: { text = '' } = {},
-					type: interpretType = interpretTypeConfig,
-				} = {},
-			} = ({} = input);
+			assertValidationError(
+				!!credentials,
+				PredictionsValidationErrorCode.NoCredentials
+			);
 
-			const { text: { source: { language = undefined } = {} } = {} } = ({} =
-				input as any); // language is only required for specific interpret types
+			// const {
+			// 	text: {
+			// 		source: { text = '' } = {},
+			// 		type: interpretType = interpretTypeConfig,
+			// 	} = {},
+			// } = ({} = input);
+
+			const { interpretText = {} } =
+				Amplify.getConfig().Predictions?.interpret ?? {};
+			const { region = '', defaults = {} } = interpretText;
+			const { type: defaultType = '' } = defaults;
+
+			const { text: textSource } = input;
+			const { source, type = defaultType } = textSource;
+			const { text, language } = (source as any) ?? {};
 
 			this.comprehendClient = new ComprehendClient({
 				credentials,
@@ -66,10 +73,10 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 				}),
 			});
 
-			const doAll = interpretType === InterpretTextCategories.ALL;
+			const doAll = type === InterpretTextCategories.ALL;
 
 			let languagePromise: Promise<string>;
-			if (doAll || interpretType === InterpretTextCategories.LANGUAGE) {
+			if (doAll || type === InterpretTextCategories.LANGUAGE) {
 				const languageDetectionParams = {
 					Text: text,
 				};
@@ -77,8 +84,8 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 			}
 
 			let entitiesPromise: Promise<Array<TextEntities>>;
-			if (doAll || interpretType === InterpretTextCategories.ENTITIES) {
-				const LanguageCode = language || (await languagePromise);
+			if (doAll || type === InterpretTextCategories.ENTITIES) {
+				const LanguageCode = language ?? (await languagePromise);
 				if (!LanguageCode) {
 					return rej('language code is required on source for this selection');
 				}
@@ -90,7 +97,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 			}
 
 			let sentimentPromise: Promise<TextSentiment>;
-			if (doAll || interpretType === InterpretTextCategories.SENTIMENT) {
+			if (doAll || type === InterpretTextCategories.SENTIMENT) {
 				const LanguageCode = language || (await languagePromise);
 				if (!LanguageCode) {
 					return rej('language code is required on source for this selection');
@@ -103,7 +110,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 			}
 
 			let syntaxPromise: Promise<Array<TextSyntax>>;
-			if (doAll || interpretType === InterpretTextCategories.SYNTAX) {
+			if (doAll || type === InterpretTextCategories.SYNTAX) {
 				const LanguageCode = language || (await languagePromise);
 				if (!LanguageCode) {
 					return rej('language code is required on source for this selection');
@@ -116,7 +123,7 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 			}
 
 			let keyPhrasesPromise: Promise<Array<KeyPhrases>>;
-			if (doAll || interpretType === InterpretTextCategories.KEY_PHRASES) {
+			if (doAll || type === InterpretTextCategories.KEY_PHRASES) {
 				const LanguageCode = language || (await languagePromise);
 				if (!LanguageCode) {
 					return rej('language code is required on source for this selection');
