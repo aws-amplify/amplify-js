@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ConsoleLogger as Logger } from './Logger';
-import { OAuthConfig } from './singleton/Auth/types';
+import { OAuthConfig, AuthStandardAttributeKey, AuthConfigUserAttributes } from './singleton/Auth/types';
 import { ResourcesConfig } from './singleton/types';
 
 const logger = new Logger('parseAWSExports');
@@ -37,6 +37,9 @@ export const parseAWSExports = (
 		aws_cognito_mfa_configuration,
 		aws_cognito_mfa_types,
 		aws_cognito_password_protection_settings,
+		aws_cognito_verification_mechanisms,
+		aws_cognito_signup_attributes,
+		aws_cognito_username_attributes,
 		aws_mandatory_sign_in,
 		aws_mobile_analytics_app_id,
 		aws_mobile_analytics_app_region,
@@ -103,25 +106,45 @@ export const parseAWSExports = (
 	} : undefined;
 	const passwordRestrictionsConfig = aws_cognito_password_protection_settings ? {
 		minLength: aws_cognito_password_protection_settings.passwordPolicyMinLength,
-		requireLowercase: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_LOWERCASE'),
-		requireUppercase: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_UPPERCASE'),
-		requireNumbers: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_NUMBERS'),
-		requireSpecialCharacters: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_SYMBOLS'),
+		requireLowercase: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_LOWERCASE') ?? false,
+		requireUppercase: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_UPPERCASE') ?? false,
+		requireNumbers: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_NUMBERS') ?? false,
+		requireSpecialCharacters: aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes('REQUIRES_SYMBOLS') ?? false,
 	} : undefined;
+	const userAttributesConfig = Array.from(
+		new Set([
+			...(aws_cognito_verification_mechanisms?.map((s: string) => (
+				{
+					[s.toLowerCase()]: {}
+				}
+			)) ?? []),
+			...(aws_cognito_signup_attributes?.map((s: string) => (
+				{
+					[s.toLowerCase()]: { required: true }
+				}
+			)) ?? [])
+		])
+	) as unknown as AuthConfigUserAttributes;
 	if (aws_cognito_identity_pool_id || aws_user_pools_id) {
 		amplifyConfig.Auth = {
 			Cognito: {
 				identityPoolId: aws_cognito_identity_pool_id,
 				allowGuestAccess: aws_mandatory_sign_in !== 'enable',
 				signUpVerificationMethod: aws_cognito_sign_up_verification_method,
+				signUpAttributes: userAttributesConfig,
 				userPoolClientId: aws_user_pools_web_client_id,
 				userPoolId: aws_user_pools_id,
 				mfa: mfaConfig,
 				passwordRestrictions: passwordRestrictionsConfig,
-				...(oauth &&
-					Object.keys(oauth).length > 0 && {
-						loginWith: getOAuthConfig(oauth),
-					}),
+				loginWith: {
+					username: aws_cognito_username_attributes?.includes('USERNAME') ?? false,
+					email: aws_cognito_username_attributes?.includes('EMAIL') ?? false,
+					phoneNumber: aws_cognito_username_attributes?.includes('PHONE_NUMBER') ?? false,
+					...(oauth &&
+						Object.keys(oauth).length > 0 && {
+							oauth: getOAuthConfig(oauth),
+						}),
+				}
 			},
 		};
 	}
@@ -185,12 +208,10 @@ const getOAuthConfig = ({
 	redirectSignIn,
 	redirectSignOut,
 	responseType,
-}: Record<string, any>): { oauth: OAuthConfig } => ({
-	oauth: {
-		domain,
-		scopes: scope,
-		redirectSignIn: getRedirectUrl(redirectSignIn),
-		redirectSignOut: getRedirectUrl(redirectSignOut),
-		responseType,
-	},
+}: Record<string, any>): OAuthConfig => ({
+	domain,
+	scopes: scope,
+	redirectSignIn: getRedirectUrl(redirectSignIn),
+	redirectSignOut: getRedirectUrl(redirectSignOut),
+	responseType,
 });

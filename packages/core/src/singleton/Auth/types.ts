@@ -93,6 +93,8 @@ export type AuthStandardAttributeKey =
 
 export type AuthVerifiableAttributeKey = 'email' | 'phone_number';
 
+export type AuthConfigUserAttributes = Partial<Record<AuthStandardAttributeKey, { required?: boolean }>>;
+
 export type AuthConfig = StrictUnion<
 	| AuthIdentityPoolConfig
 	| AuthUserPoolConfig
@@ -135,9 +137,7 @@ export type CognitoUserPoolConfig = {
 		email?: boolean;
 		phoneNumber?: boolean;
 	};
-	userAttributes?: Partial<
-		Record<AuthStandardAttributeKey, { required?: boolean }>
-	>;
+	signUpAttributes?: AuthConfigUserAttributes;
 	mfa?: {
 		mode: 'on' | 'off' | 'optional';
 		useTOTP?: boolean;
@@ -150,6 +150,12 @@ export type CognitoUserPoolConfig = {
 		requireNumbers?: boolean;
 		requireSpecialCharacters?: boolean;
 	};
+	/**
+	 * Internal-only configuration for testing purpose. You should not use this.
+	 *
+	 * @internal
+	 */
+	dangerouslyConnectToHttpEndpointForTesting?: string;
 };
 
 export type OAuthConfig = {
