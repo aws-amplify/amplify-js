@@ -52,6 +52,7 @@ describe('getUrl test', () => {
 		const config = {
 			credentials,
 			region,
+			userAgentValue: expect.any(String)
 		};
 		const key = 'key';
 		beforeEach(() => {

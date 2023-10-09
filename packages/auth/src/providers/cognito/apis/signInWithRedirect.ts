@@ -3,14 +3,15 @@
 
 import { Amplify, Hub, defaultStorage, OAuthConfig } from '@aws-amplify/core';
 import {
+	AuthAction,
 	AMPLIFY_SYMBOL,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
-	getAmplifyUserAgent,
 	isBrowser,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
 	urlSafeDecode,
+	decodeJWT,
 } from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { CognitoUserPoolsTokenProvider } from '../tokenProvider';
@@ -20,7 +21,7 @@ import { AuthError } from '../../../errors/AuthError';
 import { AuthErrorTypes } from '../../../types/Auth';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { authErrorMessages } from '../../../Errors';
-import { openAuthSession } from '../../../utils';
+import { getAuthUserAgentValue, openAuthSession } from '../../../utils';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInWithRedirectInput } from '../types';
 import { generateCodeVerifier, generateState } from '../utils/oauth';
@@ -121,7 +122,7 @@ async function oauthSignIn({
 			domain,
 			redirectUri: redirectSignIn[0],
 			responseType,
-			userAgentValue: getAmplifyUserAgent(),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignInWithRedirect),
 			preferPrivateSession,
 		});
 	}
@@ -159,10 +160,7 @@ async function handleCodeFlow({
 	}
 	const code = url.searchParams.get('code');
 
-	const currentUrlPathname = url.pathname || '/';
-	const redirectUriPathname = new URL(redirectUri).pathname || '/';
-
-	if (!code || currentUrlPathname !== redirectUriPathname) {
+	if (!code) {
 		return;
 	}
 
@@ -214,7 +212,11 @@ async function handleCodeFlow({
 
 	await store.clearOAuthInflightData();
 
+	const username =
+		(access_token && decodeJWT(access_token).payload.username) ?? 'username';
+
 	await cacheCognitoTokens({
+		username,
 		AccessToken: access_token,
 		IdToken: id_token,
 		RefreshToken: refresh_token,
@@ -243,7 +245,7 @@ async function handleImplicitFlow({
 	const url = new URL(currentUrl);
 
 	const { idToken, accessToken, state, tokenType, expiresIn } = (
-		url.hash || '#'
+		url.hash ?? '#'
 	)
 		.substring(1) // Remove # from returned code
 		.split('&')
@@ -264,7 +266,11 @@ async function handleImplicitFlow({
 		return;
 	}
 
+	const username =
+		(accessToken && decodeJWT(accessToken).payload.username) ?? 'username';
+
 	await cacheCognitoTokens({
+		username,
 		AccessToken: accessToken,
 		IdToken: idToken,
 		TokenType: tokenType,
@@ -425,7 +431,7 @@ async function parseRedirectURL() {
 			domain,
 			redirectUri: redirectSignIn[0],
 			responseType,
-			userAgentValue: getAmplifyUserAgent(),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignInWithRedirect),
 		});
 	} catch (err) {
 		// is ok if there is not OAuthConfig

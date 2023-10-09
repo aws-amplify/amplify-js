@@ -3,6 +3,7 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
+	AuthAction,
 	assertTokenProviderConfig,
 	fetchAuthSession,
 } from '@aws-amplify/core/internals/utils';
@@ -11,6 +12,7 @@ import { getRegion } from '../../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../../utils/types';
 import { FetchUserAttributesOutput } from '../../types';
 import { toAuthUserAttribute } from '../../utils/apiHelpers';
+import { getAuthUserAgentValue } from '../../../../utils';
 
 export const fetchUserAttributes = async (
 	amplify: AmplifyClassV6
@@ -23,7 +25,10 @@ export const fetchUserAttributes = async (
 	assertAuthTokens(tokens);
 
 	const { UserAttributes } = await getUser(
-		{ region: getRegion(authConfig.userPoolId) },
+		{ 
+			region: getRegion(authConfig.userPoolId), 
+			userAgentValue: getAuthUserAgentValue(AuthAction.FetchUserAttributes) 
+		},
 		{
 			AccessToken: tokens.accessToken.toString(),
 		}

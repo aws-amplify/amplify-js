@@ -40,7 +40,10 @@ describe('ResendSignUp API Happy Path Cases:', () => {
 		});
 		expect(result).toEqual(authAPITestParams.resendSignUpAPIResult);
 		expect(resendSignUpSpy).toHaveBeenCalledWith(
-			{ region: 'us-west-2' },
+			{ 
+				region: 'us-west-2',
+				userAgentValue: expect.any(String)
+			},
 			{
 				ClientMetadata: undefined,
 				Username: user1.username,

@@ -257,8 +257,8 @@ describe('aws-amplify Exports', () => {
 		it('should only export expected symbols from the top-level', () => {
 			expect(Object.keys(apiTopLevelExports)).toMatchInlineSnapshot(`
 			Array [
-			  "GraphQLAuthError",
 			  "generateClient",
+			  "GraphQLAuthError",
 			  "get",
 			  "put",
 			  "post",

@@ -3,6 +3,7 @@
 
 import { Amplify, CognitoUserPoolConfig } from '@aws-amplify/core';
 import {
+	AuthAction,
 	assertTokenProviderConfig,
 	base64Encoder,
 } from '@aws-amplify/core/internals/utils';
@@ -55,6 +56,7 @@ import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants'
 import { getCurrentUser } from '../apis/getCurrentUser';
 import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
 import { assertDeviceMetadata } from './types';
+import { getAuthUserAgentValue } from '../../../utils';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -91,7 +93,7 @@ export async function handleCustomChallenge({
 		ANSWER: challengeResponse,
 	};
 
-	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata();
+	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
 	if (deviceMetadata && deviceMetadata.deviceKey) {
 		challengeResponses['DEVICE_KEY'] = deviceMetadata.deviceKey;
 	}
@@ -105,7 +107,10 @@ export async function handleCustomChallenge({
 	};
 
 	const response = await respondToAuthChallenge(
-		{ region: getRegion(userPoolId) },
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+		},
 		jsonReq
 	);
 
@@ -134,7 +139,10 @@ export async function handleMFASetupChallenge({
 	};
 
 	const { Session } = await verifySoftwareToken(
-		{ region: getRegion(userPoolId) },
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+		},
 		{
 			UserCode: challengeResponse,
 			Session: session,
@@ -183,7 +191,13 @@ export async function handleSelectMFATypeChallenge({
 		ClientId: userPoolClientId,
 	};
 
-	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+	return respondToAuthChallenge(
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+		}, 
+		jsonReq
+	);
 }
 
 export async function handleSMSMFAChallenge({
@@ -206,7 +220,13 @@ export async function handleSMSMFAChallenge({
 		ClientId: userPoolClientId,
 	};
 
-	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+	return respondToAuthChallenge(
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+		}, 
+		jsonReq
+	);
 }
 export async function handleSoftwareTokenMFAChallenge({
 	challengeResponse,
@@ -227,7 +247,13 @@ export async function handleSoftwareTokenMFAChallenge({
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 	};
-	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+	return respondToAuthChallenge(
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+		}, 
+		jsonReq
+	);
 }
 export async function handleCompleteNewPasswordChallenge({
 	challengeResponse,
@@ -252,7 +278,13 @@ export async function handleCompleteNewPasswordChallenge({
 		ClientId: userPoolClientId,
 	};
 
-	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+	return respondToAuthChallenge(
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+		}, 
+		jsonReq
+	);
 }
 
 export async function handleUserPasswordAuthFlow(
@@ -267,7 +299,7 @@ export async function handleUserPasswordAuthFlow(
 		USERNAME: username,
 		PASSWORD: password,
 	};
-	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata(username);
 
 	if (deviceMetadata && deviceMetadata.deviceKey) {
 		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
@@ -280,7 +312,10 @@ export async function handleUserPasswordAuthFlow(
 	};
 
 	const response = await initiateAuth(
-		{ region: getRegion(userPoolId) },
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn)
+		},
 		jsonReq
 	);
 
@@ -310,7 +345,7 @@ export async function handleUserSRPAuthFlow(
 		USERNAME: username,
 		SRP_A: authenticationHelper.A.toString(16),
 	};
-	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata(username);
 
 	if (deviceMetadata && deviceMetadata.deviceKey) {
 		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
@@ -322,7 +357,13 @@ export async function handleUserSRPAuthFlow(
 		ClientId: userPoolClientId,
 	};
 
-	const resp = await initiateAuth({ region: getRegion(userPoolId) }, jsonReq);
+	const resp = await initiateAuth(
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn)
+		}, 
+		jsonReq
+	);
 	const { ChallengeParameters: challengeParameters, Session: session } = resp;
 
 	return handlePasswordVerifierChallenge(
@@ -346,7 +387,7 @@ export async function handleCustomAuthFlowWithoutSRP(
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
 	};
-	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata(username);
 
 	if (deviceMetadata && deviceMetadata.deviceKey) {
 		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
@@ -359,7 +400,10 @@ export async function handleCustomAuthFlowWithoutSRP(
 	};
 
 	const response = await initiateAuth(
-		{ region: getRegion(userPoolId) },
+		{ 
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn)
+		},
 		jsonReq
 	);
 	if (response.ChallengeName === 'DEVICE_SRP_AUTH')
@@ -386,7 +430,7 @@ export async function handleCustomSRPAuthFlow(
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = await getAuthenticationHelper(userPoolName);
 
-	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata(username);
 
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
@@ -405,7 +449,13 @@ export async function handleCustomSRPAuthFlow(
 	};
 
 	const { ChallengeParameters: challengeParameters, Session: session } =
-		await initiateAuth({ region: getRegion(userPoolId) }, jsonReq);
+		await initiateAuth(
+			{ 
+				region: getRegion(userPoolId),
+				userAgentValue: getAuthUserAgentValue(AuthAction.SignIn)
+			}, 
+			jsonReq
+		);
 
 	return handlePasswordVerifierChallenge(
 		password,
@@ -427,7 +477,7 @@ async function handleDeviceSRPAuth({
 }: HandleDeviceSRPInput): Promise<RespondToAuthChallengeCommandOutput> {
 	const userPoolId = config.userPoolId;
 	const clientId = config.userPoolClientId;
-	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata();
+	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
 	assertDeviceMetadata(deviceMetadata);
 	const authenticationHelper = await getAuthenticationHelper(
 		deviceMetadata.deviceGroupKey
@@ -470,7 +520,7 @@ async function handleDevicePasswordVerifier(
 	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig,
 	tokenOrchestrator?: AuthTokenOrchestrator
 ): Promise<RespondToAuthChallengeCommandOutput> {
-	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata();
+	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
 	assertDeviceMetadata(deviceMetadata);
 
 	const serverBValue = new BigInteger(challengeParameters?.SRP_B, 16);
@@ -554,7 +604,7 @@ export async function handlePasswordVerifierChallenge(
 		}),
 	} as { [key: string]: string };
 
-	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata();
+	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata(username);
 	if (deviceMetadata && deviceMetadata.deviceKey) {
 		challengeResponses['DEVICE_KEY'] = deviceMetadata.deviceKey;
 	}
