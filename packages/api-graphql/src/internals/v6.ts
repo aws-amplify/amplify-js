@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLAPI } from '../GraphQLAPI';
-import { GraphQLOptionsV6, GraphQLResponseV6 } from '../types';
+import {
+	__amplify,
+	V6Client,
+	GraphQLOptionsV6,
+	GraphQLResponseV6,
+} from '../types';
 
 /**
  * Invokes graphql operations against a graphql service, providing correct input and
@@ -91,6 +96,7 @@ export function graphql<
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string
 >(
+	this: V6Client,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
 	additionalHeaders?: { [key: string]: string }
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
@@ -99,7 +105,11 @@ export function graphql<
 	 * Neither of these can actually be validated at runtime. Hence, we don't perform
 	 * any validation or type-guarding here.
 	 */
-	const result = GraphQLAPI.graphql(options, additionalHeaders);
+	const result = GraphQLAPI.graphql(
+		this[__amplify],
+		options,
+		additionalHeaders
+	);
 	return result as any;
 }
 
@@ -108,7 +118,11 @@ export function graphql<
  * @param {any} request - request to cancel
  * @returns - A boolean indicating if the request was cancelled
  */
-export function cancel(promise: Promise<any>, message?: string): boolean {
+export function cancel(
+	this: V6Client,
+	promise: Promise<any>,
+	message?: string
+): boolean {
 	return GraphQLAPI.cancel(promise, message);
 }
 
@@ -117,7 +131,7 @@ export function cancel(promise: Promise<any>, message?: string): boolean {
  * @param {any} error - Any error
  * @returns - A boolean indicating if the error was from an api request cancellation
  */
-export function isCancelError(error: any): boolean {
+export function isCancelError(this: V6Client, error: any): boolean {
 	return GraphQLAPI.isCancelError(error);
 }
 
