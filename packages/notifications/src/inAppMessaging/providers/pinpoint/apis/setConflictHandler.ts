@@ -4,18 +4,21 @@
 import { InAppMessage } from '../../../types';
 import { InAppMessageConflictHandler, SetConflictHandlerInput } from '../types';
 
+export let conflictHandler: InAppMessageConflictHandler =
+	defaultConflictHandler;
+
 /**
- * Set a conflict handler that will be used to resolve conflicts that emerge
- * when matching the event to the synced messages.
- * This setting is not persisted across restarts and hence needs to be called before dipatching an event.
+ * Set a conflict handler that will be used to resolve conflicts that may emerge
+ * when matching events with synced messages.
+ * @remark
+ * The conflict handler is not persisted between sessions and needs to be called before dispatching an event to have any effect.
  *
  * @param SetConflictHandlerInput: The input object that holds the conflict handler to be used.
  *
- * @returns Does not return anything.
  *
  * @example
  * ```ts
- * // Sync message before disptaching an event
+ * // Sync messages before dispatching an event
  * await syncMessages();
  *
  * // Example custom conflict handler
@@ -35,9 +38,6 @@ import { InAppMessageConflictHandler, SetConflictHandlerInput } from '../types';
 export function setConflictHandler(input: SetConflictHandlerInput): void {
 	conflictHandler = input;
 }
-
-export let conflictHandler: InAppMessageConflictHandler =
-	defaultConflictHandler;
 
 function defaultConflictHandler(messages: InAppMessage[]): InAppMessage {
 	// default behavior is to return the message closest to expiry

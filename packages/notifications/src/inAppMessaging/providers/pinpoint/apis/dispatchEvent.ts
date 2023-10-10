@@ -16,9 +16,9 @@ import { syncMessages } from './syncMessages';
 import { conflictHandler, setConflictHandler } from './setConflictHandler';
 
 /**
- * Trigges an InApp message to be displayed. Use this after the messages have been synced to the devices using
+ * Triggers an In-App message to be displayed. Use this after your campaigns have been synced to the device using
  * {@link syncMessages}. Based on the messages synced and the event passed to this API, it triggers the display
- * of the InApp message that meets the criteria. To change the conflict handler, use the {@link setConflictHandler} API.
+ * of the In-App message that meets the criteria. To change the conflict handler, use the {@link setConflictHandler} API.
  *
  * @param DisptachEventInput The input object that holds the event to be dispatched.
  *

@@ -88,7 +88,7 @@ export enum GeoAction {
 export enum InAppMessagingAction {
 	SyncMessages = '1',
 	IdentifyUser = '2',
-	Record = '3',
+	DispatchEvent = '3',
 }
 export enum InteractionsAction {
 	None = '0',
@@ -111,7 +111,7 @@ export enum StorageAction {
 	Copy = '4',
 	Remove = '5',
 	GetProperties = '6',
-	GetUrl = '7'
+	GetUrl = '7',
 }
 
 type ActionMap = {

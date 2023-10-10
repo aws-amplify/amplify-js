@@ -4,7 +4,7 @@
 export { UpdateEndpointException } from './errors';
 export {
 	IdentifyUserInput,
-	DisptachEventInput,
+	DispatchEventInput as DisptachEventInput,
 	SetConflictHandlerInput,
 } from './inputs';
 export { IdentifyUserOptions } from './options';
