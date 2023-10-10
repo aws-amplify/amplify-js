@@ -21,30 +21,30 @@ const mockAddEventListener = addEventListener as jest.Mock;
 
 describe('Interaction events', () => {
 	const handler = jest.fn();
-	test('can be listened to by onMessageReceived', () => {
+	it('can be listened to by onMessageReceived', () => {
 		onMessageReceived(handler);
 
 		expect(mockAddEventListener).toBeCalledWith('messageReceived', handler);
 	});
 
-	test('can be listened to by onMessageDisplayed', () => {
+	it('can be listened to by onMessageDisplayed', () => {
 		onMessageDisplayed(handler);
 
 		expect(mockAddEventListener).toBeCalledWith('messageDisplayed', handler);
 	});
 
-	test('can be listened to by onMessageDismissed', () => {
+	it('can be listened to by onMessageDismissed', () => {
 		onMessageDismissed(handler);
 
 		expect(mockAddEventListener).toBeCalledWith('messageDismissed', handler);
 	});
 
-	test('can be listened to by onMessageActionTaken', () => {
+	it('can be listened to by onMessageActionTaken', () => {
 		onMessageActionTaken(handler);
 
 		expect(mockAddEventListener).toBeCalledWith('messageActionTaken', handler);
 	});
-	test('can be notified by notifyMessageInteraction', () => {
+	it('can be notified by notifyMessageInteraction', () => {
 		const [message] = inAppMessages;
 
 		notifyMessageInteraction({
