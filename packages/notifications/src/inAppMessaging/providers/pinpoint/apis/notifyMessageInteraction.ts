@@ -9,7 +9,6 @@ import { NotifyMessageInteractionInput } from '../types/inputs';
  *
  * @param {NotifyMessageInteractionInput} input - The input object that holds the type and message.
  *
- *
  * @returns {void}
  *
  * @example
