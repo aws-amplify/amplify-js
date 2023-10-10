@@ -41,7 +41,14 @@ export const setCustomUserAgent = (
 	);
 
 	// Callback that cleans up state for APIs recorded by this call
+	let cleanUpCallbackCalled = false;
 	const cleanUpCallback = () => {
+		// Only allow the cleanup callback to be called once
+		if (cleanUpCallbackCalled) {
+			return;
+		}
+		cleanUpCallbackCalled = true;
+
 		input.apis.forEach(api => {
 			const apiRefCount = customUserAgentState[input.category][api].refCount;
 
@@ -61,9 +68,8 @@ export const setCustomUserAgent = (
 	return cleanUpCallback;
 };
 
-export const getCustomUserAgentState = (
+export const getCustomUserAgent = (
 	category: string,
 	api: string
-): AdditionalDetails | undefined => {
-	return customUserAgentState[category]?.[api]?.additionalDetails;
-};
+): AdditionalDetails | undefined =>
+	customUserAgentState[category]?.[api]?.additionalDetails;

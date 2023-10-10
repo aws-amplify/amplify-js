@@ -5,7 +5,7 @@ import { CustomUserAgentDetails, Framework } from './types';
 import { version } from './version';
 import { detectFramework, observeFrameworkChanges } from './detectFramework';
 import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
-import { getCustomUserAgentState } from './customUserAgent';
+import { getCustomUserAgent } from './customUserAgent';
 
 const BASE_USER_AGENT = `aws-amplify`;
 
@@ -41,7 +41,7 @@ export const getAmplifyUserAgentObject = ({
 	userAgent.push(['framework', detectFramework()]);
 
 	if (category && action) {
-		const customState = getCustomUserAgentState(category, action);
+		const customState = getCustomUserAgent(category, action);
 
 		if (customState) {
 			customState.forEach(state => {
