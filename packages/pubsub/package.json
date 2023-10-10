@@ -25,7 +25,7 @@
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 93.0 -i src/vendor/paho-mqtt.js"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 93.0 -i src/vendor/paho-mqtt.js"
 	},
 	"typesVersions": {
 		">=4.0": {
@@ -106,7 +106,11 @@
 	"jest": {
 		"globals": {
 			"ts-jest": {
-				"diagnostics": false
+				"diagnostics": false,
+				"tsConfig": {
+					"allowJs": true,
+					"noEmitOnError": false
+				}
 			},
 			"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 			"testPathIgnorePatterns": [

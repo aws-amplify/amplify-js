@@ -3,6 +3,6 @@
 
 import { MqttOverWSProvider, MqttOptions } from '../Providers';
 
-export const generateClient = (options: MqttOptions) => {
+export const generateClient = (options: MqttOptions = {}) => {
 	return new MqttOverWSProvider(options);
 };

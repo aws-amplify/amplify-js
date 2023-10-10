@@ -3,6 +3,6 @@
 
 import { AWSIoTProvider, AWSIoTOptions } from '../Providers';
 
-export const generateClient = (options: AWSIoTOptions) => {
+export const generateClient = (options: AWSIoTOptions = {}) => {
 	return new AWSIoTProvider(options);
 };
