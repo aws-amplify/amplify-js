@@ -54,7 +54,6 @@ export const recordAnalyticsEvent = (
 	const { id, metadata } = message;
 	resolveCredentials()
 		.then(({ credentials, identityId }) => {
-			// TODO(V6): Make sure this record has the right params
 			recordCore({
 				appId,
 				category: CATEGORY,
@@ -70,7 +69,7 @@ export const recordAnalyticsEvent = (
 				identityId,
 				region,
 				userAgentValue: getInAppMessagingUserAgentString(
-					InAppMessagingAction.Record
+					InAppMessagingAction.DispatchEvent
 				),
 			});
 		})

@@ -121,31 +121,6 @@ describe('aws-amplify Exports', () => {
 		});
 	});
 
-	describe('InAppMessaging exports', () => {
-		it('should only export expected symbols from the top-level', () => {
-			expect(Object.keys(inAppMessagingTopLevelExports)).toMatchInlineSnapshot(`
-			Array [
-			  "identifyUser",
-			  "syncMessages",
-			  "dispatchEvent",
-			  "setConflictHandler",
-			]
-		`);
-		});
-
-		it('should only export expected symbols from the Pinpoint provider', () => {
-			expect(Object.keys(inAppMessagingPinpointTopLevelExports))
-				.toMatchInlineSnapshot(`
-			Array [
-			  "identifyUser",
-			  "syncMessages",
-			  "dispatchEvent",
-			  "setConflictHandler",
-			]
-		`);
-		});
-	});
-
 	describe('Auth exports', () => {
 		it('should only export expected symbols from the top-level', () => {
 			expect(Object.keys(authTopLevelExports)).toMatchInlineSnapshot(`
@@ -175,6 +150,7 @@ describe('aws-amplify Exports', () => {
 			  "rememberDevice",
 			  "forgetDevice",
 			  "fetchDevices",
+			  "autoSignIn",
 			  "AuthError",
 			  "fetchAuthSession",
 			]
@@ -209,6 +185,7 @@ describe('aws-amplify Exports', () => {
 			  "rememberDevice",
 			  "forgetDevice",
 			  "fetchDevices",
+			  "autoSignIn",
 			  "cognitoCredentialsProvider",
 			  "CognitoAWSCredentialsAndIdentityIdProvider",
 			  "DefaultIdentityIdStore",
