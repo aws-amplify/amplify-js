@@ -70,6 +70,33 @@ export type AuthTokens = {
 	accessToken: JWT;
 };
 
+export type AuthStandardAttributeKey =
+	| 'address'
+	| 'birthdate'
+	| 'email_verified'
+	| 'family_name'
+	| 'gender'
+	| 'given_name'
+	| 'locale'
+	| 'middle_name'
+	| 'name'
+	| 'nickname'
+	| 'phone_number_verified'
+	| 'picture'
+	| 'preferred_username'
+	| 'profile'
+	| 'sub'
+	| 'updated_at'
+	| 'website'
+	| 'zoneinfo'
+	| AuthVerifiableAttributeKey;
+
+export type AuthVerifiableAttributeKey = 'email' | 'phone_number';
+
+export type AuthConfigUserAttributes = Partial<
+	Record<AuthStandardAttributeKey, { required: boolean }>
+>;
+
 export type AuthConfig = StrictUnion<
 	| AuthIdentityPoolConfig
 	| AuthUserPoolConfig
@@ -88,6 +115,10 @@ export type AuthIdentityPoolConfig = {
 		userPoolId?: never;
 		loginWith?: never;
 		signUpVerificationMethod?: never;
+		userAttributes?: never;
+		mfa?: never;
+		passwordFormat?: never;
+		endpoint?: never;
 	};
 };
 
@@ -109,7 +140,24 @@ export type CognitoUserPoolConfig = {
 	signUpVerificationMethod?: 'code' | 'link';
 	loginWith?: {
 		oauth?: OAuthConfig;
+		username?: boolean;
+		email?: boolean;
+		phone?: boolean;
 	};
+	userAttributes?: AuthConfigUserAttributes;
+	mfa?: {
+		status?: 'on' | 'off' | 'optional';
+		totpEnabled?: boolean;
+		smsEnabled?: boolean;
+	};
+	passwordFormat?: {
+		minLength?: number;
+		requireLowercase?: boolean;
+		requireUppercase?: boolean;
+		requireNumbers?: boolean;
+		requireSpecialCharacters?: boolean;
+	};
+	endpoint?: string;
 };
 
 export type OAuthConfig = {

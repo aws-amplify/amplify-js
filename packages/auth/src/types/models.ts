@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignInOutput } from '../providers/cognito';
+import { AuthStandardAttributeKey } from '@aws-amplify/core/internals/utils';
 
 /**
  * Additional data that may be returned from Auth APIs.
@@ -185,29 +186,6 @@ export type AuthNextSignInStep<
 	| ConfirmSignUpStep
 	| ResetPasswordStep
 	| DoneSignInStep;
-
-export type AuthStandardAttributeKey =
-	| 'address'
-	| 'birthdate'
-	| 'email_verified'
-	| 'family_name'
-	| 'gender'
-	| 'given_name'
-	| 'locale'
-	| 'middle_name'
-	| 'name'
-	| 'nickname'
-	| 'phone_number_verified'
-	| 'picture'
-	| 'preferred_username'
-	| 'profile'
-	| 'sub'
-	| 'updated_at'
-	| 'website'
-	| 'zoneinfo'
-	| AuthVerifiableAttributeKey;
-
-export type AuthVerifiableAttributeKey = 'email' | 'phone_number';
 
 /**
  * Key/value pairs describing a user attributes.
