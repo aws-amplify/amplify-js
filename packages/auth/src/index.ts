@@ -28,6 +28,7 @@ export {
 	rememberDevice,
 	forgetDevice,
 	fetchDevices,
+	autoSignIn,
 } from './providers/cognito';
 
 export {
