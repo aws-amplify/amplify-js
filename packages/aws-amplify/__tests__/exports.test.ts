@@ -146,6 +146,7 @@ describe('aws-amplify Exports', () => {
 			  "rememberDevice",
 			  "forgetDevice",
 			  "fetchDevices",
+			  "autoSignIn",
 			  "AuthError",
 			  "fetchAuthSession",
 			]
@@ -180,6 +181,7 @@ describe('aws-amplify Exports', () => {
 			  "rememberDevice",
 			  "forgetDevice",
 			  "fetchDevices",
+			  "autoSignIn",
 			  "cognitoCredentialsProvider",
 			  "CognitoAWSCredentialsAndIdentityIdProvider",
 			  "DefaultIdentityIdStore",
@@ -228,8 +230,8 @@ describe('aws-amplify Exports', () => {
 		it('should only export expected symbols from the top-level', () => {
 			expect(Object.keys(apiTopLevelExports)).toMatchInlineSnapshot(`
 			Array [
-			  "GraphQLAuthError",
 			  "generateClient",
+			  "GraphQLAuthError",
 			  "get",
 			  "put",
 			  "post",

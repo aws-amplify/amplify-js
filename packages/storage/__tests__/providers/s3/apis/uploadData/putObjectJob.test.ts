@@ -95,6 +95,7 @@ describe('putObjectJob', () => {
 				abortSignal: abortController.signal,
 				onUploadProgress: expect.any(Function),
 				useAccelerateEndpoint: true,
+				userAgentValue: expect.any(String)
 			},
 			{
 				Bucket: 'bucket',

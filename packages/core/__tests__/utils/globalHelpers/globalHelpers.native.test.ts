@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { loadGetRandomValues } from '@aws-amplify/react-native';
-import { decode, encode } from 'base-64';
+import { loadGetRandomValues, loadBase64 } from '@aws-amplify/react-native';
 import {
 	getAtob,
 	getBtoa,
@@ -21,12 +20,14 @@ jest.mock('@aws-amplify/react-native', () => ({
 			writable: true,
 		});
 	}),
+	loadBase64: jest.fn(() => ({
+		decode: jest.fn(() => 'isMockDecode'),
+		encode: jest.fn(() => 'isMockEncode'),
+	})),
 }));
-jest.mock('base-64');
 
-const mockDecode = decode as jest.Mock;
-const mockEncode = encode as jest.Mock;
 const mockLoadGetRandomValues = loadGetRandomValues as jest.Mock;
+const mockLoadBase64 = loadBase64 as jest.Mock;
 
 describe('getGlobal (native)', () => {
 	beforeAll(() => {
@@ -42,13 +43,13 @@ describe('getGlobal (native)', () => {
 
 	describe('getBtoa()', () => {
 		it('returns encode provided by base-64', () => {
-			expect(getBtoa()).toEqual(mockEncode);
+			expect(getBtoa()('input')).toEqual('isMockEncode');
 		});
 	});
 
 	describe('getAtob()', () => {
 		it('returns decode provided by base-64', () => {
-			expect(getAtob()).toEqual(mockDecode);
+			expect(getAtob()('input')).toEqual('isMockDecode');
 		});
 	});
 });

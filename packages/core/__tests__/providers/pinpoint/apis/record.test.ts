@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import { putEvents as clientPutEvents } from '../../../../src/AwsClients/Pinpoint';
+import { putEvents as clientPutEvents } from '../../../../src/awsClients/pinpoint';
 import { record } from '../../../../src/providers/pinpoint/apis';
 import { updateEndpoint } from '../../../../src/providers/pinpoint/apis/updateEndpoint';
 import { getEndpointId } from '../../../../src/providers/pinpoint/utils';
@@ -16,7 +16,7 @@ import {
 import { getEventBuffer } from '../../../../src/providers/pinpoint/utils/getEventBuffer';
 
 jest.mock('uuid');
-jest.mock('../../../../src/AwsClients/Pinpoint');
+jest.mock('../../../../src/awsClients/pinpoint');
 jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('../../../../src/providers/pinpoint/apis/updateEndpoint');
 jest.mock('../../../../src/providers/pinpoint/utils/getEventBuffer');

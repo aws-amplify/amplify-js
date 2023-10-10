@@ -20,12 +20,7 @@ export {
 } from './utils';
 export { parseAWSExports } from './parseAWSExports';
 export { LegacyConfig } from './singleton/types';
-export {
-	JWT,
-	StrictUnion,
-	CognitoIdentityPoolConfig,
-	JwtPayload,
-} from './singleton/Auth/types';
+
 // Auth utilities
 export {
 	decodeJWT,
@@ -36,11 +31,19 @@ export {
 export { isTokenExpired } from './singleton/Auth';
 export { APIAuthMode, DocumentType } from './singleton/API/types';
 export { Signer } from './Signer';
+export {
+	JWT,
+	StrictUnion,
+	CognitoIdentityPoolConfig,
+	JwtPayload,
+	AuthStandardAttributeKey,
+	AuthVerifiableAttributeKey,
+} from './singleton/Auth/types';
 
 // Logging utilities
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 
-// Platform & device utils
+// Platform & user-agent utilities
 export { ClientDevice } from './ClientDevice';
 export {
 	Platform,
@@ -62,7 +65,9 @@ export {
 	PubSubAction,
 	PushNotificationAction,
 	StorageAction,
+	SetCustomUserAgentInput,
 } from './Platform/types';
+export { setCustomUserAgent } from './Platform/customUserAgent';
 
 // Service worker
 export { ServiceWorker } from './ServiceWorker';
@@ -93,4 +98,4 @@ export { base64Decoder, base64Encoder } from './utils/convert';
 export { getCrypto } from './utils/globalHelpers';
 
 // Hub
-export { HubClass } from './Hub';
+export { HubInternal } from './Hub';
