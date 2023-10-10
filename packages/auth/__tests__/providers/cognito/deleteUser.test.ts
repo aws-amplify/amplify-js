@@ -84,12 +84,13 @@ describe('deleteUser API happy path cases', () => {
 			})
 		);
 		expect(deleteUserClientSpy).toBeCalledTimes(1);
+		expect(tokenOrchestratorSpy).toHaveBeenCalledTimes(1);
+		expect(signOutApiSpy).toHaveBeenCalledTimes(1);
 
-		// signout
-		expect(signOutApiSpy).toBeCalledTimes(1);
-
-		// clear device tokens
-		expect(tokenOrchestratorSpy).toBeCalled();
+		// make sure we clearDeviceToken -> signout, in that order
+		expect(tokenOrchestratorSpy.mock.invocationCallOrder[0]).toBeLessThan(
+			signOutApiSpy.mock.invocationCallOrder[0]
+		);
 	});
 });
 
