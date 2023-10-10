@@ -71,16 +71,14 @@ export async function processInAppMessages(
 function normalizeMessages(messages: PinpointInAppMessage[]): InAppMessage[] {
 	return messages.map(message => {
 		const { CampaignId, InAppMessage } = message;
-		const normalizedMesssage = {
+		return {
 			id: CampaignId,
 			content: extractContent(message),
-			// Only populate this field if we have a Layout field in the message
 			layout: InAppMessage?.Layout
 				? interpretLayout(InAppMessage.Layout)
 				: undefined,
 			metadata: extractMetadata(message),
 		};
-		return normalizedMesssage;
 	});
 }
 
