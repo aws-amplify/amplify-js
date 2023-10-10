@@ -131,8 +131,6 @@ export class InternalGraphQLAPIClass {
 			case 'none':
 				break;
 			default:
-				{
-				}
 				break;
 		}
 

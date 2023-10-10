@@ -15,7 +15,6 @@ import * as analyticsKinesisFirehoseExports from '../src/analytics/kinesis-fireh
 import * as analyticsPersonalizeExports from '../src/analytics/personalize';
 import * as storageTopLevelExports from '../src/storage';
 import * as storageS3Exports from '../src/storage/s3';
-import * as apiTopLevelExports from '../src/api';
 
 /**
  * Describes exports from the aws-amplify umbrella package to ensure we're not polluting the export surface.

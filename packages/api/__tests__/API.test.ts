@@ -19,20 +19,58 @@ describe('API generateClient', () => {
 	describe('client.cancel', () => {
 		test('cancel RestAPI request', async () => {
 			const client = generateClient();
-			const request = Promise.resolve();
-			expect(client.cancel(request)).toBe(true);
+			let requestToCancel;
+
+			try {
+				const promise = client.graphql({ query: 'query' });
+				requestToCancel = promise;
+				await promise;
+			} catch (e) {
+				console.log(e);
+			}
+
+			expect(client.cancel(requestToCancel)).toBe(true);
 			expect(cancel).toHaveBeenCalled();
 		});
 	});
 
 	describe('client.isCancelError', () => {
-		test('cancel RestAPI request', async () => {
+		test('should return `true` when error is due to request cancellation', async () => {
 			const client = generateClient();
+
+			// Request that will be canceled:
 			const request = Promise.resolve();
+
 			try {
+				// Cancel the request:
 				client.cancel(request, 'this should be my message');
 			} catch (e) {
+				/**
+				 * An error is thrown on cancellation (expected). Here we
+				 * check that the error is a result of the request cancellation.
+				 */
 				expect(client.isCancelError(e)).toBe(true);
+			}
+			expect(cancel).toHaveBeenCalled();
+		});
+		test('should return `false` when error is not due to request cancellation', async () => {
+			// Throw an error unrelated to request cancellation:
+			const spy = jest
+				.spyOn(InternalGraphQLAPIClass.prototype, 'graphql')
+				.mockImplementation(() => {
+					throw new Error();
+				});
+
+			const client = generateClient();
+
+			try {
+				// Will throw an error for some other reason:
+				await client.graphql({ query: 'query' });
+			} catch (e) {
+				/**
+				 * Validate that the error is not a result of request cancellation:
+				 */
+				expect(client.isCancelError(e)).toBe(false);
 			}
 			expect(cancel).toHaveBeenCalled();
 		});
