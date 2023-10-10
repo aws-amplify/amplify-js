@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
@@ -26,14 +29,14 @@ export async function deleteUser(): Promise<void> {
 	assertAuthTokens(tokens);
 
 	await serviceDeleteUser(
-		{ 
+		{
 			region: getRegion(authConfig.userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.DeleteUser)
+			userAgentValue: getAuthUserAgentValue(AuthAction.DeleteUser),
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
 		}
 	);
-	await signOut();
 	await tokenOrchestrator.clearDeviceMetadata();
+	await signOut();
 }
