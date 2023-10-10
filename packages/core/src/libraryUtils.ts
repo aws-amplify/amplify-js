@@ -37,7 +37,7 @@ export {
 	CognitoIdentityPoolConfig,
 	JwtPayload,
 	AuthStandardAttributeKey,
-	AuthVerifiableAttributeKey
+	AuthVerifiableAttributeKey,
 } from './singleton/Auth/types';
 
 // Logging utilities
@@ -98,4 +98,4 @@ export { base64Decoder, base64Encoder } from './utils/convert';
 export { getCrypto } from './utils/globalHelpers';
 
 // Hub
-export { HubClass } from './Hub';
+export { HubInternal } from './Hub';

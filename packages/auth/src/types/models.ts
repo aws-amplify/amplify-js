@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthStandardAttributeKey } from "@aws-amplify/core/internals/utils";
+import { SignInOutput } from '../providers/cognito';
+import { AuthStandardAttributeKey } from '@aws-amplify/core/internals/utils';
 
 /**
  * Additional data that may be returned from Auth APIs.
@@ -211,22 +212,6 @@ export type AuthUserAttribute<
 export type AuthUserAttributeKey = AuthStandardAttributeKey | AuthAnyAttribute;
 
 /**
- * Denotes the next step in the Sign Up process.
- */
-export type AuthSignUpStep = 'CONFIRM_SIGN_UP' | 'DONE';
-
-/**
- * Data encapsulating the next step in the Sign Up process
- */
-export type AuthNextSignUpStep<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
-> = {
-	signUpStep?: AuthSignUpStep;
-	additionalInfo?: AuthAdditionalInfo;
-	codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
-};
-
-/**
  * Denotes the next step in the Update User Attribute process.
  */
 export type AuthUpdateAttributeStep =
@@ -239,6 +224,34 @@ export type AuthUpdateAttributeStep =
 	 * Auth update attribute step indicates that the attribute is updated.
 	 */
 	| 'DONE';
+/**
+ * Data encapsulating the next step in the Sign Up process
+ */
+export type AuthNextSignUpStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> =
+	| ConfirmSignUpSignUpStep<UserAttributeKey>
+	| AutoSignInSignUpStep<UserAttributeKey>
+	| DoneSignUpStep;
+
+export type AutoSignInCallback = () => Promise<SignInOutput>;
+export type DoneSignUpStep = {
+	signUpStep: 'DONE';
+};
+
+export type ConfirmSignUpSignUpStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = {
+	signUpStep: 'CONFIRM_SIGN_UP';
+	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
+};
+
+export type AutoSignInSignUpStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = {
+	signUpStep: 'COMPLETE_AUTO_SIGN_IN';
+	codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
+};
 
 export type AuthNextUpdateAttributeStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
