@@ -15,7 +15,7 @@ import { OnMessageActionTakenOutput } from '../types/outputs';
  *
  * @example
  * ```ts
- * onMessageDisplayed((message) => {
+ * onMessageActionTaken((message) => {
  *   // use the message
  * });
  * ```

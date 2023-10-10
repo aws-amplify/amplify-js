@@ -15,7 +15,7 @@ import { OnMessageDismissedInput } from '../types/inputs';
  *
  * @example
  * ```ts
- * onMessageDisplayed((message) => {
+ * onMessageDismissed((message) => {
  *   // use the message
  * });
  * ```
