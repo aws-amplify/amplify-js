@@ -84,6 +84,30 @@ describe('initSingleton (DefaultAmplify)', () => {
 						Cognito: {
 							allowGuestAccess: true,
 							identityPoolId: 'aws_cognito_identity_pool_id',
+							loginWith: {
+								email: false,
+								phone: false,
+								username: true,
+							},
+							mfa: {
+								smsEnabled: true,
+								status: 'off',
+								totpEnabled: false,
+							},
+							passwordFormat: {
+								minLength: 8,
+								requireLowercase: false,
+								requireNumbers: false,
+								requireSpecialCharacters: false,
+								requireUppercase: false,
+							},
+							userAttributes: [
+								{
+									phone_number: {
+										required: true,
+									},
+								},
+							],
 							userPoolClientId: 'aws_user_pools_web_client_id',
 							userPoolId: 'aws_user_pools_id',
 						},
