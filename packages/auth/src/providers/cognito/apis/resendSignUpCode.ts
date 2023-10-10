@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
-import { AuthStandardAttributeKey, AuthDeliveryMedium } from '../../../types';
+import { assertTokenProviderConfig, AuthAction, AuthStandardAttributeKey } from '@aws-amplify/core/internals/utils';
+import { AuthDeliveryMedium } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { ResendSignUpCodeInput, ResendSignUpCodeOutput } from '../types';
