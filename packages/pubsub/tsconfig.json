@@ -3,7 +3,8 @@
 	"compilerOptions": {
 		"importHelpers": true,
 		"strict": true,
-		"noImplicitAny": true
+		"noImplicitAny": true,
+		"outDir": "./lib/"
 	},
 	"include": ["./src/**/*.ts"]
 }
