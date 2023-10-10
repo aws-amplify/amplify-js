@@ -5,6 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
 	AuthAction,
+	HubInternal,
 } from '@aws-amplify/core/internals/utils';
 import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
@@ -14,7 +15,6 @@ import { confirmSignUp as confirmSignUpClient } from '../utils/clients/CognitoId
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { AutoSignInEventData } from '../types/models';
 import {
-	HubInternal,
 	isAutoSignInStarted,
 	isAutoSignInUserUsingConfirmSignUp,
 	setAutoSignInStarted,

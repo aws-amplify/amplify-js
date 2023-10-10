@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { HubClass } from '@aws-amplify/core/internals/utils';
+import { HubInternal } from '@aws-amplify/core/internals/utils';
 import { signIn } from '../apis/signIn';
 import { SignInInput, SignInOutput } from '../types';
 import { AutoSignInEventData } from '../types/models';
@@ -12,8 +12,6 @@ import { resetAutoSignIn, setAutoSignIn } from '../apis/autoSignIn';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
 
 const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
-
-export const HubInternal = new HubClass('internal-hub');
 
 export function handleCodeAutoSignIn(signInInput: SignInInput) {
 	const stopHubListener = HubInternal.listen<AutoSignInEventData>(
