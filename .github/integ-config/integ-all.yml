@@ -697,14 +697,14 @@ tests:
   #   spec: reconnection
   #   # Firefox doesn't support network state management in cypress
   #   browser: [chrome]
-  # - test_name: integ_react_api_reconnect
-  #   desc: 'PubSub - Reconnection for API'
-  #   framework: react
-  #   category: pubsub
-  #   sample_name: [reconnection-api]
-  #   spec: reconnection
-  #   # Firefox doesn't support network state management in cypress
-  #   browser: [chrome]
+  - test_name: integ_react_api_reconnect
+    desc: 'PubSub - Reconnection for API'
+    framework: react
+    category: pubsub
+    sample_name: [reconnection-api]
+    spec: reconnection
+    # Firefox doesn't support network state management in cypress
+    browser: [chrome]
 
   # STORAGE
   - test_name: integ_react_storage
