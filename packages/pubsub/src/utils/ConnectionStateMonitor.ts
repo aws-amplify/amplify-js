@@ -50,7 +50,7 @@ export class ConnectionStateMonitor {
 	 */
 	private _linkedConnectionState: LinkedConnectionStates;
 	private _linkedConnectionStateObservable: Observable<LinkedConnectionStates>;
-	private _linkedConnectionStateObserver: ZenObservable.SubscriptionObserver<LinkedConnectionStates>;
+	private _linkedConnectionStateObserver?: ZenObservable.SubscriptionObserver<LinkedConnectionStates>;
 	private _networkMonitoringSubscription?: ZenObservable.Subscription;
 	private _initialNetworkStateSubscription?: ZenObservable.Subscription;
 
@@ -150,7 +150,7 @@ export class ConnectionStateMonitor {
 
 		this._linkedConnectionState = { ...newSocketStatus };
 
-		this._linkedConnectionStateObserver.next(this._linkedConnectionState);
+		this._linkedConnectionStateObserver?.next(this._linkedConnectionState);
 	}
 
 	/*

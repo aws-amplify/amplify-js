@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
+// @ts-ignore
 import * as Paho from '../vendor/paho-mqtt';
 import { v4 as uuid } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -11,7 +13,7 @@ import {
 	PubSubContent,
 } from '../types/PubSub';
 import { ProviderOptions } from '../types/Provider';
-import { Hub } from '@aws-amplify/core';
+import { Hub, HubPayload } from '@aws-amplify/core';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import {
 	ConnectionStateMonitor,
@@ -58,7 +60,7 @@ interface PahoClient {
 	isConnected: () => boolean;
 	subscribe: (topic: string) => void;
 	unsubscribe: (topic: string) => void;
-	send(topic: string, message: string);
+	send(topic: string, message: string): void;
 }
 
 class ClientsQueue {
@@ -90,7 +92,8 @@ class ClientsQueue {
 	}
 }
 
-const dispatchPubSubEvent = payload => {
+// TODOV6 - Custom hub payload types
+const dispatchPubSubEvent = (payload: HubPayload) => {
 	Hub.dispatch('pubsub', payload, 'PubSub', AMPLIFY_SYMBOL);
 };
 
@@ -98,7 +101,7 @@ const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
 
 export class MqttOverWSProvider extends AbstractPubSubProvider<MqttOptions> {
 	private _clientsQueue = new ClientsQueue();
-	private connectionState: ConnectionState;
+	private connectionState?: ConnectionState;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
 
@@ -232,10 +235,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttOptions> {
 			if (client) {
 				// Once connected, subscribe to all topics registered observers
 				this._topicObservers.forEach(
-					(
-						_value: Set<ZenObservable.SubscriptionObserver<any>>,
-						key: string
-					) => {
+					(_value: Set<PubSubContentObserver>, key: string) => {
 						client.subscribe(key);
 					}
 				);
@@ -280,9 +280,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttOptions> {
 
 	private _onMessage(topic: string, msg: string) {
 		try {
-			const matchedTopicObservers: Set<
-				ZenObservable.SubscriptionObserver<any>
-			>[] = [];
+			const matchedTopicObservers: Set<PubSubContentObserver>[] = [];
 			this._topicObservers.forEach((observerForTopic, observerTopic) => {
 				if (mqttTopicMatch(observerTopic, topic)) {
 					matchedTopicObservers.push(observerForTopic);
