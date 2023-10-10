@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
 import {
 	Endpoint,
 	EndpointResolverOptions,
@@ -25,9 +26,17 @@ const SERVICE_NAME = 'cognito-idp';
 /**
  * The endpoint resolver function that returns the endpoint URL for a given region.
  */
-const endpointResolver = ({ region }: EndpointResolverOptions) => ({
-	url: new URL(`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`),
-});
+const endpointResolver = ({ region }: EndpointResolverOptions) => {
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const customURL = authConfig?.endpoint;
+	const defaultURL = new URL(
+		`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`
+	);
+
+	return {
+		url: customURL ? new URL(customURL) : defaultURL,
+	};
+};
 
 /**
  * A Cognito Identity-specific middleware that disables caching for all requests.

@@ -40,7 +40,7 @@ export type RestApiOptionsBase = {
 type Headers = Record<string, string>;
 
 /**
- * Type representing an operation that can be cancelled.
+ * Type representing an operation that can be canceled.
  *
  * @internal
  */

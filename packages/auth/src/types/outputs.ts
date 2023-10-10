@@ -22,8 +22,8 @@ export type AuthSignUpOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	isSignUpComplete: boolean;
-	nextStep: AuthNextSignUpStep<UserAttributeKey>;
 	userId?: string;
+	nextStep: AuthNextSignUpStep<UserAttributeKey>;
 };
 
 export type AuthResetPasswordOutput<

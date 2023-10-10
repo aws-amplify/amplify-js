@@ -2,10 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+	AuthStandardAttributeKey,
+} from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { AuthDeliveryMedium, AuthStandardAttributeKey } from '../../../types';
+import { AuthDeliveryMedium } from '../../../types';
 import { ResetPasswordInput, ResetPasswordOutput } from '../types';
 import { forgotPassword } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
@@ -35,9 +39,9 @@ export async function resetPassword(
 	assertTokenProviderConfig(authConfig);
 	const clientMetadata = input.options?.serviceOptions?.clientMetadata;
 	const res = await forgotPassword(
-		{ 
+		{
 			region: getRegion(authConfig.userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ResetPassword)
+			userAgentValue: getAuthUserAgentValue(AuthAction.ResetPassword),
 		},
 		{
 			Username: username,
