@@ -30,3 +30,5 @@ export enum PinpointMessageEvent {
 export type InAppMessageConflictHandler = (
 	messages: InAppMessage[]
 ) => InAppMessage;
+
+export type OnMessageInteractionEventHandler = (message: InAppMessage) => any;
