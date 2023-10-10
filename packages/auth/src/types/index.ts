@@ -18,7 +18,6 @@ export {
 	AuthUser,
 	AuthTOTPSetupDetails,
 	AuthResetPasswordStep,
-	AuthSignUpStep,
 	AuthUpdateAttributeStep,
 	AuthDevice,
 } from './models';
