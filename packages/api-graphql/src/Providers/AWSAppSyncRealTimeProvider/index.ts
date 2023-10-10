@@ -6,16 +6,24 @@ import * as url from 'url';
 import { v4 as uuid } from 'uuid';
 import { Buffer } from 'buffer';
 import { Hub, fetchAuthSession } from '@aws-amplify/core';
+import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
+import {
+	APIAuthMode,
+	CustomUserAgentDetails,
+	Logger,
+	NonRetryableError,
+	USER_AGENT_HEADER,
+	getAmplifyUserAgent,
+	isNonRetryableError,
+	jitteredExponentialRetry,
+	DocumentType,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	CONTROL_MSG,
 	ConnectionState,
-	PubSubContent,
 	PubSubContentObserver,
 } from '../../types/PubSub';
-
-import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
-
 import {
 	AMPLIFY_SYMBOL,
 	AWS_APPSYNC_REALTIME_HEADERS,
@@ -38,18 +46,6 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
-
-import {
-	CustomUserAgentDetails,
-	Logger,
-	NonRetryableError,
-	USER_AGENT_HEADER,
-	getAmplifyUserAgent,
-	isNonRetryableError,
-	jitteredExponentialRetry,
-	GraphQLAuthMode,
-} from '@aws-amplify/core/internals/utils';
-import { DocumentType } from '@aws-amplify/api-rest';
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
@@ -92,7 +88,7 @@ type ParsedMessagePayload = {
 
 export interface AWSAppSyncRealTimeProviderOptions {
 	appSyncGraphqlEndpoint?: string;
-	authenticationType?: GraphQLAuthMode;
+	authenticationType?: APIAuthMode;
 	query?: string;
 	variables?: Record<string, DocumentType>;
 	apiKey?: string;
@@ -197,6 +193,7 @@ export class AWSAppSyncRealTimeProvider {
 			variables,
 			authenticationType,
 			additionalHeaders,
+			apiKey,
 		} = options || {};
 
 		return new Observable(observer => {
@@ -227,6 +224,7 @@ export class AWSAppSyncRealTimeProvider {
 									authenticationType,
 									appSyncGraphqlEndpoint,
 									additionalHeaders,
+									apiKey,
 								},
 								observer,
 								subscriptionId,
@@ -875,6 +873,7 @@ export class AWSAppSyncRealTimeProvider {
 	}
 
 	private async _awsRealTimeHeaderBasedAuth({
+		apiKey,
 		authenticationType,
 		payload,
 		canonicalUri,
@@ -885,32 +884,34 @@ export class AWSAppSyncRealTimeProvider {
 		Record<string, unknown> | undefined
 	> {
 		const headerHandler: {
-			[key: string]: (arg0: AWSAppSyncRealTimeAuthInput) => {};
+			[key in APIAuthMode]: (arg0: AWSAppSyncRealTimeAuthInput) => {};
 		} = {
 			apiKey: this._awsRealTimeApiKeyHeader.bind(this),
 			iam: this._awsRealTimeIAMHeader.bind(this),
-			jwt: this._awsRealTimeOPENIDHeader.bind(this),
-			custom: this._customAuthHeader,
+			oidc: this._awsAuthTokenHeader.bind(this),
+			userPool: this._awsAuthTokenHeader.bind(this),
+			lambda: this._customAuthHeader,
+			none: this._customAuthHeader,
 		};
 
-		if (!authenticationType || !headerHandler[authenticationType.type]) {
+		if (!authenticationType || !headerHandler[authenticationType]) {
 			logger.debug(`Authentication type ${authenticationType} not supported`);
 			return undefined;
 		} else {
-			const handler = headerHandler[authenticationType.type];
+			const handler = headerHandler[authenticationType];
 
 			const { host } = url.parse(appSyncGraphqlEndpoint ?? '');
 
 			logger.debug(`Authenticating with ${JSON.stringify(authenticationType)}`);
-			let apiKey;
-			if (authenticationType.type === 'apiKey') {
-				apiKey = authenticationType.apiKey;
+			let resolvedApiKey;
+			if (authenticationType === 'apiKey') {
+				resolvedApiKey = apiKey;
 			}
 			const result = await handler({
 				payload,
 				canonicalUri,
 				appSyncGraphqlEndpoint,
-				apiKey,
+				apiKey: resolvedApiKey,
 				region,
 				host,
 				additionalHeaders,
@@ -920,9 +921,7 @@ export class AWSAppSyncRealTimeProvider {
 		}
 	}
 
-	private async _awsRealTimeOPENIDHeader({
-		host,
-	}: AWSAppSyncRealTimeAuthInput) {
+	private async _awsAuthTokenHeader({ host }: AWSAppSyncRealTimeAuthInput) {
 		const session = await fetchAuthSession();
 
 		return {
@@ -973,8 +972,9 @@ export class AWSAppSyncRealTimeProvider {
 				body: request.data,
 			},
 			{
-				credentials: creds,
-				signingRegion: endpointInfo.region,
+				// TODO: What do we need to do to remove these !'s?
+				credentials: creds!,
+				signingRegion: endpointInfo.region!,
 				signingService: endpointInfo.service,
 			}
 		);

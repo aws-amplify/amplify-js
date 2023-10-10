@@ -6,7 +6,7 @@ import { ClientDevice } from '../../../ClientDevice';
 import {
 	updateEndpoint as clientUpdateEndpoint,
 	UpdateEndpointInput,
-} from '../../../AwsClients/Pinpoint';
+} from '../../../awsClients/pinpoint';
 import { PinpointUpdateEndpointInput } from '../types';
 import { cacheEndpointId, getEndpointId } from '../utils';
 

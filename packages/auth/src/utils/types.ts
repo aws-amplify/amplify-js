@@ -3,19 +3,22 @@
 
 export type OpenAuthSession = (
 	url: string,
-	redirectSchemes: string[]
-) => Promise<OpenAuthSessionResult> | void;
+	redirectUrls: string[],
+	preferPrivateSession?: boolean
+) => Promise<OpenAuthSessionResult | void>;
 
-type OpenAuthSessionResultType = 'canceled' | 'success' | 'unknown';
+type OpenAuthSessionResultType = 'canceled' | 'success' | 'error';
 
 export type OpenAuthSessionResult = {
 	type: OpenAuthSessionResultType;
+	error?: unknown;
 	url?: string;
 };
 
 export type AmplifyWebBrowser = {
 	openAuthSessionAsync: (
 		url: string,
-		redirectSchemes: string[]
+		redirectUrls: string[],
+		prefersEphemeralSession?: boolean
 	) => Promise<string | null>;
 };

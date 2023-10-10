@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
@@ -10,6 +10,7 @@ import { deleteUser as serviceDeleteUser } from '../utils/clients/CognitoIdentit
 import { DeleteUserException } from '../types/errors';
 import { tokenOrchestrator } from '../tokenProvider';
 import { signOut } from '..';
+import { getAuthUserAgentValue } from '../../../utils';
 
 /**
  * Deletes a user from the user pool while authenticated.
@@ -24,25 +25,15 @@ export async function deleteUser(): Promise<void> {
 	const { tokens } = await fetchAuthSession();
 	assertAuthTokens(tokens);
 
-	try {
-		await serviceDeleteUser(
-			{ region: getRegion(authConfig.userPoolId) },
-			{
-				AccessToken: tokens.accessToken.toString(),
-			}
-		);
-	} catch (error) {
-		if (
-			error instanceof SyntaxError &&
-			error.message === 'Unexpected end of JSON input'
-		) {
-			// TODO: fix this error and remove try/catch block
-			// this error is caused when parsing empty client response.
-			// Swallow error as a workaround
-		} else {
-			throw error;
+	await serviceDeleteUser(
+		{ 
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.DeleteUser)
+		},
+		{
+			AccessToken: tokens.accessToken.toString(),
 		}
-	}
+	);
 	await signOut();
 	await tokenOrchestrator.clearDeviceMetadata();
 }

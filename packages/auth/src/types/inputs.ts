@@ -5,6 +5,7 @@ import {
 	AuthUserAttributes,
 	AuthUserAttribute,
 	AuthUserAttributeKey,
+	AuthDevice,
 } from './models';
 import { AuthServiceOptions, AuthSignUpOptions } from './options';
 
@@ -57,6 +58,18 @@ export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
 export type AuthSignInWithRedirectInput = {
 	provider?: AuthProvider | { custom: string };
 	customState?: string;
+	options?: {
+		/**
+		 * On iOS devices, setting this to true requests that the browser not share cookies or other browsing data between
+		 * the authentication session and the user’s normal browser session. This will bypass the permissions dialog that
+		 * is displayed your user during sign-in and sign-out but also prevents reuse of existing sessions from the user's
+		 * browser, requiring them to re-enter their credentials even if they are already externally logged in on their
+		 * browser.
+		 *
+		 * On all other platforms, this flag is ignored.
+		 */
+		preferPrivateSession?: boolean;
+	};
 };
 
 /**
@@ -189,3 +202,12 @@ export type AuthSendUserAttributeVerificationCodeInput<
 export type AuthDeleteUserAttributesInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = { userAttributeKeys: [UserAttributeKey, ...UserAttributeKey[]] };
+
+/**
+ * Constructs a `forgetDevice` input.
+ *
+ * @param device - optional parameter to forget an external device
+ */
+export type AuthForgetDeviceInput = {
+	device?: AuthDevice;
+};

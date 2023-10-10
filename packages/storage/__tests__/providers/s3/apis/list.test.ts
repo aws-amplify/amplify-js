@@ -40,6 +40,7 @@ const credentials: Credentials = {
 const listObjectClientConfig = {
 	credentials,
 	region,
+	userAgentValue: expect.any(String)
 };
 const listObjectClientBaseResultItem = {
 	ETag: eTag,

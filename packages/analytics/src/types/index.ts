@@ -16,3 +16,5 @@ export {
 export { AnalyticsServiceOptions } from './options';
 
 export { AnalyticsIdentifyUserInput } from './inputs';
+
+export { KinesisStream, KinesisShard, KinesisEventData } from './kinesis';

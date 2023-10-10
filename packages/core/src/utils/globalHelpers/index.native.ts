@@ -1,9 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import 'react-native-get-random-values';
-import { encode, decode } from 'base-64';
+import { loadGetRandomValues, loadBase64 } from '@aws-amplify/react-native';
 import { AmplifyError } from '../../errors';
+
+loadGetRandomValues();
+const { encode, decode } = loadBase64();
 
 export const getCrypto = () => {
 	if (

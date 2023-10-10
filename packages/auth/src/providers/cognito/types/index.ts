@@ -6,7 +6,9 @@ export {
 	ValidationData,
 	AuthFlowType,
 	UserAttributeKey,
+	VerifiableUserAttributeKey,
 	MFAPreference,
+	AWSAuthDevice,
 } from './models';
 
 export {
@@ -45,6 +47,7 @@ export {
 	UpdateUserAttributeInput,
 	SendUserAttributeVerificationCodeInput,
 	DeleteUserAttributesInput,
+	ForgetDeviceInput,
 } from './inputs';
 
 export {
@@ -66,4 +69,5 @@ export {
 	UpdateUserAttributesOutput,
 	UpdateUserAttributeOutput,
 	SendUserAttributeVerificationCodeOutput,
+	FetchDevicesOutput,
 } from './outputs';

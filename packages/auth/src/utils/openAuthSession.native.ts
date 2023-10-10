@@ -22,18 +22,20 @@ try {
 
 export const openAuthSession: OpenAuthSession = async (
 	url: string,
-	redirectSchemes: string[]
+	redirectUrls: string[],
+	prefersEphemeralSession?: boolean
 ): Promise<OpenAuthSessionResult> => {
 	try {
 		const redirectUrl = await webBrowser.openAuthSessionAsync(
 			url,
-			redirectSchemes
+			redirectUrls,
+			prefersEphemeralSession
 		);
 		if (!redirectUrl) {
 			return { type: 'canceled' };
 		}
 		return { type: 'success', url: redirectUrl };
-	} catch (err) {
-		return { type: 'unknown' };
+	} catch (error) {
+		return { type: 'error', error };
 	}
 };

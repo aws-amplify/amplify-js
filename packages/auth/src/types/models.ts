@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AuthStandardAttributeKey } from "@aws-amplify/core/internals/utils";
+
 /**
  * Additional data that may be returned from Auth APIs.
  */
@@ -184,28 +186,6 @@ export type AuthNextSignInStep<
 	| ResetPasswordStep
 	| DoneSignInStep;
 
-export type AuthStandardAttributeKey =
-	| 'address'
-	| 'birthdate'
-	| 'email'
-	| 'email_verified'
-	| 'family_name'
-	| 'gender'
-	| 'given_name'
-	| 'locale'
-	| 'middle_name'
-	| 'name'
-	| 'nickname'
-	| 'phone_number'
-	| 'phone_number_verified'
-	| 'picture'
-	| 'preferred_username'
-	| 'profile'
-	| 'sub'
-	| 'updated_at'
-	| 'website'
-	| 'zoneinfo';
-
 /**
  * Key/value pairs describing a user attributes.
  */
@@ -273,4 +253,12 @@ export type AuthNextUpdateAttributeStep<
 export type AuthUser = {
 	username: string;
 	userId: string;
+};
+
+/**
+ * The AuthDevice object contains id and name of the device.
+ */
+export type AuthDevice = {
+	id: string;
+	name?: string;
 };

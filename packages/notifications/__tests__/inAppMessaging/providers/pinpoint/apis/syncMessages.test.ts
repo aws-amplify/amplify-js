@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { defaultStorage } from '@aws-amplify/core';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import { syncMessages } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 import {
 	STORAGE_KEY_SUFFIX,
