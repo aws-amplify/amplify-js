@@ -2,13 +2,26 @@ import {
 	getAmplifyUserAgentObject,
 	getAmplifyUserAgent,
 	Platform,
-} from '../src/Platform';
-import { version } from '../src/Platform/version';
-import { ApiAction, Category, Framework } from '../src/Platform/types';
-import { detectFramework, clearCache } from '../src/Platform/detectFramework';
-import * as detection from '../src/Platform/detection';
+} from '../../src/Platform';
+import { version } from '../../src/Platform/version';
+import {
+	ApiAction,
+	AuthAction,
+	Category,
+	Framework,
+} from '../../src/Platform/types';
+import {
+	detectFramework,
+	clearCache,
+} from '../../src/Platform/detectFramework';
+import * as detection from '../../src/Platform/detection';
+import { getCustomUserAgent } from '../../src/Platform/customUserAgent';
+
+jest.mock('../../src/Platform/customUserAgent');
 
 describe('Platform test', () => {
+	const mockGetCustomUserAgent = getCustomUserAgent as jest.Mock;
+
 	beforeAll(() => {
 		jest.useFakeTimers();
 	});
@@ -18,6 +31,7 @@ describe('Platform test', () => {
 	});
 
 	beforeEach(() => {
+		mockGetCustomUserAgent.mockReset();
 		clearCache();
 	});
 
@@ -39,13 +53,32 @@ describe('Platform test', () => {
 		test('with customUserAgentDetails', () => {
 			expect(
 				getAmplifyUserAgentObject({
-					category: Category.API,
-					action: ApiAction.None,
+					category: Category.Auth,
+					action: AuthAction.ConfirmSignIn,
 				})
 			).toStrictEqual([
 				['aws-amplify', version],
-				[Category.API, ApiAction.None],
+				[Category.Auth, AuthAction.ConfirmSignIn],
 				['framework', Framework.WebUnknown],
+			]);
+		});
+
+		it('injects global user agent details when available', () => {
+			const mockUAState = [['uiversion', '1.0.0'], ['flag']];
+
+			mockGetCustomUserAgent.mockReturnValue(mockUAState);
+
+			expect(
+				getAmplifyUserAgentObject({
+					category: Category.Auth,
+					action: AuthAction.ConfirmSignIn,
+				})
+			).toStrictEqual([
+				['aws-amplify', version],
+				[Category.Auth, AuthAction.ConfirmSignIn],
+				['framework', Framework.WebUnknown],
+				['uiversion', '1.0.0'],
+				['flag'],
 			]);
 		});
 	});
@@ -60,11 +93,26 @@ describe('Platform test', () => {
 		test('with customUserAgentDetails', () => {
 			expect(
 				getAmplifyUserAgent({
-					category: Category.API,
-					action: ApiAction.None,
+					category: Category.Auth,
+					action: AuthAction.ConfirmSignIn,
 				})
 			).toBe(
-				`${Platform.userAgent} ${Category.API}/${ApiAction.None} framework/${Framework.WebUnknown}`
+				`${Platform.userAgent} ${Category.Auth}/${AuthAction.ConfirmSignIn} framework/${Framework.WebUnknown}`
+			);
+		});
+
+		it('handles flag UA attributes', () => {
+			const mockUAState = [['uiversion', '1.0.0'], ['flag']];
+
+			mockGetCustomUserAgent.mockReturnValue(mockUAState);
+
+			expect(
+				getAmplifyUserAgent({
+					category: Category.Auth,
+					action: AuthAction.ConfirmSignIn,
+				})
+			).toBe(
+				`${Platform.userAgent} ${Category.Auth}/${AuthAction.ConfirmSignIn} framework/${Framework.WebUnknown} uiversion/1.0.0 flag`
 			);
 		});
 	});
@@ -86,7 +134,7 @@ describe('detectFramework observers', () => {
 
 	beforeAll(() => {
 		jest.resetModules();
-		module = require('../src/Platform/detectFramework');
+		module = require('../../src/Platform/detectFramework');
 		jest.useFakeTimers();
 	});
 

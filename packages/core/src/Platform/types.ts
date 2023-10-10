@@ -111,7 +111,7 @@ export enum StorageAction {
 	Copy = '4',
 	Remove = '5',
 	GetProperties = '6',
-	GetUrl = '7'
+	GetUrl = '7',
 }
 
 type ActionMap = {
@@ -151,3 +151,46 @@ export type CustomUserAgentDetails =
 	| UserAgentDetailsWithCategory<Category.PubSub>
 	| UserAgentDetailsWithCategory<Category.PushNotification>
 	| UserAgentDetailsWithCategory<Category.Storage>;
+
+/**
+ * `refCount` tracks how many consumers have set state for a particular API to avoid it being cleared before all
+ * consumers are done using it.
+ *
+ * Category -> Action -> Custom State
+ */
+export type CategoryUserAgentStateMap = Record<
+	string,
+	{ refCount: number; additionalDetails: AdditionalDetails }
+>;
+export type CustomUserAgentStateMap = Record<string, CategoryUserAgentStateMap>;
+
+export type AdditionalDetails = [string, string?][];
+
+type StorageUserAgentInput = {
+	category: Category.Storage;
+	apis: StorageAction[];
+};
+
+type AuthUserAgentInput = {
+	category: Category.Auth;
+	apis: AuthAction[];
+};
+
+type InAppMessagingUserAgentInput = {
+	category: Category.InAppMessaging;
+	apis: InAppMessagingAction[];
+};
+
+type GeoUserAgentInput = {
+	category: Category.Geo;
+	apis: GeoAction[];
+};
+
+export type SetCustomUserAgentInput = (
+	| StorageUserAgentInput
+	| AuthUserAgentInput
+	| InAppMessagingUserAgentInput
+	| GeoUserAgentInput
+) & {
+	additionalDetails: AdditionalDetails;
+};
