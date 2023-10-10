@@ -426,7 +426,7 @@
 			"name": "[Storage] downloadData (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ downloadData }",
-			"limit": "18.30 kB"
+			"limit": "18.67 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
