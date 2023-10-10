@@ -3,11 +3,6 @@
 
 export { CONNECTION_STATE_CHANGE } from './Providers/constants';
 export { ConnectionState, CONTROL_MSG } from './types';
-export {
-	AWSIoTProvider,
-	AWSIoTProviderOptions,
-	AbstractPubSubProvider,
-	MqttOverWSProvider,
-	MqttProviderOptions,
-	mqttTopicMatch,
-} from './Providers';
+export { AWSIoTOptions, MqttOptions, mqttTopicMatch } from './Providers';
+
+export { generateClient } from './clients/iot';

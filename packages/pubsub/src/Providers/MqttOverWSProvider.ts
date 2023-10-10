@@ -39,7 +39,7 @@ export function mqttTopicMatch(filter: string, topic: string) {
 	return length === topicArray.length;
 }
 
-export interface MqttProviderOptions extends ProviderOptions {
+export interface MqttOptions extends ProviderOptions {
 	clientId?: string;
 	url?: string;
 	aws_pubsub_endpoint?: string;
@@ -96,13 +96,13 @@ const dispatchPubSubEvent = payload => {
 
 const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
 
-export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptions> {
+export class MqttOverWSProvider extends AbstractPubSubProvider<MqttOptions> {
 	private _clientsQueue = new ClientsQueue();
 	private connectionState: ConnectionState;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
 
-	constructor(options: MqttProviderOptions = {}) {
+	constructor(options: MqttOptions = {}) {
 		super({ ...options, clientId: options.clientId || uuid() });
 
 		// Monitor the connection health state and pass changes along to Hub
@@ -174,10 +174,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		}
 	}
 
-	public async newClient({
-		url,
-		clientId,
-	}: MqttProviderOptions): Promise<PahoClient> {
+	public async newClient({ url, clientId }: MqttOptions): Promise<PahoClient> {
 		logger.debug('Creating new MQTT client', clientId);
 
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
@@ -227,7 +224,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 
 	protected async connect(
 		clientId: string,
-		options: MqttProviderOptions = {}
+		options: MqttOptions = {}
 	): Promise<PahoClient | undefined> {
 		return await this.clientsQueue.get(clientId, async clientId => {
 			const client = await this.newClient({ ...options, clientId });
@@ -308,7 +305,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 
 	subscribe(
 		topics: string[] | string,
-		options: MqttProviderOptions = {}
+		options: MqttOptions = {}
 	): Observable<PubSubContent> {
 		const targetTopics = ([] as string[]).concat(topics);
 		logger.debug('Subscribing to topic(s)', targetTopics.join(','));

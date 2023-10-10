@@ -1,17 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { MqttOverWSProvider, MqttProviderOptions } from './MqttOverWSProvider';
+import { MqttOverWSProvider, MqttOptions } from './MqttOverWSProvider';
 import { Signer } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '@aws-amplify/core';
 const SERVICE_NAME = 'iotdevicegateway';
 
-export interface AWSIoTProviderOptions extends MqttProviderOptions {
+export interface AWSIoTOptions extends MqttOptions {
 	aws_pubsub_region?: string;
 	aws_pubsub_endpoint?: string;
 }
 
 export class AWSIoTProvider extends MqttOverWSProvider {
-	constructor(options: AWSIoTProviderOptions = {}) {
+	constructor(options: AWSIoTOptions = {}) {
 		super(options);
 	}
 
