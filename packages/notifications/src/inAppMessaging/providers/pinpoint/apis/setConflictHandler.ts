@@ -11,7 +11,8 @@ export let conflictHandler: InAppMessageConflictHandler =
  * Set a conflict handler that will be used to resolve conflicts that may emerge
  * when matching events with synced messages.
  * @remark
- * The conflict handler is not persisted between sessions and needs to be called before dispatching an event to have any effect.
+ * The conflict handler is not persisted between sessions
+ * and needs to be called before dispatching an event to have any effect.
  *
  * @param SetConflictHandlerInput: The input object that holds the conflict handler to be used.
  *
