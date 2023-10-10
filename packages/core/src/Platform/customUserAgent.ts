@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	AdditionalDetails,
 	CategoryUserAgentStateMap,
 	CustomUserAgentStateMap,
 	SetCustomUserAgentInput,
@@ -27,18 +28,16 @@ export const setCustomUserAgent = (
 	input: SetCustomUserAgentInput
 ): (() => void) => {
 	// Save custom user-agent state & increment reference counter
-	customUserAgentState[input.category] = Object.assign(
-		customUserAgentState[input.category] || {},
-		input.apis.reduce<CategoryUserAgentStateMap>(
-			(acc, api) => ({
-				...acc,
-				[api]: {
-					refCount: acc[api].refCount ? acc[api].refCount + 1 : 1,
-					additionalDetails: input.additionalDetails,
-				},
-			}),
-			{}
-		)
+	// TODO Remove `any` when we upgrade to TypeScript 5.2, see: https://github.com/microsoft/TypeScript/issues/44373
+	customUserAgentState[input.category] = (input.apis as any[]).reduce(
+		(acc: CategoryUserAgentStateMap, api: string) => ({
+			...acc,
+			[api]: {
+				refCount: acc[api]?.refCount ? acc[api].refCount + 1 : 1,
+				additionalDetails: input.additionalDetails,
+			},
+		}),
+		customUserAgentState[input.category] ?? {}
 	);
 
 	// Callback that cleans up state for APIs recorded by this call
@@ -60,4 +59,11 @@ export const setCustomUserAgent = (
 	};
 
 	return cleanUpCallback;
+};
+
+export const getCustomUserAgentState = (
+	category: string,
+	api: string
+): AdditionalDetails | undefined => {
+	return customUserAgentState[category]?.[api]?.additionalDetails;
 };

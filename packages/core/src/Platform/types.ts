@@ -110,7 +110,7 @@ export enum StorageAction {
 	Copy = '4',
 	Remove = '5',
 	GetProperties = '6',
-	GetUrl = '7'
+	GetUrl = '7',
 }
 
 type ActionMap = {
@@ -157,7 +157,7 @@ export type CustomUserAgentDetails =
  * `refCount` tracks how many consumers have set state for a particular API to avoid it being cleared before all
  * consumers are done using it.
  *
- * Category -> API Code -> Custom State
+ * Category -> Action -> Custom State
  */
 export type CategoryUserAgentStateMap = Record<
 	string,
@@ -165,7 +165,7 @@ export type CategoryUserAgentStateMap = Record<
 >;
 export type CustomUserAgentStateMap = Record<string, CategoryUserAgentStateMap>;
 
-export type AdditionalDetails = [[string, string?]];
+export type AdditionalDetails = [string, string?][];
 
 type StorageUserAgentInput = {
 	category: Category.Storage;

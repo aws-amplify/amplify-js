@@ -5,6 +5,7 @@ import { CustomUserAgentDetails, Framework } from './types';
 import { version } from './version';
 import { detectFramework, observeFrameworkChanges } from './detectFramework';
 import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
+import { getCustomUserAgentState } from './customUserAgent';
 
 const BASE_USER_AGENT = `aws-amplify`;
 
@@ -39,7 +40,15 @@ export const getAmplifyUserAgentObject = ({
 	}
 	userAgent.push(['framework', detectFramework()]);
 
-	// TODO Load and append any custom user-agent state
+	if (category && action) {
+		const customState = getCustomUserAgentState(category, action);
+
+		if (customState) {
+			customState.forEach(state => {
+				userAgent.push(state);
+			});
+		}
+	}
 
 	return userAgent;
 };
@@ -49,7 +58,9 @@ export const getAmplifyUserAgent = (
 ): string => {
 	const userAgent = getAmplifyUserAgentObject(customUserAgentDetails);
 	const userAgentString = userAgent
-		.map(([agentKey, agentValue]) => `${agentKey}/${agentValue}`)
+		.map(([agentKey, agentValue]) =>
+			agentKey && agentValue ? `${agentKey}/${agentValue}` : agentKey
+		)
 		.join(' ');
 
 	return userAgentString;
