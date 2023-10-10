@@ -8,4 +8,5 @@ export {
 	loadBuffer,
 	loadUrlPolyfill,
 	loadGetRandomValues,
+	loadBase64,
 } from './moduleLoaders';

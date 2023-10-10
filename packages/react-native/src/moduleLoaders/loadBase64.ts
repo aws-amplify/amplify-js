@@ -1,9 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export {
-	identifyUser,
-	syncMessages,
-	dispatchEvent,
-	setConflictHandler,
-} from './pinpoint/apis';
+import { decode, encode } from 'base-64';
+
+export const loadBase64 = () => ({ decode, encode });
