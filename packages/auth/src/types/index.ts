@@ -7,8 +7,6 @@ export {
 	AuthAnyAttribute,
 	AuthCodeDeliveryDetails,
 	AuthNextSignUpStep,
-	AuthStandardAttributeKey,
-	AuthVerifiableAttributeKey,
 	AuthUserAttributeKey,
 	AuthUserAttributes,
 	AuthUserAttribute,
