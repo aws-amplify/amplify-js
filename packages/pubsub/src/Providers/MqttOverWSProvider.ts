@@ -4,7 +4,7 @@
 // @ts-ignore
 import * as Paho from '../vendor/paho-mqtt';
 import { v4 as uuid } from 'uuid';
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { Observable, SubscriptionLike as Subscription, Observer } from 'rxjs';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
 import {
@@ -307,7 +307,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttOptions> {
 	): Observable<PubSubContent> {
 		const targetTopics = ([] as string[]).concat(topics);
 		logger.debug('Subscribing to topic(s)', targetTopics.join(','));
-		let reconnectSubscription: ZenObservable.Subscription;
+		let reconnectSubscription: Subscription;
 
 		return new Observable(observer => {
 			targetTopics.forEach(topic => {
@@ -380,7 +380,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttOptions> {
 					targetTopics.forEach(topic => {
 						const observersForTopic =
 							this._topicObservers.get(topic) ||
-							(new Set() as Set<ZenObservable.SubscriptionObserver<any>>);
+							(new Set() as Set<Observer<any>>);
 
 						observersForTopic.delete(observer);
 

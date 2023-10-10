@@ -1,5 +1,5 @@
 import { Hub } from '@aws-amplify/core';
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 import { ConnectionState as CS, CONNECTION_STATE_CHANGE } from '../src';
 import * as constants from '../src/Providers/constants';
 

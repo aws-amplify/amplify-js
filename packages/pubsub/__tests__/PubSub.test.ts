@@ -25,7 +25,7 @@ import * as Paho from '../src/vendor/paho-mqtt';
 import { ConnectionState, generateClient, mqttTopicMatch } from '../src';
 import { generateClient as generateMqttClient } from '../src/clients/mqtt';
 import { HubConnectionListener } from './helpers';
-import Observable from 'zen-observable-ts';
+import { Observable, Observer } from 'rxjs';
 import * as constants from '../src/Providers/constants';
 import { MqttOverWSProvider } from '../src/Providers';
 import { NetworkStatus } from '@aws-amplify/core/lib-esm/Reachability/types';
@@ -270,7 +270,7 @@ describe('PubSub', () => {
 		describe('Hub connection state changes', () => {
 			let hubConnectionListener: HubConnectionListener;
 
-			let reachabilityObserver: ZenObservable.Observer<NetworkStatus>;
+			let reachabilityObserver: Observer<NetworkStatus>;
 
 			beforeEach(() => {
 				// Maintain the Hub connection listener, used to monitor the connection messages sent through Hub
