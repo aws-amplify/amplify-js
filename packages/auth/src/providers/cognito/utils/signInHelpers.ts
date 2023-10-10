@@ -21,6 +21,8 @@ import {
 	AuthAdditionalInfo,
 	AuthSignInOutput,
 	AuthDeliveryMedium,
+	AuthSignUpOutput,
+	AuthSignInInput,
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
@@ -107,9 +109,9 @@ export async function handleCustomChallenge({
 	};
 
 	const response = await respondToAuthChallenge(
-		{ 
+		{
 			region: getRegion(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 		},
 		jsonReq
 	);
@@ -139,9 +141,9 @@ export async function handleMFASetupChallenge({
 	};
 
 	const { Session } = await verifySoftwareToken(
-		{ 
+		{
 			region: getRegion(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 		},
 		{
 			UserCode: challengeResponse,
@@ -192,10 +194,10 @@ export async function handleSelectMFATypeChallenge({
 	};
 
 	return respondToAuthChallenge(
-		{ 
+		{
 			region: getRegion(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
-		}, 
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
+		},
 		jsonReq
 	);
 }
@@ -221,10 +223,10 @@ export async function handleSMSMFAChallenge({
 	};
 
 	return respondToAuthChallenge(
-		{ 
+		{
 			region: getRegion(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
-		}, 
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
+		},
 		jsonReq
 	);
 }
@@ -248,10 +250,10 @@ export async function handleSoftwareTokenMFAChallenge({
 		ClientId: userPoolClientId,
 	};
 	return respondToAuthChallenge(
-		{ 
+		{
 			region: getRegion(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
-		}, 
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
+		},
 		jsonReq
 	);
 }
@@ -279,10 +281,10 @@ export async function handleCompleteNewPasswordChallenge({
 	};
 
 	return respondToAuthChallenge(
-		{ 
+		{
 			region: getRegion(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn)
-		}, 
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
+		},
 		jsonReq
 	);
 }
@@ -312,9 +314,9 @@ export async function handleUserPasswordAuthFlow(
 	};
 
 	const response = await initiateAuth(
-		{ 
+		{
 			region: getRegion(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn)
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
 		},
 		jsonReq
 	);
@@ -358,10 +360,10 @@ export async function handleUserSRPAuthFlow(
 	};
 
 	const resp = await initiateAuth(
-		{ 
+		{
 			region: getRegion(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn)
-		}, 
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
+		},
 		jsonReq
 	);
 	const { ChallengeParameters: challengeParameters, Session: session } = resp;
@@ -400,9 +402,9 @@ export async function handleCustomAuthFlowWithoutSRP(
 	};
 
 	const response = await initiateAuth(
-		{ 
+		{
 			region: getRegion(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn)
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
 		},
 		jsonReq
 	);
@@ -450,10 +452,10 @@ export async function handleCustomSRPAuthFlow(
 
 	const { ChallengeParameters: challengeParameters, Session: session } =
 		await initiateAuth(
-			{ 
+			{
 				region: getRegion(userPoolId),
-				userAgentValue: getAuthUserAgentValue(AuthAction.SignIn)
-			}, 
+				userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
+			},
 			jsonReq
 		);
 
