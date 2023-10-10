@@ -93,7 +93,9 @@ export type AuthStandardAttributeKey =
 
 export type AuthVerifiableAttributeKey = 'email' | 'phone_number';
 
-export type AuthConfigUserAttributes = Partial<Record<AuthStandardAttributeKey, { required: boolean }>>;
+export type AuthConfigUserAttributes = Partial<
+	Record<AuthStandardAttributeKey, { required: boolean }>
+>;
 
 export type AuthConfig = StrictUnion<
 	| AuthIdentityPoolConfig
@@ -112,6 +114,7 @@ export type AuthIdentityPoolConfig = {
 		userPoolClientId?: never;
 		userPoolId?: never;
 		loginWith?: never;
+		signUpVerificationMethod?: never;
 		userAttributes?: never;
 		mfa?: never;
 		passwordFormat?: never;
