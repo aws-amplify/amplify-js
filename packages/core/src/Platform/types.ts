@@ -133,12 +133,10 @@ type UserAgentDetailsWithCategory<T extends Category> =
 		action: T extends keyof ActionMap ? ActionMap[T] : never;
 	};
 
-// TODO Remove or refactor?
 type CustomUserAgentDetailsBase = {
 	framework?: Framework;
 };
 
-// TODO Remove or refactor?
 export type CustomUserAgentDetails =
 	| (CustomUserAgentDetailsBase & { category?: never; action?: never })
 	| UserAgentDetailsWithCategory<Category.API>

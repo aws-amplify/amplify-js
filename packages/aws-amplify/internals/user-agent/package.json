@@ -1,8 +1,0 @@
-{
-	"name": "aws-amplify/internals/user-agent",
-	"types": "../../lib-esm/userAgent/index.d.ts",
-	"main": "../../lib/userAgent/index.js",
-	"module": "../../lib-esm/userAgent/index.js",
-	"react-native": "../../lib-esm/userAgent/index.js",
-	"sideEffects": false
-}
