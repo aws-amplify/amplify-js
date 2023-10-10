@@ -55,9 +55,6 @@
 		"uuid": "^9.0.0",
 		"zen-observable-ts": "0.8.19"
 	},
-	"peerDependencies": {
-		"@aws-amplify/core": "^6.0.0"
-	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
 		"@types/zen-observable": "^0.8.0",

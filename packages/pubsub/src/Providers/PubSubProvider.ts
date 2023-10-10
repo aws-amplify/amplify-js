@@ -3,9 +3,9 @@
 import Observable from 'zen-observable-ts';
 import { PubSubProvider, ProviderOptions } from '../types/Provider';
 import {
-	CustomUserAgentDetails,
 	ConsoleLogger as Logger,
-} from '@aws-amplify/core';
+	CustomUserAgentDetails,
+} from '@aws-amplify/core/internals/utils';
 import { PubSubContent } from '../types/PubSub';
 
 const logger = new Logger('AbstractPubSubProvider');
