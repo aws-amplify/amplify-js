@@ -88,9 +88,9 @@ export class AmazonAIConvertPredictionsProvider {
 
 		const { sourceLanguage, targetLanguage } = defaults;
 		const sourceLanguageCode =
-			input.translateText.source.language ?? sourceLanguage;
+			input.translateText?.source?.language ?? sourceLanguage;
 		const targetLanguageCode =
-			input.translateText.targetLanguage ?? targetLanguage;
+			input.translateText?.targetLanguage ?? targetLanguage;
 		assertValidationError(
 			!!sourceLanguageCode,
 			PredictionsValidationErrorCode.NoSourceLanguage
@@ -111,7 +111,7 @@ export class AmazonAIConvertPredictionsProvider {
 		const translateTextCommand = new TranslateTextCommand({
 			SourceLanguageCode: sourceLanguageCode,
 			TargetLanguageCode: targetLanguageCode,
-			Text: input.translateText.source.text,
+			Text: input.translateText?.source?.text,
 		});
 		try {
 			const data = await this.translateClient.send(translateTextCommand);
@@ -133,7 +133,7 @@ export class AmazonAIConvertPredictionsProvider {
 			PredictionsValidationErrorCode.NoCredentials
 		);
 		assertValidationError(
-			!!input.textToSpeech.source,
+			!!input.textToSpeech?.source,
 			PredictionsValidationErrorCode.NoSource
 		);
 
@@ -146,7 +146,7 @@ export class AmazonAIConvertPredictionsProvider {
 		const { defaults = {}, region } = speechGenerator;
 
 		const { voiceId: defaultVoiceId } = defaults;
-		const voiceId = input.textToSpeech.voiceId ?? defaultVoiceId;
+		const voiceId = input.textToSpeech?.voiceId ?? defaultVoiceId;
 		assertValidationError(!!voiceId, PredictionsValidationErrorCode.NoVoiceId);
 
 		this.pollyClient = new PollyClient({
@@ -159,7 +159,7 @@ export class AmazonAIConvertPredictionsProvider {
 		});
 		const synthesizeSpeechCommand = new SynthesizeSpeechCommand({
 			OutputFormat: 'mp3',
-			Text: input.textToSpeech.source.text,
+			Text: input.textToSpeech?.source?.text,
 			VoiceId: voiceId,
 			TextType: 'text',
 			SampleRate: '24000',
@@ -176,7 +176,7 @@ export class AmazonAIConvertPredictionsProvider {
 			return {
 				speech: { url },
 				audioStream: arrayBuffer,
-				text: input.textToSpeech.source.text,
+				text: input.textToSpeech?.source?.text,
 			} as TextToSpeechOutput;
 		} catch (err) {
 			return Promise.reject(err);
@@ -201,14 +201,14 @@ export class AmazonAIConvertPredictionsProvider {
 			);
 
 			const { defaults, region } = transcription;
-			const language = input.transcription.language ?? defaults?.language;
+			const language = input.transcription?.language ?? defaults?.language;
 
 			assertValidationError(
 				!!language,
 				PredictionsValidationErrorCode.NoLanguage
 			);
 
-			const source = input.transcription.source;
+			const source = input.transcription?.source;
 			assertValidationError(
 				isBytesSource(source),
 				PredictionsValidationErrorCode.InvalidSource

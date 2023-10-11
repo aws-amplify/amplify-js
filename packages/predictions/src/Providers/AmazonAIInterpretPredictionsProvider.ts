@@ -45,114 +45,117 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 	}
 
-	interpretText(input: InterpretTextInput): Promise<InterpretTextOutput> {
-		return new Promise(async (res, rej) => {
-			const { credentials } = await fetchAuthSession();
+	async interpretText(input: InterpretTextInput): Promise<InterpretTextOutput> {
+		const { credentials } = await fetchAuthSession();
+		assertValidationError(
+			!!credentials,
+			PredictionsValidationErrorCode.NoCredentials
+		);
+
+		const { interpretText = {} } =
+			Amplify.getConfig().Predictions?.interpret ?? {};
+		const { region = '', defaults = {} } = interpretText;
+		const { type: defaultType = '' } = defaults;
+
+		const { text: textSource } = input;
+		const { source, type = defaultType } = textSource;
+		const { text, language } = (source as any) ?? {};
+
+		this.comprehendClient = new ComprehendClient({
+			credentials,
+			region,
+			customUserAgent: getAmplifyUserAgentObject({
+				category: Category.Predictions,
+				action: PredictionsAction.Interpret,
+			}),
+		});
+
+		const doAll = type === InterpretTextCategories.ALL;
+
+		let languagePromise: Promise<string>;
+		if (doAll || type === InterpretTextCategories.LANGUAGE) {
+			const languageDetectionParams = {
+				Text: text,
+			};
+			languagePromise = this.detectLanguage(languageDetectionParams);
+		}
+
+		let entitiesPromise: Promise<Array<TextEntities>>;
+		if (doAll || type === InterpretTextCategories.ENTITIES) {
+			const languageCode = language || (await languagePromise);
 			assertValidationError(
-				!!credentials,
-				PredictionsValidationErrorCode.NoCredentials
+				!!languageCode,
+				PredictionsValidationErrorCode.NoLanguage
+			);
+			const entitiesDetectionParams = {
+				Text: text,
+				LanguageCode: languageCode,
+			};
+			entitiesPromise = this.detectEntities(entitiesDetectionParams);
+		}
+
+		let sentimentPromise: Promise<TextSentiment>;
+		if (doAll || type === InterpretTextCategories.SENTIMENT) {
+			const languageCode = language || (await languagePromise);
+			assertValidationError(
+				!!languageCode,
+				PredictionsValidationErrorCode.NoLanguage
+			);
+			const sentimentParams = {
+				Text: text,
+				LanguageCode: languageCode,
+			};
+			sentimentPromise = this.detectSentiment(sentimentParams);
+		}
+
+		let syntaxPromise: Promise<Array<TextSyntax>>;
+		if (doAll || type === InterpretTextCategories.SYNTAX) {
+			const languageCode = language || (await languagePromise);
+			assertValidationError(
+				!!languageCode,
+				PredictionsValidationErrorCode.NoLanguage
+			);
+			const syntaxParams = {
+				Text: text,
+				LanguageCode: languageCode,
+			};
+			syntaxPromise = this.detectSyntax(syntaxParams);
+		}
+
+		let keyPhrasesPromise: Promise<Array<KeyPhrases>>;
+		if (doAll || type === InterpretTextCategories.KEY_PHRASES) {
+			const languageCode = language || (await languagePromise);
+			assertValidationError(
+				!!languageCode,
+				PredictionsValidationErrorCode.NoLanguage
 			);
 
-			const { interpretText = {} } =
-				Amplify.getConfig().Predictions?.interpret ?? {};
-			const { region = '', defaults = {} } = interpretText;
-			const { type: defaultType = '' } = defaults;
-
-			const { text: textSource } = input;
-			const { source, type = defaultType } = textSource;
-			const { text, language } = (source as any) ?? {};
-
-			this.comprehendClient = new ComprehendClient({
-				credentials,
-				region,
-				customUserAgent: getAmplifyUserAgentObject({
-					category: Category.Predictions,
-					action: PredictionsAction.Interpret,
-				}),
-			});
-
-			const doAll = type === InterpretTextCategories.ALL;
-
-			let languagePromise: Promise<string>;
-			if (doAll || type === InterpretTextCategories.LANGUAGE) {
-				const languageDetectionParams = {
-					Text: text,
-				};
-				languagePromise = this.detectLanguage(languageDetectionParams);
-			}
-
-			let entitiesPromise: Promise<Array<TextEntities>>;
-			if (doAll || type === InterpretTextCategories.ENTITIES) {
-				const LanguageCode = language ?? (await languagePromise);
-				if (!LanguageCode) {
-					return rej('language code is required on source for this selection');
-				}
-				const entitiesDetectionParams = {
-					Text: text,
-					LanguageCode,
-				};
-				entitiesPromise = this.detectEntities(entitiesDetectionParams);
-			}
-
-			let sentimentPromise: Promise<TextSentiment>;
-			if (doAll || type === InterpretTextCategories.SENTIMENT) {
-				const LanguageCode = language || (await languagePromise);
-				if (!LanguageCode) {
-					return rej('language code is required on source for this selection');
-				}
-				const sentimentParams = {
-					Text: text,
-					LanguageCode,
-				};
-				sentimentPromise = this.detectSentiment(sentimentParams);
-			}
-
-			let syntaxPromise: Promise<Array<TextSyntax>>;
-			if (doAll || type === InterpretTextCategories.SYNTAX) {
-				const LanguageCode = language || (await languagePromise);
-				if (!LanguageCode) {
-					return rej('language code is required on source for this selection');
-				}
-				const syntaxParams = {
-					Text: text,
-					LanguageCode,
-				};
-				syntaxPromise = this.detectSyntax(syntaxParams);
-			}
-
-			let keyPhrasesPromise: Promise<Array<KeyPhrases>>;
-			if (doAll || type === InterpretTextCategories.KEY_PHRASES) {
-				const LanguageCode = language || (await languagePromise);
-				if (!LanguageCode) {
-					return rej('language code is required on source for this selection');
-				}
-				const keyPhrasesParams = {
-					Text: text,
-					LanguageCode,
-				};
-				keyPhrasesPromise = this.detectKeyPhrases(keyPhrasesParams);
-			}
-			try {
-				const results = await Promise.all([
-					languagePromise,
-					entitiesPromise,
-					sentimentPromise,
-					syntaxPromise,
-					keyPhrasesPromise,
-				]);
-				res({
-					textInterpretation: {
-						keyPhrases: results[4] || [],
-						language: results[0] || '',
-						sentiment: results[2],
-						syntax: <TextSyntax[]>results[3] || [],
-						textEntities: <TextEntities[]>results[1] || [],
-					},
-				});
-			} catch (err) {
-				rej(err);
-			}
-		});
+			const keyPhrasesParams = {
+				Text: text,
+				LanguageCode: languageCode,
+			};
+			keyPhrasesPromise = this.detectKeyPhrases(keyPhrasesParams);
+		}
+		try {
+			const results = await Promise.all([
+				languagePromise,
+				entitiesPromise,
+				sentimentPromise,
+				syntaxPromise,
+				keyPhrasesPromise,
+			]);
+			return {
+				textInterpretation: {
+					keyPhrases: results[4] || [],
+					language: results[0] || '',
+					sentiment: results[2],
+					syntax: <TextSyntax[]>results[3] || [],
+					textEntities: <TextEntities[]>results[1] || [],
+				},
+			};
+		} catch (err) {
+			return Promise.reject(err);
+		}
 	}
 
 	private async detectKeyPhrases(params): Promise<Array<KeyPhrases>> {
