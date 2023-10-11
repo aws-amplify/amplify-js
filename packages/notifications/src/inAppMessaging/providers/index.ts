@@ -6,4 +6,7 @@ export {
 	syncMessages,
 	dispatchEvent,
 	setConflictHandler,
-} from './pinpoint/apis';
+	IdentifyUserInput,
+	DispatchEventInput,
+	SetConflictHandlerInput,
+} from './pinpoint';

@@ -7,3 +7,9 @@ export {
 	dispatchEvent,
 	setConflictHandler,
 } from './apis';
+
+export {
+	IdentifyUserInput,
+	DispatchEventInput,
+	SetConflictHandlerInput,
+} from './types/inputs';

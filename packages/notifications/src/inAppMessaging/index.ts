@@ -6,4 +6,7 @@ export {
 	syncMessages,
 	dispatchEvent,
 	setConflictHandler,
-} from './providers/pinpoint';
+	IdentifyUserInput,
+	DispatchEventInput,
+	SetConflictHandlerInput,
+} from './providers';
