@@ -5,6 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
 	AuthAction,
+	HubInternal,
 } from '@aws-amplify/core/internals/utils';
 import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
@@ -12,7 +13,14 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { ConfirmSignUpException } from '../types/errors';
 import { confirmSignUp as confirmSignUpClient } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { AutoSignInEventData } from '../types/models';
+import {
+	isAutoSignInStarted,
+	isAutoSignInUserUsingConfirmSignUp,
+	setAutoSignInStarted,
+} from '../utils/signUpHelpers';
 import { getAuthUserAgentValue } from '../../../utils';
+import { getUserContextData } from '../utils/userContextData';
 
 /**
  * Confirms a new user account.
@@ -32,6 +40,7 @@ export async function confirmSignUp(
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
+	const { userPoolId, userPoolClientId } = authConfig;
 	const clientMetadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
@@ -41,6 +50,12 @@ export async function confirmSignUp(
 		!!confirmationCode,
 		AuthValidationErrorCode.EmptyConfirmSignUpCode
 	);
+
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
 
 	await confirmSignUpClient(
 		{
@@ -53,14 +68,49 @@ export async function confirmSignUp(
 			ClientMetadata: clientMetadata,
 			ForceAliasCreation: options?.forceAliasCreation,
 			ClientId: authConfig.userPoolClientId,
-			// TODO: handle UserContextData
+			UserContextData,
 		}
 	);
 
-	return {
-		isSignUpComplete: true,
-		nextStep: {
-			signUpStep: 'DONE',
-		},
-	};
+	return new Promise((resolve, reject) => {
+		try {
+			const signUpOut: ConfirmSignUpOutput = {
+				isSignUpComplete: true,
+				nextStep: {
+					signUpStep: 'DONE',
+				},
+			};
+
+			if (
+				!isAutoSignInStarted() ||
+				!isAutoSignInUserUsingConfirmSignUp(username)
+			) {
+				return resolve(signUpOut);
+			}
+
+			const stopListener = HubInternal.listen<AutoSignInEventData>(
+				'auth-internal',
+				({ payload }) => {
+					switch (payload.event) {
+						case 'autoSignIn':
+							resolve({
+								isSignUpComplete: true,
+								nextStep: {
+									signUpStep: 'COMPLETE_AUTO_SIGN_IN',
+								},
+							});
+							setAutoSignInStarted(false);
+							stopListener();
+					}
+				}
+			);
+
+			HubInternal.dispatch('auth-internal', {
+				event: 'confirmSignUp',
+				data: signUpOut,
+			});
+		} catch (error) {
+			reject(error);
+		}
+	});
 }

@@ -13,6 +13,7 @@ import {
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
+	retryOnResourceNotFoundException,
 } from '../utils/signInHelpers';
 import { Amplify, Hub } from '@aws-amplify/core';
 import {
@@ -64,11 +65,10 @@ export async function signInWithUserPassword(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleUserPasswordAuthFlow(
+		} = await retryOnResourceNotFoundException(
+			handleUserPasswordAuthFlow,
+			[username, password, metadata, authConfig, tokenOrchestrator],
 			username,
-			password,
-			metadata,
-			authConfig,
 			tokenOrchestrator
 		);
 

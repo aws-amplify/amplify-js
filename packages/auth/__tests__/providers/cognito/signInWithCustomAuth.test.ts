@@ -11,6 +11,7 @@ import {
 	CognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
+import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 
 const authConfig = {
 	Cognito: {
@@ -26,6 +27,9 @@ CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 describe('signIn API happy path cases', () => {
 	let handleCustomAuthFlowWithoutSRPSpy;
 
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
 	beforeEach(() => {
 		handleCustomAuthFlowWithoutSRPSpy = jest
 			.spyOn(initiateAuthHelpers, 'handleCustomAuthFlowWithoutSRP')
@@ -69,6 +73,63 @@ describe('signIn API happy path cases', () => {
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			authConfig.Cognito,
 			tokenOrchestrator
+		);
+	});
+});
+
+describe('Cognito ASF', () => {
+	let initiateAuthSpy;
+
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
+	beforeEach(() => {
+		initiateAuthSpy = jest
+			.spyOn(clients, 'initiateAuth')
+			.mockImplementationOnce(
+				async (): Promise<InitiateAuthCommandOutput> => ({
+					ChallengeName: 'SMS_MFA',
+					Session: '1234234232',
+					$metadata: {},
+					ChallengeParameters: {
+						CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
+						CODE_DELIVERY_DESTINATION: '*******9878',
+					},
+				})
+			);
+		// load Cognito ASF polyfill
+		window['AmazonCognitoAdvancedSecurityData'] = {
+			getData() {
+				return 'abcd';
+			},
+		};
+	});
+
+	afterEach(() => {
+		initiateAuthSpy.mockClear();
+		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+	});
+
+	test('signIn API should send UserContextData', async () => {
+		const result = await signIn({
+			username: authAPITestParams.user1.username,
+			options: {
+				serviceOptions: {
+					authFlowType: 'CUSTOM_WITHOUT_SRP',
+				},
+			},
+		});
+		expect(initiateAuthSpy).toBeCalledWith(
+			expect.objectContaining({
+				region: 'us-west-2',
+			}),
+			{
+				AuthFlow: 'CUSTOM_AUTH',
+				AuthParameters: { USERNAME: 'user1' },
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				ClientMetadata: undefined,
+				UserContextData: { EncodedData: 'abcd' },
+			}
 		);
 	});
 });

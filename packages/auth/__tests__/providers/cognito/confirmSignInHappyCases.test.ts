@@ -14,6 +14,7 @@ import {
 	CognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
+import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 
 const authConfig = {
@@ -57,6 +58,10 @@ describe('confirmSignIn API happy path cases', () => {
 
 	afterEach(() => {
 		handleChallengeNameSpy.mockClear();
+	});
+
+	afterAll(() => {
+		jest.restoreAllMocks();
 	});
 
 	test(`confirmSignIn test SMS_MFA ChallengeName.`, async () => {
@@ -257,5 +262,280 @@ describe('confirmSignIn API happy path cases', () => {
 			options
 		);
 		handleUserSRPAuthFlowSpy.mockClear();
+	});
+});
+
+describe('Cognito ASF', () => {
+	let respondToAuthChallengeSpy;
+	let handleUserSRPAuthFlowSpy;
+
+	const username = authAPITestParams.user1.username;
+	const password = authAPITestParams.user1.password;
+	beforeEach(() => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
+
+		// load Cognito ASF polyfill
+		window['AmazonCognitoAdvancedSecurityData'] = {
+			getData() {
+				return 'abcd';
+			},
+		};
+
+		respondToAuthChallengeSpy = jest
+			.spyOn(clients, 'respondToAuthChallenge')
+			.mockImplementation(
+				async (): Promise<RespondToAuthChallengeCommandOutput> => {
+					return {
+						Session: '1234234232',
+						$metadata: {},
+						ChallengeName: undefined,
+						ChallengeParameters: {},
+						AuthenticationResult: {
+							AccessToken:
+								'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
+							ExpiresIn: 1000,
+							IdToken:
+								'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
+							RefreshToken: 'qwersfsafsfssfasf',
+						},
+					};
+				}
+			);
+	});
+
+	afterEach(() => {
+		respondToAuthChallengeSpy.mockClear();
+		handleUserSRPAuthFlowSpy.mockClear();
+		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+	});
+
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
+
+	test('SMS_MFA challengeCheck UserContextData is added', async () => {
+		handleUserSRPAuthFlowSpy = jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+					ChallengeName: 'SMS_MFA',
+					Session: '1234234232',
+					$metadata: {},
+					ChallengeParameters: {
+						CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS_MFA',
+						CODE_DELIVERY_DESTINATION: 'aaa@awsamplify.com',
+					},
+				})
+			);
+		const result = await signIn({ username, password });
+
+		expect(result.isSignedIn).toBe(false);
+		expect(result.nextStep.signInStep).toBe('CONFIRM_SIGN_IN_WITH_SMS_CODE');
+		try {
+			await confirmSignIn({
+				challengeResponse: '777',
+			});
+		} catch (err) {
+			console.log(err);
+		}
+
+		expect(respondToAuthChallengeSpy).toHaveBeenCalledWith(
+			expect.objectContaining({
+				region: 'us-west-2',
+			}),
+			expect.objectContaining({
+				ChallengeName: 'SMS_MFA',
+				ChallengeResponses: { SMS_MFA_CODE: '777', USERNAME: 'user1' },
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				ClientMetadata: undefined,
+				Session: '1234234232',
+				UserContextData: { EncodedData: 'abcd' },
+			})
+		);
+	});
+
+	test('SELECT_MFA_TYPE challengeCheck UserContextData is added', async () => {
+		handleUserSRPAuthFlowSpy = jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+					ChallengeName: 'SELECT_MFA_TYPE',
+					Session: '1234234232',
+					ChallengeParameters: {
+						MFAS_CAN_CHOOSE: '["SMS_MFA","SOFTWARE_TOKEN_MFA"]',
+					},
+					$metadata: {},
+				})
+			);
+		const result = await signIn({ username, password });
+
+		expect(result.isSignedIn).toBe(false);
+		expect(result.nextStep.signInStep).toBe(
+			'CONTINUE_SIGN_IN_WITH_MFA_SELECTION'
+		);
+		try {
+			await confirmSignIn({
+				challengeResponse: 'SMS',
+			});
+		} catch (err) {
+			console.log(err);
+		}
+
+		expect(respondToAuthChallengeSpy).toHaveBeenCalledWith(
+			expect.objectContaining({
+				region: 'us-west-2',
+			}),
+			expect.objectContaining({
+				ChallengeName: 'SELECT_MFA_TYPE',
+				ChallengeResponses: {
+					ANSWER: 'SMS_MFA',
+					USERNAME: 'user1',
+				},
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				ClientMetadata: undefined,
+				Session: '1234234232',
+				UserContextData: { EncodedData: 'abcd' },
+			})
+		);
+	});
+
+	test(`confirmSignIn tests MFA_SETUP sends UserContextData`, async () => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
+		const handleUserSRPAuthflowSpy = jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+					ChallengeName: 'SOFTWARE_TOKEN_MFA',
+					Session: '1234234232',
+					$metadata: {},
+					ChallengeParameters: {},
+				})
+			);
+
+		const result = await signIn({ username, password });
+
+		expect(result.isSignedIn).toBe(false);
+		expect(result.nextStep.signInStep).toBe('CONFIRM_SIGN_IN_WITH_TOTP_CODE');
+		try {
+			await confirmSignIn({
+				challengeResponse: '123456',
+			});
+		} catch (err) {
+			console.log(err);
+		}
+
+		expect(respondToAuthChallengeSpy).toHaveBeenCalledWith(
+			expect.objectContaining({
+				region: 'us-west-2',
+			}),
+			expect.objectContaining({
+				ChallengeName: 'SOFTWARE_TOKEN_MFA',
+				ChallengeResponses: {
+					SOFTWARE_TOKEN_MFA_CODE: '123456',
+					USERNAME: 'user1',
+				},
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				ClientMetadata: undefined,
+				Session: '1234234232',
+				UserContextData: { EncodedData: 'abcd' },
+			})
+		);
+	});
+
+	test(`confirmSignIn tests NEW_PASSWORD_REQUIRED sends UserContextData`, async () => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
+		const handleUserSRPAuthflowSpy = jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+					ChallengeName: 'NEW_PASSWORD_REQUIRED',
+					Session: '1234234232',
+					$metadata: {},
+					ChallengeParameters: {},
+				})
+			);
+
+		const result = await signIn({ username, password });
+
+		expect(result.isSignedIn).toBe(false);
+		expect(result.nextStep.signInStep).toBe(
+			'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED'
+		);
+		try {
+			await confirmSignIn({
+				challengeResponse: 'password',
+			});
+		} catch (err) {
+			console.log(err);
+		}
+
+		expect(respondToAuthChallengeSpy).toHaveBeenCalledWith(
+			expect.objectContaining({
+				region: 'us-west-2',
+			}),
+			expect.objectContaining({
+				ChallengeName: 'NEW_PASSWORD_REQUIRED',
+				ChallengeResponses: {
+					NEW_PASSWORD: 'password',
+					USERNAME: 'user1',
+				},
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				ClientMetadata: undefined,
+				Session: '1234234232',
+				UserContextData: { EncodedData: 'abcd' },
+			})
+		);
+	});
+	test(`confirmSignIn tests CUSTOM_CHALLENGE sends UserContextData`, async () => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
+		const handleUserSRPAuthflowSpy = jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+					ChallengeName: 'CUSTOM_CHALLENGE',
+					Session: '1234234232',
+					$metadata: {},
+					ChallengeParameters: {},
+				})
+			);
+
+		const result = await signIn({ username, password });
+
+		expect(result.isSignedIn).toBe(false);
+		expect(result.nextStep.signInStep).toBe(
+			'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE'
+		);
+		try {
+			await confirmSignIn({
+				challengeResponse: 'secret-answer',
+			});
+		} catch (err) {
+			console.log(err);
+		}
+
+		expect(respondToAuthChallengeSpy).toHaveBeenCalledWith(
+			expect.objectContaining({
+				region: 'us-west-2',
+			}),
+			expect.objectContaining({
+				ChallengeName: 'CUSTOM_CHALLENGE',
+				ChallengeResponses: {
+					ANSWER: 'secret-answer',
+					USERNAME: 'user1',
+				},
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				ClientMetadata: undefined,
+				Session: '1234234232',
+				UserContextData: { EncodedData: 'abcd' },
+			})
+		);
 	});
 });

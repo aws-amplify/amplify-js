@@ -13,6 +13,7 @@ import { confirmForgotPassword } from '../utils/clients/CognitoIdentityProvider'
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { ConfirmForgotPasswordException } from '../../cognito/types/errors';
 import { getAuthUserAgentValue } from '../../../utils';
+import { getUserContextData } from '../utils/userContextData';
 /**
  * Confirms the new password and verification code to reset the password.
  *
@@ -28,7 +29,7 @@ export async function confirmResetPassword(
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-
+	const { userPoolClientId, userPoolId } = authConfig;
 	const { username, newPassword } = input;
 	assertValidationError(
 		!!username,
@@ -46,6 +47,12 @@ export async function confirmResetPassword(
 	);
 	const metadata = input.options?.clientMetadata;
 
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	await confirmForgotPassword(
 		{
 			region: getRegion(authConfig.userPoolId),
@@ -57,6 +64,7 @@ export async function confirmResetPassword(
 			Password: newPassword,
 			ClientMetadata: metadata,
 			ClientId: authConfig.userPoolClientId,
+			UserContextData: UserContextData,
 		}
 	);
 }

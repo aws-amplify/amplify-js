@@ -14,6 +14,7 @@ import {
 	getSignInResult,
 	getSignInResultFromError,
 	getNewDeviceMetatada,
+	retryOnResourceNotFoundException,
 } from '../utils/signInHelpers';
 import {
 	InitiateAuthException,
@@ -68,11 +69,10 @@ export async function signInWithCustomSRPAuth(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleCustomSRPAuthFlow(
+		} = await retryOnResourceNotFoundException(
+			handleCustomSRPAuthFlow,
+			[username, password, metadata, authConfig, tokenOrchestrator],
 			username,
-			password,
-			metadata,
-			authConfig,
 			tokenOrchestrator
 		);
 

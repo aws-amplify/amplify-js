@@ -35,6 +35,10 @@ describe('ResetPassword API happy path cases', () => {
 		resetPasswordSpy.mockClear();
 	});
 
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
+
 	test('ResetPassword API should call the UserPoolClient and should return a ResetPasswordResult', async () => {
 		const result = await resetPassword(authAPITestParams.resetPasswordRequest);
 		expect(result).toEqual(authAPITestParams.resetPasswordResult);
@@ -88,5 +92,52 @@ describe('ResetPassword API error path cases:', () => {
 				ForgotPasswordException.InvalidParameterException
 			);
 		}
+	});
+});
+
+describe('Cognito ASF', () => {
+	let resetPasswordSpy;
+
+	beforeEach(() => {
+		resetPasswordSpy = jest
+			.spyOn(resetPasswordClient, 'forgotPassword')
+			.mockImplementationOnce(async () => {
+				return authAPITestParams.resetPasswordHttpCallResult as ForgotPasswordCommandOutput;
+			});
+		// load Cognito ASF polyfill
+		window['AmazonCognitoAdvancedSecurityData'] = {
+			getData() {
+				return 'abcd';
+			},
+		};
+	});
+
+	afterEach(() => {
+		resetPasswordSpy.mockClear();
+		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+	});
+
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
+
+	test('ResetPassword API should send UserContextData', async () => {
+		await resetPassword({
+			username: 'username',
+			options: {
+				serviceOptions: {
+					clientMetadata: { foo: 'foo' },
+				},
+			},
+		});
+		expect(resetPasswordSpy).toHaveBeenCalledWith(
+			expect.objectContaining({ region: 'us-west-2' }),
+			expect.objectContaining({
+				Username: 'username',
+				ClientMetadata: { foo: 'foo' },
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				UserContextData: { EncodedData: 'abcd' },
+			})
+		);
 	});
 });

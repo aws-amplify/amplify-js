@@ -252,31 +252,31 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ record }",
-			"limit": "21.10 kB"
+			"limit": "21.69 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
 			"path": "./lib-esm/analytics/kinesis/index.js",
 			"import": "{ record }",
-			"limit": "46.40 kB"
+			"limit": "46.96 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis Firehose)",
 			"path": "./lib-esm/analytics/kinesis-firehose/index.js",
 			"import": "{ record }",
-			"limit": "42.73 kB"
+			"limit": "43.31 kB"
 		},
 		{
 			"name": "[Analytics] record (Personalize)",
 			"path": "./lib-esm/analytics/personalize/index.js",
 			"import": "{ record }",
-			"limit": "47.0 kB"
+			"limit": "47.59 kB"
 		},
 		{
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ identifyUser }",
-			"limit": "19.30 kB"
+			"limit": "19.79 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -300,163 +300,163 @@
 			"name": "[API] REST API handlers",
 			"path": "./lib-esm/api/index.js",
 			"import": "{ get, post, put, del, patch, head, isCancelError }",
-			"limit": "13.7 kB"
+			"limit": "14.2 kB"
 		},
 		{
 			"name": "[Auth] signUp (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signUp }",
-			"limit": "11.50 kB"
+			"limit": "30.52 kB"
 		},
 		{
 			"name": "[Auth] resetPassword (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ resetPassword }",
-			"limit": "11.30 kB"
+			"limit": "11.77 kB"
 		},
 		{
 			"name": "[Auth] confirmResetPassword (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmResetPassword }",
-			"limit": "11.05 kB"
+			"limit": "11.70 kB"
 		},
 		{
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "29.17 kB"
+			"limit": "29.64 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ resendSignUpCode }",
-			"limit": "11.08 kB"
+			"limit": "11.73 kB"
 		},
 		{
 			"name": "[Auth] confirmSignUp (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignUp }",
-			"limit": "11.30 kB"
+			"limit": "30.22 kB"
 		},
 		{
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignIn }",
-			"limit": "29.05 kB"
+			"limit": "29.65 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ updateMFAPreference }",
-			"limit": "10.22 kB"
+			"limit": "10.82 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ fetchMFAPreference }",
-			"limit": "10.23 kB"
+			"limit": "10.85 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "11.16 kB"
+			"limit": "11.74 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ updatePassword }",
-			"limit": "11.19 kB"
+			"limit": "11.73 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ setUpTOTP }",
-			"limit": "12.08 kB"
+			"limit": "12.76 kB"
 		},
 		{
 			"name": "[Auth] updateUserAttributes (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ updateUserAttributes }",
-			"limit": "10.50 kB"
+			"limit": "11.0 kB"
 		},
 		{
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ getCurrentUser }",
-			"limit": "5.30 kB"
+			"limit": "5.68 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmUserAttribute }",
-			"limit": "11.10 kB"
+			"limit": "11.76 kB"
 		},
 		{
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect }",
-			"limit": "22.47 kB"
+			"limit": "22.94 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ fetchUserAttributes }",
-			"limit": "10.19 kB"
+			"limit": "10.85 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "31.35 kB"
+			"limit": "31.92 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "23.04 kB"
+			"limit": "23.42 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ copy }",
-			"limit": "16.98 kB"
+			"limit": "17.95 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ downloadData }",
-			"limit": "17.73 kB"
+			"limit": "18.67 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ getProperties }",
-			"limit": "17.02 kB"
+			"limit": "17.6 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ getUrl }",
-			"limit": "18.46 kB"
+			"limit": "19.03 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ list }",
-			"limit": "17.53 kB"
+			"limit": "18.12 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ remove }",
-			"limit": "16.85 kB"
+			"limit": "17.43 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ uploadData }",
-			"limit": "23.66 kB"
+			"limit": "24.22 kB"
 		}
 	],
 	"jest": {
