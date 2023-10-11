@@ -16,6 +16,10 @@ import {
 	TranslateTextCommand,
 } from '@aws-sdk/client-translate';
 import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
+import {
+	PredictionsValidationErrorCode,
+	validationErrorMap,
+} from '../../src/errors/types/validation';
 
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
@@ -94,16 +98,18 @@ const identityId = 'identityId';
 
 const options = {
 	translateText: {
-		connection: 'sdk',
 		region: 'us-west-2',
-		sourceLanguage: 'en',
-		targetLanguage: 'es',
+		defaults: {
+			sourceLanguage: 'en',
+			targetLanguage: 'es',
+		},
 	},
 	speechGenerator: {
-		connection: 'sdk',
 		region: 'us-west-2',
-		language: 'en',
-		voiceId: 'Aditi',
+		defaults: {
+			language: 'en',
+			voiceId: 'Aditi',
+		},
 	},
 	transcription: {
 		region: 'us-west-2',
@@ -162,7 +168,7 @@ describe('Predictions convert provider test', () => {
 				},
 			});
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
-			return expect(
+			expect(
 				predictionsProvider.convert(validTranslateTextInput)
 			).resolves.toMatchObject({ language: 'es', text: 'translatedText' });
 		});
@@ -174,9 +180,14 @@ describe('Predictions convert provider test', () => {
 				},
 			});
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
-			return expect(
+
+			expect(
 				predictionsProvider.convert(validTranslateTextInput)
-			).rejects.toMatch('No credentials');
+			).rejects.toThrow(
+				expect.objectContaining(
+					validationErrorMap[PredictionsValidationErrorCode.NoCredentials]
+				)
+			);
 		});
 		test('error case credentials exist but service fails', () => {
 			mockFetchAuthSession.mockResolvedValue({
@@ -192,7 +203,7 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(TranslateClient.prototype, 'send').mockImplementation(() => {
 				return Promise.reject('error');
 			});
-			return expect(
+			expect(
 				predictionsProvider.convert(validTranslateTextInput)
 			).rejects.toMatch('error');
 		});
@@ -217,7 +228,7 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
 				return 'dummyURL';
 			});
-			return expect(
+			expect(
 				predictionsProvider.convert(validTextToSpeechInput)
 			).resolves.toMatchObject({
 				speech: {
@@ -235,9 +246,13 @@ describe('Predictions convert provider test', () => {
 				},
 			});
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
-			return expect(
+			expect(
 				predictionsProvider.convert(validTextToSpeechInput)
-			).rejects.toMatch('No credentials');
+			).rejects.toThrow(
+				expect.objectContaining(
+					validationErrorMap[PredictionsValidationErrorCode.NoCredentials]
+				)
+			);
 		});
 		test('error case credentials exist but service fails', () => {
 			mockFetchAuthSession.mockResolvedValue({
@@ -253,7 +268,7 @@ describe('Predictions convert provider test', () => {
 			jest.spyOn(PollyClient.prototype, 'send').mockImplementation(() => {
 				return Promise.reject('error');
 			});
-			return expect(
+			expect(
 				predictionsProvider.convert(validTextToSpeechInput)
 			).rejects.toMatch('error');
 		});
@@ -290,7 +305,11 @@ describe('Predictions convert provider test', () => {
 
 			return expect(
 				predictionsProvider.convert(validSpeechToTextInput)
-			).rejects.toMatch('region not configured for transcription');
+			).rejects.toThrow(
+				expect.objectContaining(
+					validationErrorMap[PredictionsValidationErrorCode.NoRegion]
+				)
+			);
 		});
 		test('Error languageCode not configured ', () => {
 			mockFetchAuthSession.mockResolvedValue({
@@ -315,10 +334,12 @@ describe('Predictions convert provider test', () => {
 
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 
-			return expect(
+			expect(
 				predictionsProvider.convert(validSpeechToTextInput)
-			).rejects.toMatch(
-				'languageCode not configured or provided for transcription'
+			).rejects.toThrow(
+				expect.objectContaining(
+					validationErrorMap[PredictionsValidationErrorCode.NoLanguage]
+				)
 			);
 		});
 		test('Happy case ', () => {
@@ -339,7 +360,7 @@ describe('Predictions convert provider test', () => {
 
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 
-			return expect(
+			expect(
 				predictionsProvider.convert(validSpeechToTextInput)
 			).resolves.toMatchObject({
 				transcription: {

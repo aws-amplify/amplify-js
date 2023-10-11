@@ -16,6 +16,7 @@ import {
 	TextSentiment,
 	TextSyntax,
 	KeyPhrases,
+	InterpretTextOthers,
 } from '../types';
 import {
 	ComprehendClient,
@@ -25,6 +26,8 @@ import {
 	DetectKeyPhrasesCommand,
 	DetectSentimentCommand,
 } from '@aws-sdk/client-comprehend';
+import { assertValidationError } from '../errors/utils/assertValidationError';
+import { PredictionsValidationErrorCode } from '../errors/types/validation';
 
 export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredictionsProvider {
 	private comprehendClient: ComprehendClient;
@@ -37,117 +40,113 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 		return 'AmazonAIInterpretPredictionsProvider';
 	}
 
-	interpretText(input: InterpretTextInput): Promise<InterpretTextOutput> {
-		return new Promise(async (res, rej) => {
-			const { credentials } = await fetchAuthSession();
-			if (!credentials) return rej('No credentials');
-			const {
-				interpretText: {
-					region = '',
-					defaults: { type: interpretTypeConfig = '' } = {},
-				} = {},
-			} = Amplify.getConfig().Predictions?.interpret || {};
-			const {
-				text: {
-					source: { text = '' } = {},
-					type: interpretType = interpretTypeConfig,
-				} = {},
-			} = ({} = input);
+	async interpretText(input: InterpretTextInput): Promise<InterpretTextOutput> {
+		const { credentials } = await fetchAuthSession();
+		assertValidationError(
+			!!credentials,
+			PredictionsValidationErrorCode.NoCredentials
+		);
 
-			const { text: { source: { language = undefined } = {} } = {} } = ({} =
-				input as any); // language is only required for specific interpret types
+		const { interpretText = {} } =
+			Amplify.getConfig().Predictions?.interpret ?? {};
+		const { region = '', defaults = {} } = interpretText;
+		const { type: defaultType = '' } = defaults;
 
-			this.comprehendClient = new ComprehendClient({
-				credentials,
-				region,
-				customUserAgent: getAmplifyUserAgentObject({
-					category: Category.Predictions,
-					action: PredictionsAction.Interpret,
-				}),
-			});
+		const { text: textSource } = input;
+		const { source, type = defaultType } = textSource;
+		const { text, language } = (source as any) ?? {};
 
-			const doAll = interpretType === InterpretTextCategories.ALL;
-
-			let languagePromise: Promise<string>;
-			if (doAll || interpretType === InterpretTextCategories.LANGUAGE) {
-				const languageDetectionParams = {
-					Text: text,
-				};
-				languagePromise = this.detectLanguage(languageDetectionParams);
-			}
-
-			let entitiesPromise: Promise<Array<TextEntities>>;
-			if (doAll || interpretType === InterpretTextCategories.ENTITIES) {
-				const LanguageCode = language || (await languagePromise);
-				if (!LanguageCode) {
-					return rej('language code is required on source for this selection');
-				}
-				const entitiesDetectionParams = {
-					Text: text,
-					LanguageCode,
-				};
-				entitiesPromise = this.detectEntities(entitiesDetectionParams);
-			}
-
-			let sentimentPromise: Promise<TextSentiment>;
-			if (doAll || interpretType === InterpretTextCategories.SENTIMENT) {
-				const LanguageCode = language || (await languagePromise);
-				if (!LanguageCode) {
-					return rej('language code is required on source for this selection');
-				}
-				const sentimentParams = {
-					Text: text,
-					LanguageCode,
-				};
-				sentimentPromise = this.detectSentiment(sentimentParams);
-			}
-
-			let syntaxPromise: Promise<Array<TextSyntax>>;
-			if (doAll || interpretType === InterpretTextCategories.SYNTAX) {
-				const LanguageCode = language || (await languagePromise);
-				if (!LanguageCode) {
-					return rej('language code is required on source for this selection');
-				}
-				const syntaxParams = {
-					Text: text,
-					LanguageCode,
-				};
-				syntaxPromise = this.detectSyntax(syntaxParams);
-			}
-
-			let keyPhrasesPromise: Promise<Array<KeyPhrases>>;
-			if (doAll || interpretType === InterpretTextCategories.KEY_PHRASES) {
-				const LanguageCode = language || (await languagePromise);
-				if (!LanguageCode) {
-					return rej('language code is required on source for this selection');
-				}
-				const keyPhrasesParams = {
-					Text: text,
-					LanguageCode,
-				};
-				keyPhrasesPromise = this.detectKeyPhrases(keyPhrasesParams);
-			}
-			try {
-				const results = await Promise.all([
-					languagePromise,
-					entitiesPromise,
-					sentimentPromise,
-					syntaxPromise,
-					keyPhrasesPromise,
-				]);
-				res({
-					textInterpretation: {
-						keyPhrases: results[4] || [],
-						language: results[0] || '',
-						sentiment: results[2],
-						syntax: <TextSyntax[]>results[3] || [],
-						textEntities: <TextEntities[]>results[1] || [],
-					},
-				});
-			} catch (err) {
-				rej(err);
-			}
+		this.comprehendClient = new ComprehendClient({
+			credentials,
+			region,
+			customUserAgent: getAmplifyUserAgentObject({
+				category: Category.Predictions,
+				action: PredictionsAction.Interpret,
+			}),
 		});
+
+		const doAll = type === InterpretTextCategories.ALL;
+
+		let languagePromise: Promise<string>;
+		if (doAll || type === InterpretTextCategories.LANGUAGE) {
+			const languageDetectionParams = {
+				Text: text,
+			};
+			languagePromise = this.detectLanguage(languageDetectionParams);
+		}
+
+		let entitiesPromise: Promise<Array<TextEntities>>;
+		if (doAll || type === InterpretTextCategories.ENTITIES) {
+			const languageCode = language || (await languagePromise);
+			assertValidationError(
+				!!languageCode,
+				PredictionsValidationErrorCode.NoLanguage
+			);
+			const entitiesDetectionParams = {
+				Text: text,
+				LanguageCode: languageCode,
+			};
+			entitiesPromise = this.detectEntities(entitiesDetectionParams);
+		}
+
+		let sentimentPromise: Promise<TextSentiment>;
+		if (doAll || type === InterpretTextCategories.SENTIMENT) {
+			const languageCode = language || (await languagePromise);
+			assertValidationError(
+				!!languageCode,
+				PredictionsValidationErrorCode.NoLanguage
+			);
+			const sentimentParams = {
+				Text: text,
+				LanguageCode: languageCode,
+			};
+			sentimentPromise = this.detectSentiment(sentimentParams);
+		}
+
+		let syntaxPromise: Promise<Array<TextSyntax>>;
+		if (doAll || type === InterpretTextCategories.SYNTAX) {
+			const languageCode = language || (await languagePromise);
+			assertValidationError(
+				!!languageCode,
+				PredictionsValidationErrorCode.NoLanguage
+			);
+			const syntaxParams = {
+				Text: text,
+				LanguageCode: languageCode,
+			};
+			syntaxPromise = this.detectSyntax(syntaxParams);
+		}
+
+		let keyPhrasesPromise: Promise<Array<KeyPhrases>>;
+		if (doAll || type === InterpretTextCategories.KEY_PHRASES) {
+			const languageCode = language || (await languagePromise);
+			assertValidationError(
+				!!languageCode,
+				PredictionsValidationErrorCode.NoLanguage
+			);
+
+			const keyPhrasesParams = {
+				Text: text,
+				LanguageCode: languageCode,
+			};
+			keyPhrasesPromise = this.detectKeyPhrases(keyPhrasesParams);
+		}
+		const results = await Promise.all([
+			languagePromise,
+			entitiesPromise,
+			sentimentPromise,
+			syntaxPromise,
+			keyPhrasesPromise,
+		]);
+		return {
+			textInterpretation: {
+				keyPhrases: results[4] || [],
+				language: results[0] || '',
+				sentiment: results[2],
+				syntax: <TextSyntax[]>results[3] || [],
+				textEntities: <TextEntities[]>results[1] || [],
+			},
+		};
 	}
 
 	private async detectKeyPhrases(params): Promise<Array<KeyPhrases>> {
@@ -160,12 +159,12 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 			});
 		} catch (err) {
 			if (err.code === 'AccessDeniedException') {
-				Promise.reject(
+				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
 						'amplify predictions add'
 				);
 			} else {
-				Promise.reject(err.message);
+				throw err;
 			}
 		}
 	}
@@ -178,12 +177,12 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 			return this.serializeSyntaxFromComprehend(SyntaxTokens);
 		} catch (err) {
 			if (err.code === 'AccessDeniedException') {
-				Promise.reject(
+				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
 						'amplify predictions add'
 				);
 			} else {
-				Promise.reject(err.message);
+				throw err;
 			}
 		}
 	}
@@ -216,12 +215,12 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 			return { predominant, positive, negative, neutral, mixed };
 		} catch (err) {
 			if (err.code === 'AccessDeniedException') {
-				Promise.reject(
+				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
 						'amplify predictions add'
 				);
 			} else {
-				Promise.reject(err.message);
+				throw err;
 			}
 		}
 	}
@@ -234,12 +233,12 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 			return this.serializeEntitiesFromComprehend(Entities);
 		} catch (err) {
 			if (err.code === 'AccessDeniedException') {
-				Promise.reject(
+				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
 						'amplify predictions add'
 				);
 			} else {
-				Promise.reject(err.message);
+				throw err;
 			}
 		}
 	}
@@ -263,18 +262,20 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 				detectDominantLanguageCommand
 			);
 			const { Languages: [{ LanguageCode }] = [{}] } = ({} = data || {});
-			if (!LanguageCode) {
-				Promise.reject('Language not detected');
-			}
-			return data.Languages[0].LanguageCode;
+			assertValidationError(
+				!!LanguageCode,
+				PredictionsValidationErrorCode.NoLanguage
+			);
+
+			return LanguageCode;
 		} catch (err) {
 			if (err.code === 'AccessDeniedException') {
-				Promise.reject(
+				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
 						'amplify predictions add'
 				);
 			} else {
-				Promise.reject(err.message);
+				throw err;
 			}
 		}
 	}
