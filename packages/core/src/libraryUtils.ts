@@ -29,7 +29,7 @@ export {
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
 export { isTokenExpired } from './singleton/Auth';
-export { APIAuthMode, DocumentType } from './singleton/API/types';
+export { GraphQLAuthMode, DocumentType } from './singleton/API/types';
 export { Signer } from './Signer';
 export {
 	JWT,
@@ -44,7 +44,6 @@ export {
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 
 // Platform & user-agent utilities
-export { ClientDevice } from './ClientDevice';
 export {
 	Platform,
 	getAmplifyUserAgentObject,
