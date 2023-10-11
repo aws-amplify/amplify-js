@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { ConfirmResetPasswordInput } from '../types';
@@ -10,6 +13,7 @@ import { confirmForgotPassword } from '../utils/clients/CognitoIdentityProvider'
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { ConfirmForgotPasswordException } from '../../cognito/types/errors';
 import { getAuthUserAgentValue } from '../../../utils';
+import { getUserContextData } from '../utils/advanceSecurity';
 /**
  * Confirms the new password and verification code to reset the password.
  *
@@ -25,7 +29,7 @@ export async function confirmResetPassword(
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-
+	const { userPoolClientId, userPoolId } = authConfig;
 	const { username, newPassword } = input;
 	assertValidationError(
 		!!username,
@@ -43,10 +47,16 @@ export async function confirmResetPassword(
 	);
 	const metadata = input.options?.serviceOptions?.clientMetadata;
 
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	await confirmForgotPassword(
-		{ 
-			region: getRegion(authConfig.userPoolId), 
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmResetPassword)
+		{
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmResetPassword),
 		},
 		{
 			Username: username,
@@ -54,6 +64,7 @@ export async function confirmResetPassword(
 			Password: newPassword,
 			ClientMetadata: metadata,
 			ClientId: authConfig.userPoolClientId,
+			UserContextData: UserContextData,
 		}
 	);
 }

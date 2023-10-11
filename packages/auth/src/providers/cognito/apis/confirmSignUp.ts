@@ -20,6 +20,7 @@ import {
 	setAutoSignInStarted,
 } from '../utils/signUpHelpers';
 import { getAuthUserAgentValue } from '../../../utils';
+import { getUserContextData } from '../utils/advanceSecurity';
 
 /**
  * Confirms a new user account.
@@ -39,6 +40,7 @@ export async function confirmSignUp(
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
+	const { userPoolId, userPoolClientId } = authConfig;
 	const clientMetadata = options?.serviceOptions?.clientMetadata;
 	assertValidationError(
 		!!username,
@@ -48,6 +50,12 @@ export async function confirmSignUp(
 		!!confirmationCode,
 		AuthValidationErrorCode.EmptyConfirmSignUpCode
 	);
+
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
 
 	await confirmSignUpClient(
 		{
@@ -60,7 +68,7 @@ export async function confirmSignUp(
 			ClientMetadata: clientMetadata,
 			ForceAliasCreation: options?.serviceOptions?.forceAliasCreation,
 			ClientId: authConfig.userPoolClientId,
-			// TODO: handle UserContextData
+			UserContextData,
 		}
 	);
 
