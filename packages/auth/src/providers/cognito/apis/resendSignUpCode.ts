@@ -14,7 +14,7 @@ import { ResendSignUpCodeInput, ResendSignUpCodeOutput } from '../types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { resendConfirmationCode } from '../utils/clients/CognitoIdentityProvider';
 import { getAuthUserAgentValue } from '../../../utils';
-import { getUserContextData } from '../utils/advanceSecurity';
+import { getUserContextData } from '../utils/userContextData';
 
 /**
  * Resend the confirmation code while signing up

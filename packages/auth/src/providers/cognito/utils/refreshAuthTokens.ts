@@ -11,7 +11,7 @@ import { initiateAuth } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokensWithRefreshToken } from '../utils/types';
 import { AuthError } from '../../../errors/AuthError';
-import { getUserContextData } from './advanceSecurity';
+import { getUserContextData } from './userContextData';
 
 export const refreshAuthTokens: TokenRefresher = async ({
 	tokens,

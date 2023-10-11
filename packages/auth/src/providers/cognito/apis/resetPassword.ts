@@ -15,7 +15,7 @@ import { forgotPassword } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { ForgotPasswordException } from '../../cognito/types/errors';
 import { getAuthUserAgentValue } from '../../../utils';
-import { getUserContextData } from '../utils/advanceSecurity';
+import { getUserContextData } from '../utils/userContextData';
 
 /**
  * Resets a user's password.

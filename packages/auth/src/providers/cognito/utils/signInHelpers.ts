@@ -59,7 +59,7 @@ import { getCurrentUser } from '../apis/getCurrentUser';
 import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
 import { assertDeviceMetadata } from './types';
 import { getAuthUserAgentValue } from '../../../utils';
-import { getUserContextData } from './advanceSecurity';
+import { getUserContextData } from './userContextData';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 

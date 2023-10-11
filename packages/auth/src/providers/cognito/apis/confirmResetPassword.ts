@@ -13,7 +13,7 @@ import { confirmForgotPassword } from '../utils/clients/CognitoIdentityProvider'
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { ConfirmForgotPasswordException } from '../../cognito/types/errors';
 import { getAuthUserAgentValue } from '../../../utils';
-import { getUserContextData } from '../utils/advanceSecurity';
+import { getUserContextData } from '../utils/userContextData';
 /**
  * Confirms the new password and verification code to reset the password.
  *

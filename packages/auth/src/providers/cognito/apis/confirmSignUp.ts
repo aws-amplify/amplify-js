@@ -20,7 +20,7 @@ import {
 	setAutoSignInStarted,
 } from '../utils/signUpHelpers';
 import { getAuthUserAgentValue } from '../../../utils';
-import { getUserContextData } from '../utils/advanceSecurity';
+import { getUserContextData } from '../utils/userContextData';
 
 /**
  * Confirms a new user account.
