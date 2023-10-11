@@ -163,7 +163,7 @@ describe('signIn API happy path cases', () => {
 describe('Cognito ASF', () => {
 	let initiateAuthSpy;
 
-	afterAll(() => {
+	beforeAll(() => {
 		jest.restoreAllMocks();
 	});
 	beforeEach(() => {
