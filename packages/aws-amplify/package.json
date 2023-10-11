@@ -232,7 +232,8 @@
 		"storage",
 		"datastore",
 		"in-app-messaging",
-		"push-notifications"
+		"push-notifications",
+		"utils"
 	],
 	"dependencies": {
 		"@aws-amplify/api": "6.0.0",
