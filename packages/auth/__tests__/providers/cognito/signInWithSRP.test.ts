@@ -11,6 +11,8 @@ import {
 	CognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
+import { AuthError } from '../../../src';
+import { createKeysForAuthStorage } from '../../../src/providers/cognito/tokenProvider/TokenStore';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 
 const authConfig = {
@@ -25,13 +27,37 @@ Amplify.configure({
 	Auth: authConfig,
 });
 
+const mockedDeviceMetadata = {
+	deviceKey: 'mockedKey',
+	deviceGrouKey: 'mockedKey',
+	randomPasswordKey: 'mockedKey',
+};
+
+const lastAuthUser = 'lastAuthUser';
+const authKeys = createKeysForAuthStorage(
+	'CognitoIdentityServiceProvider',
+	`${authConfig.Cognito.userPoolClientId}.${lastAuthUser}`
+);
+
+function setDeviceKeys() {
+	localStorage.setItem(authKeys.deviceKey, mockedDeviceMetadata.deviceKey);
+	localStorage.setItem(
+		authKeys.deviceGroupKey,
+		mockedDeviceMetadata.deviceGrouKey
+	);
+	localStorage.setItem(
+		authKeys.randomPasswordKey,
+		mockedDeviceMetadata.randomPasswordKey
+	);
+}
+
 describe('signIn API happy path cases', () => {
 	let handleUserSRPAuthflowSpy;
 
 	beforeEach(() => {
 		handleUserSRPAuthflowSpy = jest
 			.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
-			.mockImplementationOnce(
+			.mockImplementation(
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
 					authAPITestParams.RespondToAuthChallengeCommandOutput
 			);
@@ -39,6 +65,47 @@ describe('signIn API happy path cases', () => {
 
 	afterEach(() => {
 		handleUserSRPAuthflowSpy.mockClear();
+	});
+
+	test('signIn should retry on ResourceNotFoundException and delete device keys', async () => {
+		setDeviceKeys();
+		handleUserSRPAuthflowSpy = jest
+			.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementation(
+				async (): Promise<RespondToAuthChallengeCommandOutput> => {
+					const deviceKeys = await tokenOrchestrator.getDeviceMetadata(
+						lastAuthUser
+					);
+					if (deviceKeys) {
+						throw new AuthError({
+							name: 'ResourceNotFoundException',
+							message: 'Device does not exist.',
+						});
+					}
+
+					return {
+						ChallengeName: 'CUSTOM_CHALLENGE',
+						AuthenticationResult: undefined,
+						Session: 'aaabbbcccddd',
+						$metadata: {},
+					};
+				}
+			);
+
+		const result = await signIn({
+			username: lastAuthUser,
+			password: 'XXXXXXXX',
+		});
+
+		expect(result).toEqual({
+			isSignedIn: false,
+			nextStep: {
+				signInStep: 'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
+				additionalInfo: undefined,
+			},
+		});
+		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(2);
+		expect(await tokenOrchestrator.getDeviceMetadata(lastAuthUser)).toBeNull();
 	});
 
 	test('signIn API invoked with authFlowType should return a SignInResult', async () => {
@@ -96,7 +163,7 @@ describe('signIn API happy path cases', () => {
 describe('Cognito ASF', () => {
 	let initiateAuthSpy;
 
-	afterAll(() => {
+	beforeAll(() => {
 		jest.restoreAllMocks();
 	});
 	beforeEach(() => {

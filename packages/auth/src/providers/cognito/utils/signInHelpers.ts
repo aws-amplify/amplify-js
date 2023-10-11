@@ -21,8 +21,6 @@ import {
 	AuthAdditionalInfo,
 	AuthSignInOutput,
 	AuthDeliveryMedium,
-	AuthSignUpOutput,
-	AuthSignInInput,
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
@@ -71,7 +69,6 @@ type HandleAuthChallengeRequest = {
 	deviceName?: string;
 	requiredAttributes?: AuthUserAttributes;
 	config: CognitoUserPoolConfig;
-	tokenOrchestrator?: AuthTokenOrchestrator;
 };
 
 type HandleDeviceSRPInput = {
@@ -89,7 +86,9 @@ export async function handleCustomChallenge({
 	username,
 	config,
 	tokenOrchestrator,
-}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
+}: HandleAuthChallengeRequest & {
+	tokenOrchestrator: AuthTokenOrchestrator;
+}): Promise<RespondToAuthChallengeCommandOutput> {
 	const { userPoolId, userPoolClientId } = config;
 	const challengeResponses: Record<string, string> = {
 		USERNAME: username,
@@ -124,7 +123,7 @@ export async function handleCustomChallenge({
 		jsonReq
 	);
 
-	if (response.ChallengeName === 'DEVICE_SRP_AUTH')
+	if (response.ChallengeName === 'DEVICE_SRP_AUTH') {
 		return handleDeviceSRPAuth({
 			username,
 			config,
@@ -132,6 +131,8 @@ export async function handleCustomChallenge({
 			session: response.Session,
 			tokenOrchestrator,
 		});
+	}
+
 	return response;
 }
 
@@ -356,7 +357,7 @@ export async function handleUserPasswordAuthFlow(
 		ClientId: userPoolClientId,
 		UserContextData,
 	};
-
+	// TODO: add the retry here
 	const response = await initiateAuth(
 		{
 			region: getRegion(userPoolId),
@@ -420,13 +421,18 @@ export async function handleUserSRPAuthFlow(
 	);
 	const { ChallengeParameters: challengeParameters, Session: session } = resp;
 
-	return handlePasswordVerifierChallenge(
-		password,
-		challengeParameters as ChallengeParameters,
-		clientMetadata,
-		session,
-		authenticationHelper,
-		config,
+	return retryOnResourceNotFoundException(
+		handlePasswordVerifierChallenge,
+		[
+			password,
+			challengeParameters as ChallengeParameters,
+			clientMetadata,
+			session,
+			authenticationHelper,
+			config,
+			tokenOrchestrator,
+		],
+		username,
 		tokenOrchestrator
 	);
 }
@@ -526,13 +532,18 @@ export async function handleCustomSRPAuthFlow(
 			jsonReq
 		);
 
-	return handlePasswordVerifierChallenge(
-		password,
-		challengeParameters as ChallengeParameters,
-		clientMetadata,
-		session,
-		authenticationHelper,
-		config,
+	return retryOnResourceNotFoundException(
+		handlePasswordVerifierChallenge,
+		[
+			password,
+			challengeParameters as ChallengeParameters,
+			clientMetadata,
+			session,
+			authenticationHelper,
+			config,
+			tokenOrchestrator,
+		],
+		username,
 		tokenOrchestrator
 	);
 }
@@ -921,14 +932,21 @@ export async function handleChallengeName(
 				config,
 			});
 		case 'CUSTOM_CHALLENGE':
-			return handleCustomChallenge({
-				challengeResponse,
-				clientMetadata,
-				session,
+			return retryOnResourceNotFoundException(
+				handleCustomChallenge,
+				[
+					{
+						challengeResponse,
+						clientMetadata,
+						session,
+						username,
+						config,
+						tokenOrchestrator,
+					},
+				],
 				username,
-				config,
-				tokenOrchestrator,
-			});
+				tokenOrchestrator
+			);
 		case 'SOFTWARE_TOKEN_MFA':
 			return handleSoftwareTokenMFAChallenge({
 				challengeResponse,
@@ -1051,5 +1069,34 @@ export async function getNewDeviceMetatada(
 	} catch (error) {
 		// TODO: log error here
 		return undefined;
+	}
+}
+
+/**
+ * It will retry the function if the error is a `ResourceNotFoundException` and
+ * will clean the device keys stored in the storage mechanism.
+ *
+ */
+export async function retryOnResourceNotFoundException<
+	F extends (...args: any[]) => any
+>(
+	func: F,
+	args: Parameters<F>,
+	username: string,
+	tokenOrchestrator: AuthTokenOrchestrator
+): Promise<ReturnType<F>> {
+	try {
+		return await func(...args);
+	} catch (error) {
+		if (
+			error instanceof AuthError &&
+			error.name === 'ResourceNotFoundException' &&
+			error.message.includes('Device does not exist.')
+		) {
+			await tokenOrchestrator.clearDeviceMetadata(username);
+
+			return await func(...args);
+		}
+		throw error;
 	}
 }
