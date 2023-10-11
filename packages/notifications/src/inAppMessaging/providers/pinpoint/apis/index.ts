@@ -5,3 +5,4 @@ export { identifyUser } from './identifyUser';
 export { syncMessages } from './syncMessages';
 export { dispatchEvent } from './dispatchEvent';
 export { setConflictHandler } from './setConflictHandler';
+export { initializeInAppMessaging } from './initializeInAppMessaging';

@@ -6,4 +6,5 @@ export {
 	syncMessages,
 	dispatchEvent,
 	setConflictHandler,
+	initializeInAppMessaging,
 } from './pinpoint/apis';

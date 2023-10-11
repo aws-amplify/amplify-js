@@ -19,12 +19,13 @@ import {
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
 import { defaultStorage } from '@aws-amplify/core';
+import { SessionState } from '../../../sessionTracker';
 
 const MESSAGE_DAILY_COUNT_KEY = 'pinpointProvider_inAppMessages_dailyCount';
 const MESSAGE_TOTAL_COUNT_KEY = 'pinpointProvider_inAppMessages_totalCount';
 const logger = new ConsoleLogger('InAppMessaging.processInAppMessages');
 
-const sessionMessageCountMap: InAppMessageCountMap = {};
+let sessionMessageCountMap: InAppMessageCountMap = {};
 
 export async function processInAppMessages(
 	messages: PinpointInAppMessage[],
@@ -66,6 +67,23 @@ export async function processInAppMessages(
 		}
 	}
 	return normalizeMessages(acc);
+}
+
+export function sessionStateChangeHandler(state: SessionState): void {
+	if (state === 'started') {
+		console.log('Resetting the count');
+		// reset all session counts
+		sessionMessageCountMap = {};
+	}
+}
+
+export async function incrementMessageCounts(messageId: string): Promise<void> {
+	const { sessionCount, dailyCount, totalCount } = await getMessageCounts(
+		messageId
+	);
+	setSessionCount(messageId, sessionCount + 1);
+	setDailyCount(dailyCount + 1);
+	await setTotalCount(messageId, totalCount + 1);
 }
 
 function normalizeMessages(messages: PinpointInAppMessage[]): InAppMessage[] {
@@ -112,6 +130,39 @@ async function getMessageCounts(
 
 function getSessionCount(messageId: string): number {
 	return sessionMessageCountMap[messageId] || 0;
+}
+
+function setSessionCount(messageId: string, count: number): void {
+	sessionMessageCountMap[messageId] = count;
+}
+
+function setDailyCount(count: number): void {
+	const dailyCount: DailyInAppMessageCounter = {
+		count,
+		lastCountTimestamp: getStartOfDay(),
+	};
+	try {
+		defaultStorage.setItem(MESSAGE_DAILY_COUNT_KEY, JSON.stringify(dailyCount));
+	} catch (err) {
+		logger.error('Failed to save daily message count to storage', err);
+	}
+}
+
+function setTotalCountMap(countMap: InAppMessageCountMap): void {
+	try {
+		defaultStorage.setItem(MESSAGE_TOTAL_COUNT_KEY, JSON.stringify(countMap));
+	} catch (err) {
+		logger.error('Failed to save total count to storage', err);
+	}
+}
+
+async function setTotalCount(messageId: string, count: number): Promise<void> {
+	const totalCountMap = await getTotalCountMap();
+	const updatedMap = {
+		...totalCountMap,
+		[messageId]: count,
+	};
+	setTotalCountMap(updatedMap);
 }
 
 async function getDailyCount(): Promise<number> {
