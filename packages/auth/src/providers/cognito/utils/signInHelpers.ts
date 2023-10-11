@@ -21,6 +21,8 @@ import {
 	AuthAdditionalInfo,
 	AuthSignInOutput,
 	AuthDeliveryMedium,
+	AuthSignUpOutput,
+	AuthSignInInput,
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';

@@ -12,7 +12,7 @@ import {
 	DEFAULT_PRESIGN_EXPIRATION,
 	MAX_URL_EXPIRATION,
 } from '../../utils/constants';
-import { StorageAction } from '@aws-amplify/core/lib-esm/libraryUtils';
+import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 export const getUrl = async function (
 	amplify: AmplifyClassV6,

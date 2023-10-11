@@ -203,3 +203,11 @@ export class HubClass {
 pseudo Singleton for the main messaging bus, however you can still create
 your own instance of HubClass() for a separate "private bus" of events.*/
 export const Hub = new HubClass('__default__');
+
+/**
+ * @internal
+ *
+ * Internal hub used for core Amplify functionality. Not intended for use outside of Amplify.
+ *
+ */
+export const HubInternal = new HubClass('internal-hub');
