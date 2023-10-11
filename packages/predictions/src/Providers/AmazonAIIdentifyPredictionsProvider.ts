@@ -178,11 +178,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 		});
 		let inputDocument: Document;
 
-		try {
-			inputDocument = await this.configureSource(input.text?.source);
-		} catch (err) {
-			return Promise.reject(err);
-		}
+		inputDocument = await this.configureSource(input.text?.source);
 
 		// get default value if format isn't specified in the input.
 		const format = input.text?.format ?? configFormat;
@@ -203,51 +199,41 @@ export class AmazonAIIdentifyPredictionsProvider {
 				Image: inputDocument,
 			};
 
-			try {
-				const detectTextCommand = new DetectTextCommand(rekognitionParam);
-				const rekognitionData = await this.rekognitionClient.send(
-					detectTextCommand
-				);
+			const detectTextCommand = new DetectTextCommand(rekognitionParam);
+			const rekognitionData = await this.rekognitionClient.send(
+				detectTextCommand
+			);
 
-				const rekognitionResponse = categorizeRekognitionBlocks(
-					rekognitionData.TextDetections as TextDetectionList
-				);
-				if (rekognitionResponse.text.words.length < 50) {
-					// did not hit the word limit, return the data
-					return rekognitionResponse;
-				}
-
-				const detectDocumentTextCommand = new DetectDocumentTextCommand(
-					textractParam
-				);
-
-				const { Blocks } = await this.textractClient.send(
-					detectDocumentTextCommand
-				);
-
-				if (rekognitionData.TextDetections.length > Blocks.length) {
-					return rekognitionResponse;
-				}
-
-				return categorizeTextractBlocks(Blocks as BlockList);
-			} catch (err) {
-				Promise.reject(err);
+			const rekognitionResponse = categorizeRekognitionBlocks(
+				rekognitionData.TextDetections as TextDetectionList
+			);
+			if (rekognitionResponse.text.words.length < 50) {
+				// did not hit the word limit, return the data
+				return rekognitionResponse;
 			}
+
+			const detectDocumentTextCommand = new DetectDocumentTextCommand(
+				textractParam
+			);
+
+			const { Blocks } = await this.textractClient.send(
+				detectDocumentTextCommand
+			);
+
+			if (rekognitionData.TextDetections.length > Blocks.length) {
+				return rekognitionResponse;
+			}
+
+			return categorizeTextractBlocks(Blocks as BlockList);
 		} else {
 			const param: AnalyzeDocumentCommandInput = {
 				Document: inputDocument,
 				FeatureTypes: featureTypes,
 			};
 
-			try {
-				const analyzeDocumentCommand = new AnalyzeDocumentCommand(param);
-				const { Blocks } = await this.textractClient.send(
-					analyzeDocumentCommand
-				);
-				return categorizeTextractBlocks(Blocks as BlockList);
-			} catch (err) {
-				return Promise.reject(err);
-			}
+			const analyzeDocumentCommand = new AnalyzeDocumentCommand(param);
+			const { Blocks } = await this.textractClient.send(analyzeDocumentCommand);
+			return categorizeTextractBlocks(Blocks as BlockList);
 		}
 	}
 
@@ -259,56 +245,44 @@ export class AmazonAIIdentifyPredictionsProvider {
 	protected async identifyLabels(
 		input: IdentifyLabelsInput
 	): Promise<IdentifyLabelsOutput> {
-		try {
-			const { credentials } = await fetchAuthSession();
-			assertValidationError(
-				!!credentials,
-				PredictionsValidationErrorCode.NoCredentials
-			);
+		const { credentials } = await fetchAuthSession();
+		assertValidationError(
+			!!credentials,
+			PredictionsValidationErrorCode.NoCredentials
+		);
 
-			const { identifyLabels = {} } =
-				Amplify.getConfig().Predictions?.identify ?? {};
-			const { region = '', defaults = {} } = identifyLabels;
-			const { type = 'LABELS' } = defaults;
+		const { identifyLabels = {} } =
+			Amplify.getConfig().Predictions?.identify ?? {};
+		const { region = '', defaults = {} } = identifyLabels;
+		const { type = 'LABELS' } = defaults;
 
-			this.rekognitionClient = new RekognitionClient({
-				region,
-				credentials,
-				customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
-			});
-			let inputImage: Image;
-			await this.configureSource(input.labels?.source)
-				.then(data => {
-					inputImage = data;
-				})
-				.catch(err => {
-					return Promise.reject(err);
-				});
-			const param = { Image: inputImage! };
-			const servicePromises = [];
+		this.rekognitionClient = new RekognitionClient({
+			region,
+			credentials,
+			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
+		});
 
-			// get default argument
-			const entityType = input.labels?.type ?? type;
-			if (entityType === 'LABELS' || entityType === 'ALL') {
-				servicePromises.push(this.detectLabels(param));
-			}
-			if (entityType === 'UNSAFE' || entityType === 'ALL') {
-				servicePromises.push(this.detectModerationLabels(param));
-			}
+		const inputImage = await this.configureSource(input.labels?.source);
+		const param = { Image: inputImage };
+		const servicePromises = [];
 
-			return Promise.all(servicePromises)
-				.then(data => {
-					let identifyResult: IdentifyLabelsOutput = {};
-					// concatenate resolved promises to a single object
-					data.forEach(val => {
-						identifyResult = { ...identifyResult, ...val };
-					});
-					return identifyResult;
-				})
-				.catch(err => Promise.reject(err));
-		} catch (err) {
-			return Promise.reject(err);
+		// get default argument
+		const entityType = input.labels?.type ?? type;
+		if (entityType === 'LABELS' || entityType === 'ALL') {
+			servicePromises.push(this.detectLabels(param));
 		}
+		if (entityType === 'UNSAFE' || entityType === 'ALL') {
+			servicePromises.push(this.detectModerationLabels(param));
+		}
+
+		return Promise.all(servicePromises).then(data => {
+			let identifyResult: IdentifyLabelsOutput = {};
+			// concatenate resolved promises to a single object
+			data.forEach(val => {
+				identifyResult = { ...identifyResult, ...val };
+			});
+			return identifyResult;
+		});
 	}
 
 	/**
@@ -319,27 +293,23 @@ export class AmazonAIIdentifyPredictionsProvider {
 	private async detectLabels(
 		param: DetectLabelsCommandInput
 	): Promise<IdentifyLabelsOutput> {
-		try {
-			const detectLabelsCommand = new DetectLabelsCommand(param);
-			const data = await this.rekognitionClient.send(detectLabelsCommand);
-			if (!data.Labels) return { labels: null }; // no image was detected
-			const detectLabelData = data.Labels.map(val => {
-				const boxes = val.Instances
-					? val.Instances.map(val => makeCamelCase(val.BoundingBox))
-					: undefined;
-				return {
-					name: val.Name,
-					boundingBoxes: boxes,
-					metadata: {
-						confidence: val.Confidence,
-						parents: makeCamelCaseArray(val.Parents),
-					},
-				};
-			});
-			return { labels: detectLabelData };
-		} catch (err) {
-			return Promise.reject(err);
-		}
+		const detectLabelsCommand = new DetectLabelsCommand(param);
+		const data = await this.rekognitionClient.send(detectLabelsCommand);
+		if (!data.Labels) return { labels: null }; // no image was detected
+		const detectLabelData = data.Labels.map(val => {
+			const boxes = val.Instances
+				? val.Instances.map(val => makeCamelCase(val.BoundingBox))
+				: undefined;
+			return {
+				name: val.Name,
+				boundingBoxes: boxes,
+				metadata: {
+					confidence: val.Confidence,
+					parents: makeCamelCaseArray(val.Parents),
+				},
+			};
+		});
+		return { labels: detectLabelData };
 	}
 
 	/**
@@ -350,20 +320,16 @@ export class AmazonAIIdentifyPredictionsProvider {
 	private async detectModerationLabels(
 		param: DetectModerationLabelsCommandInput
 	): Promise<IdentifyLabelsOutput> {
-		try {
-			const detectModerationLabelsCommand = new DetectModerationLabelsCommand(
-				param
-			);
-			const data = await this.rekognitionClient.send(
-				detectModerationLabelsCommand
-			);
-			if (data.ModerationLabels.length !== 0) {
-				return { unsafe: 'YES' };
-			} else {
-				return { unsafe: 'NO' };
-			}
-		} catch (err) {
-			return Promise.reject(err);
+		const detectModerationLabelsCommand = new DetectModerationLabelsCommand(
+			param
+		);
+		const data = await this.rekognitionClient.send(
+			detectModerationLabelsCommand
+		);
+		if (data.ModerationLabels.length !== 0) {
+			return { unsafe: 'YES' };
+		} else {
+			return { unsafe: 'NO' };
 		}
 	}
 
@@ -399,45 +365,34 @@ export class AmazonAIIdentifyPredictionsProvider {
 			credentials,
 			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 		});
-		let inputImage: Image;
-		await this.configureSource(input.entities?.source)
-			.then(data => (inputImage = data))
-			.catch(err => {
-				return Promise.reject(err);
-			});
-
+		const inputImage = await this.configureSource(input.entities?.source);
 		const param = { Attributes: ['ALL'], Image: inputImage };
 
 		if (
 			isIdentifyCelebrities(input.entities) &&
 			input.entities.celebrityDetection
 		) {
-			if (!celebrityDetectionEnabled) {
-				return Promise.reject(
-					'Error: You have to enable celebrity detection first'
-				);
-			}
-			try {
-				const recognizeCelebritiesCommand = new RecognizeCelebritiesCommand(
-					param
-				);
-				const data = await this.rekognitionClient.send(
-					recognizeCelebritiesCommand
-				);
-				const faces = data.CelebrityFaces.map(celebrity => {
-					return {
-						boundingBox: makeCamelCase(celebrity.Face.BoundingBox),
-						landmarks: makeCamelCaseArray(celebrity.Face.Landmarks),
-						metadata: {
-							...makeCamelCase(celebrity, ['Id', 'Name', 'Urls']),
-							pose: makeCamelCase(celebrity.Face.Pose),
-						},
-					};
-				});
-				return { entities: faces };
-			} catch (err) {
-				return Promise.reject(err);
-			}
+			assertValidationError(
+				celebrityDetectionEnabled,
+				PredictionsValidationErrorCode.CelebrityDetectionNotEnabled
+			);
+			const recognizeCelebritiesCommand = new RecognizeCelebritiesCommand(
+				param
+			);
+			const data = await this.rekognitionClient.send(
+				recognizeCelebritiesCommand
+			);
+			const faces = data.CelebrityFaces.map(celebrity => {
+				return {
+					boundingBox: makeCamelCase(celebrity.Face.BoundingBox),
+					landmarks: makeCamelCaseArray(celebrity.Face.Landmarks),
+					metadata: {
+						...makeCamelCase(celebrity, ['Id', 'Name', 'Urls']),
+						pose: makeCamelCase(celebrity.Face.Pose),
+					},
+				};
+			});
+			return { entities: faces };
 		} else if (
 			isIdentifyFromCollection(input.entities) &&
 			input.entities.collection
@@ -452,65 +407,55 @@ export class AmazonAIIdentifyPredictionsProvider {
 				CollectionId: collectionId,
 				MaxFaces: maxFaces,
 			};
-			try {
-				const searchFacesByImageCommand = new SearchFacesByImageCommand(
-					updatedParam
-				);
-				const data = await this.rekognitionClient.send(
-					searchFacesByImageCommand
-				);
-				const faces = data.FaceMatches.map(val => {
-					return {
-						boundingBox: makeCamelCase(val.Face.BoundingBox),
-						metadata: {
-							externalImageId: this.decodeExternalImageId(
-								val.Face.ExternalImageId
-							),
-							similarity: val.Similarity,
-						},
-					};
-				});
-				return { entities: faces };
-			} catch (err) {
-				return Promise.reject(err);
-			}
+			const searchFacesByImageCommand = new SearchFacesByImageCommand(
+				updatedParam
+			);
+			const data = await this.rekognitionClient.send(searchFacesByImageCommand);
+			const faces = data.FaceMatches.map(val => {
+				return {
+					boundingBox: makeCamelCase(val.Face.BoundingBox),
+					metadata: {
+						externalImageId: this.decodeExternalImageId(
+							val.Face.ExternalImageId
+						),
+						similarity: val.Similarity,
+					},
+				};
+			});
+			return { entities: faces };
 		} else {
-			try {
-				const detectFacesCommand = new DetectFacesCommand(param);
-				const data = await this.rekognitionClient.send(detectFacesCommand);
-				const faces = data.FaceDetails.map(detail => {
-					// face attributes keys we want to extract from Rekognition's response
-					const attributeKeys = [
-						'Smile',
-						'Eyeglasses',
-						'Sunglasses',
-						'Gender',
-						'Beard',
-						'Mustache',
-						'EyesOpen',
-						'MouthOpen',
-					];
-					const faceAttributes = makeCamelCase(detail, attributeKeys);
-					if (detail.Emotions) {
-						faceAttributes['emotions'] = detail.Emotions.map(
-							emotion => emotion.Type
-						);
-					}
-					return {
-						boundingBox: makeCamelCase(detail.BoundingBox),
-						landmarks: makeCamelCaseArray(detail.Landmarks),
-						ageRange: makeCamelCase(detail.AgeRange),
-						attributes: faceAttributes,
-						metadata: {
-							confidence: detail.Confidence,
-							pose: makeCamelCase(detail.Pose),
-						},
-					};
-				});
-				return { entities: faces };
-			} catch (err) {
-				return Promise.reject(err);
-			}
+			const detectFacesCommand = new DetectFacesCommand(param);
+			const data = await this.rekognitionClient.send(detectFacesCommand);
+			const faces = data.FaceDetails.map(detail => {
+				// face attributes keys we want to extract from Rekognition's response
+				const attributeKeys = [
+					'Smile',
+					'Eyeglasses',
+					'Sunglasses',
+					'Gender',
+					'Beard',
+					'Mustache',
+					'EyesOpen',
+					'MouthOpen',
+				];
+				const faceAttributes = makeCamelCase(detail, attributeKeys);
+				if (detail.Emotions) {
+					faceAttributes['emotions'] = detail.Emotions.map(
+						emotion => emotion.Type
+					);
+				}
+				return {
+					boundingBox: makeCamelCase(detail.BoundingBox),
+					landmarks: makeCamelCaseArray(detail.Landmarks),
+					ageRange: makeCamelCase(detail.AgeRange),
+					attributes: faceAttributes,
+					metadata: {
+						confidence: detail.Confidence,
+						pose: makeCamelCase(detail.Pose),
+					},
+				};
+			});
+			return { entities: faces };
 		}
 	}
 
