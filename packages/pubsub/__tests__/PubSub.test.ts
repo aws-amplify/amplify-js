@@ -143,8 +143,8 @@ describe('PubSub', () => {
 
 			const config = {
 				PubSub: {
-					aws_pubsub_region: 'region',
-					aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+					region: 'region',
+					endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				},
 			};
 			const pubsub = new IotPubSub(config.PubSub);
@@ -180,13 +180,13 @@ describe('PubSub', () => {
 
 		test('should remove AWSIoTProvider', () => {
 			const pubsubClient = new IotPubSub({
-				aws_pubsub_region: 'region',
-				aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				region: 'region',
+				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 			jest.spyOn(pubsubClient, 'publish');
 			const newPubsubClient = new IotPubSub({
-				aws_pubsub_region: 'new-region',
-				aws_pubsub_endpoint: 'wss://iot.newEndPoint.org:443/newEndPoint',
+				region: 'new-region',
+				endpoint: 'wss://iot.newEndPoint.org:443/newEndPoint',
 			});
 			jest.spyOn(newPubsubClient, 'publish');
 
@@ -200,8 +200,8 @@ describe('PubSub', () => {
 	describe('MqttOverWSProvider', () => {
 		test('trigger observer error when connect failed', () => {
 			const pubsub = new MqttPubSub({
-				aws_pubsub_region: 'region',
-				aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				region: 'region',
+				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 
 			jest
@@ -222,8 +222,8 @@ describe('PubSub', () => {
 		test('trigger reconnection when disconnected', async () => {
 			let hubConnectionListener = new HubConnectionListener('pubsub');
 			const pubsub = new MqttPubSub({
-				aws_pubsub_region: 'region',
-				aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				region: 'region',
+				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 
 			pubsub.subscribe('topic', { clientId: '123' }).subscribe({});
@@ -250,13 +250,13 @@ describe('PubSub', () => {
 
 		test('should remove MqttOverWSProvider', () => {
 			const pubsubClient = new MqttPubSub({
-				aws_pubsub_region: 'region',
-				aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				region: 'region',
+				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 			jest.spyOn(pubsubClient, 'publish');
 			const newPubsubClient = new MqttPubSub({
-				aws_pubsub_region: 'region',
-				aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				region: 'region',
+				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 			jest.spyOn(newPubsubClient, 'publish');
 
@@ -299,8 +299,8 @@ describe('PubSub', () => {
 
 			test('test happy case connect -> disconnect cycle', async () => {
 				const pubsub = new IotPubSub({
-					aws_pubsub_region: 'region',
-					aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+					region: 'region',
+					endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				});
 
 				const sub = pubsub.subscribe('topic', { clientId: '123' }).subscribe({
@@ -326,8 +326,8 @@ describe('PubSub', () => {
 
 			test('test network disconnection and recovery', async () => {
 				const pubsub = new IotPubSub({
-					aws_pubsub_region: 'region',
-					aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+					region: 'region',
+					endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				});
 
 				const sub = pubsub.subscribe('topic', { clientId: '123' }).subscribe({
@@ -359,8 +359,8 @@ describe('PubSub', () => {
 
 			test('test network disconnection followed by connection disruption', async () => {
 				const pubsub = new IotPubSub({
-					aws_pubsub_region: 'region',
-					aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+					region: 'region',
+					endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				});
 
 				const sub = pubsub.subscribe('topic', { clientId: '123' }).subscribe({
@@ -396,7 +396,7 @@ describe('PubSub', () => {
 		test('ssl should be disabled in the case of local testing', async () => {
 			mockConnect.mockClear();
 			const pubsub = new MqttPubSub({
-				aws_pubsub_region: 'region',
+				region: 'region',
 				aws_appsync_dangerously_connect_to_http_endpoint_for_testing: true,
 			});
 
@@ -417,13 +417,13 @@ describe('PubSub', () => {
 	describe('multiple providers', () => {
 		test('subscribe and publish to specific provider', async () => {
 			const iotClient = new IotPubSub({
-				aws_pubsub_region: 'region',
-				aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				region: 'region',
+				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 
 			const mqttClient = new MqttPubSub({
-				aws_pubsub_region: 'region',
-				aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				region: 'region',
+				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 
 			let hubConnectionListener = new HubConnectionListener('pubsub');
@@ -450,13 +450,13 @@ describe('PubSub', () => {
 
 		test('throw a rejected promise when publish failed by any of the provider', () => {
 			const iotClient = new IotPubSub({
-				aws_pubsub_region: 'region',
-				aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				region: 'region',
+				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 
 			const mqttClient = new MqttPubSub({
-				aws_pubsub_region: 'region',
-				aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				region: 'region',
+				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 
 			jest.spyOn(iotClient, 'publish').mockImplementationOnce(() => {
@@ -471,8 +471,8 @@ describe('PubSub', () => {
 		test('On unsubscribe when is the last observer it should disconnect the websocket', async () => {
 			const hubConnectionListener = new HubConnectionListener('pubsub');
 			const mqttClient = new MqttPubSub({
-				aws_pubsub_region: 'region',
-				aws_pubsub_endpoint: 'wss://iot.mock-endpoint.org:443/mqtt',
+				region: 'region',
+				endpoint: 'wss://iot.mock-endpoint.org:443/mqtt',
 			});
 			const spyDisconnect = jest.spyOn(
 				MqttPubSub.prototype,
@@ -509,8 +509,8 @@ describe('PubSub', () => {
 				'other observers connected when unsubscribing',
 			async () => {
 				const pubsub = new MqttPubSub({
-					aws_pubsub_region: 'region',
-					aws_pubsub_endpoint: 'wss://iot.mock-endpoint.org:443/mqtt',
+					region: 'region',
+					endpoint: 'wss://iot.mock-endpoint.org:443/mqtt',
 				});
 
 				const spyDisconnect = jest.spyOn(

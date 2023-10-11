@@ -16,12 +16,12 @@ export class AWSIoT extends MqttOverWS {
 	}
 
 	protected get region(): string | undefined {
-		return this.options['aws_pubsub_region'];
+		return this.options?.region;
 	}
 
 	protected get endpoint() {
 		return (async () => {
-			const endpoint = this.options.aws_pubsub_endpoint;
+			const endpoint = this.options.endpoint;
 
 			const serviceInfo = {
 				service: SERVICE_NAME,

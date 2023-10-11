@@ -138,7 +138,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 	}
 
 	protected get endpoint(): Promise<string | undefined> {
-		return Promise.resolve(this.options.aws_pubsub_endpoint);
+		return Promise.resolve(this.options.endpoint);
 	}
 
 	protected get clientsQueue() {
