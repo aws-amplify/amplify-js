@@ -43,7 +43,7 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 					loginWith: {
 						email: false,
 						phone: false,
-						username: true
+						username: true,
 					},
 					mfa: {
 						smsEnabled: true,
@@ -55,15 +55,15 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 						requireLowercase: false,
 						requireNumbers: false,
 						requireSpecialCharacters: false,
-						requireUppercase: false
+						requireUppercase: false,
 					},
 					userAttributes: [
 						{
 							phone_number: {
-								required: true
-							}
-						}
-					]
+								required: true,
+							},
+						},
+					],
 				},
 			},
 		});

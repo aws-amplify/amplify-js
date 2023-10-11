@@ -11,8 +11,12 @@ import { StorageError } from './StorageError';
  * @internal
  */
 export class CanceledError extends StorageError {
-	constructor(params: AmplifyErrorParams) {
-		super(params);
+	constructor(params: Partial<AmplifyErrorParams> = {}) {
+		super({
+			name: 'CanceledError',
+			message: 'Upload is canceled by user',
+			...params,
+		});
 
 		// TODO: Delete the following 2 lines after we change the build target to >= es2015
 		this.constructor = CanceledError;
@@ -24,5 +28,5 @@ export class CanceledError extends StorageError {
  * Check if an error is caused by user calling `cancel()` on a upload/download task. If an overwriting error is
  * supplied to `task.cancel(errorOverwrite)`, this function will return `false`.
  */
-export const isCancelError = (error: unknown): boolean =>
+export const isCancelError = (error: unknown): error is CanceledError =>
 	!!error && error instanceof CanceledError;
