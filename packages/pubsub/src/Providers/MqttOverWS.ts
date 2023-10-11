@@ -6,13 +6,13 @@ import * as Paho from '../vendor/paho-mqtt';
 import { v4 as uuid } from 'uuid';
 import { Observable, SubscriptionLike as Subscription, Observer } from 'rxjs';
 
-import { AbstractPubSubProvider } from './PubSubProvider';
+import { AbstractPubSub } from './PubSub';
 import {
 	ConnectionState,
 	PubSubContentObserver,
 	PubSubContent,
+	PubSubOptions,
 } from '../types/PubSub';
-import { ProviderOptions } from '../types/Provider';
 import { Hub, HubPayload } from '@aws-amplify/core';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import {
@@ -25,7 +25,7 @@ import {
 } from '../utils/ReconnectionMonitor';
 import { AMPLIFY_SYMBOL, CONNECTION_STATE_CHANGE } from './constants';
 
-const logger = new Logger('MqttOverWSProvider');
+const logger = new Logger('MqttOverWS');
 
 export function mqttTopicMatch(filter: string, topic: string) {
 	const filterArray = filter.split('/');
@@ -41,10 +41,10 @@ export function mqttTopicMatch(filter: string, topic: string) {
 	return length === topicArray.length;
 }
 
-export interface MqttOptions extends ProviderOptions {
+export interface MqttOptions extends PubSubOptions {
 	clientId?: string;
 	url?: string;
-	aws_pubsub_endpoint?: string;
+	endpoint?: string;
 }
 
 interface PahoClient {
@@ -99,7 +99,7 @@ const dispatchPubSubEvent = (payload: HubPayload) => {
 
 const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
 
-export class MqttOverWSProvider extends AbstractPubSubProvider<MqttOptions> {
+export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 	private _clientsQueue = new ClientsQueue();
 	private connectionState?: ConnectionState;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
@@ -149,10 +149,6 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttOptions> {
 		return !this.options[
 			'aws_appsync_dangerously_connect_to_http_endpoint_for_testing'
 		];
-	}
-
-	getProviderName() {
-		return 'MqttOverWSProvider';
 	}
 
 	public onDisconnect({

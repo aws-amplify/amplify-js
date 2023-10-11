@@ -1,17 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Observable } from 'rxjs';
-import { PubSubProvider, ProviderOptions } from '../types/Provider';
+import { PubSubBase, PubSubOptions, PubSubContent } from '../types/PubSub';
 import {
 	ConsoleLogger as Logger,
 	CustomUserAgentDetails,
 } from '@aws-amplify/core/internals/utils';
-import { PubSubContent } from '../types/PubSub';
 
 const logger = new Logger('AbstractPubSubProvider');
 
-export abstract class AbstractPubSubProvider<T extends ProviderOptions>
-	implements PubSubProvider
+export abstract class AbstractPubSub<T extends PubSubOptions>
+	implements PubSubBase
 {
 	private _config: T;
 
@@ -22,16 +21,10 @@ export abstract class AbstractPubSubProvider<T extends ProviderOptions>
 	configure(config: T): T {
 		this._config = { ...config, ...this._config };
 
-		logger.debug(`configure ${this.getProviderName()}`, this._config);
+		logger.debug(`configure`, this._config);
 
 		return this.options;
 	}
-
-	getCategory() {
-		return 'PubSub';
-	}
-
-	abstract getProviderName(): string;
 
 	protected get options(): T {
 		return { ...this._config };

@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Observer } from 'rxjs';
+import { Observer, Observable } from 'rxjs';
 export interface SubscriptionObserver<T> {
 	closed: boolean;
 	next(value: T): void;
@@ -54,3 +54,24 @@ export enum ConnectionState {
 
 export type PubSubContent = Record<string, unknown>;
 export type PubSubContentObserver = Observer<PubSubContent>;
+
+export interface PubSubOptions {
+	[key: string]: any;
+	provider?: string | symbol;
+}
+
+export interface PubSubBase {
+	// configure your provider
+	configure(config: Record<string, unknown>): Record<string, unknown>;
+
+	publish(
+		topics: string[] | string,
+		msg: PubSubContent,
+		options?: PubSubOptions
+	): void;
+
+	subscribe(
+		topics: string[] | string,
+		options?: PubSubOptions
+	): Observable<PubSubContent>;
+}
