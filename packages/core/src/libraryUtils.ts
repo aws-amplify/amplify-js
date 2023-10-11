@@ -41,7 +41,6 @@ export {
 } from './singleton/Auth/types';
 
 // Platform & user-agent utilities
-export { ClientDevice } from './ClientDevice';
 export {
 	Platform,
 	getAmplifyUserAgentObject,
