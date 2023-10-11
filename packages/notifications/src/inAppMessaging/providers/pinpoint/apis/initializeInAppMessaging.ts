@@ -42,7 +42,7 @@ export function initializeInAppMessaging(): void {
 
 function analyticsListener({
 	payload,
-}: HubCapsule<'inAppMessaging', { event: string; data: InAppMessagingEvent }>) {
+}: HubCapsule<string, { event: string; data: InAppMessagingEvent }>) {
 	const { event, data } = payload;
 	switch (event) {
 		case 'record': {

@@ -107,10 +107,11 @@ async function isBelowCap({
 	const { sessionCount, dailyCount, totalCount } = await getMessageCounts(
 		CampaignId
 	);
+
 	return (
-		(!SessionCap ?? sessionCount < SessionCap) &&
-		(!DailyCap ?? dailyCount < DailyCap) &&
-		(!TotalCap ?? totalCount < TotalCap)
+		(!SessionCap || sessionCount < SessionCap) &&
+		(!DailyCap || dailyCount < DailyCap) &&
+		(!TotalCap || totalCount < TotalCap)
 	);
 }
 
