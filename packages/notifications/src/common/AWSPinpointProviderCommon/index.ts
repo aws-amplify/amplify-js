@@ -3,7 +3,6 @@
 
 import {
 	Category,
-	ClientDevice,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
 	InAppMessagingAction,
