@@ -15,6 +15,7 @@ import { forgotPassword } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { ForgotPasswordException } from '../../cognito/types/errors';
 import { getAuthUserAgentValue } from '../../../utils';
+import { getUserContextData } from '../utils/userContextData';
 
 /**
  * Resets a user's password.
@@ -37,7 +38,15 @@ export async function resetPassword(
 	);
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
+	const { userPoolClientId, userPoolId } = authConfig;
 	const clientMetadata = input.options?.serviceOptions?.clientMetadata;
+
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	const res = await forgotPassword(
 		{
 			region: getRegion(authConfig.userPoolId),
@@ -47,6 +56,7 @@ export async function resetPassword(
 			Username: username,
 			ClientMetadata: clientMetadata,
 			ClientId: authConfig.userPoolClientId,
+			UserContextData,
 		}
 	);
 	const codeDeliveryDetails = res.CodeDeliveryDetails;
