@@ -46,8 +46,8 @@ export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
 
 	const downloadTask = createDownloadTask({
 		job: downloadDataJob(input, abortController.signal),
-		onCancel: (abortErrorOverwrite?: Error) => {
-			abortController.abort(abortErrorOverwrite);
+		onCancel: (message?: string) => {
+			abortController.abort(message);
 		},
 	});
 	return downloadTask;
@@ -79,7 +79,7 @@ const downloadDataJob =
 				...s3Config,
 				abortSignal,
 				onDownloadProgress: downloadDataOptions?.onProgress,
-				userAgentValue: getStorageUserAgentValue(StorageAction.DownloadData)
+				userAgentValue: getStorageUserAgentValue(StorageAction.DownloadData),
 			},
 			{
 				Bucket: bucket,
