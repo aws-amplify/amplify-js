@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 // @ts-ignore: missing type definition
 import { Platform, Dimensions } from 'react-native';
-import { ConsoleLogger as Logger } from '../Logger';
+import { ConsoleLogger as Logger } from '../../Logger';
 
 const logger = new Logger('DeviceInfo');
 
-export const clientInfo = () => {
+export const getClientInfo = () => {
 	const dim = Dimensions.get('screen');
 	logger.debug(Platform, dim);
 	const OS = 'ios';
@@ -21,7 +21,7 @@ export const clientInfo = () => {
 	};
 };
 
-function dimToMake(dim:{height:number, width:number;}) {
+function dimToMake(dim: { height: number; width: number }) {
 	let { height, width } = dim;
 	if (height < width) {
 		const tmp = height;

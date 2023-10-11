@@ -57,6 +57,7 @@ import { getCurrentUser } from '../apis/getCurrentUser';
 import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
 import { assertDeviceMetadata } from './types';
 import { getAuthUserAgentValue } from '../../../utils';
+import { getUserContextData } from './userContextData';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -99,12 +100,19 @@ export async function handleCustomChallenge({
 		challengeResponses['DEVICE_KEY'] = deviceMetadata.deviceKey;
 	}
 
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'CUSTOM_CHALLENGE',
 		ChallengeResponses: challengeResponses,
 		Session: session,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
+		UserContextData,
 	};
 
 	const response = await respondToAuthChallenge(
@@ -186,12 +194,19 @@ export async function handleSelectMFATypeChallenge({
 		ANSWER: mapMfaType(challengeResponse),
 	};
 
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'SELECT_MFA_TYPE',
 		ChallengeResponses: challengeResponses,
 		Session: session,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
+		UserContextData,
 	};
 
 	return respondToAuthChallenge(
@@ -215,12 +230,18 @@ export async function handleSMSMFAChallenge({
 		USERNAME: username,
 		SMS_MFA_CODE: challengeResponse,
 	};
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
 	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'SMS_MFA',
 		ChallengeResponses: challengeResponses,
 		Session: session,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
+		UserContextData,
 	};
 
 	return respondToAuthChallenge(
@@ -243,12 +264,20 @@ export async function handleSoftwareTokenMFAChallenge({
 		USERNAME: username,
 		SOFTWARE_TOKEN_MFA_CODE: challengeResponse,
 	};
+
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'SOFTWARE_TOKEN_MFA',
 		ChallengeResponses: challengeResponses,
 		Session: session,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
+		UserContextData,
 	};
 	return respondToAuthChallenge(
 		{
@@ -273,12 +302,19 @@ export async function handleCompleteNewPasswordChallenge({
 		USERNAME: username,
 	};
 
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	const jsonReq: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'NEW_PASSWORD_REQUIRED',
 		ChallengeResponses: challengeResponses,
 		ClientMetadata: clientMetadata,
 		Session: session,
 		ClientId: userPoolClientId,
+		UserContextData,
 	};
 
 	return respondToAuthChallenge(
@@ -307,11 +343,19 @@ export async function handleUserPasswordAuthFlow(
 	if (deviceMetadata && deviceMetadata.deviceKey) {
 		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
 	}
+
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'USER_PASSWORD_AUTH',
 		AuthParameters: authParameters,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
+		UserContextData,
 	};
 	// TODO: add the retry here
 	const response = await initiateAuth(
@@ -353,11 +397,19 @@ export async function handleUserSRPAuthFlow(
 	if (deviceMetadata && deviceMetadata.deviceKey) {
 		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
 	}
+
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'USER_SRP_AUTH',
 		AuthParameters: authParameters,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
+		UserContextData,
 	};
 
 	const resp = await initiateAuth(
@@ -400,11 +452,19 @@ export async function handleCustomAuthFlowWithoutSRP(
 	if (deviceMetadata && deviceMetadata.deviceKey) {
 		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
 	}
+
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'CUSTOM_AUTH',
 		AuthParameters: authParameters,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
+		UserContextData,
 	};
 
 	const response = await initiateAuth(
@@ -449,11 +509,18 @@ export async function handleCustomSRPAuthFlow(
 		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
 	}
 
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	const jsonReq: InitiateAuthCommandInput = {
 		AuthFlow: 'CUSTOM_AUTH',
 		AuthParameters: authParameters,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
+		UserContextData,
 	};
 
 	const { ChallengeParameters: challengeParameters, Session: session } =
@@ -562,12 +629,19 @@ async function handleDevicePasswordVerifier(
 		DEVICE_KEY: deviceKey,
 	} as { [key: string]: string };
 
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	const jsonReqResponseChallenge: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'DEVICE_PASSWORD_VERIFIER',
 		ClientId: userPoolClientId,
 		ChallengeResponses: challengeResponses,
 		Session: session,
 		ClientMetadata: clientMetadata,
+		UserContextData,
 	};
 
 	return respondToAuthChallenge(
@@ -622,12 +696,19 @@ export async function handlePasswordVerifierChallenge(
 		challengeResponses['DEVICE_KEY'] = deviceMetadata.deviceKey;
 	}
 
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	const jsonReqResponseChallenge: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'PASSWORD_VERIFIER',
 		ChallengeResponses: challengeResponses,
 		ClientMetadata: clientMetadata,
 		Session: session,
 		ClientId: userPoolClientId,
+		UserContextData,
 	};
 
 	const response = await respondToAuthChallenge(

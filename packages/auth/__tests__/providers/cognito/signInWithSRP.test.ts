@@ -13,6 +13,7 @@ import {
 } from '../../../src/providers/cognito/tokenProvider';
 import { AuthError } from '../../../src';
 import { createKeysForAuthStorage } from '../../../src/providers/cognito/tokenProvider/TokenStore';
+import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 
 const authConfig = {
 	Cognito: {
@@ -155,6 +156,58 @@ describe('signIn API happy path cases', () => {
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			authConfig.Cognito,
 			tokenOrchestrator
+		);
+	});
+});
+
+describe('Cognito ASF', () => {
+	let initiateAuthSpy;
+
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
+	beforeEach(() => {
+		initiateAuthSpy = jest
+			.spyOn(clients, 'initiateAuth')
+			.mockImplementationOnce(async () => ({
+				ChallengeName: 'SRP_AUTH',
+				Session: '1234234232',
+				$metadata: {},
+				ChallengeParameters: {
+					USER_ID_FOR_SRP: authAPITestParams.user1.username,
+				},
+			}));
+		// load Cognito ASF polyfill
+		window['AmazonCognitoAdvancedSecurityData'] = {
+			getData() {
+				return 'abcd';
+			},
+		};
+	});
+
+	afterEach(() => {
+		initiateAuthSpy.mockClear();
+		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+	});
+
+	test('signIn SRP should send UserContextData', async () => {
+		try {
+			await signIn({
+				username: authAPITestParams.user1.username,
+				password: authAPITestParams.user1.password,
+			});
+		} catch (_) {
+			// only want to test the contents
+		}
+		expect(initiateAuthSpy).toBeCalledWith(
+			expect.objectContaining({
+				region: 'us-west-2',
+			}),
+			expect.objectContaining({
+				UserContextData: {
+					EncodedData: 'abcd',
+				},
+			})
 		);
 	});
 });
