@@ -5,7 +5,7 @@ import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';
 import { Buffer } from 'buffer';
-import { Hub, fetchAuthSession, Logger } from '@aws-amplify/core';
+import { Hub, fetchAuthSession, ConsoleLogger } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	GraphQLAuthMode,
@@ -46,7 +46,7 @@ import {
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
 
-const logger = new Logger('AWSAppSyncRealTimeProvider');
+const logger = new ConsoleLogger('AWSAppSyncRealTimeProvider');
 
 const dispatchApiEvent = payload => {
 	Hub.dispatch('api', payload, 'PubSub', AMPLIFY_SYMBOL);

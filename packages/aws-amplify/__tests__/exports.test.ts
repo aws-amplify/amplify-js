@@ -39,7 +39,7 @@ describe('aws-amplify Exports', () => {
 			  "Hub",
 			  "I18n",
 			  "Cache",
-			  "Logger",
+			  "ConsoleLogger",
 			]
 		`);
 		});

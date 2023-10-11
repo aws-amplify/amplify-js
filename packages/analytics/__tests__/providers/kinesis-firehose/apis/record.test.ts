@@ -11,7 +11,7 @@ import {
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
 import { record } from '../../../../src/providers/kinesis-firehose';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 import { RecordInput as KinesisFirehoseRecordInput } from '../../../../src/providers/kinesis-firehose/types';
 
 jest.mock('../../../../src/utils');
@@ -28,8 +28,8 @@ describe('Analytics KinesisFirehose API: record', () => {
 	const mockIsAnalyticsEnabled = isAnalyticsEnabled as jest.Mock;
 	const mockGetEventBuffer = getEventBuffer as jest.Mock;
 	const mockAppend = jest.fn();
-	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
-	const loggerDebugSpy = jest.spyOn(Logger.prototype, 'debug');
+	const loggerWarnSpy = jest.spyOn(ConsoleLogger.prototype, 'warn');
+	const loggerDebugSpy = jest.spyOn(ConsoleLogger.prototype, 'debug');
 
 	beforeEach(() => {
 		mockIsAnalyticsEnabled.mockReturnValue(true);

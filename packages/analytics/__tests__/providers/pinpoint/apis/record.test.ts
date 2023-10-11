@@ -1,6 +1,6 @@
 import { Hub } from '@aws-amplify/core';
 import { record as pinpointRecord } from '@aws-amplify/core/internals/providers/pinpoint';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 import { record } from '../../../../src/providers/pinpoint';
 import {
 	resolveConfig,
@@ -28,7 +28,7 @@ jest.mock('../../../../src/providers/pinpoint/utils');
 
 describe('Pinpoint API: record', () => {
 	// create spies
-	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
+	const loggerWarnSpy = jest.spyOn(ConsoleLogger.prototype, 'warn');
 	// create mocks
 	const mockPinpointRecord = pinpointRecord as jest.Mock;
 	const mockResolveConfig = resolveConfig as jest.Mock;

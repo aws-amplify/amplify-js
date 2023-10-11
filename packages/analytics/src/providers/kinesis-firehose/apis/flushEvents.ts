@@ -7,9 +7,9 @@ import {
 	resolveCredentials,
 } from '../../../utils';
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 
-const logger = new Logger('KinesisFirehose');
+const logger = new ConsoleLogger('KinesisFirehose');
 
 /**
  * Flushes all buffered Kinesis events to the service.

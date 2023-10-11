@@ -7,9 +7,9 @@ import {
 	InteractionsMessage,
 	InteractionsResponse,
 } from './types';
-import { Amplify, Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger } from '@aws-amplify/core';
 import { AWSLexProvider } from './Providers';
-const logger = new Logger('Interactions');
+const logger = new ConsoleLogger('Interactions');
 
 export class InteractionsClass {
 	private _options: InteractionsOptions;

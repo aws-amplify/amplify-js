@@ -4,10 +4,10 @@
 // TODO: delete this module when the Auth class is removed.
 
 import { AuthErrorMessages, AuthErrorTypes } from './types/Auth';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 import { AuthErrorStrings } from './common/AuthErrorStrings';
 
-const logger = new Logger('AuthError');
+const logger = new ConsoleLogger('AuthError');
 
 export class AuthError extends Error {
 	public log: string;

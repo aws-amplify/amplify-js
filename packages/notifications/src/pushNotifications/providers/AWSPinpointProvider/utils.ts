@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { Event as AWSPinpointAnalyticsEvent } from '@aws-amplify/core/internals/aws-clients/pinpoint';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 import { PushNotificationMessage } from '../../types';
 import {
 	AWSPinpointMessageEventSource,
@@ -14,7 +14,7 @@ const ANDROID_CAMPAIGN_ACTIVITY_ID_KEY =
 const ANDROID_CAMPAIGN_ID_KEY = 'pinpoint.campaign.campaign_id';
 const ANDROID_CAMPAIGN_TREATMENT_ID_KEY = 'pinpoint.campaign.treatment_id';
 
-export const logger = new Logger('PushNotification.AWSPinpointProvider');
+export const logger = new ConsoleLogger('PushNotification.AWSPinpointProvider');
 
 export const getAnalyticsEvent = (
 	{ data }: PushNotificationMessage,

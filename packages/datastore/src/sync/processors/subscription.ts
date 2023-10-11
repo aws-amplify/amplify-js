@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Hub, HubCapsule, fetchAuthSession, Logger } from '@aws-amplify/core';
+import { Hub, HubCapsule, fetchAuthSession, ConsoleLogger } from '@aws-amplify/core';
 import {
 	Category,
 	CustomUserAgentDetails,
@@ -46,7 +46,7 @@ import { validatePredicate } from '../../util';
 import { getSubscriptionErrorType } from './errorMaps';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/api-graphql';
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 export enum CONTROL_MSG {
 	CONNECTED = 'CONNECTED',

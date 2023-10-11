@@ -10,9 +10,9 @@ import {
 } from '../../../utils';
 import { fromUtf8 } from '@smithy/util-utf8';
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 
-const logger = new Logger('KinesisFirehose');
+const logger = new ConsoleLogger('KinesisFirehose');
 
 export const record = ({ streamName, data }: RecordInput): void => {
 	if (!isAnalyticsEnabled()) {

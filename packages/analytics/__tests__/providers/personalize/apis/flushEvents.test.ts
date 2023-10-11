@@ -11,7 +11,7 @@ import {
 	mockPersonalizeConfig,
 } from '../../../testUtils/mockConstants.test';
 import { flushEvents } from '../../../../src/providers/personalize';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/personalize/utils');
@@ -21,7 +21,7 @@ describe('Analytics Personalize API: flushEvents', () => {
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 	const mockGetEventBuffer = getEventBuffer as jest.Mock;
 	const mockFlushAll = jest.fn();
-	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
+	const loggerWarnSpy = jest.spyOn(ConsoleLogger.prototype, 'warn');
 
 	beforeEach(() => {
 		mockResolveConfig.mockReturnValue(mockPersonalizeConfig);

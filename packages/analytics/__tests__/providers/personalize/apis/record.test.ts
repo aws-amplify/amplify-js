@@ -13,7 +13,7 @@ import {
 	mockPersonalizeConfig,
 } from '../../../testUtils/mockConstants.test';
 import { record } from '../../../../src/providers/personalize';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 import { RecordInput as PersonalizeRecordInput } from '../../../../src/providers/personalize/types';
 import {
 	IDENTIFY_EVENT_TYPE,
@@ -45,8 +45,8 @@ describe('Analytics Personalize API: record', () => {
 	const mockAutoTrackMedia = autoTrackMedia as jest.Mock;
 	const mockGetEventBuffer = getEventBuffer as jest.Mock;
 	const mockAppend = jest.fn();
-	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
-	const loggerDebugSpy = jest.spyOn(Logger.prototype, 'debug');
+	const loggerWarnSpy = jest.spyOn(ConsoleLogger.prototype, 'warn');
+	const loggerDebugSpy = jest.spyOn(ConsoleLogger.prototype, 'debug');
 	const mockEventBuffer = {
 		append: mockAppend,
 	};

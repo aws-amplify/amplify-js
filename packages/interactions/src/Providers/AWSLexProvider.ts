@@ -17,13 +17,13 @@ import {
 	PostContentCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import {
-	Logger,
+	ConsoleLogger,
 	Credentials,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core';
 import { convert } from './AWSLexProviderHelper/utils';
 
-const logger = new Logger('AWSLexProvider');
+const logger = new ConsoleLogger('AWSLexProvider');
 
 interface PostContentCommandOutputFormatted
 	extends Omit<PostContentCommandOutput, 'audioStream'> {

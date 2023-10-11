@@ -7,9 +7,9 @@ import {
 	resolveCredentials,
 } from '../../../utils';
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 
-const logger = new Logger('Personalize');
+const logger = new ConsoleLogger('Personalize');
 
 /**
  * Flushes all buffered Personalize events to the service.

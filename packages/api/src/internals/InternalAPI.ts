@@ -10,7 +10,7 @@ import {
 	GraphQLSubscription,
 } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
-import { Amplify, Cache, Logger } from '@aws-amplify/core';
+import { Amplify, Cache, ConsoleLogger } from '@aws-amplify/core';
 import {
 	ApiAction,
 	Category,
@@ -27,7 +27,7 @@ import { Observable } from 'rxjs';
  * state as possible for V6 to reduce number of potentially impactful changes to DataStore.
  */
 
-const logger = new Logger('API');
+const logger = new ConsoleLogger('API');
 /**
  * @deprecated
  * Use RestApi or GraphQLAPI to reduce your application bundle size

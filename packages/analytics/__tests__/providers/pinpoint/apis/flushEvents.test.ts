@@ -9,7 +9,7 @@ import { config, credentials, identityId } from './testUtils/data';
 import { flushEvents } from '../../../../src/providers/pinpoint';
 import { flushEvents as pinpointFlushEvents } from '@aws-amplify/core/internals/providers/pinpoint';
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 import { getAnalyticsUserAgentString } from '../../../../src/utils';
 
 jest.mock('../../../../src/providers/pinpoint/utils');
@@ -19,7 +19,7 @@ describe('Pinpoint API: flushEvents', () => {
 	const mockResolveConfig = resolveConfig as jest.Mock;
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 	const mockPinpointFlushEvents = pinpointFlushEvents as jest.Mock;
-	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
+	const loggerWarnSpy = jest.spyOn(ConsoleLogger.prototype, 'warn');
 
 	beforeEach(() => {
 		mockResolveConfig.mockReturnValue(config);

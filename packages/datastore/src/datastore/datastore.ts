@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Amplify, Hub, Cache, Logger } from '@aws-amplify/core';
+import { Amplify, Hub, Cache, ConsoleLogger } from '@aws-amplify/core';
 
 import {
 	Draft,
@@ -108,7 +108,7 @@ import { BackgroundProcessManager } from '@aws-amplify/core/internals/utils';
 setAutoFreeze(true);
 enablePatches();
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 const ulid = monotonicUlidFactory(Date.now());
 

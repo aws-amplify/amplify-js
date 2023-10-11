@@ -8,7 +8,7 @@ import {
 	AWSCredentialsAndIdentityId,
 	getCredentialsForIdentity,
 	GetCredentialsOptions,
-	Logger
+	ConsoleLogger
 } from '@aws-amplify/core';
 import {
 	assertIdentityPoolIdConfig,
@@ -20,7 +20,7 @@ import { IdentityIdStore } from './types';
 import { getRegionFromIdentityPoolId } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertIdTokenInAuthTokens } from '../utils/types';
 
-const logger = new Logger('CognitoCredentialsProvider');
+const logger = new ConsoleLogger('CognitoCredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
 export class CognitoAWSCredentialsAndIdentityIdProvider
 	implements AWSCredentialsAndIdentityIdProvider

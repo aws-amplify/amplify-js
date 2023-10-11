@@ -34,7 +34,7 @@ import {
 	AmplifyError,
 } from '@aws-amplify/core/internals/utils';
 
-import { Amplify, Hub, Logger } from '@aws-amplify/core';
+import { Amplify, Hub, ConsoleLogger } from '@aws-amplify/core';
 
 import { ModelPredicateCreator } from '../../predicates';
 import { getSyncErrorType } from './errorMaps';
@@ -44,7 +44,7 @@ const opResultDefaults = {
 	startedAt: null,
 };
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();

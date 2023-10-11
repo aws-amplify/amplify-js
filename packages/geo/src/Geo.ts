@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify, Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger } from '@aws-amplify/core';
 import { AmazonLocationServiceProvider } from './providers/location-service/AmazonLocationServiceProvider';
 
 import { validateCoordinates } from './util';
@@ -24,7 +24,7 @@ import {
 	searchByPlaceIdOptions,
 } from './types';
 
-const logger = new Logger('Geo');
+const logger = new ConsoleLogger('Geo');
 
 const DEFAULT_PROVIDER = 'AmazonLocationService';
 export class GeoClass {

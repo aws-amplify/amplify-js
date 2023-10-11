@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Observable, Observer, SubscriptionLike } from 'rxjs';
 import { ReachabilityMonitor } from './datastoreReachability';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 const RECONNECTING_IN = 5000; // 5s this may be configurable in the future
 

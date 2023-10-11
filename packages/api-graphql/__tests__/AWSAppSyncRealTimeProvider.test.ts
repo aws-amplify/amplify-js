@@ -11,7 +11,7 @@ jest.mock('@aws-amplify/core', () => ({
 
 import { Observable, Observer } from 'rxjs';
 import { Reachability } from '@aws-amplify/core/internals/utils';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 import { MESSAGE_TYPES } from '../src/Providers/constants';
 import * as constants from '../src/Providers/constants';
 
@@ -113,7 +113,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 			describe('connection logic with mocked websocket', () => {
 				let fakeWebSocketInterface: FakeWebSocketInterface;
 				const loggerSpy: jest.SpyInstance = jest.spyOn(
-					Logger.prototype,
+					ConsoleLogger.prototype,
 					'_log'
 				);
 

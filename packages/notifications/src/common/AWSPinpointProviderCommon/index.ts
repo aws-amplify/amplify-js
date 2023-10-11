@@ -9,7 +9,7 @@ import {
 	InAppMessagingAction,
 	PushNotificationAction,
 } from '@aws-amplify/core/internals/utils';
-import { Cache, fetchAuthSession, Logger } from '@aws-amplify/core';
+import { Cache, fetchAuthSession, ConsoleLogger } from '@aws-amplify/core';
 
 import {
 	Event as AWSPinpointAnalyticsEvent,
@@ -38,7 +38,7 @@ export default abstract class AWSPinpointProviderCommon
 	protected config: Record<string, any> = {};
 	protected endpointInitialized = false;
 	protected initialized = false;
-	protected logger: Logger;
+	protected logger: ConsoleLogger;
 
 	constructor(logger) {
 		// this.config = { storage: new StorageHelper().getStorage() };

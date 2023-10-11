@@ -4,7 +4,7 @@
 import { EventBuffer } from '../../../utils';
 import { PersonalizeBufferEvent, PersonalizeEvent } from '../types';
 import { isBrowser } from '@aws-amplify/core/internals/utils';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 enum HTML5_MEDIA_EVENT {
 	'PLAY' = 'play',
@@ -36,7 +36,7 @@ type MediaAutoTrackConfig = {
 	event: PersonalizeEvent;
 };
 
-const logger = new Logger('MediaAutoTrack');
+const logger = new ConsoleLogger('MediaAutoTrack');
 
 const startIframeAutoTracking = (
 	element: HTMLElement,

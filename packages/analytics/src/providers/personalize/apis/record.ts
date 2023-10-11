@@ -15,13 +15,13 @@ import {
 	resolveCredentials,
 } from '../../../utils';
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 import {
 	IDENTIFY_EVENT_TYPE,
 	MEDIA_AUTO_TRACK_EVENT_TYPE,
 } from '../utils/constants';
 
-const logger = new Logger('Personalize');
+const logger = new ConsoleLogger('Personalize');
 
 export const record = ({
 	userId,

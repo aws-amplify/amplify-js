@@ -8,9 +8,9 @@ import {
 } from '../../../utils';
 import { getEventBuffer } from '../utils/getEventBuffer';
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 
-const logger = new Logger('Kinesis');
+const logger = new ConsoleLogger('Kinesis');
 
 /**
  * Flushes all buffered Kinesis events to the service.

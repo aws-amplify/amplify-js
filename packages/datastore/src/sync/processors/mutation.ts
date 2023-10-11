@@ -13,7 +13,7 @@ import {
 	GraphQLAuthMode,
 	AmplifyError,
 } from '@aws-amplify/core/internals/utils';
-import { Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 import { Observable, Observer } from 'rxjs';
 import { MutationEvent } from '../';
@@ -50,7 +50,7 @@ import { getMutationErrorType } from './errorMaps';
 
 const MAX_ATTEMPTS = 10;
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 type MutationProcessorEvent = {
 	operation: TransformerMutationType;
