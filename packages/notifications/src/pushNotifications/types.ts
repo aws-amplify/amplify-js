@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { EventListener } from '../common';
-import { PinpointProviderConfig } from '../common/AWSPinpointProviderCommon/types';
+import { PinpointProviderConfig } from '../common/providers/pinpoint/types';
 import {
 	NotificationsProvider,
 	NotificationsSubCategory as NotificationsSubCategories,
@@ -31,16 +30,12 @@ export interface PushNotificationInterface {
 	) => Promise<boolean>;
 	onNotificationReceivedInBackground: (
 		handler: OnPushNotificationMessageHandler
-	) => EventListener<OnPushNotificationMessageHandler>;
+	) => void;
 	onNotificationReceivedInForeground: (
 		handler: OnPushNotificationMessageHandler
-	) => EventListener<OnPushNotificationMessageHandler>;
-	onNotificationOpened: (
-		handler: OnPushNotificationMessageHandler
-	) => EventListener<OnPushNotificationMessageHandler>;
-	onTokenReceived: (
-		handler: OnTokenReceivedHandler
-	) => EventListener<OnTokenReceivedHandler>;
+	) => void;
+	onNotificationOpened: (handler: OnPushNotificationMessageHandler) => void;
+	onTokenReceived: (handler: OnTokenReceivedHandler) => void;
 }
 
 export interface PushNotificationProvider extends NotificationsProvider {

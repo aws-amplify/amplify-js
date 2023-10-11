@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { AWSPinpointProviderCommon } from './common';
-export { PinpointUserInfo } from './common/AWSPinpointProviderCommon/types';
 export {
 	PushNotificationMessage,
 	PushNotificationPermissions,
