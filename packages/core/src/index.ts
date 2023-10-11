@@ -66,3 +66,6 @@ export { BrowserStorageCache as Cache }; // Maintain interoperability with React
 
 // Internationalization utilities
 export { I18n } from './I18n';
+
+// Service worker
+export { ServiceWorker } from './ServiceWorker';

@@ -29,6 +29,7 @@ export enum Category {
 	API = 'api',
 	Auth = 'auth',
 	Analytics = 'analytics',
+	Core = 'core',
 	DataStore = 'datastore',
 	Geo = 'geo',
 	InAppMessaging = 'inappmessaging',

@@ -69,9 +69,6 @@ export {
 } from './Platform/types';
 export { setCustomUserAgent } from './Platform/customUserAgent';
 
-// Service worker
-export { ServiceWorker } from './ServiceWorker';
-
 // Other utilities & constants
 export { BackgroundProcessManager } from './BackgroundProcessManager';
 export { Mutex } from './Mutex';
