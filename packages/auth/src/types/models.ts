@@ -273,5 +273,4 @@ export type AuthUser = {
  */
 export type AuthDevice = {
 	id: string;
-	name?: string;
 };
