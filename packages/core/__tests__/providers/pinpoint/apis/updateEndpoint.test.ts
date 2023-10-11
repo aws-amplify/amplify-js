@@ -3,7 +3,7 @@
 
 import { v4 } from 'uuid';
 import { getClientInfo } from '../../../../src/utils/getClientInfo';
-import { updateEndpoint as clientUpdateEndpoint } from '../../../../src/AwsClients/Pinpoint';
+import { updateEndpoint as clientUpdateEndpoint } from '../../../../src/awsClients/pinpoint';
 import {
 	cacheEndpointId,
 	getEndpointId,
