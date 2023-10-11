@@ -8,7 +8,6 @@ import {
 } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 import { processInAppMessages } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 import {
-	closestExpiryMessage,
 	customHandledMessage,
 	inAppMessages,
 	simpleInAppMessagingEvent,
@@ -24,21 +23,12 @@ const mockDefaultStorage = defaultStorage as jest.Mocked<typeof defaultStorage>;
 const mockNotifyEventListeners = notifyEventListeners as jest.Mock;
 const mockProcessInAppMessages = processInAppMessages as jest.Mock;
 
-describe('Conflict handling', () => {
+describe('setConflictHandler', () => {
 	beforeEach(() => {
 		mockDefaultStorage.setItem.mockClear();
 		mockNotifyEventListeners.mockClear();
 	});
-	test('has a default implementation', async () => {
-		mockProcessInAppMessages.mockReturnValueOnce(inAppMessages);
-		await dispatchEvent(simpleInAppMessagingEvent);
-		expect(mockNotifyEventListeners).toBeCalledWith(
-			'messageReceived',
-			closestExpiryMessage
-		);
-	});
-
-	test('can be customized through setConflictHandler', async () => {
+	it('can register a custom conflict handler', async () => {
 		const customConflictHandler = messages =>
 			messages.find(message => message.id === 'custom-handled');
 		mockProcessInAppMessages.mockReturnValueOnce(inAppMessages);

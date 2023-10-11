@@ -30,20 +30,7 @@ let eventNameMemo = {};
 let eventAttributesMemo = {};
 let eventMetricsMemo = {};
 
-export const logger = new ConsoleLogger('InAppMessaging.Pinpoint');
-
-export const dispatchInAppMessagingEvent = (
-	event: string,
-	data: any,
-	message?: string
-) => {
-	Hub.dispatch(
-		'inAppMessaging',
-		{ event, data, message },
-		'InAppMessaging',
-		AMPLIFY_SYMBOL
-	);
-};
+export const logger = new ConsoleLogger('InAppMessaging.Pinpoint.Utils');
 
 export const recordAnalyticsEvent = (
 	event: PinpointMessageEvent,
