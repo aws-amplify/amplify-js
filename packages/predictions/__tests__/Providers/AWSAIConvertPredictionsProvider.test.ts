@@ -305,8 +305,10 @@ describe('Predictions convert provider test', () => {
 
 			return expect(
 				predictionsProvider.convert(validSpeechToTextInput)
-			).rejects.toMatch(
-				validationErrorMap[PredictionsValidationErrorCode.NoRegion].message
+			).rejects.toThrow(
+				expect.objectContaining(
+					validationErrorMap[PredictionsValidationErrorCode.NoRegion]
+				)
 			);
 		});
 		test('Error languageCode not configured ', () => {
@@ -334,8 +336,10 @@ describe('Predictions convert provider test', () => {
 
 			expect(
 				predictionsProvider.convert(validSpeechToTextInput)
-			).rejects.toMatch(
-				validationErrorMap[PredictionsValidationErrorCode.NoLanguage].message
+			).rejects.toThrow(
+				expect.objectContaining(
+					validationErrorMap[PredictionsValidationErrorCode.NoLanguage]
+				)
 			);
 		});
 		test('Happy case ', () => {
