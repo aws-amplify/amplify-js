@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ConsoleLogger as Logger } from '../Logger';
+import { ConsoleLogger as Logger } from '../../Logger';
 
 const logger = new Logger('ClientDevice_Browser');
 
-export function clientInfo() {
+export function getClientInfo() {
 	if (typeof window === 'undefined') {
 		return {};
 	}
@@ -25,7 +25,7 @@ function browserClientInfo() {
 	}
 
 	const { platform, product, vendor, userAgent, language } = nav;
-	const type = browserType(userAgent);
+	const type = getBrowserType(userAgent);
 	const timezone = browserTimezone();
 
 	return {
@@ -39,24 +39,12 @@ function browserClientInfo() {
 	};
 }
 
-export function dimension() {
-	if (typeof window === 'undefined') {
-		logger.warn('No window object available to get browser client info');
-		return { width: 320, height: 320 };
-	}
-
-	return {
-		width: window.innerWidth,
-		height: window.innerHeight,
-	};
-}
-
 function browserTimezone() {
 	const tzMatch = /\(([A-Za-z\s].*)\)/.exec(new Date().toString());
 	return tzMatch ? tzMatch[1] || '' : '';
 }
 
-export function browserType(userAgent: string) {
+function getBrowserType(userAgent: string) {
 	const operaMatch = /.+(Opera[\s[A-Z]*|OPR[\sA-Z]*)\/([0-9\.]+).*/i.exec(
 		userAgent
 	);
