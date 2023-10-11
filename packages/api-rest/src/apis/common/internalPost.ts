@@ -60,7 +60,7 @@ export const cancel = (
 	const controller = cancelTokenMap.get(promise);
 	if (controller) {
 		controller.abort(message);
-		if (controller.signal.reason !== message) {
+		if (message && controller.signal.reason !== message) {
 			// In runtimes where `AbortSignal.reason` is not supported, we track the reason ourselves.
 			// @ts-expect-error reason is read-only property.
 			controller.signal['reason'] = message;
