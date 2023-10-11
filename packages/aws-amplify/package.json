@@ -306,7 +306,7 @@
 			"name": "[Auth] signUp (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signUp }",
-			"limit": "30.51 kB"
+			"limit": "30.52 kB"
 		},
 		{
 			"name": "[Auth] resetPassword (Cognito)",
@@ -372,7 +372,7 @@
 			"name": "[Auth] setUpTOTP (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ setUpTOTP }",
-			"limit": "12.75 kB"
+			"limit": "12.76 kB"
 		},
 		{
 			"name": "[Auth] updateUserAttributes (Cognito)",
@@ -426,7 +426,7 @@
 			"name": "[Storage] downloadData (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ downloadData }",
-			"limit": "18.30 kB"
+			"limit": "18.67 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
