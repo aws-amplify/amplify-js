@@ -55,7 +55,12 @@ export class InternalGraphQLAPIClass {
 	private _options;
 	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
-	private _api = { post, cancelREST, updateRequestToBeCancellable };
+	private _api = {
+		post,
+		cancelREST,
+		isCancelErrorREST,
+		updateRequestToBeCancellable,
+	};
 
 	/**
 	 * Initialize GraphQL API with AWS configuration
@@ -316,7 +321,7 @@ export class InternalGraphQLAPIClass {
 			// If the exception is because user intentionally
 			// cancelled the request, do not modify the exception
 			// so that clients can identify the exception correctly.
-			if (isCancelErrorREST(err)) {
+			if (this._api.isCancelErrorREST(err)) {
 				throw err;
 			}
 
@@ -341,7 +346,7 @@ export class InternalGraphQLAPIClass {
 	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
 	 */
 	isCancelError(error: any): boolean {
-		return isCancelErrorREST(error);
+		return this._api.isCancelErrorREST(error);
 	}
 
 	/**

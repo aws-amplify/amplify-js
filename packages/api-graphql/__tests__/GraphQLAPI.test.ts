@@ -1,5 +1,5 @@
 import * as raw from '../src';
-import { graphql, cancel } from '../src/internals/v6';
+import { graphql, cancel, isCancelError } from '../src/internals/v6';
 import { Amplify } from 'aws-amplify';
 import { Amplify as AmplifyCore } from '@aws-amplify/core';
 import * as typedQueries from './fixtures/with-types/queries';
@@ -58,7 +58,12 @@ jest.mock('aws-amplify', () => {
 	return mockedModule;
 });
 
-const client = { [__amplify]: amplify, graphql, cancel } as V6Client;
+const client = {
+	[__amplify]: amplify,
+	graphql,
+	cancel,
+	isCancelError,
+} as V6Client;
 
 afterEach(() => {
 	jest.restoreAllMocks();
@@ -139,6 +144,42 @@ describe('API test', () => {
 
 			const request = Promise.resolve();
 			expect(client.cancel(request)).toBe(true);
+		});
+
+		test('cancel-graphql-query', async () => {
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'apiKey',
+						apiKey: 'FAKE-KEY',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
+					},
+				},
+			});
+
+			jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'cancelREST')
+				.mockReturnValue(true);
+
+			jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'isCancelErrorREST')
+				.mockReturnValue(true);
+
+			let promiseToCancel;
+			let isCancelErrorResult;
+
+			try {
+				promiseToCancel = client.graphql({ query: 'query' });
+				await promiseToCancel;
+			} catch (e) {
+				isCancelErrorResult = client.isCancelError(e);
+			}
+
+			const cancellationResult = client.cancel(promiseToCancel);
+
+			expect(cancellationResult).toBe(true);
+			expect(isCancelErrorResult).toBe(true);
 		});
 
 		test('happy-case-query-oidc', async () => {
