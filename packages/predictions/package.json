@@ -55,6 +55,7 @@
 		"@smithy/util-utf8": "2.0.0",
 		"buffer": "4.9.2",
 		"tslib": "^2.5.0",
+		"typescript": "5.0.2",
 		"uuid": "^9.0.0"
 	},
 	"peerDependencies": {

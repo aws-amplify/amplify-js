@@ -15,6 +15,7 @@ import {
 	TextSentiment,
 	TextSyntax,
 	KeyPhrases,
+	InterpretTextOthers,
 	isInterpretTextInput,
 } from '../types';
 import {
