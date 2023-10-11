@@ -26,7 +26,7 @@ describe('dispatchEvent', () => {
 		mockDefaultStorage.setItem.mockClear();
 		mockNotifyEventListeners.mockClear();
 	});
-	test('gets in-app messages from store and notifies listeners', async () => {
+	it('gets in-app messages from store and notifies listeners', async () => {
 		const [message] = inAppMessages;
 		mockDefaultStorage.getItem.mockResolvedValueOnce(
 			JSON.stringify(simpleInAppMessages)
@@ -40,7 +40,7 @@ describe('dispatchEvent', () => {
 		expect(mockNotifyEventListeners).toBeCalledWith('messageReceived', message);
 	});
 
-	test('handles conflicts through default conflict handler', async () => {
+	it('handles conflicts through default conflict handler', async () => {
 		mockDefaultStorage.getItem.mockResolvedValueOnce(
 			JSON.stringify(simpleInAppMessages)
 		);
@@ -56,7 +56,7 @@ describe('dispatchEvent', () => {
 		);
 	});
 
-	test('does not notify listeners if no messages are returned', async () => {
+	it('does not notify listeners if no messages are returned', async () => {
 		mockProcessInAppMessages.mockReturnValueOnce([]);
 		mockDefaultStorage.getItem.mockResolvedValueOnce(
 			JSON.stringify(simpleInAppMessages)
@@ -67,7 +67,7 @@ describe('dispatchEvent', () => {
 		expect(mockNotifyEventListeners).not.toBeCalled();
 	});
 
-	test('logs error if storage retrieval fails', async () => {
+	it('logs error if storage retrieval fails', async () => {
 		mockDefaultStorage.getItem.mockRejectedValueOnce(Error);
 		await expect(
 			dispatchEvent(simpleInAppMessagingEvent)
