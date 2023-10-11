@@ -6,17 +6,15 @@ import { OnMessageActionTakenInput } from '../types/inputs';
 import { OnMessageActionTakenOutput } from '../types/outputs';
 
 /**
- * Registers a callback handler that is fired upon a message action taken event
+ * Registers a callback that will be invoked on `messageActionTaken` events.
  *
  * @param {OnMessageActionTakenInput} input - The input object that holds the callback handler.
- *
- *
  * @returns {OnMessageActionTakenOutput} - An object that holds a remove method to stop listening to events.
- *
  * @example
  * ```ts
  * onMessageActionTaken((message) => {
  *   // use the message
+ *   console.log(message.id);
  * });
  * ```
  */

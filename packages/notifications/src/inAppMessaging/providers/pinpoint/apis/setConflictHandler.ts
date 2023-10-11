@@ -10,12 +10,12 @@ export let conflictHandler: InAppMessageConflictHandler =
 /**
  * Set a conflict handler that will be used to resolve conflicts that may emerge
  * when matching events with synced messages.
+ *
  * @remark
- * The conflict handler is not persisted across app restarts and needs to be called before dispatching an event.
+ * The conflict handler is not persisted across app restarts and so must be set again before dispatching an event for
+ * any custom handling to take effect.
  *
  * @param SetConflictHandlerInput: The input object that holds the conflict handler to be used.
- *
- *
  * @example
  * ```ts
  * // Sync messages before dispatching an event
@@ -32,7 +32,7 @@ export let conflictHandler: InAppMessageConflictHandler =
  * setConflictHandler(myConflictHandler);
  *
  * // Dispatch an event
- * await dispatchEvent({ name: "test_event" });
+ * await dispatchEvent({ name: 'test_event' });
  * ```
  */
 export function setConflictHandler(input: SetConflictHandlerInput): void {

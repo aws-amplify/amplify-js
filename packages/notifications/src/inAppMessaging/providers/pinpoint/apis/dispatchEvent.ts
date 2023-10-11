@@ -26,11 +26,8 @@ import { conflictHandler, setConflictHandler } from './setConflictHandler';
  * your own logic for resolving message conflicts.
  *
  * @param DispatchEventInput The input object that holds the event to be dispatched.
- *
  * @throws service exceptions - Thrown when the underlying Pinpoint service returns an error.
- *
  * @returns A promise that will resolve when the operation is complete.
- *
  * @example
  * ```ts
  * // Sync message before disptaching an event
