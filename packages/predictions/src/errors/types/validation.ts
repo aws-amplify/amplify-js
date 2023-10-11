@@ -4,6 +4,7 @@
 import { AmplifyErrorMap } from '@aws-amplify/core/internals/utils';
 
 export enum PredictionsValidationErrorCode {
+	CelebrityDetectionNotEnabled = 'CelebrityDetectionNotEnabled',
 	InvalidSource = 'InvalidSource',
 	NoCredentials = 'NoCredentials',
 	NoLanguage = 'NoLanguage',
@@ -16,6 +17,9 @@ export enum PredictionsValidationErrorCode {
 
 export const validationErrorMap: AmplifyErrorMap<PredictionsValidationErrorCode> =
 	{
+		[PredictionsValidationErrorCode.CelebrityDetectionNotEnabled]: {
+			message: 'Celebrity Detection must be enabled.',
+		},
 		[PredictionsValidationErrorCode.NoCredentials]: {
 			message: 'Credentials should not be empty.',
 		},

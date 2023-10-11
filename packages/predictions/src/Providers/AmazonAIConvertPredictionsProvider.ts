@@ -95,15 +95,11 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			TargetLanguageCode: targetLanguageCode,
 			Text: input.translateText?.source?.text,
 		});
-		try {
-			const data = await this.translateClient.send(translateTextCommand);
-			return {
-				text: data.TranslatedText,
-				language: data.TargetLanguageCode,
-			} as TranslateTextOutput;
-		} catch (err) {
-			return Promise.reject(err);
-		}
+		const data = await this.translateClient.send(translateTextCommand);
+		return {
+			text: data.TranslatedText,
+			language: data.TargetLanguageCode,
+		} as TranslateTextOutput;
 	}
 
 	protected async convertTextToSpeech(
@@ -147,78 +143,66 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			SampleRate: '24000',
 			// tslint:disable-next-line: align
 		});
-		try {
-			const data = await this.pollyClient.send(synthesizeSpeechCommand);
-			const response = new Response(data.AudioStream as ReadableStream);
-			const arrayBuffer = await response.arrayBuffer();
-			const blob = new Blob([arrayBuffer], {
-				type: data.ContentType,
-			});
-			const url = URL.createObjectURL(blob);
-			return {
-				speech: { url },
-				audioStream: arrayBuffer,
-				text: input.textToSpeech?.source?.text,
-			} as TextToSpeechOutput;
-		} catch (err) {
-			return Promise.reject(err);
-		}
+		const data = await this.pollyClient.send(synthesizeSpeechCommand);
+		const response = new Response(data.AudioStream as ReadableStream);
+		const arrayBuffer = await response.arrayBuffer();
+		const blob = new Blob([arrayBuffer], {
+			type: data.ContentType,
+		});
+		const url = URL.createObjectURL(blob);
+		return {
+			speech: { url },
+			audioStream: arrayBuffer,
+			text: input.textToSpeech?.source?.text,
+		} as TextToSpeechOutput;
 	}
 
 	protected async convertSpeechToText(
 		input: SpeechToTextInput
 	): Promise<SpeechToTextOutput> {
-		try {
-			logger.debug('starting transcription..');
-			const { credentials } = await fetchAuthSession();
-			assertValidationError(
-				!!credentials,
-				PredictionsValidationErrorCode.NoCredentials
-			);
+		logger.debug('starting transcription..');
+		const { credentials } = await fetchAuthSession();
+		assertValidationError(
+			!!credentials,
+			PredictionsValidationErrorCode.NoCredentials
+		);
 
-			const { transcription } = Amplify.getConfig().Predictions?.convert ?? {};
-			assertValidationError(
-				!!transcription?.region,
-				PredictionsValidationErrorCode.NoRegion
-			);
+		const { transcription } = Amplify.getConfig().Predictions?.convert ?? {};
+		assertValidationError(
+			!!transcription?.region,
+			PredictionsValidationErrorCode.NoRegion
+		);
 
-			const { defaults, region } = transcription;
-			const language = input.transcription?.language ?? defaults?.language;
+		const { defaults, region } = transcription;
+		const language = input.transcription?.language ?? defaults?.language;
 
-			assertValidationError(
-				!!language,
-				PredictionsValidationErrorCode.NoLanguage
-			);
+		assertValidationError(
+			!!language,
+			PredictionsValidationErrorCode.NoLanguage
+		);
 
-			const source = input.transcription?.source;
-			assertValidationError(
-				isBytesSource(source),
-				PredictionsValidationErrorCode.InvalidSource
-			);
+		const source = input.transcription?.source;
+		assertValidationError(
+			isBytesSource(source),
+			PredictionsValidationErrorCode.InvalidSource
+		);
 
-			const connection = await this.openConnectionWithTranscribe({
-				credentials,
-				region,
-				languageCode: language,
-			});
+		const connection = await this.openConnectionWithTranscribe({
+			credentials,
+			region,
+			languageCode: language,
+		});
 
-			try {
-				const fullText = await this.sendDataToTranscribe({
-					connection,
-					raw: source.bytes,
-					languageCode: language,
-				});
-				return {
-					transcription: {
-						fullText,
-					},
-				};
-			} catch (err) {
-				return Promise.reject(err);
-			}
-		} catch (err) {
-			return Promise.reject(err.name + ': ' + err.message);
-		}
+		const fullText = await this.sendDataToTranscribe({
+			connection,
+			raw: source.bytes,
+			languageCode: language,
+		});
+		return {
+			transcription: {
+				fullText,
+			},
+		};
 	}
 
 	public static serializeDataFromTranscribe(message) {
