@@ -76,6 +76,7 @@ export const transferHandler = async (
 	};
 
 	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
+	let response: RestApiResponse;
 	if (isIamAuthApplicable) {
 		const signingInfoFromUrl = parseSigningInfo(url);
 		const signingService =
@@ -83,17 +84,23 @@ export const transferHandler = async (
 		const signingRegion =
 			signingServiceInfo?.region ?? signingInfoFromUrl.region;
 		const credentials = await resolveCredentials(amplify);
-		return await authenticatedHandler(request, {
+		response = await authenticatedHandler(request, {
 			...baseOptions,
 			credentials,
 			region: signingRegion,
 			service: signingService,
 		});
 	} else {
-		return await unauthenticatedHandler(request, {
+		response = await unauthenticatedHandler(request, {
 			...baseOptions,
 		});
 	}
+	// Clean-up un-modeled properties from response.
+	return {
+		statusCode: response.statusCode,
+		headers: response.headers,
+		body: response.body,
+	};
 };
 
 const iamAuthApplicable = (
