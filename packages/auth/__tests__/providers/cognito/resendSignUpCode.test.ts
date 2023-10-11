@@ -34,15 +34,18 @@ describe('ResendSignUp API Happy Path Cases:', () => {
 	afterEach(() => {
 		resendSignUpSpy.mockClear();
 	});
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
 	test('ResendSignUp API should call the UserPoolClient and should return a ResendSignUpCodeResult', async () => {
 		const result = await resendSignUpCode({
 			username: user1.username,
 		});
 		expect(result).toEqual(authAPITestParams.resendSignUpAPIResult);
 		expect(resendSignUpSpy).toHaveBeenCalledWith(
-			{ 
+			{
 				region: 'us-west-2',
-				userAgentValue: expect.any(String)
+				userAgentValue: expect.any(String),
 			},
 			{
 				ClientMetadata: undefined,
@@ -56,7 +59,9 @@ describe('ResendSignUp API Happy Path Cases:', () => {
 
 describe('ResendSignUp API Error Path Cases:', () => {
 	const { user1 } = authAPITestParams;
-
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
 	test('ResendSignUp API should throw a validation AuthError when username is empty', async () => {
 		expect.assertions(2);
 		try {
@@ -89,3 +94,49 @@ describe('ResendSignUp API Error Path Cases:', () => {
 });
 
 describe('ResendSignUp API Edge Cases:', () => {});
+
+describe('Cognito ASF', () => {
+	let resendSignUpSpy;
+	const { user1 } = authAPITestParams;
+	beforeEach(() => {
+		resendSignUpSpy = jest
+			.spyOn(resendSignUpConfirmationCodeClient, 'resendConfirmationCode')
+			.mockImplementationOnce(async () => {
+				return authAPITestParams.resendSignUpClientResult as ResendConfirmationCodeCommandOutput;
+			});
+
+		// load Cognito ASF polyfill
+		window['AmazonCognitoAdvancedSecurityData'] = {
+			getData() {
+				return 'abcd';
+			},
+		};
+	});
+
+	afterEach(() => {
+		resendSignUpSpy.mockClear();
+		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+	});
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
+	test('ResendSignUp API should send UserContextData', async () => {
+		const result = await resendSignUpCode({
+			username: user1.username,
+		});
+		expect(result).toEqual(authAPITestParams.resendSignUpAPIResult);
+		expect(resendSignUpSpy).toHaveBeenCalledWith(
+			{
+				region: 'us-west-2',
+				userAgentValue: expect.any(String),
+			},
+			{
+				ClientMetadata: undefined,
+				Username: user1.username,
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				UserContextData: { EncodedData: 'abcd' },
+			}
+		);
+		expect(resendSignUpSpy).toBeCalledTimes(1);
+	});
+});
