@@ -150,7 +150,7 @@ export const getMultipartUploadHandlers = (
 			{
 				...s3Config,
 				abortSignal: abortController.signal,
-				userAgentValue: getStorageUserAgentValue(StorageAction.UploadData)
+				userAgentValue: getStorageUserAgentValue(StorageAction.UploadData),
 			},
 			{
 				Bucket: bucket,
@@ -215,9 +215,9 @@ export const getMultipartUploadHandlers = (
 	const onResume = () => {
 		startUploadWithResumability();
 	};
-	const onCancel = (abortErrorOverwrite?: Error) => {
+	const onCancel = (message?: string) => {
 		// 1. abort in-flight API requests
-		abortController?.abort(abortErrorOverwrite);
+		abortController?.abort(message);
 
 		const cancelUpload = async () => {
 			// 2. clear upload cache.
@@ -236,13 +236,9 @@ export const getMultipartUploadHandlers = (
 		});
 
 		rejectCallback!(
-			abortErrorOverwrite ??
-				// Internal error that should not be exposed to the users. They should use isCancelError() to check if
-				// the error is caused by cancel().
-				new CanceledError({
-					name: 'StorageCanceledError',
-					message: 'Upload is canceled by user',
-				})
+			// Internal error that should not be exposed to the users. They should use isCancelError() to check if
+			// the error is caused by cancel().
+			new CanceledError(message ? { message } : undefined)
 		);
 	};
 	return {
