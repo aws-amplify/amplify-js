@@ -92,7 +92,6 @@ class ClientsQueue {
 	}
 }
 
-// TODOV6 - Custom hub payload types
 const dispatchPubSubEvent = (payload: HubPayload) => {
 	Hub.dispatch('pubsub', payload, 'PubSub', AMPLIFY_SYMBOL);
 };
