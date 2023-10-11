@@ -11,7 +11,7 @@ import {
 import { Observable } from 'rxjs';
 import { AmplifyClassV6, Logger } from '@aws-amplify/core';
 import {
-	APIAuthMode,
+	GraphQLAuthMode,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
@@ -28,6 +28,7 @@ import {
 	updateRequestToBeCancellable,
 } from '@aws-amplify/api-rest/internals';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
+import { resolveConfig, resolveLibraryOptions } from '../utils';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -53,7 +54,12 @@ export class InternalGraphQLAPIClass {
 	private _options;
 	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
-	private _api = { post, updateRequestToBeCancellable };
+	private _api = {
+		post,
+		cancelREST,
+		isCancelErrorREST,
+		updateRequestToBeCancellable,
+	};
 
 	/**
 	 * Initialize GraphQL API with AWS configuration
@@ -70,7 +76,7 @@ export class InternalGraphQLAPIClass {
 
 	private async _headerBasedAuth(
 		amplify: AmplifyClassV6,
-		authMode: APIAuthMode,
+		authMode: GraphQLAuthMode,
 		additionalHeaders: { [key: string]: string } = {}
 	) {
 		const config = amplify.getConfig();
@@ -79,7 +85,7 @@ export class InternalGraphQLAPIClass {
 			endpoint: appSyncGraphqlEndpoint,
 			apiKey,
 			defaultAuthMode,
-		} = config.API?.GraphQL || {};
+		} = resolveConfig(amplify);
 
 		const authenticationType = authMode || defaultAuthMode || 'iam';
 		let headers = {};
@@ -129,9 +135,6 @@ export class InternalGraphQLAPIClass {
 			case 'none':
 				break;
 			default:
-				headers = {
-					Authorization: null,
-				};
 				break;
 		}
 
@@ -217,25 +220,42 @@ export class InternalGraphQLAPIClass {
 		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
-		const config = amplify.getConfig();
+		const {
+			region: region,
+			endpoint: appSyncGraphqlEndpoint,
+			customEndpoint,
+			customEndpointRegion,
+		} = resolveConfig(amplify);
 
-		const { region: region, endpoint: appSyncGraphqlEndpoint } =
-			config.API?.GraphQL || {};
-
-		const customGraphqlEndpoint = null;
-		const customEndpointRegion = null;
+		// Retrieve library options from Amplify configuration
+		const { headers: customHeaders, withCredentials } =
+			resolveLibraryOptions(amplify);
 
 		// TODO: Figure what we need to do to remove `!`'s.
 		const headers = {
-			...(!customGraphqlEndpoint &&
+			...(!customEndpoint &&
 				(await this._headerBasedAuth(amplify, authMode!, additionalHeaders))),
-			...((customGraphqlEndpoint &&
+			/**
+			 * Custom endpoint headers.
+			 * If there is both a custom endpoint and custom region present, we get the headers.
+			 * If there is a custom endpoint but no region, we return an empty object.
+			 * If neither are present, we return an empty object.
+			 */
+			...((customEndpoint &&
 				(customEndpointRegion
 					? await this._headerBasedAuth(amplify, authMode!, additionalHeaders)
-					: { Authorization: null })) ||
+					: {})) ||
 				{}),
+			// Custom headers included in Amplify configuration options:
+			...(customHeaders &&
+				(await customHeaders({
+					query: print(query as DocumentNode),
+					variables,
+				}))),
+			// Headers from individual calls to `graphql`:
 			...additionalHeaders,
-			...(!customGraphqlEndpoint && {
+			// User agent headers:
+			...(!customEndpoint && {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 			}),
 		};
@@ -245,7 +265,31 @@ export class InternalGraphQLAPIClass {
 			variables: variables || null,
 		};
 
-		const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
+		let signingServiceInfo;
+
+		/**
+		 * We do not send the signing service info to the REST API under the
+		 * following conditions (i.e. it will not sign the request):
+		 *   - there is a custom endpoint but no region
+		 *   - the auth mode is `none`, or `apiKey`
+		 *   - the auth mode is a type other than the types listed below
+		 */
+		if (
+			(customEndpoint && !customEndpointRegion) ||
+			(authMode !== 'oidc' &&
+				authMode !== 'userPool' &&
+				authMode !== 'iam' &&
+				authMode !== 'lambda')
+		) {
+			signingServiceInfo = null;
+		} else {
+			signingServiceInfo = {
+				service: !customEndpointRegion ? 'appsync' : 'execute-api',
+				region: !customEndpointRegion ? region : customEndpointRegion,
+			};
+		}
+
+		const endpoint = customEndpoint || appSyncGraphqlEndpoint;
 
 		if (!endpoint) {
 			const error = new GraphQLError('No graphql endpoint provided.');
@@ -263,10 +307,8 @@ export class InternalGraphQLAPIClass {
 				options: {
 					headers,
 					body,
-					signingServiceInfo: {
-						service: 'appsync',
-						region,
-					},
+					signingServiceInfo,
+					withCredentials,
 				},
 				abortController,
 			});
@@ -278,7 +320,7 @@ export class InternalGraphQLAPIClass {
 			// If the exception is because user intentionally
 			// cancelled the request, do not modify the exception
 			// so that clients can identify the exception correctly.
-			if (isCancelErrorREST(err)) {
+			if (this._api.isCancelErrorREST(err)) {
 				throw err;
 			}
 
@@ -303,7 +345,7 @@ export class InternalGraphQLAPIClass {
 	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
 	 */
 	isCancelError(error: any): boolean {
-		return isCancelErrorREST(error);
+		return this._api.isCancelErrorREST(error);
 	}
 
 	/**
@@ -312,7 +354,7 @@ export class InternalGraphQLAPIClass {
 	 * @returns - A boolean indicating if the request was cancelled
 	 */
 	cancel(request: Promise<any>, message?: string): boolean {
-		return cancelREST(request, message);
+		return this._api.cancelREST(request, message);
 	}
 
 	private _graphqlSubscribe(
@@ -321,7 +363,8 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
-		const { GraphQL } = amplify.getConfig().API ?? {};
+		const config = resolveConfig(amplify);
+
 		if (!this.appSyncRealTime) {
 			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
 		}
@@ -329,10 +372,10 @@ export class InternalGraphQLAPIClass {
 			{
 				query: print(query as DocumentNode),
 				variables,
-				appSyncGraphqlEndpoint: GraphQL?.endpoint,
-				region: GraphQL?.region,
-				authenticationType: authMode ?? GraphQL?.defaultAuthMode,
-				apiKey: GraphQL?.apiKey,
+				appSyncGraphqlEndpoint: config?.endpoint,
+				region: config?.region,
+				authenticationType: config?.defaultAuthMode,
+				apiKey: config?.apiKey,
 				additionalHeaders,
 			},
 			customUserAgentDetails

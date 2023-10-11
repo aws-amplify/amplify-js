@@ -10,7 +10,7 @@ import {
 	NonRetryableError,
 	retry,
 	BackgroundProcessManager,
-	APIAuthMode,
+	GraphQLAuthMode,
 	AmplifyError,
 } from '@aws-amplify/core/internals/utils';
 import { Logger } from '@aws-amplify/core';
@@ -315,7 +315,7 @@ class MutationProcessor {
 		modelConstructor: PersistentModelConstructor<PersistentModel>,
 		MutationEvent: PersistentModelConstructor<MutationEvent>,
 		mutationEvent: MutationEvent,
-		authMode: APIAuthMode,
+		authMode: GraphQLAuthMode,
 		onTerminate: Promise<void>
 	): Promise<
 		[GraphQLResult<Record<string, PersistentModel>>, string, SchemaModel]
