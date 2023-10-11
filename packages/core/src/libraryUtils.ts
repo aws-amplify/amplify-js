@@ -74,10 +74,7 @@ export { setCustomUserAgent } from './Platform/customUserAgent';
 // Service worker
 export { ServiceWorker } from './ServiceWorker';
 
-// Other utilities & constants
-export { BackgroundProcessManager } from './BackgroundProcessManager';
-export { Mutex } from './Mutex';
-export { Reachability } from './Reachability';
+// Error handling
 export {
 	AmplifyError,
 	PlatformNotSupportedError,
@@ -90,6 +87,11 @@ export {
 	AssertionFunction,
 	ServiceError,
 } from './types';
+
+// Other utilities & constants
+export { BackgroundProcessManager } from './BackgroundProcessManager';
+export { Mutex } from './Mutex';
+export { Reachability } from './Reachability';
 export {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 	USER_AGENT_HEADER,

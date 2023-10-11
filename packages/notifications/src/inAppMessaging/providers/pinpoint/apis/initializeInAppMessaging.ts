@@ -3,7 +3,7 @@
 
 import SessionTracker from '../../../sessionTracker';
 import { InAppMessage, InAppMessagingEvent } from '../../../types';
-import { addEventListener } from '../../../../common';
+import { addEventListener } from '../../../../eventListeners';
 import { recordAnalyticsEvent } from '../utils/helpers';
 import { PinpointMessageEvent } from '../types';
 import { Hub, HubCapsule } from '@aws-amplify/core';

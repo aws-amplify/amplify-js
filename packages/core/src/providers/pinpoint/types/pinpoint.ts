@@ -9,7 +9,7 @@ export type SupportedCategory =
 	| 'InAppMessaging'
 	| 'PushNotification';
 
-export type SupportedChannelType = 'APNS' | 'APNS_SANDBOX' | 'GCM' | 'IN_APP';
+type SupportedChannelType = 'APNS' | 'APNS_SANDBOX' | 'GCM' | 'IN_APP';
 
 export type PinpointProviderConfig = {
 	Pinpoint?: {
@@ -39,6 +39,7 @@ export type PinpointAnalyticsEvent = {
 type PinpointCommonParameters = {
 	appId: string;
 	category: SupportedCategory;
+	channelType?: SupportedChannelType;
 	credentials: Required<AuthSession>['credentials'];
 	identityId?: AuthSession['identityId'];
 	region: string;
@@ -47,7 +48,6 @@ type PinpointCommonParameters = {
 
 export type PinpointUpdateEndpointInput = PinpointCommonParameters &
 	PinpointServiceOptions & {
-		channelType?: SupportedChannelType;
 		userId?: string;
 		userProfile?: UserProfile;
 	};

@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
-import {
-	updateEndpoint,
-	getEndpointId,
-} from '@aws-amplify/core/internals/providers/pinpoint';
+import { resolveEndpointId } from '@aws-amplify/core/internals/providers/pinpoint';
 import { defaultStorage } from '@aws-amplify/core';
 import {
 	resolveConfig,
@@ -24,7 +21,6 @@ import {
 import {
 	InAppMessagingValidationErrorCode,
 	assertServiceError,
-	assertValidationError,
 } from '../../../errors';
 import { assertIsInitialized } from '../../../utils';
 
@@ -62,30 +58,17 @@ async function fetchInAppMessages() {
 	try {
 		const { credentials, identityId } = await resolveCredentials();
 		const { appId, region } = resolveConfig();
-		let endpointId = await getEndpointId(appId, CATEGORY);
-
-		// Prepare a Pinpoint endpoint via updateEndpoint if one does not already exist, which will generate and cache an
-		// endpoint ID between calls
-		if (!endpointId) {
-			await updateEndpoint({
-				appId,
-				category: CATEGORY,
-				channelType: CHANNEL_TYPE,
-				credentials,
-				identityId,
-				region,
-				userAgentValue: getInAppMessagingUserAgentString(
-					InAppMessagingAction.SyncMessages
-				),
-			});
-
-			endpointId = await getEndpointId(appId, CATEGORY);
-		}
-
-		assertValidationError(
-			!!endpointId,
-			InAppMessagingValidationErrorCode.NoEndpointId
-		);
+		const endpointId = await resolveEndpointId({
+			appId,
+			category: CATEGORY,
+			channelType: CHANNEL_TYPE,
+			credentials,
+			identityId,
+			region,
+			userAgentValue: getInAppMessagingUserAgentString(
+				InAppMessagingAction.SyncMessages
+			),
+		});
 
 		const input: GetInAppMessagesInput = {
 			ApplicationId: appId,

@@ -2,7 +2,7 @@ import { v4 } from 'uuid';
 import { putEvents as clientPutEvents } from '../../../../src/awsClients/pinpoint';
 import { record } from '../../../../src/providers/pinpoint/apis';
 import { updateEndpoint } from '../../../../src/providers/pinpoint/apis/updateEndpoint';
-import { getEndpointId } from '../../../../src/providers/pinpoint/utils';
+import { resolveEndpointId } from '../../../../src/providers/pinpoint/utils';
 import {
 	appId,
 	category,
@@ -24,23 +24,26 @@ jest.mock('../../../../src/providers/pinpoint/utils/getEventBuffer');
 describe('Pinpoint Provider API: record', () => {
 	const mockGetEventBuffer = getEventBuffer as jest.Mock;
 	const mockClientPutEvents = clientPutEvents as jest.Mock;
-	const mockGetEndpointId = getEndpointId as jest.Mock;
+	const mockResolveEndpointId = resolveEndpointId as jest.Mock;
 	const mockUpdateEndpoint = updateEndpoint as jest.Mock;
 	const mockBufferPush = jest.fn();
 	const mockUuid = v4 as jest.Mock;
 
 	beforeEach(() => {
 		mockUuid.mockReturnValue(uuid);
-		mockClientPutEvents.mockClear();
-		mockUpdateEndpoint.mockReset();
 		mockUpdateEndpoint.mockResolvedValue(undefined);
-		mockGetEndpointId.mockReset();
-		mockGetEndpointId.mockReturnValue(endpointId);
-		mockGetEventBuffer.mockReset();
-		mockBufferPush.mockReset();
+		mockResolveEndpointId.mockReturnValue(endpointId);
 		mockGetEventBuffer.mockReturnValue({
 			push: mockBufferPush,
 		});
+	});
+
+	afterEach(() => {
+		mockClientPutEvents.mockClear();
+		mockUpdateEndpoint.mockReset();
+		mockResolveEndpointId.mockReset();
+		mockGetEventBuffer.mockReset();
+		mockBufferPush.mockReset();
 	});
 
 	it('uses an existing enpoint if available', async () => {
@@ -64,27 +67,6 @@ describe('Pinpoint Provider API: record', () => {
 		);
 	});
 
-	it("prepares an endpoint if one hasn't been setup", async () => {
-		mockGetEndpointId.mockReturnValueOnce(undefined);
-
-		await record({
-			appId,
-			category,
-			credentials,
-			event,
-			identityId,
-			region,
-		});
-
-		expect(mockUpdateEndpoint).toBeCalledWith({
-			appId,
-			category,
-			credentials,
-			identityId,
-			region,
-		});
-	});
-
 	it('does not invoke the service API directly', async () => {
 		await record({
 			appId,
@@ -99,9 +81,6 @@ describe('Pinpoint Provider API: record', () => {
 	});
 
 	it('reuses an existing session if it exists', async () => {
-		const expectedSessionId = uuid;
-		const newUuid = 'new-uuid';
-
 		await record({
 			appId,
 			category,
@@ -132,8 +111,10 @@ describe('Pinpoint Provider API: record', () => {
 		);
 	});
 
-	it('throws an error if it is unable to determine the endpoint ID', async () => {
-		mockGetEndpointId.mockReturnValue(undefined);
+	it('throws an error if it is unable to resolve the endpoint ID', async () => {
+		mockResolveEndpointId.mockImplementation(() => {
+			throw new Error();
+		});
 
 		try {
 			await record({
@@ -145,7 +126,7 @@ describe('Pinpoint Provider API: record', () => {
 				region,
 			});
 		} catch (e) {
-			expect(e.message).toEqual('Endpoint was not created.');
+			expect(e).toBeDefined();
 		}
 
 		expect.assertions(1);
