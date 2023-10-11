@@ -2,19 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyErrorParams } from '@aws-amplify/core/internals/utils';
-import { StorageError } from './StorageError';
+import { RestApiError } from './RestApiError';
 
 /**
- * Internal-only class for CanceledError thrown by XHR handler or multipart upload when cancellation is invoked
- * without overwriting behavior.
+ * Internal-only class for CanceledError.
  *
  * @internal
  */
-export class CanceledError extends StorageError {
+export class CanceledError extends RestApiError {
 	constructor(params: Partial<AmplifyErrorParams> = {}) {
 		super({
 			name: 'CanceledError',
-			message: 'Upload is canceled by user',
+			message: 'Request is canceled by user',
 			...params,
 		});
 
@@ -25,8 +24,7 @@ export class CanceledError extends StorageError {
 }
 
 /**
- * Check if an error is caused by user calling `cancel()` on a upload/download task. If an overwriting error is
- * supplied to `task.cancel(errorOverwrite)`, this function will return `false`.
+ * Check if an error is caused by user calling `cancel()` REST API.
  */
 export const isCancelError = (error: unknown): error is CanceledError =>
 	!!error && error instanceof CanceledError;

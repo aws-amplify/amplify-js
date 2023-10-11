@@ -7,8 +7,9 @@ export type LibraryAPIOptions = {
 		// custom headers for given GraphQL service. Will be applied to all operations.
 		headers?: (options: {
 			query: string;
-			variables: Record<string, DocumentType>;
+			variables?: Record<string, DocumentType>;
 		}) => Promise<Headers>;
+		withCredentials?: boolean;
 	};
 	REST?: {
 		// custom headers for given REST service. Will be applied to all operations.
@@ -41,7 +42,7 @@ type APIGraphQLConfig = {
 	/**
 	 * Default auth mode for all the API calls to given service.
 	 */
-	defaultAuthMode: APIAuthMode;
+	defaultAuthMode: GraphQLAuthMode;
 };
 
 type APIRestConfig = {
@@ -69,7 +70,7 @@ export type APIConfig = {
 	GraphQL?: APIGraphQLConfig;
 };
 
-export type APIAuthMode =
+export type GraphQLAuthMode =
 	| 'apiKey'
 	| 'oidc'
 	| 'userPool'
