@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import type { CanceledError } from '../errors/CanceledError';
+
 export type TransferTaskState =
 	| 'IN_PROGRESS'
 	| 'PAUSED'
@@ -18,11 +20,11 @@ export type TransferTask<Result> = {
 	 * Cancel an ongoing transfer(upload/download) task. This will reject the `result` promise with an `AbortError` by
 	 * default. You can use `isCancelError` to check if the error is caused by cancellation.
 	 *
-	 * @param {Error} [abortErrorOverwrite] - Optional error to overwrite the default `AbortError` thrown when the task is
-	 * 	canceled. If provided, the `result` promise will be rejected with this error instead, and you can no longer use
-	 *  `isCancelError` to check if the error is caused by cancellation.
+	 * @param message - Optional error message to overwrite the default `canceled` message thrown when the task is
+	 * 	canceled. If provided, the `result` promise will be rejected with a {@link CanceledError} with supplied error
+	 *  message instead.
 	 */
-	cancel: (abortErrorOverwrite?: Error) => void;
+	cancel: (message?: string) => void;
 
 	/**
 	 * Pause an ongoing transfer(upload/download) task. This method does not support the following scenarios:
