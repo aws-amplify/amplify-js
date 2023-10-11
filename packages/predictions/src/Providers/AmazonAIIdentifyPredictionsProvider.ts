@@ -158,13 +158,13 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		let inputDocument: Document;
 
 		try {
-			inputDocument = await this.configureSource(input.text.source);
+			inputDocument = await this.configureSource(input.text?.source);
 		} catch (err) {
 			return Promise.reject(err);
 		}
 
 		// get default value if format isn't specified in the input.
-		const format = input.text.format ?? configFormat;
+		const format = input.text?.format ?? configFormat;
 		const featureTypes: FeatureTypes = []; // structures we want to analyze (e.g. [TABLES, FORMS]).
 		if (format === 'FORM' || format === 'ALL') featureTypes.push('FORMS');
 		if (format === 'TABLE' || format === 'ALL') featureTypes.push('TABLES');
@@ -256,7 +256,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 			});
 			let inputImage: Image;
-			await this.configureSource(input.labels.source)
+			await this.configureSource(input.labels?.source)
 				.then(data => {
 					inputImage = data;
 				})
@@ -267,7 +267,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			const servicePromises = [];
 
 			// get default argument
-			const entityType = input.labels.type ?? type;
+			const entityType = input.labels?.type ?? type;
 			if (entityType === 'LABELS' || entityType === 'ALL') {
 				servicePromises.push(this.detectLabels(param));
 			}
@@ -379,7 +379,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 		});
 		let inputImage: Image;
-		await this.configureSource(input.entities.source)
+		await this.configureSource(input.entities?.source)
 			.then(data => (inputImage = data))
 			.catch(err => {
 				return Promise.reject(err);
