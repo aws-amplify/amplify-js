@@ -24,6 +24,7 @@ export {
 	AuthUserPoolConfig,
 	AuthUserPoolAndIdentityPoolConfig,
 	APIConfig,
+	CacheConfig,
 	StorageAccessLevel,
 	StorageConfig,
 	GetCredentialsOptions,
