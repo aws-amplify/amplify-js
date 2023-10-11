@@ -10,11 +10,10 @@ import {
 	GraphQLSubscription,
 } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
-import { Amplify, Cache } from '@aws-amplify/core';
+import { Amplify, Cache, Logger } from '@aws-amplify/core';
 import {
 	ApiAction,
 	Category,
-	ConsoleLogger as Logger,
 	CustomUserAgentDetails,
 } from '@aws-amplify/core/internals/utils';
 import { Observable } from 'rxjs';

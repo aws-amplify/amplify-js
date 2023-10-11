@@ -1,11 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthTokens, getId } from '@aws-amplify/core';
-import {
-	Logger,
-	CognitoIdentityPoolConfig,
-} from '@aws-amplify/core/internals/utils';
+import { AuthTokens, getId, Logger } from '@aws-amplify/core';
+import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
 import { formLoginsMap } from './credentialsProvider';
 import { AuthError } from '../../../errors/AuthError';
 import { IdentityIdStore } from './types';

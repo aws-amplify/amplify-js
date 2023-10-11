@@ -1,11 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Hub } from '@aws-amplify/core';
+import { Hub, Logger } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
-	AnalyticsAction,
-	ConsoleLogger as Logger,
+	AnalyticsAction
 } from '@aws-amplify/core/internals/utils';
 import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
 import {

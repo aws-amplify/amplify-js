@@ -11,6 +11,7 @@ import {
 } from '../../../../../src/errors/types/validation';
 
 jest.mock('@aws-amplify/core', () => ({
+	...jest.requireActual('@aws-amplify/core'),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {

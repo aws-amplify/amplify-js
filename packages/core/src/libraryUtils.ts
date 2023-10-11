@@ -40,9 +40,6 @@ export {
 	AuthVerifiableAttributeKey,
 } from './singleton/Auth/types';
 
-// Logging utilities
-export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
-
 // Platform & user-agent utilities
 export { ClientDevice } from './ClientDevice';
 export {

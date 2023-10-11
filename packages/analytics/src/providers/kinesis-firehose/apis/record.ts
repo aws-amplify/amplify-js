@@ -9,10 +9,8 @@ import {
 	resolveCredentials,
 } from '../../../utils';
 import { fromUtf8 } from '@smithy/util-utf8';
-import {
-	AnalyticsAction,
-	ConsoleLogger as Logger,
-} from '@aws-amplify/core/internals/utils';
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 
 const logger = new Logger('KinesisFirehose');
 

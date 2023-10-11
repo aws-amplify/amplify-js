@@ -17,7 +17,7 @@ import {
 	PostContentCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import {
-	ConsoleLogger as Logger,
+	Logger,
 	Credentials,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core';

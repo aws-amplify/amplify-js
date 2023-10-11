@@ -26,7 +26,6 @@ import {
 import {
 	jitteredExponentialRetry,
 	Category,
-	ConsoleLogger as Logger,
 	CustomUserAgentDetails,
 	DataStoreAction,
 	NonRetryableError,
@@ -35,7 +34,7 @@ import {
 	AmplifyError,
 } from '@aws-amplify/core/internals/utils';
 
-import { Amplify, Hub } from '@aws-amplify/core';
+import { Amplify, Hub, Logger } from '@aws-amplify/core';
 
 import { ModelPredicateCreator } from '../../predicates';
 import { getSyncErrorType } from './errorMaps';

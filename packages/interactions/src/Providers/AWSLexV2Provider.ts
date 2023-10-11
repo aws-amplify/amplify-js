@@ -17,7 +17,7 @@ import {
 	RecognizeUtteranceCommandOutput,
 } from '@aws-sdk/client-lex-runtime-v2';
 import {
-	ConsoleLogger as Logger,
+	Logger,
 	Credentials,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core';

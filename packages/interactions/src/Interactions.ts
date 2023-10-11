@@ -7,7 +7,7 @@ import {
 	InteractionsMessage,
 	InteractionsResponse,
 } from './types';
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, Logger } from '@aws-amplify/core';
 import { AWSLexProvider } from './Providers';
 const logger = new Logger('Interactions');
 

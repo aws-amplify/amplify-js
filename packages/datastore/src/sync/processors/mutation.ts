@@ -4,7 +4,6 @@ import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import {
 	Category,
-	Logger,
 	CustomUserAgentDetails,
 	DataStoreAction,
 	jitteredBackoff,
@@ -14,6 +13,7 @@ import {
 	APIAuthMode,
 	AmplifyError,
 } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 
 import { Observable, Observer } from 'rxjs';
 import { MutationEvent } from '../';

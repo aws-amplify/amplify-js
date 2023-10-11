@@ -13,7 +13,7 @@ import {
 	mockPersonalizeConfig,
 } from '../../../testUtils/mockConstants.test';
 import { record } from '../../../../src/providers/personalize';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 import { RecordInput as PersonalizeRecordInput } from '../../../../src/providers/personalize/types';
 import {
 	IDENTIFY_EVENT_TYPE,

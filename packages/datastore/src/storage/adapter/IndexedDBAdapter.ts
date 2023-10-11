@@ -24,7 +24,7 @@ import {
 	isSafariCompatabilityMode,
 } from '../../util';
 import { StorageAdapterBase } from './StorageAdapterBase';
-import { Logger } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 
 const logger = new Logger('DataStore');
 

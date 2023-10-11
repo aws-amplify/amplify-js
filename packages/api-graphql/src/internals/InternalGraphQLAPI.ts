@@ -9,11 +9,10 @@ import {
 	OperationTypeNode,
 } from 'graphql';
 import { Observable } from 'rxjs';
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyClassV6, Logger } from '@aws-amplify/core';
 import {
 	APIAuthMode,
 	CustomUserAgentDetails,
-	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
 import {

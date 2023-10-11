@@ -1,6 +1,6 @@
 import { Hub } from '@aws-amplify/core';
 import { record as pinpointRecord } from '@aws-amplify/core/internals/providers/pinpoint';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 import { record } from '../../../../src/providers/pinpoint';
 import {
 	resolveConfig,

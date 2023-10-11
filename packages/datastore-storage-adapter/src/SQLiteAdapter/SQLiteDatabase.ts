@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import SQLite from 'react-native-sqlite-storage';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Logger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
 import { DB_NAME } from '../common/constants';
 import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';

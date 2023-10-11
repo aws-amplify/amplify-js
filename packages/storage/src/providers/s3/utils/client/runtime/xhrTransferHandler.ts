@@ -8,7 +8,7 @@ import {
 	ResponseBodyMixin,
 	withMemoization,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 import {
 	ABORT_ERROR_CODE,
 	ABORT_ERROR_MESSAGE,

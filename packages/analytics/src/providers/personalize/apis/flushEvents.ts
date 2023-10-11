@@ -6,12 +6,10 @@ import {
 	getAnalyticsUserAgentString,
 	resolveCredentials,
 } from '../../../utils';
-import {
-	AnalyticsAction,
-	ConsoleLogger,
-} from '@aws-amplify/core/internals/utils';
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 
-const logger = new ConsoleLogger('Personalize');
+const logger = new Logger('Personalize');
 
 /**
  * Flushes all buffered Personalize events to the service.

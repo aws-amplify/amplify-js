@@ -8,9 +8,9 @@ import {
 	AWSCredentialsAndIdentityId,
 	getCredentialsForIdentity,
 	GetCredentialsOptions,
+	Logger
 } from '@aws-amplify/core';
 import {
-	Logger,
 	assertIdentityPoolIdConfig,
 	decodeJWT,
 	CognitoIdentityPoolConfig,

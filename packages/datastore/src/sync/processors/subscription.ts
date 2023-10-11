@@ -2,15 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Hub, HubCapsule, fetchAuthSession } from '@aws-amplify/core';
+import { Hub, HubCapsule, fetchAuthSession, Logger } from '@aws-amplify/core';
 import {
 	Category,
-	Logger,
 	CustomUserAgentDetails,
 	DataStoreAction,
 	BackgroundProcessManager,
 	APIAuthMode,
-	AmplifyError,
 	JwtPayload,
 } from '@aws-amplify/core/internals/utils';
 

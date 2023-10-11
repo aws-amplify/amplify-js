@@ -9,7 +9,7 @@ import {
 } from '../../../testUtils/mockConstants.test';
 import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEventBuffer';
 import { flushEvents } from '../../../../src/providers/kinesis/apis';
-import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis/utils/getEventBuffer');
@@ -20,7 +20,7 @@ describe('Analytics Kinesis API: flushEvents', () => {
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 	const mockGetEventBuffer = getEventBuffer as jest.Mock;
 	const mockFlushAll = jest.fn();
-	const loggerWarnSpy = jest.spyOn(ConsoleLogger.prototype, 'warn');
+	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
 
 	beforeEach(() => {
 		mockResolveConfig.mockReturnValue(mockKinesisConfig);

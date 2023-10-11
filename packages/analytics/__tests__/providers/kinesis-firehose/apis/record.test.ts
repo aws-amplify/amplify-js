@@ -11,7 +11,7 @@ import {
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
 import { record } from '../../../../src/providers/kinesis-firehose';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 import { RecordInput as KinesisFirehoseRecordInput } from '../../../../src/providers/kinesis-firehose/types';
 
 jest.mock('../../../../src/utils');

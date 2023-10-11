@@ -5,12 +5,11 @@ import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';
 import { Buffer } from 'buffer';
-import { Hub, fetchAuthSession } from '@aws-amplify/core';
+import { Hub, fetchAuthSession, Logger } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	APIAuthMode,
 	CustomUserAgentDetails,
-	Logger,
 	NonRetryableError,
 	USER_AGENT_HEADER,
 	getAmplifyUserAgent,

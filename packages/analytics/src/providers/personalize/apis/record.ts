@@ -14,16 +14,14 @@ import {
 	isAnalyticsEnabled,
 	resolveCredentials,
 } from '../../../utils';
-import {
-	AnalyticsAction,
-	ConsoleLogger,
-} from '@aws-amplify/core/internals/utils';
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 import {
 	IDENTIFY_EVENT_TYPE,
 	MEDIA_AUTO_TRACK_EVENT_TYPE,
 } from '../utils/constants';
 
-const logger = new ConsoleLogger('Personalize');
+const logger = new Logger('Personalize');
 
 export const record = ({
 	userId,

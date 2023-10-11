@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Observable, Observer, SubscriptionLike } from 'rxjs';
 import { ReachabilityMonitor } from './datastoreReachability';
-import { Logger } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 
 const logger = new Logger('DataStore');
 

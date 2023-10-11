@@ -66,3 +66,6 @@ export { BrowserStorageCache as Cache }; // Maintain interoperability with React
 
 // Internationalization utilities
 export { I18n } from './I18n';
+
+// Logging utilities
+export { ConsoleLogger as Logger } from './Logger';

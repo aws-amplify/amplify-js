@@ -30,7 +30,8 @@ import {
 import { getIdentifierValue } from '../sync/utils';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
-import { Logger, Mutex } from '@aws-amplify/core/internals/utils';
+import { Mutex } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 
 export type StorageSubscriptionMessage<T extends PersistentModel> =
 	InternalSubscriptionMessage<T> & {

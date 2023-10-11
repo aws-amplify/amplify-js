@@ -9,6 +9,7 @@ import { GetPropertiesOptions } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
+	...jest.requireActual('@aws-amplify/core'),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {

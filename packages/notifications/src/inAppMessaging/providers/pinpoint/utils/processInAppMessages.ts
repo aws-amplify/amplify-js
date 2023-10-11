@@ -17,12 +17,11 @@ import {
 	matchesMetrics,
 } from './helpers';
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
-import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
-import { defaultStorage } from '@aws-amplify/core';
+import { defaultStorage, Logger } from '@aws-amplify/core';
 
 const MESSAGE_DAILY_COUNT_KEY = 'pinpointProvider_inAppMessages_dailyCount';
 const MESSAGE_TOTAL_COUNT_KEY = 'pinpointProvider_inAppMessages_totalCount';
-const logger = new ConsoleLogger('InAppMessaging.processInAppMessages');
+const logger = new Logger('InAppMessaging.processInAppMessages');
 
 const sessionMessageCountMap: InAppMessageCountMap = {};
 

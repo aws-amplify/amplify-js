@@ -1,6 +1,6 @@
 Symbol = undefined; // this should be undefined before loading Hub
 import { Hub } from '../src';
-import { Logger } from '../src/libraryUtils';
+import { Logger } from '../src';
 
 describe('Symbol undefined before load Hub', () => {
 	test('Symbol not supported', () => {

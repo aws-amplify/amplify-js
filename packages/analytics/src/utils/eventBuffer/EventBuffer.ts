@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 import { EventBufferConfig, IAnalyticsClient } from './';
 
-const logger = new ConsoleLogger('EventBuffer');
+const logger = new Logger('EventBuffer');
 
 export class EventBuffer<T> {
 	private list: T[];

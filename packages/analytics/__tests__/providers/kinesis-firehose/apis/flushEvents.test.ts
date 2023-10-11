@@ -11,7 +11,7 @@ import {
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
 import { flushEvents } from '../../../../src/providers/kinesis-firehose/apis';
-import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis-firehose/utils');
@@ -21,7 +21,7 @@ describe('Analytics Kinesis Firehose API: flushEvents', () => {
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 	const mockGetEventBuffer = getEventBuffer as jest.Mock;
 	const mockFlushAll = jest.fn();
-	const loggerWarnSpy = jest.spyOn(ConsoleLogger.prototype, 'warn');
+	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
 
 	beforeEach(() => {
 		mockResolveConfig.mockReturnValue(mockKinesisConfig);

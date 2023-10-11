@@ -3,13 +3,11 @@
 
 import { resolveConfig, resolveCredentials } from '../utils';
 import { flushEvents as flushEventsCore } from '@aws-amplify/core/internals/providers/pinpoint';
-import {
-	AnalyticsAction,
-	ConsoleLogger,
-} from '@aws-amplify/core/internals/utils';
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 import { getAnalyticsUserAgentString } from '../../../utils';
 
-const logger = new ConsoleLogger('Analytics');
+const logger = new Logger('Analytics');
 
 /**
  * Flushes all buffered Pinpoint events to the service.

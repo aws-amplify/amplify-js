@@ -9,7 +9,7 @@ import {
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
 import { record } from '../../../../src/providers/kinesis';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
+import { Logger } from '@aws-amplify/core';
 import { RecordInput as KinesisRecordInput } from '../../../../src/providers/kinesis/types';
 
 jest.mock('../../../../src/utils');
