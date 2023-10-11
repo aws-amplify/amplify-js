@@ -21,8 +21,6 @@ import {
 	AuthAdditionalInfo,
 	AuthSignInOutput,
 	AuthDeliveryMedium,
-	AuthSignUpOutput,
-	AuthSignInInput,
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
@@ -58,7 +56,6 @@ import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants'
 import { getCurrentUser } from '../apis/getCurrentUser';
 import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
 import { assertDeviceMetadata } from './types';
-import { TokenOrchestrator } from '../tokenProvider';
 import { getAuthUserAgentValue } from '../../../utils';
 
 const USER_ATTRIBUTES = 'userAttributes.';
@@ -1008,12 +1005,12 @@ export async function retryOnResourceNotFoundException<
 	tokenOrchestrator: AuthTokenOrchestrator
 ): Promise<ReturnType<F>> {
 	try {
-		const output = await func(...args);
-		return output;
+		return await func(...args);
 	} catch (error) {
 		if (
 			error instanceof AuthError &&
-			error.name === 'ResourceNotFoundException'
+			error.name === 'ResourceNotFoundException' &&
+			error.message.includes('Device does not exist.')
 		) {
 			await tokenOrchestrator.clearDeviceMetadata(username);
 
