@@ -4,7 +4,7 @@
 import { addEventListener } from '../../../../common';
 import { OnMessageDisplayedOutput } from '../types/outputs';
 import { OnMessageDisplayedInput } from '../types/inputs';
-import { assertInitializationError } from '../utils';
+import { assertInitializationError } from '../../../utils';
 
 /**
  * Registers a callback that will be invoked on `messageDisplayed` events.

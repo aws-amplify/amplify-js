@@ -27,6 +27,7 @@ export const validationErrorMap: AmplifyErrorMap<InAppMessagingValidationErrorCo
 		},
 		[InAppMessagingValidationErrorCode.NotInitialized]: {
 			message: 'InAppMessaging not initialized.',
-			recoverySuggestion: 'Call initializeInAppMessaging API first.',
+			recoverySuggestion:
+				'Make sure to call initializeInAppMessaging API first.',
 		},
 	};

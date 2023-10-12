@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { InAppMessage } from '../../../types';
+import { assertInitializationError } from '../../../utils';
 import { InAppMessageConflictHandler, SetConflictHandlerInput } from '../types';
-import { assertInitializationError } from '../utils';
 
 export let conflictHandler: InAppMessageConflictHandler =
 	defaultConflictHandler;

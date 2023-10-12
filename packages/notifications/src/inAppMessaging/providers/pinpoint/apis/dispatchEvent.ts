@@ -4,7 +4,6 @@
 import {
 	PINPOINT_KEY_PREFIX,
 	STORAGE_KEY_SUFFIX,
-	assertInitializationError,
 	processInAppMessages,
 } from '../utils';
 import { InAppMessage } from '../../../types';
@@ -15,6 +14,7 @@ import { assertServiceError } from '../../../errors';
 import { DispatchEventInput } from '../types';
 import { syncMessages } from './syncMessages';
 import { conflictHandler, setConflictHandler } from './setConflictHandler';
+import { assertInitializationError } from '../../../utils';
 
 /**
  * Triggers an In-App message to be displayed. Use this after your campaigns have been synced to the device using

@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { addEventListener } from '../../../../common';
+import { assertInitializationError } from '../../../utils';
 import { OnMessageReceivedInput } from '../types/inputs';
 import { OnMessageReceivedOutput } from '../types/outputs';
-import { assertInitializationError } from '../utils';
 
 /**
  * Registers a callback that will be invoked on `messageReceived` events.

@@ -15,6 +15,4 @@ export {
 	processInAppMessages,
 	sessionStateChangeHandler,
 	incrementMessageCounts,
-} from './processInAppMessages';
-
-export { assertInitializationError } from './helpers';
+} from './messageProcessingHelpers';

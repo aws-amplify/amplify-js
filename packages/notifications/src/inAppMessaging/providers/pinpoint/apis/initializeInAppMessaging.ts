@@ -9,11 +9,10 @@ import { PinpointMessageEvent } from '../types';
 import { Hub, HubCapsule } from '@aws-amplify/core';
 import { dispatchEvent } from './dispatchEvent';
 import { incrementMessageCounts, sessionStateChangeHandler } from '../utils';
-
-/**
- * @internal
- */
-export let initialized: boolean = false;
+import {
+	isInAppMessagingInitialized,
+	setInAppMessagingInitializedStatus,
+} from '../../../utils';
 
 /**
  * Initialize and set up in-app messaging category. Enables the tracking of messages displayed in a session, send
@@ -28,7 +27,7 @@ export let initialized: boolean = false;
  * ```
  */
 export function initializeInAppMessaging(): void {
-	if (initialized) {
+	if (isInAppMessagingInitialized()) {
 		return;
 	}
 	// set up the session tracker and start it
@@ -51,7 +50,7 @@ export function initializeInAppMessaging(): void {
 	// listen to analytics hub events
 	Hub.listen('analytics', analyticsListener);
 
-	initialized = true;
+	setInAppMessagingInitializedStatus(true);
 }
 
 function analyticsListener({

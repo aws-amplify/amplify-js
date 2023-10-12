@@ -15,7 +15,6 @@ import {
 	PINPOINT_KEY_PREFIX,
 	CATEGORY,
 	CHANNEL_TYPE,
-	assertInitializationError,
 } from '../utils';
 import {
 	getInAppMessages,
@@ -27,6 +26,7 @@ import {
 	assertServiceError,
 	assertValidationError,
 } from '../../../errors';
+import { assertInitializationError } from '../../../utils';
 
 /**
  * Fetch and persist messages from Pinpoint campaigns.

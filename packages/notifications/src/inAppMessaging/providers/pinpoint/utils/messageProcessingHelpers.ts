@@ -130,7 +130,7 @@ async function getMessageCounts(
 }
 
 function getSessionCount(messageId: string): number {
-	return sessionMessageCountMap[messageId] || 0;
+	return sessionMessageCountMap[messageId] ?? 0;
 }
 
 function setSessionCount(messageId: string, count: number): void {

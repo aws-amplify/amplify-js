@@ -7,12 +7,12 @@ import { InAppMessagingValidationErrorCode } from '../../../errors';
 import {
 	CATEGORY,
 	CHANNEL_TYPE,
-	assertInitializationError,
 	getInAppMessagingUserAgentString,
 	resolveConfig,
 	resolveCredentials,
 } from '../utils';
 import { IdentifyUserInput } from '../types';
+import { assertInitializationError } from '../../../utils';
 
 /**
  * Sends information about a user to Pinpoint. Sending user information allows you to associate a user to their user

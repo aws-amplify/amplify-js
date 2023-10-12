@@ -21,7 +21,7 @@ jest.mock('../../../../../src/inAppMessaging/sessionTracker', () => {
 const mockNotifyEventListeners = notifyEventListeners as jest.Mock;
 const mockAddEventListener = addEventListener as jest.Mock;
 
-describe('InializeInAppMessaging', () => {
+describe('initializeInAppMessaging', () => {
 	beforeEach(() => {
 		mockNotifyEventListeners.mockClear();
 	});

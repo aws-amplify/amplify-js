@@ -4,7 +4,7 @@
 import { addEventListener } from '../../../../common';
 import { OnMessageDismissedOutput } from '../types/outputs';
 import { OnMessageDismissedInput } from '../types/inputs';
-import { assertInitializationError } from '../utils';
+import { assertInitializationError } from '../../../utils';
 
 /**
  * Registers a callback that will be invoked on `messageDismissed` events.

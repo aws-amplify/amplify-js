@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { notifyEventListeners } from '../../../../common';
+import { assertInitializationError } from '../../../utils';
 import { NotifyMessageInteractionInput } from '../types/inputs';
-import { assertInitializationError } from '../utils';
 
 /**
  * Notifies the respective listener of the specified type with the message given.
