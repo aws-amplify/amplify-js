@@ -4,7 +4,10 @@
 		"importHelpers": true,
 		"strict": true,
 		"noImplicitAny": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"paths": {
+			"*": ["../node_modules/*", "../node_modules/@types/*"]
+		}
 	},
 	"include": ["./src"]
 }
