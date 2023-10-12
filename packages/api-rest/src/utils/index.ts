@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import './polyfills';
-
 export { createCancellableOperation } from './createCancellableOperation';
 export { resolveCredentials } from './resolveCredentials';
 export { parseSigningInfo } from './parseSigningInfo';
