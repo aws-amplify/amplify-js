@@ -43,6 +43,24 @@ describe('aws-amplify Exports', () => {
 		});
 	});
 
+	describe('API exports', () => {
+		it('should only export expected symbols from the top level', () => {
+			expect(Object.keys(apiTopLevelExports)).toMatchInlineSnapshot(`
+			Array [
+			  "generateClient",
+			  "GraphQLAuthError",
+			  "get",
+			  "put",
+			  "post",
+			  "del",
+			  "head",
+			  "patch",
+			  "isCancelError",
+			]
+		`);
+		});
+	});
+
 	describe('Analytics exports', () => {
 		it('should only export expected symbols from the top-level', () => {
 			expect(Object.keys(analyticsTopLevelExports)).toMatchInlineSnapshot(`
@@ -102,6 +120,13 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "identifyUser",
 			  "syncMessages",
+			  "dispatchEvent",
+			  "setConflictHandler",
+			  "onMessageReceived",
+			  "onMessageDisplayed",
+			  "onMessageDismissed",
+			  "onMessageActionTaken",
+			  "notifyMessageInteraction",
 			]
 		`);
 		});
@@ -112,6 +137,13 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "identifyUser",
 			  "syncMessages",
+			  "dispatchEvent",
+			  "setConflictHandler",
+			  "onMessageReceived",
+			  "onMessageDisplayed",
+			  "onMessageDismissed",
+			  "onMessageActionTaken",
+			  "notifyMessageInteraction",
 			]
 		`);
 		});
@@ -146,6 +178,7 @@ describe('aws-amplify Exports', () => {
 			  "rememberDevice",
 			  "forgetDevice",
 			  "fetchDevices",
+			  "autoSignIn",
 			  "AuthError",
 			  "fetchAuthSession",
 			]
@@ -180,6 +213,7 @@ describe('aws-amplify Exports', () => {
 			  "rememberDevice",
 			  "forgetDevice",
 			  "fetchDevices",
+			  "autoSignIn",
 			  "cognitoCredentialsProvider",
 			  "CognitoAWSCredentialsAndIdentityIdProvider",
 			  "DefaultIdentityIdStore",
@@ -219,24 +253,6 @@ describe('aws-amplify Exports', () => {
 			  "getProperties",
 			  "copy",
 			  "getUrl",
-			]
-		`);
-		});
-	});
-
-	describe('API exports', () => {
-		it('should only export expected symbols from the top-level', () => {
-			expect(Object.keys(apiTopLevelExports)).toMatchInlineSnapshot(`
-			Array [
-			  "generateClient",
-			  "GraphQLAuthError",
-			  "get",
-			  "put",
-			  "post",
-			  "del",
-			  "head",
-			  "patch",
-			  "isCancelError",
 			]
 		`);
 		});

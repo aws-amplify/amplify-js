@@ -20,6 +20,8 @@ export {
 } from './utils';
 export { parseAWSExports } from './parseAWSExports';
 export { LegacyConfig } from './singleton/types';
+export { amplifyUuid } from './utils/amplifyUuid';
+export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
 
 // Auth utilities
 export {
@@ -29,7 +31,7 @@ export {
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
 export { isTokenExpired } from './singleton/Auth';
-export { APIAuthMode, DocumentType } from './singleton/API/types';
+export { GraphQLAuthMode, DocumentType } from './singleton/API/types';
 export { Signer } from './Signer';
 export {
 	JWT,
@@ -37,14 +39,14 @@ export {
 	CognitoIdentityPoolConfig,
 	JwtPayload,
 	AuthStandardAttributeKey,
-	AuthVerifiableAttributeKey
+	AuthVerifiableAttributeKey,
+	AWSCredentials,
 } from './singleton/Auth/types';
 
 // Logging utilities
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 
-// Platform & device utils
-export { ClientDevice } from './ClientDevice';
+// Platform & user-agent utilities
 export {
 	Platform,
 	getAmplifyUserAgentObject,
@@ -65,7 +67,9 @@ export {
 	PubSubAction,
 	PushNotificationAction,
 	StorageAction,
+	SetCustomUserAgentInput,
 } from './Platform/types';
+export { setCustomUserAgent } from './Platform/customUserAgent';
 
 // Service worker
 export { ServiceWorker } from './ServiceWorker';
@@ -96,4 +100,4 @@ export { base64Decoder, base64Encoder } from './utils/convert';
 export { getCrypto } from './utils/globalHelpers';
 
 // Hub
-export { HubClass } from './Hub';
+export { HubInternal } from './Hub';

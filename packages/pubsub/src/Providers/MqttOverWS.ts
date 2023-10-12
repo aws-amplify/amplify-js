@@ -3,8 +3,9 @@
 
 // @ts-ignore
 import * as Paho from '../vendor/paho-mqtt';
-import { v4 as uuid } from 'uuid';
 import { Observable, SubscriptionLike as Subscription, Observer } from 'rxjs';
+import { amplifyUuid } from '@aws-amplify/core/internals/utils';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 
 import { AbstractPubSub } from './PubSub';
 import {
@@ -105,7 +106,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
 
 	constructor(options: MqttOptions = {}) {
-		super({ ...options, clientId: options.clientId || uuid() });
+		super({ ...options, clientId: options.clientId || amplifyUuid() });
 
 		// Monitor the connection health state and pass changes along to Hub
 		this.connectionStateMonitor.connectionStateObservable.subscribe(

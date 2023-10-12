@@ -80,8 +80,10 @@
 		"graphql": "15.8.0",
 		"tslib": "^2.5.0",
 		"url": "0.11.0",
-		"uuid": "^9.0.0",
 		"rxjs": "^7.8.1"
+	},
+	"peerDependencies": {
+		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",

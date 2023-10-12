@@ -1,12 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthStandardAttributeKey, AuthVerifiableAttributeKey } from "@aws-amplify/core/internals/utils";
 import {
-	AuthUserAttribute,
-	AuthDevice,
-} from '../../../types';
+	AuthStandardAttributeKey,
+	AuthVerifiableAttributeKey,
+} from '@aws-amplify/core/internals/utils';
+import { AuthUserAttribute, AuthDevice } from '../../../types';
 import { AuthProvider } from '../../../types/inputs';
+import { SignInOutput, SignUpOutput } from './outputs';
 
 /**
  * Cognito supported AuthFlowTypes that may be passed as part of the Sign In request.
@@ -62,6 +63,14 @@ export type MFAPreference =
 	| 'PREFERRED'
 	| 'NOT_PREFERRED';
 
+export type AutoSignInEventData =
+	| {
+			event: 'confirmSignUp';
+			data: SignUpOutput;
+	  }
+	| {
+			event: 'autoSignIn';
+	  };
 /**
  * Holds the device specific information along with it's id and name.
  */

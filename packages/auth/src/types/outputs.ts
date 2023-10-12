@@ -16,14 +16,12 @@ export type AuthSignInOutput<
 	nextStep: AuthNextSignInStep<UserAttributeKey>;
 };
 
-export type AuthSignOutOutput = void;
-
 export type AuthSignUpOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	isSignUpComplete: boolean;
-	nextStep: AuthNextSignUpStep<UserAttributeKey>;
 	userId?: string;
+	nextStep: AuthNextSignUpStep<UserAttributeKey>;
 };
 
 export type AuthResetPasswordOutput<

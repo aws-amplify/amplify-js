@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Credentials } from '@aws-sdk/types';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 import { listObjectsV2 } from '../../../../src/providers/s3/utils/client';
 import { list } from '../../../../src/providers/s3';
@@ -32,7 +32,7 @@ const defaultIdentityId = 'defaultIdentityId';
 const eTag = 'eTag';
 const lastModified = 'lastModified';
 const size = 'size';
-const credentials: Credentials = {
+const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
@@ -40,7 +40,7 @@ const credentials: Credentials = {
 const listObjectClientConfig = {
 	credentials,
 	region,
-	userAgentValue: expect.any(String)
+	userAgentValue: expect.any(String),
 };
 const listObjectClientBaseResultItem = {
 	ETag: eTag,

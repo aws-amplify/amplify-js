@@ -5,4 +5,10 @@ export { InAppMessagingServiceOptions } from './options';
 export { InAppMessagingIdentifyUserInput } from './inputs';
 export { InAppMessagingConfig } from './config';
 export { InAppMessageInteractionEvent, InAppMessagingEvent } from './event';
-export { InAppMessage } from './message';
+export {
+	InAppMessage,
+	InAppMessageAction,
+	InAppMessageContent,
+	InAppMessageLayout,
+	InAppMessageTextAlign,
+} from './message';

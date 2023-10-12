@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Credentials } from '@aws-sdk/types';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 import { putObject } from '../../../../../src/providers/s3/utils/client';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
@@ -24,7 +24,7 @@ jest.mock('@aws-amplify/core', () => ({
 		},
 	},
 }));
-const credentials: Credentials = {
+const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
@@ -95,7 +95,7 @@ describe('putObjectJob', () => {
 				abortSignal: abortController.signal,
 				onUploadProgress: expect.any(Function),
 				useAccelerateEndpoint: true,
-				userAgentValue: expect.any(String)
+				userAgentValue: expect.any(String),
 			},
 			{
 				Bucket: 'bucket',

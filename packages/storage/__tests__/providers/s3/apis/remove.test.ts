@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Credentials } from '@aws-sdk/types';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 import { deleteObject } from '../../../../src/providers/s3/utils/client';
 import { remove } from '../../../../src/providers/s3/apis';
@@ -24,7 +24,7 @@ const bucket = 'bucket';
 const region = 'region';
 const defaultIdentityId = 'defaultIdentityId';
 const removeResult = { key };
-const credentials: Credentials = {
+const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
@@ -32,7 +32,7 @@ const credentials: Credentials = {
 const deleteObjectClientConfig = {
 	credentials,
 	region,
-	userAgentValue: expect.any(String)
+	userAgentValue: expect.any(String),
 };
 
 describe('remove API', () => {
