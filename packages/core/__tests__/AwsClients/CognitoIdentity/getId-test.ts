@@ -10,6 +10,7 @@ import {
 } from '../../../src/AwsClients/CognitoIdentity';
 import {
 	cognitoIdentityHandlerOptions,
+	cognitoIdentityHandlerOptions2,
 	mockIdentityId,
 	mockJsonResponse,
 	mockRequestId,
@@ -62,6 +63,51 @@ describe('CognitoIdentity - getId', () => {
 			mockJsonResponse(succeedResponse)
 		);
 		const response = await getId(cognitoIdentityHandlerOptions, params);
+		expect(response).toEqual(expectedOutput);
+		expect(fetchTransferHandler).toBeCalledWith(
+			expectedRequest,
+			expect.anything()
+		);
+	});
+
+	test('happy case(new)', async () => {
+		const expectedRequest = {
+			url: new URL(
+				'https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/example/'
+			),
+			method: 'POST',
+			headers: expect.objectContaining({
+				'cache-control': 'no-store',
+				'content-type': 'application/x-amz-json-1.1',
+				'x-amz-target': 'AWSCognitoIdentityService.GetId',
+				'x-amz-user-agent': expect.stringContaining('aws-amplify'),
+			}),
+			body: JSON.stringify({
+				IdentityPoolId: IDENTITY_POOL_ID,
+				AccountId: ACCOUNT_ID,
+			}),
+		};
+		const succeedResponse = {
+			status: 200,
+			headers: {
+				'x-amzn-requestid': mockRequestId,
+			},
+			body: {
+				IdentityId: mockIdentityId,
+			},
+		};
+		const expectedOutput: GetIdOutput = {
+			IdentityId: mockIdentityId,
+			$metadata: expect.objectContaining({
+				attempts: 1,
+				requestId: mockRequestId,
+				httpStatusCode: 200,
+			}),
+		};
+		(fetchTransferHandler as jest.Mock).mockResolvedValue(
+			mockJsonResponse(succeedResponse)
+		);
+		const response = await getId(cognitoIdentityHandlerOptions2, params);
 		expect(response).toEqual(expectedOutput);
 		expect(fetchTransferHandler).toBeCalledWith(
 			expectedRequest,

@@ -257,6 +257,7 @@ export class CredentialsClass {
 		}
 		const { identityPoolId, region, mandatorySignIn, identityPoolRegion } =
 			this._config;
+		const endpoint: string = this._config.Auth?.endpoint;
 
 		if (mandatorySignIn) {
 			return Promise.reject(
@@ -282,7 +283,10 @@ export class CredentialsClass {
 
 		const identityId = (this._identityId = await this._getGuestIdentityId());
 
-		const cognitoConfig = { region: identityPoolRegion ?? region };
+		const cognitoConfig = {
+			region: identityPoolRegion ?? region,
+			customEndpoint: endpoint,
+		};
 
 		const guestCredentialsProvider = async () => {
 			if (!identityId) {
@@ -372,6 +376,8 @@ export class CredentialsClass {
 		logins[domain] = token;
 
 		const { identityPoolId, region, identityPoolRegion } = this._config;
+		const endpoint: string = this._config.Auth?.endpoint;
+
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
@@ -383,7 +389,10 @@ export class CredentialsClass {
 			);
 		}
 
-		const cognitoConfig = { region: identityPoolRegion ?? region };
+		const cognitoConfig = {
+			region: identityPoolRegion ?? region,
+			customEndpoint: endpoint,
+		};
 
 		const authenticatedCredentialsProvider = async () => {
 			if (!identity_id) {
@@ -418,6 +427,8 @@ export class CredentialsClass {
 		const idToken = session.getIdToken().getJwtToken();
 		const { region, userPoolId, identityPoolId, identityPoolRegion } =
 			this._config;
+		const endpoint: string = this._config.Auth?.endpoint;
+
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
@@ -432,7 +443,10 @@ export class CredentialsClass {
 		const logins = {};
 		logins[key] = idToken;
 
-		const cognitoConfig = { region: identityPoolRegion ?? region };
+		const cognitoConfig = {
+			region: identityPoolRegion ?? region,
+			customEndpoint: endpoint,
+		};
 
 		/* 
 			Retreiving identityId with GetIdCommand to mimic the behavior in the following code in aws-sdk-v3:

@@ -28,9 +28,22 @@ const SERVICE_NAME = 'cognito-identity';
 /**
  * The endpoint resolver function that returns the endpoint URL for a given region.
  */
-const endpointResolver = ({ region }: EndpointResolverOptions) => ({
-	url: new URL(`https://cognito-identity.${region}.${getDnsSuffix(region)}`),
-});
+const endpointResolver = ({
+	region,
+	customEndpoint,
+}: EndpointResolverOptions) => {
+	if (customEndpoint) {
+		return {
+			url: new URL(customEndpoint),
+		};
+	} else {
+		return {
+			url: new URL(
+				`https://cognito-identity.${region}.${getDnsSuffix(region)}`
+			),
+		};
+	}
+};
 
 /**
  * A Cognito Identity-specific middleware that disables caching for all requests.

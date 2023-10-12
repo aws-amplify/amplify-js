@@ -5,6 +5,8 @@ import { HttpResponse } from '../../../src/clients/types';
 
 // Common
 const region = 'us-east-1';
+const endpoint =
+	'https://xxxxxxxxxx.execute-api.us-east-2.amazonaws.com/example/';
 
 export const mockJsonResponse = ({
 	status,
@@ -41,6 +43,10 @@ export const mockIdentityId = 'us-east-1:88859bc9-0149-4183-bf10-39e36EXAMPLE';
 
 export const cognitoIdentityHandlerOptions = {
 	region,
+};
+export const cognitoIdentityHandlerOptions2 = {
+	region,
+	endpoint,
 };
 
 // Pinpoint
