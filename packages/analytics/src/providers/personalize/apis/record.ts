@@ -39,10 +39,10 @@ export const record = ({
 	const { region, trackingId, bufferSize, flushSize, flushInterval } =
 		resolveConfig();
 	resolveCredentials()
-		.then(({ credentials, identityId }) => {
+		.then(async ({ credentials, identityId }) => {
 			const timestamp = Date.now();
 			const { sessionId: cachedSessionId, userId: cachedUserId } =
-				resolveCachedSession(trackingId);
+				await resolveCachedSession();
 			if (eventType === IDENTIFY_EVENT_TYPE) {
 				updateCachedSession(
 					typeof properties.userId === 'string' ? properties.userId : '',
@@ -54,7 +54,7 @@ export const record = ({
 			}
 
 			const { sessionId: updatedSessionId, userId: updatedUserId } =
-				resolveCachedSession(trackingId);
+				await resolveCachedSession();
 
 			const eventBuffer = getEventBuffer({
 				region,

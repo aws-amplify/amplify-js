@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export {
-	CacheObject,
-	defaultConfig,
 	getByteLength,
-	getCurrTime,
+	getCurrentSizeKey,
+	getCurrentTime,
 	isInteger,
-} from './CacheUtils';
-export { default as CacheList } from './CacheList';
+} from './cacheHelpers';
+export { CacheList } from './CacheList';

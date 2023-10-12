@@ -1,7 +1,7 @@
-import { getByteLength } from '../../../src/Cache/Utils/CacheUtils';
+import { getByteLength } from '../../../src/Cache/utils/cacheHelpers';
 
-describe('CacheUtils', () => {
-	describe('getByteLength test', () => {
+describe('cacheHelpers', () => {
+	describe('getByteLength()', () => {
 		test('happy case', () => {
 			const str: string = 'abc';
 			expect(getByteLength(str)).toBe(3);
