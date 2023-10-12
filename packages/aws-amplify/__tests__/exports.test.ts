@@ -122,6 +122,11 @@ describe('aws-amplify Exports', () => {
 			  "syncMessages",
 			  "dispatchEvent",
 			  "setConflictHandler",
+			  "onMessageReceived",
+			  "onMessageDisplayed",
+			  "onMessageDismissed",
+			  "onMessageActionTaken",
+			  "notifyMessageInteraction",
 			]
 		`);
 		});
@@ -134,6 +139,11 @@ describe('aws-amplify Exports', () => {
 			  "syncMessages",
 			  "dispatchEvent",
 			  "setConflictHandler",
+			  "onMessageReceived",
+			  "onMessageDisplayed",
+			  "onMessageDismissed",
+			  "onMessageActionTaken",
+			  "notifyMessageInteraction",
 			]
 		`);
 		});

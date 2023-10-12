@@ -172,20 +172,16 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 	},
 	Priority: 3,
 	Schedule: {
-		EndDate: '2024-01-01T00:00:00Z',
+		EndDate: '2021-01-01T00:00:00Z',
 		EventFilter: {
 			FilterType: 'SYSTEM',
 			Dimensions: {
-				Attributes: {
-					interests: { Values: ['test-interest'] },
-				},
+				Attributes: {},
 				EventType: {
 					DimensionType: 'INCLUSIVE',
 					Values: ['clicked', 'swiped'],
 				},
-				Metrics: {
-					clicks: { ComparisonOperator: 'EQUAL', Value: 5 },
-				},
+				Metrics: {},
 			},
 		},
 		QuietTime: {

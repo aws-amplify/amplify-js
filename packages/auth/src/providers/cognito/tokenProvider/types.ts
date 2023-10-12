@@ -11,9 +11,11 @@ import {
 export type TokenRefresher = ({
 	tokens,
 	authConfig,
+	username,
 }: {
 	tokens: CognitoAuthTokens;
 	authConfig?: AuthConfig;
+	username: string;
 }) => Promise<CognitoAuthTokens>;
 
 export type AuthKeys<AuthKey extends string> = {
@@ -32,6 +34,7 @@ export const AuthTokenStorageKeys = {
 };
 
 export interface AuthTokenStore {
+	getLastAuthUser(): Promise<string>;
 	loadTokens(): Promise<CognitoAuthTokens | null>;
 	storeTokens(tokens: CognitoAuthTokens): Promise<void>;
 	clearTokens(): Promise<void>;

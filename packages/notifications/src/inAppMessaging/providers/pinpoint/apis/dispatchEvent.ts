@@ -19,14 +19,15 @@ import { conflictHandler, setConflictHandler } from './setConflictHandler';
  * Triggers an In-App message to be displayed. Use this after your campaigns have been synced to the device using
  * {@link syncMessages}. Based on the messages synced and the event passed to this API, it triggers the display
  * of the In-App message that meets the criteria.
- * To change the conflict handler, use the {@link setConflictHandler} API.
+ *
+ * @remark
+ * If an event would trigger multiple messages, the message closest to expiry will be chosen by default.
+ * To change this behavior, you can use the {@link setConflictHandler} API to provide
+ * your own logic for resolving message conflicts.
  *
  * @param DispatchEventInput The input object that holds the event to be dispatched.
- *
  * @throws service exceptions - Thrown when the underlying Pinpoint service returns an error.
- *
  * @returns A promise that will resolve when the operation is complete.
- *
  * @example
  * ```ts
  * // Sync message before disptaching an event

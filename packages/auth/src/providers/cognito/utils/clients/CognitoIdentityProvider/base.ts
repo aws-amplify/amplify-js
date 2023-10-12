@@ -29,11 +29,13 @@ const SERVICE_NAME = 'cognito-idp';
 const endpointResolver = ({ region }: EndpointResolverOptions) => {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const customURL = authConfig?.endpoint;
-	const defaultURL = new URL(`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`);
+	const defaultURL = new URL(
+		`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`
+	);
 
 	return {
 		url: customURL ? new URL(customURL) : defaultURL,
-	}
+	};
 };
 
 /**
