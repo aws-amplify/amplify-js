@@ -1,20 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Predictions } from './Predictions';
-
-import {
-	AmazonAIConvertPredictionsProvider,
-	AmazonAIIdentifyPredictionsProvider,
-	AmazonAIPredictionsProvider,
-	AmazonAIInterpretPredictionsProvider,
-} from './Providers';
-
-export * from './types';
+export { Predictions } from './Predictions';
 
 export {
-	Predictions,
-	AmazonAIIdentifyPredictionsProvider,
-	AmazonAIConvertPredictionsProvider,
-	AmazonAIPredictionsProvider,
-	AmazonAIInterpretPredictionsProvider,
-};
+	TranslateTextInput,
+	TranslateTextOutput,
+	TextToSpeechInput,
+	TextToSpeechOutput,
+	SpeechToTextInput,
+	SpeechToTextOutput,
+	IdentifyTextInput,
+	IdentifyTextOutput,
+	IdentifyLabelsOutput,
+	IdentifyLabelsInput,
+	IdentifyEntitiesInput,
+	IdentifyEntitiesOutput,
+	InterpretTextOutput,
+	InterpretTextInput,
+} from './types';

@@ -8,7 +8,6 @@ import {
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
 import { getUrl } from '@aws-amplify/storage';
-import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
 import {
 	RekognitionClient,
 	SearchFacesByImageCommand,
@@ -36,6 +35,9 @@ import {
 	isIdentifyFromCollection,
 	IdentifyFromCollection,
 	FeatureTypes,
+	isIdentifyTextInput,
+	isIdentifyLabelsInput,
+	isIdentifyEntitiesInput,
 } from '../types';
 import {
 	Image,
@@ -58,16 +60,31 @@ import {
 import { assertValidationError } from '../errors/utils/assertValidationError';
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
 
-export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredictionsProvider {
+const logger = new Logger('AmazonAIIdentifyPredictionsProvider');
+
+export class AmazonAIIdentifyPredictionsProvider {
 	private rekognitionClient: RekognitionClient;
 	private textractClient: TextractClient;
 
-	constructor() {
-		super();
-	}
-
 	getProviderName() {
 		return 'AmazonAIIdentifyPredictionsProvider';
+	}
+
+	identify(
+		input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput
+	): Promise<
+		IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput
+	> {
+		if (isIdentifyTextInput(input)) {
+			logger.debug('identifyText');
+			return this.identifyText(input);
+		} else if (isIdentifyLabelsInput(input)) {
+			logger.debug('identifyLabels');
+			return this.identifyLabels(input);
+		} else if (isIdentifyEntitiesInput(input)) {
+			logger.debug('identifyEntities');
+			return this.identifyEntities(input);
+		}
 	}
 
 	/**

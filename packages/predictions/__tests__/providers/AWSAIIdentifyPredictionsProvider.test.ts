@@ -14,7 +14,7 @@ import {
 	IdentifyLabelsOutput,
 } from '../../src/types';
 import { BlockList } from '../../src/types/AWSTypes';
-import { AmazonAIIdentifyPredictionsProvider } from '../../src/Providers';
+import { AmazonAIIdentifyPredictionsProvider } from '../../src/providers';
 import {
 	RekognitionClient,
 	DetectLabelsCommandOutput,

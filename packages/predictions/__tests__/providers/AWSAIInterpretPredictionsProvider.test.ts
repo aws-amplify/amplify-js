@@ -203,8 +203,8 @@ const happyConfig = {
 };
 
 // Mocks before importing provider to avoid race condition with provider instantiation
-import { AmazonAIInterpretPredictionsProvider } from '../../src/Providers';
-import { InterpretTextCategories } from '../../src';
+import { AmazonAIInterpretPredictionsProvider } from '../../src/providers';
+import { InterpretTextCategories } from '../../src/types';
 
 const credentials = {
 	accessKeyId: 'accessKeyId',

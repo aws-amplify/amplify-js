@@ -10,7 +10,7 @@ import {
 	SpeechToTextInput,
 	SpeechToTextOutput,
 } from '../../src/types';
-import { AmazonAIConvertPredictionsProvider } from '../../src/Providers';
+import { AmazonAIConvertPredictionsProvider } from '../../src/providers';
 import {
 	TranslateClient,
 	TranslateTextCommand,

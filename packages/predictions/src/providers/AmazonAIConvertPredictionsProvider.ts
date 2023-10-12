@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AbstractConvertPredictionsProvider } from '../types/Providers/AbstractConvertPredictionsProvider';
 import {
 	TranslateClient,
 	TranslateTextCommand,
@@ -14,6 +13,9 @@ import {
 	TextToSpeechOutput,
 	SpeechToTextOutput,
 	isBytesSource,
+	isTranslateTextInput,
+	isTextToSpeechInput,
+	isSpeechToTextInput,
 } from '../types';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
@@ -38,15 +40,28 @@ const eventBuilder = new EventStreamCodec(toUtf8, fromUtf8);
 
 const LANGUAGES_CODE_IN_8KHZ = ['fr-FR', 'en-AU', 'en-GB', 'fr-CA'];
 
-export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictionsProvider {
+export class AmazonAIConvertPredictionsProvider {
 	private translateClient: TranslateClient;
 	private pollyClient: PollyClient;
-	constructor() {
-		super();
-	}
 
 	getProviderName() {
 		return 'AmazonAIConvertPredictionsProvider';
+	}
+
+	convert(
+		input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput
+	): Promise<TextToSpeechOutput | TranslateTextOutput | SpeechToTextOutput> {
+		if (isTranslateTextInput(input)) {
+			logger.debug('translateText');
+			return this.translateText(input);
+		} else if (isTextToSpeechInput(input)) {
+			logger.debug('textToSpeech');
+			return this.convertTextToSpeech(input);
+		} else if (isSpeechToTextInput(input)) {
+			logger.debug('textToSpeech');
+			return this.convertSpeechToText(input);
+		} else {
+		}
 	}
 
 	protected async translateText(

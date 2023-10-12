@@ -2,10 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /* tslint:disable:max-line-length */
 
-export interface ProviderOptions {
-	providerName?: string;
-}
-
 /**
  * Convert types
  */
