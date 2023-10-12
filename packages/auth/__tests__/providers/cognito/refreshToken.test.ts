@@ -44,7 +44,7 @@ describe('refresh token tests', () => {
 			refreshToken: mockedRefreshToken,
 
 			clockDrift: 0,
-			username: mockedRefreshToken,
+			username: mockedUsername,
 		};
 		const expectedRequest = {
 			url: new URL('https://cognito-idp.us-east-1.amazonaws.com/'),
