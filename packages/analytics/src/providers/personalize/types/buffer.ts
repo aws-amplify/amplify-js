@@ -3,7 +3,7 @@
 
 import { PersonalizeEvent } from './';
 import { EventBufferConfig } from '../../../utils';
-import { Credentials } from '@aws-sdk/types';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
 export type PersonalizeBufferEvent = {
 	trackingId: string;
@@ -15,7 +15,7 @@ export type PersonalizeBufferEvent = {
 
 export type PersonalizeBufferConfig = EventBufferConfig & {
 	region: string;
-	credentials: Credentials;
+	credentials: AWSCredentials;
 	identityId?: string;
 	userAgentValue?: string;
 };
