@@ -83,7 +83,7 @@ export class AmplifyClass {
 	/**
 	 * Provides access to the current back-end resource configuration for the Library.
 	 *
-	 * @returns Returns an immutable back-end resource configuration.
+	 * @returns Returns the an immutable copy of the current back-end resource configuration.
 	 */
 	getConfig(): ResourcesConfig {
 		// Memoization contingent on `configure` creating a new object instance each time configuration changes
