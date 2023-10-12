@@ -8,11 +8,11 @@ import {
 	TranslateTextOutput,
 } from '../src/types';
 import { PredictionsClass } from '../src/Predictions';
-import { AmazonAIConvertPredictionsProvider } from '../src/Providers/AmazonAIConvertPredictionsProvider';
 import {
+	AmazonAIConvertPredictionsProvider,
 	AmazonAIIdentifyPredictionsProvider,
 	AmazonAIInterpretPredictionsProvider,
-} from '../src/Providers';
+} from '../src/providers';
 
 describe('Predictions test', () => {
 	describe('getModuleName tests', () => {

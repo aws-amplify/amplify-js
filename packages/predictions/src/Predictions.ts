@@ -4,7 +4,7 @@ import {
 	AmazonAIConvertPredictionsProvider,
 	AmazonAIIdentifyPredictionsProvider,
 	AmazonAIInterpretPredictionsProvider,
-} from './Providers';
+} from './providers';
 import {
 	TranslateTextInput,
 	TranslateTextOutput,
