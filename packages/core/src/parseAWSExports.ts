@@ -60,6 +60,7 @@ export const parseAWSExports = (
 		predictions,
 		aws_cloud_logic_custom,
 		Notifications,
+		modelIntrospection,
 	} = config;
 	const amplifyConfig: ResourcesConfig = {};
 
@@ -120,6 +121,9 @@ export const parseAWSExports = (
 				defaultAuthMode: defaultAuthMode ?? 'iam',
 			},
 		};
+		if (modelIntrospection) {
+			amplifyConfig.API.GraphQL!.modelIntrospection = modelIntrospection;
+		}
 	}
 
 	// Auth
