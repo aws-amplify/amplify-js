@@ -26,8 +26,8 @@ export const validationErrorMap: AmplifyErrorMap<InAppMessagingValidationErrorCo
 			message: 'Could not find or create EndpointId.',
 		},
 		[InAppMessagingValidationErrorCode.NotInitialized]: {
-			message: 'InAppMessaging not initialized.',
+			message: 'In-app messaging has not been initialized.',
 			recoverySuggestion:
-				'Make sure to call initializeInAppMessaging API first.',
+				'Please make sure to first call `initializePushNotifications`.',
 		},
 	};

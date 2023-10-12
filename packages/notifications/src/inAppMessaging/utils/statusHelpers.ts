@@ -6,22 +6,27 @@ import {
 	assertValidationError,
 } from '../errors';
 
-let inAppMessagingInitialized = false;
+let initialized = false;
 
 /**
- * Returns the current status of the InAppMessaging category.
+ * Sets initialization status to true.
+ *
+ * @internal
  */
-export const isInAppMessagingInitialized = () => inAppMessagingInitialized;
+export const initialize = () => {
+	initialized = true;
+};
 
 /**
- * Initialize the InAppMessaging category.
+ * Returns the initialization status of In-App Messaging.
+ *
+ * @internal
  */
-export const setInAppMessagingInitializedStatus = (status: boolean) =>
-	(inAppMessagingInitialized = status);
+export const isInitialized = () => initialized;
 
-export function assertInitializationError() {
+export function assertIsInitialized() {
 	assertValidationError(
-		isInAppMessagingInitialized(),
+		isInitialized(),
 		InAppMessagingValidationErrorCode.NotInitialized
 	);
 }

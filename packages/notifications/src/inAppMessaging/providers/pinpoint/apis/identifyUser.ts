@@ -12,7 +12,7 @@ import {
 	resolveCredentials,
 } from '../utils';
 import { IdentifyUserInput } from '../types';
-import { assertInitializationError } from '../../../utils';
+import { assertIsInitialized } from '../../../utils';
 
 /**
  * Sends information about a user to Pinpoint. Sending user information allows you to associate a user to their user
@@ -22,8 +22,8 @@ import { assertInitializationError } from '../../../utils';
  * @param {IdentifyUserParameters} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
  *  API.
  * @throws service: {@link UpdateEndpointException} - Thrown when the underlying Pinpoint service returns an error.
- * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters, library
- *  configuration or category initialization is incorrect.
+ * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters or library
+ * configuration is incorrect, or if In App messaging hasn't been initialized.
  * @returns A promise that will resolve when the operation is complete.
  * @example
  * ```ts
@@ -70,7 +70,7 @@ export const identifyUser = async ({
 	userProfile,
 	options,
 }: IdentifyUserInput): Promise<void> => {
-	assertInitializationError();
+	assertIsInitialized();
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
 	const { address, optOut, userAttributes } = options?.serviceOptions ?? {};

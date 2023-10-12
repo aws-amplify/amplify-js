@@ -26,15 +26,15 @@ import {
 	assertServiceError,
 	assertValidationError,
 } from '../../../errors';
-import { assertInitializationError } from '../../../utils';
+import { assertIsInitialized } from '../../../utils';
 
 /**
  * Fetch and persist messages from Pinpoint campaigns.
  * Calling this API is necessary to trigger InApp messages on the device.
  *
  * @throws service exceptions - Thrown when the underlying Pinpoint service returns an error.
- * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters, library
- *  configuration or category initialization is incorrect.
+ * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters or library
+ * configuration is incorrect, or if In App messaging hasn't been initialized.
  * @returns A promise that will resolve when the operation is complete.
  * @example
  * ```ts
@@ -44,7 +44,7 @@ import { assertInitializationError } from '../../../utils';
  * ```
  */
 export async function syncMessages(): Promise<void> {
-	assertInitializationError();
+	assertIsInitialized();
 	const messages = await fetchInAppMessages();
 	if (!messages || messages.length === 0) {
 		return;

@@ -14,7 +14,7 @@ import { assertServiceError } from '../../../errors';
 import { DispatchEventInput } from '../types';
 import { syncMessages } from './syncMessages';
 import { conflictHandler, setConflictHandler } from './setConflictHandler';
-import { assertInitializationError } from '../../../utils';
+import { assertIsInitialized } from '../../../utils';
 
 /**
  * Triggers an In-App message to be displayed. Use this after your campaigns have been synced to the device using
@@ -27,8 +27,8 @@ import { assertInitializationError } from '../../../utils';
  * your own logic for resolving message conflicts.
  *
  * @param DispatchEventInput The input object that holds the event to be dispatched.
- * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters, library
- *  configuration or category initialization is incorrect.
+ * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters or library
+ * configuration is incorrect, or if In App messaging hasn't been initialized.
  * @throws service exceptions - Thrown when the underlying Pinpoint service returns an error.
  * @returns A promise that will resolve when the operation is complete.
  * @example
@@ -41,7 +41,7 @@ import { assertInitializationError } from '../../../utils';
  * ```
  */
 export async function dispatchEvent(input: DispatchEventInput): Promise<void> {
-	assertInitializationError();
+	assertIsInitialized();
 	try {
 		const key = `${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`;
 		const cachedMessages = await defaultStorage.getItem(key);
