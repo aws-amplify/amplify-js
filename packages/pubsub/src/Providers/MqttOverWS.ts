@@ -4,8 +4,6 @@
 // @ts-ignore
 import * as Paho from '../vendor/paho-mqtt';
 import { Observable, SubscriptionLike as Subscription, Observer } from 'rxjs';
-import { amplifyUuid } from '@aws-amplify/core/internals/utils';
-import Observable, { ZenObservable } from 'zen-observable-ts';
 
 import { AbstractPubSub } from './PubSub';
 import {
@@ -15,7 +13,10 @@ import {
 	PubSubOptions,
 } from '../types/PubSub';
 import { Hub, HubPayload } from '@aws-amplify/core';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
+import {
+	ConsoleLogger as Logger,
+	amplifyUuid,
+} from '@aws-amplify/core/internals/utils';
 import {
 	ConnectionStateMonitor,
 	CONNECTION_CHANGE,
