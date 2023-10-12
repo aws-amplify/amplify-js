@@ -6,7 +6,6 @@ import { AmplifyErrorMap, AssertionFunction } from '../../types';
 
 export enum CacheErrorCode {
 	NoCacheItem = 'NoCacheItem',
-	NoCacheStorage = 'NoCacheStorage',
 	NullNextNode = 'NullNextNode',
 	NullPreviousNode = 'NullPreviousNode',
 }
@@ -14,9 +13,6 @@ export enum CacheErrorCode {
 const cacheErrorMap: AmplifyErrorMap<CacheErrorCode> = {
 	[CacheErrorCode.NoCacheItem]: {
 		message: 'Item not found in the cache storage.',
-	},
-	[CacheErrorCode.NoCacheStorage]: {
-		message: 'Storage is not defined in the cache config.',
 	},
 	[CacheErrorCode.NullNextNode]: {
 		message: 'Next node is null.',
