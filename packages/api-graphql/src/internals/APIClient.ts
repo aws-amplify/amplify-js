@@ -240,8 +240,6 @@ export function generateGraphQLDocument(
 		selectionSet
 	);
 
-	console.log('generated sel set', selectionSetFields);
-
 	switch (modelOperation) {
 		case 'CREATE':
 		case 'UPDATE':

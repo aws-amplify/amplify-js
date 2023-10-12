@@ -14,9 +14,12 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 	params: ClientGenerationParams
 ): ModelTypes<T> {
 	const models = {} as any;
-	const { modelIntrospection } = params.amplify.getConfig() as any;
+	const config = params.amplify.getConfig();
 
-	console.log('config', params.amplify.getConfig());
+	const modelIntrospection = config.API?.GraphQL?.modelIntrospection;
+	if (!modelIntrospection) {
+		return {} as any;
+	}
 
 	// TODO: refactor this to use separate methods for each CRUDL.
 	// Doesn't make sense to gen the methods dynamically given the different args and return values
@@ -44,9 +47,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 							modelIntrospection
 						);
 
-						console.log('API list', query, variables);
-
-						const res = (await this.graphql({
+						const res = (await client.graphql({
 							query,
 							variables,
 						})) as any;
@@ -68,8 +69,6 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 										flattenedResult,
 										modelIntrospection
 									);
-
-									console.log('initialized', initialized);
 
 									return initialized;
 								}
@@ -94,9 +93,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 							modelIntrospection
 						);
 
-						console.log(`API ${operationPrefix}`, query, variables);
-
-						const res = (await this.graphql({
+						const res = (await client.graphql({
 							query,
 							variables,
 						})) as any;

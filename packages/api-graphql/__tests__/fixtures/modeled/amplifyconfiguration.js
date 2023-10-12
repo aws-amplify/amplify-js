@@ -2,6 +2,7 @@ const amplifyConfig = {
 	aws_appsync_graphqlEndpoint: 'https://0.0.0.0/modeled/graphql',
 	aws_appsync_region: 'us-west-1',
 	aws_appsync_authenticationType: 'API_KEY',
+	aws_appsync_apiKey: 'some-api-key',
 	modelIntrospection: {
 		version: 1,
 		models: {
