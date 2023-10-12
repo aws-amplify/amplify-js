@@ -32,4 +32,18 @@ export class Reachability {
 			};
 		});
 	}
+
+	// expose observers to simulate offline mode for integration testing
+	private static _observerOverride(status: NetworkStatus): void {
+		for (const observer of this._observers) {
+			if (observer.closed) {
+				this._observers = this._observers.filter(
+					_observer => _observer !== observer
+				);
+				continue;
+			}
+
+			observer?.next && observer.next(status);
+		}
+	}
 }
