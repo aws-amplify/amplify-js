@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getAmplifyUserAgent } from '@aws-amplify/core/internals/utils';
+import {
+	getAmplifyUserAgent,
+	AmplifyUrl,
+} from '@aws-amplify/core/internals/utils';
 import {
 	getDnsSuffix,
 	jitteredBackoff,
@@ -56,16 +59,16 @@ const endpointResolver = (
 	let endpoint: URL;
 	// 1. get base endpoint
 	if (customEndpoint) {
-		endpoint = new URL(customEndpoint);
+		endpoint = new AmplifyUrl(customEndpoint);
 	} else if (useAccelerateEndpoint) {
 		if (forcePathStyle) {
 			throw new Error(
 				'Path style URLs are not supported with S3 Transfer Acceleration.'
 			);
 		}
-		endpoint = new URL(`https://s3-accelerate.${getDnsSuffix(region)}`);
+		endpoint = new AmplifyUrl(`https://s3-accelerate.${getDnsSuffix(region)}`);
 	} else {
-		endpoint = new URL(`https://s3.${region}.${getDnsSuffix(region)}`);
+		endpoint = new AmplifyUrl(`https://s3.${region}.${getDnsSuffix(region)}`);
 	}
 	// 2. inject bucket name
 	if (apiInput?.Bucket) {

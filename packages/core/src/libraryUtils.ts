@@ -20,6 +20,8 @@ export {
 } from './utils';
 export { parseAWSExports } from './parseAWSExports';
 export { LegacyConfig } from './singleton/types';
+export { amplifyUuid } from './utils/amplifyUuid';
+export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
 
 // Auth utilities
 export {
