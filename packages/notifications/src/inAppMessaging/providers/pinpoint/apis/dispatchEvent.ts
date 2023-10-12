@@ -34,7 +34,7 @@ import { conflictHandler, setConflictHandler } from './setConflictHandler';
  * await syncMessages();
  *
  * // Dispatch an event
- * await dispatchEvent({ name: "test_event" });
+ * await dispatchEvent({ name: 'test_event' });
  * ```
  */
 export async function dispatchEvent(input: DispatchEventInput): Promise<void> {
@@ -46,7 +46,6 @@ export async function dispatchEvent(input: DispatchEventInput): Promise<void> {
 			input
 		);
 		const flattenedMessages = flatten(messages);
-
 		if (flattenedMessages.length > 0) {
 			notifyEventListeners(
 				'messageReceived',

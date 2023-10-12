@@ -11,6 +11,19 @@ import { dispatchEvent } from './dispatchEvent';
 import { incrementMessageCounts, sessionStateChangeHandler } from '../utils';
 
 let initialized: boolean = false;
+
+/**
+ * Initialize and set up in-app messaging category. Enables the tracking of messages displayed in a session, send
+ * `messageReceived` events that are triggered via Analytics events.
+ *
+ * @remarks
+ * Call this at the earliest in your app at the root entry point after configuring Amplify
+ * @example
+ * ```ts
+ * Amplify.configure(config);
+ * initializeInAppMessaging();
+ * ```
+ */
 export function initializeInAppMessaging(): void {
 	if (initialized) {
 		return;
@@ -20,7 +33,6 @@ export function initializeInAppMessaging(): void {
 	sessionTracker.start();
 
 	// wire up default Pinpoint message event handling
-	// TODO(V6): Check if we don't need to record for message received
 	addEventListener('messageDisplayed', (message: InAppMessage) => {
 		console.log('Recording message displayed event');
 		recordAnalyticsEvent(PinpointMessageEvent.MESSAGE_DISPLAYED, message);
@@ -36,7 +48,6 @@ export function initializeInAppMessaging(): void {
 	// listen to analytics hub events
 	Hub.listen('analytics', analyticsListener);
 
-	console.log('Inisitalized inapp');
 	initialized = true;
 }
 
