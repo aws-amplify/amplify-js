@@ -4,10 +4,10 @@
 import {
 	AuthStandardAttributeKey,
 	AuthVerifiableAttributeKey,
-	AuthUserAttribute,
-	AuthDevice,
-} from '../../../types';
+} from '@aws-amplify/core/internals/utils';
+import { AuthUserAttribute, AuthDevice } from '../../../types';
 import { AuthProvider } from '../../../types/inputs';
+import { SignInOutput, SignUpOutput } from './outputs';
 
 /**
  * Cognito supported AuthFlowTypes that may be passed as part of the Sign In request.
@@ -63,6 +63,14 @@ export type MFAPreference =
 	| 'PREFERRED'
 	| 'NOT_PREFERRED';
 
+export type AutoSignInEventData =
+	| {
+			event: 'confirmSignUp';
+			data: SignUpOutput;
+	  }
+	| {
+			event: 'autoSignIn';
+	  };
 /**
  * Holds the device specific information along with it's id and name.
  */

@@ -3,6 +3,7 @@
 
 import * as topLevelExports from '../src';
 import * as utilsExports from '../src/utils';
+import * as apiTopLevelExports from '../src/api';
 import * as authTopLevelExports from '../src/auth';
 import * as authCognitoExports from '../src/auth/cognito';
 import * as analyticsTopLevelExports from '../src/analytics';
@@ -37,6 +38,24 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "Hub",
 			  "I18n",
+			]
+		`);
+		});
+	});
+
+	describe('API exports', () => {
+		it('should only export expected symbols from the top level', () => {
+			expect(Object.keys(apiTopLevelExports)).toMatchInlineSnapshot(`
+			Array [
+			  "generateClient",
+			  "GraphQLAuthError",
+			  "get",
+			  "put",
+			  "post",
+			  "del",
+			  "head",
+			  "patch",
+			  "isCancelError",
 			]
 		`);
 		});
@@ -101,6 +120,13 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "identifyUser",
 			  "syncMessages",
+			  "dispatchEvent",
+			  "setConflictHandler",
+			  "onMessageReceived",
+			  "onMessageDisplayed",
+			  "onMessageDismissed",
+			  "onMessageActionTaken",
+			  "notifyMessageInteraction",
 			]
 		`);
 		});
@@ -111,6 +137,13 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "identifyUser",
 			  "syncMessages",
+			  "dispatchEvent",
+			  "setConflictHandler",
+			  "onMessageReceived",
+			  "onMessageDisplayed",
+			  "onMessageDismissed",
+			  "onMessageActionTaken",
+			  "notifyMessageInteraction",
 			]
 		`);
 		});
@@ -145,6 +178,7 @@ describe('aws-amplify Exports', () => {
 			  "rememberDevice",
 			  "forgetDevice",
 			  "fetchDevices",
+			  "autoSignIn",
 			  "AuthError",
 			  "fetchAuthSession",
 			]
@@ -179,6 +213,7 @@ describe('aws-amplify Exports', () => {
 			  "rememberDevice",
 			  "forgetDevice",
 			  "fetchDevices",
+			  "autoSignIn",
 			  "cognitoCredentialsProvider",
 			  "CognitoAWSCredentialsAndIdentityIdProvider",
 			  "DefaultIdentityIdStore",

@@ -8,7 +8,7 @@ import { Buffer } from 'buffer';
 import { Hub, fetchAuthSession } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
-	APIAuthMode,
+	GraphQLAuthMode,
 	CustomUserAgentDetails,
 	Logger,
 	NonRetryableError,
@@ -88,7 +88,7 @@ type ParsedMessagePayload = {
 
 export interface AWSAppSyncRealTimeProviderOptions {
 	appSyncGraphqlEndpoint?: string;
-	authenticationType?: APIAuthMode;
+	authenticationType?: GraphQLAuthMode;
 	query?: string;
 	variables?: Record<string, DocumentType>;
 	apiKey?: string;
@@ -884,7 +884,7 @@ export class AWSAppSyncRealTimeProvider {
 		Record<string, unknown> | undefined
 	> {
 		const headerHandler: {
-			[key in APIAuthMode]: (arg0: AWSAppSyncRealTimeAuthInput) => {};
+			[key in GraphQLAuthMode]: (arg0: AWSAppSyncRealTimeAuthInput) => {};
 		} = {
 			apiKey: this._awsRealTimeApiKeyHeader.bind(this),
 			iam: this._awsRealTimeIAMHeader.bind(this),
@@ -972,8 +972,9 @@ export class AWSAppSyncRealTimeProvider {
 				body: request.data,
 			},
 			{
-				credentials: creds,
-				signingRegion: endpointInfo.region,
+				// TODO: What do we need to do to remove these !'s?
+				credentials: creds!,
+				signingRegion: endpointInfo.region!,
 				signingService: endpointInfo.service,
 			}
 		);

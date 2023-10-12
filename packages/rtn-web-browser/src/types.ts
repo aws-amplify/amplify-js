@@ -4,6 +4,7 @@
 export type WebBrowserNativeModule = {
 	openAuthSessionAsync: (
 		url: string,
-		redirectUrl?: string
+		redirectUrl?: string,
+		prefersEphemeralSession?: boolean
 	) => Promise<string | null>;
 };

@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
+import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { DownloadDataInput, DownloadDataOutput, S3Exception } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { createDownloadTask } from '../utils';
 import { getObject } from '../utils/client';
+import { getStorageUserAgentValue } from '../utils/userAgent';
 
 /**
  * Download S3 object data to memory
@@ -44,8 +46,8 @@ export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
 
 	const downloadTask = createDownloadTask({
 		job: downloadDataJob(input, abortController.signal),
-		onCancel: (abortErrorOverwrite?: Error) => {
-			abortController.abort(abortErrorOverwrite);
+		onCancel: (message?: string) => {
+			abortController.abort(message);
 		},
 	});
 	return downloadTask;
@@ -77,6 +79,7 @@ const downloadDataJob =
 				...s3Config,
 				abortSignal,
 				onDownloadProgress: downloadDataOptions?.onProgress,
+				userAgentValue: getStorageUserAgentValue(StorageAction.DownloadData),
 			},
 			{
 				Bucket: bucket,

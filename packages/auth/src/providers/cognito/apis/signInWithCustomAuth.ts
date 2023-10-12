@@ -9,6 +9,7 @@ import {
 	getSignInResult,
 	getSignInResultFromError,
 	getNewDeviceMetatada,
+	retryOnResourceNotFoundException,
 } from '../utils/signInHelpers';
 import { Amplify, Hub } from '@aws-amplify/core';
 import {
@@ -64,10 +65,10 @@ export async function signInWithCustomAuth(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleCustomAuthFlowWithoutSRP(
+		} = await retryOnResourceNotFoundException(
+			handleCustomAuthFlowWithoutSRP,
+			[username, metadata, authConfig, tokenOrchestrator],
 			username,
-			metadata,
-			authConfig,
 			tokenOrchestrator
 		);
 
@@ -81,6 +82,7 @@ export async function signInWithCustomAuth(
 			cleanActiveSignInState();
 
 			await cacheCognitoTokens({
+				username,
 				...AuthenticationResult,
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,

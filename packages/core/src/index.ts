@@ -23,6 +23,7 @@ export {
 	AuthConfig,
 	AuthUserPoolConfig,
 	AuthUserPoolAndIdentityPoolConfig,
+	APIConfig,
 	StorageAccessLevel,
 	StorageConfig,
 	GetCredentialsOptions,
@@ -44,7 +45,7 @@ export {
 	getId,
 	GetCredentialsForIdentityInput,
 	GetCredentialsForIdentityOutput,
-} from './AwsClients/CognitoIdentity';
+} from './awsClients/cognitoIdentity';
 
 // Amplify-wide constructs
 export { UserProfile } from './types';

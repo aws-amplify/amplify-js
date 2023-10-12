@@ -1,10 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { AmplifyClassV6 } from '@aws-amplify/core';
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { Observable } from 'rxjs';
 
-import { APIAuthMode, DocumentType } from '@aws-amplify/core/internals/utils';
+import {
+	GraphQLAuthMode,
+	DocumentType,
+} from '@aws-amplify/core/internals/utils';
 export { CONTROL_MSG, ConnectionState } from './PubSub';
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
@@ -12,7 +16,7 @@ export { CONTROL_MSG, ConnectionState } from './PubSub';
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: Record<string, DocumentType>;
-	authMode?: APIAuthMode;
+	authMode?: GraphQLAuthMode;
 	authToken?: string;
 	/**
 	 * @deprecated This property should not be used
@@ -21,7 +25,7 @@ export interface GraphQLOptions {
 }
 
 export interface GraphQLResult<T = object> {
-	data?: T;
+	data: T;
 	errors?: GraphQLError[];
 	extensions?: {
 		[key: string]: any;
@@ -35,6 +39,82 @@ export type GraphQLQuery<T> = T & { readonly [queryType]: 'query' };
 export type GraphQLSubscription<T> = T & {
 	readonly [queryType]: 'subscription';
 };
+
+/**
+ * Accepts a code generated model type and returns a supertype that
+ * can accept return values from the relevant graphql operations.
+ *
+ * For example:
+ *
+ * ```typescript
+ * import { GraphQLReturnType } from 'aws-amplify/api';
+ * import { MyModel } from './API';
+ * import { getMyModel } from './graphql/queries';
+ *
+ * const [item, setItem] = useState<GraphQLReturnType<MyModel>>();
+ * setItem(await client.graphql({ query: getMyModel }).data.getMyModel!)
+ * ```
+ *
+ * Trying to assign the result of a `getMyModel` operation directly to a
+ * `MyModel` variables won't necessarily work, because normally-required related
+ * models might not be part of the selection set.
+ *
+ * This util simply makes related model properties optional recursively.
+ */
+export type GraphQLReturnType<T> = T extends {}
+	? {
+			[K in keyof T]?: GraphQLReturnType<T[K]>;
+	  }
+	: T;
+
+/**
+ * Describes a paged list result from AppSync, which can either
+ * live at the top query or property (e.g., related model) level.
+ */
+type PagedList<T, TYPENAME> = {
+	__typename: TYPENAME;
+	nextToken?: string | null | undefined;
+	items: Array<T>;
+};
+
+/**
+ * Recursively looks through a result type and removes nulls and
+ * and undefined from `PagedList` types.
+ *
+ * Although a graphql response might contain empty values in an
+ * array, this will only be the case when we also have errors,
+ * which will then be *thrown*.
+ */
+type WithListsFixed<T> = T extends PagedList<infer IT, infer NAME>
+	? PagedList<Exclude<IT, null | undefined>, NAME>
+	: T extends {}
+	? {
+			[K in keyof T]: WithListsFixed<T[K]>;
+	  }
+	: T;
+
+/**
+ * Returns an updated response type to always return a value.
+ */
+type NeverEmpty<T> = {
+	[K in keyof T]-?: Exclude<WithListsFixed<T[K]>, undefined | null>;
+};
+
+/**
+ * Replaces all list result types in a query result with types to exclude
+ * nulls and undefined from list member unions.
+ *
+ * If empty members are present, there will also be errors present,
+ * and the response will instead be *thrown*.
+ */
+type FixedQueryResult<T> = Exclude<
+	T[keyof T],
+	null | undefined
+> extends PagedList<any, any>
+	? {
+			[K in keyof T]-?: WithListsFixed<Exclude<T[K], null | undefined>>;
+	  }
+	: T;
 
 /**
  * The return value from a `graphql({query})` call when `query` is a subscription.
@@ -77,12 +157,12 @@ export type GraphqlSubscriptionResult<T> = Observable<
  * ```
  */
 export type GraphqlSubscriptionMessage<T> = {
-	data?: T;
+	data: T;
 };
 
 export interface AWSAppSyncRealTimeProviderOptions {
 	appSyncGraphqlEndpoint?: string;
-	authenticationType?: APIAuthMode;
+	authenticationType?: GraphQLAuthMode;
 	query?: string;
 	variables?: Record<string, unknown>;
 	apiKey?: string;
@@ -121,7 +201,7 @@ export interface GraphQLOptionsV6<
 > {
 	query: TYPED_GQL_STRING | DocumentNode;
 	variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
-	authMode?: APIAuthMode;
+	authMode?: GraphQLAuthMode;
 	authToken?: string;
 	/**
 	 * @deprecated This property should not be used
@@ -165,11 +245,11 @@ export type GraphQLResponseV6<
 	FALLBACK_TYPE = unknown,
 	TYPED_GQL_STRING extends string = string
 > = TYPED_GQL_STRING extends GeneratedQuery<infer IN, infer QUERY_OUT>
-	? Promise<GraphQLResult<QUERY_OUT>>
+	? Promise<GraphQLResult<FixedQueryResult<QUERY_OUT>>>
 	: TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer MUTATION_OUT>
-	? Promise<GraphQLResult<MUTATION_OUT>>
+	? Promise<GraphQLResult<NeverEmpty<MUTATION_OUT>>>
 	: TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer SUB_OUT>
-	? GraphqlSubscriptionResult<SUB_OUT>
+	? GraphqlSubscriptionResult<NeverEmpty<SUB_OUT>>
 	: FALLBACK_TYPE extends GraphQLQuery<infer T>
 	? Promise<GraphQLResult<FALLBACK_TYPE>>
 	: FALLBACK_TYPE extends GraphQLSubscription<infer T>
@@ -263,3 +343,26 @@ export type GeneratedSubscription<InputType, OutputType> = string & {
 	__generatedSubscriptionInput: InputType;
 	__generatedSubscriptionOutput: OutputType;
 };
+
+type FilteredKeys<T> = {
+	[P in keyof T]: T[P] extends never ? never : P;
+}[keyof T];
+type ExcludeNeverFields<O> = {
+	[K in FilteredKeys<O>]: O[K];
+};
+
+export const __amplify = Symbol('amplify');
+
+export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
+	[__amplify]: AmplifyClassV6;
+	graphql: <FALLBACK_TYPES = unknown, TYPED_GQL_STRING extends string = string>(
+		options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
+		additionalHeaders?:
+			| {
+					[key: string]: string;
+			  }
+			| undefined
+	) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+	cancel: (promise: Promise<any>, message?: string) => boolean;
+	isCancelError: (error: any) => boolean;
+}>;

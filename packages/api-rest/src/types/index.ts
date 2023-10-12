@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 import { DocumentType } from '@aws-amplify/core/internals/utils';
 
-export type GetOptions = RestApiOptionsBase;
-export type PostOptions = RestApiOptionsBase;
-export type PutOptions = RestApiOptionsBase;
-export type PatchOptions = RestApiOptionsBase;
-export type DeleteOptions = Omit<RestApiOptionsBase, 'body'>;
-export type HeadOptions = Omit<RestApiOptionsBase, 'body'>;
+export type GetInput = ApiInput<RestApiOptionsBase>;
+export type PostInput = ApiInput<RestApiOptionsBase>;
+export type PutInput = ApiInput<RestApiOptionsBase>;
+export type PatchInput = ApiInput<RestApiOptionsBase>;
+export type DeleteInput = ApiInput<Omit<RestApiOptionsBase, 'body'>>;
+export type HeadInput = ApiInput<Omit<RestApiOptionsBase, 'body'>>;
 
 export type GetOperation = Operation<RestApiResponse>;
 export type PostOperation = Operation<RestApiResponse>;
@@ -16,7 +16,10 @@ export type PatchOperation = Operation<RestApiResponse>;
 export type DeleteOperation = Operation<Omit<RestApiResponse, 'body'>>;
 export type HeadOperation = Operation<Omit<RestApiResponse, 'body'>>;
 
-type RestApiOptionsBase = {
+/**
+ * @internal
+ */
+export type RestApiOptionsBase = {
 	headers?: Headers;
 	queryParams?: Record<string, string>;
 	body?: DocumentType | FormData;
@@ -37,7 +40,7 @@ type RestApiOptionsBase = {
 type Headers = Record<string, string>;
 
 /**
- * Type representing an operation that can be cancelled.
+ * Type representing an operation that can be canceled.
  *
  * @internal
  */
@@ -64,12 +67,20 @@ export interface RestApiResponse {
 }
 
 /**
- * Input type of REST API.
  * @internal
  */
 export type ApiInput<Options> = {
+	/**
+	 * Name of the REST API configured in Amplify singleton.
+	 */
 	apiName: string;
+	/**
+	 * Path of the REST API.
+	 */
 	path: string;
+	/**
+	 * Options to overwrite the REST API call behavior.
+	 */
 	options?: Options;
 };
 

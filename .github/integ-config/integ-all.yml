@@ -565,6 +565,42 @@ tests:
     # Temp fix:
     browser: *minimal_browser_list
 
+  - test_name: integ_react_analytics_personalize_auth
+    desc: 'Test record API for Personalize with authenticated user'
+    framework: react
+    category: analytics
+    sample_name: [personalize-test]
+    spec: personalize
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_personalize_unauth
+    desc: 'Test record API for Personalize with guest user'
+    framework: react
+    category: analytics
+    sample_name: [personalize-test]
+    spec: personalize-unauth
+    # Temp fix:
+    browser: *minimal_browser_list
+    
+  - test_name: integ_react_analytics_kinesis_data_firehose_auth
+    desc: 'Test record API for KDF with authenticated user'
+    framework: react
+    category: analytics
+    sample_name: [kinesis-firehose-test]
+    spec: kinesis-firehose
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_kinesis_data_firehose_unauth
+    desc: 'Test record API for KDF with guest user'
+    framework: react
+    category: analytics
+    sample_name: [kinesis-firehose-test]
+    spec: kinesis-firehose-unauth
+    # Temp fix:
+    browser: *minimal_browser_list
+
   # GEO
   # - test_name: integ_react_geo_display_map
   #   desc: 'Display Map'
@@ -661,14 +697,14 @@ tests:
   #   spec: reconnection
   #   # Firefox doesn't support network state management in cypress
   #   browser: [chrome]
-  # - test_name: integ_react_api_reconnect
-  #   desc: 'PubSub - Reconnection for API'
-  #   framework: react
-  #   category: pubsub
-  #   sample_name: [reconnection-api]
-  #   spec: reconnection
-  #   # Firefox doesn't support network state management in cypress
-  #   browser: [chrome]
+  - test_name: integ_react_api_reconnect
+    desc: 'PubSub - Reconnection for API'
+    framework: react
+    category: pubsub
+    sample_name: [reconnection-api]
+    spec: reconnection
+    # Firefox doesn't support network state management in cypress
+    browser: [chrome]
 
   # STORAGE
   - test_name: integ_react_storage

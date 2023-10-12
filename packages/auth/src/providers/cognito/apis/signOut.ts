@@ -8,11 +8,12 @@ import {
 	clearCredentials,
 	defaultStorage,
 } from '@aws-amplify/core';
-import { openAuthSession } from '../../../utils';
-import { SignOutInput, SignOutOutput } from '../types';
+import { getAuthUserAgentValue, openAuthSession } from '../../../utils';
+import { SignOutInput } from '../types';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { tokenOrchestrator } from '../tokenProvider';
 import {
+	AuthAction,
 	AMPLIFY_SYMBOL,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
@@ -32,10 +33,9 @@ import {
  * Signs a user out
  *
  * @param input - The SignOutInput object
- * @returns SignOutOutput
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export async function signOut(input?: SignOutInput): Promise<SignOutOutput> {
+export async function signOut(input?: SignOutInput): Promise<void> {
 	const cognitoConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(cognitoConfig);
 
@@ -56,6 +56,7 @@ async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 			await revokeToken(
 				{
 					region: getRegion(cognitoConfig.userPoolId),
+					userAgentValue: getAuthUserAgentValue(AuthAction.SignOut),
 				},
 				{
 					ClientId: cognitoConfig.userPoolClientId,
@@ -81,6 +82,7 @@ async function globalSignOut(cognitoConfig: CognitoUserPoolConfig) {
 		await globalSignOutClient(
 			{
 				region: getRegion(cognitoConfig.userPoolId),
+				userAgentValue: getAuthUserAgentValue(AuthAction.SignOut),
 			},
 			{
 				AccessToken: tokens.accessToken.toString(),
@@ -107,15 +109,19 @@ async function handleOAuthSignOut(cognitoConfig: CognitoUserPoolConfig) {
 
 	const oauthStore = new DefaultOAuthStore(defaultStorage);
 	oauthStore.setAuthConfig(cognitoConfig);
-	const isOAuthSignIn = await oauthStore.loadOAuthSignIn();
+	const { isOAuthSignIn, preferPrivateSession } =
+		await oauthStore.loadOAuthSignIn();
 	await oauthStore.clearOAuthData();
 
 	if (isOAuthSignIn) {
-		oAuthSignOutRedirect(cognitoConfig);
+		oAuthSignOutRedirect(cognitoConfig, preferPrivateSession);
 	}
 }
 
-async function oAuthSignOutRedirect(authConfig: CognitoUserPoolConfig) {
+async function oAuthSignOutRedirect(
+	authConfig: CognitoUserPoolConfig,
+	preferPrivateSession: boolean
+) {
 	assertOAuthConfig(authConfig);
 
 	const { loginWith, userPoolClientId } = authConfig;
@@ -135,7 +141,11 @@ async function oAuthSignOutRedirect(authConfig: CognitoUserPoolConfig) {
 	// );
 	// logger.debug(`Signing out from ${oAuthLogoutEndpoint}`);
 
-	await openAuthSession(oAuthLogoutEndpoint, redirectSignOut);
+	await openAuthSession(
+		oAuthLogoutEndpoint,
+		redirectSignOut,
+		preferPrivateSession
+	);
 }
 
 function isSessionRevocable(token: JWT) {

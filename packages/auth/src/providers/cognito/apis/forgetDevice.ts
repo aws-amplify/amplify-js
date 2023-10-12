@@ -4,12 +4,16 @@
 import { forgetDevice as serviceForgetDevice } from '../utils/clients/CognitoIdentityProvider';
 import { Amplify } from '@aws-amplify/core';
 import { assertAuthTokens, assertDeviceMetadata } from '../utils/types';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { tokenOrchestrator } from '../tokenProvider';
 import { ForgetDeviceInput } from '../types';
 import { ForgetDeviceException } from '../../cognito/types/errors';
+import { getAuthUserAgentValue } from '../../../utils';
 
 /**
  * Forget a remembered device while authenticated.
@@ -32,7 +36,10 @@ export async function forgetDevice(input?: ForgetDeviceInput): Promise<void> {
 	if (!externalDeviceKey) assertDeviceMetadata(deviceMetadata);
 
 	await serviceForgetDevice(
-		{ region: getRegion(authConfig.userPoolId) },
+		{
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ForgetDevice),
+		},
 		{
 			AccessToken: tokens.accessToken.toString(),
 			DeviceKey: externalDeviceKey ?? currentDeviceKey,

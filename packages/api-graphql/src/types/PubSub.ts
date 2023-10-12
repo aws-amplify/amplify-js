@@ -52,5 +52,5 @@ export enum ConnectionState {
 	ConnectedPendingKeepAlive = 'ConnectedPendingKeepAlive',
 }
 
-export type PubSubContent = Record<string, unknown> | string;
+export type PubSubContent = Record<string, unknown>;
 export type PubSubContentObserver = Observer<PubSubContent>;

@@ -28,6 +28,7 @@ export {
 	rememberDevice,
 	forgetDevice,
 	fetchDevices,
+	autoSignIn,
 } from './providers/cognito';
 
 export {
@@ -61,7 +62,6 @@ export {
 	ResetPasswordOutput,
 	SetUpTOTPOutput,
 	SignInOutput,
-	SignOutOutput,
 	SignUpOutput,
 	UpdateUserAttributesOutput,
 	SendUserAttributeVerificationCodeOutput,

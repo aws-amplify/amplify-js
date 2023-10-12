@@ -153,7 +153,7 @@ export const xhrTransferHandler: TransferHandler<
 		});
 
 		if (abortSignal) {
-			const onCancelled = () => {
+			const onCanceled = () => {
 				// The abort event is triggered after the error or load event. So we need to check if the xhr is null.
 				if (!xhr) {
 					return;
@@ -167,8 +167,8 @@ export const xhrTransferHandler: TransferHandler<
 				xhr = null;
 			};
 			abortSignal.aborted
-				? onCancelled()
-				: abortSignal.addEventListener('abort', onCancelled);
+				? onCanceled()
+				: abortSignal.addEventListener('abort', onCanceled);
 		}
 
 		if (
