@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Credentials } from '@aws-sdk/types';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, defaultStorage } from '@aws-amplify/core';
 import {
 	createMultipartUpload,
@@ -24,7 +24,7 @@ import { StorageOptions } from '../../../../../src/types';
 jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/providers/s3/utils/client');
 
-const credentials: Credentials = {
+const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
