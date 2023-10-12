@@ -15,11 +15,10 @@ import {
 } from '../../../utils';
 
 /**
- * Initialize and set up in-app messaging category. Enables the tracking of messages displayed in a session, send
- * `messageReceived` events that are triggered via Analytics events.
+ * Initialize and set up in-app messaging category. This API needs to be called to enable other InAppMessaging APIs.
  *
  * @remarks
- * Call this at the earliest in your app at the root entry point after configuring Amplify
+ * Make sure to call this at the earliest in your app at the root entry point after configuring Amplify.
  * @example
  * ```ts
  * Amplify.configure(config);
