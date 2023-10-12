@@ -300,13 +300,13 @@
 			"name": "[API] REST API handlers",
 			"path": "./lib-esm/api/index.js",
 			"import": "{ get, post, put, del, patch, head, isCancelError }",
-			"limit": "14.2 kB"
+			"limit": "15.0 kB"
 		},
 		{
 			"name": "[Auth] signUp (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signUp }",
-			"limit": "30.52 kB"
+			"limit": "31.00 kB"
 		},
 		{
 			"name": "[Auth] resetPassword (Cognito)",
@@ -324,7 +324,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "29.64 kB"
+			"limit": "30.00 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
@@ -336,7 +336,7 @@
 			"name": "[Auth] confirmSignUp (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignUp }",
-			"limit": "30.22 kB"
+			"limit": "31.00 kB"
 		},
 		{
 			"name": "[Auth] confirmSignIn (Cognito)",
@@ -372,7 +372,7 @@
 			"name": "[Auth] setUpTOTP (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ setUpTOTP }",
-			"limit": "12.76 kB"
+			"limit": "13.50 kB"
 		},
 		{
 			"name": "[Auth] updateUserAttributes (Cognito)",
@@ -420,37 +420,37 @@
 			"name": "[Storage] copy (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ copy }",
-			"limit": "17.95 kB"
+			"limit": "18.95 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ downloadData }",
-			"limit": "18.67 kB"
+			"limit": "19.67 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ getProperties }",
-			"limit": "17.6 kB"
+			"limit": "18.6 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ getUrl }",
-			"limit": "19.03 kB"
+			"limit": "20.03 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ list }",
-			"limit": "18.12 kB"
+			"limit": "19.12 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ remove }",
-			"limit": "17.43 kB"
+			"limit": "18.43 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
