@@ -6,4 +6,9 @@ export {
 	syncMessages,
 	dispatchEvent,
 	setConflictHandler,
+	onMessageReceived,
+	onMessageDisplayed,
+	onMessageDismissed,
+	onMessageActionTaken,
+	notifyMessageInteraction,
 } from './pinpoint/apis';

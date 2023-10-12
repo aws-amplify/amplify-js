@@ -15,4 +15,5 @@ export {
 	InAppMessageCountMap,
 	DailyInAppMessageCounter,
 	InAppMessageConflictHandler,
+	OnMessageInteractionEventHandler,
 } from './types';
