@@ -9,6 +9,14 @@ type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	? A
 	: never;
 
+const MOCK_RESOURCE_CONFIG = {
+	Auth: {
+		Cognito: {
+			identityPoolId: 'us-east-1:bbbbb',
+		},
+	},
+};
+
 describe('Amplify.configure() and Amplify.getConfig()', () => {
 	it('should take the legacy CLI shaped config object for configuring and return it from getConfig()', () => {
 		const mockLegacyConfig = {
@@ -117,6 +125,33 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 			},
 		});
 	});
+
+	it('should return memoized, immutable resource configuration objects', () => {
+		Amplify.configure(MOCK_RESOURCE_CONFIG);
+
+		const config = Amplify.getConfig();
+		const config2 = Amplify.getConfig();
+
+		const mutateConfig = () => {
+			config.Auth = MOCK_RESOURCE_CONFIG.Auth;
+		}
+
+		// Config should be cached
+		expect(config).toEqual(MOCK_RESOURCE_CONFIG);
+		expect(config2).toBe(config);
+
+		// Config should be immutable
+		expect(mutateConfig).toThrow(TypeError);
+
+		// Config should be re-generated if it changes
+		Amplify.configure(MOCK_RESOURCE_CONFIG);
+
+		const config3 = Amplify.getConfig();
+
+		expect(config3).toEqual(MOCK_RESOURCE_CONFIG);
+		expect(config3).not.toBe(config);
+		expect(config3).not.toBe(config2);
+	})
 });
 
 describe('Session tests', () => {

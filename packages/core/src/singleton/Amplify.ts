@@ -4,24 +4,36 @@ import { AuthClass } from './Auth';
 import { Hub, AMPLIFY_SYMBOL } from '../Hub';
 import { LegacyConfig, LibraryOptions, ResourcesConfig } from './types';
 import { parseAWSExports } from '../parseAWSExports';
+import { deepFreeze } from '../utils';
 
 // TODO(v6): add default AuthTokenStore for each platform
 
 export class AmplifyClass {
 	resourcesConfig: ResourcesConfig;
 	libraryOptions: LibraryOptions;
+
+	/**
+	 * @internal
+	 */
+	private cachedResourcesConfig: ResourcesConfig;
+
+	/**
+	 * @internal
+	 */
+	private cachedImmutableResourcesConfig: ResourcesConfig | undefined;
+
 	/**
 	 * Cross-category Auth utilities.
 	 *
 	 * @internal
 	 */
 	public readonly Auth: AuthClass;
+
 	constructor() {
 		this.resourcesConfig = {};
-		this.Auth = new AuthClass();
-
-		// TODO(v6): add default providers for getting started
+		this.cachedResourcesConfig = this.resourcesConfig;
 		this.libraryOptions = {};
+		this.Auth = new AuthClass();
 	}
 
 	/**
@@ -71,10 +83,16 @@ export class AmplifyClass {
 	/**
 	 * Provides access to the current back-end resource configuration for the Library.
 	 *
-	 * @returns Returns the current back-end resource configuration.
+	 * @returns Returns an immutable back-end resource configuration.
 	 */
 	getConfig(): ResourcesConfig {
-		return JSON.parse(JSON.stringify(this.resourcesConfig));
+		// Memoization contingent on `configure` creating a new object instance each time configuration changes
+		if (this.cachedResourcesConfig !== this.resourcesConfig || !this.cachedImmutableResourcesConfig) {
+			this.cachedResourcesConfig = this.resourcesConfig;
+			this.cachedImmutableResourcesConfig = deepFreeze(JSON.parse(JSON.stringify(this.resourcesConfig)));
+		}
+
+		return this.cachedImmutableResourcesConfig!;
 	}
 }
 
