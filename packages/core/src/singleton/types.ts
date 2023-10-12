@@ -12,6 +12,7 @@ import {
 	GetCredentialsOptions,
 	CognitoIdentityPoolConfig,
 } from './Auth/types';
+import { CacheConfig } from './Cache/types';
 import { GeoConfig } from './Geo/types';
 import {
 	LibraryStorageOptions,
@@ -32,7 +33,7 @@ export type ResourcesConfig = {
 	API?: APIConfig;
 	Analytics?: AnalyticsConfig;
 	Auth?: AuthConfig;
-	// Cache?: CacheConfig;
+	Cache?: CacheConfig;
 	// DataStore?: {};
 	I18n?: I18nConfig;
 	// Interactions?: {};
@@ -55,6 +56,7 @@ export {
 	AuthUserPoolConfig,
 	AuthIdentityPoolConfig,
 	AuthUserPoolAndIdentityPoolConfig,
+	CacheConfig,
 	GetCredentialsOptions,
 	StorageAccessLevel,
 	StorageConfig,
