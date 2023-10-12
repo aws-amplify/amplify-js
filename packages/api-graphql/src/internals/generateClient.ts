@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { graphql, cancel, isCancelError } from './v6';
+import { generateModelsProperty } from './generateModelsProperty';
 import { V6Client, __amplify } from '../types';
-
-type ClientGenerationParams = {
-	amplify: AmplifyClassV6;
-};
+import { ClientGenerationParams } from './types';
 
 /**
  * @private
@@ -17,11 +15,18 @@ type ClientGenerationParams = {
  * @param params
  * @returns
  */
-export function generateClient(params: ClientGenerationParams): V6Client {
-	return {
+export function generateClient<T extends Record<any, any> = never>(
+	params: ClientGenerationParams
+): V6Client<T> {
+	const client = {
 		[__amplify]: params.amplify,
 		graphql,
 		cancel,
 		isCancelError,
-	};
+		models: {},
+	} as any;
+
+	client.models = generateModelsProperty<T>(client, params);
+
+	return client as V6Client<T>;
 }

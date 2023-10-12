@@ -16,6 +16,68 @@ const MOCK_AUTH_CONFIG = {
 		},
 	},
 };
+const modelIntrospection = {
+	version: 1,
+	models: {
+		Todo: {
+			name: 'Todo',
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				name: {
+					name: 'name',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+				description: {
+					name: 'description',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+				createdAt: {
+					name: 'createdAt',
+					isArray: false,
+					type: 'AWSDateTime',
+					isRequired: false,
+					attributes: [],
+					isReadOnly: true,
+				},
+				updatedAt: {
+					name: 'updatedAt',
+					isArray: false,
+					type: 'AWSDateTime',
+					isRequired: false,
+					attributes: [],
+					isReadOnly: true,
+				},
+			},
+			syncable: true,
+			pluralName: 'Todos',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			primaryKeyInfo: {
+				isCustomPrimaryKey: false,
+				primaryKeyFieldName: 'id',
+				sortKeyFieldNames: [],
+			},
+		},
+	},
+	enums: {},
+	nonModels: {},
+};
 
 describe('Amplify.configure() and Amplify.getConfig()', () => {
 	it('should take the legacy CLI shaped config object for configuring and return it from getConfig()', () => {
@@ -36,6 +98,11 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 				passwordPolicyCharacters: [],
 			},
 			aws_cognito_verification_mechanisms: ['PHONE_NUMBER'],
+			aws_appsync_graphqlEndpoint: 'https://some.domain.com/graphql',
+			aws_appsync_region: 'us-west-1',
+			aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+			aws_appsync_apiKey: 'some-key',
+			modelIntrospection,
 		};
 
 		Amplify.configure(mockLegacyConfig);
@@ -74,6 +141,15 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 					],
 				},
 			},
+			API: {
+				GraphQL: {
+					apiKey: 'some-key',
+					defaultAuthMode: 'userPool',
+					endpoint: 'https://some.domain.com/graphql',
+					region: 'us-west-1',
+					modelIntrospection,
+				},
+			},
 		});
 	});
 
@@ -81,7 +157,18 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 		Amplify.configure(MOCK_AUTH_CONFIG);
 		const result = Amplify.getConfig();
 
-		expect(result).toEqual(MOCK_AUTH_CONFIG);
+		expect(result).toEqual({
+			...MOCK_AUTH_CONFIG,
+			API: {
+				GraphQL: {
+					apiKey: 'some-key',
+					defaultAuthMode: 'userPool',
+					endpoint: 'https://some.domain.com/graphql',
+					region: 'us-west-1',
+					modelIntrospection,
+				},
+			},
+		});
 	});
 
 	it('should replace Cognito configuration set and get config', () => {
@@ -109,7 +196,7 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 		const config2 = Amplify.getConfig();
 
 		const mutateConfig = () => {
-			config.Auth = MOCK_AUTH_CONFIG.Auth;
+			(config as any).Auth = MOCK_AUTH_CONFIG.Auth;
 		};
 
 		// Config should be cached
@@ -124,6 +211,15 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 			Auth: {
 				Cognito: {
 					identityPoolId: 'us-east-1:bbbbb',
+				},
+			},
+			API: {
+				GraphQL: {
+					apiKey: 'some-key',
+					defaultAuthMode: 'userPool',
+					endpoint: 'https://some.domain.com/graphql',
+					region: 'us-west-1',
+					modelIntrospection: modelIntrospection as any,
 				},
 			},
 		});
