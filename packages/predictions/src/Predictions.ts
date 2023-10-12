@@ -34,7 +34,6 @@ export class PredictionsClass {
 		return 'Predictions';
 	}
 
-	public interpret(input: InterpretTextInput): Promise<InterpretTextOutput>;
 	public interpret(input: InterpretTextInput): Promise<InterpretTextOutput> {
 		return this.interpretProvider.interpret(input);
 	}
