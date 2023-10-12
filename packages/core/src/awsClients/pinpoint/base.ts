@@ -9,6 +9,7 @@ import {
 import { parseJsonError } from '../../clients/serde/json';
 import type { EndpointResolverOptions, Headers } from '../../clients/types';
 import { getAmplifyUserAgent } from '../../Platform';
+import { AmplifyUrl } from '../../utils/amplifyUrl';
 
 /**
  * The service name used to sign requests if the API requires authentication.
@@ -19,7 +20,7 @@ const SERVICE_NAME = 'mobiletargeting';
  * The endpoint resolver function that returns the endpoint URL for a given region.
  */
 const endpointResolver = ({ region }: EndpointResolverOptions) => ({
-	url: new URL(`https://pinpoint.${region}.${getDnsSuffix(region)}`),
+	url: new AmplifyUrl(`https://pinpoint.${region}.${getDnsSuffix(region)}`),
 });
 
 /**

@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Cache } from '@aws-amplify/core';
-import { isBrowser } from '@aws-amplify/core/internals/utils';
-import { v4 as uuid } from 'uuid';
+import { isBrowser, amplifyUuid } from '@aws-amplify/core/internals/utils';
 
 const PERSONALIZE_CACHE_USERID = '_awsct_uid';
 const PERSONALIZE_CACHE_SESSIONID = '_awsct_sid';
@@ -30,7 +29,7 @@ const setCache = (key: string, value: unknown) => {
 export const resolveCachedSession = (trackingId: string) => {
 	let sessionId: string | undefined = getCache(PERSONALIZE_CACHE_SESSIONID);
 	if (!sessionId) {
-		sessionId = uuid();
+		sessionId = amplifyUuid();
 		setCache(PERSONALIZE_CACHE_SESSIONID, sessionId);
 	}
 
@@ -58,7 +57,7 @@ export const updateCachedSession = (
 		!!currentSessionId && !currentUserId && !!newUserId;
 
 	if (isRequireNewSession) {
-		const newSessionId = uuid();
+		const newSessionId = amplifyUuid();
 		setCache(PERSONALIZE_CACHE_SESSIONID, newSessionId);
 		setCache(PERSONALIZE_CACHE_USERID, newUserId);
 	} else if (isRequireUpdateSession) {
