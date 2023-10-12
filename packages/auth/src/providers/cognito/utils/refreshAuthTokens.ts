@@ -63,13 +63,12 @@ export const refreshAuthTokens: TokenRefresher = async ({
 		});
 	}
 	const clockDrift = iat * 1000 - new Date().getTime();
-	const refreshToken = AuthenticationResult?.RefreshToken ?? refreshTokenString;
 
 	return {
 		accessToken,
 		idToken,
 		clockDrift,
-		refreshToken,
+		refreshToken: refreshTokenString,
 		username: `${accessToken.payload.username}`,
 	};
 };
