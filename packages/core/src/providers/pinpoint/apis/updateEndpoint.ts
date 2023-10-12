@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { v4 as uuidv4 } from 'uuid';
+import { amplifyUuid } from '../../../utils/amplifyUuid';
 import { getClientInfo } from '../../../utils/getClientInfo';
 import {
 	updateEndpoint as clientUpdateEndpoint,
@@ -29,7 +29,7 @@ export const updateEndpoint = async ({
 }: PinpointUpdateEndpointInput): Promise<void> => {
 	const endpointId = await getEndpointId(appId, category);
 	// only generate a new endpoint id if one was not found in cache
-	const createdEndpointId = !endpointId ? uuidv4() : undefined;
+	const createdEndpointId = !endpointId ? amplifyUuid() : undefined;
 	const {
 		customProperties,
 		demographic,
@@ -59,7 +59,7 @@ export const updateEndpoint = async ({
 		ApplicationId: appId,
 		EndpointId: endpointId ?? createdEndpointId,
 		EndpointRequest: {
-			RequestId: uuidv4(),
+			RequestId: amplifyUuid(),
 			EffectiveDate: new Date().toISOString(),
 			ChannelType: channelType,
 			Address: address,

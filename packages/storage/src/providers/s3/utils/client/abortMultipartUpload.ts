@@ -8,6 +8,10 @@ import {
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
+import {
+	AmplifyUrl,
+	AmplifyUrlSearchParams,
+} from '@aws-amplify/core/internals/utils';
 import { MetadataBearer } from '@aws-sdk/types';
 import type { AbortMultipartUploadCommandInput } from './types';
 
@@ -31,11 +35,11 @@ const abortMultipartUploadSerializer = (
 	input: AbortMultipartUploadInput,
 	endpoint: Endpoint
 ): HttpRequest => {
-	const url = new URL(endpoint.url.toString());
+	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	validateS3RequiredParameter(!!input.UploadId, 'UploadId');
-	url.search = new URLSearchParams({
+	url.search = new AmplifyUrlSearchParams({
 		uploadId: input.UploadId,
 	}).toString();
 	return {

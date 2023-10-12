@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Cache } from '@aws-amplify/core';
-import { isBrowser } from '@aws-amplify/core/internals/utils';
+import { isBrowser, amplifyUuid } from '@aws-amplify/core/internals/utils';
 import {
 	resolveCachedSession,
 	updateCachedSession,
@@ -11,11 +11,14 @@ import {
 jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/utils');
 
+const mockAmplifyUuid = amplifyUuid as jest.Mock;
+
 describe('Analytics service provider Personalize utils: cachedSession', () => {
 	const sessionIdCacheKey = '_awsct_sid.personalize';
 	const userIdCacheKey = '_awsct_uid.personalize';
 	const mockCache = Cache as jest.Mocked<typeof Cache>;
 	const mockIsBrowser = isBrowser as jest.Mock;
+	const mockUuid = 'b2bd676e-bc6b-40f4-bd86-1e31a07f7d10';
 
 	const mockSession = {
 		sessionId: 'sessionId0',
@@ -30,6 +33,7 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 	beforeEach(() => {
 		mockCache.getItem.mockImplementation(key => mockCachedStorage[key]);
 		mockIsBrowser.mockReturnValue(false);
+		mockAmplifyUuid.mockReturnValue(mockUuid);
 	});
 
 	afterEach(() => {
@@ -47,7 +51,7 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 		mockCache.getItem.mockImplementation(async () => undefined);
 		const result = await resolveCachedSession();
 		expect(result.sessionId).not.toBe(mockSession.sessionId);
-		expect(result.sessionId.length).toBeGreaterThan(0);
+		expect(result.sessionId).toEqual(mockUuid);
 		expect(result.userId).toBe(undefined);
 	});
 
