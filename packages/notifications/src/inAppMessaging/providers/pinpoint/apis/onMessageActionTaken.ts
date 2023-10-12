@@ -4,11 +4,14 @@
 import { addEventListener } from '../../../../common';
 import { OnMessageActionTakenInput } from '../types/inputs';
 import { OnMessageActionTakenOutput } from '../types/outputs';
+import { assertInitializationError } from '../utils';
 
 /**
  * Registers a callback that will be invoked on `messageActionTaken` events.
  *
  * @param {OnMessageActionTakenInput} input - The input object that holds the callback handler.
+ * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters, library
+ *  configuration or category initialization is incorrect.
  * @returns {OnMessageActionTakenOutput} - An object that holds a remove method to stop listening to events.
  * @example
  * ```ts
@@ -21,5 +24,6 @@ import { OnMessageActionTakenOutput } from '../types/outputs';
 export function onMessageActionTaken(
 	input: OnMessageActionTakenInput
 ): OnMessageActionTakenOutput {
+	assertInitializationError();
 	return addEventListener('messageActionTaken', input);
 }

@@ -10,7 +10,10 @@ import { Hub, HubCapsule } from '@aws-amplify/core';
 import { dispatchEvent } from './dispatchEvent';
 import { incrementMessageCounts, sessionStateChangeHandler } from '../utils';
 
-let initialized: boolean = false;
+/**
+ * @internal
+ */
+export let initialized: boolean = false;
 
 /**
  * Initialize and set up in-app messaging category. Enables the tracking of messages displayed in a session, send

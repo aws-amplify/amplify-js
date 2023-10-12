@@ -16,3 +16,5 @@ export {
 	sessionStateChangeHandler,
 	incrementMessageCounts,
 } from './processInAppMessages';
+
+export { assertInitializationError } from './helpers';

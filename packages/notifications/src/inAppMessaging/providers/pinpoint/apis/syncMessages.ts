@@ -15,6 +15,7 @@ import {
 	PINPOINT_KEY_PREFIX,
 	CATEGORY,
 	CHANNEL_TYPE,
+	assertInitializationError,
 } from '../utils';
 import {
 	getInAppMessages,
@@ -32,8 +33,8 @@ import {
  * Calling this API is necessary to trigger InApp messages on the device.
  *
  * @throws service exceptions - Thrown when the underlying Pinpoint service returns an error.
- * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters or library
- *  configuration is incorrect.
+ * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters, library
+ *  configuration or category initialization is incorrect.
  * @returns A promise that will resolve when the operation is complete.
  * @example
  * ```ts
@@ -43,6 +44,7 @@ import {
  * ```
  */
 export async function syncMessages(): Promise<void> {
+	assertInitializationError();
 	const messages = await fetchInAppMessages();
 	if (!messages || messages.length === 0) {
 		return;

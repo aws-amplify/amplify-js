@@ -4,6 +4,7 @@
 import {
 	PINPOINT_KEY_PREFIX,
 	STORAGE_KEY_SUFFIX,
+	assertInitializationError,
 	processInAppMessages,
 } from '../utils';
 import { InAppMessage } from '../../../types';
@@ -26,6 +27,8 @@ import { conflictHandler, setConflictHandler } from './setConflictHandler';
  * your own logic for resolving message conflicts.
  *
  * @param DispatchEventInput The input object that holds the event to be dispatched.
+ * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters, library
+ *  configuration or category initialization is incorrect.
  * @throws service exceptions - Thrown when the underlying Pinpoint service returns an error.
  * @returns A promise that will resolve when the operation is complete.
  * @example
@@ -38,6 +41,7 @@ import { conflictHandler, setConflictHandler } from './setConflictHandler';
  * ```
  */
 export async function dispatchEvent(input: DispatchEventInput): Promise<void> {
+	assertInitializationError();
 	try {
 		const key = `${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`;
 		const cachedMessages = await defaultStorage.getItem(key);

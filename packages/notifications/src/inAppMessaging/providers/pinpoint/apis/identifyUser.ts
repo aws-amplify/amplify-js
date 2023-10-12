@@ -7,6 +7,7 @@ import { InAppMessagingValidationErrorCode } from '../../../errors';
 import {
 	CATEGORY,
 	CHANNEL_TYPE,
+	assertInitializationError,
 	getInAppMessagingUserAgentString,
 	resolveConfig,
 	resolveCredentials,
@@ -21,8 +22,8 @@ import { IdentifyUserInput } from '../types';
  * @param {IdentifyUserParameters} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
  *  API.
  * @throws service: {@link UpdateEndpointException} - Thrown when the underlying Pinpoint service returns an error.
- * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters or library
- *  configuration is incorrect.
+ * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters, library
+ *  configuration or category initialization is incorrect.
  * @returns A promise that will resolve when the operation is complete.
  * @example
  * ```ts
@@ -69,6 +70,7 @@ export const identifyUser = async ({
 	userProfile,
 	options,
 }: IdentifyUserInput): Promise<void> => {
+	assertInitializationError();
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
 	const { address, optOut, userAttributes } = options?.serviceOptions ?? {};
