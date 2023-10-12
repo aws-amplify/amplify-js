@@ -21,6 +21,7 @@ import {
 } from './Storage/types';
 import { I18nConfig } from '../I18n/types';
 import { NotificationsConfig } from './Notifications/types';
+import { InteractionsConfig } from './Interactions/types';
 
 export type LegacyConfig = {
 	/**
@@ -36,7 +37,7 @@ export type ResourcesConfig = {
 	Cache?: CacheConfig;
 	// DataStore?: {};
 	I18n?: I18nConfig;
-	// Interactions?: {};
+	Interactions?: InteractionsConfig;
 	Notifications?: NotificationsConfig;
 	// Predictions?: {};
 	Storage?: StorageConfig;
@@ -58,6 +59,7 @@ export {
 	AuthUserPoolAndIdentityPoolConfig,
 	CacheConfig,
 	GetCredentialsOptions,
+	InteractionsConfig,
 	StorageAccessLevel,
 	StorageConfig,
 	AnalyticsConfig,

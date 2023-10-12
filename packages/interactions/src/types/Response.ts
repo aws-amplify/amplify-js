@@ -4,3 +4,8 @@
 export type InteractionsResponse = {
 	[key: string]: any;
 };
+
+export type CompletionCallback = (
+	error?: Error,
+	completion?: InteractionsResponse
+) => void;

@@ -36,6 +36,8 @@ export const parseAWSExports = (
 		aws_appsync_authenticationType,
 		aws_appsync_graphqlEndpoint,
 		aws_appsync_region,
+		aws_bots,
+		aws_bots_config,
 		aws_cognito_identity_pool_id,
 		aws_cognito_sign_up_verification_method,
 		aws_cognito_mfa_configuration,
@@ -82,6 +84,12 @@ export const parseAWSExports = (
 				},
 			};
 		}
+	}
+
+	if (Array.isArray(aws_bots_config)) {
+		amplifyConfig.Interactions = {
+			Lex: aws_bots_config,
+		};
 	}
 
 	// API
