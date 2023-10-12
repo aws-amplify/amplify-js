@@ -16,6 +16,7 @@ import type {
 	PutEventsCommandInput as PutEventsInput,
 	PutEventsCommandOutput as PutEventsOutput,
 } from './types';
+import { AmplifyUrl } from '../../utils/amplifyUrl';
 
 export type { PutEventsInput, PutEventsOutput };
 
@@ -25,7 +26,7 @@ const putEventsSerializer = (
 ): HttpRequest => {
 	assert(!!ApplicationId, PinpointValidationErrorCode.NoAppId);
 	const headers = getSharedHeaders();
-	const url = new URL(endpoint.url);
+	const url = new AmplifyUrl(endpoint.url);
 	url.pathname = `v1/apps/${extendedEncodeURIComponent(ApplicationId)}/events`;
 	const body = JSON.stringify(EventsRequest ?? {});
 	return { method: 'POST', headers, url, body };
