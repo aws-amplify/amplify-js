@@ -11,7 +11,6 @@ import {
 	AuthSignInOutput,
 	AuthSignUpOutput,
 	AuthResetPasswordOutput,
-	AuthSignOutOutput,
 	AuthUpdateUserAttributesOutput,
 	AuthUpdateUserAttributeOutput,
 } from '../../../types';
@@ -85,11 +84,6 @@ export type SignInWithUserPasswordOutput = AuthSignInOutput;
  * Output type for Cognito signInWithCustomSRPAuth API.
  */
 export type SignInWithCustomSRPAuthOutput = AuthSignInOutput;
-
-/**
- * Output type for Cognito signOut API.
- */
-export type SignOutOutput = AuthSignOutOutput;
 
 /**
  * Output type for Cognito signUp API.

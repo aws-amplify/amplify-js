@@ -209,7 +209,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		return `${this.name}.${identifier}.LastAuthUser`;
 	}
 
-	private async getLastAuthUser(): Promise<string> {
+	async getLastAuthUser(): Promise<string> {
 		const lastAuthUser =
 			(await this.getKeyValueStorage().getItem(this.getLastAuthUserKey())) ??
 			'username';
