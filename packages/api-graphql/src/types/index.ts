@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import { ModelTypes } from '@aws-amplify/amplify-api-next-types-alpha';
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { Observable } from 'rxjs';
@@ -10,6 +11,7 @@ import {
 	DocumentType,
 } from '@aws-amplify/core/internals/utils';
 export { CONTROL_MSG, ConnectionState } from './PubSub';
+
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
  */
@@ -347,6 +349,7 @@ export type GeneratedSubscription<InputType, OutputType> = string & {
 type FilteredKeys<T> = {
 	[P in keyof T]: T[P] extends never ? never : P;
 }[keyof T];
+
 type ExcludeNeverFields<O> = {
 	[K in FilteredKeys<O>]: O[K];
 };
@@ -365,4 +368,5 @@ export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 	cancel: (promise: Promise<any>, message?: string) => boolean;
 	isCancelError: (error: any) => boolean;
+	models: ModelTypes<T>;
 }>;
