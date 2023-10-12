@@ -408,16 +408,16 @@ tests:
   #   browser: [chrome]
   #   timeout_minutes: 45
   #   retry_count: 10
-  # - test_name: integ_rollup_datastore_basic_crud
-  #   desc: 'Rollup + DataStore - Basic CRUD'
-  #   framework: rollup
-  #   category: datastore
-  #   sample_name: [rollup-basic-crud]
-  #   spec: rollup-basic-crud
-  #   # TODO: run on firefox
-  #   browser: [chrome]
-  #   timeout_minutes: 45
-  #   retry_count: 10
+  - test_name: integ_rollup_datastore_basic_crud
+    desc: 'Rollup + DataStore - Basic CRUD'
+    framework: rollup
+    category: datastore
+    sample_name: [rollup-basic-crud]
+    spec: rollup-basic-crud
+    # TODO: run on firefox
+    browser: [chrome]
+    timeout_minutes: 45
+    retry_count: 10
 
   # API
   # - test_name: integ_react_graphql_api
@@ -582,7 +582,7 @@ tests:
     spec: personalize-unauth
     # Temp fix:
     browser: *minimal_browser_list
-    
+
   - test_name: integ_react_analytics_kinesis_data_firehose_auth
     desc: 'Test record API for KDF with authenticated user'
     framework: react
