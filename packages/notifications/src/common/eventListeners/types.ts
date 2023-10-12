@@ -10,3 +10,7 @@ export interface EventListener<EventHandler extends Function> {
 }
 
 export type EventType = InAppMessageInteractionEvent | PushNotificationEvent;
+
+export type EventListenerRemover = {
+	remove: () => void;
+};

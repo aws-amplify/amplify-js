@@ -38,6 +38,7 @@ export {
 	JwtPayload,
 	AuthStandardAttributeKey,
 	AuthVerifiableAttributeKey,
+	AWSCredentials
 } from './singleton/Auth/types';
 
 // Logging utilities
