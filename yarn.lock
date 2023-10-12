@@ -10,6 +10,18 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@aws-amplify/amplify-api-next-alpha@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-api-next-alpha/-/amplify-api-next-alpha-0.4.1.tgz#2d191991090d14e90e3c903aab7d2dcf727975c9"
+  integrity sha512-n/+FtBAIozubPqmJP2UFOmQinpsc0nHtKVD/qNr6gfSs/3Fe9Ub/Oo/xT7f52hjVHsOsBtN3InrYlgRdsLgBEw==
+  dependencies:
+    "@aws-amplify/amplify-api-next-types-alpha" "*"
+
+"@aws-amplify/amplify-api-next-types-alpha@*", "@aws-amplify/amplify-api-next-types-alpha@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-api-next-types-alpha/-/amplify-api-next-types-alpha-0.0.5.tgz#afeaba02f2607ac43de404bfcbb8702cb56f6ff9"
+  integrity sha512-FlOfQX9+r0Q8G5EEAV5tkBjcaTJhlnwfaeoe4K42BLKPzngntn+wWIFbIIbCFjW18DUmv62ItynzNSls+E38vg==
+
 "@aws-crypto/crc32@3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@aws-crypto/crc32/-/crc32-3.0.0.tgz#07300eca214409c33e3ff769cd5697b57fdd38fa"
