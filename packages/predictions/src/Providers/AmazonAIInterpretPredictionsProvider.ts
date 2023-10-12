@@ -32,10 +32,6 @@ import { PredictionsValidationErrorCode } from '../errors/types/validation';
 export class AmazonAIInterpretPredictionsProvider {
 	private comprehendClient: ComprehendClient;
 
-	getCategory(): string {
-		return 'Interpret';
-	}
-
 	getProviderName() {
 		return 'AmazonAIInterpretPredictionsProvider';
 	}

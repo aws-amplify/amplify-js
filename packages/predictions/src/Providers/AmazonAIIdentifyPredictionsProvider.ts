@@ -66,10 +66,6 @@ export class AmazonAIIdentifyPredictionsProvider {
 	private rekognitionClient: RekognitionClient;
 	private textractClient: TextractClient;
 
-	getCategory(): string {
-		return 'Identify';
-	}
-
 	getProviderName() {
 		return 'AmazonAIIdentifyPredictionsProvider';
 	}

@@ -44,10 +44,6 @@ export class AmazonAIConvertPredictionsProvider {
 	private translateClient: TranslateClient;
 	private pollyClient: PollyClient;
 
-	getCategory(): string {
-		return 'Convert';
-	}
-
 	getProviderName() {
 		return 'AmazonAIConvertPredictionsProvider';
 	}
@@ -64,6 +60,7 @@ export class AmazonAIConvertPredictionsProvider {
 		} else if (isSpeechToTextInput(input)) {
 			logger.debug('textToSpeech');
 			return this.convertSpeechToText(input);
+		} else {
 		}
 	}
 
