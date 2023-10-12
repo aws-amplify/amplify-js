@@ -9,7 +9,7 @@ describe('API generateClient', () => {
 		const client = generateClient();
 		expect(await client.graphql({ query: 'query' })).toBe('grapqhqlResponse');
 		expect(spy).toBeCalledWith(
-			{ Auth: {}, cachedResourcesConfig: {}, libraryOptions: {}, resourcesConfig: {} },
+			{ Auth: {}, libraryOptions: {}, resourcesConfig: {} },
 			{ query: 'query' },
 			undefined
 		);
