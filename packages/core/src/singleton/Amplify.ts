@@ -4,24 +4,23 @@ import { AuthClass } from './Auth';
 import { Hub, AMPLIFY_SYMBOL } from '../Hub';
 import { LegacyConfig, LibraryOptions, ResourcesConfig } from './types';
 import { parseAWSExports } from '../parseAWSExports';
-
-// TODO(v6): add default AuthTokenStore for each platform
+import { deepFreeze } from '../utils';
 
 export class AmplifyClass {
 	resourcesConfig: ResourcesConfig;
 	libraryOptions: LibraryOptions;
+
 	/**
 	 * Cross-category Auth utilities.
 	 *
 	 * @internal
 	 */
 	public readonly Auth: AuthClass;
+
 	constructor() {
 		this.resourcesConfig = {};
-		this.Auth = new AuthClass();
-
-		// TODO(v6): add default providers for getting started
 		this.libraryOptions = {};
+		this.Auth = new AuthClass();
 	}
 
 	/**
@@ -55,6 +54,9 @@ export class AmplifyClass {
 			libraryOptions
 		);
 
+		// Make resource config immutable
+		this.resourcesConfig = deepFreeze(this.resourcesConfig);
+
 		this.Auth.configure(this.resourcesConfig.Auth!, this.libraryOptions.Auth);
 
 		Hub.dispatch(
@@ -71,10 +73,10 @@ export class AmplifyClass {
 	/**
 	 * Provides access to the current back-end resource configuration for the Library.
 	 *
-	 * @returns Returns the current back-end resource configuration.
+	 * @returns Returns the immutable back-end resource configuration.
 	 */
-	getConfig(): ResourcesConfig {
-		return JSON.parse(JSON.stringify(this.resourcesConfig));
+	getConfig(): Readonly<ResourcesConfig> {
+		return this.resourcesConfig;
 	}
 }
 
