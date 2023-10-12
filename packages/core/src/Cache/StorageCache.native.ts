@@ -1,30 +1,27 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { loadAsyncStorage } from '@aws-amplify/react-native';
 import { ConsoleLogger as Logger } from '../Logger';
-import { KeyValueStorage } from '../storage/KeyValueStorage';
-import { getLocalStorageWithFallback } from '../storage/utils';
 import { defaultConfig } from './constants';
 import { StorageCacheCommon } from './StorageCacheCommon';
 import { Cache, CacheConfig } from './types';
 import { getCurrentSizeKey, getCurrentTime } from './utils';
 
-const logger = new Logger('Cache');
+const logger = new Logger('StorageCache');
+const AsyncStorage = loadAsyncStorage();
 
-/**
- * Customized storage based on the SessionStorage or LocalStorage with LRU implemented
+/*
+ * Customized cache which based on the AsyncStorage with LRU implemented
  */
 export class StorageCache extends StorageCacheCommon implements Cache {
-	storage: Storage;
 	/**
 	 * initialize the cache
 	 * @param config - the configuration of the cache
 	 */
 	constructor(config?: CacheConfig) {
-		const storage = getLocalStorageWithFallback();
-		super({ config, keyValueStorage: new KeyValueStorage(storage) });
+		super({ config, keyValueStorage: AsyncStorage });
 
-		this.storage = storage;
 		this.getItem = this.getItem.bind(this);
 		this.setItem = this.setItem.bind(this);
 		this.removeItem = this.removeItem.bind(this);
@@ -33,8 +30,7 @@ export class StorageCache extends StorageCacheCommon implements Cache {
 	protected async getAllCacheKeys(options?: { omitSizeKey?: boolean }) {
 		const { omitSizeKey } = options ?? {};
 		const keys: string[] = [];
-		for (let i = 0; i < this.storage.length; i++) {
-			const key = this.storage.key(i);
+		for (const key of await AsyncStorage.getAllKeys()) {
 			if (omitSizeKey && key === getCurrentSizeKey(this.config.keyPrefix)) {
 				continue;
 			}
@@ -43,6 +39,15 @@ export class StorageCache extends StorageCacheCommon implements Cache {
 			}
 		}
 		return keys;
+	}
+
+	protected async getAllStorageKeys() {
+		try {
+			return AsyncStorage.getAllKeys();
+		} catch (e) {
+			logger.warn(`getAllKeys failed! ${e}`);
+			return [];
+		}
 	}
 
 	/**
@@ -55,7 +60,6 @@ export class StorageCache extends StorageCacheCommon implements Cache {
 			logger.error('invalid keyPrefix, setting keyPrefix with timeStamp');
 			config.keyPrefix = getCurrentTime.toString();
 		}
-
 		return new StorageCache(config);
 	}
 }
