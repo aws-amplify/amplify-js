@@ -298,13 +298,13 @@
 			"name": "[API] REST API handlers",
 			"path": "./lib-esm/api/index.js",
 			"import": "{ get, post, put, del, patch, head, isCancelError }",
-			"limit": "9.65 kB"
+			"limit": "15.0 kB"
 		},
 		{
 			"name": "[Auth] signUp (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signUp }",
-			"limit": "26.51 kB"
+			"limit": "31.00 kB"
 		},
 		{
 			"name": "[Auth] resetPassword (Cognito)",
@@ -322,7 +322,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "25.70 kB"
+			"limit": "30.00 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
@@ -334,7 +334,7 @@
 			"name": "[Auth] confirmSignUp (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignUp }",
-			"limit": "26.24 kB"
+			"limit": "31.00 kB"
 		},
 		{
 			"name": "[Auth] confirmSignIn (Cognito)",
@@ -370,7 +370,7 @@
 			"name": "[Auth] setUpTOTP (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ setUpTOTP }",
-			"limit": "9.18 kB"
+			"limit": "13.50 kB"
 		},
 		{
 			"name": "[Auth] updateUserAttributes (Cognito)",
@@ -424,19 +424,19 @@
 			"name": "[Storage] downloadData (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ downloadData }",
-			"limit": "13.68 kB"
+			"limit": "19.67 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ getProperties }",
-			"limit": "12.95 kB"
+			"limit": "18.6 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ getUrl }",
-			"limit": "14.03 kB"
+			"limit": "20.03 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
