@@ -75,7 +75,7 @@ export class AmplifyClass {
 	 *
 	 * @returns Returns the immutable back-end resource configuration.
 	 */
-	getConfig(): ResourcesConfig {
+	getConfig(): Readonly<ResourcesConfig> {
 		return this.resourcesConfig;
 	}
 }

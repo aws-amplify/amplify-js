@@ -14,4 +14,4 @@ export {
 } from './retry';
 export { urlSafeDecode } from './urlSafeDecode';
 export { urlSafeEncode } from './urlSafeEncode';
-export { deepFreeze } from './objectHelpers';
+export { deepFreeze } from './deepFreeze';
