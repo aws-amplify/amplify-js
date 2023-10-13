@@ -7,6 +7,7 @@ import {
 	addEventListener,
 } from '../../../../../src/common';
 import {
+	initializeInAppMessaging,
 	notifyMessageInteraction,
 	onMessageActionTaken,
 	onMessageDismissed,
@@ -21,6 +22,9 @@ const mockAddEventListener = addEventListener as jest.Mock;
 
 describe('Interaction events', () => {
 	const handler = jest.fn();
+	beforeAll(() => {
+		initializeInAppMessaging();
+	});
 	it('can be listened to by onMessageReceived', () => {
 		onMessageReceived(handler);
 
