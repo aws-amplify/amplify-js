@@ -15,4 +15,4 @@ export {
 	IdentifyUserInput,
 	DispatchEventInput,
 	SetConflictHandlerInput,
-} from './providers';
+} from './providers/pinpoint';
