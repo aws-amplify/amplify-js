@@ -89,8 +89,7 @@
 		"lib-esm",
 		"src",
 		"in-app-messaging",
-		"in-app-messaging/pinpoint",
-		"push-notifications/pinpoint"
+		"push-notifications"
 	],
 	"dependencies": {
 		"lodash": "^4.17.21"
