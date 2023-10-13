@@ -13,10 +13,8 @@
 		"./lib/Credentials.js",
 		"./lib-esm/I18n/index.js",
 		"./lib-esm/Credentials.js",
-		"./lib/Cache/BrowserStorageCache.js",
-		"./lib/Cache/AsyncStorageCache.js",
-		"./lib-esm/Cache/BrowserStorageCache.js",
-		"./lib-esm/Cache/AsyncStorageCache.js"
+		"./lib/Cache/index.js",
+		"./lib-esm/Cache/index.js"
 	],
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage",
@@ -36,9 +34,7 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 92.36"
 	},
 	"react-native": {
-		"./lib/index": "./lib-esm/index.js",
-		"./lib-esm/ClientDevice": "./lib-esm/ClientDevice/reactnative.js",
-		"./lib-esm/Cache": "./lib-esm/Cache/reactnative.js"
+		"./lib/index": "./lib-esm/index.js"
 	},
 	"repository": {
 		"type": "git",
@@ -129,12 +125,6 @@
 			"path": "./lib-esm/index.js",
 			"import": "{ Cache }",
 			"limit": "4.13 kB"
-		},
-		{
-			"name": "Cache (in-memory)",
-			"path": "./lib-esm/index.js",
-			"import": "{ InMemoryCache }",
-			"limit": "4.15 kB"
 		}
 	],
 	"jest": {

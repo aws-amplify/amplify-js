@@ -3,12 +3,12 @@
 
 import {
 	Category,
-	ClientDevice,
 	ConsoleLogger,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
 	InAppMessagingAction,
 	PushNotificationAction,
+	amplifyUuid,
 } from '@aws-amplify/core/internals/utils';
 import { Cache, fetchAuthSession } from '@aws-amplify/core';
 
@@ -19,7 +19,6 @@ import {
 	updateEndpoint,
 	UpdateEndpointInput,
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
-import { v4 as uuid } from 'uuid';
 
 import {
 	NotificationsCategory,
@@ -35,15 +34,12 @@ export default abstract class AWSPinpointProviderCommon
 	static category: NotificationsCategory = 'Notifications';
 	static providerName = 'AWSPinpoint';
 
-	protected clientInfo;
 	protected config: Record<string, any> = {};
 	protected endpointInitialized = false;
 	protected initialized = false;
 	protected logger: ConsoleLogger;
 
 	constructor(logger) {
-		// this.config = { storage: new StorageHelper().getStorage() };
-		this.clientInfo = ClientDevice.clientInfo() ?? {};
 		this.logger = logger;
 	}
 
@@ -140,7 +136,7 @@ export default abstract class AWSPinpointProviderCommon
 						[endpointId]: {
 							Endpoint: {},
 							Events: {
-								[uuid()]: event,
+								[amplifyUuid()]: event,
 							},
 						},
 					},
@@ -185,14 +181,13 @@ export default abstract class AWSPinpointProviderCommon
 		try {
 			const { address, attributes, demographic, location, metrics, optOut } =
 				userInfo ?? {};
-			const { appVersion, make, model, platform, version } = this.clientInfo;
 			// Create the UpdateEndpoint input, prioritizing passed in user info and falling back to
 			// defaults (if any) obtained from the config
 			const input: UpdateEndpointInput = {
 				ApplicationId: appId,
 				EndpointId: endpointId,
 				EndpointRequest: {
-					RequestId: uuid(),
+					RequestId: amplifyUuid(),
 					EffectiveDate: new Date().toISOString(),
 					ChannelType: endpointInfo.channelType,
 					Address: address ?? endpointInfo.address,
@@ -201,11 +196,11 @@ export default abstract class AWSPinpointProviderCommon
 						...attributes,
 					},
 					Demographic: {
-						AppVersion: appVersion,
-						Make: make,
-						Model: model,
-						ModelVersion: version,
-						Platform: platform,
+						AppVersion: null,
+						Make: null,
+						Model: null,
+						ModelVersion: null,
+						Platform: null,
 						...this.transferKeyToUpperCase({
 							...endpointInfo.demographic,
 							...demographic,
@@ -252,7 +247,7 @@ export default abstract class AWSPinpointProviderCommon
 			return cachedEndpointId;
 		}
 		// Otherwise, generate a new ID and store it in long-lived cache before returning it
-		const endpointId = uuid();
+		const endpointId = amplifyUuid();
 		// Set a longer TTL to avoid endpoint id being deleted after the default TTL (3 days)
 		// Also set its priority to the highest to reduce its chance of being deleted when cache is full
 		const ttl = 1000 * 60 * 60 * 24 * 365 * 100; // 100 years

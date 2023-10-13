@@ -73,6 +73,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		}
 		await this.waitForInflightOAuth();
 		tokens = await this.getTokenStore().loadTokens();
+		const username = await this.getTokenStore().getLastAuthUser();
 
 		if (tokens === null) {
 			return null;
@@ -91,6 +92,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		if (options?.forceRefresh || idTokenExpired || accessTokenExpired) {
 			tokens = await this.refreshTokens({
 				tokens,
+				username,
 			});
 
 			if (tokens === null) {
@@ -106,13 +108,16 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 
 	private async refreshTokens({
 		tokens,
+		username,
 	}: {
 		tokens: CognitoAuthTokens;
+		username: string;
 	}): Promise<CognitoAuthTokens | null> {
 		try {
 			const newTokens = await this.getTokenRefresher()({
 				tokens,
 				authConfig: this.authConfig,
+				username,
 			});
 
 			this.setTokens({ tokens: newTokens });

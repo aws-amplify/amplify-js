@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import * as Paho from '../vendor/paho-mqtt';
-import { v4 as uuid } from 'uuid';
+import { amplifyUuid } from '@aws-amplify/core/internals/utils';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
@@ -102,7 +102,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
 
 	constructor(options: MqttProviderOptions = {}) {
-		super({ ...options, clientId: options.clientId || uuid() });
+		super({ ...options, clientId: options.clientId || amplifyUuid() });
 
 		// Monitor the connection health state and pass changes along to Hub
 		this.connectionStateMonitor.connectionStateObservable.subscribe(

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { v4 as uuid } from 'uuid';
+import { amplifyUuid } from '../../../utils/amplifyUuid';
 import { PinpointRecordInput, PinpointSession } from '../types';
 import { getEndpointId } from '../utils';
 import {
@@ -30,7 +30,7 @@ export const record = async ({
 	userAgentValue,
 }: PinpointRecordInput): Promise<void> => {
 	const timestampISOString = new Date().toISOString();
-	const eventId = uuid();
+	const eventId = amplifyUuid();
 	let endpointId = await getEndpointId(appId, category);
 
 	// Prepare event buffer if required
@@ -70,7 +70,7 @@ export const record = async ({
 
 	// Generate session if required
 	if (!session) {
-		const sessionId = uuid();
+		const sessionId = amplifyUuid();
 
 		session = {
 			Id: sessionId,

@@ -11,6 +11,7 @@ import {
 	EMPTY_SHA256_HASH,
 	HttpResponse,
 } from '@aws-amplify/core/internals/aws-client-utils';
+import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import { S3EndpointResolverOptions, defaultConfig } from './base';
@@ -43,7 +44,7 @@ const getObjectSerializer = async (
 	input: GetObjectInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	const url = new URL(endpoint.url.toString());
+	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {

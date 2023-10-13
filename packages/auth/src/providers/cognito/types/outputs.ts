@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthStandardAttributeKey } from "@aws-amplify/core/internals/utils";
+import { AuthStandardAttributeKey } from '@aws-amplify/core/internals/utils';
 import {
 	AuthMFAType,
 	AuthUserAttributes,
@@ -11,7 +11,6 @@ import {
 	AuthSignInOutput,
 	AuthSignUpOutput,
 	AuthResetPasswordOutput,
-	AuthSignOutOutput,
 	AuthUpdateUserAttributesOutput,
 	AuthUpdateUserAttributeOutput,
 } from '../../../types';
@@ -85,11 +84,6 @@ export type SignInWithUserPasswordOutput = AuthSignInOutput;
  * Output type for Cognito signInWithCustomSRPAuth API.
  */
 export type SignInWithCustomSRPAuthOutput = AuthSignInOutput;
-
-/**
- * Output type for Cognito signOut API.
- */
-export type SignOutOutput = AuthSignOutOutput;
 
 /**
  * Output type for Cognito signUp API.
