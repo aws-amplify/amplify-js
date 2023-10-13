@@ -202,13 +202,13 @@ tests:
   #   sample_name: v2/owner-custom-claim-default-v2
   #   spec: owner-custom-claim-default
   #   browser: *minimal_browser_list
-  # - test_name: integ_datastore_auth_v2-owner-custom-field-default
-  #   desc: 'DataStore Auth CLI v2'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: v2/owner-custom-field-default-v2
-  #   spec: owner-custom-field-default
-  #   browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-owner-custom-field-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-custom-field-default-v2
+    spec: owner-custom-field-default
+    browser: *minimal_browser_list
   # - test_name: integ_react_datastore
   #   desc: 'React DataStore'
   #   framework: react
