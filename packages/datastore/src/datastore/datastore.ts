@@ -1726,7 +1726,6 @@ class DataStore {
 		return this.runningProcesses
 			.add(async () => {
 				await this.start();
-
 				if (!this.storage) {
 					throw new Error('No storage to save to');
 				}
@@ -2555,6 +2554,7 @@ class DataStore {
 			await this.sync.stop();
 		}
 
+		// here is the problem
 		await this.storage!.clear();
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
