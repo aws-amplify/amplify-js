@@ -78,10 +78,16 @@ const createCookieStorageAdapterFromNextRequestAndNextResponse = (
 	const mutableCookieStore = response.cookies;
 
 	return {
-		get: readonlyCookieStore.get.bind(readonlyCookieStore),
+		get(name) {
+			return readonlyCookieStore.get(processCookieName(name));
+		},
 		getAll: readonlyCookieStore.getAll.bind(readonlyCookieStore),
-		set: mutableCookieStore.set.bind(mutableCookieStore),
-		delete: mutableCookieStore.delete.bind(mutableCookieStore),
+		set(name, value, options) {
+			mutableCookieStore.set(processCookieName(name), value, options);
+		},
+		delete(name) {
+			mutableCookieStore.delete(processCookieName(name));
+		},
 	};
 };
 
@@ -95,7 +101,9 @@ const createCookieStorageAdapterFromNextRequestAndHttpResponse = (
 	);
 
 	return {
-		get: readonlyCookieStore.get.bind(readonlyCookieStore),
+		get(name) {
+			return readonlyCookieStore.get(processCookieName(name));
+		},
 		getAll: readonlyCookieStore.getAll.bind(readonlyCookieStore),
 		...mutableCookieStore,
 	};
@@ -113,7 +121,7 @@ const createCookieStorageAdapterFromNextCookies = (
 	// and safely ignore the error if it is thrown.
 	const setFunc: CookieStorage.Adapter['set'] = (name, value, options) => {
 		try {
-			cookieStore.set(name, value, options);
+			cookieStore.set(processCookieName(name), value, options);
 		} catch {
 			// no-op
 		}
@@ -121,14 +129,16 @@ const createCookieStorageAdapterFromNextCookies = (
 
 	const deleteFunc: CookieStorage.Adapter['delete'] = name => {
 		try {
-			cookieStore.delete(name);
+			cookieStore.delete(processCookieName(name));
 		} catch {
 			// no-op
 		}
 	};
 
 	return {
-		get: cookieStore.get.bind(cookieStore),
+		get(name) {
+			return cookieStore.get(processCookieName(name));
+		},
 		getAll: cookieStore.getAll.bind(cookieStore),
 		set: setFunc,
 		delete: deleteFunc,
@@ -147,7 +157,7 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 
 	return {
 		get(name) {
-			const value = cookiesMap[name];
+			const value = cookiesMap[processCookieName(name)];
 			return value
 				? {
 						name,
@@ -161,13 +171,15 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 		set(name, value, options) {
 			response.setHeader(
 				'Set-Cookie',
-				`${name}=${value};${options ? serializeSetCookieOptions(options) : ''}`
+				`${processCookieName(name)}=${value};${
+					options ? serializeSetCookieOptions(options) : ''
+				}`
 			);
 		},
 		delete(name) {
 			response.setHeader(
 				'Set-Cookie',
-				`${name}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
+				`${processCookieName(name)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
 			);
 		},
 	};
@@ -179,13 +191,15 @@ const createMutableCookieStoreFromHeaders = (
 	const setFunc: CookieStorage.Adapter['set'] = (name, value, options) => {
 		headers.append(
 			'Set-Cookie',
-			`${name}=${value};${options ? serializeSetCookieOptions(options) : ''}`
+			`${processCookieName(name)}=${value};${
+				options ? serializeSetCookieOptions(options) : ''
+			}`
 		);
 	};
 	const deleteFunc: CookieStorage.Adapter['delete'] = name => {
 		headers.append(
 			'Set-Cookie',
-			`${name}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
+			`${processCookieName(name)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
 		);
 	};
 	return {
@@ -197,7 +211,7 @@ const createMutableCookieStoreFromHeaders = (
 const serializeSetCookieOptions = (
 	options: CookieStorage.SetCookieOptions
 ): string => {
-	const { expires, maxAge, domain, httpOnly, sameSite, secure } = options;
+	const { expires, domain, httpOnly, sameSite, secure } = options;
 	const serializedOptions: string[] = [];
 	if (domain) {
 		serializedOptions.push(`Domain=${domain}`);
@@ -215,4 +229,16 @@ const serializeSetCookieOptions = (
 		serializedOptions.push(`Secure`);
 	}
 	return serializedOptions.join(';');
+};
+
+const processCookieName = (name: string): string => {
+	// if the cookie name contains a `%`, it should have been encoded by the
+	// tokenProvider, to ensure the compatibility of cookie name encoding handled
+	// by the js-cookie package on the client side (as the cookies is created
+	// on the client side with sign in), we double encode it.
+	if (name.includes('%')) {
+		return encodeURIComponent(name);
+	}
+
+	return name;
 };

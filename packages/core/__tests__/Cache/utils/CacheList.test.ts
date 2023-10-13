@@ -1,6 +1,6 @@
-import CacheList from '../../../src/Cache/Utils/CacheList';
+import { CacheList } from '../../../src/Cache/utils';
 
-describe('cacheList', () => {
+describe('CacheList', () => {
 	describe('isEmpty', () => {
 		test('return true if list is empty', () => {
 			const list: CacheList = new CacheList();
