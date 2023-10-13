@@ -107,13 +107,13 @@ tests:
   #   sample_name: owner-custom-field-default
   #   spec: owner-custom-field-default
   #   browser: *minimal_browser_list
-  # - test_name: integ_datastore_auth_v2-owner-based-default
-  #   desc: 'DataStore Auth CLI v2'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: v2/owner-based-default-v2
-  #   spec: owner-based-default
-  #   browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-owner-based-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-based-default-v2
+    spec: owner-based-default
+    browser: *minimal_browser_list
   # - test_name: integ_datastore_auth_v2-static-user-pool-groups-default
   #   desc: 'DataStore Auth CLI v2'
   #   framework: react

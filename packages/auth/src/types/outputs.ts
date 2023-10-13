@@ -16,8 +16,6 @@ export type AuthSignInOutput<
 	nextStep: AuthNextSignInStep<UserAttributeKey>;
 };
 
-export type AuthSignOutOutput = void;
-
 export type AuthSignUpOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {

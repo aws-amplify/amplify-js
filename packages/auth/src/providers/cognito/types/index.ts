@@ -64,7 +64,6 @@ export {
 	SignInWithSRPOutput,
 	SignInWithUserPasswordOutput,
 	SignInWithCustomSRPAuthOutput,
-	SignOutOutput,
 	SignUpOutput,
 	UpdateUserAttributesOutput,
 	UpdateUserAttributeOutput,
