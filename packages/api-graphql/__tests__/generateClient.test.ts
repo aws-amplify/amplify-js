@@ -376,5 +376,177 @@ describe('generateClient', () => {
 				})
 			);
 		});
+
+		test('can lazy load @hasMany', async () => {
+			mockApiResponse({
+				data: {
+					getTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						id: 'todo-id',
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const result = await client.models.Todo.get({ id: 'todo-id' });
+
+			const getChildNotesSpy = mockApiResponse({
+				data: {
+					listNotes: {
+						items: [
+							{
+								__typename: 'Note',
+								...serverManagedFields,
+								id: 'note-id',
+								body: 'some body',
+							},
+						],
+					},
+				},
+			});
+
+			const notes = await result.notes();
+
+			expect(getChildNotesSpy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'some-api-key',
+						}),
+						body: {
+							query: expect.stringContaining('listNotes(filter: $filter)'),
+							variables: {
+								filter: {
+									and: [{ todoNotesId: { eq: 'todo-id' } }],
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(notes!.length).toBe(1);
+			expect(notes![0]).toEqual(
+				expect.objectContaining({
+					__typename: 'Note',
+					id: 'note-id',
+					owner: 'wirejobviously',
+					body: 'some body',
+				})
+			);
+		});
+
+		test('can lazy load @belongsTo', async () => {
+			mockApiResponse({
+				data: {
+					getNote: {
+						__typename: 'Note',
+						...serverManagedFields,
+						id: 'note-id',
+						body: 'some body',
+						todoNotesId: 'todo-id',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const result = await client.models.Note.get({ id: 'note-id' });
+
+			const getChildNotesSpy = mockApiResponse({
+				data: {
+					getTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						id: 'todo-id',
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const todo = await result.todo();
+
+			expect(getChildNotesSpy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'some-api-key',
+						}),
+						body: {
+							query: expect.stringContaining('getTodo(id: $id)'),
+							variables: {
+								id: 'todo-id',
+							},
+						},
+					}),
+				})
+			);
+
+			expect(todo).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'todo-id',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can lazy load @hasOne', async () => {
+			mockApiResponse({
+				data: {
+					getTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						id: 'todo-id',
+						body: 'some body',
+						todoMetaId: 'meta-id',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const result = await client.models.Todo.get({ id: 'todo-id' });
+
+			const getChildMetaSpy = mockApiResponse({
+				data: {
+					getTodoMetadata: {
+						__typename: 'TodoMetadata',
+						...serverManagedFields,
+						id: 'meta-id',
+						data: '{"field":"value"}',
+					},
+				},
+			});
+
+			const todo = await result.meta();
+
+			expect(getChildMetaSpy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'some-api-key',
+						}),
+						body: {
+							query: expect.stringContaining('getTodoMetadata(id: $id)'),
+							variables: {
+								id: 'meta-id',
+							},
+						},
+					}),
+				})
+			);
+
+			expect(todo).toEqual(
+				expect.objectContaining({
+					__typename: 'TodoMetadata',
+					id: 'meta-id',
+					data: '{"field":"value"}',
+				})
+			);
+		});
 	});
 });
