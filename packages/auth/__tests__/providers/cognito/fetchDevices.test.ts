@@ -62,43 +62,17 @@ describe('fetchDevices API happy path cases', () => {
 		fetchAuthSessionsSpy.mockClear();
 	});
 
-	it('should fetch devices and parse client response correctly with and without device name', async () => {
-		const deviceName = {
-			Name: 'device_name',
-			Value: 'test-device-name',
-		};
-
+	it('should fetch devices and parse client response correctly', async () => {
 		const fetchDevicesClientSpy = jest
 			.spyOn(clients, 'listDevices')
 			.mockImplementationOnce(async () => {
 				return {
-					Devices: [
-						{
-							...clientResponseDevice,
-							DeviceKey: 'DeviceKey1',
-							DeviceAttributes: [
-								...clientResponseDevice.DeviceAttributes,
-								deviceName,
-							],
-						},
-						{ ...clientResponseDevice, DeviceKey: 'DeviceKey2' },
-					],
+					Devices: [clientResponseDevice],
 					$metadata: {},
 				};
 			});
 
-		expect(await fetchDevices()).toEqual([
-			{
-				...apiOutputDevice,
-				id: 'DeviceKey1',
-				name: deviceName.Value,
-				attributes: {
-					...apiOutputDevice.attributes,
-					[deviceName.Name]: deviceName.Value,
-				},
-			},
-			{ ...apiOutputDevice, id: 'DeviceKey2' },
-		]);
+		expect(await fetchDevices()).toEqual([apiOutputDevice]);
 		expect(fetchDevicesClientSpy).toHaveBeenCalledWith(
 			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({

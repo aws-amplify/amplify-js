@@ -10,3 +10,9 @@ export {
 	CHANNEL_TYPE,
 	STORAGE_KEY_SUFFIX,
 } from './constants';
+
+export {
+	processInAppMessages,
+	sessionStateChangeHandler,
+	incrementMessageCounts,
+} from './messageProcessingHelpers';

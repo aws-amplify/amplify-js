@@ -8,6 +8,7 @@ export enum InAppMessagingValidationErrorCode {
 	NoCredentials = 'NoCredentials',
 	NoRegion = 'NoRegion',
 	NoEndpointId = 'NoEndpointId',
+	NotInitialized = 'NotInitialized',
 }
 
 export const validationErrorMap: AmplifyErrorMap<InAppMessagingValidationErrorCode> =
@@ -23,5 +24,10 @@ export const validationErrorMap: AmplifyErrorMap<InAppMessagingValidationErrorCo
 		},
 		[InAppMessagingValidationErrorCode.NoEndpointId]: {
 			message: 'Could not find or create EndpointId.',
+		},
+		[InAppMessagingValidationErrorCode.NotInitialized]: {
+			message: 'In-app messaging has not been initialized.',
+			recoverySuggestion:
+				'Please make sure to first call `initializePushNotifications`.',
 		},
 	};

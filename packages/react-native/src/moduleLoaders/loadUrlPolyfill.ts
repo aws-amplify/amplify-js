@@ -12,7 +12,7 @@ export const loadUrlPolyfill = () => {
 		// another module and that causes error
 		const message = (e as Error).message.replace(
 			/undefined/g,
-			'@react-native-community/netinfo'
+			'react-native-url-polyfill'
 		);
 		throw new Error(message);
 	}

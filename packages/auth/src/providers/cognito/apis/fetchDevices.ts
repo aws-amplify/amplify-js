@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { FetchDevicesOutput } from '../types';
 import { listDevices } from '../utils/clients/CognitoIdentityProvider';
@@ -32,9 +35,9 @@ export async function fetchDevices(): Promise<FetchDevicesOutput> {
 	assertAuthTokens(tokens);
 
 	const response = await listDevices(
-		{ 
+		{
 			region: getRegion(authConfig.userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.FetchDevices)
+			userAgentValue: getAuthUserAgentValue(AuthAction.FetchDevices),
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
@@ -55,11 +58,9 @@ const parseDevicesResponse = async (
 			DeviceLastModifiedDate,
 			DeviceLastAuthenticatedDate,
 		}) => {
-			let name: string | undefined;
 			const attributes = DeviceAttributes.reduce(
 				(attrs: any, { Name, Value }) => {
 					if (Name && Value) {
-						if (Name === 'device_name') name = Value;
 						attrs[Name] = Value;
 					}
 					return attrs;
@@ -68,7 +69,6 @@ const parseDevicesResponse = async (
 			);
 			return {
 				id,
-				name,
 				attributes,
 				createDate: DeviceCreateDate
 					? new Date(DeviceCreateDate * 1000)

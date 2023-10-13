@@ -11,13 +11,16 @@ import { initiateAuth } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokensWithRefreshToken } from '../utils/types';
 import { AuthError } from '../../../errors/AuthError';
+import { getUserContextData } from './userContextData';
 
 export const refreshAuthTokens: TokenRefresher = async ({
 	tokens,
 	authConfig,
+	username,
 }: {
 	tokens: CognitoAuthTokens;
 	authConfig?: AuthConfig;
+	username: string;
 }): Promise<CognitoAuthTokens> => {
 	assertTokenProviderConfig(authConfig?.Cognito);
 	const region = getRegion(authConfig.Cognito.userPoolId);
@@ -30,12 +33,20 @@ export const refreshAuthTokens: TokenRefresher = async ({
 	if (tokens.deviceMetadata?.deviceKey) {
 		AuthParameters['DEVICE_KEY'] = tokens.deviceMetadata.deviceKey;
 	}
+
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId: authConfig.Cognito.userPoolId,
+		userPoolClientId: authConfig.Cognito.userPoolClientId,
+	});
+
 	const { AuthenticationResult } = await initiateAuth(
 		{ region },
 		{
 			ClientId: authConfig?.Cognito?.userPoolClientId,
 			AuthFlow: 'REFRESH_TOKEN_AUTH',
 			AuthParameters,
+			UserContextData,
 		}
 	);
 
@@ -52,13 +63,12 @@ export const refreshAuthTokens: TokenRefresher = async ({
 		});
 	}
 	const clockDrift = iat * 1000 - new Date().getTime();
-	const refreshToken = AuthenticationResult?.RefreshToken;
 
 	return {
 		accessToken,
 		idToken,
 		clockDrift,
-		refreshToken,
+		refreshToken: refreshTokenString,
 		username: `${accessToken.payload.username}`,
 	};
 };
