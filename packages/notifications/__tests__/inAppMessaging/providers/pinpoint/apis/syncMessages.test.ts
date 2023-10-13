@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { defaultStorage } from '@aws-amplify/core';
-import { syncMessages } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
+import {
+	initializeInAppMessaging,
+	syncMessages,
+} from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 import {
 	STORAGE_KEY_SUFFIX,
 	resolveCredentials,
@@ -53,6 +56,7 @@ const mockedEmptyMessages = {
 
 describe('syncMessages', () => {
 	beforeAll(() => {
+		initializeInAppMessaging();
 		mockGetInAppMessagingUserAgentString.mockReturnValue(userAgentValue);
 		mockResolveConfig.mockReturnValue(config);
 		mockResolveCredentials.mockResolvedValue(credentials);
