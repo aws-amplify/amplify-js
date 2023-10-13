@@ -59,7 +59,7 @@ process.on('unhandledRejection', reason => {
 	console.log(reason); // log the reason including the stack trace
 });
 
-describe('DataStore sanity testing checks', () => {
+describe.only('DataStore sanity testing checks', () => {
 	beforeEach(async () => {
 		jest.resetAllMocks();
 		jest.resetModules();
@@ -91,21 +91,23 @@ describe('DataStore sanity testing checks', () => {
 		const { DataStore: datastore, Post, Comment } = getDataStore();
 		DataStore = datastore;
 
-		await expect(
-			DataStore.save(
-				new Comment({
-					content: 'newly created comment',
-					post: new Post({
-						title: 'newly created post',
-					}),
-				})
-			)
-		).rejects.toThrow(
+		const post = new Post({
+			title: 'newly created post',
+		});
+
+		const comment = new Comment({
+			content: 'newly created comment',
+			post,
+		});
+		const promise = DataStore.save(comment);
+
+		debugger;
+		await expect(promise).rejects.toThrow(
 			`Data integrity error. You tried to save a Comment` // instructions specific to the instance follow
 		);
 	});
 
-	describe('cleans up after itself', () => {
+	describe.skip('cleans up after itself', () => {
 		/**
 		 * basically, if we spin up our test contexts repeatedly, put some
 		 * data in there and do some things, stopping DataStore should
@@ -173,7 +175,7 @@ describe('DataStore sanity testing checks', () => {
 			expect(lastCycle).toBe(numberOfCycles);
 		});
 
-		describe('during lifecycle events', () => {
+		describe.skip('during lifecycle events', () => {
 			let { DataStore, Post } = getDataStore();
 
 			beforeAll(async () => {

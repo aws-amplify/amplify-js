@@ -2749,10 +2749,10 @@ class DataStore {
 
 const instance = new DataStore();
 instance.configure({});
-Hub.listen('core', capsule => {
-	if (capsule.payload.event === 'configure') {
-		instance.configure({});
-	}
-});
+// Hub.listen('core', capsule => {
+// 	if (capsule.payload.event === 'configure') {
+// 		instance.configure({});
+// 	}
+// });
 
 export { DataStore as DataStoreClass, initSchema, instance as DataStore };
