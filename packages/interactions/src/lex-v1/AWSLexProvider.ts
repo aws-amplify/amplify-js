@@ -6,6 +6,7 @@ import {
 	InteractionsResponse,
 } from '../types';
 import {
+	DialogState,
 	LexRuntimeServiceClient,
 	PostContentCommand,
 	PostContentCommandInput,
@@ -34,14 +35,10 @@ type AWSLexProviderSendResponse =
 	| PostContentCommandOutputFormatted;
 
 class AWSLexProvider {
-	private readonly _botsCompleteCallback: Record<string, CompletionCallback>;
-
-	constructor() {
-		this._botsCompleteCallback = {};
-	}
+	private readonly _botsCompleteCallback: Record<string, CompletionCallback> =
+		{};
 
 	/**
-	 * @private
 	 * @deprecated
 	 * This is used internally by 'sendMessage' to call onComplete callback
 	 * for a bot if configured
@@ -50,27 +47,23 @@ class AWSLexProvider {
 		data: AWSLexProviderSendResponse,
 		{ name }: AWSLexProviderOption
 	) {
+		const callback = this._botsCompleteCallback[name];
+		if (!callback) {
+			return;
+		}
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', data.dialogState);
-		if (
-			data.dialogState === 'ReadyForFulfillment' ||
-			data.dialogState === 'Fulfilled'
-		) {
-			if (typeof this._botsCompleteCallback[name] === 'function') {
-				setTimeout(() => this._botsCompleteCallback[name](undefined, data), 0);
-			}
-		}
 
-		if (data.dialogState === 'Failed') {
-			if (typeof this._botsCompleteCallback[name] === 'function') {
-				setTimeout(
-					() =>
-						this._botsCompleteCallback[name](
-							new Error('Bot conversation failed')
-						),
-					0
-				);
-			}
+		switch (data.dialogState) {
+			case DialogState.READY_FOR_FULFILLMENT:
+			case DialogState.FULFILLED:
+				callback(undefined, data);
+				break;
+			case DialogState.FAILED:
+				callback(new Error('Bot conversation failed'));
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -88,7 +81,7 @@ class AWSLexProvider {
 
 		const { name, region, alias } = botConfig;
 		const client = new LexRuntimeServiceClient({
-			region: region,
+			region,
 			credentials: session.credentials,
 			customUserAgent: getAmplifyUserAgentObject(),
 		});

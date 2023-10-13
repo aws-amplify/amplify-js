@@ -6,6 +6,7 @@ import {
 	InteractionsResponse,
 } from '../types';
 import {
+	IntentState,
 	LexRuntimeV2Client,
 	RecognizeTextCommand,
 	RecognizeTextCommandInput,
@@ -53,12 +54,9 @@ type lexV2BaseReqParams = {
 };
 
 class AWSLexV2Provider {
-	private readonly _botsCompleteCallback: Record<string, CompletionCallback>;
+	private readonly _botsCompleteCallback: Record<string, CompletionCallback> =
+		{};
 	private defaultSessionId: string = uuid();
-
-	constructor() {
-		this._botsCompleteCallback = {};
-	}
 
 	/**
 	 * Send a message to a bot
@@ -79,9 +77,9 @@ class AWSLexV2Provider {
 			return Promise.reject('No credentials');
 		}
 
-		const { name, region, aliasId, localeId, botId } = botConfig;
+		const { region, aliasId, localeId, botId } = botConfig;
 		const client = new LexRuntimeV2Client({
-			region: region,
+			region,
 			credentials: session.credentials,
 			customUserAgent: getAmplifyUserAgentObject(),
 		});
@@ -128,10 +126,9 @@ class AWSLexV2Provider {
 	}
 
 	/**
-	 * @private
 	 * call onComplete callback for a bot if configured
 	 */
-	private _reportBotStatus(
+	_reportBotStatus(
 		data: AWSLexV2ProviderSendResponse,
 		{ name }: AWSLexV2ProviderOption
 	) {
@@ -139,30 +136,21 @@ class AWSLexV2Provider {
 
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', sessionState?.intent?.state);
-
-		const isApiOnCompleteAttached =
-			typeof this._botsCompleteCallback?.[name] === 'function';
-
-		// no onComplete callbacks added
-		if (!isApiOnCompleteAttached) return;
-
-		if (
-			sessionState?.intent?.state === 'ReadyForFulfillment' ||
-			sessionState?.intent?.state === 'Fulfilled'
-		) {
-			if (isApiOnCompleteAttached) {
-				setTimeout(
-					() => this._botsCompleteCallback?.[name](undefined, data),
-					0
-				);
-			}
+		const callback = this._botsCompleteCallback[name];
+		if (!callback) {
+			return;
 		}
 
-		if (sessionState?.intent?.state === 'Failed') {
-			const error = new Error('Bot conversation failed');
-			if (isApiOnCompleteAttached) {
-				setTimeout(() => this._botsCompleteCallback[name](error), 0);
-			}
+		switch (sessionState?.intent?.state) {
+			case IntentState.READY_FOR_FULFILLMENT:
+			case IntentState.FULFILLED:
+				callback(undefined, data);
+				break;
+			case IntentState.FAILED:
+				callback(new Error('Bot conversation failed'));
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -174,7 +162,7 @@ class AWSLexV2Provider {
 	private async _formatUtteranceCommandOutput(
 		data: RecognizeUtteranceCommandOutput
 	): Promise<RecognizeUtteranceCommandOutputFormatted> {
-		const response: RecognizeUtteranceCommandOutputFormatted = {
+		return {
 			...data,
 			messages: await unGzipBase64AsJson(data.messages),
 			sessionState: await unGzipBase64AsJson(data.sessionState),
@@ -185,7 +173,6 @@ class AWSLexV2Provider {
 				? await convert(data.audioStream)
 				: undefined,
 		};
-		return response;
 	}
 
 	/**
