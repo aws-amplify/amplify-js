@@ -4,6 +4,7 @@
 import { defaultStorage } from '@aws-amplify/core';
 import {
 	dispatchEvent,
+	initializeInAppMessaging,
 	setConflictHandler,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 import { processInAppMessages } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
@@ -24,6 +25,9 @@ const mockNotifyEventListeners = notifyEventListeners as jest.Mock;
 const mockProcessInAppMessages = processInAppMessages as jest.Mock;
 
 describe('setConflictHandler', () => {
+	beforeAll(() => {
+		initializeInAppMessaging();
+	});
 	beforeEach(() => {
 		mockDefaultStorage.setItem.mockClear();
 		mockNotifyEventListeners.mockClear();
