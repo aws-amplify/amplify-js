@@ -23,7 +23,7 @@ import {
 	OpType,
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
-import { MutationEvent } from '../src/sync/';
+import { SyncEngine, MutationEvent } from '../src/sync/';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
@@ -325,11 +325,9 @@ async function instantiateMutationProcessor({
 } = {}) {
 	let schema: InternalSchema = internalTestSchema();
 
-	jest.doMock('../src/sync/', () => ({
-		SyncEngine: {
-			getNamespace: () => schema.namespaces['sync'],
-		},
-	}));
+	jest.spyOn(SyncEngine, 'getNamespace').mockImplementation(() => {
+		return schema.namespaces['sync'];
+	});
 
 	const { initSchema, DataStore } = require('../src/datastore/datastore');
 	const classes = initSchema(testSchema());
