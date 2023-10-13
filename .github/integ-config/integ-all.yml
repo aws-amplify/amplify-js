@@ -107,13 +107,13 @@ tests:
   #   sample_name: owner-custom-field-default
   #   spec: owner-custom-field-default
   #   browser: *minimal_browser_list
-  # - test_name: integ_datastore_auth_v2-owner-based-default
-  #   desc: 'DataStore Auth CLI v2'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: v2/owner-based-default-v2
-  #   spec: owner-based-default
-  #   browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-owner-based-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-based-default-v2
+    spec: owner-based-default
+    browser: *minimal_browser_list
   # - test_name: integ_datastore_auth_v2-static-user-pool-groups-default
   #   desc: 'DataStore Auth CLI v2'
   #   framework: react
@@ -562,6 +562,24 @@ tests:
     category: analytics
     sample_name: [pinpoint-test]
     spec: pinpoint
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_personalize_auth
+    desc: 'Test record API for Personalize with authenticated user'
+    framework: react
+    category: analytics
+    sample_name: [personalize-test]
+    spec: personalize
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_personalize_unauth
+    desc: 'Test record API for Personalize with guest user'
+    framework: react
+    category: analytics
+    sample_name: [personalize-test]
+    spec: personalize-unauth
     # Temp fix:
     browser: *minimal_browser_list
 

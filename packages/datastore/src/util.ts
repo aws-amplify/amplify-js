@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { monotonicFactory, ULID } from 'ulid';
-import { v4 as uuid } from 'uuid';
+import { amplifyUuid, AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { produce, applyPatches, Patch } from 'immer';
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
@@ -246,7 +246,7 @@ let privateModeCheckResult;
 
 export const isPrivateMode = () => {
 	return new Promise(resolve => {
-		const dbname = uuid();
+		const dbname = amplifyUuid();
 		let db;
 
 		const isPrivate = () => {
@@ -297,7 +297,7 @@ let safariCompatabilityModeResult;
  */
 export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 	try {
-		const dbName = uuid();
+		const dbName = amplifyUuid();
 		const storeName = 'indexedDBFeatureProbeStore';
 		const indexName = 'idx';
 
@@ -642,7 +642,7 @@ export const isAWSJSON = (val: string): boolean => {
 
 export const isAWSURL = (val: string): boolean => {
 	try {
-		return !!new URL(val);
+		return !!new AmplifyUrl(val);
 	} catch {
 		return false;
 	}

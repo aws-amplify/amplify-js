@@ -14,7 +14,10 @@ import {
 	getRetryDecider,
 	jitteredBackoff,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { getAmplifyUserAgent } from '@aws-amplify/core/internals/utils';
+import {
+	getAmplifyUserAgent,
+	AmplifyUrl,
+} from '@aws-amplify/core/internals/utils';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 /**
@@ -26,7 +29,9 @@ const SERVICE_NAME = 'cognito-idp';
  * The endpoint resolver function that returns the endpoint URL for a given region.
  */
 const endpointResolver = ({ region }: EndpointResolverOptions) => ({
-	url: new URL(`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`),
+	url: new AmplifyUrl(
+		`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`
+	),
 });
 
 /**

@@ -6,3 +6,8 @@ export {
 	notifyEventListeners,
 	notifyEventListenersAndAwaitHandlers,
 } from './eventListeners';
+export {
+	EventListener,
+	EventType,
+	EventListenerRemover,
+} from './eventListeners/types';

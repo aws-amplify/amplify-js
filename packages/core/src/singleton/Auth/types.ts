@@ -217,7 +217,7 @@ export type AWSCredentialsAndIdentityId = {
 	identityId?: string;
 };
 
-type AWSCredentials = {
+export type AWSCredentials = {
 	accessKeyId: string;
 	secretAccessKey: string;
 	sessionToken?: string;

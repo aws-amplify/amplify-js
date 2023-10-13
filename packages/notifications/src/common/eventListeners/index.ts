@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { EventListener, EventType } from './types';
+import { EventListener, EventListenerRemover, EventType } from './types';
 
 const eventListeners: Record<string, Set<EventListener<Function>>> = {};
 
@@ -29,7 +29,7 @@ export const notifyEventListenersAndAwaitHandlers = (
 export const addEventListener = <EventHandler extends Function>(
 	type: EventType,
 	handler: EventHandler
-): EventListener<EventHandler> => {
+): EventListenerRemover => {
 	// If there is no listener set for the event type, just create it
 	if (!eventListeners[type]) {
 		eventListeners[type] = new Set<EventListener<EventHandler>>();
@@ -41,5 +41,7 @@ export const addEventListener = <EventHandler extends Function>(
 		},
 	};
 	eventListeners[type].add(listener);
-	return listener;
+	return {
+		remove: () => listener.remove(),
+	};
 };
