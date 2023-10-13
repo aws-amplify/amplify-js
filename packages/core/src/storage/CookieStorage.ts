@@ -1,11 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	get as getJsCookie,
-	remove as removeJsCookie,
-	set as setJsCookie,
-} from 'js-cookie';
+import JsCookie from 'js-cookie';
 import {
 	CookieStorageData,
 	KeyValueStorageInterface,
@@ -42,20 +38,20 @@ export class CookieStorage implements KeyValueStorageInterface {
 	}
 
 	async setItem(key: string, value: string) {
-		setJsCookie(key, value, this.getData());
+		JsCookie.set(key, value, this.getData());
 	}
 
 	async getItem(key: string) {
-		const item = getJsCookie(key);
+		const item = JsCookie.get(key);
 		return item ?? null;
 	}
 
 	async removeItem(key: string) {
-		removeJsCookie(key, this.getData());
+		JsCookie.remove(key, this.getData());
 	}
 
 	async clear() {
-		const cookie = getJsCookie();
+		const cookie = JsCookie.get();
 		const promises = Object.keys(cookie).map(key => this.removeItem(key));
 		await Promise.all(promises);
 	}
