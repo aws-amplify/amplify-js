@@ -93,7 +93,7 @@ tests:
     sample_name: public-auth-iam
     spec: public-auth-iam
     browser: *minimal_browser_list
-  - test_name: integ_datastore_auth-AuthUser
+  - test_name: integ_datastore_auth-owner-custom-claim-default
     desc: 'DataStore Auth'
     framework: react
     category: datastore
