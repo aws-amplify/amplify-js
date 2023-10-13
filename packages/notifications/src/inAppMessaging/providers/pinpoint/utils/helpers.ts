@@ -265,7 +265,8 @@ export const extractContent = ({
 			}
 			if (HeaderConfig) {
 				extractedContent.header = {
-					content: HeaderConfig.Header,
+					// Default to empty string in rare cases we don't have a Header value
+					content: HeaderConfig.Header ?? '',
 					style: {
 						color: HeaderConfig.TextColor,
 						textAlign:
@@ -275,7 +276,8 @@ export const extractContent = ({
 			}
 			if (BodyConfig) {
 				extractedContent.body = {
-					content: BodyConfig.Body,
+					// Default to empty string in rare cases we don't have a Body value
+					content: BodyConfig.Body ?? '',
 					style: {
 						color: BodyConfig.TextColor,
 						textAlign:
@@ -290,7 +292,8 @@ export const extractContent = ({
 			}
 			if (defaultPrimaryButton) {
 				extractedContent.primaryButton = {
-					title: defaultPrimaryButton.Text,
+					// Default to empty string in rare cases we don't have a Text value
+					title: defaultPrimaryButton.Text ?? '',
 					action: defaultPrimaryButton.ButtonAction as InAppMessageAction,
 					url: defaultPrimaryButton.Link,
 					style: {
@@ -302,7 +305,8 @@ export const extractContent = ({
 			}
 			if (defaultSecondaryButton) {
 				extractedContent.secondaryButton = {
-					title: defaultSecondaryButton.Text,
+					// Default to empty string in rare cases we don't have a Text value
+					title: defaultSecondaryButton.Text ?? '',
 					action: defaultSecondaryButton.ButtonAction as InAppMessageAction,
 					url: defaultSecondaryButton.Link,
 					style: {

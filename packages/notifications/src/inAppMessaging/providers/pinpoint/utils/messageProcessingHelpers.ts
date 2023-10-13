@@ -90,11 +90,13 @@ function normalizeMessages(messages: PinpointInAppMessage[]): InAppMessage[] {
 	return messages.map(message => {
 		const { CampaignId, InAppMessage } = message;
 		return {
-			id: CampaignId,
+			// Default to empty string in rare cases we don't have a campaignId
+			id: CampaignId ?? '',
 			content: extractContent(message),
+			// Default to TOP_BANNER layout in rare cases we don't have a Layout
 			layout: InAppMessage?.Layout
 				? interpretLayout(InAppMessage.Layout)
-				: undefined,
+				: 'TOP_BANNER',
 			metadata: extractMetadata(message),
 		};
 	});
