@@ -76,12 +76,11 @@ export type AuthSignInWithRedirectInput = {
  * @param options - optional parameters for the Sign Up process, including user attributes
  */
 export type AuthSignUpInput<
-	AttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+	ServiceOptions extends AuthSignUpOptions<AuthUserAttributeKey> = AuthSignUpOptions<AuthUserAttributeKey>
 > = {
 	username: string;
 	password: string;
-	options?: AuthSignUpOptions<AttributeKey, ServiceOptions>;
+	options?: ServiceOptions;
 };
 
 /**

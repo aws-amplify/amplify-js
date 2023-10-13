@@ -106,9 +106,7 @@ describe('Cognito ASF', () => {
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,
 				options: {
-					serviceOptions: {
-						authFlowType: 'USER_PASSWORD_AUTH',
-					},
+					authFlowType: 'USER_PASSWORD_AUTH',
 				},
 			});
 		} catch (_) {

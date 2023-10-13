@@ -62,9 +62,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 
 	const signInInput: SignInInput = {
 		username,
-		options: {
-			...signInServiceOptions,
-		},
+		options: signInServiceOptions,
 	};
 
 	// if the authFlowType is 'CUSTOM_WITHOUT_SRP' then we don't include the password

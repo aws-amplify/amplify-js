@@ -114,9 +114,7 @@ describe('Cognito ASF', () => {
 		const result = await signIn({
 			username: authAPITestParams.user1.username,
 			options: {
-				serviceOptions: {
-					authFlowType: 'CUSTOM_WITHOUT_SRP',
-				},
+				authFlowType: 'CUSTOM_WITHOUT_SRP',
 			},
 		});
 		expect(initiateAuthSpy).toBeCalledWith(

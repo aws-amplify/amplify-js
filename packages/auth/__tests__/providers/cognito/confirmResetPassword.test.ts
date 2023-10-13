@@ -160,9 +160,7 @@ describe('Cognito ASF', () => {
 			newPassword: 'password',
 			confirmationCode: 'code',
 			options: {
-				serviceOptions: {
-					clientMetadata: { fooo: 'fooo' },
-				},
+				clientMetadata: { fooo: 'fooo' },
 			},
 		});
 		expect(confirmForgotPasswordSpy).toHaveBeenCalledWith(
