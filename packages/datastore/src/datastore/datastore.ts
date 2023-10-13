@@ -2554,6 +2554,7 @@ class DataStore {
 			await this.sync.stop();
 		}
 
+		// here is the problem
 		await this.storage!.clear();
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
