@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StorageAccessLevel } from '@aws-amplify/core';
-// TODO(ashwinkumar6) this uses V5 Credentials, update to V6.
-import { Credentials } from '@aws-sdk/types';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
 import { TransferProgressEvent } from '../../../types';
 import {
@@ -123,7 +122,7 @@ export type CopyDestinationOptions = WriteOptions & {
  */
 export type ResolvedS3Config = {
 	region: string;
-	credentials: Credentials;
+	credentials: AWSCredentials;
 	customEndpoint?: string;
 	forcePathStyle?: boolean;
 	useAccelerateEndpoint?: boolean;

@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { identifyUser } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
+import {
+	identifyUser,
+	initializeInAppMessaging,
+} from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 import {
 	resolveCredentials,
 	resolveConfig,
@@ -34,6 +37,7 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 
 	beforeAll(() => {
+		initializeInAppMessaging();
 		mockgetInAppMessagingUserAgentString.mockReturnValue(userAgentValue);
 		mockResolveConfig.mockReturnValue(config);
 		mockResolveCredentials.mockResolvedValue(credentials);

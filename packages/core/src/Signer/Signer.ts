@@ -7,6 +7,7 @@ import {
 	signRequest,
 	TOKEN_QUERY_PARAM,
 } from '../clients/middleware/signing/signer/signatureV4';
+import { AmplifyUrl } from '../utils/amplifyUrl';
 
 const IOT_SERVICE_NAME = 'iotdevicegateway';
 // Best practice regex to parse the service and region from an AWS endpoint
@@ -75,7 +76,7 @@ export class Signer {
 		const requestToSign = {
 			...request,
 			body: request.data,
-			url: new URL(request.url),
+			url: new AmplifyUrl(request.url),
 		};
 
 		const options = getOptions(requestToSign, accessInfo, serviceInfo);
@@ -121,7 +122,7 @@ export class Signer {
 		const presignable = {
 			body,
 			method,
-			url: new URL(urlToSign),
+			url: new AmplifyUrl(urlToSign),
 		};
 
 		const options = getOptions(

@@ -3,12 +3,11 @@
 import { Observable, SubscriptionLike } from 'rxjs';
 import { GraphQLError } from 'graphql';
 import * as url from 'url';
-import { v4 as uuid } from 'uuid';
 import { Buffer } from 'buffer';
 import { Hub, fetchAuthSession } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
-	APIAuthMode,
+	GraphQLAuthMode,
 	CustomUserAgentDetails,
 	Logger,
 	NonRetryableError,
@@ -17,6 +16,8 @@ import {
 	isNonRetryableError,
 	jitteredExponentialRetry,
 	DocumentType,
+	amplifyUuid,
+	AmplifyUrl,
 } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -88,7 +89,7 @@ type ParsedMessagePayload = {
 
 export interface AWSAppSyncRealTimeProviderOptions {
 	appSyncGraphqlEndpoint?: string;
-	authenticationType?: APIAuthMode;
+	authenticationType?: GraphQLAuthMode;
 	query?: string;
 	variables?: Record<string, DocumentType>;
 	apiKey?: string;
@@ -210,7 +211,7 @@ export class AWSAppSyncRealTimeProvider {
 				observer.complete();
 			} else {
 				let subscriptionStartActive = false;
-				const subscriptionId = uuid();
+				const subscriptionId = amplifyUuid();
 				const startSubscription = () => {
 					if (!subscriptionStartActive) {
 						subscriptionStartActive = true;
@@ -884,7 +885,7 @@ export class AWSAppSyncRealTimeProvider {
 		Record<string, unknown> | undefined
 	> {
 		const headerHandler: {
-			[key in APIAuthMode]: (arg0: AWSAppSyncRealTimeAuthInput) => {};
+			[key in GraphQLAuthMode]: (arg0: AWSAppSyncRealTimeAuthInput) => {};
 		} = {
 			apiKey: this._awsRealTimeApiKeyHeader.bind(this),
 			iam: this._awsRealTimeIAMHeader.bind(this),
@@ -968,7 +969,7 @@ export class AWSAppSyncRealTimeProvider {
 			{
 				headers: request.headers,
 				method: request.method,
-				url: new URL(request.url),
+				url: new AmplifyUrl(request.url),
 				body: request.data,
 			},
 			{

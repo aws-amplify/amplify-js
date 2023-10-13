@@ -15,6 +15,7 @@ import {
 } from './constants';
 import { getSigningValues } from './utils/getSigningValues';
 import { getSignature } from './utils/getSignature';
+import { AmplifyUrl } from '../../../../../utils/amplifyUrl';
 
 /**
  * Given a `Presignable` object, returns a Signature Version 4 presigned `URL` object.
@@ -33,7 +34,7 @@ export const presignUrl = (
 
 	// create the request to sign
 	// @ts-ignore URL constructor accepts a URL object
-	const presignedUrl = new URL(url);
+	const presignedUrl = new AmplifyUrl(url);
 	Object.entries({
 		[ALGORITHM_QUERY_PARAM]: SHA256_ALGORITHM_IDENTIFIER,
 		[CREDENTIAL_QUERY_PARAM]: `${accessKeyId}/${credentialScope}`,

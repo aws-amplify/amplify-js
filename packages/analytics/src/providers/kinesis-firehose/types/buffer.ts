@@ -3,7 +3,7 @@
 
 import { EventBufferConfig } from '../../../utils';
 import { KinesisStream } from '../../../types';
-import { Credentials } from '@aws-sdk/types';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
 export type KinesisFirehoseBufferEvent = KinesisStream & {
 	event: Uint8Array;
@@ -13,7 +13,7 @@ export type KinesisFirehoseBufferEvent = KinesisStream & {
 
 export type KinesisFirehoseEventBufferConfig = EventBufferConfig & {
 	region: string;
-	credentials: Credentials;
+	credentials: AWSCredentials;
 	identityId?: string;
 	resendLimit?: number;
 	userAgentValue?: string;

@@ -23,6 +23,8 @@ export {
 	AuthConfig,
 	AuthUserPoolConfig,
 	AuthUserPoolAndIdentityPoolConfig,
+	APIConfig,
+	CacheConfig,
 	StorageAccessLevel,
 	StorageConfig,
 	GetCredentialsOptions,
@@ -59,10 +61,7 @@ export {
 export { KeyValueStorageInterface } from './types';
 
 // Cache exports
-import { BrowserStorageCache } from './Cache/BrowserStorageCache';
-export { InMemoryCache } from './Cache/InMemoryCache';
-export { BrowserStorageCache };
-export { BrowserStorageCache as Cache }; // Maintain interoperability with React Native
+export { Cache } from './Cache';
 
 // Internationalization utilities
 export { I18n } from './I18n';

@@ -47,7 +47,6 @@ export {
 export {
 	AuthSignUpOutput,
 	AuthSignInOutput,
-	AuthSignOutOutput,
 	AuthResetPasswordOutput,
 	AuthUpdateUserAttributeOutput,
 	AuthUpdateUserAttributesOutput,

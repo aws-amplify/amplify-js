@@ -10,7 +10,7 @@ import {
 
 type CreateCancellableTaskOptions<Result> = {
 	job: () => Promise<Result>;
-	onCancel: (abortErrorOverwrite?: Error) => void;
+	onCancel: (message?: string) => void;
 };
 
 type CancellableTask<Result> = DownloadTask<Result>;
@@ -20,16 +20,16 @@ const createCancellableTask = <Result>({
 	onCancel,
 }: CreateCancellableTaskOptions<Result>): CancellableTask<Result> => {
 	const state = 'IN_PROGRESS' as TransferTaskState;
-	let abortErrorOverwriteRecord: Error | undefined = undefined;
+	let canceledErrorMessage: string | undefined = undefined;
 	const cancelableTask = {
-		cancel: (abortErrorOverwrite?: Error) => {
-			abortErrorOverwriteRecord = abortErrorOverwrite;
+		cancel: (message?: string) => {
 			const { state } = cancelableTask;
 			if (state === 'CANCELED' || state === 'ERROR' || state === 'SUCCESS') {
 				return;
 			}
 			cancelableTask.state = 'CANCELED';
-			onCancel(abortErrorOverwrite);
+			canceledErrorMessage = message;
+			onCancel(canceledErrorMessage);
 		},
 		state,
 	};
@@ -42,7 +42,7 @@ const createCancellableTask = <Result>({
 		} catch (e) {
 			if (isCancelError(e)) {
 				cancelableTask.state = 'CANCELED';
-				throw abortErrorOverwriteRecord ?? e;
+				e.message = canceledErrorMessage ?? e.message;
 			}
 			cancelableTask.state = 'ERROR';
 			throw e;
@@ -58,7 +58,7 @@ export const createDownloadTask = createCancellableTask;
 
 type CreateUploadTaskOptions<Result> = {
 	job: () => Promise<Result>;
-	onCancel: (abortErrorOverwrite?: Error) => void;
+	onCancel: (message?: string) => void;
 	onResume?: () => void;
 	onPause?: () => void;
 	isMultipartUpload?: boolean;

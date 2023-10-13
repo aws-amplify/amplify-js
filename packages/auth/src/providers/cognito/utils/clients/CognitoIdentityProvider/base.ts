@@ -15,7 +15,10 @@ import {
 	getRetryDecider,
 	jitteredBackoff,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { getAmplifyUserAgent } from '@aws-amplify/core/internals/utils';
+import {
+	getAmplifyUserAgent,
+	AmplifyUrl,
+} from '@aws-amplify/core/internals/utils';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 /**
@@ -29,11 +32,13 @@ const SERVICE_NAME = 'cognito-idp';
 const endpointResolver = ({ region }: EndpointResolverOptions) => {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const customURL = authConfig?.endpoint;
-	const defaultURL = new URL(`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`);
+	const defaultURL = new AmplifyUrl(
+		`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`
+	);
 
 	return {
-		url: customURL ? new URL(customURL) : defaultURL,
-	}
+		url: customURL ? new AmplifyUrl(customURL) : defaultURL,
+	};
 };
 
 /**

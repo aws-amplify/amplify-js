@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Credentials } from '@aws-sdk/types';
+import { AWSCredentials } from '../../../libraryUtils';
 import { getEventBuffer } from '../utils/getEventBuffer';
 import {
 	BUFFER_SIZE,
@@ -13,7 +13,7 @@ import {
 export const flushEvents = (
 	appId: string,
 	region: string,
-	credentials: Credentials,
+	credentials: AWSCredentials,
 	identityId?: string,
 	userAgentValue?: string
 ) => {
