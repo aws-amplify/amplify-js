@@ -54,6 +54,14 @@ describe('CookieStorage', () => {
 				expect(await cookieStore.getItem('testKey')).toBe('testValue');
 			});
 
+			it('setting and getting an item with encoded cookie name', async () => {
+				const testKey = encodeURIComponent('test@email.com');
+				const testValue = '123';
+				await cookieStore.setItem(testKey, testValue);
+				console.log(document.cookie);
+				expect(await cookieStore.getItem(testKey)).toEqual(testValue);
+			});
+
 			it('Clearing cookies should remove all items within the storage', async () => {
 				const cookieStore = new CookieStorage(cookieStoreData);
 				await cookieStore.setItem('testKey2', 'testValue');
