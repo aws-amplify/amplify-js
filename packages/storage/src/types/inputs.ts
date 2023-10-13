@@ -49,4 +49,8 @@ export type StorageCopyInput<
 /**
  * The data payload type for upload operation.
  */
-export type StorageUploadDataPayload = Blob | BufferSource | string;
+export type StorageUploadDataPayload =
+	| Blob
+	| ArrayBufferView
+	| ArrayBuffer
+	| string;

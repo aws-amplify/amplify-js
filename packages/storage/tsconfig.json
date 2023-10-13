@@ -4,11 +4,7 @@
 		"importHelpers": true,
 		"strict": true,
 		"noImplicitAny": true,
-		"resolveJsonModule": true,
-		"baseUrl": "./",
-		"paths": {
-			"*": ["../node_modules/*", "../node_modules/@types/*"]
-		}
+		"resolveJsonModule": true
 	},
 	"include": ["./src"]
 }
