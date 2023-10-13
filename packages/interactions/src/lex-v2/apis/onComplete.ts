@@ -4,14 +4,20 @@
 import { CompletionCallback } from '../../types';
 import { resolveConfig } from '../utils';
 import { lexProvider } from '../AWSLexV2Provider';
+import {
+	assertValidationError,
+	InteractionsValidationErrorCode,
+} from '../../errors';
 
 export const onComplete = (
 	botname: string,
 	callback: CompletionCallback
 ): void => {
 	const botConfig = resolveConfig(botname);
-	if (!botConfig) {
-		throw new Error(`Bot ${botname} does not exist`);
-	}
+	assertValidationError(
+		!!botConfig,
+		InteractionsValidationErrorCode.NoBotConfig,
+		`Bot ${botname} does not exist.`
+	);
 	lexProvider.onComplete(botConfig, callback);
 };
