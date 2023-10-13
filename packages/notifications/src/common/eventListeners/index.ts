@@ -6,7 +6,6 @@ import { EventListener, EventListenerRemover, EventType } from './types';
 const eventListeners: Record<string, Set<EventListener<Function>>> = {};
 
 export const notifyEventListeners = (type: EventType, ...args: any[]): void => {
-	console.log('notifying listeners:', ...args);
 	eventListeners[type]?.forEach(listener => {
 		listener.handleEvent(...args);
 	});
