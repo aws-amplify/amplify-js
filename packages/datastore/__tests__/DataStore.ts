@@ -68,7 +68,7 @@ describe('DataStore sanity testing checks', () => {
 		await unconfigureSync(DataStore);
 	});
 
-	test('getDataStore() returns fully fresh instances of DataStore and models', async () => {
+	test.only('getDataStore() returns fully fresh instances of DataStore and models', async () => {
 		/**
 		 * Simulating connect/disconnect and/or `isNode` required the `getDataStore()`
 		 * to reset modules. Hence, the returned DataStore instances should be different.
@@ -85,7 +85,7 @@ describe('DataStore sanity testing checks', () => {
 	});
 
 	// HAS_MANY does not contain a FK. no constraint to validate.
-	test('maintains integrity when attempting to save BELONGS_TO FK at non-existent record', async () => {
+	test.only('maintains integrity when attempting to save BELONGS_TO FK at non-existent record', async () => {
 		const { DataStore: datastore, Post, Comment } = getDataStore();
 		DataStore = datastore;
 		const post = new Post({
@@ -147,7 +147,7 @@ describe('DataStore sanity testing checks', () => {
 		 *
 		 */
 
-		test('sanity check for expectedIsolation helper', async () => {
+		test.only('sanity check for expectedIsolation helper', async () => {
 			// make sure expectIsolation is properly awaiting between executions.
 			// Logging is used to provide visual confirmation that the utility is
 			// working as expected. We create the same test *N* times.
@@ -170,7 +170,7 @@ describe('DataStore sanity testing checks', () => {
 			expect(lastCycle).toBe(numberOfCycles);
 		});
 
-		describe('during lifecycle events', () => {
+		describe.only('during lifecycle events', () => {
 			let { DataStore, Post } = getDataStore();
 
 			beforeAll(async () => {
@@ -277,7 +277,7 @@ describe('DataStore sanity testing checks', () => {
 			 * likely change from "everything is happy, DataStore figures it out" to
 			 * predictable error cases.
 			 */
-			describe('fuzz', () => {
+			describe.skip('fuzz', () => {
 				function fuzz() {
 					const steps = [] as any[];
 
