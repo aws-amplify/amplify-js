@@ -25,5 +25,3 @@ export {
 	OnMessageDismissedOutput,
 	OnMessageDisplayedOutput,
 } from './providers/pinpoint';
-
-export { InAppMessageInteractionEvent } from './types';
