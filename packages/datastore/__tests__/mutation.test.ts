@@ -42,8 +42,8 @@ const datastoreUserAgentDetails: CustomUserAgentDetails = {
 	action: DataStoreAction.GraphQl,
 };
 
-describe.only('Jittered backoff', () => {
-	it.only('should progress exponentially until some limit', () => {
+describe('Jittered backoff', () => {
+	it('should progress exponentially until some limit', () => {
 		const COUNT = 13;
 
 		const backoffs = [...Array(COUNT)].map((v, i) =>
@@ -89,7 +89,7 @@ describe.only('Jittered backoff', () => {
 	});
 });
 
-describe.skip('MutationProcessor', () => {
+describe('MutationProcessor', () => {
 	let mutationProcessor: MutationProcessor;
 
 	beforeAll(async () => {
@@ -180,7 +180,7 @@ describe.skip('MutationProcessor', () => {
 	});
 });
 
-describe.skip('error handler', () => {
+describe('error handler', () => {
 	let mutationProcessor: MutationProcessor;
 	const errorHandler = jest.fn();
 
