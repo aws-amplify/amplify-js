@@ -12,4 +12,16 @@ export {
 	onMessageDismissed,
 	onMessageActionTaken,
 	notifyMessageInteraction,
-} from './pinpoint/apis';
+	IdentifyUserInput,
+	DispatchEventInput,
+	SetConflictHandlerInput,
+	OnMessageActionTakenInput,
+	OnMessageDismissedInput,
+	OnMessageDisplayedInput,
+	OnMessageReceivedInput,
+	NotifyMessageInteractionInput,
+	OnMessageReceivedOutput,
+	OnMessageActionTakenOutput,
+	OnMessageDismissedOutput,
+	OnMessageDisplayedOutput,
+} from './pinpoint';
