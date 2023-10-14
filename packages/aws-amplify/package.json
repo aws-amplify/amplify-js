@@ -97,6 +97,11 @@
 			"import": "./lib-esm/storage/s3/server.js",
 			"require": "./lib/storage/s3/server.js"
 		},
+		"./storage/s3/utils": {
+			"types": "./lib-esm/storage/s3/utils.d.ts",
+			"import": "./lib-esm/storage/s3/utils.js",
+			"require": "./lib/storage/s3/utils.js"
+		},
 		"./in-app-messaging": {
 			"types": "./lib-esm/in-app-messaging/index.d.ts",
 			"import": "./lib-esm/in-app-messaging/index.js",
