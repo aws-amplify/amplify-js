@@ -41,8 +41,8 @@ const datastoreUserAgentDetails: CustomUserAgentDetails = {
 	action: DataStoreAction.GraphQl,
 };
 
-describe.only('Jittered backoff', () => {
-	it.only('should progress exponentially until some limit', () => {
+describe('Jittered backoff', () => {
+	it('should progress exponentially until some limit', () => {
 		const COUNT = 13;
 
 		const backoffs = [...Array(COUNT)].map((v, i) =>
@@ -88,7 +88,7 @@ describe.only('Jittered backoff', () => {
 	});
 });
 
-describe.skip('MutationProcessor', () => {
+describe('MutationProcessor', () => {
 	let mutationProcessor: MutationProcessor;
 
 	beforeAll(async () => {
@@ -96,7 +96,7 @@ describe.skip('MutationProcessor', () => {
 	});
 
 	// Test for this PR: https://github.com/aws-amplify/amplify-js/pull/6542
-	describe('100% Packet Loss Axios Error', () => {
+	describe.only('100% Packet Loss Axios Error', () => {
 		it('Should result in Network Error and get handled without breaking the Mutation Processor', async () => {
 			const mutationProcessorSpy = jest.spyOn(mutationProcessor, 'resume');
 
@@ -181,7 +181,7 @@ describe.skip('MutationProcessor', () => {
 	});
 });
 
-describe.skip('error handler', () => {
+describe('error handler', () => {
 	let mutationProcessor: MutationProcessor;
 	const errorHandler = jest.fn();
 
@@ -273,35 +273,37 @@ jest.mock('@aws-amplify/api-rest/internals', () => {
 
 // Configuring the API category so that API.graphql can be used
 // by the MutationProcessor
-jest.mock('@aws-amplify/api/internals', () => {
-	const awsconfig = {
-		aws_project_region: 'us-west-2',
-		aws_appsync_graphqlEndpoint:
-			'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
-		aws_appsync_region: 'us-west-2',
-		aws_appsync_authenticationType: 'API_KEY',
-		aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
-	};
+// jest.mock('@aws-amplify/api/internals', () => {
+// 	const awsconfig = {
+// 		aws_project_region: 'us-west-2',
+// 		aws_appsync_graphqlEndpoint:
+// 			'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
+// 		aws_appsync_region: 'us-west-2',
+// 		aws_appsync_authenticationType: 'API_KEY',
+// 		aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
+// 	};
 
-	const { InternalGraphQLAPIClass } = jest.requireActual(
-		'@aws-amplify/api-graphql/internals'
-	);
-	const internalGraphqlInstance = new InternalGraphQLAPIClass(null);
-	Amplify.configure(awsconfig);
+// 	const { InternalGraphQLAPIClass } = jest.requireActual(
+// 		'@aws-amplify/api-graphql/internals'
+// 	);
+// 	const internalGraphqlInstance = new InternalGraphQLAPIClass(null);
+// 	Amplify.configure(awsconfig);
 
-	const actualInternalAPIModule = jest.requireActual(
-		'@aws-amplify/api/internals'
-	);
-	const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
+// 	const actualInternalAPIModule = jest.requireActual(
+// 		'@aws-amplify/api/internals'
+// 	);
+// 	const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 
-	return {
-		...actualInternalAPIModule,
-		InternalAPI: {
-			...actualInternalAPIInstance,
-			graphql: internalGraphqlInstance.graphql.bind(internalGraphqlInstance),
-		},
-	};
-});
+// 	return {
+// 		...actualInternalAPIModule,
+// 		InternalAPI: {
+// 			...actualInternalAPIInstance,
+// 			graphql: internalGraphqlInstance.graphql.bind(internalGraphqlInstance),
+// 		},
+// 	};
+// });
+
+// import * as API from '@aws-amplify/api/internals'
 
 // mocking jitteredBackoff to prevent it from retrying
 // endlessly in the mutation processor and so that we can expect the thrown result in our test
