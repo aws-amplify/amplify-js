@@ -7,7 +7,7 @@ import { Amplify } from '@aws-amplify/core';
 function isLexV1Config(object: any): object is AWSLexProviderOption {
 	return 'alias' in object;
 }
-export const resolveConfig = (
+export const resolveBotConfig = (
 	botName: string
 ): AWSLexProviderOption | undefined => {
 	const lexBots = Amplify.getConfig().Interactions?.Lex ?? [];

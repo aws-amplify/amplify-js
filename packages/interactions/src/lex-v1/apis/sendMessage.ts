@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { InteractionsMessage, InteractionsResponse } from '../../types';
-import { resolveConfig } from '../utils';
+import { resolveBotConfig } from '../utils';
 import { lexProvider } from '../AWSLexProvider';
 import {
 	assertValidationError,
@@ -13,7 +13,7 @@ export const sendMessage = async (
 	botname: string,
 	message: string | InteractionsMessage
 ): Promise<InteractionsResponse> => {
-	const botConfig = resolveConfig(botname);
+	const botConfig = resolveBotConfig(botname);
 	assertValidationError(
 		!!botConfig,
 		InteractionsValidationErrorCode.NoBotConfig,

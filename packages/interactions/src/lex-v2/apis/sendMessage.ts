@@ -3,17 +3,17 @@
 
 import { InteractionsMessage, InteractionsResponse } from '../../types';
 import { lexProvider } from '../AWSLexV2Provider';
-import { resolveConfig } from '../utils';
+import { resolveBotConfig } from '../utils';
 import {
 	assertValidationError,
 	InteractionsValidationErrorCode,
 } from '../../errors';
 
-export const sendMessage = (
+export const sendMessage = async (
 	botname: string,
 	message: string | InteractionsMessage
 ): Promise<InteractionsResponse> => {
-	const botConfig = resolveConfig(botname);
+	const botConfig = resolveBotConfig(botname);
 	assertValidationError(
 		!!botConfig,
 		InteractionsValidationErrorCode.NoBotConfig,
