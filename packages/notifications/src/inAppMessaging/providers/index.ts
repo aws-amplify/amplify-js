@@ -6,6 +6,7 @@ export {
 	syncMessages,
 	dispatchEvent,
 	setConflictHandler,
+	initializeInAppMessaging,
 	onMessageReceived,
 	onMessageDisplayed,
 	onMessageDismissed,
