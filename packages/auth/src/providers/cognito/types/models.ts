@@ -1,8 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthStandardAttributeKey } from '../../../types';
+import {
+	AuthStandardAttributeKey,
+	AuthVerifiableAttributeKey,
+} from '@aws-amplify/core/internals/utils';
+import { AuthUserAttribute, AuthDevice } from '../../../types';
 import { AuthProvider } from '../../../types/inputs';
+import { SignInOutput, SignUpOutput } from './outputs';
 
 /**
  * Cognito supported AuthFlowTypes that may be passed as part of the Sign In request.
@@ -34,6 +39,11 @@ export type ClientMetadata = {
 export type UserAttributeKey = AuthStandardAttributeKey | CustomAttribute;
 
 /**
+ * Verifiable user attribute types available for Cognito.
+ */
+export type VerifiableUserAttributeKey = AuthVerifiableAttributeKey;
+
+/**
  * Cognito custom attribute type
  */
 // TODO(V6): replace by `custom:${string}` once categories that use auth have upgraded TS
@@ -52,3 +62,21 @@ export type MFAPreference =
 	| 'DISABLED'
 	| 'PREFERRED'
 	| 'NOT_PREFERRED';
+
+export type AutoSignInEventData =
+	| {
+			event: 'confirmSignUp';
+			data: SignUpOutput;
+	  }
+	| {
+			event: 'autoSignIn';
+	  };
+/**
+ * Holds the device specific information along with it's id and name.
+ */
+export type AWSAuthDevice = AuthDevice & {
+	attributes: AuthUserAttribute<UserAttributeKey>;
+	createDate?: Date;
+	lastAuthenticatedDate?: Date;
+	lastModifiedDate?: Date;
+};

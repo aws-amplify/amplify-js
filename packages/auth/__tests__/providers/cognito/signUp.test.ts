@@ -55,7 +55,10 @@ describe('SignUp API Happy Path Cases:', () => {
 			userId: '1234567890',
 		});
 		expect(signUpSpy).toHaveBeenCalledWith(
-			{ region: 'us-west-2' },
+			{ 
+				region: 'us-west-2',
+				userAgentValue: expect.any(String)
+			},
 			{
 				ClientMetadata: undefined,
 				Password: user1.password,

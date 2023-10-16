@@ -1,3 +1,4 @@
+import { Hub } from '@aws-amplify/core';
 import { record as pinpointRecord } from '@aws-amplify/core/internals/providers/pinpoint';
 import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import { record } from '../../../../src/providers/pinpoint';
@@ -8,6 +9,10 @@ import {
 import { AnalyticsValidationErrorCode } from '../../../../src/errors';
 import { RecordInput } from '../../../../src/providers/pinpoint/types';
 import {
+	isAnalyticsEnabled,
+	getAnalyticsUserAgentString,
+} from '../../../../src/utils';
+import {
 	appId,
 	identityId,
 	region,
@@ -16,25 +21,41 @@ import {
 	config,
 } from './testUtils/data';
 
-jest.mock('../../../../src/providers/pinpoint/utils');
+jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
+jest.mock('../../../../src/utils');
+jest.mock('../../../../src/providers/pinpoint/utils');
 
 describe('Pinpoint API: record', () => {
+	// create spies
+	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
+	// create mocks
 	const mockPinpointRecord = pinpointRecord as jest.Mock;
 	const mockResolveConfig = resolveConfig as jest.Mock;
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
-	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
+	const mockIsAnalyticsEnabled = isAnalyticsEnabled as jest.Mock;
+	const mockGetAnalyticsUserAgentString =
+		getAnalyticsUserAgentString as jest.Mock;
+	const mockHubDispatch = Hub.dispatch as jest.Mock;
 
 	beforeEach(() => {
-		mockPinpointRecord.mockReset();
 		mockPinpointRecord.mockResolvedValue(undefined);
-		mockResolveConfig.mockReset();
 		mockResolveConfig.mockReturnValue(config);
-		mockResolveCredentials.mockReset();
+		mockIsAnalyticsEnabled.mockReturnValue(true);
+		mockGetAnalyticsUserAgentString.mockReturnValue('mock-user-agent');
 		mockResolveCredentials.mockResolvedValue({
 			credentials,
 			identityId,
 		});
+	});
+
+	afterEach(() => {
+		mockPinpointRecord.mockReset();
+		mockResolveConfig.mockReset();
+		mockIsAnalyticsEnabled.mockReset();
+		mockGetAnalyticsUserAgentString.mockReset();
+		mockResolveCredentials.mockReset();
+		mockHubDispatch.mockClear();
 	});
 
 	it('invokes the core record implementation', async () => {
@@ -78,5 +99,28 @@ describe('Pinpoint API: record', () => {
 		}
 
 		expect.assertions(1);
+	});
+
+	it('should not enqueue an event when Analytics has been disable', async () => {
+		mockIsAnalyticsEnabled.mockReturnValue(false);
+
+		record(event);
+
+		await new Promise(process.nextTick);
+
+		expect(mockPinpointRecord).not.toBeCalled();
+	});
+
+	it('should dispatch a Hub event', async () => {
+		record(event);
+
+		await new Promise(process.nextTick);
+
+		expect(mockHubDispatch).toBeCalledWith(
+			'analytics',
+			{ event: 'record', data: event, message: 'Recording Analytics event' },
+			'Analytics',
+			expect.anything()
+		);
 	});
 });

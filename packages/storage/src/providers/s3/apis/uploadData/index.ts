@@ -72,8 +72,8 @@ export const uploadData = (input: UploadDataInput): UploadDataOutput => {
 		return createUploadTask({
 			isMultipartUpload: false,
 			job: putObjectJob(input, abortController.signal, dataByteLength),
-			onCancel: (abortErrorOverwrite?: Error) => {
-				abortController.abort(abortErrorOverwrite);
+			onCancel: (message?: string) => {
+				abortController.abort(message);
 			},
 		});
 	} else {
@@ -82,8 +82,8 @@ export const uploadData = (input: UploadDataInput): UploadDataOutput => {
 		return createUploadTask({
 			isMultipartUpload: true,
 			job: multipartUploadJob,
-			onCancel: (abortErrorOverwrite?: Error) => {
-				onCancel(abortErrorOverwrite);
+			onCancel: (message?: string) => {
+				onCancel(message);
 			},
 			onPause,
 			onResume,

@@ -4,6 +4,7 @@
 	"description": "Storage category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
+	"react-native": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
 	"browser": {
 		"./lib-esm/lib-esm/providers/s3/utils/client/runtime/index": "./lib-esm/providers/s3/utils/client/runtime/index.browser.js"
@@ -103,6 +104,7 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
+		"@aws-amplify/react-native": "^1.0.0",
 		"@types/sinon": "^7.5.1",
 		"typescript": "5.0.2"
 	},

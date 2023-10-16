@@ -6,5 +6,7 @@ export {
 	identifyUser,
 	RecordInput,
 	IdentifyUserInput,
+	flushEvents,
 } from './providers/pinpoint';
+export { enable, disable } from './apis';
 export { AnalyticsError } from './errors';

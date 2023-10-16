@@ -2445,18 +2445,13 @@ class DataStore {
 			...configFromAmplify
 		} = config;
 
-		let apiKey = '';
-		const currentAppSyncConfig = Amplify.getConfig().API?.AppSync;
-		if (currentAppSyncConfig?.defaultAuthMode.type === 'apiKey') {
-			apiKey = currentAppSyncConfig.defaultAuthMode.apiKey;
-		}
+		const currentAppSyncConfig = Amplify.getConfig().API?.GraphQL;
 
 		const appSyncConfig = {
 			aws_appsync_graphqlEndpoint: currentAppSyncConfig?.endpoint,
-			aws_appsync_authenticationType:
-				currentAppSyncConfig?.defaultAuthMode.type,
+			aws_appsync_authenticationType: currentAppSyncConfig?.defaultAuthMode,
 			aws_appsync_region: currentAppSyncConfig?.region,
-			aws_appsync_apiKey: apiKey,
+			aws_appsync_apiKey: currentAppSyncConfig?.apiKey,
 		};
 
 		this.amplifyConfig = {

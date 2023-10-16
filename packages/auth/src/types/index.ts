@@ -7,7 +7,6 @@ export {
 	AuthAnyAttribute,
 	AuthCodeDeliveryDetails,
 	AuthNextSignUpStep,
-	AuthStandardAttributeKey,
 	AuthUserAttributeKey,
 	AuthUserAttributes,
 	AuthUserAttribute,
@@ -19,8 +18,8 @@ export {
 	AuthUser,
 	AuthTOTPSetupDetails,
 	AuthResetPasswordStep,
-	AuthSignUpStep,
 	AuthUpdateAttributeStep,
+	AuthDevice,
 } from './models';
 
 export { AuthServiceOptions, AuthSignUpOptions } from './options';
@@ -41,12 +40,13 @@ export {
 	AuthSignInWithRedirectInput,
 	AuthSignOutInput,
 	AuthSendUserAttributeVerificationCodeInput,
+	AuthDeleteUserAttributesInput,
+	AuthForgetDeviceInput,
 } from './inputs';
 
 export {
 	AuthSignUpOutput,
 	AuthSignInOutput,
-	AuthSignOutOutput,
 	AuthResetPasswordOutput,
 	AuthUpdateUserAttributeOutput,
 	AuthUpdateUserAttributesOutput,

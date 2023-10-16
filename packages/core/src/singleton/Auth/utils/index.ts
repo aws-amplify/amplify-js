@@ -28,7 +28,7 @@ export function assertTokenProviderConfig(
 		assertionValid = false;
 	} else {
 		assertionValid =
-			!!cognitoConfig.userPoolClientId && !!cognitoConfig.userPoolClientId;
+			!!cognitoConfig.userPoolId && !!cognitoConfig.userPoolClientId;
 	}
 
 	return assert(

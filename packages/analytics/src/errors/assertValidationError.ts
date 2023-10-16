@@ -9,11 +9,17 @@ import { AnalyticsValidationErrorCode, validationErrorMap } from './validation';
  */
 export function assertValidationError(
 	assertion: boolean,
-	name: AnalyticsValidationErrorCode
+	name: AnalyticsValidationErrorCode,
+	message?: string
 ): asserts assertion {
-	const { message, recoverySuggestion } = validationErrorMap[name];
+	const { message: defaultMessage, recoverySuggestion } =
+		validationErrorMap[name];
 
 	if (!assertion) {
-		throw new AnalyticsError({ name, message, recoverySuggestion });
+		throw new AnalyticsError({
+			name,
+			message: message ?? defaultMessage,
+			recoverySuggestion,
+		});
 	}
 }

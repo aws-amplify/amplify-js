@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { generateRandomString } from './generateRandomString';
+export { getClientInfo } from './getClientInfo';
 export { isBrowser } from './isBrowser';
 export { isWebWorker } from './isWebWorker';
 export {
@@ -13,3 +14,4 @@ export {
 } from './retry';
 export { urlSafeDecode } from './urlSafeDecode';
 export { urlSafeEncode } from './urlSafeEncode';
+export { deepFreeze } from './deepFreeze';

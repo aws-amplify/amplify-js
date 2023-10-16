@@ -16,6 +16,9 @@
 		"packages/datastore",
 		"packages/rtn-web-browser",
 		"packages/notifications",
+		"packages/rtn-push-notification",
+		"packages/react-native",
+		"packages/react-native/example",
 		"scripts/tsc-compliance-test"
 	],
 	"exact": true,

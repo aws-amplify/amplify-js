@@ -2,16 +2,34 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { AuthDeliveryMedium } from '../../../types';
-import { UserAttributeKey, SignUpInput, SignUpOutput } from '../types';
+import {
+	UserAttributeKey,
+	SignUpInput,
+	SignUpOutput,
+	SignInInput,
+} from '../types';
 import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { SignUpException } from '../types/errors';
-import { AttributeType } from '../utils/clients/CognitoIdentityProvider/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { toAttributeType } from '../utils/apiHelpers';
+import {
+	handleCodeAutoSignIn,
+	isAutoSignInStarted,
+	setAutoSignInStarted,
+	isSignUpComplete,
+	autoSignInUserConfirmed,
+	autoSignInWhenUserIsConfirmedWithLink,
+	setUsernameUsedForAutoSignIn,
+} from '../utils/signUpHelpers';
+import { setAutoSignIn } from './autoSignIn';
+import { getAuthUserAgentValue } from '../../../utils';
 
 /**
  * Creates a user
@@ -26,7 +44,10 @@ import { toAttributeType } from '../utils/apiHelpers';
 export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	const clientMetadata = input.options?.serviceOptions?.clientMetadata;
+	const signUpVerificationMethod =
+		authConfig?.signUpVerificationMethod ?? 'code';
+	const { clientMetadata, validationData, autoSignIn } =
+		input.options?.serviceOptions ?? {};
 	assertTokenProviderConfig(authConfig);
 	assertValidationError(
 		!!username,
@@ -36,43 +57,73 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		!!password,
 		AuthValidationErrorCode.EmptySignUpPassword
 	);
-	// TODO: implement autoSignIn
-	let validationData: AttributeType[] | undefined;
-	let attributes: AttributeType[] | undefined;
 
-	if (options?.serviceOptions?.validationData) {
-		validationData = toAttributeType(options?.serviceOptions?.validationData);
-	}
-	if (options?.userAttributes) {
-		attributes = toAttributeType(options?.userAttributes);
-	}
+	const signInServiceOptions =
+		typeof autoSignIn !== 'boolean' ? autoSignIn : undefined;
 
-	const res = await signUpClient(
-		{ region: getRegion(authConfig.userPoolId) },
+	const signInInput: SignInInput = {
+		username,
+		options: {
+			serviceOptions: signInServiceOptions,
+		},
+	};
+
+	// if the authFlowType is 'CUSTOM_WITHOUT_SRP' then we don't include the password
+	if (signInServiceOptions?.authFlowType !== 'CUSTOM_WITHOUT_SRP') {
+		signInInput['password'] = password;
+	}
+	if (signInServiceOptions || autoSignIn === true) {
+		setUsernameUsedForAutoSignIn(username);
+		setAutoSignInStarted(true);
+	}
+	const clientOutput = await signUpClient(
+		{
+			region: getRegion(authConfig.userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignUp),
+		},
 		{
 			Username: username,
 			Password: password,
-			UserAttributes: attributes,
+			UserAttributes:
+				options?.userAttributes && toAttributeType(options?.userAttributes),
 			ClientMetadata: clientMetadata,
-			ValidationData: validationData,
+			ValidationData: validationData && toAttributeType(validationData),
 			ClientId: authConfig.userPoolClientId,
 		}
 	);
+	const { UserSub, CodeDeliveryDetails } = clientOutput;
 
-	const { UserConfirmed, CodeDeliveryDetails, UserSub } = res;
-
-	if (UserConfirmed) {
+	if (isSignUpComplete(clientOutput) && isAutoSignInStarted()) {
+		setAutoSignIn(autoSignInUserConfirmed(signInInput));
+		return {
+			isSignUpComplete: true,
+			nextStep: {
+				signUpStep: 'COMPLETE_AUTO_SIGN_IN',
+			},
+		};
+	} else if (isSignUpComplete(clientOutput) && !isAutoSignInStarted()) {
 		return {
 			isSignUpComplete: true,
 			nextStep: {
 				signUpStep: 'DONE',
 			},
 		};
-	} else {
+	} else if (
+		!isSignUpComplete(clientOutput) &&
+		isAutoSignInStarted() &&
+		signUpVerificationMethod === 'code'
+	) {
+		handleCodeAutoSignIn(signInInput);
+	} else if (
+		!isSignUpComplete(clientOutput) &&
+		isAutoSignInStarted() &&
+		signUpVerificationMethod === 'link'
+	) {
+		setAutoSignIn(autoSignInWhenUserIsConfirmedWithLink(signInInput));
 		return {
 			isSignUpComplete: false,
 			nextStep: {
-				signUpStep: 'CONFIRM_SIGN_UP',
+				signUpStep: 'COMPLETE_AUTO_SIGN_IN',
 				codeDeliveryDetails: {
 					deliveryMedium:
 						CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
@@ -83,4 +134,18 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			userId: UserSub,
 		};
 	}
+
+	return {
+		isSignUpComplete: false,
+		nextStep: {
+			signUpStep: 'CONFIRM_SIGN_UP',
+			codeDeliveryDetails: {
+				deliveryMedium:
+					CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
+				destination: CodeDeliveryDetails?.Destination as string,
+				attributeName: CodeDeliveryDetails?.AttributeName as UserAttributeKey,
+			},
+		},
+		userId: UserSub,
+	};
 }

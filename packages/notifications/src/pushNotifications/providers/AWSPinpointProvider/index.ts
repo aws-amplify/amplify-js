@@ -3,16 +3,13 @@
 
 import { addEventListener, AWSPinpointProviderCommon } from '../../../common';
 import { ChannelType } from '../../../common/AWSPinpointProviderCommon/types';
-import PlatformNotSupportedError from '../../PlatformNotSupportedError';
-import { Platform } from '../../Platform';
 import {
-	PushNotificationEvent,
 	PushNotificationMessage,
 	PushNotificationProvider,
 	NotificationsSubCategory,
 } from '../../types';
 import { AWSPinpointMessageEvent } from './types';
-import { getAnalyticsEvent, logger } from './utils';
+import { logger } from './utils';
 
 export default class AWSPinpointProvider
 	extends AWSPinpointProviderCommon
@@ -42,24 +39,20 @@ export default class AWSPinpointProvider
 		// some configuration steps should not be re-run even if provider is re-configured for some reason
 		if (!this.configured) {
 			// wire up default Pinpoint message event handling
-			addEventListener(
-				PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
-				message =>
-					this.recordMessageEvent(
-						message,
-						AWSPinpointMessageEvent.BACKGROUND_MESSAGE_RECEIVED
-					)
+			addEventListener('backgroundMessageReceived', message =>
+				this.recordMessageEvent(
+					message,
+					AWSPinpointMessageEvent.BACKGROUND_MESSAGE_RECEIVED
+				)
 			);
-			addEventListener(
-				PushNotificationEvent.FOREGROUND_MESSAGE_RECEIVED,
-				message =>
-					this.recordMessageEvent(
-						message,
-						AWSPinpointMessageEvent.FOREGROUND_MESSAGE_RECEIVED
-					)
+			addEventListener('foregroundMessageReceived', message =>
+				this.recordMessageEvent(
+					message,
+					AWSPinpointMessageEvent.FOREGROUND_MESSAGE_RECEIVED
+				)
 			);
 			const launchNotificationOpenedListener = addEventListener(
-				PushNotificationEvent.LAUNCH_NOTIFICATION_OPENED,
+				'launchNotificationsOpened',
 				message => {
 					this.recordMessageEvent(
 						message,
@@ -69,7 +62,7 @@ export default class AWSPinpointProvider
 					launchNotificationOpenedListener?.remove();
 				}
 			);
-			addEventListener(PushNotificationEvent.NOTIFICATION_OPENED, message => {
+			addEventListener('notificationOpened', message => {
 				this.recordMessageEvent(
 					message,
 					AWSPinpointMessageEvent.NOTIFICATION_OPENED

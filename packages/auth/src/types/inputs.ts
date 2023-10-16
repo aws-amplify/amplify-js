@@ -5,6 +5,7 @@ import {
 	AuthUserAttributes,
 	AuthUserAttribute,
 	AuthUserAttributeKey,
+	AuthDevice,
 } from './models';
 import { AuthServiceOptions, AuthSignUpOptions } from './options';
 
@@ -57,6 +58,18 @@ export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
 export type AuthSignInWithRedirectInput = {
 	provider?: AuthProvider | { custom: string };
 	customState?: string;
+	options?: {
+		/**
+		 * On iOS devices, setting this to true requests that the browser not share cookies or other browsing data between
+		 * the authentication session and the user’s normal browser session. This will bypass the permissions dialog that
+		 * is displayed your user during sign-in and sign-out but also prevents reuse of existing sessions from the user's
+		 * browser, requiring them to re-enter their credentials even if they are already externally logged in on their
+		 * browser.
+		 *
+		 * On all other platforms, this flag is ignored.
+		 */
+		preferPrivateSession?: boolean;
+	};
 };
 
 /**
@@ -107,6 +120,7 @@ export type AuthConfirmSignInInput<
 
 /**
  * Constructs a `VerifyTOTPSetup` input.
+ *
  * @param code - required parameter for verifying the TOTP setup.
  * @param options - optional parameters for the Verify TOTP Setup process such as the service options.
  */
@@ -130,6 +144,7 @@ export type AuthUpdatePasswordInput = {
 
 /**
  * Constructs a `updateUserAttributes` input.
+ *
  * @param userAttributes - the user attributes to be updated
  * @param options - optional parameters for the Update User Attributes process such as the service options.
  */
@@ -167,6 +182,7 @@ export type AuthConfirmUserAttributeInput<
 
 /**
  * Constructs a `sendUserAttributeVerificationCode` request.
+ *
  * @param userAttributeKey - the user attribute key
  * @param options - optional parameters for the Resend Attribute Code process such as the service options.
  */
@@ -176,4 +192,22 @@ export type AuthSendUserAttributeVerificationCodeInput<
 > = {
 	userAttributeKey: UserAttributeKey;
 	options?: { serviceOptions?: ServiceOptions };
+};
+
+/**
+ * Constructs a `deleteUserAttributes` input.
+ *
+ * @param userAttributeKeys - the user attribute keys to be deleted
+ */
+export type AuthDeleteUserAttributesInput<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+> = { userAttributeKeys: [UserAttributeKey, ...UserAttributeKey[]] };
+
+/**
+ * Constructs a `forgetDevice` input.
+ *
+ * @param device - optional parameter to forget an external device
+ */
+export type AuthForgetDeviceInput = {
+	device?: AuthDevice;
 };

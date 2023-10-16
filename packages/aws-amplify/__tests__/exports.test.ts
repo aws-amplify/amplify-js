@@ -3,10 +3,16 @@
 
 import * as topLevelExports from '../src';
 import * as utilsExports from '../src/utils';
+import * as apiTopLevelExports from '../src/api';
 import * as authTopLevelExports from '../src/auth';
 import * as authCognitoExports from '../src/auth/cognito';
 import * as analyticsTopLevelExports from '../src/analytics';
 import * as analyticsPinpointExports from '../src/analytics/pinpoint';
+import * as inAppMessagingTopLevelExports from '../src/in-app-messaging';
+import * as inAppMessagingPinpointTopLevelExports from '../src/in-app-messaging/pinpoint';
+import * as analyticsKinesisExports from '../src/analytics/kinesis';
+import * as analyticsKinesisFirehoseExports from '../src/analytics/kinesis-firehose';
+import * as analyticsPersonalizeExports from '../src/analytics/personalize';
 import * as storageTopLevelExports from '../src/storage';
 import * as storageS3Exports from '../src/storage/s3';
 
@@ -37,12 +43,33 @@ describe('aws-amplify Exports', () => {
 		});
 	});
 
+	describe('API exports', () => {
+		it('should only export expected symbols from the top level', () => {
+			expect(Object.keys(apiTopLevelExports)).toMatchInlineSnapshot(`
+			Array [
+			  "generateClient",
+			  "GraphQLAuthError",
+			  "get",
+			  "put",
+			  "post",
+			  "del",
+			  "head",
+			  "patch",
+			  "isCancelError",
+			]
+		`);
+		});
+	});
+
 	describe('Analytics exports', () => {
 		it('should only export expected symbols from the top-level', () => {
 			expect(Object.keys(analyticsTopLevelExports)).toMatchInlineSnapshot(`
 			Array [
 			  "record",
 			  "identifyUser",
+			  "flushEvents",
+			  "enable",
+			  "disable",
 			  "AnalyticsError",
 			]
 		`);
@@ -53,6 +80,70 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "record",
 			  "identifyUser",
+			  "flushEvents",
+			]
+		`);
+		});
+
+		it('should only export expected symbols from the Kinesis provider', () => {
+			expect(Object.keys(analyticsKinesisExports)).toMatchInlineSnapshot(`
+			Array [
+			  "record",
+			  "flushEvents",
+			]
+			`);
+		});
+
+		it('should only export expected symbols from the Kinesis Firehose provider', () => {
+			expect(Object.keys(analyticsKinesisFirehoseExports))
+				.toMatchInlineSnapshot(`
+			Array [
+			  "record",
+			  "flushEvents",
+			]
+			`);
+		});
+
+		it('should only export expected symbols from the Personalize provider', () => {
+			expect(Object.keys(analyticsPersonalizeExports)).toMatchInlineSnapshot(`
+			Array [
+			  "record",
+			  "flushEvents",
+			]
+			`);
+		});
+	});
+
+	describe('InAppMessaging exports', () => {
+		it('should only export expected symbols from the top-level', () => {
+			expect(Object.keys(inAppMessagingTopLevelExports)).toMatchInlineSnapshot(`
+			Array [
+			  "identifyUser",
+			  "syncMessages",
+			  "dispatchEvent",
+			  "setConflictHandler",
+			  "onMessageReceived",
+			  "onMessageDisplayed",
+			  "onMessageDismissed",
+			  "onMessageActionTaken",
+			  "notifyMessageInteraction",
+			]
+		`);
+		});
+
+		it('should only export expected symbols from the Pinpoint provider', () => {
+			expect(Object.keys(inAppMessagingPinpointTopLevelExports))
+				.toMatchInlineSnapshot(`
+			Array [
+			  "identifyUser",
+			  "syncMessages",
+			  "dispatchEvent",
+			  "setConflictHandler",
+			  "onMessageReceived",
+			  "onMessageDisplayed",
+			  "onMessageDismissed",
+			  "onMessageActionTaken",
+			  "notifyMessageInteraction",
 			]
 		`);
 		});
@@ -82,6 +173,12 @@ describe('aws-amplify Exports', () => {
 			  "fetchUserAttributes",
 			  "signOut",
 			  "sendUserAttributeVerificationCode",
+			  "deleteUserAttributes",
+			  "deleteUser",
+			  "rememberDevice",
+			  "forgetDevice",
+			  "fetchDevices",
+			  "autoSignIn",
 			  "AuthError",
 			  "fetchAuthSession",
 			]
@@ -111,6 +208,12 @@ describe('aws-amplify Exports', () => {
 			  "fetchUserAttributes",
 			  "signOut",
 			  "sendUserAttributeVerificationCode",
+			  "deleteUserAttributes",
+			  "deleteUser",
+			  "rememberDevice",
+			  "forgetDevice",
+			  "fetchDevices",
+			  "autoSignIn",
 			  "cognitoCredentialsProvider",
 			  "CognitoAWSCredentialsAndIdentityIdProvider",
 			  "DefaultIdentityIdStore",

@@ -2,5 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export type WebBrowserNativeModule = {
-	openAuthSessionAsync: (url: string) => Promise<string | null>;
+	openAuthSessionAsync: (
+		url: string,
+		redirectUrl?: string,
+		prefersEphemeralSession?: boolean
+	) => Promise<string | null>;
 };

@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { AmplifyClassV6 } from '@aws-amplify/core';
 import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internals';
 import { Observable } from 'rxjs';
@@ -30,10 +31,29 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
+		amplify: AmplifyClassV6,
 		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
-		return super.graphql(options, additionalHeaders);
+		return super.graphql(amplify, options, additionalHeaders);
+	}
+
+	/**
+	 * Checks to see if an error thrown is from an api request cancellation
+	 * @param error - Any error
+	 * @returns A boolean indicating if the error was from an api request cancellation
+	 */
+	isCancelError(error: any): boolean {
+		return super.isCancelError(error);
+	}
+
+	/**
+	 * Cancels an inflight request. Only applicable for graphql queries and mutations
+	 * @param {any} request - request to cancel
+	 * @returns A boolean indicating if the request was cancelled
+	 */
+	cancel(request: Promise<any>, message?: string): boolean {
+		return super.cancel(request, message);
 	}
 }
 

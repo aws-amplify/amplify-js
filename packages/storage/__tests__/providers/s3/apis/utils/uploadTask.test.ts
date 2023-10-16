@@ -29,10 +29,10 @@ describe('createUploadTask', () => {
 			job: jest.fn(),
 			onCancel,
 		});
-		const customError = new Error('Custom Error');
-		task.cancel(customError);
+		const customErrorMessage = 'Custom Error';
+		task.cancel(customErrorMessage);
 		expect(task.state).toBe('CANCELED');
-		expect(onCancel).toHaveBeenCalledWith(customError);
+		expect(onCancel).toHaveBeenCalledWith(customErrorMessage);
 	});
 
 	it('should set status to error after calling error', async () => {

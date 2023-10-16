@@ -3,7 +3,6 @@
 
 import {
 	Category,
-	ClientDevice,
 	ConsoleLogger,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
@@ -27,7 +26,7 @@ import {
 	NotificationsProvider,
 	UserInfo,
 } from '../../types';
-import { AWSPinpointUserInfo } from './types';
+import { PinpointUserInfo } from './types';
 
 export default abstract class AWSPinpointProviderCommon
 	implements NotificationsProvider
@@ -35,15 +34,12 @@ export default abstract class AWSPinpointProviderCommon
 	static category: NotificationsCategory = 'Notifications';
 	static providerName = 'AWSPinpoint';
 
-	protected clientInfo;
 	protected config: Record<string, any> = {};
 	protected endpointInitialized = false;
 	protected initialized = false;
 	protected logger: ConsoleLogger;
 
 	constructor(logger) {
-		// this.config = { storage: new StorageHelper().getStorage() };
-		this.clientInfo = ClientDevice.clientInfo() ?? {};
 		this.logger = logger;
 	}
 
@@ -115,7 +111,7 @@ export default abstract class AWSPinpointProviderCommon
 		} else {
 			customUserAgentDetails = {
 				category: Category.InAppMessaging,
-				action: InAppMessagingAction.None,
+				action: InAppMessagingAction.IdentifyUser,
 			};
 		}
 
@@ -159,7 +155,7 @@ export default abstract class AWSPinpointProviderCommon
 
 	protected updateEndpoint = async (
 		userId: string = null,
-		userInfo: AWSPinpointUserInfo = null
+		userInfo: PinpointUserInfo = null
 	): Promise<void> => {
 		const credentials = await this.getCredentials();
 		// Shallow compare to determine if credentials stored here are outdated
@@ -185,7 +181,6 @@ export default abstract class AWSPinpointProviderCommon
 		try {
 			const { address, attributes, demographic, location, metrics, optOut } =
 				userInfo ?? {};
-			const { appVersion, make, model, platform, version } = this.clientInfo;
 			// Create the UpdateEndpoint input, prioritizing passed in user info and falling back to
 			// defaults (if any) obtained from the config
 			const input: UpdateEndpointInput = {
@@ -201,11 +196,11 @@ export default abstract class AWSPinpointProviderCommon
 						...attributes,
 					},
 					Demographic: {
-						AppVersion: appVersion,
-						Make: make,
-						Model: model,
-						ModelVersion: version,
-						Platform: platform,
+						AppVersion: null,
+						Make: null,
+						Model: null,
+						ModelVersion: null,
+						Platform: null,
 						...this.transferKeyToUpperCase({
 							...endpointInfo.demographic,
 							...demographic,
