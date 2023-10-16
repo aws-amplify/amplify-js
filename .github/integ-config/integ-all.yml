@@ -188,13 +188,13 @@ tests:
   #   sample_name: v2/public-auth-default-v2
   #   spec: public-auth-default
   #   browser: *minimal_browser_list
-  # - test_name: integ_datastore_auth_v2-public-auth-iam
-  #   desc: 'DataStore Auth CLI v2'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: v2/public-auth-iam-v2
-  #   spec: public-auth-iam
-  #   browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-public-auth-iam
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/public-auth-iam-v2
+    spec: public-auth-iam
+    browser: *minimal_browser_list
   # - test_name: integ_datastore_auth_v2-owner-custom-claim-default
   #   desc: 'DataStore Auth CLI v2'
   #   framework: react
