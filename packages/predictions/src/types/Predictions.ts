@@ -175,15 +175,15 @@ export interface Table {
 		columns: number;
 	};
 	table: TableCell[][];
-	polygon: Polygon;
-	boundingBox: BoundingBox;
+	polygon?: Polygon;
+	boundingBox?: BoundingBox;
 }
 
 export interface KeyValue {
 	key: string;
 	value: Content;
-	polygon: Polygon;
-	boundingBox: BoundingBox;
+	polygon?: Polygon;
+	boundingBox?: BoundingBox;
 }
 
 export interface IdentifyTextOutput {
