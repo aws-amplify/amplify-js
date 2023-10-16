@@ -1,4 +1,17 @@
 import { CookieStorage } from '../../src/storage/CookieStorage';
+/**
+ * This mock is a workaround before we upgrade the ts-jest config.
+ * The current ts-jest config uses only the default tsconfig instead of the tsconfig.json in core package.
+ * The default tsconfig used by ts-jest does not set the `esModuleInterop` to true. This cause
+ * `import JsCookie from 'js-cookie'` to fail.
+ */
+jest.mock('js-cookie', () => ({
+	default: {
+		get: jest.requireActual('js-cookie').get,
+		set: jest.requireActual('js-cookie').set,
+		remove: jest.requireActual('js-cookie').remove,
+	},
+}));
 
 const cookieStorageDomain = 'https://testdomain.com';
 
