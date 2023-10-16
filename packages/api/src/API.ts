@@ -17,6 +17,7 @@ import {
 	buildGraphQLVariables,
 	graphQLOperationsInfo,
 	ModelOperation,
+	flattenItems,
 } from './APIClient';
 import type { ModelTypes } from '@aws-amplify/amplify-api-next-types-alpha';
 
@@ -26,6 +27,7 @@ const logger = new Logger('API');
  * Use RestApi or GraphQLAPI to reduce your application bundle size
  * Export Cloud Logic APIs
  */
+
 export class APIClass extends InternalAPIClass {
 	public getModuleName() {
 		return 'API';
@@ -107,7 +109,7 @@ export class APIClass extends InternalAPIClass {
 								const [key] = Object.keys(res.data);
 
 								if (res.data[key].items) {
-									const flattenedResult = res.data[key].items;
+									const flattenedResult = flattenItems(res.data)[key];
 
 									// don't init if custom selection set
 									if (args?.selectionSet) {

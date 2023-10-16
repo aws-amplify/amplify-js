@@ -8,6 +8,32 @@ const connectionType = {
 	BELONGS_TO: 'BELONGS_TO',
 };
 
+/**
+ *
+ * @param GraphQL response object
+ * @returns response object with `items` properties flattened
+ */
+export const flattenItems = (obj: Record<string, any>): Record<string, any> => {
+	const res: Record<string, any> = {};
+
+	Object.entries(obj).forEach(([prop, value]) => {
+		if (typeof value === 'object' && value !== null) {
+			if (value.items !== undefined) {
+				res[prop] = value.items.map((item: Record<string, any>) =>
+					flattenItems(item)
+				);
+				return;
+			}
+			res[prop] = flattenItems(value);
+			return;
+		}
+
+		res[prop] = value;
+	});
+
+	return res;
+};
+
 // TODO: this should accept single result to support CRUD methods; create helper for array/list
 export function initializeModel(
 	client: any,

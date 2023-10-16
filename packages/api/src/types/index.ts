@@ -14,3 +14,4 @@ export {
 	GraphQLQuery,
 	GraphQLSubscription,
 } from '@aws-amplify/api-graphql';
+export { SelectionSet } from '@aws-amplify/amplify-api-next-types-alpha';
