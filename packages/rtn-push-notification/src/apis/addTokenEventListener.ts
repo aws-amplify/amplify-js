@@ -3,8 +3,7 @@
 
 import { EmitterSubscription } from 'react-native';
 import { nativeEventEmitter } from '../nativeModule';
-import { NativeMessage, PushNotificationMessage, TokenPayload } from '../types';
-import { normalizeNativeMessage } from '../utils';
+import { TokenPayload } from '../types';
 
 export const addTokenEventListener = (
 	event: string,

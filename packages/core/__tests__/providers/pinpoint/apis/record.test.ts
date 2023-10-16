@@ -116,19 +116,8 @@ describe('Pinpoint Provider API: record', () => {
 			throw new Error();
 		});
 
-		try {
-			await record({
-				appId,
-				category,
-				credentials,
-				event,
-				identityId,
-				region,
-			});
-		} catch (e) {
-			expect(e).toBeDefined();
-		}
-
-		expect.assertions(1);
+		await expect(
+			record({ appId, category, credentials, event, identityId, region })
+		).rejects.toThrow();
 	});
 });

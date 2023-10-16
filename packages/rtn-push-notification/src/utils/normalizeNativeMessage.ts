@@ -27,12 +27,12 @@ export const normalizeNativeMessage = (
 	}
 	const { body, imageUrl, title, action, options, data } = normalized;
 	return {
-		...(body && { body }),
-		...(imageUrl && { imageUrl }),
-		...(title && { title }),
+		body,
+		data,
+		imageUrl,
+		title,
 		...action,
 		...options,
-		...(!isEmpty(data) && { data }),
 	};
 };
 

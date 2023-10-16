@@ -37,19 +37,6 @@ const logger = new ConsoleLogger('Notifications.PushNotification');
 
 const BACKGROUND_TASK_TIMEOUT = 25; // seconds
 
-/**
- * Initialize and set up the push notification category. The category must be first initialized before all other
- * functionalities become available.
- *
- * @remarks
- * It is recommended that this be called as early in your app as possible at the root of your application to allow
- * background processing of notifications.
- * @example
- * ```ts
- * Amplify.configure(config);
- * initializePushNotifications();
- * ```
- */
 export const initializePushNotifications = (): Promise<void> => {
 	if (isInitialized()) {
 		logger.info('Push notifications have already been enabled');

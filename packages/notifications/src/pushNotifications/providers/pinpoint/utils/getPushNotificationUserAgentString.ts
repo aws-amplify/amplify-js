@@ -6,11 +6,10 @@ import {
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
 
-export function getPushNotificationUserAgentString(
+export const getPushNotificationUserAgentString = (
 	action: PushNotificationAction
-) {
-	return getAmplifyUserAgent({
+) =>
+	getAmplifyUserAgent({
 		category: Category.PushNotification,
 		action,
 	});
-}

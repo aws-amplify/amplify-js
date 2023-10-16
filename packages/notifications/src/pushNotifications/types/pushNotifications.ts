@@ -8,11 +8,11 @@ export type {
 	PushNotificationPermissions,
 } from '@aws-amplify/react-native';
 
-export type OnTokenReceivedHandler = (token: string) => any;
+export type OnTokenReceivedHandler = (token: string) => void;
 
 export type OnPushNotificationMessageHandler = (
 	message: PushNotificationMessage
-) => any;
+) => void;
 
 export type PushNotificationEvent =
 	| 'backgroundMessageReceived'
