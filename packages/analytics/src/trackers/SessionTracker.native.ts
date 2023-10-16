@@ -60,6 +60,8 @@ export class SessionTracker implements TrackerInterface {
 
 			this.sessionTrackingActive = true;
 		}
+
+		console.log('+ Session configure', this.options);
 	}
 
 	public cleanup() {
@@ -77,6 +79,9 @@ export class SessionTracker implements TrackerInterface {
 	private handleStateChange(nextAppState: string) {
 		const currentState = loadAppState().currentState;
 
+		console.log('+ App State Change', nextAppState);
+		console.log('+ App State Change current', currentState);
+
 		if (
 			currentState.match(/inactive|background/) &&
 			nextAppState === 'active'
@@ -88,8 +93,6 @@ export class SessionTracker implements TrackerInterface {
 		) {
 			this.stopSession();
 		}
-
-		this.stopSession();
 	}
 
 	private startSession() {
