@@ -114,10 +114,8 @@ export function categorizeTextractBlocks(
 				}
 				response.text.linesDetailed.push({
 					text: block.Text,
-					polygon: block.Geometry ? getPolygon(block.Geometry) : undefined,
-					boundingBox: block.Geometry
-						? getBoundingBox(block.Geometry)
-						: undefined,
+					polygon: getPolygon(block.Geometry),
+					boundingBox: getBoundingBox(block.Geometry),
 					page: block.Page,
 				});
 				break;
@@ -136,13 +134,11 @@ export function categorizeTextractBlocks(
 				const selectionStatus =
 					block.SelectionStatus === 'SELECTED' ? true : false;
 				if (!response.text.selections) response.text.selections = [];
-				if (block.Geometry) {
-					response.text.selections.push({
-						selected: selectionStatus,
-						polygon: getPolygon(block.Geometry)!,
-						boundingBox: getBoundingBox(block.Geometry)!,
-					});
-				}
+				response.text.selections.push({
+					selected: selectionStatus,
+					polygon: getPolygon(block.Geometry)!,
+					boundingBox: getBoundingBox(block.Geometry)!,
+				});
 				if (block.Id) {
 					blockMap[block.Id] = block;
 				}

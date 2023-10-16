@@ -196,8 +196,8 @@ export interface IdentifyTextOutput {
 		tables?: Table[];
 		selections?: {
 			selected: boolean;
-			polygon: Polygon;
-			boundingBox: BoundingBox;
+			polygon?: Polygon;
+			boundingBox?: BoundingBox;
 		}[];
 	};
 }
