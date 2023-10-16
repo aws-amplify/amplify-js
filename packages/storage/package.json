@@ -97,6 +97,11 @@
 			"import": "./lib-esm/providers/s3/server.js",
 			"require": "./lib/providers/s3/server.js"
 		},
+		"./s3/utils": {
+			"types": "./lib-esm/providers/s3/utilityApis.d.ts",
+			"import": "./lib-esm/providers/s3/utilityApis.js",
+			"require": "./lib/providers/s3/utilityApis.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"peerDependencies": {
