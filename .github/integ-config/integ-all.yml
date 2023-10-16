@@ -51,62 +51,62 @@ tests:
   #   sample_name: owner-and-group-same-model-operations
   #   spec: owner-and-group-same-model-operations
   #   browser: *minimal_browser_list
-  # - test_name: integ_datastore_auth-dynamic-user-pool-groups-default
-  #   desc: 'DataStore Auth'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: dynamic-user-pool-groups-default
-  #   spec: dynamic-user-pool-groups-default
-  #   browser: *minimal_browser_list
-  # - test_name: integ_datastore_auth-dynamic-user-pool-groups-owner-based-default
-  #   desc: 'DataStore Auth'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: dynamic-user-pool-groups-owner-based-default
-  #   spec: dynamic-user-pool-groups-owner-based-default
-  #   browser: *minimal_browser_list
-  # - test_name: integ_datastore_auth-private-auth-default
-  #   desc: 'DataStore Auth'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: private-auth-default
-  #   spec: private-auth-default
-  #   browser: *minimal_browser_list
-  # - test_name: integ_datastore_auth-private-auth-iam
-  #   desc: 'DataStore Auth'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: private-auth-iam
-  #   spec: private-auth-iam
-  #   browser: *minimal_browser_list
-  # - test_name: integ_datastore_auth-public-auth-default
-  #   desc: 'DataStore Auth'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: public-auth-default
-  #   spec: public-auth-default
-  #   browser: *minimal_browser_list
-  # - test_name: integ_datastore_auth-public-auth-iam
-  #   desc: 'DataStore Auth'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: public-auth-iam
-  #   spec: public-auth-iam
-  #   browser: *minimal_browser_list
-  # - test_name: integ_datastore_auth-owner-custom-claim-default
-  #   desc: 'DataStore Auth'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: owner-custom-claim-default
-  #   spec: owner-custom-claim-default
-  #   browser: *minimal_browser_list
-  # - test_name: integ_datastore_auth-owner-custom-field-default
-  #   desc: 'DataStore Auth'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: owner-custom-field-default
-  #   spec: owner-custom-field-default
-  #   browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-dynamic-user-pool-groups-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: dynamic-user-pool-groups-default
+    spec: dynamic-user-pool-groups-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-dynamic-user-pool-groups-owner-based-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: dynamic-user-pool-groups-owner-based-default
+    spec: dynamic-user-pool-groups-owner-based-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-private-auth-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: private-auth-default
+    spec: private-auth-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-private-auth-iam
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: private-auth-iam
+    spec: private-auth-iam
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-public-auth-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: public-auth-default
+    spec: public-auth-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-public-auth-iam
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: public-auth-iam
+    spec: public-auth-iam
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-owner-custom-claim-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: owner-custom-claim-default
+    spec: owner-custom-claim-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-owner-custom-field-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: owner-custom-field-default
+    spec: owner-custom-field-default
+    browser: *minimal_browser_list
   - test_name: integ_datastore_auth_v2-owner-based-default
     desc: 'DataStore Auth CLI v2'
     framework: react
@@ -202,13 +202,13 @@ tests:
   #   sample_name: v2/owner-custom-claim-default-v2
   #   spec: owner-custom-claim-default
   #   browser: *minimal_browser_list
-  # - test_name: integ_datastore_auth_v2-owner-custom-field-default
-  #   desc: 'DataStore Auth CLI v2'
-  #   framework: react
-  #   category: datastore
-  #   sample_name: v2/owner-custom-field-default-v2
-  #   spec: owner-custom-field-default
-  #   browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-owner-custom-field-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-custom-field-default-v2
+    spec: owner-custom-field-default
+    browser: *minimal_browser_list
   # - test_name: integ_react_datastore
   #   desc: 'React DataStore'
   #   framework: react
