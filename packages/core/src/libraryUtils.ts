@@ -71,9 +71,6 @@ export {
 } from './Platform/types';
 export { setCustomUserAgent } from './Platform/customUserAgent';
 
-// Service worker
-export { ServiceWorker } from './ServiceWorker';
-
 // Error handling
 export {
 	AmplifyError,
