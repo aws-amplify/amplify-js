@@ -28,6 +28,7 @@ export class SessionTracker implements TrackerInterface {
 		this.eventRecoder = eventRecorder;
 		this.initialEventSend = false;
 		this.sessionTrackingActive = false;
+		this.handleStateChange = this.handleStateChange.bind(this);
 
 		this.configure(eventRecorder, options);
 	}
