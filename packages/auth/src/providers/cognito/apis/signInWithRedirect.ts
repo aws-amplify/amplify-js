@@ -3,14 +3,15 @@
 
 import { Amplify, Hub, defaultStorage, OAuthConfig } from '@aws-amplify/core';
 import {
+	AuthAction,
 	AMPLIFY_SYMBOL,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
-	getAmplifyUserAgent,
 	isBrowser,
 	urlSafeEncode,
 	USER_AGENT_HEADER,
 	urlSafeDecode,
+	decodeJWT,
 } from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { CognitoUserPoolsTokenProvider } from '../tokenProvider';
@@ -20,12 +21,11 @@ import { AuthError } from '../../../errors/AuthError';
 import { AuthErrorTypes } from '../../../types/Auth';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { authErrorMessages } from '../../../Errors';
+import { getAuthUserAgentValue, openAuthSession } from '../../../utils';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInWithRedirectInput } from '../types';
 import { generateCodeVerifier, generateState } from '../utils/oauth';
 import { getCurrentUser } from './getCurrentUser';
-
-const SELF = '_self';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
@@ -37,11 +37,12 @@ const SELF = '_self';
 export async function signInWithRedirect(
 	input?: SignInWithRedirectInput
 ): Promise<void> {
-	await assertUserNotAuthenticated();
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 	store.setAuthConfig(authConfig);
+	await assertUserNotAuthenticated();
+
 	let provider = 'COGNITO'; // Default
 
 	if (typeof input?.provider === 'string') {
@@ -50,27 +51,31 @@ export async function signInWithRedirect(
 		provider = input.provider.custom;
 	}
 
-	oauthSignIn({
+	return oauthSignIn({
 		oauthConfig: authConfig.loginWith.oauth,
 		clientId: authConfig.userPoolClientId,
 		provider,
 		customState: input?.customState,
+		preferPrivateSession: input?.options?.preferPrivateSession,
 	});
 }
 
 const store = new DefaultOAuthStore(defaultStorage);
 
-function oauthSignIn({
+async function oauthSignIn({
 	oauthConfig,
 	provider,
 	clientId,
 	customState,
+	preferPrivateSession,
 }: {
 	oauthConfig: OAuthConfig;
 	provider: string;
 	clientId: string;
 	customState?: string;
+	preferPrivateSession?: boolean;
 }) {
+	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
 	const randomState = generateState();
 
 	/* encodeURIComponent is not URL safe, use urlSafeEncode instead. Cognito 
@@ -83,20 +88,19 @@ function oauthSignIn({
 		? `${randomState}-${urlSafeEncode(customState)}`
 		: randomState;
 	const { value, method, toCodeChallenge } = generateCodeVerifier(128);
-	const scopesString = oauthConfig.scopes.join(' ');
 
 	store.storeOAuthInFlight(true);
 	store.storeOAuthState(state);
 	store.storePKCE(value);
 
 	const queryString = Object.entries({
-		redirect_uri: oauthConfig.redirectSignIn[0], // TODO(v6): add logic to identity the correct url
-		response_type: oauthConfig.responseType,
+		redirect_uri: redirectSignIn[0], // TODO(v6): add logic to identity the correct url
+		response_type: responseType,
 		client_id: clientId,
 		identity_provider: provider,
-		scope: scopesString,
+		scope: scopes.join(' '),
 		state,
-		...(oauthConfig.responseType === 'code' && {
+		...(responseType === 'code' && {
 			code_challenge: toCodeChallenge(),
 			code_challenge_method: method,
 		}),
@@ -105,8 +109,26 @@ function oauthSignIn({
 		.join('&');
 
 	// TODO(v6): use URL object instead
-	const URL = `https://${oauthConfig.domain}/oauth2/authorize?${queryString}`;
-	window.open(URL, SELF);
+	const oAuthUrl = `https://${domain}/oauth2/authorize?${queryString}`;
+	const { type, error, url } =
+		(await openAuthSession(oAuthUrl, redirectSignIn, preferPrivateSession)) ??
+		{};
+	if (type === 'success' && url) {
+		// ensure the code exchange completion resolves the signInWithRedirect
+		// returned promise in react-native
+		await handleAuthResponse({
+			currentUrl: url,
+			clientId,
+			domain,
+			redirectUri: redirectSignIn[0],
+			responseType,
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignInWithRedirect),
+			preferPrivateSession,
+		});
+	}
+	if (type === 'error') {
+		handleFailure(String(error));
+	}
 }
 
 async function handleCodeFlow({
@@ -115,12 +137,14 @@ async function handleCodeFlow({
 	clientId,
 	redirectUri,
 	domain,
+	preferPrivateSession,
 }: {
 	currentUrl: string;
 	userAgentValue: string;
 	clientId: string;
 	redirectUri: string;
 	domain: string;
+	preferPrivateSession?: boolean;
 }) {
 	/* Convert URL into an object with parameters as keys
 { redirect_uri: 'http://localhost:3000/', response_type: 'code', ...} */
@@ -136,10 +160,7 @@ async function handleCodeFlow({
 	}
 	const code = url.searchParams.get('code');
 
-	const currentUrlPathname = url.pathname || '/';
-	const redirectUriPathname = new URL(redirectUri).pathname || '/';
-
-	if (!code || currentUrlPathname !== redirectUriPathname) {
+	if (!code) {
 		return;
 	}
 
@@ -152,14 +173,14 @@ async function handleCodeFlow({
 	// 	`Retrieving tokens from ${oAuthTokenEndpoint}`
 	// );
 
-	const code_verifier = await store.loadPKCE();
+	const codeVerifier = await store.loadPKCE();
 
 	const oAuthTokenBody = {
 		grant_type: 'authorization_code',
 		code,
 		client_id: clientId,
 		redirect_uri: redirectUri,
-		...(code_verifier ? { code_verifier } : {}),
+		...(codeVerifier ? { code_verifier: codeVerifier } : {}),
 	};
 
 	const body = Object.entries(oAuthTokenBody)
@@ -186,23 +207,16 @@ async function handleCodeFlow({
 
 	if (error) {
 		invokeAndClearPromise();
-
-		Hub.dispatch(
-			'auth',
-			{ event: 'signInWithRedirect_failure' },
-			'Auth',
-			AMPLIFY_SYMBOL
-		);
-		throw new AuthError({
-			message: error,
-			name: AuthErrorCodes.OAuthSignInError,
-			recoverySuggestion: authErrorMessages.oauthSignInError.log,
-		});
+		handleFailure(error);
 	}
 
 	await store.clearOAuthInflightData();
 
+	const username =
+		(access_token && decodeJWT(access_token).payload.username) ?? 'username';
+
 	await cacheCognitoTokens({
+		username,
 		AccessToken: access_token,
 		IdToken: id_token,
 		RefreshToken: refresh_token,
@@ -210,54 +224,38 @@ async function handleCodeFlow({
 		ExpiresIn: expires_in,
 	});
 
-	await store.storeOAuthSignIn(true);
-
-	if (isCustomState(validatedState)) {
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'customOAuthState',
-				data: urlSafeDecode(getCustomState(validatedState)),
-			},
-			'Auth',
-			AMPLIFY_SYMBOL
-		);
-	}
-	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
-	Hub.dispatch(
-		'auth',
-		{ event: 'signedIn', data: await getCurrentUser() },
-		'Auth',
-		AMPLIFY_SYMBOL
-	);
-	clearHistory(redirectUri);
-	invokeAndClearPromise();
-	return;
+	return completeFlow({
+		redirectUri,
+		state: validatedState,
+		preferPrivateSession,
+	});
 }
 
 async function handleImplicitFlow({
 	currentUrl,
 	redirectUri,
+	preferPrivateSession,
 }: {
 	currentUrl: string;
 	redirectUri: string;
+	preferPrivateSession?: boolean;
 }) {
 	// hash is `null` if `#` doesn't exist on URL
 
 	const url = new URL(currentUrl);
 
-	const { id_token, access_token, state, token_type, expires_in } = (
-		url.hash || '#'
+	const { idToken, accessToken, state, tokenType, expiresIn } = (
+		url.hash ?? '#'
 	)
-		.substr(1) // Remove # from returned code
+		.substring(1) // Remove # from returned code
 		.split('&')
 		.map(pairings => pairings.split('='))
 		.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), {
-			id_token: undefined,
-			access_token: undefined,
+			idToken: undefined,
+			accessToken: undefined,
 			state: undefined,
-			token_type: undefined,
-			expires_in: undefined,
+			tokenType: undefined,
+			expiresIn: undefined,
 		});
 
 	await store.clearOAuthInflightData();
@@ -268,15 +266,30 @@ async function handleImplicitFlow({
 		return;
 	}
 
+	const username =
+		(accessToken && decodeJWT(accessToken).payload.username) ?? 'username';
+
 	await cacheCognitoTokens({
-		AccessToken: access_token,
-		IdToken: id_token,
-		RefreshToken: undefined,
-		TokenType: token_type,
-		ExpiresIn: expires_in,
+		username,
+		AccessToken: accessToken,
+		IdToken: idToken,
+		TokenType: tokenType,
+		ExpiresIn: expiresIn,
 	});
 
-	await store.storeOAuthSignIn(true);
+	return completeFlow({ redirectUri, state, preferPrivateSession });
+}
+
+async function completeFlow({
+	redirectUri,
+	state,
+	preferPrivateSession,
+}: {
+	preferPrivateSession?: boolean;
+	redirectUri: string;
+	state: string;
+}) {
+	await store.storeOAuthSignIn(true, preferPrivateSession);
 	if (isCustomState(state)) {
 		Hub.dispatch(
 			'auth',
@@ -306,6 +319,7 @@ async function handleAuthResponse({
 	redirectUri,
 	responseType,
 	domain,
+	preferPrivateSession,
 }: {
 	currentUrl: string;
 	userAgentValue: string;
@@ -313,24 +327,15 @@ async function handleAuthResponse({
 	redirectUri: string;
 	responseType: string;
 	domain: string;
+	preferPrivateSession?: boolean;
 }) {
 	try {
 		const urlParams = new URL(currentUrl);
 		const error = urlParams.searchParams.get('error');
-		const error_description = urlParams.searchParams.get('error_description');
+		const errorMessage = urlParams.searchParams.get('error_description');
 
 		if (error) {
-			Hub.dispatch(
-				'auth',
-				{ event: 'signInWithRedirect_failure' },
-				'Auth',
-				AMPLIFY_SYMBOL
-			);
-			throw new AuthError({
-				message: error_description ?? '',
-				name: AuthErrorCodes.OAuthSignInError,
-				recoverySuggestion: authErrorMessages.oauthSignInError.log,
-			});
+			handleFailure(errorMessage);
 		}
 
 		if (responseType === 'code') {
@@ -340,11 +345,13 @@ async function handleAuthResponse({
 				clientId,
 				redirectUri,
 				domain,
+				preferPrivateSession,
 			});
 		} else {
 			return await handleImplicitFlow({
 				currentUrl,
 				redirectUri,
+				preferPrivateSession,
 			});
 		}
 	} catch (e) {
@@ -378,6 +385,20 @@ function validateState(state?: string | null): asserts state {
 	}
 }
 
+function handleFailure(errorMessage: string | null) {
+	Hub.dispatch(
+		'auth',
+		{ event: 'signInWithRedirect_failure' },
+		'Auth',
+		AMPLIFY_SYMBOL
+	);
+	throw new AuthError({
+		message: errorMessage ?? '',
+		name: AuthErrorCodes.OAuthSignInError,
+		recoverySuggestion: authErrorMessages.oauthSignInError.log,
+	});
+}
+
 async function parseRedirectURL() {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	try {
@@ -400,15 +421,17 @@ async function parseRedirectURL() {
 	}
 
 	try {
-		const url = window.location.href;
+		const currentUrl = window.location.href;
+		const { loginWith, userPoolClientId } = authConfig;
+		const { domain, redirectSignIn, responseType } = loginWith.oauth;
 
 		handleAuthResponse({
-			currentUrl: url,
-			clientId: authConfig.userPoolClientId,
-			domain: authConfig.loginWith.oauth.domain,
-			redirectUri: authConfig.loginWith.oauth.redirectSignIn[0],
-			responseType: authConfig.loginWith.oauth.responseType,
-			userAgentValue: getAmplifyUserAgent(),
+			currentUrl,
+			clientId: userPoolClientId,
+			domain,
+			redirectUri: redirectSignIn[0],
+			responseType,
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignInWithRedirect),
 		});
 	} catch (err) {
 		// is ok if there is not OAuthConfig
@@ -434,19 +457,22 @@ const invokeAndClearPromise = () => {
 	resolveInflightPromise();
 	resolveInflightPromise = () => {};
 };
-CognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
-	() =>
-		new Promise(async (res, _rej) => {
-			if (!(await store.loadOAuthInFlight())) {
-				res();
-			} else {
-				resolveInflightPromise = res;
-			}
-			return;
-		})
-);
+
+isBrowser() &&
+	CognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
+		() =>
+			new Promise(async (res, _rej) => {
+				if (!(await store.loadOAuthInFlight())) {
+					res();
+				} else {
+					resolveInflightPromise = res;
+				}
+				return;
+			})
+	);
+
 function clearHistory(redirectUri: string) {
-	if (window && typeof window.history !== 'undefined') {
+	if (typeof window !== 'undefined' && typeof window.history !== 'undefined') {
 		window.history.replaceState({}, '', redirectUri);
 	}
 }
@@ -454,6 +480,7 @@ function clearHistory(redirectUri: string) {
 function isCustomState(state: string): Boolean {
 	return /-/.test(state);
 }
+
 function getCustomState(state: string): string {
 	return state.split('-').splice(1).join('-');
 }

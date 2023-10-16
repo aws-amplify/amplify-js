@@ -6,7 +6,9 @@ export {
 	ValidationData,
 	AuthFlowType,
 	UserAttributeKey,
+	VerifiableUserAttributeKey,
 	MFAPreference,
+	AWSAuthDevice,
 } from './models';
 
 export {
@@ -44,6 +46,8 @@ export {
 	VerifyTOTPSetupInput,
 	UpdateUserAttributeInput,
 	SendUserAttributeVerificationCodeInput,
+	DeleteUserAttributesInput,
+	ForgetDeviceInput,
 } from './inputs';
 
 export {
@@ -60,9 +64,9 @@ export {
 	SignInWithSRPOutput,
 	SignInWithUserPasswordOutput,
 	SignInWithCustomSRPAuthOutput,
-	SignOutOutput,
 	SignUpOutput,
 	UpdateUserAttributesOutput,
 	UpdateUserAttributeOutput,
 	SendUserAttributeVerificationCodeOutput,
+	FetchDevicesOutput,
 } from './outputs';

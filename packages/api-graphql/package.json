@@ -52,11 +52,12 @@
     "@aws-amplify/api-rest": "4.0.0",
     "@aws-amplify/auth": "6.0.0",
     "@aws-amplify/core": "6.0.0",
-	"@aws-sdk/types": "3.387.0",
+    "@aws-sdk/types": "3.387.0",
     "graphql": "15.8.0",
     "tslib": "^1.8.0",
+    "url": "0.11.0",
     "uuid": "^3.2.1",
-	"rxjs": "^7.8.1"
+    "rxjs": "^7.8.1"
   },
   "size-limit": [
     {
@@ -82,6 +83,7 @@
 					],
 					"allowJs": true,
 					"noEmitOnError": false,
+					"strictNullChecks": true,
 					"types": ["@types/jest"]
 				}
 			}
@@ -91,6 +93,7 @@
 		},
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 		"testPathIgnorePatterns": [
+			"<rootDir>/__tests__/helpers.ts",
 			"<rootDir>/__tests__/fixtures/",
 			"<rootDir>/__tests__/utils/"
 		],

@@ -78,7 +78,10 @@ describe('updateMFAPreference Happy Path Cases:', () => {
 			const { totp, sms } = mfaChoise;
 			await updateMFAPreference(mfaChoise);
 			expect(setUserMFAPreferenceClientSpy).toHaveBeenCalledWith(
-				{ region: 'us-west-2' },
+				{ 
+					region: 'us-west-2',
+					userAgentValue: expect.any(String)
+				},
 				{
 					AccessToken: mockedAccessToken,
 					SMSMfaSettings: getMFASettings(sms),

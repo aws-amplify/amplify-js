@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { v4 as uuidv4 } from 'uuid';
-import { ClientDevice } from '../../../ClientDevice';
+import { getClientInfo } from '../../../utils/getClientInfo';
 import {
 	updateEndpoint as clientUpdateEndpoint,
 	UpdateEndpointInput,
-} from '../../../AwsClients/Pinpoint';
+} from '../../../awsClients/pinpoint';
 import { PinpointUpdateEndpointInput } from '../types';
 import { cacheEndpointId, getEndpointId } from '../utils';
 
@@ -39,7 +39,7 @@ export const updateEndpoint = async ({
 		name,
 		plan,
 	} = userProfile ?? {};
-	const clientInfo = ClientDevice.clientInfo();
+	const clientInfo = getClientInfo();
 	const mergedDemographic = {
 		appVersion: clientInfo.appVersion,
 		make: clientInfo.make,

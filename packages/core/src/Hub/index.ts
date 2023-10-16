@@ -72,6 +72,7 @@ export class HubClass {
 	 * @param ampSymbol - Symbol used to determine if the event is dispatched internally on a protected channel
 	 *
 	 */
+
 	dispatch<Channel extends AmplifyChannel>(
 		channel: Channel,
 		payload: HubPayload<AmplifyEventData[Channel]>,
@@ -202,3 +203,11 @@ export class HubClass {
 pseudo Singleton for the main messaging bus, however you can still create
 your own instance of HubClass() for a separate "private bus" of events.*/
 export const Hub = new HubClass('__default__');
+
+/**
+ * @internal
+ *
+ * Internal hub used for core Amplify functionality. Not intended for use outside of Amplify.
+ *
+ */
+export const HubInternal = new HubClass('internal-hub');

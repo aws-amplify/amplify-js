@@ -41,7 +41,7 @@ export enum Category {
 
 export enum AnalyticsAction {
 	Record = '1',
-	UpdateEndpoint = '2',
+	IdentifyUser = '2',
 }
 export enum ApiAction {
 	GraphQl = '1',
@@ -53,40 +53,30 @@ export enum ApiAction {
 	Head = '7',
 }
 export enum AuthAction {
-	// SignUp = '1',
-	// ConfirmSignUp = '2',
-	// ResendSignUp = '3',
-	// SignIn = '4',
-	// GetMFAOptions = '5',
-	// GetPreferredMFA = '6',
-	// SetPreferredMFA = '7',
-	// DisableSMS = '8',
-	// EnableSMS = '9',
-	// SetupTOTP = '10',
-	// VerifyTotpToken = '11',
-	// ConfirmSignIn = '12',
-	// CompleteNewPassword = '13',
-	// SendCustomChallengeAnswer = '14',
-	// DeleteUserAttributes = '15',
-	// DeleteUser = '16',
-	// UpdateUserAttributes = '17',
-	// UserAttributes = '18',
-	// CurrentUserPoolUser = '19',
-	// CurrentAuthenticatedUser = '20',
-	// CurrentSession = '21',
-	// VerifyUserAttribute = '22',
-	// VerifyUserAttributeSubmit = '23',
-	// VerifyCurrentUserAttribute = '24',
-	// VerifyCurrentUserAttributeSubmit = '25',
-	// SignOut = '26',
-	// ChangePassword = '27',
-	// ForgotPassword = '28',
-	// ForgotPasswordSubmit = '29',
+	SignUp = '1',
+	ConfirmSignUp = '2',
+	ResendSignUpCode = '3',
+	SignIn = '4',
+	FetchMFAPreference = '6',
+	UpdateMFAPreference = '7',
+	SetUpTOTP = '10',
+	VerifyTOTPSetup = '11',
+	ConfirmSignIn = '12',
+	DeleteUserAttributes = '15',
+	DeleteUser = '16',
+	UpdateUserAttributes = '17',
+	FetchUserAttributes = '18',
+	ConfirmUserAttribute = '22',
+	SignOut = '26',
+	UpdatePassword = '27',
+	ResetPassword = '28',
+	ConfirmResetPassword = '29',
 	FederatedSignIn = '30',
-	// CurrentUserInfo = '31',
-	// RememberDevice = '32',
-	// ForgetDevice = '33',
-	// FetchDevices = '34',
+	RememberDevice = '32',
+	ForgetDevice = '33',
+	FetchDevices = '34',
+	SendUserAttributeVerificationCode = '35',
+	SignInWithRedirect = '36',
 }
 export enum DataStoreAction {
 	Subscribe = '1',
@@ -96,7 +86,9 @@ export enum GeoAction {
 	None = '0',
 }
 export enum InAppMessagingAction {
-	None = '0',
+	SyncMessages = '1',
+	IdentifyUser = '2',
+	DispatchEvent = '3',
 }
 export enum InteractionsAction {
 	None = '0',
@@ -113,12 +105,13 @@ export enum PushNotificationAction {
 	None = '0',
 }
 export enum StorageAction {
-	Put = '1',
-	Get = '2',
+	UploadData = '1',
+	DownloadData = '2',
 	List = '3',
 	Copy = '4',
 	Remove = '5',
 	GetProperties = '6',
+	GetUrl = '7',
 }
 
 type ActionMap = {
@@ -158,3 +151,46 @@ export type CustomUserAgentDetails =
 	| UserAgentDetailsWithCategory<Category.PubSub>
 	| UserAgentDetailsWithCategory<Category.PushNotification>
 	| UserAgentDetailsWithCategory<Category.Storage>;
+
+/**
+ * `refCount` tracks how many consumers have set state for a particular API to avoid it being cleared before all
+ * consumers are done using it.
+ *
+ * Category -> Action -> Custom State
+ */
+export type CategoryUserAgentStateMap = Record<
+	string,
+	{ refCount: number; additionalDetails: AdditionalDetails }
+>;
+export type CustomUserAgentStateMap = Record<string, CategoryUserAgentStateMap>;
+
+export type AdditionalDetails = [string, string?][];
+
+type StorageUserAgentInput = {
+	category: Category.Storage;
+	apis: StorageAction[];
+};
+
+type AuthUserAgentInput = {
+	category: Category.Auth;
+	apis: AuthAction[];
+};
+
+type InAppMessagingUserAgentInput = {
+	category: Category.InAppMessaging;
+	apis: InAppMessagingAction[];
+};
+
+type GeoUserAgentInput = {
+	category: Category.Geo;
+	apis: GeoAction[];
+};
+
+export type SetCustomUserAgentInput = (
+	| StorageUserAgentInput
+	| AuthUserAgentInput
+	| InAppMessagingUserAgentInput
+	| GeoUserAgentInput
+) & {
+	additionalDetails: AdditionalDetails;
+};

@@ -23,6 +23,12 @@ export {
 	fetchUserAttributes,
 	signOut,
 	sendUserAttributeVerificationCode,
+	deleteUserAttributes,
+	deleteUser,
+	rememberDevice,
+	forgetDevice,
+	fetchDevices,
+	autoSignIn,
 } from './providers/cognito';
 
 export {
@@ -42,6 +48,8 @@ export {
 	UpdateUserAttributeInput,
 	VerifyTOTPSetupInput,
 	SendUserAttributeVerificationCodeInput,
+	DeleteUserAttributesInput,
+	ForgetDeviceInput,
 } from './providers/cognito';
 
 export {
@@ -54,11 +62,11 @@ export {
 	ResetPasswordOutput,
 	SetUpTOTPOutput,
 	SignInOutput,
-	SignOutOutput,
 	SignUpOutput,
 	UpdateUserAttributesOutput,
 	SendUserAttributeVerificationCodeOutput,
 	UpdateUserAttributeOutput,
+	FetchDevicesOutput,
 } from './providers/cognito';
 
 export { AuthError } from './errors/AuthError';

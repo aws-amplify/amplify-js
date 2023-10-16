@@ -53,8 +53,11 @@
 			"packages/api",
 			"packages/datastore",
 			"packages/notifications",
+			"packages/rtn-push-notification",
 			"packages/aws-amplify",
 			"packages/rtn-web-browser",
+			"packages/react-native",
+			"packages/react-native/example",
 			"scripts/tsc-compliance-test"
 		],
 		"nohoist": [

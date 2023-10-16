@@ -93,16 +93,17 @@
 	],
 	"dependencies": {
 		"tslib": "^2.5.0",
-		"uuid": "^9.0.0"
+		"uuid": "^9.0.0",
+		"@aws-sdk/client-kinesis": "3.398.0",
+		"@aws-sdk/client-firehose": "3.398.0",
+		"@aws-sdk/client-personalize-events": "3.398.0",
+		"@smithy/util-utf8": "2.0.0"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
-		"@aws-sdk/client-kinesis": "3.398.0",
-		"@aws-sdk/client-firehose": "3.398.0",
-		"@aws-sdk/client-personalize-events": "3.398.0",
 		"@aws-sdk/types": "3.398.0",
 		"@types/uuid": "^9.0.0",
 		"typescript": "5.0.2"

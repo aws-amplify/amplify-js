@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { getDataChunker } from './getDataChunker';
 import { UploadDataInput } from '../../../types';
@@ -24,6 +25,7 @@ import {
 	completeMultipartUpload,
 	headObject,
 } from '../../../utils/client';
+import { getStorageUserAgentValue } from '../../../utils/userAgent';
 
 /**
  * Create closure hiding the multipart upload implementation details and expose the upload job and control functions(
@@ -148,6 +150,7 @@ export const getMultipartUploadHandlers = (
 			{
 				...s3Config,
 				abortSignal: abortController.signal,
+				userAgentValue: getStorageUserAgentValue(StorageAction.UploadData),
 			},
 			{
 				Bucket: bucket,
@@ -212,9 +215,9 @@ export const getMultipartUploadHandlers = (
 	const onResume = () => {
 		startUploadWithResumability();
 	};
-	const onCancel = (abortErrorOverwrite?: Error) => {
+	const onCancel = (message?: string) => {
 		// 1. abort in-flight API requests
-		abortController?.abort(abortErrorOverwrite);
+		abortController?.abort(message);
 
 		const cancelUpload = async () => {
 			// 2. clear upload cache.
@@ -233,13 +236,9 @@ export const getMultipartUploadHandlers = (
 		});
 
 		rejectCallback!(
-			abortErrorOverwrite ??
-				// Internal error that should not be exposed to the users. They should use isCancelError() to check if
-				// the error is caused by cancel().
-				new CanceledError({
-					name: 'StorageCanceledError',
-					message: 'Upload is canceled by user',
-				})
+			// Internal error that should not be exposed to the users. They should use isCancelError() to check if
+			// the error is caused by cancel().
+			new CanceledError(message ? { message } : undefined)
 		);
 	};
 	return {

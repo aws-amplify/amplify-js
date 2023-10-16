@@ -2,9 +2,8 @@
 	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
 		"importHelpers": true,
-		"strict": false,
-		"noImplicitAny": false,
-		"skipLibCheck": true
+		"strict": true,
+		"noImplicitAny": true
 	},
 	"include": ["./src"]
 }

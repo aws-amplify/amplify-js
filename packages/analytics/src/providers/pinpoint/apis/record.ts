@@ -1,7 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Hub } from '@aws-amplify/core';
 import {
+	AMPLIFY_SYMBOL,
 	AnalyticsAction,
 	ConsoleLogger as Logger,
 } from '@aws-amplify/core/internals/utils';
@@ -10,7 +12,10 @@ import {
 	AnalyticsValidationErrorCode,
 	assertValidationError,
 } from '../../../errors';
-import { getAnalyticsUserAgentString } from '../../../utils/userAgent';
+import {
+	getAnalyticsUserAgentString,
+	isAnalyticsEnabled,
+} from '../../../utils';
 import { RecordInput } from '../types';
 import { resolveConfig, resolveCredentials } from '../utils';
 
@@ -47,10 +52,21 @@ const logger = new Logger('Analytics');
 export const record = (input: RecordInput): void => {
 	const { appId, region } = resolveConfig();
 
+	if (!isAnalyticsEnabled()) {
+		logger.debug('Analytics is disabled, event will not be recorded.');
+		return;
+	}
+
 	assertValidationError(!!input.name, AnalyticsValidationErrorCode.NoEventName);
 
 	resolveCredentials()
 		.then(({ credentials, identityId }) => {
+			Hub.dispatch(
+				'analytics',
+				{ event: 'record', data: input, message: 'Recording Analytics event' },
+				'Analytics',
+				AMPLIFY_SYMBOL
+			);
 			recordCore({
 				appId,
 				category: 'Analytics',
