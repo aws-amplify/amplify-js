@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { loadAppState } from '@aws-amplify/react-native';
+import { Logger as ConsoleLogger } from '@aws-amplify/core/internals/utils';
 import {
 	SessionTrackingOpts,
 	TrackerEventRecorder,
@@ -10,6 +11,8 @@ import {
 
 const SESSION_START_EVENT = '_session.start';
 const SESSION_STOP_EVENT = '_session.stop';
+
+const logger = new ConsoleLogger('SessionTracker');
 
 export class SessionTracker implements TrackerInterface {
 	private options: SessionTrackingOpts;
@@ -89,10 +92,24 @@ export class SessionTracker implements TrackerInterface {
 	}
 
 	private startSession() {
-		this.eventRecoder(SESSION_START_EVENT, this.options.attributes ?? {});
+		const attributes = this.options.attributes ?? {};
+
+		logger.debug('Recording automatically tracked page view event', {
+			SESSION_START_EVENT,
+			attributes,
+		});
+
+		this.eventRecoder(SESSION_START_EVENT, attributes);
 	}
 
 	private stopSession() {
-		this.eventRecoder(SESSION_STOP_EVENT, this.options.attributes ?? {});
+		const attributes = this.options.attributes ?? {};
+
+		logger.debug('Recording automatically tracked page view event', {
+			SESSION_STOP_EVENT,
+			attributes,
+		});
+
+		this.eventRecoder(SESSION_STOP_EVENT, attributes);
 	}
 }

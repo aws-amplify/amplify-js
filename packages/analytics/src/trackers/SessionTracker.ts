@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Logger as ConsoleLogger } from '@aws-amplify/core/internals/utils';
 import {
 	SessionTrackingOpts,
 	TrackerEventRecorder,
 	TrackerInterface,
 } from '../types/trackers';
-import { Logger as ConsoleLogger } from '@aws-amplify/core/internals/utils';
 
 const SESSION_START_EVENT = '_session.start';
 const SESSION_STOP_EVENT = '_session.stop';
@@ -27,6 +27,8 @@ export class SessionTracker implements TrackerInterface {
 		this.eventRecoder = eventRecorder;
 		this.sessionTrackingActive = false;
 		this.initialEventSend = false;
+		this.handleUnload = this.handleUnload.bind(this);
+		this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
 
 		this.configure(eventRecorder, options);
 	}
@@ -91,10 +93,24 @@ export class SessionTracker implements TrackerInterface {
 	}
 
 	private startSession() {
-		this.eventRecoder(SESSION_START_EVENT, this.options.attributes ?? {});
+		const attributes = this.options.attributes ?? {};
+
+		logger.debug('Recording automatically tracked page view event', {
+			SESSION_START_EVENT,
+			attributes,
+		});
+
+		this.eventRecoder(SESSION_START_EVENT, attributes);
 	}
 
 	private stopSession() {
-		this.eventRecoder(SESSION_STOP_EVENT, this.options.attributes ?? {});
+		const attributes = this.options.attributes ?? {};
+
+		logger.debug('Recording automatically tracked page view event', {
+			SESSION_STOP_EVENT,
+			attributes,
+		});
+
+		this.eventRecoder(SESSION_STOP_EVENT, attributes);
 	}
 }

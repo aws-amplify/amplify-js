@@ -25,6 +25,7 @@ export class EventTracker implements TrackerInterface {
 	) {
 		this.options = {};
 		this.eventRecoder = eventRecorder;
+		this.handleDocEvent = this.handleDocEvent.bind(this);
 
 		this.configure(eventRecorder, options);
 	}
@@ -74,9 +75,9 @@ export class EventTracker implements TrackerInterface {
 		 * />
 		 * ```
 		 */
-		const triggerSelector = `['${this.options.selectorPrefix}on]`;
-		const attrSelector = `[${this.options.selectorPrefix}attrs]`;
-		const eventNameSelector = `[${this.options.selectorPrefix}name]`;
+		const triggerSelector = `[${this.options.selectorPrefix}on]`;
+		const attrSelector = `${this.options.selectorPrefix}attrs`;
+		const eventNameSelector = `${this.options.selectorPrefix}name`;
 		const eventSource = event.target;
 
 		// Validate that the triggering event type is being tracked

@@ -25,6 +25,8 @@ export class PageViewTracker implements TrackerInterface {
 	private spaTrackingActive: boolean;
 	private pushStateProxy?: any;
 	private replaceStateProxy?: any;
+	private originalPushState: any;
+	private originalReplaceState: any;
 
 	constructor(
 		eventRecorder: TrackerEventRecorder,
@@ -35,6 +37,7 @@ export class PageViewTracker implements TrackerInterface {
 		this.spaTrackingActive = false;
 		this.pushStateProxy = undefined;
 		this.replaceStateProxy = undefined;
+		this.handleLocationChange = this.handleLocationChange.bind(this);
 
 		this.configure(eventRecorder, options);
 	}
@@ -67,6 +70,8 @@ export class PageViewTracker implements TrackerInterface {
 	public cleanup() {
 		// Clean up SPA page view listeners
 		if (this.spaTrackingActive) {
+			window.history.pushState = this.originalPushState;
+			window.history.replaceState = this.originalReplaceState;
 			this.pushStateProxy.revoke();
 			this.replaceStateProxy.revoke();
 			window.removeEventListener('popstate', this.handleLocationChange);
@@ -97,11 +102,12 @@ export class PageViewTracker implements TrackerInterface {
 				},
 			});
 
-			// TODO Make this work with multiple providers at once somehow
+			this.originalPushState = window.history.pushState;
+			this.originalReplaceState = window.history.replaceState;
 			window.history.pushState = this.pushStateProxy.proxy;
 			window.history.replaceState = this.replaceStateProxy.proxy;
 			window.addEventListener('popstate', this.handleLocationChange);
-			sessionStorage.clear();
+			sessionStorage.removeItem(PREV_URL_STORAGE_KEY);
 
 			this.spaTrackingActive = true;
 		}
