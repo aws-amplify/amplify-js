@@ -49,37 +49,54 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 							modelIntrospection
 						);
 
-						const res = (await client.graphql({
-							query,
-							variables,
-						})) as any;
+						try {
+							const { data, nextToken } = (await client.graphql({
+								query,
+								variables,
+							})) as any;
 
-						// flatten response
-						if (res.data !== undefined) {
-							const [key] = Object.keys(res.data);
+							// flatten response
+							if (data !== undefined) {
+								const [key] = Object.keys(data);
 
-							if (res.data[key].items) {
-								const flattenedResult = res.data[key].items;
+								if (data[key].items) {
+									const flattenedResult = data[key].items;
 
-								// don't init if custom selection set
-								if (args?.selectionSet) {
-									return flattenedResult;
-								} else {
-									const initialized = initializeModel(
-										client,
-										name,
-										flattenedResult,
-										modelIntrospection
-									);
+									// don't init if custom selection set
+									if (args?.selectionSet) {
+										return {
+											data: flattenedResult,
+											nextToken,
+										};
+									} else {
+										const initialized = initializeModel(
+											client,
+											name,
+											flattenedResult,
+											modelIntrospection
+										);
 
-									return initialized;
+										return {
+											data: initialized,
+											nextToken,
+										};
+									}
 								}
+
+								return {
+									data: data[key],
+									nextToken,
+								};
 							}
-
-							return res.data[key];
+						} catch (error) {
+							if (error.errors) {
+								// graphql errors pass through
+								return error as any;
+							} else {
+								// non-graphql errors re re-thrown
+								throw error;
+							}
 						}
-
-						return res as any;
 					};
 				} else {
 					models[name][operationPrefix] = async (arg?: any, options?: any) => {
@@ -95,27 +112,37 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 							modelIntrospection
 						);
 
-						const res = (await client.graphql({
-							query,
-							variables,
-						})) as any;
+						try {
+							const { data } = (await client.graphql({
+								query,
+								variables,
+							})) as any;
 
-						// flatten response
-						if (res.data !== undefined) {
-							const [key] = Object.keys(res.data);
+							// flatten response
+							if (data !== undefined) {
+								const [key] = Object.keys(data);
 
-							// TODO: refactor to avoid destructuring here
-							const [initialized] = initializeModel(
-								client,
-								name,
-								[res.data[key]],
-								modelIntrospection
-							);
+								// TODO: refactor to avoid destructuring here
+								const [initialized] = initializeModel(
+									client,
+									name,
+									[data[key]],
+									modelIntrospection
+								);
 
-							return initialized;
+								return { data: initialized };
+							} else {
+								return { data: null };
+							}
+						} catch (error) {
+							if (error.errors) {
+								// graphql errors pass through
+								return error as any;
+							} else {
+								// non-graphql errors re re-thrown
+								throw error;
+							}
 						}
-
-						return res;
 					};
 				}
 			}
