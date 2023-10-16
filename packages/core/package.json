@@ -58,14 +58,14 @@
 		"@aws-crypto/sha256-js": "5.0.0",
 		"@aws-sdk/types": "3.398.0",
 		"@smithy/util-hex-encoding": "2.0.0",
-		"js-cookie": "^2.2.1",
+		"js-cookie": "^3.0.5",
 		"tslib": "^2.5.0",
 		"uuid": "^9.0.0",
 		"rxjs": "^7.8.1"
 	},
 	"devDependencies": {
 		"@aws-amplify/react-native": "^1.0.0",
-		"@types/js-cookie": "^2.2.7",
+		"@types/js-cookie": "3.0.2",
 		"@types/uuid": "^9.0.0",
 		"find": "^0.2.7",
 		"genversion": "^2.2.0",
