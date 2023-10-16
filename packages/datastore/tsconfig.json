@@ -1,10 +1,27 @@
 {
-	"extends": "../tsconfig.base.json",
+	// TODO: extend from tsconfig.base.json when upgrade to TS5.x
 	"compilerOptions": {
+		"target": "es5",
 		"importHelpers": false,
 		"strict": false,
 		"noImplicitAny": false,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"lib": [
+			"dom",
+			"dom.iterable",
+			"es2017",
+			"esnext.asynciterable",
+			"es2018.asyncgenerator",
+			"es2019",
+			"es2020.promise"
+		],
+		"downlevelIteration": true,
+		"moduleResolution": "node",
+		"declaration": true,
+		"noEmitOnError": true,
+		"incremental": true,
+		"types": ["node"]
 	},
 	"include": ["./src"]
 }
