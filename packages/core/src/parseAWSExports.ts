@@ -89,7 +89,7 @@ export const parseAWSExports = (
 	// Interactions
 	if (Array.isArray(aws_bots_config)) {
 		amplifyConfig.Interactions = {
-			Lex: aws_bots_config,
+			LexV1: Object.fromEntries(aws_bots_config.map(bot => [bot.name, bot])),
 		};
 	}
 

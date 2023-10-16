@@ -10,14 +10,14 @@ import {
 } from '../../errors';
 
 export const sendMessage = async (
-	botname: string,
+	botName: string,
 	message: string | InteractionsMessage
 ): Promise<InteractionsResponse> => {
-	const botConfig = resolveBotConfig(botname);
+	const botConfig = resolveBotConfig(botName);
 	assertValidationError(
 		!!botConfig,
 		InteractionsValidationErrorCode.NoBotConfig,
-		`Bot ${botname} does not exist.`
+		`Bot ${botName} does not exist.`
 	);
 	return lexProvider.sendMessage(botConfig, message);
 };

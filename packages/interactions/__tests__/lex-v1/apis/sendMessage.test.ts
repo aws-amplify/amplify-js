@@ -3,7 +3,7 @@
 
 import { v4 as uuid } from 'uuid';
 import { lexProvider } from '../../../src/lex-v1/AWSLexProvider';
-import { sendMessage } from '../../../src/lex-v1';
+import { sendMessage } from '../../../src/lex-v1/apis';
 import { generateRandomLexV1Config } from '../../testUtils/randomConfigGeneration.test';
 import { resolveBotConfig } from '../../../src/lex-v1/utils';
 import { InteractionsError } from '../../../src/errors/InteractionsError';

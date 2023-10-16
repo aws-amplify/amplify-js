@@ -20,7 +20,8 @@ describe('Interactions LexV1 Util: resolveBotConfig', () => {
 		const v2BotConfigs = [...Array(5)].map(generateRandomLexV2Config);
 		getConfigSpy.mockReturnValue({
 			Interactions: {
-				Lex: [...v1BotConfigs, ...v2BotConfigs],
+				LexV1: Object.fromEntries(v1BotConfigs.map(bot => [bot.name, bot])),
+				LexV2: Object.fromEntries(v2BotConfigs.map(bot => [bot.name, bot])),
 			},
 		});
 
@@ -34,7 +35,8 @@ describe('Interactions LexV1 Util: resolveBotConfig', () => {
 		const v2BotConfigs = [...Array(5)].map(generateRandomLexV2Config);
 		getConfigSpy.mockReturnValue({
 			Interactions: {
-				Lex: [...v1BotConfigs, ...v2BotConfigs],
+				LexV1: Object.fromEntries(v1BotConfigs.map(bot => [bot.name, bot])),
+				LexV2: Object.fromEntries(v2BotConfigs.map(bot => [bot.name, bot])),
 			},
 		});
 
@@ -47,7 +49,8 @@ describe('Interactions LexV1 Util: resolveBotConfig', () => {
 		const v2BotConfigs = [...Array(5)].map(generateRandomLexV2Config);
 		getConfigSpy.mockReturnValue({
 			Interactions: {
-				Lex: [...v1BotConfigs, ...v2BotConfigs],
+				LexV1: Object.fromEntries(v1BotConfigs.map(bot => [bot.name, bot])),
+				LexV2: Object.fromEntries(v2BotConfigs.map(bot => [bot.name, bot])),
 			},
 		});
 
@@ -60,16 +63,16 @@ describe('Interactions LexV1 Util: resolveBotConfig', () => {
 		const v2BotConfigs = [...Array(5)].map(generateRandomLexV2Config);
 		getConfigSpy.mockReturnValue({
 			Interactions: {
-				Lex: [
-					...v1BotConfigs,
-					{ ...v1BotConfigs[3], alias: 'test' },
-					...v2BotConfigs,
-				],
+				LexV1: {
+					...Object.fromEntries(v1BotConfigs.map(bot => [bot.name, bot])),
+					[v1BotConfigs[3].name]: { ...v1BotConfigs[3], alias: 'test' },
+				},
+				LexV2: Object.fromEntries(v2BotConfigs.map(bot => [bot.name, bot])),
 			},
 		});
 
 		const result = resolveBotConfig(v1BotConfigs[3].name);
 		expect(result).not.toBeUndefined();
-		expect(result).toStrictEqual(v1BotConfigs[3]);
+		expect(result).toStrictEqual({ ...v1BotConfigs[3], alias: 'test' });
 	});
 });

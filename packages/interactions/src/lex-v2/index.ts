@@ -1,4 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { sendMessage, onComplete } from './apis';
+import { sendMessage, onComplete } from './apis';
+import { IInteractions } from '../types/Interactions';
+
+export const Interactions: IInteractions = {
+	send: sendMessage,
+	onComplete,
+};

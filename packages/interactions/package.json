@@ -89,15 +89,21 @@
 	},
 	"size-limit": [
 		{
-			"name": "Interactions (top-level class with Lex v2)",
+			"name": "Interactions (default to Lex v2)",
 			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, sendMessage, onComplete }",
+			"import": "{ Amplify, Interactions }",
 			"limit": "52.00 kB"
 		},
 		{
-			"name": "Interactions (top-level class with Lex v1)",
+			"name": "Interactions (Lex v2)",
+			"path": "./lib-esm/lex-v2/index.js",
+			"import": "{ Amplify, Interactions }",
+			"limit": "52.00 kB"
+		},
+		{
+			"name": "Interactions (Lex v1)",
 			"path": "./lib-esm/lex-v1/index.js",
-			"import": "{ Amplify, sendMessage, onComplete }",
+			"import": "{ Amplify, Interactions }",
 			"limit": "47.00 kB"
 		}
 	],

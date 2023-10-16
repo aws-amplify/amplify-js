@@ -2,19 +2,24 @@
 // SPDX-License-Identifier: Apache-2.0
 
 interface LexV1BotConfig {
-	name: string;
 	alias: string;
 	region: string;
 }
 
 interface LexV2BotConfig {
-	name: string;
 	botId: string;
 	aliasId: string;
 	localeId: string;
 	region: string;
 }
 
-export type InteractionsConfig = {
-	Lex: (LexV1BotConfig | LexV2BotConfig)[];
+type InteractionsLexV1Config = {
+	LexV1?: Record<string, LexV1BotConfig>;
 };
+
+type InteractionsLexV2Config = {
+	LexV2?: Record<string, LexV2BotConfig>;
+};
+
+export type InteractionsConfig = InteractionsLexV1Config &
+	InteractionsLexV2Config;

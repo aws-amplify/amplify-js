@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export * from './types';
-export * from './lex-v2';
+export { Interactions } from './lex-v2';
