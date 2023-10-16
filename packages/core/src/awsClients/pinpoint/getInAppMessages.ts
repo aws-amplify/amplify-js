@@ -15,6 +15,7 @@ import type {
 	GetInAppMessagesCommandInput as GetInAppMessagesInput,
 	GetInAppMessagesCommandOutput as GetInAppMessagesOutput,
 } from './types';
+import { AmplifyUrl } from '../../utils/amplifyUrl';
 
 export type { GetInAppMessagesInput, GetInAppMessagesOutput };
 
@@ -23,7 +24,7 @@ const getInAppMessagesSerializer = (
 	endpoint: Endpoint
 ): HttpRequest => {
 	const headers = getSharedHeaders();
-	const url = new URL(endpoint.url);
+	const url = new AmplifyUrl(endpoint.url);
 	url.pathname = `v1/apps/${extendedEncodeURIComponent(
 		ApplicationId
 	)}/endpoints/${extendedEncodeURIComponent(EndpointId)}/inappmessages`;

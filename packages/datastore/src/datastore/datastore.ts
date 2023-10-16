@@ -11,7 +11,7 @@ import {
 	enablePatches,
 	Patch,
 } from 'immer';
-import { v4 as uuid4 } from 'uuid';
+import { amplifyUuid } from '@aws-amplify/core/internals/utils';
 import { Observable, SubscriptionLike, filter } from 'rxjs';
 import { defaultAuthStrategy, multiAuthStrategy } from '../authModeStrategies';
 import {
@@ -835,13 +835,14 @@ const createModelClass = <T extends PersistentModel>(
 						const id = isInternalModel
 							? _id
 							: modelDefinition.syncable
-							? uuid4()
+							? amplifyUuid()
 							: ulid();
 
 						(<ModelWithIDIdentifier>(<unknown>draft)).id = id;
 					} else if (isIdOptionallyManaged(modelDefinition)) {
 						// only auto-populate if the id was not provided
-						(<ModelWithIDIdentifier>(<unknown>draft)).id = draft.id || uuid4();
+						(<ModelWithIDIdentifier>(<unknown>draft)).id =
+							draft.id || amplifyUuid();
 					}
 
 					if (!isInternallyInitialized) {

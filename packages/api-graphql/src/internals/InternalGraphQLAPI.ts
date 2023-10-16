@@ -14,6 +14,7 @@ import {
 	GraphQLAuthMode,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
+	AmplifyUrl,
 } from '@aws-amplify/core/internals/utils';
 import {
 	GraphQLAuthError,
@@ -303,7 +304,7 @@ export class InternalGraphQLAPIClass {
 		let response;
 		try {
 			const { body: responseBody } = await this._api.post({
-				url: new URL(endpoint),
+				url: new AmplifyUrl(endpoint),
 				options: {
 					headers,
 					body,

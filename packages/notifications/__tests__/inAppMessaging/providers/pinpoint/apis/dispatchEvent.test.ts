@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { defaultStorage } from '@aws-amplify/core';
-import { dispatchEvent } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
+import {
+	dispatchEvent,
+	initializeInAppMessaging,
+} from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 import { processInAppMessages } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 import {
 	inAppMessages,
@@ -22,6 +25,9 @@ const mockNotifyEventListeners = notifyEventListeners as jest.Mock;
 const mockProcessInAppMessages = processInAppMessages as jest.Mock;
 
 describe('dispatchEvent', () => {
+	beforeAll(() => {
+		initializeInAppMessaging();
+	});
 	beforeEach(() => {
 		mockDefaultStorage.setItem.mockClear();
 		mockNotifyEventListeners.mockClear();

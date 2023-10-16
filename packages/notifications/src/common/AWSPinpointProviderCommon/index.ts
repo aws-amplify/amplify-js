@@ -7,6 +7,7 @@ import {
 	getAmplifyUserAgent,
 	InAppMessagingAction,
 	PushNotificationAction,
+	amplifyUuid,
 } from '@aws-amplify/core/internals/utils';
 import { Cache, fetchAuthSession, ConsoleLogger } from '@aws-amplify/core';
 
@@ -17,7 +18,6 @@ import {
 	updateEndpoint,
 	UpdateEndpointInput,
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
-import { v4 as uuid } from 'uuid';
 
 import {
 	NotificationsCategory,
@@ -135,7 +135,7 @@ export default abstract class AWSPinpointProviderCommon
 						[endpointId]: {
 							Endpoint: {},
 							Events: {
-								[uuid()]: event,
+								[amplifyUuid()]: event,
 							},
 						},
 					},
@@ -186,7 +186,7 @@ export default abstract class AWSPinpointProviderCommon
 				ApplicationId: appId,
 				EndpointId: endpointId,
 				EndpointRequest: {
-					RequestId: uuid(),
+					RequestId: amplifyUuid(),
 					EffectiveDate: new Date().toISOString(),
 					ChannelType: endpointInfo.channelType,
 					Address: address ?? endpointInfo.address,
@@ -246,7 +246,7 @@ export default abstract class AWSPinpointProviderCommon
 			return cachedEndpointId;
 		}
 		// Otherwise, generate a new ID and store it in long-lived cache before returning it
-		const endpointId = uuid();
+		const endpointId = amplifyUuid();
 		// Set a longer TTL to avoid endpoint id being deleted after the default TTL (3 days)
 		// Also set its priority to the highest to reduce its chance of being deleted when cache is full
 		const ttl = 1000 * 60 * 60 * 24 * 365 * 100; // 100 years
