@@ -15,4 +15,13 @@ export {
 	IdentifyUserInput,
 	DispatchEventInput,
 	SetConflictHandlerInput,
+	OnMessageActionTakenInput,
+	OnMessageDismissedInput,
+	OnMessageDisplayedInput,
+	OnMessageReceivedInput,
+	NotifyMessageInteractionInput,
+	OnMessageReceivedOutput,
+	OnMessageActionTakenOutput,
+	OnMessageDismissedOutput,
+	OnMessageDisplayedOutput,
 } from './providers/pinpoint';

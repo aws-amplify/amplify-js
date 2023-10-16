@@ -18,4 +18,13 @@ export {
 	IdentifyUserInput,
 	DispatchEventInput,
 	SetConflictHandlerInput,
-} from './types/inputs';
+	OnMessageActionTakenInput,
+	OnMessageDismissedInput,
+	OnMessageDisplayedInput,
+	OnMessageReceivedInput,
+	NotifyMessageInteractionInput,
+	OnMessageReceivedOutput,
+	OnMessageActionTakenOutput,
+	OnMessageDismissedOutput,
+	OnMessageDisplayedOutput,
+} from './types';
