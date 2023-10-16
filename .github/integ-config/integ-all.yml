@@ -618,22 +618,6 @@ tests:
     spec: search-outside-map
     # Temp fix:
     browser: [chrome]
-  # - test_name: integ_javascript_geo_display_map
-  #   desc: 'Display Map'
-  #   framework: javascript
-  #   category: geo
-  #   sample_name: [display-map-static]
-  #   spec: display-map-static
-  #   browser: *minimal_browser_list
-  #   amplifyjs_dir: true
-  # - test_name: integ_javascript_geo_search_outside_map
-  #   desc: 'Search Outside Map'
-  #   framework: javascript
-  #   category: geo
-  #   sample_name: [search-outside-map-static]
-  #   spec: search-outside-map-static
-  #   browser: *minimal_browser_list
-  #   amplifyjs_dir: true
 
   # INTERACTIONS
   - test_name: integ_react_interactions_react_interactions
