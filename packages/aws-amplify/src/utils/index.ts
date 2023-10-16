@@ -9,5 +9,5 @@ export {
 	I18n,
 	Cache,
 	ConsoleLogger,
-  ServiceWorker
+	ServiceWorker
 } from '@aws-amplify/core';

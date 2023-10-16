@@ -16,7 +16,7 @@ jest.mock('../../../../../src/providers/s3/utils', () => {
 	};
 });
 jest.mock('@aws-amplify/core', () => ({
-	...jest.requireActual('@aws-amplify/core'),
+	ConsoleLogger: jest.fn(),
 	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
