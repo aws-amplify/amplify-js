@@ -11,7 +11,7 @@ import { DownloadDataOptions } from '../../../../src/providers/s3/types';
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('../../../../src/providers/s3/utils');
 jest.mock('@aws-amplify/core', () => ({
-	...jest.requireActual('@aws-amplify/core'),
+	ConsoleLogger: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {
