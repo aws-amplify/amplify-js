@@ -12,4 +12,27 @@ export {
 	onMessageDismissed,
 	onMessageActionTaken,
 	notifyMessageInteraction,
-} from './pinpoint/apis';
+	IdentifyUserInput,
+	DispatchEventInput,
+	SetConflictHandlerInput,
+	OnMessageActionTakenInput,
+	OnMessageDismissedInput,
+	OnMessageDisplayedInput,
+	OnMessageReceivedInput,
+	NotifyMessageInteractionInput,
+	OnMessageReceivedOutput,
+	OnMessageActionTakenOutput,
+	OnMessageDismissedOutput,
+	OnMessageDisplayedOutput,
+} from './pinpoint';
+
+export {
+	InAppMessage,
+	InAppMessageAction,
+	InAppMessageContent,
+	InAppMessageLayout,
+	InAppMessageTextAlign,
+	InAppMessageButton,
+	InAppMessageImage,
+	InAppMessageStyle,
+} from '../types';
