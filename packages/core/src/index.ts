@@ -65,3 +65,6 @@ export { Cache } from './Cache';
 
 // Internationalization utilities
 export { I18n } from './I18n';
+
+// Service worker
+export { ServiceWorker } from './ServiceWorker';
