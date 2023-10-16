@@ -8,5 +8,6 @@ export {
 	Hub, 
 	I18n,
 	Cache,
-	ConsoleLogger
+	ConsoleLogger,
+  ServiceWorker
 } from '@aws-amplify/core';

@@ -40,6 +40,7 @@ describe('aws-amplify Exports', () => {
 			  "I18n",
 			  "Cache",
 			  "ConsoleLogger",
+			  "ServiceWorker",
 			]
 		`);
 		});
