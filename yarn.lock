@@ -15,10 +15,10 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@aws-amplify/amplify-api-next-types-alpha@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-api-next-types-alpha/-/amplify-api-next-types-alpha-0.0.5.tgz#afeaba02f2607ac43de404bfcbb8702cb56f6ff9"
-  integrity sha512-FlOfQX9+r0Q8G5EEAV5tkBjcaTJhlnwfaeoe4K42BLKPzngntn+wWIFbIIbCFjW18DUmv62ItynzNSls+E38vg==
+"@aws-amplify/amplify-api-next-types-alpha@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-api-next-types-alpha/-/amplify-api-next-types-alpha-0.1.2.tgz#e25ee9b5c9bcbc2ca6d807d372c81175465e1886"
+  integrity sha512-g+t8F0F0J+SPutmc3WszOvZQdPu9Z5dm7b0Q6CyBx3+oUxc7O83jazdR04uydX4NLAwui8QSKg2StI82FKw8sQ==
 
 "@aws-crypto/crc32@2.0.0":
   version "2.0.0"
