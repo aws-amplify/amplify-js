@@ -6,6 +6,7 @@ import { UserProfile } from '../../../types';
 
 export type SupportedCategory =
 	| 'Analytics'
+	| 'Core'
 	| 'InAppMessaging'
 	| 'PushNotification';
 

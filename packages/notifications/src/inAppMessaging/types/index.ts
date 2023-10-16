@@ -11,4 +11,7 @@ export {
 	InAppMessageContent,
 	InAppMessageLayout,
 	InAppMessageTextAlign,
+	InAppMessageButton,
+	InAppMessageImage,
+	InAppMessageStyle,
 } from './message';
