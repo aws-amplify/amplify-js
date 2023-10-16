@@ -19,7 +19,7 @@ export class SessionTracker implements TrackerInterface {
 	private eventRecoder: TrackerEventRecorder;
 	private initialEventSend: boolean;
 	private sessionTrackingActive: boolean;
-	private currentAppState: string;
+	private currentAppState?: string;
 
 	constructor(
 		eventRecorder: TrackerEventRecorder,
@@ -83,12 +83,13 @@ export class SessionTracker implements TrackerInterface {
 		console.log('+ App State Change current', this.currentAppState);
 
 		if (
-			this.currentAppState.match(/inactive|background/) &&
+			(this.currentAppState === undefined ||
+				this.currentAppState.match(/inactive|background/)) &&
 			nextAppState === 'active'
 		) {
 			this.startSession();
 		} else if (
-			this.currentAppState.match(/active/) &&
+			this.currentAppState?.match(/active/) &&
 			nextAppState.match(/inactive|background/)
 		) {
 			this.stopSession();
