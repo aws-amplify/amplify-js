@@ -10,6 +10,10 @@ export function getUserContextData({
 	userPoolId: string;
 	userPoolClientId: string;
 }) {
+	if (typeof window === 'undefined') {
+		return undefined;
+	}
+
 	const amazonCognitoAdvancedSecurityData = (window as any)
 		.AmazonCognitoAdvancedSecurityData as any;
 	if (typeof amazonCognitoAdvancedSecurityData === 'undefined') {

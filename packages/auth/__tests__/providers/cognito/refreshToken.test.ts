@@ -8,6 +8,8 @@ import * as clients from '../../../src/providers/cognito/utils/clients/CognitoId
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
 
 describe('refresh token tests', () => {
+	const mockedUsername = 'mockedUsername';
+	const mockedRefreshToken = 'mockedRefreshToken';
 	test('Default Cognito Token Refresh Handler', async () => {
 		const succeedResponse = {
 			status: 200,
@@ -38,10 +40,11 @@ describe('refresh token tests', () => {
 			idToken: decodeJWT(
 				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0'
 			),
-			metadata: {
-				refreshToken: 'refreshtoken',
-			},
+
+			refreshToken: mockedRefreshToken,
+
 			clockDrift: 0,
+			username: mockedUsername,
 		};
 		const expectedRequest = {
 			url: new URL('https://cognito-idp.us-east-1.amazonaws.com/'),
@@ -56,7 +59,7 @@ describe('refresh token tests', () => {
 				ClientId: 'aaaaaaaaaaaa',
 				AuthFlow: 'REFRESH_TOKEN_AUTH',
 				AuthParameters: {
-					REFRESH_TOKEN: 'refreshtoken',
+					REFRESH_TOKEN: mockedRefreshToken,
 				},
 			}),
 		};
@@ -70,7 +73,8 @@ describe('refresh token tests', () => {
 					payload: {},
 				},
 				clockDrift: 0,
-				refreshToken: 'refreshtoken',
+				refreshToken: mockedRefreshToken,
+				username: mockedUsername,
 			},
 			authConfig: {
 				Cognito: {
@@ -78,11 +82,15 @@ describe('refresh token tests', () => {
 					userPoolClientId: 'aaaaaaaaaaaa',
 				},
 			},
+			username: mockedUsername,
 		});
 
 		expect(response.accessToken.toString()).toEqual(
 			expectedOutput.accessToken.toString()
 		);
+
+		expect(response.refreshToken).toEqual(expectedOutput.refreshToken);
+
 		expect(fetchTransferHandler).toBeCalledWith(
 			expectedRequest,
 			expect.anything()
@@ -92,7 +100,6 @@ describe('refresh token tests', () => {
 
 describe('Cognito ASF', () => {
 	let initiateAuthSpy;
-	let tokenProviderSpy;
 	afterAll(() => {
 		jest.restoreAllMocks();
 	});

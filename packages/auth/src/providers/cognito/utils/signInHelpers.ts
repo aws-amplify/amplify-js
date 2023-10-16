@@ -6,6 +6,7 @@ import {
 	AuthAction,
 	assertTokenProviderConfig,
 	base64Encoder,
+	AmplifyUrl,
 } from '@aws-amplify/core/internals/utils';
 import { AuthenticationHelper } from './srp/AuthenticationHelper';
 import { BigInteger } from './srp/BigInteger';
@@ -840,7 +841,7 @@ export function getTOTPSetupDetails(
 				accountName ?? username
 			}?secret=${secretCode}&issuer=${appName}`;
 
-			return new URL(totpUri);
+			return new AmplifyUrl(totpUri);
 		},
 	};
 }
