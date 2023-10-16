@@ -225,8 +225,8 @@ export interface BoundingBox {
 
 export interface IdentifyLabelsOutput {
 	labels?: {
-		name: string;
-		boundingBoxes: BoundingBox[];
+		name?: string;
+		boundingBoxes?: BoundingBox[];
 		metadata?: Object;
 	}[];
 	unsafe?: 'YES' | 'NO' | 'UNKNOWN';
@@ -264,21 +264,23 @@ export interface FaceAttributes {
 	emotions?: string[];
 }
 
-export interface IdentifyEntitiesOutput {
-	entities: {
-		boundingBox?: BoundingBox;
-		ageRange?: {
-			low?: Number;
-			high?: Number;
-		};
-		landmarks?: {
-			type?: string;
-			x?: number;
-			y?: number;
-		}[];
-		attributes?: FaceAttributes;
-		metadata?: object;
+export type IdentifyEntity = {
+	boundingBox?: BoundingBox;
+	ageRange?: {
+		low?: Number;
+		high?: Number;
+	};
+	landmarks?: {
+		type?: string;
+		x?: number;
+		y?: number;
 	}[];
+	attributes?: FaceAttributes;
+	metadata?: object;
+};
+
+export interface IdentifyEntitiesOutput {
+	entities: IdentifyEntity[];
 }
 
 export function isIdentifyFromCollection(

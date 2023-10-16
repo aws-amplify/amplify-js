@@ -38,6 +38,8 @@ import {
 	isIdentifyTextInput,
 	isIdentifyLabelsInput,
 	isIdentifyEntitiesInput,
+	IdentifyEntity,
+	FaceAttributes,
 } from '../types';
 import {
 	Image,
@@ -59,6 +61,8 @@ import {
 } from './IdentifyTextUtils';
 import { assertValidationError } from '../errors/utils/assertValidationError';
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
+import { getValidationError } from '../errors/utils/getValidationError';
+import { BoundingBox } from 'puppeteer';
 
 const logger = new Logger('AmazonAIIdentifyPredictionsProvider');
 
@@ -84,6 +88,8 @@ export class AmazonAIIdentifyPredictionsProvider {
 		} else if (isIdentifyEntitiesInput(input)) {
 			logger.debug('identifyEntities');
 			return this.identifyEntities(input);
+		} else {
+			throw getValidationError(PredictionsValidationErrorCode.InvalidInput);
 		}
 	}
 
@@ -191,33 +197,33 @@ export class AmazonAIIdentifyPredictionsProvider {
 			const textractParam: DetectDocumentTextCommandInput = {
 				Document: inputDocument,
 			};
+			const detectDocumentTextCommand = new DetectDocumentTextCommand(
+				textractParam
+			);
+			const { Blocks } = await this.textractClient.send(
+				detectDocumentTextCommand
+			);
+
 			const rekognitionParam: DetectTextCommandInput = {
 				Image: inputDocument,
 			};
-
 			const detectTextCommand = new DetectTextCommand(rekognitionParam);
 			const rekognitionData = await this.rekognitionClient.send(
 				detectTextCommand
 			);
 
-			const rekognitionResponse = categorizeRekognitionBlocks(
-				rekognitionData.TextDetections as TextDetectionList
-			);
-			if (rekognitionResponse.text.words.length < 50) {
-				// did not hit the word limit, return the data
-				return rekognitionResponse;
-			}
+			if (rekognitionData.TextDetections) {
+				const rekognitionResponse = categorizeRekognitionBlocks(
+					rekognitionData.TextDetections as TextDetectionList
+				);
+				if (rekognitionResponse.text.words.length < 50) {
+					// did not hit the word limit, return the data
+					return rekognitionResponse;
+				}
 
-			const detectDocumentTextCommand = new DetectDocumentTextCommand(
-				textractParam
-			);
-
-			const { Blocks } = await this.textractClient.send(
-				detectDocumentTextCommand
-			);
-
-			if (rekognitionData.TextDetections.length > Blocks.length) {
-				return rekognitionResponse;
+				if (rekognitionData.TextDetections.length > (Blocks?.length ?? 0)) {
+					return rekognitionResponse;
+				}
 			}
 
 			return categorizeTextractBlocks(Blocks as BlockList);
@@ -260,7 +266,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 
 		const inputImage = await this.configureSource(input.labels?.source);
 		const param = { Image: inputImage };
-		const servicePromises = [];
+		const servicePromises: Promise<IdentifyLabelsOutput>[] = [];
 
 		// get default argument
 		const entityType = input.labels?.type ?? type;
@@ -291,17 +297,20 @@ export class AmazonAIIdentifyPredictionsProvider {
 	): Promise<IdentifyLabelsOutput> {
 		const detectLabelsCommand = new DetectLabelsCommand(param);
 		const data = await this.rekognitionClient.send(detectLabelsCommand);
-		if (!data.Labels) return { labels: null }; // no image was detected
-		const detectLabelData = data.Labels.map(val => {
-			const boxes = val.Instances
-				? val.Instances.map(val => makeCamelCase(val.BoundingBox))
-				: undefined;
+		if (!data.Labels) return {}; // no image was detected
+		const detectLabelData = data.Labels.map(label => {
+			const filteredInstances =
+				label.Instances?.filter(instance => !!instance.BoundingBox) ?? [];
+
+			const boxes = filteredInstances.map(
+				instance => makeCamelCase(instance.BoundingBox) as BoundingBox
+			);
 			return {
-				name: val.Name,
+				name: label.Name,
 				boundingBoxes: boxes,
 				metadata: {
-					confidence: val.Confidence,
-					parents: makeCamelCaseArray(val.Parents),
+					confidence: label.Confidence,
+					parents: makeCamelCaseArray(label.Parents),
 				},
 			};
 		});
@@ -322,7 +331,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 		const data = await this.rekognitionClient.send(
 			detectModerationLabelsCommand
 		);
-		if (data.ModerationLabels.length !== 0) {
+		if (data.ModerationLabels?.length !== 0) {
 			return { unsafe: 'YES' };
 		} else {
 			return { unsafe: 'NO' };
@@ -344,16 +353,17 @@ export class AmazonAIIdentifyPredictionsProvider {
 			PredictionsValidationErrorCode.NoCredentials
 		);
 
+		const { identifyEntities = {} } =
+			Amplify.getConfig().Predictions?.identify ?? {};
 		const {
-			identifyEntities: {
-				region = '',
-				celebrityDetectionEnabled = false,
-				defaults: {
-					collectionId: collectionIdConfig = '',
-					maxEntities: maxFacesConfig = 50,
-				} = {},
-			} = {},
-		} = Amplify.getConfig().Predictions?.identify ?? {};
+			region = '',
+			celebrityDetectionEnabled = false,
+			defaults = {},
+		} = identifyEntities;
+		const {
+			collectionId: collectionIdConfig = '',
+			maxEntities: maxFacesConfig = 50,
+		} = defaults;
 		// default arguments
 
 		this.rekognitionClient = new RekognitionClient({
@@ -378,16 +388,18 @@ export class AmazonAIIdentifyPredictionsProvider {
 			const data = await this.rekognitionClient.send(
 				recognizeCelebritiesCommand
 			);
-			const faces = data.CelebrityFaces.map(celebrity => {
-				return {
-					boundingBox: makeCamelCase(celebrity.Face.BoundingBox),
-					landmarks: makeCamelCaseArray(celebrity.Face.Landmarks),
-					metadata: {
-						...makeCamelCase(celebrity, ['Id', 'Name', 'Urls']),
-						pose: makeCamelCase(celebrity.Face.Pose),
-					},
-				};
-			});
+			const faces =
+				data.CelebrityFaces?.map(
+					celebrity =>
+						<IdentifyEntity>{
+							boundingBox: makeCamelCase(celebrity.Face?.BoundingBox),
+							landmarks: makeCamelCaseArray(celebrity.Face?.Landmarks),
+							metadata: {
+								...makeCamelCase(celebrity, ['Id', 'Name', 'Urls']),
+								pose: makeCamelCase(celebrity.Face?.Pose),
+							},
+						}
+				) ?? [];
 			return { entities: faces };
 		} else if (
 			isIdentifyFromCollection(input.entities) &&
@@ -407,50 +419,57 @@ export class AmazonAIIdentifyPredictionsProvider {
 				updatedParam
 			);
 			const data = await this.rekognitionClient.send(searchFacesByImageCommand);
-			const faces = data.FaceMatches.map(val => {
-				return {
-					boundingBox: makeCamelCase(val.Face.BoundingBox),
-					metadata: {
-						externalImageId: this.decodeExternalImageId(
-							val.Face.ExternalImageId
-						),
-						similarity: val.Similarity,
-					},
-				};
-			});
+			const faces =
+				data.FaceMatches?.map(val => {
+					const externalImageId = val.Face?.ExternalImageId
+						? this.decodeExternalImageId(val.Face.ExternalImageId)
+						: undefined;
+					return <IdentifyEntity>{
+						boundingBox: makeCamelCase(val.Face?.BoundingBox),
+						metadata: {
+							externalImageId,
+							similarity: val.Similarity,
+						},
+					};
+				}) ?? [];
 			return { entities: faces };
 		} else {
 			const detectFacesCommand = new DetectFacesCommand(param);
 			const data = await this.rekognitionClient.send(detectFacesCommand);
-			const faces = data.FaceDetails.map(detail => {
-				// face attributes keys we want to extract from Rekognition's response
-				const attributeKeys = [
-					'Smile',
-					'Eyeglasses',
-					'Sunglasses',
-					'Gender',
-					'Beard',
-					'Mustache',
-					'EyesOpen',
-					'MouthOpen',
-				];
-				const faceAttributes = makeCamelCase(detail, attributeKeys);
-				if (detail.Emotions) {
-					faceAttributes['emotions'] = detail.Emotions.map(
-						emotion => emotion.Type
-					);
-				}
-				return {
-					boundingBox: makeCamelCase(detail.BoundingBox),
-					landmarks: makeCamelCaseArray(detail.Landmarks),
-					ageRange: makeCamelCase(detail.AgeRange),
-					attributes: faceAttributes,
-					metadata: {
-						confidence: detail.Confidence,
-						pose: makeCamelCase(detail.Pose),
-					},
-				};
-			});
+			const faces =
+				data.FaceDetails?.map(detail => {
+					// face attributes keys we want to extract from Rekognition's response
+					const attributeKeys = [
+						'Smile',
+						'Eyeglasses',
+						'Sunglasses',
+						'Gender',
+						'Beard',
+						'Mustache',
+						'EyesOpen',
+						'MouthOpen',
+					];
+					const faceAttributes = makeCamelCase(
+						detail,
+						attributeKeys
+					) as FaceAttributes;
+					if (detail.Emotions) {
+						faceAttributes.emotions =
+							detail.Emotions.filter(emotion => !!emotion.Type).map(
+								emotion => emotion.Type!
+							) ?? [];
+					}
+					return <IdentifyEntity>{
+						boundingBox: makeCamelCase(detail.BoundingBox),
+						landmarks: makeCamelCaseArray(detail.Landmarks),
+						ageRange: makeCamelCase(detail.AgeRange),
+						attributes: faceAttributes,
+						metadata: {
+							confidence: detail.Confidence,
+							pose: makeCamelCase(detail.Pose),
+						},
+					};
+				}) ?? [];
 			return { entities: faces };
 		}
 	}
