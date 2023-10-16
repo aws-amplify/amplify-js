@@ -1,8 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { loadAppState } from '@aws-amplify/react-native';
-import { Logger as ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import {
+	Logger as ConsoleLogger,
+	SessionListener,
+	SessionState,
+} from '@aws-amplify/core/internals/utils';
 import {
 	SessionTrackingOpts,
 	TrackerEventRecorder,
@@ -17,10 +20,8 @@ const logger = new ConsoleLogger('SessionTracker');
 export class SessionTracker implements TrackerInterface {
 	private options: SessionTrackingOpts;
 	private eventRecoder: TrackerEventRecorder;
-	private initialEventSend: boolean;
+	private initialEventSent: boolean;
 	private sessionTrackingActive: boolean;
-	private currentAppState?: string;
-	private eventListener?: any;
 
 	constructor(
 		eventRecorder: TrackerEventRecorder,
@@ -28,9 +29,8 @@ export class SessionTracker implements TrackerInterface {
 	) {
 		this.options = {};
 		this.eventRecoder = eventRecorder;
-		this.initialEventSend = false;
+		this.initialEventSent = false;
 		this.sessionTrackingActive = false;
-		this.currentAppState = loadAppState().currentAppState;
 		this.handleStateChange = this.handleStateChange.bind(this);
 
 		this.configure(eventRecorder, options);
@@ -50,19 +50,11 @@ export class SessionTracker implements TrackerInterface {
 			attributes: options?.attributes || {},
 		};
 
-		// Send the initial session start event
-		// NOTE: The initial event will not be re-sent on re-configuration (e.g. to add additional custom attributes)
-		if (!this.initialEventSend) {
-			this.startSession();
-			this.initialEventSend = true;
-		}
-
 		// Setup state listeners
 		if (!this.sessionTrackingActive) {
-			this.eventListener = loadAppState().addEventListener(
-				'change',
+			SessionListener.addStateChangeListener(
 				this.handleStateChange,
-				false
+				!this.initialEventSent
 			);
 
 			this.sessionTrackingActive = true;
@@ -71,36 +63,21 @@ export class SessionTracker implements TrackerInterface {
 
 	public cleanup() {
 		if (this.sessionTrackingActive) {
-			const appState = loadAppState();
-
-			if (typeof appState.removeEventListener === 'function') {
-				appState.removeEventListener('change', this.handleStateChange, false);
-			} else {
-				this.eventListener.remove();
-			}
+			SessionListener.removeStateChangeHandler(this.handleStateChange);
 		}
 
 		this.sessionTrackingActive = false;
 	}
 
-	private handleStateChange(nextAppState: string) {
-		if (
-			(this.currentAppState === undefined ||
-				this.currentAppState.match(/inactive|background/)) &&
-			nextAppState === 'active'
-		) {
-			this.startSession();
-		} else if (
-			this.currentAppState?.match(/active/) &&
-			nextAppState.match(/inactive|background/)
-		) {
-			this.stopSession();
+	private handleStateChange(state: SessionState) {
+		if (state === 'started') {
+			this.sessionStarted();
+		} else {
+			this.sessionStopped();
 		}
-
-		this.currentAppState = nextAppState;
 	}
 
-	private startSession() {
+	private sessionStarted() {
 		const attributes = this.options.attributes ?? {};
 
 		logger.debug('Recording automatically tracked page view event', {
@@ -109,9 +86,14 @@ export class SessionTracker implements TrackerInterface {
 		});
 
 		this.eventRecoder(SESSION_START_EVENT, attributes);
+
+		// NOTE: The initial event will not be re-sent on re-configuration (e.g. to add additional custom attributes)
+		if (!this.initialEventSent) {
+			this.initialEventSent = true;
+		}
 	}
 
-	private stopSession() {
+	private sessionStopped() {
 		const attributes = this.options.attributes ?? {};
 
 		logger.debug('Recording automatically tracked page view event', {

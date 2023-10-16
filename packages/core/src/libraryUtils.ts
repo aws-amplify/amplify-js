@@ -40,7 +40,7 @@ export {
 	JwtPayload,
 	AuthStandardAttributeKey,
 	AuthVerifiableAttributeKey,
-	AWSCredentials
+	AWSCredentials,
 } from './singleton/Auth/types';
 
 // Logging utilities
@@ -101,3 +101,7 @@ export { getCrypto } from './utils/globalHelpers';
 
 // Hub
 export { HubInternal } from './Hub';
+
+// Session listener
+export { SessionListener } from './utils/sessionListener';
+export { SessionState } from './utils/sessionListener/types';

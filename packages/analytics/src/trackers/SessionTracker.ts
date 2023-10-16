@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Logger as ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import {
+	Logger as ConsoleLogger,
+	SessionListener,
+	SessionState,
+} from '@aws-amplify/core/internals/utils';
 import {
 	SessionTrackingOpts,
 	TrackerEventRecorder,
@@ -17,7 +21,7 @@ export class SessionTracker implements TrackerInterface {
 	private options: SessionTrackingOpts;
 	private eventRecoder: TrackerEventRecorder;
 	private sessionTrackingActive: boolean;
-	private initialEventSend: boolean;
+	private initialEventSent: boolean;
 
 	constructor(
 		eventRecorder: TrackerEventRecorder,
@@ -26,9 +30,8 @@ export class SessionTracker implements TrackerInterface {
 		this.options = {};
 		this.eventRecoder = eventRecorder;
 		this.sessionTrackingActive = false;
-		this.initialEventSend = false;
-		this.handleUnload = this.handleUnload.bind(this);
-		this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
+		this.initialEventSent = false;
+		this.handleStateChange = this.handleStateChange.bind(this);
 
 		this.configure(eventRecorder, options);
 	}
@@ -47,21 +50,12 @@ export class SessionTracker implements TrackerInterface {
 			attributes: options?.attributes || {},
 		};
 
-		// Send the initial session start event
-		// NOTE: The initial event will not be re-sent on re-configuration (e.g. to add additional custom attributes)
-		if (!this.initialEventSend) {
-			this.startSession();
-			this.initialEventSend = true;
-		}
-
 		// Setup state listeners
 		if (!this.sessionTrackingActive) {
-			document.addEventListener(
-				'visibilitychange',
-				this.handleVisibilityChange,
-				false
+			SessionListener.addStateChangeListener(
+				this.handleStateChange,
+				!this.initialEventSent
 			);
-			window.addEventListener('beforeunload', this.handleUnload, false);
 
 			this.sessionTrackingActive = true;
 		}
@@ -69,30 +63,21 @@ export class SessionTracker implements TrackerInterface {
 
 	public cleanup() {
 		if (this.sessionTrackingActive) {
-			document.removeEventListener(
-				'visibilitychange',
-				this.handleVisibilityChange,
-				false
-			);
-			window.removeEventListener('beforeunload', this.handleUnload, false);
+			SessionListener.removeStateChangeHandler(this.handleStateChange);
 		}
 
 		this.sessionTrackingActive = false;
 	}
 
-	private handleVisibilityChange() {
-		if (document.visibilityState === 'hidden') {
-			this.stopSession();
+	private handleStateChange(state: SessionState) {
+		if (state === 'started') {
+			this.sessionStarted();
 		} else {
-			this.startSession();
+			this.sessionStopped();
 		}
 	}
 
-	private handleUnload() {
-		this.stopSession();
-	}
-
-	private startSession() {
+	private sessionStarted() {
 		const attributes = this.options.attributes ?? {};
 
 		logger.debug('Recording automatically tracked page view event', {
@@ -101,9 +86,14 @@ export class SessionTracker implements TrackerInterface {
 		});
 
 		this.eventRecoder(SESSION_START_EVENT, attributes);
+
+		// NOTE: The initial event will not be re-sent on re-configuration (e.g. to add additional custom attributes)
+		if (!this.initialEventSent) {
+			this.initialEventSent = true;
+		}
 	}
 
-	private stopSession() {
+	private sessionStopped() {
 		const attributes = this.options.attributes ?? {};
 
 		logger.debug('Recording automatically tracked page view event', {
