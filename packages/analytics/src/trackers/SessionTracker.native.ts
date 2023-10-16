@@ -20,6 +20,7 @@ export class SessionTracker implements TrackerInterface {
 	private initialEventSend: boolean;
 	private sessionTrackingActive: boolean;
 	private currentAppState?: string;
+	private eventListener?: any;
 
 	constructor(
 		eventRecorder: TrackerEventRecorder,
@@ -58,7 +59,11 @@ export class SessionTracker implements TrackerInterface {
 
 		// Setup state listeners
 		if (!this.sessionTrackingActive) {
-			loadAppState().addEventListener('change', this.handleStateChange, false);
+			this.eventListener = loadAppState().addEventListener(
+				'change',
+				this.handleStateChange,
+				false
+			);
 
 			this.sessionTrackingActive = true;
 		}
@@ -68,11 +73,13 @@ export class SessionTracker implements TrackerInterface {
 
 	public cleanup() {
 		if (this.sessionTrackingActive) {
-			loadAppState().removeEventListener(
-				'change',
-				this.handleStateChange,
-				false
-			);
+			const appState = loadAppState();
+
+			if (typeof appState.removeEventListener === 'function') {
+				appState.removeEventListener('change', this.handleStateChange, false);
+			} else {
+				this.eventListener.remove();
+			}
 		}
 
 		this.sessionTrackingActive = false;
