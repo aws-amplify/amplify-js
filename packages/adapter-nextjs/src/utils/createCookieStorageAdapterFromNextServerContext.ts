@@ -78,10 +78,16 @@ const createCookieStorageAdapterFromNextRequestAndNextResponse = (
 	const mutableCookieStore = response.cookies;
 
 	return {
-		get: readonlyCookieStore.get.bind(readonlyCookieStore),
+		get(name) {
+			return readonlyCookieStore.get(ensureEncodedForJSCookie(name));
+		},
 		getAll: readonlyCookieStore.getAll.bind(readonlyCookieStore),
-		set: mutableCookieStore.set.bind(mutableCookieStore),
-		delete: mutableCookieStore.delete.bind(mutableCookieStore),
+		set(name, value, options) {
+			mutableCookieStore.set(ensureEncodedForJSCookie(name), value, options);
+		},
+		delete(name) {
+			mutableCookieStore.delete(ensureEncodedForJSCookie(name));
+		},
 	};
 };
 
@@ -95,7 +101,9 @@ const createCookieStorageAdapterFromNextRequestAndHttpResponse = (
 	);
 
 	return {
-		get: readonlyCookieStore.get.bind(readonlyCookieStore),
+		get(name) {
+			return readonlyCookieStore.get(ensureEncodedForJSCookie(name));
+		},
 		getAll: readonlyCookieStore.getAll.bind(readonlyCookieStore),
 		...mutableCookieStore,
 	};
@@ -113,7 +121,7 @@ const createCookieStorageAdapterFromNextCookies = (
 	// and safely ignore the error if it is thrown.
 	const setFunc: CookieStorage.Adapter['set'] = (name, value, options) => {
 		try {
-			cookieStore.set(name, value, options);
+			cookieStore.set(ensureEncodedForJSCookie(name), value, options);
 		} catch {
 			// no-op
 		}
@@ -121,14 +129,16 @@ const createCookieStorageAdapterFromNextCookies = (
 
 	const deleteFunc: CookieStorage.Adapter['delete'] = name => {
 		try {
-			cookieStore.delete(name);
+			cookieStore.delete(ensureEncodedForJSCookie(name));
 		} catch {
 			// no-op
 		}
 	};
 
 	return {
-		get: cookieStore.get.bind(cookieStore),
+		get(name) {
+			return cookieStore.get(ensureEncodedForJSCookie(name));
+		},
 		getAll: cookieStore.getAll.bind(cookieStore),
 		set: setFunc,
 		delete: deleteFunc,
@@ -147,7 +157,7 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 
 	return {
 		get(name) {
-			const value = cookiesMap[name];
+			const value = cookiesMap[ensureEncodedForJSCookie(name)];
 			return value
 				? {
 						name,
@@ -161,13 +171,17 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 		set(name, value, options) {
 			response.setHeader(
 				'Set-Cookie',
-				`${name}=${value};${options ? serializeSetCookieOptions(options) : ''}`
+				`${ensureEncodedForJSCookie(name)}=${value};${
+					options ? serializeSetCookieOptions(options) : ''
+				}`
 			);
 		},
 		delete(name) {
 			response.setHeader(
 				'Set-Cookie',
-				`${name}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
+				`${ensureEncodedForJSCookie(
+					name
+				)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
 			);
 		},
 	};
@@ -179,13 +193,17 @@ const createMutableCookieStoreFromHeaders = (
 	const setFunc: CookieStorage.Adapter['set'] = (name, value, options) => {
 		headers.append(
 			'Set-Cookie',
-			`${name}=${value};${options ? serializeSetCookieOptions(options) : ''}`
+			`${ensureEncodedForJSCookie(name)}=${value};${
+				options ? serializeSetCookieOptions(options) : ''
+			}`
 		);
 	};
 	const deleteFunc: CookieStorage.Adapter['delete'] = name => {
 		headers.append(
 			'Set-Cookie',
-			`${name}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
+			`${ensureEncodedForJSCookie(
+				name
+			)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
 		);
 	};
 	return {
@@ -197,7 +215,7 @@ const createMutableCookieStoreFromHeaders = (
 const serializeSetCookieOptions = (
 	options: CookieStorage.SetCookieOptions
 ): string => {
-	const { expires, maxAge, domain, httpOnly, sameSite, secure } = options;
+	const { expires, domain, httpOnly, sameSite, secure } = options;
 	const serializedOptions: string[] = [];
 	if (domain) {
 		serializedOptions.push(`Domain=${domain}`);
@@ -216,3 +234,12 @@ const serializeSetCookieOptions = (
 	}
 	return serializedOptions.join(';');
 };
+
+// Ensures the cookie names are encoded in order to look up the cookie store
+// that is manipulated by js-cookie on the client side.
+// Details of the js-cookie encoding behavior see:
+// https://github.com/js-cookie/js-cookie#encoding
+// The implementation is borrowed from js-cookie without escaping `[()]` as
+// we are not using those chars in the auth keys.
+const ensureEncodedForJSCookie = (name: string): string =>
+	encodeURIComponent(name).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent);

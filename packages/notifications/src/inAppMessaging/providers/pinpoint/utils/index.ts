@@ -11,4 +11,8 @@ export {
 	STORAGE_KEY_SUFFIX,
 } from './constants';
 
-export { processInAppMessages } from './processInAppMessages';
+export {
+	processInAppMessages,
+	sessionStateChangeHandler,
+	incrementMessageCounts,
+} from './messageProcessingHelpers';

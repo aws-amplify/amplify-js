@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { StorageAccessLevel } from '@aws-amplify/core';
 import {
 	StorageOptions,
 	StorageListAllOptions,
@@ -49,4 +50,13 @@ export type StorageCopyInput<
 /**
  * The data payload type for upload operation.
  */
-export type StorageUploadDataPayload = Blob | BufferSource | string | File;
+export type StorageUploadDataPayload =
+	| Blob
+	| ArrayBufferView
+	| ArrayBuffer
+	| string;
+
+export type ResolvePrefixInput = {
+	accessLevel: StorageAccessLevel;
+	targetIdentityId?: string;
+};
