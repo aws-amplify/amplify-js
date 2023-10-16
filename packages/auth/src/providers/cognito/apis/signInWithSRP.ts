@@ -22,6 +22,7 @@ import {
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
+	retryOnResourceNotFoundException,
 } from '../utils/signInHelpers';
 import { SignInWithSRPInput, SignInWithSRPOutput } from '../types';
 import {
@@ -65,11 +66,10 @@ export async function signInWithSRP(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleUserSRPAuthFlow(
+		} = await retryOnResourceNotFoundException(
+			handleUserSRPAuthFlow,
+			[username, password, clientMetaData, authConfig, tokenOrchestrator],
 			username,
-			password,
-			clientMetaData,
-			authConfig,
 			tokenOrchestrator
 		);
 

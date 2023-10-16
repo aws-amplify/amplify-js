@@ -565,6 +565,24 @@ tests:
     # Temp fix:
     browser: *minimal_browser_list
 
+  - test_name: integ_react_analytics_personalize_auth
+    desc: 'Test record API for Personalize with authenticated user'
+    framework: react
+    category: analytics
+    sample_name: [personalize-test]
+    spec: personalize
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_personalize_unauth
+    desc: 'Test record API for Personalize with guest user'
+    framework: react
+    category: analytics
+    sample_name: [personalize-test]
+    spec: personalize-unauth
+    # Temp fix:
+    browser: *minimal_browser_list
+    
   - test_name: integ_react_analytics_kinesis_data_firehose_auth
     desc: 'Test record API for KDF with authenticated user'
     framework: react

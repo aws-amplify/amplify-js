@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Credentials } from '@aws-sdk/types';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';
@@ -31,7 +31,7 @@ const region = 'region';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
 const copyResult = { key: destinationKey };
-const credentials: Credentials = {
+const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getUrl } from '../../../../src/providers/s3/apis';
-import { Credentials } from '@aws-sdk/types';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 import {
 	getPresignedGetObjectUrl,
@@ -25,7 +25,7 @@ const bucket = 'bucket';
 const region = 'region';
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
-const credentials: Credentials = {
+const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
