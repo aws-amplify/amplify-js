@@ -25,3 +25,14 @@ export {
 	OnMessageDismissedOutput,
 	OnMessageDisplayedOutput,
 } from './pinpoint';
+
+export {
+	InAppMessage,
+	InAppMessageAction,
+	InAppMessageContent,
+	InAppMessageLayout,
+	InAppMessageTextAlign,
+	InAppMessageButton,
+	InAppMessageImage,
+	InAppMessageStyle,
+} from '../types';
