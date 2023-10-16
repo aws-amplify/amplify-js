@@ -420,15 +420,15 @@ export class AmazonAIIdentifyPredictionsProvider {
 			);
 			const data = await this.rekognitionClient.send(searchFacesByImageCommand);
 			const faces =
-				data.FaceMatches?.map(val => {
-					const externalImageId = val.Face?.ExternalImageId
-						? this.decodeExternalImageId(val.Face.ExternalImageId)
+				data.FaceMatches?.map(match => {
+					const externalImageId = match.Face?.ExternalImageId
+						? this.decodeExternalImageId(match.Face.ExternalImageId)
 						: undefined;
 					return <IdentifyEntity>{
-						boundingBox: makeCamelCase(val.Face?.BoundingBox),
+						boundingBox: makeCamelCase(match.Face?.BoundingBox),
 						metadata: {
 							externalImageId,
-							similarity: val.Similarity,
+							similarity: match.Similarity,
 						},
 					};
 				}) ?? [];
