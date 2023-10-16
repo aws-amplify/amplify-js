@@ -3,9 +3,11 @@
 
 import { ConsoleLogger as Logger } from '../Logger';
 import { isBrowser } from '../utils';
-import { Amplify } from '../Amplify';
 import { AmplifyError } from '../errors';
 import { assert, ServiceWorkerErrorCode } from './errorHelpers';
+import { record } from '../providers/pinpoint';
+import { Amplify, fetchAuthSession } from '../singleton';
+
 /**
  * Provides a means to registering a service worker in the browser
  * and communicating with it via postMessage events.
@@ -205,15 +207,25 @@ export class ServiceWorkerClass {
 	 * https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/state
 	 **/
 	_setupListeners() {
-		this.serviceWorker.addEventListener('statechange', event => {
+		this.serviceWorker.addEventListener('statechange', async event => {
 			const currentState = this.serviceWorker.state;
 			this._logger.debug(`ServiceWorker statechange: ${currentState}`);
-			Amplify.Analytics;
-			if (isAmplifyWithAnalytics(Amplify)) {
-				(Amplify as AmplifyWithAnalytics).Analytics.record({
-					name: 'ServiceWorker',
-					attributes: {
-						state: currentState,
+
+			const { appId, region } = Amplify.getConfig().Analytics?.Pinpoint ?? {};
+			const { credentials } = await fetchAuthSession();
+
+			if (appId && region && credentials) {
+				// Pinpoint is configured, record an event
+				record({
+					appId,
+					region,
+					category: 'Core',
+					credentials,
+					event: {
+						name: 'ServiceWorker',
+						attributes: {
+							state: currentState,
+						},
 					},
 				});
 			}
@@ -222,13 +234,4 @@ export class ServiceWorkerClass {
 			this._logger.debug(`ServiceWorker message event: ${event}`);
 		});
 	}
-}
-
-type AmplifyWithAnalytics = {
-	Analytics: {
-		record: Function;
-	};
-};
-function isAmplifyWithAnalytics(amplify: any): amplify is AmplifyWithAnalytics {
-	return amplify.Analytics && typeof amplify.Analytics.record === 'function';
 }
