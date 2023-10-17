@@ -118,8 +118,10 @@ export interface FileSource {
 	file: File;
 }
 
+export type Bytes = Buffer | ArrayBuffer | string;
+
 export interface BytesSource {
-	bytes: Buffer | ArrayBuffer | Blob | string;
+	bytes: Bytes;
 }
 
 export interface SpeechToTextInput {
@@ -128,6 +130,12 @@ export interface SpeechToTextInput {
 		language?: string;
 	};
 }
+
+export type TranscribeData = {
+	connection: WebSocket;
+	raw: Bytes;
+	languageCode: string;
+};
 
 export interface SpeechToTextOutput {
 	transcription: {
