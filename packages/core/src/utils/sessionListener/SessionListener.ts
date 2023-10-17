@@ -8,14 +8,14 @@ import {
 	SessionListenerInterface,
 } from './types';
 
-let stateChangeListeners = new Set<SessionStateChangeListener>();
+const stateChangeListeners = new Set<SessionStateChangeListener>();
 
 export class SessionListenerClass implements SessionListenerInterface {
 	constructor() {
 		this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
 
 		// Setup state listeners
-		if (typeof window !== 'undefined') {
+		if (typeof document !== 'undefined') {
 			document.addEventListener(
 				'visibilitychange',
 				this.handleVisibilityChange,
@@ -55,7 +55,7 @@ export class SessionListenerClass implements SessionListenerInterface {
 	private getSessionState = (): SessionState => {
 		if (
 			isBrowser() &&
-			typeof window !== 'undefined' &&
+			typeof document !== 'undefined' &&
 			document.visibilityState !== 'hidden'
 		) {
 			return 'started';

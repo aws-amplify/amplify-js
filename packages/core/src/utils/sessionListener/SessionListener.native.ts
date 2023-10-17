@@ -9,8 +9,7 @@ import {
 	SessionListenerInterface,
 } from './types';
 
-let stateChangeListeners = new Set<SessionStateChangeListener>();
-
+const stateChangeListeners = new Set<SessionStateChangeListener>();
 const isActive = (appState?: string) => appState === 'active';
 const isInactive = (appState?: string) =>
 	appState === 'inactive' || appState === 'background';
