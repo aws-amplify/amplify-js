@@ -10,11 +10,11 @@ import { RequestPermissions } from '../types';
  * granted (or have previously been granted) or false otherwise. Not all specific permissions are supported by platforms
  * your React Native app can run on but will be safely ignored even on those plaforms. Currently supported permissions:
  *
- *   Alert: When set to true, requests the ability to display notifications to the user.
+ *   * `alert`: When set to true, requests the ability to display notifications to the user.
  *
- *   Sound: When set to true, requests the ability to play a sound in response to notifications.
+ *   * `sound`: When set to true, requests the ability to play a sound in response to notifications.
  *
- *   Badge: When set to true, requests the ability to update the app's badge.
+ *   * `badge`: When set to true, requests the ability to update the app's badge.
  *
  * @throws platform: {@link PlatformNotSupportedError} - Thrown if called against an unsupported platform. Currently,
  * only React Native is supported by this API.
