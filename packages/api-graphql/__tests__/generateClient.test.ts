@@ -153,7 +153,7 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
-			const result = await client.models.Todo.create({
+			const { data } = await client.models.Todo.create({
 				name: 'some name',
 				description: 'something something',
 			});
@@ -177,7 +177,7 @@ describe('generateClient', () => {
 				})
 			);
 
-			expect(result).toEqual(
+			expect(data).toEqual(
 				expect.objectContaining({
 					__typename: 'Todo',
 					id: 'some-id',
@@ -201,7 +201,7 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
-			const result = await client.models.Todo.get({ id: 'asdf' });
+			const { data } = await client.models.Todo.get({ id: 'asdf' });
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -219,7 +219,7 @@ describe('generateClient', () => {
 				})
 			);
 
-			expect(result).toEqual(
+			expect(data).toEqual(
 				expect.objectContaining({
 					__typename: 'Todo',
 					id: 'some-id',
@@ -247,7 +247,7 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
-			const result = await client.models.Todo.list({
+			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
 			});
 
@@ -271,8 +271,8 @@ describe('generateClient', () => {
 				})
 			);
 
-			expect(result.length).toBe(1);
-			expect(result[0]).toEqual(
+			expect(data.length).toBe(1);
+			expect(data[0]).toEqual(
 				expect.objectContaining({
 					__typename: 'Todo',
 					id: 'some-id',
@@ -296,7 +296,7 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
-			const result = await client.models.Todo.update({
+			const { data } = await client.models.Todo.update({
 				id: 'some-id',
 				name: 'some other name',
 			});
@@ -320,7 +320,7 @@ describe('generateClient', () => {
 				})
 			);
 
-			expect(result).toEqual(
+			expect(data).toEqual(
 				expect.objectContaining({
 					__typename: 'Todo',
 					id: 'some-id',
@@ -344,7 +344,7 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
-			const result = await client.models.Todo.delete({
+			const { data } = await client.models.Todo.delete({
 				id: 'some-id',
 			});
 
@@ -366,7 +366,7 @@ describe('generateClient', () => {
 				})
 			);
 
-			expect(result).toEqual(
+			expect(data).toEqual(
 				expect.objectContaining({
 					__typename: 'Todo',
 					id: 'some-id',
@@ -391,7 +391,7 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
-			const result = await client.models.Todo.get({ id: 'todo-id' });
+			const { data } = await client.models.Todo.get({ id: 'todo-id' });
 
 			const getChildNotesSpy = mockApiResponse({
 				data: {
@@ -408,7 +408,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			const notes = await result.notes();
+			const { data: notes } = await data.notes();
 
 			expect(getChildNotesSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -453,7 +453,7 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
-			const result = await client.models.Note.get({ id: 'note-id' });
+			const { data } = await client.models.Note.get({ id: 'note-id' });
 
 			const getChildNotesSpy = mockApiResponse({
 				data: {
@@ -467,7 +467,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			const todo = await result.todo();
+			const { data: todo } = await data.todo();
 
 			expect(getChildNotesSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -509,7 +509,7 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
-			const result = await client.models.Todo.get({ id: 'todo-id' });
+			const { data } = await client.models.Todo.get({ id: 'todo-id' });
 
 			const getChildMetaSpy = mockApiResponse({
 				data: {
@@ -522,7 +522,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			const todo = await result.meta();
+			const { data: todo } = await data.meta();
 
 			expect(getChildMetaSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
