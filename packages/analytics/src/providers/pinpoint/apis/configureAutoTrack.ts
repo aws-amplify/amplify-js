@@ -15,7 +15,7 @@ import { ConfigureAutoTrackInput } from '../types';
 import { record } from './record';
 
 // Configured Tracker instances for Pinpoint
-let configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
+const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
 
 /**
  * Configures automatic event tracking for Pinpoint. This API will automatically transmit an analytic event when

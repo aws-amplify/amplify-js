@@ -85,7 +85,7 @@ export class PageViewTracker implements TrackerInterface {
 			// Configure proxies on History APIs
 			this.pushStateProxy = Proxy.revocable(window.history.pushState, {
 				apply: (target, thisArg, args) => {
-					let proxiedResult = target.apply(thisArg, args as any);
+					const proxiedResult = target.apply(thisArg, args as any);
 
 					this.handleLocationChange();
 
@@ -94,7 +94,7 @@ export class PageViewTracker implements TrackerInterface {
 			});
 			this.replaceStateProxy = Proxy.revocable(window.history.replaceState, {
 				apply: (target, thisArg, args) => {
-					let proxiedResult = target.apply(thisArg, args as any);
+					const proxiedResult = target.apply(thisArg, args as any);
 
 					this.handleLocationChange();
 
