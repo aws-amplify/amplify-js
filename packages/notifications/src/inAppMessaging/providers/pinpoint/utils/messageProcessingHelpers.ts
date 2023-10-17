@@ -17,8 +17,7 @@ import {
 	matchesMetrics,
 } from './helpers';
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
-import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
-import { defaultStorage } from '@aws-amplify/core';
+import { defaultStorage, ConsoleLogger } from '@aws-amplify/core';
 import { SessionState } from '../../../sessionTracker';
 
 const MESSAGE_DAILY_COUNT_KEY = 'pinpointProvider_inAppMessages_dailyCount';
@@ -71,7 +70,6 @@ export async function processInAppMessages(
 
 export function sessionStateChangeHandler(state: SessionState): void {
 	if (state === 'started') {
-		console.log('Resetting the count');
 		// reset all session counts
 		sessionMessageCountMap = {};
 	}

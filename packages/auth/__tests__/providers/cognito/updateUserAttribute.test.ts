@@ -54,9 +54,7 @@ describe('updateUserAttribute API happy path cases', () => {
 				value: 'mockedEmail',
 			},
 			options: {
-				serviceOptions: {
-					clientMetadata: { foo: 'bar' },
-				},
+				clientMetadata: { foo: 'bar' },
 			},
 		};
 		const mockOutput = {
@@ -115,9 +113,7 @@ describe('updateUserAttribute API error path cases:', () => {
 					value: 'mockedEmail',
 				},
 				options: {
-					serviceOptions: {
-						clientMetadata: { foo: 'bar' },
-					},
+					clientMetadata: { foo: 'bar' },
 				},
 			});
 		} catch (error) {

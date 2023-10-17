@@ -59,7 +59,7 @@ describe('verifyTOTPSetup  API happy path cases', () => {
 	test('verifyTOTPSetup API should return successful response', async () => {
 		await verifyTOTPSetup({
 			code,
-			options: { serviceOptions: { friendlyDeviceName } },
+			options: { friendlyDeviceName },
 		});
 
 		expect(verifySoftwareTokenClientSpy).toHaveBeenCalledWith(

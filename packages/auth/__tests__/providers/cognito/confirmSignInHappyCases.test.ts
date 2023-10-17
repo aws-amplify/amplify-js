@@ -248,9 +248,7 @@ describe('confirmSignIn API happy path cases', () => {
 		const challengeResponse = '123456';
 		await confirmSignIn({
 			challengeResponse,
-			options: {
-				serviceOptions: authAPITestParams.configWithClientMetadata,
-			},
+			options: authAPITestParams.configWithClientMetadata,
 		});
 		const options = authAPITestParams.configWithClientMetadata;
 		expect(handleChallengeNameSpy).toBeCalledWith(

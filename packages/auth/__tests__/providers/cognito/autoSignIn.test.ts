@@ -54,9 +54,7 @@ describe('Auto sign-in API Happy Path Cases:', () => {
 			password: user1.password,
 			options: {
 				userAttributes: { email: user1.email },
-				serviceOptions: {
-					autoSignIn: true,
-				},
+				autoSignIn: true,
 			},
 		});
 		expect(resp).toEqual({

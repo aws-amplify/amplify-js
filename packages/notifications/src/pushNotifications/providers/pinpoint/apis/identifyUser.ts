@@ -4,14 +4,14 @@
 import { UpdateEndpointException } from '@aws-amplify/core/internals/providers/pinpoint';
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
 import { PushNotificationValidationErrorCode } from '../../../errors';
-import { IdentifyUser } from '../types';
+import { IdentifyUser, IdentifyUserInput } from '../types';
 
 /**
  * Sends information about a user to Pinpoint. Sending user information allows you to associate a user to their user
  * profile and activities or actions in your application. Activity can be tracked across devices & platforms by using
  * the same `userId`.
  *
- * @param {IdentifyUserParameters} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
+ * @param {IdentifyUserInput} input The input object used to construct requests sent to Pinpoint's UpdateEndpoint
  *  API.
  * @throws service: {@link UpdateEndpointException} - Thrown when the underlying Pinpoint service returns an error.
  * @throws validation: {@link PushNotificationValidationErrorCode} - Thrown when the provided parameters or library

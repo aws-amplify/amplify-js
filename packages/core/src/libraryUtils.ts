@@ -40,11 +40,8 @@ export {
 	JwtPayload,
 	AuthStandardAttributeKey,
 	AuthVerifiableAttributeKey,
-	AWSCredentials
+	AWSCredentials,
 } from './singleton/Auth/types';
-
-// Logging utilities
-export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 
 // Platform & user-agent utilities
 export {
@@ -68,6 +65,10 @@ export {
 	PushNotificationAction,
 	StorageAction,
 	SetCustomUserAgentInput,
+	StorageUserAgentInput,
+	AuthUserAgentInput,
+	InAppMessagingUserAgentInput,
+	GeoUserAgentInput,
 } from './Platform/types';
 export { setCustomUserAgent } from './Platform/customUserAgent';
 
