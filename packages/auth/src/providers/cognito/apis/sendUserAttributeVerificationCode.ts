@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../..';
 import { AuthDeliveryMedium } from '../../../types';
 import {
@@ -28,14 +31,16 @@ export const sendUserAttributeVerificationCode = async (
 ): Promise<SendUserAttributeVerificationCodeOutput> => {
 	const { userAttributeKey, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	const clientMetadata = options?.serviceOptions?.clientMetadata;
+	const clientMetadata = options?.clientMetadata;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	const { CodeDeliveryDetails } = await getUserAttributeVerificationCode(
-		{ 
+		{
 			region: getRegion(authConfig.userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.SendUserAttributeVerificationCode)
+			userAgentValue: getAuthUserAgentValue(
+				AuthAction.SendUserAttributeVerificationCode
+			),
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),

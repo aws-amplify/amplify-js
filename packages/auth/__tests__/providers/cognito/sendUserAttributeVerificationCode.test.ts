@@ -61,9 +61,7 @@ describe('resendUserAttributeConfirmationCode API happy path cases', () => {
 		const result = await sendUserAttributeVerificationCode({
 			userAttributeKey: 'email',
 			options: {
-				serviceOptions: {
-					clientMetadata: { foo: 'bar' },
-				},
+				clientMetadata: { foo: 'bar' },
 			},
 		});
 		expect(result).toEqual(authAPITestParams.resendSignUpAPIResult);
@@ -105,9 +103,7 @@ describe('resendUserAttributeConfirmationCode API error path cases', () => {
 			await sendUserAttributeVerificationCode({
 				userAttributeKey: 'email',
 				options: {
-					serviceOptions: {
-						clientMetadata: { foo: 'bar' },
-					},
+					clientMetadata: { foo: 'bar' },
 				},
 			});
 		} catch (error) {
