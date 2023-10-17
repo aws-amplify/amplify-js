@@ -10,7 +10,6 @@ import {
 import {
 	InterpretTextInput,
 	InterpretTextOutput,
-	InterpretTextCategories,
 	TextEntities,
 	TextSentiment,
 	TextSyntax,
@@ -73,10 +72,10 @@ export class AmazonAIInterpretPredictionsProvider {
 			}),
 		});
 
-		const doAll = type === InterpretTextCategories.ALL;
+		const doAll = type === 'all';
 
 		let languageCode = language;
-		if ((doAll && !languageCode) || type === InterpretTextCategories.LANGUAGE) {
+		if ((doAll && !languageCode) || type === 'LANGUAGE') {
 			const languageDetectionParams = {
 				Text: text,
 			};
@@ -84,7 +83,7 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 
 		let entitiesPromise: Promise<Array<TextEntities>> | undefined = undefined;
-		if (doAll || type === InterpretTextCategories.ENTITIES) {
+		if (doAll || type === 'entities') {
 			assertValidationError(
 				!!languageCode,
 				PredictionsValidationErrorCode.NoLanguage
@@ -97,7 +96,7 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 
 		let sentimentPromise: Promise<TextSentiment> | undefined = undefined;
-		if (doAll || type === InterpretTextCategories.SENTIMENT) {
+		if (doAll || type === 'sentiment') {
 			assertValidationError(
 				!!languageCode,
 				PredictionsValidationErrorCode.NoLanguage
@@ -110,7 +109,7 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 
 		let syntaxPromise: Promise<Array<TextSyntax>> | undefined = undefined;
-		if (doAll || type === InterpretTextCategories.SYNTAX) {
+		if (doAll || type === 'syntax') {
 			assertValidationError(
 				!!languageCode,
 				PredictionsValidationErrorCode.NoLanguage
@@ -123,7 +122,7 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 
 		let keyPhrasesPromise: Promise<Array<KeyPhrases>> | undefined = undefined;
-		if (doAll || type === InterpretTextCategories.KEY_PHRASES) {
+		if (doAll || type === 'keyPhrases') {
 			assertValidationError(
 				!!languageCode,
 				PredictionsValidationErrorCode.NoLanguage

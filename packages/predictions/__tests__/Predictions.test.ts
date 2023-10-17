@@ -1,7 +1,6 @@
 import {
 	IdentifyTextInput,
 	IdentifyTextOutput,
-	InterpretTextCategories,
 	InterpretTextInput,
 	InterpretTextOutput,
 	TranslateTextInput,
@@ -70,7 +69,7 @@ describe('Predictions test', () => {
 				source: {
 					text: 'Test text',
 				},
-				type: InterpretTextCategories.LANGUAGE,
+				type: 'language',
 			},
 		};
 		const result: InterpretTextOutput = {

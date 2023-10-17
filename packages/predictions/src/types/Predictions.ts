@@ -6,14 +6,13 @@
  * Convert types
  */
 
-export enum InterpretTextCategories {
-	ALL = 'ALL',
-	LANGUAGE = 'LANGUAGE',
-	ENTITIES = 'ENTITIES',
-	SENTIMENT = 'SENTIMENT',
-	SYNTAX = 'SYNTAX',
-	KEY_PHRASES = 'KEY_PHRASES',
-}
+export type InterpretTextCategories =
+	| 'all'
+	| 'language'
+	| 'entities'
+	| 'sentiment'
+	| 'syntax'
+	| 'keyPhrases';
 
 export interface InterpretTextInput {
 	text: InterpretTextInputLanguage | InterpretTextOthers | InterpretTextAll;
@@ -23,7 +22,7 @@ export interface InterpretTextInputLanguage {
 	source: {
 		text: string;
 	};
-	type: InterpretTextCategories.LANGUAGE;
+	type: 'language';
 }
 
 export interface InterpretTextOthers {
@@ -31,18 +30,14 @@ export interface InterpretTextOthers {
 		text: string;
 		language: string;
 	};
-	type:
-		| InterpretTextCategories.ENTITIES
-		| InterpretTextCategories.SENTIMENT
-		| InterpretTextCategories.SYNTAX
-		| InterpretTextCategories.KEY_PHRASES;
+	type: 'entities' | 'sentiment' | 'syntax' | 'keyPhrases';
 }
 
 export interface InterpretTextAll {
 	source: {
 		text: string;
 	};
-	type: InterpretTextCategories.ALL;
+	type: 'all';
 }
 
 export interface TextEntities {
