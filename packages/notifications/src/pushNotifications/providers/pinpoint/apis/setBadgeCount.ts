@@ -5,7 +5,7 @@ import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
 import { SetBadgeCount } from '../types';
 
 /**
- * Sets the current badge count (the number next to your app's icon). Setting the badge count to 0 (zero) will remove
+ * Sets the current badge count (the number on the top right corner of your app's icon). Setting the badge count to 0 (zero) will remove
  * the badge from your app's icon.This function is safe to call (but will be ignored) even when your React Native app
  * is running on platforms where badges are not supported.
  *
