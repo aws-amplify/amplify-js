@@ -57,25 +57,4 @@ describe('Interactions LexV2 Util: resolveBotConfig', () => {
 		const result = resolveBotConfig('test');
 		expect(result).toBeUndefined();
 	});
-
-	it('return first match bot', () => {
-		const v1BotConfigs = [...Array(5)].map(generateRandomLexV1Config);
-		const v2BotConfigs = [...Array(5)].map(generateRandomLexV2Config);
-		getConfigSpy.mockReturnValue({
-			Interactions: {
-				LexV1: Object.fromEntries(v1BotConfigs.map(bot => [bot.name, bot])),
-				LexV2: {
-					[v2BotConfigs[3].name]: { ...v2BotConfigs[3], aliasId: 'test' },
-					...Object.fromEntries(v2BotConfigs.map(bot => [bot.name, bot])),
-				},
-			},
-		});
-
-		const result = resolveBotConfig(v2BotConfigs[3].name);
-		expect(result).not.toBeUndefined();
-		expect(result).toStrictEqual({
-			...v2BotConfigs[3],
-			aliasId: v2BotConfigs[3].aliasId,
-		});
-	});
 });

@@ -2,22 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { InteractionsMessage, InteractionsResponse } from '../../types';
-import { lexProvider } from '../AWSLexV2Provider';
 import { resolveBotConfig } from '../utils';
+import { lexProvider } from '../AWSLexProvider';
 import {
 	assertValidationError,
 	InteractionsValidationErrorCode,
 } from '../../errors';
 
-export const sendMessage = async (
-	botname: string,
+export const send = async (
+	botName: string,
 	message: string | InteractionsMessage
 ): Promise<InteractionsResponse> => {
-	const botConfig = resolveBotConfig(botname);
+	const botConfig = resolveBotConfig(botName);
 	assertValidationError(
 		!!botConfig,
 		InteractionsValidationErrorCode.NoBotConfig,
-		`Bot ${botname} does not exist.`
+		`Bot ${botName} does not exist.`
 	);
 	return lexProvider.sendMessage(botConfig, message);
 };
