@@ -28,8 +28,7 @@ describe('[RN] Session Listener', () => {
 	it('Should register an event listener on initialization', () => {
 		expect(mockAddEventListener).toHaveBeenCalledWith(
 			'change',
-			expect.any(Function),
-			false
+			expect.any(Function)
 		);
 	});
 

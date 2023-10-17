@@ -21,7 +21,7 @@ export class SessionListenerClass implements SessionListenerInterface {
 		this.handleStateChange = this.handleStateChange.bind(this);
 
 		// Setup state listeners
-		loadAppState().addEventListener('change', this.handleStateChange, false);
+		loadAppState().addEventListener('change', this.handleStateChange);
 	}
 
 	public addStateChangeListener(
