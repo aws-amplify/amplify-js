@@ -2,11 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import camelcaseKeys from 'camelcase-keys';
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
-import {
-	ConsoleLogger as Logger,
-	getAmplifyUserAgentObject,
-} from '@aws-amplify/core/internals/utils';
+import { Amplify, fetchAuthSession, ConsoleLogger } from '@aws-amplify/core';
+import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
 import {
 	Place as PlaceResult,
 	LocationClient,
@@ -63,7 +60,7 @@ import {
 	AmazonLocationServiceBatchGeofenceErrorMessages,
 } from '../../types';
 
-const logger = new Logger('AmazonLocationServiceProvider');
+const logger = new ConsoleLogger('AmazonLocationServiceProvider');
 
 export class AmazonLocationServiceProvider implements GeoProvider {
 	static CATEGORY = 'Geo';
