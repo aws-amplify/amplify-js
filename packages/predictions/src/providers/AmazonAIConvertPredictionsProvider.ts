@@ -374,11 +374,10 @@ export class AmazonAIConvertPredictionsProvider {
 		buffer: Bytes | any[];
 		outputSampleRate: number;
 	}) {
-		// Cannot check length of ArrayBuffer or Blob
+		// Cannot process ArrayBuffer using length property
 		if (
 			outputSampleRate === this.inputSampleRate ||
-			buffer instanceof ArrayBuffer ||
-			buffer instanceof Blob
+			buffer instanceof ArrayBuffer
 		) {
 			return buffer;
 		}
