@@ -6,7 +6,7 @@ import { AuthUserAttributes, AuthUserAttributeKey } from './models';
 /**
  * Base type for service options.
  */
-export type AuthServiceOptions = Record<string, any>;
+export type AuthServiceOptions = Record<string, unknown>;
 
 /**
  * The optional parameters for the Sign Up process.
