@@ -15,7 +15,7 @@ export class SessionListenerClass implements SessionListenerInterface {
 	private currentAppState?: string;
 
 	constructor() {
-		this.currentAppState = loadAppState().currentAppState;
+		this.currentAppState = loadAppState().current;
 		this.handleStateChange = this.handleStateChange.bind(this);
 
 		// Setup state listeners
@@ -68,12 +68,9 @@ export class SessionListenerClass implements SessionListenerInterface {
 	}
 
 	private getSessionState = (): SessionState => {
-		console.log(
-			'+ getSessionState current state',
-			loadAppState().currentAppState
-		);
+		console.log('+ getSessionState current state', loadAppState().current);
 
-		if (loadAppState().currentAppState === 'active') {
+		if (loadAppState().current === 'active') {
 			return 'started';
 		}
 
