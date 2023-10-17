@@ -4,7 +4,6 @@ import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import {
 	Category,
-	Logger,
 	CustomUserAgentDetails,
 	DataStoreAction,
 	jitteredBackoff,
@@ -47,10 +46,11 @@ import {
 	getTokenForCustomAuth,
 } from '../utils';
 import { getMutationErrorType } from './errorMaps';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 const MAX_ATTEMPTS = 10;
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 type MutationProcessorEvent = {
 	operation: TransformerMutationType;
