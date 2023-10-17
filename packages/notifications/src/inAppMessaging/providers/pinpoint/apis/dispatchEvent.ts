@@ -9,7 +9,7 @@ import {
 import { InAppMessage } from '../../../types';
 import flatten from 'lodash/flatten';
 import { defaultStorage } from '@aws-amplify/core';
-import { notifyEventListeners } from '../../../../common';
+import { notifyEventListeners } from '../../../../eventListeners';
 import { assertServiceError } from '../../../errors';
 import { DispatchEventInput } from '../types';
 import { syncMessages } from './syncMessages';

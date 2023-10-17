@@ -342,7 +342,7 @@ class SyncProcessor {
 						throw new NonRetryableError(error);
 					}
 
-					if (result.data?.[opName].items?.length) {
+					if (result.data?.[opName]?.items?.length) {
 						return result;
 					}
 
