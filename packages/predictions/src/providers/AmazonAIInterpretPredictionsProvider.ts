@@ -82,7 +82,7 @@ export class AmazonAIInterpretPredictionsProvider {
 			languageCode = await this.detectLanguage(languageDetectionParams);
 		}
 
-		let entitiesPromise: Promise<Array<TextEntities>> | undefined = undefined;
+		let entitiesPromise: Promise<Array<TextEntities>> | undefined;
 		if (doAll || type === 'entities') {
 			assertValidationError(
 				!!languageCode,
@@ -95,7 +95,7 @@ export class AmazonAIInterpretPredictionsProvider {
 			entitiesPromise = this.detectEntities(entitiesDetectionParams);
 		}
 
-		let sentimentPromise: Promise<TextSentiment> | undefined = undefined;
+		let sentimentPromise: Promise<TextSentiment> | undefined;
 		if (doAll || type === 'sentiment') {
 			assertValidationError(
 				!!languageCode,
@@ -108,7 +108,7 @@ export class AmazonAIInterpretPredictionsProvider {
 			sentimentPromise = this.detectSentiment(sentimentParams);
 		}
 
-		let syntaxPromise: Promise<Array<TextSyntax>> | undefined = undefined;
+		let syntaxPromise: Promise<Array<TextSyntax>> | undefined;
 		if (doAll || type === 'syntax') {
 			assertValidationError(
 				!!languageCode,
@@ -121,7 +121,7 @@ export class AmazonAIInterpretPredictionsProvider {
 			syntaxPromise = this.detectSyntax(syntaxParams);
 		}
 
-		let keyPhrasesPromise: Promise<Array<KeyPhrases>> | undefined = undefined;
+		let keyPhrasesPromise: Promise<Array<KeyPhrases>> | undefined;
 		if (doAll || type === 'keyPhrases') {
 			assertValidationError(
 				!!languageCode,
