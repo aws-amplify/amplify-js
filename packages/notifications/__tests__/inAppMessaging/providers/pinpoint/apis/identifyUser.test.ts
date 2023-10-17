@@ -70,23 +70,21 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 		});
 	});
 
-	it('passes through service options along with input and other params to core Pinpoint updateEndpoint API', async () => {
+	it('passes through options along with input and other params to core Pinpoint updateEndpoint API', async () => {
 		const userAttributes = { hobbies: ['biking', 'climbing'] };
 		const input: IdentifyUserInput = {
 			userId: 'user-id',
 			userProfile: {},
 		};
 		const options: IdentifyUserInput['options'] = {
-			serviceOptions: {
-				address: 'test-address',
-				optOut: 'NONE',
-				userAttributes,
-			},
+			address: 'test-address',
+			optOut: 'NONE',
+			userAttributes,
 		};
 		await identifyUser({ ...input, options });
 		expect(mockUpdateEndpoint).toBeCalledWith({
 			...input,
-			...options.serviceOptions,
+			...options,
 			...credentials,
 			...config,
 			channelType: CHANNEL_TYPE,
