@@ -9,7 +9,7 @@ import { GetPermissionStatus, GetPermissionStatusOutput } from '../types';
  * statuses are as follows:
  *
  *   * `'shouldRequest'` - No permissions have been requested yet. It is idiomatic at this time to simply request for
- *   * permissions from the user.
+ *   permissions from the user.
  *
  *   * `'shouldExplainThenRequest'` - It is recommended at this time to provide some context or rationale to the user
  *   explaining why you want to send them push notifications before requesting for permissions.
