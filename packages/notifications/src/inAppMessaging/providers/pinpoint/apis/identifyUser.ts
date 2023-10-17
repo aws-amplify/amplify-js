@@ -59,10 +59,10 @@ import { assertIsInitialized } from '../../../utils';
  *     },
  *     options: {
  *         address: 'device-address',
- *             optOut: 'NONE',
- * 			   userAttributes: {
- * 			      interests: ['food']
- * 		   },
+ *         optOut: 'NONE',
+ *         userAttributes: {
+ *             interests: ['food']
+ *         },
  *     },
  * });
  */
