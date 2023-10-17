@@ -12,6 +12,7 @@ export function makeCamelCase(obj?: object, keys?: string[]) {
 		if (obj.hasOwnProperty(key)) {
 			// change the key to camelcase.
 			const camelCaseKey = key.charAt(0).toLowerCase() + key.substr(1);
+			// @ts-ignore
 			Object.assign(newObj, { [camelCaseKey]: obj[key] });
 		}
 	});
