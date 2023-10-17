@@ -10,6 +10,7 @@ import { Hub, HubCapsule } from '@aws-amplify/core';
 import { dispatchEvent } from './dispatchEvent';
 import { incrementMessageCounts, sessionStateChangeHandler } from '../utils';
 import { isInitialized, initialize } from '../../../utils';
+import { Amplify } from '@aws-amplify/core';
 
 /**
  * Initialize and set up in-app messaging category. This API needs to be called to enable other InAppMessaging APIs.
@@ -26,13 +27,13 @@ export function initializeInAppMessaging(): void {
 	if (isInitialized()) {
 		return;
 	}
+	console.log('Confin in initializeInAppMessaging: ', Amplify.getConfig());
 	// set up the session tracker and start it
 	const sessionTracker = new SessionTracker(sessionStateChangeHandler);
 	sessionTracker.start();
 
 	// wire up default Pinpoint message event handling
 	addEventListener('messageDisplayed', (message: InAppMessage) => {
-		console.log('Recording message displayed event');
 		recordAnalyticsEvent(PinpointMessageEvent.MESSAGE_DISPLAYED, message);
 		incrementMessageCounts(message.id);
 	});
