@@ -54,9 +54,7 @@ const initialAutoSignIn: AutoSignInCallback =
  *       password,
  *       options: {
  *         userAttributes:{ email:'email@email.com'},
- *         serviceOptions: {
- *           autoSignIn: true // This enables the auto sign-in flow.
- *         },
+ *         autoSignIn: true // This enables the auto sign-in flow.
  *       },
  *     });
  *
