@@ -52,7 +52,7 @@ export class SessionListenerClass implements SessionListenerInterface {
 		});
 	}
 
-	private getSessionState = (): SessionState => {
+	private getSessionState() {
 		if (
 			isBrowser() &&
 			typeof document !== 'undefined' &&
@@ -63,5 +63,5 @@ export class SessionListenerClass implements SessionListenerInterface {
 
 		// If, for any reason, document is undefined the session will never start
 		return 'ended';
-	};
+	}
 }

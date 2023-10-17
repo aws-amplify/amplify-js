@@ -6,7 +6,7 @@ import {
 	TrackerEventRecorder,
 	TrackerInterface,
 } from '../types/trackers';
-import { Logger as ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 const logger = new ConsoleLogger('PageViewTracker');
 

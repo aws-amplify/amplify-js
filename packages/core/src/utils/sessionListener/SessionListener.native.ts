@@ -60,12 +60,12 @@ export class SessionListenerClass implements SessionListenerInterface {
 		});
 	}
 
-	private getSessionState = (): SessionState => {
+	private getSessionState() {
 		if (isActive(this.currentAppState)) {
 			return 'started';
 		}
 
 		// Consider any other app state as ended
 		return 'ended';
-	};
+	}
 }

@@ -7,7 +7,7 @@ import {
 	TrackerEventRecorder,
 	TrackerInterface,
 } from '../types/trackers';
-import { Logger as ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 const DEFAULT_EVENTS = ['click'] as DOMEvent[];
 const DEFAULT_SELECTOR_PREFIX = 'data-amplify-analytics-';
