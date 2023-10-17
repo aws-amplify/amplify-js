@@ -11,7 +11,7 @@ import {
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
 import { flushEvents } from '../../../../src/providers/kinesis-firehose/apis';
-import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis-firehose/utils');

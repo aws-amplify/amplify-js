@@ -1,9 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	ConsoleLogger as Logger,
-	isBrowser,
-} from '@aws-amplify/core/internals/utils';
+import { isBrowser } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 import noop from 'lodash/noop';
 import {
 	SessionState,
@@ -28,7 +26,7 @@ if (isBrowser() && document) {
 	}
 }
 
-const logger = new Logger('InAppMessagingSessionTracker');
+const logger = new ConsoleLogger('InAppMessagingSessionTracker');
 
 export default class SessionTracker implements SessionTrackerInterface {
 	private sessionStateChangeHandler: SessionStateChangeHandler;

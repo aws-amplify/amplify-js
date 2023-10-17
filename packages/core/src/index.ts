@@ -66,5 +66,8 @@ export { Cache } from './Cache';
 // Internationalization utilities
 export { I18n } from './I18n';
 
+// Logging utilities
+export { ConsoleLogger } from './Logger';
+
 // Service worker
 export { ServiceWorker } from './ServiceWorker';
