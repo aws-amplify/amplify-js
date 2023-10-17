@@ -43,6 +43,9 @@ type T = ModelInit<Model>;
 let { DataStore } = getDataStore() as {
 	DataStore: typeof DataStoreType;
 };
+
+let initSchema: typeof initSchemaType;
+
 const nameOf = <T>(name: keyof T) => name;
 
 /**

@@ -2554,7 +2554,6 @@ class DataStore {
 			await this.sync.stop();
 		}
 
-		// here is the problem
 		await this.storage!.clear();
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
@@ -2750,10 +2749,10 @@ class DataStore {
 
 const instance = new DataStore();
 instance.configure({});
-// Hub.listen('core', capsule => {
-// 	if (capsule.payload.event === 'configure') {
-// 		instance.configure({});
-// 	}
-// });
+Hub.listen('core', capsule => {
+	if (capsule.payload.event === 'configure') {
+		instance.configure({});
+	}
+});
 
 export { DataStore as DataStoreClass, initSchema, instance as DataStore };
