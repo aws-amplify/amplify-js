@@ -14,6 +14,7 @@ import { GetBadgeCount } from '../types';
  * @example
  * ```ts
  * const badgeCount = await getBadgeCount();
+ * ```
  */
 export const getBadgeCount: GetBadgeCount = () => {
 	throw new PlatformNotSupportedError();
