@@ -160,12 +160,13 @@ export class APIClass extends InternalAPIClass {
 							// flatten response
 							if (res.data !== undefined) {
 								const [key] = Object.keys(res.data);
+								const flattenedResult = flattenItems(res.data)[key];
 
 								// TODO: refactor to avoid destructuring here
 								const [initialized] = initializeModel(
 									client,
 									name,
-									[res.data[key]],
+									[flattenedResult],
 									modelIntrospection
 								);
 

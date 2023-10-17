@@ -161,27 +161,22 @@ type OperationPrefix =
 const graphQLDocumentsCache = new Map<string, Map<ModelOperation, string>>();
 const SELECTION_SET_ALL_NESTED = '*';
 
-function defaultSelectionSetForModel(modelDefinition: any): string {
+function defaultSelectionSetForModel(modelDefinition: any): string[] {
 	const { fields } = modelDefinition;
 	return Object.values<any>(fields)
 		.map(({ type, name }) => typeof type === 'string' && name) // Default selection set omits model fields
-		.filter(Boolean)
-		.join(' ');
+		.filter(Boolean);
 }
 
-function generateSelectionSet(
+export function customSelectionSetToIR(
 	modelIntrospection: any,
 	modelName: string,
-	selectionSet?: string[]
+	selectionSet: string[]
 ) {
 	const modelDefinition = modelIntrospection[modelName];
 	const { fields } = modelDefinition;
 
-	if (!selectionSet) {
-		return defaultSelectionSetForModel(modelDefinition);
-	}
-
-	const selSet: string[] = [];
+	const intermediateSelectionSet: Record<string, string | object> = {};
 
 	for (const f of selectionSet) {
 		const nested = f.includes('.');
@@ -198,14 +193,43 @@ function generateSelectionSet(
 
 			if (selectedField === SELECTION_SET_ALL_NESTED) {
 				const relatedModelDefinition = modelIntrospection[relatedModel];
+
 				const defaultSelectionSet = defaultSelectionSetForModel(
 					relatedModelDefinition
 				);
 
+				const reduced = defaultSelectionSet.reduce((acc, curVal) => {
+					acc[curVal] = '';
+					return acc;
+				}, {});
+
 				if (fields[modelFieldName]?.isArray) {
-					selSet.push(`${modelFieldName} { items { ${defaultSelectionSet} } }`);
+					intermediateSelectionSet[modelFieldName] = {
+						items: reduced,
+					};
 				} else {
-					selSet.push(`${modelFieldName} { ${defaultSelectionSet} }`);
+					intermediateSelectionSet[modelFieldName] = reduced;
+				}
+			} else {
+				const getNestedSelSet = customSelectionSetToIR(
+					modelIntrospection,
+					relatedModel,
+					[selectedField]
+				);
+
+				if (fields[modelFieldName]?.isArray) {
+					const existing = (intermediateSelectionSet as any)[
+						modelFieldName
+					] || { items: {} };
+					const merged = { ...existing.items, ...getNestedSelSet };
+
+					intermediateSelectionSet[modelFieldName] = { items: merged };
+				} else {
+					const existingItems =
+						(intermediateSelectionSet as any)[modelFieldName] || {};
+					const merged = { ...existingItems, ...getNestedSelSet };
+
+					intermediateSelectionSet[modelFieldName] = merged;
 				}
 			}
 		} else {
@@ -215,11 +239,62 @@ function generateSelectionSet(
 				throw Error(`${f} is not a field of model ${modelName}`);
 			}
 
-			selSet.push(f);
+			intermediateSelectionSet[f] = '';
 		}
 	}
 
-	return selSet.join(' ');
+	return intermediateSelectionSet;
+}
+
+const FIELD = '';
+
+export function selectionSetIRToString(
+	obj: Record<string, string | any>
+): string {
+	const res: string[] = [];
+
+	Object.entries(obj).forEach(([fieldName, value]) => {
+		if (value === FIELD) {
+			res.push(fieldName);
+		} else if (typeof value === 'object' && value !== null) {
+			if (value?.items) {
+				res.push(
+					fieldName,
+					'{',
+					'items',
+					'{',
+					selectionSetIRToString(value.items),
+					'}',
+					'}'
+				);
+			} else {
+				res.push(fieldName, '{', selectionSetIRToString(value), '}');
+			}
+		}
+	});
+
+	return res.join(' ');
+}
+
+export function generateSelectionSet(
+	modelIntrospection: any,
+	modelName: string,
+	selectionSet?: string[]
+) {
+	const modelDefinition = modelIntrospection[modelName];
+
+	if (!selectionSet) {
+		return defaultSelectionSetForModel(modelDefinition).join(' ');
+	}
+
+	const selSetIr = customSelectionSetToIR(
+		modelIntrospection,
+		modelName,
+		selectionSet
+	);
+	const selSetString = selectionSetIRToString(selSetIr);
+
+	return selSetString;
 }
 
 export function generateGraphQLDocument(

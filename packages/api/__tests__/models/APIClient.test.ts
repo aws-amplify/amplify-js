@@ -1,4 +1,9 @@
-import { normalizeMutationInput, flattenItems } from '../../src/APIClient';
+import {
+	normalizeMutationInput,
+	flattenItems,
+	generateSelectionSet,
+	customSelectionSetToIR,
+} from '../../src/APIClient';
 import modelIntroSchema from '../assets/model-introspection';
 
 describe('APIClient', () => {
@@ -153,5 +158,119 @@ describe('flattenItems', () => {
 		const flattened = flattenItems(listResponse);
 
 		expect(flattened).toEqual(expected);
+	});
+});
+
+describe('customSelectionSetToIR', () => {
+	test('1', () => {
+		const selSet = customSelectionSetToIR(modelIntroSchema.models, 'Post', [
+			'postId',
+			'title',
+		]);
+
+		const expected = {
+			postId: '',
+			title: '',
+		};
+
+		expect(selSet).toEqual(expected);
+	});
+
+	test('2', () => {
+		const selSet = customSelectionSetToIR(modelIntroSchema.models, 'Post', [
+			'postId',
+			'title',
+			'comments.id',
+			'comments.createdAt',
+		]);
+
+		const expected = {
+			postId: '',
+			title: '',
+			comments: {
+				items: {
+					id: '',
+					createdAt: '',
+				},
+			},
+		};
+
+		expect(selSet).toEqual(expected);
+	});
+
+	test('3', () => {
+		const selSet = customSelectionSetToIR(modelIntroSchema.models, 'Post', [
+			'postId',
+			'title',
+			'comments.*',
+		]);
+
+		const expected = {
+			postId: '',
+			title: '',
+			comments: {
+				items: {
+					id: '',
+					bingo: '',
+					anotherField: '',
+					createdAt: '',
+					updatedAt: '',
+					postCommentsPostId: '',
+					postCommentsTitle: '',
+					postComments2PostId: '',
+					postComments2Title: '',
+				},
+			},
+		};
+
+		expect(selSet).toEqual(expected);
+	});
+});
+
+describe('generateSelectionSet', () => {
+	test('it should generate default selection set', () => {
+		const selSet = generateSelectionSet(modelIntroSchema.models, 'Post');
+
+		const expected =
+			'postId title summary viewCount createdAt updatedAt postAuthorId';
+
+		expect(selSet).toEqual(expected);
+	});
+
+	test('it should generate custom selection set - top-level fields', () => {
+		const selSet = generateSelectionSet(modelIntroSchema.models, 'Post', [
+			'postId',
+			'title',
+		]);
+
+		const expected = 'postId title';
+
+		expect(selSet).toEqual(expected);
+	});
+
+	test('it should generate custom selection set - specific nested fields', () => {
+		const selSet = generateSelectionSet(modelIntroSchema.models, 'Post', [
+			'postId',
+			'title',
+			'comments.id',
+			'comments.createdAt',
+		]);
+
+		const expected = 'postId title comments { items { id createdAt } }';
+
+		expect(selSet).toEqual(expected);
+	});
+
+	test('it should generate custom selection set - all nested fields', () => {
+		const selSet = generateSelectionSet(modelIntroSchema.models, 'Post', [
+			'postId',
+			'title',
+			'comments.*',
+		]);
+
+		const expected =
+			'postId title comments { items { id bingo anotherField createdAt updatedAt postCommentsPostId postCommentsTitle postComments2PostId postComments2Title } }';
+
+		expect(selSet).toEqual(expected);
 	});
 });
