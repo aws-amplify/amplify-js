@@ -5,13 +5,13 @@ import { Hub } from '@aws-amplify/core';
 import {
 	notifyEventListeners,
 	addEventListener,
-} from '../../../../../src/common';
+} from '../../../../../src/eventListeners';
 import { initializeInAppMessaging } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 import SessionTracker from '../../../../../src/inAppMessaging/sessionTracker';
 
 jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/utils');
-jest.mock('../../../../../src/common/eventListeners');
+jest.mock('../../../../../src/eventListeners');
 jest.mock('../../../../../src/inAppMessaging/sessionTracker', () => {
 	return jest.fn().mockImplementation(() => {
 		return { start: jest.fn() };

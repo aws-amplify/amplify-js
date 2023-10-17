@@ -1,4 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { identifyUser } from './apis';
+export { identifyUser, initializePushNotifications } from './apis';
+export { IdentifyUserInput } from './types/inputs';

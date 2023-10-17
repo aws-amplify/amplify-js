@@ -102,7 +102,8 @@ export enum PubSubAction {
 	Subscribe = '1',
 }
 export enum PushNotificationAction {
-	None = '0',
+	InitializePushNotifications = '1',
+	IdentifyUser = '2',
 }
 export enum StorageAction {
 	UploadData = '1',
