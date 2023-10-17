@@ -71,7 +71,6 @@ export async function processInAppMessages(
 
 export function sessionStateChangeHandler(state: SessionState): void {
 	if (state === 'started') {
-		console.log('Resetting the count');
 		// reset all session counts
 		sessionMessageCountMap = {};
 	}
