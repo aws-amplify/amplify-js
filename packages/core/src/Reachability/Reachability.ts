@@ -18,16 +18,8 @@ export class Reachability {
 		return new Observable(observer => {
 			observer.next({ online: globalObj.navigator.onLine });
 
-			const notifyOnline = () => { 
-				console.log('+ Notify online');
-
-				observer.next({ online: true });
-			}
-			const notifyOffline = () => { 
-				console.log('+ Notify offline');
-
-				observer.next({ online: false });
-			}
+			const notifyOnline = () => observer.next({ online: true });
+			const notifyOffline = () => observer.next({ online: false });
 
 			globalObj.addEventListener('online', notifyOnline);
 			globalObj.addEventListener('offline', notifyOffline);
