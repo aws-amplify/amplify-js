@@ -338,8 +338,17 @@ export function isFileSource(obj: any): obj is FileSource {
 	return obj && obj.hasOwnProperty(key);
 }
 
-export function isBytesSource(obj: any): obj is BytesSource {
-	const key: keyof BytesSource = 'bytes';
+export function isConvertBytesSource(
+	obj: any
+): obj is BytesSource<ConvertBytes> {
+	const key: keyof BytesSource<ConvertBytes> = 'bytes';
+	return obj && obj.hasOwnProperty(key);
+}
+
+export function isIdentifyBytesSource(
+	obj: any
+): obj is BytesSource<IdentifyBytes> {
+	const key: keyof BytesSource<IdentifyBytes> = 'bytes';
 	return obj && obj.hasOwnProperty(key);
 }
 

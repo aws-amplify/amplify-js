@@ -28,7 +28,7 @@ import {
 	IdentifyEntitiesOutput,
 	isStorageSource,
 	isFileSource,
-	isBytesSource,
+	isIdentifyBytesSource,
 	IdentifyTextInput,
 	IdentifyTextOutput,
 	isIdentifyCelebrities,
@@ -128,7 +128,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 						res({ Bytes: new Uint8Array(buffer) });
 					})
 					.catch(err => rej(err));
-			} else if (isBytesSource(source)) {
+			} else if (isIdentifyBytesSource(source)) {
 				const bytes = source.bytes;
 				if (bytes instanceof Blob) {
 					blobToArrayBuffer(bytes)

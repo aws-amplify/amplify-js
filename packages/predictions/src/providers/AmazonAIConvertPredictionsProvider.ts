@@ -12,7 +12,7 @@ import {
 	TranslateTextOutput,
 	TextToSpeechOutput,
 	SpeechToTextOutput,
-	isBytesSource,
+	isConvertBytesSource,
 	isTranslateTextInput,
 	isTextToSpeechInput,
 	isSpeechToTextInput,
@@ -199,7 +199,7 @@ export class AmazonAIConvertPredictionsProvider {
 
 		const source = input.transcription?.source;
 		assertValidationError(
-			isBytesSource(source),
+			isConvertBytesSource(source),
 			PredictionsValidationErrorCode.InvalidSource
 		);
 
