@@ -50,7 +50,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						);
 
 						try {
-							const { data, nextToken } = (await client.graphql({
+							const { data, nextToken, extensions } = (await client.graphql({
 								query,
 								variables,
 							})) as any;
@@ -67,6 +67,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 										return {
 											data: flattenedResult,
 											nextToken,
+											extensions,
 										};
 									} else {
 										const initialized = initializeModel(
@@ -79,6 +80,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 										return {
 											data: initialized,
 											nextToken,
+											extensions,
 										};
 									}
 								}
@@ -86,6 +88,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								return {
 									data: data[key],
 									nextToken,
+									extensions,
 								};
 							}
 						} catch (error) {
@@ -113,7 +116,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						);
 
 						try {
-							const { data } = (await client.graphql({
+							const { data, extensions } = (await client.graphql({
 								query,
 								variables,
 							})) as any;
@@ -130,9 +133,9 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 									modelIntrospection
 								);
 
-								return { data: initialized };
+								return { data: initialized, extensions };
 							} else {
-								return { data: null };
+								return { data: null, extensions };
 							}
 						} catch (error) {
 							if (error.errors) {
