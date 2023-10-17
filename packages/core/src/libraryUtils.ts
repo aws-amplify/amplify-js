@@ -43,9 +43,6 @@ export {
 	AWSCredentials,
 } from './singleton/Auth/types';
 
-// Logging utilities
-export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
-
 // Platform & user-agent utilities
 export {
 	Platform,
@@ -68,6 +65,10 @@ export {
 	PushNotificationAction,
 	StorageAction,
 	SetCustomUserAgentInput,
+	StorageUserAgentInput,
+	AuthUserAgentInput,
+	InAppMessagingUserAgentInput,
+	GeoUserAgentInput,
 } from './Platform/types';
 export { setCustomUserAgent } from './Platform/customUserAgent';
 

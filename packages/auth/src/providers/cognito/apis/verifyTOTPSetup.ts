@@ -7,7 +7,10 @@ import { VerifyTOTPSetupInput } from '../types';
 import { verifySoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { VerifySoftwareTokenException } from '../types/errors';
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
@@ -36,14 +39,14 @@ export async function verifyTOTPSetup(
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
 	await verifySoftwareToken(
-		{ 
+		{
 			region: getRegion(authConfig.userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.VerifyTOTPSetup)
+			userAgentValue: getAuthUserAgentValue(AuthAction.VerifyTOTPSetup),
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
 			UserCode: code,
-			FriendlyDeviceName: options?.serviceOptions?.friendlyDeviceName,
+			FriendlyDeviceName: options?.friendlyDeviceName,
 		}
 	);
 }

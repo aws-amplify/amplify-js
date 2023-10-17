@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { record } from '@aws-amplify/core/internals/providers/pinpoint';
-import {
-	AWSCredentials,
-	ConsoleLogger,
-} from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import {
 	OnPushNotificationMessageHandler,
 	PushNotificationEvent,

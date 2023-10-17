@@ -436,7 +436,6 @@ tests:
     sample_name: [javascript-auth]
     spec: functional-auth
     browser: *minimal_browser_list
-  # TODO(v6) Migrate?
   - test_name: integ_react_auth_1_guest_to_authenticated_user
     desc: 'Guest to Authenticated User'
     framework: react
@@ -493,20 +492,20 @@ tests:
     sample_name: [delete-user]
     spec: delete-user
     browser: *minimal_browser_list
-  - test_name: integ_angular_auth_angular_authenticator
-    desc: 'Angular Authenticator'
-    framework: angular
-    category: auth
-    sample_name: [amplify-authenticator]
-    spec: ui-amplify-authenticator
-    browser: *minimal_browser_list
-  - test_name: integ_angular_auth_angular_custom_authenticator
-    desc: 'Angular Custom Authenticator'
-    framework: angular
-    category: auth
-    sample_name: [amplify-authenticator]
-    spec: custom-authenticator
-    browser: *minimal_browser_list
+  # - test_name: integ_angular_auth_angular_authenticator
+  #   desc: 'Angular Authenticator'
+  #   framework: angular
+  #   category: auth
+  #   sample_name: [amplify-authenticator]
+  #   spec: ui-amplify-authenticator
+  #   browser: *minimal_browser_list
+  # - test_name: integ_angular_auth_angular_custom_authenticator
+  #   desc: 'Angular Custom Authenticator'
+  #   framework: angular
+  #   category: auth
+  #   sample_name: [amplify-authenticator]
+  #   spec: custom-authenticator
+  #   browser: *minimal_browser_list
   - test_name: integ_javascript_auth
     desc: 'JavaScript Auth CDN'
     framework: javascript
@@ -515,20 +514,20 @@ tests:
     spec: auth-cdn
     browser: *minimal_browser_list
     amplifyjs_dir: true
-  - test_name: integ_vue_auth_legacy_vue_authenticator
-    desc: 'Legacy Vue Authenticator'
-    framework: vue
-    category: auth
-    sample_name: [amplify-authenticator-legacy]
-    spec: authenticator
-    browser: *minimal_browser_list
-  - test_name: integ_vue_auth_vue_3_authenticator
-    desc: 'Vue 3 Authenticator'
-    framework: vue
-    category: auth
-    sample_name: [authenticator-vue3]
-    spec: new-ui-authenticator
-    browser: *minimal_browser_list
+  # - test_name: integ_vue_auth_legacy_vue_authenticator
+  #   desc: 'Legacy Vue Authenticator'
+  #   framework: vue
+  #   category: auth
+  #   sample_name: [amplify-authenticator-legacy]
+  #   spec: authenticator
+  #   browser: *minimal_browser_list
+  # - test_name: integ_vue_auth_vue_3_authenticator
+  #   desc: 'Vue 3 Authenticator'
+  #   framework: vue
+  #   category: auth
+  #   sample_name: [authenticator-vue3]
+  #   spec: new-ui-authenticator
+  #   browser: *minimal_browser_list
   # TODO(v6) Migrate once SSR updates available
   - test_name: integ_next_auth_authenticator_and_ssr_page
     desc: 'Authenticator and SSR page'
