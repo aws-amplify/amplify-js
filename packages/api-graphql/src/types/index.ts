@@ -14,6 +14,8 @@ import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
 export { CONTROL_MSG, ConnectionState } from './PubSub';
 
+export { SelectionSet } from '@aws-amplify/amplify-api-next-types-alpha';
+
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
  */
