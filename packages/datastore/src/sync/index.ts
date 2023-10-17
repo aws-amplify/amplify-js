@@ -1,12 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	Logger,
-	BackgroundProcessManager,
-} from '@aws-amplify/core/internals/utils';
-import { Hub } from '@aws-amplify/core';
+import { BackgroundProcessManager } from '@aws-amplify/core/internals/utils';
+import { Hub, ConsoleLogger } from '@aws-amplify/core';
 
-import { filter, Observable, Observer, of, SubscriptionLike } from 'rxjs';
+import { filter, Observable, of, SubscriptionLike } from 'rxjs';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import { ExclusiveStorage as Storage } from '../storage/storage';
@@ -54,7 +51,7 @@ import {
 	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
 } from '@aws-amplify/api-graphql';
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 const ownSymbol = Symbol('sync');
 

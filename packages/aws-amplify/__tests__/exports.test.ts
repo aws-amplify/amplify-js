@@ -38,6 +38,8 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "Hub",
 			  "I18n",
+			  "Cache",
+			  "ConsoleLogger",
 			  "ServiceWorker",
 			]
 		`);
