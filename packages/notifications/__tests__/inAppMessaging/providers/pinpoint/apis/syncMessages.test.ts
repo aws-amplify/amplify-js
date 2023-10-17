@@ -15,7 +15,7 @@ import {
 import { simpleInAppMessages } from '../../../../../__mocks__/data';
 import {
 	updateEndpoint,
-	getEndpointId,
+	resolveEndpointId,
 } from '@aws-amplify/core/internals/providers/pinpoint';
 import { getInAppMessages } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import { InAppMessagingError } from '../../../../../src/inAppMessaging/errors';
@@ -29,7 +29,7 @@ jest.mock('../../../../../src/inAppMessaging/providers/pinpoint/utils');
 const mockDefaultStorage = defaultStorage as jest.Mocked<typeof defaultStorage>;
 const mockResolveCredentials = resolveCredentials as jest.Mock;
 const mockUpdateEndpoint = updateEndpoint as jest.Mock;
-const mockGetEndpointId = getEndpointId as jest.Mock;
+const mockResolveEndpointId = resolveEndpointId as jest.Mock;
 const mockGetInAppMessages = getInAppMessages as jest.Mock;
 const mockGetInAppMessagingUserAgentString =
 	getInAppMessagingUserAgentString as jest.Mock;
@@ -64,24 +64,16 @@ describe('syncMessages', () => {
 	});
 
 	beforeEach(() => {
+		mockResolveEndpointId.mockResolvedValue('endpoint-id');
+	});
+
+	afterEach(() => {
 		mockUpdateEndpoint.mockClear();
 		mockDefaultStorage.setItem.mockClear();
-	});
-	it('Gets in-app messages and stores them when endpointId is already available in cache', async () => {
-		mockGetEndpointId.mockReturnValueOnce('endpoint-id');
-
-		await syncMessages();
-
-		expect(mockDefaultStorage.setItem).toBeCalledWith(
-			expect.stringContaining(STORAGE_KEY_SUFFIX),
-			JSON.stringify(simpleInAppMessages)
-		);
+		mockResolveEndpointId.mockReset();
 	});
 
-	it('Creates an endpointId when not available and gets the messages', async () => {
-		mockGetEndpointId
-			.mockResolvedValueOnce(undefined)
-			.mockResolvedValueOnce('endpoint-id');
+	it('Gets in-app messages and stores them', async () => {
 		await syncMessages();
 
 		expect(mockDefaultStorage.setItem).toBeCalledWith(
@@ -91,7 +83,6 @@ describe('syncMessages', () => {
 	});
 
 	it('Only tries to store messages if there are messages to store', async () => {
-		mockGetEndpointId.mockReturnValueOnce('endpoint-id');
 		mockGetInAppMessages.mockResolvedValueOnce(mockedEmptyMessages);
 		await syncMessages();
 
@@ -99,14 +90,17 @@ describe('syncMessages', () => {
 	});
 
 	it('Rejects if there is a validation error', async () => {
+		mockResolveEndpointId.mockImplementation(() => {
+			throw new Error();
+		});
 		await expect(syncMessages()).rejects.toStrictEqual(
 			expect.any(InAppMessagingError)
 		);
 
 		expect(mockDefaultStorage.setItem).not.toBeCalled();
 	});
+
 	it('Rejects if there is a failure getting messages', async () => {
-		mockGetEndpointId.mockReturnValueOnce('endpoint-id');
 		mockGetInAppMessages.mockRejectedValueOnce(Error);
 		await expect(syncMessages()).rejects.toStrictEqual(
 			expect.any(InAppMessagingError)
@@ -114,8 +108,8 @@ describe('syncMessages', () => {
 
 		expect(mockDefaultStorage.setItem).not.toBeCalled();
 	});
+
 	it('Rejects if there is a failure storing messages', async () => {
-		mockGetEndpointId.mockReturnValueOnce('endpoint-id');
 		mockDefaultStorage.setItem.mockRejectedValueOnce(Error);
 		await expect(syncMessages()).rejects.toStrictEqual(
 			expect.any(InAppMessagingError)

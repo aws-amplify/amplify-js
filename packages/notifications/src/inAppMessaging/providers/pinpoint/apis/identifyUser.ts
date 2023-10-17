@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
-import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
+import {
+	updateEndpoint,
+	UpdateEndpointException,
+} from '@aws-amplify/core/internals/providers/pinpoint';
 import { InAppMessagingValidationErrorCode } from '../../../errors';
 import {
 	CATEGORY,

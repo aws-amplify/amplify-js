@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLAuthError } from '@aws-amplify/api';
 import { ConsoleLogger } from '@aws-amplify/core';
+import type { GraphQLError } from 'graphql';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
@@ -864,23 +865,37 @@ export async function getModelAuthModes({
 }
 
 export function getForbiddenError(error) {
-	const forbiddenErrorMessages = [
-		'Request failed with status code 401',
-		'Request failed with status code 403',
-	];
+	const forbiddenErrorCodes = [401, 403];
 	let forbiddenError;
 	if (error && error.errors) {
 		forbiddenError = (error.errors as [any]).find(err =>
-			forbiddenErrorMessages.includes(err.message)
+			forbiddenErrorCodes.includes(resolveServiceErrorStatusCode(err))
 		);
 	} else if (error && error.message) {
 		forbiddenError = error;
 	}
 
 	if (forbiddenError) {
-		return forbiddenError.message;
+		return (
+			forbiddenError.message ??
+			`Request failed with status code ${resolveServiceErrorStatusCode(
+				forbiddenError
+			)}`
+		);
 	}
 	return null;
+}
+
+export function resolveServiceErrorStatusCode(error: unknown): number | null {
+	if (error?.['$metadata']?.['httpStatusCode']) {
+		return Number(error?.['$metadata']?.['httpStatusCode']);
+	} else if ((error as GraphQLError)?.originalError) {
+		return resolveServiceErrorStatusCode(
+			(error as GraphQLError)?.originalError
+		);
+	} else {
+		return null;
+	}
 }
 
 export function getClientSideAuthError(error) {

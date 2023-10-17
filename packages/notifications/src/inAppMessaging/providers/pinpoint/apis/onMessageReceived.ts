@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { addEventListener } from '../../../../common';
+import { addEventListener } from '../../../../eventListeners';
 import { assertIsInitialized } from '../../../utils';
 import { OnMessageReceivedInput } from '../types/inputs';
 import { OnMessageReceivedOutput } from '../types/outputs';
