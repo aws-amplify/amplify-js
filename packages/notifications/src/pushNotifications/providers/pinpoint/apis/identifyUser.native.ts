@@ -4,6 +4,7 @@
 import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
 import {
+	getChannelType,
 	getPushNotificationUserAgentString,
 	resolveConfig,
 	resolveCredentials,
@@ -20,7 +21,7 @@ export const identifyUser: IdentifyUser = async ({
 	const { address, optOut, userAttributes } = options ?? {};
 	updateEndpoint({
 		address,
-		channelType: 'GCM',
+		channelType: getChannelType(),
 		optOut,
 		appId,
 		category: 'PushNotification',
