@@ -68,9 +68,7 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 			username: user1.username,
 			confirmationCode,
 			options: {
-				serviceOptions: {
-					forceAliasCreation: true,
-				},
+				forceAliasCreation: true,
 			},
 		});
 		expect(confirmSignUpClientSpy).toHaveBeenCalledWith(
@@ -90,9 +88,7 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 			username: user1.username,
 			confirmationCode,
 			options: {
-				serviceOptions: {
-					clientMetadata,
-				},
+				clientMetadata,
 			},
 		});
 		expect(confirmSignUpClientSpy).toHaveBeenCalledWith(

@@ -8,7 +8,7 @@ import {
 	ResponseBodyMixin,
 	withMemoization,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 import {
 	ABORT_ERROR_CODE,
 	ABORT_ERROR_MESSAGE,
@@ -20,7 +20,7 @@ import {
 import { TransferProgressEvent } from '../../../../../types/common';
 import { CanceledError } from '../../../../../errors/CanceledError';
 
-const logger = new Logger('xhr-http-handler');
+const logger = new ConsoleLogger('xhr-http-handler');
 
 /**
  * @internal

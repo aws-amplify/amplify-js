@@ -11,7 +11,7 @@ import {
 	mockPersonalizeConfig,
 } from '../../../testUtils/mockConstants.test';
 import { flushEvents } from '../../../../src/providers/personalize';
-import { ConsoleLogger } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/personalize/utils');

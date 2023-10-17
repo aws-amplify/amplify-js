@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
-import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
+import {
+	updateEndpoint,
+	UpdateEndpointException,
+} from '@aws-amplify/core/internals/providers/pinpoint';
 import { InAppMessagingValidationErrorCode } from '../../../errors';
 import {
 	CATEGORY,
@@ -55,13 +58,11 @@ import { assertIsInitialized } from '../../../utils';
  *         }
  *     },
  *     options: {
- *         serviceOptions: {
- *             address: 'device-address',
+ *         address: 'device-address',
  *             optOut: 'NONE',
  * 			   userAttributes: {
  * 			      interests: ['food']
- * 			   },
- *         },
+ * 		   },
  *     },
  * });
  */
@@ -73,7 +74,7 @@ export const identifyUser = async ({
 	assertIsInitialized();
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
-	const { address, optOut, userAttributes } = options?.serviceOptions ?? {};
+	const { address, optOut, userAttributes } = options ?? {};
 	updateEndpoint({
 		address,
 		channelType: CHANNEL_TYPE,
