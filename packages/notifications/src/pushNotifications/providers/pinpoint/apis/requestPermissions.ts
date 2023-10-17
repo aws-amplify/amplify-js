@@ -32,6 +32,7 @@ import { RequestPermissions } from '../types';
  *   sound: false,
  *   badge: false
  * });
+ * ```
  */
 export const requestPermissions: RequestPermissions = () => {
 	throw new PlatformNotSupportedError();
