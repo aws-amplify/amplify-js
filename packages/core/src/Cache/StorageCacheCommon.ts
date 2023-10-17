@@ -31,11 +31,8 @@ export abstract class StorageCacheCommon {
 		config?: CacheConfig;
 		keyValueStorage: KeyValueStorageInterface;
 	}) {
-		const globalCacheConfig = Amplify.getConfig().Cache ?? {};
-
 		this.config = {
 			...defaultConfig,
-			...globalCacheConfig,
 			...config,
 		};
 		this.keyValueStorage = keyValueStorage;

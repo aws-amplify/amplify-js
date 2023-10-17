@@ -24,7 +24,6 @@ export {
 	AuthUserPoolConfig,
 	AuthUserPoolAndIdentityPoolConfig,
 	APIConfig,
-	CacheConfig,
 	StorageAccessLevel,
 	StorageConfig,
 	GetCredentialsOptions,
@@ -62,6 +61,7 @@ export { KeyValueStorageInterface } from './types';
 
 // Cache exports
 export { Cache } from './Cache';
+export { CacheConfig } from './Cache/types';
 
 // Internationalization utilities
 export { I18n } from './I18n';
