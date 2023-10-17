@@ -1,15 +1,5 @@
-let mockRestPost;
-jest.mock('@aws-amplify/api-rest/internals', () => {
-	const whatisthis = jest.requireActual('@aws-amplify/api-rest/internals');
-	mockRestPost = jest.fn(() => {
-		return Promise.reject(serverError);
-	});
-
-	return {
-		...whatisthis,
-		post: mockRestPost,
-	};
-});
+const mockRestPost = jest.fn();
+import { Amplify } from '@aws-amplify/core';
 
 import {
 	Category,
@@ -36,7 +26,6 @@ import {
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { SyncEngine, MutationEvent } from '../src/sync/';
 
-import { Amplify } from '@aws-amplify/core';
 let syncClasses: any;
 let modelInstanceCreator: any;
 let Model: PersistentModelConstructor<ModelType>;
@@ -113,11 +102,11 @@ describe('MutationProcessor', () => {
 			const mutationProcessorSpy = jest.spyOn(mutationProcessor, 'resume');
 			await mutationProcessor.resume();
 
-			// expect(mockRetry.mock.results).toHaveLength(1);
-			// debugger;
-			// await expect(mockRetry.mock.results[0].value).rejects.toEqual(
-			// 	new Error('Network Error')
-			// );
+			expect(mockRetry.mock.results).toHaveLength(1);
+
+			await expect(mockRetry.mock.results[0].value).rejects.toEqual(
+				new Error('Network Error')
+			);
 
 			expect(mutationProcessorSpy).toHaveBeenCalled();
 
@@ -172,7 +161,7 @@ describe('MutationProcessor', () => {
 			expect(input.postId).toEqual('100');
 		});
 
-		it.skip('Should send datastore details with the x-amz-user-agent in the rest api request', async done => {
+		it.skip('Should send datastore details with the x-amz-user-agent in the rest api request', async () => {
 			jest.spyOn(mutationProcessor, 'resume');
 			await mutationProcessor.resume();
 			expect(mockRestPost).toBeCalledWith(
@@ -283,47 +272,14 @@ describe('error handler', () => {
 });
 // Mocking restClient.post to throw the error we expect
 // when experiencing poor network conditions
-// jest.mock('@aws-amplify/api-rest/internals', () => {
-// 	return {
-// 		...jest.requireActual('@aws-amplify/api-rest/internals'),
-// 		post: mockRestPost.mockImplementation(() => {
-// 			return Promise.reject(serverError);
-// 		}),
-// 	};
-// });
-
-// Configuring the API category so that API.graphql can be used
-// by the MutationProcessor
-// jest.mock('@aws-amplify/api/internals', () => {
-// 	const awsconfig = {
-// 		aws_project_region: 'us-west-2',
-// 		aws_appsync_graphqlEndpoint:
-// 			'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
-// 		aws_appsync_region: 'us-west-2',
-// 		aws_appsync_authenticationType: 'API_KEY',
-// 		aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
-// 	};
-
-// 	const { InternalGraphQLAPIClass } = jest.requireActual(
-// 		'@aws-amplify/api-graphql/internals'
-// 	);
-// 	const internalGraphqlInstance = new InternalGraphQLAPIClass(null);
-
-// 	const actualInternalAPIModule = jest.requireActual(
-// 		'@aws-amplify/api/internals'
-// 	);
-// 	const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
-// 	const test = {
-// 		...actualInternalAPIModule,
-// 		InternalAPI: {
-// 			...actualInternalAPIInstance,
-// 			graphql: internalGraphqlInstance.graphql.bind(internalGraphqlInstance),
-// 		},
-// 	};
-
-// 	debugger;
-// 	return test;
-// });
+jest.mock('@aws-amplify/api-rest/internals', () => {
+	return {
+		...jest.requireActual('@aws-amplify/api-rest/internals'),
+		post: mockRestPost.mockImplementation(() => {
+			return Promise.reject(serverError);
+		}),
+	};
+});
 
 // mocking jitteredBackoff to prevent it from retrying
 // endlessly in the mutation processor and so that we can expect the thrown result in our test
