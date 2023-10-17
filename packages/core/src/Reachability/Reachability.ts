@@ -9,7 +9,7 @@ export class Reachability {
 	private static _observers: Array<CompletionObserver<NetworkStatus>> = [];
 
 	networkMonitor(_?: unknown): Observable<NetworkStatus> {
-		const globalObj = isWebWorker() ? self : window;
+		const globalObj = isWebWorker() ? self : typeof window !== 'undefined' && window;
 
 		if (!globalObj) {
 			return from([{ online: true }]);
