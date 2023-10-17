@@ -129,7 +129,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								const flattenedResult = flattenItems(data)[key];
 
 								if (options?.selectionSet) {
-									return flattenedResult;
+									return { data: flattenedResult, extensions };
 								} else {
 									// TODO: refactor to avoid destructuring here
 									const [initialized] = initializeModel(

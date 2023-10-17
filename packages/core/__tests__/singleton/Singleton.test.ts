@@ -157,18 +157,7 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 		Amplify.configure(MOCK_AUTH_CONFIG);
 		const result = Amplify.getConfig();
 
-		expect(result).toEqual({
-			...MOCK_AUTH_CONFIG,
-			API: {
-				GraphQL: {
-					apiKey: 'some-key',
-					defaultAuthMode: 'userPool',
-					endpoint: 'https://some.domain.com/graphql',
-					region: 'us-west-1',
-					modelIntrospection,
-				},
-			},
-		});
+		expect(result).toEqual(MOCK_AUTH_CONFIG);
 	});
 
 	it('should replace Cognito configuration set and get config', () => {
@@ -226,7 +215,18 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 
 		const config3 = Amplify.getConfig();
 
-		expect(config3).toEqual(MOCK_AUTH_CONFIG);
+		expect(config3).toEqual({
+			...MOCK_AUTH_CONFIG,
+			API: {
+				GraphQL: {
+					apiKey: 'some-key',
+					defaultAuthMode: 'userPool',
+					endpoint: 'https://some.domain.com/graphql',
+					region: 'us-west-1',
+					modelIntrospection,
+				},
+			},
+		});
 		expect(config3).not.toBe(config);
 		expect(config3).not.toBe(config2);
 	});
