@@ -46,8 +46,8 @@ export interface InterpretTextAll {
 }
 
 export interface TextEntities {
-	type: string;
-	text: string;
+	type?: string;
+	text?: string;
 }
 
 export interface KeyPhrases {
@@ -66,6 +66,11 @@ export interface TextSentiment {
 	neutral: number;
 	mixed: number;
 }
+
+export type DetectParams = {
+	Text: string;
+	LanguageCode: string;
+};
 
 export interface InterpretTextOutput {
 	textInterpretation: {

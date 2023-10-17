@@ -15,8 +15,8 @@ import {
 	TextSentiment,
 	TextSyntax,
 	KeyPhrases,
-	InterpretTextOthers,
 	isInterpretTextInput,
+	DetectParams,
 } from '../types';
 import {
 	ComprehendClient,
@@ -25,13 +25,15 @@ import {
 	DetectDominantLanguageCommand,
 	DetectKeyPhrasesCommand,
 	DetectSentimentCommand,
+	SyntaxToken,
+	Entity,
 } from '@aws-sdk/client-comprehend';
 import { assertValidationError } from '../errors/utils/assertValidationError';
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
 import { getValidationError } from '../errors/utils/getValidationError';
 
 export class AmazonAIInterpretPredictionsProvider {
-	private comprehendClient: ComprehendClient;
+	private comprehendClient: ComprehendClient | undefined;
 
 	getProviderName() {
 		return 'AmazonAIInterpretPredictionsProvider';
@@ -59,7 +61,8 @@ export class AmazonAIInterpretPredictionsProvider {
 
 		const { text: textSource } = input;
 		const { source, type = defaultType } = textSource;
-		const { text, language } = (source as any) ?? {};
+		const { text } = source ?? {};
+		const language: string = (source as any)?.language;
 
 		this.comprehendClient = new ComprehendClient({
 			credentials,
@@ -149,15 +152,17 @@ export class AmazonAIInterpretPredictionsProvider {
 		};
 	}
 
-	private async detectKeyPhrases(params): Promise<Array<KeyPhrases>> {
+	private async detectKeyPhrases(
+		params: DetectParams
+	): Promise<Array<KeyPhrases>> {
 		try {
 			const detectKeyPhrasesCommand = new DetectKeyPhrasesCommand(params);
-			const data = await this.comprehendClient.send(detectKeyPhrasesCommand);
+			const data = await this.comprehendClient!.send(detectKeyPhrasesCommand);
 			const { KeyPhrases = [] } = data || {};
 			return KeyPhrases.filter(({ Text }) => !!Text).map(({ Text }) => {
 				return { text: Text! };
 			});
-		} catch (err) {
+		} catch (err: any) {
 			if (err.code === 'AccessDeniedException') {
 				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
@@ -169,13 +174,13 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 	}
 
-	private async detectSyntax(params): Promise<Array<TextSyntax>> {
+	private async detectSyntax(params: DetectParams): Promise<Array<TextSyntax>> {
 		try {
 			const detectSyntaxCommand = new DetectSyntaxCommand(params);
-			const data = await this.comprehendClient.send(detectSyntaxCommand);
+			const data = await this.comprehendClient!.send(detectSyntaxCommand);
 			const { SyntaxTokens = [] } = data || {};
 			return this.serializeSyntaxFromComprehend(SyntaxTokens);
-		} catch (err) {
+		} catch (err: any) {
 			if (err.code === 'AccessDeniedException') {
 				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
@@ -187,7 +192,9 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 	}
 
-	private serializeSyntaxFromComprehend(tokens): Array<TextSyntax> {
+	private serializeSyntaxFromComprehend(
+		tokens: SyntaxToken[]
+	): Array<TextSyntax> {
 		let response: TextSyntax[] = [];
 		if (tokens && Array.isArray(tokens)) {
 			response = tokens.map(
@@ -199,10 +206,10 @@ export class AmazonAIInterpretPredictionsProvider {
 		return response;
 	}
 
-	private async detectSentiment(params): Promise<TextSentiment> {
+	private async detectSentiment(params: DetectParams): Promise<TextSentiment> {
 		try {
 			const detectSentimentCommand = new DetectSentimentCommand(params);
-			const data = await this.comprehendClient.send(detectSentimentCommand);
+			const data = await this.comprehendClient!.send(detectSentimentCommand);
 			const {
 				Sentiment: predominant = '',
 				SentimentScore: {
@@ -213,7 +220,7 @@ export class AmazonAIInterpretPredictionsProvider {
 				} = {},
 			} = ({} = data);
 			return { predominant, positive, negative, neutral, mixed };
-		} catch (err) {
+		} catch (err: any) {
 			if (err.code === 'AccessDeniedException') {
 				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
@@ -225,13 +232,15 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 	}
 
-	private async detectEntities(params): Promise<Array<TextEntities>> {
+	private async detectEntities(
+		params: DetectParams
+	): Promise<Array<TextEntities>> {
 		try {
 			const detectEntitiesCommand = new DetectEntitiesCommand(params);
-			const data = await this.comprehendClient.send(detectEntitiesCommand);
+			const data = await this.comprehendClient!.send(detectEntitiesCommand);
 			const { Entities = [] } = data || {};
 			return this.serializeEntitiesFromComprehend(Entities);
-		} catch (err) {
+		} catch (err: any) {
 			if (err.code === 'AccessDeniedException') {
 				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
@@ -243,7 +252,7 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 	}
 
-	private serializeEntitiesFromComprehend(data): Array<TextEntities> {
+	private serializeEntitiesFromComprehend(data: Entity[]): Array<TextEntities> {
 		let response: TextEntities[] = [];
 		if (data && Array.isArray(data)) {
 			response = data.map(({ Type: type, Text: text }) => {
@@ -253,12 +262,12 @@ export class AmazonAIInterpretPredictionsProvider {
 		return response;
 	}
 
-	private async detectLanguage(params): Promise<string> {
+	private async detectLanguage(params: { Text: string }): Promise<string> {
 		try {
 			const detectDominantLanguageCommand = new DetectDominantLanguageCommand(
 				params
 			);
-			const data = await this.comprehendClient.send(
+			const data = await this.comprehendClient!.send(
 				detectDominantLanguageCommand
 			);
 			const { Languages: [{ LanguageCode }] = [{}] } = ({} = data || {});
@@ -268,7 +277,7 @@ export class AmazonAIInterpretPredictionsProvider {
 			);
 
 			return LanguageCode;
-		} catch (err) {
+		} catch (err: any) {
 			if (err.code === 'AccessDeniedException') {
 				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
