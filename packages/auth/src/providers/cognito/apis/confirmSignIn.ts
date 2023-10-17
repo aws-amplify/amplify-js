@@ -60,7 +60,7 @@ export async function confirmSignIn(
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
-	const clientMetaData = options?.serviceOptions?.clientMetadata;
+	const clientMetaData = options?.clientMetadata;
 
 	assertValidationError(
 		!!challengeResponse,
@@ -98,7 +98,7 @@ export async function confirmSignIn(
 			authConfig,
 			tokenOrchestrator,
 			clientMetaData,
-			options?.serviceOptions
+			options
 		);
 
 		// sets up local state used during the sign-in process

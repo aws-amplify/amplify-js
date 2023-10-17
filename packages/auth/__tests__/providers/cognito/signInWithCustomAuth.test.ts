@@ -47,9 +47,7 @@ describe('signIn API happy path cases', () => {
 		const result = await signIn({
 			username: authAPITestParams.user1.username,
 			options: {
-				serviceOptions: {
-					authFlowType: 'CUSTOM_WITHOUT_SRP',
-				},
+				authFlowType: 'CUSTOM_WITHOUT_SRP',
 			},
 		});
 		expect(result).toEqual(authAPITestParams.signInResultWithCustomAuth());
@@ -68,9 +66,7 @@ describe('signIn API happy path cases', () => {
 
 		await signInWithCustomAuth({
 			username,
-			options: {
-				serviceOptions: authAPITestParams.configWithClientMetadata,
-			},
+			options: authAPITestParams.configWithClientMetadata,
 		});
 		expect(handleCustomAuthFlowWithoutSRPSpy).toBeCalledWith(
 			username,
@@ -118,9 +114,7 @@ describe('Cognito ASF', () => {
 		const result = await signIn({
 			username: authAPITestParams.user1.username,
 			options: {
-				serviceOptions: {
-					authFlowType: 'CUSTOM_WITHOUT_SRP',
-				},
+				authFlowType: 'CUSTOM_WITHOUT_SRP',
 			},
 		});
 		expect(initiateAuthSpy).toBeCalledWith(
