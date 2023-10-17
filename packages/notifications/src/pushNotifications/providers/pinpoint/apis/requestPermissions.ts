@@ -8,7 +8,7 @@ import { RequestPermissions } from '../types';
  * Requests notification permissions from your user. By default, Amplify requests all supported permissions but you can
  * choose not to request specific permissions. The resulting promise will resolve to true if requested permissions are
  * granted (or have previously been granted) or false otherwise. Not all specific permissions are supported by platforms
- * your React Native app can run on but will be safely ignored even on those plaforms. Currently supported permissions:
+ * your React Native app can run on but will be safely ignored even on those platforms. Currently supported permissions:
  *
  *   * `alert`: When set to true, requests the ability to display notifications to the user.
  *
