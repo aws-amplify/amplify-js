@@ -15,9 +15,7 @@ export type AuthConfirmResetPasswordInput<
 	username: string;
 	newPassword: string;
 	confirmationCode: string;
-	options?: {
-		serviceOptions?: ServiceOptions;
-	};
+	options?: ServiceOptions;
 };
 
 /**
@@ -30,16 +28,14 @@ export type AuthResendSignUpCodeInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
 	username: string;
-	options?: { serviceOptions?: ServiceOptions };
+	options?: ServiceOptions;
 };
 
 export type AuthResetPasswordInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
 	username: string;
-	options?: {
-		serviceOptions?: ServiceOptions;
-	};
+	options?: ServiceOptions;
 };
 
 export type AuthSignInInput<
@@ -47,7 +43,7 @@ export type AuthSignInInput<
 > = {
 	username: string;
 	password?: string;
-	options?: { serviceOptions?: ServiceOptions };
+	options?: ServiceOptions;
 };
 export type AuthSignOutInput = {
 	global: boolean;
@@ -80,12 +76,11 @@ export type AuthSignInWithRedirectInput = {
  * @param options - optional parameters for the Sign Up process, including user attributes
  */
 export type AuthSignUpInput<
-	AttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+	ServiceOptions extends AuthSignUpOptions<AuthUserAttributeKey> = AuthSignUpOptions<AuthUserAttributeKey>
 > = {
 	username: string;
 	password: string;
-	options?: AuthSignUpOptions<AttributeKey, ServiceOptions>;
+	options?: ServiceOptions;
 };
 
 /**
@@ -100,9 +95,7 @@ export type AuthConfirmSignUpInput<
 > = {
 	username: string;
 	confirmationCode: string;
-	options?: {
-		serviceOptions?: ServiceOptions;
-	};
+	options?: ServiceOptions;
 };
 /**
  * Constructs a `confirmSignIn` input.
@@ -115,7 +108,7 @@ export type AuthConfirmSignInInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
 	challengeResponse: string;
-	options?: { serviceOptions?: ServiceOptions };
+	options?: ServiceOptions;
 };
 
 /**
@@ -128,7 +121,7 @@ export type AuthVerifyTOTPSetupInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
 	code: string;
-	options?: { serviceOptions?: ServiceOptions };
+	options?: ServiceOptions;
 };
 
 /**
@@ -153,7 +146,7 @@ export type AuthUpdateUserAttributesInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
 	userAttributes: AuthUserAttributes<UserAttributeKey>;
-	options?: { serviceOptions?: ServiceOptions };
+	options?: ServiceOptions;
 };
 
 /**
@@ -166,7 +159,7 @@ export type AuthUpdateUserAttributeInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
 	userAttribute: AuthUserAttribute<UserAttributeKey>;
-	options?: { serviceOptions?: ServiceOptions };
+	options?: ServiceOptions;
 };
 
 /*
@@ -191,7 +184,7 @@ export type AuthSendUserAttributeVerificationCodeInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
 > = {
 	userAttributeKey: UserAttributeKey;
-	options?: { serviceOptions?: ServiceOptions };
+	options?: ServiceOptions;
 };
 
 /**

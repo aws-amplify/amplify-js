@@ -1,6 +1,12 @@
 const mockRestPost = jest.fn();
 import { Amplify } from '@aws-amplify/core';
 import {
+	Category,
+	CustomUserAgentDetails,
+	DataStoreAction,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core/internals/utils';
+import {
 	MutationProcessor,
 	safeJitteredBackoff,
 } from '../src/sync/processors/mutation';
@@ -18,22 +24,16 @@ import {
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { MutationEvent } from '../src/sync/';
-import {
-	Category,
-	CustomUserAgentDetails,
-	DataStoreAction,
-	getAmplifyUserAgent,
-} from '@aws-amplify/core/internals/utils';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
 let Model: PersistentModelConstructor<ModelType>;
 let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
-let axiosError;
+let serverError;
 
 beforeEach(() => {
-	axiosError = timeoutError;
+	serverError = timeoutError;
 });
 
 const datastoreUserAgentDetails: CustomUserAgentDetails = {
@@ -191,7 +191,7 @@ describe('error handler', () => {
 	});
 
 	test('newly required field', async () => {
-		axiosError = {
+		serverError = {
 			message: "Variable 'name' has coerced Null value for NonNull type",
 			name: 'Error',
 			code: '',
@@ -208,7 +208,7 @@ describe('error handler', () => {
 	});
 
 	test('connection timout', async () => {
-		axiosError = {
+		serverError = {
 			message: 'Connection failed: Connection Timeout',
 			name: 'Error',
 			code: '',
@@ -225,11 +225,12 @@ describe('error handler', () => {
 	});
 
 	test('server error', async () => {
-		axiosError = {
-			message: 'Error: Request failed with status code 500',
-			name: 'Error',
-			code: '',
-			errorType: '',
+		serverError = {
+			originalError: {
+				$metadata: {
+					httpStatusCode: 500,
+				},
+			},
 		};
 		await mutationProcessor.resume();
 		expect(errorHandler).toHaveBeenCalledWith(
@@ -242,11 +243,12 @@ describe('error handler', () => {
 	});
 
 	test('no auth decorator', async () => {
-		axiosError = {
-			message: 'Request failed with status code 401',
-			name: 'Error',
-			code: '',
-			errorType: '',
+		serverError = {
+			originalError: {
+				$metadata: {
+					httpStatusCode: 401,
+				},
+			},
 		};
 		await mutationProcessor.resume();
 		expect(errorHandler).toHaveBeenCalledWith(
@@ -260,19 +262,12 @@ describe('error handler', () => {
 });
 // Mocking restClient.post to throw the error we expect
 // when experiencing poor network conditions
-jest.mock('@aws-amplify/api-rest', () => {
+jest.mock('@aws-amplify/api-rest/internals', () => {
 	return {
-		...jest.requireActual('@aws-amplify/api-rest'),
-		RestClient() {
-			return {
-				post: mockRestPost.mockImplementation(() => {
-					return Promise.reject(axiosError);
-				}),
-				getCancellableToken: () => {},
-				updateRequestToBeCancellable: () => {},
-				isCancel: () => false,
-			};
-		},
+		...jest.requireActual('@aws-amplify/api-rest/internals'),
+		post: mockRestPost.mockImplementation(() => {
+			return Promise.reject(serverError);
+		}),
 	};
 });
 

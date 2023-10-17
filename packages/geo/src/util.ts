@@ -1,6 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import booleanClockwise from '@turf/boolean-clockwise';
+import {
+	Category,
+	GeoAction,
+	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
+} from '@aws-amplify/core/internals/utils';
+import { UserAgent } from '@aws-sdk/types';
 
 import {
 	Longitude,
@@ -190,4 +197,18 @@ export function mapSearchOptions(options, locationServiceInput) {
 		locationServiceModifiedInput.FilterBBox = options['searchAreaConstraints'];
 	}
 	return locationServiceModifiedInput;
+}
+
+export function getGeoUserAgent(action: GeoAction): UserAgent {
+	return getAmplifyUserAgentObject({
+		category: Category.Geo,
+		action,
+	});
+}
+
+export function getGeoUserAgentString(action: GeoAction) {
+	return getAmplifyUserAgent({
+		category: Category.Geo,
+		action,
+	});
 }

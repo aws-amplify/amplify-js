@@ -30,7 +30,8 @@ import {
 import { getIdentifierValue } from '../sync/utils';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
-import { Logger, Mutex } from '@aws-amplify/core/internals/utils';
+import { Mutex } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 export type StorageSubscriptionMessage<T extends PersistentModel> =
 	InternalSubscriptionMessage<T> & {
@@ -40,7 +41,7 @@ export type StorageSubscriptionMessage<T extends PersistentModel> =
 export type StorageFacade = Omit<Adapter, 'setUp'>;
 export type Storage = InstanceType<typeof StorageClass>;
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 class StorageClass implements StorageFacade {
 	private initialized: Promise<void> | undefined;
 	private readonly pushStream: Subject<
