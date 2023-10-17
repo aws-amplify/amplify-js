@@ -17,13 +17,3 @@ const schema = a.schema({
 });
 
 export type Schema = ClientSchema<typeof schema>;
-
-type Todo = Schema['Todo'];
-type MaybeTodo = Exclude<
-	Awaited<ReturnType<Schema['Note']['todo']>>,
-	null | undefined
->;
-
-type TEST = Todo extends MaybeTodo ? 'yes' : 'no';
-
-type Note_dot_todo = Schema['Note']['todo'];
