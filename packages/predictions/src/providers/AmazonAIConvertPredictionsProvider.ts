@@ -44,6 +44,9 @@ const eventBuilder = new EventStreamCodec(toUtf8, fromUtf8);
 const LANGUAGES_CODE_IN_8KHZ = ['fr-FR', 'en-AU', 'en-GB', 'fr-CA'];
 
 export class AmazonAIConvertPredictionsProvider {
+	private translateClient: TranslateClient | undefined;
+	private pollyClient: PollyClient | undefined;
+
 	getProviderName() {
 		return 'AmazonAIConvertPredictionsProvider';
 	}
@@ -98,7 +101,7 @@ export class AmazonAIConvertPredictionsProvider {
 			PredictionsValidationErrorCode.NoTargetLanguage
 		);
 
-		const translateClient = new TranslateClient({
+		this.translateClient = new TranslateClient({
 			region,
 			credentials,
 			customUserAgent: getAmplifyUserAgentObject({
@@ -111,7 +114,7 @@ export class AmazonAIConvertPredictionsProvider {
 			TargetLanguageCode: targetLanguageCode,
 			Text: input.translateText?.source?.text,
 		});
-		const data = await translateClient.send(translateTextCommand);
+		const data = await this.translateClient.send(translateTextCommand);
 		return {
 			text: data.TranslatedText,
 			language: data.TargetLanguageCode,
@@ -143,7 +146,7 @@ export class AmazonAIConvertPredictionsProvider {
 		const voiceId = input.textToSpeech?.voiceId ?? defaultVoiceId;
 		assertValidationError(!!voiceId, PredictionsValidationErrorCode.NoVoiceId);
 
-		const pollyClient = new PollyClient({
+		this.pollyClient = new PollyClient({
 			region,
 			credentials,
 			customUserAgent: getAmplifyUserAgentObject({
@@ -159,7 +162,7 @@ export class AmazonAIConvertPredictionsProvider {
 			SampleRate: '24000',
 			// tslint:disable-next-line: align
 		});
-		const data = await pollyClient.send(synthesizeSpeechCommand);
+		const data = await this.pollyClient.send(synthesizeSpeechCommand);
 		const response = new Response(data.AudioStream as ReadableStream);
 		const arrayBuffer = await response.arrayBuffer();
 		const blob = new Blob([arrayBuffer], {

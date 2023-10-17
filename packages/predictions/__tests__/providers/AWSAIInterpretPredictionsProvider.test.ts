@@ -491,7 +491,7 @@ describe('Predictions interpret provider test', () => {
 				},
 			});
 			expect(
-				predictionsProvider['comprehendClient'].config.customUserAgent
+				predictionsProvider['comprehendClient']!.config.customUserAgent
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,

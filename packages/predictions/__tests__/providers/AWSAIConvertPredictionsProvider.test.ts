@@ -63,11 +63,10 @@ const resetPollyMock = () => {
 });
 
 (global as any).WebSocket = jest.fn(url => {
-	let onCloseCallback = null;
-	let onErrorCallback = null;
-	let onMsgCallback = null;
-	let connection = null;
-	connection = {
+	let onCloseCallback;
+	let onErrorCallback;
+	let onMsgCallback;
+	let connection = {
 		set onmessage(callback) {
 			onMsgCallback = callback;
 		},
@@ -81,7 +80,9 @@ const resetPollyMock = () => {
 			callback();
 		},
 		send: jest.fn(() => {
-			onMsgCallback('');
+			if (onMsgCallback) {
+				onMsgCallback('');
+			}
 			onCloseCallback();
 		}),
 	};
@@ -428,7 +429,9 @@ describe('Predictions convert provider test', () => {
 
 			await predictionsProvider.convert(validTextToSpeechInput);
 
-			expect(predictionsProvider['pollyClient'].config.customUserAgent).toEqual(
+			expect(
+				predictionsProvider['pollyClient']!.config.customUserAgent
+			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Convert,
@@ -449,7 +452,7 @@ describe('Predictions convert provider test', () => {
 
 			await predictionsProvider.convert(validTranslateTextInput);
 			expect(
-				predictionsProvider['translateClient'].config.customUserAgent
+				predictionsProvider['translateClient']!.config.customUserAgent
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,

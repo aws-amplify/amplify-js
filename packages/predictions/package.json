@@ -93,16 +93,17 @@
 	"jest": {
 		"globals": {
 			"ts-jest": {
-				"diagnostics": false,
+				"diagnostics": {
+					"pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
+				},
 				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2017.object"
-					],
-					"allowJs": true
+					"downlevelIteration": true,
+					"allowJs": true,
+					"types": ["@types/jest"],
+					"outDir": "./tsconfig.json",
+					"noEmitOnError": false,
+					"noImplicitAny": false,
+					"skipLibCheck": true
 				}
 			}
 		},

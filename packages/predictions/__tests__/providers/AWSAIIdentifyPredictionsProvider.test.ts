@@ -67,20 +67,20 @@ RekognitionClient.prototype.send = jest.fn(command => {
 					],
 				},
 			],
-			$metadata: null,
+			$metadata: {},
 		};
 		return Promise.resolve(detectlabelsResponse);
 	} else if (command instanceof DetectModerationLabelsCommand) {
 		const detectModerationLabelsResponse: DetectModerationLabelsCommandOutput =
 			{
 				ModerationLabels: [{ Name: 'test', Confidence: 0.0 }],
-				$metadata: null,
+				$metadata: {},
 			};
 		return Promise.resolve(detectModerationLabelsResponse);
 	} else if (command instanceof DetectFacesCommand) {
 		const detectFacesResponse: DetectFacesCommandOutput = {
 			FaceDetails: [{ AgeRange: { High: 0, Low: 0 } }],
-			$metadata: null,
+			$metadata: {},
 		};
 		return Promise.resolve(detectFacesResponse);
 	} else if (command instanceof SearchFacesByImageCommand) {
@@ -94,7 +94,7 @@ RekognitionClient.prototype.send = jest.fn(command => {
 					Similarity: 0.0,
 				},
 			],
-			$metadata: null,
+			$metadata: {},
 		};
 		return Promise.resolve(searchFacesByImageResponse);
 	} else if (command instanceof RecognizeCelebritiesCommand) {
@@ -118,7 +118,7 @@ RekognitionClient.prototype.send = jest.fn(command => {
 					},
 				},
 			],
-			$metadata: null,
+			$metadata: {},
 		};
 		return Promise.resolve(recognizeCelebritiesResponse);
 	} else if (command instanceof DetectTextCommand) {
@@ -128,7 +128,7 @@ RekognitionClient.prototype.send = jest.fn(command => {
 				{ Type: 'WORD', Id: 2, ParentId: 1, DetectedText: 'Hello' },
 				{ Type: 'WORD', Id: 3, ParentId: 1, DetectedText: 'world' },
 			],
-			$metadata: null,
+			$metadata: {},
 		};
 		return Promise.resolve(plainBlocks);
 	}
@@ -340,10 +340,10 @@ describe('Predictions identify provider test', () => {
 							TextDetections: [
 								{ Type: 'LINE', Id: 1, DetectedText: 'Hello world' },
 							],
-							$metadata: null,
+							$metadata: {},
 						};
 						for (let i = 0; i < 50; ++i) {
-							plainBlocks.TextDetections.push({
+							plainBlocks.TextDetections!.push({
 								Type: 'WORD',
 								Id: i + 2,
 								ParentId: 1,
@@ -608,7 +608,7 @@ describe('Predictions identify provider test', () => {
 					],
 				},
 			],
-			$metadata: null,
+			$metadata: {},
 		};
 
 		test('happy case input source valid public s3object', () => {
@@ -619,7 +619,7 @@ describe('Predictions identify provider test', () => {
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce(command => {
 					expect(
-						(command as DetectLabelsCommand).input.Image.S3Object.Name
+						(command as DetectLabelsCommand).input.Image?.S3Object?.Name
 					).toMatch('public/key');
 					return Promise.resolve(detectlabelsResponse);
 				});
@@ -634,7 +634,7 @@ describe('Predictions identify provider test', () => {
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce(command => {
 					expect(
-						(command as DetectLabelsCommand).input.Image.S3Object.Name
+						(command as DetectLabelsCommand).input.Image?.S3Object?.Name
 					).toMatch('private/identityId/key');
 					return {};
 				});
@@ -656,7 +656,7 @@ describe('Predictions identify provider test', () => {
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce(command => {
 					expect(
-						(command as DetectLabelsCommand).input.Image.S3Object.Name
+						(command as DetectLabelsCommand).input.Image?.S3Object?.Name
 					).toMatch('protected/identityId/key');
 					return Promise.resolve(detectlabelsResponse);
 				});
@@ -670,7 +670,7 @@ describe('Predictions identify provider test', () => {
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce(command => {
-					expect((command as DetectLabelsCommand).input.Image.Bytes).toMatch(
+					expect((command as DetectLabelsCommand).input.Image?.Bytes).toMatch(
 						'bytes'
 					);
 					return Promise.resolve(detectlabelsResponse);
@@ -687,7 +687,7 @@ describe('Predictions identify provider test', () => {
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce(command => {
 					expect(
-						(command as DetectLabelsCommand).input.Image.Bytes
+						(command as DetectLabelsCommand).input.Image?.Bytes
 					).toMatchObject(fileInput);
 					return {};
 				});
@@ -704,7 +704,7 @@ describe('Predictions identify provider test', () => {
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce(command => {
 					expect(
-						(command as DetectLabelsCommand).input.Image.Bytes
+						(command as DetectLabelsCommand).input.Image?.Bytes
 					).toMatchObject(fileInput);
 					return {};
 				});
@@ -713,6 +713,7 @@ describe('Predictions identify provider test', () => {
 
 		test('error case invalid input source', () => {
 			const detectLabelInput: IdentifyLabelsInput = {
+				// @ts-ignore - source should be invalid
 				labels: { source: null, type: 'LABELS' },
 			};
 			expect(predictionsProvider.identify(detectLabelInput)).rejects.toMatch(
