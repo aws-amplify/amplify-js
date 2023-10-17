@@ -67,8 +67,8 @@ import { BoundingBox } from 'puppeteer';
 const logger = new Logger('AmazonAIIdentifyPredictionsProvider');
 
 export class AmazonAIIdentifyPredictionsProvider {
-	private rekognitionClient: RekognitionClient;
-	private textractClient: TextractClient;
+	private rekognitionClient: RekognitionClient | undefined;
+	private textractClient: TextractClient | undefined;
 
 	getProviderName() {
 		return 'AmazonAIIdentifyPredictionsProvider';
@@ -296,7 +296,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 		param: DetectLabelsCommandInput
 	): Promise<IdentifyLabelsOutput> {
 		const detectLabelsCommand = new DetectLabelsCommand(param);
-		const data = await this.rekognitionClient.send(detectLabelsCommand);
+		const data = await this.rekognitionClient!.send(detectLabelsCommand);
 		if (!data.Labels) return {}; // no image was detected
 		const detectLabelData = data.Labels.map(label => {
 			const filteredInstances =
@@ -328,7 +328,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 		const detectModerationLabelsCommand = new DetectModerationLabelsCommand(
 			param
 		);
-		const data = await this.rekognitionClient.send(
+		const data = await this.rekognitionClient!.send(
 			detectModerationLabelsCommand
 		);
 		if (data.ModerationLabels?.length !== 0) {

@@ -118,22 +118,23 @@ export interface FileSource {
 	file: File;
 }
 
-export type Bytes = Buffer | ArrayBuffer | string;
+export type ConvertBytes = Buffer | ArrayBuffer | string;
+export type IdentifyBytes = ConvertBytes | Blob;
 
-export interface BytesSource {
-	bytes: Bytes;
+export interface BytesSource<T> {
+	bytes: T;
 }
 
 export interface SpeechToTextInput {
 	transcription: {
-		source: BytesSource;
+		source: BytesSource<ConvertBytes>;
 		language?: string;
 	};
 }
 
 export type TranscribeData = {
 	connection: WebSocket;
-	raw: Bytes;
+	raw: ConvertBytes;
 	languageCode: string;
 };
 
@@ -143,7 +144,10 @@ export interface SpeechToTextOutput {
 	};
 }
 
-export type IdentifySource = StorageSource | FileSource | BytesSource;
+export type IdentifySource =
+	| StorageSource
+	| FileSource
+	| BytesSource<IdentifyBytes>;
 
 export interface IdentifyTextInput {
 	text: {

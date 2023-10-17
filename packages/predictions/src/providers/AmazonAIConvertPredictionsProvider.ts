@@ -16,7 +16,7 @@ import {
 	isTranslateTextInput,
 	isTextToSpeechInput,
 	isSpeechToTextInput,
-	Bytes,
+	ConvertBytes,
 	TranscribeData,
 } from '../types';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
@@ -313,7 +313,7 @@ export class AmazonAIConvertPredictionsProvider {
 
 	private sendEncodedDataToTranscribe(
 		connection: WebSocket,
-		data: Bytes | any[],
+		data: ConvertBytes | any[],
 		languageCode: string
 	) {
 		const downsampledBuffer = this.downsampleBuffer({
@@ -349,7 +349,7 @@ export class AmazonAIConvertPredictionsProvider {
 		return audioEventMessage;
 	}
 
-	private pcmEncode(input: Float32Array | Bytes | any[]) {
+	private pcmEncode(input: Float32Array | ConvertBytes | any[]) {
 		let offset = 0;
 		// ArrayBuffer cannot be processed using length property
 		if (input instanceof ArrayBuffer) {
@@ -371,7 +371,7 @@ export class AmazonAIConvertPredictionsProvider {
 		buffer,
 		outputSampleRate = 16000,
 	}: {
-		buffer: Bytes | any[];
+		buffer: ConvertBytes | any[];
 		outputSampleRate: number;
 	}) {
 		// Cannot process ArrayBuffer using length property
