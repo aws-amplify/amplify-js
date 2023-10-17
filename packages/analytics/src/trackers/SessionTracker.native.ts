@@ -70,6 +70,8 @@ export class SessionTracker implements TrackerInterface {
 	}
 
 	private handleStateChange(state: SessionState) {
+		console.log('+ SessionTracker state change: ', state);
+
 		if (state === 'started') {
 			this.sessionStarted();
 		} else {

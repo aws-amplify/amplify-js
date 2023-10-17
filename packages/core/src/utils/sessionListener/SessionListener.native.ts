@@ -44,11 +44,13 @@ export class SessionListenerClass implements SessionListenerInterface {
 				this.currentAppState.match(/inactive|background/)) &&
 			nextAppState === 'active'
 		) {
+			console.log('+ Session listener active');
 			this.notifyHandlers();
 		} else if (
 			this.currentAppState?.match(/active/) &&
 			nextAppState.match(/inactive|background/)
 		) {
+			console.log('+ Session listener background');
 			this.notifyHandlers();
 		}
 
@@ -58,12 +60,19 @@ export class SessionListenerClass implements SessionListenerInterface {
 	private notifyHandlers() {
 		const sessionState = this.getSessionState();
 
+		console.log('+ Notify handlers state', sessionState);
+
 		stateChangeListeners.forEach(listener => {
 			listener(sessionState);
 		});
 	}
 
 	private getSessionState = (): SessionState => {
+		console.log(
+			'+ getSessionState current state',
+			loadAppState().currentAppState
+		);
+
 		if (loadAppState().currentAppState === 'active') {
 			return 'started';
 		}
