@@ -32,7 +32,6 @@ export function initializeInAppMessaging(): void {
 
 	// wire up default Pinpoint message event handling
 	addEventListener('messageDisplayed', (message: InAppMessage) => {
-		console.log('Recording message displayed event');
 		recordAnalyticsEvent(PinpointMessageEvent.MESSAGE_DISPLAYED, message);
 		incrementMessageCounts(message.id);
 	});

@@ -3,10 +3,8 @@
 
 import { resolveConfig, resolveCredentials } from '../utils';
 import { flushEvents as flushEventsCore } from '@aws-amplify/core/internals/providers/pinpoint';
-import {
-	AnalyticsAction,
-	ConsoleLogger,
-} from '@aws-amplify/core/internals/utils';
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 import { getAnalyticsUserAgentString } from '../../../utils';
 
 const logger = new ConsoleLogger('Analytics');

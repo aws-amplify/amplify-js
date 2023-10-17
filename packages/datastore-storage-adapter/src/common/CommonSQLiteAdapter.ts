@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 import {
 	generateSchemaStatements,
 	queryByIdStatement,
@@ -39,7 +39,7 @@ import {
 
 const { traverseModel, validatePredicate, isModelConstructor } = utils;
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 export class CommonSQLiteAdapter implements StorageAdapter {
 	private schema: InternalSchema;
