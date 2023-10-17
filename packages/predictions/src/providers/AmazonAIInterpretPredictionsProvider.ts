@@ -159,8 +159,8 @@ export class AmazonAIInterpretPredictionsProvider {
 			const detectKeyPhrasesCommand = new DetectKeyPhrasesCommand(params);
 			const data = await this.comprehendClient!.send(detectKeyPhrasesCommand);
 			const { KeyPhrases = [] } = data || {};
-			return KeyPhrases.filter(({ Text }) => !!Text).map(({ Text }) => {
-				return { text: Text! };
+			return KeyPhrases.map(({ Text: text }) => {
+				return { text };
 			});
 		} catch (err: any) {
 			if (err.code === 'AccessDeniedException') {

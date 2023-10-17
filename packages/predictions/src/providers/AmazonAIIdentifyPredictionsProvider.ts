@@ -302,12 +302,11 @@ export class AmazonAIIdentifyPredictionsProvider {
 		const data = await this.rekognitionClient!.send(detectLabelsCommand);
 		if (!data.Labels) return {}; // no image was detected
 		const detectLabelData = data.Labels.map(label => {
-			const filteredInstances =
-				label.Instances?.filter(instance => !!instance.BoundingBox) ?? [];
-
-			const boxes = filteredInstances.map(
-				instance => makeCamelCase(instance.BoundingBox) as BoundingBox
-			);
+			const boxes =
+				label.Instances?.map(
+					instance =>
+						makeCamelCase(instance.BoundingBox) as BoundingBox | undefined
+				) || [];
 			return {
 				name: label.Name,
 				boundingBoxes: boxes,
@@ -456,12 +455,10 @@ export class AmazonAIIdentifyPredictionsProvider {
 						detail,
 						attributeKeys
 					) as FaceAttributes;
-					if (detail.Emotions) {
-						faceAttributes.emotions =
-							detail.Emotions.filter(emotion => !!emotion.Type).map(
-								emotion => emotion.Type!
-							) ?? [];
-					}
+
+					faceAttributes.emotions = detail.Emotions?.map(
+						emotion => emotion.Type
+					);
 					return <IdentifyEntity>{
 						boundingBox: makeCamelCase(detail.BoundingBox),
 						landmarks: makeCamelCaseArray(detail.Landmarks),

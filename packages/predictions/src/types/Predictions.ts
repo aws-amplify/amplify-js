@@ -46,7 +46,7 @@ export interface TextEntities {
 }
 
 export interface KeyPhrases {
-	text: string;
+	text: string | undefined;
 }
 
 export interface TextSyntax {
@@ -238,7 +238,7 @@ export interface BoundingBox {
 export interface IdentifyLabelsOutput {
 	labels?: {
 		name?: string;
-		boundingBoxes?: BoundingBox[];
+		boundingBoxes?: (BoundingBox | undefined)[];
 		metadata?: Object;
 	}[];
 	unsafe?: 'YES' | 'NO' | 'UNKNOWN';
@@ -273,7 +273,7 @@ export interface FaceAttributes {
 	mustache?: boolean;
 	eyesOpen?: boolean;
 	mouthOpen?: boolean;
-	emotions?: string[];
+	emotions?: (string | undefined)[];
 }
 
 export type IdentifyEntity = {
