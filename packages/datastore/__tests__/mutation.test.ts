@@ -26,6 +26,7 @@ import {
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { SyncEngine, MutationEvent } from '../src/sync/';
 
+import { Amplify } from '@aws-amplify/core';
 let syncClasses: any;
 let modelInstanceCreator: any;
 let Model: PersistentModelConstructor<ModelType>;
@@ -98,12 +99,12 @@ describe('MutationProcessor', () => {
 
 	// Test for this PR: https://github.com/aws-amplify/amplify-js/pull/6542
 	describe('100% Packet Loss Axios Error', () => {
-		it.skip('Should result in Network Error and get handled without breaking the Mutation Processor', async () => {
+		it('Should result in Network Error and get handled without breaking the Mutation Processor', async () => {
 			const mutationProcessorSpy = jest.spyOn(mutationProcessor, 'resume');
 			await mutationProcessor.resume();
 
 			expect(mockRetry.mock.results).toHaveLength(1);
-
+			debugger;
 			await expect(mockRetry.mock.results[0].value).rejects.toEqual(
 				new Error('Network Error')
 			);
@@ -287,6 +288,7 @@ jest.mock('@aws-amplify/api-rest/internals', () => {
 let mockRetry;
 jest.mock('@aws-amplify/core/internals/utils', () => {
 	mockRetry = jest.fn().mockImplementation(async (fn, args) => {
+		debugger;
 		await fn(...args);
 	});
 	return {
