@@ -209,7 +209,6 @@ let warpTimeTick;
  * @param multiplier How much faster than regular time should we run?
  */
 export function warpTime(multiplier = 20) {
-	debugger;
 	warpTimeTick = setInterval(() => {
 		jest.advanceTimersByTime(25 * multiplier);
 	}, 25);
@@ -221,7 +220,6 @@ export function warpTime(multiplier = 20) {
  * implementations.
  */
 export function unwarpTime() {
-	debugger;
 	jest.useRealTimers();
 	clearInterval(warpTimeTick);
 }
