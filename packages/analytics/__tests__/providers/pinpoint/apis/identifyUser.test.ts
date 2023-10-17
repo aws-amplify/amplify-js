@@ -70,7 +70,7 @@ describe('Analytics Pinpoint Provider API: identifyUser', () => {
 			userProfile: {},
 		};
 		const options: IdentifyUserInput['options'] = {
-			serviceOptions: { userAttributes },
+			userAttributes,
 		};
 		await identifyUser({ ...input, options });
 		expect(mockUpdateEndpoint).toBeCalledWith({

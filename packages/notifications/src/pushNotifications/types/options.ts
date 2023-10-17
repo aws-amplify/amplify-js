@@ -4,4 +4,4 @@
 /**
  * Base type for service options.
  */
-export type PushNotificationServiceOptions = any;
+export type PushNotificationServiceOptions = Record<string, unknown>;
