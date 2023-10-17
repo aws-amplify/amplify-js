@@ -297,7 +297,7 @@ describe('client', () => {
 			expect(items).toEqual(graphqlResponse.data.listThreads.items);
 		});
 
-		test('subscribe', done => {
+		test.only('subscribe', done => {
 			const threadToSend = {
 				__typename: 'Thread',
 				...serverManagedFields,
@@ -327,6 +327,8 @@ describe('client', () => {
 					variables: graphqlVariables,
 					authMode: 'apiKey',
 				});
+
+			console.dir((spy.mock.calls as any)[0][0].variables);
 
 			result.subscribe({
 				// Customers should normally omit the type. Making it explicit to ensure the test

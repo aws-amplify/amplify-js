@@ -126,6 +126,9 @@ export const graphQLOperationsInfo = {
 	UPDATE: { operationPrefix: 'update' as const, usePlural: false },
 	DELETE: { operationPrefix: 'delete' as const, usePlural: false },
 	LIST: { operationPrefix: 'list' as const, usePlural: true },
+	ONCREATE: { operationPrefix: 'onCreate' as const, usePlural: false },
+	ONUPDATE: { operationPrefix: 'onUpdate' as const, usePlural: false },
+	ONDELETE: { operationPrefix: 'onDelete' as const, usePlural: false },
 };
 export type ModelOperation = keyof typeof graphQLOperationsInfo;
 
@@ -230,7 +233,7 @@ export function generateGraphQLDocument(
 	}
 
 	const graphQLFieldName = `${operationPrefix}${usePlural ? pluralName : name}`;
-	let graphQLOperationType: 'mutation' | 'query' | undefined;
+	let graphQLOperationType: 'mutation' | 'query' | 'subscription' | undefined;
 	let graphQLSelectionSet: string | undefined;
 	let graphQLArguments: Record<string, any> | undefined;
 
@@ -353,6 +356,9 @@ export function buildGraphQLVariables(
 			}
 			break;
 		case 'LIST':
+		case 'ONCREATE':
+		case 'ONUPDATE':
+		case 'ONDELETE':
 			if (arg?.filter) {
 				variables = { filter: arg.filter };
 			}
