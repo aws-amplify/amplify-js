@@ -14,6 +14,7 @@ import { SetBadgeCount } from '../types';
  * @example
  * ```ts
  * setBadgeCount(42);
+ * ```
  */
 export const setBadgeCount: SetBadgeCount = () => {
 	throw new PlatformNotSupportedError();
