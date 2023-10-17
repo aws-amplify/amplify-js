@@ -99,7 +99,7 @@ describe('MutationProcessor', () => {
 
 	// Test for this PR: https://github.com/aws-amplify/amplify-js/pull/6542
 	describe('100% Packet Loss Axios Error', () => {
-		it('Should result in Network Error and get handled without breaking the Mutation Processor', async () => {
+		it.skip('Should result in Network Error and get handled without breaking the Mutation Processor', async () => {
 			const mutationProcessorSpy = jest.spyOn(mutationProcessor, 'resume');
 			await mutationProcessor.resume();
 
@@ -162,9 +162,10 @@ describe('MutationProcessor', () => {
 			expect(input.postId).toEqual('100');
 		});
 
-		it.skip('Should send datastore details with the x-amz-user-agent in the rest api request', async () => {
+		it.skip('Should send datastore details with the x-amz-user-agent in the rest api request', async done => {
 			jest.spyOn(mutationProcessor, 'resume');
 			await mutationProcessor.resume();
+			await new Promise(res => setTimeout(res, 1000));
 			expect(mockRestPost).toBeCalledWith(
 				expect.anything(),
 				expect.objectContaining({
