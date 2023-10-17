@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { nativeModule } from '../nativeModule';
-import { NativeMessage } from '../types';
+import { PushNotificationMessage } from '../types';
+import { normalizeNativeMessage } from '../utils';
 
-export const getLaunchNotification = async (): Promise<NativeMessage | null> =>
-	nativeModule.getLaunchNotification();
+export const getLaunchNotification =
+	async (): Promise<PushNotificationMessage | null> =>
+		normalizeNativeMessage(
+			(await nativeModule.getLaunchNotification()) ?? undefined
+		);
