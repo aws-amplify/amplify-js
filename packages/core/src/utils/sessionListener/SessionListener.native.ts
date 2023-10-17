@@ -39,6 +39,8 @@ export class SessionListenerClass implements SessionListenerInterface {
 	}
 
 	private handleStateChange(nextAppState: string) {
+		console.log('+ handleStateChange currentAppState', this.currentAppState);
+
 		if (
 			(this.currentAppState === undefined ||
 				this.currentAppState.match(/inactive|background/)) &&
