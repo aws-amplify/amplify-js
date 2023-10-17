@@ -26,7 +26,6 @@ import {
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { SyncEngine, MutationEvent } from '../src/sync/';
 
-import { Amplify } from '@aws-amplify/core';
 let syncClasses: any;
 let modelInstanceCreator: any;
 let Model: PersistentModelConstructor<ModelType>;
@@ -103,11 +102,11 @@ describe('MutationProcessor', () => {
 			const mutationProcessorSpy = jest.spyOn(mutationProcessor, 'resume');
 			await mutationProcessor.resume();
 
-			// expect(mockRetry.mock.results).toHaveLength(1);
-			// debugger;
-			// await expect(mockRetry.mock.results[0].value).rejects.toEqual(
-			// 	new Error('Network Error')
-			// );
+			expect(mockRetry.mock.results).toHaveLength(1);
+
+			await expect(mockRetry.mock.results[0].value).rejects.toEqual(
+				new Error('Network Error')
+			);
 
 			expect(mutationProcessorSpy).toHaveBeenCalled();
 
@@ -162,7 +161,7 @@ describe('MutationProcessor', () => {
 			expect(input.postId).toEqual('100');
 		});
 
-		it.skip('Should send datastore details with the x-amz-user-agent in the rest api request', async done => {
+		it.skip('Should send datastore details with the x-amz-user-agent in the rest api request', async () => {
 			jest.spyOn(mutationProcessor, 'resume');
 			await mutationProcessor.resume();
 			expect(mockRestPost).toBeCalledWith(
@@ -273,14 +272,14 @@ describe('error handler', () => {
 });
 // Mocking restClient.post to throw the error we expect
 // when experiencing poor network conditions
-// jest.mock('@aws-amplify/api-rest/internals', () => {
-// 	return {
-// 		...jest.requireActual('@aws-amplify/api-rest/internals'),
-// 		post: mockRestPost.mockImplementation(() => {
-// 			return Promise.reject(serverError);
-// 		}),
-// 	};
-// });
+jest.mock('@aws-amplify/api-rest/internals', () => {
+	return {
+		...jest.requireActual('@aws-amplify/api-rest/internals'),
+		post: mockRestPost.mockImplementation(() => {
+			return Promise.reject(serverError);
+		}),
+	};
+});
 
 // mocking jitteredBackoff to prevent it from retrying
 // endlessly in the mutation processor and so that we can expect the thrown result in our test
