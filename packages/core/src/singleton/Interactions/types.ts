@@ -14,12 +14,16 @@ interface LexV2BotConfig {
 }
 
 type InteractionsLexV1Config = {
-	LexV1?: Record<string, LexV1BotConfig>;
+	LexV1: Record<string, LexV1BotConfig>;
 };
 
 type InteractionsLexV2Config = {
-	LexV2?: Record<string, LexV2BotConfig>;
+	LexV2: Record<string, LexV2BotConfig>;
 };
 
-export type InteractionsConfig = InteractionsLexV1Config &
-	InteractionsLexV2Config;
+type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
+	U[keyof U];
+
+export type InteractionsConfig = AtLeastOne<
+	InteractionsLexV1Config & InteractionsLexV2Config
+>;
