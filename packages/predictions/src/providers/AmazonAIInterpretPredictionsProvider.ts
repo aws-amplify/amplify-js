@@ -16,6 +16,7 @@ import {
 	KeyPhrases,
 	isInterpretTextInput,
 	DetectParams,
+	isValidInterpretInput,
 } from '../types';
 import {
 	ComprehendClient,
@@ -29,7 +30,6 @@ import {
 } from '@aws-sdk/client-comprehend';
 import { assertValidationError } from '../errors/utils/assertValidationError';
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
-import { getValidationError } from '../errors/utils/getValidationError';
 
 export class AmazonAIInterpretPredictionsProvider {
 	private comprehendClient: ComprehendClient | undefined;
@@ -39,11 +39,12 @@ export class AmazonAIInterpretPredictionsProvider {
 	}
 
 	interpret(input: InterpretTextInput): Promise<InterpretTextOutput> {
-		if (isInterpretTextInput(input)) {
-			return this.interpretText(input);
-		} else {
-			throw getValidationError(PredictionsValidationErrorCode.InvalidInput);
-		}
+		assertValidationError(
+			isValidInterpretInput(input),
+			PredictionsValidationErrorCode.InvalidInput
+		);
+
+		return this.interpretText(input);
 	}
 
 	async interpretText(input: InterpretTextInput): Promise<InterpretTextOutput> {

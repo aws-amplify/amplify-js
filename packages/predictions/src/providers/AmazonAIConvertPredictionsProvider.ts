@@ -18,6 +18,7 @@ import {
 	isSpeechToTextInput,
 	ConvertBytes,
 	TranscribeData,
+	isValidConvertInput,
 } from '../types';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
@@ -36,7 +37,7 @@ import {
 import { fromUtf8, toUtf8 } from '@smithy/util-utf8';
 import { Buffer } from 'buffer';
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
-import { assertValidationError, getValidationError } from '../errors/utils';
+import { assertValidationError } from '../errors/utils/assertValidationError';
 
 const logger = new Logger('AmazonAIConvertPredictionsProvider');
 const eventBuilder = new EventStreamCodec(toUtf8, fromUtf8);
@@ -54,17 +55,20 @@ export class AmazonAIConvertPredictionsProvider {
 	convert(
 		input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput
 	): Promise<TextToSpeechOutput | TranslateTextOutput | SpeechToTextOutput> {
+		assertValidationError(
+			isValidConvertInput(input),
+			PredictionsValidationErrorCode.InvalidInput
+		);
+
 		if (isTranslateTextInput(input)) {
 			logger.debug('translateText');
 			return this.translateText(input);
 		} else if (isTextToSpeechInput(input)) {
 			logger.debug('textToSpeech');
 			return this.convertTextToSpeech(input);
-		} else if (isSpeechToTextInput(input)) {
+		} else {
 			logger.debug('textToSpeech');
 			return this.convertSpeechToText(input);
-		} else {
-			throw getValidationError(PredictionsValidationErrorCode.InvalidInput);
 		}
 	}
 

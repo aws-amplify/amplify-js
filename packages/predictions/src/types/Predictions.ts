@@ -295,6 +295,26 @@ export interface IdentifyEntitiesOutput {
 	entities: IdentifyEntity[];
 }
 
+export function isValidConvertInput(obj: any) {
+	return (
+		isTranslateTextInput(obj) ||
+		isTextToSpeechInput(obj) ||
+		isSpeechToTextInput(obj)
+	);
+}
+
+export function isValidIdentifyInput(obj: any) {
+	return (
+		isIdentifyTextInput(obj) ||
+		isIdentifyLabelsInput(obj) ||
+		isIdentifyEntitiesInput(obj)
+	);
+}
+
+export function isValidInterpretInput(obj: any) {
+	return isInterpretTextInput(obj);
+}
+
 export function isIdentifyFromCollection(
 	obj: any
 ): obj is IdentifyFromCollection {

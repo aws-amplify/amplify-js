@@ -40,6 +40,7 @@ import {
 	isIdentifyEntitiesInput,
 	IdentifyEntity,
 	FaceAttributes,
+	isValidIdentifyInput,
 } from '../types';
 import {
 	Image,
@@ -61,7 +62,6 @@ import {
 } from './IdentifyTextUtils';
 import { assertValidationError } from '../errors/utils/assertValidationError';
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
-import { getValidationError } from '../errors/utils/getValidationError';
 import { BoundingBox } from 'puppeteer';
 
 const logger = new Logger('AmazonAIIdentifyPredictionsProvider');
@@ -79,17 +79,20 @@ export class AmazonAIIdentifyPredictionsProvider {
 	): Promise<
 		IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput
 	> {
+		assertValidationError(
+			isValidIdentifyInput(input),
+			PredictionsValidationErrorCode.InvalidInput
+		);
+
 		if (isIdentifyTextInput(input)) {
 			logger.debug('identifyText');
 			return this.identifyText(input);
 		} else if (isIdentifyLabelsInput(input)) {
 			logger.debug('identifyLabels');
 			return this.identifyLabels(input);
-		} else if (isIdentifyEntitiesInput(input)) {
+		} else {
 			logger.debug('identifyEntities');
 			return this.identifyEntities(input);
-		} else {
-			throw getValidationError(PredictionsValidationErrorCode.InvalidInput);
 		}
 	}
 
