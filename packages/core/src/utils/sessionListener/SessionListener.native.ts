@@ -31,8 +31,8 @@ export class SessionListenerClass implements SessionListenerInterface {
 	) {
 		stateChangeListeners.add(listener);
 
-		// Notify new handlers of the current state on add
-		if (notifyOnAdd) {
+		// Notify new handlers of the current state on add if the current state has been determined
+		if (notifyOnAdd && this.currentAppState !== undefined) {
 			listener(this.getSessionState());
 		}
 	}
@@ -42,17 +42,13 @@ export class SessionListenerClass implements SessionListenerInterface {
 	}
 
 	private handleStateChange(nextAppState: string) {
-		console.log('+ handleStateChange currentAppState', this.currentAppState);
-
 		if (
 			(this.currentAppState === undefined ||
 				isInactive(this.currentAppState)) &&
 			isActive(nextAppState)
 		) {
-			console.log('+ Session listener active');
 			this.notifyHandlers('started');
 		} else if (isActive(this.currentAppState) && isInactive(nextAppState)) {
-			console.log('+ Session listener background');
 			this.notifyHandlers('ended');
 		}
 
@@ -60,16 +56,12 @@ export class SessionListenerClass implements SessionListenerInterface {
 	}
 
 	private notifyHandlers(state: SessionState) {
-		console.log('+ Notify handlers state', state);
-
 		stateChangeListeners.forEach(listener => {
 			listener(state);
 		});
 	}
 
 	private getSessionState = (): SessionState => {
-		console.log('+ getSessionState current state', this.currentAppState);
-
 		if (isActive(this.currentAppState)) {
 			return 'started';
 		}
