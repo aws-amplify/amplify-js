@@ -19,6 +19,7 @@ import { GetLaunchNotification, GetLaunchNotificationOutput } from '../types';
  * @example
  * ```ts
  * const launchNotification = await getLaunchNotification();
+ * ```
  */
 export const getLaunchNotification: GetLaunchNotification = () => {
 	throw new PlatformNotSupportedError();
