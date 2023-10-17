@@ -3,7 +3,7 @@
 
 // TODO(v6): revisit exports
 
-export { GraphQLQuery, GraphQLSubscription } from './types';
+export { GraphQLQuery, GraphQLSubscription, SelectionSet } from './types';
 export { generateClient } from './API';
 
 export { GraphQLAuthError } from '@aws-amplify/api-graphql';

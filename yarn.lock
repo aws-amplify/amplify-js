@@ -10,17 +10,17 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@aws-amplify/amplify-api-next-alpha@^0.4.1":
-  version "0.4.1"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-api-next-alpha/-/amplify-api-next-alpha-0.4.1.tgz#2d191991090d14e90e3c903aab7d2dcf727975c9"
-  integrity sha512-n/+FtBAIozubPqmJP2UFOmQinpsc0nHtKVD/qNr6gfSs/3Fe9Ub/Oo/xT7f52hjVHsOsBtN3InrYlgRdsLgBEw==
+"@aws-amplify/amplify-api-next-alpha@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-api-next-alpha/-/amplify-api-next-alpha-0.6.0.tgz#5560136c259df68732c975e834dd5610cd0e12f2"
+  integrity sha512-SNE5ervGKabSkHV21NDPg7yyMfL2wSt7+aPmR27yAM87dGXG21QfeCNOme16prpk1fmbDU0/xQO1tc9NQMw3iw==
   dependencies:
     "@aws-amplify/amplify-api-next-types-alpha" "*"
 
-"@aws-amplify/amplify-api-next-types-alpha@*", "@aws-amplify/amplify-api-next-types-alpha@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-api-next-types-alpha/-/amplify-api-next-types-alpha-0.0.5.tgz#afeaba02f2607ac43de404bfcbb8702cb56f6ff9"
-  integrity sha512-FlOfQX9+r0Q8G5EEAV5tkBjcaTJhlnwfaeoe4K42BLKPzngntn+wWIFbIIbCFjW18DUmv62ItynzNSls+E38vg==
+"@aws-amplify/amplify-api-next-types-alpha@*", "@aws-amplify/amplify-api-next-types-alpha@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-api-next-types-alpha/-/amplify-api-next-types-alpha-0.2.0.tgz#4ef225033caecd5124cee1788e3df63d034965f9"
+  integrity sha512-5eFaXUdmHc6ahqmV5bvX0aCTeV6bBULTG9QV+96L+/gtWBhhn/mj1+O8Q4nMy7/e95m8Hz9LnDt225EewwVAPw==
 
 "@aws-crypto/crc32@3.0.0":
   version "3.0.0"
