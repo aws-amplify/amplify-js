@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLAuthError } from '@aws-amplify/api';
+import { ConsoleLogger } from '@aws-amplify/core';
 import type { GraphQLError } from 'graphql';
-import { Logger, GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
@@ -40,7 +41,7 @@ import {
 } from '../util';
 import { MutationEvent } from './';
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 enum GraphQLOperationType {
 	LIST = 'query',

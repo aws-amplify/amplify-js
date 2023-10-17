@@ -14,10 +14,8 @@ import {
 	isAnalyticsEnabled,
 	resolveCredentials,
 } from '../../../utils';
-import {
-	AnalyticsAction,
-	ConsoleLogger,
-} from '@aws-amplify/core/internals/utils';
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 import {
 	IDENTIFY_EVENT_TYPE,
 	MEDIA_AUTO_TRACK_EVENT_TYPE,
