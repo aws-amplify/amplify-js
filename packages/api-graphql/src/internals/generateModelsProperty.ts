@@ -61,7 +61,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								const [key] = Object.keys(data);
 
 								if (data[key].items) {
-								const flattenedResult = flattenItems(data)[key];
+									const flattenedResult = flattenItems(data)[key];
 
 									// don't init if custom selection set
 									if (args?.selectionSet) {
@@ -123,31 +123,24 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								variables,
 							})) as any;
 
-<<<<<<< HEAD
 							// flatten response
 							if (data !== undefined) {
 								const [key] = Object.keys(data);
+								const flattenedResult = flattenItems(data)[key];
 
-=======
-						// flatten response
-						if (res.data !== undefined) {
-							const [key] = Object.keys(res.data);
-							const flattenedResult = flattenItems(res.data)[key];
+								if (options?.selectionSet) {
+									return flattenedResult;
+								} else {
+									// TODO: refactor to avoid destructuring here
+									const [initialized] = initializeModel(
+										client,
+										name,
+										[flattenedResult],
+										modelIntrospection
+									);
 
-							if (options?.selectionSet) {
-								return flattenedResult;
-							} else {
->>>>>>> ac2fc0c47 (backport recent changes from v5; bump types)
-								// TODO: refactor to avoid destructuring here
-								const [initialized] = initializeModel(
-									client,
-									name,
-<<<<<<< HEAD
-									[data[key]],
-									modelIntrospection
-								);
-
-								return { data: initialized, extensions };
+									return { data: initialized, extensions };
+								}
 							} else {
 								return { data: null, extensions };
 							}
@@ -158,13 +151,6 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 							} else {
 								// non-graphql errors re re-thrown
 								throw error;
-=======
-									[flattenedResult],
-									modelIntrospection
-								);
-
-								return initialized;
->>>>>>> ac2fc0c47 (backport recent changes from v5; bump types)
 							}
 						}
 					};

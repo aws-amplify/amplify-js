@@ -17,10 +17,10 @@
   dependencies:
     "@aws-amplify/amplify-api-next-types-alpha" "*"
 
-"@aws-amplify/amplify-api-next-types-alpha@*", "@aws-amplify/amplify-api-next-types-alpha@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-api-next-types-alpha/-/amplify-api-next-types-alpha-0.1.2.tgz#e25ee9b5c9bcbc2ca6d807d372c81175465e1886"
-  integrity sha512-g+t8F0F0J+SPutmc3WszOvZQdPu9Z5dm7b0Q6CyBx3+oUxc7O83jazdR04uydX4NLAwui8QSKg2StI82FKw8sQ==
+"@aws-amplify/amplify-api-next-types-alpha@*", "@aws-amplify/amplify-api-next-types-alpha@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-api-next-types-alpha/-/amplify-api-next-types-alpha-0.2.0.tgz#4ef225033caecd5124cee1788e3df63d034965f9"
+  integrity sha512-5eFaXUdmHc6ahqmV5bvX0aCTeV6bBULTG9QV+96L+/gtWBhhn/mj1+O8Q4nMy7/e95m8Hz9LnDt225EewwVAPw==
 
 "@aws-crypto/crc32@3.0.0":
   version "3.0.0"
