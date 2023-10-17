@@ -7,7 +7,7 @@
 		"allowSyntheticDefaultImports": true,
 		"outDir": "./lib/",
 		"target": "esnext",
-		"noImplicitAny": false,
+		"noImplicitAny": true,
 		"jsx": "react",
 		"lib": ["esnext"],
 		"sourceMap": true,
