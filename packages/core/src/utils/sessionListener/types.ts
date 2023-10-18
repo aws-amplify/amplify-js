@@ -7,5 +7,5 @@ export type SessionStateChangeListener = (state: SessionState) => void;
 
 export interface SessionListenerInterface {
 	addStateChangeListener: (listener: SessionStateChangeListener) => void;
-	removeStateChangeHandler: (listener: SessionStateChangeListener) => void;
+	removeStateChangeListener: (listener: SessionStateChangeListener) => void;
 }

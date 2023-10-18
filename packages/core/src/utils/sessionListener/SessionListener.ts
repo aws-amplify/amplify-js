@@ -2,25 +2,26 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { isBrowser } from '../isBrowser';
-import {
-	SessionStateChangeListener,
-	SessionState,
-	SessionListenerInterface,
-} from './types';
+import { SessionStateChangeListener, SessionListenerInterface } from './types';
 
 const stateChangeListeners = new Set<SessionStateChangeListener>();
 
-export class SessionListenerClass implements SessionListenerInterface {
+export class SessionListener implements SessionListenerInterface {
+	private listenerActive: boolean;
+
 	constructor() {
+		this.listenerActive = false;
 		this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
 
 		// Setup state listeners
-		if (typeof document !== 'undefined') {
+		if (isBrowser()) {
 			document.addEventListener(
 				'visibilitychange',
 				this.handleVisibilityChange,
 				false
 			);
+
+			this.listenerActive = true;
 		}
 	}
 
@@ -28,6 +29,11 @@ export class SessionListenerClass implements SessionListenerInterface {
 		listener: SessionStateChangeListener,
 		notifyOnAdd: boolean = false
 	) {
+		// No-op if document listener is not active
+		if (!this.listenerActive) {
+			return;
+		}
+
 		stateChangeListeners.add(listener);
 
 		// Notify new handlers of the current status on add
@@ -36,7 +42,12 @@ export class SessionListenerClass implements SessionListenerInterface {
 		}
 	}
 
-	public removeStateChangeHandler(handler: SessionStateChangeListener) {
+	public removeStateChangeListener(handler: SessionStateChangeListener) {
+		// No-op if document listener is not active
+		if (!this.listenerActive) {
+			return;
+		}
+
 		stateChangeListeners.delete(handler);
 	}
 
@@ -53,11 +64,7 @@ export class SessionListenerClass implements SessionListenerInterface {
 	}
 
 	private getSessionState() {
-		if (
-			isBrowser() &&
-			typeof document !== 'undefined' &&
-			document.visibilityState !== 'hidden'
-		) {
+		if (isBrowser() && document.visibilityState !== 'hidden') {
 			return 'started';
 		}
 

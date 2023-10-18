@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	EventTrackingOpts,
+	EventTrackingOptions,
 	DOMEvent,
 	TrackerEventRecorder,
 	TrackerInterface,
@@ -16,15 +16,15 @@ const DEFAULT_EVENT_NAME = 'event'; // Default event name as sent to the analyti
 const logger = new ConsoleLogger('EventTracker');
 
 export class EventTracker implements TrackerInterface {
-	private options: EventTrackingOpts;
-	private eventRecoder: TrackerEventRecorder;
+	private options: EventTrackingOptions;
+	private eventRecorder: TrackerEventRecorder;
 
 	constructor(
 		eventRecorder: TrackerEventRecorder,
-		options?: EventTrackingOpts
+		options?: EventTrackingOptions
 	) {
 		this.options = {};
-		this.eventRecoder = eventRecorder;
+		this.eventRecorder = eventRecorder;
 		this.handleDocEvent = this.handleDocEvent.bind(this);
 
 		this.configure(eventRecorder, options);
@@ -32,18 +32,18 @@ export class EventTracker implements TrackerInterface {
 
 	public configure(
 		eventRecorder: TrackerEventRecorder,
-		options?: EventTrackingOpts
+		options?: EventTrackingOptions
 	) {
-		this.eventRecoder = eventRecorder;
+		this.eventRecorder = eventRecorder;
 
 		// Clean up any existing listeners
 		this.cleanup();
 
 		// Apply defaults
 		this.options = {
-			attributes: options?.attributes || undefined,
-			events: options?.events || DEFAULT_EVENTS,
-			selectorPrefix: options?.selectorPrefix || DEFAULT_SELECTOR_PREFIX,
+			attributes: options?.attributes ?? undefined,
+			events: options?.events ?? DEFAULT_EVENTS,
+			selectorPrefix: options?.selectorPrefix ?? DEFAULT_SELECTOR_PREFIX,
 		};
 
 		// Register event listeners
@@ -81,10 +81,7 @@ export class EventTracker implements TrackerInterface {
 		const eventSource = event.target;
 
 		// Validate that the triggering event type is being tracked
-		if (
-			this.options.events &&
-			this.options.events.indexOf(event.type as DOMEvent) < 0
-		) {
+		if (!this.options.events?.includes(event.type as DOMEvent)) {
 			return;
 		}
 
@@ -99,12 +96,10 @@ export class EventTracker implements TrackerInterface {
 				// Parse attributes from the element
 				const elementAttributes: Record<string, string> = {};
 				const rawElementAttributes = target.getAttribute(attrSelector);
-				if (rawElementAttributes) {
-					rawElementAttributes.split(/\s*,\s*/).forEach(attr => {
-						const tmp = attr.trim().split(/\s*:\s*/);
-						elementAttributes[tmp[0]] = tmp[1];
-					});
-				}
+				rawElementAttributes?.split(/\s*,\s*/).forEach(attr => {
+					const tmp = attr.trim().split(/\s*:\s*/);
+					elementAttributes[tmp[0]] = tmp[1];
+				});
 
 				// Assemble final list of attributes
 				const attributes = Object.assign(
@@ -121,7 +116,7 @@ export class EventTracker implements TrackerInterface {
 					attributes,
 				});
 
-				this.eventRecoder(eventName, attributes);
+				this.eventRecorder(eventName, attributes);
 			}
 		}
 	}

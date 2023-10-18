@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SessionListenerClass } from './SessionListener';
+import { SessionListener } from './SessionListener';
 
-export const SessionListener = new SessionListenerClass();
+export const sessionListener = new SessionListener();

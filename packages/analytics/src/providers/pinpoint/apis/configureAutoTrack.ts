@@ -17,12 +17,23 @@ import { record } from './record';
 // Configured Tracker instances for Pinpoint
 const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
 
+// Callback that will emit an appropriate event to Pinpoint when required by the Tracker
+const emitTrackingEvent = (
+	eventName: string,
+	attributes: TrackerAttributes
+) => {
+	record({
+		name: eventName,
+		attributes,
+	});
+};
+
 /**
  * Configures automatic event tracking for Pinpoint. This API will automatically transmit an analytic event when
  * configured events are detected within your application. This can include: DOM element events (via the `event`
  * tracker), session events (via the `session` tracker), and page view events (via the `pageView` tracker).
  *
- * @note Only session tracking is currently supported on React Native.
+ * @remark Only session tracking is currently supported on React Native.
  *
  * @param {ConfigureAutoTrackInput} params The input object to configure auto track behavior.
  *
@@ -32,17 +43,6 @@ const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
  */
 export const configureAutoTrack = (input: ConfigureAutoTrackInput): void => {
 	validateTrackerConfiguration(input);
-
-	// Callback that will emit an appropriate event to Pinpoint when required by the Tracker
-	const emitTrackingEvent = (
-		eventName: string,
-		attributes: TrackerAttributes
-	) => {
-		record({
-			name: eventName,
-			attributes,
-		});
-	};
 
 	// Initialize or update this provider's trackers
 	updateProviderTrackers(input, emitTrackingEvent, configuredTrackers);

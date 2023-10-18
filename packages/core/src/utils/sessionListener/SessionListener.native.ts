@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { loadAppState } from '@aws-amplify/react-native';
-import { isBrowser } from '../isBrowser';
 import {
 	SessionStateChangeListener,
 	SessionState,
@@ -14,7 +13,7 @@ const isActive = (appState?: string) => appState === 'active';
 const isInactive = (appState?: string) =>
 	appState === 'inactive' || appState === 'background';
 
-export class SessionListenerClass implements SessionListenerInterface {
+export class SessionListener implements SessionListenerInterface {
 	private currentAppState?: string;
 
 	constructor() {
@@ -36,7 +35,7 @@ export class SessionListenerClass implements SessionListenerInterface {
 		}
 	}
 
-	public removeStateChangeHandler(handler: SessionStateChangeListener) {
+	public removeStateChangeListener(handler: SessionStateChangeListener) {
 		stateChangeListeners.delete(handler);
 	}
 

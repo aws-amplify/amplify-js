@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	PageViewTrackingOpts,
+	PageViewTrackingOptions,
 	TrackerEventRecorder,
 	TrackerInterface,
 } from '../types/trackers';
@@ -18,8 +18,8 @@ const DEFAULT_URL_PROVIDER = () => {
 const PREV_URL_STORAGE_KEY = 'aws-amplify-analytics-prevUrl';
 
 export class PageViewTracker implements TrackerInterface {
-	private options: PageViewTrackingOpts;
-	private eventRecoder: TrackerEventRecorder;
+	private options: PageViewTrackingOptions;
+	private eventRecorder: TrackerEventRecorder;
 
 	// SPA tracking helpers
 	private spaTrackingActive: boolean;
@@ -30,13 +30,11 @@ export class PageViewTracker implements TrackerInterface {
 
 	constructor(
 		eventRecorder: TrackerEventRecorder,
-		options?: PageViewTrackingOpts
+		options?: PageViewTrackingOptions
 	) {
 		this.options = {};
-		this.eventRecoder = eventRecorder;
+		this.eventRecorder = eventRecorder;
 		this.spaTrackingActive = false;
-		this.pushStateProxy = undefined;
-		this.replaceStateProxy = undefined;
 		this.handleLocationChange = this.handleLocationChange.bind(this);
 
 		this.configure(eventRecorder, options);
@@ -44,19 +42,19 @@ export class PageViewTracker implements TrackerInterface {
 
 	public configure(
 		eventRecorder: TrackerEventRecorder,
-		options?: PageViewTrackingOpts
+		options?: PageViewTrackingOptions
 	) {
-		this.eventRecoder = eventRecorder;
+		this.eventRecorder = eventRecorder;
 
 		// Clean up any existing listeners
 		this.cleanup();
 
 		// Apply defaults
 		this.options = {
-			appType: options?.appType || DEFAULT_APP_TYPE,
-			attributes: options?.attributes || undefined,
-			eventName: this.options?.eventName || DEFAULT_EVENT_NAME,
-			urlProvider: this.options?.urlProvider || DEFAULT_URL_PROVIDER,
+			appType: options?.appType ?? DEFAULT_APP_TYPE,
+			attributes: options?.attributes ?? undefined,
+			eventName: this.options?.eventName ?? DEFAULT_EVENT_NAME,
+			urlProvider: this.options?.urlProvider ?? DEFAULT_URL_PROVIDER,
 		};
 
 		// Configure SPA or MPA page view tracking
@@ -72,8 +70,8 @@ export class PageViewTracker implements TrackerInterface {
 		if (this.spaTrackingActive) {
 			window.history.pushState = this.originalPushState;
 			window.history.replaceState = this.originalReplaceState;
-			this.pushStateProxy.revoke();
-			this.replaceStateProxy.revoke();
+			this.pushStateProxy?.revoke();
+			this.replaceStateProxy?.revoke();
 			window.removeEventListener('popstate', this.handleLocationChange);
 
 			this.spaTrackingActive = false;
@@ -137,7 +135,7 @@ export class PageViewTracker implements TrackerInterface {
 				attributes,
 			});
 
-			this.eventRecoder(eventName, attributes);
+			this.eventRecorder(eventName, attributes);
 		}
 	}
 
@@ -145,10 +143,6 @@ export class PageViewTracker implements TrackerInterface {
 		const prevUrl = sessionStorage.getItem(PREV_URL_STORAGE_KEY);
 		const currUrl = this.options.urlProvider!();
 
-		if (currUrl !== prevUrl) {
-			return true;
-		}
-
-		return false;
+		return currUrl !== prevUrl;
 	}
 }

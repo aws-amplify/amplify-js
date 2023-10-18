@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	SessionListener,
+	sessionListener,
 	SessionState,
 } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
 import {
-	SessionTrackingOpts,
+	SessionTrackingOptions,
 	TrackerEventRecorder,
 	TrackerInterface,
 } from '../types/trackers';
@@ -18,17 +18,17 @@ const SESSION_STOP_EVENT = '_session.stop';
 const logger = new ConsoleLogger('SessionTracker');
 
 export class SessionTracker implements TrackerInterface {
-	private options: SessionTrackingOpts;
-	private eventRecoder: TrackerEventRecorder;
+	private options: SessionTrackingOptions;
+	private eventRecorder: TrackerEventRecorder;
 	private initialEventSent: boolean;
 	private sessionTrackingActive: boolean;
 
 	constructor(
 		eventRecorder: TrackerEventRecorder,
-		options?: SessionTrackingOpts
+		options?: SessionTrackingOptions
 	) {
 		this.options = {};
-		this.eventRecoder = eventRecorder;
+		this.eventRecorder = eventRecorder;
 		this.initialEventSent = false;
 		this.sessionTrackingActive = false;
 		this.handleStateChange = this.handleStateChange.bind(this);
@@ -38,21 +38,21 @@ export class SessionTracker implements TrackerInterface {
 
 	public configure(
 		eventRecorder: TrackerEventRecorder,
-		options?: SessionTrackingOpts
+		options?: SessionTrackingOptions
 	) {
-		this.eventRecoder = eventRecorder;
+		this.eventRecorder = eventRecorder;
 
 		// Clean up any existing listeners
 		this.cleanup();
 
 		// Apply defaults
 		this.options = {
-			attributes: options?.attributes || {},
+			attributes: options?.attributes ?? {},
 		};
 
 		// Setup state listeners
 		if (!this.sessionTrackingActive) {
-			SessionListener.addStateChangeListener(
+			sessionListener.addStateChangeListener(
 				this.handleStateChange,
 				!this.initialEventSent
 			);
@@ -63,15 +63,13 @@ export class SessionTracker implements TrackerInterface {
 
 	public cleanup() {
 		if (this.sessionTrackingActive) {
-			SessionListener.removeStateChangeHandler(this.handleStateChange);
+			sessionListener.removeStateChangeListener(this.handleStateChange);
 		}
 
 		this.sessionTrackingActive = false;
 	}
 
 	private handleStateChange(state: SessionState) {
-		console.log('+ SessionTracker state change: ', state);
-
 		if (state === 'started') {
 			this.sessionStarted();
 		} else {
@@ -87,7 +85,7 @@ export class SessionTracker implements TrackerInterface {
 			attributes,
 		});
 
-		this.eventRecoder(SESSION_START_EVENT, attributes);
+		this.eventRecorder(SESSION_START_EVENT, attributes);
 
 		// NOTE: The initial event will not be re-sent on re-configuration (e.g. to add additional custom attributes)
 		if (!this.initialEventSent) {
@@ -103,6 +101,6 @@ export class SessionTracker implements TrackerInterface {
 			attributes,
 		});
 
-		this.eventRecoder(SESSION_STOP_EVENT, attributes);
+		this.eventRecorder(SESSION_STOP_EVENT, attributes);
 	}
 }

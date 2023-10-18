@@ -1,18 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export type SessionTrackingOpts = {
+export type SessionTrackingOptions = {
 	attributes?: TrackerAttributes;
 };
 
-export type PageViewTrackingOpts = {
+export type PageViewTrackingOptions = {
 	attributes?: TrackerAttributes;
 	eventName?: string;
 	urlProvider?: () => string;
 	appType?: 'multiPage' | 'singlePage';
 };
 
-export type EventTrackingOpts = {
+export type EventTrackingOptions = {
 	attributes?: TrackerAttributes;
 	events?: DOMEvent[];
 	selectorPrefix?: string;

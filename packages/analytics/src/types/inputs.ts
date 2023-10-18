@@ -4,9 +4,9 @@
 import { UserProfile } from '@aws-amplify/core';
 import { AnalyticsServiceOptions } from '.';
 import {
-	SessionTrackingOpts,
-	PageViewTrackingOpts,
-	EventTrackingOpts,
+	SessionTrackingOptions,
+	PageViewTrackingOptions,
+	EventTrackingOptions,
 } from './trackers';
 
 /**
@@ -39,14 +39,14 @@ export type AnalyticsConfigureAutoTrackInput = {
 } & (
 	| {
 			type: 'session';
-			options?: SessionTrackingOpts;
+			options?: SessionTrackingOptions;
 	  }
 	| {
 			type: 'pageView';
-			options?: PageViewTrackingOpts;
+			options?: PageViewTrackingOptions;
 	  }
 	| {
 			type: 'event';
-			options?: EventTrackingOpts;
+			options?: EventTrackingOptions;
 	  }
 );

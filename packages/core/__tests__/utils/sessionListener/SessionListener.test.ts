@@ -1,12 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SessionListenerClass } from '../../../src/utils/sessionListener/SessionListener';
+import { SessionListener } from '../../../src/utils/sessionListener/SessionListener';
 
 describe('[Web] Session Listener', () => {
 	let sessionListener;
 	let eventListenerCallback;
-	const mockAddEventListener = jest.fn();
 
 	beforeEach(() => {
 		jest.resetAllMocks();
@@ -17,7 +16,7 @@ describe('[Web] Session Listener', () => {
 			});
 		jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
 
-		sessionListener = new SessionListenerClass();
+		sessionListener = new SessionListener();
 	});
 
 	it('Should register an event listener on initialization', () => {
@@ -62,7 +61,7 @@ describe('[Web] Session Listener', () => {
 		expect(mockStateListener).toBeCalledWith('started');
 
 		// Remove the listener and confirm it stops receiving updates
-		sessionListener.removeStateChangeHandler(mockStateListener);
+		sessionListener.removeStateChangeListener(mockStateListener);
 		eventListenerCallback();
 		expect(mockStateListener).toBeCalledTimes(1);
 	});
