@@ -113,6 +113,9 @@ export default class CognitoUserPool {
 			ValidationData: validationData,
 			ClientMetadata: clientMetadata,
 		};
+		if (typeof callback !== 'function') {
+    return new Error('Callback function is missing or not a valid function.');
+    }
 		if (this.getUserContextData(username)) {
 			jsonReq.UserContextData = this.getUserContextData(username);
 		}
