@@ -76,9 +76,7 @@ describe('updateUserAttributes  API happy path cases', () => {
 		const result = await updateUserAttributes({
 			userAttributes,
 			options: {
-				serviceOptions: {
-					clientMetadata: { foo: 'bar' },
-				},
+				clientMetadata: { foo: 'bar' },
 			},
 		});
 
@@ -145,9 +143,7 @@ describe('updateUserAttributes  API happy path cases', () => {
 		const result = await updateUserAttributes({
 			userAttributes,
 			options: {
-				serviceOptions: {
-					clientMetadata: { foo: 'bar' },
-				},
+				clientMetadata: { foo: 'bar' },
 			},
 		});
 
@@ -203,9 +199,7 @@ describe('updateUserAttributes  API happy path cases', () => {
 		const result = await updateUserAttributes({
 			userAttributes,
 			options: {
-				serviceOptions: {
-					clientMetadata: { foo: 'bar' },
-				},
+				clientMetadata: { foo: 'bar' },
 			},
 		});
 
@@ -271,9 +265,7 @@ describe('updateUserAttributes  API error path cases:', () => {
 					email: 'mockedEmail',
 				},
 				options: {
-					serviceOptions: {
-						clientMetadata: { foo: 'bar' },
-					},
+					clientMetadata: { foo: 'bar' },
 				},
 			});
 		} catch (error) {

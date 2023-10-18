@@ -70,6 +70,7 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "record",
 			  "identifyUser",
+			  "configureAutoTrack",
 			  "flushEvents",
 			  "enable",
 			  "disable",
@@ -84,6 +85,7 @@ describe('aws-amplify Exports', () => {
 			  "record",
 			  "identifyUser",
 			  "flushEvents",
+			  "configureAutoTrack",
 			]
 		`);
 		});
