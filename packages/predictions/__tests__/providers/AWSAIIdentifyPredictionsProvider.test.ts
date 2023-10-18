@@ -712,8 +712,7 @@ describe('Predictions identify provider test', () => {
 		});
 
 		test('error case invalid input source', () => {
-			const detectLabelInput: IdentifyLabelsInput = {
-				// @ts-ignore - source should be invalid
+			const detectLabelInput = {
 				labels: { source: null, type: 'LABELS' },
 			};
 			expect(predictionsProvider.identify(detectLabelInput)).rejects.toMatch(
