@@ -58,13 +58,11 @@ import { assertIsInitialized } from '../../../utils';
  *         }
  *     },
  *     options: {
- *         serviceOptions: {
- *             address: 'device-address',
+ *         address: 'device-address',
  *             optOut: 'NONE',
  * 			   userAttributes: {
  * 			      interests: ['food']
- * 			   },
- *         },
+ * 		   },
  *     },
  * });
  */
@@ -76,7 +74,7 @@ export const identifyUser = async ({
 	assertIsInitialized();
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
-	const { address, optOut, userAttributes } = options?.serviceOptions ?? {};
+	const { address, optOut, userAttributes } = options ?? {};
 	updateEndpoint({
 		address,
 		channelType: CHANNEL_TYPE,
