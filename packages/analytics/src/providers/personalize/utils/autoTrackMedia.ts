@@ -3,7 +3,8 @@
 
 import { EventBuffer } from '../../../utils';
 import { PersonalizeBufferEvent, PersonalizeEvent } from '../types';
-import { ConsoleLogger, isBrowser } from '@aws-amplify/core/internals/utils';
+import { isBrowser } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 enum HTML5_MEDIA_EVENT {
 	'PLAY' = 'play',

@@ -12,6 +12,7 @@ import {
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
+	ConsoleLogger: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {
@@ -40,7 +41,7 @@ const credentials: AWSCredentials = {
 const listObjectClientConfig = {
 	credentials,
 	region,
-	userAgentValue: expect.any(String)
+	userAgentValue: expect.any(String),
 };
 const listObjectClientBaseResultItem = {
 	ETag: eTag,

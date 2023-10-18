@@ -15,16 +15,13 @@ import {
 	RecognizeUtteranceCommandInput,
 	RecognizeUtteranceCommandOutput,
 } from '@aws-sdk/client-lex-runtime-v2';
-import {
-	ConsoleLogger as Logger,
-	getAmplifyUserAgentObject,
-} from '@aws-amplify/core/internals/utils';
-import { fetchAuthSession } from '@aws-amplify/core';
+import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
 import { convert, unGzipBase64AsJson } from '../utils';
 import { v4 as uuid } from 'uuid';
 import { AWSLexV2ProviderOption } from './types';
 
-const logger = new Logger('AWSLexV2Provider');
+const logger = new ConsoleLogger('AWSLexV2Provider');
 
 interface RecognizeUtteranceCommandOutputFormatted
 	extends Omit<

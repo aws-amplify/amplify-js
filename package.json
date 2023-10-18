@@ -52,6 +52,7 @@
 			"packages/api",
 			"packages/datastore",
 			"packages/interactions",
+			"packages/pubsub",
 			"packages/notifications",
 			"packages/rtn-push-notification",
 			"packages/aws-amplify",

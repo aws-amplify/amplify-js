@@ -11,6 +11,7 @@ import { DownloadDataOptions } from '../../../../src/providers/s3/types';
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('../../../../src/providers/s3/utils');
 jest.mock('@aws-amplify/core', () => ({
+	ConsoleLogger: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {
@@ -108,7 +109,7 @@ describe('downloadData', () => {
 					useAccelerateEndpoint: true,
 					onDownloadProgress: onProgress,
 					abortSignal: expect.any(AbortSignal),
-					userAgentValue: expect.any(String)
+					userAgentValue: expect.any(String),
 				},
 				{
 					Bucket: bucket,

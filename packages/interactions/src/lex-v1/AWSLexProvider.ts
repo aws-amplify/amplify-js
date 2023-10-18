@@ -15,15 +15,12 @@ import {
 	PostTextCommandInput,
 	PostTextCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
-import {
-	ConsoleLogger as Logger,
-	getAmplifyUserAgentObject,
-} from '@aws-amplify/core/internals/utils';
-import { fetchAuthSession } from '@aws-amplify/core';
+import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
 import { convert } from '../utils';
 import { AWSLexProviderOption } from './types';
 
-const logger = new Logger('AWSLexProvider');
+const logger = new ConsoleLogger('AWSLexProvider');
 
 interface PostContentCommandOutputFormatted
 	extends Omit<PostContentCommandOutput, 'audioStream'> {

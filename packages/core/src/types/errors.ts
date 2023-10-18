@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export enum AmplifyErrorCode {
+	NoEndpointId = 'NoEndpointId',
 	PlatformNotSupported = 'PlatformNotSupported',
 	Unknown = 'Unknown',
 }

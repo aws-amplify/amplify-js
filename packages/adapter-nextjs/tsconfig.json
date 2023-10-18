@@ -9,7 +9,7 @@
 		"sourceMap": true,
 		"module": "commonjs",
 		"moduleResolution": "node",
-		"allowJs": false,
+		"allowJs": true,
 		"declaration": true,
 		"typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
 		"types": ["node"],

@@ -30,9 +30,9 @@ import {
 import type { IDBPDatabase, IDBPObjectStore } from 'idb';
 import type AsyncStorageDatabase from './AsyncStorageDatabase';
 import { ModelRelationship } from '../relationship';
-import { Logger } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 const DB_NAME = 'amplify-datastore';
 
 export abstract class StorageAdapterBase implements Adapter {

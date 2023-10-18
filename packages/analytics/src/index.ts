@@ -4,9 +4,11 @@
 export {
 	record,
 	identifyUser,
+	configureAutoTrack,
+	flushEvents,
 	RecordInput,
 	IdentifyUserInput,
-	flushEvents,
+	ConfigureAutoTrackInput,
 } from './providers/pinpoint';
 export { enable, disable } from './apis';
 export { AnalyticsError } from './errors';
