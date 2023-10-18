@@ -41,7 +41,7 @@ const credentials: AWSCredentials = {
 const listObjectClientConfig = {
 	credentials,
 	region,
-	userAgentValue: expect.any(String)
+	userAgentValue: expect.any(String),
 };
 const listObjectClientBaseResultItem = {
 	ETag: eTag,

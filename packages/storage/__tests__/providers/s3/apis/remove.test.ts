@@ -33,7 +33,7 @@ const credentials: AWSCredentials = {
 const deleteObjectClientConfig = {
 	credentials,
 	region,
-	userAgentValue: expect.any(String)
+	userAgentValue: expect.any(String),
 };
 
 describe('remove API', () => {
