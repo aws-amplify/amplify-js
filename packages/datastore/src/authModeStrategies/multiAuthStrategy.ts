@@ -142,7 +142,11 @@ export const multiAuthStrategy: (
 	async ({ schema, modelName }) => {
 		let currentUser;
 		try {
-			currentUser = await fetchAuthSession();
+			const userFetched = await fetchAuthSession();
+			if (userFetched.tokens.accessToken) {
+				// the user is authenticated
+				currentUser = userFetched;
+			}
 		} catch (e) {
 			// No current user
 		}
