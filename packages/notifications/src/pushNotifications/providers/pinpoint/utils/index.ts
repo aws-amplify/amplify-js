@@ -4,7 +4,3 @@
 export { createMessageEventRecorder } from './createMessageEventRecorder';
 export { getChannelType } from './getChannelType';
 export { getPushNotificationUserAgentString } from './getPushNotificationUserAgentString';
-export { initialize, isInitialized } from './initializationManager';
-export { resolveConfig } from './resolveConfig';
-export { resolveCredentials } from './resolveCredentials';
-export { getToken, setToken } from './tokenManager';

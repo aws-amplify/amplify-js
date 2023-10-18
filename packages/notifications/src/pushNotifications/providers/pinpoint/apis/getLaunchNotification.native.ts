@@ -2,10 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { loadAmplifyPushNotification } from '@aws-amplify/react-native';
+import { assertIsInitialized } from '../../../errors/errorHelpers';
 import { GetLaunchNotification } from '../types';
 
 const { getLaunchNotification: getLaunchNotificationNative } =
 	loadAmplifyPushNotification();
 
-export const getLaunchNotification: GetLaunchNotification = () =>
-	getLaunchNotificationNative();
+export const getLaunchNotification: GetLaunchNotification = () => {
+	assertIsInitialized();
+	return getLaunchNotificationNative();
+};
