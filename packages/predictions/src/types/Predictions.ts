@@ -22,7 +22,7 @@ export interface InterpretTextInputLanguage {
 	source: {
 		text: string;
 	};
-	type: 'language';
+	type: Extract<InterpretTextCategories, 'language'>;
 }
 
 export interface InterpretTextOthers {
@@ -30,14 +30,17 @@ export interface InterpretTextOthers {
 		text: string;
 		language: string;
 	};
-	type: 'entities' | 'sentiment' | 'syntax' | 'keyPhrases';
+	type: Extract<
+		InterpretTextCategories,
+		'entities' | 'sentiment' | 'syntax' | 'keyPhrases'
+	>;
 }
 
 export interface InterpretTextAll {
 	source: {
 		text: string;
 	};
-	type: 'all';
+	type: Extract<InterpretTextCategories, 'all'>;
 }
 
 export interface TextEntities {
