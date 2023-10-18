@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { addEventListener } from '../../../../eventListeners';
+import { assertIsInitialized } from '../../../errors/errorHelpers';
 import { OnNotificationReceivedInBackground } from '../types';
 
 export const onNotificationReceivedInBackground: OnNotificationReceivedInBackground =
-	input => addEventListener('backgroundMessageReceived', input);
+	input => {
+		assertIsInitialized();
+		return addEventListener('backgroundMessageReceived', input);
+	};

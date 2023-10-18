@@ -8,3 +8,4 @@ export { loadBuffer } from './loadBuffer';
 export { loadUrlPolyfill } from './loadUrlPolyfill';
 export { loadGetRandomValues } from './loadGetRandomValues';
 export { loadBase64 } from './loadBase64';
+export { loadAppState } from './loadAppState';

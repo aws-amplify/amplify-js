@@ -12,15 +12,17 @@ import {
 	notifyEventListenersAndAwaitHandlers,
 } from '../../../../eventListeners';
 import {
-	createMessageEventRecorder,
-	getChannelType,
-	getPushNotificationUserAgentString,
 	getToken,
 	initialize,
 	isInitialized,
 	resolveConfig,
 	resolveCredentials,
 	setToken,
+} from '../../../utils';
+import {
+	createMessageEventRecorder,
+	getChannelType,
+	getPushNotificationUserAgentString,
 } from '../utils';
 
 const {

@@ -4,7 +4,7 @@
 import { Hub, ConsoleLogger } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
-	AnalyticsAction
+	AnalyticsAction,
 } from '@aws-amplify/core/internals/utils';
 import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
 import {
