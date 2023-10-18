@@ -59,7 +59,7 @@ describe('getProperties api', () => {
 		const config = {
 			credentials,
 			region: 'region',
-			userAgentValue: expect.any(String)
+			userAgentValue: expect.any(String),
 		};
 		const key = 'key';
 		beforeEach(() => {
@@ -138,7 +138,7 @@ describe('getProperties api', () => {
 					{
 						credentials,
 						region: 'region',
-						userAgentValue: expect.any(String)
+						userAgentValue: expect.any(String),
 					},
 					{
 						Bucket: 'bucket',
