@@ -40,12 +40,11 @@ import {
 
 type T = ModelInit<Model>;
 
+let initSchema: typeof initSchemaType;
+
 let { DataStore } = getDataStore() as {
 	DataStore: typeof DataStoreType;
 };
-
-let initSchema: typeof initSchemaType;
-
 const nameOf = <T>(name: keyof T) => name;
 
 /**
