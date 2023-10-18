@@ -1,17 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import * as Paho from '../vendor/paho-mqtt';
-import { amplifyUuid } from '@aws-amplify/core/internals/utils';
-import Observable, { ZenObservable } from 'zen-observable-ts';
 
-import { AbstractPubSubProvider } from './PubSubProvider';
+// @ts-ignore
+import * as Paho from '../vendor/paho-mqtt';
+import { Observable, SubscriptionLike as Subscription, Observer } from 'rxjs';
+
+import { AbstractPubSub } from './PubSub';
 import {
 	ConnectionState,
 	PubSubContentObserver,
 	PubSubContent,
+	PubSubOptions,
 } from '../types/PubSub';
-import { ProviderOptions } from '../types/Provider';
-import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import { Hub, HubPayload, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { amplifyUuid } from '@aws-amplify/core/internals/utils';
 import {
 	ConnectionStateMonitor,
 	CONNECTION_CHANGE,
@@ -22,7 +24,7 @@ import {
 } from '../utils/ReconnectionMonitor';
 import { AMPLIFY_SYMBOL, CONNECTION_STATE_CHANGE } from './constants';
 
-const logger = new Logger('MqttOverWSProvider');
+const logger = new Logger('MqttOverWS');
 
 export function mqttTopicMatch(filter: string, topic: string) {
 	const filterArray = filter.split('/');
@@ -38,10 +40,10 @@ export function mqttTopicMatch(filter: string, topic: string) {
 	return length === topicArray.length;
 }
 
-export interface MqttProviderOptions extends ProviderOptions {
+export interface MqttOptions extends PubSubOptions {
 	clientId?: string;
 	url?: string;
-	aws_pubsub_endpoint?: string;
+	endpoint?: string;
 }
 
 interface PahoClient {
@@ -57,7 +59,7 @@ interface PahoClient {
 	isConnected: () => boolean;
 	subscribe: (topic: string) => void;
 	unsubscribe: (topic: string) => void;
-	send(topic: string, message: string);
+	send(topic: string, message: string): void;
 }
 
 class ClientsQueue {
@@ -89,19 +91,19 @@ class ClientsQueue {
 	}
 }
 
-const dispatchPubSubEvent = payload => {
+const dispatchPubSubEvent = (payload: HubPayload) => {
 	Hub.dispatch('pubsub', payload, 'PubSub', AMPLIFY_SYMBOL);
 };
 
 const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
 
-export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptions> {
+export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 	private _clientsQueue = new ClientsQueue();
-	private connectionState: ConnectionState;
+	private connectionState?: ConnectionState;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
 
-	constructor(options: MqttProviderOptions = {}) {
+	constructor(options: MqttOptions = {}) {
 		super({ ...options, clientId: options.clientId || amplifyUuid() });
 
 		// Monitor the connection health state and pass changes along to Hub
@@ -134,7 +136,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 	}
 
 	protected get endpoint(): Promise<string | undefined> {
-		return Promise.resolve(this.options.aws_pubsub_endpoint);
+		return Promise.resolve(this.options.endpoint);
 	}
 
 	protected get clientsQueue() {
@@ -145,10 +147,6 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		return !this.options[
 			'aws_appsync_dangerously_connect_to_http_endpoint_for_testing'
 		];
-	}
-
-	getProviderName() {
-		return 'MqttOverWSProvider';
 	}
 
 	public onDisconnect({
@@ -173,10 +171,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		}
 	}
 
-	public async newClient({
-		url,
-		clientId,
-	}: MqttProviderOptions): Promise<PahoClient> {
+	public async newClient({ url, clientId }: MqttOptions): Promise<PahoClient> {
 		logger.debug('Creating new MQTT client', clientId);
 
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
@@ -226,7 +221,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 
 	protected async connect(
 		clientId: string,
-		options: MqttProviderOptions = {}
+		options: MqttOptions = {}
 	): Promise<PahoClient | undefined> {
 		return await this.clientsQueue.get(clientId, async clientId => {
 			const client = await this.newClient({ ...options, clientId });
@@ -234,10 +229,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 			if (client) {
 				// Once connected, subscribe to all topics registered observers
 				this._topicObservers.forEach(
-					(
-						_value: Set<ZenObservable.SubscriptionObserver<any>>,
-						key: string
-					) => {
+					(_value: Set<PubSubContentObserver>, key: string) => {
 						client.subscribe(key);
 					}
 				);
@@ -282,9 +274,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 
 	private _onMessage(topic: string, msg: string) {
 		try {
-			const matchedTopicObservers: Set<
-				ZenObservable.SubscriptionObserver<any>
-			>[] = [];
+			const matchedTopicObservers: Set<PubSubContentObserver>[] = [];
 			this._topicObservers.forEach((observerForTopic, observerTopic) => {
 				if (mqttTopicMatch(observerTopic, topic)) {
 					matchedTopicObservers.push(observerForTopic);
@@ -307,11 +297,11 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 
 	subscribe(
 		topics: string[] | string,
-		options: MqttProviderOptions = {}
+		options: MqttOptions = {}
 	): Observable<PubSubContent> {
 		const targetTopics = ([] as string[]).concat(topics);
 		logger.debug('Subscribing to topic(s)', targetTopics.join(','));
-		let reconnectSubscription: ZenObservable.Subscription;
+		let reconnectSubscription: Subscription;
 
 		return new Observable(observer => {
 			targetTopics.forEach(topic => {
@@ -384,7 +374,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 					targetTopics.forEach(topic => {
 						const observersForTopic =
 							this._topicObservers.get(topic) ||
-							(new Set() as Set<ZenObservable.SubscriptionObserver<any>>);
+							(new Set() as Set<Observer<any>>);
 
 						observersForTopic.delete(observer);
 

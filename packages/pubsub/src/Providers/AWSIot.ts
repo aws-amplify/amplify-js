@@ -1,41 +1,43 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { MqttOverWSProvider, MqttProviderOptions } from './MqttOverWSProvider';
-import { Signer, Credentials } from '@aws-amplify/core';
-
+import { MqttOverWS, MqttOptions } from './MqttOverWS';
+import { Signer } from '@aws-amplify/core/internals/utils';
+import { fetchAuthSession } from '@aws-amplify/core';
 const SERVICE_NAME = 'iotdevicegateway';
 
-export interface AWSIoTProviderOptions extends MqttProviderOptions {
-	aws_pubsub_region?: string;
-	aws_pubsub_endpoint?: string;
+export interface AWSIoTOptions extends MqttOptions {
+	region?: string;
+	endpoint?: string;
 }
 
-export class AWSIoTProvider extends MqttOverWSProvider {
-	constructor(options: AWSIoTProviderOptions = {}) {
+export class AWSIoT extends MqttOverWS {
+	constructor(options: AWSIoTOptions = {}) {
 		super(options);
 	}
 
 	protected get region(): string | undefined {
-		return this.options['aws_pubsub_region'];
-	}
-
-	public getProviderName() {
-		return 'AWSIoTProvider';
+		return this.options?.region;
 	}
 
 	protected get endpoint() {
 		return (async () => {
-			const endpoint = this.options.aws_pubsub_endpoint;
+			const endpoint = this.options.endpoint;
 
 			const serviceInfo = {
 				service: SERVICE_NAME,
 				region: this.region,
 			};
+			const session = await fetchAuthSession();
+
+			if (!session.credentials) {
+				throw new Error('No auth session credentials');
+			}
+
 			const {
 				accessKeyId: access_key,
 				secretAccessKey: secret_key,
 				sessionToken: session_token,
-			} = await Credentials.get();
+			} = session.credentials;
 
 			const result = Signer.signUrl(
 				endpoint,

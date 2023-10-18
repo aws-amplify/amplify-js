@@ -39,7 +39,7 @@ const credentials: AWSCredentials = {
 const copyObjectClientConfig = {
 	credentials,
 	region,
-	userAgentValue: expect.any(String)
+	userAgentValue: expect.any(String),
 };
 const copyObjectClientBaseParams = {
 	Bucket: bucket,
