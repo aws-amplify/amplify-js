@@ -11,8 +11,7 @@ import {
 } from '../../../types';
 import { getAnalyticsEvent } from './getAnalyticsEvent';
 import { getChannelType } from './getChannelType';
-import { resolveCredentials } from './resolveCredentials';
-import { resolveConfig } from './resolveConfig';
+import { resolveConfig, resolveCredentials } from '../../../utils';
 
 const logger = new ConsoleLogger('PushNotification.recordMessageEvent');
 
