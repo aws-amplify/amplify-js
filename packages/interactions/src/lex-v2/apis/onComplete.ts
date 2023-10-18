@@ -10,14 +10,14 @@ import {
 } from '../../errors';
 
 export const onComplete = (
-	botname: string,
+	botName: string,
 	callback: CompletionCallback
 ): void => {
-	const botConfig = resolveBotConfig(botname);
+	const botConfig = resolveBotConfig(botName);
 	assertValidationError(
 		!!botConfig,
 		InteractionsValidationErrorCode.NoBotConfig,
-		`Bot ${botname} does not exist.`
+		`Bot ${botName} does not exist.`
 	);
 	lexProvider.onComplete(botConfig, callback);
 };
