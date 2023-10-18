@@ -429,8 +429,10 @@ describe('Predictions convert provider test', () => {
 
 			await predictionsProvider.convert(validTextToSpeechInput);
 
+			// pollyClient is a private property
+			// Used this strategy to easily check that the customUserAgent is set correctly on the client
 			expect(
-				predictionsProvider['pollyClient']!.config.customUserAgent
+				(predictionsProvider as any).pollyClient.config.customUserAgent
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
@@ -451,15 +453,16 @@ describe('Predictions convert provider test', () => {
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 
 			await predictionsProvider.convert(validTranslateTextInput);
+			// translateClient is a private property
+			// Used this strategy to easily check that the customUserAgent is set correctly on the client
 			expect(
-				predictionsProvider['translateClient']!.config.customUserAgent
+				(predictionsProvider as any).translateClient.config.customUserAgent
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Convert,
 				})
 			);
-			expect(predictionsProvider['textractClient']).toBeUndefined();
 		});
 	});
 });

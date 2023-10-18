@@ -489,8 +489,11 @@ describe('Predictions interpret provider test', () => {
 					type: 'all',
 				},
 			});
+
+			// comprehendClient is a private property
+			// Used this strategy to easily check that the customUserAgent is set correctly on the client
 			expect(
-				predictionsProvider['comprehendClient']!.config.customUserAgent
+				(predictionsProvider as any).comprehendClient.config.customUserAgent
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,

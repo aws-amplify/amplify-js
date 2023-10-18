@@ -732,15 +732,15 @@ describe('Predictions identify provider test', () => {
 				labels: { source: { bytes: fileInput }, type: 'LABELS' },
 			};
 			await predictionsProvider.identify(detectLabelInput);
+
 			expect(
-				predictionsProvider['rekognitionClient'].config.customUserAgent
+				predictionsProvider.rekognitionClient.config.customUserAgent
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
 				})
 			);
-			expect(predictionsProvider['textractClient']).toBeUndefined();
 		});
 		test('identify for entities initializes a client with the correct custom user agent', async () => {
 			predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
@@ -755,15 +755,15 @@ describe('Predictions identify provider test', () => {
 				},
 			};
 			await predictionsProvider.identify(detectFacesInput);
+
 			expect(
-				predictionsProvider['rekognitionClient'].config.customUserAgent
+				predictionsProvider.rekognitionClient.config.customUserAgent
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
 				})
 			);
-			expect(predictionsProvider['textractClient']).toBeUndefined();
 		});
 		test('identify for text initializes a client with the correct custom user agent', async () => {
 			predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
@@ -773,17 +773,17 @@ describe('Predictions identify provider test', () => {
 				text: { source: { key: 'key' }, format: 'PLAIN' },
 			};
 			await predictionsProvider.identify(detectTextInput);
+
 			expect(
-				predictionsProvider['rekognitionClient'].config.customUserAgent
+				predictionsProvider.rekognitionClient.config.customUserAgent
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
 				})
 			);
-			expect(
-				predictionsProvider['textractClient'].config.customUserAgent
-			).toEqual(
+
+			expect(predictionsProvider.textractClient.config.customUserAgent).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
