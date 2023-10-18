@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger } from '@aws-amplify/core';
-import { AppState, AppStateStatus } from 'react-native';
+import {
+	AppState,
+	AppStateStatus,
+	NativeEventSubscription,
+} from 'react-native';
 import noop from 'lodash/noop';
 import {
 	SessionState,
@@ -10,8 +14,8 @@ import {
 	SessionTrackerInterface,
 } from './types';
 
-const isActive = appState => appState === 'active';
-const isInactive = appState =>
+const isActive = (appState: AppStateStatus) => appState === 'active';
+const isInactive = (appState: AppStateStatus) =>
 	appState === 'inactive' || appState === 'background';
 
 const logger = new ConsoleLogger('InAppMessagingSessionTracker');
@@ -19,19 +23,22 @@ const logger = new ConsoleLogger('InAppMessagingSessionTracker');
 export default class SessionTracker implements SessionTrackerInterface {
 	private currentAppState: AppStateStatus;
 	private sessionStateChangeHandler: SessionStateChangeHandler;
-
+	private eventSubcription: NativeEventSubscription | undefined;
 	constructor(sessionStateChangeHandler: SessionStateChangeHandler = noop) {
 		this.currentAppState = 'active';
 		this.sessionStateChangeHandler = sessionStateChangeHandler;
 	}
 
 	start = (): SessionState => {
-		AppState.addEventListener('change', this.appStateChangeHandler);
+		this.eventSubcription = AppState.addEventListener(
+			'change',
+			this.appStateChangeHandler
+		);
 		return this.getSessionState();
 	};
 
 	end = (): SessionState => {
-		AppState.removeEventListener('change', this.appStateChangeHandler);
+		this.eventSubcription?.remove();
 		return this.getSessionState();
 	};
 
@@ -43,7 +50,7 @@ export default class SessionTracker implements SessionTrackerInterface {
 		return 'ended';
 	};
 
-	private appStateChangeHandler = nextAppState => {
+	private appStateChangeHandler = (nextAppState: AppStateStatus) => {
 		// if going from active to inactive
 		if (isActive(this.currentAppState) && isInactive(nextAppState)) {
 			logger.debug('App has gone to the background');

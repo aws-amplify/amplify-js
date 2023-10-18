@@ -1,11 +1,14 @@
 //WARNING: If you are manually specifying files to compile then the tsconfig.json is completely ignored, you must use command line flags
 {
+	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
+		"strict": true,
+		"target": "esnext",
+		"noImplicitAny": true,
+		"lib": ["dom", "es2019", "esnext.asynciterable", "esnext"],
+		"skipLibCheck": true,
 		"allowSyntheticDefaultImports": true,
 		"outDir": "./lib/",
-		"target": "es5",
-		"noImplicitAny": false,
-		"lib": ["dom", "es2019", "esnext.asynciterable"],
 		"sourceMap": true,
 		"module": "commonjs",
 		"moduleResolution": "node",
@@ -15,8 +18,7 @@
 		"types": ["jest", "node"],
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
-		"jsx": "react-native",
-		"strict": true
+		"jsx": "react-native"
 	},
 	"include": ["src/**/*"],
 	"exclude": ["src/setupTests.ts"]

@@ -9,36 +9,37 @@ import {
 	SessionTrackerInterface,
 } from './types';
 
-// Per https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
-let hidden: string;
-let visibilityChange: string;
-
-if (isBrowser() && document) {
-	if (typeof document.hidden !== 'undefined') {
-		hidden = 'hidden';
-		visibilityChange = 'visibilitychange';
-	} else if (typeof document['msHidden'] !== 'undefined') {
-		hidden = 'msHidden';
-		visibilityChange = 'msvisibilitychange';
-	} else if (typeof document['webkitHidden'] !== 'undefined') {
-		hidden = 'webkitHidden';
-		visibilityChange = 'webkitvisibilitychange';
-	}
-}
-
 const logger = new ConsoleLogger('InAppMessagingSessionTracker');
 
 export default class SessionTracker implements SessionTrackerInterface {
+	// Per https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
+	private hiddenType: string = 'hidden';
+	private visibilityChange: string = 'visibilitychange';
+	private localDocument: any;
+
 	private sessionStateChangeHandler: SessionStateChangeHandler;
 
 	constructor(sessionStateChangeHandler: SessionStateChangeHandler = noop) {
 		this.sessionStateChangeHandler = sessionStateChangeHandler;
+		if (isBrowser() && document) {
+			this.localDocument = document;
+			if (typeof this.localDocument.hidden !== 'undefined') {
+				this.hiddenType = 'hidden';
+				this.visibilityChange = 'visibilitychange';
+			} else if (typeof this.localDocument['msHidden'] !== 'undefined') {
+				this.hiddenType = 'msHidden';
+				this.visibilityChange = 'msvisibilitychange';
+			} else if (typeof this.localDocument['webkitHidden'] !== 'undefined') {
+				this.hiddenType = 'webkitHidden';
+				this.visibilityChange = 'webkitvisibilitychange';
+			}
+		}
 	}
 
 	start = (): SessionState => {
 		if (isBrowser()) {
-			document?.addEventListener(
-				visibilityChange,
+			this.localDocument?.addEventListener(
+				this.visibilityChange,
 				this.visibilityChangeHandler
 			);
 		}
@@ -47,8 +48,8 @@ export default class SessionTracker implements SessionTrackerInterface {
 
 	end = (): SessionState => {
 		if (isBrowser()) {
-			document?.removeEventListener(
-				visibilityChange,
+			this.localDocument?.removeEventListener(
+				this.visibilityChange,
 				this.visibilityChangeHandler
 			);
 		}
@@ -56,7 +57,11 @@ export default class SessionTracker implements SessionTrackerInterface {
 	};
 
 	private getSessionState = (): SessionState => {
-		if (isBrowser() && document && !document[hidden]) {
+		if (
+			isBrowser() &&
+			this.localDocument &&
+			!this.localDocument[this.hiddenType]
+		) {
 			return 'started';
 		}
 		// If, for any reason, document is undefined the session will never start
@@ -64,10 +69,10 @@ export default class SessionTracker implements SessionTrackerInterface {
 	};
 
 	private visibilityChangeHandler = () => {
-		if (!isBrowser() || !document) {
+		if (!isBrowser() || !this.localDocument) {
 			return;
 		}
-		if (document[hidden]) {
+		if (this.localDocument[this.hiddenType]) {
 			logger.debug('App is now hidden');
 			this.sessionStateChangeHandler('ended');
 		} else {

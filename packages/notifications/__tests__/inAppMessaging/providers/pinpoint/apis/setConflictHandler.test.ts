@@ -14,6 +14,7 @@ import {
 	simpleInAppMessagingEvent,
 } from '../../../../../__mocks__/data';
 import { notifyEventListeners } from '../../../../../src/eventListeners';
+import { InAppMessage } from '../../../../../src/inAppMessaging/types';
 
 jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/utils');
@@ -33,8 +34,8 @@ describe('setConflictHandler', () => {
 		mockNotifyEventListeners.mockClear();
 	});
 	it('can register a custom conflict handler', async () => {
-		const customConflictHandler = messages =>
-			messages.find(message => message.id === 'custom-handled');
+		const customConflictHandler = (messages: InAppMessage[]) =>
+			messages.find(message => message.id === 'custom-handled') ?? messages[0];
 		mockProcessInAppMessages.mockReturnValueOnce(inAppMessages);
 
 		setConflictHandler(customConflictHandler);

@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger } from '@aws-amplify/core';
-import {
-	InAppMessagingAction,
-} from '@aws-amplify/core/internals/utils';
+import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import isEmpty from 'lodash/isEmpty';
 import {
@@ -24,9 +22,9 @@ import { getInAppMessagingUserAgentString } from './userAgent';
 
 const DELIVERY_TYPE = 'IN_APP_MESSAGE';
 
-let eventNameMemo = {};
-let eventAttributesMemo = {};
-let eventMetricsMemo = {};
+let eventNameMemo: Record<string, boolean> = {};
+let eventAttributesMemo: Record<string, boolean> = {};
+let eventMetricsMemo: Record<string, boolean> = {};
 
 export const logger = new ConsoleLogger('InAppMessaging.Pinpoint.Utils');
 
