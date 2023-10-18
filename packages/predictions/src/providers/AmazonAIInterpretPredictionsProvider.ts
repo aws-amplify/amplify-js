@@ -33,7 +33,7 @@ import { assertValidationError } from '../errors/utils/assertValidationError';
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
 
 export class AmazonAIInterpretPredictionsProvider {
-	private comprehendClient: ComprehendClient | undefined;
+	private comprehendClient?: ComprehendClient;
 
 	getProviderName() {
 		return 'AmazonAIInterpretPredictionsProvider';

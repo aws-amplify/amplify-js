@@ -67,8 +67,8 @@ import { BoundingBox } from 'puppeteer';
 const logger = new Logger('AmazonAIIdentifyPredictionsProvider');
 
 export class AmazonAIIdentifyPredictionsProvider {
-	private rekognitionClient: RekognitionClient | undefined;
-	private textractClient: TextractClient | undefined;
+	private rekognitionClient?: RekognitionClient;
+	private textractClient?: TextractClient;
 
 	getProviderName() {
 		return 'AmazonAIIdentifyPredictionsProvider';

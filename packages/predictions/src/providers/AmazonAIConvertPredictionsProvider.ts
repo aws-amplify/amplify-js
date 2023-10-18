@@ -45,8 +45,8 @@ const eventBuilder = new EventStreamCodec(toUtf8, fromUtf8);
 const LANGUAGES_CODE_IN_8KHZ = ['fr-FR', 'en-AU', 'en-GB', 'fr-CA'];
 
 export class AmazonAIConvertPredictionsProvider {
-	private translateClient: TranslateClient | undefined;
-	private pollyClient: PollyClient | undefined;
+	private translateClient?: TranslateClient;
+	private pollyClient?: PollyClient;
 
 	getProviderName() {
 		return 'AmazonAIConvertPredictionsProvider';
