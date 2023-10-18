@@ -4,4 +4,4 @@
 /**
  * Base type for service options.
  */
-export type InAppMessagingServiceOptions = any;
+export type InAppMessagingServiceOptions = Record<string, unknown>;

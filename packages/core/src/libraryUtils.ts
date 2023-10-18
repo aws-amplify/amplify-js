@@ -65,6 +65,10 @@ export {
 	PushNotificationAction,
 	StorageAction,
 	SetCustomUserAgentInput,
+	StorageUserAgentInput,
+	AuthUserAgentInput,
+	InAppMessagingUserAgentInput,
+	GeoUserAgentInput,
 } from './Platform/types';
 export { setCustomUserAgent } from './Platform/customUserAgent';
 

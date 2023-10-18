@@ -45,7 +45,7 @@ export async function confirmResetPassword(
 		!!code,
 		AuthValidationErrorCode.EmptyConfirmResetPasswordConfirmationCode
 	);
-	const metadata = input.options?.serviceOptions?.clientMetadata;
+	const metadata = input.options?.clientMetadata;
 
 	const UserContextData = getUserContextData({
 		username,

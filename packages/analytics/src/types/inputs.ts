@@ -28,9 +28,7 @@ export type AnalyticsIdentifyUserInput<
 	/**
 	 * Options to be passed to the API.
 	 */
-	options?: {
-		serviceOptions?: ServiceOptions;
-	};
+	options?: ServiceOptions;
 };
 
 /**
