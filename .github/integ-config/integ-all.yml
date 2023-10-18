@@ -464,20 +464,6 @@ tests:
     sample_name: [auto-signin-after-signup]
     spec: auto-signin-after-signup
     browser: *minimal_browser_list
-  - test_name: integ_react_amazon_cognito_identity_js_cookie_storage
-    desc: 'amazon-cognito-identity-js-cookie-storage'
-    framework: react
-    category: auth
-    sample_name: [amazon-cognito-identity-js-cookie-storage]
-    spec: amazon-cognito-identity-js-cookie-storage
-    browser: *minimal_browser_list
-  - test_name: integ_react_amazon_cognito_identity_js
-    desc: 'amazon-cognito-identity-js'
-    framework: react
-    category: auth
-    sample_name: [amazon-cognito-identity-js]
-    spec: amazon-cognito-identity-js
-    browser: *minimal_browser_list
   - test_name: integ_react_device_tracking
     desc: 'cognito-device-tracking'
     framework: react
@@ -492,43 +478,6 @@ tests:
     sample_name: [delete-user]
     spec: delete-user
     browser: *minimal_browser_list
-  # - test_name: integ_angular_auth_angular_authenticator
-  #   desc: 'Angular Authenticator'
-  #   framework: angular
-  #   category: auth
-  #   sample_name: [amplify-authenticator]
-  #   spec: ui-amplify-authenticator
-  #   browser: *minimal_browser_list
-  # - test_name: integ_angular_auth_angular_custom_authenticator
-  #   desc: 'Angular Custom Authenticator'
-  #   framework: angular
-  #   category: auth
-  #   sample_name: [amplify-authenticator]
-  #   spec: custom-authenticator
-  #   browser: *minimal_browser_list
-  # - test_name: integ_javascript_auth
-  #   desc: 'JavaScript Auth CDN'
-  #   framework: javascript
-  #   category: auth
-  #   sample_name: [auth-cdn]
-  #   spec: auth-cdn
-  #   browser: *minimal_browser_list
-  #   amplifyjs_dir: true
-  # - test_name: integ_vue_auth_legacy_vue_authenticator
-  #   desc: 'Legacy Vue Authenticator'
-  #   framework: vue
-  #   category: auth
-  #   sample_name: [amplify-authenticator-legacy]
-  #   spec: authenticator
-  #   browser: *minimal_browser_list
-  # - test_name: integ_vue_auth_vue_3_authenticator
-  #   desc: 'Vue 3 Authenticator'
-  #   framework: vue
-  #   category: auth
-  #   sample_name: [authenticator-vue3]
-  #   spec: new-ui-authenticator
-  #   browser: *minimal_browser_list
-  # TODO(v6) Migrate once SSR updates available
   - test_name: integ_next_auth_authenticator_and_ssr_page
     desc: 'Authenticator and SSR page'
     framework: next
@@ -545,6 +494,50 @@ tests:
     browser: [chrome]
     timeout_minutes: 45
     retry_count: 10
+
+  # DISABLED Angular/Vue tests: 
+  # TODO: delete tests or add custom ui logic to support them.
+
+  # - test_name: integ_angular_auth_angular_authenticator
+  #   desc: 'Angular Authenticator'
+  #   framework: angular
+  #   category: auth
+  #   sample_name: [amplify-authenticator]
+  #   spec: ui-amplify-authenticator
+  #   browser: *minimal_browser_list
+  # - test_name: integ_angular_auth_angular_custom_authenticator
+  #   desc: 'Angular Custom Authenticator'
+  #   framework: angular
+  #   category: auth
+  #   sample_name: [amplify-authenticator]
+  #   spec: custom-authenticator
+  #   browser: *minimal_browser_list
+  # - test_name: integ_vue_auth_legacy_vue_authenticator
+  #   desc: 'Legacy Vue Authenticator'
+  #   framework: vue
+  #   category: auth
+  #   sample_name: [amplify-authenticator-legacy]
+  #   spec: authenticator
+  #   browser: *minimal_browser_list
+  # - test_name: integ_vue_auth_vue_3_authenticator
+  #   desc: 'Vue 3 Authenticator'
+  #   framework: vue
+  #   category: auth
+  #   sample_name: [authenticator-vue3]
+  #   spec: new-ui-authenticator
+  #   browser: *minimal_browser_list
+
+  # DISABLED CDN test: 
+  # TODO: delete this test after making sure CDN won't be supported
+
+  # - test_name: integ_javascript_auth
+  #   desc: 'JavaScript Auth CDN'
+  #   framework: javascript
+  #   category: auth
+  #   sample_name: [auth-cdn]
+  #   spec: auth-cdn
+  #   browser: *minimal_browser_list
+  #   amplifyjs_dir: true
 
   # ANALYTICS
   - test_name: integ_react_analytics_pinpoint
