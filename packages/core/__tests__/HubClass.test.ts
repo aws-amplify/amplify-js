@@ -5,7 +5,7 @@ import { ConsoleLogger } from '../src';
 describe('Symbol undefined before load Hub', () => {
 	test('Symbol not supported', () => {
 		const listener = jest.fn(() => {});
-		const amplifySymbol = ('@@amplify_default' as unknown) as Symbol;
+		const amplifySymbol = '@@amplify_default' as unknown as Symbol;
 		const loggerSpy = jest.spyOn(ConsoleLogger.prototype, '_log');
 
 		Hub.listen('auth', listener);
