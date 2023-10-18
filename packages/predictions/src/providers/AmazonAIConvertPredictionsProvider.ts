@@ -442,7 +442,11 @@ export class AmazonAIConvertPredictionsProvider {
 	}
 
 	private generateTranscribeUrl({
-		credentials: awsCredentials,
+		credentials: {
+			accessKeyId,
+			secretAccessKey,
+			sessionToken
+		},
 		region,
 		languageCode,
 	}: {
@@ -450,16 +454,10 @@ export class AmazonAIConvertPredictionsProvider {
 		region: string;
 		languageCode: string;
 	}): string {
-		const {
-			accessKeyId: access_key,
-			secretAccessKey: secret_key,
-			sessionToken: session_token,
-		} = awsCredentials;
-
 		const credentials = {
-			access_key,
-			secret_key,
-			session_token,
+			access_key: accessKeyId,
+			secret_key: secretAccessKey,
+			session_token: sessionToken,
 		};
 
 		const url = [
