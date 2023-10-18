@@ -126,7 +126,7 @@ export class AmazonAIInterpretPredictionsProvider {
 			syntaxPromise = this.detectSyntax(syntaxParams);
 		}
 
-		let keyPhrasesPromise: Promise<Array<KeyPhrases>> | undefined;
+		let keyPhrasesPromise: Promise<KeyPhrases> | undefined;
 		if (doAll || type === 'keyPhrases') {
 			assertValidationError(
 				!!languageCode,
@@ -156,9 +156,7 @@ export class AmazonAIInterpretPredictionsProvider {
 		};
 	}
 
-	private async detectKeyPhrases(
-		params: DetectParams
-	): Promise<Array<KeyPhrases>> {
+	private async detectKeyPhrases(params: DetectParams): Promise<KeyPhrases> {
 		try {
 			const detectKeyPhrasesCommand = new DetectKeyPhrasesCommand(params);
 			const data = await this.comprehendClient!.send(detectKeyPhrasesCommand);

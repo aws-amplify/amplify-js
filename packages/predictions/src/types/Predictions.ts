@@ -48,9 +48,10 @@ export interface TextEntities {
 	text?: string;
 }
 
-export interface KeyPhrases {
-	text: string | undefined;
-}
+export type KeyPhrases = KeyPhrase[];
+export type KeyPhrase = {
+	text?: string;
+};
 
 export interface TextSyntax {
 	text: string;
@@ -74,7 +75,7 @@ export interface InterpretTextOutput {
 	textInterpretation: {
 		language?: string;
 		textEntities?: Array<TextEntities>;
-		keyPhrases?: Array<KeyPhrases>;
+		keyPhrases?: KeyPhrases;
 		sentiment?: TextSentiment;
 		syntax?: Array<TextSyntax>;
 	};
