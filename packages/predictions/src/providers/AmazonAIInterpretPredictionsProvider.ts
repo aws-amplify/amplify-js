@@ -14,9 +14,10 @@ import {
 	TextSentiment,
 	TextSyntax,
 	KeyPhrases,
-	isInterpretTextInput,
 	DetectParams,
 	isValidInterpretInput,
+	isInterpretTextOthers,
+	InterpretTextOthers,
 } from '../types';
 import {
 	ComprehendClient,
@@ -61,8 +62,11 @@ export class AmazonAIInterpretPredictionsProvider {
 
 		const { text: textSource } = input;
 		const { source, type = defaultType } = textSource;
-		const { text } = source ?? {};
-		const language: string = (source as any)?.language;
+		const { text } = source;
+		let language;
+		if (isInterpretTextOthers(textSource)) {
+			language = (textSource as InterpretTextOthers).source.language;
+		}
 
 		this.comprehendClient = new ComprehendClient({
 			credentials,
@@ -76,7 +80,7 @@ export class AmazonAIInterpretPredictionsProvider {
 		const doAll = type === 'all';
 
 		let languageCode = language;
-		if ((doAll && !languageCode) || type === 'LANGUAGE') {
+		if (doAll || type === 'language') {
 			const languageDetectionParams = {
 				Text: text,
 			};

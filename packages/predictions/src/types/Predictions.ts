@@ -395,6 +395,12 @@ export function isInterpretTextInput(obj: any): obj is InterpretTextInput {
 	return obj && obj.hasOwnProperty(key);
 }
 
+export function isInterpretTextOthers(
+	text: InterpretTextInput['text']
+): text is InterpretTextOthers {
+	return (text as InterpretTextOthers).source.language !== undefined;
+}
+
 export interface Geometry {
 	/**
 	 * <p>An axis-aligned coarse representation of the detected text's location on the image.</p>
