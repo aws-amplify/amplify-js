@@ -37,7 +37,6 @@ import {
 	FeatureTypes,
 	isIdentifyTextInput,
 	isIdentifyLabelsInput,
-	isIdentifyEntitiesInput,
 	IdentifyEntity,
 	FaceAttributes,
 	isValidIdentifyInput,
@@ -200,33 +199,35 @@ export class AmazonAIIdentifyPredictionsProvider {
 			const textractParam: DetectDocumentTextCommandInput = {
 				Document: inputDocument,
 			};
-			const detectDocumentTextCommand = new DetectDocumentTextCommand(
-				textractParam
-			);
-			const { Blocks } = await this.textractClient.send(
-				detectDocumentTextCommand
-			);
-
 			const rekognitionParam: DetectTextCommandInput = {
 				Image: inputDocument,
 			};
+
 			const detectTextCommand = new DetectTextCommand(rekognitionParam);
 			const rekognitionData = await this.rekognitionClient.send(
 				detectTextCommand
 			);
 
-			if (rekognitionData.TextDetections) {
-				const rekognitionResponse = categorizeRekognitionBlocks(
-					rekognitionData.TextDetections as TextDetectionList
-				);
-				if (rekognitionResponse.text.words.length < 50) {
-					// did not hit the word limit, return the data
-					return rekognitionResponse;
-				}
+			const rekognitionResponse = categorizeRekognitionBlocks(
+				rekognitionData.TextDetections as TextDetectionList
+			);
+			if (rekognitionResponse.text.words.length < 50) {
+				// did not hit the word limit, return the data
+				return rekognitionResponse;
+			}
 
-				if (rekognitionData.TextDetections.length > (Blocks?.length ?? 0)) {
-					return rekognitionResponse;
-				}
+			const detectDocumentTextCommand = new DetectDocumentTextCommand(
+				textractParam
+			);
+
+			const { Blocks } = await this.textractClient.send(
+				detectDocumentTextCommand
+			);
+
+			if (
+				(rekognitionData.TextDetections?.length ?? 0) > (Blocks?.length ?? 0)
+			) {
+				return rekognitionResponse;
 			}
 
 			return categorizeTextractBlocks(Blocks as BlockList);
