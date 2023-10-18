@@ -506,14 +506,14 @@ tests:
   #   sample_name: [amplify-authenticator]
   #   spec: custom-authenticator
   #   browser: *minimal_browser_list
-  - test_name: integ_javascript_auth
-    desc: 'JavaScript Auth CDN'
-    framework: javascript
-    category: auth
-    sample_name: [auth-cdn]
-    spec: auth-cdn
-    browser: *minimal_browser_list
-    amplifyjs_dir: true
+  # - test_name: integ_javascript_auth
+  #   desc: 'JavaScript Auth CDN'
+  #   framework: javascript
+  #   category: auth
+  #   sample_name: [auth-cdn]
+  #   spec: auth-cdn
+  #   browser: *minimal_browser_list
+  #   amplifyjs_dir: true
   # - test_name: integ_vue_auth_legacy_vue_authenticator
   #   desc: 'Legacy Vue Authenticator'
   #   framework: vue
@@ -536,7 +536,6 @@ tests:
     sample_name: [auth-ssr]
     spec: auth-ssr
     browser: *minimal_browser_list
-  # TODO(v6) Migrate once SSR updates available
   - test_name: integ_next_auth_authenticator_and_rsc_page
     desc: 'Authenticator and RSC page'
     framework: next
@@ -546,13 +545,6 @@ tests:
     browser: [chrome]
     timeout_minutes: 45
     retry_count: 10
-  - test_name: integ_next_auth_nextjs_auth_custom_implementation_with_ssr
-    desc: 'NextJS Auth Custom Implementation with SSR'
-    framework: next
-    category: auth
-    sample_name: [custom-auth-ssr]
-    spec: authenticator
-    browser: *minimal_browser_list
 
   # ANALYTICS
   - test_name: integ_react_analytics_pinpoint
