@@ -13,6 +13,7 @@
 		"packages/api-rest",
 		"packages/api-graphql",
 		"packages/datastore",
+		"packages/datastore-storage-adapter",
 		"packages/interactions",
 		"packages/pubsub",
 		"packages/rtn-web-browser",
