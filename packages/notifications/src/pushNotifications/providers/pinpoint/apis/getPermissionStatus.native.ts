@@ -2,10 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { loadAmplifyPushNotification } from '@aws-amplify/react-native';
+import { assertIsInitialized } from '../../../errors/errorHelpers';
 import { GetPermissionStatus } from '../types';
 
 const { getPermissionStatus: getPermissionStatusNative } =
 	loadAmplifyPushNotification();
 
-export const getPermissionStatus: GetPermissionStatus = () =>
-	getPermissionStatusNative();
+export const getPermissionStatus: GetPermissionStatus = () => {
+	assertIsInitialized();
+	return getPermissionStatusNative();
+};
