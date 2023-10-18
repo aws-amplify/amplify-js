@@ -139,7 +139,7 @@ export class AmazonAIInterpretPredictionsProvider {
 			};
 			keyPhrasesPromise = this.detectKeyPhrases(keyPhrasesParams);
 		}
-		const [entities, sentiment, syntax, keyPhrases] = await Promise.all([
+		const [textEntities, sentiment, syntax, keyPhrases] = await Promise.all([
 			entitiesPromise,
 			sentimentPromise,
 			syntaxPromise,
@@ -147,11 +147,11 @@ export class AmazonAIInterpretPredictionsProvider {
 		]);
 		return {
 			textInterpretation: {
-				keyPhrases: keyPhrases,
+				keyPhrases,
 				language: languageCode,
-				sentiment: sentiment,
-				syntax: syntax,
-				textEntities: entities,
+				sentiment,
+				syntax,
+				textEntities,
 			},
 		};
 	}
