@@ -14,7 +14,9 @@ const logger = new ConsoleLogger('PageViewTracker');
 const DEFAULT_EVENT_NAME = 'pageView';
 const DEFAULT_APP_TYPE = 'singlePage';
 const DEFAULT_URL_PROVIDER = () => {
-	return window.location.origin + window.location.pathname;
+	return isBrowser()
+		? window.location.origin + window.location.pathname
+		: undefined!;
 };
 const PREV_URL_STORAGE_KEY = 'aws-amplify-analytics-prevUrl';
 
@@ -52,16 +54,16 @@ export class PageViewTracker implements TrackerInterface {
 		// Clean up any existing listeners
 		this.cleanup();
 
-		if (isBrowser()) {
-			// Apply defaults
-			this.options = {
-				appType: options?.appType ?? DEFAULT_APP_TYPE,
-				attributes: options?.attributes ?? undefined,
-				eventName: this.options?.eventName ?? DEFAULT_EVENT_NAME,
-				urlProvider: this.options?.urlProvider ?? DEFAULT_URL_PROVIDER,
-			};
+		// Apply defaults
+		this.options = {
+			appType: options?.appType ?? DEFAULT_APP_TYPE,
+			attributes: options?.attributes ?? undefined,
+			eventName: this.options?.eventName ?? DEFAULT_EVENT_NAME,
+			urlProvider: this.options?.urlProvider ?? DEFAULT_URL_PROVIDER,
+		};
 
-			// Configure SPA or MPA page view tracking
+		// Configure SPA or MPA page view tracking
+		if (isBrowser()) {
 			if (this.options.appType === 'singlePage') {
 				this.setupSPATracking();
 			} else {
