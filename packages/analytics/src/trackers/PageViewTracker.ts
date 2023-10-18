@@ -7,6 +7,7 @@ import {
 	TrackerInterface,
 } from '../types/trackers';
 import { ConsoleLogger } from '@aws-amplify/core';
+import { isBrowser } from '@aws-amplify/core/internals/utils';
 
 const logger = new ConsoleLogger('PageViewTracker');
 
@@ -18,6 +19,7 @@ const DEFAULT_URL_PROVIDER = () => {
 const PREV_URL_STORAGE_KEY = 'aws-amplify-analytics-prevUrl';
 
 export class PageViewTracker implements TrackerInterface {
+	private trackerActive: boolean;
 	private options: PageViewTrackingOptions;
 	private eventRecorder: TrackerEventRecorder;
 
@@ -33,6 +35,7 @@ export class PageViewTracker implements TrackerInterface {
 		options?: PageViewTrackingOptions
 	) {
 		this.options = {};
+		this.trackerActive = true;
 		this.eventRecorder = eventRecorder;
 		this.spaTrackingActive = false;
 		this.handleLocationChange = this.handleLocationChange.bind(this);
@@ -58,14 +61,23 @@ export class PageViewTracker implements TrackerInterface {
 		};
 
 		// Configure SPA or MPA page view tracking
-		if (this.options.appType === 'singlePage') {
-			this.setupSPATracking();
-		} else {
-			this.setupMPATracking();
+		if (isBrowser()) {
+			if (this.options.appType === 'singlePage') {
+				this.setupSPATracking();
+			} else {
+				this.setupMPATracking();
+			}
+
+			this.trackerActive = true;
 		}
 	}
 
 	public cleanup() {
+		// No-op if document listener is not active
+		if (!this.trackerActive) {
+			return;
+		}
+
 		// Clean up SPA page view listeners
 		if (this.spaTrackingActive) {
 			window.history.pushState = this.originalPushState;
