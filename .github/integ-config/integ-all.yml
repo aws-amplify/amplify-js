@@ -427,6 +427,13 @@ tests:
     sample_name: [graphql]
     spec: graphql
     browser: *minimal_browser_list
+  - test_name: integ_react_api_optimistic_ui
+    desc: React GraphQL API Optimistic UI with Tan/ReactQuery
+    framework: react
+    category: api
+    sample_name: [optimistic-ui]
+    spec: optimistic-ui
+    browser: *minimal_browser_list
 
   # AUTH
   - test_name: integ_react_javascript_authentication
