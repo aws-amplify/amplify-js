@@ -393,14 +393,14 @@ export class AmazonAIIdentifyPredictionsProvider {
 			const faces =
 				data.CelebrityFaces?.map(
 					celebrity =>
-						<IdentifyEntity>{
+						({
 							boundingBox: makeCamelCase(celebrity.Face?.BoundingBox),
 							landmarks: makeCamelCaseArray(celebrity.Face?.Landmarks),
 							metadata: {
 								...makeCamelCase(celebrity, ['Id', 'Name', 'Urls']),
 								pose: makeCamelCase(celebrity.Face?.Pose),
 							},
-						}
+						} as IdentifyEntity)
 				) ?? [];
 			return { entities: faces };
 		} else if (
@@ -426,13 +426,13 @@ export class AmazonAIIdentifyPredictionsProvider {
 					const externalImageId = match.Face?.ExternalImageId
 						? this.decodeExternalImageId(match.Face.ExternalImageId)
 						: undefined;
-					return <IdentifyEntity>{
+					return {
 						boundingBox: makeCamelCase(match.Face?.BoundingBox),
 						metadata: {
 							externalImageId,
 							similarity: match.Similarity,
 						},
-					};
+					} as IdentifyEntity;
 				}) ?? [];
 			return { entities: faces };
 		} else {
@@ -459,7 +459,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 					faceAttributes.emotions = detail.Emotions?.map(
 						emotion => emotion.Type
 					);
-					return <IdentifyEntity>{
+					return {
 						boundingBox: makeCamelCase(detail.BoundingBox),
 						landmarks: makeCamelCaseArray(detail.Landmarks),
 						ageRange: makeCamelCase(detail.AgeRange),
@@ -468,7 +468,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 							confidence: detail.Confidence,
 							pose: makeCamelCase(detail.Pose),
 						},
-					};
+					} as IdentifyEntity;
 				}) ?? [];
 			return { entities: faces };
 		}

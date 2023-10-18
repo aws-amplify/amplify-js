@@ -279,17 +279,20 @@ export interface FaceAttributes {
 	emotions?: (string | undefined)[];
 }
 
+export type EntityAgeRange = {
+	low?: Number;
+	high?: Number;
+};
+export type EntityLandmark = {
+	type?: string;
+	x?: number;
+	y?: number;
+};
+
 export type IdentifyEntity = {
 	boundingBox?: BoundingBox;
-	ageRange?: {
-		low?: Number;
-		high?: Number;
-	};
-	landmarks?: {
-		type?: string;
-		x?: number;
-		y?: number;
-	}[];
+	ageRange?: EntityAgeRange;
+	landmarks?: (EntityLandmark | undefined)[];
 	attributes?: FaceAttributes;
 	metadata?: object;
 };

@@ -4,7 +4,7 @@
  * Changes object keys to camel case. If optional parameter `keys` is given, then we extract only the
  * keys specified in `keys`.
  */
-export function makeCamelCase(obj?: Record<string, unknown>, keys?: string[]) {
+export function makeCamelCase(obj?: any, keys?: string[]) {
 	if (!obj) return undefined;
 	const newObj = {};
 	const keysToRename = keys ? keys : Object.keys(obj);
