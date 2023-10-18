@@ -283,9 +283,9 @@ export class AmazonAIConvertPredictionsProvider {
 					if (decodedMessage) {
 						fullText += decodedMessage + ' ';
 					}
-				} catch (err: any) {
+				} catch (err: unknown) {
 					logger.debug(err);
-					rej(err.message);
+					rej(err);
 				}
 			};
 
