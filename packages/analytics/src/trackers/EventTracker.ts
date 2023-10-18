@@ -8,6 +8,7 @@ import {
 	TrackerInterface,
 } from '../types/trackers';
 import { ConsoleLogger } from '@aws-amplify/core';
+import { isBrowser } from '@aws-amplify/core/internals/utils';
 
 const DEFAULT_EVENTS = ['click'] as DOMEvent[];
 const DEFAULT_SELECTOR_PREFIX = 'data-amplify-analytics-';
@@ -16,6 +17,7 @@ const DEFAULT_EVENT_NAME = 'event'; // Default event name as sent to the analyti
 const logger = new ConsoleLogger('EventTracker');
 
 export class EventTracker implements TrackerInterface {
+	private trackerActive: boolean;
 	private options: EventTrackingOptions;
 	private eventRecorder: TrackerEventRecorder;
 
@@ -24,6 +26,7 @@ export class EventTracker implements TrackerInterface {
 		options?: EventTrackingOptions
 	) {
 		this.options = {};
+		this.trackerActive = false;
 		this.eventRecorder = eventRecorder;
 		this.handleDocEvent = this.handleDocEvent.bind(this);
 
@@ -47,14 +50,23 @@ export class EventTracker implements TrackerInterface {
 		};
 
 		// Register event listeners
-		this.options.events?.forEach(targetEvent => {
-			document.addEventListener(targetEvent, this.handleDocEvent, {
-				capture: true,
+		if (isBrowser()) {
+			this.options.events?.forEach(targetEvent => {
+				document.addEventListener(targetEvent, this.handleDocEvent, {
+					capture: true,
+				});
 			});
-		});
+
+			this.trackerActive = true;
+		}
 	}
 
 	public cleanup() {
+		// No-op if document listener is not active
+		if (!this.trackerActive) {
+			return;
+		}
+
 		// Clean up event listeners
 		this.options.events?.forEach(targetEvent => {
 			document.removeEventListener(targetEvent, this.handleDocEvent, {
