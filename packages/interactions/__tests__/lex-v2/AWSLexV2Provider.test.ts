@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AWSLexV2Provider } from '../../src/Providers';
-import { Credentials } from '@aws-amplify/core';
+import { fetchAuthSession } from '@aws-amplify/core';
 import {
+	IntentState,
 	LexRuntimeV2Client,
 	RecognizeTextCommand,
 	RecognizeTextCommandOutput,
@@ -10,7 +10,10 @@ import {
 } from '@aws-sdk/client-lex-runtime-v2';
 import { gzip, strToU8 } from 'fflate';
 import { encode } from 'base-64';
-import { prototype } from 'stream';
+import { v4 as uuid } from 'uuid';
+import { lexProvider } from '../../src/lex-v2/AWSLexV2Provider';
+
+jest.mock('@aws-amplify/core');
 
 (global as any).Response = () => {};
 (global as any).Response.prototype.arrayBuffer = (blob: Blob) => {
@@ -30,17 +33,19 @@ const botConfig = {
 		aliasId: 'O1O8YV2JTG',
 		localeId: 'en_US',
 		region: 'us-west-2',
-		providerName: 'AWSLexV2Provider',
-	},
-	OrderFlowers: {
-		name: 'OrderFlowers',
-		botId: 'O1O8YV2JTG',
-		aliasId: '0DNZS5QI8M',
-		localeId: 'en_US',
-		region: 'us-west-2',
-		providerName: 'AWSLexV2Provider',
 	},
 };
+
+const credentials = {
+	credentials: {
+		accessKeyId: 'access-key-id',
+		secretAccessKey: 'secret-access-key',
+		sessionToken: 'session-token',
+	},
+	identityId: 'identity-id',
+};
+
+const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 
 const arrayBufferToBase64 = (buffer: Uint8Array) => {
 	var binary = '';
@@ -214,99 +219,19 @@ afterEach(() => {
 });
 
 describe('Interactions', () => {
-	// Test 'getProviderName' API
-	test(`Is provider name 'AWSLexV2Provider'`, () => {
-		const provider = new AWSLexV2Provider();
-		expect(provider.getProviderName()).toEqual('AWSLexV2Provider');
-		expect.assertions(1);
-	});
-
-	// Test 'getCategory' API
-	test(`Is category name 'Interactions'`, () => {
-		const provider = new AWSLexV2Provider();
-		expect(provider.getCategory()).toEqual('Interactions');
-		expect.assertions(1);
-	});
-
-	// Test 'configure' API
-	describe('configure API', () => {
-		const provider = new AWSLexV2Provider();
-
-		test('Check if bot is successfully configured by validating config response', () => {
-			expect(provider.configure(botConfig)).toEqual(botConfig);
-			expect.assertions(1);
-		});
-
-		test('configure multiple bots and re-configure existing bot successfully', () => {
-			// config 1st bot
-			expect(provider.configure(botConfig)).toEqual(botConfig);
-
-			const anotherBot = {
-				BookTrip: {
-					name: 'BookHotel',
-					botId: '0DNZS5QI8M',
-					aliasId: 'O1O8YV2JTG',
-					localeId: 'en_US',
-					region: 'us-west-2',
-					providerName: 'AWSLexV2Provider',
-				},
-			};
-			// config 2nd bot
-			expect(provider.configure(anotherBot)).toEqual({
-				...botConfig,
-				...anotherBot,
-			});
-
-			const anotherBotUpdated = {
-				BookTrip: {
-					name: 'BookHotel',
-					botId: '0DNZS5QI8M',
-					aliasId: '7542RC2HTD',
-					localeId: 'en_IN',
-					region: 'us-west-2',
-					providerName: 'AWSLexV2Provider',
-				},
-			};
-			// re-configure updated 2nd bot
-			// 2nd bot is overridden
-			expect(provider.configure(anotherBotUpdated)).toEqual({
-				...botConfig,
-				...anotherBotUpdated,
-			});
-			expect.assertions(3);
-		});
-
-		test('Configure bot with invalid config', () => {
-			const v1Bot = {
-				BookHotel: {
-					name: 'BookHotel',
-					alias: '$LATEST',
-					region: 'us-west-2',
-				},
-			};
-			// @ts-ignore
-			expect(() => provider.configure(v1Bot)).toThrow(
-				'invalid bot configuration'
-			);
-			expect.assertions(1);
-		});
-	});
-
 	// Test 'send' API
 	describe('send API', () => {
 		let provider;
 
 		beforeEach(() => {
-			jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
-
-			provider = new AWSLexV2Provider();
-			provider.configure(botConfig);
+			mockFetchAuthSession.mockReturnValue(credentials);
+			provider = lexProvider;
 		});
 
+		afterEach(() => mockFetchAuthSession.mockReset());
+
 		test('send simple text message to bot and fulfill', async () => {
-			let response = await provider.sendMessage('BookTrip', 'hi');
+			let response = await provider.sendMessage(botConfig.BookTrip, 'hi');
 			expect(response).toEqual({
 				sessionState: {
 					intent: {
@@ -316,7 +241,7 @@ describe('Interactions', () => {
 				messages: [{ content: 'echo:hi' }],
 			});
 
-			response = await provider.sendMessage('BookTrip', 'done');
+			response = await provider.sendMessage(botConfig.BookTrip, 'done');
 			expect(response).toEqual({
 				sessionState: {
 					intent: {
@@ -330,7 +255,7 @@ describe('Interactions', () => {
 		});
 
 		test('send obj text message to bot and fulfill', async () => {
-			let response = await provider.sendMessage('BookTrip', {
+			let response = await provider.sendMessage(botConfig.BookTrip, {
 				content: 'hi',
 				options: {
 					messageType: 'text',
@@ -346,7 +271,7 @@ describe('Interactions', () => {
 				audioStream: new Uint8Array(),
 			});
 
-			response = await provider.sendMessage('BookTrip', {
+			response = await provider.sendMessage(botConfig.BookTrip, {
 				content: 'done',
 				options: {
 					messageType: 'text',
@@ -372,13 +297,11 @@ describe('Interactions', () => {
 					botId: '0DNZS5QI8M:hi',
 					aliasId: 'O1O8YV2JTG',
 					localeId: 'en_US',
-					providerName: 'AWSLexV2Provider',
 					region: 'us-west-2',
 				},
 			};
-			provider.configure(botconfig);
 
-			let response = await provider.sendMessage('BookTrip', {
+			let response = await provider.sendMessage(botconfig.BookTrip, {
 				content: createBlob(),
 				options: {
 					messageType: 'voice',
@@ -395,8 +318,7 @@ describe('Interactions', () => {
 			});
 
 			botconfig.BookTrip.botId = '0DNZS5QI8M:done';
-			provider.configure(botconfig);
-			response = await provider.sendMessage('BookTrip', {
+			response = await provider.sendMessage(botconfig.BookTrip, {
 				content: createBlob(),
 				options: {
 					messageType: 'voice',
@@ -416,27 +338,18 @@ describe('Interactions', () => {
 		});
 
 		test('send a text message bot But with no credentials', async () => {
-			jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.reject({ identityId: '1234' }));
+			mockFetchAuthSession.mockReturnValue(Promise.reject(new Error()));
 
-			await expect(provider.sendMessage('BookTrip', 'hi')).rejects.toEqual(
-				'No credentials'
-			);
-			expect.assertions(1);
-		});
-
-		test('send message to non-existing bot', async () => {
-			await expect(provider.sendMessage('unknownBot', 'hi')).rejects.toEqual(
-				'Bot unknownBot does not exist'
-			);
+			await expect(
+				provider.sendMessage(botConfig.BookTrip, 'hi')
+			).rejects.toEqual('No credentials');
 			expect.assertions(1);
 		});
 
 		test('send obj text and obj voice messages in wrong format', async () => {
 			// obj text in wrong format
 			await expect(
-				provider.sendMessage('BookTrip', {
+				provider.sendMessage(botConfig.BookTrip, {
 					content: createBlob(),
 					options: {
 						messageType: 'text',
@@ -446,7 +359,7 @@ describe('Interactions', () => {
 
 			// obj voice in wrong format
 			await expect(
-				provider.sendMessage('BookTrip', {
+				provider.sendMessage(botConfig.BookTrip, {
 					content: 'Hi',
 					options: {
 						messageType: 'voice',
@@ -462,23 +375,16 @@ describe('Interactions', () => {
 		let provider;
 
 		beforeEach(() => {
-			jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
-
-			provider = new AWSLexV2Provider();
-			provider.configure(botConfig);
+			mockFetchAuthSession.mockReturnValue(credentials);
+			provider = lexProvider;
 		});
+
+		afterEach(() => mockFetchAuthSession.mockReset());
 
 		test('Configure onComplete callback for a configured bot successfully', () => {
-			expect(() => provider.onComplete('BookTrip', callback)).not.toThrow();
-			expect.assertions(1);
-		});
-
-		test('Configure onComplete callback for non-existing bot', async () => {
-			expect(() => provider.onComplete('unknownBot', callback)).toThrow(
-				'Bot unknownBot does not exist'
-			);
+			expect(() =>
+				provider.onComplete(botConfig.BookTrip, callback)
+			).not.toThrow();
 			expect.assertions(1);
 		});
 	});
@@ -486,8 +392,7 @@ describe('Interactions', () => {
 	// Test 'reportBotStatus' API
 	describe('reportBotStatus API', () => {
 		jest.useFakeTimers();
-		let provider;
-
+		let provider = lexProvider;
 		// enum, action types callback function can handle
 		const ACTION_TYPE = Object.freeze({
 			IN_PROGRESS: 'inProgress',
@@ -499,13 +404,7 @@ describe('Interactions', () => {
 		let mockResponseProvider;
 
 		beforeEach(async () => {
-			jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
-
-			provider = new AWSLexV2Provider();
-			provider.configure(botConfig);
-
+			mockFetchAuthSession.mockReturnValue(credentials);
 			mockCallbackProvider = actionType => {
 				switch (actionType) {
 					case ACTION_TYPE.IN_PROGRESS:
@@ -515,7 +414,7 @@ describe('Interactions', () => {
 
 					case ACTION_TYPE.COMPLETE:
 						return jest.fn((err, confirmation) => {
-							expect(err).toEqual(null);
+							expect(err).toEqual(undefined);
 							expect(confirmation).toEqual({
 								sessionState: {
 									intent: {
@@ -534,17 +433,17 @@ describe('Interactions', () => {
 			};
 
 			const inProgressResp = (await provider.sendMessage(
-				'BookTrip',
+				botConfig.BookTrip,
 				'in progress. callback isnt fired'
 			)) as RecognizeTextCommandOutput;
 
 			const completeSuccessResp = (await provider.sendMessage(
-				'BookTrip',
+				botConfig.BookTrip,
 				'done'
 			)) as RecognizeTextCommandOutput;
 
 			const completeFailResp = (await provider.sendMessage(
-				'BookTrip',
+				botConfig.BookTrip,
 				'error'
 			)) as RecognizeTextCommandOutput;
 
@@ -560,79 +459,22 @@ describe('Interactions', () => {
 			};
 		});
 
-		describe('onComplete callback from `Interactions.onComplete`', () => {
-			test(`In progress, callback shouldn't be called`, async () => {
-				// callback is only called once conversation is completed
-				const inProgressCallback = mockCallbackProvider(
-					ACTION_TYPE.IN_PROGRESS
-				);
-				provider.onComplete('BookTrip', inProgressCallback);
-
-				provider._reportBotStatus(
-					mockResponseProvider(ACTION_TYPE.IN_PROGRESS),
-					'BookTrip'
-				);
-
-				jest.runAllTimers();
-				expect(inProgressCallback).toBeCalledTimes(0);
-				expect.assertions(1);
-			});
-
-			test(`task complete; callback with success resp`, async () => {
-				const completeSuccessCallback = mockCallbackProvider(
-					ACTION_TYPE.COMPLETE
-				);
-
-				provider.onComplete('BookTrip', completeSuccessCallback);
-				provider._reportBotStatus(
-					mockResponseProvider(ACTION_TYPE.COMPLETE),
-					'BookTrip'
-				);
-
-				jest.runAllTimers();
-				expect(completeSuccessCallback).toBeCalledTimes(1);
-				// 2 assertions from callback
-				expect.assertions(3);
-			});
-
-			test(`task complete; callback with error resp`, async () => {
-				const completeFailCallback = mockCallbackProvider(ACTION_TYPE.ERROR);
-				provider.onComplete('BookTrip', completeFailCallback);
-
-				provider._reportBotStatus(
-					mockResponseProvider(ACTION_TYPE.ERROR),
-					'BookTrip'
-				);
-
-				jest.runAllTimers();
-				expect(completeFailCallback).toBeCalledTimes(1);
-				// 1 assertion from callback
-				expect.assertions(2);
-			});
+		afterEach(() => {
+			mockFetchAuthSession.mockReset();
 		});
 
 		describe('onComplete callback from `Interactions.onComplete`', () => {
-			const myBot: any = {
-				BookTrip: {
-					name: 'BookTrip',
-					botId: '0DNZS5QI8M',
-					aliasId: 'O1O8YV2JTG',
-					localeId: 'en_US',
-					region: 'us-west-2',
-					providerName: 'AWSLexV2Provider',
-				},
-			};
-
 			test(`In progress, callback shouldn't be called`, async () => {
+				// callback is only called once conversation is completed
+				let config = { ...botConfig.BookTrip, name: uuid() };
 				const inProgressCallback = mockCallbackProvider(
 					ACTION_TYPE.IN_PROGRESS
 				);
-				myBot.BookTrip.onComplete = inProgressCallback;
+				provider.onComplete(config, inProgressCallback);
 
-				provider.configure(myBot);
 				provider._reportBotStatus(
 					mockResponseProvider(ACTION_TYPE.IN_PROGRESS),
-					'BookTrip'
+					config
 				);
 
 				jest.runAllTimers();
@@ -641,15 +483,15 @@ describe('Interactions', () => {
 			});
 
 			test(`task complete; callback with success resp`, async () => {
+				let config = { ...botConfig.BookTrip, name: uuid() };
 				const completeSuccessCallback = mockCallbackProvider(
 					ACTION_TYPE.COMPLETE
 				);
-				myBot.BookTrip.onComplete = completeSuccessCallback;
 
-				provider.configure(myBot);
+				provider.onComplete(config, completeSuccessCallback);
 				provider._reportBotStatus(
 					mockResponseProvider(ACTION_TYPE.COMPLETE),
-					'BookTrip'
+					config
 				);
 
 				jest.runAllTimers();
@@ -659,13 +501,13 @@ describe('Interactions', () => {
 			});
 
 			test(`task complete; callback with error resp`, async () => {
+				let config = { ...botConfig.BookTrip, name: uuid() };
 				const completeFailCallback = mockCallbackProvider(ACTION_TYPE.ERROR);
-				myBot.BookTrip.onComplete = completeFailCallback;
+				provider.onComplete(config, completeFailCallback);
 
-				provider.configure(myBot);
 				provider._reportBotStatus(
 					mockResponseProvider(ACTION_TYPE.ERROR),
-					'BookTrip'
+					config
 				);
 
 				jest.runAllTimers();

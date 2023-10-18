@@ -51,6 +51,8 @@
 			"packages/api-graphql",
 			"packages/api",
 			"packages/datastore",
+			"packages/datastore-storage-adapter",
+			"packages/interactions",
 			"packages/pubsub",
 			"packages/notifications",
 			"packages/rtn-push-notification",
