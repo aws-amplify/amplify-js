@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { UserProfile } from '@aws-amplify/core';
-import { PushNotificationServiceOptions } from '.';
+import { PushNotificationServiceOptions } from './options';
+import {
+	OnPushNotificationMessageHandler,
+	OnTokenReceivedHandler,
+	PushNotificationPermissions,
+} from './pushNotifications';
 
-/**
- * Input type for `identifyUser`.
- */
 export type PushNotificationIdentifyUserInput<
 	ServiceOptions extends PushNotificationServiceOptions = PushNotificationServiceOptions
 > = {
@@ -25,3 +27,19 @@ export type PushNotificationIdentifyUserInput<
 	 */
 	options?: ServiceOptions;
 };
+
+export type PushNotificationRequestPermissionsInput =
+	PushNotificationPermissions;
+
+export type PushNotificationSetBadgeCountInput = number;
+
+export type PushNotificationOnNotificationOpenedInput =
+	OnPushNotificationMessageHandler;
+
+export type PushNotificationOnNotificationReceivedInBackgroundInput =
+	OnPushNotificationMessageHandler;
+
+export type PushNotificationOnNotificationReceivedInForegroundInput =
+	OnPushNotificationMessageHandler;
+
+export type PushNotificationOnTokenReceivedInput = OnTokenReceivedHandler;
