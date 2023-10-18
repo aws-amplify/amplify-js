@@ -14,7 +14,9 @@ const logger = new ConsoleLogger('PageViewTracker');
 const DEFAULT_EVENT_NAME = 'pageView';
 const DEFAULT_APP_TYPE = 'singlePage';
 const DEFAULT_URL_PROVIDER = () => {
-	return window.location.origin + window.location.pathname;
+	return isBrowser()
+		? window.location.origin + window.location.pathname
+		: undefined;
 };
 const PREV_URL_STORAGE_KEY = 'aws-amplify-analytics-prevUrl';
 
