@@ -12,11 +12,8 @@ import {
 	PubSubContent,
 	PubSubOptions,
 } from '../types/PubSub';
-import { Hub, HubPayload } from '@aws-amplify/core';
-import {
-	ConsoleLogger as Logger,
-	amplifyUuid,
-} from '@aws-amplify/core/internals/utils';
+import { Hub, HubPayload, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { amplifyUuid } from '@aws-amplify/core/internals/utils';
 import {
 	ConnectionStateMonitor,
 	CONNECTION_CHANGE,

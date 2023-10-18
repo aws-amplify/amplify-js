@@ -2,11 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Observable } from 'rxjs';
 import { PubSubBase, PubSubOptions, PubSubContent } from '../types/PubSub';
-import {
-	ConsoleLogger as Logger,
-	CustomUserAgentDetails,
-} from '@aws-amplify/core/internals/utils';
-
+import { CustomUserAgentDetails } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 const logger = new Logger('AbstractPubSubProvider');
 
 export abstract class AbstractPubSub<T extends PubSubOptions>
