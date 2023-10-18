@@ -15,8 +15,6 @@
 		"packages/datastore",
 		"packages/rtn-web-browser",
 		"packages/notifications",
-		"packages/notifications/in-app-messaging",
-		"packages/notifications/push-notifications",
 		"packages/rtn-push-notification",
 		"packages/react-native",
 		"packages/react-native/example",
