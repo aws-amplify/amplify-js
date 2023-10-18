@@ -1,4 +1,5 @@
-import { AmplifyError, ServiceWorker } from '../src/libraryUtils';
+import { AmplifyError } from '../src/libraryUtils';
+import { ServiceWorker } from '../src';
 import { ServiceWorkerErrorCode } from '../src/ServiceWorker/errorHelpers';
 
 describe('ServiceWorker test', () => {

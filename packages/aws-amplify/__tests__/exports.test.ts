@@ -38,6 +38,9 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "Hub",
 			  "I18n",
+			  "Cache",
+			  "ConsoleLogger",
+			  "ServiceWorker",
 			]
 		`);
 		});
@@ -67,6 +70,7 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "record",
 			  "identifyUser",
+			  "configureAutoTrack",
 			  "flushEvents",
 			  "enable",
 			  "disable",
@@ -81,6 +85,7 @@ describe('aws-amplify Exports', () => {
 			  "record",
 			  "identifyUser",
 			  "flushEvents",
+			  "configureAutoTrack",
 			]
 		`);
 		});

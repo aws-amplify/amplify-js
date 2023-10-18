@@ -9,11 +9,10 @@ import {
 	OperationTypeNode,
 } from 'graphql';
 import { Observable } from 'rxjs';
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyClassV6, ConsoleLogger } from '@aws-amplify/core';
 import {
 	GraphQLAuthMode,
 	CustomUserAgentDetails,
-	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
 	AmplifyUrl,
 } from '@aws-amplify/core/internals/utils';
@@ -34,7 +33,7 @@ import { resolveConfig, resolveLibraryOptions } from '../utils';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
-const logger = new Logger('GraphQLAPI');
+const logger = new ConsoleLogger('GraphQLAPI');
 
 export const graphqlOperation = (
 	query,

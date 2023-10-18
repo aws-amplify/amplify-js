@@ -12,14 +12,12 @@ import {
 	GetCredentialsOptions,
 	CognitoIdentityPoolConfig,
 } from './Auth/types';
-import { CacheConfig } from './Cache/types';
 import { GeoConfig } from './Geo/types';
 import {
 	LibraryStorageOptions,
 	StorageAccessLevel,
 	StorageConfig,
 } from './Storage/types';
-import { I18nConfig } from '../I18n/types';
 import { NotificationsConfig } from './Notifications/types';
 
 export type LegacyConfig = {
@@ -33,9 +31,6 @@ export type ResourcesConfig = {
 	API?: APIConfig;
 	Analytics?: AnalyticsConfig;
 	Auth?: AuthConfig;
-	Cache?: CacheConfig;
-	// DataStore?: {};
-	I18n?: I18nConfig;
 	// Interactions?: {};
 	Notifications?: NotificationsConfig;
 	// Predictions?: {};
@@ -56,7 +51,6 @@ export {
 	AuthUserPoolConfig,
 	AuthIdentityPoolConfig,
 	AuthUserPoolAndIdentityPoolConfig,
-	CacheConfig,
 	GetCredentialsOptions,
 	StorageAccessLevel,
 	StorageConfig,

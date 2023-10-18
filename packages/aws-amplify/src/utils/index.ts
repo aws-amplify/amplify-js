@@ -4,4 +4,10 @@
 /*
 This file maps exports from `aws-amplify/utils`.
 */
-export { Hub, I18n } from '@aws-amplify/core';
+export {
+	Hub, 
+	I18n,
+	Cache,
+	ConsoleLogger,
+	ServiceWorker
+} from '@aws-amplify/core';

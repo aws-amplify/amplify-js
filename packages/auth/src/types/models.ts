@@ -121,9 +121,7 @@ export type ConfirmSignInWithNewPasswordRequired<
 	 * await confirmSignIn({
 	 *  challengeResponse: newPassword,
 	 *  options: {
-	 *   serviceOptions: {
 	 *    userAttributes: attributes
-	 *    }
 	 *   }
 	 * });
 	 * ```

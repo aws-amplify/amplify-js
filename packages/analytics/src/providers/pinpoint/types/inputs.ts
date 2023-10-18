@@ -3,7 +3,10 @@
 
 import { PinpointAnalyticsEvent } from '@aws-amplify/core/internals/providers/pinpoint';
 import { IdentifyUserOptions } from '.';
-import { AnalyticsIdentifyUserInput } from '../../../types';
+import {
+	AnalyticsConfigureAutoTrackInput,
+	AnalyticsIdentifyUserInput,
+} from '../../../types';
 
 /**
  * Input type for Pinpoint record API.
@@ -14,3 +17,8 @@ export type RecordInput = PinpointAnalyticsEvent;
  * Input type for Pinpoint identifyUser API.
  */
 export type IdentifyUserInput = AnalyticsIdentifyUserInput<IdentifyUserOptions>;
+
+/**
+ * Input type for Pinpoint configureAutoTrack API.
+ */
+export type ConfigureAutoTrackInput = AnalyticsConfigureAutoTrackInput;

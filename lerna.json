@@ -13,6 +13,7 @@
 		"packages/api-rest",
 		"packages/api-graphql",
 		"packages/datastore",
+		"packages/pubsub",
 		"packages/rtn-web-browser",
 		"packages/notifications",
 		"packages/rtn-push-notification",

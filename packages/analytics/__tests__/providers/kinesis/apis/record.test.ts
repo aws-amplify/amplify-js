@@ -9,7 +9,7 @@ import {
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
 import { record } from '../../../../src/providers/kinesis';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 import { RecordInput as KinesisRecordInput } from '../../../../src/providers/kinesis/types';
 
 jest.mock('../../../../src/utils');
@@ -28,8 +28,8 @@ describe('Analytics Kinesis API: record', () => {
 	const mockGetEventBuffer = getEventBuffer as jest.Mock;
 	const mockIsAnalyticsEnabled = isAnalyticsEnabled as jest.Mock;
 	const mockAppend = jest.fn();
-	const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn');
-	const loggerDebugSpy = jest.spyOn(Logger.prototype, 'debug');
+	const loggerWarnSpy = jest.spyOn(ConsoleLogger.prototype, 'warn');
+	const loggerDebugSpy = jest.spyOn(ConsoleLogger.prototype, 'debug');
 
 	beforeEach(() => {
 		mockIsAnalyticsEnabled.mockReturnValue(true);

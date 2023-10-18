@@ -1,11 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Hub } from '@aws-amplify/core';
+import { Hub, ConsoleLogger } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
-	AnalyticsAction,
-	ConsoleLogger as Logger,
+	AnalyticsAction
 } from '@aws-amplify/core/internals/utils';
 import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
 import {
@@ -19,7 +18,7 @@ import {
 import { RecordInput } from '../types';
 import { resolveConfig, resolveCredentials } from '../utils';
 
-const logger = new Logger('Analytics');
+const logger = new ConsoleLogger('Analytics');
 
 /**
  * Records an Analytic event to Pinpoint. Events will be buffered and periodically sent to Pinpoint.

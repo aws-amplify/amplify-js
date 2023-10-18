@@ -1,6 +1,6 @@
 import {
-	Logger,
-} from '../src/libraryUtils';
+	ConsoleLogger,
+} from '../src';
 
 describe('ConsoleLogger', () => {
 	describe('pluggables', () => {
@@ -17,7 +17,7 @@ describe('ConsoleLogger', () => {
 		});*/
 
 		it('should do nothing when no plugin is provided to addPluggable', () => {
-			const logger = new Logger('name');
+			const logger = new ConsoleLogger('name');
 			logger.addPluggable();
 			const pluggables = logger.listPluggables();
 
@@ -38,7 +38,7 @@ describe('ConsoleLogger', () => {
 				pushLogs: null,
 			};
 
-			const logger = new Logger('name');
+			const logger = new ConsoleLogger('name');
 			logger.addPluggable(provider);
 			const pluggables = logger.listPluggables();
 

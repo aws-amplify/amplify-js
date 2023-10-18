@@ -24,9 +24,9 @@ import {
 	isSafariCompatabilityMode,
 } from '../../util';
 import { StorageAdapterBase } from './StorageAdapterBase';
-import { Logger } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 /**
  * The point after which queries composed of multiple simple OR conditions

@@ -3,3 +3,4 @@
 
 export { computeModPow } from './computeModPow';
 export { computeS } from './computeS';
+export { getOperatingSystem } from './getOperatingSystem';
