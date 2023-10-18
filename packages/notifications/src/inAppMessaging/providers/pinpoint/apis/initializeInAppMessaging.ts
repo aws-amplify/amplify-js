@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import SessionTracker from '../../../sessionTracker';
+import { sessionListener } from '@aws-amplify/core/internals/utils';
 import { InAppMessage, InAppMessagingEvent } from '../../../types';
 import { addEventListener } from '../../../../eventListeners';
 import { recordAnalyticsEvent } from '../utils/helpers';
@@ -26,9 +26,8 @@ export function initializeInAppMessaging(): void {
 	if (isInitialized()) {
 		return;
 	}
-	// set up the session tracker and start it
-	const sessionTracker = new SessionTracker(sessionStateChangeHandler);
-	sessionTracker.start();
+	// register with the session listener
+	sessionListener.addStateChangeListener(sessionStateChangeHandler, true);
 
 	// wire up default Pinpoint message event handling
 	addEventListener('messageDisplayed', (message: InAppMessage) => {
