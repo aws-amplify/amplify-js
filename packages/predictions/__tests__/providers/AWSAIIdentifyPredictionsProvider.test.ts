@@ -6,39 +6,39 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { getUrl } from '@aws-amplify/storage';
 import {
-	IdentifyEntitiesInput,
-	IdentifyEntitiesOutput,
-	IdentifyTextInput,
-	IdentifyTextOutput,
-	IdentifyLabelsInput,
-	IdentifyLabelsOutput,
-} from '../../src/types';
-import { BlockList } from '../../src/types/AWSTypes';
-import { AmazonAIIdentifyPredictionsProvider } from '../../src/providers';
-import {
-	RekognitionClient,
-	DetectLabelsCommandOutput,
-	DetectLabelsCommand,
-	DetectModerationLabelsCommandOutput,
-	DetectModerationLabelsCommand,
-	DetectFacesCommandOutput,
 	DetectFacesCommand,
-	SearchFacesByImageCommandOutput,
-	SearchFacesByImageCommand,
-	RecognizeCelebritiesCommandOutput,
-	RecognizeCelebritiesCommand,
-	DetectTextCommandOutput,
+	DetectFacesCommandOutput,
+	DetectLabelsCommand,
+	DetectLabelsCommandOutput,
+	DetectModerationLabelsCommand,
+	DetectModerationLabelsCommandOutput,
 	DetectTextCommand,
+	DetectTextCommandOutput,
+	RecognizeCelebritiesCommand,
+	RecognizeCelebritiesCommandOutput,
+	RekognitionClient,
+	SearchFacesByImageCommand,
+	SearchFacesByImageCommandOutput,
 } from '@aws-sdk/client-rekognition';
 import {
-	TextractClient,
-	DetectDocumentTextCommand,
 	AnalyzeDocumentCommand,
+	DetectDocumentTextCommand,
+	TextractClient,
 } from '@aws-sdk/client-textract';
 import {
 	PredictionsValidationErrorCode,
 	validationErrorMap,
 } from '../../src/errors/types/validation';
+import { AmazonAIIdentifyPredictionsProvider } from '../../src/providers';
+import {
+	IdentifyEntitiesInput,
+	IdentifyEntitiesOutput,
+	IdentifyLabelsInput,
+	IdentifyLabelsOutput,
+	IdentifyTextInput,
+	IdentifyTextOutput,
+} from '../../src/types';
+import { BlockList } from '../../src/types/AWSTypes';
 
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;

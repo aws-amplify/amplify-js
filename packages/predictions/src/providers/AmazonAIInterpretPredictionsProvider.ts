@@ -8,29 +8,29 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 import {
+	ComprehendClient,
+	DetectDominantLanguageCommand,
+	DetectEntitiesCommand,
+	DetectKeyPhrasesCommand,
+	DetectSentimentCommand,
+	DetectSyntaxCommand,
+	Entity,
+	SyntaxToken,
+} from '@aws-sdk/client-comprehend';
+import { PredictionsValidationErrorCode } from '../errors/types/validation';
+import { assertValidationError } from '../errors/utils/assertValidationError';
+import {
+	DetectParams,
 	InterpretTextInput,
+	InterpretTextOthers,
 	InterpretTextOutput,
+	KeyPhrases,
 	TextEntities,
 	TextSentiment,
 	TextSyntax,
-	KeyPhrases,
-	DetectParams,
-	isValidInterpretInput,
 	isInterpretTextOthers,
-	InterpretTextOthers,
+	isValidInterpretInput,
 } from '../types';
-import {
-	ComprehendClient,
-	DetectSyntaxCommand,
-	DetectEntitiesCommand,
-	DetectDominantLanguageCommand,
-	DetectKeyPhrasesCommand,
-	DetectSentimentCommand,
-	SyntaxToken,
-	Entity,
-} from '@aws-sdk/client-comprehend';
-import { assertValidationError } from '../errors/utils/assertValidationError';
-import { PredictionsValidationErrorCode } from '../errors/types/validation';
 
 export class AmazonAIInterpretPredictionsProvider {
 	private comprehendClient?: ComprehendClient;

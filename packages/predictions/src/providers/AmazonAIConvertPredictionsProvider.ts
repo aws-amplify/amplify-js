@@ -1,35 +1,22 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
+	Amplify,
+	ConsoleLogger as Logger,
+	fetchAuthSession,
+} from '@aws-amplify/core';
+import {
+	AWSCredentials,
+	Category,
+	PredictionsAction,
+	Signer,
+	getAmplifyUserAgentObject,
+} from '@aws-amplify/core/internals/utils';
+import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
+import {
 	TranslateClient,
 	TranslateTextCommand,
 } from '@aws-sdk/client-translate';
-import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
-import {
-	TranslateTextInput,
-	TextToSpeechInput,
-	SpeechToTextInput,
-	TranslateTextOutput,
-	TextToSpeechOutput,
-	SpeechToTextOutput,
-	isConvertBytesSource,
-	isTranslateTextInput,
-	isTextToSpeechInput,
-	isSpeechToTextInput,
-	ConvertBytes,
-	TranscribeData,
-	isValidConvertInput,
-} from '../types';
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
-import {
-	ConsoleLogger as Logger,
-	Signer,
-	getAmplifyUserAgentObject,
-	Category,
-	PredictionsAction,
-	AWSCredentials,
-} from '@aws-amplify/core/internals/utils';
-
 import {
 	EventStreamCodec,
 	MessageHeaderValue,
@@ -38,6 +25,20 @@ import { fromUtf8, toUtf8 } from '@smithy/util-utf8';
 import { Buffer } from 'buffer';
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
 import { assertValidationError } from '../errors/utils/assertValidationError';
+import {
+	ConvertBytes,
+	SpeechToTextInput,
+	SpeechToTextOutput,
+	TextToSpeechInput,
+	TextToSpeechOutput,
+	TranscribeData,
+	TranslateTextInput,
+	TranslateTextOutput,
+	isConvertBytesSource,
+	isTextToSpeechInput,
+	isTranslateTextInput,
+	isValidConvertInput,
+} from '../types';
 
 const logger = new Logger('AmazonAIConvertPredictionsProvider');
 const eventBuilder = new EventStreamCodec(toUtf8, fromUtf8);
@@ -442,11 +443,7 @@ export class AmazonAIConvertPredictionsProvider {
 	}
 
 	private generateTranscribeUrl({
-		credentials: {
-			accessKeyId,
-			secretAccessKey,
-			sessionToken
-		},
+		credentials: { accessKeyId, secretAccessKey, sessionToken },
 		region,
 		languageCode,
 	}: {

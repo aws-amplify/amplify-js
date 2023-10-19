@@ -66,28 +66,10 @@
 	},
 	"size-limit": [
 		{
-			"name": "Predictions (all providers)",
+			"name": "Predictions",
 			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Predictions, AmazonAIPredictionsProvider }",
-			"limit": "103.2 kB"
-		},
-		{
-			"name": "Predictions (Convert provider)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Predictions, AmazonAIConvertPredictionsProvider }",
-			"limit": "57.9 kB"
-		},
-		{
-			"name": "Predictions (Identify provider)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Predictions, AmazonAIIdentifyPredictionsProvider }",
-			"limit": "73.57 kB"
-		},
-		{
-			"name": "Predictions (Interpret provider)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Predictions, AmazonAIInterpretPredictionsProvider }",
-			"limit": "43.4 kB"
+			"import": "{ Amplify, Predictions }",
+			"limit": "66 kB"
 		}
 	],
 	"jest": {
