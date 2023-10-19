@@ -224,26 +224,33 @@ describe('confirmSignIn API happy path cases', () => {
 		handleUserSRPAuthflowSpy.mockClear();
 	});
 
-	test('handleChallengeName should be called with clientMetadata from request', async () => {
+	test('handleChallengeName should be called with clientMetadata and  usersub', async () => {
 		Amplify.configure({
 			Auth: authConfig,
 		});
+
+		const mockedUserSub = '1111-2222-3333-4444';
 		const activeSignInSession = '1234234232';
 		const activeChallengeName = 'SMS_MFA';
 		const handleUserSRPAuthFlowSpy = jest
-			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.spyOn(clients, 'initiateAuth')
 			.mockImplementationOnce(
 				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
-					ChallengeName: 'SMS_MFA',
-					Session: '1234234232',
+					ChallengeName: activeChallengeName,
+					Session: activeSignInSession,
 					$metadata: {},
 					ChallengeParameters: {
+						USER_ID_FOR_SRP: mockedUserSub,
 						CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
 						CODE_DELIVERY_DESTINATION: '*******9878',
 					},
 				})
 			);
-		await signIn({ username, password });
+		await signIn({
+			username,
+			password,
+			options: { authFlowType: 'USER_PASSWORD_AUTH' },
+		});
 
 		const challengeResponse = '123456';
 		await confirmSignIn({
@@ -252,7 +259,7 @@ describe('confirmSignIn API happy path cases', () => {
 		});
 		const options = authAPITestParams.configWithClientMetadata;
 		expect(handleChallengeNameSpy).toBeCalledWith(
-			username,
+			mockedUserSub,
 			activeChallengeName,
 			activeSignInSession,
 			challengeResponse,

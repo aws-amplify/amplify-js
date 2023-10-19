@@ -10,6 +10,7 @@ import {
 	getSignInResultFromError,
 	getNewDeviceMetatada,
 	retryOnResourceNotFoundException,
+	getActiveSignInUsername,
 } from '../utils/signInHelpers';
 import { Amplify, Hub } from '@aws-amplify/core';
 import {
@@ -71,18 +72,18 @@ export async function signInWithCustomAuth(
 			username,
 			tokenOrchestrator
 		);
-
+		const activeUsername = getActiveSignInUsername(username);
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
 			signInSession: Session,
-			username,
+			username: activeUsername,
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
 
 			await cacheCognitoTokens({
-				username,
+				username: activeUsername,
 				...AuthenticationResult,
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
