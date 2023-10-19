@@ -55,7 +55,6 @@
     "@aws-sdk/types": "3.387.0",
     "graphql": "15.8.0",
     "tslib": "^1.8.0",
-    "url": "0.11.0",
     "rxjs": "^7.8.1"
   },
   "size-limit": [
