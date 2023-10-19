@@ -224,8 +224,9 @@ export const clearMemo = () => {
 //      outside the Pinpoint provider
 // - 2. Amplify correctly handles the legacy layout values from Pinpoint after they are updated
 
-// TODO(V6): Add exact type as PinpointInAppMessage['InAppMessage']['Layout']
-export const interpretLayout = (layout: string): InAppMessageLayout => {
+export const interpretLayout = (
+	layout: NonNullable<PinpointInAppMessage['InAppMessage']>['Layout']
+): InAppMessageLayout => {
 	if (layout === 'MOBILE_FEED') {
 		return 'MODAL';
 	}

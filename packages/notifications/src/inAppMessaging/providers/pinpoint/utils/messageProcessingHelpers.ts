@@ -111,9 +111,9 @@ async function isBelowCap({
 	);
 
 	return (
-		(!SessionCap || sessionCount < SessionCap) &&
-		(!DailyCap || dailyCount < DailyCap) &&
-		(!TotalCap || totalCount < TotalCap)
+		(!SessionCap || sessionCount <= SessionCap) &&
+		(!DailyCap || dailyCount <= DailyCap) &&
+		(!TotalCap || totalCount <= TotalCap)
 	);
 }
 
@@ -133,6 +133,7 @@ async function getMessageCounts(
 				dailyCount: await getDailyCount(),
 				totalCount: await getTotalCount(messageId),
 			};
+		return messageCounts;
 	} catch (err) {
 		logger.error('Failed to get message counts from storage', err);
 
@@ -140,7 +141,6 @@ async function getMessageCounts(
 		// we default to 0 allowing all the messages to be eligible
 		return messageCounts;
 	}
-	return messageCounts;
 }
 
 function getSessionCount(messageId: string): number {
