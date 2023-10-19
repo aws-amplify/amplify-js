@@ -7,7 +7,7 @@ import { InMemoryStorage } from './InMemoryStorage';
  * @internal
  * @returns Either a reference to window.localStorage or an in-memory storage as fallback
  */
-export const getDefaultStorageWithFallback = (): Storage =>
+export const getLocalStorageWithFallback = (): Storage =>
 	typeof window !== 'undefined' && window.localStorage
 		? window.localStorage
 		: new InMemoryStorage();

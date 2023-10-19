@@ -6,7 +6,7 @@ import { AuthUserAttributes, AuthUserAttributeKey } from './models';
 /**
  * Base type for service options.
  */
-export type AuthServiceOptions = any;
+export type AuthServiceOptions = Record<string, unknown>;
 
 /**
  * The optional parameters for the Sign Up process.
@@ -15,13 +15,9 @@ export type AuthServiceOptions = any;
  * Particular services may require some of these parameters.
  */
 export type AuthSignUpOptions<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	userAttributes: AuthUserAttributes<UserAttributeKey>;
-	serviceOptions?: ServiceOptions;
 };
 
-export type SignInWithWebUIOptions<ServiceOptions> = {
-	serviceOptions?: ServiceOptions;
-};
+export type SignInWithWebUIOptions<ServiceOptions> = ServiceOptions;

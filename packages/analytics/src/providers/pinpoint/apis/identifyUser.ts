@@ -2,10 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
+import {
+	updateEndpoint,
+	UpdateEndpointException,
+} from '@aws-amplify/core/internals/providers/pinpoint';
 import { AnalyticsValidationErrorCode } from '../../../errors';
 import { getAnalyticsUserAgentString } from '../../../utils';
-import { IdentifyUserInput, UpdateEndpointException } from '../types';
+import { IdentifyUserInput } from '../types';
 import { resolveConfig, resolveCredentials } from '../utils';
 
 /**
@@ -60,7 +63,7 @@ export const identifyUser = async ({
 }: IdentifyUserInput): Promise<void> => {
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
-	const { userAttributes } = options?.serviceOptions ?? {};
+	const { userAttributes } = options ?? {};
 	updateEndpoint({
 		appId,
 		category: 'Analytics',

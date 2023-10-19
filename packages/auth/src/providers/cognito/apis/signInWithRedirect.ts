@@ -12,6 +12,7 @@ import {
 	USER_AGENT_HEADER,
 	urlSafeDecode,
 	decodeJWT,
+	AmplifyUrl,
 } from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { CognitoUserPoolsTokenProvider } from '../tokenProvider';
@@ -148,7 +149,7 @@ async function handleCodeFlow({
 }) {
 	/* Convert URL into an object with parameters as keys
 { redirect_uri: 'http://localhost:3000/', response_type: 'code', ...} */
-	const url = new URL(currentUrl);
+	const url = new AmplifyUrl(currentUrl);
 	let validatedState: string;
 	try {
 		validatedState = await validateStateFromURL(url);
@@ -242,7 +243,7 @@ async function handleImplicitFlow({
 }) {
 	// hash is `null` if `#` doesn't exist on URL
 
-	const url = new URL(currentUrl);
+	const url = new AmplifyUrl(currentUrl);
 
 	const { idToken, accessToken, state, tokenType, expiresIn } = (
 		url.hash ?? '#'
@@ -330,7 +331,7 @@ async function handleAuthResponse({
 	preferPrivateSession?: boolean;
 }) {
 	try {
-		const urlParams = new URL(currentUrl);
+		const urlParams = new AmplifyUrl(currentUrl);
 		const error = urlParams.searchParams.get('error');
 		const errorMessage = urlParams.searchParams.get('error_description');
 

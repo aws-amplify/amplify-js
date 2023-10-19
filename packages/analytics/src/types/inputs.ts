@@ -3,6 +3,11 @@
 
 import { UserProfile } from '@aws-amplify/core';
 import { AnalyticsServiceOptions } from '.';
+import {
+	SessionTrackingOptions,
+	PageViewTrackingOptions,
+	EventTrackingOptions,
+} from './trackers';
 
 /**
  * Input type for `identifyUser`.
@@ -23,7 +28,25 @@ export type AnalyticsIdentifyUserInput<
 	/**
 	 * Options to be passed to the API.
 	 */
-	options?: {
-		serviceOptions?: ServiceOptions;
-	};
+	options?: ServiceOptions;
 };
+
+/**
+ * Input type for `configureAutoTrack`.
+ */
+export type AnalyticsConfigureAutoTrackInput = {
+	enable: boolean;
+} & (
+	| {
+			type: 'session';
+			options?: SessionTrackingOptions;
+	  }
+	| {
+			type: 'pageView';
+			options?: PageViewTrackingOptions;
+	  }
+	| {
+			type: 'event';
+			options?: EventTrackingOptions;
+	  }
+);

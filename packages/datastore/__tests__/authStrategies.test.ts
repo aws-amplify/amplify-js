@@ -1,3 +1,4 @@
+import { JWT, decodeJWT } from '@aws-amplify/core/internals/utils';
 import {
 	InternalSchema,
 	ModelAttributeAuthAllow,
@@ -529,19 +530,25 @@ function getAuthSchema(
 	};
 }
 
+const mockedAccessToken =
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+
 function mockCurrentUser({
 	hasAuthenticatedUser,
 }: {
 	hasAuthenticatedUser: boolean;
 }) {
 	jest.mock('@aws-amplify/core', () => ({
-		async fetchAuthSession(): Promise<{}> {
+		async fetchAuthSession(): Promise<{ tokens?: { accessToken: JWT } }> {
 			if (hasAuthenticatedUser) {
-				return hasAuthenticatedUser;
+				return {
+					tokens: {
+						accessToken: decodeJWT(mockedAccessToken),
+					},
+				};
 			} else {
-				throw new Error();
+				return {};
 			}
-			return {};
 		},
 	}));
 }

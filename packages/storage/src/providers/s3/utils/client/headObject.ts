@@ -7,6 +7,7 @@ import {
 	HttpResponse,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
+import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import { defaultConfig } from './base';
 import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
@@ -41,7 +42,7 @@ const headObjectSerializer = async (
 	input: HeadObjectInput,
 	endpoint: Endpoint
 ): Promise<HttpRequest> => {
-	const url = new URL(endpoint.url.toString());
+	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {

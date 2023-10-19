@@ -2,21 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Observable, SubscriptionLike } from 'rxjs';
 import { GraphQLError } from 'graphql';
-import * as url from 'url';
-import { v4 as uuid } from 'uuid';
 import { Buffer } from 'buffer';
-import { Hub, fetchAuthSession } from '@aws-amplify/core';
+import { Hub, fetchAuthSession, ConsoleLogger } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	GraphQLAuthMode,
 	CustomUserAgentDetails,
-	Logger,
 	NonRetryableError,
 	USER_AGENT_HEADER,
 	getAmplifyUserAgent,
 	isNonRetryableError,
 	jitteredExponentialRetry,
 	DocumentType,
+	amplifyUuid,
+	AmplifyUrl,
 } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -47,7 +46,7 @@ import {
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
 
-const logger = new Logger('AWSAppSyncRealTimeProvider');
+const logger = new ConsoleLogger('AWSAppSyncRealTimeProvider');
 
 const dispatchApiEvent = payload => {
 	Hub.dispatch('api', payload, 'PubSub', AMPLIFY_SYMBOL);
@@ -210,7 +209,7 @@ export class AWSAppSyncRealTimeProvider {
 				observer.complete();
 			} else {
 				let subscriptionStartActive = false;
-				const subscriptionId = uuid();
+				const subscriptionId = amplifyUuid();
 				const startSubscription = () => {
 					if (!subscriptionStartActive) {
 						subscriptionStartActive = true;
@@ -900,7 +899,9 @@ export class AWSAppSyncRealTimeProvider {
 		} else {
 			const handler = headerHandler[authenticationType];
 
-			const { host } = url.parse(appSyncGraphqlEndpoint ?? '');
+			const host = appSyncGraphqlEndpoint
+				? new AmplifyUrl(appSyncGraphqlEndpoint).host
+				: undefined;
 
 			logger.debug(`Authenticating with ${JSON.stringify(authenticationType)}`);
 			let resolvedApiKey;
@@ -968,7 +969,7 @@ export class AWSAppSyncRealTimeProvider {
 			{
 				headers: request.headers,
 				method: request.method,
-				url: new URL(request.url),
+				url: new AmplifyUrl(request.url),
 				body: request.data,
 			},
 			{

@@ -3,7 +3,6 @@
 
 export { InAppMessagingServiceOptions } from './options';
 export { InAppMessagingIdentifyUserInput } from './inputs';
-export { InAppMessagingConfig } from './config';
 export { InAppMessageInteractionEvent, InAppMessagingEvent } from './event';
 export {
 	InAppMessage,
@@ -11,4 +10,7 @@ export {
 	InAppMessageContent,
 	InAppMessageLayout,
 	InAppMessageTextAlign,
+	InAppMessageButton,
+	InAppMessageImage,
+	InAppMessageStyle,
 } from './message';

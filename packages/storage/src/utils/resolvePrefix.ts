@@ -1,19 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StorageAccessLevel } from '@aws-amplify/core';
 import { assertValidationError } from '../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../errors/types/validation';
-
-type ResolvePrefixOptions = {
-	accessLevel: StorageAccessLevel;
-	targetIdentityId?: string;
-};
+import { ResolvePrefixInput } from '../types/inputs';
 
 export const resolvePrefix = ({
 	accessLevel,
 	targetIdentityId,
-}: ResolvePrefixOptions) => {
+}: ResolvePrefixInput) => {
 	if (accessLevel === 'private') {
 		assertValidationError(
 			!!targetIdentityId,

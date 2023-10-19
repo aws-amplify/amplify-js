@@ -5,8 +5,9 @@ import { inAppMessages } from '../../../../../__mocks__/data';
 import {
 	notifyEventListeners,
 	addEventListener,
-} from '../../../../../src/common';
+} from '../../../../../src/eventListeners';
 import {
+	initializeInAppMessaging,
 	notifyMessageInteraction,
 	onMessageActionTaken,
 	onMessageDismissed,
@@ -14,13 +15,16 @@ import {
 	onMessageReceived,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 
-jest.mock('../../../../../src/common/eventListeners');
+jest.mock('../../../../../src/eventListeners');
 
 const mockNotifyEventListeners = notifyEventListeners as jest.Mock;
 const mockAddEventListener = addEventListener as jest.Mock;
 
 describe('Interaction events', () => {
 	const handler = jest.fn();
+	beforeAll(() => {
+		initializeInAppMessaging();
+	});
 	it('can be listened to by onMessageReceived', () => {
 		onMessageReceived(handler);
 

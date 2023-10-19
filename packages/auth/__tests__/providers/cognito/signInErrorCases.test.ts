@@ -83,9 +83,7 @@ describe('signIn API error path cases:', () => {
 				username: authAPITestParams.user1.username,
 				password: authAPITestParams.user1.password,
 				options: {
-					serviceOptions: {
-						authFlowType: 'CUSTOM_WITHOUT_SRP',
-					},
+					authFlowType: 'CUSTOM_WITHOUT_SRP',
 				},
 			});
 		} catch (error) {
