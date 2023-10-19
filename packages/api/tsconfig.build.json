@@ -1,7 +1,5 @@
 {
 	"extends": "../tsconfig.base.json",
-	"compilerOptions": {
-		"target": "es5"
-	},
+	"compilerOptions": {},
 	"include": ["lib*/**/*.ts", "src"]
 }
