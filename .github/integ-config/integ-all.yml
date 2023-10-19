@@ -237,6 +237,13 @@ tests:
     sample_name: [v2/multi-auth-v2]
     spec: multi-auth-one-rule
     browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_one_rule_oidc_v2
+    desc: 'React DataStore Multi-Auth OIDC - One Rule CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/multi-auth-oidc-v2]
+    spec: multi-auth-one-rule-oidc
+    browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_two_rules
     desc: 'React DataStore Multi-Auth - Two Rules'
     framework: react
@@ -250,6 +257,13 @@ tests:
     category: datastore
     sample_name: [v2/multi-auth-v2]
     spec: multi-auth-two-rules
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_two_rules_oidc_v2
+    desc: 'React DataStore Multi-Auth OIDC - Two Rules CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/multi-auth-oidc-v2]
+    spec: multi-auth-two-rules-oidc
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_three_plus_rules
     desc: 'React DataStore Multi-Auth - Three Plus Rules'
