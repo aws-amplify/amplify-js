@@ -5,7 +5,7 @@ import {
 	pinpointInAppMessage,
 	simpleInAppMessagingEvent,
 } from '../../../__mocks__/data';
-import { processInAppMessages } from '../../../src/inAppMessaging/providers/pinpoint/utils/processInAppMessages';
+import { processInAppMessages } from '../../../src/inAppMessaging/providers/pinpoint/utils';
 import { cloneDeep } from 'lodash';
 import {
 	isBeforeEndDate,
@@ -13,6 +13,7 @@ import {
 	matchesEventType,
 	matchesMetrics,
 } from '../../../src/inAppMessaging/providers/pinpoint/utils/helpers';
+import { initializeInAppMessaging } from '../../../src/inAppMessaging/providers/pinpoint/apis';
 
 jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/utils');
@@ -31,6 +32,9 @@ describe('processInAppMessages', () => {
 		{ ...cloneDeep(pinpointInAppMessage), CampaignId: 'uuid-3', Priority: 1 },
 		{ ...cloneDeep(pinpointInAppMessage), CampaignId: 'uuid-4', Priority: 2 },
 	];
+	beforeAll(() => {
+		initializeInAppMessaging();
+	});
 	beforeEach(() => {
 		mockMatchesEventType.mockReturnValue(true);
 		mockMatchesAttributes.mockReturnValue(true);

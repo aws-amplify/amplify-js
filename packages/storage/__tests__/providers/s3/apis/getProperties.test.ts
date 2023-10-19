@@ -9,6 +9,7 @@ import { GetPropertiesOptions } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
+	ConsoleLogger: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {
@@ -58,7 +59,7 @@ describe('getProperties api', () => {
 		const config = {
 			credentials,
 			region: 'region',
-			userAgentValue: expect.any(String)
+			userAgentValue: expect.any(String),
 		};
 		const key = 'key';
 		beforeEach(() => {
@@ -137,7 +138,7 @@ describe('getProperties api', () => {
 					{
 						credentials,
 						region: 'region',
-						userAgentValue: expect.any(String)
+						userAgentValue: expect.any(String),
 					},
 					{
 						Bucket: 'bucket',

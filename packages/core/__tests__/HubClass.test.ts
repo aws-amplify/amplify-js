@@ -1,12 +1,12 @@
 Symbol = undefined; // this should be undefined before loading Hub
 import { Hub } from '../src';
-import { Logger } from '../src/libraryUtils';
+import { ConsoleLogger } from '../src';
 
 describe('Symbol undefined before load Hub', () => {
 	test('Symbol not supported', () => {
 		const listener = jest.fn(() => {});
-		const amplifySymbol = ('@@amplify_default' as unknown) as Symbol;
-		const loggerSpy = jest.spyOn(Logger.prototype, '_log');
+		const amplifySymbol = '@@amplify_default' as unknown as Symbol;
+		const loggerSpy = jest.spyOn(ConsoleLogger.prototype, '_log');
 
 		Hub.listen('auth', listener);
 

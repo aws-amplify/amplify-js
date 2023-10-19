@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ErrorType } from '../../types';
+import { resolveServiceErrorStatusCode } from '../utils';
 
 export type ErrorMap = Partial<{
 	[key in ErrorType]: (error: Error) => boolean;
@@ -9,8 +10,7 @@ export type ErrorMap = Partial<{
 const connectionTimeout = error =>
 	/^Connection failed: Connection Timeout/.test(error.message);
 
-const serverError = error =>
-	/^Error: Request failed with status code 5\d\d/.test(error.message);
+const serverError = error => resolveServiceErrorStatusCode(error) >= 500;
 
 export const mutationErrorMap: ErrorMap = {
 	BadModel: () => false,
@@ -25,7 +25,7 @@ export const mutationErrorMap: ErrorMap = {
 	Transient: error => connectionTimeout(error) || serverError(error),
 	Unauthorized: error =>
 		error.message === 'Unauthorized' ||
-		/^Request failed with status code 401/.test(error.message),
+		resolveServiceErrorStatusCode(error) === 401,
 };
 
 export const subscriptionErrorMap: ErrorMap = {
@@ -58,10 +58,10 @@ export const syncErrorMap: ErrorMap = {
  */
 function unwrapObservableError(observableError: any) {
 	const {
-		error: { errors: [error] } = {
-			errors: [],
-		},
-	} = observableError;
+		errors: [error],
+	} = ({
+		errors: [],
+	} = observableError);
 
 	return error;
 }

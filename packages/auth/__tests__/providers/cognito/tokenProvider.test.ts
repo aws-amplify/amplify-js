@@ -19,7 +19,7 @@ class MemoryStorage implements KeyValueStorageInterface {
 }
 
 describe('Loading tokens', () => {
-	test('load tokens from store', async () => {
+	it('should load tokens from store', async () => {
 		const tokenStore = new DefaultTokenStore();
 		const memoryStorage = new MemoryStorage();
 		const userPoolClientId = 'abcdefgh';
@@ -78,61 +78,10 @@ describe('Loading tokens', () => {
 		expect(result?.deviceMetadata?.randomPassword).toBe('random-password');
 		expect(result?.deviceMetadata?.deviceKey).toBe('device-key');
 	});
-
-	test('load device tokens from store', async () => {
-		const tokenStore = new DefaultTokenStore();
-		const memoryStorage = new MemoryStorage();
-		const userPoolClientId = 'userPoolClientId';
-		const userSub1 = 'user1@email.com';
-		const userSub1Encoded = 'user1%40email.com';
-		const userSub2 = 'user2@email.com';
-
-		memoryStorage.setItem(
-			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1Encoded}.deviceKey`,
-			'user1-device-key'
-		);
-		memoryStorage.setItem(
-			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1Encoded}.deviceGroupKey`,
-			'user1-device-group-key'
-		);
-		memoryStorage.setItem(
-			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1Encoded}.randomPasswordKey`,
-			'user1-random-password'
-		);
-		memoryStorage.setItem(
-			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceKey`,
-			'user2-device-key'
-		);
-		memoryStorage.setItem(
-			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceGroupKey`,
-			'user2-device-group-key'
-		);
-		memoryStorage.setItem(
-			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.randomPasswordKey`,
-			'user2-random-password'
-		);
-
-		tokenStore.setKeyValueStorage(memoryStorage);
-		tokenStore.setAuthConfig({
-			Cognito: {
-				userPoolId: 'us-east-1:1111111',
-				userPoolClientId,
-			},
-		});
-		const user1DeviceMetadata = await tokenStore.getDeviceMetadata(userSub1);
-		expect(user1DeviceMetadata?.randomPassword).toBe('user1-random-password');
-		expect(user1DeviceMetadata?.deviceGroupKey).toBe('user1-device-group-key');
-		expect(user1DeviceMetadata?.deviceKey).toBe('user1-device-key');
-
-		const user2DeviceMetadata = await tokenStore.getDeviceMetadata(userSub2);
-		expect(user2DeviceMetadata?.randomPassword).toBe('user2-random-password');
-		expect(user2DeviceMetadata?.deviceGroupKey).toBe('user2-device-group-key');
-		expect(user2DeviceMetadata?.deviceKey).toBe('user2-device-key');
-	});
 });
 
 describe('saving tokens', () => {
-	test('save tokens from store first time', async () => {
+	it('should save tokens from store first time', async () => {
 		const tokenStore = new DefaultTokenStore();
 		const memoryStorage = new MemoryStorage();
 		const userPoolClientId = 'abcdefgh';
@@ -144,7 +93,7 @@ describe('saving tokens', () => {
 				userPoolClientId,
 			},
 		});
-
+		const lastAuthUser = 'amplify@user';
 		await tokenStore.storeTokens({
 			accessToken: decodeJWT(
 				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA'
@@ -159,22 +108,20 @@ describe('saving tokens', () => {
 				deviceGroupKey: 'device-group-key2',
 				randomPassword: 'random-password2',
 			},
-			username: 'amplify@user',
+			username: lastAuthUser,
 		});
-
-		const usernameDecoded = 'amplify%40user';
 
 		expect(
 			await memoryStorage.getItem(
 				`CognitoIdentityServiceProvider.${userPoolClientId}.LastAuthUser`
 			)
-		).toBe(usernameDecoded); // from decoded JWT
+		).toBe(lastAuthUser);
 
 		// Refreshed tokens
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameDecoded}.accessToken`
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.accessToken`
 			)
 		).toBe(
 			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA'
@@ -182,7 +129,7 @@ describe('saving tokens', () => {
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameDecoded}.idToken`
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.idToken`
 			)
 		).toBe(
 			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.III'
@@ -190,32 +137,32 @@ describe('saving tokens', () => {
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameDecoded}.refreshToken`
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.refreshToken`
 			)
 		).toBe('refresh-token');
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameDecoded}.clockDrift`
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.clockDrift`
 			)
 		).toBe('150');
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameDecoded}.deviceKey`
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.deviceKey`
 			)
 		).toBe('device-key2');
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameDecoded}.deviceGroupKey`
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.deviceGroupKey`
 			)
 		).toBe('device-group-key2');
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameDecoded}.randomPasswordKey`
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.randomPasswordKey`
 			)
 		).toBe('random-password2');
 	});
-	test('save tokens from store clear old tokens', async () => {
+	it('should save tokens from store clear old tokens', async () => {
 		const tokenStore = new DefaultTokenStore();
 		const memoryStorage = new MemoryStorage();
 		const userPoolClientId = 'abcdefgh';
@@ -276,22 +223,20 @@ describe('saving tokens', () => {
 				deviceGroupKey: 'device-group-key2',
 				randomPassword: 'random-password2',
 			},
-			username: 'amplify@user',
+			username: oldUserName,
 		});
-
-		const usernameEncoded = 'amplify%40user';
 
 		expect(
 			await memoryStorage.getItem(
 				`CognitoIdentityServiceProvider.${userPoolClientId}.LastAuthUser`
 			)
-		).toBe(usernameEncoded); // from decoded JWT
+		).toBe(oldUserName);
 
 		// Refreshed tokens
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameEncoded}.accessToken`
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.accessToken`
 			)
 		).toBe(
 			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA'
@@ -299,7 +244,7 @@ describe('saving tokens', () => {
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameEncoded}.idToken`
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.idToken`
 			)
 		).toBe(
 			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.III'
@@ -307,84 +252,137 @@ describe('saving tokens', () => {
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameEncoded}.refreshToken`
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.refreshToken`
 			)
 		).toBe('refresh-token');
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameEncoded}.clockDrift`
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.clockDrift`
 			)
 		).toBe('150');
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameEncoded}.deviceKey`
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.deviceKey`
 			)
 		).toBe('device-key2');
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameEncoded}.deviceGroupKey`
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.deviceGroupKey`
 			)
 		).toBe('device-group-key2');
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${usernameEncoded}.randomPasswordKey`
-			)
-		).toBe('random-password2');
-
-		// old tokens cleared
-		expect(
-			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.accessToken`
-			)
-		).toBeUndefined();
-		expect(
-			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.idToken`
-			)
-		).toBeUndefined();
-		expect(
-			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.refreshToken`
-			)
-		).toBeUndefined();
-		expect(
-			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.clockDrift`
-			)
-		).toBeUndefined();
-
-		expect(
-			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.idToken`
-			)
-		).toBeUndefined();
-		expect(
-			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.refreshToken`
-			)
-		).toBeUndefined();
-		expect(
-			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.clockDrift`
-			)
-		).toBeUndefined();
-
-		expect(
-			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.deviceKey`
-			)
-		).not.toBeUndefined();
-		expect(
-			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.deviceGroupKey`
-			)
-		).not.toBeUndefined();
-		expect(
-			await memoryStorage.getItem(
 				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.randomPasswordKey`
 			)
+		).toBe('random-password2');
+	});
+});
+
+describe('device tokens', () => {
+	let tokenStore;
+	let memoryStorage;
+	let userPoolClientId;
+	let userSub1;
+	let userSub2;
+	beforeEach(() => {
+		tokenStore = new DefaultTokenStore();
+		memoryStorage = new MemoryStorage();
+		userPoolClientId = 'userPoolClientId';
+		userSub1 = 'user1@email.com';
+		userSub2 = 'user2@email.com';
+
+		memoryStorage.setItem(
+			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.deviceKey`,
+			'user1-device-key'
+		);
+		memoryStorage.setItem(
+			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.deviceGroupKey`,
+			'user1-device-group-key'
+		);
+		memoryStorage.setItem(
+			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.randomPasswordKey`,
+			'user1-random-password'
+		);
+
+		memoryStorage.setItem(
+			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceKey`,
+			'user2-device-key'
+		);
+		memoryStorage.setItem(
+			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceGroupKey`,
+			'user2-device-group-key'
+		);
+		memoryStorage.setItem(
+			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.randomPasswordKey`,
+			'user2-random-password'
+		);
+		memoryStorage.setItem(
+			`CognitoIdentityServiceProvider.${userPoolClientId}.LastAuthUser`,
+			userSub2
+		);
+
+		tokenStore.setKeyValueStorage(memoryStorage);
+		tokenStore.setAuthConfig({
+			Cognito: {
+				userPoolId: 'us-east-1:1111111',
+				userPoolClientId,
+			},
+		});
+	});
+
+	it('should get device metadata tokens from store', async () => {
+		const user2DeviceMetadata = await tokenStore.getDeviceMetadata(userSub1);
+		expect(user2DeviceMetadata?.randomPassword).toBe('user1-random-password');
+		expect(user2DeviceMetadata?.deviceGroupKey).toBe('user1-device-group-key');
+		expect(user2DeviceMetadata?.deviceKey).toBe('user1-device-key');
+
+		const user3DeviceMetadata = await tokenStore.getDeviceMetadata();
+		expect(user3DeviceMetadata?.randomPassword).toBe('user2-random-password');
+		expect(user3DeviceMetadata?.deviceGroupKey).toBe('user2-device-group-key');
+		expect(user3DeviceMetadata?.deviceKey).toBe('user2-device-key');
+	});
+
+	it('should clear device metadata tokens from store', async () => {
+		await tokenStore.clearDeviceMetadata(userSub1);
+		expect(
+			await memoryStorage.getItem(
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.deviceKey`
+			)
+		).toBeUndefined();
+		expect(
+			await memoryStorage.getItem(
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.deviceGroupKey`
+			)
+		).toBeUndefined();
+		expect(
+			await memoryStorage.getItem(
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.randomPasswordKey`
+			)
+		).toBeUndefined();
+		expect(
+			// userSub1 cleared, userSub2 not cleared
+			await memoryStorage.getItem(
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.randomPasswordKey`
+			)
 		).not.toBeUndefined();
+
+		await tokenStore.clearDeviceMetadata();
+		expect(
+			await memoryStorage.getItem(
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceKey`
+			)
+		).toBeUndefined();
+		expect(
+			await memoryStorage.getItem(
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceGroupKey`
+			)
+		).toBeUndefined();
+		expect(
+			await memoryStorage.getItem(
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.randomPasswordKey`
+			)
+		).toBeUndefined();
 	});
 });

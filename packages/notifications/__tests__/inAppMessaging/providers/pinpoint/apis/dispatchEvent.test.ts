@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { defaultStorage } from '@aws-amplify/core';
-import { dispatchEvent } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
+import {
+	dispatchEvent,
+	initializeInAppMessaging,
+} from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 import { processInAppMessages } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 import {
 	inAppMessages,
@@ -10,18 +13,21 @@ import {
 	simpleInAppMessagingEvent,
 } from '../../../../../__mocks__/data';
 import { InAppMessagingError } from '../../../../../src/inAppMessaging/errors';
-import { notifyEventListeners } from '../../../../../src/common/eventListeners';
+import { notifyEventListeners } from '../../../../../src/eventListeners';
 
 jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/utils');
 jest.mock('../../../../../src/inAppMessaging/providers/pinpoint/utils');
-jest.mock('../../../../../src/common/eventListeners');
+jest.mock('../../../../../src/eventListeners');
 
 const mockDefaultStorage = defaultStorage as jest.Mocked<typeof defaultStorage>;
 const mockNotifyEventListeners = notifyEventListeners as jest.Mock;
 const mockProcessInAppMessages = processInAppMessages as jest.Mock;
 
 describe('dispatchEvent', () => {
+	beforeAll(() => {
+		initializeInAppMessaging();
+	});
 	beforeEach(() => {
 		mockDefaultStorage.setItem.mockClear();
 		mockNotifyEventListeners.mockClear();

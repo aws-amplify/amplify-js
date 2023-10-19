@@ -108,7 +108,7 @@ export type SignOutInput = AuthSignOutInput;
 /**
  * Input type for Cognito signUp API.
  */
-export type SignUpInput = AuthSignUpInput<UserAttributeKey, SignUpOptions>;
+export type SignUpInput = AuthSignUpInput<SignUpOptions<UserAttributeKey>>;
 
 /**
  * Input type for Cognito updateMFAPreference API.

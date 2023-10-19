@@ -1,6 +1,4 @@
-import {
-	Logger,
-} from '../src/libraryUtils';
+import { ConsoleLogger } from '../src';
 
 describe('ConsoleLogger', () => {
 	describe('pluggables', () => {
@@ -17,7 +15,7 @@ describe('ConsoleLogger', () => {
 		});*/
 
 		it('should do nothing when no plugin is provided to addPluggable', () => {
-			const logger = new Logger('name');
+			const logger = new ConsoleLogger('name');
 			logger.addPluggable();
 			const pluggables = logger.listPluggables();
 
@@ -26,19 +24,19 @@ describe('ConsoleLogger', () => {
 
 		it('should do nothing when a non-logging category plugin is provided to addPluggable', () => {
 			const provider = {
-				getCategoryName: function() {
+				getCategoryName: function () {
 					return 'non-logging';
 				},
-				getProviderName: function() {
+				getProviderName: function () {
 					return 'lol';
 				},
-				configure: function() {
+				configure: function () {
 					return {};
 				},
 				pushLogs: null,
 			};
 
-			const logger = new Logger('name');
+			const logger = new ConsoleLogger('name');
 			logger.addPluggable(provider);
 			const pluggables = logger.listPluggables();
 

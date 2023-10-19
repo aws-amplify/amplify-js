@@ -7,6 +7,10 @@ import {
 	HttpResponse,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
+import {
+	AmplifyUrl,
+	AmplifyUrlSearchParams,
+} from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import { defaultConfig } from './base';
@@ -41,12 +45,12 @@ const uploadPartSerializer = async (
 		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
 	};
 	headers['content-type'] = 'application/octet-stream';
-	const url = new URL(endpoint.url.toString());
+	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	validateS3RequiredParameter(!!input.PartNumber, 'PartNumber');
 	validateS3RequiredParameter(!!input.UploadId, 'UploadId');
-	url.search = new URLSearchParams({
+	url.search = new AmplifyUrlSearchParams({
 		partNumber: input.PartNumber + '',
 		uploadId: input.UploadId,
 	}).toString();

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { EventListenerRemover } from '../../../../common';
+import { EventListenerRemover } from '../../../../eventListeners';
 
 /**
  * Output type for OnMessageReceived API.
