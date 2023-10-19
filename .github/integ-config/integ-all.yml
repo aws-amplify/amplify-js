@@ -237,6 +237,13 @@ tests:
     sample_name: [v2/multi-auth-v2]
     spec: multi-auth-one-rule
     browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_one_rule_oidc_v2
+    desc: 'React DataStore Multi-Auth OIDC - One Rule CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/multi-auth-oidc-v2]
+    spec: multi-auth-one-rule-oidc
+    browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_two_rules
     desc: 'React DataStore Multi-Auth - Two Rules'
     framework: react
@@ -250,6 +257,13 @@ tests:
     category: datastore
     sample_name: [v2/multi-auth-v2]
     spec: multi-auth-two-rules
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_two_rules_oidc_v2
+    desc: 'React DataStore Multi-Auth OIDC - Two Rules CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/multi-auth-oidc-v2]
+    spec: multi-auth-two-rules-oidc
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_three_plus_rules
     desc: 'React DataStore Multi-Auth - Three Plus Rules'
@@ -427,6 +441,13 @@ tests:
     sample_name: [graphql]
     spec: graphql
     browser: *minimal_browser_list
+  - test_name: integ_react_api_optimistic_ui
+    desc: React GraphQL API Optimistic UI with Tan/ReactQuery
+    framework: react
+    category: api
+    sample_name: [optimistic-ui]
+    spec: optimistic-ui
+    browser: *minimal_browser_list
 
   # AUTH
   - test_name: integ_react_javascript_authentication
@@ -464,20 +485,6 @@ tests:
     sample_name: [auto-signin-after-signup]
     spec: auto-signin-after-signup
     browser: *minimal_browser_list
-  - test_name: integ_react_amazon_cognito_identity_js_cookie_storage
-    desc: 'amazon-cognito-identity-js-cookie-storage'
-    framework: react
-    category: auth
-    sample_name: [amazon-cognito-identity-js-cookie-storage]
-    spec: amazon-cognito-identity-js-cookie-storage
-    browser: *minimal_browser_list
-  - test_name: integ_react_amazon_cognito_identity_js
-    desc: 'amazon-cognito-identity-js'
-    framework: react
-    category: auth
-    sample_name: [amazon-cognito-identity-js]
-    spec: amazon-cognito-identity-js
-    browser: *minimal_browser_list
   - test_name: integ_react_device_tracking
     desc: 'cognito-device-tracking'
     framework: react
@@ -492,6 +499,26 @@ tests:
     sample_name: [delete-user]
     spec: delete-user
     browser: *minimal_browser_list
+  - test_name: integ_next_auth_authenticator_and_ssr_page
+    desc: 'Authenticator and SSR page'
+    framework: next
+    category: auth
+    sample_name: [auth-ssr]
+    spec: auth-ssr
+    browser: *minimal_browser_list
+  - test_name: integ_next_auth_authenticator_and_rsc_page
+    desc: 'Authenticator and RSC page'
+    framework: next
+    category: auth
+    sample_name: [auth-rsc]
+    spec: auth-rsc
+    browser: [chrome]
+    timeout_minutes: 45
+    retry_count: 10
+
+  # DISABLED Angular/Vue tests: 
+  # TODO: delete tests or add custom ui logic to support them.
+
   # - test_name: integ_angular_auth_angular_authenticator
   #   desc: 'Angular Authenticator'
   #   framework: angular
@@ -506,14 +533,6 @@ tests:
   #   sample_name: [amplify-authenticator]
   #   spec: custom-authenticator
   #   browser: *minimal_browser_list
-  - test_name: integ_javascript_auth
-    desc: 'JavaScript Auth CDN'
-    framework: javascript
-    category: auth
-    sample_name: [auth-cdn]
-    spec: auth-cdn
-    browser: *minimal_browser_list
-    amplifyjs_dir: true
   # - test_name: integ_vue_auth_legacy_vue_authenticator
   #   desc: 'Legacy Vue Authenticator'
   #   framework: vue
@@ -528,31 +547,18 @@ tests:
   #   sample_name: [authenticator-vue3]
   #   spec: new-ui-authenticator
   #   browser: *minimal_browser_list
-  # TODO(v6) Migrate once SSR updates available
-  - test_name: integ_next_auth_authenticator_and_ssr_page
-    desc: 'Authenticator and SSR page'
-    framework: next
-    category: auth
-    sample_name: [auth-ssr]
-    spec: auth-ssr
-    browser: *minimal_browser_list
-  # TODO(v6) Migrate once SSR updates available
-  - test_name: integ_next_auth_authenticator_and_rsc_page
-    desc: 'Authenticator and RSC page'
-    framework: next
-    category: auth
-    sample_name: [auth-rsc]
-    spec: auth-rsc
-    browser: [chrome]
-    timeout_minutes: 45
-    retry_count: 10
-  - test_name: integ_next_auth_nextjs_auth_custom_implementation_with_ssr
-    desc: 'NextJS Auth Custom Implementation with SSR'
-    framework: next
-    category: auth
-    sample_name: [custom-auth-ssr]
-    spec: authenticator
-    browser: *minimal_browser_list
+
+  # DISABLED CDN test: 
+  # TODO: delete this test after making sure CDN won't be supported
+
+  # - test_name: integ_javascript_auth
+  #   desc: 'JavaScript Auth CDN'
+  #   framework: javascript
+  #   category: auth
+  #   sample_name: [auth-cdn]
+  #   spec: auth-cdn
+  #   browser: *minimal_browser_list
+  #   amplifyjs_dir: true
 
   # ANALYTICS
   - test_name: integ_react_analytics_pinpoint

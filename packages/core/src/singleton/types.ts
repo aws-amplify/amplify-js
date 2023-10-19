@@ -19,6 +19,7 @@ import {
 	StorageConfig,
 } from './Storage/types';
 import { NotificationsConfig } from './Notifications/types';
+import { InteractionsConfig } from './Interactions/types';
 
 export type LegacyConfig = {
 	/**
@@ -31,7 +32,7 @@ export type ResourcesConfig = {
 	API?: APIConfig;
 	Analytics?: AnalyticsConfig;
 	Auth?: AuthConfig;
-	// Interactions?: {};
+	Interactions?: InteractionsConfig;
 	Notifications?: NotificationsConfig;
 	// Predictions?: {};
 	Storage?: StorageConfig;
@@ -52,6 +53,7 @@ export {
 	AuthIdentityPoolConfig,
 	AuthUserPoolAndIdentityPoolConfig,
 	GetCredentialsOptions,
+	InteractionsConfig,
 	StorageAccessLevel,
 	StorageConfig,
 	AnalyticsConfig,
