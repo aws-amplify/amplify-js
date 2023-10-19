@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { parse } from 'url'; // Used for OAuth parsing of Cognito Hosted UI
+import { parse, URL } from 'url'; // Used for OAuth parsing of Cognito Hosted UI
 import { launchUri } from './urlOpener';
 import * as oAuthStorage from './oauthStorage';
 import { Buffer } from 'buffer';
@@ -99,20 +99,21 @@ export default class OAuth {
 
 		const scopesString = this._scopes.join(' ');
 
-		const queryString = Object.entries({
-			redirect_uri: redirectSignIn,
-			response_type: responseType,
-			client_id: clientId,
-			identity_provider: provider,
-			scope: scopesString,
-			state,
-			...(responseType === 'code' ? { code_challenge } : {}),
-			...(responseType === 'code' ? { code_challenge_method } : {}),
-		})
-			.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-			.join('&');
+		const url = new URL('oauth2/authorize', `https://${domain}`);
 
-		const URL = `https://${domain}/oauth2/authorize?${queryString}`;
+		url.searchParams.set('redirect_uri', redirectSignIn);
+		url.searchParams.set('response_type', responseType);
+		url.searchParams.set('client_id', clientId);
+		url.searchParams.set('identity_provider', provider);
+		url.searchParams.set('scope', scopesString);
+		url.searchParams.set('state', state);
+
+		if (responseType === 'code') {
+			url.searchParams.set('code_challenge', code_challenge);
+			url.searchParams.set('code_challenge_method', code_challenge_method);
+		}
+
+		const URL = url.toString();
 		logger.debug(`Redirecting to ${URL}`);
 		this._urlOpener(URL, redirectSignIn);
 	}
