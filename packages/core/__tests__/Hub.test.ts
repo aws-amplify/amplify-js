@@ -1,5 +1,5 @@
 import { Hub } from '../src';
-import { Logger } from '../src/libraryUtils';
+import { ConsoleLogger } from '../src';
 
 describe('Hub', () => {
 	test('happy case', () => {
@@ -23,7 +23,7 @@ describe('Hub', () => {
 
 	test('Protected channel', () => {
 		const listener = jest.fn(() => {});
-		const loggerSpy = jest.spyOn(Logger.prototype, '_log');
+		const loggerSpy = jest.spyOn(ConsoleLogger.prototype, '_log');
 
 		Hub.listen('auth', listener);
 
@@ -46,7 +46,7 @@ describe('Hub', () => {
 
 	test('Protected channel - ui', () => {
 		const listener = jest.fn(() => {});
-		const loggerSpy = jest.spyOn(Logger.prototype, '_log');
+		const loggerSpy = jest.spyOn(ConsoleLogger.prototype, '_log');
 
 		Hub.listen('ui', listener);
 

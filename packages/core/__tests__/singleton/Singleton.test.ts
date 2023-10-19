@@ -110,7 +110,7 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 
 		const mutateConfig = () => {
 			config.Auth = MOCK_AUTH_CONFIG.Auth;
-		}
+		};
 
 		// Config should be cached
 		expect(config).toEqual(MOCK_AUTH_CONFIG);
@@ -127,7 +127,7 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 		expect(config3).toEqual(MOCK_AUTH_CONFIG);
 		expect(config3).not.toBe(config);
 		expect(config3).not.toBe(config2);
-	})
+	});
 });
 
 describe('Session tests', () => {

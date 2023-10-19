@@ -55,9 +55,7 @@ export const authAPITestParams = {
 	resetPasswordRequestWithClientMetadata: {
 		username: 'username',
 		options: {
-			serviceOptions: {
-				clientMetadata: { foo: 'bar' },
-			},
+			clientMetadata: { foo: 'bar' },
 		},
 	},
 	forgotPasswordCommandWithClientMetadata: {
@@ -75,9 +73,7 @@ export const authAPITestParams = {
 		newPassword: 'password',
 		confirmationCode: 'code',
 		options: {
-			serviceOptions: {
-				clientMetadata: { foo: 'bar' },
-			},
+			clientMetadata: { foo: 'bar' },
 		},
 	},
 	confirmForgotPasswordCommandWithClientMetadata: {

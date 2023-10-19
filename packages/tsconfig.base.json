@@ -18,6 +18,7 @@
 		"noEmitOnError": true,
 		"incremental": true,
 		"importHelpers": true,
+		"skipLibCheck": true,
 		"types": ["node"]
 	}
 }

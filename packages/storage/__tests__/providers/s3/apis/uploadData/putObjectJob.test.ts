@@ -16,6 +16,7 @@ jest.mock('../../../../../src/providers/s3/utils', () => {
 	};
 });
 jest.mock('@aws-amplify/core', () => ({
+	ConsoleLogger: jest.fn(),
 	fetchAuthSession: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
@@ -95,7 +96,7 @@ describe('putObjectJob', () => {
 				abortSignal: abortController.signal,
 				onUploadProgress: expect.any(Function),
 				useAccelerateEndpoint: true,
-				userAgentValue: expect.any(String)
+				userAgentValue: expect.any(String),
 			},
 			{
 				Bucket: 'bucket',
