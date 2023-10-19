@@ -83,7 +83,14 @@ export enum DataStoreAction {
 	GraphQl = '2',
 }
 export enum GeoAction {
-	None = '0',
+	SearchByText = '0',
+	SearchByCoordinates = '1',
+	SearchForSuggestions = '2',
+	SearchByPlaceId = '3',
+	SaveGeofences = '4',
+	GetGeofence = '5',
+	ListGeofences = '6',
+	DeleteGeofences = '7',
 }
 export enum InAppMessagingAction {
 	SyncMessages = '1',
@@ -102,7 +109,8 @@ export enum PubSubAction {
 	Subscribe = '1',
 }
 export enum PushNotificationAction {
-	None = '0',
+	InitializePushNotifications = '1',
+	IdentifyUser = '2',
 }
 export enum StorageAction {
 	UploadData = '1',
@@ -166,31 +174,32 @@ export type CustomUserAgentStateMap = Record<string, CategoryUserAgentStateMap>;
 
 export type AdditionalDetails = [string, string?][];
 
-type StorageUserAgentInput = {
+export type StorageUserAgentInput = {
 	category: Category.Storage;
 	apis: StorageAction[];
+	additionalDetails: AdditionalDetails;
 };
 
-type AuthUserAgentInput = {
+export type AuthUserAgentInput = {
 	category: Category.Auth;
 	apis: AuthAction[];
+	additionalDetails: AdditionalDetails;
 };
 
-type InAppMessagingUserAgentInput = {
+export type InAppMessagingUserAgentInput = {
 	category: Category.InAppMessaging;
 	apis: InAppMessagingAction[];
+	additionalDetails: AdditionalDetails;
 };
 
-type GeoUserAgentInput = {
+export type GeoUserAgentInput = {
 	category: Category.Geo;
 	apis: GeoAction[];
+	additionalDetails: AdditionalDetails;
 };
 
-export type SetCustomUserAgentInput = (
+export type SetCustomUserAgentInput =
 	| StorageUserAgentInput
 	| AuthUserAgentInput
 	| InAppMessagingUserAgentInput
-	| GeoUserAgentInput
-) & {
-	additionalDetails: AdditionalDetails;
-};
+	| GeoUserAgentInput;

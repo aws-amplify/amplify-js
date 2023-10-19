@@ -1,8 +1,8 @@
 import { Hub } from '@aws-amplify/core';
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 import { ConnectionState as CS, CONNECTION_STATE_CHANGE } from '../src';
 import * as constants from '../src/Providers/constants';
-
+import { Observer as RxObserver } from 'rxjs';
 export function delay(timeout) {
 	return new Promise(resolve => {
 		setTimeout(() => {
@@ -16,7 +16,7 @@ export class HubConnectionListener {
 	observedConnectionStates: CS[] = [];
 	currentConnectionState: CS;
 
-	private connectionStateObservers: ZenObservable.Observer<CS>[] = [];
+	private connectionStateObservers: RxObserver<CS>[] = [];
 
 	constructor(channel: string) {
 		let closeResolver: (value: PromiseLike<any>) => void;

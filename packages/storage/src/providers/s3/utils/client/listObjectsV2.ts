@@ -7,6 +7,10 @@ import {
 	HttpResponse,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
+import {
+	AmplifyUrl,
+	AmplifyUrlSearchParams,
+} from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import type {
 	ListObjectsV2CommandInput,
@@ -48,8 +52,8 @@ const listObjectsV2Serializer = (
 		prefix: input.Prefix,
 		'start-after': input.StartAfter,
 	});
-	const url = new URL(endpoint.url.toString());
-	url.search = new URLSearchParams(query).toString();
+	const url = new AmplifyUrl(endpoint.url.toString());
+	url.search = new AmplifyUrlSearchParams(query).toString();
 	return {
 		method: 'GET',
 		headers,

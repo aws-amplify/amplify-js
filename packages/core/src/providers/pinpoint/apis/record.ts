@@ -1,18 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { v4 as uuid } from 'uuid';
+import { amplifyUuid } from '../../../utils/amplifyUuid';
 import { PinpointRecordInput, PinpointSession } from '../types';
-import { getEndpointId } from '../utils';
+import { resolveEndpointId } from '../utils';
 import {
 	BUFFER_SIZE,
 	FLUSH_INTERVAL,
 	FLUSH_SIZE,
 	RESEND_LIMIT,
 } from '../utils/constants';
-import { updateEndpoint } from './updateEndpoint';
 import { getEventBuffer } from '../utils/getEventBuffer';
-import { AmplifyError } from '../../../errors';
 
 // TODO(v6) Refactor when we add support for session tracking & `autoTrack`
 let session: PinpointSession;
@@ -23,6 +21,7 @@ let session: PinpointSession;
 export const record = async ({
 	appId,
 	category,
+	channelType,
 	credentials,
 	event,
 	identityId,
@@ -30,8 +29,7 @@ export const record = async ({
 	userAgentValue,
 }: PinpointRecordInput): Promise<void> => {
 	const timestampISOString = new Date().toISOString();
-	const eventId = uuid();
-	let endpointId = await getEndpointId(appId, category);
+	const eventId = amplifyUuid();
 
 	// Prepare event buffer if required
 	const buffer = getEventBuffer({
@@ -46,31 +44,19 @@ export const record = async ({
 		userAgentValue,
 	});
 
-	// Prepare a Pinpoint endpoint via updateEndpoint if one does not already exist, which will generate and cache an
-	// endpoint ID between calls
-	if (!endpointId) {
-		await updateEndpoint({
-			appId,
-			category,
-			credentials,
-			identityId,
-			region,
-			userAgentValue,
-		});
-
-		endpointId = await getEndpointId(appId, category);
-	}
-
-	if (!endpointId) {
-		throw new AmplifyError({
-			name: 'ENDPOINT_NOT_CREATED',
-			message: 'Endpoint was not created.',
-		});
-	}
+	const endpointId = await resolveEndpointId({
+		appId,
+		category,
+		channelType,
+		credentials,
+		identityId,
+		region,
+		userAgentValue,
+	});
 
 	// Generate session if required
 	if (!session) {
-		const sessionId = uuid();
+		const sessionId = amplifyUuid();
 
 		session = {
 			Id: sessionId,

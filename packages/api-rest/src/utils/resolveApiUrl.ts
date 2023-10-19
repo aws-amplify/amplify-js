@@ -3,6 +3,10 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
+	AmplifyUrl,
+	AmplifyUrlSearchParams,
+} from '@aws-amplify/core/internals/utils';
+import {
 	RestApiError,
 	RestApiValidationErrorCode,
 	assertValidationError,
@@ -28,13 +32,13 @@ export const resolveApiUrl = (
 	const urlStr = amplify.getConfig()?.API?.REST?.[apiName]?.endpoint;
 	assertValidationError(!!urlStr, RestApiValidationErrorCode.InvalidApiName);
 	try {
-		const url = new URL(urlStr + path);
+		const url = new AmplifyUrl(urlStr + path);
 		if (queryParams) {
-			const mergedQueryParams = new URLSearchParams(url.searchParams);
+			const mergedQueryParams = new AmplifyUrlSearchParams(url.searchParams);
 			Object.entries(queryParams).forEach(([key, value]) => {
 				mergedQueryParams.set(key, value);
 			});
-			url.search = new URLSearchParams(mergedQueryParams).toString();
+			url.search = new AmplifyUrlSearchParams(mergedQueryParams).toString();
 		}
 		return url;
 	} catch (error) {

@@ -1,0 +1,7 @@
+{
+	"name": "@aws-amplify/pubsub/mqtt",
+	"main": "../lib/clients/mqtt.js",
+	"browser": "../lib-esm/clients/mqtt.js",
+	"module": "../lib-esm/clients/mqtt.js",
+	"typings": "../lib-esm/clients/mqtt.d.ts"
+}

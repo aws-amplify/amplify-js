@@ -4,3 +4,4 @@
 export { cacheEndpointId } from './cacheEndpointId';
 export { getCacheKey } from './getCacheKey';
 export { getEndpointId } from './getEndpointId';
+export { resolveEndpointId } from './resolveEndpointId';

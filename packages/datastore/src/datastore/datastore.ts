@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Amplify, Hub, Cache } from '@aws-amplify/core';
+import { Amplify, Hub, Cache, ConsoleLogger } from '@aws-amplify/core';
 
 import {
 	Draft,
@@ -11,7 +11,7 @@ import {
 	enablePatches,
 	Patch,
 } from 'immer';
-import { v4 as uuid4 } from 'uuid';
+import { amplifyUuid } from '@aws-amplify/core/internals/utils';
 import { Observable, SubscriptionLike, filter } from 'rxjs';
 import { defaultAuthStrategy, multiAuthStrategy } from '../authModeStrategies';
 import {
@@ -103,15 +103,12 @@ import {
 } from '../predicates/next';
 import { getIdentifierValue } from '../sync/utils';
 import DataStoreConnectivity from '../sync/datastoreConnectivity';
-import {
-	BackgroundProcessManager,
-	Logger,
-} from '@aws-amplify/core/internals/utils';
+import { BackgroundProcessManager } from '@aws-amplify/core/internals/utils';
 
 setAutoFreeze(true);
 enablePatches();
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 const ulid = monotonicUlidFactory(Date.now());
 
@@ -838,13 +835,14 @@ const createModelClass = <T extends PersistentModel>(
 						const id = isInternalModel
 							? _id
 							: modelDefinition.syncable
-							? uuid4()
+							? amplifyUuid()
 							: ulid();
 
 						(<ModelWithIDIdentifier>(<unknown>draft)).id = id;
 					} else if (isIdOptionallyManaged(modelDefinition)) {
 						// only auto-populate if the id was not provided
-						(<ModelWithIDIdentifier>(<unknown>draft)).id = draft.id || uuid4();
+						(<ModelWithIDIdentifier>(<unknown>draft)).id =
+							draft.id || amplifyUuid();
 					}
 
 					if (!isInternallyInitialized) {
