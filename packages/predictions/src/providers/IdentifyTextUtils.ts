@@ -193,7 +193,7 @@ export function categorizeTextractBlocks(
  * @param {Block} table - Table block that has references (`Relationships`) to its cells
  * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
-export function constructTable(
+function constructTable(
 	table: Block,
 	blockMap: { [key: string]: Block }
 ): Table {
@@ -239,7 +239,7 @@ export function constructTable(
  * @param {Block} KeyValue - KeyValue block that has references (`Relationships`) to its children.
  * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
-export function constructKeyValue(
+function constructKeyValue(
 	keyBlock: Block,
 	blockMap: { [key: string]: Block }
 ): KeyValue {
@@ -274,7 +274,7 @@ export function constructKeyValue(
  * @param {Block}} block - Block that we want to extract contents from.
  * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
-export function extractContentsFromBlock(
+function extractContentsFromBlock(
 	block: Block,
 	blockMap: { [id: string]: Block }
 ): Content {
