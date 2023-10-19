@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Observable, SubscriptionLike } from 'rxjs';
 import { GraphQLError } from 'graphql';
-import * as url from 'url';
 import { Buffer } from 'buffer';
 import { Hub, fetchAuthSession, ConsoleLogger } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
@@ -900,7 +899,7 @@ export class AWSAppSyncRealTimeProvider {
 		} else {
 			const handler = headerHandler[authenticationType];
 
-			const { host } = url.parse(appSyncGraphqlEndpoint ?? '');
+			const host = new AmplifyUrl(appSyncGraphqlEndpoint ?? '').host;
 
 			logger.debug(`Authenticating with ${JSON.stringify(authenticationType)}`);
 			let resolvedApiKey;
