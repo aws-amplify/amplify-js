@@ -899,7 +899,9 @@ export class AWSAppSyncRealTimeProvider {
 		} else {
 			const handler = headerHandler[authenticationType];
 
-			const host = new AmplifyUrl(appSyncGraphqlEndpoint ?? '').host;
+			const host = appSyncGraphqlEndpoint
+				? new AmplifyUrl(appSyncGraphqlEndpoint).host
+				: undefined;
 
 			logger.debug(`Authenticating with ${JSON.stringify(authenticationType)}`);
 			let resolvedApiKey;
