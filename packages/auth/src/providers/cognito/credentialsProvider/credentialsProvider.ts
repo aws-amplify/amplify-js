@@ -8,7 +8,7 @@ import {
 	AWSCredentialsAndIdentityId,
 	getCredentialsForIdentity,
 	GetCredentialsOptions,
-	ConsoleLogger
+	ConsoleLogger,
 } from '@aws-amplify/core';
 import {
 	assertIdentityPoolIdConfig,
