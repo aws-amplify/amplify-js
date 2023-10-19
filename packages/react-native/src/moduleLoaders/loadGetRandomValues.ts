@@ -12,7 +12,7 @@ export const loadGetRandomValues = () => {
 		// another module and that causes error
 		const message = (e as Error).message.replace(
 			/undefined/g,
-			'@react-native-community/netinfo'
+			'react-native-get-random-values'
 		);
 		throw new Error(message);
 	}

@@ -2,7 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Hub, HubCapsule, fetchAuthSession, ConsoleLogger } from '@aws-amplify/core';
+import {
+	Hub,
+	HubCapsule,
+	fetchAuthSession,
+	ConsoleLogger,
+} from '@aws-amplify/core';
 import {
 	Category,
 	CustomUserAgentDetails,
@@ -454,10 +459,10 @@ class SubscriptionProcessor {
 												},
 												error: async subscriptionError => {
 													const {
-														error: { errors: [{ message = '' } = {}] } = {
-															errors: [],
-														},
-													} = subscriptionError;
+														errors: [{ message = '' } = {}],
+													} = ({
+														errors: [],
+													} = subscriptionError);
 
 													const isRTFError =
 														// only attempt catch if a filter variable was added to the subscription query

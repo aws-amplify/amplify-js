@@ -5,9 +5,9 @@
 This file maps exports from `aws-amplify/utils`.
 */
 export {
-	Hub, 
+	Hub,
 	I18n,
 	Cache,
 	ConsoleLogger,
-	ServiceWorker
+	ServiceWorker,
 } from '@aws-amplify/core';

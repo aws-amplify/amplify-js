@@ -101,3 +101,7 @@ export { getCrypto } from './utils/globalHelpers';
 
 // Hub
 export { HubInternal } from './Hub';
+
+// Session listener
+export { sessionListener } from './utils/sessionListener';
+export { SessionState } from './utils/sessionListener/types';

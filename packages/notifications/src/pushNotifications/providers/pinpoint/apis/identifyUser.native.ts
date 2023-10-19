@@ -3,12 +3,9 @@
 
 import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
-import {
-	getChannelType,
-	getPushNotificationUserAgentString,
-	resolveConfig,
-	resolveCredentials,
-} from '../utils';
+import { assertIsInitialized } from '../../../errors/errorHelpers';
+import { resolveConfig, resolveCredentials } from '../../../utils';
+import { getChannelType, getPushNotificationUserAgentString } from '../utils';
 import { IdentifyUser } from '../types';
 
 export const identifyUser: IdentifyUser = async ({
@@ -16,6 +13,7 @@ export const identifyUser: IdentifyUser = async ({
 	userProfile,
 	options,
 }) => {
+	assertIsInitialized();
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
 	const { address, optOut, userAttributes } = options ?? {};

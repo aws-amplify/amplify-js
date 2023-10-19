@@ -15,4 +15,5 @@ export {
 	loadUrlPolyfill,
 	loadGetRandomValues,
 	loadBase64,
+	loadAppState,
 } from './moduleLoaders';
