@@ -188,4 +188,58 @@ describe('OAuth', () => {
 			});
 		});
 	});
+	describe('oauthSignIn', () => {
+		test('redirect to the correct url', () => {
+			const responseType = 'something';
+			const domain = 'test.com';
+			const redirectSignIn = 'https://redirect.com';
+			const clientId = 'clientId';
+			const provider = 'provider';
+			const scopes = ['openid'];
+			const state = 'state';
+
+			const config = {
+				domain: '',
+				clientID: '',
+				scope: '',
+				redirectUri: '',
+				audience: '',
+				responseType: 'code',
+				returnTo: '',
+				redirectSignIn,
+				urlOpener: jest.fn(),
+			};
+
+			const oAuth = new OAuth({
+				scopes,
+				config,
+				cognitoClientId: '',
+			});
+
+			oAuth['_generateState'] = () => state;
+
+			oAuth.oauthSignIn(
+				responseType,
+				domain,
+				redirectSignIn,
+				clientId,
+				provider
+			);
+
+			const searchParams = new URLSearchParams({
+				redirect_uri: redirectSignIn,
+				response_type: responseType,
+				client_id: clientId,
+				identity_provider: provider,
+				scope: scopes.join(' '),
+				state,
+			});
+
+			expect(config.urlOpener).toHaveBeenCalledTimes(1);
+			expect(config.urlOpener).toHaveBeenCalledWith(
+				`https://${domain}/oauth2/authorize?${searchParams.toString()}`,
+				redirectSignIn
+			);
+		});
+	});
 });

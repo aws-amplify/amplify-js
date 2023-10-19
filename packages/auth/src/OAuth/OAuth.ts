@@ -113,9 +113,8 @@ export default class OAuth {
 			url.searchParams.set('code_challenge_method', code_challenge_method);
 		}
 
-		const URL = url.toString();
-		logger.debug(`Redirecting to ${URL}`);
-		this._urlOpener(URL, redirectSignIn);
+		logger.debug(`Redirecting to ${url.toString()}`);
+		this._urlOpener(url.toString(), redirectSignIn);
 	}
 
 	private async _handleCodeFlow(currentUrl: string) {
