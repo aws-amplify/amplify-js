@@ -1,9 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import {
+	Amplify,
+	ConsoleLogger as Logger,
+	fetchAuthSession,
+} from '@aws-amplify/core';
 import {
 	Category,
-	ConsoleLogger as Logger,
 	PredictionsAction,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
