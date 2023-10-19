@@ -46,8 +46,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signUpVerificationMethod =
 		authConfig?.signUpVerificationMethod ?? 'code';
-	const { clientMetadata, validationData, autoSignIn } =
-		input.options?.serviceOptions ?? {};
+	const { clientMetadata, validationData, autoSignIn } = input.options ?? {};
 	assertTokenProviderConfig(authConfig);
 	assertValidationError(
 		!!username,
@@ -63,9 +62,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 
 	const signInInput: SignInInput = {
 		username,
-		options: {
-			serviceOptions: signInServiceOptions,
-		},
+		options: signInServiceOptions,
 	};
 
 	// if the authFlowType is 'CUSTOM_WITHOUT_SRP' then we don't include the password

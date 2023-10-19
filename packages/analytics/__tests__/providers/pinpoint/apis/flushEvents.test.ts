@@ -8,10 +8,8 @@ import {
 import { config, credentials, identityId } from './testUtils/data';
 import { flushEvents } from '../../../../src/providers/pinpoint';
 import { flushEvents as pinpointFlushEvents } from '@aws-amplify/core/internals/providers/pinpoint';
-import {
-	AnalyticsAction,
-	ConsoleLogger,
-} from '@aws-amplify/core/internals/utils';
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 import { getAnalyticsUserAgentString } from '../../../../src/utils';
 
 jest.mock('../../../../src/providers/pinpoint/utils');

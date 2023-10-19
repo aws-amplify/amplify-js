@@ -18,8 +18,8 @@ import {
 	StorageAccessLevel,
 	StorageConfig,
 } from './Storage/types';
-import { I18nConfig } from '../I18n/types';
 import { NotificationsConfig } from './Notifications/types';
+import { InteractionsConfig } from './Interactions/types';
 
 export type LegacyConfig = {
 	/**
@@ -32,10 +32,7 @@ export type ResourcesConfig = {
 	API?: APIConfig;
 	Analytics?: AnalyticsConfig;
 	Auth?: AuthConfig;
-	// Cache?: CacheConfig;
-	// DataStore?: {};
-	I18n?: I18nConfig;
-	// Interactions?: {};
+	Interactions?: InteractionsConfig;
 	Notifications?: NotificationsConfig;
 	// Predictions?: {};
 	Storage?: StorageConfig;
@@ -56,6 +53,7 @@ export {
 	AuthIdentityPoolConfig,
 	AuthUserPoolAndIdentityPoolConfig,
 	GetCredentialsOptions,
+	InteractionsConfig,
 	StorageAccessLevel,
 	StorageConfig,
 	AnalyticsConfig,

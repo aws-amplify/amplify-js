@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/storage/s3/utils",
+	"main": "../../../lib/storage/s3/utils.js",
+	"browser": "../../../lib-esm/storage/s3/utils.js",
+	"module": "../../../lib-esm/storage/s3/utils.js",
+	"typings": "../../../lib-esm/storage/s3/utils.d.ts"
+}

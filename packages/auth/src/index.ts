@@ -62,7 +62,6 @@ export {
 	ResetPasswordOutput,
 	SetUpTOTPOutput,
 	SignInOutput,
-	SignOutOutput,
 	SignUpOutput,
 	UpdateUserAttributesOutput,
 	SendUserAttributeVerificationCodeOutput,

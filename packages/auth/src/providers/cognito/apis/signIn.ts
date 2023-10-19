@@ -24,7 +24,7 @@ import { SignInInput, SignInOutput } from '../types';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signIn(input: SignInInput): Promise<SignInOutput> {
-	const authFlowType = input.options?.serviceOptions?.authFlowType;
+	const authFlowType = input.options?.authFlowType;
 	await assertUserNotAuthenticated();
 	switch (authFlowType) {
 		case 'USER_SRP_AUTH':

@@ -4,4 +4,4 @@
 /**
  * Base type for service options.
  */
-export type AnalyticsServiceOptions = any;
+export type AnalyticsServiceOptions = Record<string, unknown>;

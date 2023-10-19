@@ -14,11 +14,11 @@
 		"test:default": "jest -w 1 --coverage",
 		"test:native": "jest -w 1 --coverage --config=jest.native.config.js --coverageDirectory=coverage-native",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
-		"build-with-test": "npm run clean && npm test && tsc && webpack",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "node ./build es6 --watch",
+		"build-with-test": "npm run clean && npm test && tsc",
+		"build:cjs": "rimraf lib && tsc -p ./tsconfig.build.json -m commonjs --outDir lib",
+		"build:esm": "rimraf lib-esm && tsc -p ./tsconfig.build.json -m esnext --outDir lib-esm",
+		"build:cjs:watch": "rimraf lib && tsc -p ./tsconfig.build.json -m commonjs --outDir lib --watch",
+		"build:esm:watch": "rimraf lib-esm && tsc -p ./tsconfig.build.json -m esnext --outDir lib-esm --watch",
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
@@ -57,9 +57,9 @@
 			"require": "./lib/inAppMessaging/providers/index.js"
 		},
 		"./push-notifications": {
-			"types": "./lib-esm/pushNotifications/providers/index.d.ts",
-			"import": "./lib-esm/pushNotifications/providers/index.js",
-			"require": "./lib/pushNotifications/providers/index.js"
+			"types": "./lib-esm/pushNotifications/index.d.ts",
+			"import": "./lib-esm/pushNotifications/index.js",
+			"require": "./lib/pushNotifications/index.js"
 		},
 		"./in-app-messaging/pinpoint": {
 			"types": "./lib-esm/inAppMessaging/providers/pinpoint/index.d.ts",
@@ -89,11 +89,12 @@
 	"files": [
 		"lib",
 		"lib-esm",
-		"src"
+		"src",
+		"in-app-messaging",
+		"push-notifications"
 	],
 	"dependencies": {
-		"lodash": "^4.17.21",
-		"uuid": "^9.0.0"
+		"lodash": "^4.17.21"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.0.0"

@@ -9,6 +9,7 @@ import {
 	getSignInResult,
 	getSignInResultFromError,
 	getNewDeviceMetatada,
+	retryOnResourceNotFoundException,
 } from '../utils/signInHelpers';
 import { Amplify, Hub } from '@aws-amplify/core';
 import {
@@ -48,7 +49,7 @@ export async function signInWithCustomAuth(
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { username, password, options } = input;
-	const metadata = options?.serviceOptions?.clientMetadata;
+	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -64,10 +65,10 @@ export async function signInWithCustomAuth(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleCustomAuthFlowWithoutSRP(
+		} = await retryOnResourceNotFoundException(
+			handleCustomAuthFlowWithoutSRP,
+			[username, metadata, authConfig, tokenOrchestrator],
 			username,
-			metadata,
-			authConfig,
 			tokenOrchestrator
 		);
 

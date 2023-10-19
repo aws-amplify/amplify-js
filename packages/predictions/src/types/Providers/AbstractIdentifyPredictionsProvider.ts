@@ -12,8 +12,8 @@ import {
 	IdentifyLabelsOutput,
 	IdentifyEntitiesOutput,
 } from '../Predictions';
-import { Logger } from '@aws-amplify/core';
-const logger = new Logger('AbstractIdentifyPredictionsProvider');
+import { ConsoleLogger } from '@aws-amplify/core';
+const logger = new ConsoleLogger('AbstractIdentifyPredictionsProvider');
 
 export abstract class AbstractIdentifyPredictionsProvider extends AbstractPredictionsProvider {
 	getCategory(): string {

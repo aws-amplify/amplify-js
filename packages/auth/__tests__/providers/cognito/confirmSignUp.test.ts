@@ -37,6 +37,9 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 	afterEach(() => {
 		confirmSignUpClientSpy.mockClear();
 	});
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
 	test('confirmSignUp API should call the UserPoolClient and should return a SignUpResult', async () => {
 		const result = await confirmSignUp({
 			username: user1.username,
@@ -65,9 +68,7 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 			username: user1.username,
 			confirmationCode,
 			options: {
-				serviceOptions: {
-					forceAliasCreation: true,
-				},
+				forceAliasCreation: true,
 			},
 		});
 		expect(confirmSignUpClientSpy).toHaveBeenCalledWith(
@@ -87,9 +88,7 @@ describe('confirmSignUp API Happy Path Cases:', () => {
 			username: user1.username,
 			confirmationCode,
 			options: {
-				serviceOptions: {
-					clientMetadata,
-				},
+				clientMetadata,
 			},
 		});
 		expect(confirmSignUpClientSpy).toHaveBeenCalledWith(
@@ -146,5 +145,60 @@ describe('confirmSignUp API Error Path Cases:', () => {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(ConfirmSignUpException.InvalidParameterException);
 		}
+	});
+});
+
+describe('Cognito ASF', () => {
+	Amplify.configure({
+		Auth: authConfig,
+	});
+	let confirmSignUpClientSpy;
+	const { user1 } = authAPITestParams;
+	const confirmationCode = '123456';
+	beforeEach(() => {
+		confirmSignUpClientSpy = jest
+			.spyOn(confirmSignUpClient, 'confirmSignUp')
+			.mockImplementationOnce(async (): Promise<ConfirmSignUpCommandOutput> => {
+				return {} as ConfirmSignUpCommandOutput;
+			});
+
+		// load Cognito ASF polyfill
+		window['AmazonCognitoAdvancedSecurityData'] = {
+			getData() {
+				return 'abcd';
+			},
+		};
+	});
+
+	afterEach(() => {
+		confirmSignUpClientSpy.mockClear();
+		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+	});
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
+	test('confirmSignUp should send UserContextData', async () => {
+		const result = await confirmSignUp({
+			username: user1.username,
+			confirmationCode,
+		});
+		expect(result).toEqual({
+			isSignUpComplete: true,
+			nextStep: {
+				signUpStep: 'DONE',
+			},
+		});
+		expect(confirmSignUpClientSpy).toHaveBeenCalledWith(
+			expect.objectContaining({ region: 'us-west-2' }),
+			{
+				ClientMetadata: undefined,
+				ConfirmationCode: confirmationCode,
+				Username: user1.username,
+				ForceAliasCreation: undefined,
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				UserContextData: { EncodedData: 'abcd' },
+			}
+		);
+		expect(confirmSignUpClientSpy).toBeCalledTimes(1);
 	});
 });

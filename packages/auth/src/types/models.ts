@@ -121,9 +121,7 @@ export type ConfirmSignInWithNewPasswordRequired<
 	 * await confirmSignIn({
 	 *  challengeResponse: newPassword,
 	 *  options: {
-	 *   serviceOptions: {
 	 *    userAttributes: attributes
-	 *    }
 	 *   }
 	 * });
 	 * ```
@@ -273,5 +271,4 @@ export type AuthUser = {
  */
 export type AuthDevice = {
 	id: string;
-	name?: string;
 };

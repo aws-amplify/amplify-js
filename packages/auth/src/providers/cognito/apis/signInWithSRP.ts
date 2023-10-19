@@ -22,6 +22,7 @@ import {
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
+	retryOnResourceNotFoundException,
 } from '../utils/signInHelpers';
 import { SignInWithSRPInput, SignInWithSRPOutput } from '../types';
 import {
@@ -49,7 +50,7 @@ export async function signInWithSRP(
 	const { username, password } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const clientMetaData = input.options?.serviceOptions?.clientMetadata;
+	const clientMetaData = input.options?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -65,11 +66,10 @@ export async function signInWithSRP(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleUserSRPAuthFlow(
+		} = await retryOnResourceNotFoundException(
+			handleUserSRPAuthFlow,
+			[username, password, clientMetaData, authConfig, tokenOrchestrator],
 			username,
-			password,
-			clientMetaData,
-			authConfig,
 			tokenOrchestrator
 		);
 

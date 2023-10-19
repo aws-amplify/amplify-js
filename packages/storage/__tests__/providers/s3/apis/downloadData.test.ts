@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Credentials } from '@aws-sdk/types';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 import { getObject } from '../../../../src/providers/s3/utils/client';
 import { downloadData } from '../../../../src/providers/s3';
@@ -11,6 +11,7 @@ import { DownloadDataOptions } from '../../../../src/providers/s3/types';
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('../../../../src/providers/s3/utils');
 jest.mock('@aws-amplify/core', () => ({
+	ConsoleLogger: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {
@@ -18,7 +19,7 @@ jest.mock('@aws-amplify/core', () => ({
 		},
 	},
 }));
-const credentials: Credentials = {
+const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
@@ -108,7 +109,7 @@ describe('downloadData', () => {
 					useAccelerateEndpoint: true,
 					onDownloadProgress: onProgress,
 					abortSignal: expect.any(AbortSignal),
-					userAgentValue: expect.any(String)
+					userAgentValue: expect.any(String),
 				},
 				{
 					Bucket: bucket,
