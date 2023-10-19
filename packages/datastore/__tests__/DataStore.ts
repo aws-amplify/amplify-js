@@ -90,16 +90,17 @@ describe('DataStore sanity testing checks', () => {
 	test('maintains integrity when attempting to save BELONGS_TO FK at non-existent record', async () => {
 		const { DataStore: datastore, Post, Comment } = getDataStore();
 		DataStore = datastore;
-		const post = new Post({
-			title: 'newly created post',
-		});
 
-		const comment = new Comment({
-			content: 'newly created comment',
-			post,
-		});
-		const promise = DataStore.save(comment);
-		await expect(promise).rejects.toThrow(
+		await expect(
+			DataStore.save(
+				new Comment({
+					content: 'newly created comment',
+					post: new Post({
+						title: 'newly created post',
+					}),
+				})
+			)
+		).rejects.toThrow(
 			`Data integrity error. You tried to save a Comment` // instructions specific to the instance follow
 		);
 	});
