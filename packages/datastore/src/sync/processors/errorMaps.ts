@@ -58,10 +58,10 @@ export const syncErrorMap: ErrorMap = {
  */
 function unwrapObservableError(observableError: any) {
 	const {
-		error: { errors: [error] } = {
-			errors: [],
-		},
-	} = observableError;
+		errors: [error],
+	} = ({
+		errors: [],
+	} = observableError);
 
 	return error;
 }

@@ -17,6 +17,7 @@ import {
 	InternalSchema,
 	PersistentModelConstructor,
 } from '../src/types';
+import { Category, DataStoreAction } from '@aws-amplify/core/internals/utils';
 
 // mock graphql to return a mockable observable
 jest.mock('@aws-amplify/api/internals', () => {
@@ -590,19 +591,17 @@ describe('error handler', () => {
 		});
 	});
 
-	test.skip('error handler once after all retires have failed', done => {
-		// Logger.LOG_LEVEL = 'DEBUG';
-		// const debugLog = jest.spyOn(console, 'log');
+	test('error handler once after all retires have failed', done => {
+		window['LOG_LEVEL'] = 'DEBUG';
+		const debugLog = jest.spyOn(console, 'log');
 		const message = PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR;
 		mockObservable = new Observable(observer => {
 			observer.error({
-				error: {
-					errors: [
-						{
-							message,
-						},
-					],
-				},
+				errors: [
+					{
+						message,
+					},
+				],
 			});
 		});
 
@@ -613,7 +612,7 @@ describe('error handler', () => {
 				console.log(errorHandler.mock.calls);
 
 				// call once each for Create, Update, and Delete
-				expect(errorHandler).toHaveBeenCalledTimes(1);
+				expect(errorHandler).toHaveBeenCalledTimes(3);
 				['Create', 'Update', 'Delete'].forEach(operation => {
 					expect(errorHandler).toHaveBeenCalledWith(
 						expect.objectContaining({
@@ -626,35 +625,35 @@ describe('error handler', () => {
 					);
 					// expect logger.debug to be called 6 times for auth mode (2 for each operation)
 					// can't use toHaveBeenCalledTimes because it is called elsewhere unrelated to the test
-					// expect(debugLog).toHaveBeenCalledWith(
-					// 	expect.stringMatching(
-					// 		new RegExp(
-					// 			`[DEBUG].*${operation} subscription failed with authMode: API_KEY`
-					// 		)
-					// 	)
-					// );
-					// expect(debugLog).toHaveBeenCalledWith(
-					// 	expect.stringMatching(
-					// 		new RegExp(
-					// 			`[DEBUG].*${operation} subscription failed with authMode: AMAZON_COGNITO_USER_POOLS`
-					// 		)
-					// 	)
-					// );
+					expect(debugLog).toHaveBeenCalledWith(
+						expect.stringMatching(
+							new RegExp(
+								`[DEBUG].*${operation} subscription failed with authMode: apiKey`
+							)
+						)
+					);
+					expect(debugLog).toHaveBeenCalledWith(
+						expect.stringMatching(
+							new RegExp(
+								`[DEBUG].*${operation} subscription failed with authMode: userPool`
+							)
+						)
+					);
 
-					// expect(mockGraphQL).toHaveBeenCalledWith(
-					// 	expect.anything(),
-					// 	undefined,
-					// 	{
-					// 		category: Category.DataStore,
-					// 		action: DataStoreAction.Subscribe,
-					// 	}
-					// );
+					expect(mockGraphQL).toHaveBeenCalledWith(
+						expect.anything(),
+						undefined,
+						{
+							category: Category.DataStore,
+							action: DataStoreAction.Subscribe,
+						}
+					);
 				});
 
 				done();
 			},
 		});
-	}, 5000);
+	}, 500);
 
 	async function instantiateSubscriptionProcessor({
 		errorHandler = () => null,

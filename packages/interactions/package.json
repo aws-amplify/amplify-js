@@ -1,7 +1,6 @@
 {
 	"name": "@aws-amplify/interactions",
 	"version": "6.0.0",
-	"private": true,
 	"description": "Interactions category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -9,10 +8,7 @@
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js"
 	},
-	"sideEffects": [
-		"./lib/Interactions.js",
-		"./lib-esm/Interactions.js"
-	],
+	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
 	},
@@ -20,16 +16,46 @@
 		"test": "npm run lint && jest -w 1 --coverage",
 		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm test && tsc && webpack",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "node ./build es6 --watch",
+		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
+		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
+		"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.6"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 88.6"
+	},
+	"typesVersions": {
+		">=4.0": {
+			"*": [
+				"./lib-esm/index.d.ts"
+			],
+			"lex-v1": [
+				"./lib-esm/lex-v1/index.d.ts"
+			],
+			"lex-v2": [
+				"./lib-esm/lex-v2/index.d.ts"
+			]
+		}
+	},
+	"exports": {
+		".": {
+			"types": "./lib-esm/index.d.ts",
+			"import": "./lib-esm/index.js",
+			"require": "./lib/index.js"
+		},
+		"./lex-v1": {
+			"types": "./lib-esm/lex-v1/index.d.ts",
+			"import": "./lib-esm/lex-v1/index.js",
+			"require": "./lib/lex-v1/index.js"
+		},
+		"./lex-v2": {
+			"types": "./lib-esm/lex-v2/index.d.ts",
+			"import": "./lib-esm/lex-v2/index.js",
+			"require": "./lib/lex-v2/index.js"
+		}
 	},
 	"repository": {
 		"type": "git",
@@ -44,28 +70,41 @@
 	"files": [
 		"lib",
 		"lib-esm",
-		"src"
+		"src",
+		"lex-v1",
+		"lex-v2"
 	],
 	"dependencies": {
-		"@aws-sdk/client-lex-runtime-service": "3.186.3",
-		"@aws-sdk/client-lex-runtime-v2": "3.186.3",
+		"@aws-sdk/client-lex-runtime-service": "3.398.0",
+		"@aws-sdk/client-lex-runtime-v2": "3.398.0",
 		"base-64": "1.0.0",
 		"fflate": "0.7.3",
 		"pako": "2.0.4",
+		"uuid": "^9.0.0",
 		"tslib": "^2.5.0"
 	},
-	"peerDependencies": {
-		"@aws-amplify/core": "^6.0.0"
-	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.0"
+		"@aws-amplify/core": "6.0.0",
+		"typescript": "^5.0.2"
 	},
 	"size-limit": [
 		{
-			"name": "Interactions (top-level class with Lex v2)",
+			"name": "Interactions (default to Lex v2)",
 			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Interactions, AWSLexV2Provider }",
-			"limit": "76.02 kB"
+			"import": "{ Amplify, Interactions }",
+			"limit": "52.00 kB"
+		},
+		{
+			"name": "Interactions (Lex v2)",
+			"path": "./lib-esm/lex-v2/index.js",
+			"import": "{ Amplify, Interactions }",
+			"limit": "52.00 kB"
+		},
+		{
+			"name": "Interactions (Lex v1)",
+			"path": "./lib-esm/lex-v1/index.js",
+			"import": "{ Amplify, Interactions }",
+			"limit": "47.00 kB"
 		}
 	],
 	"jest": {
@@ -73,20 +112,17 @@
 			"ts-jest": {
 				"diagnostics": false,
 				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2017.object"
-					],
-					"allowJs": true
+					"allowJs": true,
+					"noEmitOnError": false
 				}
 			}
 		},
 		"transform": {
 			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
 		},
+		"testPathIgnorePatterns": [
+			"/testUtils/"
+		],
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 		"moduleFileExtensions": [
 			"ts",
@@ -106,7 +142,7 @@
 			}
 		},
 		"coveragePathIgnorePatterns": [
-			"/node_modules/",
+			"node_modules",
 			"dist",
 			"lib",
 			"lib-esm"
