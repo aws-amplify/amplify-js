@@ -69,8 +69,8 @@ describe('signIn API happy path cases', () => {
 
 	test('signIn should retry on ResourceNotFoundException and delete device keys', async () => {
 		setDeviceKeys();
-		handleUserSRPAuthflowSpy = jest
-			.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
+		const handleUserPasswordAuthFlow = jest
+			.spyOn(initiateAuthHelpers, 'handleUserPasswordAuthFlow')
 			.mockImplementation(
 				async (): Promise<RespondToAuthChallengeCommandOutput> => {
 					const deviceKeys = await tokenOrchestrator.getDeviceMetadata(
@@ -95,6 +95,9 @@ describe('signIn API happy path cases', () => {
 		const result = await signIn({
 			username: lastAuthUser,
 			password: 'XXXXXXXX',
+			options: {
+				authFlowType: 'USER_PASSWORD_AUTH',
+			},
 		});
 
 		expect(result).toEqual({
@@ -104,8 +107,9 @@ describe('signIn API happy path cases', () => {
 				additionalInfo: undefined,
 			},
 		});
-		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(2);
+		expect(handleUserPasswordAuthFlow).toHaveBeenCalledTimes(2);
 		expect(await tokenOrchestrator.getDeviceMetadata(lastAuthUser)).toBeNull();
+		handleUserPasswordAuthFlow.mockClear();
 	});
 
 	test('signIn API invoked with authFlowType should return a SignInResult', async () => {

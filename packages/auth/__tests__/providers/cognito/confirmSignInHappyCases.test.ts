@@ -232,7 +232,7 @@ describe('confirmSignIn API happy path cases', () => {
 		const mockedUserSub = '1111-2222-3333-4444';
 		const activeSignInSession = '1234234232';
 		const activeChallengeName = 'SMS_MFA';
-		const handleUserSRPAuthFlowSpy = jest
+		const initiateAuthSpy = jest
 			.spyOn(clients, 'initiateAuth')
 			.mockImplementationOnce(
 				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
@@ -268,7 +268,7 @@ describe('confirmSignIn API happy path cases', () => {
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			options
 		);
-		handleUserSRPAuthFlowSpy.mockClear();
+		initiateAuthSpy.mockClear();
 	});
 });
 
