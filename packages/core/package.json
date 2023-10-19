@@ -76,55 +76,43 @@
 			"name": "Core (Hub)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Hub }",
-			"limit": "2.35 kB"
+			"limit": "1.43 kB"
 		},
 		{
 			"name": "Core (I18n)",
 			"path": "./lib-esm/index.js",
 			"import": "{ I18n }",
-			"limit": "5.60 kB"
+			"limit": "1.46 kB"
 		},
 		{
 			"name": "Custom clients (fetch handler)",
 			"path": "./lib-esm/clients/handlers/fetch.js",
 			"import": "{ fetchTransferHandler }",
-			"limit": "1.86 kB"
+			"limit": "500 B"
 		},
 		{
 			"name": "Custom clients (unauthenticated handler)",
 			"path": "./lib-esm/clients/handlers/unauthenticated.js",
 			"import": "{ unauthenticatedHandler }",
-			"limit": "2.74 kB"
-		},
-		{
-			"name": "Custom clients (retry middleware)",
-			"path": "./lib-esm/clients/middleware/retry/middleware.js",
-			"import": "{ retryMiddleware }",
-			"limit": "1.45 kB"
-		},
-		{
-			"name": "Custom clients (signing middleware)",
-			"path": "./lib-esm/clients/middleware/signing/middleware.js",
-			"import": "{ signingMiddleware }",
-			"limit": "6.81 kB"
+			"limit": "1 kB"
 		},
 		{
 			"name": "Custom clients (request signer)",
 			"path": "./lib-esm/clients/middleware/signing/signer/signatureV4/index.js",
 			"import": "{ signRequest }",
-			"limit": "6.27 kB"
+			"limit": "3.53 kB"
 		},
 		{
 			"name": "Custom clients (url presigner)",
 			"path": "./lib-esm/clients/middleware/signing/signer/signatureV4/index.js",
 			"import": "{ presignUrl }",
-			"limit": "6.4 kB"
+			"limit": "3.58 kB"
 		},
 		{
 			"name": "Cache (default browser storage)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Cache }",
-			"limit": "4.13 kB"
+			"limit": "3.3 kB"
 		}
 	],
 	"jest": {

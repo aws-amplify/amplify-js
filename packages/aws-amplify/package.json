@@ -300,7 +300,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./lib-esm/api/index.js",
 			"import": "{ generateClient }",
-			"limit": "44.73 kB"
+			"limit": "38.56 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
