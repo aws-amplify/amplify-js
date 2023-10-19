@@ -21,6 +21,7 @@ import {
 	RecognizeCelebritiesCommand,
 } from '@aws-sdk/client-rekognition';
 import {
+	BoundingBox,
 	IdentifyLabelsInput,
 	IdentifyLabelsOutput,
 	IdentifySource,
@@ -61,7 +62,6 @@ import {
 } from './IdentifyTextUtils';
 import { assertValidationError } from '../errors/utils/assertValidationError';
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
-import { BoundingBox } from 'puppeteer';
 
 const logger = new Logger('AmazonAIIdentifyPredictionsProvider');
 
