@@ -12,10 +12,13 @@ import {
 	TranslateTextOutput,
 	TextToSpeechOutput,
 	SpeechToTextOutput,
-	isBytesSource,
+	isConvertBytesSource,
 	isTranslateTextInput,
 	isTextToSpeechInput,
 	isSpeechToTextInput,
+	ConvertBytes,
+	TranscribeData,
+	isValidConvertInput,
 } from '../types';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
@@ -24,6 +27,7 @@ import {
 	getAmplifyUserAgentObject,
 	Category,
 	PredictionsAction,
+	AWSCredentials,
 } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -32,8 +36,8 @@ import {
 } from '@smithy/eventstream-codec';
 import { fromUtf8, toUtf8 } from '@smithy/util-utf8';
 import { Buffer } from 'buffer';
-import { assertValidationError } from '../errors/utils/assertValidationError';
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
+import { assertValidationError } from '../errors/utils/assertValidationError';
 
 const logger = new Logger('AmazonAIConvertPredictionsProvider');
 const eventBuilder = new EventStreamCodec(toUtf8, fromUtf8);
@@ -41,8 +45,8 @@ const eventBuilder = new EventStreamCodec(toUtf8, fromUtf8);
 const LANGUAGES_CODE_IN_8KHZ = ['fr-FR', 'en-AU', 'en-GB', 'fr-CA'];
 
 export class AmazonAIConvertPredictionsProvider {
-	private translateClient: TranslateClient;
-	private pollyClient: PollyClient;
+	private translateClient?: TranslateClient;
+	private pollyClient?: PollyClient;
 
 	getProviderName() {
 		return 'AmazonAIConvertPredictionsProvider';
@@ -51,16 +55,20 @@ export class AmazonAIConvertPredictionsProvider {
 	convert(
 		input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput
 	): Promise<TextToSpeechOutput | TranslateTextOutput | SpeechToTextOutput> {
+		assertValidationError(
+			isValidConvertInput(input),
+			PredictionsValidationErrorCode.InvalidInput
+		);
+
 		if (isTranslateTextInput(input)) {
 			logger.debug('translateText');
 			return this.translateText(input);
 		} else if (isTextToSpeechInput(input)) {
 			logger.debug('textToSpeech');
 			return this.convertTextToSpeech(input);
-		} else if (isSpeechToTextInput(input)) {
+		} else {
 			logger.debug('textToSpeech');
 			return this.convertSpeechToText(input);
-		} else {
 		}
 	}
 
@@ -198,7 +206,7 @@ export class AmazonAIConvertPredictionsProvider {
 
 		const source = input.transcription?.source;
 		assertValidationError(
-			isBytesSource(source),
+			isConvertBytesSource(source),
 			PredictionsValidationErrorCode.InvalidSource
 		);
 
@@ -220,7 +228,7 @@ export class AmazonAIConvertPredictionsProvider {
 		};
 	}
 
-	public static serializeDataFromTranscribe(message) {
+	public static serializeDataFromTranscribe(message: MessageEvent) {
 		let decodedMessage = '';
 		const transcribeMessage = eventBuilder.decode(Buffer.from(message.data));
 		const transcribeMessageJson = JSON.parse(toUtf8(transcribeMessage.body));
@@ -263,7 +271,7 @@ export class AmazonAIConvertPredictionsProvider {
 		connection,
 		raw,
 		languageCode,
-	}): Promise<string> {
+	}: TranscribeData): Promise<string> {
 		return new Promise((res, rej) => {
 			let fullText = '';
 			connection.onmessage = message => {
@@ -275,9 +283,9 @@ export class AmazonAIConvertPredictionsProvider {
 					if (decodedMessage) {
 						fullText += decodedMessage + ' ';
 					}
-				} catch (err) {
+				} catch (err: unknown) {
 					logger.debug(err);
-					rej(err.message);
+					rej(err);
 				}
 			};
 
@@ -310,13 +318,18 @@ export class AmazonAIConvertPredictionsProvider {
 		});
 	}
 
-	private sendEncodedDataToTranscribe(connection, data, languageCode) {
+	private sendEncodedDataToTranscribe(
+		connection: WebSocket,
+		data: ConvertBytes | any[],
+		languageCode: string
+	) {
 		const downsampledBuffer = this.downsampleBuffer({
 			buffer: data,
 			outputSampleRate: LANGUAGES_CODE_IN_8KHZ.includes(languageCode)
 				? 8000
 				: 16000,
 		});
+
 		const pcmEncodedBuffer = this.pcmEncode(downsampledBuffer);
 		const audioEventMessage = this.getAudioEventMessage(
 			Buffer.from(pcmEncodedBuffer)
@@ -325,7 +338,7 @@ export class AmazonAIConvertPredictionsProvider {
 		connection.send(binary);
 	}
 
-	private getAudioEventMessage(buffer) {
+	private getAudioEventMessage(buffer: Buffer) {
 		const audioEventMessage = {
 			body: buffer as Uint8Array,
 			headers: {
@@ -343,8 +356,13 @@ export class AmazonAIConvertPredictionsProvider {
 		return audioEventMessage;
 	}
 
-	private pcmEncode(input) {
+	private pcmEncode(input: Float32Array | ConvertBytes | any[]) {
 		let offset = 0;
+		// ArrayBuffer cannot be processed using length property
+		if (input instanceof ArrayBuffer) {
+			return input;
+		}
+
 		const buffer = new ArrayBuffer(input.length * 2);
 		const view = new DataView(buffer);
 		for (let i = 0; i < input.length; i++, offset += 2) {
@@ -356,8 +374,18 @@ export class AmazonAIConvertPredictionsProvider {
 
 	private inputSampleRate = 44100;
 
-	private downsampleBuffer({ buffer, outputSampleRate = 16000 }) {
-		if (outputSampleRate === this.inputSampleRate) {
+	private downsampleBuffer({
+		buffer,
+		outputSampleRate = 16000,
+	}: {
+		buffer: ConvertBytes | any[];
+		outputSampleRate: number;
+	}) {
+		// Cannot process ArrayBuffer using length property
+		if (
+			outputSampleRate === this.inputSampleRate ||
+			buffer instanceof ArrayBuffer
+		) {
 			return buffer;
 		}
 
@@ -387,23 +415,15 @@ export class AmazonAIConvertPredictionsProvider {
 	}
 
 	private openConnectionWithTranscribe({
-		credentials: userCredentials,
+		credentials,
 		region,
 		languageCode,
+	}: {
+		credentials: AWSCredentials;
+		region: string;
+		languageCode: string;
 	}): Promise<WebSocket> {
 		return new Promise(async (res, rej) => {
-			const {
-				accessKeyId: access_key,
-				secretAccessKey: secret_key,
-				sessionToken: session_token,
-			} = userCredentials;
-
-			const credentials = {
-				access_key,
-				secret_key,
-				session_token,
-			};
-
 			const signedUrl = this.generateTranscribeUrl({
 				credentials,
 				region,
@@ -421,7 +441,25 @@ export class AmazonAIConvertPredictionsProvider {
 		});
 	}
 
-	private generateTranscribeUrl({ credentials, region, languageCode }): string {
+	private generateTranscribeUrl({
+		credentials: {
+			accessKeyId,
+			secretAccessKey,
+			sessionToken
+		},
+		region,
+		languageCode,
+	}: {
+		credentials: AWSCredentials;
+		region: string;
+		languageCode: string;
+	}): string {
+		const credentials = {
+			access_key: accessKeyId,
+			secret_key: secretAccessKey,
+			session_token: sessionToken,
+		};
+
 		const url = [
 			`wss://transcribestreaming.${region}.amazonaws.com:8443`,
 			'/stream-transcription-websocket?',

@@ -204,7 +204,6 @@ const happyConfig = {
 
 // Mocks before importing provider to avoid race condition with provider instantiation
 import { AmazonAIInterpretPredictionsProvider } from '../../src/providers';
-import { InterpretTextCategories } from '../../src/types';
 
 const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -241,7 +240,7 @@ describe('Predictions interpret provider test', () => {
 							text: textToTest,
 							language: 'en-US',
 						},
-						type: InterpretTextCategories.ENTITIES,
+						type: 'entities',
 					},
 				})
 			).resolves.toMatchObject({
@@ -273,7 +272,7 @@ describe('Predictions interpret provider test', () => {
 						source: {
 							text: textToTest,
 						},
-						type: InterpretTextCategories.LANGUAGE,
+						type: 'language',
 					},
 				})
 			).resolves.toMatchObject({
@@ -302,7 +301,7 @@ describe('Predictions interpret provider test', () => {
 							text: textToTest,
 							language: 'en-US',
 						},
-						type: InterpretTextCategories.SENTIMENT,
+						type: 'sentiment',
 					},
 				})
 			).resolves.toMatchObject({
@@ -338,7 +337,7 @@ describe('Predictions interpret provider test', () => {
 							text: textToTest,
 							language: 'en-US',
 						},
-						type: InterpretTextCategories.SYNTAX,
+						type: 'syntax',
 					},
 				})
 			).resolves.toMatchObject({
@@ -384,7 +383,7 @@ describe('Predictions interpret provider test', () => {
 							text: textToTest,
 							language: 'en-US',
 						},
-						type: InterpretTextCategories.KEY_PHRASES,
+						type: 'keyPhrases',
 					},
 				})
 			).resolves.toMatchObject({
@@ -405,7 +404,7 @@ describe('Predictions interpret provider test', () => {
 			expect(keyPhrasesSpy.mock.calls[0][0].input).toEqual(sdkParams);
 		});
 
-		test("happy case credentials type: 'ALL'", async () => {
+		test("happy case credentials type: 'all'", async () => {
 			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
 			await expect(
 				predictionsProvider.interpret({
@@ -413,7 +412,7 @@ describe('Predictions interpret provider test', () => {
 						source: {
 							text: textToTest,
 						},
-						type: InterpretTextCategories.ALL,
+						type: 'all',
 					},
 				})
 			).resolves.toMatchObject({
@@ -487,11 +486,14 @@ describe('Predictions interpret provider test', () => {
 					source: {
 						text: textToTest,
 					},
-					type: InterpretTextCategories.ALL,
+					type: 'all',
 				},
 			});
+
+			// comprehendClient is a private property
+			// Used this strategy to easily check that the customUserAgent is set correctly on the client
 			expect(
-				predictionsProvider['comprehendClient'].config.customUserAgent
+				(predictionsProvider as any).comprehendClient.config.customUserAgent
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,

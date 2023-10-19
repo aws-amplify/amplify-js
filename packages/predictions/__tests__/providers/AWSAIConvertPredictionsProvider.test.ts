@@ -63,11 +63,10 @@ const resetPollyMock = () => {
 });
 
 (global as any).WebSocket = jest.fn(url => {
-	let onCloseCallback = null;
-	let onErrorCallback = null;
-	let onMsgCallback = null;
-	let connection = null;
-	connection = {
+	let onCloseCallback;
+	let onErrorCallback;
+	let onMsgCallback;
+	let connection = {
 		set onmessage(callback) {
 			onMsgCallback = callback;
 		},
@@ -81,7 +80,9 @@ const resetPollyMock = () => {
 			callback();
 		},
 		send: jest.fn(() => {
-			onMsgCallback('');
+			if (onMsgCallback) {
+				onMsgCallback('');
+			}
 			onCloseCallback();
 		}),
 	};
@@ -428,7 +429,11 @@ describe('Predictions convert provider test', () => {
 
 			await predictionsProvider.convert(validTextToSpeechInput);
 
-			expect(predictionsProvider['pollyClient'].config.customUserAgent).toEqual(
+			// pollyClient is a private property
+			// Used this strategy to easily check that the customUserAgent is set correctly on the client
+			expect(
+				(predictionsProvider as any).pollyClient.config.customUserAgent
+			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Convert,
@@ -448,15 +453,16 @@ describe('Predictions convert provider test', () => {
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 
 			await predictionsProvider.convert(validTranslateTextInput);
+			// translateClient is a private property
+			// Used this strategy to easily check that the customUserAgent is set correctly on the client
 			expect(
-				predictionsProvider['translateClient'].config.customUserAgent
+				(predictionsProvider as any).translateClient.config.customUserAgent
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Convert,
 				})
 			);
-			expect(predictionsProvider['textractClient']).toBeUndefined();
 		});
 	});
 });
