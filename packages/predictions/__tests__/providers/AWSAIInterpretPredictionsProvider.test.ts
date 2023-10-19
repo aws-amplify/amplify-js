@@ -6,11 +6,11 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import {
 	ComprehendClient,
-	DetectSyntaxCommand,
-	DetectEntitiesCommand,
 	DetectDominantLanguageCommand,
+	DetectEntitiesCommand,
 	DetectKeyPhrasesCommand,
 	DetectSentimentCommand,
+	DetectSyntaxCommand,
 } from '@aws-sdk/client-comprehend';
 
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;

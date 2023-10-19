@@ -9,59 +9,59 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { getUrl } from '@aws-amplify/storage';
 import {
-	RekognitionClient,
-	SearchFacesByImageCommand,
-	DetectTextCommand,
-	DetectTextCommandInput,
+	DetectFacesCommand,
 	DetectLabelsCommand,
 	DetectLabelsCommandInput,
-	DetectFacesCommand,
 	DetectModerationLabelsCommand,
 	DetectModerationLabelsCommandInput,
+	DetectTextCommand,
+	DetectTextCommandInput,
 	RecognizeCelebritiesCommand,
+	RekognitionClient,
+	SearchFacesByImageCommand,
 } from '@aws-sdk/client-rekognition';
 import {
+	AnalyzeDocumentCommand,
+	AnalyzeDocumentCommandInput,
+	DetectDocumentTextCommand,
+	DetectDocumentTextCommandInput,
+	TextractClient,
+} from '@aws-sdk/client-textract';
+import { BoundingBox } from 'puppeteer';
+import { PredictionsValidationErrorCode } from '../errors/types/validation';
+import { assertValidationError } from '../errors/utils/assertValidationError';
+import {
+	FaceAttributes,
+	FeatureTypes,
+	IdentifyEntitiesInput,
+	IdentifyEntitiesOutput,
+	IdentifyEntity,
+	IdentifyFromCollection,
 	IdentifyLabelsInput,
 	IdentifyLabelsOutput,
 	IdentifySource,
-	IdentifyEntitiesInput,
-	IdentifyEntitiesOutput,
-	isStorageSource,
-	isFileSource,
-	isIdentifyBytesSource,
 	IdentifyTextInput,
 	IdentifyTextOutput,
+	isFileSource,
+	isIdentifyBytesSource,
 	isIdentifyCelebrities,
 	isIdentifyFromCollection,
-	IdentifyFromCollection,
-	FeatureTypes,
-	isIdentifyTextInput,
 	isIdentifyLabelsInput,
-	IdentifyEntity,
-	FaceAttributes,
+	isIdentifyTextInput,
+	isStorageSource,
 	isValidIdentifyInput,
 } from '../types';
 import {
-	Image,
-	Document,
-	TextDetectionList,
 	BlockList,
+	Document,
+	Image,
+	TextDetectionList,
 } from '../types/AWSTypes';
-import {
-	TextractClient,
-	DetectDocumentTextCommand,
-	DetectDocumentTextCommandInput,
-	AnalyzeDocumentCommand,
-	AnalyzeDocumentCommandInput,
-} from '@aws-sdk/client-textract';
-import { makeCamelCase, makeCamelCaseArray, blobToArrayBuffer } from './Utils';
 import {
 	categorizeRekognitionBlocks,
 	categorizeTextractBlocks,
 } from './IdentifyTextUtils';
-import { assertValidationError } from '../errors/utils/assertValidationError';
-import { PredictionsValidationErrorCode } from '../errors/types/validation';
-import { BoundingBox } from 'puppeteer';
+import { blobToArrayBuffer, makeCamelCase, makeCamelCaseArray } from './Utils';
 
 const logger = new Logger('AmazonAIIdentifyPredictionsProvider');
 

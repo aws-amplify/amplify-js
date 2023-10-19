@@ -4,22 +4,22 @@ import {
 	PredictionsAction,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
-import {
-	TranslateTextInput,
-	TextToSpeechInput,
-	SpeechToTextInput,
-	SpeechToTextOutput,
-} from '../../src/types';
-import { AmazonAIConvertPredictionsProvider } from '../../src/providers';
+import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
 import {
 	TranslateClient,
 	TranslateTextCommand,
 } from '@aws-sdk/client-translate';
-import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
 import {
 	PredictionsValidationErrorCode,
 	validationErrorMap,
 } from '../../src/errors/types/validation';
+import { AmazonAIConvertPredictionsProvider } from '../../src/providers';
+import {
+	SpeechToTextInput,
+	SpeechToTextOutput,
+	TextToSpeechInput,
+	TranslateTextInput,
+} from '../../src/types';
 
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;

@@ -1,17 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	IdentifyTextOutput,
-	Table,
-	KeyValue,
-	TableCell,
-	Content,
 	BoundingBox,
-	Polygon,
+	Content,
 	Geometry,
+	IdentifyTextOutput,
+	KeyValue,
+	Polygon,
+	Table,
+	TableCell,
 } from '../types';
 import { Block, BlockList, TextDetectionList } from '../types/AWSTypes';
-import { makeCamelCaseArray, makeCamelCase } from './Utils';
+import { makeCamelCase, makeCamelCaseArray } from './Utils';
 
 function getBoundingBox(geometry?: Geometry): BoundingBox | undefined {
 	return makeCamelCase(geometry?.BoundingBox);

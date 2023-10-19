@@ -1,3 +1,9 @@
+import { PredictionsClass } from '../src/Predictions';
+import {
+	AmazonAIConvertPredictionsProvider,
+	AmazonAIIdentifyPredictionsProvider,
+	AmazonAIInterpretPredictionsProvider,
+} from '../src/providers';
 import {
 	IdentifyTextInput,
 	IdentifyTextOutput,
@@ -6,12 +12,6 @@ import {
 	TranslateTextInput,
 	TranslateTextOutput,
 } from '../src/types';
-import { PredictionsClass } from '../src/Predictions';
-import {
-	AmazonAIConvertPredictionsProvider,
-	AmazonAIIdentifyPredictionsProvider,
-	AmazonAIInterpretPredictionsProvider,
-} from '../src/providers';
 
 describe('Predictions test', () => {
 	describe('getModuleName tests', () => {

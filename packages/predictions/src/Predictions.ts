@@ -1,27 +1,27 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 import {
 	AmazonAIConvertPredictionsProvider,
 	AmazonAIIdentifyPredictionsProvider,
 	AmazonAIInterpretPredictionsProvider,
 } from './providers';
 import {
-	TranslateTextInput,
-	TranslateTextOutput,
-	TextToSpeechInput,
-	TextToSpeechOutput,
-	SpeechToTextInput,
-	SpeechToTextOutput,
-	IdentifyTextInput,
-	IdentifyTextOutput,
-	IdentifyLabelsOutput,
-	IdentifyLabelsInput,
 	IdentifyEntitiesInput,
 	IdentifyEntitiesOutput,
-	InterpretTextOutput,
+	IdentifyLabelsInput,
+	IdentifyLabelsOutput,
+	IdentifyTextInput,
+	IdentifyTextOutput,
 	InterpretTextInput,
+	InterpretTextOutput,
+	SpeechToTextInput,
+	SpeechToTextOutput,
+	TextToSpeechInput,
+	TextToSpeechOutput,
+	TranslateTextInput,
+	TranslateTextOutput,
 } from './types';
-import { ConsoleLogger as Logger } from '@aws-amplify/core/internals/utils';
 
 const logger = new Logger('Predictions');
 
