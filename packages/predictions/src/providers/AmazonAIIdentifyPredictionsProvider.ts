@@ -27,10 +27,10 @@ import {
 	DetectDocumentTextCommandInput,
 	TextractClient,
 } from '@aws-sdk/client-textract';
-import { BoundingBox } from 'puppeteer';
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
 import { assertValidationError } from '../errors/utils/assertValidationError';
 import {
+	BoundingBox,
 	FaceAttributes,
 	FeatureTypes,
 	IdentifyEntitiesInput,
