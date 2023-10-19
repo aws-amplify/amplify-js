@@ -72,6 +72,14 @@ const modelIntrospection = {
 	nonModels: {},
 };
 
+const MOCK_AUTH_CONFIG = {
+	Auth: {
+		Cognito: {
+			identityPoolId: 'us-east-1:bbbbb',
+		},
+	},
+};
+
 describe('Amplify.configure() and Amplify.getConfig()', () => {
 	it('should take the legacy CLI shaped config object for configuring and return it from getConfig()', () => {
 		const mockLegacyConfig = {
@@ -185,15 +193,7 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 		};
 
 		Amplify.configure(config1);
-
-		const config2: ArgumentTypes<typeof Amplify.configure>[0] = {
-			Auth: {
-				Cognito: {
-					identityPoolId: 'us-east-1:bbbbb',
-				},
-			},
-		};
-		Amplify.configure(config2);
+		Amplify.configure(MOCK_AUTH_CONFIG);
 
 		const result = Amplify.getConfig();
 
@@ -213,6 +213,55 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 				},
 			},
 		});
+	});
+
+	it('should return memoized, immutable resource configuration objects', () => {
+		Amplify.configure(MOCK_AUTH_CONFIG);
+
+		const config = Amplify.getConfig();
+		const config2 = Amplify.getConfig();
+
+		const mutateConfig = () => {
+			(config as any).Auth = MOCK_AUTH_CONFIG.Auth;
+		};
+
+		// Config should be cached
+		expect(config).toEqual({
+			...MOCK_AUTH_CONFIG,
+			API: {
+				GraphQL: {
+					apiKey: 'some-key',
+					defaultAuthMode: 'userPool',
+					endpoint: 'https://some.domain.com/graphql',
+					region: 'us-west-1',
+					modelIntrospection,
+				},
+			},
+		});
+		expect(config2).toBe(config);
+
+		// Config should be immutable
+		expect(mutateConfig).toThrow(TypeError);
+
+		// Config should be re-generated if it changes
+		Amplify.configure(MOCK_AUTH_CONFIG);
+
+		const config3 = Amplify.getConfig();
+
+		expect(config3).toEqual({
+			...MOCK_AUTH_CONFIG,
+			API: {
+				GraphQL: {
+					apiKey: 'some-key',
+					defaultAuthMode: 'userPool',
+					endpoint: 'https://some.domain.com/graphql',
+					region: 'us-west-1',
+					modelIntrospection,
+				},
+			},
+		});
+		expect(config3).not.toBe(config);
+		expect(config3).not.toBe(config2);
 	});
 });
 

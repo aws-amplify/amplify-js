@@ -11,6 +11,7 @@ import {
 	CognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
+import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 
 const authConfig = {
 	Cognito: {
@@ -44,9 +45,7 @@ describe('signIn API happy path cases', () => {
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 			options: {
-				serviceOptions: {
-					authFlowType: 'USER_PASSWORD_AUTH',
-				},
+				authFlowType: 'USER_PASSWORD_AUTH',
 			},
 		});
 		expect(result).toEqual(authAPITestParams.signInResult());
@@ -59,9 +58,7 @@ describe('signIn API happy path cases', () => {
 		await signInWithUserPassword({
 			username,
 			password,
-			options: {
-				serviceOptions: authAPITestParams.configWithClientMetadata,
-			},
+			options: authAPITestParams.configWithClientMetadata,
 		});
 		expect(handleUserPasswordFlowSpy).toBeCalledWith(
 			username,
@@ -69,6 +66,61 @@ describe('signIn API happy path cases', () => {
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			authConfig.Cognito,
 			tokenOrchestrator
+		);
+	});
+});
+
+describe('Cognito ASF', () => {
+	let initiateAuthSpy;
+
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
+	beforeEach(() => {
+		initiateAuthSpy = jest
+			.spyOn(clients, 'initiateAuth')
+			.mockImplementationOnce(async () => ({
+				ChallengeName: 'SRP_AUTH',
+				Session: '1234234232',
+				$metadata: {},
+				ChallengeParameters: {
+					USER_ID_FOR_SRP: authAPITestParams.user1.username,
+				},
+			}));
+		// load Cognito ASF polyfill
+		window['AmazonCognitoAdvancedSecurityData'] = {
+			getData() {
+				return 'abcd';
+			},
+		};
+	});
+
+	afterEach(() => {
+		initiateAuthSpy.mockClear();
+		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+	});
+
+	test('signIn API should send UserContextData', async () => {
+		try {
+			await signIn({
+				username: authAPITestParams.user1.username,
+				password: authAPITestParams.user1.password,
+				options: {
+					authFlowType: 'USER_PASSWORD_AUTH',
+				},
+			});
+		} catch (_) {
+			// only want to test the contents
+		}
+		expect(initiateAuthSpy).toBeCalledWith(
+			expect.objectContaining({
+				region: 'us-west-2',
+			}),
+			expect.objectContaining({
+				UserContextData: {
+					EncodedData: 'abcd',
+				},
+			})
 		);
 	});
 });

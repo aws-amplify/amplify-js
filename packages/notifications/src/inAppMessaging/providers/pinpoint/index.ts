@@ -6,4 +6,25 @@ export {
 	syncMessages,
 	dispatchEvent,
 	setConflictHandler,
+	initializeInAppMessaging,
+	onMessageReceived,
+	onMessageDisplayed,
+	onMessageDismissed,
+	onMessageActionTaken,
+	notifyMessageInteraction,
 } from './apis';
+
+export {
+	IdentifyUserInput,
+	DispatchEventInput,
+	SetConflictHandlerInput,
+	OnMessageActionTakenInput,
+	OnMessageDismissedInput,
+	OnMessageDisplayedInput,
+	OnMessageReceivedInput,
+	NotifyMessageInteractionInput,
+	OnMessageReceivedOutput,
+	OnMessageActionTakenOutput,
+	OnMessageDismissedOutput,
+	OnMessageDisplayedOutput,
+} from './types';

@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { identifyUser } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
+import {
+	identifyUser,
+	initializeInAppMessaging,
+} from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 import {
 	resolveCredentials,
 	resolveConfig,
@@ -34,6 +37,7 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 
 	beforeAll(() => {
+		initializeInAppMessaging();
 		mockgetInAppMessagingUserAgentString.mockReturnValue(userAgentValue);
 		mockResolveConfig.mockReturnValue(config);
 		mockResolveCredentials.mockResolvedValue(credentials);
@@ -66,23 +70,21 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 		});
 	});
 
-	it('passes through service options along with input and other params to core Pinpoint updateEndpoint API', async () => {
+	it('passes through options along with input and other params to core Pinpoint updateEndpoint API', async () => {
 		const userAttributes = { hobbies: ['biking', 'climbing'] };
 		const input: IdentifyUserInput = {
 			userId: 'user-id',
 			userProfile: {},
 		};
 		const options: IdentifyUserInput['options'] = {
-			serviceOptions: {
-				address: 'test-address',
-				optOut: 'NONE',
-				userAttributes,
-			},
+			address: 'test-address',
+			optOut: 'NONE',
+			userAttributes,
 		};
 		await identifyUser({ ...input, options });
 		expect(mockUpdateEndpoint).toBeCalledWith({
 			...input,
-			...options.serviceOptions,
+			...options,
 			...credentials,
 			...config,
 			channelType: CHANNEL_TYPE,
