@@ -459,10 +459,10 @@ class SubscriptionProcessor {
 												},
 												error: async subscriptionError => {
 													const {
-														error: { errors: [{ message = '' } = {}] } = {
-															errors: [],
-														},
-													} = subscriptionError;
+														errors: [{ message = '' } = {}],
+													} = ({
+														errors: [],
+													} = subscriptionError);
 
 													const isRTFError =
 														// only attempt catch if a filter variable was added to the subscription query
