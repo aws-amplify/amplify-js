@@ -5,6 +5,7 @@
 		"packages/core",
 		"packages/auth",
 		"packages/analytics",
+		"packages/predictions",
 		"packages/storage",
 		"packages/aws-amplify",
 		"packages/adapter-nextjs",
