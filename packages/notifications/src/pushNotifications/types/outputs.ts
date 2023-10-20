@@ -7,7 +7,7 @@ import {
 	PushNotificationPermissionStatus,
 } from '../types';
 
-export type PushNotificationGetBadgeCountOutput = number;
+export type PushNotificationGetBadgeCountOutput = number | null;
 
 export type PushNotificationGetLaunchNotificationOutput =
 	PushNotificationMessage | null;

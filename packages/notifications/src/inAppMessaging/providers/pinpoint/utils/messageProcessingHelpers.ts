@@ -30,7 +30,7 @@ export async function processInAppMessages(
 	messages: PinpointInAppMessage[],
 	event: InAppMessagingEvent
 ): Promise<InAppMessage[]> {
-	let highestPrioritySeen: number;
+	let highestPrioritySeen: number | undefined;
 	let acc: PinpointInAppMessage[] = [];
 	for (let index = 0; index < messages.length; index++) {
 		const message = messages[index];
@@ -88,9 +88,13 @@ function normalizeMessages(messages: PinpointInAppMessage[]): InAppMessage[] {
 	return messages.map(message => {
 		const { CampaignId, InAppMessage } = message;
 		return {
-			id: CampaignId,
+			// Default to empty string in rare cases we don't have a campaignId
+			id: CampaignId ?? '',
 			content: extractContent(message),
-			layout: interpretLayout(InAppMessage.Layout),
+			// Default to TOP_BANNER layout in rare cases we don't have a Layout
+			layout: InAppMessage?.Layout
+				? interpretLayout(InAppMessage.Layout)
+				: 'TOP_BANNER',
 			metadata: extractMetadata(message),
 		};
 	});
@@ -114,16 +118,28 @@ async function isBelowCap({
 }
 
 async function getMessageCounts(
-	messageId: string
+	messageId?: string
 ): Promise<InAppMessageCounts> {
+	let messageCounts = {
+		sessionCount: 0,
+		dailyCount: 0,
+		totalCount: 0,
+	};
 	try {
-		return {
-			sessionCount: getSessionCount(messageId),
-			dailyCount: await getDailyCount(),
-			totalCount: await getTotalCount(messageId),
-		};
+		// only return true counts if there is a messageId else default to 0
+		if (messageId)
+			messageCounts = {
+				sessionCount: getSessionCount(messageId),
+				dailyCount: await getDailyCount(),
+				totalCount: await getTotalCount(messageId),
+			};
+		return messageCounts;
 	} catch (err) {
 		logger.error('Failed to get message counts from storage', err);
+
+		// If there are no cached counts or there is an error,
+		// we default to 0 allowing all the messages to be eligible
+		return messageCounts;
 	}
 }
 
