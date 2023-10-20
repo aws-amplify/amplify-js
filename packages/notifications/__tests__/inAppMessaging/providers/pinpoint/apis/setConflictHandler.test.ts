@@ -35,7 +35,7 @@ describe('setConflictHandler', () => {
 	});
 	it('can register a custom conflict handler', async () => {
 		const customConflictHandler = (messages: InAppMessage[]) =>
-			messages.find(message => message.id === 'custom-handled') ?? messages[2];
+			messages.find(message => message.id === 'custom-handled')!;
 		mockProcessInAppMessages.mockReturnValueOnce(inAppMessages);
 
 		setConflictHandler(customConflictHandler);

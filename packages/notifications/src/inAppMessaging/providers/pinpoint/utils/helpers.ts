@@ -53,7 +53,7 @@ export const recordAnalyticsEvent = (
 				identityId,
 				region,
 				userAgentValue: getInAppMessagingUserAgentString(
-					InAppMessagingAction.DispatchEvent
+					InAppMessagingAction.NotifyMessageInteraction
 				),
 			});
 		})

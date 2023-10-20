@@ -76,8 +76,8 @@ describe('processInAppMessages', () => {
 	test('filters in-app messages based on session counts', async () => {
 		// simulate incrementing the counts as this happens when a message is displayed
 		// increment it twice to exceed it's session cap
-		await incrementMessageCounts('uuid-3');
-		await incrementMessageCounts('uuid-3');
+		await incrementMessageCounts(messages[2].CampaignId!);
+		await incrementMessageCounts(messages[2].CampaignId!);
 
 		const [result] = await processInAppMessages(
 			messages,
