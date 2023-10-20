@@ -30,6 +30,16 @@
 		"lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 84.00"
 	},
+	"typesVersions": {
+		">=4.0": {
+			"*": [
+				"./lib-esm/index.d.ts"
+			],
+			"pinpoint": [
+				"./lib-esm/providers/pinpoint/AmazonLocationServiceProvider.d.ts"
+			]
+		}
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aws-amplify/amplify-js.git"

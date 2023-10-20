@@ -27,6 +27,25 @@
 		"lint": "tslint '{src}/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 91.18"
 	},
+	"typesVersions": {
+		">=4.0": {
+			"*": [
+				"./lib-esm/index.d.ts"
+			],
+			"cognito": [
+				"./lib-esm/providers/cognito/index.d.ts"
+			],
+			"cognito/server": [
+				"./lib-esm/providers/cognito/apis/server/index.d.ts"
+			],
+			"server": [
+				"./lib-esm/server.d.ts"
+			],
+			"internals": [
+				"./lib-esm/lib-esm/internals/index.d.ts"
+			]
+		}
+	},
 	"exports": {
 		".": {
 			"types": "./lib-esm/index.d.ts",

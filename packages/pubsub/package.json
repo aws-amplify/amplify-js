@@ -27,6 +27,19 @@
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 93.0 -i src/vendor/paho-mqtt.js"
 	},
+	"typesVersions": {
+		">=4.0": {
+			"*": [
+				"./lib-esm/index.d.ts"
+			],
+			"iot": [
+				"./lib-esm/clients/iot.d.ts"
+			],
+			"mqtt": [
+				"./lib-esm/clients/mqtt.d.ts"
+			]
+		}
+	},
 	"exports": {
 		".": {
 			"types": "./lib-esm/index.d.ts",
