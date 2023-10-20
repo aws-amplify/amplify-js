@@ -29,6 +29,9 @@ jest.mock('@aws-amplify/core', () => ({
 	Amplify: {
 		getConfig: jest.fn(),
 	},
+	ConsoleLogger: jest.fn(() => ({
+		debug: jest.fn(),
+	})),
 }));
 
 const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };

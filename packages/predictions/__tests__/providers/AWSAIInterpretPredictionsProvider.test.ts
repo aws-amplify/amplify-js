@@ -21,6 +21,9 @@ jest.mock('@aws-amplify/core', () => ({
 	Amplify: {
 		getConfig: jest.fn(),
 	},
+	ConsoleLogger: jest.fn(() => ({
+		debug: jest.fn(),
+	})),
 }));
 
 ComprehendClient.prototype.send = jest.fn((command, callback) => {

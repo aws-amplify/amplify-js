@@ -49,6 +49,9 @@ jest.mock('@aws-amplify/core', () => ({
 	Amplify: {
 		getConfig: jest.fn(),
 	},
+	ConsoleLogger: jest.fn(() => ({
+		debug: jest.fn(),
+	})),
 }));
 
 jest.mock('@aws-amplify/storage', () => ({
