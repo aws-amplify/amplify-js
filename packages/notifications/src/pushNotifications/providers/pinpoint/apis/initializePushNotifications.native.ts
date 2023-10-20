@@ -37,7 +37,7 @@ const logger = new ConsoleLogger('Notifications.PushNotification');
 
 const BACKGROUND_TASK_TIMEOUT = 25; // seconds
 
-export const initializePushNotifications = (): Promise<void> => {
+export const initializePushNotifications = (): void => {
 	if (isInitialized()) {
 		logger.info('Push notifications have already been enabled');
 		return;
@@ -48,7 +48,7 @@ export const initializePushNotifications = (): Promise<void> => {
 };
 
 const addAnalyticsListeners = (): void => {
-	let launchNotificationOpenedListenerRemover: EventListenerRemover;
+	let launchNotificationOpenedListenerRemover: EventListenerRemover | undefined;
 
 	// wire up default Pinpoint message event handling
 	addEventListener(
@@ -126,7 +126,7 @@ const addNativeListeners = (): void => {
 					logger.error(err);
 				} finally {
 					// notify native module that handlers have completed their work (or timed out)
-					completeNotification(completionHandlerId);
+					if (completionHandlerId) completeNotification(completionHandlerId);
 				}
 			}
 		);
