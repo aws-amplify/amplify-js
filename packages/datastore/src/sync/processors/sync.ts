@@ -34,7 +34,7 @@ import {
 	AmplifyError,
 } from '@aws-amplify/core/internals/utils';
 
-import { Amplify, Hub, ConsoleLogger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
 
 import { ModelPredicateCreator } from '../../predicates';
 import { getSyncErrorType } from './errorMaps';

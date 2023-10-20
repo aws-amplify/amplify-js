@@ -181,22 +181,11 @@ export function getDataStore({
 		if (log) console.log('done simulated disruption end.');
 	}
 
-	jest.mock('@aws-amplify/core', () => {
-		const actual = jest.requireActual('@aws-amplify/core');
+	jest.mock('@aws-amplify/core/internals/utils', () => {
+		const actual = jest.requireActual('@aws-amplify/core/internals/utils');
 		return {
 			...actual,
-			browserOrNode: () => ({
-				isBrowser: !isNode,
-				isNode,
-			}),
-			JS: {
-				...actual.JS,
-				browserOrNode: () => {
-					throw new Error(
-						'amplify/core::JS.browserOrNode() does not exist anymore'
-					);
-				},
-			},
+			isBrowser: () => !isNode,
 		};
 	});
 
