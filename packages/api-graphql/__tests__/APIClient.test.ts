@@ -245,6 +245,7 @@ describe('flattenItems', () => {
 															createdAt: '',
 															updatedAt: '',
 															todoNotesId: '',
+															owner: '',
 														},
 													},
 												},
@@ -279,6 +280,7 @@ describe('flattenItems', () => {
 						createdAt: '',
 						updatedAt: '',
 						todoNotesId: '',
+						owner: '',
 						todo: {
 							name: '',
 						},
@@ -345,7 +347,7 @@ describe('flattenItems', () => {
 			]);
 
 			const expected =
-				'id name notes { items { todo { notes { items { todo { notes { items { todo { notes { items { id body createdAt updatedAt todoNotesId } } } } } } } } } } }';
+				'id name notes { items { todo { notes { items { todo { notes { items { todo { notes { items { id body createdAt updatedAt todoNotesId owner } } } } } } } } } } }';
 
 			expect(selSet).toEqual(expected);
 		});
