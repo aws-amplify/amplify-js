@@ -3,12 +3,14 @@
 
 export { GraphQLQuery, GraphQLSubscription } from './types';
 import { generateClient as internalGenerateClient } from '@aws-amplify/api-graphql/internals';
-import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
+import { getAmplifyServerContext } from '@aws-amplify/core/internals/adapter-core';
 
 import { V6Client } from '@aws-amplify/api-graphql';
+
+import {
+	NextServer,
+	runWithAmplifyServerContext,
+} from '@aws-amplify/adapter-nextjs';
 
 export type {
 	GraphQLResult,
@@ -18,12 +20,20 @@ export type {
 /**
  * Generates an API client that can work with models or raw GraphQL
  */
-export function generateClient<T extends Record<any, any> = never>(
-	contextSpec: AmplifyServer.ContextSpec
+export function generateServerClient<T extends Record<any, any> = never>(
+	nextServerContext: NextServer.Context
 ): V6Client<T> {
-	return internalGenerateClient({
-		amplify: getAmplifyServerContext(contextSpec).amplify,
-	});
+	// This function reference gets passed down to InternalGraphQLAPI.graphql
+	// where this._graphql is passed through as the `fn` argument
+	// causing it to always get invoked inside `runWithAmplifyServerContext`
+	const getAmplify = (fn: (amplify: any) => Promise<any>) =>
+		runWithAmplifyServerContext({
+			nextServerContext,
+			operation: contextSpec =>
+				fn(getAmplifyServerContext(contextSpec).amplify),
+		});
+
+	return internalGenerateClient({ amplify: getAmplify });
 }
 
 export {

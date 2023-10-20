@@ -359,7 +359,7 @@ type ExcludeNeverFields<O> = {
 export const __amplify = Symbol('amplify');
 
 export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
-	[__amplify]: AmplifyClassV6;
+	[__amplify]: AmplifyClassV6 | (() => Promise<AmplifyClassV6>);
 	graphql: <FALLBACK_TYPES = unknown, TYPED_GQL_STRING extends string = string>(
 		options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
 		additionalHeaders?:

@@ -11,6 +11,7 @@ import {
 } from './APIClient';
 import { ClientGenerationParams } from './types';
 import { V6Client } from '../types';
+import { Amplify } from '@aws-amplify/core';
 
 export function generateModelsProperty<T extends Record<any, any> = never>(
 	client: V6Client,
@@ -18,6 +19,9 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 ): ModelTypes<T> {
 	const models = {} as any;
 	const config = params.amplify.getConfig();
+
+	console.log('AMPLIFY', params.amplify);
+	console.log('CONFIG', config);
 
 	const modelIntrospection = config.API?.GraphQL?.modelIntrospection;
 	if (!modelIntrospection) {

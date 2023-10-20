@@ -8,5 +8,7 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
  * The knobs available for configuring `generateClient` internally.
  */
 export type ClientGenerationParams = {
-	amplify: AmplifyClassV6;
+	amplify:
+		| AmplifyClassV6
+		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>);
 };

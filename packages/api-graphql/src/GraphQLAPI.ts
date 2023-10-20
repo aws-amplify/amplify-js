@@ -31,7 +31,7 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
-		amplify: AmplifyClassV6,
+		amplify: AmplifyClassV6 | (() => Promise<AmplifyClassV6>),
 		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {

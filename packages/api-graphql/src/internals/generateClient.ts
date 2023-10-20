@@ -26,7 +26,11 @@ export function generateClient<T extends Record<any, any> = never>(
 		models: {},
 	} as any;
 
-	client.models = generateModelsProperty<T>(client, params);
+	// generateClient just needs the modelIntro property from the config
+	// therefore we pass it the global Amplify object
+	client.models = generateModelsProperty<T>(client, {
+		amplify: AmplifyClassV6,
+	});
 
 	return client as V6Client<T>;
 }
