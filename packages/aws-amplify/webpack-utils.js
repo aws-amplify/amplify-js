@@ -28,7 +28,6 @@
 // IMPORTANT: if new packages are added to Amplify, add them to the map below.
 
 const packageFolderMap = {
-	'amazon-cognito-identity-js': 'amazon-cognito-identity-js',
 	analytics: '@aws-amplify/analytics',
 	api: '@aws-amplify/api',
 	auth: '@aws-amplify/auth',

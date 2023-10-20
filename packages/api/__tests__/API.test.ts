@@ -11,7 +11,11 @@ describe('API generateClient', () => {
 		expect(spy).toBeCalledWith(
 			{ Auth: {}, libraryOptions: {}, resourcesConfig: {} },
 			{ query: 'query' },
-			undefined
+			undefined,
+			{
+				action: '1', 
+				category: 'api'
+			}
 		);
 	});
 });
