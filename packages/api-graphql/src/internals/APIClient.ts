@@ -216,7 +216,7 @@ export function customSelectionSetToIR(
 		const nested = f.includes('.');
 
 		if (nested) {
-			const [modelFieldName, selectedField] = f.split('.');
+			const [modelFieldName, selectedField, ...rest] = f.split('.');
 
 			const relatedModel = fields[modelFieldName]?.type?.model;
 
@@ -248,7 +248,7 @@ export function customSelectionSetToIR(
 				const getNestedSelSet = customSelectionSetToIR(
 					modelIntrospection,
 					relatedModel,
-					[selectedField]
+					[[selectedField, ...rest].join('.')]
 				);
 
 				if (fields[modelFieldName]?.isArray) {

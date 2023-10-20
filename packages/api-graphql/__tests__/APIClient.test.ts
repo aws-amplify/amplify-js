@@ -218,6 +218,48 @@ describe('flattenItems', () => {
 
 			expect(selSet).toEqual(expected);
 		});
+
+		test.only('deeply nested on a bi-directional model', () => {
+			const selSet = customSelectionSetToIR(modelIntroSchema.models, 'Todo', [
+				'id',
+				'name',
+				'notes.todo.notes.todo.notes.todo.notes.*',
+			]);
+
+			const expected = {
+				id: '',
+				name: '',
+				notes: {
+					items: {
+						todo: {
+							notes: {
+								items: {
+									todo: {
+										notes: {
+											items: {
+												todo: {
+													notes: {
+														items: {
+															id: '',
+															body: '',
+															createdAt: '',
+															updatedAt: '',
+															todoNotesId: '',
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			};
+
+			expect(selSet).toEqual(expected);
+		});
 	});
 
 	describe('generateSelectionSet', () => {
