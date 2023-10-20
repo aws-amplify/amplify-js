@@ -358,7 +358,7 @@ export async function handleUserPasswordAuthFlow(
 		ClientId: userPoolClientId,
 		UserContextData,
 	};
-	// TODO: add the retry here
+
 	const response = await initiateAuth(
 		{
 			region: getRegion(userPoolId),
@@ -367,9 +367,16 @@ export async function handleUserPasswordAuthFlow(
 		jsonReq
 	);
 
+	const activeUsername =
+		response.ChallengeParameters?.USERNAME ??
+		response.ChallengeParameters?.USER_ID_FOR_SRP ??
+		username;
+
+	setActiveSignInUsername(activeUsername);
+
 	if (response.ChallengeName === 'DEVICE_SRP_AUTH')
 		return handleDeviceSRPAuth({
-			username,
+			username: activeUsername,
 			config,
 			clientMetadata,
 			session: response.Session,
@@ -393,11 +400,6 @@ export async function handleUserSRPAuthFlow(
 		USERNAME: username,
 		SRP_A: authenticationHelper.A.toString(16),
 	};
-	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata(username);
-
-	if (deviceMetadata && deviceMetadata.deviceKey) {
-		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
-	}
 
 	const UserContextData = getUserContextData({
 		username,
@@ -421,7 +423,8 @@ export async function handleUserSRPAuthFlow(
 		jsonReq
 	);
 	const { ChallengeParameters: challengeParameters, Session: session } = resp;
-
+	const activeUsername = challengeParameters?.USERNAME ?? username;
+	setActiveSignInUsername(activeUsername);
 	return retryOnResourceNotFoundException(
 		handlePasswordVerifierChallenge,
 		[
@@ -433,7 +436,7 @@ export async function handleUserSRPAuthFlow(
 			config,
 			tokenOrchestrator,
 		],
-		username,
+		activeUsername,
 		tokenOrchestrator
 	);
 }
@@ -445,6 +448,7 @@ export async function handleCustomAuthFlowWithoutSRP(
 	tokenOrchestrator: AuthTokenOrchestrator
 ): Promise<InitiateAuthCommandOutput> {
 	const { userPoolClientId, userPoolId } = config;
+	const { dispatch } = signInStore;
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
 	};
@@ -475,9 +479,11 @@ export async function handleCustomAuthFlowWithoutSRP(
 		},
 		jsonReq
 	);
+	const activeUsername = response.ChallengeParameters?.USERNAME ?? username;
+	setActiveSignInUsername(activeUsername);
 	if (response.ChallengeName === 'DEVICE_SRP_AUTH')
 		return handleDeviceSRPAuth({
-			username,
+			username: activeUsername,
 			config,
 			clientMetadata,
 			session: response.Session,
@@ -499,16 +505,11 @@ export async function handleCustomSRPAuthFlow(
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = await getAuthenticationHelper(userPoolName);
 
-	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata(username);
-
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
 		SRP_A: authenticationHelper.A.toString(16),
 		CHALLENGE_NAME: 'SRP_A',
 	};
-	if (deviceMetadata && deviceMetadata.deviceKey) {
-		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
-	}
 
 	const UserContextData = getUserContextData({
 		username,
@@ -532,6 +533,8 @@ export async function handleCustomSRPAuthFlow(
 			},
 			jsonReq
 		);
+	const activeUsername = challengeParameters?.USERNAME ?? username;
+	setActiveSignInUsername(activeUsername);
 
 	return retryOnResourceNotFoundException(
 		handlePasswordVerifierChallenge,
@@ -544,7 +547,7 @@ export async function handleCustomSRPAuthFlow(
 			config,
 			tokenOrchestrator,
 		],
-		username,
+		activeUsername,
 		tokenOrchestrator
 	);
 }
@@ -1100,4 +1103,15 @@ export async function retryOnResourceNotFoundException<
 		}
 		throw error;
 	}
+}
+
+export function setActiveSignInUsername(username: string) {
+	const { dispatch } = signInStore;
+
+	dispatch({ type: 'SET_USERNAME', value: username });
+}
+
+export function getActiveSignInUsername(username: string): string {
+	const state = signInStore.getState();
+	return state.username ?? username;
 }
