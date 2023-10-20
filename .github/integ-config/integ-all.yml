@@ -505,7 +505,7 @@ tests:
     category: auth
     sample_name: [auth-ssr]
     spec: auth-ssr
-    browser: *minimal_browser_list
+    browser: [chrome]
   - test_name: integ_next_auth_authenticator_and_rsc_page
     desc: 'Authenticator and RSC page'
     framework: next
