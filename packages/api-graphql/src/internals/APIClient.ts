@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { resolveOwnerFields } from '../utils/resolveOwnerFields';
+
 type ListArgs = { selectionSet?: string[]; filter?: {} };
 
 const connectionType = {
@@ -139,11 +141,21 @@ const graphQLDocumentsCache = new Map<string, Map<ModelOperation, string>>();
 const SELECTION_SET_ALL_NESTED = '*';
 
 function defaultSelectionSetForModel(modelDefinition: any): string {
+	// fields that are explicitly part of the graphql schema; not
+	// inferred from owner auth rules.
 	const { fields } = modelDefinition;
-	return Object.values<any>(fields)
+	const explicitFields = Object.values<any>(fields)
 		.map(({ type, name }) => typeof type === 'string' && name) // Default selection set omits model fields
-		.filter(Boolean)
-		.join(' ');
+		.filter(Boolean);
+
+	// fields used for owner auth rules that may or may not also
+	// be explicit on the model.
+	const ownerFields = resolveOwnerFields(modelDefinition);
+
+	const allDistinctFields = Array.from(
+		new Set(explicitFields.concat(ownerFields))
+	);
+	return allDistinctFields.join(' ');
 }
 
 function generateSelectionSet(
@@ -278,6 +290,15 @@ export function generateGraphQLDocument(
 			graphQLOperationType ?? (graphQLOperationType = 'query');
 			graphQLSelectionSet ??
 				(graphQLSelectionSet = `items { ${selectionSetFields} }`);
+		case 'ONCREATE':
+		case 'ONUPDATE':
+		case 'ONDELETE':
+			graphQLArguments ??
+				(graphQLArguments = {
+					filter: `ModelSubscription${name}FilterInput`,
+				});
+			graphQLOperationType ?? (graphQLOperationType = 'subscription');
+			graphQLSelectionSet ?? (graphQLSelectionSet = selectionSetFields);
 	}
 
 	const graphQLDocument = `${graphQLOperationType}${

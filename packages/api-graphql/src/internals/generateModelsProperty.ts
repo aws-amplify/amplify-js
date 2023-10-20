@@ -9,7 +9,8 @@ import {
 	ModelOperation,
 } from './APIClient';
 import { ClientGenerationParams } from './types';
-import { V6Client } from '../types';
+import { V6Client, GraphqlSubscriptionResult } from '../types';
+import { Observable, map } from 'rxjs';
 
 export function generateModelsProperty<T extends Record<any, any> = never>(
 	client: V6Client,
@@ -100,6 +101,32 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								throw error;
 							}
 						}
+					};
+				} else if (['ONCREATE', 'ONUPDATE', 'ONDELETE'].includes(operation)) {
+					models[name][operationPrefix] = (arg?: any, options?: any) => {
+						const query = generateGraphQLDocument(
+							modelIntrospection.models,
+							name,
+							operation
+						);
+						const variables = buildGraphQLVariables(
+							model,
+							operation,
+							arg,
+							modelIntrospection
+						);
+
+						const observable = client.graphql({
+							query,
+							variables,
+						}) as GraphqlSubscriptionResult<object>;
+
+						return observable.pipe(
+							map(value => {
+								const [key] = Object.keys(value.data);
+								return value.data[key];
+							})
+						);
 					};
 				} else {
 					models[name][operationPrefix] = async (arg?: any, options?: any) => {

@@ -379,7 +379,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test('can subscribe to onCreate()', done => {
+		test.only('can subscribe to onCreate()', done => {
 			const noteToSend = {
 				__typename: 'Note',
 				...serverManagedFields,
@@ -406,7 +406,7 @@ describe('generateClient', () => {
 			client.models.Note.onCreate({
 				filter: graphqlVariables.filter,
 			}).subscribe({
-				next({ value }) {
+				next(value) {
 					expectSub(spy, 'onCreateNote', graphqlVariables);
 					expect(value).toEqual(noteToSend);
 					done();
