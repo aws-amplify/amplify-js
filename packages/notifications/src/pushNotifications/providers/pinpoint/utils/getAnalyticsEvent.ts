@@ -33,7 +33,10 @@ export const getAnalyticsEvent = (
 
 const getAnalyticsEventAttributes = (
 	data: PushNotificationMessage['data']
-): AnalyticsEventAttributes => {
+): AnalyticsEventAttributes | undefined => {
+	if (!data) {
+		return;
+	}
 	if (data.hasOwnProperty(ANDROID_CAMPAIGN_ID_KEY)) {
 		return {
 			source: '_campaign',

@@ -19,7 +19,7 @@ export const getChannelType = (): ChannelType => {
 	}
 	if (isIos) {
 		// If building in debug mode, use the APNs sandbox
-		return global['__DEV__'] ? 'APNS_SANDBOX' : 'APNS';
+		return __DEV__ ? 'APNS_SANDBOX' : 'APNS';
 	}
 	throw new PlatformNotSupportedError();
 };
