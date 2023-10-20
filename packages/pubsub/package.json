@@ -29,9 +29,6 @@
 	},
 	"typesVersions": {
 		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
 			"iot": [
 				"./lib-esm/clients/iot.d.ts"
 			],

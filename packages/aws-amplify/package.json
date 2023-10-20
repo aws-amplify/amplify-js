@@ -131,9 +131,6 @@
 	},
 	"typesVersions": {
 		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
 			"api": [
 				"./lib-esm/api/index.d.ts"
 			],

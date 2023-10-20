@@ -29,9 +29,6 @@
 	},
 	"typesVersions": {
 		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
 			"cognito": [
 				"./lib-esm/providers/cognito/index.d.ts"
 			],

@@ -28,9 +28,6 @@
 	},
 	"typesVersions": {
 		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
 			"in-app-messaging": [
 				"./lib-esm/inAppMessaging/providers/index.d.ts"
 			],

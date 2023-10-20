@@ -27,9 +27,6 @@
 	"react-native": "./lib-esm/index.js",
 	"typesVersions": {
 		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
 			"pinpoint": [
 				"./lib-esm/providers/pinpoint/index.d.ts"
 			],

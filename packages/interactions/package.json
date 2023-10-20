@@ -29,9 +29,6 @@
 	},
 	"typesVersions": {
 		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
 			"lex-v1": [
 				"./lib-esm/lex-v1/index.d.ts"
 			],

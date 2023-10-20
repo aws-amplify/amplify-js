@@ -32,9 +32,6 @@
 	},
 	"typesVersions": {
 		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
 			"pinpoint": [
 				"./lib-esm/providers/pinpoint/AmazonLocationServiceProvider.d.ts"
 			]
