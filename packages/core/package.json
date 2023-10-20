@@ -13,10 +13,8 @@
 		"./lib/Credentials.js",
 		"./lib-esm/I18n/index.js",
 		"./lib-esm/Credentials.js",
-		"./lib/Cache/BrowserStorageCache.js",
-		"./lib/Cache/AsyncStorageCache.js",
-		"./lib-esm/Cache/BrowserStorageCache.js",
-		"./lib-esm/Cache/AsyncStorageCache.js"
+		"./lib/Cache/index.js",
+		"./lib-esm/Cache/index.js"
 	],
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage",
@@ -36,9 +34,7 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 92.36"
 	},
 	"react-native": {
-		"./lib/index": "./lib-esm/index.js",
-		"./lib-esm/ClientDevice": "./lib-esm/ClientDevice/reactnative.js",
-		"./lib-esm/Cache": "./lib-esm/Cache/reactnative.js"
+		"./lib/index": "./lib-esm/index.js"
 	},
 	"repository": {
 		"type": "git",
@@ -59,17 +55,17 @@
 		"server"
 	],
 	"dependencies": {
-		"@aws-crypto/sha256-js": "5.0.0",
+		"@aws-crypto/sha256-js": "5.2.0",
 		"@aws-sdk/types": "3.398.0",
 		"@smithy/util-hex-encoding": "2.0.0",
-		"js-cookie": "^2.2.1",
+		"js-cookie": "^3.0.5",
 		"tslib": "^2.5.0",
 		"uuid": "^9.0.0",
 		"rxjs": "^7.8.1"
 	},
 	"devDependencies": {
 		"@aws-amplify/react-native": "^1.0.0",
-		"@types/js-cookie": "^2.2.7",
+		"@types/js-cookie": "3.0.2",
 		"@types/uuid": "^9.0.0",
 		"find": "^0.2.7",
 		"genversion": "^2.2.0",
@@ -129,12 +125,6 @@
 			"path": "./lib-esm/index.js",
 			"import": "{ Cache }",
 			"limit": "4.13 kB"
-		},
-		{
-			"name": "Cache (in-memory)",
-			"path": "./lib-esm/index.js",
-			"import": "{ InMemoryCache }",
-			"limit": "4.15 kB"
 		}
 	],
 	"jest": {

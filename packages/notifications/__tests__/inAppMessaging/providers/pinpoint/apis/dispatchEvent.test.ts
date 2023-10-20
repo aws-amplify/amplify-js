@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { defaultStorage } from '@aws-amplify/core';
-import { dispatchEvent } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
+import {
+	dispatchEvent,
+	initializeInAppMessaging,
+} from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 import { processInAppMessages } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 import {
 	inAppMessages,
@@ -10,23 +13,26 @@ import {
 	simpleInAppMessagingEvent,
 } from '../../../../../__mocks__/data';
 import { InAppMessagingError } from '../../../../../src/inAppMessaging/errors';
-import { notifyEventListeners } from '../../../../../src/common/eventListeners';
+import { notifyEventListeners } from '../../../../../src/eventListeners';
 
 jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/utils');
 jest.mock('../../../../../src/inAppMessaging/providers/pinpoint/utils');
-jest.mock('../../../../../src/common/eventListeners');
+jest.mock('../../../../../src/eventListeners');
 
 const mockDefaultStorage = defaultStorage as jest.Mocked<typeof defaultStorage>;
 const mockNotifyEventListeners = notifyEventListeners as jest.Mock;
 const mockProcessInAppMessages = processInAppMessages as jest.Mock;
 
 describe('dispatchEvent', () => {
+	beforeAll(() => {
+		initializeInAppMessaging();
+	});
 	beforeEach(() => {
 		mockDefaultStorage.setItem.mockClear();
 		mockNotifyEventListeners.mockClear();
 	});
-	test('gets in-app messages from store and notifies listeners', async () => {
+	it('gets in-app messages from store and notifies listeners', async () => {
 		const [message] = inAppMessages;
 		mockDefaultStorage.getItem.mockResolvedValueOnce(
 			JSON.stringify(simpleInAppMessages)
@@ -40,7 +46,7 @@ describe('dispatchEvent', () => {
 		expect(mockNotifyEventListeners).toBeCalledWith('messageReceived', message);
 	});
 
-	test('handles conflicts through default conflict handler', async () => {
+	it('handles conflicts through default conflict handler', async () => {
 		mockDefaultStorage.getItem.mockResolvedValueOnce(
 			JSON.stringify(simpleInAppMessages)
 		);
@@ -56,7 +62,7 @@ describe('dispatchEvent', () => {
 		);
 	});
 
-	test('does not notify listeners if no messages are returned', async () => {
+	it('does not notify listeners if no messages are returned', async () => {
 		mockProcessInAppMessages.mockReturnValueOnce([]);
 		mockDefaultStorage.getItem.mockResolvedValueOnce(
 			JSON.stringify(simpleInAppMessages)
@@ -67,7 +73,7 @@ describe('dispatchEvent', () => {
 		expect(mockNotifyEventListeners).not.toBeCalled();
 	});
 
-	test('logs error if storage retrieval fails', async () => {
+	it('logs error if storage retrieval fails', async () => {
 		mockDefaultStorage.getItem.mockRejectedValueOnce(Error);
 		await expect(
 			dispatchEvent(simpleInAppMessagingEvent)

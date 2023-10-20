@@ -7,8 +7,6 @@ import type {
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import { InAppMessage, InAppMessagingEvent } from '../src/inAppMessaging/types';
 import { PushNotificationMessage } from '../src/pushNotifications';
-import { UserInfo } from '../src';
-import { NotificationsConfig } from '../src';
 
 export const credentials = {
 	accessKeyId: 'access-key-id',
@@ -32,7 +30,7 @@ export const notificationsConfig = {
 	Push: subcategoryConfig,
 };
 
-export const adhocConfig: NotificationsConfig = {
+export const adhocConfig = {
 	Notifications: {
 		InAppMessaging: {
 			AWSPinpoint: {
@@ -53,7 +51,7 @@ export const imageUrl = 'http://image.fakeurl/avocado.png';
 
 export const userId = 'user-id';
 
-export const userInfo: UserInfo = {
+export const userInfo = {
 	attributes: {
 		hobbies: ['shuffleboard', 'jousting'],
 	},
@@ -67,10 +65,6 @@ export const analyticsEvent: Event = {
 /**
  * In-App Messaging data
  */
-export const inAppMessagingConfig = {
-	endpointInfo: { channelType: 'IN_APP' },
-};
-
 export const simpleInAppMessagingEvent: InAppMessagingEvent = { name: 'foo' };
 
 export const simpleInAppMessages: Partial<InAppMessage>[] = [
@@ -172,20 +166,16 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 	},
 	Priority: 3,
 	Schedule: {
-		EndDate: '2024-01-01T00:00:00Z',
+		EndDate: '2021-01-01T00:00:00Z',
 		EventFilter: {
 			FilterType: 'SYSTEM',
 			Dimensions: {
-				Attributes: {
-					interests: { Values: ['test-interest'] },
-				},
+				Attributes: {},
 				EventType: {
 					DimensionType: 'INCLUSIVE',
 					Values: ['clicked', 'swiped'],
 				},
-				Metrics: {
-					clicks: { ComparisonOperator: 'EQUAL', Value: 5 },
-				},
+				Metrics: {},
 			},
 		},
 		QuietTime: {

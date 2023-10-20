@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CompletionObserver, Observable } from 'rxjs';
+import { CompletionObserver, Observable, from } from 'rxjs';
 import { isWebWorker } from '../libraryUtils';
 import { NetworkStatus } from './types';
 
@@ -9,7 +9,13 @@ export class Reachability {
 	private static _observers: Array<CompletionObserver<NetworkStatus>> = [];
 
 	networkMonitor(_?: unknown): Observable<NetworkStatus> {
-		const globalObj = isWebWorker() ? self : window;
+		const globalObj = isWebWorker()
+			? self
+			: typeof window !== 'undefined' && window;
+
+		if (!globalObj) {
+			return from([{ online: true }]);
+		}
 
 		return new Observable(observer => {
 			observer.next({ online: globalObj.navigator.onLine });
@@ -31,5 +37,19 @@ export class Reachability {
 				);
 			};
 		});
+	}
+
+	// expose observers to simulate offline mode for integration testing
+	private static _observerOverride(status: NetworkStatus): void {
+		for (const observer of this._observers) {
+			if (observer.closed) {
+				this._observers = this._observers.filter(
+					_observer => _observer !== observer
+				);
+				continue;
+			}
+
+			observer?.next && observer.next(status);
+		}
 	}
 }

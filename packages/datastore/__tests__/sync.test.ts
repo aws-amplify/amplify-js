@@ -1,5 +1,9 @@
 // These tests should be replaced once SyncEngine.partialDataFeatureFlagEnabled is removed.
-import { Category, DataStoreAction } from '@aws-amplify/core/internals/utils';
+import {
+	AmplifyError,
+	Category,
+	DataStoreAction,
+} from '@aws-amplify/core/internals/utils';
 import { defaultAuthStrategy } from '../src/authModeStrategies';
 
 let mockGraphQl;
@@ -210,7 +214,11 @@ describe('Sync', () => {
 				data: null,
 				errors: [
 					{
-						message: 'Request failed with status code 403',
+						originalError: {
+							$metadata: {
+								httpStatusCode: 403,
+							},
+						},
 					},
 				],
 			};
@@ -389,7 +397,11 @@ describe('Sync', () => {
 					data,
 					errors: [
 						{
-							message: 'Error: Request failed with status code 500',
+							originalError: {
+								$metadata: {
+									httpStatusCode: 500,
+								},
+							},
 						},
 					],
 				},

@@ -71,7 +71,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 				refreshToken,
 				deviceMetadata: (await this.getDeviceMetadata()) ?? undefined,
 				clockDrift,
-				username: decodeURIComponent(await this.getLastAuthUser()),
+				username: await this.getLastAuthUser(),
 			};
 		} catch (err) {
 			return null;
@@ -81,8 +81,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		assert(tokens !== undefined, TokenProviderErrorCode.InvalidAuthTokens);
 		await this.clearTokens();
 
-		const lastAuthUser =
-			(tokens.username && encodeURIComponent(tokens.username)) ?? 'username';
+		const lastAuthUser = tokens.username;
 		await this.getKeyValueStorage().setItem(
 			this.getLastAuthUserKey(),
 			lastAuthUser
@@ -146,7 +145,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 	}
 
 	async getDeviceMetadata(username?: string): Promise<DeviceMetadata | null> {
-		const authKeys = await this.getDeviceAuthKeys(username);
+		const authKeys = await this.getAuthKeys(username);
 		const deviceKey = await this.getKeyValueStorage().getItem(
 			authKeys.deviceKey
 		);
@@ -166,7 +165,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 			: null;
 	}
 	async clearDeviceMetadata(username?: string): Promise<void> {
-		const authKeys = await this.getDeviceAuthKeys(username);
+		const authKeys = await this.getAuthKeys(username);
 		await Promise.all([
 			this.getKeyValueStorage().removeItem(authKeys.deviceKey),
 			this.getKeyValueStorage().removeItem(authKeys.deviceGroupKey),
@@ -184,24 +183,6 @@ export class DefaultTokenStore implements AuthTokenStore {
 			`${this.authConfig.Cognito.userPoolClientId}.${lastAuthUser}`
 		);
 	}
-	private async getDeviceAuthKeys(
-		username?: string
-	): Promise<AuthKeys<keyof typeof AuthTokenStorageKeys>> {
-		let authKeys: AuthKeys<keyof typeof AuthTokenStorageKeys>;
-		if (username) {
-			const authEncodedKeys = await this.getAuthKeys(
-				encodeURIComponent(username)
-			);
-			const authNonEncodedKeys = await this.getAuthKeys(username);
-			const isEncodedKeysPresent = !!(await this.getKeyValueStorage().getItem(
-				authEncodedKeys.randomPasswordKey
-			));
-			authKeys = isEncodedKeysPresent ? authEncodedKeys : authNonEncodedKeys;
-		} else {
-			authKeys = await this.getAuthKeys();
-		}
-		return authKeys;
-	}
 
 	private getLastAuthUserKey() {
 		assertTokenProviderConfig(this.authConfig?.Cognito);
@@ -209,7 +190,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 		return `${this.name}.${identifier}.LastAuthUser`;
 	}
 
-	private async getLastAuthUser(): Promise<string> {
+	async getLastAuthUser(): Promise<string> {
 		const lastAuthUser =
 			(await this.getKeyValueStorage().getItem(this.getLastAuthUserKey())) ??
 			'username';

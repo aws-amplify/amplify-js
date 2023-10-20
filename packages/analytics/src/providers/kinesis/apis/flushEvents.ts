@@ -7,10 +7,8 @@ import {
 	resolveCredentials,
 } from '../../../utils';
 import { getEventBuffer } from '../utils/getEventBuffer';
-import {
-	AnalyticsAction,
-	ConsoleLogger,
-} from '@aws-amplify/core/internals/utils';
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 const logger = new ConsoleLogger('Kinesis');
 

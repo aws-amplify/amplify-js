@@ -3,12 +3,13 @@
 
 import { headObject } from '../../../../src/providers/s3/utils/client';
 import { getProperties } from '../../../../src/providers/s3';
-import { Credentials } from '@aws-sdk/types';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 import { GetPropertiesOptions } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
+	ConsoleLogger: jest.fn(),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {
@@ -22,7 +23,7 @@ const mockGetConfig = Amplify.getConfig as jest.Mock;
 
 const bucket = 'bucket';
 const region = 'region';
-const credentials: Credentials = {
+const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
@@ -58,7 +59,7 @@ describe('getProperties api', () => {
 		const config = {
 			credentials,
 			region: 'region',
-			userAgentValue: expect.any(String)
+			userAgentValue: expect.any(String),
 		};
 		const key = 'key';
 		beforeEach(() => {
@@ -137,7 +138,7 @@ describe('getProperties api', () => {
 					{
 						credentials,
 						region: 'region',
-						userAgentValue: expect.any(String)
+						userAgentValue: expect.any(String),
 					},
 					{
 						Bucket: 'bucket',

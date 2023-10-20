@@ -10,6 +10,32 @@ const connectionType = {
 	BELONGS_TO: 'BELONGS_TO',
 };
 
+/**
+ *
+ * @param GraphQL response object
+ * @returns response object with `items` properties flattened
+ */
+export const flattenItems = (obj: Record<string, any>): Record<string, any> => {
+	const res: Record<string, any> = {};
+
+	Object.entries(obj).forEach(([prop, value]) => {
+		if (typeof value === 'object' && value !== null) {
+			if (value.items !== undefined) {
+				res[prop] = value.items.map((item: Record<string, any>) =>
+					flattenItems(item)
+				);
+				return;
+			}
+			res[prop] = flattenItems(value);
+			return;
+		}
+
+		res[prop] = value;
+	});
+
+	return res;
+};
+
 // TODO: this should accept single result to support CRUD methods; create helper for array/list
 export function initializeModel(
 	client: any,
@@ -140,7 +166,7 @@ type OperationPrefix =
 const graphQLDocumentsCache = new Map<string, Map<ModelOperation, string>>();
 const SELECTION_SET_ALL_NESTED = '*';
 
-function defaultSelectionSetForModel(modelDefinition: any): string {
+function defaultSelectionSetForModel(modelDefinition: any): string[] {
 	// fields that are explicitly part of the graphql schema; not
 	// inferred from owner auth rules.
 	const { fields } = modelDefinition;
@@ -152,25 +178,39 @@ function defaultSelectionSetForModel(modelDefinition: any): string {
 	// be explicit on the model.
 	const ownerFields = resolveOwnerFields(modelDefinition);
 
-	const allDistinctFields = Array.from(
-		new Set(explicitFields.concat(ownerFields))
-	);
-	return allDistinctFields.join(' ');
+	return Array.from(new Set(explicitFields.concat(ownerFields)));
 }
 
-function generateSelectionSet(
+const FIELD_IR = '';
+
+/**
+ * Generates nested Custom Selection Set IR from path
+ *
+ * @param modelIntrospection
+ * @param modelName
+ * @param selectionSet - array of object paths
+ * @example
+ * ### Given
+ * `selectionSet = ['id', 'comments.post.id']`
+ * ### Returns
+ * ```ts
+ * {
+ *   id: '',
+ *   comments: {
+ *     items: { post: { id: '' } }
+ *   }
+ * }
+ * ```
+ */
+export function customSelectionSetToIR(
 	modelIntrospection: any,
 	modelName: string,
-	selectionSet?: string[]
-) {
+	selectionSet: string[]
+): Record<string, string | object> {
 	const modelDefinition = modelIntrospection[modelName];
 	const { fields } = modelDefinition;
 
-	if (!selectionSet) {
-		return defaultSelectionSetForModel(modelDefinition);
-	}
-
-	const selSet: string[] = [];
+	const intermediateSelectionSet: Record<string, string | object> = {};
 
 	for (const f of selectionSet) {
 		const nested = f.includes('.');
@@ -187,14 +227,43 @@ function generateSelectionSet(
 
 			if (selectedField === SELECTION_SET_ALL_NESTED) {
 				const relatedModelDefinition = modelIntrospection[relatedModel];
+
 				const defaultSelectionSet = defaultSelectionSetForModel(
 					relatedModelDefinition
 				);
 
+				const reduced = defaultSelectionSet.reduce((acc, curVal) => {
+					acc[curVal] = FIELD_IR;
+					return acc;
+				}, {});
+
 				if (fields[modelFieldName]?.isArray) {
-					selSet.push(`${modelFieldName} { items { ${defaultSelectionSet} } }`);
+					intermediateSelectionSet[modelFieldName] = {
+						items: reduced,
+					};
 				} else {
-					selSet.push(`${modelFieldName} { ${defaultSelectionSet} }`);
+					intermediateSelectionSet[modelFieldName] = reduced;
+				}
+			} else {
+				const getNestedSelSet = customSelectionSetToIR(
+					modelIntrospection,
+					relatedModel,
+					[selectedField]
+				);
+
+				if (fields[modelFieldName]?.isArray) {
+					const existing = (intermediateSelectionSet as any)[
+						modelFieldName
+					] || { items: {} };
+					const merged = { ...existing.items, ...getNestedSelSet };
+
+					intermediateSelectionSet[modelFieldName] = { items: merged };
+				} else {
+					const existingItems =
+						(intermediateSelectionSet as any)[modelFieldName] || {};
+					const merged = { ...existingItems, ...getNestedSelSet };
+
+					intermediateSelectionSet[modelFieldName] = merged;
 				}
 			}
 		} else {
@@ -204,11 +273,75 @@ function generateSelectionSet(
 				throw Error(`${f} is not a field of model ${modelName}`);
 			}
 
-			selSet.push(f);
+			intermediateSelectionSet[f] = FIELD_IR;
 		}
 	}
 
-	return selSet.join(' ');
+	return intermediateSelectionSet;
+}
+
+/**
+ * Stringifies selection set IR
+ * * @example
+ * ### Given
+ * ```ts
+ * {
+ *   id: '',
+ *   comments: {
+ *     items: { post: { id: '' } }
+ *   }
+ * }
+ * ```
+ * ### Returns
+ * `'id comments { items { post { id } } }'`
+ */
+export function selectionSetIRToString(
+	obj: Record<string, string | any>
+): string {
+	const res: string[] = [];
+
+	Object.entries(obj).forEach(([fieldName, value]) => {
+		if (value === FIELD_IR) {
+			res.push(fieldName);
+		} else if (typeof value === 'object' && value !== null) {
+			if (value?.items) {
+				res.push(
+					fieldName,
+					'{',
+					'items',
+					'{',
+					selectionSetIRToString(value.items),
+					'}',
+					'}'
+				);
+			} else {
+				res.push(fieldName, '{', selectionSetIRToString(value), '}');
+			}
+		}
+	});
+
+	return res.join(' ');
+}
+
+export function generateSelectionSet(
+	modelIntrospection: any,
+	modelName: string,
+	selectionSet?: string[]
+) {
+	const modelDefinition = modelIntrospection[modelName];
+
+	if (!selectionSet) {
+		return defaultSelectionSetForModel(modelDefinition).join(' ');
+	}
+
+	const selSetIr = customSelectionSetToIR(
+		modelIntrospection,
+		modelName,
+		selectionSet
+	);
+	const selSetString = selectionSetIRToString(selSetIr);
+
+	return selSetString;
 }
 
 export function generateGraphQLDocument(

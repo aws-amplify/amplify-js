@@ -6,6 +6,7 @@ import {
 	AuthStandardAttributeKey,
 	AuthConfigUserAttributes,
 } from './singleton/Auth/types';
+
 import { ResourcesConfig } from './singleton/types';
 
 const logger = new Logger('parseAWSExports');
@@ -36,6 +37,8 @@ export const parseAWSExports = (
 		aws_appsync_authenticationType,
 		aws_appsync_graphqlEndpoint,
 		aws_appsync_region,
+		aws_bots,
+		aws_bots_config,
 		aws_cognito_identity_pool_id,
 		aws_cognito_sign_up_verification_method,
 		aws_cognito_mfa_configuration,
@@ -71,18 +74,34 @@ export const parseAWSExports = (
 	}
 
 	// Notifications
-	if (Notifications) {
-		if (Notifications.InAppMessaging?.AWSPinpoint) {
-			const { appId, region } = Notifications.InAppMessaging.AWSPinpoint;
-			amplifyConfig.Notifications = {
-				InAppMessaging: {
-					Pinpoint: {
-						appId,
-						region,
-					},
+	const { InAppMessaging, Push } = Notifications ?? {};
+	if (InAppMessaging?.AWSPinpoint || Push?.AWSPinpoint) {
+		amplifyConfig.Notifications = {};
+		if (InAppMessaging?.AWSPinpoint) {
+			const { appId, region } = InAppMessaging.AWSPinpoint;
+			amplifyConfig.Notifications.InAppMessaging = {
+				Pinpoint: {
+					appId,
+					region,
 				},
 			};
 		}
+		if (Push?.AWSPinpoint) {
+			const { appId, region } = Push.AWSPinpoint;
+			amplifyConfig.Notifications.PushNotification = {
+				Pinpoint: {
+					appId,
+					region,
+				},
+			};
+		}
+	}
+
+	// Interactions
+	if (Array.isArray(aws_bots_config)) {
+		amplifyConfig.Interactions = {
+			LexV1: Object.fromEntries(aws_bots_config.map(bot => [bot.name, bot])),
+		};
 	}
 
 	// API

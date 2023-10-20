@@ -41,7 +41,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
-	"@aws-amplify/amplify-api-next-alpha": "^0.4.1",
+	"@aws-amplify/amplify-api-next-alpha": "^0.6.0",
 	"typescript": "5.1.6"
   },
   "files": [
@@ -54,12 +54,11 @@
     "@aws-amplify/api-rest": "4.0.0",
     "@aws-amplify/auth": "6.0.0",
     "@aws-amplify/core": "6.0.0",
-    "@aws-amplify/amplify-api-next-types-alpha": "^0.0.5",
+    "@aws-amplify/amplify-api-next-types-alpha": "^0.2.0",
     "@aws-sdk/types": "3.387.0",
     "graphql": "15.8.0",
     "tslib": "^2.6.1",
     "url": "0.11.0",
-    "uuid": "^3.2.1",
     "rxjs": "^7.8.1"
   },
   "size-limit": [

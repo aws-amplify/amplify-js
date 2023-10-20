@@ -48,9 +48,7 @@ describe('ConfirmResetPassword API happy path cases', () => {
 			newPassword: 'password',
 			confirmationCode: 'code',
 			options: {
-				serviceOptions: {
-					clientMetadata: { fooo: 'fooo' },
-				},
+				clientMetadata: { fooo: 'fooo' },
 			},
 		});
 		expect(confirmForgotPasswordSpy).toHaveBeenCalledWith(
@@ -132,5 +130,51 @@ describe('ConfirmResetPassword API error path cases', () => {
 				ConfirmForgotPasswordException.InvalidParameterException
 			);
 		}
+	});
+});
+
+describe('Cognito ASF', () => {
+	let confirmForgotPasswordSpy;
+
+	beforeEach(() => {
+		// load Cognito ASF polyfill
+		window['AmazonCognitoAdvancedSecurityData'] = {
+			getData() {
+				return 'abcd';
+			},
+		};
+		confirmForgotPasswordSpy = jest
+			.spyOn(confirmResetPasswordClient, 'confirmForgotPassword')
+			.mockImplementationOnce(async () => {
+				return authAPITestParams.confirmResetPasswordHttpCallResult;
+			});
+	});
+
+	afterEach(() => {
+		confirmForgotPasswordSpy.mockClear();
+		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+	});
+	test('Check UserContextData is added', async () => {
+		await confirmResetPassword({
+			username: 'username',
+			newPassword: 'password',
+			confirmationCode: 'code',
+			options: {
+				clientMetadata: { fooo: 'fooo' },
+			},
+		});
+		expect(confirmForgotPasswordSpy).toHaveBeenCalledWith(
+			expect.objectContaining({ region: 'us-west-2' }),
+			expect.objectContaining({
+				Username: 'username',
+				ConfirmationCode: 'code',
+				Password: 'password',
+				ClientMetadata: { fooo: 'fooo' },
+				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				UserContextData: {
+					EncodedData: 'abcd',
+				},
+			})
+		);
 	});
 });

@@ -7,6 +7,7 @@ import {
 	buildGraphQLVariables,
 	graphQLOperationsInfo,
 	ModelOperation,
+	flattenItems,
 } from './APIClient';
 import { ClientGenerationParams } from './types';
 import { V6Client, GraphqlSubscriptionResult } from '../types';
@@ -61,7 +62,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								const [key] = Object.keys(data);
 
 								if (data[key].items) {
-									const flattenedResult = data[key].items;
+									const flattenedResult = flattenItems(data)[key];
 
 									// don't init if custom selection set
 									if (args?.selectionSet) {
@@ -133,7 +134,8 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						const query = generateGraphQLDocument(
 							modelIntrospection.models,
 							name,
-							operation
+							operation,
+							options
 						);
 						const variables = buildGraphQLVariables(
 							model,
@@ -151,16 +153,21 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 							// flatten response
 							if (data !== undefined) {
 								const [key] = Object.keys(data);
+								const flattenedResult = flattenItems(data)[key];
 
-								// TODO: refactor to avoid destructuring here
-								const [initialized] = initializeModel(
-									client,
-									name,
-									[data[key]],
-									modelIntrospection
-								);
+								if (options?.selectionSet) {
+									return { data: flattenedResult, extensions };
+								} else {
+									// TODO: refactor to avoid destructuring here
+									const [initialized] = initializeModel(
+										client,
+										name,
+										[flattenedResult],
+										modelIntrospection
+									);
 
-								return { data: initialized, extensions };
+									return { data: initialized, extensions };
+								}
 							} else {
 								return { data: null, extensions };
 							}

@@ -19,6 +19,7 @@ import {
 } from '../../clients/middleware/retry';
 import { getAmplifyUserAgent } from '../../Platform';
 import { observeFrameworkChanges } from '../../Platform/detectFramework';
+import { AmplifyUrl } from '../../utils/amplifyUrl';
 
 /**
  * The service name used to sign requests if the API requires authentication.
@@ -29,7 +30,9 @@ const SERVICE_NAME = 'cognito-identity';
  * The endpoint resolver function that returns the endpoint URL for a given region.
  */
 const endpointResolver = ({ region }: EndpointResolverOptions) => ({
-	url: new URL(`https://cognito-identity.${region}.${getDnsSuffix(region)}`),
+	url: new AmplifyUrl(
+		`https://cognito-identity.${region}.${getDnsSuffix(region)}`
+	),
 });
 
 /**

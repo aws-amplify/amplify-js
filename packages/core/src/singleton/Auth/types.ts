@@ -113,12 +113,12 @@ export type AuthIdentityPoolConfig = {
 	Cognito: CognitoIdentityPoolConfig & {
 		userPoolClientId?: never;
 		userPoolId?: never;
+		userPoolEndpoint?: never;
 		loginWith?: never;
 		signUpVerificationMethod?: never;
 		userAttributes?: never;
 		mfa?: never;
 		passwordFormat?: never;
-		endpoint?: never;
 	};
 };
 
@@ -137,6 +137,7 @@ export type AuthUserPoolConfig = {
 export type CognitoUserPoolConfig = {
 	userPoolClientId: string;
 	userPoolId: string;
+	userPoolEndpoint?: string;
 	signUpVerificationMethod?: 'code' | 'link';
 	loginWith?: {
 		oauth?: OAuthConfig;
@@ -157,7 +158,6 @@ export type CognitoUserPoolConfig = {
 		requireNumbers?: boolean;
 		requireSpecialCharacters?: boolean;
 	};
-	endpoint?: string;
 };
 
 export type OAuthConfig = {
@@ -217,7 +217,7 @@ export type AWSCredentialsAndIdentityId = {
 	identityId?: string;
 };
 
-type AWSCredentials = {
+export type AWSCredentials = {
 	accessKeyId: string;
 	secretAccessKey: string;
 	sessionToken?: string;

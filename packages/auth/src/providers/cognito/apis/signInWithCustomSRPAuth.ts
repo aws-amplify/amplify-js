@@ -14,6 +14,7 @@ import {
 	getSignInResult,
 	getSignInResultFromError,
 	getNewDeviceMetatada,
+	retryOnResourceNotFoundException,
 } from '../utils/signInHelpers';
 import {
 	InitiateAuthException,
@@ -52,7 +53,7 @@ export async function signInWithCustomSRPAuth(
 	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const metadata = options?.serviceOptions?.clientMetadata;
+	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -68,11 +69,10 @@ export async function signInWithCustomSRPAuth(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleCustomSRPAuthFlow(
+		} = await retryOnResourceNotFoundException(
+			handleCustomSRPAuthFlow,
+			[username, password, metadata, authConfig, tokenOrchestrator],
 			username,
-			password,
-			metadata,
-			authConfig,
 			tokenOrchestrator
 		);
 

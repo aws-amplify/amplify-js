@@ -13,6 +13,7 @@ import {
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
+	retryOnResourceNotFoundException,
 } from '../utils/signInHelpers';
 import { Amplify, Hub } from '@aws-amplify/core';
 import {
@@ -48,7 +49,7 @@ export async function signInWithUserPassword(
 	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const metadata = options?.serviceOptions?.clientMetadata;
+	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -64,11 +65,10 @@ export async function signInWithUserPassword(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await handleUserPasswordAuthFlow(
+		} = await retryOnResourceNotFoundException(
+			handleUserPasswordAuthFlow,
+			[username, password, metadata, authConfig, tokenOrchestrator],
 			username,
-			password,
-			metadata,
-			authConfig,
 			tokenOrchestrator
 		);
 
