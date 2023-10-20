@@ -111,9 +111,9 @@ async function isBelowCap({
 	);
 
 	return (
-		(!SessionCap || sessionCount <= SessionCap) &&
-		(!DailyCap || dailyCount <= DailyCap) &&
-		(!TotalCap || totalCount <= TotalCap)
+		(!SessionCap || sessionCount < SessionCap) &&
+		(!DailyCap || dailyCount < DailyCap) &&
+		(!TotalCap || totalCount < TotalCap)
 	);
 }
 
