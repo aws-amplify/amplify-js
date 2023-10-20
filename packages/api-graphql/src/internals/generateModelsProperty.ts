@@ -242,36 +242,36 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 							}
 
 							// obervable collection collection
-							function ingestMessage(message: (typeof messageQueue)[number]) {
-								const idx = findIndexByKeyFields(
-									message.item,
-									items,
-									pkFields as any
-								);
-								switch (message.type) {
-									case 'create':
-										if (idx < 0) items.push(message.item);
-										break;
-									case 'update':
-										if (idx >= 0) items[idx] = message.item;
-										break;
-									case 'delete':
-										if (idx >= 0) items.splice(idx, 1);
-										break;
-									default:
-										console.error(
-											'Unrecognized message in observeQuery.',
-											message
-										);
+							function ingestMessages(messages: typeof messageQueue) {
+								for (const message of messages) {
+									const idx = findIndexByKeyFields(
+										message.item,
+										items,
+										pkFields as any
+									);
+									switch (message.type) {
+										case 'create':
+											if (idx < 0) items.push(message.item);
+											break;
+										case 'update':
+											if (idx >= 0) items[idx] = message.item;
+											break;
+										case 'delete':
+											if (idx >= 0) items.splice(idx, 1);
+											break;
+										default:
+											console.error(
+												'Unrecognized message in observeQuery.',
+												message
+											);
+									}
 								}
 							}
 
 							const pkFields = getPkFields(model);
 
 							// play through the queue
-							for (const message of messageQueue) {
-								ingestMessage(message);
-							}
+							ingestMessages(messageQueue);
 
 							subscriber.next({
 								items,
@@ -279,6 +279,14 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 							});
 
 							// switch the queue to write directly to the items collection
+							messageQueue.push = (...messages: typeof messageQueue) => {
+								ingestMessages(messages);
+								subscriber.next({
+									items,
+									isSynced: true,
+								});
+								return items.length;
+							};
 
 							// when subscriber unsubscribes, tear down internal subs
 							return () => {
