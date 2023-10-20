@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ConsoleLogger as Logger } from './Logger';
-import { OAuthConfig, AuthConfigUserAttributes, OAuthProvider } from './singleton/Auth/types';
+import {
+	OAuthConfig,
+	AuthConfigUserAttributes,
+	OAuthProvider,
+} from './singleton/Auth/types';
 import { ResourcesConfig } from './singleton/types';
 
 const logger = new Logger('parseAWSExports');
@@ -53,6 +57,7 @@ export const parseAWSExports = (
 		aws_user_pools_web_client_id,
 		geo,
 		oauth,
+		predictions,
 		aws_cloud_logic_custom,
 		Notifications,
 	} = config;
@@ -179,22 +184,24 @@ export const parseAWSExports = (
 					username:
 						loginWithEmailEnabled || loginWithPhoneEnabled ? false : true,
 					email: loginWithEmailEnabled,
-					phone: loginWithPhoneEnabled
+					phone: loginWithPhoneEnabled,
 				},
 			},
 		};
 	}
 
 	const hasOAuthConfig = oauth ? Object.keys(oauth).length > 0 : false;
-	const hasSocialProviderConfig = aws_cognito_social_providers ? aws_cognito_social_providers.length > 0 : false;
+	const hasSocialProviderConfig = aws_cognito_social_providers
+		? aws_cognito_social_providers.length > 0
+		: false;
 	if (amplifyConfig.Auth && hasOAuthConfig) {
 		amplifyConfig.Auth.Cognito.loginWith = {
 			...amplifyConfig.Auth.Cognito.loginWith,
 			oauth: {
-				...(getOAuthConfig(oauth)),
+				...getOAuthConfig(oauth),
 				...(hasSocialProviderConfig && {
-					providers: parseSocialProviders(aws_cognito_social_providers)
-				})
+					providers: parseSocialProviders(aws_cognito_social_providers),
+				}),
 			},
 		};
 	}
@@ -246,6 +253,25 @@ export const parseAWSExports = (
 		};
 	}
 
+	// Predictions
+	if (predictions) {
+		// map VoiceId from speechGenerator defaults to voiceId
+		const { VoiceId: voiceId } =
+			predictions?.convert?.speechGenerator?.defaults ?? {};
+		amplifyConfig.Predictions = voiceId
+			? {
+					...predictions,
+					convert: {
+						...predictions.convert,
+						speechGenerator: {
+							...predictions.convert.speechGenerator,
+							defaults: { voiceId },
+						},
+					},
+			  }
+			: predictions;
+	}
+
 	return amplifyConfig;
 };
 
@@ -263,7 +289,7 @@ const getOAuthConfig = ({
 	scopes: scope,
 	redirectSignIn: getRedirectUrl(redirectSignIn),
 	redirectSignOut: getRedirectUrl(redirectSignOut),
-	responseType
+	responseType,
 });
 
 const parseSocialProviders = (aws_cognito_social_providers: string[]) => {
