@@ -13,7 +13,6 @@ import {
 	GraphQLAuthMode,
 	AmplifyError,
 } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
 
 import { Observable, Observer } from 'rxjs';
 import { MutationEvent } from '../';
@@ -47,6 +46,7 @@ import {
 	getTokenForCustomAuth,
 } from '../utils';
 import { getMutationErrorType } from './errorMaps';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 const MAX_ATTEMPTS = 10;
 

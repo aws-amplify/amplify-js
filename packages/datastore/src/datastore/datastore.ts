@@ -11,7 +11,7 @@ import {
 	enablePatches,
 	Patch,
 } from 'immer';
-import { amplifyUuid } from '@aws-amplify/core/internals/utils';
+import { amplifyUuid, isBrowser } from '@aws-amplify/core/internals/utils';
 import { Observable, SubscriptionLike, filter } from 'rxjs';
 import { defaultAuthStrategy, multiAuthStrategy } from '../authModeStrategies';
 import {
@@ -1554,7 +1554,9 @@ class DataStore {
 						.subscribe({
 							next: ({ type, data }) => {
 								// In the Browser, we can begin returning data once subscriptions are in place.
-								const readyType = ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
+								const readyType = isBrowser()
+									? ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED
+									: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY;
 
 								if (type === readyType) {
 									this.initResolve();
@@ -1724,7 +1726,6 @@ class DataStore {
 		return this.runningProcesses
 			.add(async () => {
 				await this.start();
-
 				if (!this.storage) {
 					throw new Error('No storage to save to');
 				}
