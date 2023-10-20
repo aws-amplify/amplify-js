@@ -26,25 +26,6 @@
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
 	},
-	"typesVersions": {
-		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
-			"in-app-messaging": [
-				"./lib-esm/inAppMessaging/providers/index.d.ts"
-			],
-			"push-notifications": [
-				"./lib-esm/pushNotifications/providers/index.d.ts"
-			],
-			"in-app-messaging/pinpoint": [
-				"./lib-esm/inAppMessaging/providers/pinpoint/index.d.ts"
-			],
-			"push-notifications/pinpoint": [
-				"./lib-esm/pushNotifications/providers/pinpoint/index.d.ts"
-			]
-		}
-	},
 	"exports": {
 		".": {
 			"types": "./lib-esm/index.d.ts",

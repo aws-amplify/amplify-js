@@ -25,25 +25,6 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 71.4"
 	},
 	"react-native": "./lib-esm/index.js",
-	"typesVersions": {
-		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
-			"pinpoint": [
-				"./lib-esm/providers/pinpoint/index.d.ts"
-			],
-			"kinesis": [
-				"./lib-esm/providers/kinesis/index.d.ts"
-			],
-			"kinesis-firehose": [
-				"./lib-esm/providers/kinesis-firehose/index.d.ts"
-			],
-			"personalize": [
-				"./lib-esm/providers/personalize/index.d.ts"
-			]
-		}
-	},
 	"exports": {
 		".": {
 			"types": "./lib-esm/index.d.ts",
