@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ConsoleLogger as Logger } from './Logger';
-import { OAuthConfig, AuthConfigUserAttributes } from './singleton/Auth/types';
+import { OAuthConfig, AuthConfigUserAttributes, OAuthProvider } from './singleton/Auth/types';
 import { ResourcesConfig } from './singleton/types';
 
 const logger = new Logger('parseAWSExports');
@@ -41,6 +41,7 @@ export const parseAWSExports = (
 		aws_cognito_password_protection_settings,
 		aws_cognito_verification_mechanisms,
 		aws_cognito_signup_attributes,
+		aws_cognito_social_providers,
 		aws_cognito_username_attributes,
 		aws_mandatory_sign_in,
 		aws_mobile_analytics_app_id,
@@ -178,12 +179,22 @@ export const parseAWSExports = (
 					username:
 						loginWithEmailEnabled || loginWithPhoneEnabled ? false : true,
 					email: loginWithEmailEnabled,
-					phone: loginWithPhoneEnabled,
-					...(oauth &&
-						Object.keys(oauth).length > 0 && {
-							oauth: getOAuthConfig(oauth),
-						}),
+					phone: loginWithPhoneEnabled
 				},
+			},
+		};
+	}
+
+	const hasOAuthConfig = oauth ? Object.keys(oauth).length > 0 : false;
+	const hasSocialProviderConfig = aws_cognito_social_providers ? aws_cognito_social_providers.length > 0 : false;
+	if (amplifyConfig.Auth && hasOAuthConfig) {
+		amplifyConfig.Auth.Cognito.loginWith = {
+			...amplifyConfig.Auth.Cognito.loginWith,
+			oauth: {
+				...(getOAuthConfig(oauth)),
+				...(hasSocialProviderConfig && {
+					providers: parseSocialProviders(aws_cognito_social_providers)
+				})
 			},
 		};
 	}
@@ -252,5 +263,12 @@ const getOAuthConfig = ({
 	scopes: scope,
 	redirectSignIn: getRedirectUrl(redirectSignIn),
 	redirectSignOut: getRedirectUrl(redirectSignOut),
-	responseType,
+	responseType
 });
+
+const parseSocialProviders = (aws_cognito_social_providers: string[]) => {
+	return aws_cognito_social_providers.map((provider: string) => {
+		const updatedProvider = provider.toLowerCase();
+		return updatedProvider.charAt(0).toUpperCase() + updatedProvider.slice(1);
+	}) as OAuthProvider[];
+};
