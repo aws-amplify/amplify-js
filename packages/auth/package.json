@@ -28,7 +28,7 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 91.18"
 	},
 	"typesVersions": {
-		">=4.0": {
+		">=4.2": {
 			"cognito": [
 				"./lib-esm/providers/cognito/index.d.ts"
 			],

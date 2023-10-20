@@ -31,7 +31,7 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 84.00"
 	},
 	"typesVersions": {
-		">=4.0": {
+		">=4.2": {
 			"pinpoint": [
 				"./lib-esm/providers/pinpoint/AmazonLocationServiceProvider.d.ts"
 			]
