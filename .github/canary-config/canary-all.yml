@@ -264,20 +264,6 @@ tests:
     sample_name: [credentials-auth]
     spec: credentials-auth
     browser: *minimal_browser_list
-  - test_name: integ_react_amazon_cognito_identity_js_cookie_storage
-    desc: 'amazon-cognito-identity-js-cookie-storage'
-    framework: react
-    category: auth
-    sample_name: [amazon-cognito-identity-js-cookie-storage]
-    spec: amazon-cognito-identity-js-cookie-storage
-    browser: *minimal_browser_list
-  - test_name: integ_react_amazon_cognito_identity_js
-    desc: 'amazon-cognito-identity-js'
-    framework: react
-    category: auth
-    sample_name: [amazon-cognito-identity-js]
-    spec: amazon-cognito-identity-js
-    browser: *minimal_browser_list
   - test_name: integ_react_device_tracking
     desc: 'cognito-device-tracking'
     framework: react
@@ -321,9 +307,3 @@ tests:
     sample_name: [auth-ssr]
     spec: auth-ssr
     browser: *minimal_browser_list
-  - test_name: integ_node_amazon_cognito_identity_js
-    desc: 'amazon-cognito-identity-js'
-    framework: node
-    category: auth
-    sample_name: [amazon-cognito-identity-js]
-    build_type: dev
