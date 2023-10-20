@@ -7,8 +7,7 @@ concurrency:
 
 on:
   push:
-    branches:
-      - next/main
+    branches: ['next/main', 'es2020']
 
 jobs:
   e2e:
