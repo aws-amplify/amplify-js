@@ -66,6 +66,7 @@ const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
 	{
 		Bucket: 'bucket',
 		Key: 'key',
+		Range: 'bytes=1-100',
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
@@ -78,6 +79,7 @@ const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
 			'x-amz-content-sha256': EMPTY_SHA256,
 			'x-amz-date': expect.stringMatching(/^\d{8}T\d{6}Z/),
 			'x-amz-user-agent': expect.stringContaining('aws-amplify'),
+			Range: 'bytes=1-100',
 		}),
 	}),
 	{
