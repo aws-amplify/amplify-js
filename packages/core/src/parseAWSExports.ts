@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ConsoleLogger as Logger } from './Logger';
-import { OAuthConfig, AuthConfigUserAttributes } from './singleton/Auth/types';
+import { OAuthConfig, AuthConfigUserAttributes, OAuthProvider } from './singleton/Auth/types';
 import { ResourcesConfig } from './singleton/types';
 
 const logger = new Logger('parseAWSExports');
@@ -187,18 +187,15 @@ export const parseAWSExports = (
 
 	const hasOAuthConfig = oauth ? Object.keys(oauth).length > 0 : false;
 	const hasSocialProviderConfig = aws_cognito_social_providers ? aws_cognito_social_providers.length > 0 : false;
-	if (amplifyConfig.Auth && (hasOAuthConfig || hasSocialProviderConfig)) {
+	if (amplifyConfig.Auth && hasOAuthConfig) {
 		amplifyConfig.Auth.Cognito.loginWith = {
 			...amplifyConfig.Auth.Cognito.loginWith,
 			oauth: {
-				...(hasOAuthConfig && getOAuthConfig(oauth)),
+				...(getOAuthConfig(oauth)),
 				...(hasSocialProviderConfig && {
-					providers: aws_cognito_social_providers.map((provider: string) => {
-						const updatedProvider = provider.toLowerCase();
-						return updatedProvider.charAt(0).toUpperCase() + updatedProvider.slice(1);
-					})
+					providers: parseSocialProviders(aws_cognito_social_providers)
 				})
-			} as OAuthConfig,
+			},
 		};
 	}
 
@@ -268,3 +265,10 @@ const getOAuthConfig = ({
 	redirectSignOut: getRedirectUrl(redirectSignOut),
 	responseType
 });
+
+const parseSocialProviders = (aws_cognito_social_providers: string[]) => {
+	return aws_cognito_social_providers.map((provider: string) => {
+		const updatedProvider = provider.toLowerCase();
+		return updatedProvider.charAt(0).toUpperCase() + updatedProvider.slice(1);
+	}) as OAuthProvider[];
+};
