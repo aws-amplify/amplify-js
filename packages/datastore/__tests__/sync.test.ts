@@ -5,7 +5,6 @@ import {
 	DataStoreAction,
 } from '@aws-amplify/core/internals/utils';
 import { defaultAuthStrategy } from '../src/authModeStrategies';
-
 let mockGraphQl;
 
 const sessionStorageMock = (() => {
@@ -182,7 +181,7 @@ describe('Sync', () => {
 		});
 
 		// TODO(v6) Re-enable test
-		it.skip('should throw error if no data is returned', async () => {
+		it('should throw error if no data is returned', async () => {
 			const rejectResponse = {
 				data: null,
 				errors: [
@@ -462,11 +461,15 @@ function jitteredRetrySyncProcessorSetup({
 		};
 	});
 
-	jest.mock('@aws-amplify/core', () => ({
-		...jest.requireActual('@aws-amplify/core'),
+	jest.mock('@aws-amplify/core/internals/utils', () => ({
+		...jest.requireActual('@aws-amplify/core/internals/utils'),
 		// No need to retry any thrown errors right now,
 		// so we're overriding jitteredExponentialRetry
 		jitteredExponentialRetry: (fn, args) => fn(...args),
+	}));
+
+	jest.mock('@aws-amplify/core', () => ({
+		...jest.requireActual('@aws-amplify/core'),
 		...coreMocks,
 	}));
 
