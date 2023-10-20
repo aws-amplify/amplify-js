@@ -24,7 +24,6 @@ const api_externals = [
 const auth_externals = [
 	'@aws-amplify/core',
 	'amazon-cognito-auth-js',
-	'amazon-cognito-identity-js',
 ];
 
 const cache_externals = ['@aws-amplify/core'];
