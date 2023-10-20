@@ -14,6 +14,9 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     namespace "com.amplifyrtncoreexample"
+    buildFeatures {
+        buildConfig = true
+    }
     defaultConfig {
         applicationId "com.amplifyrtncoreexample"
         minSdkVersion rootProject.ext.minSdkVersion
