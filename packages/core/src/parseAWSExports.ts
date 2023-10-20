@@ -238,20 +238,21 @@ export const parseAWSExports = (
 
 	// Predictions
 	if (predictions) {
-		const predictionsConfig = { ...predictions };
-
-		const { convert } = predictionsConfig || {};
-		if (convert?.speechGenerator?.defaults) {
-			// map VoiceId to voiceId in convert.speechGenerator.defaults
-			const { VoiceId: voiceId } =
-				predictionsConfig.convert.speechGenerator.defaults;
-			convert.speechGenerator.defaults = {
-				voiceId,
-				...convert.speechGenerator.defaults,
-			};
-			delete convert.speechGenerator.defaults.VoiceId;
-		}
-		amplifyConfig.Predictions = predictionsConfig;
+		// map VoiceId from speechGenerator defaults to voiceId
+		const { VoiceId: voiceId } =
+			predictions?.convert?.speechGenerator?.defaults ?? {};
+		amplifyConfig.Predictions = voiceId
+			? {
+					...predictions,
+					convert: {
+						...predictions.convert,
+						speechGenerator: {
+							...predictions.convert.speechGenerator,
+							defaults: { voiceId: voiceId },
+						},
+					},
+			  }
+			: predictions;
 	}
 
 	return amplifyConfig;
