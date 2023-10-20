@@ -1,18 +1,47 @@
 import { type ClientSchema, a } from '@aws-amplify/amplify-api-next-alpha';
 
 const schema = a.schema({
-	Todo: a.model({
-		name: a.string(),
+	Todo: a
+		.model({
+			name: a.string(),
+			description: a.string(),
+			notes: a.hasMany('Note'),
+			meta: a.hasOne('TodoMetadata'),
+		})
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
+	Note: a
+		.model({
+			body: a.string().required(),
+			todo: a.belongsTo('Todo'),
+		})
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
+	TodoMetadata: a
+		.model({
+			data: a.json(),
+		})
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
+	ThingWithCustomerOwnerField: a
+		.model({
+			id: a.id(),
+			description: a.string(),
+		})
+		.authorization([a.allow.owner('userPools').inField('customField')]),
+	ThingWithOwnerFieldSpecifiedInModel: a
+		.model({
+			id: a.id(),
+			name: a.string(),
+			owner: a.string(),
+		})
+		.authorization([a.allow.owner()]),
+	ThingWithAPIKeyAuth: a
+		.model({
+			id: a.id(),
+			description: a.string(),
+		})
+		.authorization([a.allow.public('apiKey')]),
+	ThingWithoutExplicitAuth: a.model({
+		id: a.id(),
 		description: a.string(),
-		notes: a.hasMany('Note'),
-		meta: a.hasOne('TodoMetadata'),
-	}),
-	Note: a.model({
-		body: a.string().required(),
-		todo: a.belongsTo('Todo'),
-	}),
-	TodoMetadata: a.model({
-		data: a.json(),
 	}),
 });
 
