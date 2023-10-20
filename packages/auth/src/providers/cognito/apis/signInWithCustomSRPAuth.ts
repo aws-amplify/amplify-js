@@ -14,7 +14,7 @@ import {
 	getSignInResult,
 	getSignInResultFromError,
 	getNewDeviceMetatada,
-	retryOnResourceNotFoundException,
+	getActiveSignInUsername,
 } from '../utils/signInHelpers';
 import {
 	InitiateAuthException,
@@ -69,22 +69,24 @@ export async function signInWithCustomSRPAuth(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await retryOnResourceNotFoundException(
-			handleCustomSRPAuthFlow,
-			[username, password, metadata, authConfig, tokenOrchestrator],
+		} = await handleCustomSRPAuthFlow(
 			username,
+			password,
+			metadata,
+			authConfig,
 			tokenOrchestrator
 		);
 
+		const activeUsername = getActiveSignInUsername(username);
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
 			signInSession: Session,
-			username,
+			username: activeUsername,
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
 			await cacheCognitoTokens({
-				username,
+				username: activeUsername,
 				...AuthenticationResult,
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
