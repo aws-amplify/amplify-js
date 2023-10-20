@@ -164,7 +164,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 									},
 								});
 							const onDeleteSub = models[name]
-								.onUpdate(arg, options)
+								.onDelete(arg, options)
 								.subscribe({
 									next(item) {
 										messageQueue.push({ item, type: 'delete' });
@@ -173,39 +173,6 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 										subscriber.error({ type: 'onDelete', error });
 									},
 								});
-
-							// initial results
-							(async () => {
-								let firstPage = true;
-								let nextToken: string | null = null;
-								while (!subscriber.closed && (firstPage || nextToken)) {
-									firstPage = false;
-
-									const {
-										data: page,
-										errors,
-										nextToken: _nextToken,
-									} = await models[name].list(arg, options);
-									nextToken = _nextToken;
-
-									for (const item of page) {
-										items.push(item);
-									}
-
-									subscriber.next({
-										items,
-
-										// if there are no more pages, we're "sync'd"
-										isSynced: !nextToken,
-									});
-
-									if (Array.isArray(errors)) {
-										for (const error of errors) {
-											subscriber.error(error);
-										}
-									}
-								}
-							})();
 
 							// util function (to be moved to utils)
 							function findIndexByKeyFields<T>(
@@ -270,23 +237,57 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 
 							const pkFields = getPkFields(model);
 
-							// play through the queue
-							ingestMessages(messageQueue);
+							// initial results
+							(async () => {
+								let firstPage = true;
+								let nextToken: string | null = null;
+								while (!subscriber.closed && (firstPage || nextToken)) {
+									firstPage = false;
 
-							subscriber.next({
-								items,
-								isSynced: true,
-							});
+									const {
+										data: page,
+										errors,
+										nextToken: _nextToken,
+									} = await models[name].list(arg, options);
+									nextToken = _nextToken;
 
-							// switch the queue to write directly to the items collection
-							messageQueue.push = (...messages: typeof messageQueue) => {
-								ingestMessages(messages);
+									items.push(...page);
+
+									// if there are no more pages and no items we already know about
+									// that need to be merged in from sub, we're "synced"
+									const isSynced =
+										messageQueue.length === 0 &&
+										(nextToken === null || nextToken === undefined);
+
+									subscriber.next({
+										items,
+										isSynced,
+									});
+
+									if (Array.isArray(errors)) {
+										for (const error of errors) {
+											subscriber.error(error);
+										}
+									}
+								}
+
+								// play through the queue
+								ingestMessages(messageQueue);
 								subscriber.next({
 									items,
 									isSynced: true,
 								});
-								return items.length;
-							};
+
+								// switch the queue to write directly to the items collection
+								messageQueue.push = (...messages: typeof messageQueue) => {
+									ingestMessages(messages);
+									subscriber.next({
+										items,
+										isSynced: true,
+									});
+									return items.length;
+								};
+							})();
 
 							// when subscriber unsubscribes, tear down internal subs
 							return () => {

@@ -21,6 +21,29 @@ function mockApiResponse(value: any) {
 	});
 }
 
+function makeAppSyncStreams() {
+	const streams = {} as Partial<
+		Record<
+			'create' | 'update' | 'delete',
+			{
+				next: (message: any) => void;
+			}
+		>
+	>;
+	const spy = jest.fn(request => {
+		const matchedType = (request.query as string).match(
+			/on(Create|Update|Delete)/
+		);
+		if (matchedType) {
+			return new Observable(subscriber => {
+				streams[matchedType[1].toLowerCase()] = subscriber;
+			});
+		}
+	});
+	(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+	return { streams, spy };
+}
+
 describe('generateClient', () => {
 	test('can produce a client bound to an arbitrary amplify object for getConfig()', async () => {
 		// TS lies: We don't care what `amplify` is or does. We want want to make sure
@@ -694,6 +717,9 @@ describe('generateClient', () => {
 				},
 			});
 
+			const { streams, spy } = makeAppSyncStreams();
+			console.log({ streams });
+
 			client.models.Todo.observeQuery().subscribe({
 				next({ items, isSynced }) {
 					expect(isSynced).toBe(true);
@@ -712,6 +738,7 @@ describe('generateClient', () => {
 
 		test('can paginate through initial results', done => {
 			const client = generateClient<Schema>({ amplify: Amplify });
+			const { streams } = makeAppSyncStreams();
 
 			mockApiResponse({
 				data: {
@@ -781,7 +808,7 @@ describe('generateClient', () => {
 			});
 		});
 
-		test('can see creates - with non-empty query result', async done => {
+		test.only('can see creates - with non-empty query result', async done => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			mockApiResponse({
@@ -800,21 +827,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			const streams = {} as Partial<
-				Record<
-					'create' | 'update' | 'delete',
-					{
-						next: (message: any) => void;
-					}
-				>
-			>;
-			const spy = jest.fn(request => {
-				console.log({ request });
-				new Observable(subscriber => {
-					streams.create = subscriber;
-				});
-			});
-			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+			const { streams, spy } = makeAppSyncStreams();
 
 			let firstSnapshot = true;
 			client.models.Todo.observeQuery().subscribe({
