@@ -52,7 +52,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						);
 
 						try {
-							const { data, nextToken, extensions } = (await client.graphql({
+							const { data, extensions } = (await client.graphql({
 								query,
 								variables,
 							})) as any;
@@ -68,7 +68,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 									if (args?.selectionSet) {
 										return {
 											data: flattenedResult,
-											nextToken,
+											nextToken: data[key].nextToken,
 											extensions,
 										};
 									} else {
@@ -81,7 +81,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 
 										return {
 											data: initialized,
-											nextToken,
+											nextToken: data[key].nextToken,
 											extensions,
 										};
 									}
@@ -89,7 +89,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 
 								return {
 									data: data[key],
-									nextToken,
+									nextToken: data[key].nextToken,
 									extensions,
 								};
 							}
@@ -154,19 +154,13 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 									const {
 										data: page,
 										errors,
-										_nextToken,
+										nextToken: _nextToken,
 									} = await models[name].list(arg, options);
 									nextToken = _nextToken;
 
 									for (const item of page) {
 										items.push(item);
 									}
-
-									console.log({
-										page,
-										errors,
-										_nextToken,
-									});
 
 									subscriber.next({
 										items,

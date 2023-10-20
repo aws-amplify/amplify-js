@@ -708,9 +708,9 @@ describe('generateClient', () => {
 					done();
 				},
 			});
-		}, 500);
+		});
 
-		test.only('can paginate through initial results', done => {
+		test('can paginate through initial results', done => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			mockApiResponse({
@@ -779,7 +779,7 @@ describe('generateClient', () => {
 					}
 				},
 			});
-		}, 500);
+		});
 
 		// test('can see creates', async done => {});
 
