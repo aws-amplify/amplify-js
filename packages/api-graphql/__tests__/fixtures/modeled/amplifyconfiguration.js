@@ -1,14 +1,13 @@
 /**
- * Generated from `./schema.ts` by samsara
+ * Generated from `./schema.ts` by samsara.
  *
- * 1. cognito config omitted
- * 1.
+ * Cognito fields etc. omitted.
  */
 const amplifyConfig = {
-	aws_appsync_graphqlEndpoint: 'https://0.0.0.0/modeled/graphql',
+	aws_appsync_graphqlEndpoint: 'https://localhost/graphql',
 	aws_appsync_region: 'us-west-1',
 	aws_appsync_authenticationType: 'API_KEY',
-	aws_appsync_apiKey: 'some-api-key',
+	aws_appsync_apiKey: 'FAKE-KEY',
 	modelIntrospection: {
 		version: 1,
 		models: {

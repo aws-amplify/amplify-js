@@ -164,7 +164,7 @@ describe('generateClient', () => {
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
-							'X-Api-Key': 'some-api-key',
+							'X-Api-Key': 'FAKE-KEY',
 						}),
 						body: {
 							query: expect.stringContaining('createTodo(input: $input)'),
@@ -209,7 +209,7 @@ describe('generateClient', () => {
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
-							'X-Api-Key': 'some-api-key',
+							'X-Api-Key': 'FAKE-KEY',
 						}),
 						body: {
 							query: expect.stringContaining('getTodo(id: $id)'),
@@ -257,7 +257,7 @@ describe('generateClient', () => {
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
-							'X-Api-Key': 'some-api-key',
+							'X-Api-Key': 'FAKE-KEY',
 						}),
 						body: {
 							query: expect.stringContaining('listTodos(filter: $filter)'),
@@ -307,7 +307,7 @@ describe('generateClient', () => {
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
-							'X-Api-Key': 'some-api-key',
+							'X-Api-Key': 'FAKE-KEY',
 						}),
 						body: {
 							query: expect.stringContaining('updateTodo(input: $input)'),
@@ -354,7 +354,7 @@ describe('generateClient', () => {
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
-							'X-Api-Key': 'some-api-key',
+							'X-Api-Key': 'FAKE-KEY',
 						}),
 						body: {
 							query: expect.stringContaining('deleteTodo(input: $input)'),
@@ -379,7 +379,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test.only('can subscribe to onCreate()', done => {
+		test('can subscribe to onCreate()', done => {
 			const noteToSend = {
 				__typename: 'Note',
 				...serverManagedFields,
@@ -445,7 +445,7 @@ describe('generateClient', () => {
 			client.models.Note.onUpdate({
 				filter: graphqlVariables.filter,
 			}).subscribe({
-				next({ value }) {
+				next(value) {
 					expectSub(spy, 'onUpdateNote', graphqlVariables);
 					expect(value).toEqual(noteToSend);
 					done();
@@ -484,7 +484,7 @@ describe('generateClient', () => {
 			client.models.Note.onDelete({
 				filter: graphqlVariables.filter,
 			}).subscribe({
-				next({ value }) {
+				next(value) {
 					expectSub(spy, 'onDeleteNote', graphqlVariables);
 					expect(value).toEqual(noteToSend);
 					done();
@@ -533,7 +533,7 @@ describe('generateClient', () => {
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
-							'X-Api-Key': 'some-api-key',
+							'X-Api-Key': 'FAKE-KEY',
 						}),
 						body: {
 							query: expect.stringContaining('listNotes(filter: $filter)'),
@@ -592,7 +592,7 @@ describe('generateClient', () => {
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
-							'X-Api-Key': 'some-api-key',
+							'X-Api-Key': 'FAKE-KEY',
 						}),
 						body: {
 							query: expect.stringContaining('getTodo(id: $id)'),
@@ -647,7 +647,7 @@ describe('generateClient', () => {
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
-							'X-Api-Key': 'some-api-key',
+							'X-Api-Key': 'FAKE-KEY',
 						}),
 						body: {
 							query: expect.stringContaining('getTodoMetadata(id: $id)'),
