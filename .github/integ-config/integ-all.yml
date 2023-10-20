@@ -434,13 +434,20 @@ tests:
   #     retry_count: 10
 
   #   # API
-  - test_name: integ_react_graphql_api
-    desc: React GraphQL API
-    framework: react
+  - test_name: integ_next_graphql_api_v6_generate_client
+    desc: Next GraphQL API V6 Generate Client
+    framework: next
     category: api
-    sample_name: [graphql]
-    spec: graphql
+    sample_name: [next-12/api-v6-generate-client]
+    spec: api-v6-generate-client
     browser: *minimal_browser_list
+  # - test_name: integ_react_graphql_api
+  #   desc: React GraphQL API
+  #   framework: react
+  #   category: api
+  #   sample_name: [graphql]
+  #   spec: graphql
+  #   browser: *minimal_browser_list
 #   - test_name: integ_react_api_optimistic_ui
 #     desc: React GraphQL API Optimistic UI with Tan/ReactQuery
 #     framework: react
