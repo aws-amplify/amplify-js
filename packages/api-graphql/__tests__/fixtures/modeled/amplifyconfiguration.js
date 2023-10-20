@@ -1,8 +1,13 @@
+/**
+ * Generated from `./schema.ts` by samsara.
+ *
+ * Cognito fields etc. omitted.
+ */
 const amplifyConfig = {
-	aws_appsync_graphqlEndpoint: 'https://0.0.0.0/modeled/graphql',
+	aws_appsync_graphqlEndpoint: 'https://localhost/graphql',
 	aws_appsync_region: 'us-west-1',
 	aws_appsync_authenticationType: 'API_KEY',
-	aws_appsync_apiKey: 'some-api-key',
+	aws_appsync_apiKey: 'FAKE-KEY',
 	modelIntrospection: {
 		version: 1,
 		models: {
@@ -89,6 +94,25 @@ const amplifyConfig = {
 						type: 'model',
 						properties: {},
 					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									allow: 'public',
+									provider: 'apiKey',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+								{
+									provider: 'userPools',
+									ownerField: 'owner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
 				],
 				primaryKeyInfo: {
 					isCustomPrimaryKey: false,
@@ -157,6 +181,25 @@ const amplifyConfig = {
 						type: 'model',
 						properties: {},
 					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									allow: 'public',
+									provider: 'apiKey',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+								{
+									provider: 'userPools',
+									ownerField: 'owner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
 				],
 				primaryKeyInfo: {
 					isCustomPrimaryKey: false,
@@ -204,6 +247,295 @@ const amplifyConfig = {
 					{
 						type: 'model',
 						properties: {},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									allow: 'public',
+									provider: 'apiKey',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+								{
+									provider: 'userPools',
+									ownerField: 'owner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
+				],
+				primaryKeyInfo: {
+					isCustomPrimaryKey: false,
+					primaryKeyFieldName: 'id',
+					sortKeyFieldNames: [],
+				},
+			},
+			ThingWithCustomerOwnerField: {
+				name: 'ThingWithCustomerOwnerField',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					customField: {
+						name: 'customField',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ThingWithCustomerOwnerFields',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'customField',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
+				],
+				primaryKeyInfo: {
+					isCustomPrimaryKey: false,
+					primaryKeyFieldName: 'id',
+					sortKeyFieldNames: [],
+				},
+			},
+			ThingWithOwnerFieldSpecifiedInModel: {
+				name: 'ThingWithOwnerFieldSpecifiedInModel',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					name: {
+						name: 'name',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					owner: {
+						name: 'owner',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ThingWithOwnerFieldSpecifiedInModels',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'owner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
+				],
+				primaryKeyInfo: {
+					isCustomPrimaryKey: false,
+					primaryKeyFieldName: 'id',
+					sortKeyFieldNames: [],
+				},
+			},
+			ThingWithAPIKeyAuth: {
+				name: 'ThingWithAPIKeyAuth',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ThingWithAPIKeyAuths',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									allow: 'public',
+									provider: 'apiKey',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
+				],
+				primaryKeyInfo: {
+					isCustomPrimaryKey: false,
+					primaryKeyFieldName: 'id',
+					sortKeyFieldNames: [],
+				},
+			},
+			ThingWithoutExplicitAuth: {
+				name: 'ThingWithoutExplicitAuth',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ThingWithoutExplicitAuths',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
 					},
 				],
 				primaryKeyInfo: {
