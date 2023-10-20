@@ -137,12 +137,42 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 
 							// To enqueue subscription messages while we collect our initial
 							// result set.
-							// const messageQueue = [] as {
-							// 	type: 'create' | 'update' | 'delete';
-							// 	item: object;
-							// }[];
+							const messageQueue = [] as {
+								type: 'create' | 'update' | 'delete';
+								item: object;
+							}[];
 
 							// start subscriptions
+							const onCreateSub = models[name]
+								.onCreate(arg, options)
+								.subscribe({
+									next(item) {
+										messageQueue.push({ item, type: 'create' });
+									},
+									error(error) {
+										subscriber.error({ type: 'onCreate', error });
+									},
+								});
+							const onUpdateSub = models[name]
+								.onUpdate(arg, options)
+								.subscribe({
+									next(item) {
+										messageQueue.push({ item, type: 'update' });
+									},
+									error(error) {
+										subscriber.error({ type: 'onUpdate', error });
+									},
+								});
+							const onDeleteSub = models[name]
+								.onUpdate(arg, options)
+								.subscribe({
+									next(item) {
+										messageQueue.push({ item, type: 'delete' });
+									},
+									error(error) {
+										subscriber.error({ type: 'onDelete', error });
+									},
+								});
 
 							// initial results
 							(async () => {
@@ -177,9 +207,86 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								}
 							})();
 
+							// util function (to be moved to utils)
+							function findIndexByKeyFields<T>(
+								needle: T,
+								haystack: T[],
+								keyFields: Array<keyof T>
+							): number {
+								const searchObject = Object.fromEntries(
+									keyFields.map(fieldName => [fieldName, needle[fieldName]])
+								);
+
+								for (let i = 0; i < haystack.length; i++) {
+									if (
+										Object.keys(searchObject).every(
+											k => searchObject[k] === haystack[i][k]
+										)
+									) {
+										return i;
+									}
+								}
+
+								// if not found, return -1 as is traditional.
+								return -1;
+							}
+
+							// util function (to be moved to utils)
+							function getPkFields(model: any) {
+								const { primaryKeyFieldName, sortKeyFieldNames } =
+									model.primaryKeyInfo as {
+										primaryKeyFieldName: string;
+										sortKeyFieldNames: string[];
+									};
+								return [primaryKeyFieldName, ...sortKeyFieldNames];
+							}
+
+							// obervable collection collection
+							function ingestMessage(message: (typeof messageQueue)[number]) {
+								const idx = findIndexByKeyFields(
+									message.item,
+									items,
+									pkFields as any
+								);
+								switch (message.type) {
+									case 'create':
+										if (idx < 0) items.push(message.item);
+										break;
+									case 'update':
+										if (idx >= 0) items[idx] = message.item;
+										break;
+									case 'delete':
+										if (idx >= 0) items.splice(idx, 1);
+										break;
+									default:
+										console.error(
+											'Unrecognized message in observeQuery.',
+											message
+										);
+								}
+							}
+
+							const pkFields = getPkFields(model);
+
+							// play through the queue
+							for (const message of messageQueue) {
+								ingestMessage(message);
+							}
+
+							subscriber.next({
+								items,
+								isSynced: true,
+							});
+
+							// switch the queue to write directly to the items collection
+
 							// when subscriber unsubscribes, tear down internal subs
 							return () => {
 								// 1. tear down internal subs
+								onCreateSub.unsubscribe();
+								onUpdateSub.unsubscribe();
+								onDeleteSub.unsubscribe();
+
 								// 2. no need to explicitly stop paging at this point, because the
 								// `subscriber` object has a `closed` property we can use to stop paging.
 							};

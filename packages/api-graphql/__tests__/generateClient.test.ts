@@ -4,7 +4,7 @@ import { generateClient } from '../src/internals';
 import configFixture from './fixtures/modeled/amplifyconfiguration';
 import { Schema } from './fixtures/modeled/schema';
 import { expectSub } from './utils/expects';
-import { from } from 'rxjs';
+import { Observable, from } from 'rxjs';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -781,7 +781,105 @@ describe('generateClient', () => {
 			});
 		});
 
-		// test('can see creates', async done => {});
+		test('can see creates - with non-empty query result', async done => {
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'initial record',
+								description: 'something something',
+							},
+						],
+						nextToken: null,
+					},
+				},
+			});
+
+			const streams = {} as Partial<
+				Record<
+					'create' | 'update' | 'delete',
+					{
+						next: (message: any) => void;
+					}
+				>
+			>;
+			const spy = jest.fn(request => {
+				console.log({ request });
+				new Observable(subscriber => {
+					streams.create = subscriber;
+				});
+			});
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			let firstSnapshot = true;
+			client.models.Todo.observeQuery().subscribe({
+				next({ items, isSynced }) {
+					if (firstSnapshot) {
+						firstSnapshot = false;
+						expect(items).toEqual([
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'initial record',
+								description: 'something something',
+							}),
+						]);
+						setTimeout(() => {
+							streams.create?.next({});
+						}, 1);
+					} else {
+						expect(items).toEqual([
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'initial record',
+								description: 'something something',
+							}),
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'observed record',
+								description: 'something something',
+							}),
+						]);
+						done();
+					}
+				},
+			});
+		});
+
+		test('can see creates - with empty query result', async done => {
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			mockApiResponse({
+				data: {
+					listTodos: {
+						items: [],
+						nextToken: null,
+					},
+				},
+			});
+
+			client.models.Todo.observeQuery().subscribe({
+				next({ items, isSynced }) {
+					expect(isSynced).toBe(true);
+					expect(items).toEqual([
+						expect.objectContaining({
+							__typename: 'Todo',
+							...serverManagedFields,
+							name: 'some name',
+							description: 'something something',
+						}),
+					]);
+					done();
+				},
+			});
+		});
 
 		// test('can see updates', async done => {});
 
