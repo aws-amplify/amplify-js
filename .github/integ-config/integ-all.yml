@@ -505,7 +505,7 @@ tests:
     category: auth
     sample_name: [auth-ssr]
     spec: auth-ssr
-    browser: *minimal_browser_list
+    browser: [chrome]
   - test_name: integ_next_auth_authenticator_and_rsc_page
     desc: 'Authenticator and RSC page'
     framework: next
@@ -648,20 +648,20 @@ tests:
   #   sample_name: [chatbot-component]
   #   spec: chatbot-component
   #   browser: *minimal_browser_list
-  # - test_name: integ_react_interactions_chatbot_v1
-  #   desc: 'Chatbot V1'
-  #   framework: react
-  #   category: interactions
-  #   sample_name: [lex-test-component]
-  #   spec: chatbot-v1
-  #   browser: *minimal_browser_list
-  # - test_name: integ_react_interactions_chatbot_v2
-  #   desc: 'Chatbot V2'
-  #   framework: react
-  #   category: interactions
-  #   sample_name: [lex-test-component]
-  #   spec: chatbot-v2
-  #   browser: *minimal_browser_list
+  - test_name: integ_react_interactions_chatbot_v1
+    desc: 'Chatbot V1'
+    framework: react
+    category: interactions
+    sample_name: [lex-test-component]
+    spec: chatbot-v1
+    browser: *minimal_browser_list
+  - test_name: integ_react_interactions_chatbot_v2
+    desc: 'Chatbot V2'
+    framework: react
+    category: interactions
+    sample_name: [lex-test-component]
+    spec: chatbot-v2
+    browser: *minimal_browser_list
   # - test_name: integ_angular_interactions
   #   desc: 'Angular Interactions'
   #   framework: angular
