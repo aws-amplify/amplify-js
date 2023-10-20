@@ -166,10 +166,10 @@ export type OAuthConfig = {
 	redirectSignIn: Array<string>;
 	redirectSignOut: Array<string>;
 	responseType: 'code' | 'token';
-	providers?: Array<OAuthProviders | CustomProvider>;
+	providers?: Array<OAuthProvider | CustomProvider>;
 };
 
-type OAuthProviders = 'Google' | 'Facebook' | 'Amazon' | 'Apple';
+export type OAuthProvider = 'Google' | 'Facebook' | 'Amazon' | 'Apple';
 type CustomProvider = { custom: string };
 
 type CustomScope = string & {};
