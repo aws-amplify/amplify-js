@@ -219,7 +219,7 @@ describe('flattenItems', () => {
 			expect(selSet).toEqual(expected);
 		});
 
-		test.only('deeply nested on a bi-directional model', () => {
+		test('deeply nested on a bi-directional model', () => {
 			const selSet = customSelectionSetToIR(modelIntroSchema.models, 'Todo', [
 				'id',
 				'name',
@@ -253,6 +253,34 @@ describe('flattenItems', () => {
 									},
 								},
 							},
+						},
+					},
+				},
+			};
+
+			expect(selSet).toEqual(expected);
+		});
+
+		test("subsequent wildcard doesn't overwrite existing nested object", () => {
+			const selSet = customSelectionSetToIR(modelIntroSchema.models, 'Todo', [
+				'id',
+				'name',
+				'notes.todo.name',
+				'notes.*',
+			]);
+
+			const expected = {
+				id: '',
+				name: '',
+				notes: {
+					items: {
+						id: '',
+						body: '',
+						createdAt: '',
+						updatedAt: '',
+						todoNotesId: '',
+						todo: {
+							name: '',
 						},
 					},
 				},
@@ -305,6 +333,19 @@ describe('flattenItems', () => {
 
 			const expected =
 				'id name notes { items { id body createdAt updatedAt todoNotesId owner } }';
+
+			expect(selSet).toEqual(expected);
+		});
+
+		test('deeply nested on a bi-directional model', () => {
+			const selSet = generateSelectionSet(modelIntroSchema.models, 'Todo', [
+				'id',
+				'name',
+				'notes.todo.notes.todo.notes.todo.notes.*',
+			]);
+
+			const expected =
+				'id name notes { items { todo { notes { items { todo { notes { items { todo { notes { items { id body createdAt updatedAt todoNotesId } } } } } } } } } } }';
 
 			expect(selSet).toEqual(expected);
 		});
