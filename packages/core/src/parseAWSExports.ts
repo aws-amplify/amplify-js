@@ -185,8 +185,8 @@ export const parseAWSExports = (
 		};
 	}
 
-	const hasOAuthConfig = oauth && Object.keys(oauth).length > 0;
-	const hasSocialProviderConfig = aws_cognito_social_providers && aws_cognito_social_providers.length > 0;
+	const hasOAuthConfig = oauth ? Object.keys(oauth).length > 0 : false;
+	const hasSocialProviderConfig = aws_cognito_social_providers ? aws_cognito_social_providers.length > 0 : false;
 	if (amplifyConfig.Auth && (hasOAuthConfig || hasSocialProviderConfig)) {
 		amplifyConfig.Auth.Cognito.loginWith = {
 			...amplifyConfig.Auth.Cognito.loginWith,
@@ -198,7 +198,7 @@ export const parseAWSExports = (
 						return updatedProvider.charAt(0).toUpperCase() + updatedProvider.slice(1);
 					})
 				})
-			}
+			} as OAuthConfig,
 		};
 	}
 
