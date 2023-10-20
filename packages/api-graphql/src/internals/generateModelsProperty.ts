@@ -233,6 +233,10 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 											);
 									}
 								}
+								subscriber.next({
+									items,
+									isSynced: true,
+								});
 							}
 
 							const pkFields = getPkFields(model);
@@ -272,19 +276,13 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								}
 
 								// play through the queue
-								ingestMessages(messageQueue);
-								subscriber.next({
-									items,
-									isSynced: true,
-								});
+								if (messageQueue.length > 0) {
+									ingestMessages(messageQueue);
+								}
 
 								// switch the queue to write directly to the items collection
 								messageQueue.push = (...messages: typeof messageQueue) => {
 									ingestMessages(messages);
-									subscriber.next({
-										items,
-										isSynced: true,
-									});
 									return items.length;
 								};
 							})();

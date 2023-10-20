@@ -13,12 +13,19 @@ const serverManagedFields = {
 	updatedAt: new Date().toISOString(),
 };
 
-function mockApiResponse(value: any) {
-	return jest.spyOn((raw.GraphQLAPI as any)._api, 'post').mockReturnValue({
-		body: {
-			json: () => value,
-		},
-	});
+function mockApiResponse(value: any, trigger?: Promise<void>) {
+	return jest
+		.spyOn((raw.GraphQLAPI as any)._api, 'post')
+		.mockImplementation(async () => {
+			if (trigger) {
+				await trigger;
+			}
+			return {
+				body: {
+					json: () => value,
+				},
+			};
+		});
 }
 
 function makeAppSyncStreams() {
@@ -808,7 +815,7 @@ describe('generateClient', () => {
 			});
 		});
 
-		test.only('can see creates - with non-empty query result', async done => {
+		test('can see creates - with non-empty query result', async done => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			mockApiResponse({
@@ -843,7 +850,17 @@ describe('generateClient', () => {
 							}),
 						]);
 						setTimeout(() => {
-							streams.create?.next({});
+							streams.create?.next({
+								data: {
+									onCreateTodo: {
+										__typename: 'Todo',
+										...serverManagedFields,
+										id: 'different-id',
+										name: 'observed record',
+										description: 'something something',
+									},
+								},
+							});
 						}, 1);
 					} else {
 						expect(items).toEqual([
@@ -856,6 +873,7 @@ describe('generateClient', () => {
 							expect.objectContaining({
 								__typename: 'Todo',
 								...serverManagedFields,
+								id: 'different-id',
 								name: 'observed record',
 								description: 'something something',
 							}),
@@ -878,24 +896,238 @@ describe('generateClient', () => {
 				},
 			});
 
+			const { streams, spy } = makeAppSyncStreams();
+
+			let firstSnapshot = true;
 			client.models.Todo.observeQuery().subscribe({
 				next({ items, isSynced }) {
-					expect(isSynced).toBe(true);
-					expect(items).toEqual([
-						expect.objectContaining({
-							__typename: 'Todo',
-							...serverManagedFields,
-							name: 'some name',
-							description: 'something something',
-						}),
-					]);
-					done();
+					if (firstSnapshot) {
+						firstSnapshot = false;
+						expect(items).toEqual([]);
+						setTimeout(() => {
+							streams.create?.next({
+								data: {
+									onCreateTodo: {
+										__typename: 'Todo',
+										...serverManagedFields,
+										id: 'observed-id',
+										name: 'observed record',
+										description: 'something something',
+									},
+								},
+							});
+						}, 1);
+					} else {
+						expect(items).toEqual([
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								id: 'observed-id',
+								name: 'observed record',
+								description: 'something something',
+							}),
+						]);
+						done();
+					}
 				},
 			});
 		});
 
-		// test('can see updates', async done => {});
+		// MOSTLY COPY PASTED ... NOT IMPLEMENTED YET
+		test.skip('can see onCreates that are received prior to fetch completion', async done => {
+			const client = generateClient<Schema>({ amplify: Amplify });
 
-		// test('can see deletions', async done => {});
+			mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'initial record',
+								description: 'something something',
+							},
+						],
+						nextToken: null,
+					},
+				},
+			});
+
+			const { streams, spy } = makeAppSyncStreams();
+
+			let firstSnapshot = true;
+			client.models.Todo.observeQuery().subscribe({
+				next({ items, isSynced }) {
+					if (firstSnapshot) {
+						firstSnapshot = false;
+						expect(items).toEqual([
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'initial record',
+								description: 'something something',
+							}),
+						]);
+						setTimeout(() => {
+							streams.create?.next({
+								data: {
+									onCreateTodo: {
+										__typename: 'Todo',
+										...serverManagedFields,
+										id: 'different-id',
+										name: 'observed record',
+										description: 'something something',
+									},
+								},
+							});
+						}, 1);
+					} else {
+						expect(items).toEqual([
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'initial record',
+								description: 'something something',
+							}),
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								id: 'different-id',
+								name: 'observed record',
+								description: 'something something',
+							}),
+						]);
+						done();
+					}
+				},
+			});
+
+			streams.create?.next({
+				data: {
+					onCreateTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						id: 'different-id',
+						name: 'observed record',
+						description: 'something something',
+					},
+				},
+			});
+		});
+
+		test('can see updates', async done => {
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'initial record',
+								description: 'something something',
+							},
+						],
+						nextToken: null,
+					},
+				},
+			});
+
+			const { streams, spy } = makeAppSyncStreams();
+
+			let firstSnapshot = true;
+			client.models.Todo.observeQuery().subscribe({
+				next({ items, isSynced }) {
+					if (firstSnapshot) {
+						firstSnapshot = false;
+						expect(items).toEqual([
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'initial record',
+								description: 'something something',
+							}),
+						]);
+						setTimeout(() => {
+							streams.update?.next({
+								data: {
+									onCreateTodo: {
+										__typename: 'Todo',
+										...serverManagedFields,
+										name: 'updated record',
+										description: 'something something',
+									},
+								},
+							});
+						}, 1);
+					} else {
+						expect(items).toEqual([
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'updated record',
+								description: 'something something',
+							}),
+						]);
+						done();
+					}
+				},
+			});
+		});
+
+		test('can see deletions', async done => {
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'initial record',
+								description: 'something something',
+							},
+						],
+						nextToken: null,
+					},
+				},
+			});
+
+			const { streams, spy } = makeAppSyncStreams();
+
+			let firstSnapshot = true;
+			client.models.Todo.observeQuery().subscribe({
+				next({ items, isSynced }) {
+					if (firstSnapshot) {
+						firstSnapshot = false;
+						expect(items).toEqual([
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'initial record',
+								description: 'something something',
+							}),
+						]);
+						setTimeout(() => {
+							streams.delete?.next({
+								data: {
+									onCreateTodo: {
+										__typename: 'Todo',
+										...serverManagedFields,
+										name: 'initial record',
+										description: 'something something',
+									},
+								},
+							});
+						}, 1);
+					} else {
+						expect(items).toEqual([]);
+						done();
+					}
+				},
+			});
+		});
 	});
 });
