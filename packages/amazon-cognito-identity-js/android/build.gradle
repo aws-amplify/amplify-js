@@ -1,3 +1,8 @@
+import com.android.Version
+
+def agpVersion = Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
+def androidManifestPath = agpVersion >= 7 ? 'src/main/AndroidManifest.xml' : 'src/hasNamespace/AndroidManifest.xml'
+
 buildscript {
     repositories {
         mavenCentral()
@@ -15,6 +20,10 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
+    if (agpVersion >= 7) {
+        namespace "com.amazonaws"
+    }
+
     compileSdkVersion safeExtGet('compileSdkVersion', 26)
     buildToolsVersion safeExtGet('buildToolsVersion', '26.0.3')
 
@@ -23,6 +32,11 @@ android {
         targetSdkVersion safeExtGet('targetSdkVersion', 26)
         versionCode 1
         versionName "1.0"
+    }
+    sourceSets {
+        main {
+            manifest.srcFile androidManifestPath
+        }
     }
     lintOptions {
         abortOnError false
