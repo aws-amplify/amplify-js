@@ -3,5 +3,5 @@
 	"main": "../lib/withAmplify.js",
 	"browser": "../lib-esm/withAmplify.js",
 	"module": "../lib-esm/withAmplify.js",
-	"typings": "../lib-esm/withAmplify.js"
+	"typings": "../lib-esm/withAmplify.d.ts"
 }
