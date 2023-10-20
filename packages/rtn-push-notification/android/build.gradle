@@ -1,7 +1,7 @@
 import com.android.Version
 
 def agpVersion = Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
-def androidManifestPath = agpVersion >= 7 ? 'src/main/AndroidManifest.xml' : 'src/hasNamespace/AndroidManifest.xml'
+def androidManifestPath = agpVersion >= 7 ? 'src/main/AndroidManifest.xml' : 'src/hasPackageName/AndroidManifest.xml'
 
 buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion')
@@ -32,7 +32,7 @@ def getExtOrDefault(prop) {
 
 android {
     if (agpVersion >= 7) {
-        namespace 'com.amazonaws.amplify.rtnpushnotification'
+        namespace 'com.amazonaws.amplify'
     }
 
     compileSdkVersion getExtOrDefault('compileSdkVersion')
