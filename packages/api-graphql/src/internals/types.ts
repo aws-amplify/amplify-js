@@ -11,4 +11,5 @@ export type ClientGenerationParams = {
 	amplify:
 		| AmplifyClassV6
 		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>);
+	config?: object;
 };

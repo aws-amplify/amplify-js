@@ -10,6 +10,7 @@ import { V6Client } from '@aws-amplify/api-graphql';
 import {
 	NextServer,
 	runWithAmplifyServerContext,
+	getAmplifyConfig,
 } from '@aws-amplify/adapter-nextjs';
 
 export type {
@@ -33,7 +34,11 @@ export function generateServerClient<T extends Record<any, any> = never>(
 				fn(getAmplifyServerContext(contextSpec).amplify),
 		});
 
-	return internalGenerateClient({ amplify: getAmplify });
+	// retrieve general SSR config. This is used only for get the
+	// modelIntroSchema in generateModelsProperty
+	const config = getAmplifyConfig();
+
+	return internalGenerateClient({ amplify: getAmplify, config });
 }
 
 export {
