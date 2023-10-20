@@ -41,6 +41,7 @@ export const parseAWSExports = (
 		aws_cognito_password_protection_settings,
 		aws_cognito_verification_mechanisms,
 		aws_cognito_signup_attributes,
+		aws_cognito_social_providers,
 		aws_cognito_username_attributes,
 		aws_mandatory_sign_in,
 		aws_mobile_analytics_app_id,
@@ -179,10 +180,15 @@ export const parseAWSExports = (
 						loginWithEmailEnabled || loginWithPhoneEnabled ? false : true,
 					email: loginWithEmailEnabled,
 					phone: loginWithPhoneEnabled,
-					...(oauth &&
-						Object.keys(oauth).length > 0 && {
-							oauth: getOAuthConfig(oauth),
-						}),
+					oauth: {
+						...(oauth && Object.keys(oauth).length > 0 && getOAuthConfig(oauth)),
+						...(aws_cognito_social_providers && {
+							providers: aws_cognito_social_providers.map((provider: string) => {
+								const updatedProvider = provider.toLowerCase();
+								return updatedProvider.charAt(0).toUpperCase() + updatedProvider.slice(1);
+							})
+						})
+					}
 				},
 			},
 		};
@@ -252,5 +258,5 @@ const getOAuthConfig = ({
 	scopes: scope,
 	redirectSignIn: getRedirectUrl(redirectSignIn),
 	redirectSignOut: getRedirectUrl(redirectSignOut),
-	responseType,
+	responseType
 });
