@@ -1,11 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// import {
-// 	ICookieStorageData,
-// 	ICognitoStorage,
-// } from 'amazon-cognito-identity-js';
-
 /**
  * Parameters for user sign up
  */
