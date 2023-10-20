@@ -157,6 +157,7 @@ export const graphQLOperationsInfo = {
 	ONCREATE: { operationPrefix: 'onCreate' as const, usePlural: false },
 	ONUPDATE: { operationPrefix: 'onUpdate' as const, usePlural: false },
 	ONDELETE: { operationPrefix: 'onDelete' as const, usePlural: false },
+	OBSERVE_QUERY: { operationPrefix: 'observeQuery' as const, usePlural: false },
 };
 export type ModelOperation = keyof typeof graphQLOperationsInfo;
 
@@ -424,6 +425,12 @@ export function generateGraphQLDocument(
 				});
 			graphQLOperationType ?? (graphQLOperationType = 'subscription');
 			graphQLSelectionSet ?? (graphQLSelectionSet = selectionSetFields);
+			break;
+		case 'OBSERVE_QUERY':
+		default:
+			throw new Error(
+				'Internal error: Attempted to generate graphql document for observeQuery. Please report this error.'
+			);
 	}
 
 	const graphQLDocument = `${graphQLOperationType}${
@@ -508,6 +515,11 @@ export function buildGraphQLVariables(
 			if (arg?.filter) {
 				variables = { filter: arg.filter };
 			}
+			break;
+		case 'OBSERVE_QUERY':
+			throw new Error(
+				'Internal error: Attempted to build variables for observeQuery. Please report this error.'
+			);
 			break;
 		default:
 			const exhaustiveCheck: never = operation;

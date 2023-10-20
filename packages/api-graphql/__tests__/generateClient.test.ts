@@ -136,7 +136,7 @@ describe('generateClient', () => {
 		expect(apiSpy).toHaveBeenCalled();
 	});
 
-	describe('with model', () => {
+	describe('basic model operations', () => {
 		beforeEach(() => {
 			jest.clearAllMocks();
 			Amplify.configure(configFixture as any);
@@ -667,5 +667,124 @@ describe('generateClient', () => {
 				})
 			);
 		});
+	});
+
+	describe.only('observeQuery', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+			Amplify.configure(configFixture as any);
+		});
+
+		test('can see initial results', done => {
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+						nextToken: null,
+					},
+				},
+			});
+
+			client.models.Todo.observeQuery().subscribe({
+				next({ items, isSynced }) {
+					expect(isSynced).toBe(true);
+					expect(items).toEqual([
+						expect.objectContaining({
+							__typename: 'Todo',
+							...serverManagedFields,
+							name: 'some name',
+							description: 'something something',
+						}),
+					]);
+					done();
+				},
+			});
+		}, 500);
+
+		test.only('can paginate through initial results', done => {
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'first todo',
+								description: 'something something first',
+							},
+						],
+						nextToken: 'sometoken',
+					},
+				},
+			});
+
+			let isFirstResult = true;
+
+			client.models.Todo.observeQuery().subscribe({
+				next({ items, isSynced }) {
+					if (isFirstResult) {
+						isFirstResult = false;
+						expect(isSynced).toBe(false);
+						expect(items).toEqual([
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'first todo',
+								description: 'something something first',
+							}),
+						]);
+						mockApiResponse({
+							data: {
+								listTodos: {
+									items: [
+										{
+											__typename: 'Todo',
+											...serverManagedFields,
+											name: 'second todo',
+											description: 'something something second',
+										},
+									],
+									nextToken: undefined,
+								},
+							},
+						});
+					} else {
+						expect(isSynced).toBe(true);
+						expect(items).toEqual([
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'first todo',
+								description: 'something something first',
+							}),
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'second todo',
+								description: 'something something second',
+							}),
+						]);
+						done();
+					}
+				},
+			});
+		}, 500);
+
+		// test('can see creates', async done => {});
+
+		// test('can see updates', async done => {});
+
+		// test('can see deletions', async done => {});
 	});
 });

@@ -129,6 +129,67 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 							})
 						);
 					};
+				} else if (operation === 'OBSERVE_QUERY') {
+					models[name][operationPrefix] = (arg?: any, options?: any) =>
+						new Observable(subscriber => {
+							// what we'll be sending to our subscribers
+							const items: object[] = [];
+
+							// To enqueue subscription messages while we collect our initial
+							// result set.
+							// const messageQueue = [] as {
+							// 	type: 'create' | 'update' | 'delete';
+							// 	item: object;
+							// }[];
+
+							// start subscriptions
+
+							// initial results
+							(async () => {
+								let firstPage = true;
+								let nextToken: string | null = null;
+								while (!subscriber.closed && (firstPage || nextToken)) {
+									firstPage = false;
+
+									const {
+										data: page,
+										errors,
+										_nextToken,
+									} = await models[name].list(arg, options);
+									nextToken = _nextToken;
+
+									for (const item of page) {
+										items.push(item);
+									}
+
+									console.log({
+										page,
+										errors,
+										_nextToken,
+									});
+
+									subscriber.next({
+										items,
+
+										// if there are no more pages, we're "sync'd"
+										isSynced: !nextToken,
+									});
+
+									if (Array.isArray(errors)) {
+										for (const error of errors) {
+											subscriber.error(error);
+										}
+									}
+								}
+							})();
+
+							// when subscriber unsubscribes, tear down internal subs
+							return () => {
+								// 1. tear down internal subs
+								// 2. no need to explicitly stop paging at this point, because the
+								// `subscriber` object has a `closed` property we can use to stop paging.
+							};
+						});
 				} else {
 					models[name][operationPrefix] = async (arg?: any, options?: any) => {
 						const query = generateGraphQLDocument(
