@@ -179,18 +179,26 @@ export const parseAWSExports = (
 					username:
 						loginWithEmailEnabled || loginWithPhoneEnabled ? false : true,
 					email: loginWithEmailEnabled,
-					phone: loginWithPhoneEnabled,
-					oauth: {
-						...(oauth && Object.keys(oauth).length > 0 && getOAuthConfig(oauth)),
-						...(aws_cognito_social_providers && {
-							providers: aws_cognito_social_providers.map((provider: string) => {
-								const updatedProvider = provider.toLowerCase();
-								return updatedProvider.charAt(0).toUpperCase() + updatedProvider.slice(1);
-							})
-						})
-					}
+					phone: loginWithPhoneEnabled
 				},
 			},
+		};
+	}
+
+	const hasOAuthConfig = oauth && Object.keys(oauth).length > 0;
+	const hasSocialProviderConfig = aws_cognito_social_providers && aws_cognito_social_providers.length > 0;
+	if (amplifyConfig.Auth && (hasOAuthConfig || hasSocialProviderConfig)) {
+		amplifyConfig.Auth.Cognito.loginWith = {
+			...amplifyConfig.Auth.Cognito.loginWith,
+			oauth: {
+				...(hasOAuthConfig && getOAuthConfig(oauth)),
+				...(hasSocialProviderConfig && {
+					providers: aws_cognito_social_providers.map((provider: string) => {
+						const updatedProvider = provider.toLowerCase();
+						return updatedProvider.charAt(0).toUpperCase() + updatedProvider.slice(1);
+					})
+				})
+			}
 		};
 	}
 

@@ -81,6 +81,7 @@ describe('Parser', () => {
 					],
 				},
 				aws_cognito_verification_mechanisms: ['EMAIL'],
+				aws_cognito_social_providers: ['GOOGLE', 'APPLE', 'FACEBOOK', 'AMAZON'],
 				aws_mandatory_sign_in: 'enable',
 				aws_mobile_analytics_app_id: appId,
 				aws_mobile_analytics_app_region: region,
@@ -118,6 +119,9 @@ describe('Parser', () => {
 					allowGuestAccess: false,
 					loginWith: {
 						email: false,
+						oauth: {
+							providers: ['Google', 'Apple', 'Facebook', 'Amazon']
+						},
 						phone: true,
 						username: false,
 					},
