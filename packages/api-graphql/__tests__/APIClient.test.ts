@@ -208,6 +208,7 @@ describe('flattenItems', () => {
 					items: {
 						id: '',
 						body: '',
+						owner: '',
 						createdAt: '',
 						updatedAt: '',
 						todoNotesId: '',
@@ -223,7 +224,8 @@ describe('flattenItems', () => {
 		test('it should generate default selection set', () => {
 			const selSet = generateSelectionSet(modelIntroSchema.models, 'Todo');
 
-			const expected = 'id name description createdAt updatedAt todoMetaId';
+			const expected =
+				'id name description createdAt updatedAt todoMetaId owner';
 
 			expect(selSet).toEqual(expected);
 		});
@@ -260,7 +262,7 @@ describe('flattenItems', () => {
 			]);
 
 			const expected =
-				'id name notes { items { id body createdAt updatedAt todoNotesId } }';
+				'id name notes { items { id body createdAt updatedAt todoNotesId owner } }';
 
 			expect(selSet).toEqual(expected);
 		});
