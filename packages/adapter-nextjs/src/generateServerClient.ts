@@ -3,11 +3,9 @@ import { getAmplifyServerContext } from '@aws-amplify/core/internals/adapter-cor
 
 import { V6Client } from '@aws-amplify/api-graphql';
 
-import {
-	NextServer,
-	runWithAmplifyServerContext,
-	getAmplifyConfig,
-} from './index';
+import { runWithAmplifyServerContext } from './runWithAmplifyServerContext';
+import { getAmplifyConfig } from './utils/getAmplifyConfig';
+import { NextServer } from './types';
 
 export type {
 	GraphQLResult,
