@@ -12,17 +12,17 @@ import {
 	notifyEventListenersAndAwaitHandlers,
 } from '../../../../eventListeners';
 import {
+	getPushNotificationUserAgentString,
 	getToken,
 	initialize,
 	isInitialized,
-	resolveConfig,
 	resolveCredentials,
 	setToken,
 } from '../../../utils';
 import {
 	createMessageEventRecorder,
 	getChannelType,
-	getPushNotificationUserAgentString,
+	resolveConfig,
 } from '../utils';
 
 const {
@@ -45,36 +45,6 @@ export const initializePushNotifications = (): void => {
 	addNativeListeners();
 	addAnalyticsListeners();
 	initialize();
-};
-
-const addAnalyticsListeners = (): void => {
-	let launchNotificationOpenedListenerRemover: EventListenerRemover | undefined;
-
-	// wire up default Pinpoint message event handling
-	addEventListener(
-		'backgroundMessageReceived',
-		createMessageEventRecorder('backgroundMessageReceived')
-	);
-	addEventListener(
-		'foregroundMessageReceived',
-		createMessageEventRecorder('foregroundMessageReceived')
-	);
-	launchNotificationOpenedListenerRemover = addEventListener(
-		'launchNotificationsOpened',
-		createMessageEventRecorder(
-			'notificationOpened',
-			// once we are done with it we can remove the listener
-			launchNotificationOpenedListenerRemover?.remove
-		)
-	);
-	addEventListener(
-		'notificationOpened',
-		createMessageEventRecorder(
-			'notificationOpened',
-			// if we are in this state, we no longer need the listener as the app was launched via some other means
-			launchNotificationOpenedListenerRemover?.remove
-		)
-	);
 };
 
 const addNativeListeners = (): void => {
@@ -126,7 +96,9 @@ const addNativeListeners = (): void => {
 					logger.error(err);
 				} finally {
 					// notify native module that handlers have completed their work (or timed out)
-					if (completionHandlerId) completeNotification(completionHandlerId);
+					if (completionHandlerId) {
+						completeNotification(completionHandlerId);
+					}
 				}
 			}
 		);
@@ -147,7 +119,7 @@ const addNativeListeners = (): void => {
 				// for use otherwise as it produces inconsistent results when used within React Native app context
 				LAUNCH_NOTIFICATION_OPENED,
 				message => {
-					notifyEventListeners('launchNotificationsOpened', message);
+					notifyEventListeners('launchNotificationOpened', message);
 					// once we are done with it we can remove the listener
 					launchNotificationOpenedListener?.remove();
 				}
@@ -169,23 +141,58 @@ const addNativeListeners = (): void => {
 		// listen for native new token event, automatically re-register device with provider using new token and
 		// broadcast to library listeners
 		TOKEN_RECEIVED,
-		token => {
+		async token => {
 			// avoid a race condition where two endpoints are created with the same token on a fresh install
 			if (getToken() === token) {
 				return;
 			}
 			setToken(token);
-			registerDevice();
 			notifyEventListeners('tokenReceived', token);
+			try {
+				await registerDevice(token);
+			} catch (err) {
+				logger.error('Failed to register device for push notifications', err);
+				throw err;
+			}
 		}
 	);
 };
 
-const registerDevice = async (): Promise<void> => {
+const addAnalyticsListeners = (): void => {
+	let launchNotificationOpenedListenerRemover: EventListenerRemover | undefined;
+
+	// wire up default Pinpoint message event handling
+	addEventListener(
+		'backgroundMessageReceived',
+		createMessageEventRecorder('received_background')
+	);
+	addEventListener(
+		'foregroundMessageReceived',
+		createMessageEventRecorder('received_foreground')
+	);
+	launchNotificationOpenedListenerRemover = addEventListener(
+		'launchNotificationOpened',
+		createMessageEventRecorder(
+			'opened_notification',
+			// once we are done with it we can remove the listener
+			launchNotificationOpenedListenerRemover?.remove
+		)
+	);
+	addEventListener(
+		'notificationOpened',
+		createMessageEventRecorder(
+			'opened_notification',
+			// if we are in this state, we no longer need the listener as the app was launched via some other means
+			launchNotificationOpenedListenerRemover?.remove
+		)
+	);
+};
+
+const registerDevice = async (address: string): Promise<void> => {
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
-	return updateEndpoint({
-		address: getToken(),
+	await updateEndpoint({
+		address,
 		appId,
 		category: 'PushNotification',
 		credentials,

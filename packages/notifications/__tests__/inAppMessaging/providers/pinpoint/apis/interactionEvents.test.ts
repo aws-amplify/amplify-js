@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { inAppMessages } from '../../../../../__mocks__/data';
+import { inAppMessages } from '../../../../testUtils/data';
 import {
 	notifyEventListeners,
 	addEventListener,

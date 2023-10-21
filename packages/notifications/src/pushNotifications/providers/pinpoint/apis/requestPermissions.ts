@@ -34,6 +34,6 @@ import { RequestPermissions } from '../types';
  * });
  * ```
  */
-export const requestPermissions: RequestPermissions = () => {
+export const requestPermissions: RequestPermissions = async () => {
 	throw new PlatformNotSupportedError();
 };

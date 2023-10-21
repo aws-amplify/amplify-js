@@ -12,7 +12,7 @@ import {
 	resolveConfig,
 	getInAppMessagingUserAgentString,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
-import { simpleInAppMessages } from '../../../../../__mocks__/data';
+import { simpleInAppMessages } from '../../../../testUtils/data';
 import {
 	updateEndpoint,
 	resolveEndpointId,

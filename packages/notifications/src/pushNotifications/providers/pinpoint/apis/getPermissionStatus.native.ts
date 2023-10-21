@@ -8,7 +8,7 @@ import { GetPermissionStatus } from '../types';
 const { getPermissionStatus: getPermissionStatusNative } =
 	loadAmplifyPushNotification();
 
-export const getPermissionStatus: GetPermissionStatus = () => {
+export const getPermissionStatus: GetPermissionStatus = async () => {
 	assertIsInitialized();
 	return getPermissionStatusNative();
 };
