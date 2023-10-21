@@ -488,10 +488,8 @@ export class FakeGraphQLService {
 		const observerMessageName = `on${typeName}${tableName}`;
 		observers.forEach(observer => {
 			const message = {
-				value: {
-					data: {
-						[observerMessageName]: data[selection],
-					},
+				data: {
+					[observerMessageName]: data[selection],
 				},
 			};
 			if (!this.stopSubscriptionMessages) {

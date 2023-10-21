@@ -62,6 +62,17 @@ describe('Parser', () => {
 	};
 	const appsyncEndpoint = 'https://123.appsync-api.com';
 	const apiKey = 'api-key';
+	const oAuthDomain = 'test.auth.us-west-2.amazoncognito.com';
+	const oAuthScopes = [
+		'phone',
+		'email',
+		'openid',
+		'profile',
+		'aws.cognito.signin.user.admin',
+	];
+	const oAuthSignoutUrl = 'test://';
+	const oAuthSigninUrl = 'test://';
+	const oAuthResponseType = 'code';
 
 	it('should parse valid aws-exports.js', () => {
 		expect(
@@ -80,7 +91,15 @@ describe('Parser', () => {
 						'REQUIRES_NUMBERS',
 					],
 				},
+				oauth: {
+					domain: oAuthDomain,
+					scope: oAuthScopes,
+					redirectSignIn: oAuthSigninUrl,
+					redirectSignOut: oAuthSignoutUrl,
+					responseType: oAuthResponseType,
+				},
 				aws_cognito_verification_mechanisms: ['EMAIL'],
+				aws_cognito_social_providers: ['GOOGLE', 'APPLE', 'FACEBOOK', 'AMAZON'],
 				aws_mandatory_sign_in: 'enable',
 				aws_mobile_analytics_app_id: appId,
 				aws_mobile_analytics_app_region: region,
@@ -118,6 +137,14 @@ describe('Parser', () => {
 					allowGuestAccess: false,
 					loginWith: {
 						email: false,
+						oauth: {
+							domain: oAuthDomain,
+							providers: ['Google', 'Apple', 'Facebook', 'Amazon'],
+							redirectSignIn: [oAuthSigninUrl],
+							redirectSignOut: [oAuthSignoutUrl],
+							responseType: oAuthResponseType,
+							scopes: oAuthScopes,
+						},
 						phone: true,
 						username: false,
 					},

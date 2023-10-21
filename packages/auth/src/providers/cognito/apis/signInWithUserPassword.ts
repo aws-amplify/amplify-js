@@ -9,6 +9,7 @@ import {
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
 import {
+	getActiveSignInUsername,
 	getNewDeviceMetatada,
 	getSignInResult,
 	getSignInResultFromError,
@@ -71,17 +72,17 @@ export async function signInWithUserPassword(
 			username,
 			tokenOrchestrator
 		);
-
+		const activeUsername = getActiveSignInUsername(username);
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
 			signInSession: Session,
-			username,
+			username: activeUsername,
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
 			await cacheCognitoTokens({
 				...AuthenticationResult,
-				username,
+				username: activeUsername,
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,

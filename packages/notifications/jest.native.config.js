@@ -9,7 +9,6 @@ module.exports = {
 	testEnvironment: 'jsdom',
 	collectCoverageFrom: ['**/src/**/*.native.*'],
 	coverageThreshold: {
-		// TODO(V6): revert these numbers back
 		global: {
 			statements: 0,
 			branches: 0,

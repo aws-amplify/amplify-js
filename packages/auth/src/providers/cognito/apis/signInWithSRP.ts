@@ -18,11 +18,11 @@ import {
 	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
 import {
+	getActiveSignInUsername,
 	getNewDeviceMetatada,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
-	retryOnResourceNotFoundException,
 } from '../utils/signInHelpers';
 import { SignInWithSRPInput, SignInWithSRPOutput } from '../types';
 import {
@@ -66,23 +66,25 @@ export async function signInWithSRP(
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = await retryOnResourceNotFoundException(
-			handleUserSRPAuthFlow,
-			[username, password, clientMetaData, authConfig, tokenOrchestrator],
+		} = await handleUserSRPAuthFlow(
 			username,
+			password,
+			clientMetaData,
+			authConfig,
 			tokenOrchestrator
 		);
 
+		const activeUsername = getActiveSignInUsername(username);
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
 			signInSession: Session,
-			username,
+			username: activeUsername,
 			challengeName: ChallengeName as ChallengeName,
 		});
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
 			await cacheCognitoTokens({
-				username,
+				username: activeUsername,
 				...AuthenticationResult,
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,

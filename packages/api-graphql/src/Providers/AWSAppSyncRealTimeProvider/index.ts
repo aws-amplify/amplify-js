@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Observable, SubscriptionLike } from 'rxjs';
 import { GraphQLError } from 'graphql';
-import { Buffer } from 'buffer';
 import { Hub, fetchAuthSession, ConsoleLogger } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
+	base64Encoder,
 	GraphQLAuthMode,
 	CustomUserAgentDetails,
 	NonRetryableError,
@@ -699,9 +699,9 @@ export class AWSAppSyncRealTimeProvider {
 					});
 
 					const headerString = authHeader ? JSON.stringify(authHeader) : '';
-					const headerQs = Buffer.from(headerString).toString('base64');
+					const headerQs = base64Encoder.convert(headerString);
 
-					const payloadQs = Buffer.from(payloadString).toString('base64');
+					const payloadQs = base64Encoder.convert(payloadString);
 
 					let discoverableEndpoint = appSyncGraphqlEndpoint ?? '';
 
