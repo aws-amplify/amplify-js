@@ -74,7 +74,10 @@
 						"esnext.asynciterable",
 						"es2017.object"
 					],
-					"allowJs": true
+					"allowJs": true,
+					"noEmitOnError": false,
+					"strictNullChecks": true,
+					"types": ["@types/jest"]
 				}
 			}
 		},
