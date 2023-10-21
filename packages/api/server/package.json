@@ -4,8 +4,5 @@
 	"main": "../lib/server.js",
 	"module": "../lib-esm/server.js",
 	"react-native": "../lib-esm/server.js",
-	"sideEffects": false,
-	"peerDependencies": {
-		"@aws-amplify/adapter-nextjs": "0.0.1"
-	}
+	"sideEffects": false
 }
