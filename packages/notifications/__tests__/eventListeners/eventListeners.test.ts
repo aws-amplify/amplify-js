@@ -54,14 +54,10 @@ describe('Event listeners', () => {
 		const params = { foo: 'foo' };
 		addEventListener(eventType, mockHandler);
 
-		try {
-			await notifyEventListenersAndAwaitHandlers(eventType, params);
-		} catch (e) {
-			expect(mockHandler).toBeCalledWith(params);
-			expect(e).toStrictEqual(expect.any(Error));
-		}
-
-		expect.assertions(2);
+		await expect(
+			notifyEventListenersAndAwaitHandlers(eventType, params)
+		).rejects.toThrow();
+		expect(mockHandler).toBeCalledWith(params);
 	});
 
 	it('can handle multiple parameters', () => {
