@@ -21,6 +21,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 	params: ClientGenerationParams
 ): ModelTypes<T> {
 	const models = {} as any;
+	// params.config gets populated in SSR only; otherwise we get it from the singleton
 	const config: any = params.config ?? Amplify.getConfig();
 
 	logger.debug('AMPLIFY', params.amplify);
