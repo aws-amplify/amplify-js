@@ -10,11 +10,9 @@ import {
 	flattenItems,
 } from './APIClient';
 import { ClientGenerationParams } from './types';
-import { V6Client } from '../types';
-import { ConsoleLogger } from '@aws-amplify/core';
+import { V6Client, GraphqlSubscriptionResult } from '../types';
+import { Observable, map } from 'rxjs';
 import { Amplify } from '@aws-amplify/core';
-
-const logger = new ConsoleLogger('generateModelsProperty');
 
 export function generateModelsProperty<T extends Record<any, any> = never>(
 	client: V6Client,
@@ -23,9 +21,6 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 	const models = {} as any;
 	// params.config gets populated in SSR only; otherwise we get it from the singleton
 	const config: any = params.config ?? Amplify.getConfig();
-
-	logger.debug('AMPLIFY', params.amplify);
-	logger.debug('CONFIG', config);
 
 	const modelIntrospection = config.API?.GraphQL?.modelIntrospection;
 	if (!modelIntrospection) {
@@ -109,6 +104,32 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								throw error;
 							}
 						}
+					};
+				} else if (['ONCREATE', 'ONUPDATE', 'ONDELETE'].includes(operation)) {
+					models[name][operationPrefix] = (arg?: any, options?: any) => {
+						const query = generateGraphQLDocument(
+							modelIntrospection.models,
+							name,
+							operation
+						);
+						const variables = buildGraphQLVariables(
+							model,
+							operation,
+							arg,
+							modelIntrospection
+						);
+
+						const observable = client.graphql({
+							query,
+							variables,
+						}) as GraphqlSubscriptionResult<object>;
+
+						return observable.pipe(
+							map(value => {
+								const [key] = Object.keys(value.data);
+								return value.data[key];
+							})
+						);
 					};
 				} else {
 					models[name][operationPrefix] = async (arg?: any, options?: any) => {

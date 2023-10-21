@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { resolveOwnerFields } from '../utils/resolveOwnerFields';
+
 type ListArgs = { selectionSet?: string[]; filter?: {} };
 
 const connectionType = {
@@ -152,6 +154,9 @@ export const graphQLOperationsInfo = {
 	UPDATE: { operationPrefix: 'update' as const, usePlural: false },
 	DELETE: { operationPrefix: 'delete' as const, usePlural: false },
 	LIST: { operationPrefix: 'list' as const, usePlural: true },
+	ONCREATE: { operationPrefix: 'onCreate' as const, usePlural: false },
+	ONUPDATE: { operationPrefix: 'onUpdate' as const, usePlural: false },
+	ONDELETE: { operationPrefix: 'onDelete' as const, usePlural: false },
 };
 export type ModelOperation = keyof typeof graphQLOperationsInfo;
 
@@ -159,13 +164,21 @@ type OperationPrefix =
 	(typeof graphQLOperationsInfo)[ModelOperation]['operationPrefix'];
 
 const graphQLDocumentsCache = new Map<string, Map<ModelOperation, string>>();
-const SELECTION_SET_ALL_NESTED = '*';
+const SELECTION_SET_WILDCARD = '*';
 
 function defaultSelectionSetForModel(modelDefinition: any): string[] {
+	// fields that are explicitly part of the graphql schema; not
+	// inferred from owner auth rules.
 	const { fields } = modelDefinition;
-	return Object.values<any>(fields)
+	const explicitFields = Object.values<any>(fields)
 		.map(({ type, name }) => typeof type === 'string' && name) // Default selection set omits model fields
 		.filter(Boolean);
+
+	// fields used for owner auth rules that may or may not also
+	// be explicit on the model.
+	const ownerFields = resolveOwnerFields(modelDefinition);
+
+	return Array.from(new Set(explicitFields.concat(ownerFields)));
 }
 
 const FIELD_IR = '';
@@ -195,77 +208,69 @@ export function customSelectionSetToIR(
 	selectionSet: string[]
 ): Record<string, string | object> {
 	const modelDefinition = modelIntrospection[modelName];
-	const { fields } = modelDefinition;
+	const { fields: modelFields } = modelDefinition;
 
-	const intermediateSelectionSet: Record<string, string | object> = {};
-
-	for (const f of selectionSet) {
-		const nested = f.includes('.');
+	return selectionSet.reduce((resultObj, path) => {
+		const [fieldName, nested, ...rest] = path.split('.');
 
 		if (nested) {
-			const [modelFieldName, selectedField] = f.split('.');
-
-			const relatedModel = fields[modelFieldName]?.type?.model;
+			const relatedModel = modelFields[fieldName]?.type?.model;
 
 			if (!relatedModel) {
 				// TODO: may need to change this to support custom types
-				throw Error(`${modelFieldName} is not a model field`);
+				throw Error(`${fieldName} is not a model field`);
 			}
 
-			if (selectedField === SELECTION_SET_ALL_NESTED) {
-				const relatedModelDefinition = modelIntrospection[relatedModel];
+			const relatedModelDefinition = modelIntrospection[relatedModel];
 
-				const defaultSelectionSet = defaultSelectionSetForModel(
-					relatedModelDefinition
-				);
+			const selectionSet =
+				nested === SELECTION_SET_WILDCARD
+					? defaultSelectionSetIR(relatedModelDefinition)
+					: // if we have a path like 'field.anotherField' recursively build up selection set IR
+					  customSelectionSetToIR(modelIntrospection, relatedModel, [
+							[nested, ...rest].join('.'),
+					  ]);
 
-				const reduced = defaultSelectionSet.reduce((acc, curVal) => {
-					acc[curVal] = FIELD_IR;
-					return acc;
-				}, {});
+			if (modelFields[fieldName]?.isArray) {
+				const existing = resultObj[fieldName] || {
+					items: {},
+				};
+				const merged = { ...existing.items, ...selectionSet };
 
-				if (fields[modelFieldName]?.isArray) {
-					intermediateSelectionSet[modelFieldName] = {
-						items: reduced,
-					};
-				} else {
-					intermediateSelectionSet[modelFieldName] = reduced;
-				}
-			} else {
-				const getNestedSelSet = customSelectionSetToIR(
-					modelIntrospection,
-					relatedModel,
-					[selectedField]
-				);
-
-				if (fields[modelFieldName]?.isArray) {
-					const existing = (intermediateSelectionSet as any)[
-						modelFieldName
-					] || { items: {} };
-					const merged = { ...existing.items, ...getNestedSelSet };
-
-					intermediateSelectionSet[modelFieldName] = { items: merged };
-				} else {
-					const existingItems =
-						(intermediateSelectionSet as any)[modelFieldName] || {};
-					const merged = { ...existingItems, ...getNestedSelSet };
-
-					intermediateSelectionSet[modelFieldName] = merged;
-				}
-			}
-		} else {
-			const exists = Boolean(fields[f]);
-
-			if (!exists) {
-				throw Error(`${f} is not a field of model ${modelName}`);
+				resultObj[fieldName] = { items: merged };
+				return resultObj;
 			}
 
-			intermediateSelectionSet[f] = FIELD_IR;
+			const existingItems = resultObj[fieldName] || {};
+			const merged = { ...existingItems, ...selectionSet };
+
+			resultObj[fieldName] = merged;
+			return resultObj;
 		}
-	}
 
-	return intermediateSelectionSet;
+		const exists = Boolean(modelFields[fieldName]);
+
+		if (!exists) {
+			throw Error(`${fieldName} is not a field of model ${modelName}`);
+		}
+
+		resultObj[fieldName] = FIELD_IR;
+		return resultObj;
+	}, {});
 }
+
+const defaultSelectionSetIR = relatedModelDefinition => {
+	const defaultSelectionSet = defaultSelectionSetForModel(
+		relatedModelDefinition
+	);
+
+	const reduced = defaultSelectionSet.reduce((acc, curVal) => {
+		acc[curVal] = FIELD_IR;
+		return acc;
+	}, {});
+
+	return reduced;
+};
 
 /**
  * Stringifies selection set IR
@@ -365,7 +370,7 @@ export function generateGraphQLDocument(
 	}
 
 	const graphQLFieldName = `${operationPrefix}${usePlural ? pluralName : name}`;
-	let graphQLOperationType: 'mutation' | 'query' | undefined;
+	let graphQLOperationType: 'mutation' | 'query' | 'subscription' | undefined;
 	let graphQLSelectionSet: string | undefined;
 	let graphQLArguments: Record<string, any> | undefined;
 
@@ -410,6 +415,15 @@ export function generateGraphQLDocument(
 			graphQLOperationType ?? (graphQLOperationType = 'query');
 			graphQLSelectionSet ??
 				(graphQLSelectionSet = `items { ${selectionSetFields} }`);
+		case 'ONCREATE':
+		case 'ONUPDATE':
+		case 'ONDELETE':
+			graphQLArguments ??
+				(graphQLArguments = {
+					filter: `ModelSubscription${name}FilterInput`,
+				});
+			graphQLOperationType ?? (graphQLOperationType = 'subscription');
+			graphQLSelectionSet ?? (graphQLSelectionSet = selectionSetFields);
 	}
 
 	const graphQLDocument = `${graphQLOperationType}${
@@ -488,6 +502,9 @@ export function buildGraphQLVariables(
 			}
 			break;
 		case 'LIST':
+		case 'ONCREATE':
+		case 'ONUPDATE':
+		case 'ONDELETE':
 			if (arg?.filter) {
 				variables = { filter: arg.filter };
 			}
