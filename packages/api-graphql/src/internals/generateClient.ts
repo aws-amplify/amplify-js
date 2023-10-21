@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { graphql, cancel, isCancelError } from './v6';
+import { generateModelsProperty } from './generateModelsProperty';
 import { V6Client, __amplify } from '../types';
 import { ClientGenerationParams } from './types';
 
@@ -23,6 +24,7 @@ export function generateClient<T extends Record<any, any> = never>(
 		isCancelError,
 		models: {},
 	} as any;
+	client.models = generateModelsProperty<T>(client, params);
 
 	return client as V6Client<T>;
 }

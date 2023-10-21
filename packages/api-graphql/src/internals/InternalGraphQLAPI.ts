@@ -46,7 +46,7 @@ export const graphqlOperation = (
 });
 
 const isAmplifyInstance = (amplify): amplify is AmplifyClassV6 => {
-	if (typeof amplify?.then !== 'function') {
+	if (typeof amplify !== 'function') {
 		return true;
 	}
 	return false;
