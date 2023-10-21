@@ -48,6 +48,9 @@ export const initializePushNotifications = (): void => {
 };
 
 const addNativeListeners = (): void => {
+	let launchNotificationOpenedListener: ReturnType<
+		typeof addMessageEventListener
+	> | null;
 	const { NativeEvent, NativeHeadlessTaskKey } = getConstants();
 	const {
 		BACKGROUND_MESSAGE_RECEIVED,
@@ -112,7 +115,7 @@ const addNativeListeners = (): void => {
 		}
 	);
 
-	const launchNotificationOpenedListener = LAUNCH_NOTIFICATION_OPENED
+	launchNotificationOpenedListener = LAUNCH_NOTIFICATION_OPENED
 		? addMessageEventListener(
 				// listen for native notification opened app (user tapped on notification, opening the app from quit -
 				// not background - state) event. This is broadcasted to an internal listener only as it is not intended
