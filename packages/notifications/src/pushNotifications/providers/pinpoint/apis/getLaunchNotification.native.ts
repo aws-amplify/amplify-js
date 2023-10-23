@@ -8,7 +8,7 @@ import { GetLaunchNotification } from '../types';
 const { getLaunchNotification: getLaunchNotificationNative } =
 	loadAmplifyPushNotification();
 
-export const getLaunchNotification: GetLaunchNotification = () => {
+export const getLaunchNotification: GetLaunchNotification = async () => {
 	assertIsInitialized();
 	return getLaunchNotificationNative();
 };

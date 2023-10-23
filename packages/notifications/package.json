@@ -10,9 +10,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "npm run lint && npm run test:default && npm run test:native",
-		"test:default": "jest -w 1 --coverage",
-		"test:native": "jest -w 1 --coverage --config=jest.native.config.js --coverageDirectory=coverage-native",
+		"test": "npm run lint && jest -w 1 --coverage",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
 		"build-with-test": "npm run clean && npm test && tsc && webpack",
 		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
@@ -89,18 +87,57 @@
 		"push-notifications"
 	],
 	"dependencies": {
-		"lodash": "^4.17.21"
+		"lodash": "^4.17.21",
+		"tslib": "^2.5.0"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
-		"@babel/core": "7.15.5",
-		"@babel/plugin-proposal-class-properties": "^7.0.0",
-		"@babel/plugin-proposal-private-methods": "^7.0.0",
-		"@babel/plugin-proposal-private-property-in-object": "^7.0.0",
-		"metro-react-native-babel-preset": "^0.66.2",
-		"@types/react-native": "0.70.0"
+		"@aws-amplify/react-native": "^1.0.0",
+		"typescript": "5.0.2"
+	},
+	"jest": {
+		"globals": {
+			"__DEV__": true,
+			"ts-jest": {
+				"diagnostics": false,
+				"tsConfig": {
+					"allowJs": true,
+					"noEmitOnError": false
+				}
+			}
+		},
+		"transform": {
+			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+		},
+		"testPathIgnorePatterns": [
+			"/testUtils/"
+		],
+		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"json",
+			"jsx"
+		],
+		"testEnvironment": "jsdom",
+		"testURL": "http://localhost/",
+		"coverageThreshold": {
+			"global": {
+				"branches": 0,
+				"functions": 0,
+				"lines": 0,
+				"statements": 0
+			}
+		},
+		"coveragePathIgnorePatterns": [
+			"node_modules",
+			"dist",
+			"lib",
+			"lib-esm"
+		]
 	}
 }

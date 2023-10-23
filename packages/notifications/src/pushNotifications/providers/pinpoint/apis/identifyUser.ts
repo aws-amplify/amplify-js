@@ -57,6 +57,6 @@ import { IdentifyUser, IdentifyUserInput } from '../types';
  *     },
  * });
  */
-export const identifyUser: IdentifyUser = () => {
+export const identifyUser: IdentifyUser = async () => {
 	throw new PlatformNotSupportedError();
 };

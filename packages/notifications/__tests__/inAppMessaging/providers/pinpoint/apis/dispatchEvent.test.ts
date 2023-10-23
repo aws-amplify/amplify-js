@@ -11,7 +11,7 @@ import {
 	inAppMessages,
 	simpleInAppMessages,
 	simpleInAppMessagingEvent,
-} from '../../../../../__mocks__/data';
+} from '../../../../testUtils/data';
 import { InAppMessagingError } from '../../../../../src/inAppMessaging/errors';
 import { notifyEventListeners } from '../../../../../src/eventListeners';
 

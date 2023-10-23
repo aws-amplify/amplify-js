@@ -7,7 +7,6 @@ import {
 	AuthUserAttributes,
 	AuthUserAttributeKey,
 } from '../../../types';
-import {} from '../../../';
 import { ClientMetadata, AuthFlowType, ValidationData } from './models';
 
 /**
