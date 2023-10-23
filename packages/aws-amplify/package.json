@@ -125,10 +125,7 @@
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
-		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
+		">=4.2": {
 			"api": [
 				"./lib-esm/api/index.d.ts"
 			],
