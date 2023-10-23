@@ -1,7 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
 	"version": "6.0.0",
-	"private": true,
 	"description": "Machine learning category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -16,11 +15,11 @@
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
 		"test:size": "size-limit",
-		"build-with-test": "npm run clean && npm test && tsc && webpack -p",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "node ./build es6 --watch",
+		"build-with-test": "npm test && npm run build",
+		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
+		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
+		"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
@@ -28,7 +27,7 @@
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"generate-docs-local": "typedoc --out docs src",
 		"generate-docs-root": "typedoc --out ../../docs src",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 87.84"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 87.84"
 	},
 	"repository": {
 		"type": "git",
@@ -47,13 +46,13 @@
 	],
 	"dependencies": {
 		"@aws-amplify/storage": "6.0.0",
-		"@aws-sdk/client-comprehend": "3.6.1",
-		"@aws-sdk/client-polly": "3.6.1",
-		"@aws-sdk/client-rekognition": "3.6.1",
-		"@aws-sdk/client-textract": "3.6.1",
-		"@aws-sdk/client-translate": "3.6.1",
-		"@aws-sdk/eventstream-marshaller": "3.6.1",
-		"@aws-sdk/util-utf8-node": "3.6.1",
+		"@aws-sdk/client-comprehend": "3.398.0",
+		"@aws-sdk/client-polly": "3.398.0",
+		"@aws-sdk/client-rekognition": "3.398.0",
+		"@aws-sdk/client-textract": "3.398.0",
+		"@aws-sdk/client-translate": "3.398.0",
+		"@smithy/eventstream-codec": "2.0.9",
+		"@smithy/util-utf8": "2.0.0",
 		"buffer": "4.9.2",
 		"tslib": "^2.5.0",
 		"uuid": "^9.0.0"
@@ -62,47 +61,31 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.0"
+		"@aws-amplify/core": "6.0.0",
+		"typescript": "5.0.2"
 	},
 	"size-limit": [
 		{
-			"name": "Predictions (all providers)",
+			"name": "Predictions",
 			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Predictions, AmazonAIPredictionsProvider }",
-			"limit": "103.2 kB"
-		},
-		{
-			"name": "Predictions (Convert provider)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Predictions, AmazonAIConvertPredictionsProvider }",
-			"limit": "57.9 kB"
-		},
-		{
-			"name": "Predictions (Identify provider)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Predictions, AmazonAIIdentifyPredictionsProvider }",
-			"limit": "73.57 kB"
-		},
-		{
-			"name": "Predictions (Interpret provider)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Predictions, AmazonAIInterpretPredictionsProvider }",
-			"limit": "43.4 kB"
+			"import": "{ Amplify, Predictions }",
+			"limit": "66 kB"
 		}
 	],
 	"jest": {
 		"globals": {
 			"ts-jest": {
-				"diagnostics": false,
+				"diagnostics": {
+					"pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
+				},
 				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2017.object"
-					],
-					"allowJs": true
+					"downlevelIteration": true,
+					"allowJs": true,
+					"types": ["@types/jest"],
+					"outDir": "./tsconfig.json",
+					"noEmitOnError": false,
+					"noImplicitAny": false,
+					"skipLibCheck": true
 				}
 			}
 		},

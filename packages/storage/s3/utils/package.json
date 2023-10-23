@@ -1,7 +1,0 @@
-{
-	"name": "@aws-amplify/storage/s3/utils",
-	"main": "../../lib/providers/s3/utilityApis.js",
-	"browser": "../../lib-esm/providers/s3/utilityApis.js",
-	"module": "../../lib-esm/providers/s3/utilityApis.js",
-	"typings": "../../lib-esm/providers/s3/utilityApis.d.ts"
-}
