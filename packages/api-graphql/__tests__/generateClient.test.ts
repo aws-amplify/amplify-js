@@ -290,7 +290,9 @@ describe('generateClient', () => {
 							'X-Api-Key': 'FAKE-KEY',
 						}),
 						body: {
-							query: expect.stringContaining('listTodos(filter: $filter)'),
+							query: expect.stringContaining(
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+							),
 							variables: {
 								filter: {
 									name: {
@@ -576,7 +578,9 @@ describe('generateClient', () => {
 							'X-Api-Key': 'FAKE-KEY',
 						}),
 						body: {
-							query: expect.stringContaining('listNotes(filter: $filter)'),
+							query: expect.stringContaining(
+								'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
+							),
 							variables: {
 								filter: {
 									and: [{ todoNotesId: { eq: 'todo-id' } }],
@@ -756,7 +760,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			const { streams } = makeAppSyncStreams();
 
-			mockApiResponse({
+			let spy = mockApiResponse({
 				data: {
 					listTodos: {
 						items: [
@@ -787,7 +791,7 @@ describe('generateClient', () => {
 								description: 'something something first',
 							}),
 						]);
-						mockApiResponse({
+						spy = mockApiResponse({
 							data: {
 								listTodos: {
 									items: [
@@ -818,6 +822,20 @@ describe('generateClient', () => {
 								description: 'something something second',
 							}),
 						]);
+
+						// ensure we actually got a request that included our next token
+						expect(spy).toHaveBeenCalledWith(
+							expect.objectContaining({
+								options: expect.objectContaining({
+									body: expect.objectContaining({
+										variables: expect.objectContaining({
+											nextToken: 'sometoken',
+										}),
+									}),
+								}),
+							})
+						);
+
 						done();
 					}
 				},

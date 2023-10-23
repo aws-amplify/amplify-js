@@ -412,10 +412,12 @@ export function generateGraphQLDocument(
 			graphQLArguments ??
 				(graphQLArguments = {
 					filter: `Model${name}FilterInput`,
+					limit: 'Int',
+					nextToken: 'String',
 				});
 			graphQLOperationType ?? (graphQLOperationType = 'query');
 			graphQLSelectionSet ??
-				(graphQLSelectionSet = `items { ${selectionSetFields} } nextToken`);
+				(graphQLSelectionSet = `items { ${selectionSetFields} } nextToken __typename`);
 		case 'ONCREATE':
 		case 'ONUPDATE':
 		case 'ONDELETE':
@@ -467,7 +469,7 @@ export function buildGraphQLVariables(
 		},
 	} = modelDefinition;
 
-	let variables = {};
+	let variables: Record<string, any> = {};
 
 	// TODO: process input
 	switch (operation) {
@@ -509,6 +511,14 @@ export function buildGraphQLVariables(
 			}
 			break;
 		case 'LIST':
+			if (arg?.filter) {
+				variables.filter = arg.filter;
+			}
+			if (arg?.nextToken) {
+				console.log;
+				variables.nextToken = arg.nextToken;
+			}
+			break;
 		case 'ONCREATE':
 		case 'ONUPDATE':
 		case 'ONDELETE':

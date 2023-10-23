@@ -252,7 +252,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 										data: page,
 										errors,
 										nextToken: _nextToken,
-									} = await models[name].list(arg, options);
+									} = await models[name].list({ ...arg, nextToken }, options);
 									nextToken = _nextToken;
 
 									items.push(...page);
