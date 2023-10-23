@@ -16,6 +16,6 @@ import { GetBadgeCount } from '../types';
  * const badgeCount = await getBadgeCount();
  * ```
  */
-export const getBadgeCount: GetBadgeCount = () => {
+export const getBadgeCount: GetBadgeCount = async () => {
 	throw new PlatformNotSupportedError();
 };

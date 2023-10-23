@@ -1,28 +1,29 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import type {
-	Event,
-	InAppMessageCampaign as PinpointInAppMessage,
-} from '@aws-amplify/core/internals/aws-clients/pinpoint';
-import { InAppMessage, InAppMessagingEvent } from '../src/inAppMessaging/types';
-import { PushNotificationMessage } from '../src/pushNotifications';
+import { PinpointAnalyticsEvent } from '@aws-amplify/core/internals/providers/pinpoint';
+import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
+import {
+	InAppMessage,
+	InAppMessagingEvent,
+} from '../../src/inAppMessaging/types';
+import { PushNotificationMessage } from '../../src/pushNotifications';
 
 export const credentials = {
-	accessKeyId: 'access-key-id',
-	sessionToken: 'session-token',
-	secretAccessKey: 'secret-access-key',
+	credentials: {
+		accessKeyId: 'access-key-id',
+		secretAccessKey: 'secret-access-key',
+	},
 	identityId: 'identity-id',
-	authenticated: true,
 };
 
-export const awsPinpointConfig = {
+export const pinpointConfig = {
 	appId: 'pinpoint-project-id',
 	region: 'us-west-2',
 };
 
 export const subcategoryConfig = {
-	AWSPinpoint: awsPinpointConfig,
+	Pinpoint: pinpointConfig,
 };
 
 export const notificationsConfig = {
@@ -51,15 +52,8 @@ export const imageUrl = 'http://image.fakeurl/avocado.png';
 
 export const userId = 'user-id';
 
-export const userInfo = {
-	attributes: {
-		hobbies: ['shuffleboard', 'jousting'],
-	},
-};
-
-export const analyticsEvent: Event = {
-	EventType: 'analytics-event',
-	Timestamp: '2023-03-08T18:13:03.627Z',
+export const analyticsEvent: PinpointAnalyticsEvent = {
+	name: 'analytics-event',
 };
 
 /**
@@ -334,3 +328,9 @@ export const iosJourneyData = {
 		journey: pinpointJourney,
 	},
 };
+
+export const completionHandlerId = 'completion-handler-id';
+
+export const userAgentValue = 'user-agent-value';
+
+export const channelType = 'APNS_SANDBOX';
