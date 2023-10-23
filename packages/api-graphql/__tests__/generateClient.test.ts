@@ -13,16 +13,20 @@ const serverManagedFields = {
 	updatedAt: new Date().toISOString(),
 };
 
-function mockApiResponse(value: any, trigger?: Promise<void>) {
+/**
+ *
+ * @param value Value to be returned. Will be `awaited`, and can
+ * therefore be a simple JSON value or a `Promise`.
+ * @returns
+ */
+function mockApiResponse(value: any) {
 	return jest
 		.spyOn((raw.GraphQLAPI as any)._api, 'post')
 		.mockImplementation(async () => {
-			if (trigger) {
-				await trigger;
-			}
+			const result = await value;
 			return {
 				body: {
-					json: () => value,
+					json: () => result,
 				},
 			};
 		});
@@ -961,24 +965,37 @@ describe('generateClient', () => {
 		});
 
 		// MOSTLY COPY PASTED ... NOT IMPLEMENTED YET
-		test.skip('can see onCreates that are received prior to fetch completion', async done => {
+		test('can see onCreates that are received prior to fetch completion', async done => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
-			mockApiResponse({
-				data: {
-					listTodos: {
-						items: [
-							{
-								__typename: 'Todo',
-								...serverManagedFields,
-								name: 'initial record',
-								description: 'something something',
+			// to record which order
+			const callSequence = [] as string[];
+
+			// get an API list response "started", but delayed, so that it returns
+			// *after* we get a subscription messages sent to the client.
+			mockApiResponse(
+				new Promise(resolve => {
+					const result = {
+						data: {
+							listTodos: {
+								items: [
+									{
+										__typename: 'Todo',
+										...serverManagedFields,
+										name: 'initial record',
+										description: 'something something',
+									},
+								],
+								nextToken: null,
 							},
-						],
-						nextToken: null,
-					},
-				},
-			});
+						},
+					};
+					setTimeout(() => {
+						callSequence.push('list');
+						resolve(result);
+					}, 15);
+				})
+			);
 
 			const { streams, spy } = makeAppSyncStreams();
 
@@ -995,19 +1012,6 @@ describe('generateClient', () => {
 								description: 'something something',
 							}),
 						]);
-						setTimeout(() => {
-							streams.create?.next({
-								data: {
-									onCreateTodo: {
-										__typename: 'Todo',
-										...serverManagedFields,
-										id: 'different-id',
-										name: 'observed record',
-										description: 'something something',
-									},
-								},
-							});
-						}, 1);
 					} else {
 						expect(items).toEqual([
 							expect.objectContaining({
@@ -1024,6 +1028,7 @@ describe('generateClient', () => {
 								description: 'something something',
 							}),
 						]);
+						expect(callSequence).toEqual(['onCreate', 'list']);
 						done();
 					}
 				},
@@ -1040,6 +1045,7 @@ describe('generateClient', () => {
 					},
 				},
 			});
+			callSequence.push('onCreate');
 		});
 
 		test('can see updates', async done => {
