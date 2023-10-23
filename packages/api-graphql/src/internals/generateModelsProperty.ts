@@ -294,8 +294,8 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								onUpdateSub.unsubscribe();
 								onDeleteSub.unsubscribe();
 
-								// 2. no need to explicitly stop paging at this point, because the
-								// `subscriber` object has a `closed` property we can use to stop paging.
+								// 2. there is no need to explicitly stop paging. instead, we
+								// just check `subscriber.closed` above before fetching each page.
 							};
 						});
 				} else {
