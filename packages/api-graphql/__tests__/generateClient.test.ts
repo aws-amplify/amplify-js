@@ -303,6 +303,16 @@ describe('generateClient', () => {
 				})
 			);
 
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						body: expect.objectContaining({
+							query: expect.stringContaining('nextToken'),
+						}),
+					}),
+				})
+			);
+
 			expect(data.length).toBe(1);
 			expect(data[0]).toEqual(
 				expect.objectContaining({
@@ -699,7 +709,7 @@ describe('generateClient', () => {
 		});
 	});
 
-	describe.only('observeQuery', () => {
+	describe('observeQuery', () => {
 		beforeEach(() => {
 			jest.clearAllMocks();
 			Amplify.configure(configFixture as any);
@@ -725,7 +735,6 @@ describe('generateClient', () => {
 			});
 
 			const { streams, spy } = makeAppSyncStreams();
-			console.log({ streams });
 
 			client.models.Todo.observeQuery().subscribe({
 				next({ items, isSynced }) {

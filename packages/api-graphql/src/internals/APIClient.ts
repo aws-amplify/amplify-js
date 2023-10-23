@@ -415,7 +415,7 @@ export function generateGraphQLDocument(
 				});
 			graphQLOperationType ?? (graphQLOperationType = 'query');
 			graphQLSelectionSet ??
-				(graphQLSelectionSet = `items { ${selectionSetFields} }`);
+				(graphQLSelectionSet = `items { ${selectionSetFields} } nextToken`);
 		case 'ONCREATE':
 		case 'ONUPDATE':
 		case 'ONDELETE':
