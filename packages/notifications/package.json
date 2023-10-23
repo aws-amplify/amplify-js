@@ -25,10 +25,7 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 88.21"
 	},
 	"typesVersions": {
-		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
+		">=4.2": {
 			"in-app-messaging": [
 				"./lib-esm/inAppMessaging/index.d.ts"
 			],
