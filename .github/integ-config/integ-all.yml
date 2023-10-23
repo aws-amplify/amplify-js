@@ -391,13 +391,6 @@ tests:
     amplifyjs_dir: true
     timeout_minutes: 45
     retry_count: 10
-  - test_name: integ_next_datastore_owner_auth
-    desc: 'next owner auth'
-    framework: next
-    category: datastore
-    sample_name: [owner-based-default]
-    spec: next-owner-based-default
-    browser: *minimal_browser_list
   - test_name: integ_next_datastore_13_basic
     desc: 'DataStore - Nextjs 13 build with SWC - basic JS app'
     framework: next
