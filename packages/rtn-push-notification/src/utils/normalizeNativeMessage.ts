@@ -83,7 +83,7 @@ const getFcmOptions = ({
 	channelId = '',
 	messageId = '',
 	senderId = '',
-	sendTime = '',
+	sendTime = new Date().getTime(),
 }: FcmMessage): Pick<PushNotificationMessage, 'fcmOptions'> => {
 	const fcmOptions = {
 		channelId,
