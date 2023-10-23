@@ -12,6 +12,8 @@ import {
 	mockProgressEvents,
 } from './testUtils/mocks';
 
+jest.mock('@aws-amplify/core');
+
 const defaultRequest = {
 	method: 'GET',
 	url: new URL('https://foo.com'),

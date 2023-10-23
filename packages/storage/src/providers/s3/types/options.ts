@@ -26,6 +26,13 @@ type WriteOptions = {
 	accessLevel?: StorageAccessLevel;
 };
 
+type BytesRangeOptions = {
+	bytesRange?: {
+		start: number;
+		end: number;
+	};
+};
+
 /**
  * Transfer-related options type for S3 downloadData, uploadData APIs.
  */
@@ -80,7 +87,10 @@ export type GetUrlOptions = ReadOptions &
 /**
  * Input options type for S3 downloadData API.
  */
-export type DownloadDataOptions = ReadOptions & CommonOptions & TransferOptions;
+export type DownloadDataOptions = ReadOptions &
+	CommonOptions &
+	TransferOptions &
+	BytesRangeOptions;
 
 export type UploadDataOptions = WriteOptions &
 	CommonOptions &

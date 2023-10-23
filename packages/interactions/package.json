@@ -28,10 +28,7 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 88.6"
 	},
 	"typesVersions": {
-		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
+		">=4.2": {
 			"lex-v1": [
 				"./lib-esm/lex-v1/index.d.ts"
 			],

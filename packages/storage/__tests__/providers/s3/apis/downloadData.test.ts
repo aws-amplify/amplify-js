@@ -153,4 +153,27 @@ describe('downloadData', () => {
 			contentType,
 		});
 	});
+
+	it('should forward the bytes range option to the getObject API', async () => {
+		const start = 1;
+		const end = 100;
+		(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
+
+		downloadData({
+			key: 'mockKey',
+			options: {
+				bytesRange: { start, end },
+			},
+		});
+
+		const job = mockCreateDownloadTask.mock.calls[0][0].job;
+		await job();
+
+		expect(getObject).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				Range: `bytes=${start}-${end}`,
+			})
+		);
+	});
 });

@@ -7,7 +7,7 @@ import {
 	createKeyValueStorageFromCookieStorageAdapter,
 	createUserPoolsTokenProvider,
 	runWithAmplifyServerContext as runWithAmplifyServerContextCore,
-} from 'aws-amplify/internals/adapter-core';
+} from 'aws-amplify/adapter-core';
 import { runWithAmplifyServerContext } from '../src';
 import { getAmplifyConfig } from '../src/utils';
 import { NextServer } from '../src/types';
@@ -32,7 +32,7 @@ jest.mock('../src/utils', () => ({
 	getAmplifyConfig: jest.fn(() => mockAmplifyConfig),
 	createCookieStorageAdapterFromNextServerContext: jest.fn(),
 }));
-jest.mock('aws-amplify/internals/adapter-core');
+jest.mock('aws-amplify/adapter-core');
 
 const mockGetAmplifyConfig = getAmplifyConfig as jest.Mock;
 const mockRunWithAmplifyServerContextCore =

@@ -1,26 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	IdentifyTextOutput,
-	Table,
-	KeyValue,
-	TableCell,
-	Content,
 	BoundingBox,
-	Polygon,
+	Content,
 	Geometry,
+	IdentifyTextOutput,
+	KeyValue,
+	Polygon,
+	Table,
+	TableCell,
 } from '../types';
 import { Block, BlockList, TextDetectionList } from '../types/AWSTypes';
-import { makeCamelCaseArray, makeCamelCase } from './Utils';
+import { makeCamelCase, makeCamelCaseArray } from './Utils';
 
-function getBoundingBox(geometry: Geometry): BoundingBox {
-	if (!geometry) return undefined;
-	return makeCamelCase(geometry.BoundingBox);
+function getBoundingBox(geometry?: Geometry): BoundingBox | undefined {
+	return makeCamelCase(geometry?.BoundingBox);
 }
 
-function getPolygon(geometry: Geometry): Polygon {
-	if (!geometry) return undefined;
-	return makeCamelCaseArray(Array.from(geometry.Polygon));
+function getPolygon(geometry?: Geometry): Polygon | undefined {
+	if (!geometry?.Polygon) return undefined;
+	return makeCamelCaseArray(Array.from(geometry.Polygon)) as Polygon;
 }
 
 /**
@@ -45,12 +44,14 @@ export function categorizeRekognitionBlocks(
 	blocks.forEach(block => {
 		switch (block.Type) {
 			case 'LINE':
-				response.text.lines.push(block.DetectedText);
+				if (block.DetectedText) {
+					response.text.lines.push(block.DetectedText);
+				}
 				response.text.linesDetailed.push({
 					text: block.DetectedText,
 					polygon: getPolygon(block.Geometry),
 					boundingBox: getBoundingBox(block.Geometry),
-					page: null, // rekognition doesn't have this info
+					page: undefined, // rekognition doesn't have this info
 				});
 				break;
 			case 'WORD':
@@ -108,7 +109,9 @@ export function categorizeTextractBlocks(
 	blocks.forEach(block => {
 		switch (block.BlockType) {
 			case 'LINE':
-				response.text.lines.push(block.Text);
+				if (block.Text) {
+					response.text.lines.push(block.Text);
+				}
 				response.text.linesDetailed.push({
 					text: block.Text,
 					polygon: getPolygon(block.Geometry),
@@ -123,7 +126,9 @@ export function categorizeTextractBlocks(
 					polygon: getPolygon(block.Geometry),
 					boundingBox: getBoundingBox(block.Geometry),
 				});
-				blockMap[block.Id] = block;
+				if (block.Id) {
+					blockMap[block.Id] = block;
+				}
 				break;
 			case 'SELECTION_ELEMENT':
 				const selectionStatus =
@@ -131,20 +136,26 @@ export function categorizeTextractBlocks(
 				if (!response.text.selections) response.text.selections = [];
 				response.text.selections.push({
 					selected: selectionStatus,
-					polygon: getPolygon(block.Geometry),
-					boundingBox: getBoundingBox(block.Geometry),
+					polygon: getPolygon(block.Geometry)!,
+					boundingBox: getBoundingBox(block.Geometry)!,
 				});
-				blockMap[block.Id] = block;
+				if (block.Id) {
+					blockMap[block.Id] = block;
+				}
 				break;
 			case 'TABLE':
 				tableBlocks.push(block);
 				break;
 			case 'KEY_VALUE_SET':
 				keyValueBlocks.push(block);
-				blockMap[block.Id] = block;
+				if (block.Id) {
+					blockMap[block.Id] = block;
+				}
 				break;
 			default:
-				blockMap[block.Id] = block;
+				if (block.Id) {
+					blockMap[block.Id] = block;
+				}
 		}
 	});
 	// remove trailing space in fullText
@@ -165,9 +176,11 @@ export function categorizeTextractBlocks(
 		const keyValueResponse: KeyValue[] = Array();
 		keyValueBlocks.forEach(keyValue => {
 			// We need the KeyValue blocks of EntityType = `KEY`, which has both key and value references.
-			const entityTypes = Array.from(keyValue.EntityTypes);
-			if (entityTypes.indexOf('KEY') !== -1) {
-				keyValueResponse.push(constructKeyValue(keyValue, blockMap));
+			if (keyValue.EntityTypes) {
+				const entityTypes = Array.from(keyValue.EntityTypes);
+				if (entityTypes.indexOf('KEY') !== -1) {
+					keyValueResponse.push(constructKeyValue(keyValue, blockMap));
+				}
 			}
 		});
 		response.text.keyValues = keyValueResponse;
@@ -180,40 +193,44 @@ export function categorizeTextractBlocks(
  * @param {Block} table - Table block that has references (`Relationships`) to its cells
  * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
-export function constructTable(
+function constructTable(
 	table: Block,
 	blockMap: { [key: string]: Block }
 ): Table {
 	let tableMatrix: TableCell[][];
 	tableMatrix = [];
 	// visit each of the cell associated with the table's relationship.
-	for (const tableRelation of table.Relationships) {
-		for (const cellId of tableRelation.Ids) {
+	for (const tableRelation of table.Relationships ?? []) {
+		for (const cellId of tableRelation.Ids ?? []) {
 			const cellBlock: Block = blockMap[cellId];
-			const row = cellBlock.RowIndex - 1; // textract starts indexing at 1, so subtract it by 1.
-			const col = cellBlock.ColumnIndex - 1; // textract starts indexing at 1, so subtract it by 1.
-			// extract data contained inside the cell.
-			const content = extractContentsFromBlock(cellBlock, blockMap);
-			const cell: TableCell = {
-				text: content.text,
-				boundingBox: getBoundingBox(cellBlock.Geometry),
-				polygon: getPolygon(cellBlock.Geometry),
-				selected: content.selected,
-				rowSpan: cellBlock.RowSpan,
-				columnSpan: cellBlock.ColumnSpan,
-			};
-			if (!tableMatrix[row]) tableMatrix[row] = [];
-			tableMatrix[row][col] = cell;
+			if (cellBlock.RowIndex && cellBlock.ColumnIndex) {
+				const row = cellBlock.RowIndex - 1; // textract starts indexing at 1, so subtract it by 1.
+				const col = cellBlock.ColumnIndex - 1; // textract starts indexing at 1, so subtract it by 1.
+				// extract data contained inside the cell.
+				const content = extractContentsFromBlock(cellBlock, blockMap);
+				const cell: TableCell = {
+					text: content.text,
+					boundingBox: getBoundingBox(cellBlock.Geometry),
+					polygon: getPolygon(cellBlock.Geometry),
+					selected: content.selected,
+					rowSpan: cellBlock.RowSpan,
+					columnSpan: cellBlock.ColumnSpan,
+				};
+				if (!tableMatrix[row]) tableMatrix[row] = [];
+				tableMatrix[row][col] = cell;
+			}
 		}
 	}
 	const rowSize = tableMatrix.length;
 	const columnSize = tableMatrix[0].length;
+	const boundingBox = getBoundingBox(table.Geometry);
+	const polygon = getPolygon(table.Geometry);
 	// Note that we leave spanned cells undefined for distinction
 	return {
 		size: { rows: rowSize, columns: columnSize },
 		table: tableMatrix,
-		boundingBox: getBoundingBox(table.Geometry),
-		polygon: getPolygon(table.Geometry),
+		boundingBox,
+		polygon,
 	};
 }
 
@@ -222,24 +239,24 @@ export function constructTable(
  * @param {Block} KeyValue - KeyValue block that has references (`Relationships`) to its children.
  * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
-export function constructKeyValue(
+function constructKeyValue(
 	keyBlock: Block,
 	blockMap: { [key: string]: Block }
 ): KeyValue {
 	let keyText: string = '';
 	let valueText: string = '';
-	let valueSelected: boolean;
-	for (const keyValueRelation of keyBlock.Relationships) {
+	let valueSelected: boolean = false;
+	for (const keyValueRelation of keyBlock.Relationships ?? []) {
 		if (keyValueRelation.Type === 'CHILD') {
 			// relation refers to key
 			const contents = extractContentsFromBlock(keyBlock, blockMap);
-			keyText = contents.text;
+			keyText = contents.text ?? '';
 		} else if (keyValueRelation.Type === 'VALUE') {
 			// relation refers to value
-			for (const valueId of keyValueRelation.Ids) {
+			for (const valueId of keyValueRelation.Ids ?? []) {
 				const valueBlock = blockMap[valueId];
 				const contents = extractContentsFromBlock(valueBlock, blockMap);
-				valueText = contents.text;
+				valueText = contents.text ?? '';
 				if (contents.selected != null) valueSelected = contents.selected;
 			}
 		}
@@ -257,19 +274,19 @@ export function constructKeyValue(
  * @param {Block}} block - Block that we want to extract contents from.
  * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
-export function extractContentsFromBlock(
+function extractContentsFromBlock(
 	block: Block,
 	blockMap: { [id: string]: Block }
 ): Content {
 	let words: string = '';
-	let isSelected: boolean;
+	let isSelected: boolean = false;
 
 	if (!block.Relationships) {
 		// some block might have no content
 		return { text: '', selected: undefined };
 	}
 	for (const relation of block.Relationships) {
-		for (const contentId of relation.Ids) {
+		for (const contentId of relation.Ids ?? []) {
 			const contentBlock = blockMap[contentId];
 			if (contentBlock.BlockType === 'WORD') {
 				words += contentBlock.Text + ' ';

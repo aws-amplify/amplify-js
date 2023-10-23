@@ -26,10 +26,7 @@
 	},
 	"react-native": "./lib-esm/index.js",
 	"typesVersions": {
-		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
+		">=4.2": {
 			"pinpoint": [
 				"./lib-esm/providers/pinpoint/index.d.ts"
 			],

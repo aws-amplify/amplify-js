@@ -36,7 +36,10 @@ import {
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
-export type GetObjectInput = Pick<GetObjectCommandInput, 'Bucket' | 'Key'>;
+export type GetObjectInput = Pick<
+	GetObjectCommandInput,
+	'Bucket' | 'Key' | 'Range'
+>;
 
 export type GetObjectOutput = GetObjectCommandOutput;
 
@@ -49,7 +52,9 @@ const getObjectSerializer = async (
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	return {
 		method: 'GET',
-		headers: {},
+		headers: {
+			...(input.Range && { Range: input.Range }),
+		},
 		url,
 	};
 };
