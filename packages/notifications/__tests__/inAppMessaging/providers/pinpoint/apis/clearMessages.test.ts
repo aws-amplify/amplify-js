@@ -33,7 +33,12 @@ describe('clearMessages', () => {
 
 	it('Rejects if there is a failure storing messages', async () => {
 		initializeInAppMessaging();
-		mockDefaultStorage.removeItem.mockRejectedValueOnce(Error);
+		mockDefaultStorage.removeItem.mockRejectedValueOnce(
+			new InAppMessagingError({
+				name: 'ItemCorrupted',
+				message: 'Item corrupted',
+			})
+		);
 		await expect(clearMessages()).rejects.toStrictEqual(
 			expect.any(InAppMessagingError)
 		);

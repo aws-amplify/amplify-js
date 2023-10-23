@@ -4,10 +4,7 @@
 import { defaultStorage } from '@aws-amplify/core';
 import { STORAGE_KEY_SUFFIX, PINPOINT_KEY_PREFIX } from '../utils';
 
-import {
-	InAppMessagingValidationErrorCode,
-	assertServiceError,
-} from '../../../errors';
+import { InAppMessagingValidationErrorCode } from '../../../errors';
 import { assertIsInitialized } from '../../../utils';
 
 /**
@@ -25,11 +22,7 @@ import { assertIsInitialized } from '../../../utils';
  */
 export async function clearMessages(): Promise<void> {
 	assertIsInitialized();
-	try {
-		const key = `${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`;
-		return await defaultStorage.removeItem(key);
-	} catch (error) {
-		assertServiceError(error);
-		throw error;
-	}
+
+	const key = `${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`;
+	return await defaultStorage.removeItem(key);
 }
