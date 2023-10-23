@@ -24,9 +24,7 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
 	},
 	"devDependencies": {
-		"@types/react-native": "0.70.0",
-		"react-native": "0.72.3",
-		"typescript": "5.1.6"
+		"@types/react-native": "0.70.0"
 	},
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js"

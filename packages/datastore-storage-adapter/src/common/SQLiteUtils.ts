@@ -412,7 +412,7 @@ export function orderByClauseFromSort<T extends PersistentModel>(
 ): string {
 	const orderByParts = sortPredicate.map(
 		({ field, sortDirection }) =>
-			`"${field}" ${sortDirectionMap[sortDirection]}`
+			`"${String(field)}" ${sortDirectionMap[sortDirection]}`
 	);
 
 	// We always sort by _rowid_ last

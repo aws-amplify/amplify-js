@@ -17,8 +17,7 @@
 		"@types/react-dom": "^18.2.6",
 		"aws-amplify": "6.0.0",
 		"jest-fetch-mock": "3.0.3",
-		"next": ">= 13.4.0 < 14.0.0",
-		"typescript": "5.1.6"
+		"next": ">= 13.4.0 < 14.0.0"
 	},
 	"publishConfig": {
 		"access": "public"

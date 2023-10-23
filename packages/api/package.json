@@ -39,9 +39,6 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
-	"devDependencies": {
-		"typescript": "5.1.6"
-	},
 	"files": [
 		"lib",
 		"lib-esm",

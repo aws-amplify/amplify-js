@@ -101,8 +101,7 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
 		"@aws-amplify/react-native": "^1.0.0",
-		"@aws-sdk/types": "3.398.0",
-		"typescript": "5.0.2"
+		"@aws-sdk/types": "3.398.0"
 	},
 	"jest": {
 		"globals": {

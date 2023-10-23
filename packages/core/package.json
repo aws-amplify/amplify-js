@@ -67,9 +67,7 @@
 		"@aws-amplify/react-native": "^1.0.0",
 		"@types/js-cookie": "3.0.2",
 		"@types/uuid": "^9.0.0",
-		"find": "^0.2.7",
-		"genversion": "^2.2.0",
-		"typescript": "5.0.2"
+		"genversion": "^2.2.0"
 	},
 	"size-limit": [
 		{

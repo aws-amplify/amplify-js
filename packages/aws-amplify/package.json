@@ -242,9 +242,6 @@
 		"@aws-amplify/notifications": "2.0.0",
 		"tslib": "^2.5.0"
 	},
-	"devDependencies": {
-		"typescript": "5.0.2"
-	},
 	"size-limit": [
 		{
 			"name": "[Analytics] record (Pinpoint)",
