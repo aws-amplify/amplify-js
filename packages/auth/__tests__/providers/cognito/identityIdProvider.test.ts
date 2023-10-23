@@ -4,8 +4,6 @@
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { Amplify, Identity, ResourcesConfig } from '@aws-amplify/core';
 import { DefaultIdentityIdStore } from '../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
-
-// TODO(V6): import these from top level core/ and not lib/
 import * as cogId from '@aws-amplify/core/lib/awsClients/cognitoIdentity';
 import { cognitoIdentityIdProvider } from '../../../src/providers/cognito/credentialsProvider/IdentityIdProvider';
 jest.mock('@aws-amplify/core/lib/awsClients/cognitoIdentity');
