@@ -194,7 +194,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 									}
 								}
 
-								// if not found, return -1 as is traditional.
+								// use -1 to signal "not found" as is the norm for indexOf-like searches
 								return -1;
 							}
 
