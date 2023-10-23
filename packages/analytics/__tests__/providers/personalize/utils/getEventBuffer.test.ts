@@ -4,7 +4,7 @@
 import { EventBuffer } from '../../../../src/utils';
 import {
 	mockBufferConfig,
-	mockKinesisConfig,
+	mockPersonalizeConfig,
 	mockCredentialConfig,
 } from '../../../testUtils/mockConstants.test';
 import { getEventBuffer } from '../../../../src/providers/personalize/utils';
@@ -20,12 +20,12 @@ describe('Personalize Provider Util: getEventBuffer', () => {
 
 	it("create a buffer if one doesn't exist", () => {
 		const testBuffer = getEventBuffer({
-			...mockKinesisConfig,
+			...mockPersonalizeConfig,
 			...mockCredentialConfig,
 		});
 
 		expect(mockEventBuffer).toBeCalledWith(
-			mockBufferConfig,
+			{ ...mockBufferConfig, bufferSize: mockBufferConfig.flushSize + 1 },
 			expect.any(Function)
 		);
 		expect(testBuffer).toBeInstanceOf(EventBuffer);
@@ -33,28 +33,33 @@ describe('Personalize Provider Util: getEventBuffer', () => {
 
 	it('returns an existing buffer instance', () => {
 		const testBuffer1 = getEventBuffer({
-			...mockKinesisConfig,
+			...mockPersonalizeConfig,
 			...mockCredentialConfig,
 		});
 		const testBuffer2 = getEventBuffer({
-			...mockKinesisConfig,
+			...mockPersonalizeConfig,
 			...mockCredentialConfig,
 		});
 		expect(testBuffer1).toBe(testBuffer2);
 	});
 
-	it('release other buffers & creates a new one if credential has changed', () => {
+	it('release other buffers & creates a new one if identity has changed', async () => {
 		const testBuffer1 = getEventBuffer({
-			...mockKinesisConfig,
+			...mockPersonalizeConfig,
 			...mockCredentialConfig,
 		});
+		jest.spyOn(testBuffer1, 'flushAll').mockReturnValue(Promise.resolve());
+		jest.spyOn(testBuffer1, 'release');
+
 		const testBuffer2 = getEventBuffer({
-			...mockKinesisConfig,
+			...mockPersonalizeConfig,
 			...mockCredentialConfig,
 			identityId: 'identityId2',
 		});
 
-		expect(testBuffer1.release).toHaveBeenCalledTimes(1);
+		await new Promise(process.nextTick);
+		expect(testBuffer1.flushAll).toBeCalledTimes(1);
+		expect(testBuffer1.release).toBeCalledTimes(1);
 		expect(testBuffer1).not.toBe(testBuffer2);
 	});
 });
