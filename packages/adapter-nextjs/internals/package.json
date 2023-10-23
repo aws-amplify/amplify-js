@@ -1,0 +1,7 @@
+{
+	"name": "@aws-amplify/adapter-nextjs/internals",
+	"main": "../lib/internals/index.js",
+	"browser": "../lib-esm/internals/index.js",
+	"module": "../lib-esm/internals/index.js",
+	"typings": "../lib-esm/internals/index.d.ts"
+}

@@ -29,6 +29,6 @@ import { GetPermissionStatus, GetPermissionStatusOutput } from '../types';
  * ```ts
  * const permissionStatus = await getPermissionStatus();
  */
-export const getPermissionStatus: GetPermissionStatus = () => {
+export const getPermissionStatus: GetPermissionStatus = async () => {
 	throw new PlatformNotSupportedError();
 };

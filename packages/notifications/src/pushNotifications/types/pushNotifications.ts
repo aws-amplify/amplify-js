@@ -17,6 +17,6 @@ export type OnPushNotificationMessageHandler = (
 export type PushNotificationEvent =
 	| 'backgroundMessageReceived'
 	| 'foregroundMessageReceived'
-	| 'launchNotificationsOpened'
+	| 'launchNotificationOpened'
 	| 'notificationOpened'
 	| 'tokenReceived';

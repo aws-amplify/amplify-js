@@ -97,11 +97,6 @@
 			"import": "./lib-esm/storage/s3/server.js",
 			"require": "./lib/storage/s3/server.js"
 		},
-		"./storage/s3/utils": {
-			"types": "./lib-esm/storage/s3/utils.d.ts",
-			"import": "./lib-esm/storage/s3/utils.js",
-			"require": "./lib/storage/s3/utils.js"
-		},
 		"./in-app-messaging": {
 			"types": "./lib-esm/in-app-messaging/index.d.ts",
 			"import": "./lib-esm/in-app-messaging/index.js",
@@ -122,7 +117,7 @@
 			"import": "./lib-esm/push-notifications/pinpoint/index.js",
 			"require": "./lib/push-notifications/pinpoint/index.js"
 		},
-		"./internals/adapter-core": {
+		"./adapter-core": {
 			"types": "./lib-esm/adapterCore/index.d.ts",
 			"import": "./lib-esm/adapterCore/index.js",
 			"require": "./lib/adapterCore/index.js"
@@ -130,10 +125,7 @@
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
-		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
+		">=4.2": {
 			"api": [
 				"./lib-esm/api/index.d.ts"
 			],
@@ -194,7 +186,7 @@
 			"push-notifications/pinpoint": [
 				"./lib-esm/push-notifications/pinpoint/index.d.ts"
 			],
-			"internals/adapter-core": [
+			"adapter-core": [
 				"./lib-esm/adapterCore/index.d.ts"
 			]
 		}
@@ -231,9 +223,9 @@
 		"lib-esm",
 		"src",
 		"analytics",
+		"adapter-core",
 		"api",
 		"auth",
-		"internals",
 		"storage",
 		"datastore",
 		"in-app-messaging",

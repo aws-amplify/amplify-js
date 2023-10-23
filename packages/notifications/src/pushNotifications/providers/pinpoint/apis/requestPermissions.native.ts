@@ -8,7 +8,7 @@ import { RequestPermissions } from '../types';
 const { requestPermissions: requestPermissionsNative } =
 	loadAmplifyPushNotification();
 
-export const requestPermissions: RequestPermissions = input => {
+export const requestPermissions: RequestPermissions = async input => {
 	assertIsInitialized();
 	return requestPermissionsNative(input);
 };

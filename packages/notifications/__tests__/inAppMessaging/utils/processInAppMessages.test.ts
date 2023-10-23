@@ -3,8 +3,8 @@
 
 import {
 	pinpointInAppMessage,
-	simpleInAppMessagingEvent,
-} from '../../../__mocks__/data';
+	simpleInAppMessagingEvent
+} from '../../testUtils/data';
 import {
 	incrementMessageCounts,
 	processInAppMessages,
@@ -54,7 +54,7 @@ describe('processInAppMessages', () => {
 		mockIsBeforeEndDate.mockReturnValue(true);
 	});
 
-	test('filters in-app messages from Pinpoint by criteria', async () => {
+	it('filters in-app messages from Pinpoint by criteria', async () => {
 		mockMatchesEventType.mockReturnValueOnce(false);
 		mockMatchesAttributes.mockReturnValueOnce(false);
 		mockMatchesMetrics.mockReturnValueOnce(false);
@@ -65,7 +65,7 @@ describe('processInAppMessages', () => {
 		expect(result.id).toBe('uuid-4');
 	});
 
-	test('filters in-app messages from Pinpoint by priority', async () => {
+	it('filters in-app messages from Pinpoint by priority', async () => {
 		const [result] = await processInAppMessages(
 			messages,
 			simpleInAppMessagingEvent
@@ -73,7 +73,7 @@ describe('processInAppMessages', () => {
 		expect(result.id).toBe('uuid-3');
 	});
 
-	test('filters in-app messages based on session counts', async () => {
+	it('filters in-app messages based on session counts', async () => {
 		// simulate incrementing the counts as this happens when a message is displayed
 		// increment it twice to exceed it's session cap
 		await incrementMessageCounts(messages[2].CampaignId!);

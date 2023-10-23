@@ -12,7 +12,7 @@ import {
 	customHandledMessage,
 	inAppMessages,
 	simpleInAppMessagingEvent,
-} from '../../../../../__mocks__/data';
+} from '../../../../testUtils/data';
 import { notifyEventListeners } from '../../../../../src/eventListeners';
 import { InAppMessage } from '../../../../../src/inAppMessaging/types';
 

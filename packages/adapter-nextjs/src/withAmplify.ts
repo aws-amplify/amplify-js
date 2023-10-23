@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ResourcesConfig } from 'aws-amplify';
-import { LegacyConfig } from 'aws-amplify/internals/adapter-core';
+import { LegacyConfig } from 'aws-amplify/adapter-core';
 import { NextConfig } from 'next';
 
 // NOTE: this function is exported from the subpath `/with-amplify`.
