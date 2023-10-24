@@ -5,6 +5,7 @@ import configFixture from './fixtures/modeled/amplifyconfiguration';
 import { Schema } from './fixtures/modeled/schema';
 import { expectSub } from './utils/expects';
 import { Observable, from } from 'rxjs';
+import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -12,6 +13,50 @@ const serverManagedFields = {
 	createdAt: new Date().toISOString(),
 	updatedAt: new Date().toISOString(),
 };
+
+// // Mock all calls to signRequest
+// jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
+// 	const original = jest.requireActual(
+// 		'@aws-amplify/core/internals/aws-client-utils'
+// 	);
+// 	return {
+// 		...original,
+// 		signRequest: (_request, _options) => {
+// 			return {
+// 				method: 'test',
+// 				headers: { test: 'test' },
+// 				url: new URL('http://example/'),
+// 			};
+// 		},
+// 	};
+// });
+
+// // Mock all calls to signRequest
+// jest.mock('@aws-amplify/core', () => {
+// 	const original = jest.requireActual('@aws-amplify/core');
+// 	const session = {
+// 		tokens: {
+// 			accessToken: {
+// 				toString: () => 'test',
+// 			},
+// 		},
+// 		credentials: {
+// 			accessKeyId: 'test',
+// 			secretAccessKey: 'test',
+// 		},
+// 	};
+// 	return {
+// 		...original,
+// 		fetchAuthSession: (_request, _options) => {
+// 			return Promise.resolve(session);
+// 		},
+// 		Amplify: {
+// 			Auth: {
+// 				fetchAuthSession: async () => session,
+// 			},
+// 		},
+// 	};
+// });
 
 /**
  *
@@ -717,6 +762,520 @@ describe('generateClient', () => {
 		});
 	});
 
+	describe.only('basic model operations - authMode: CuP override at the time of operation', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+			Amplify.configure(configFixture as any);
+
+			jest
+				.spyOn(Amplify.Auth, 'fetchAuthSession')
+				.mockImplementation(async () => {
+					return {
+						tokens: {
+							accessToken: {
+								toString: () => 'test',
+							},
+						},
+						credentials: {
+							accessKeyId: 'test',
+							secretAccessKey: 'test',
+						},
+					} as any;
+				});
+		});
+
+		test('can create()', async () => {
+			const spy = mockApiResponse({
+				data: {
+					createTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			await client.models.Todo.create(
+				{
+					name: 'some name',
+					description: 'something something',
+				},
+				{
+					authMode: 'userPool',
+				}
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							Authorization: 'test',
+						}),
+						body: {
+							query: expect.stringContaining('createTodo(input: $input)'),
+							variables: {
+								input: {
+									name: 'some name',
+									description: 'something something',
+								},
+							},
+						},
+					}),
+				})
+			);
+		});
+
+		test('can get()', async () => {
+			const spy = mockApiResponse({
+				data: {
+					getTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			await client.models.Todo.get({ id: 'asdf' }, { authMode: 'userPool' });
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							Authorization: 'test',
+						}),
+						body: {
+							query: expect.stringContaining('getTodo(id: $id)'),
+							variables: {
+								id: 'asdf',
+							},
+						},
+					}),
+				})
+			);
+		});
+
+		test('can list()', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			await client.models.Todo.list({
+				filter: { name: { contains: 'name' } },
+				authMode: 'userPool',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							Authorization: 'test',
+						}),
+						body: {
+							query: expect.stringContaining(
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+							),
+							variables: {
+								filter: {
+									name: {
+										contains: 'name',
+									},
+								},
+							},
+						},
+					}),
+				})
+			);
+		});
+
+		test('can update()', async () => {
+			const spy = mockApiResponse({
+				data: {
+					updateTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some other name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			await client.models.Todo.update(
+				{
+					id: 'some-id',
+					name: 'some other name',
+				},
+				{ authMode: 'userPool' }
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							Authorization: 'test',
+						}),
+						body: {
+							query: expect.stringContaining('updateTodo(input: $input)'),
+							variables: {
+								input: {
+									id: 'some-id',
+									name: 'some other name',
+								},
+							},
+						},
+					}),
+				})
+			);
+		});
+
+		test('can delete()', async () => {
+			const spy = mockApiResponse({
+				data: {
+					deleteTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			await client.models.Todo.delete(
+				{
+					id: 'some-id',
+				},
+				{ authMode: 'userPool' }
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							Authorization: 'test',
+						}),
+						body: {
+							query: expect.stringContaining('deleteTodo(input: $input)'),
+							variables: {
+								input: {
+									id: 'some-id',
+								},
+							},
+						},
+					}),
+				})
+			);
+		});
+
+		test('can subscribe to onCreate()', done => {
+			const noteToSend = {
+				__typename: 'Note',
+				...serverManagedFields,
+				body: 'a very good note',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onCreateNote: noteToSend,
+				},
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			client.models.Note.onCreate({
+				authMode: 'userPool',
+			}).subscribe({
+				next(value) {
+					expect(spy).toHaveBeenCalledWith(
+						expect.objectContaining({
+							authenticationType: 'userPool',
+						}),
+						undefined
+					);
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+		});
+
+		test('can subscribe to onUpdate()', done => {
+			const noteToSend = {
+				__typename: 'Note',
+				...serverManagedFields,
+				body: 'a very good note',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onUpdateNote: noteToSend,
+				},
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			client.models.Note.onUpdate({
+				authMode: 'userPool',
+			}).subscribe({
+				next(value) {
+					expect(spy).toHaveBeenCalledWith(
+						expect.objectContaining({
+							authenticationType: 'userPool',
+						}),
+						undefined
+					);
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+		});
+
+		test('can subscribe to onDelete()', done => {
+			const noteToSend = {
+				__typename: 'Note',
+				...serverManagedFields,
+				body: 'a very good note',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onDeleteNote: noteToSend,
+				},
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			client.models.Note.onDelete({
+				authMode: 'userPool',
+			}).subscribe({
+				next(value) {
+					expect(spy).toHaveBeenCalledWith(
+						expect.objectContaining({
+							authenticationType: 'userPool',
+						}),
+						undefined
+					);
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+		});
+
+		test('can lazy load @hasMany', async () => {
+			throw new Error('test not yet updated to test the requirement');
+
+			mockApiResponse({
+				data: {
+					getTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						id: 'todo-id',
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data } = await client.models.Todo.get({ id: 'todo-id' });
+
+			const getChildNotesSpy = mockApiResponse({
+				data: {
+					listNotes: {
+						items: [
+							{
+								__typename: 'Note',
+								...serverManagedFields,
+								id: 'note-id',
+								body: 'some body',
+							},
+						],
+					},
+				},
+			});
+
+			const { data: notes } = await data.notes();
+
+			expect(getChildNotesSpy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+						}),
+						body: {
+							query: expect.stringContaining(
+								'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
+							),
+							variables: {
+								filter: {
+									and: [{ todoNotesId: { eq: 'todo-id' } }],
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(notes!.length).toBe(1);
+			expect(notes![0]).toEqual(
+				expect.objectContaining({
+					__typename: 'Note',
+					id: 'note-id',
+					owner: 'wirejobviously',
+					body: 'some body',
+				})
+			);
+		});
+
+		test('can lazy load @belongsTo', async () => {
+			throw new Error('test not yet updated to test the requirement');
+
+			mockApiResponse({
+				data: {
+					getNote: {
+						__typename: 'Note',
+						...serverManagedFields,
+						id: 'note-id',
+						body: 'some body',
+						todoNotesId: 'todo-id',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data } = await client.models.Note.get({ id: 'note-id' });
+
+			const getChildNotesSpy = mockApiResponse({
+				data: {
+					getTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						id: 'todo-id',
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const { data: todo } = await data.todo();
+
+			expect(getChildNotesSpy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+						}),
+						body: {
+							query: expect.stringContaining('getTodo(id: $id)'),
+							variables: {
+								id: 'todo-id',
+							},
+						},
+					}),
+				})
+			);
+
+			expect(todo).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'todo-id',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can lazy load @hasOne', async () => {
+			throw new Error('test not yet updated to test the requirement');
+
+			mockApiResponse({
+				data: {
+					getTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						id: 'todo-id',
+						body: 'some body',
+						todoMetaId: 'meta-id',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data } = await client.models.Todo.get({ id: 'todo-id' });
+
+			const getChildMetaSpy = mockApiResponse({
+				data: {
+					getTodoMetadata: {
+						__typename: 'TodoMetadata',
+						...serverManagedFields,
+						id: 'meta-id',
+						data: '{"field":"value"}',
+					},
+				},
+			});
+
+			const { data: todo } = await data.meta();
+
+			expect(getChildMetaSpy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+						}),
+						body: {
+							query: expect.stringContaining('getTodoMetadata(id: $id)'),
+							variables: {
+								id: 'meta-id',
+							},
+						},
+					}),
+				})
+			);
+
+			expect(todo).toEqual(
+				expect.objectContaining({
+					__typename: 'TodoMetadata',
+					id: 'meta-id',
+					data: '{"field":"value"}',
+				})
+			);
+		});
+	});
+
 	describe('observeQuery', () => {
 		beforeEach(() => {
 			jest.clearAllMocks();
@@ -1305,6 +1864,10 @@ describe('generateClient', () => {
 					}
 				},
 			});
+		});
+
+		test('uses provided authMode at call site', async done => {
+			throw new Error('test not yet updated to test the requirement');
 		});
 	});
 });

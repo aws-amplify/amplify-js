@@ -53,7 +53,12 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						);
 
 						try {
+							const options = args?.authMode
+								? { authMode: args?.authMode }
+								: {};
+
 							const { data, extensions } = (await client.graphql({
+								...options,
 								query,
 								variables,
 							})) as any;
@@ -105,7 +110,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						}
 					};
 				} else if (['ONCREATE', 'ONUPDATE', 'ONDELETE'].includes(operation)) {
-					models[name][operationPrefix] = (arg?: any, options?: any) => {
+					models[name][operationPrefix] = (args?: any) => {
 						const query = generateGraphQLDocument(
 							modelIntrospection.models,
 							name,
@@ -114,11 +119,15 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						const variables = buildGraphQLVariables(
 							model,
 							operation,
-							arg,
+							args,
 							modelIntrospection
 						);
 
+						const options = args?.authMode ? { authMode: args?.authMode } : {};
+						console.log({ options });
+
 						const observable = client.graphql({
+							...options,
 							query,
 							variables,
 						}) as GraphqlSubscriptionResult<object>;
@@ -289,6 +298,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 
 						try {
 							const { data, extensions } = (await client.graphql({
+								...options,
 								query,
 								variables,
 							})) as any;
