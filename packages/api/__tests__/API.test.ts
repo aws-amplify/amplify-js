@@ -13,8 +13,8 @@ describe('API generateClient', () => {
 			{ query: 'query' },
 			undefined,
 			{
-				action: '1', 
-				category: 'api'
+				action: '1',
+				category: 'api',
 			}
 		);
 	});
