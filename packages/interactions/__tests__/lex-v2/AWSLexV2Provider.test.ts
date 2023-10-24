@@ -15,9 +15,10 @@ import { lexProvider } from '../../src/lex-v2/AWSLexV2Provider';
 
 jest.mock('@aws-amplify/core');
 
-(global as any).Response = () => {};
-(global as any).Response.prototype.arrayBuffer = (blob: Blob) => {
-	return Promise.resolve(new ArrayBuffer(0));
+(global as any).Response = class Response {
+	arrayBuffer(blob: Blob) {
+		return Promise.resolve(new ArrayBuffer(0));
+	}
 };
 
 // mock stream response
