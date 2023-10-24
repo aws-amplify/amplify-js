@@ -97,7 +97,7 @@ describe('Parser', () => {
 					redirectSignIn: oAuthSigninUrl,
 					redirectSignOut: oAuthSignoutUrl,
 					responseType: oAuthResponseType,
-				  },
+				},
 				aws_cognito_verification_mechanisms: ['EMAIL'],
 				aws_cognito_social_providers: ['GOOGLE', 'APPLE', 'FACEBOOK', 'AMAZON'],
 				aws_mandatory_sign_in: 'enable',
@@ -143,7 +143,7 @@ describe('Parser', () => {
 							redirectSignIn: [oAuthSigninUrl],
 							redirectSignOut: [oAuthSignoutUrl],
 							responseType: oAuthResponseType,
-							scopes: oAuthScopes
+							scopes: oAuthScopes,
 						},
 						phone: true,
 						username: false,
