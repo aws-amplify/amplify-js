@@ -5,6 +5,10 @@ import { amplifyUuid } from '../../../utils/amplifyUuid';
 import { PinpointRecordInput, PinpointSession } from '../types';
 import { resolveEndpointId } from '../utils';
 import {
+	SESSION_START_EVENT,
+	SESSION_STOP_EVENT,
+} from '../../../utils/sessionListener';
+import {
 	BUFFER_SIZE,
 	FLUSH_INTERVAL,
 	FLUSH_SIZE,
@@ -12,8 +16,7 @@ import {
 } from '../utils/constants';
 import { getEventBuffer } from '../utils/getEventBuffer';
 
-// TODO(v6) Refactor when we add support for session tracking & `autoTrack`
-let session: PinpointSession;
+let session: PinpointSession | undefined;
 
 /**
  * @internal
@@ -28,7 +31,9 @@ export const record = async ({
 	region,
 	userAgentValue,
 }: PinpointRecordInput): Promise<void> => {
-	const timestampISOString = new Date().toISOString();
+	let eventSession = session;
+	const currentTime = new Date();
+	const timestampISOString = currentTime.toISOString();
 	const eventId = amplifyUuid();
 
 	// Prepare event buffer if required
@@ -55,13 +60,25 @@ export const record = async ({
 	});
 
 	// Generate session if required
-	if (!session) {
+	if (!eventSession || event.name === SESSION_START_EVENT) {
 		const sessionId = amplifyUuid();
 
 		session = {
 			Id: sessionId,
 			StartTimestamp: timestampISOString,
 		};
+		eventSession = session;
+	}
+
+	// Terminate session when required
+	if (session && event.name === SESSION_STOP_EVENT) {
+		eventSession = {
+			...session,
+			StopTimestamp: timestampISOString,
+			Duration:
+				currentTime.getTime() - new Date(session.StartTimestamp).getTime(),
+		};
+		session = undefined;
 	}
 
 	// Push event to buffer
@@ -69,7 +86,7 @@ export const record = async ({
 		eventId,
 		endpointId,
 		event,
-		session,
+		session: eventSession!,
 		timestamp: timestampISOString,
 		resendLimit: RESEND_LIMIT,
 	});
