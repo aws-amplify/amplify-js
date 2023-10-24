@@ -77,7 +77,7 @@ export type FcmMessage = {
 	channelId?: string;
 	messageId?: string;
 	senderId?: string;
-	sendTime?: string;
+	sendTime?: number;
 	completionHandlerId?: never;
 };
 

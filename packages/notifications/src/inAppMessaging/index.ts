@@ -12,6 +12,7 @@ export {
 	onMessageDismissed,
 	onMessageActionTaken,
 	notifyMessageInteraction,
+	clearMessages,
 	IdentifyUserInput,
 	DispatchEventInput,
 	SetConflictHandlerInput,

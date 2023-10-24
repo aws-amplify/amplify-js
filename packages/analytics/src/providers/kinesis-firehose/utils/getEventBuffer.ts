@@ -75,10 +75,7 @@ export const getEventBuffer = ({
 	resendLimit,
 	userAgentValue,
 }: KinesisFirehoseEventBufferConfig): EventBuffer<KinesisFirehoseBufferEvent> => {
-	const { sessionToken } = credentials;
-	const sessionIdentityKey = [region, sessionToken, identityId]
-		.filter(id => !!id)
-		.join('-');
+	const sessionIdentityKey = [region, identityId].filter(id => !!id).join('-');
 
 	if (!eventBufferMap[sessionIdentityKey]) {
 		const getClient = (): IAnalyticsClient<KinesisFirehoseBufferEvent> => {
@@ -108,9 +105,11 @@ export const getEventBuffer = ({
 			key => key !== sessionIdentityKey
 		);
 		for (const releaseSessionKey of releaseSessionKeys) {
-			eventBufferMap[releaseSessionKey].release();
-			delete eventBufferMap[releaseSessionKey];
-			delete cachedClients[releaseSessionKey];
+			eventBufferMap[releaseSessionKey].flushAll().finally(() => {
+				eventBufferMap[releaseSessionKey].release();
+				delete eventBufferMap[releaseSessionKey];
+				delete cachedClients[releaseSessionKey];
+			});
 		}
 	}
 
