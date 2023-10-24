@@ -33,7 +33,8 @@ import { getCurrentUser } from './getCurrentUser';
  *
  * @param input - The SignInWithRedirectInput object, if empty it will redirect to Cognito HostedUI
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the userpool config is invalid.
+ * @throws OAuthNotConfigureException - Thrown when the oauth config is invalid.
  */
 export async function signInWithRedirect(
 	input?: SignInWithRedirectInput
