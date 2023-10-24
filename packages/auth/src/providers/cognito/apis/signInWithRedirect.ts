@@ -27,6 +27,7 @@ import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInWithRedirectInput } from '../types';
 import { generateCodeVerifier, generateState } from '../utils/oauth';
 import { getCurrentUser } from './getCurrentUser';
+import { getSignInRedirect } from '../utils/oauth/getSignInRedirect';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
@@ -96,7 +97,7 @@ export async function oauthSignIn({
 	store.storePKCE(value);
 
 	const queryString = Object.entries({
-		redirect_uri: redirectSignIn[0], // TODO(v6): add logic to identity the correct url
+		redirect_uri: getSignInRedirect(oauthConfig.redirectSignIn),
 		response_type: responseType,
 		client_id: clientId,
 		identity_provider: provider,
@@ -247,20 +248,20 @@ async function handleImplicitFlow({
 
 	const url = new AmplifyUrl(currentUrl);
 
-	const { idToken, accessToken, state, tokenType, expiresIn } = (
+	const { id_token, access_token, state, token_type, expires_in } = (
 		url.hash ?? '#'
 	)
 		.substring(1) // Remove # from returned code
 		.split('&')
 		.map(pairings => pairings.split('='))
 		.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), {
-			idToken: undefined,
-			accessToken: undefined,
+			id_token: undefined,
+			access_token: undefined,
 			state: undefined,
-			tokenType: undefined,
-			expiresIn: undefined,
+			token_type: undefined,
+			expires_in: undefined,
 		});
-	if (!idToken || !accessToken) {
+	if (!access_token) {
 		await store.clearOAuthData();
 		return;
 	}
@@ -273,14 +274,14 @@ async function handleImplicitFlow({
 	}
 
 	const username =
-		(accessToken && decodeJWT(accessToken).payload.username) ?? 'username';
+		(access_token && decodeJWT(access_token).payload.username) ?? 'username';
 
 	await cacheCognitoTokens({
 		username,
-		AccessToken: accessToken,
-		IdToken: idToken,
-		TokenType: tokenType,
-		ExpiresIn: expiresIn,
+		AccessToken: access_token,
+		IdToken: id_token,
+		TokenType: token_type,
+		ExpiresIn: expires_in,
 	});
 
 	return completeFlow({ redirectUri, state, preferPrivateSession });
