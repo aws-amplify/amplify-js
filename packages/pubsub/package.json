@@ -1,5 +1,6 @@
 {
 	"name": "@aws-amplify/pubsub",
+	"private": true,
 	"version": "6.0.0",
 	"description": "Pubsub category of aws-amplify",
 	"main": "./lib/index.js",

@@ -14,6 +14,10 @@ import {
 	uuid,
 } from '../testUtils/data';
 import { getEventBuffer } from '../../../../src/providers/pinpoint/utils/getEventBuffer';
+import {
+	SESSION_START_EVENT,
+	SESSION_STOP_EVENT,
+} from '../../../../src/utils/sessionListener';
 
 jest.mock('uuid');
 jest.mock('../../../../src/awsClients/pinpoint');
@@ -106,6 +110,63 @@ describe('Pinpoint Provider API: record', () => {
 				endpointId,
 				event,
 				session: expect.any(Object),
+				timestamp: expect.any(String),
+			})
+		);
+	});
+
+	it('should start and stop sessions when appropriate events are received', async () => {
+		const mockStartEvent = {
+			name: SESSION_START_EVENT,
+		};
+		const mockEndEvent = {
+			name: SESSION_STOP_EVENT,
+		};
+
+		mockUuid.mockReturnValue('new-uuid');
+
+		await record({
+			appId,
+			category,
+			credentials,
+			event: mockStartEvent,
+			identityId,
+			region,
+		});
+
+		expect(mockBufferPush).toBeCalledWith(
+			expect.objectContaining({
+				endpointId,
+				event: mockStartEvent,
+				session: {
+					Id: 'new-uuid',
+					StartTimestamp: expect.any(String),
+				},
+				timestamp: expect.any(String),
+			})
+		);
+
+		// End the session
+		mockUuid.mockReturnValue('new-uuid-2'); // Ensure the original session is ended
+		await record({
+			appId,
+			category,
+			credentials,
+			event: mockEndEvent,
+			identityId,
+			region,
+		});
+
+		expect(mockBufferPush).toHaveBeenLastCalledWith(
+			expect.objectContaining({
+				endpointId,
+				event: mockEndEvent,
+				session: {
+					Id: 'new-uuid',
+					Duration: expect.any(Number),
+					StartTimestamp: expect.any(String),
+					StopTimestamp: expect.any(String),
+				},
 				timestamp: expect.any(String),
 			})
 		);
