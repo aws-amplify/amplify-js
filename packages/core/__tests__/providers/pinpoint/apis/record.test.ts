@@ -111,6 +111,63 @@ describe('Pinpoint Provider API: record', () => {
 		);
 	});
 
+	it('should start and stop sessions when appropriate events are received', async () => {
+		const mockStartEvent = {
+			name: '_session.start',
+		};
+		const mockEndEvent = {
+			name: '_session.stop',
+		};
+
+		mockUuid.mockReturnValue('new-uuid');
+
+		await record({
+			appId,
+			category,
+			credentials,
+			event: mockStartEvent,
+			identityId,
+			region,
+		});
+
+		expect(mockBufferPush).toBeCalledWith(
+			expect.objectContaining({
+				endpointId,
+				event: mockStartEvent,
+				session: {
+					Id: 'new-uuid',
+					StartTimestamp: expect.any(String),
+				},
+				timestamp: expect.any(String),
+			})
+		);
+
+		// End the session
+		mockUuid.mockReturnValue('new-uuid-2'); // Ensure the original session is ended
+		await record({
+			appId,
+			category,
+			credentials,
+			event: mockEndEvent,
+			identityId,
+			region,
+		});
+
+		expect(mockBufferPush).toHaveBeenLastCalledWith(
+			expect.objectContaining({
+				endpointId,
+				event: mockEndEvent,
+				session: {
+					Id: 'new-uuid',
+					Duration: expect.any(Number),
+					StartTimestamp: expect.any(String),
+					StopTimestamp: expect.any(String),
+				},
+				timestamp: expect.any(String),
+			})
+		);
+	});
+
 	it('throws an error if it is unable to resolve the endpoint ID', async () => {
 		mockResolveEndpointId.mockImplementation(() => {
 			throw new Error();
