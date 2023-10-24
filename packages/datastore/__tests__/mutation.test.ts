@@ -1,4 +1,15 @@
-const mockRestPost = jest.fn();
+const mockRestPost = jest.fn(() => {
+	return Promise.reject(serverError);
+});
+
+jest.mock('@aws-amplify/api/internals', () => {
+	const apiInternals = jest.requireActual('@aws-amplify/api/internals');
+	apiInternals.InternalAPI._graphqlApi._api.post = mockRestPost;
+	return {
+		...apiInternals,
+	};
+});
+
 import { Amplify } from '@aws-amplify/core';
 
 import {
@@ -94,11 +105,25 @@ describe('MutationProcessor', () => {
 
 	beforeAll(async () => {
 		mutationProcessor = await instantiateMutationProcessor();
+		const awsconfig = {
+			aws_project_region: 'us-west-2',
+			aws_appsync_graphqlEndpoint:
+				'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
+			aws_appsync_region: 'us-west-2',
+			aws_appsync_authenticationType: 'API_KEY',
+			aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
+		};
+
+		Amplify.configure(awsconfig);
+	});
+
+	afterEach(() => {
+		jest.resetModules();
 	});
 
 	// Test for this PR: https://github.com/aws-amplify/amplify-js/pull/6542
 	describe('100% Packet Loss Axios Error', () => {
-		it.skip('Should result in Network Error and get handled without breaking the Mutation Processor', async () => {
+		it('Should result in Network Error and get handled without breaking the Mutation Processor', async () => {
 			const mutationProcessorSpy = jest.spyOn(mutationProcessor, 'resume');
 			await mutationProcessor.resume();
 
@@ -161,14 +186,22 @@ describe('MutationProcessor', () => {
 			expect(input.postId).toEqual('100');
 		});
 
-		it.skip('Should send datastore details with the x-amz-user-agent in the rest api request', async () => {
+		it('Should send datastore details with the x-amz-user-agent in the rest api request', async () => {
 			jest.spyOn(mutationProcessor, 'resume');
 			await mutationProcessor.resume();
-			expect(mockRestPost).toBeCalledWith(
-				expect.anything(),
+			expect(mockRestPost).toHaveBeenCalledWith(
 				expect.objectContaining({
-					headers: expect.objectContaining({
-						'x-amz-user-agent': getAmplifyUserAgent(datastoreUserAgentDetails),
+					url: new URL(
+						'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql'
+					),
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'x-amz-user-agent': getAmplifyUserAgent(
+								datastoreUserAgentDetails
+							),
+						}),
+						signingServiceInfo: null,
+						withCredentials: undefined,
 					}),
 				})
 			);
@@ -269,16 +302,6 @@ describe('error handler', () => {
 			})
 		);
 	});
-});
-// Mocking restClient.post to throw the error we expect
-// when experiencing poor network conditions
-jest.mock('@aws-amplify/api-rest/internals', () => {
-	return {
-		...jest.requireActual('@aws-amplify/api-rest/internals'),
-		post: mockRestPost.mockImplementation(() => {
-			return Promise.reject(serverError);
-		}),
-	};
 });
 
 // mocking jitteredBackoff to prevent it from retrying
