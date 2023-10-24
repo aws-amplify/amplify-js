@@ -264,7 +264,7 @@ describe('client', () => {
 				data: {
 					listThreads: {
 						items: threadsToList,
-						nextToken: null,
+						nextToken: 'something',
 					},
 				},
 			};
@@ -295,6 +295,7 @@ describe('client', () => {
 			expectList(spy, 'listThreads', graphqlVariables);
 			expect(errors).toBe(undefined);
 			expect(items).toEqual(graphqlResponse.data.listThreads.items);
+			expect(nextToken).toEqual('something');
 		});
 
 		test('subscribe', done => {
