@@ -10,7 +10,6 @@ import { assertIsInitialized } from '../../../utils';
 /**
  * Clear locally cached messages.
  *
- * @throws service exceptions - Thrown when the underlying Pinpoint service returns an error.
  * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown if In App messaging hasn't been initialized.
  * @returns A promise that will resolve when the operation is complete.
  * @example
@@ -22,7 +21,6 @@ import { assertIsInitialized } from '../../../utils';
  */
 export async function clearMessages(): Promise<void> {
 	assertIsInitialized();
-
 	const key = `${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`;
 	return await defaultStorage.removeItem(key);
 }
